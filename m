@@ -2,203 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 012006F3B0C
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 01:35:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E19F56F3B12
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 01:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232958AbjEAXfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 19:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
+        id S233161AbjEAXnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 19:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230202AbjEAXfX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 19:35:23 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7A43588;
-        Mon,  1 May 2023 16:35:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682984122; x=1714520122;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pkLc5ZP/dOvD7lQT0PQ1IrPetzjCfx8doT8UwYt0P10=;
-  b=Xo1AQmtcbajeQIMJQpWuHDj8djbMk05ffjAwGLHAm0spYpLFFnEgY3kP
-   GQU3UrVeLejXGCEdvy8TYIlEVKBly5yllFUlmSxVKmMCm4Mi4ixaEe43N
-   y0caJGyTnepYVNWrQwtULWRVHVlLzrLvZIvk5dVHIlzm66VPCNK8SM5s6
-   krxhfhdglws95o2QxJ9pvhdlx+iFos6zAJkTTlesKfVWgFSH1zf9JXwEK
-   PgU1Wq+IMJ/9fD4hhVGsaaqjmYZBy8k/YQwyQLodVHlMSdx/G2jAQKSLz
-   wyrnJrkIH8utEAYR/yFcATMkAVdsPARm2zquWCK9kesGjUDa/r6D8bQ+q
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10697"; a="347074292"
-X-IronPort-AV: E=Sophos;i="5.99,242,1677571200"; 
-   d="scan'208";a="347074292"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2023 16:35:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10697"; a="760864044"
-X-IronPort-AV: E=Sophos;i="5.99,242,1677571200"; 
-   d="scan'208";a="760864044"
-Received: from lkp-server01.sh.intel.com (HELO e3434d64424d) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 01 May 2023 16:35:17 -0700
-Received: from kbuild by e3434d64424d with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1ptd36-0000hY-20;
-        Mon, 01 May 2023 23:35:16 +0000
-Date:   Tue, 2 May 2023 07:34:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@kernel.org>, Yishai Hadas <yishaih@nvidia.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
+        with ESMTP id S233449AbjEAXmb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 19:42:31 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2063.outbound.protection.outlook.com [40.107.100.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD143588;
+        Mon,  1 May 2023 16:42:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cRf7/+rgZTWXcwOU97tdsrfqRzYzeO/cofpS4Q2NbHux+9WQHztXzlrosldRspdrpGO/k6qPtI0ydFsnVIhftcL3lT4BCcx5IXN1Anna1A8hQF7MxDMMTWK7FTu63hquo69AWUM0cmkcr2sViix5Spf4jjry+DwE+5C5jiffyGTmv839e5tv8GeNLJ9zM3gsVuJAb66mVJfMLGkPWJ7ufJ72xhRpew9Cr1gakSe+/vN83ZnlfLURWnMe0g+mmn19ePD0x5UVrEQylyz276WrKio5MtAHPA2uaBom9A1rEpqweL0sHyLgEhqDaKxIY62huuu9S2IYoPG8ySYXxWgw8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kN4VH6XCp6p8zubRs36D4kgn5RUUBwe+kT5byDFcnTQ=;
+ b=AAn8AIVzg/Hh+g7YIKq7ikXaGzdytQu8NUnpOSV+bG6AP79uEwpNRG3qJT6/YMeF/8Zwj8f+nDEsBi3G2/J8swtD97rtGCPEch1Is+IHlXbWTYVAA/myWPCdH9x3LO6k0Ww9ZV2Ym9gzCFJMmH2mc7dM7Mrd9RXMjSOHyd46LnbOOk+vtRdYxZHkg1Clxu3RODWs0zjdPiDaZ5ih+/c5d+nRgJtXru4zkl7lj5ep6e5b8iP/jt6I4sRRyMNQleh1hucxUSJTA2YNfqDU6EIBTZfGYxoe734y8EK0A/nTXyc5PAUJUXlocrtbBLX/rSUpL+SkrHYI/o2HTmyszCopGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kN4VH6XCp6p8zubRs36D4kgn5RUUBwe+kT5byDFcnTQ=;
+ b=Q7eGDicvwXMPFrtz2vkEqpGRg5BQIh/JAhiZreLJLBRss3CJmM46BKBrT0/L9wPZ5pvLej9OTGsJ/20XIryJRfzvadmS6uX0PhfhxtM9rnme6oyarab1hvkMbpoBnJ00S5InZ+izSQyF4pBxKDeiMkBxN/+4Z73ShdehLbNsnOoq3tMLWGZcOXmoM1pWGPM1nmk7ZPu8QQuVPXtCYkaraPSDR0q0XoUKFBwPI/uOEQHhMqyJUklH2kDr24jIccCVAFUR51pYo0bNrzs7FeDNWKcylVER/RllJpkrd/71vkivH/RgWjstK3YFmrND6yTGTjW9KxHNvCM0RSUQijdYJw==
+Received: from MW4PR03CA0270.namprd03.prod.outlook.com (2603:10b6:303:b4::35)
+ by CH2PR12MB4263.namprd12.prod.outlook.com (2603:10b6:610:a6::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Mon, 1 May
+ 2023 23:42:26 +0000
+Received: from CO1NAM11FT110.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b4:cafe::1d) by MW4PR03CA0270.outlook.office365.com
+ (2603:10b6:303:b4::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30 via Frontend
+ Transport; Mon, 1 May 2023 23:42:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT110.mail.protection.outlook.com (10.13.175.125) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6363.20 via Frontend Transport; Mon, 1 May 2023 23:42:26 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 1 May 2023
+ 16:42:18 -0700
+Received: from [10.110.48.28] (10.126.231.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 1 May 2023
+ 16:42:17 -0700
+Message-ID: <d4dc3bf4-5a9c-93d7-8472-a0cf6ea9992d@nvidia.com>
+Date:   Mon, 1 May 2023 16:42:16 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to
+ file-backed mappings
+Content-Language: en-US
+To:     Lorenzo Stoakes <lstoakes@gmail.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        "Matthew Wilcox" <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         Leon Romanovsky <leon@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        Arnd Bergmann <arnd@arndb.de>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        "Namhyung Kim" <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 2/2] net/mlx4: avoid overloading user/kernel pointers
-Message-ID: <202305020739.Q8ObXAba-lkp@intel.com>
-References: <20230418114730.3674657-2-arnd@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230418114730.3674657-2-arnd@kernel.org>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        "Christian Brauner" <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <linux-fsdevel@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, Oleg Nesterov <oleg@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        "Mika Penttila" <mpenttil@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        "Dave Chinner" <david@fromorbit.com>,
+        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>
+References: <cover.1682981880.git.lstoakes@gmail.com>
+ <dee4f4ad6532b0f94d073da263526de334d5d7e0.1682981880.git.lstoakes@gmail.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+In-Reply-To: <dee4f4ad6532b0f94d073da263526de334d5d7e0.1682981880.git.lstoakes@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT110:EE_|CH2PR12MB4263:EE_
+X-MS-Office365-Filtering-Correlation-Id: 736ebcc6-22bb-4731-33b8-08db4a9db842
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QbWHv9DQq+dJw4zK8fpKA2Lu7HmWKNP9D80fWCGjU1xKkIPwv3OQtEe3k1VnGn/g8vodYYURE1WMTGmIq64+FzwZJo/ovsGsFWoT4RgfUVdaULGCng2eoS796MuTYRnrE5PSEn35Yfk37CIi/GdeYU9XVTZnZLPOl+0guqjxvU2QTtlrupBpMbt/w7KmIQ+odi7VfA+QMGhTPAunAaBGDVbgEgIF0JHpx555DbYCkI6PgPPP7iSeVVxkuymF+s4ENuRSKAZ8EO88aLHkmEvzRxNDcumYvlHEpcvT8yR442f1YibljI3zuIeKRncIThEsMyS35I9rne9PJ+fPQzFdWjYs/oUc+nzD9ACmitewcTPf3cLIGG2kSh/UknglqEp26RnnBgj64mwEHqfR+Xf5TCkMHCulToN8Kk9G0r660vpw2VwKCg7jEQqPkAPzwDuPuEAnsmxQ4eU1CMDi4MFGN7Pz9wBZRlnSxsBBpUcYaMNYVQvo3FXK9tNJl3D/gv20tRUDKNrHAFeu1Q//AGzDT3C6Jp+oh5Tk0AlWAo8+/taVpVBaURl1qOHtbVwtB28Uhai+n7nY7JDHsK8TIUsBRBlxoJkpcwttKaxGNlZ6jBHCUgEn1+Gv4U73u7z1Shc+gjlSIkRtWUIjOJTyUkugWUMlz3ZNCmHInnEH9RzaBPxvpd7UYlWNjDVUmwM1XqvP00ijfJU/YCdTTKQKkN4N9wYQ7MSN3aL7FWWarfMd7RRtFhb+x+u0QIinje+yzbuK
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199021)(46966006)(36840700001)(40470700004)(31686004)(316002)(53546011)(26005)(82310400005)(40460700003)(40480700001)(8936002)(5660300002)(7416002)(7406005)(8676002)(31696002)(86362001)(186003)(16526019)(478600001)(110136005)(16576012)(70206006)(70586007)(336012)(2616005)(426003)(36860700001)(47076005)(83380400001)(41300700001)(54906003)(356005)(36756003)(7636003)(2906002)(82740400003)(4326008)(43740500002)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2023 23:42:26.3318
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 736ebcc6-22bb-4731-33b8-08db4a9db842
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT110.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4263
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnd,
+On 5/1/23 16:11, Lorenzo Stoakes wrote:
+> Writing to file-backed dirty-tracked mappings via GUP is inherently broken
+> as we cannot rule out folios being cleaned and then a GUP user writing to
+> them again and possibly marking them dirty unexpectedly.
+> 
+> This is especially egregious for long-term mappings (as indicated by the
+> use of the FOLL_LONGTERM flag), so we disallow this case in GUP-fast as
+> we have already done in the slow path.
+> 
+> We have access to less information in the fast path as we cannot examine
+> the VMA containing the mapping, however we can determine whether the folio
+> is anonymous and then whitelist known-good mappings - specifically hugetlb
+> and shmem mappings.
+> 
+> While we obtain a stable folio for this check, the mapping might not be, as
+> a truncate could nullify it at any time. Since doing so requires mappings
+> to be zapped, we can synchronise against a TLB shootdown operation.
+> 
+> For some architectures TLB shootdown is synchronised by IPI, against which
+> we are protected as the GUP-fast operation is performed with interrupts
+> disabled. However, other architectures which specify
+> CONFIG_MMU_GATHER_RCU_TABLE_FREE use an RCU lock for this operation.
+> 
+> In these instances, we acquire an RCU lock while performing our checks. If
+> we cannot get a stable mapping, we fall back to the slow path, as otherwise
+> we'd have to walk the page tables again and it's simpler and more effective
+> to just fall back.
+> 
+> It's important to note that there are no APIs allowing users to specify
+> FOLL_FAST_ONLY for a PUP-fast let alone with FOLL_LONGTERM, so we can
+> always rely on the fact that if we fail to pin on the fast path, the code
+> will fall back to the slow path which can perform the more thorough check.
+> 
+> Suggested-by: David Hildenbrand <david@redhat.com>
+> Suggested-by: Kirill A . Shutemov <kirill@shutemov.name>
+> Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
+> ---
+>   mm/gup.c | 87 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+>   1 file changed, 85 insertions(+), 2 deletions(-)
+> 
 
-kernel test robot noticed the following build warnings:
+Hi Lorenzo,
 
-[auto build test WARNING on soc/for-next]
-[also build test WARNING on linus/master v6.3 next-20230428]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+I am unable to find anything wrong with this patch, despite poring
+over it and fretting over IPI vs. RCU cases. :)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Arnd-Bergmann/net-mlx4-avoid-overloading-user-kernel-pointers/20230418-195238
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-patch link:    https://lore.kernel.org/r/20230418114730.3674657-2-arnd%40kernel.org
-patch subject: [PATCH 2/2] net/mlx4: avoid overloading user/kernel pointers
-config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20230502/202305020739.Q8ObXAba-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/1389cdaec07839abb7b8aacb2b16f37d4affd8d3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Arnd-Bergmann/net-mlx4-avoid-overloading-user-kernel-pointers/20230418-195238
-        git checkout 1389cdaec07839abb7b8aacb2b16f37d4affd8d3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/firmware/ drivers/hwmon/ drivers/mfd/ drivers/net/ethernet/mellanox/mlx4/ drivers/pinctrl/ drivers/power/supply/ drivers/staging/media/atomisp/
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202305020739.Q8ObXAba-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/ethernet/mellanox/mlx4/en_cq.c:141:53: warning: expression which evaluates to zero treated as a null pointer constant of type 'void *' [-Wnon-literal-null-conversion]
-                               cq->vector, 0, timestamp_en, &cq->wqres.buf, false);
-                                                                            ^~~~~
-   1 warning generated.
-
-
-vim +141 drivers/net/ethernet/mellanox/mlx4/en_cq.c
-
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   88  
-76532d0c7e74249 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09   89  int mlx4_en_activate_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq,
-76532d0c7e74249 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09   90  			int cq_idx)
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   91  {
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   92  	struct mlx4_en_dev *mdev = priv->mdev;
-80a62deedf9d449 drivers/net/ethernet/mellanox/mlx4/en_cq.c Thomas Gleixner   2020-12-10   93  	int irq, err = 0;
-ec693d47010e830 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23   94  	int timestamp_en = 0;
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31   95  	bool assigned_eq = false;
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   96  
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   97  	cq->dev = mdev->pndev[priv->port];
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   98  	cq->mcq.set_ci_db  = cq->wqres.db.db;
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   99  	cq->mcq.arm_db     = cq->wqres.db.db + 1;
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  100  	*cq->mcq.set_ci_db = 0;
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  101  	*cq->mcq.arm_db    = 0;
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  102  	memset(cq->buf, 0, cq->buf_size);
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  103  
-ccc109b8ed24c6a drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  104  	if (cq->type == RX) {
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  105  		if (!mlx4_is_eq_vector_valid(mdev->dev, priv->port,
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  106  					     cq->vector)) {
-de1618034ae5704 drivers/net/ethernet/mellanox/mlx4/en_cq.c Ido Shamay        2015-05-31  107  			cq->vector = cpumask_first(priv->rx_ring[cq->ring]->affinity_mask);
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  108  
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  109  			err = mlx4_assign_eq(mdev->dev, priv->port,
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  110  					     &cq->vector);
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  111  			if (err) {
-b0f6446377e72bc drivers/net/ethernet/mellanox/mlx4/en_cq.c Carol L Soto      2015-08-27  112  				mlx4_err(mdev, "Failed assigning an EQ to CQ vector %d\n",
-b0f6446377e72bc drivers/net/ethernet/mellanox/mlx4/en_cq.c Carol L Soto      2015-08-27  113  					 cq->vector);
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  114  				goto free_eq;
-1fb9876e9bf895e drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  115  			}
-35f6f45368632f2 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2014-06-29  116  
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  117  			assigned_eq = true;
-1fb9876e9bf895e drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  118  		}
-80a62deedf9d449 drivers/net/ethernet/mellanox/mlx4/en_cq.c Thomas Gleixner   2020-12-10  119  		irq = mlx4_eq_get_irq(mdev->dev, cq->vector);
-197d23707729579 drivers/net/ethernet/mellanox/mlx4/en_cq.c Thomas Gleixner   2020-12-10  120  		cq->aff_mask = irq_get_effective_affinity_mask(irq);
-1fb9876e9bf895e drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  121  	} else {
-76532d0c7e74249 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  122  		/* For TX we use the same irq per
-76532d0c7e74249 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  123  		ring we assigned for the RX    */
-76532d0c7e74249 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  124  		struct mlx4_en_cq *rx_cq;
-76532d0c7e74249 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  125  
-76532d0c7e74249 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  126  		cq_idx = cq_idx % priv->rx_ring_num;
-41d942d56cfd210 drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-11-07  127  		rx_cq = priv->rx_cq[cq_idx];
-76532d0c7e74249 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  128  		cq->vector = rx_cq->vector;
-1fb9876e9bf895e drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  129  	}
-1fb9876e9bf895e drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  130  
-ccc109b8ed24c6a drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  131  	if (cq->type == RX)
-41d942d56cfd210 drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-11-07  132  		cq->size = priv->rx_ring[cq->ring]->actual_size;
-38aab07c14adbf3 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2009-05-24  133  
-ccc109b8ed24c6a drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  134  	if ((cq->type != RX && priv->hwtstamp_config.tx_type) ||
-ccc109b8ed24c6a drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  135  	    (cq->type == RX && priv->hwtstamp_config.rx_filter))
-ec693d47010e830 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  136  		timestamp_en = 1;
-ec693d47010e830 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  137  
-f3301870161ca29 drivers/net/ethernet/mellanox/mlx4/en_cq.c Moshe Shemesh     2017-06-21  138  	cq->mcq.usage = MLX4_RES_USAGE_DRIVER;
-ec693d47010e830 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  139  	err = mlx4_cq_alloc(mdev->dev, cq->size, &cq->wqres.mtt,
-ec693d47010e830 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  140  			    &mdev->priv_uar, cq->wqres.db.dma, &cq->mcq,
-e45678973dcbb13 drivers/net/ethernet/mellanox/mlx4/en_cq.c Daniel Jurgens    2018-11-21 @141  			    cq->vector, 0, timestamp_en, &cq->wqres.buf, false);
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  142  	if (err)
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  143  		goto free_eq;
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  144  
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  145  	cq->mcq.event = mlx4_en_cq_event;
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  146  
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  147  	switch (cq->type) {
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  148  	case TX:
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  149  		cq->mcq.comp = mlx4_en_tx_irq;
-16d083e28f1a4f6 drivers/net/ethernet/mellanox/mlx4/en_cq.c Jakub Kicinski    2022-05-04  150  		netif_napi_add_tx(cq->dev, &cq->napi, mlx4_en_poll_tx_cq);
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  151  		napi_enable(&cq->napi);
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  152  		break;
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  153  	case RX:
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  154  		cq->mcq.comp = mlx4_en_rx_irq;
-b48b89f9c189d24 drivers/net/ethernet/mellanox/mlx4/en_cq.c Jakub Kicinski    2022-09-27  155  		netif_napi_add(cq->dev, &cq->napi, mlx4_en_poll_rx_cq);
-0276a330617a0cf drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-12-19  156  		napi_enable(&cq->napi);
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  157  		break;
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  158  	case TX_XDP:
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  159  		/* nothing regarding napi, it's shared with rx ring */
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  160  		cq->xdp_busy = false;
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  161  		break;
-6c78511b0503c9b drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  162  	}
-0276a330617a0cf drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-12-19  163  
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  164  	return 0;
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  165  
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  166  free_eq:
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  167  	if (assigned_eq)
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  168  		mlx4_release_eq(mdev->dev, cq->vector);
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  169  	cq->vector = mdev->dev->caps.num_comp_vectors;
-c66fa19c405a366 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  170  	return err;
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  171  }
-c27a02cd94d6695 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  172  
-
+thanks,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+John Hubbard
+NVIDIA
+
+
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 0f09dec0906c..431618048a03 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -18,6 +18,7 @@
+>   #include <linux/migrate.h>
+>   #include <linux/mm_inline.h>
+>   #include <linux/sched/mm.h>
+> +#include <linux/shmem_fs.h>
+>   
+>   #include <asm/mmu_context.h>
+>   #include <asm/tlbflush.h>
+> @@ -95,6 +96,77 @@ static inline struct folio *try_get_folio(struct page *page, int refs)
+>   	return folio;
+>   }
+>   
+> +#ifdef CONFIG_MMU_GATHER_RCU_TABLE_FREE
+> +static bool stabilise_mapping_rcu(struct folio *folio)
+> +{
+> +	struct address_space *mapping = READ_ONCE(folio->mapping);
+> +
+> +	rcu_read_lock();
+> +
+> +	return mapping == READ_ONCE(folio->mapping);
+> +}
+> +
+> +static void unlock_rcu(void)
+> +{
+> +	rcu_read_unlock();
+> +}
+> +#else
+> +static bool stabilise_mapping_rcu(struct folio *)
+> +{
+> +	return true;
+> +}
+> +
+> +static void unlock_rcu(void)
+> +{
+> +}
+> +#endif
+> +
+> +/*
+> + * Used in the GUP-fast path to determine whether a FOLL_PIN | FOLL_LONGTERM |
+> + * FOLL_WRITE pin is permitted for a specific folio.
+> + *
+> + * This assumes the folio is stable and pinned.
+> + *
+> + * Writing to pinned file-backed dirty tracked folios is inherently problematic
+> + * (see comment describing the writeable_file_mapping_allowed() function). We
+> + * therefore try to avoid the most egregious case of a long-term mapping doing
+> + * so.
+> + *
+> + * This function cannot be as thorough as that one as the VMA is not available
+> + * in the fast path, so instead we whitelist known good cases.
+> + *
+> + * The folio is stable, but the mapping might not be. When truncating for
+> + * instance, a zap is performed which triggers TLB shootdown. IRQs are disabled
+> + * so we are safe from an IPI, but some architectures use an RCU lock for this
+> + * operation, so we acquire an RCU lock to ensure the mapping is stable.
+> + */
+> +static bool folio_longterm_write_pin_allowed(struct folio *folio)
+> +{
+> +	bool ret;
+> +
+> +	/* hugetlb mappings do not require dirty tracking. */
+> +	if (folio_test_hugetlb(folio))
+> +		return true;
+> +
+> +	if (stabilise_mapping_rcu(folio)) {
+> +		struct address_space *mapping = folio_mapping(folio);
+> +
+> +		/*
+> +		 * Neither anonymous nor shmem-backed folios require
+> +		 * dirty tracking.
+> +		 */
+> +		ret = folio_test_anon(folio) ||
+> +			(mapping && shmem_mapping(mapping));
+> +	} else {
+> +		/* If the mapping is unstable, fallback to the slow path. */
+> +		ret = false;
+> +	}
+> +
+> +	unlock_rcu();
+> +
+> +	return ret;
+> +}
+> +
+>   /**
+>    * try_grab_folio() - Attempt to get or pin a folio.
+>    * @page:  pointer to page to be grabbed
+> @@ -123,6 +195,8 @@ static inline struct folio *try_get_folio(struct page *page, int refs)
+>    */
+>   struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
+>   {
+> +	bool is_longterm = flags & FOLL_LONGTERM;
+> +
+>   	if (unlikely(!(flags & FOLL_PCI_P2PDMA) && is_pci_p2pdma_page(page)))
+>   		return NULL;
+>   
+> @@ -136,8 +210,7 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
+>   		 * right zone, so fail and let the caller fall back to the slow
+>   		 * path.
+>   		 */
+> -		if (unlikely((flags & FOLL_LONGTERM) &&
+> -			     !is_longterm_pinnable_page(page)))
+> +		if (unlikely(is_longterm && !is_longterm_pinnable_page(page)))
+>   			return NULL;
+>   
+>   		/*
+> @@ -148,6 +221,16 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
+>   		if (!folio)
+>   			return NULL;
+>   
+> +		/*
+> +		 * Can this folio be safely pinned? We need to perform this
+> +		 * check after the folio is stabilised.
+> +		 */
+> +		if ((flags & FOLL_WRITE) && is_longterm &&
+> +		    !folio_longterm_write_pin_allowed(folio)) {
+> +			folio_put_refs(folio, refs);
+> +			return NULL;
+> +		}
+> +
+>   		/*
+>   		 * When pinning a large folio, use an exact count to track it.
+>   		 *
+
+
