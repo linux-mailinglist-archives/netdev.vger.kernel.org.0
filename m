@@ -2,118 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D5A46F2F25
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 09:27:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44EA6F2F34
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 09:41:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232132AbjEAH10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 03:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
+        id S232243AbjEAHla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 03:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbjEAH1Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 03:27:24 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFCB127
-        for <netdev@vger.kernel.org>; Mon,  1 May 2023 00:27:22 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-64115eef620so25138851b3a.1
-        for <netdev@vger.kernel.org>; Mon, 01 May 2023 00:27:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fromorbit-com.20221208.gappssmtp.com; s=20221208; t=1682926042; x=1685518042;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ibXuk7FbYrowdFzsiIEHtgPKzlyAO+Sfsye0fqZ102E=;
-        b=IKlhLUer77vP+NjL6egKLZ4SBjsZvxj/D3clB+asMNMvxbEKZVyD67jL8L+HgQcTZP
-         bx2+VCvjy6HeCWRCAKSjdVeCtOUPiNZOnarnxDf2Ay6KT0thLI2fnISAw3lEGAFT3jl2
-         kDsM3kvKxVx4yCWkUsfVNm1hwj4coNk2oyMCtjatrEV3EX4+4UoJMiPf3zbEvc9Jjg1m
-         0bcMJvDlbUEMRKu34+4Ed5M78tX9h6w4sQUUsnBU8Gli1HsSt1NKbMvyBp/4K2SrmTSi
-         DEZoHLZVnAjL+yBP9KaRc6NDRzIuI950QrEuS8Jegk9aH6BmTEHBRYboZ8q0GghNqhi2
-         OyTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682926042; x=1685518042;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ibXuk7FbYrowdFzsiIEHtgPKzlyAO+Sfsye0fqZ102E=;
-        b=HtOwufvqT0JTzCa6NGz682AHIofJBrjMMRhPwArC5g4mFdtpSirvaVmw2xXU7Mn7R1
-         gSQk9m2x49opTzYuP4B1kQPytEjl8I21ef3PIIXOohDGpIIY1TD4kmy2w2qNt1d7xHCE
-         3tgaHDavtpsJuW828LdbAB+/CcSsTMy557nlCQyPDkSA6OhJ19lPO5E+2L14WpLPa/TJ
-         FQdPdfTKU3N/APOKV24XF5pcMZ+YVkrVEvcor/WGoet5asT7T4m3bm8TufxWcfjkxWcS
-         HhG71ASqJMhsgE1CKhrotUyGHAj5rSq9pBlVjMIqiU6POdhqQCw+pWhGF/1/kVd0QMxn
-         cWTg==
-X-Gm-Message-State: AC+VfDxiG7/PfbkSymDlNcB4bcnwtStIFJx0mLkpUgr/A/n5fLD0vyr8
-        ww2DVRKGyHvRDAq2GZyClVbEmQ==
-X-Google-Smtp-Source: ACHHUZ4UvG80mxUfpvf1acfCnS2H3KC6jDEcSFVNzFYuXXy+v/xi65gkE5IdZ0bX/96Zq1X5x+FUpg==
-X-Received: by 2002:a05:6a00:a16:b0:63d:3c39:ecc2 with SMTP id p22-20020a056a000a1600b0063d3c39ecc2mr17292848pfh.12.1682926041931;
-        Mon, 01 May 2023 00:27:21 -0700 (PDT)
-Received: from dread.disaster.area (pa49-181-88-204.pa.nsw.optusnet.com.au. [49.181.88.204])
-        by smtp.gmail.com with ESMTPSA id t40-20020a056a0013a800b0063d29df1589sm19371079pfg.136.2023.05.01.00.27.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 May 2023 00:27:21 -0700 (PDT)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1ptNwM-009yXy-1S; Mon, 01 May 2023 17:27:18 +1000
-Date:   Mon, 1 May 2023 17:27:18 +1000
-From:   Dave Chinner <david@fromorbit.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Theodore Ts'o <tytso@mit.edu>,
-        David Hildenbrand <david@redhat.com>,
-        Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        David Howells <dhowells@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
- by default
-Message-ID: <20230501072718.GF2155823@dread.disaster.area>
-References: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
- <afcc124e-7a9b-879c-dfdf-200426b84e24@redhat.com>
- <ZEvZtIb2EDb/WudP@nvidia.com>
- <ZEwPscQu68kx32zF@mit.edu>
- <ZEwVbPM2OPSeY21R@nvidia.com>
- <ZEybNZ7Rev+XM4GU@mit.edu>
- <ZE2ht9AGx321j0+s@nvidia.com>
+        with ESMTP id S231755AbjEAHl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 03:41:29 -0400
+Received: from mail-m11876.qiye.163.com (mail-m11876.qiye.163.com [115.236.118.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295F61B9;
+        Mon,  1 May 2023 00:41:24 -0700 (PDT)
+Received: from [IPV6:240e:3b7:327f:5c30:7d8b:c3e:1a47:99e8] (unknown [IPV6:240e:3b7:327f:5c30:7d8b:c3e:1a47:99e8])
+        by mail-m11876.qiye.163.com (Hmail) with ESMTPA id 101163C021F;
+        Mon,  1 May 2023 15:41:17 +0800 (CST)
+Message-ID: <730cf5ed-2239-34f7-79a5-ffa4d9bb8fae@sangfor.com.cn>
+Date:   Mon, 1 May 2023 15:41:18 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZE2ht9AGx321j0+s@nvidia.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net v3 1/2] iavf: Fix use-after-free in free_netdev
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        keescook@chromium.org, grzegorzx.szczurek@intel.com,
+        mateusz.palczewski@intel.com, mitch.a.williams@intel.com,
+        gregory.v.rose@intel.com, jeffrey.t.kirsher@intel.com,
+        michal.kubiak@intel.com, madhu.chittim@intel.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org, pengdonglin@sangfor.com.cn,
+        huangcun@sangfor.com.cn
+References: <20230429132022.31765-1-dinghui@sangfor.com.cn>
+ <20230429132022.31765-2-dinghui@sangfor.com.cn>
+ <ZE9j4CHtQbm5S3cg@corigine.com>
+From:   Ding Hui <dinghui@sangfor.com.cn>
+In-Reply-To: <ZE9j4CHtQbm5S3cg@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCSUNNVh1LTx5KH0gaHU4YQlUTARMWGhIXJBQOD1
+        lXWRgSC1lBWUlPSx5BSBlMQUhJTB1BThhIS0FMH0MZQRhIHkFKGk9MQUJCHkNZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hKTFVKS0tVS1kG
+X-HM-Tid: 0a87d6423c432eb2kusn101163c021f
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6N006Shw4KD0RCkIaHBQ5FA4I
+        HT4KFBpVSlVKTUNJQklNQ0xDSkhPVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+        QVlJT0seQUgZTEFISUwdQU4YSEtBTB9DGUEYSB5BShpPTEFCQh5DWVdZCAFZQUhOT0M3Bg++
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -121,32 +59,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 29, 2023 at 08:01:11PM -0300, Jason Gunthorpe wrote:
-> On Sat, Apr 29, 2023 at 12:21:09AM -0400, Theodore Ts'o wrote:
+On 2023/5/1 15:01, Simon Horman wrote:
+> On Sat, Apr 29, 2023 at 09:20:21PM +0800, Ding Hui wrote:
+>> We do netif_napi_add() for all allocated q_vectors[], but potentially
+>> do netif_napi_del() for part of them, then kfree q_vectors and leave
+>> invalid pointers at dev->napi_list.
+>>
+>> ...
+>>
+>> Although the patch #2 (of 2) can avoid the issuse triggered by this
+>> repro.sh, there still are other potential risks that if num_active_queues
+>> is changed to less than allocated q_vectors[] by unexpected, the
+>> mismatched netif_napi_add/del() can also casue UAF.
 > 
-> > In any case, the file system maintainers' position (mine and I doubt
-> > Dave Chinner's position has changed) is that if you write to
-> > file-backed mappings via GUP/RDMA/process_vm_writev, and it causes
-> > silent data corruption, you get to keep both pieces, and don't go
-> > looking for us for anything other than sympathy...
+> nit: ./checkpatch --codespell tells me:
 > 
-> This alone is enough reason to block it. I'm tired of this round and
-> round and I think we should just say enough, the mm will work to
-> enforce this view point. Files can only be written through PTEs.
+>       s/casue/cause/
+> 
 
-It has to be at least 5 years ago now that we were told that the
-next-gen RDMA hardware would be able to trigger hardware page faults
-when remote systems dirtied local pages.  This would enable
-->page-mkwrite to be run on file backed pages mapped pages just like
-local CPU write faults and everything would be fine.
+Sorry, I'll fix it in v4.
 
-Whatever happened to that? Are we still waiting for hardware that
-can trigger page faults from remote DMA transfers, or have hardware
-vendors given up on this?
+>> Since we actually call netif_napi_add() for all allocated q_vectors
+>> unconditionally in iavf_alloc_q_vectors(), so we should fix it by
+>> letting netif_napi_del() match to netif_napi_add().
+>>
+>> Fixes: 5eae00c57f5e ("i40evf: main driver core")
+>> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+>> Cc: Donglin Peng <pengdonglin@sangfor.com.cn>
+>> Cc: Huang Cun <huangcun@sangfor.com.cn>
+>> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+>> Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
+>> Reviewed-by: Madhu Chittim <madhu.chittim@intel.com>
+> 
+> 
+> 
 
-Cheers,
-
-Dave.
 -- 
-Dave Chinner
-david@fromorbit.com
+Thanks,
+-dinghui
+
