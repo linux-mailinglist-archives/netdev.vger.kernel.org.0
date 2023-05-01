@@ -2,73 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 093B76F3A86
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 00:32:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EE7A6F3A89
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 00:35:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233036AbjEAWcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 18:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
+        id S232798AbjEAWfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 18:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232625AbjEAWcK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 18:32:10 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856EE271E;
-        Mon,  1 May 2023 15:32:07 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 341MVMvA088224;
-        Mon, 1 May 2023 17:31:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1682980282;
-        bh=0vr6OTb6WAGKkCzclnyhUo3rW3Mr6nZ8oCbIk9ryJFg=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=SCrstEr/Pilh7FKg6/pAt1HLDO56BT+KobGpXL4hlH3XQuvzkhX2JY0pnursz8v8j
-         kPYjwjVbHHjdyxce+eK8TS1nntHYqkq945HEpkIPlhCOm4a3gih1UX4NtqI/DVeHyh
-         SZECQceFtJUGeTmPokigarWWaJAPK90uz9W1aCPA=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 341MVMtd058504
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 1 May 2023 17:31:22 -0500
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 1
- May 2023 17:31:22 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Mon, 1 May 2023 17:31:22 -0500
-Received: from a0498204.dal.design.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 341MVLEK023009;
-        Mon, 1 May 2023 17:31:22 -0500
-From:   Judith Mendez <jm@ti.com>
-To:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S233283AbjEAWfK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 18:35:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BD226BC;
+        Mon,  1 May 2023 15:35:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53AE361FFD;
+        Mon,  1 May 2023 22:35:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 551CEC433D2;
+        Mon,  1 May 2023 22:35:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682980503;
+        bh=tFgPQnUGzkWSyNbxoqNLA0lCOJAEhy+Hl6nBDMeibNY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=G3zly/zuoUp/BaN3h2TTKmhO2jNFFyPjfY6kTuBst7h7CX4xh0XOQmpjKt5+XfpLn
+         CYhWL4ekIGhgb5Is7uJGiVQNCln08JMxt0y95iuiPYOeNDVdYw+2RL0wxvHydgid7T
+         Ilt28qn0cF3QD8sbbeb0VVcxLjnj1wtUMfuXchcO2KonOGlBTsc2bSDL4A9pcsq0AP
+         QsrbVzT+AY0/9lzSPwPoUajAPaEcZLhuodxh1x3TOdAvsUBvS7PL+mGXefUvJvuznU
+         rijeB/LKwhDoni4rgyupPLw5o4WrR100CY2IwCv0zk64CnwVws2HQJNm3XQRx5MfKv
+         B0gQa+j5aoGJg==
+Date:   Mon, 1 May 2023 15:35:02 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Shannon Nelson <shannon.nelson@amd.com>,
+        Brett Creeley <brett.creeley@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Schuyler Patton <spatton@ti.com>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v3 4/4] arm64: dts: ti: Enable MCU MCANs for AM62x
-Date:   Mon, 1 May 2023 17:31:21 -0500
-Message-ID: <20230501223121.21663-5-jm@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230501223121.21663-1-jm@ti.com>
-References: <20230501223121.21663-1-jm@ti.com>
+        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pds_core: fix linking without CONFIG_DEBUG_FS
+Message-ID: <20230501153502.34f194ed@kernel.org>
+In-Reply-To: <20230501150624.3552344-1-arnd@kernel.org>
+References: <20230501150624.3552344-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,144 +57,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On AM62x there are no hardware interrupts routed to A53 GIC
-interrupt controller for MCU MCAN IPs, so MCU MCANs were not
-added to the MCU dtsi. In this patch series an hrtimer is introduced
-to MCAN driver to generate software interrupts. Now add MCU MCAN
-nodes to the MCU dtsi but disable the MCAN devices by default.
+On Mon,  1 May 2023 17:06:14 +0200 Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The debugfs.o file is only built when the fs is enabled:
+> 
+> main.c:(.text+0x47c): undefined reference to `pdsc_debugfs_del_dev'
+> main.c:(.text+0x8dc): undefined reference to `pdsc_debugfs_add_dev'
+> main.c:(.exit.text+0x14): undefined reference to `pdsc_debugfs_destroy'
+> main.c:(.init.text+0x8): undefined reference to `pdsc_debugfs_create'
+> dev.c:(.text+0x988): undefined reference to `pdsc_debugfs_add_ident'
+> core.c:(.text+0x6b0): undefined reference to `pdsc_debugfs_del_qcq'
+> core.c:(.text+0x998): undefined reference to `pdsc_debugfs_add_qcq'
+> core.c:(.text+0xf0c): undefined reference to `pdsc_debugfs_add_viftype'
+> 
+> Add dummy helper functions for these interfaces.
 
-AM62x does not carry on-board CAN transceivers, so instead of
-changing DTB permanently use an overlay to enable MCU MCANs and to
-add CAN transceiver nodes.
+Debugfs should wrap itself. Doesn't this work:
 
-If there is no hardware interrupt and timer method is used, remove
-interrupt properties and add poll-interval to enable the hrtimer
-per MCAN node.
-
-This DT overlay can be used with the following EVM:
-Link: https://www.ti.com/tool/TCAN1042DEVM
-
-Signed-off-by: Judith Mendez <jm@ti.com>
----
-Changelog:
-v3:
- 1. Add link for specific board
-
- arch/arm64/boot/dts/ti/Makefile               |  2 +-
- arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi       | 24 ++++++++
- .../boot/dts/ti/k3-am625-sk-mcan-mcu.dtso     | 57 +++++++++++++++++++
- 3 files changed, 82 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
-
-diff --git a/arch/arm64/boot/dts/ti/Makefile b/arch/arm64/boot/dts/ti/Makefile
-index abe15e76b614..c76be3888e4d 100644
---- a/arch/arm64/boot/dts/ti/Makefile
-+++ b/arch/arm64/boot/dts/ti/Makefile
-@@ -9,7 +9,7 @@
- # alphabetically.
- 
- # Boards with AM62x SoC
--k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo
-+k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo k3-am625-sk-mcan-mcu.dtbo
- dtb-$(CONFIG_ARCH_K3) += k3-am625-beagleplay.dtb
- dtb-$(CONFIG_ARCH_K3) += k3-am625-sk.dtb
- dtb-$(CONFIG_ARCH_K3) += k3-am625-sk-mcan.dtb
-diff --git a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
-index 076601a41e84..20462f457643 100644
---- a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
-@@ -141,4 +141,28 @@
- 		/* Tightly coupled to M4F */
- 		status = "reserved";
- 	};
-+
-+	mcu_mcan1: can@4e00000 {
-+		compatible = "bosch,m_can";
-+		reg = <0x00 0x4e00000 0x00 0x8000>,
-+			  <0x00 0x4e08000 0x00 0x200>;
-+		reg-names = "message_ram", "m_can";
-+		power-domains = <&k3_pds 188 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 188 6>, <&k3_clks 188 1>;
-+		clock-names = "hclk", "cclk";
-+		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
-+		status = "disabled";
-+	};
-+
-+	mcu_mcan2: can@4e10000 {
-+		compatible = "bosch,m_can";
-+		reg = <0x00 0x4e10000 0x00 0x8000>,
-+			  <0x00 0x4e18000 0x00 0x200>;
-+		reg-names = "message_ram", "m_can";
-+		power-domains = <&k3_pds 189 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 189 6>, <&k3_clks 189 1>;
-+		clock-names = "hclk", "cclk";
-+		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
-+		status = "disabled";
-+	};
- };
-diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
-new file mode 100644
-index 000000000000..5145b3de4f9b
---- /dev/null
-+++ b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/**
-+ * DT overlay for MCAN in MCU domain on AM625 SK
-+ *
-+ * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
-+ */
-+
-+/dts-v1/;
-+/plugin/;
-+
-+#include "k3-pinctrl.h"
-+
-+&{/} {
-+	transceiver2: can-phy1 {
-+		compatible = "ti,tcan1042";
-+		#phy-cells = <0>;
-+		max-bitrate = <5000000>;
-+	};
-+
-+	transceiver3: can-phy2 {
-+		compatible = "ti,tcan1042";
-+		#phy-cells = <0>;
-+		max-bitrate = <5000000>;
-+	};
-+};
-+
-+&mcu_pmx0 {
-+	mcu_mcan1_pins_default: mcu-mcan1-pins-default {
-+		pinctrl-single,pins = <
-+			AM62X_IOPAD(0x038, PIN_INPUT, 0) /* (B3) MCU_MCAN0_RX */
-+			AM62X_IOPAD(0x034, PIN_OUTPUT, 0) /* (D6) MCU_MCAN0_TX */
-+		>;
-+	};
-+
-+	mcu_mcan2_pins_default: mcu-mcan2-pins-default {
-+		pinctrl-single,pins = <
-+			AM62X_IOPAD(0x040, PIN_INPUT, 0) /* (D4) MCU_MCAN1_RX */
-+			AM62X_IOPAD(0x03C, PIN_OUTPUT, 0) /* (E5) MCU_MCAN1_TX */
-+		>;
-+	};
-+};
-+
-+&mcu_mcan1 {
-+	poll-interval;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mcu_mcan1_pins_default>;
-+	phys = <&transceiver2>;
-+	status = "okay";
-+};
-+
-+&mcu_mcan2 {
-+	poll-interval;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mcu_mcan2_pins_default>;
-+	phys = <&transceiver3>;
-+	status = "okay";
-+};
--- 
-2.17.1
-
+diff --git a/drivers/net/ethernet/amd/pds_core/Makefile b/drivers/net/ethernet/amd/pds_core/Makefile
+index 0abc33ce826c..54d1d5b375ce 100644
+--- a/drivers/net/ethernet/amd/pds_core/Makefile
++++ b/drivers/net/ethernet/amd/pds_core/Makefile
+@@ -9,6 +9,5 @@ pds_core-y := main.o \
+ 	      dev.o \
+ 	      adminq.o \
+ 	      core.o \
+-	      fw.o
+-
+-pds_core-$(CONFIG_DEBUG_FS) += debugfs.o
++	      fw.o \
++	      debugfs.o
