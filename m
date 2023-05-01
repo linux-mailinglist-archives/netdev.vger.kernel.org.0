@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE8E36F3A77
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 00:32:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 647D96F3A84
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 00:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232754AbjEAWcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 18:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
+        id S232991AbjEAWcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 18:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbjEAWcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 18:32:09 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF782123;
+        with ESMTP id S232627AbjEAWcK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 18:32:10 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F4830E4;
         Mon,  1 May 2023 15:32:07 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 341MVMpl048697;
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 341MVMEs014801;
         Mon, 1 May 2023 17:31:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
         s=ti-com-17Q1; t=1682980282;
-        bh=6SMGVPvdhbJ9KTLC2b351MZOPiOCtSGbFUniZnLXzTI=;
-        h=From:To:CC:Subject:Date;
-        b=x2uf5WwwXibc2VTYhNFX2i+V8zSLvfYRK1h9r3jdelFrH4BTrOg0d9R5ag/heJsX5
-         1mbMmYLUUaD5DeekuQIqEQpp084//xom3kyAOUvkOmjqsVCYxKpvB17vV9MyHIlSMB
-         /zjzal+2wyyRLU614d1E/kVFEMSRGBnbTPBa36V8=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 341MVMWt129610
+        bh=sJojSr8Wpe0gZ6WbySQHjNOucNb6OIRfQCVF8zDaBpM=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=l02eWcsc3PheABDBW5Rpsq9hAUkyYI6WMy5ylB8N0YEpLX46m2hmVFddbiamvyCHC
+         wvKTn1bR6vtpoyxa9hNAFb63krE3HDNSsCId2CuwRoIMrvk8Ri4sXaO84KE48hZzNQ
+         G7+8VDwW8fKZxmV6Kw3s+vKoiVuvl/7jPg1R2WlE=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 341MVMNU027912
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
         Mon, 1 May 2023 17:31:22 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 1
  May 2023 17:31:21 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Mon, 1 May 2023 17:31:21 -0500
+ Frontend Transport; Mon, 1 May 2023 17:31:22 -0500
 Received: from a0498204.dal.design.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 341MVLEG023009;
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 341MVLEH023009;
         Mon, 1 May 2023 17:31:21 -0500
 From:   Judith Mendez <jm@ti.com>
 To:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
@@ -57,10 +57,12 @@ CC:     "David S . Miller" <davem@davemloft.net>,
         <devicetree@vger.kernel.org>,
         Oliver Hartkopp <socketcan@hartkopp.net>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v3 0/4]  Enable multiple MCAN on AM62x
-Date:   Mon, 1 May 2023 17:31:17 -0500
-Message-ID: <20230501223121.21663-1-jm@ti.com>
+Subject: [PATCH v3 1/4] dt-bindings: net: can: Add poll-interval for MCAN
+Date:   Mon, 1 May 2023 17:31:18 -0500
+Message-ID: <20230501223121.21663-2-jm@ti.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20230501223121.21663-1-jm@ti.com>
+References: <20230501223121.21663-1-jm@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -74,90 +76,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On AM62x there is one MCAN in MAIN domain and two in MCU domain.
-The MCANs in MCU domain were not enabled since there is no
-hardware interrupt routed to A53 GIC interrupt controller.
-Therefore A53 Linux cannot be interrupted by MCU MCANs.
+On AM62x SoC, MCANs on MCU domain do not have hardware interrupt
+routed to A53 Linux, instead they will use software interrupt by
+hrtimer. To enable timer method, interrupts should be optional so
+remove interrupts property from required section and introduce
+poll-interval property.
 
-This solution instantiates a hrtimer with 1 ms polling interval
-for MCAN device when there is no hardware interrupt and there is
-poll-interval property in DTB MCAN node. The hrtimer generates a
-recurring software interrupt which allows to call the isr. The isr
-will check if there is pending transaction by reading a register
-and proceed normally if there is.
-
-On AM62x, this series enables two MCU MCAN which will use the hrtimer
-implementation. MCANs with hardware interrupt routed to A53 Linux
-will continue to use the hardware interrupt as expected.
-
-Timer polling method was tested on both classic CAN and CAN-FD
-at 125 KBPS, 250 KBPS, 1 MBPS and 2.5 MBPS with 4 MBPS bitrate
-switching.
-
-Letency and CPU load benchmarks were tested on 3x MCAN on AM62x.
-1 MBPS timer polling interval is the better timer polling interval
-since it has comparable latency to hardware interrupt with the worse
-case being 1ms + CAN frame propagation time and CPU load is not
-substantial. Latency can be improved further with less than 1 ms
-polling intervals, howerver it is at the cost of CPU usage since CPU
-load increases at 0.5 ms.
-
-Note that in terms of power, enabling MCU MCANs with timer-polling
-implementation might have negative impact since we will have to wake
-up every 1 ms whether there are CAN packets pending in the RX FIFO or
-not. This might prevent the CPU from entering into deeper idle states
-for extended periods of time.
-
-This patch series depends on 'Enable CAN PHY transceiver driver':
-Link: https://lore.kernel.org/lkml/775ec9ce-7668-429c-a977-6c8995968d6e@app.fastmail.com/T/
+Signed-off-by: Judith Mendez <jm@ti.com>
+---
+Changelog:
+v3:
+ 1. Move binding patch to first in series
+ 2. Update description for poll-interval
+ 3. Add oneOf to specify using interrupts/interrupt-names or poll-interval
+ 4. Fix example property: add comment below 'example'
 
 v2:
-Link: https://lore.kernel.org/linux-can/20230424195402.516-1-jm@ti.com/T/#t
+  1. Add poll-interval property to enable timer polling method
+  2. Add example using poll-interval property
 
-V1:
-Link: https://lore.kernel.org/linux-can/19d8ae7f-7b74-a869-a818-93b74d106709@ti.com/T/#t
+ .../bindings/net/can/bosch,m_can.yaml         | 36 +++++++++++++++++--
+ 1 file changed, 34 insertions(+), 2 deletions(-)
 
-RFC:
-Link: https://lore.kernel.org/linux-can/52a37e51-4143-9017-42ee-8d17c67028e3@ti.com/T/#t
-
-Changes since v2:
-- Change binding patch first
-- Update binding poll-interval description
-- Add oneOf to select either interrupts/interrupt-names or poll-interval
-- Sort list of includes
-- Create a define for 1 ms polling interval
-- Change plarform_get_irq to optional to not print error msg
-- Fix indentations, lengths of code lines, and added other style changes
-
-Changes since v1:
-- Add poll-interval property to bindings and MCAN DTB node
-- Add functionality to check for 'poll-interval' property in MCAN node 
-- Bindings: add an example using poll-interval
-- Add 'polling' flag in driver to check if device is using polling method
-- Check for both timer polling and hardware interrupt case, default to
-hardware interrupt method
-- Change ns_to_ktime() to ms_to_ktime()
-
-Judith Mendez (4):
-  dt-bindings: net: can: Add poll-interval for MCAN
-  can: m_can: Add hrtimer to generate software interrupt
-  arm64: dts: ti: Add AM62x MCAN MAIN domain transceiver overlay
-  arm64: dts: ti: Enable MCU MCANs for AM62x
-
- .../bindings/net/can/bosch,m_can.yaml         | 36 +++++++++++-
- arch/arm64/boot/dts/ti/Makefile               |  2 +
- arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi       | 24 ++++++++
- .../boot/dts/ti/k3-am625-sk-mcan-main.dtso    | 35 ++++++++++++
- .../boot/dts/ti/k3-am625-sk-mcan-mcu.dtso     | 57 +++++++++++++++++++
- drivers/net/can/m_can/m_can.c                 | 29 +++++++++-
- drivers/net/can/m_can/m_can.h                 |  4 ++
- drivers/net/can/m_can/m_can_platform.c        | 33 ++++++++++-
- 8 files changed, 213 insertions(+), 7 deletions(-)
- create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso
- create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
-
-
-base-commit: 92e815cf07ed24ee1c51b122f24ffcf2964b4b13
+diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+index 67879aab623b..c024ee49962c 100644
+--- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
++++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+@@ -14,6 +14,13 @@ maintainers:
+ allOf:
+   - $ref: can-controller.yaml#
+ 
++oneOf:
++  - required:
++      - interrupts
++      - interrupt-names
++  - required:
++      - poll-interval
++
+ properties:
+   compatible:
+     const: bosch,m_can
+@@ -40,6 +47,14 @@ properties:
+       - const: int1
+     minItems: 1
+ 
++  poll-interval:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: Enable hrtimer polling method for an M_CAN device.
++      If this property is defined in MCAN node, it tells the driver to
++      enable polling method for an MCAN device. If for an MCAN device,
++      hardware interrupt is found and hrtimer polling method is enabled,
++      the driver will use hardware interrupt method.
++
+   clocks:
+     items:
+       - description: peripheral clock
+@@ -122,8 +137,6 @@ required:
+   - compatible
+   - reg
+   - reg-names
+-  - interrupts
+-  - interrupt-names
+   - clocks
+   - clock-names
+   - bosch,mram-cfg
+@@ -132,6 +145,7 @@ additionalProperties: false
+ 
+ examples:
+   - |
++    // Example with interrupts
+     #include <dt-bindings/clock/imx6sx-clock.h>
+     can@20e8000 {
+       compatible = "bosch,m_can";
+@@ -149,4 +163,22 @@ examples:
+       };
+     };
+ 
++  - |
++    // Example with timer polling
++    #include <dt-bindings/clock/imx6sx-clock.h>
++    can@20e8000 {
++      compatible = "bosch,m_can";
++      reg = <0x020e8000 0x4000>, <0x02298000 0x4000>;
++      reg-names = "m_can", "message_ram";
++      poll-interval;
++      clocks = <&clks IMX6SX_CLK_CANFD>,
++               <&clks IMX6SX_CLK_CANFD>;
++      clock-names = "hclk", "cclk";
++      bosch,mram-cfg = <0x0 0 0 32 0 0 0 1>;
++
++      can-transceiver {
++        max-bitrate = <5000000>;
++      };
++    };
++
+ ...
 -- 
 2.17.1
 
