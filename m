@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDC0E6F30C9
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 14:16:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C3746F30CA
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 14:16:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232303AbjEAMQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 08:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
+        id S232446AbjEAMQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 08:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231779AbjEAMQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 08:16:12 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B305191;
-        Mon,  1 May 2023 05:16:11 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50bc040c7b8so2516553a12.2;
-        Mon, 01 May 2023 05:16:11 -0700 (PDT)
+        with ESMTP id S232430AbjEAMQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 08:16:15 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C4F191;
+        Mon,  1 May 2023 05:16:13 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-953343581a4so368589966b.3;
+        Mon, 01 May 2023 05:16:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682943370; x=1685535370;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=qI1N6Zt1ichZ6d+bawiKp7X6Hia786Ixe1XzJA/8a1M=;
-        b=YOy1OVoDmGMAcGUMIcWF2hdmky++kfkclWbsQbcd5HvhRPG2ka/PUqk4aTMOWZOStm
-         drsyktoUYykaTyW+2h57sj2Nz+oD9IlI0nxg9/vfkbbMZOVHc+at5L6clRiJj/bW8vzk
-         66jIrEwk6Ad1lV1ZTNKDJNrTDh3yXazf45BvOmHXJcjo5gbs5hb7qZyYQjTd9Uq5qE11
-         c6DgLBrGeVDzA1TjfJdsW6hTIzx7gjomxyB4M3Tu02EXXJVU8yLki8FQJ7TwhXo7g1ni
-         UTJvnpyKo65OMy2ObU5qG7AbT78WhRXm9MSrq4ahp1xYY1X/PPEpiVjEAE5boULh7QuP
-         cImQ==
+        d=gmail.com; s=20221208; t=1682943372; x=1685535372;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=M25XzE8/ZHNsBMDYVfMQXrs94X4sNByO0fz3/W69lrA=;
+        b=iOzKUZ7Nk+UvH+5TVKKXYuT6nxP1tYkIMyn1H2y9d15zAT8io4bRqX25a9Vr0GxbIX
+         kCr1GB2vx7a14fJeKTwPa+kIEW17/0S4sznvPfVgirkVqsDd0xBlS6z9ne50ntiC9DsX
+         qMc6zUpkMEBJEoBx3hBtnhijuHOoG0GFPNwP/k9QNGYBuy69Sryj0FAM3daBA2x8VEQr
+         Pv5lPxC8g6n+m237dfnWezPJIijk9DTx5+LdkDmwncFSHBoPpQ8khcYFBwHoypFyK5Ff
+         /KwhbD3nMk8+o7QwnlKqZQUBTATXDXHpYE/pHoMjahdA6sTjGsw2Bg4RnysHQidA3+x9
+         meOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682943370; x=1685535370;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qI1N6Zt1ichZ6d+bawiKp7X6Hia786Ixe1XzJA/8a1M=;
-        b=ZawjRt9JNrhgIjKPLdC2+5OEcZE3XpeUE7ssqY+JFa1zSCGsXqldY5aFzax3x3yJkj
-         7YoLOxfzMOsWqj0CwnoYIcl6tJZXx7mzXFzTaG2CD5apJapScbiLmVvDLYwSqj+xRas3
-         3HAvDdlqH/9YvVRn1LVWCfNIC2yw0qwmCqEFBLVIppKRodSwuKJZQKLeEuG/DnVEwVji
-         wyvW5d3szyft0akxX4Q8qyjd6j/6jl1El4IdNd31Z9D3PySaHzagoVt9AzQuUvP/jxyU
-         pGsja8aBLlqWCYjT3sAUA843i+pfbQQ2rSIONEaPhr8df1G7mVMEBifjRYP66NaaYG6g
-         fvOA==
-X-Gm-Message-State: AC+VfDx6ze+9LJxDQQ215GM+lwi1Gsxn51ZamA1QMISj7WWZ6JRPmgCd
-        erQd9Z1fxfMbU37LdxsmUYU=
-X-Google-Smtp-Source: ACHHUZ42ywzxk8pSiGJuLh3/VyXM5Zdh+LbpwLjowrvTTdDKs9Df+mVQSoXHbYgYmFWBv8z/Nanrtw==
-X-Received: by 2002:a17:906:58c5:b0:94e:626e:c108 with SMTP id e5-20020a17090658c500b0094e626ec108mr12965230ejs.50.1682943369686;
-        Mon, 01 May 2023 05:16:09 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682943372; x=1685535372;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=M25XzE8/ZHNsBMDYVfMQXrs94X4sNByO0fz3/W69lrA=;
+        b=dQbcL5U5CZg+KP9opAAWBEDx0h60CNuKLCLTO4XOYiQlsl2ZmkvEiHIX59xvwlmXka
+         nlmRKO6wdirH2YJXE5XSum9fvIFV0Z+Lhpci8UTWnh1+xoIeADsRIj54od4vtwfXD9/N
+         CBwVGgHLu3LKR3bCqDCvWmipRAkwhmMO6q6btPeaOb6jUAT1CRNzzF5kk/fM+h7NNI81
+         wXbuyG+qY1SHgasEHJcb1xSQBwwI/FOHm5AOjLUz+zjmfCaKI2E+nEaZS1/tEmth3Nsl
+         ag9D+hLysRjlUkmwdiLZnVy8Vhxq3jI8FH2joFdm2FmHH6A8jVM2BMmxECxZ177vMo9n
+         t7CA==
+X-Gm-Message-State: AC+VfDwEMLiSBIsFDtklVPFzb3Q1x/u+iQ1nKQs8V0fP7cWLbqr4Pjm2
+        ysoIJ+8r3kIjcHwUCU59Wio=
+X-Google-Smtp-Source: ACHHUZ5DLOoZ9nPkikE6gez/BeGuWd2aAZywoCHBXuSN1Kd9NHZ7sQU13fLgEVRP3FCzMgntyztbSQ==
+X-Received: by 2002:a17:907:846:b0:959:b745:d16f with SMTP id ww6-20020a170907084600b00959b745d16fmr12149356ejb.51.1682943371982;
+        Mon, 01 May 2023 05:16:11 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id t20-20020a1709060c5400b0094ebc041e20sm14597000ejf.46.2023.05.01.05.16.07
+        by smtp.gmail.com with ESMTPSA id t20-20020a1709060c5400b0094ebc041e20sm14597000ejf.46.2023.05.01.05.16.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 May 2023 05:16:09 -0700 (PDT)
+        Mon, 01 May 2023 05:16:11 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -66,18 +67,20 @@ To:     Sean Wang <sean.wang@mediatek.com>,
         <angelogioacchino.delregno@collabora.com>,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
 Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Bartel Eerdekens <bartel.eerdekens@constell8.be>,
         Richard van Schagen <richard@routerhints.com>,
         Richard van Schagen <vschagen@cs.com>,
         Frank Wunderlich <frank-w@public-files.de>,
+        Bartel Eerdekens <bartel.eerdekens@constell8.be>,
         mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH net 1/2] net: dsa: mt7530: fix corrupt frames using trgmii on 40 MHz XTAL MT7621
-Date:   Mon,  1 May 2023 15:15:37 +0300
-Message-Id: <20230501121538.57968-1-arinc.unal@arinc9.com>
+Subject: [PATCH net 2/2] net: dsa: mt7530: fix network connectivity with multiple CPU ports
+Date:   Mon,  1 May 2023 15:15:38 +0300
+Message-Id: <20230501121538.57968-2-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230501121538.57968-1-arinc.unal@arinc9.com>
+References: <20230501121538.57968-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -93,53 +96,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-The multi-chip module MT7530 switch with a 40 MHz oscillator on the
-MT7621AT, MT7621DAT, and MT7621ST SoCs forwards corrupt frames using
-trgmii.
+On mt753x_cpu_port_enable() there's code that enables flooding for the CPU
+port only. Since mt753x_cpu_port_enable() runs twice when both CPU ports
+are enabled, port 6 becomes the only port to forward the frames to. But
+port 5 is the active port, so no frames received from the user ports will
+be forwarded to port 5 which breaks network connectivity.
 
-This is caused by the assumption that MT7621 SoCs have got 150 MHz PLL,
-hence using the ncpo1 value, 0x0780.
+Every bit of the BC_FFP, UNM_FFP, and UNU_FFP bits represents a port. Fix
+this issue by setting the bit that corresponds to the CPU port without
+overwriting the other bits.
 
-My testing shows this value works on Unielec U7621-06, Bartel's testing
-shows it won't work on Hi-Link HLK-MT7621A and Netgear WAC104. All devices
-tested have got 40 MHz oscillators.
+Clear the bits beforehand only for the MT7531 switch. According to the
+documents MT7621 Giga Switch Programming Guide v0.3 and MT7531 Reference
+Manual for Development Board v1.0, after reset, the BC_FFP, UNM_FFP, and
+UNU_FFP bits are set to 1 for MT7531, 0 for MT7530.
 
-Using the value for 125 MHz PLL, 0x0640, works on all boards at hand. The
-definitions for 125 MHz PLL exist on the Banana Pi BPI-R2 BSP source code
-whilst 150 MHz PLL don't.
-
-Forwarding frames using trgmii on the MCM MT7530 switch with a 25 MHz
-oscillator on the said MT7621 SoCs works fine because the ncpo1 value
-defined for it is for 125 MHz PLL.
-
-Change the 150 MHz PLL comment to 125 MHz PLL, and use the 125 MHz PLL
-ncpo1 values for both oscillator frequencies.
-
-Link: https://github.com/BPI-SINOVOIP/BPI-R2-bsp/blob/81d24bbce7d99524d0771a8bdb2d6663e4eb4faa/u-boot-mt/drivers/net/rt2880_eth.c#L2195
-Fixes: 7ef6f6f8d237 ("net: dsa: mt7530: Add MT7621 TRGMII mode support")
-Tested-by: Bartel Eerdekens <bartel.eerdekens@constell8.be>
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mt7530.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index c680873819b0..7d9f9563dbda 100644
+index 7d9f9563dbda..9bc54e1348cb 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -426,9 +426,9 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
- 		else
- 			ssc_delta = 0x87;
- 		if (priv->id == ID_MT7621) {
--			/* PLL frequency: 150MHz: 1.2GBit */
-+			/* PLL frequency: 125MHz: 1.0GBit */
- 			if (xtal == HWTRAP_XTAL_40MHZ)
--				ncpo1 = 0x0780;
-+				ncpo1 = 0x0640;
- 			if (xtal == HWTRAP_XTAL_25MHZ)
- 				ncpo1 = 0x0a00;
- 		} else { /* PLL frequency: 250MHz: 2.0Gbit */
+@@ -1002,9 +1002,9 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+ 	mt7530_write(priv, MT7530_PVC_P(port),
+ 		     PORT_SPEC_TAG);
+ 
+-	/* Disable flooding by default */
+-	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
+-		   BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port)));
++	/* Enable flooding on the CPU port */
++	mt7530_set(priv, MT7530_MFC, BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) |
++		   UNU_FFP(BIT(port)));
+ 
+ 	/* Set CPU port number */
+ 	if (priv->id == ID_MT7621)
+@@ -2367,6 +2367,10 @@ mt7531_setup_common(struct dsa_switch *ds)
+ 	/* Enable and reset MIB counters */
+ 	mt7530_mib_reset(ds);
+ 
++	/* Disable flooding on all ports */
++	mt7530_clear(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK |
++		     UNU_FFP_MASK);
++
+ 	for (i = 0; i < MT7530_NUM_PORTS; i++) {
+ 		/* Disable forwarding by default on all ports */
+ 		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
 -- 
 2.39.2
 
