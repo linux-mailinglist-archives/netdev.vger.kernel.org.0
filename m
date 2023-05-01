@@ -2,150 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 632E16F391D
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 22:24:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CA716F3923
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 22:29:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231137AbjEAUXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 16:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
+        id S232388AbjEAU3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 16:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbjEAUXy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 16:23:54 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886641FFD
-        for <netdev@vger.kernel.org>; Mon,  1 May 2023 13:23:53 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id d2e1a72fcca58-63b5ce4f069so3482434b3a.1
-        for <netdev@vger.kernel.org>; Mon, 01 May 2023 13:23:53 -0700 (PDT)
+        with ESMTP id S229664AbjEAU3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 16:29:35 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111E91FFD
+        for <netdev@vger.kernel.org>; Mon,  1 May 2023 13:29:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mistywest-com.20221208.gappssmtp.com; s=20221208; t=1682972633; x=1685564633;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=S4moYw04P3+WZ9/6ZA+hbZiYpWYhiQemxrj8IS4pIZ8=;
-        b=GCiqZTlqgyosv0YQK51g0A4fyEMjYpPPlhUG9NWt4u2lKL8c3XqP2sV5Kjhuh41zZN
-         ZKqNRJAywy05LM04NPIwwi/rv6F7jcUnG6Or5oVEL3PbzzZFtsD/EeVHjORKybXDno7d
-         EWvd3JPsozO1ptcHQK8KoA7QO9TTKsrVetMi/Ixhsb8wEcPC9LyerD4B6qZ5wuklC9qa
-         8P5yP0mX215PfGBhqB1FWHy43vkg8kUzCN+M8nVWRK9Tr7P8NgRlfIA5LNmFRunTODa8
-         n8ZawOFri6sAIrck/DHBkDxyFEoXJzBDqkWKVaDwgYCXMy83H0gq/EXWZM7nX0YF7gic
-         YeQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682972633; x=1685564633;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=S4moYw04P3+WZ9/6ZA+hbZiYpWYhiQemxrj8IS4pIZ8=;
-        b=DE3ah6hxmLWHV+WeH2XZQKqt61zGJBN7K98gyKxKS5SNpIOspJmC6NUa/aZmxv/P5g
-         R2jrgw9NvK4+hsY5N6kXJ81adoNr5mCUjOx34njAZdSFHyeb546b+3L61UKFt6Y9c3Pb
-         pUeiEGXo/HQ5qHq+xiq2ji9l7I2MxfEwGbBijL4n1cOmUsNJyfdGtljewWbOjOhTMT38
-         F5Au13ZJZQr6jLkNNxXzzh4Sd4la0Pv5Xhpw1mLqtFtJ3URdQ0Qq/DQGbvaQeicizGRw
-         plOmPaou1O+YKjIK7Ko51lE13FEuwZf8cMO7DGgpXVSzjZal8AzC1kdyCWSgj1KvsCEZ
-         J4Gw==
-X-Gm-Message-State: AC+VfDzlH2JZYOUS0QlhUsf6+9s9gFIn8AC7jULiqNMhvH4D4iOlkNRp
-        xItPGaU/UkxUfZLrO0IzU/tHD6+7qwzlJdhJfmj7bQ==
-X-Google-Smtp-Source: ACHHUZ5LG+zJrpCDB6CvQpBz4Ffu8I+3dCOIaxRq0rtlpaHLDWWg2CE238jxxjJeP+nrZWkBNgc69w==
-X-Received: by 2002:a05:6a20:3d83:b0:f3:6746:ba37 with SMTP id s3-20020a056a203d8300b000f36746ba37mr13750434pzi.13.1682972632920;
-        Mon, 01 May 2023 13:23:52 -0700 (PDT)
-Received: from [192.168.1.222] (S01061c937c8195ad.vc.shawcable.net. [24.87.33.175])
-        by smtp.gmail.com with ESMTPSA id i7-20020a056a00224700b0063b675f01a5sm20981766pfu.11.2023.05.01.13.23.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 May 2023 13:23:52 -0700 (PDT)
-Message-ID: <1c2db687-fdf8-1f6b-9d97-2ec98435fdf8@mistywest.com>
-Date:   Mon, 1 May 2023 13:23:51 -0700
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1682972974; x=1714508974;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=322qd8IMEEvxaY6G+uLHDrb461NMmCtD5wX0szD7zug=;
+  b=eRZ+trHY7CIxuj+/ZhrwEnU5NS/p3oJGHI9uKa5wc25vzZrFY0XhNW6x
+   ZdzUAF+VH0ehpwm3t+N4XktfXGdWxJ3xzdY65nOkcXps9S17AxM6V0nzF
+   TdBAI6QXyl2ZFMZpFSBjGyxBHCzaxXvv5tdD1cJnN2Se54IMl83/6shFB
+   E=;
+X-IronPort-AV: E=Sophos;i="5.99,242,1677542400"; 
+   d="scan'208";a="210041263"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-d23e07e8.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2023 20:29:31 +0000
+Received: from EX19MTAUWC002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-m6i4x-d23e07e8.us-east-1.amazon.com (Postfix) with ESMTPS id 0D789815B2;
+        Mon,  1 May 2023 20:29:27 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Mon, 1 May 2023 20:29:27 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.119.90.236) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 1 May 2023 20:29:24 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     Zhengchao Shao <shaozhengchao@huawei.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH v2 net] af_packet: Don't send zero-byte data in packet_sendmsg_spkt().
+Date:   Mon, 1 May 2023 13:28:57 -0700
+Message-ID: <20230501202856.98962-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: Unable to TX data on VSC8531
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-References: <b0cdace8-5aa2-ce78-7cbf-4edf87dbc3a6@mistywest.com>
- <73139af8-03a7-4788-bbf1-f76b963acb37@lunn.ch>
- <44fe99ec-42a0-688f-16a0-0a3be3750290@mistywest.com>
- <b2e5bbf6-de38-47e5-9b93-6811979cf180@lunn.ch>
-From:   Ron Eggler <ron.eggler@mistywest.com>
-In-Reply-To: <b2e5bbf6-de38-47e5-9b93-6811979cf180@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.119.90.236]
+X-ClientProxiedBy: EX19D046UWA003.ant.amazon.com (10.13.139.18) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/1/23 13:12, Andrew Lunn wrote:
->> After a fresh rebootI executed:
->>
->> # ping 192.168.1.222 -c 1
->>
->> and see the following:
->>
->> # ifconfig
->> eth0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500  metric 1
->>          inet 192.168.1.123  netmask 255.255.255.0  broadcast 192.168.1.255
->>          ether be:a8:27:1f:63:6e  txqueuelen 1000  (Ethernet)
->>          RX packets 469  bytes 103447 (101.0 KiB)
->>          RX errors 0  dropped 203  overruns 0  frame 0
->>          TX packets 0  bytes 0 (0.0 B)
->>          TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->>          device interrupt 170
->>
->> eth1: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500  metric 1
->>          ether fe:92:66:6c:4e:24  txqueuelen 1000  (Ethernet)
->>          RX packets 0  bytes 0 (0.0 B)
->>          RX errors 0  dropped 0  overruns 0  frame 0
->>          TX packets 0  bytes 0 (0.0 B)
->>          TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->>          device interrupt 173
->>
->> lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536  metric 1
->>          inet 127.0.0.1  netmask 255.0.0.0
->>          loop  txqueuelen 1000  (Local Loopback)
->>          RX packets 1  bytes 112 (112.0 B)
->>          RX errors 0  dropped 0  overruns 0  frame 0
->>          TX packets 1  bytes 112 (112.0 B)
->>          TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->>
->> it appears like the ping got sent to the loopback device instead of the
->> eth0, is this possible?
-> It is unlikely. Loopback is used for lots of things. Rather than -c 1,
-> leave it running. There should be an arp sent around once a
-> second. See if the statistics for lo go up at that rate.
-Yes, the TX packets on lo actually do increase every second or so when I 
-have a ping running,
-it's not 1 packet at a time but rather 3 or 4, it's nnot fully 
-consistent, when I scroll back the TX packets on the lo interface 
-increased like:
+syzkaller reported a warning below [0].
 
-23
-26
-30
-33
-37
-40
+We can reproduce it by sending 0-byte data from the (AF_PACKET,
+SOCK_PACKET) socket via some devices whose dev->hard_header_len
+is 0.
 
->> I got the following:
->>
->> # mii-tool -vv eth0
->> Using SIOCGMIIPHY=0x8947
->> eth0: negotiated 100baseTx-FD, link ok
->>    registers for MII PHY 0:
->>      1040 796d 0007 0572 01e1 45e1 0007 2801
->>      0000 0300 4000 0000 0000 0000 0000 3000
->>      9000 0000 0008 0000 0000 0000 3201 1000
->>      0000 a020 a000 0000 802d 0021 0400 0000
->>    product info: vendor 00:01:c1, model 23 rev 2
->>    basic mode:   autonegotiation enabled
->>    basic status: autonegotiation complete, link ok
->>    capabilities: 1000baseT-HD 1000baseT-FD 100baseTx-FD 100baseTx-HD
->> 10baseT-FD 10baseT-HD
->>    advertising:  100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
->>    link partner: 1000baseT-HD 1000baseT-FD 100baseTx-FD 100baseTx-HD
->> 10baseT-FD 10baseT-HD flow-control
-> So you have the register values to answer Horatiu question.
-Yes, I realized now only that mii-tool provides a pretty output like this.
-Thanks for that!
+    struct sockaddr_pkt addr = {
+        .spkt_family = AF_PACKET,
+        .spkt_device = "tun0",
+    };
+    int fd;
+
+    fd = socket(AF_PACKET, SOCK_PACKET, 0);
+    sendto(fd, NULL, 0, 0, (struct sockaddr *)&addr, sizeof(addr));
+
+We have a similar fix for the (AF_PACKET, SOCK_RAW) socket as
+commit dc633700f00f ("net/af_packet: check len when min_header_len
+equals to 0").
+
+Let's add the same test for the SOCK_PACKET socket.
+
+[0]:
+skb_assert_len
+WARNING: CPU: 1 PID: 19945 at include/linux/skbuff.h:2552 skb_assert_len include/linux/skbuff.h:2552 [inline]
+WARNING: CPU: 1 PID: 19945 at include/linux/skbuff.h:2552 __dev_queue_xmit+0x1f26/0x31d0 net/core/dev.c:4159
+Modules linked in:
+CPU: 1 PID: 19945 Comm: syz-executor.0 Not tainted 6.3.0-rc7-02330-gca6270c12e20 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+RIP: 0010:skb_assert_len include/linux/skbuff.h:2552 [inline]
+RIP: 0010:__dev_queue_xmit+0x1f26/0x31d0 net/core/dev.c:4159
+Code: 89 de e8 1d a2 85 fd 84 db 75 21 e8 64 a9 85 fd 48 c7 c6 80 2a 1f 86 48 c7 c7 c0 06 1f 86 c6 05 23 cf 27 04 01 e8 fa ee 56 fd <0f> 0b e8 43 a9 85 fd 0f b6 1d 0f cf 27 04 31 ff 89 de e8 e3 a1 85
+RSP: 0018:ffff8880217af6e0 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffc90001133000
+RDX: 0000000000040000 RSI: ffffffff81186922 RDI: 0000000000000001
+RBP: ffff8880217af8b0 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: ffff888030045640
+R13: ffff8880300456b0 R14: ffff888030045650 R15: ffff888030045718
+FS:  00007fc5864da640(0000) GS:ffff88806cd00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020005740 CR3: 000000003f856003 CR4: 0000000000770ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+ <TASK>
+ dev_queue_xmit include/linux/netdevice.h:3085 [inline]
+ packet_sendmsg_spkt+0xc4b/0x1230 net/packet/af_packet.c:2066
+ sock_sendmsg_nosec net/socket.c:724 [inline]
+ sock_sendmsg+0x1b4/0x200 net/socket.c:747
+ ____sys_sendmsg+0x331/0x970 net/socket.c:2503
+ ___sys_sendmsg+0x11d/0x1c0 net/socket.c:2557
+ __sys_sendmmsg+0x18c/0x430 net/socket.c:2643
+ __do_sys_sendmmsg net/socket.c:2672 [inline]
+ __se_sys_sendmmsg net/socket.c:2669 [inline]
+ __x64_sys_sendmmsg+0x9c/0x100 net/socket.c:2669
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3c/0x90 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x72/0xdc
+RIP: 0033:0x7fc58791de5d
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 73 9f 1b 00 f7 d8 64 89 01 48
+RSP: 002b:00007fc5864d9cc8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 00000000004bbf80 RCX: 00007fc58791de5d
+RDX: 0000000000000001 RSI: 0000000020005740 RDI: 0000000000000004
+RBP: 00000000004bbf80 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 000000000000000b R14: 00007fc58797e530 R15: 0000000000000000
+ </TASK>
+---[ end trace 0000000000000000 ]---
+skb len=0 headroom=16 headlen=0 tailroom=304
+mac=(16,0) net=(16,-1) trans=-1
+shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
+csum(0x0 ip_summed=0 complete_sw=0 valid=0 level=0)
+hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
+dev name=sit0 feat=0x00000006401d7869
+sk family=17 type=10 proto=0
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+v2:
+  * Remove Fixes tag of fd1894224407
+
+v1: https://lore.kernel.org/netdev/20230501192322.89544-1-kuniyu@amazon.com/
+---
+ net/packet/af_packet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 6080c0db0814..640d94e34635 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2033,7 +2033,7 @@ static int packet_sendmsg_spkt(struct socket *sock, struct msghdr *msg,
+ 		goto retry;
+ 	}
+ 
+-	if (!dev_validate_header(dev, skb->data, len)) {
++	if (!dev_validate_header(dev, skb->data, len) || !skb->len) {
+ 		err = -EINVAL;
+ 		goto out_unlock;
+ 	}
 -- 
-Ron
+2.30.2
+
