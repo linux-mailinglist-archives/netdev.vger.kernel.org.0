@@ -2,218 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F21616F3AB1
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 00:47:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE9FD6F3ADC
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 01:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232994AbjEAWrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 18:47:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38044 "EHLO
+        id S233142AbjEAXOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 19:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232991AbjEAWq5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 18:46:57 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6723581;
-        Mon,  1 May 2023 15:46:56 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 341MkPvf097656;
-        Mon, 1 May 2023 17:46:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1682981185;
-        bh=0vr6OTb6WAGKkCzclnyhUo3rW3Mr6nZ8oCbIk9ryJFg=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Dcert+WssAeIU2Uzs+ibbz5bwbILWvhGhtmjL7QS5+KmF84rSNqpsSCaiEwaPfwoC
-         p1WsRKmBttaczAGLH4RmuhOlTZSAJYBVNhDQkSsmBDP1K+F5ujDw5WSXcGDEu7q2iT
-         Yp6u5jgPC3BiFPpnagAZekMVdCWm+fzFZI3nP7R0=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 341MkPJ5007128
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 1 May 2023 17:46:25 -0500
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 1
- May 2023 17:46:24 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Mon, 1 May 2023 17:46:24 -0500
-Received: from a0498204.dal.design.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 341MkOhh002097;
-        Mon, 1 May 2023 17:46:24 -0500
-From:   Judith Mendez <jm@ti.com>
-To:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229810AbjEAXOC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 19:14:02 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7D730D6;
+        Mon,  1 May 2023 16:14:00 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-3f09b4a1527so31657175e9.0;
+        Mon, 01 May 2023 16:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682982838; x=1685574838;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=dH0PVRqeh1hbjfzzn3FtIhyE9VI9lTkG4LXY49ABXmY=;
+        b=JQj0JK6I2bTiPohR3qubZWuRn+sGFRxt6BiT32mEZPbkhdb+VDED/zAQ7lBuswWTRu
+         z/wa9FNBxqoJyBRr1tEicrUqsort73a5tOt/dvLxRJXwtYzaOxaZSEh4metr65/4MmiW
+         E4iwriT+F51wa6I+jRK21/2vn1dJNNORgGSHNAWFjwgktUkZ3lN21JYI5lznuqMp+q/e
+         J+UDk+SzLCrItZ9rhWkvwbFEdc036nWSXBqMtCEpdK3hfAxjClYVCkZKynnA8LsHEc0p
+         +tCc2fXNTCwiS2GLkhOV5E4Q03YTYRyOflX1DfH8buK9Myr7cllHM741uQNN5I97MQRU
+         zNYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682982838; x=1685574838;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=dH0PVRqeh1hbjfzzn3FtIhyE9VI9lTkG4LXY49ABXmY=;
+        b=RPaKffdaZPXrj+iIIs6/Has9CTx5q0NI3x8xaXDfSUOvGjiSYtN2OIwKhqWSUIENX8
+         33Dlb/DKNL9HkbeGoYjyytOFUzBS717zTTD/rdIn5IXYSs1mR0X7IAlTBriwD+mCnwzQ
+         I9kPop71V9oQ+xxpcVw/NHnXGuW+15o+PusSDvmzlU10iKPclBCMNwq3G28r90YNU8aR
+         rdBfX5hlBuSJzyp+ypGdp39aa7RFaq+JSjyG+x2aNXC1mT8btTzdkv2HH7n5rHPYYrpw
+         KWhP+b9q0KMpP+UF6ENb4ulNg5xv6Y96h6eD4kz4k6XIXkTNB9SgGU546M1NYvc+Jg2N
+         Cwew==
+X-Gm-Message-State: AC+VfDwrs9b5Uh4lrH+vPwy+3dSHt7IP0l8kdJ/AuHrp7LrXbranOGhF
+        QS/p5+khgxuuth2+c3G8TFw=
+X-Google-Smtp-Source: ACHHUZ4B+CYvDYGtDHGkYMOJFrOq8n7poWlJLL09a9R99dns+0+E4k2Wr5n2KBxrwUijlxnB+zLwbw==
+X-Received: by 2002:a05:600c:2046:b0:3f1:9503:4db0 with SMTP id p6-20020a05600c204600b003f195034db0mr10552021wmg.13.1682982838155;
+        Mon, 01 May 2023 16:13:58 -0700 (PDT)
+Received: from lucifer.home (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
+        by smtp.googlemail.com with ESMTPSA id v9-20020a05600c444900b003f173be2ccfsm48948904wmn.2.2023.05.01.16.13.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 May 2023 16:13:57 -0700 (PDT)
+From:   Lorenzo Stoakes <lstoakes@gmail.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Schuyler Patton <spatton@ti.com>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v4 4/4] DO_NOT_MERGE arm64: dts: ti: Enable MCU MCANs for AM62x
-Date:   Mon, 1 May 2023 17:46:24 -0500
-Message-ID: <20230501224624.13866-5-jm@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230501224624.13866-1-jm@ti.com>
-References: <20230501224624.13866-1-jm@ti.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Mika Penttila <mpenttil@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
+        Lorenzo Stoakes <lstoakes@gmail.com>
+Subject: [PATCH v6 0/3] mm/gup: disallow GUP writing to file-backed mappings by default
+Date:   Tue,  2 May 2023 00:11:46 +0100
+Message-Id: <cover.1682981880.git.lstoakes@gmail.com>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On AM62x there are no hardware interrupts routed to A53 GIC
-interrupt controller for MCU MCAN IPs, so MCU MCANs were not
-added to the MCU dtsi. In this patch series an hrtimer is introduced
-to MCAN driver to generate software interrupts. Now add MCU MCAN
-nodes to the MCU dtsi but disable the MCAN devices by default.
+Writing to file-backed mappings which require folio dirty tracking using
+GUP is a fundamentally broken operation, as kernel write access to GUP
+mappings do not adhere to the semantics expected by a file system.
 
-AM62x does not carry on-board CAN transceivers, so instead of
-changing DTB permanently use an overlay to enable MCU MCANs and to
-add CAN transceiver nodes.
+A GUP caller uses the direct mapping to access the folio, which does not
+cause write notify to trigger, nor does it enforce that the caller marks
+the folio dirty.
 
-If there is no hardware interrupt and timer method is used, remove
-interrupt properties and add poll-interval to enable the hrtimer
-per MCAN node.
+The problem arises when, after an initial write to the folio, writeback
+results in the folio being cleaned and then the caller, via the GUP
+interface, writes to the folio again.
 
-This DT overlay can be used with the following EVM:
-Link: https://www.ti.com/tool/TCAN1042DEVM
+As a result of the use of this secondary, direct, mapping to the folio no
+write notify will occur, and if the caller does mark the folio dirty, this
+will be done so unexpectedly.
 
-Signed-off-by: Judith Mendez <jm@ti.com>
----
-Changelog:
+For example, consider the following scenario:-
+
+1. A folio is written to via GUP which write-faults the memory, notifying
+   the file system and dirtying the folio.
+2. Later, writeback is triggered, resulting in the folio being cleaned and
+   the PTE being marked read-only.
+3. The GUP caller writes to the folio, as it is mapped read/write via the
+   direct mapping.
+4. The GUP caller, now done with the page, unpins it and sets it dirty
+   (though it does not have to).
+
+This change updates both the PUP FOLL_LONGTERM slow and fast APIs. As
+pin_user_pages_fast_only() does not exist, we can rely on a slightly
+imperfect whitelisting in the PUP-fast case and fall back to the slow case
+should this fail.
+
+v6:
+- Rebased on latest mm-unstable as of 28th April 2023.
+- Add PUP-fast check with handling for rcu-locked TLB shootdown to synchronise
+  correctly.
+- Split patch series into 3 to make it more digestible.
+
+v5:
+- Rebased on latest mm-unstable as of 25th April 2023.
+- Some small refactorings suggested by John.
+- Added an extended description of the problem in the comment around
+  writeable_file_mapping_allowed() for clarity.
+- Updated commit message as suggested by Mika and John.
+https://lore.kernel.org/all/6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com/
+
+v4:
+- Split out vma_needs_dirty_tracking() from vma_wants_writenotify() to
+  reduce duplication and update to use this in the GUP check. Note that
+  both separately check vm_ops_needs_writenotify() as the latter needs to
+  test this before the vm_pgprot_modify() test, resulting in
+  vma_wants_writenotify() checking this twice, however it is such a small
+  check this should not be egregious.
+https://lore.kernel.org/all/3b92d56f55671a0389252379237703df6e86ea48.1682464032.git.lstoakes@gmail.com/
+
 v3:
- 1. Add link for specific board
- 
- arch/arm64/boot/dts/ti/Makefile               |  2 +-
- arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi       | 24 ++++++++
- .../boot/dts/ti/k3-am625-sk-mcan-mcu.dtso     | 57 +++++++++++++++++++
- 3 files changed, 82 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
+- Rebased on latest mm-unstable as of 24th April 2023.
+- Explicitly check whether file system requires folio dirtying. Note that
+  vma_wants_writenotify() could not be used directly as it is very much focused
+  on determining if the PTE r/w should be set (e.g. assuming private mapping
+  does not require it as already set, soft dirty considerations).
+- Tested code against shmem and hugetlb mappings - confirmed that these are not
+  disallowed by the check.
+- Eliminate FOLL_ALLOW_BROKEN_FILE_MAPPING flag and instead perform check only
+  for FOLL_LONGTERM pins.
+- As a result, limit check to internal GUP code.
+ https://lore.kernel.org/all/23c19e27ef0745f6d3125976e047ee0da62569d4.1682406295.git.lstoakes@gmail.com/
 
-diff --git a/arch/arm64/boot/dts/ti/Makefile b/arch/arm64/boot/dts/ti/Makefile
-index abe15e76b614..c76be3888e4d 100644
---- a/arch/arm64/boot/dts/ti/Makefile
-+++ b/arch/arm64/boot/dts/ti/Makefile
-@@ -9,7 +9,7 @@
- # alphabetically.
- 
- # Boards with AM62x SoC
--k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo
-+k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo k3-am625-sk-mcan-mcu.dtbo
- dtb-$(CONFIG_ARCH_K3) += k3-am625-beagleplay.dtb
- dtb-$(CONFIG_ARCH_K3) += k3-am625-sk.dtb
- dtb-$(CONFIG_ARCH_K3) += k3-am625-sk-mcan.dtb
-diff --git a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
-index 076601a41e84..20462f457643 100644
---- a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
-@@ -141,4 +141,28 @@
- 		/* Tightly coupled to M4F */
- 		status = "reserved";
- 	};
-+
-+	mcu_mcan1: can@4e00000 {
-+		compatible = "bosch,m_can";
-+		reg = <0x00 0x4e00000 0x00 0x8000>,
-+			  <0x00 0x4e08000 0x00 0x200>;
-+		reg-names = "message_ram", "m_can";
-+		power-domains = <&k3_pds 188 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 188 6>, <&k3_clks 188 1>;
-+		clock-names = "hclk", "cclk";
-+		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
-+		status = "disabled";
-+	};
-+
-+	mcu_mcan2: can@4e10000 {
-+		compatible = "bosch,m_can";
-+		reg = <0x00 0x4e10000 0x00 0x8000>,
-+			  <0x00 0x4e18000 0x00 0x200>;
-+		reg-names = "message_ram", "m_can";
-+		power-domains = <&k3_pds 189 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 189 6>, <&k3_clks 189 1>;
-+		clock-names = "hclk", "cclk";
-+		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
-+		status = "disabled";
-+	};
- };
-diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
-new file mode 100644
-index 000000000000..5145b3de4f9b
---- /dev/null
-+++ b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/**
-+ * DT overlay for MCAN in MCU domain on AM625 SK
-+ *
-+ * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
-+ */
-+
-+/dts-v1/;
-+/plugin/;
-+
-+#include "k3-pinctrl.h"
-+
-+&{/} {
-+	transceiver2: can-phy1 {
-+		compatible = "ti,tcan1042";
-+		#phy-cells = <0>;
-+		max-bitrate = <5000000>;
-+	};
-+
-+	transceiver3: can-phy2 {
-+		compatible = "ti,tcan1042";
-+		#phy-cells = <0>;
-+		max-bitrate = <5000000>;
-+	};
-+};
-+
-+&mcu_pmx0 {
-+	mcu_mcan1_pins_default: mcu-mcan1-pins-default {
-+		pinctrl-single,pins = <
-+			AM62X_IOPAD(0x038, PIN_INPUT, 0) /* (B3) MCU_MCAN0_RX */
-+			AM62X_IOPAD(0x034, PIN_OUTPUT, 0) /* (D6) MCU_MCAN0_TX */
-+		>;
-+	};
-+
-+	mcu_mcan2_pins_default: mcu-mcan2-pins-default {
-+		pinctrl-single,pins = <
-+			AM62X_IOPAD(0x040, PIN_INPUT, 0) /* (D4) MCU_MCAN1_RX */
-+			AM62X_IOPAD(0x03C, PIN_OUTPUT, 0) /* (E5) MCU_MCAN1_TX */
-+		>;
-+	};
-+};
-+
-+&mcu_mcan1 {
-+	poll-interval;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mcu_mcan1_pins_default>;
-+	phys = <&transceiver2>;
-+	status = "okay";
-+};
-+
-+&mcu_mcan2 {
-+	poll-interval;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mcu_mcan2_pins_default>;
-+	phys = <&transceiver3>;
-+	status = "okay";
-+};
--- 
-2.17.1
+v2:
+- Add accidentally excluded ptrace_access_vm() use of
+  FOLL_ALLOW_BROKEN_FILE_MAPPING.
+- Tweak commit message.
+https://lore.kernel.org/all/c8ee7e02d3d4f50bb3e40855c53bda39eec85b7d.1682321768.git.lstoakes@gmail.com/
 
+v1:
+https://lore.kernel.org/all/f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com/
+
+
+Lorenzo Stoakes (3):
+  mm/mmap: separate writenotify and dirty tracking logic
+  mm/gup: disallow FOLL_LONGTERM GUP-nonfast writing to file-backed
+    mappings
+  mm/gup: disallow FOLL_LONGTERM GUP-fast writing to file-backed
+    mappings
+
+ include/linux/mm.h |   1 +
+ mm/gup.c           | 128 +++++++++++++++++++++++++++++++++++++++++++--
+ mm/mmap.c          |  36 +++++++++----
+ 3 files changed, 153 insertions(+), 12 deletions(-)
+
+--
+2.40.1
