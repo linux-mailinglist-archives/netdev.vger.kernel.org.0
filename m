@@ -2,173 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E76396F3035
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 12:32:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE8926F3046
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 12:44:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232366AbjEAKcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 06:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
+        id S230391AbjEAKog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 06:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232355AbjEAKcP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 06:32:15 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545D21A5;
-        Mon,  1 May 2023 03:32:13 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-3f20215fa70so13610475e9.0;
-        Mon, 01 May 2023 03:32:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682937132; x=1685529132;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=88ED5pu6NIUvWB1EVkjbAvR9D0f7HUy1+wauwnGtc9E=;
-        b=aVU9tEIGcAyxX/UVkTd/+LzlZUdCrOBKwiDmszTdXBCg4p6CkkLwC0Jd/BxwWD4gZ9
-         +6vXAbVxueP6wfGjk5cMh0tirC1tp99oQ9bA4PMgX3Be2o3dHF2L2l5kufxDeSYsQrq7
-         5nXnJ/TQ9S5ozS6sxkLWpQ8xCB0GGVgj5V6bopm3gPg+eU+ePy+aSgSTeoK9tS1nuwB6
-         gFjqzkylUYpgrvnFTweGDor/zGD9O8eB1LahWWeYZQkMWRUe0jsYzpgSDpNqtcB8SF0H
-         yOlIDd7D08MRnAm60Qsf7119KL6DaJjPavv7K5mjuewvCA3gJfkv2vyqumAtxGLUW8Et
-         MerQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682937132; x=1685529132;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=88ED5pu6NIUvWB1EVkjbAvR9D0f7HUy1+wauwnGtc9E=;
-        b=aAsep9pN+dRU1IOmMe3L+MlFhfLXZ3J9zz4YFd5Yzf/3C6M7p61VS/4y9ISu9hlYpS
-         rdFs3vW2FiefifCcvo+v+yRZ3acZkU6RyKeT7dLRoNA5p/Qcw6a0mbWBW9LPbeltq+Vj
-         hW/iWHcc5saAGErP1L0W3HuzmUMJCEYLXd2hmKMKetm7+jrPiiU4Y33OVMc1Uc3n37uR
-         Kig2bi9MQb/wN8ubaL9TCPhZfG4e6HvhXPGcZpuQtOCHAM0n4XoBIw2gKKVb5XfcaWcr
-         nQ1PIZvS6PzE9OMz+AaPbaHG5lYuPI963iUpNADKAtcpJnoTq1hKEVkSiJ2/1vMZJrKy
-         PItA==
-X-Gm-Message-State: AC+VfDxmurJz+PnGFf20ZSwS4IuWPC+SW9xg9/ETfFRv7//aQeZcp4RI
-        dzWVe4VhWszAX7/ZiBfsqalZyhJa2xQ=
-X-Google-Smtp-Source: ACHHUZ5eBpHEUMNHy1bFaWquPRPHSuoSuTTuIHLytm54M5fD7iNwBzK81xPAZK6V8c5M+F1XuavaGw==
-X-Received: by 2002:a1c:7502:0:b0:3ed:88f5:160a with SMTP id o2-20020a1c7502000000b003ed88f5160amr9572195wmc.11.1682937131442;
-        Mon, 01 May 2023 03:32:11 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:b9bd:5800:60ec:422b:628c:6ca5? (dynamic-2a01-0c23-b9bd-5800-60ec-422b-628c-6ca5.c23.pool.telefonica.de. [2a01:c23:b9bd:5800:60ec:422b:628c:6ca5])
-        by smtp.googlemail.com with ESMTPSA id jb12-20020a05600c54ec00b003f17003e26esm35339174wmb.15.2023.05.01.03.32.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 May 2023 03:32:10 -0700 (PDT)
-Message-ID: <951be015-c18a-0aec-4c2c-df98803a2e84@gmail.com>
-Date:   Mon, 1 May 2023 12:32:08 +0200
+        with ESMTP id S229482AbjEAKof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 06:44:35 -0400
+Received: from sender3-op-o17.zoho.com (sender3-op-o17.zoho.com [136.143.184.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F31312C
+        for <netdev@vger.kernel.org>; Mon,  1 May 2023 03:44:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1682937850; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=Qoa9L9n16IZoUnol2BD3HKspYRZYO80VkLAs2W2WUgGP7f+UNasvtvhCdb6kKgtYurDy8FWbP13T4R0EMD2KmQD7C58pA8kbulfo1Q049nnm6Vca4uT7g9dzo46mFdrUtzhfhxYvFuVhdV8kDAJzoa5m6Fwx9lHFPITi1fNqEao=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1682937850; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=3qIfss0YSwkYMR4Z/pRzD9yaJhDgHp1AbhxtY2m8N2E=; 
+        b=nHIi6ZmoAjGoQxpldSE8qp3HqM3m1G5QFXa+6nJpxVh2qWqznQxVQjehSun+30bdbryQwFyx/RVGVeubNlsbu1+wYUrhWxkbYfW6wQdD82QXuWBNvNZdX0Sg/UH5ERVbalyN79u6PJ2JcBHVZwxcL/W9y9YMvr3dVZW9Uv69C7o=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1682937850;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=3qIfss0YSwkYMR4Z/pRzD9yaJhDgHp1AbhxtY2m8N2E=;
+        b=NnTwTy0AZK/IVwAJhMq0yxO+l5PX2nkVV0IDqkln/xbC1FI0N+/jegrXeEse5t3X
+        rurACUTiJGygDFQ3Ymdw7k6FvhgLVjblQtR7hPSR3mTt0IKYsCNHWFyo3OnNRrUeHUO
+        PVnP59wB3BzzgosL/jGPrtK+yIXILaW+WnuWhzq0=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1682937848841481.03617701277017; Mon, 1 May 2023 03:44:08 -0700 (PDT)
+Message-ID: <839003bf-477e-9c91-3a98-08f8ca869276@arinc9.com>
+Date:   Mon, 1 May 2023 13:43:49 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [RFC PATCH net-next 5/8] net: phy: realtek: use phy_read_paged
- instead of open coding
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Chen Minqiang <ptpt52@gmail.com>,
-        Chukun Pan <amadeus@jmu.edu.cn>,
-        Yevhen Kolomeiko <jarvis2709@gmail.com>,
-        Alexander Couzens <lynxis@fe80.eu>
-References: <cover.1682163424.git.daniel@makrotopia.org>
- <85eb0791bd614ccfdeccdc6fe39be55e602c521c.1682163424.git.daniel@makrotopia.org>
- <d7eaf73b-282a-df7d-d9a5-530e431701a1@gmail.com>
- <ZEVyk71pBcQZ_NH_@makrotopia.org>
+Subject: Re: MT7530 bug, forward broadcast and unknown frames to the correct
+ CPU port
+To:     Daniel Golle <daniel@makrotopia.org>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>, Greg Ungerer <gerg@kernel.org>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+        bartel.eerdekens@constell8.be, netdev <netdev@vger.kernel.org>
+References: <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+ <20230426205450.kez5m5jr4xch7hql@skbuf>
+ <0183eb91-8517-f40f-c2bb-b229e45d6fa5@arinc9.com>
+ <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
+ <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
+ <20230429173522.tqd7izelbhr4rvqz@skbuf>
+ <680eea9a-e719-bbb1-0c7c-1b843ed2afcd@arinc9.com>
+ <20230429185657.jrpcxoqwr5tcyt54@skbuf>
+ <d3a73d34-efd7-2f37-1362-9a2fe5a21592@arinc9.com>
+ <20230501100930.eemwoxmwh7oenhvb@skbuf> <ZE-VEuhiPygZYGPe@makrotopia.org>
 Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <ZEVyk71pBcQZ_NH_@makrotopia.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <ZE-VEuhiPygZYGPe@makrotopia.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23.04.2023 20:01, Daniel Golle wrote:
-> On Sat, Apr 22, 2023 at 05:11:57PM +0200, Heiner Kallweit wrote:
->> On 22.04.2023 13:48, Daniel Golle wrote:
->>> Instead of open coding a paged read, use the phy_read_paged function
->>> in rtlgen_supports_2_5gbps.
+On 1.05.2023 13:31, Daniel Golle wrote:
+> On Mon, May 01, 2023 at 01:09:30PM +0300, Vladimir Oltean wrote:
+>> On Sat, Apr 29, 2023 at 10:52:12PM +0300, Arınç ÜNAL wrote:
+>>> On 29.04.2023 21:56, Vladimir Oltean wrote:
+>>>> On Sat, Apr 29, 2023 at 09:39:41PM +0300, Arınç ÜNAL wrote:
+>>>>> Are you fine with the preferred port patch now that I mentioned port 6
+>>>>> would be preferred for MT7531BE since it's got 2.5G whilst port 5 has
+>>>>> got 1G? Would you like to submit it or leave it to me to send the diff
+>>>>> above and this?
+>>>>
+>>>> No, please tell me: what real life difference would it make to a user
+>>>> who doesn't care to analyze which CPU port is used?
 >>>
->>> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
->>> ---
->>>  drivers/net/phy/realtek.c | 4 +---
->>>  1 file changed, 1 insertion(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
->>> index f97b5e49fae58..62fb965b6d338 100644
->>> --- a/drivers/net/phy/realtek.c
->>> +++ b/drivers/net/phy/realtek.c
->>> @@ -735,9 +735,7 @@ static bool rtlgen_supports_2_5gbps(struct phy_device *phydev)
->>>  {
->>>  	int val;
->>>  
->>> -	phy_write(phydev, RTL821x_PAGE_SELECT, 0xa61);
->>> -	val = phy_read(phydev, 0x13);
->>> -	phy_write(phydev, RTL821x_PAGE_SELECT, 0);
->>> +	val = phy_read_paged(phydev, 0xa61, 0x13);
->>>  
->>>  	return val >= 0 && val & RTL_SUPPORTS_2500FULL;
->>>  }
+>>> They would get 2.5 Gbps download/upload bandwidth in total to the CPU,
+>>> instead of 1 Gbps. 3 computers connected to 3 switch ports would each get
+>>> 833 Mbps download/upload speed to/from the CPU instead of 333 Mbps.
 >>
->> I remember I had a reason to open-code it, it took me some minutes
->> to recall it.
->> phy_read_paged() calls __phy_read_page() that relies on phydev->drv
->> being set. phydev->drv is set in phy_probe(). And probing is done
->> after matching. __phy_read_paged() should have given you a warning.
->> Did you test this patch? If yes and you didn't get the warning,
->> then apparently I miss something.
->>
+>> In theory, theory and practice are the same. In practice, they aren't.
+>> Are you able to obtain 833 Mbps concurrently over 3 user ports?
 > 
-> Yes, you are right, this change was a bit too naive and causes a
-> NULL pointer dereference e.g. for the r8169 driver which also uses
-> the RealTek Ethernet PHY driver.
-> My main concern and original motivation was the lack of mutex protection
-> for the paged read operation. I suggest to rather make this change
-> instead:
+> Probably the 2.5 GBit/s won't saturate, but I do manage to get more
+> than 1 Gbit/s total (using the hardware flow offloading capability to
+> NAT-route WAN<->LAN and simultanously have a WiFi client access a NAS
+> device which also connects to a LAN port. I use MT7915E+MT7975D mPCIe
+> module with BPi-R2)
 > 
->>From 4dd2cc9b91ecb25f278a2c55e07e6455e9000e6b Mon Sep 17 00:00:00 2001
-> From: Daniel Golle <daniel@makrotopia.org>
-> Date: Sun, 23 Apr 2023 18:47:45 +0100
-> Subject: [PATCH] net: phy: realtek: make sure paged read is protected by mutex
-> 
-> As we cannot rely on phy_read_paged function before the PHY is
-> identified, the paged read in rtlgen_supports_2_5gbps needs to be open
-> coded as it is being called by the match_phy_device function, ie. before
-> .read_page and .write_page have been populated.
-> 
-> Make sure it is also protected by the MDIO bus mutex and use
-> rtl821x_write_page instead of 3 individually locked MDIO bus operations.
-> 
-> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> ---
->  drivers/net/phy/realtek.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-> index f97b5e49fae5..c27ec4e99fc2 100644
-> --- a/drivers/net/phy/realtek.c
-> +++ b/drivers/net/phy/realtek.c
-> @@ -735,9 +735,11 @@ static bool rtlgen_supports_2_5gbps(struct phy_device *phydev)
->  {
->  	int val;
->  
-> -	phy_write(phydev, RTL821x_PAGE_SELECT, 0xa61);
-> -	val = phy_read(phydev, 0x13);
-> -	phy_write(phydev, RTL821x_PAGE_SELECT, 0);
-> +	mutex_lock(&phydev->mdio.bus->mdio_lock);
+> Using PHY muxing to directly map the WAN port to GMAC2 is also an
+> option, but would be limiting the bandwidth for those users who just
+> want all 5 ports to be bridged. Hence I do agree with Arınç that the
+> best would be to use the TRGMII link on GMAC1 for the 4 WAN ports and
+> prefer using RGMII link on GMAC2 for the WAN port, but keep using DSA.
 
-We have helpers phy_(un)lock_mdio_bus() for this.
-Apart from that: LGTM
+You seem to be rather talking about MT7530 while I think preferring port 6
+would benefit MT7531BE the most.
 
-> +	rtl821x_write_page(phydev, 0xa61);
-> +	val = __phy_read(phydev, 0x13);
-> +	rtl821x_write_page(phydev, 0);
-> +	mutex_unlock(&phydev->mdio.bus->mdio_lock);
->  
->  	return val >= 0 && val & RTL_SUPPORTS_2500FULL;
->  }
+Can you test the actual speed with SGMII on MT7531? Route between two ports and
+do a bidirectional iperf3 speed test.
 
+SGMII should at least provide you with 2 Gbps bandwidth in total in a
+router-on-a-stick scenario which is the current situation until the changing
+DSA conduit support is added.
+
+If we were to use port 5, download and upload speed would be capped at 500
+Mbps. With SGMII you should get 1000 Mbps on each.
+
+Arınç
