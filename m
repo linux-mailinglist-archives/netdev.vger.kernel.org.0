@@ -2,82 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D870C6F2FE3
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 11:29:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAE456F2FFC
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 11:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232064AbjEAJ3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 05:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42638 "EHLO
+        id S232300AbjEAJva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 05:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbjEAJ3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 05:29:50 -0400
-Received: from sender3-op-o17.zoho.com (sender3-op-o17.zoho.com [136.143.184.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DF5101;
-        Mon,  1 May 2023 02:29:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1682933358; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=BaI/uLE+od4YdpchaIomh85K06+ogmefgWj6TRu5o+a+ftsK04Esbp69QHDw633XEv5kRIiPt4z8w4wyJZNENoJM5lesxcSG2v3TfcAKy8ANd58eYREKb9uvWIgtNLXXAciPDv112/+bntn5MgjzcT4szwFizJ7Y1AfL60O45OM=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1682933358; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=7ZRYro9MvAg1zoTwvvf4iEPdVZRnhHVogGV7UmTiafo=; 
-        b=lOdkStpKQpTL9/uJdATB3CcE/ntpCklawsIL2ga2wldbpalqXPEVHX+jEZvhe56VF36IJUbt5x5TT7ZaC4oFYhrO5ptPDB2Nhoj4KITzDcZ3nu6XRwA5AJrm3UCzEyc6utHtvuKHJd3GHFXBfYrpXh60BzxoxC0wVgZsK4M6MoM=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1682933358;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=7ZRYro9MvAg1zoTwvvf4iEPdVZRnhHVogGV7UmTiafo=;
-        b=R2+QeE8XUXKa1k3JRwSRX4X4+C2nsaFnj7j5a6mJP5JeZlBAE7SETg8O365lMkxv
-        R+Nm6oiZp8yws9dai6dRddf7HHoMeMrwMH4YoLbHWbLisfTLzh7p6SpEXDaKpap9fNI
-        L1b82UU33FLDwFZHKl93jlIY+FlOFjSVKr3tewWc=
-Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 1682933356826381.56027190272596; Mon, 1 May 2023 02:29:16 -0700 (PDT)
-Message-ID: <0f501bb6-18a0-1713-b08c-6ad244c022ec@arinc9.com>
-Date:   Mon, 1 May 2023 12:28:55 +0300
+        with ESMTP id S232284AbjEAJv0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 05:51:26 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E5BE4A;
+        Mon,  1 May 2023 02:51:24 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id 98e67ed59e1d1-24e01ba9e03so517082a91.1;
+        Mon, 01 May 2023 02:51:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682934683; x=1685526683;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wAyKklJP4RAwcGyHLElFHWzPziFPamUTZVBn88mFHEM=;
+        b=GqMfQC7PQxWSJHUrzTkIrUFwPjo7AQsDMlPtX/wojI4kRyPoU76VlXhPhhdiWO2liC
+         M1Y5g5GAs0zZLbMPhMZnI5FkpQ2WCSHTYZ3mqeftXv/E7ReZJOyGSksVcK4kvfbXG8N5
+         GmgMAXvRjp9iE5FQl3/M4krfXy8951z3lHS5+DK9cKhcX+DFLC3eowFmt7twD7yU14+K
+         YDNV1J+//dvM0DHYoKBmtLshIcTTakJsr7tDmbpkhFzI7A7Ox2INx6MUn4eXx7voZlE6
+         7cq5cS9ggipGlO+YFALA7YmsWyxxwtqk1jHXjO/1utZCrMII0jf38EZ2JKSUr/E1CTrc
+         i6eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682934683; x=1685526683;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wAyKklJP4RAwcGyHLElFHWzPziFPamUTZVBn88mFHEM=;
+        b=flKWZVthQgECi7qZxI+TGlRc63Wqm+XloM+2DrzY1FKs2vMRqQDG4G9yxrZSM1mWmd
+         we9ysisSAOJtXXpOvPJ48JnRBpzFjJIqKYRMtkw8nU0xOmynnyFU/pPXyLj7ucYaDP/x
+         W3Bm5QLuc1w1Azi2dikaIeJZ0xgJHF8Cx22w5apg0F0cAJplqG3GhvjuH6aq2iLRWuJi
+         iAwqCADH+N2wV5Td9HTPW1jGVwWpU4UoiZtuv4VN4Ga096N3+W9rOmT6BGc93lFkhKw2
+         S73kSZEqpnXvCtuAPRaNNJ97/kSQRlPvueP4zL/MaXUfRqFkSP/Pwonvda+rGgrWHyTC
+         wLiA==
+X-Gm-Message-State: AC+VfDwURUefprrKj7xQqpCQ+poRxPM1TyugkaZmWq7r0jHz1+MeqnIG
+        ml5nCo0UsUyA4+Ox0GWfW7w=
+X-Google-Smtp-Source: ACHHUZ7bXlwoLS0yE+UKf5JmSxUljwc8fOGS1fiKev+OTVuxC2eEjE3byoVXgpmu5zrdQewi4e6A0w==
+X-Received: by 2002:a17:90a:bc89:b0:24e:134e:96db with SMTP id x9-20020a17090abc8900b0024e134e96dbmr619501pjr.22.1682934683254;
+        Mon, 01 May 2023 02:51:23 -0700 (PDT)
+Received: from [183.173.17.116] ([183.173.17.116])
+        by smtp.gmail.com with ESMTPSA id h16-20020a17090aea9000b00247164c1947sm5180481pjz.0.2023.05.01.02.51.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 May 2023 02:51:22 -0700 (PDT)
+Message-ID: <d9633b9b-c39f-699a-4b05-1c0c55e2dec9@gmail.com>
+Date:   Mon, 1 May 2023 17:51:20 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH 2/2] dt-bindings: net: dsa: mediatek,mt7530: document
- MDIO-bus
-To:     David Bauer <mail@david-bauer.net>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20230430112834.11520-1-mail@david-bauer.net>
- <20230430112834.11520-2-mail@david-bauer.net>
- <e4feeac2-636b-8b75-53a5-7603325fb411@arinc9.com>
- <396fad42-89d0-114d-c02e-ac483c1dd1ed@arinc9.com>
- <04cc2904-6d61-416e-bfbe-c24d96fe261b@lunn.ch>
- <a6c6fe83-fbb5-f289-2210-6f1db6585636@arinc9.com>
- <207753d6-cffd-4a23-be16-658d7c9ceb4a@lunn.ch>
- <e5476692-aa3a-29b8-2e1d-ce93fd13a23b@arinc9.com>
- <1f759370-af97-e2a4-4b93-183eb854f7cd@david-bauer.net>
+Subject: Re: [BUG][RESEND] Bluetooth: L2CAP: possible data race in
+ __sco_sock_close()
 Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <1f759370-af97-e2a4-4b93-183eb854f7cd@david-bauer.net>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        baijiaju1990@outlook.com
+References: <CADm8TemwbUWDP0R_t7axFk4=4-srnm5c+2oJSy7aeSzdKFSVCA@mail.gmail.com>
+ <CABBYNZJCbYnxodwXAeq8F9NerzGWFva0OG6SfUWfJ_Grz=Xq6Q@mail.gmail.com>
+From:   Tuo Li <islituo@gmail.com>
+In-Reply-To: <CABBYNZJCbYnxodwXAeq8F9NerzGWFva0OG6SfUWfJ_Grz=Xq6Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
 X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,176 +80,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1.05.2023 12:22, David Bauer wrote:
-> Hi Arinc,
-> 
-> thanks for spotting this issue.
-> 
-> On 4/30/23 21:54, Arınç ÜNAL wrote:
->> On 30.04.2023 21:48, Andrew Lunn wrote:
->>>>> Try setting ds->slave_mii_bus to the MDIO bus you register via
->>>>> of_mdiobus_register().
->>>>
->>>> That seems to be the case already, under mt7530_setup_mdio():
->>>>
->>>>     bus = devm_mdiobus_alloc(dev);
->>>>     if (!bus)
->>>>         return -ENOMEM;
->>>>
->>>>     ds->slave_mii_bus = bus;
->>>>
->>>> The bus is registered with devm_of_mdiobus_register(), if that matters. (My
->>>> current knowledge about OF or OF helpers for MDIO is next to nothing.)
->>>>
->>>> The same behaviour is there.
->>>
->>> Maybe take a look at what is going on in dsa_slave_phy_setup() and
->>> dsa_slave_phy_connect().
->>>
->>> The way i understand it, is it first looks in DT to see if there is a
->>> phy-handle, and if there is, it uses it. If not, it assumes there is a
->>> 1:1 mapping between port number and PHY address, and looks to see if a
->>> PHY has been found on ds->slave_mii_bus at that address, and uses it.
->>>
->>> So i don't think you need to list the PHY, the fallback should be
->>> used.
->>
->> Thanks for pointing me in the right direction Andrew.
->>
->> I applied this diff:
->>
->> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
->> index 389f33a12534..19d0c209e7e9 100644
->> --- a/drivers/net/phy/mdio_bus.c
->> +++ b/drivers/net/phy/mdio_bus.c
->> @@ -117,8 +117,12 @@ struct phy_device *mdiobus_get_phy(struct mii_bus *bus, int addr)
->>
->>       mdiodev = bus->mdio_map[addr];
->>
->> -    if (!mdiodev)
->> +    if (!mdiodev) {
->> +        dev_info(&bus->dev, "mdio device doesn't exist\n");
->>           return NULL;
->> +    }
->> +
->> +    dev_info(&bus->dev, "mdio device exists\n");
->>
->>       if (!(mdiodev->flags & MDIO_DEVICE_FLAG_PHY))
->>           return NULL;
->> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
->> index 165bb2cb8431..0be408e32a76 100644
->> --- a/net/dsa/slave.c
->> +++ b/net/dsa/slave.c
->> @@ -2487,6 +2487,7 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
->>           /* We could not connect to a designated PHY or SFP, so try to
->>            * use the switch internal MDIO bus instead
->>            */
->> +        netdev_err(slave_dev, "using switch's internal MDIO bus\n");
->>           ret = dsa_slave_phy_connect(slave_dev, dp->index, phy_flags);
->>       }
->>       if (ret) {
->>
->> With or without this patch, the switch's internal MDIO bus is used to set
->> up the PHYs.
->>
->> DT that defines ethphy0 only, without this patch applied:
->>
->> [    4.660784] mt7530-mdio mdio-bus:1f wan (uninitialized): using switch's internal MDIO bus
->> [    4.669026] mdio_bus mt7530-0: mdio device exists
->> [    4.677693] mt7530-mdio mdio-bus:1f wan (uninitialized): PHY [mt7530-0:00] driver [MediaTek MT7530 PHY] (irq=POLL)
->> [    4.693238] mt7530-mdio mdio-bus:1f lan0 (uninitialized): using switch's internal MDIO bus
->> [    4.701589] mdio_bus mt7530-0: mdio device exists
->> [    4.707101] mt7530-mdio mdio-bus:1f lan0 (uninitialized): PHY [mt7530-0:01] driver [MediaTek MT7530 PHY] (irq=POLL)
->> [    4.718550] mt7530-mdio mdio-bus:1f lan1 (uninitialized): using switch's internal MDIO bus
->> [    4.726856] mdio_bus mt7530-0: mdio device exists
->> [    4.732384] mt7530-mdio mdio-bus:1f lan1 (uninitialized): PHY [mt7530-0:02] driver [MediaTek MT7530 PHY] (irq=POLL)
->> [    4.743822] mt7530-mdio mdio-bus:1f lan2 (uninitialized): using switch's internal MDIO bus
->> [    4.752154] mdio_bus mt7530-0: mdio device exists
->> [    4.757662] mt7530-mdio mdio-bus:1f lan2 (uninitialized): PHY [mt7530-0:03] driver [MediaTek MT7530 PHY] (irq=POLL)
->> [    4.769099] mt7530-mdio mdio-bus:1f lan3 (uninitialized): using switch's internal MDIO bus
->> [    4.781872] mdio_bus mt7530-0: mdio device exists
->> [    4.787413] mt7530-mdio mdio-bus:1f lan3 (uninitialized): PHY [mt7530-0:04] driver [MediaTek MT7530 PHY] (irq=POLL)
->>
->> Same DT but with this patch applied:
->>
->> [    4.621547] mt7530-mdio mdio-bus:1f: configuring for fixed/trgmii link mode
->> [    4.631524] mt7530-mdio mdio-bus:1f wan (uninitialized): using switch's internal MDIO bus
->> [    4.639764] mdio_bus mt7530-0: mdio device exists
->> [    4.647770] mt7530-mdio mdio-bus:1f wan (uninitialized): PHY [mt7530-0:00] driver [MediaTek MT7530 PHY] (irq=POLL)
->> [    4.663898] mt7530-mdio mdio-bus:1f lan0 (uninitialized): using switch's internal MDIO bus
->> [    4.672253] mdio_bus mt7530-0: mdio device doesn't exist
->> [    4.677597] mt7530-mdio mdio-bus:1f lan0 (uninitialized): no phy at 1
->> [    4.684053] mt7530-mdio mdio-bus:1f lan0 (uninitialized): failed to connect to PHY: -ENODEV
->> [    4.692435] mt7530-mdio mdio-bus:1f lan0 (uninitialized): error -19 setting up PHY for tree 0, switch 0, port 1
->> [    4.703087] mt7530-mdio mdio-bus:1f lan1 (uninitialized): using switch's internal MDIO bus
->> [    4.711408] mdio_bus mt7530-0: mdio device doesn't exist
->> [    4.716731] mt7530-mdio mdio-bus:1f lan1 (uninitialized): no phy at 2
->> [    4.723214] mt7530-mdio mdio-bus:1f lan1 (uninitialized): failed to connect to PHY: -ENODEV
->> [    4.731597] mt7530-mdio mdio-bus:1f lan1 (uninitialized): error -19 setting up PHY for tree 0, switch 0, port 2
->> [    4.742199] mt7530-mdio mdio-bus:1f lan2 (uninitialized): using switch's internal MDIO bus
->> [    4.755431] mdio_bus mt7530-0: mdio device doesn't exist
->> [    4.760793] mt7530-mdio mdio-bus:1f lan2 (uninitialized): no phy at 3
->> [    4.767263] mt7530-mdio mdio-bus:1f lan2 (uninitialized): failed to connect to PHY: -ENODEV
->> [    4.775632] mt7530-mdio mdio-bus:1f lan2 (uninitialized): error -19 setting up PHY for tree 0, switch 0, port 3
->> [    4.786270] mt7530-mdio mdio-bus:1f lan3 (uninitialized): using switch's internal MDIO bus
->> [    4.794591] mdio_bus mt7530-0: mdio device doesn't exist
->> [    4.799944] mt7530-mdio mdio-bus:1f lan3 (uninitialized): no phy at 4
->> [    4.806397] mt7530-mdio mdio-bus:1f lan3 (uninitialized): failed to connect to PHY: -ENODEV
->> [    4.814782] mt7530-mdio mdio-bus:1f lan3 (uninitialized): error -19 setting up PHY for tree 0, switch 0, port 4
->>
->> DT without the mdio node defined, with this patch applied:
->>
->> [    4.650766] mt7530-mdio mdio-bus:1f: configuring for fixed/trgmii link mode
->> [    4.660687] mt7530-mdio mdio-bus:1f wan (uninitialized): using switch's internal MDIO bus
->> [    4.668937] mdio_bus mt7530-0: mdio device exists
->> [    4.677787] mt7530-mdio mdio-bus:1f wan (uninitialized): PHY [mt7530-0:00] driver [MediaTek MT7530 PHY] (irq=POLL)
->> [    4.693165] mt7530-mdio mdio-bus:1f lan0 (uninitialized): using switch's internal MDIO bus
->> [    4.701517] mdio_bus mt7530-0: mdio device exists
->> [    4.707029] mt7530-mdio mdio-bus:1f lan0 (uninitialized): PHY [mt7530-0:01] driver [MediaTek MT7530 PHY] (irq=POLL)
->> [    4.718469] mt7530-mdio mdio-bus:1f lan1 (uninitialized): using switch's internal MDIO bus
->> [    4.726773] mdio_bus mt7530-0: mdio device exists
->> [    4.732322] mt7530-mdio mdio-bus:1f lan1 (uninitialized): PHY [mt7530-0:02] driver [MediaTek MT7530 PHY] (irq=POLL)
->> [    4.743793] mt7530-mdio mdio-bus:1f lan2 (uninitialized): using switch's internal MDIO bus
->> [    4.752143] mdio_bus mt7530-0: mdio device exists
->> [    4.757662] mt7530-mdio mdio-bus:1f lan2 (uninitialized): PHY [mt7530-0:03] driver [MediaTek MT7530 PHY] (irq=POLL)
->> [    4.769105] mt7530-mdio mdio-bus:1f lan3 (uninitialized): using switch's internal MDIO bus
->> [    4.781905] mdio_bus mt7530-0: mdio device exists
->> [    4.787459] mt7530-mdio mdio-bus:1f lan3 (uninitialized): PHY [mt7530-0:04] driver [MediaTek MT7530 PHY] (irq=POLL)
->>
->> This is how I define it, mind you no phandles.
->>
->> switch@1f {
->>      ...
->>      mdio {
->>          #address-cells = <0x01>;
->>          #size-cells = <0x00>;
->>
->>          ethernet-phy@0 {
->>              reg = <0x00>;
->>          };
->>      };
->> };
->>
->> Like you said, if the mdio node is not defined, the driver will assume 1:1
->> mapping. If not, it will need all the PHYs to be defined on the mdio node
->> along with on the ports node. Hence back to my original statement, we can
->> either force defining the PHYs on the mdio node which would break the ABI,
->> or forget about doing PHY muxing this way.
-> 
-> While i was not aware of this side effect, I don't see how this breaks the ABI.
+Thanks for your reply and interests. Our static analysis tool is still 
+to be improved, and any feedback on it would be appreciated.
 
-Your patch doesn't break it, my then-intention of doing PHY muxing by
-utilising this would. Your first patch is perfectly fine as is.
+On 2023/4/29 5:24, Luiz Augusto von Dentz wrote:
+> Hi,
+>
+> On Fri, Apr 28, 2023 at 3:27 AM Li Tuo <islituo@gmail.com> wrote:
+>>    Hello,
+>>
+>> Our static analysis tool finds a possible data race in the l2cap protocol
+>> in Linux 6.3.0-rc7:
+>>
+>> In most calling contexts, the variable sk->sk_socket is accessed
+>> with holding the lock sk->sk_callback_lock. Here is an example:
+>>
+>>    l2cap_sock_accept() --> Line 346 in net/bluetooth/l2cap_sock.c
+>>        bt_accept_dequeue() --> Line 368 in net/bluetooth/l2cap_sock.c
+>>            sock_graft() --> Line 240 in net/bluetooth/af_bluetooth.c
+>>                write_lock_bh(&sk->sk_callback_lock); --> Line 2081 in include/net/sock.h (Lock sk->sk_callback_lock)
+>>                sk_set_socket() --> Line 2084 in include/net/sock.h
+>>                    sk->sk_socket = sock; --> Line 2054 in include/net/sock.h (Access sk->sk_socket)
+>>
+>> However, in the following calling context:
+>>
+>>    sco_sock_shutdown() --> Line 1227 in net/bluetooth/sco.c
+>>        __sco_sock_close() --> Line 1243 in net/bluetooth/sco.c
+>>            BT_DBG(..., sk->sk_socket); --> Line 431 in net/bluetooth/sco.c (Access sk->sk_socket)
+>>
+>> the variable sk->sk_socket is accessed without holding the lock
+>> sk->sk_callback_lock, and thus a data race may occur.
+>>
+>> Reported-by: BassCheck <bass@buaa.edu.cn>
+> Need to check in detail what it means to hold the sk_callback_lock,
+> btw is this static analysis tool of yours something public that we can
+> use in our CI to detect these problems?
+>
+>
 
-> 
-> Existing device-trees not defining the MDIO node will still continue to work.
-
-Agreed, I also confirmed this with my test above.
-
-> 
-> Wouldn't we just skip the whole issue by documenting the need for defining all PHYs
-> used on the switch when defining the MDIO bus?
-
-Good idea, please do that.
-
-Arınç
