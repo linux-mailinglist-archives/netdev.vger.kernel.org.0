@@ -2,55 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C0746F3A48
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 00:08:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8E36F3A77
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 00:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232184AbjEAWIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 18:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54772 "EHLO
+        id S232754AbjEAWcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 18:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbjEAWIG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 18:08:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DD91FEB;
-        Mon,  1 May 2023 15:08:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E82A861B86;
-        Mon,  1 May 2023 22:08:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D666C433D2;
-        Mon,  1 May 2023 22:08:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682978884;
-        bh=3uBwTs+BjArlbFvziWqGDytvQf6gMzzJgKqFXYdheCk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YQpOou+14UAIaCscm+mUCjVZbXxUbmOAKvePCkuWBmZjgs1Zvi0EZx1NkwX9A+Rva
-         BZ89W8/pI/hPbyzKtLXfnwUJmVWjETdO40VG1GY2hcRpTvHK7BDyJjb6CqHGC3uRY0
-         dDuPqTh5Ibr5ToPJFx7O+yqur4Qdh0fW08ciBwBKpTSbhjJSZG1T0OAxVmNB2IDg8t
-         K2Nnq6xl36Ft9ilY4Dgl1aTcAPTctq5B14peSV8tXeikdKcTembfPSQTzkw71axk9p
-         39SbYZeXaK7839peBfUBOBuhCSS+qPPMV1OlsUot8+NqrzELKtd9boPBG/B0AHfzR4
-         X9HPkvJ+s8UxA==
-Date:   Mon, 1 May 2023 15:08:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: Re: pull-request: wireless-next-2023-04-21
-Message-ID: <20230501150803.6c4963ac@kernel.org>
-In-Reply-To: <87cz3os2wr.fsf@kernel.org>
-References: <20230421104726.800BCC433D2@smtp.kernel.org>
-        <20230421075404.63c04bca@kernel.org>
-        <e31dae6daa6640859d12bf4c4fc41599@realtek.com>
-        <87leigr06u.fsf@kernel.org>
-        <20230425071848.6156c0a0@kernel.org>
-        <87cz3os2wr.fsf@kernel.org>
+        with ESMTP id S230114AbjEAWcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 18:32:09 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF782123;
+        Mon,  1 May 2023 15:32:07 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 341MVMpl048697;
+        Mon, 1 May 2023 17:31:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1682980282;
+        bh=6SMGVPvdhbJ9KTLC2b351MZOPiOCtSGbFUniZnLXzTI=;
+        h=From:To:CC:Subject:Date;
+        b=x2uf5WwwXibc2VTYhNFX2i+V8zSLvfYRK1h9r3jdelFrH4BTrOg0d9R5ag/heJsX5
+         1mbMmYLUUaD5DeekuQIqEQpp084//xom3kyAOUvkOmjqsVCYxKpvB17vV9MyHIlSMB
+         /zjzal+2wyyRLU614d1E/kVFEMSRGBnbTPBa36V8=
+Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 341MVMWt129610
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 1 May 2023 17:31:22 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 1
+ May 2023 17:31:21 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Mon, 1 May 2023 17:31:21 -0500
+Received: from a0498204.dal.design.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 341MVLEG023009;
+        Mon, 1 May 2023 17:31:21 -0500
+From:   Judith Mendez <jm@ti.com>
+To:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Schuyler Patton <spatton@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH v3 0/4]  Enable multiple MCAN on AM62x
+Date:   Mon, 1 May 2023 17:31:17 -0500
+Message-ID: <20230501223121.21663-1-jm@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,22 +74,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Apr 2023 13:43:16 +0300 Kalle Valo wrote:
-> > I don't think it's that much extra work, the driver requires FW
-> > according to modinfo, anyway, so /lib/firmware is already required.
-> > And on smaller systems with few hundred MB of RAM it'd be nice to not
-> > hold all the stuff in kernel memory, I'd think.  
-> 
-> Later in this thread Ping explained pretty well the challenges here,
-> that sums exactly what I'm worried about.
-> 
-> > We have a rule against putting FW as a static table in the driver
-> > source, right? Or did we abandon that? Isn't this fundamentally similar?  
-> 
-> My understanding is that these are just initialisation values for
-> hardware, not executable code. (Ping, please correct me if I
-> misunderstood.) So that's why I thought these are ok to have in kernel.
-> So I took practicality over elegance here.
+On AM62x there is one MCAN in MAIN domain and two in MCU domain.
+The MCANs in MCU domain were not enabled since there is no
+hardware interrupt routed to A53 GIC interrupt controller.
+Therefore A53 Linux cannot be interrupted by MCU MCANs.
 
-Alright, I'll try to make someone else do this outside of wireless,
-and come back with real life experience disproving the concerns :)
+This solution instantiates a hrtimer with 1 ms polling interval
+for MCAN device when there is no hardware interrupt and there is
+poll-interval property in DTB MCAN node. The hrtimer generates a
+recurring software interrupt which allows to call the isr. The isr
+will check if there is pending transaction by reading a register
+and proceed normally if there is.
+
+On AM62x, this series enables two MCU MCAN which will use the hrtimer
+implementation. MCANs with hardware interrupt routed to A53 Linux
+will continue to use the hardware interrupt as expected.
+
+Timer polling method was tested on both classic CAN and CAN-FD
+at 125 KBPS, 250 KBPS, 1 MBPS and 2.5 MBPS with 4 MBPS bitrate
+switching.
+
+Letency and CPU load benchmarks were tested on 3x MCAN on AM62x.
+1 MBPS timer polling interval is the better timer polling interval
+since it has comparable latency to hardware interrupt with the worse
+case being 1ms + CAN frame propagation time and CPU load is not
+substantial. Latency can be improved further with less than 1 ms
+polling intervals, howerver it is at the cost of CPU usage since CPU
+load increases at 0.5 ms.
+
+Note that in terms of power, enabling MCU MCANs with timer-polling
+implementation might have negative impact since we will have to wake
+up every 1 ms whether there are CAN packets pending in the RX FIFO or
+not. This might prevent the CPU from entering into deeper idle states
+for extended periods of time.
+
+This patch series depends on 'Enable CAN PHY transceiver driver':
+Link: https://lore.kernel.org/lkml/775ec9ce-7668-429c-a977-6c8995968d6e@app.fastmail.com/T/
+
+v2:
+Link: https://lore.kernel.org/linux-can/20230424195402.516-1-jm@ti.com/T/#t
+
+V1:
+Link: https://lore.kernel.org/linux-can/19d8ae7f-7b74-a869-a818-93b74d106709@ti.com/T/#t
+
+RFC:
+Link: https://lore.kernel.org/linux-can/52a37e51-4143-9017-42ee-8d17c67028e3@ti.com/T/#t
+
+Changes since v2:
+- Change binding patch first
+- Update binding poll-interval description
+- Add oneOf to select either interrupts/interrupt-names or poll-interval
+- Sort list of includes
+- Create a define for 1 ms polling interval
+- Change plarform_get_irq to optional to not print error msg
+- Fix indentations, lengths of code lines, and added other style changes
+
+Changes since v1:
+- Add poll-interval property to bindings and MCAN DTB node
+- Add functionality to check for 'poll-interval' property in MCAN node 
+- Bindings: add an example using poll-interval
+- Add 'polling' flag in driver to check if device is using polling method
+- Check for both timer polling and hardware interrupt case, default to
+hardware interrupt method
+- Change ns_to_ktime() to ms_to_ktime()
+
+Judith Mendez (4):
+  dt-bindings: net: can: Add poll-interval for MCAN
+  can: m_can: Add hrtimer to generate software interrupt
+  arm64: dts: ti: Add AM62x MCAN MAIN domain transceiver overlay
+  arm64: dts: ti: Enable MCU MCANs for AM62x
+
+ .../bindings/net/can/bosch,m_can.yaml         | 36 +++++++++++-
+ arch/arm64/boot/dts/ti/Makefile               |  2 +
+ arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi       | 24 ++++++++
+ .../boot/dts/ti/k3-am625-sk-mcan-main.dtso    | 35 ++++++++++++
+ .../boot/dts/ti/k3-am625-sk-mcan-mcu.dtso     | 57 +++++++++++++++++++
+ drivers/net/can/m_can/m_can.c                 | 29 +++++++++-
+ drivers/net/can/m_can/m_can.h                 |  4 ++
+ drivers/net/can/m_can/m_can_platform.c        | 33 ++++++++++-
+ 8 files changed, 213 insertions(+), 7 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
+
+
+base-commit: 92e815cf07ed24ee1c51b122f24ffcf2964b4b13
+-- 
+2.17.1
+
