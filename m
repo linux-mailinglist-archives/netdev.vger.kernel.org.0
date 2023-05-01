@@ -2,99 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C44EA6F2F34
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 09:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A580A6F2FAF
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 11:04:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232243AbjEAHla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 03:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39828 "EHLO
+        id S229482AbjEAJEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 05:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231755AbjEAHl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 03:41:29 -0400
-Received: from mail-m11876.qiye.163.com (mail-m11876.qiye.163.com [115.236.118.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295F61B9;
-        Mon,  1 May 2023 00:41:24 -0700 (PDT)
-Received: from [IPV6:240e:3b7:327f:5c30:7d8b:c3e:1a47:99e8] (unknown [IPV6:240e:3b7:327f:5c30:7d8b:c3e:1a47:99e8])
-        by mail-m11876.qiye.163.com (Hmail) with ESMTPA id 101163C021F;
-        Mon,  1 May 2023 15:41:17 +0800 (CST)
-Message-ID: <730cf5ed-2239-34f7-79a5-ffa4d9bb8fae@sangfor.com.cn>
-Date:   Mon, 1 May 2023 15:41:18 +0800
+        with ESMTP id S232086AbjEAJEN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 05:04:13 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44FAF10E9
+        for <netdev@vger.kernel.org>; Mon,  1 May 2023 02:03:55 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-32ad0d95fdbso13705915ab.3
+        for <netdev@vger.kernel.org>; Mon, 01 May 2023 02:03:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682931834; x=1685523834;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rhp9GBgrHr9B7k3Gk9cH3dUUthVHyW0iKvO1Evx4PB8=;
+        b=VHPLKd4c7NZB2SjXltXsr32FHnwRT5Uq0pTvgfoLSKDO28u7pLGrjbydRbgin3X3UT
+         ZLqti6EVOqosnv6AfpEZ4q5y2Rz+VF+7flpKKcswwF8KruL8FkjZmUPk7VUICegefPcX
+         Q7TRr9PciDbKafWUpHvldjEkR1GltY6Wvizpx2Ua2Gbq3lgXL7pTwlDyBwktkORfdv3m
+         RrJf5XsNSWLXSnBNl63f8QaZJRoPJKcoQXb9QBkfSEvOlI3dSO2Qs82r+my72wxwQ0Gh
+         BbgR9KMBkkb9y4mkZwVuzGcJcypoqbeZF0tnZW/G5TykAMre6ODBl7tXq4/xOiPe1g9k
+         zspQ==
+X-Gm-Message-State: AC+VfDyfqQD1ZjSiFPu5TNEHwTtTBNHsz9whM70EYdoBJjK8467HLTn8
+        c2eA1Zg9qdp+A3oCnE4fGmlBuorrGfhL/kVYIV4icu/BNFQv
+X-Google-Smtp-Source: ACHHUZ6TFCy1DO4JGQ3bDaR6W6UHivOG3h2JFA2NazviMN0+BYbL6BxAXI+q8eMBqLWc7MDMix+N8uCPvMNIMUAyPryRDoIW95oX
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net v3 1/2] iavf: Fix use-after-free in free_netdev
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        keescook@chromium.org, grzegorzx.szczurek@intel.com,
-        mateusz.palczewski@intel.com, mitch.a.williams@intel.com,
-        gregory.v.rose@intel.com, jeffrey.t.kirsher@intel.com,
-        michal.kubiak@intel.com, madhu.chittim@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org, pengdonglin@sangfor.com.cn,
-        huangcun@sangfor.com.cn
-References: <20230429132022.31765-1-dinghui@sangfor.com.cn>
- <20230429132022.31765-2-dinghui@sangfor.com.cn>
- <ZE9j4CHtQbm5S3cg@corigine.com>
-From:   Ding Hui <dinghui@sangfor.com.cn>
-In-Reply-To: <ZE9j4CHtQbm5S3cg@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCSUNNVh1LTx5KH0gaHU4YQlUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUlPSx5BSBlMQUhJTB1BThhIS0FMH0MZQRhIHkFKGk9MQUJCHkNZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVKS0tVS1kG
-X-HM-Tid: 0a87d6423c432eb2kusn101163c021f
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6N006Shw4KD0RCkIaHBQ5FA4I
-        HT4KFBpVSlVKTUNJQklNQ0xDSkhPVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-        QVlJT0seQUgZTEFISUwdQU4YSEtBTB9DGUEYSB5BShpPTEFCQh5DWVdZCAFZQUhOT0M3Bg++
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:6c9:b0:32a:76a8:9b4f with SMTP id
+ p9-20020a056e0206c900b0032a76a89b4fmr6686672ils.5.1682931834585; Mon, 01 May
+ 2023 02:03:54 -0700 (PDT)
+Date:   Mon, 01 May 2023 02:03:54 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002e8a7c05fa9e1a7a@google.com>
+Subject: [syzbot] Monthly wireguard report (Apr 2023)
+From:   syzbot <syzbot+listded2f47f5f1d416c4059@syzkaller.appspotmail.com>
+To:     Jason@zx2c4.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        wireguard@lists.zx2c4.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/5/1 15:01, Simon Horman wrote:
-> On Sat, Apr 29, 2023 at 09:20:21PM +0800, Ding Hui wrote:
->> We do netif_napi_add() for all allocated q_vectors[], but potentially
->> do netif_napi_del() for part of them, then kfree q_vectors and leave
->> invalid pointers at dev->napi_list.
->>
->> ...
->>
->> Although the patch #2 (of 2) can avoid the issuse triggered by this
->> repro.sh, there still are other potential risks that if num_active_queues
->> is changed to less than allocated q_vectors[] by unexpected, the
->> mismatched netif_napi_add/del() can also casue UAF.
-> 
-> nit: ./checkpatch --codespell tells me:
-> 
->       s/casue/cause/
-> 
+Hello wireguard maintainers/developers,
 
-Sorry, I'll fix it in v4.
+This is a 31-day syzbot report for the wireguard subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/wireguard
 
->> Since we actually call netif_napi_add() for all allocated q_vectors
->> unconditionally in iavf_alloc_q_vectors(), so we should fix it by
->> letting netif_napi_del() match to netif_napi_add().
->>
->> Fixes: 5eae00c57f5e ("i40evf: main driver core")
->> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
->> Cc: Donglin Peng <pengdonglin@sangfor.com.cn>
->> Cc: Huang Cun <huangcun@sangfor.com.cn>
->> Reviewed-by: Simon Horman <simon.horman@corigine.com>
->> Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
->> Reviewed-by: Madhu Chittim <madhu.chittim@intel.com>
-> 
-> 
-> 
+During the period, 1 new issues were detected and 0 were fixed.
+In total, 4 issues are still open and 13 have been fixed so far.
 
--- 
-Thanks,
--dinghui
+Some of the still happening issues:
 
+Ref Crashes Repro Title
+<1> 620     No    KCSAN: data-race in wg_packet_send_staged_packets / wg_packet_send_staged_packets (3)
+                  https://syzkaller.appspot.com/bug?extid=6ba34f16b98fe40daef1
+<2> 440     No    KCSAN: data-race in wg_packet_decrypt_worker / wg_packet_rx_poll (2)
+                  https://syzkaller.appspot.com/bug?extid=d1de830e4ecdaac83d89
+<3> 6       No    KASAN: slab-use-after-free Write in enqueue_timer
+                  https://syzkaller.appspot.com/bug?extid=c2775460db0e1c70018e
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
+
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
