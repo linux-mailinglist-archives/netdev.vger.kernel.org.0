@@ -2,160 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 919A76F4953
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 19:49:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD2F6F495C
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 19:58:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233455AbjEBRtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 13:49:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41956 "EHLO
+        id S233823AbjEBR6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 13:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjEBRtj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 13:49:39 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F1C13A;
-        Tue,  2 May 2023 10:49:38 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id 5614622812f47-38dfa504391so2487483b6e.3;
-        Tue, 02 May 2023 10:49:38 -0700 (PDT)
+        with ESMTP id S234369AbjEBR6Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 13:58:24 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841BAAD
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 10:58:23 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-64115eef620so36661151b3a.1
+        for <netdev@vger.kernel.org>; Tue, 02 May 2023 10:58:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683049777; x=1685641777;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AiYQK3LDS9b+aANy8EM0VPV2YGfyW4MmQiZSALWg0Bg=;
-        b=TtmTSphKyWgoi/BppYoDen5j4A3wgW7PHyGJwVi3DUr1YlqdpBkywBSUc5zLCHjeH7
-         qpRiCv9cWgtsvlKVkKGsvsB+W5FUzTuo94GdBS5cv1sdDL18q/BkfKWBWKOGtyipNKrZ
-         3g1FFuZgfAptLhB2IgXJhaAx1aCQ4r2pQcyzqsjFp0cDxFvnldpoXesmqp/DSiZ4XdgJ
-         vZo2DfuGXTFxEJK1Jb+w4/nA+3IS1qXPagTxIaWfBirfVykz7uPvrJx5nXv6Fzx2ctDk
-         j9HwSDVcU1DX5VSgCVaHs0PLe3YhGSnogp9+7+HgLDoxfDcvnR6/C7IZjIOsuozPhMgv
-         z66A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683049777; x=1685641777;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683050303; x=1685642303;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=AiYQK3LDS9b+aANy8EM0VPV2YGfyW4MmQiZSALWg0Bg=;
-        b=Nwu4I1qxqXUs5XhJizKXOlqd4JOmDf9rjPw4SAejXLfkchgpdOl+SgPBUCjm9Se08x
-         AViKDOlD7isGVKblPTfB/z1q9xMGqsnzpDx8cu4Nqm8fpAVgJTvdjQ0Qnm25BYxpk0fk
-         7d3QSS0BfAOgVRHCwcBCn+df487XbII8kcM84nnL0VKqYi8iti/8mUc/tgmBroSbLwGk
-         nDwoyHU3Hr2vSHqwZeDboE9pjR8cwWB0qVICEfGGdPlVIQkOk1tK5sXn4pT2KMpPwvbe
-         EhZM9GwFwYdUjx08pPm25PCaLHY22BPR8l9SCbkr6xS9WIe03uXw7+RzwCn+86cm3V/w
-         Y6lQ==
-X-Gm-Message-State: AC+VfDyF/ZHaNUzhqdyqUGrs5fO5OY/7V4J0VxDPcgUWwZtGJNexmoaH
-        uaFyCIoZoYTqmE24AjSID8I=
-X-Google-Smtp-Source: ACHHUZ4mzV6fTIXz8QuoeH7zEVpDjTfzdGUBpE3pACo9E+FIP6e1ZwPG/VyjBBABwOAcFB8v1IbKOQ==
-X-Received: by 2002:a05:6808:693:b0:38e:b9b:a85c with SMTP id k19-20020a056808069300b0038e0b9ba85cmr8438111oig.53.1683049777498;
-        Tue, 02 May 2023 10:49:37 -0700 (PDT)
-Received: from t14s.localdomain ([177.92.48.92])
-        by smtp.gmail.com with ESMTPSA id n11-20020a0568080a0b00b003923e412668sm1206351oij.50.2023.05.02.10.49.36
+        bh=tiE1DWJVu6SR5fUQri2EkqUC06NuFzPAjn+VDe/bbX0=;
+        b=a0zP5mMWN/KjUOhGaEfPf8s4GKxrE/biIQPS8edlBr0BnWsUKt+pKjQLHRdaP8j5PS
+         VX1XEEGEg+HLO7JfJlt4fgOQ1fJk1MOLyVigx1xJSDwgvaBueNg889SV/9Qzf+8LuJ6q
+         wO/tzIlmWSO/MjB35RBTm8IfWyJsq0GZAg0rpD053LEIVzybo4ES1xvQHznAI+XjtdXY
+         Q7rT5Ovf8xYv5DjefiHXWQPZUjk7T0fMT7VpBU2nGTNTs+Cv1BD45hdyHmmgdd5gVNOM
+         R1cHAMIn5BaDJdkMExyPI14x3Ab8tAjj283Bn3RgtSekq5QD5Bj1bsHgP2vbPxIyC3Pp
+         CnrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683050303; x=1685642303;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=tiE1DWJVu6SR5fUQri2EkqUC06NuFzPAjn+VDe/bbX0=;
+        b=iSZSdvlCs+UxHCy8WepHxrAoNQ9pWlXz3bc2jg1TPk9QTbDqqVCDA1IAXZN8NFsWjC
+         2yay1U48VIKjBNU7FPiPJEHmmemANbxJIcQtXPXi6jrK9Dg6kyUpSs5q8g0DNOL6/jie
+         re4tnuWJkZdhL9fhsowRMpWtv4PV1d6lQrxs/exeOpfIGYrLzkozrf8/0tAgqj7LCuw1
+         +P9EosM69tPadE+JEc1dfMeWnLyM1NNAcBhDUThl3T6HbSBsnIhk/dnLGU4eNePUOgyE
+         z6OjunIBD/JawvOReGa7Fs2U7xyRntKSnR7tPBgBa6xCAVFabtMYJDFu2AOMxyaEqMAJ
+         m3vA==
+X-Gm-Message-State: AC+VfDzLmr0eSKx+o38tKT7kDLXix7T80C9X8tbFdvHPHEWY9+ntTlM3
+        RGIhL8En1VklEtnp4EAekSGIfA==
+X-Google-Smtp-Source: ACHHUZ69sAcGtuvOJ3Hdq1uWU7dgus/z7Ditm8fZh+kuofxEiQ76vpCMTrCfqNdnQubuxw4bWhWcqg==
+X-Received: by 2002:a05:6a20:72a6:b0:f2:817c:2038 with SMTP id o38-20020a056a2072a600b000f2817c2038mr22302768pzk.18.1683050302978;
+        Tue, 02 May 2023 10:58:22 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id n12-20020a056a00212c00b0063f172b1c47sm20469544pfj.35.2023.05.02.10.58.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 10:49:36 -0700 (PDT)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 0AFD359EE1A; Tue,  2 May 2023 14:49:34 -0300 (-03)
-Date:   Tue, 2 May 2023 14:49:34 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     ilia.gavrilov@infotecs.ru, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, lucien.xin@gmail.com,
-        lvc-project@linuxtesting.org, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, pabeni@redhat.com, simon.horman@corigine.com
-Subject: Re: [PATCH net v2] sctp: fix a potential buffer overflow in
- sctp_sched_set_sched()
-Message-ID: <ZFFNLtBYepvBzoPr@t14s.localdomain>
-References: <20230502130316.2680585-1-Ilia.Gavrilov@infotecs.ru>
- <20230502170516.39760-1-kuniyu@amazon.com>
+        Tue, 02 May 2023 10:58:22 -0700 (PDT)
+Date:   Tue, 2 May 2023 10:58:20 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ganesh Babu <ganesh.babu@ekinops.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: mroute6.h: change type of mif6c_pifi to __u32
+Message-ID: <20230502105820.2c27630d@hermes.local>
+In-Reply-To: <20230502085718.0551a86d@kernel.org>
+References: <PAZP264MB4064279CBAB0D7672726F4A1FC889@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
+        <20230328191456.43d2222e@kernel.org>
+        <PAZP264MB406414BA18689729DDE24F3DFC659@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
+        <20230502085718.0551a86d@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230502170516.39760-1-kuniyu@amazon.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 10:05:16AM -0700, Kuniyuki Iwashima wrote:
-> From:   Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
-> Date:   Tue, 2 May 2023 13:03:24 +0000
-> > The 'sched' index value must be checked before accessing an element
-> > of the 'sctp_sched_ops' array. Otherwise, it can lead to buffer overflow.
-> 
-> OOB access ?
+On Tue, 2 May 2023 08:57:18 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-My thought as well.
+> On Tue, 2 May 2023 08:07:10 +0000 Ganesh Babu wrote:
+> > Thank you for your response. Regarding the proposed change to
+> > the mif6ctl structure in mroute6.h, I would like to clarify,
+> > that changing the datatype of mif6c_pifi from __u16 to __u32
+> > will not change the offset of the structure members, which
+> > means that the size of the structure remains the same and
+> > the ABI remains compatible. Furthermore, ifindex is treated
+> > as an integer in all the subsystems of the kernel and not
+> > as a 16-bit value. Therefore, changing the datatype of
+> > mif6c_pifi from __u16 to __u32 is a natural and expected
+> > change that aligns with the existing practice in the kernel.
+> > I understand that the mif6ctl structure is part of the uAPI
+> > and changing its geometry is not allowed. However, in this
+> > case, we are not changing the geometry of the structure,
+> > as the size of the structure remains the same and the offset
+> > of the structure members will not change. Thus, the proposed
+> > change will not affect the ABI or the user API. Instead, it
+> > will allow the kernel to handle 32-bit ifindex values without
+> > any issues, which is essential for the smooth functioning of
+> > the PIM6 protocol. I hope this explanation clarifies any
+> > concerns you may have had. Let me know if you have any further
+> > questions or need any more details.  
+> 
+> Please don't top post on the list.
+> 
+> How does the hole look on big endian? Does it occupy the low or 
+> the high bytes?
+> 
+> There's also the problem of old user space possibly not initializing
+> the hole, and passing in garbage.
 
-> But it's not true because it does not happen in the first place.
-> 
-> > 
-> > Note that it's harmless since the 'sched' parameter is checked before
-> > calling 'sctp_sched_set_sched'.
-> > 
-> > Found by InfoTeCS on behalf of Linux Verification Center
-> > (linuxtesting.org) with SVACE.
-> > 
-> > Fixes: 5bbbbe32a431 ("sctp: introduce stream scheduler foundations")
-> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> > Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
-> > ---
-> > V2:
-> >  - Change the order of local variables 
-> >  - Specify the target tree in the subject
-> >  net/sctp/stream_sched.c | 9 +++++----
-> >  1 file changed, 5 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/net/sctp/stream_sched.c b/net/sctp/stream_sched.c
-> > index 330067002deb..4d076a9b8592 100644
-> > --- a/net/sctp/stream_sched.c
-> > +++ b/net/sctp/stream_sched.c
-> > @@ -146,18 +146,19 @@ static void sctp_sched_free_sched(struct sctp_stream *stream)
-> >  int sctp_sched_set_sched(struct sctp_association *asoc,
-> >  			 enum sctp_sched_type sched)
-> >  {
-> > -	struct sctp_sched_ops *n = sctp_sched_ops[sched];
-> >  	struct sctp_sched_ops *old = asoc->outqueue.sched;
-> >  	struct sctp_datamsg *msg = NULL;
-> > +	struct sctp_sched_ops *n;
-> >  	struct sctp_chunk *ch;
-> >  	int i, ret = 0;
-> >  
-> > -	if (old == n)
-> > -		return ret;
-> > -
-> >  	if (sched > SCTP_SS_MAX)
-> >  		return -EINVAL;
-> 
-> I'd just remove this check instead because the same test is done
-> in the caller side, sctp_setsockopt_scheduler(), and this errno
-> is never returned.
-> 
-> This unnecessary test confuses a reader like sched could be over
-> SCTP_SS_MAX here.
+Looks like multicast routing is one of the last places with no netlink
+API, and only ioctl. There is no API to modify multicast routes in iproute2.
 
-It's actualy better to keep the test here and remove it from the
-callers: they don't need to know the specifics, and further new calls
-will be protected already.
-
-> 
-> Since the OOB access does not happen, I think this patch should
-> go to net-next without the Fixes tag after the merge window.
-
-Yup.
-
-> 
-> Thanks,
-> Kuniyuki
-> 
-> 
-> >  
-> > +	n = sctp_sched_ops[sched];
-> > +	if (old == n)
-> > +		return ret;
-> > +
-> >  	if (old)
-> >  		sctp_sched_free_sched(&asoc->stream);
-> >  
-> > -- 
-> > 2.30.2
