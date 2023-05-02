@@ -2,67 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D6DD6F45A0
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 15:58:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F576F45BC
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 16:04:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbjEBN60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 09:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54712 "EHLO
+        id S234099AbjEBOEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 10:04:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233800AbjEBN6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 09:58:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D721119
-        for <netdev@vger.kernel.org>; Tue,  2 May 2023 06:57:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1683035856;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BFKZppZmpvZn37NH6T+y3WQHfsa5GEZZMAq/yDgIM88=;
-        b=SBQeuithexmoHOGfYqdB3Xg9kiLElAIoKMqwWx/eC/2oz9SJlx4j8O659/dars36YDBLCn
-        WwffOlkt2KjmDQzY5rIO0qg5f40AtQmoKm6R1WKsaFTWaNvxpSTVPB8DAY7Y5EPtNMMwvw
-        bAnUuXmUyiMKRIl+sH/rHtY6DGmUGV4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-175-Uw6HY6dlPUqp-dy9FUTE7w-1; Tue, 02 May 2023 09:57:34 -0400
-X-MC-Unique: Uw6HY6dlPUqp-dy9FUTE7w-1
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-3f1793d6363so11522415e9.1
-        for <netdev@vger.kernel.org>; Tue, 02 May 2023 06:57:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683035854; x=1685627854;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :references:cc:to:content-language:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BFKZppZmpvZn37NH6T+y3WQHfsa5GEZZMAq/yDgIM88=;
-        b=F5HoqJSaKrIrcHCnuvuYWqgpAIO89qWNZMMhHrkTL6V6Z4tiR3PEhgJ/c/WXbtOAaj
-         bCKiyxUfhYC1K5DRfPyWo1r9VNVgqmvbUvlpXMEfe4Y7ZD+gkI/Gt4I6vTvi84+GB0ly
-         gWxuwJvsW1rD1e8KDZ0alqpEreCcu2xmGsp1bGvVeQnt4MUMkXeLIwaclJg52ZM9jipT
-         UDTRkT4wByKEatu6CsaLSOU3FkuwoUUpy8ZWHKpwHa8RcfEgp/WtJTnHCrjrboDT/g39
-         GSWaGlcY+faPk4xeQ2FSSUk81qay2xZ+BIK3FTHdT2p01X01HRgWtxdw1I2D+IfrHwZl
-         DxzA==
-X-Gm-Message-State: AC+VfDwiLq6qkQ8IOWOwrlCFCGkSOh6z7kBC1nEZtyUIlNvTwHvj3UkP
-        R5CyX4DdXkySxNZ+N4wOWAgCjhKHxyLn5ftOPiGbk/gj5v/27gAQNRYsWpEfGNRAXQVvkzS6X2w
-        jx0yh5Miw+/VaqO1G
-X-Received: by 2002:a05:600c:3787:b0:3f1:9540:d5fe with SMTP id o7-20020a05600c378700b003f19540d5femr11730785wmr.21.1683035853687;
-        Tue, 02 May 2023 06:57:33 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4h+z02B2dd70XZKfnqJ5spQ0OHCTBKNIKA8Em6ryzkITiNSlT8DvH2K/BVtegqd1JIECFQbA==
-X-Received: by 2002:a05:600c:3787:b0:3f1:9540:d5fe with SMTP id o7-20020a05600c378700b003f19540d5femr11730752wmr.21.1683035853338;
-        Tue, 02 May 2023 06:57:33 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c700:2400:6b79:2aa:9602:7016? (p200300cbc70024006b7902aa96027016.dip0.t-ipconnect.de. [2003:cb:c700:2400:6b79:2aa:9602:7016])
-        by smtp.gmail.com with ESMTPSA id p8-20020a05600c358800b003f1738d0d13sm51382271wmq.1.2023.05.02.06.57.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 May 2023 06:57:32 -0700 (PDT)
-Message-ID: <1ffbbfb7-6bca-0ab0-1a96-9ca81d5fa373@redhat.com>
-Date:   Tue, 2 May 2023 15:57:30 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
+        with ESMTP id S229586AbjEBOEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 10:04:40 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2044.outbound.protection.outlook.com [40.107.223.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C0318E;
+        Tue,  2 May 2023 07:04:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vf2u+hq69bmLBrr92m0BZG7RQub7yAuKYjDlTvK7xzyf2g0/FWMFjyDM4n+Bj0pBEHMrix+ieA5IecqYfRiXdYTPvDW5gyot9c8W3OAJC/Z7IYzA9Gj3E4bJ3zHUKyEZXV8Dj/mvaaXbdl7JSYkGq98jmSaoRMt0ohTLcuo/mjgF2lxquvNLyCuHuyrkEbxvpSsDG/3vD+DvyqI8M8S8ZtBliChdKQURpRaW0YwGu5REobQdWbNEU1B7P/KDUQH93g+uW1xsum8Z5VG/tuWkTs/qKbEpn0TqyFKC08k8LdfhjVLwD4v1TF8JCcHEwnGLaBbYcun/E0NoGTsb9d+P5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YWyb8CqJytYwagtqVf04XG779EIGuTcRyCVfyx5n65E=;
+ b=ETptffBPU8x1wbxqUm2Y+70XUHUZGzMRNa4yDTAGiUA0mmsuppoKizPD8nk2ZzIjdOlz0CoELRkay9eUdWLGtIUQCMH3nObbKZmUdo9TJjXGFF0b4vb/3lRdaCsgZakNIAZQEuxnXqXU1xYtMPjaXrPyv1m+RCTDHMBbBLrL5Byq8tl+ePgbCMHdXrehkTL0bdDzFC4H2LGytKVrIpmdda0PcT9wxnQttzpdXnQ/C2dwep3PHxaCtPY05NIy1LL5yovm7PfI3cUJ6ehWz/nv40eYNhTc9xST39Of+dfmWiPy0CUpCe/kiyWBFczaNNhckacZOQOkNlPStMGXAQSfrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YWyb8CqJytYwagtqVf04XG779EIGuTcRyCVfyx5n65E=;
+ b=N6YLmN4o43ttBf56/thx73WBBPnbEnXplXUMPy1wduelYenzMlDNqd2PMDR2SkehsBQGp+THabxKb0WyKkFFgxx8bXoofdNZsNEG5dBiUAR0YEA96ahNUitMt+1FiZ9n8OLsVRTBV91TUbr65JI5Xlwpk048DTT/Uvpcyk7b1pQMvMNZ36ezM2dsu30Vo//zVFfXwBexrucZIMMoEybzrOVAWH6WEWgFIFbvI8/dm+nSu6TwZofs85KX4Qucg/deB8azF1fq0RmVjQpb7KotlaxhzPxEHIvhBGOgzzGbHABRwbS48CQnLKc8KERaRhKSXjHrehddr1dK/Dqfp53AUw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by MW3PR12MB4492.namprd12.prod.outlook.com (2603:10b6:303:57::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31; Tue, 2 May
+ 2023 14:04:36 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6340.030; Tue, 2 May 2023
+ 14:04:36 +0000
+Date:   Tue, 2 May 2023 11:04:30 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     David Hildenbrand <david@redhat.com>
 Cc:     Matthew Rosato <mjrosato@linux.ibm.com>,
         Christian Borntraeger <borntraeger@linux.ibm.com>,
         Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
@@ -107,9 +87,10 @@ Cc:     Matthew Rosato <mjrosato@linux.ibm.com>,
         Mika Penttila <mpenttil@redhat.com>,
         Dave Chinner <david@fromorbit.com>,
         Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>
-References: <dee4f4ad6532b0f94d073da263526de334d5d7e0.1682981880.git.lstoakes@gmail.com>
- <fbad9e18-f727-9703-33cf-545a2d33af76@linux.ibm.com>
- <7d56b424-ba79-4b21-b02c-c89705533852@lucifer.local>
+Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
+ to file-backed mappings
+Message-ID: <ZFEYblElll3pWtn5@nvidia.com>
+References: <7d56b424-ba79-4b21-b02c-c89705533852@lucifer.local>
  <a6bb0334-9aba-9fd8-6a9a-9d4a931b6da2@linux.ibm.com>
  <ZFEL20GQdomXGxko@nvidia.com>
  <c4f790fb-b18a-341a-6965-455163ec06d1@redhat.com>
@@ -118,50 +99,103 @@ References: <dee4f4ad6532b0f94d073da263526de334d5d7e0.1682981880.git.lstoakes@gm
  <ff99f2d8-804d-924f-3c60-b342ffc2173c@linux.ibm.com>
  <ad60d5d2-cfdf-df9f-aef1-7a0d3facbece@redhat.com>
  <ZFEVQmFGL3GxZMaf@nvidia.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to
- file-backed mappings
-In-Reply-To: <ZFEVQmFGL3GxZMaf@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+ <1ffbbfb7-6bca-0ab0-1a96-9ca81d5fa373@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1ffbbfb7-6bca-0ab0-1a96-9ca81d5fa373@redhat.com>
+X-ClientProxiedBy: BL1PR13CA0336.namprd13.prod.outlook.com
+ (2603:10b6:208:2c6::11) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW3PR12MB4492:EE_
+X-MS-Office365-Filtering-Correlation-Id: c546156f-6cde-46b3-b97b-08db4b162935
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: U1GA36bOEYwtOLRpwp2p4RCTcX+SPRA/9BZZXTSrjk4MQoFiv2jMDxPDeud0tVlFB+uwbjdSkp3agIBZJD+VweeCg0/lqp4WGA7bubZa5FlMg+riNC2rYxpvelfwGqmUmCSVTg2uf5fCsQLELtKEw+G1CEO/7sDxlQ2apBDaj1rkOlk5/M0s0ahe7Z0k/awqa2uY2jme4zlR50y3LNeo1qigvgDETXs62z7WIBRW1gSrLFWt1FNebtGzpfgbjhy5rJxCgw9rbiGLglv5cFyxjsRCyfGtUnxQb9AjP+tPhzJm+fTi5SUx1OVppB0UGcjhUCdWT2GKBLHbYkv8SXjI8pS54f4ifMDcDl0fwYMItyCPk128K3pG2UQzCy43yqspFuTzY0txUECwflefYDCyElJffJEeHVb2EzUxVbwMOihVldIb1rnLgtuxfw/qL0yNQgwrYqgCbSInhbyXqeX4KPO+HS1jROBy7+0h61lAXmDaw3zXDzX72z2SESFuumrPnBukZEkXkM+WL+Y6+JTacwYvc57c6R9K3EYYpH8uLXyQOP7pAcwUzyXE5meX8qQW
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(39860400002)(346002)(136003)(366004)(451199021)(6486002)(6666004)(83380400001)(36756003)(2616005)(186003)(38100700002)(86362001)(26005)(53546011)(6512007)(6506007)(2906002)(316002)(66946007)(6916009)(66556008)(66476007)(4326008)(478600001)(5660300002)(8676002)(8936002)(41300700001)(7416002)(7406005)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gdkk57Lig6+JmaV9iszwCGK+OpaREgDrZRreyK30Sk0FWLAS63KJpy1oaJgZ?=
+ =?us-ascii?Q?+IbYUnwxLnRY/mPF/15UvthVrsCQCUdQy8VHZSMNuBaRwixwiWsjUbMLogHJ?=
+ =?us-ascii?Q?2+qqw5q/OHvTy3ZEejogJHKEFvw/jrH7Oq4DijEeWXBi73Cge5fRU0lD2/CU?=
+ =?us-ascii?Q?fklf4FaKZH4Ibl38h/SStxTDjiHGP0ISMqhYPJO0DET7pLLyoxuFH8OWRjx9?=
+ =?us-ascii?Q?Qjf31NckdAYBR/oDcFjNxAT/wUD16SJMx8qtUQYJf/bJBXxGz/AVZJW1uRSu?=
+ =?us-ascii?Q?2IwvisyPRwU9vBrfO0NI1TmMHdbFQMhbgdy8HmnMNWXELuwO+XE63XIdmTuw?=
+ =?us-ascii?Q?d4WH/IAgnmdIaJb3ythCuEiwQysbw2CFx/xd6o7KzLeHP6yhPzaTl/ZaO+h5?=
+ =?us-ascii?Q?QYLBZSA2MPlucT4DnThRbpCYkS3nzT2Z/HzV1eZKMq4Qb5oQfhDyT0JxAe6a?=
+ =?us-ascii?Q?IEkhWm+jHW/od7hhqmJ82YY0W73Ym7WZs8PGbJdKKzEhAqkTFt2v5mSlmQ5Q?=
+ =?us-ascii?Q?q/Y4fAASl9475PfWBlRkqdoy66neCt/SpO+cCNkU6BhChZJSuMQUKG7WYWxr?=
+ =?us-ascii?Q?DzOFQ4erFBX9fICPW+AGg927n0oQrFFvtoWEf6bd7xxHY7ITVtD6zSkHHRHd?=
+ =?us-ascii?Q?4/jhfJrx9ruawIaIHsDXCgTa7p8EJ7nWS8FPbLc4bjHtX+ffylHmhQKFvu4l?=
+ =?us-ascii?Q?wxJNMt5COwwcdNTPW5PR/gmmKT2Ez2jWRB2gO+mnnvHPkr50PcsFirCKAtJ2?=
+ =?us-ascii?Q?1kBjrZZdPLCQWocruZ7VhX3pZKdw4C90vcuks9SiWiCcBhRqlynqvfdEsH1+?=
+ =?us-ascii?Q?AQtfyUNJqwcal93NrWdlbBaPA0/oz14QMCAoYoZcxtVfOG0SWddAW/9ob+gn?=
+ =?us-ascii?Q?NH7zD3E/QFYcfQ2SrKg1RJLWztzKQagjPgMacS53djQBP2VizE+R19zT4qlD?=
+ =?us-ascii?Q?5IDDXPTwoQwO/4dwS52hZtWQo/BV29cOXdPvjdsaMFHffHRS6DnPBk4O2FcW?=
+ =?us-ascii?Q?4W32P/4I7Sn/8cwmlaHuFHzOaxG6y6GGFQXxvVmiEudx942F8DgSgC4tgiCn?=
+ =?us-ascii?Q?yarVK5cT/MgbJe0snkSArWsNrTWtR8aksnB9dv0tfT1ejWy23l3rJOLv+ynM?=
+ =?us-ascii?Q?rSfW0PbSLtKDIMVBZm7fSDnlfbLjKzpoiMlHRsFbfQns7b7F9LX5nYh/usFR?=
+ =?us-ascii?Q?aR7sQhFnR7qpVB9c6URN3hym1GUJzAqG8kBYMpgZVhCjGV5ZdmYpymwLOAk8?=
+ =?us-ascii?Q?B07Y6Psri4D07etK1PZco/fiqucK3rohZArXp0jkP0Oi8v0nkn/r6cF/gleJ?=
+ =?us-ascii?Q?P+afQ1XGDGzPLYP0YdyhRwWVXpxka6cxXdpCHq/dHQvCAzBuRaqWuGI+ku0G?=
+ =?us-ascii?Q?y/gFI0HjhB+BFprJsy0cJGiJJcR4/y327HY6VDhaZjsP9DmHTwjUdcV9rlPk?=
+ =?us-ascii?Q?M1jma0utuYIavhSQd6gbG5pjkTaZOpy0PT3CzS1JD21tBFU6/7dhIpUVBGjR?=
+ =?us-ascii?Q?P9ReUXfx7ttImwz1LgA4dPNxbyu5ZgRaEOeHvQKmeQb3Z4aCNlZ5vARL/jaB?=
+ =?us-ascii?Q?kGQJyFxfci5eujstGCXumBz8Jwp/DoUaz8mboxIT?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c546156f-6cde-46b3-b97b-08db4b162935
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 14:04:35.8464
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: s6cxgGEN17ViNVOfhHSbG9ogqt3N1ETAkLIrQF8/R2oNl0zKF1hQcp8YqLDksRNk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4492
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02.05.23 15:50, Jason Gunthorpe wrote:
-> On Tue, May 02, 2023 at 03:47:43PM +0200, David Hildenbrand wrote:
->>> Eventually we want to implement a mechanism where we can dynamically pin in response to RPCIT.
->>
->> Okay, so IIRC we'll fail starting the domain early, that's good. And if we
->> pin all guest memory (instead of small pieces dynamically), there is little
->> existing use for file-backed RAM in such zPCI configurations (because memory
->> cannot be reclaimed either way if it's all pinned), so likely there are no
->> real existing users.
+On Tue, May 02, 2023 at 03:57:30PM +0200, David Hildenbrand wrote:
+> On 02.05.23 15:50, Jason Gunthorpe wrote:
+> > On Tue, May 02, 2023 at 03:47:43PM +0200, David Hildenbrand wrote:
+> > > > Eventually we want to implement a mechanism where we can dynamically pin in response to RPCIT.
+> > > 
+> > > Okay, so IIRC we'll fail starting the domain early, that's good. And if we
+> > > pin all guest memory (instead of small pieces dynamically), there is little
+> > > existing use for file-backed RAM in such zPCI configurations (because memory
+> > > cannot be reclaimed either way if it's all pinned), so likely there are no
+> > > real existing users.
+> > 
+> > Right, this is VFIO, the physical HW can't tolerate not having pinned
+> > memory, so something somewhere is always pinning it.
+> > 
+> > Which, again, makes it weird/wrong that this KVM code is pinning it
+> > again :\
 > 
-> Right, this is VFIO, the physical HW can't tolerate not having pinned
-> memory, so something somewhere is always pinning it.
+> IIUC, that pinning is not for ordinary IOMMU / KVM memory access. It's for
+> passthrough of (adapter) interrupts.
 > 
-> Which, again, makes it weird/wrong that this KVM code is pinning it
-> again :\
+> I have to speculate, but I guess for hardware to forward interrupts to the
+> VM, it has to pin the special guest memory page that will receive the
+> indications, to then configure (interrupt) hardware to target the interrupt
+> indications to that special guest page (using a host physical address).
 
-IIUC, that pinning is not for ordinary IOMMU / KVM memory access. It's 
-for passthrough of (adapter) interrupts.
+Either the emulated access is "CPU" based happening through the KVM
+page table so it should use mmu_notifier locking.
 
-I have to speculate, but I guess for hardware to forward interrupts to 
-the VM, it has to pin the special guest memory page that will receive 
-the indications, to then configure (interrupt) hardware to target the 
-interrupt indications to that special guest page (using a host physical 
-address).
+Or it is "DMA" and should go through an IOVA through iommufd pinning
+and locking.
 
--- 
-Thanks,
+There is no other ground, nothing in KVM should be inventing its own
+access methodology.
 
-David / dhildenb
-
+Jason
