@@ -2,68 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E0A76F3FC1
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 11:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B776F3FCE
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 11:06:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233665AbjEBJDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 05:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
+        id S233546AbjEBJGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 05:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233151AbjEBJDn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 05:03:43 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA6E30C6
-        for <netdev@vger.kernel.org>; Tue,  2 May 2023 02:03:41 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id e9e14a558f8ab-32f4e0f42a7so53095ab.1
-        for <netdev@vger.kernel.org>; Tue, 02 May 2023 02:03:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683018221; x=1685610221;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NKVfIlBvsYHMWDxi0uBcvmDgbiWUYMz6a+J28iJYmJA=;
-        b=2ad2cOPQIGv+I5wDpt6S7LzAQBXSlVZJ+z6YhICzmFlUutg4zMkL7TI279sxH540G8
-         H+P7CZUZpNY1va1AxKMtQw6bX607072FfV/9Tx0qXqIiZKWOvuYFAgV53OPKsvvNOjSw
-         sjB4CPq+byYze/jaktc2S/yGEZprfGz0ENy9in4n5OXSwYe01FnroZwhSHXilCTjBBZT
-         nnCyYjkvLmrJfvnxmxtlDZmJAvXWoxrwT5vzAoqf5b6Rc1DkLGFMeMrmeO1I8cl9xlyH
-         +zahBxiZp7+eCu1P3hgE4IO2jKqatDPLmAIL1S05RXMfmQ23FFFC/0stZWr4f+gdGk0l
-         EXAQ==
+        with ESMTP id S229495AbjEBJGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 05:06:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76DC2D4A
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 02:05:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1683018345;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=f0C+/AMlCSZv9AQrfgdKXuPAa+4+MUJG4w0wWq0+U44=;
+        b=dy0bA6eo4E0nVMV00xZe4khym/sYuLG0jws2As7DI/e6pbXCwEnkSyYEwZdeHmcI3DA5yv
+        nEtolJELA6VWubZK+sEVhO5WqvGlz5Z62ZyviEhYNOt1syJQWP26AZAsCF0jBmsnJQDTZi
+        kn1O1PWp8YFI9JIKtuR96boKSfWyg04=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-480-P8XBzDBHP6Cg8_Zka9tkUw-1; Tue, 02 May 2023 05:05:44 -0400
+X-MC-Unique: P8XBzDBHP6Cg8_Zka9tkUw-1
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f08900caadso1710825e9.0
+        for <netdev@vger.kernel.org>; Tue, 02 May 2023 02:05:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683018221; x=1685610221;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NKVfIlBvsYHMWDxi0uBcvmDgbiWUYMz6a+J28iJYmJA=;
-        b=QHJiiH3ULWzscNeTF6iD7Tpz+feUhRJC+YGBsEUmxcVOmKS6UcXCPDXX19x/Lg18gm
-         jxoaCl408vqXlWqune7MK8Vd0jMIPO8I78bICNnWMdEPYGBLK+NPqCBMnX2an1tlK7p3
-         hxEt/furVVbS+0YrZo8SmAH+3bVNtH4lmUJNjoPghGIFtOpMiyc4Bv4dYZFzO6XIWKMf
-         FV/3MbDD638Lo7rlci/Ii6BwWKT+4DWGbjf27N2wZ6dXCQJEd6m4/7J2+eMou9qMSyQ4
-         La0emOJwFKSWS6FNYntwZ+Tsxv+yIznpGkC7EIJo3iPNA21d+Y+hGiUSAZEqGGfQ0Gof
-         lp5g==
-X-Gm-Message-State: AC+VfDwbMkndjAtH8KpFzy/vw+12JXAp+xQBMNjXVcuaAED1WZxM7p49
-        Vnoy5wihM/Yrvu76iRZOBOpnAHa6xdDRQ7C81L8jmQ==
-X-Google-Smtp-Source: ACHHUZ747jLD/GDpZ0wLuJpv/ONcTgaCC5dR/I/K0IsHqe5jU64l+X+v7KsS7HlXQ828WToieUmI/aWMNaqocZ39qVc=
-X-Received: by 2002:a05:6e02:1e06:b0:32b:7232:dac6 with SMTP id
- g6-20020a056e021e0600b0032b7232dac6mr231658ila.18.1683018220705; Tue, 02 May
- 2023 02:03:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <0000000000002e8a7c05fa9e1a7a@google.com> <bdb29f17-dac3-20a3-c726-963259b95208@gmail.com>
-In-Reply-To: <bdb29f17-dac3-20a3-c726-963259b95208@gmail.com>
-From:   Aleksandr Nogikh <nogikh@google.com>
-Date:   Tue, 2 May 2023 11:03:29 +0200
-Message-ID: <CANp29Y6UGNweLS7kDx+nji9z2hUi8wXVfioKwpYftQmE4ueJZQ@mail.gmail.com>
-Subject: Re: [syzbot] Monthly wireguard report (Apr 2023)
-To:     "J.F. Samuels - K2CIB" <radiowhiz@gmail.com>
-Cc:     syzbot <syzbot+listded2f47f5f1d416c4059@syzkaller.appspotmail.com>,
-        Jason@zx2c4.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        wireguard@lists.zx2c4.com
+        d=1e100.net; s=20221208; t=1683018343; x=1685610343;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=f0C+/AMlCSZv9AQrfgdKXuPAa+4+MUJG4w0wWq0+U44=;
+        b=Mh3EOYxlyNxyev1iJ5ayYxDDL/g9CuT4vC54pa8TuMu+tIR+sBY3XeIf3vMORD677V
+         vvCbolR0ZMe5b2g0j8ZwIrni4/goyclnd9uQrVE6b7skc3Zfs+gIL4QfzWoCVYxti8IX
+         w6xV+YL9YLFiM7eXuyCyryCIjZhB8y9RCw+w7ItbslIN4gW+gd6DDIQC79H/MRf+HgVK
+         euystNJK2tNtZGZfahOijN4ungAwJ5vGRipr7cRgfXu4JboQhyO8DxntUg9QifDBw+4d
+         ldkhPiUsdLq6/Z128eb6euoBnCMIsoIzH83talSQLdycZ8jRyEvIvU1Un9mNeKkV067G
+         1MUw==
+X-Gm-Message-State: AC+VfDzPyjFiNfxPbJ+zPvMwmvuhyXuVo8O2wq4Or3xcR0tf5GyJAUl5
+        K7/hQ1XKRrtSwY1IhCldWhESaY6e+5UTpGkO+il8ukmG8+v+0QXIvIjVS7BEjICD+CiMJ7Uksjl
+        A/5ZYPUQ2DscCPftI
+X-Received: by 2002:adf:fccd:0:b0:2e4:c9ac:c492 with SMTP id f13-20020adffccd000000b002e4c9acc492mr1293377wrs.1.1683018342788;
+        Tue, 02 May 2023 02:05:42 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4rjtYdoyKyhcXOhmiGl12IvQfl4xRWKrtn/zid6aStQkUznSnb92UaWiUzP5pZgPUG9N/gkA==
+X-Received: by 2002:adf:fccd:0:b0:2e4:c9ac:c492 with SMTP id f13-20020adffccd000000b002e4c9acc492mr1293354wrs.1.1683018342311;
+        Tue, 02 May 2023 02:05:42 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-253-104.dyn.eolo.it. [146.241.253.104])
+        by smtp.gmail.com with ESMTPSA id bl13-20020adfe24d000000b003062d3daf79sm4895245wrb.107.2023.05.02.02.05.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 May 2023 02:05:41 -0700 (PDT)
+Message-ID: <d05564fd4fc47ed212be2c02be4d7c05167fa2b3.camel@redhat.com>
+Subject: Re: [PATCH v3] virtio_net: suppress cpu stall when free_unused_bufs
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Wenliang Wang <wangwenliang.1995@bytedance.com>, mst@redhat.com,
+        jasowang@redhat.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, zhengqi.arch@bytedance.com,
+        willemdebruijn.kernel@gmail.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 02 May 2023 11:05:40 +0200
+In-Reply-To: <1682783278-12819-1-git-send-email-wangwenliang.1995@bytedance.com>
+References: <1682783278-12819-1-git-send-email-wangwenliang.1995@bytedance.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,82 +81,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello John,
+On Sat, 2023-04-29 at 23:47 +0800, Wenliang Wang wrote:
+> For multi-queue and large ring-size use case, the following error
+> occurred when free_unused_bufs:
+> rcu: INFO: rcu_sched self-detected stall on CPU.
+>=20
+> Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
 
-Do you mean only these monthly reports or all messages from the mailing lis=
-ts?
+Net next is currently closed, but this patch could arguably land on the
+net tree - assuming Micheal agrees.
 
-You received this specific email because you're subscribed to one of
-the following lists:
+In that case you should include a suitable Fixes tag - reposting a new
+version.
 
-linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-wireguard@lists.zx2c4.com (the email was also sent to
-syzkaller-bugs@googlegroups.com, but you're not a member of it -- I've
-just checked).
-
-You could determine the exact one by looking at the "Mailing-list"
-header in the raw message.
-
---
-Aleksandr
-
-On Mon, May 1, 2023 at 5:56=E2=80=AFPM J.F. Samuels - K2CIB <radiowhiz@gmai=
-l.com> wrote:
->
-> I don't know how I subscribed to this - wish I knew enough to be of help!
->
-> Please unsubscribe me from all related lists.
->
-> Thanks,
->
-> John
->
->
->
-> On 5/1/2023 5:03 AM, syzbot wrote:
->
-> Hello wireguard maintainers/developers,
->
-> This is a 31-day syzbot report for the wireguard subsystem.
-> All related reports/information can be found at:
-> https://syzkaller.appspot.com/upstream/s/wireguard
->
-> During the period, 1 new issues were detected and 0 were fixed.
-> In total, 4 issues are still open and 13 have been fixed so far.
->
-> Some of the still happening issues:
->
-> Ref Crashes Repro Title
-> <1> 620     No    KCSAN: data-race in wg_packet_send_staged_packets / wg_=
-packet_send_staged_packets (3)
->                   https://syzkaller.appspot.com/bug?extid=3D6ba34f16b98fe=
-40daef1
-> <2> 440     No    KCSAN: data-race in wg_packet_decrypt_worker / wg_packe=
-t_rx_poll (2)
->                   https://syzkaller.appspot.com/bug?extid=3Dd1de830e4ecda=
-ac83d89
-> <3> 6       No    KASAN: slab-use-after-free Write in enqueue_timer
->                   https://syzkaller.appspot.com/bug?extid=3Dc2775460db0e1=
-c70018e
->
 > ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> To disable reminders for individual bugs, reply with the following comman=
-d:
-> #syz set <Ref> no-reminders
->
-> To change bug's subsystems, reply with:
-> #syz set <Ref> subsystems: new-subsystem
->
-> You may send multiple commands in a single email message.
->
-> --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgi=
-d/syzkaller-bugs/bdb29f17-dac3-20a3-c726-963259b95208%40gmail.com.
+> v2:
+> -add need_resched check.
+> -apply same logic to sq.
+> v3:
+> -use cond_resched instead.
+> ---
+>  drivers/net/virtio_net.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>=20
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index ea1bd4bb326d..744bdc8a1abd 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3559,12 +3559,14 @@ static void free_unused_bufs(struct virtnet_info =
+*vi)
+>  		struct virtqueue *vq =3D vi->sq[i].vq;
+>  		while ((buf =3D virtqueue_detach_unused_buf(vq)) !=3D NULL)
+>  			virtnet_sq_free_unused_buf(vq, buf);
+> +		cond_resched();
+
+Note that on v1 Xuan Zhuo suggested to do the above check only every a
+low fixed number of buffer. I think the current code is a better
+option, as the need_resched() check is very cheap and the overall code
+simpler.
+
+In any case, when submitting a new revision, please explicitly CC
+whoever gave feedback on previous ones.
+
+Thanks,
+
+Paolo
+
