@@ -1,157 +1,90 @@
-Return-Path: <netdev+bounces-40-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-41-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 170106F4DAF
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 01:38:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A094A6F4DCD
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 01:43:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 574EC1C209C8
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 23:38:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7223B1C209D4
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 23:43:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 954E0BA2D;
-	Tue,  2 May 2023 23:38:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBE82BA2F;
+	Tue,  2 May 2023 23:43:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88E69947F
-	for <netdev@vger.kernel.org>; Tue,  2 May 2023 23:38:08 +0000 (UTC)
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C4F3591;
-	Tue,  2 May 2023 16:38:06 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id 2adb3069b0e04-4f00d41df22so722671e87.1;
-        Tue, 02 May 2023 16:38:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683070685; x=1685662685;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6OQxInFdspH8goMZiAQFIMKvayrdCwcSWW5RpkKMAVs=;
-        b=rxwYpimfPHfiaLUYvMZSGzeu4lLfKnxa5lLprs1ayA/SCOBpxHk76Z9C11I8IEn3dk
-         bvKtFzBQjuaO7sSg7VoB/a66Yx4qUm7oNzsQZg+NYWiHvaWHJzELhwr8BjrxRDuQYS5s
-         3vyaGyN4Cs+yK1CHUTrjIbxgiQKJuWLU9SLTAcYz7AESzItR112/2AAGDOxZkjLt+O1p
-         QYs0Y+oemevj0PRP29NY3VH7oUI25qZHohWrIHDxASGXkng+oLUCTGSksk6HINPZFBg8
-         PdWRd9bakYmdTgmieZUgVFLievAojX48jBlp21kqCQ6tAFERmuvgNGt/+57haHzg9mJ0
-         J+dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683070685; x=1685662685;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6OQxInFdspH8goMZiAQFIMKvayrdCwcSWW5RpkKMAVs=;
-        b=S9knXRWL64xvtEmtjf12waDRPwOCTmfoiFZkJwmurL6pdr1SM2Xsm+lsx1/eu1veIl
-         liWa2ieaCUJUosXPsgDmWydWCJHcpTcqAczyjk38M7nSfddWymLrc0onF+oPwTG1k5sH
-         Wv1kA8G5IE/BpCKti2g3hQRewtwKkHcuxz8G4/x707/kwoJrHk0/gIGuLigx2IQX1Wda
-         PTkNplfkUd1S28qyLztEe1pZLiJId3vny3+xMkUjxjz2CdtQ11DUk8QhFys1HF1zai5H
-         m/ntE/OOEMJm/HuaOb5c1RApeTzM4w2qMXJCcLdv6t92YZOs92jrmdpc+Wacm0grFWe6
-         OpFg==
-X-Gm-Message-State: AC+VfDx/PQPZrQdK/L6JbzcKq1sbABQsfVMpyhI5hB9laajdaPjZm/6O
-	dodklSFPRKYheJ2yiAaQQryCluRfLGi6bcPCs/Q=
-X-Google-Smtp-Source: ACHHUZ4Su0H7dh/63X/8lI+nOZziTVVMVxrq4qKi72IDv95LwiyE0a3aXRPOPr3H8pU/DCEKRH1kU/UtdNkbvhmMJNw=
-X-Received: by 2002:a05:6512:3f1c:b0:4ec:9d13:9d09 with SMTP id
- y28-20020a0565123f1c00b004ec9d139d09mr51247lfa.34.1683070684774; Tue, 02 May
- 2023 16:38:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46A329456
+	for <netdev@vger.kernel.org>; Tue,  2 May 2023 23:43:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABB43C433D2;
+	Tue,  2 May 2023 23:43:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683071017;
+	bh=c1Heg2nL6qir+Xqli9M7po1p59+s4gtSZRo6ATkH01Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=fnb53USrqfLn9RG1tGzSllVvXYIWTkb1f1N8b0vEZ3sugQna8xdYMH16caSRvFoES
+	 V9oJT2JB5t5QwtG0HWVeErxb4hr9QgKg65xAUFRrZ4luSpY0q6isev8joDidge2i1b
+	 vlUE40oNbTkVt/v6WgWxtiIe1jCNdFAwsgdKr5M80vAeLzklfBbxA5gK47YF1I5U1m
+	 /2zrOMyK7/LjFbRr3HZSvw6Y0NJ7PFOOOVWVy9a3tQLke3hgWzsVNi9TbqCcBpHZJh
+	 mvq87xVh9fQihZ4Mo8MXOhEI89AU49xUiQwsZtMQOkSVEzASK3zdAg07BVpawsm0Q5
+	 VUzUd3X1Si6lw==
+Date: Tue, 2 May 2023 16:43:36 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Shannon Nelson <shannon.nelson@amd.com>
+Cc: <brett.creeley@amd.com>, <netdev@vger.kernel.org>, <drivers@pensando.io>
+Subject: Re: [PATCH RFC net-next 0/2] pds_core: add switchdev and tc for
+ vlan offload
+Message-ID: <20230502164336.1e8974af@kernel.org>
+In-Reply-To: <20230427164546.31296-1-shannon.nelson@amd.com>
+References: <20230427164546.31296-1-shannon.nelson@amd.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230424124852.12625-1-johan+linaro@kernel.org> <20230424124852.12625-2-johan+linaro@kernel.org>
-In-Reply-To: <20230424124852.12625-2-johan+linaro@kernel.org>
-From: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date: Tue, 2 May 2023 16:37:51 -0700
-Message-ID: <CABBYNZLBQjWVb=z8mffi4RmeKS-+RDLV+XF8bR2MiJ-ZOaFVHA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] Bluetooth: fix debugfs registration
-To: Johan Hovold <johan+linaro@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, linux-bluetooth@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Johan,
+On Thu, 27 Apr 2023 09:45:44 -0700 Shannon Nelson wrote:
+> This is an RFC for adding to the pds_core driver some very simple support
+> for VF representors and a tc command for offloading VF port vlans.
+> 
+> The problem to solve is how to request that a NIC do the push/pop of port
+> vlans on a VF.  The initial pds_core patchset[0] included this support
+> through the legacy ip-link methods with a PF netdev that had no datapath,
+> simply existing to enable commands such as
+>     ip link set <pf> vf <vfid> vlan <vid>
+> This was soundly squashed with a request to create proper VF representors.
+> The pds_core driver has since been reworked and merged without this feature.
 
-On Mon, Apr 24, 2023 at 5:50=E2=80=AFAM Johan Hovold <johan+linaro@kernel.o=
-rg> wrote:
->
-> Since commit ec6cef9cd98d ("Bluetooth: Fix SMP channel registration for
-> unconfigured controllers") the debugfs interface for unconfigured
-> controllers will be created when the controller is configured.
->
-> There is however currently nothing preventing a controller from being
-> configured multiple time (e.g. setting the device address using btmgmt)
-> which results in failed attempts to register the already registered
-> debugfs entries:
->
->         debugfs: File 'features' in directory 'hci0' already present!
->         debugfs: File 'manufacturer' in directory 'hci0' already present!
->         debugfs: File 'hci_version' in directory 'hci0' already present!
->         ...
->         debugfs: File 'quirk_simultaneous_discovery' in directory 'hci0' =
-already present!
->
-> Add a controller flag to avoid trying to register the debugfs interface
-> more than once.
->
-> Fixes: ec6cef9cd98d ("Bluetooth: Fix SMP channel registration for unconfi=
-gured controllers")
-> Cc: stable@vger.kernel.org      # 4.0
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> ---
->  include/net/bluetooth/hci.h | 1 +
->  net/bluetooth/hci_sync.c    | 3 +++
->  2 files changed, 4 insertions(+)
->
-> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-> index 400f8a7d0c3f..b8bca65bcd79 100644
-> --- a/include/net/bluetooth/hci.h
-> +++ b/include/net/bluetooth/hci.h
-> @@ -335,6 +335,7 @@ enum {
->  enum {
->         HCI_SETUP,
->         HCI_CONFIG,
-> +       HCI_DEBUGFS_CREATED,
->         HCI_AUTO_OFF,
->         HCI_RFKILLED,
->         HCI_MGMT,
-> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> index 632be1267288..a8785126df75 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -4501,6 +4501,9 @@ static int hci_init_sync(struct hci_dev *hdev)
->             !hci_dev_test_flag(hdev, HCI_CONFIG))
->                 return 0;
->
-> +       if (hci_dev_test_and_set_flag(hdev, HCI_DEBUGFS_CREATED))
-> +               return 0;
+Have you read the representors documentation? Passing traffic is
+crucial.
 
-Can't we just use HCI_SETUP like we do with in create_basic:
+> This pair of patches is a first attempt at adding support for a simple
+> VF representor and tc offload which I've been tinkering with off and
+> on over the last few weeks.  I will acknowledge that we have no proper
+> filtering offload language in our firmware's adminq interface yet.
+> This has been mentioned internally and is a "future project" with no
+> actual schedule yet.  Given that, I have worked here with what I have,
+> using the existing vf_setattr function.
+> 
+> An alternative that later occured to me is to make this a "devlink port
+> function" thing, similar to the existing port mac.  This would have the
+> benefit of using a familiar concept from and similar single command as
+> the legacy method, would allow early port setup as with setting the mac
+> and other port features, and would not need to create a lot of mostly
+> empty netdevs for the VF representors.  I don't know if this would then
+> lead to adding "trust" and "spoofcheck" as well, but I'm not aware of any
+> other solutions for them, either.  This also might make more sense for
+> devices that don't end up as user network interfaces, such as a virtio
+> block device that runs over ethernet on the back end.  I don't have RFC
+> code for this idea, but thought I would toss it out for discussion -
+> I didn't see any previous related discussion in a (rather quick) search.
 
-    if (hci_dev_test_flag(hdev, HCI_SETUP))
-        hci_debugfs_create_basic(hdev);
-
-Actually we might as well move these checks directly inside the
-hci_debugfs function to make sure these only take effect during the
-setup/first init.
-
->         hci_debugfs_create_common(hdev);
->
->         if (lmp_bredr_capable(hdev))
-> --
-> 2.39.2
->
-
-
---=20
-Luiz Augusto von Dentz
+No, no -- the problem is not rtnetlink vs devlink but the fact 
+that the old API was inventing its own parallel way of configuring
+forwarding outside of normal/SW netdev concepts.
 
