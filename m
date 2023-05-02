@@ -2,118 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C4966F3EB1
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 10:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6FB46F3EB4
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 10:01:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233718AbjEBIAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 04:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52284 "EHLO
+        id S233714AbjEBIB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 04:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbjEBIAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 04:00:20 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E5AE5D;
-        Tue,  2 May 2023 01:00:19 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 9E54422316;
-        Tue,  2 May 2023 08:00:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1683014417; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NP9x04IpamZ+4J4+YQ6L241Lqle1HdNEDLK94FhKL1s=;
-        b=i0Ht6owzagxVsusrh+k5TXS/6F2cGI8FuxyGJtxaFJRM4m4Tbvw8zxYpoPAbak19HBxF5W
-        cxJXamUCHUZLnK6iJcMa2ugn7dBT0o4+Usv0KcVpqAJ9chkraDeslIW2T4hEJ5YlEX4YME
-        8K8Dtc7Sx2s/ac0VicMWDMCjyyb5saQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1683014417;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NP9x04IpamZ+4J4+YQ6L241Lqle1HdNEDLK94FhKL1s=;
-        b=F85KhN7n9ZQMG5OTs4r7YsDZdS0LgI/nHqlYSWjEfVtH7P6F5XG6gXBa2RHb8jxNFawQrD
-        W5FFX4gWEOqqNXDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6DE96134FB;
-        Tue,  2 May 2023 08:00:17 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id HTxOGxHDUGTwIwAAMHmgww
-        (envelope-from <jack@suse.cz>); Tue, 02 May 2023 08:00:17 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id A2D8AA0735; Tue,  2 May 2023 10:00:16 +0200 (CEST)
-Date:   Tue, 2 May 2023 10:00:16 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     "Kirill A . Shutemov" <kirill@shutemov.name>
-Cc:     David Hildenbrand <david@redhat.com>, Peter Xu <peterx@redhat.com>,
-        Lorenzo Stoakes <lstoakes@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        David Howells <dhowells@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
- by default
-Message-ID: <20230502080016.4tgmqb4sy2ztfgrd@quack3>
-References: <62ec50da-5f73-559c-c4b3-bde4eb215e08@redhat.com>
- <6ddc7ac4-4091-632a-7b2c-df2005438ec4@redhat.com>
- <20230428160925.5medjfxkyvmzfyhq@box.shutemov.name>
- <39cc0f26-8fc2-79dd-2e84-62238d27fd98@redhat.com>
- <20230428162207.o3ejmcz7rzezpt6n@box.shutemov.name>
- <ZEv2196tk5yWvgW5@x1n>
- <173337c0-14f4-3246-15ff-7fbf03861c94@redhat.com>
- <20230428165623.pqchgi5gtfhxd5b5@box.shutemov.name>
- <1039c830-acec-d99b-b315-c2a6e26c34ca@redhat.com>
- <20230428234332.2vhprztuotlqir4x@box.shutemov.name>
+        with ESMTP id S229722AbjEBIBz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 04:01:55 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5393E5D;
+        Tue,  2 May 2023 01:01:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=awIw9raqKVv9+RqUY5uCDztWhOg0YSMu1lQ7JA1ncyA=; b=Lkob+H/01rc7kJYRQFTQoiJMP2
+        IemT/d3tF1t8a/eDrsNVGa8vnr2y2h/qVKoShFRm2vhTe8Lx9nckHzsLx26kGxdZ0VRwfTgco3aJB
+        566QPlWMFDeDiVDYKzFIESXP3ZyFjYTe0DJxYTkfAvVsWPS8XlH1V+365poPkWA31I6voqFPB0dXl
+        YKPmDo8O9GmL0mJ8KLe0AeL7Dc5+sYQj22gAhntI4dALlQHK+1MdaH9zYx3bX4IuVb/t3mk5cQbJH
+        mpQ1T7rBaECuKxf5BhPP6ER90KaE3Qcm1nPB2LkLxP1gkIIOv9S62Tinl0MK+gLntfX6MtytmzsHr
+        /D9CxFoA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46722)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ptkxB-0001vH-2A; Tue, 02 May 2023 09:01:41 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ptkx0-0000WK-EB; Tue, 02 May 2023 09:01:30 +0100
+Date:   Tue, 2 May 2023 09:01:30 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch,
+        jarkko.nikula@linux.intel.com, olteanv@gmail.com,
+        andriy.shevchenko@linux.intel.com, hkallweit1@gmail.com,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        mengyuanlou@net-swift.com, Jose Abreu <Jose.Abreu@synopsys.com>
+Subject: Re: [PATCH net-next v4 6/8] net: pcs: Add 10GBASE-R mode for
+ Synopsys Designware XPCS
+Message-ID: <ZFDDWrkiGzho1fA9@shell.armlinux.org.uk>
+References: <20230422045621.360918-1-jiawenwu@trustnetic.com>
+ <20230422045621.360918-7-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230428234332.2vhprztuotlqir4x@box.shutemov.name>
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+In-Reply-To: <20230422045621.360918-7-jiawenwu@trustnetic.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -121,47 +62,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat 29-04-23 02:43:32, Kirill A . Shutemov wrote:
-> I think I found relevant snippet of code that solves similar issue.
-> get_futex_key() uses RCU to stabilize page->mapping after GUP_fast:
+On Sat, Apr 22, 2023 at 12:56:19PM +0800, Jiawen Wu wrote:
+> Add basic support for XPCS using 10GBASE-R interface. This mode will
+> be extended to use interrupt, so set pcs.poll false. And avoid soft
+> reset so that the device using this mode is in the default configuration.
 > 
+> Cc: Jose Abreu <Jose.Abreu@synopsys.com>
 > 
-> 		/*
-> 		 * The associated futex object in this case is the inode and
-> 		 * the page->mapping must be traversed. Ordinarily this should
-> 		 * be stabilised under page lock but it's not strictly
-> 		 * necessary in this case as we just want to pin the inode, not
-> 		 * update the radix tree or anything like that.
-> 		 *
-> 		 * The RCU read lock is taken as the inode is finally freed
-> 		 * under RCU. If the mapping still matches expectations then the
-> 		 * mapping->host can be safely accessed as being a valid inode.
-> 		 */
-> 		rcu_read_lock();
+> Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
+> ---
+>  drivers/net/pcs/pcs-xpcs.c   | 56 ++++++++++++++++++++++++++++++++++++
+>  include/linux/pcs/pcs-xpcs.h |  1 +
+>  2 files changed, 57 insertions(+)
 > 
-> 		if (READ_ONCE(page->mapping) != mapping) {
-> 			rcu_read_unlock();
-> 			put_page(page);
-> 
-> 			goto again;
-> 		}
-> 
-> 		inode = READ_ONCE(mapping->host);
-> 		if (!inode) {
-> 			rcu_read_unlock();
-> 			put_page(page);
-> 
-> 			goto again;
-> 		}
-> 
-> I think something similar can be used inside GUP_fast too.
+> diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+> index 539cd43eae8d..9ddaceda1fe9 100644
+> --- a/drivers/net/pcs/pcs-xpcs.c
+> +++ b/drivers/net/pcs/pcs-xpcs.c
+> @@ -64,6 +64,16 @@ static const int xpcs_xlgmii_features[] = {
+>  	__ETHTOOL_LINK_MODE_MASK_NBITS,
+>  };
+>  
+> +static const int xpcs_10gbaser_features[] = {
+> +	ETHTOOL_LINK_MODE_Pause_BIT,
+> +	ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+> +	ETHTOOL_LINK_MODE_10000baseSR_Full_BIT,
+> +	ETHTOOL_LINK_MODE_10000baseLR_Full_BIT,
+> +	ETHTOOL_LINK_MODE_10000baseLRM_Full_BIT,
+> +	ETHTOOL_LINK_MODE_10000baseER_Full_BIT,
+> +	__ETHTOOL_LINK_MODE_MASK_NBITS,
+> +};
+> +
+>  static const int xpcs_sgmii_features[] = {
+>  	ETHTOOL_LINK_MODE_Pause_BIT,
+>  	ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+> @@ -106,6 +116,10 @@ static const phy_interface_t xpcs_xlgmii_interfaces[] = {
+>  	PHY_INTERFACE_MODE_XLGMII,
+>  };
+>  
+> +static const phy_interface_t xpcs_10gbaser_interfaces[] = {
+> +	PHY_INTERFACE_MODE_10GBASER,
+> +};
+> +
+>  static const phy_interface_t xpcs_sgmii_interfaces[] = {
+>  	PHY_INTERFACE_MODE_SGMII,
+>  };
+> @@ -123,6 +137,7 @@ enum {
+>  	DW_XPCS_USXGMII,
+>  	DW_XPCS_10GKR,
+>  	DW_XPCS_XLGMII,
+> +	DW_XPCS_10GBASER,
+>  	DW_XPCS_SGMII,
+>  	DW_XPCS_1000BASEX,
+>  	DW_XPCS_2500BASEX,
+> @@ -246,6 +261,7 @@ static int xpcs_soft_reset(struct dw_xpcs *xpcs,
+>  
+>  	switch (compat->an_mode) {
+>  	case DW_AN_C73:
+> +	case DW_10GBASER:
+>  		dev = MDIO_MMD_PCS;
+>  		break;
+>  	case DW_AN_C37_SGMII:
+> @@ -872,6 +888,8 @@ int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
+>  		return -ENODEV;
+>  
+>  	switch (compat->an_mode) {
+> +	case DW_10GBASER:
+> +		break;
+>  	case DW_AN_C73:
+>  		if (phylink_autoneg_inband(mode)) {
+>  			ret = xpcs_config_aneg_c73(xpcs, compat);
+> @@ -919,6 +937,27 @@ static int xpcs_config(struct phylink_pcs *pcs, unsigned int mode,
+>  	return xpcs_do_config(xpcs, interface, mode, advertising);
+>  }
+>  
+> +static int xpcs_get_state_10gbaser(struct dw_xpcs *xpcs,
+> +				   struct phylink_link_state *state)
+> +{
+> +	int ret;
+> +
+> +	state->link = false;
+> +
+> +	ret = xpcs_read(xpcs, MDIO_MMD_PCS, MDIO_STAT1);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (ret & MDIO_STAT1_LSTATUS) {
+> +		state->link = true;
+> +		state->pause = MLO_PAUSE_TX | MLO_PAUSE_RX;
+> +		state->duplex = DUPLEX_FULL;
+> +		state->speed = SPEED_10000;
+> +	}
+> +
+> +	return 0;
 
-Yeah, inodes (and thus struct address_space) is RCU protected these days so
-grabbing RCU lock in gup_fast() will get you enough protection for checking
-aops if you are careful (like the futex code is).
+This looks to me to be an almost duplicate of
+phylink_mii_c45_pcs_get_state().
 
-								Honza
+> +}
+> +
+>  static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
+>  			      struct phylink_link_state *state,
+>  			      const struct xpcs_compat *compat)
+> @@ -1033,6 +1072,14 @@ static void xpcs_get_state(struct phylink_pcs *pcs,
+>  		return;
+>  
+>  	switch (compat->an_mode) {
+> +	case DW_10GBASER:
+> +		ret = xpcs_get_state_10gbaser(xpcs, state);
+
+This could then be simply:
+
+		phylink_mii_c45_pcs_get_state(xpcs->mdiodev, state);
+
+> +		if (ret) {
+> +			pr_err("xpcs_get_state_10gbaser returned %pe\n",
+> +			       ERR_PTR(ret));
+
+Please avoid printing errors like this if we can't read the state. If we
+become unable to read the state, then this message will flood the log at
+the polling rate (if polling is enabled.)
+
+I know the other cases here do, but they shouldn't.
 
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
