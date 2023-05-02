@@ -2,72 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 740A56F4A38
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 21:18:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEB8F6F4A47
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 21:24:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229489AbjEBTSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 15:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        id S229572AbjEBTYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 15:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjEBTSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 15:18:46 -0400
+        with ESMTP id S229576AbjEBTYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 15:24:47 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D2A1BFD
-        for <netdev@vger.kernel.org>; Tue,  2 May 2023 12:18:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70650198D
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 12:24:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1683055079;
+        s=mimecast20190719; t=1683055439;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WtdaH0LPeSw9dc2vy9g3O4k7nCC9DNn+smmkDs0/Hqw=;
-        b=ONYEMX3mdnIlp95+DJUE0zH6Py1dzWWxjkfWreRh3u4o6PzSAewuc8rvYo0/A5FoxJ3aYY
-        Mw0rh3Ubr609Nf0rcVZBULXTdXBIlXqpYcYzk+HDdQE48t9+3JQOuWSknxpu483JuSxBVV
-        3iDFqmpc+lj7aF0K2CdQfWh5svpJNxI=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=eebKb+TsagwbVZx+TXwlGTIKwC3csstjJ30OZt/ChDs=;
+        b=N0RrYGx84OSY/3AbOyF1cT9Wnbvm2WS43etMQyg28Q/bwTkj2d50mOY6XVrcZluemlPTuG
+        je+sJkJKr4vMjsl4XU+USpdoS/Ysi+4E1BNrKFFgfHKE7FcT2YFwRaP7jEMJ2ANbIFgJEk
+        0mQVxmV4AQQVY7HbBo3ags7kZGXwxek=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-373-TAjvhGVUOFqg1EIqmdaxvg-1; Tue, 02 May 2023 15:17:58 -0400
-X-MC-Unique: TAjvhGVUOFqg1EIqmdaxvg-1
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-2f5382db4d1so1226662f8f.0
-        for <netdev@vger.kernel.org>; Tue, 02 May 2023 12:17:57 -0700 (PDT)
+ us-mta-631-oXXKIy2vN1uZi2d0kcdNmw-1; Tue, 02 May 2023 15:23:58 -0400
+X-MC-Unique: oXXKIy2vN1uZi2d0kcdNmw-1
+Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-30479b764f9so1173298f8f.0
+        for <netdev@vger.kernel.org>; Tue, 02 May 2023 12:23:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683055077; x=1685647077;
+        d=1e100.net; s=20221208; t=1683055437; x=1685647437;
         h=content-transfer-encoding:in-reply-to:organization:from:references
          :cc:to:content-language:subject:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=WtdaH0LPeSw9dc2vy9g3O4k7nCC9DNn+smmkDs0/Hqw=;
-        b=SsbDlT0g9rWmk2lFMtlwAiY6IiYYFlV16BtjKaTyFaZSV57qf2d0WzwkPZFPnSbwPS
-         QkAFM0okLtS0raAb8ZclO5ZvmojsELZSINB9r3gEMS/E4IXuosur3O91nZkwFPayVHQb
-         9BOSNPMQZnVw1NMCk6n7LKjujZbtpXDzOG0kRGdZPW+Yf7fLqmDmjTvH594BbECR1uwc
-         5MRhgC/rq/DURF+PknWt3lbX6pWjppIctBU1zj9wgNl1Clf9l2n/jH5iPzoeQFiR9xDf
-         cvBaH/mZZTxqm81qhfmnxtuV+ELxT2ktaVPXDWFmaHUmKMX6wTCEizMH+lef4wZ9B4E5
-         Frvg==
-X-Gm-Message-State: AC+VfDxT3NvAQSxqE8atzzjTfHgLVoh53iQiMiXfCJMVxzwl2FG8sQK2
-        zr80b/R5UjVWvkYnHM0xH9VJ6gEgqZaUdpCuj19XzP7Urz/N0CrEV5KYOCdfd7aA5EiIONStyi6
-        e+XWkj+GkQQPJpr6g
-X-Received: by 2002:a5d:638c:0:b0:2f6:35c3:7752 with SMTP id p12-20020a5d638c000000b002f635c37752mr12336087wru.57.1683055076771;
-        Tue, 02 May 2023 12:17:56 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7q1hw0mtMOej2U52Id4Urx2ErDM6rX7/+WSKxI/ttqG032vRWoBcwZc9nSAYRAqTsdpxhqRA==
-X-Received: by 2002:a5d:638c:0:b0:2f6:35c3:7752 with SMTP id p12-20020a5d638c000000b002f635c37752mr12336023wru.57.1683055076363;
-        Tue, 02 May 2023 12:17:56 -0700 (PDT)
+        bh=eebKb+TsagwbVZx+TXwlGTIKwC3csstjJ30OZt/ChDs=;
+        b=mAAHGLGuSLJk4+nar9I8qNJ/vjr7JUHgN7naz0/ccklXHNiY+Qf9FZc1oDn+ATq2BI
+         MWbfXAbKDz1cuBJsS8XjdvhORln4ZzBhOSfJp1R0nLJpg64rPLPEERweIv6C0gOJAzxy
+         Yu40xcc6FZ/Qun1SYMJzaLAbIlr1vHrFnI+Sht8ifcoq9kreSQJv8K60HfTcSzF7TDS8
+         pgvkf8om93EUsa6Q0KP6YMQBaWAkOHddjZIF24N52VyYsnkyAym/ngfeL6DXZXrjsACg
+         AK5kMW8VqK5gyKaCpeemk0/vOISRYoApr9a8IxmcpDwjcv2EPcYJaZmE3Q5A6xTq+qoq
+         gtig==
+X-Gm-Message-State: AC+VfDxapgkqjvI1Zb1Mo9niDXho6wcR/NVblXHC5p29AXB4DZxg2CCl
+        rDvqHWgXcN0KrNCpanemmoXyeqpK2t5KEla9PJBEHL8OqZTX1mp8DjopyGlWCrgmcscQYoLio3X
+        N29rfnWG6wU/I1aSP
+X-Received: by 2002:a5d:4e08:0:b0:2fe:2775:6067 with SMTP id p8-20020a5d4e08000000b002fe27756067mr12850040wrt.28.1683055437190;
+        Tue, 02 May 2023 12:23:57 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ52sK3ZU3tbew+lQjq4BZTENLqPkH6FqYjfheHwv6rwX9tRJiuLFtrfQqzjGEl3dyA8PVf5BQ==
+X-Received: by 2002:a5d:4e08:0:b0:2fe:2775:6067 with SMTP id p8-20020a5d4e08000000b002fe27756067mr12849995wrt.28.1683055436775;
+        Tue, 02 May 2023 12:23:56 -0700 (PDT)
 Received: from ?IPV6:2003:cb:c700:2400:6b79:2aa:9602:7016? (p200300cbc70024006b7902aa96027016.dip0.t-ipconnect.de. [2003:cb:c700:2400:6b79:2aa:9602:7016])
-        by smtp.gmail.com with ESMTPSA id n17-20020a5d4c51000000b002d6f285c0a2sm31727959wrt.42.2023.05.02.12.17.53
+        by smtp.gmail.com with ESMTPSA id p8-20020a05600c358800b003f1738d0d13sm52367092wmq.1.2023.05.02.12.23.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 May 2023 12:17:55 -0700 (PDT)
-Message-ID: <505b7df8-bb60-7564-af28-b99875eea12a@redhat.com>
-Date:   Tue, 2 May 2023 21:17:53 +0200
+        Tue, 02 May 2023 12:23:56 -0700 (PDT)
+Message-ID: <d8fa7322-8fab-b693-2075-3f5f2253ef88@redhat.com>
+Date:   Tue, 2 May 2023 21:23:53 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH v7 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to
+Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to
  file-backed mappings
 Content-Language: en-US
-To:     Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Peter Xu <peterx@redhat.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
         Matthew Wilcox <willy@infradead.org>,
         Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         Leon Romanovsky <leon@kernel.org>,
@@ -100,68 +104,109 @@ Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
         linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         Oleg Nesterov <oleg@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
         John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
         "Kirill A . Shutemov" <kirill@shutemov.name>,
         Pavel Begunkov <asml.silence@gmail.com>,
         Mika Penttila <mpenttil@redhat.com>,
         Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-References: <cover.1683044162.git.lstoakes@gmail.com>
- <b3a4441cade9770e00d24f5ecb75c8f4481785a4.1683044162.git.lstoakes@gmail.com>
+        Theodore Ts'o <tytso@mit.edu>
+References: <f0acd8e4-8df8-dfae-b6b2-30eea3b14609@redhat.com>
+ <3c17e07a-a7f9-18fc-fa99-fa55a5920803@linux.ibm.com>
+ <ZFEqTo+l/S8IkBQm@nvidia.com> <ZFEtKe/XcnC++ACZ@x1n>
+ <ZFEt/ot6VKOgW1mT@nvidia.com>
+ <4fd5f74f-3739-f469-fd8a-ad0ea22ec966@redhat.com>
+ <ZFE07gfyp0aTsSmL@nvidia.com>
+ <1f29fe90-1482-7435-96bd-687e991a4e5b@redhat.com>
+ <ZFE4A7HbM9vGhACI@nvidia.com>
+ <6681789f-f70e-820d-a185-a17e638dfa53@redhat.com>
+ <ZFFMXswUwsQ6lRi5@nvidia.com>
 From:   David Hildenbrand <david@redhat.com>
 Organization: Red Hat
-In-Reply-To: <b3a4441cade9770e00d24f5ecb75c8f4481785a4.1683044162.git.lstoakes@gmail.com>
+In-Reply-To: <ZFFMXswUwsQ6lRi5@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static bool folio_longterm_write_pin_allowed(struct folio *folio)
-> +{
-> +	struct address_space *mapping;
-> +
-> +	/*
-> +	 * GUP-fast disables IRQs - this prevents IPIs from causing page tables
-> +	 * to disappear from under us, as well as preventing RCU grace periods
-> +	 * from making progress (i.e. implying rcu_read_lock()).
-> +	 *
-> +	 * This means we can rely on the folio remaining stable for all
-> +	 * architectures, both those that set CONFIG_MMU_GATHER_RCU_TABLE_FREE
-> +	 * and those that do not.
-> +	 *
-> +	 * We get the added benefit that given inodes, and thus address_space,
-> +	 * objects are RCU freed, we can rely on the mapping remaining stable
-> +	 * here with no risk of a truncation or similar race.
-> +	 */
-> +	lockdep_assert_irqs_disabled();
-> +
-> +	/*
-> +	 * If no mapping can be found, this implies an anonymous or otherwise
-> +	 * non-file backed folio so in this instance we permit the pin.
-> +	 *
-> +	 * shmem and hugetlb mappings do not require dirty-tracking so we
-> +	 * explicitly whitelist these.
-> +	 *
-> +	 * Other non dirty-tracked folios will be picked up on the slow path.
-> +	 */
-> +	mapping = folio_mapping(folio);
-> +	return !mapping || shmem_mapping(mapping) || folio_test_hugetlb(folio);
-> +}
+On 02.05.23 19:46, Jason Gunthorpe wrote:
+> On Tue, May 02, 2023 at 06:32:23PM +0200, David Hildenbrand wrote:
+>> On 02.05.23 18:19, Jason Gunthorpe wrote:
+>>> On Tue, May 02, 2023 at 06:12:39PM +0200, David Hildenbrand wrote:
+>>>
+>>>>> It missses the general architectural point why we have all these
+>>>>> shootdown mechanims in other places - plares are not supposed to make
+>>>>> these kinds of assumptions. When the userspace unplugs the memory from
+>>>>> KVM or unmaps it from VFIO it is not still being accessed by the
+>>>>> kernel.
+>>>>
+>>>> Yes. Like having memory in a vfio iommu v1 and doing the same (mremap,
+>>>> munmap, MADV_DONTNEED, ...). Which is why we disable MADV_DONTNEED (e.g.,
+>>>> virtio-balloon) in QEMU with vfio.
+>>>
+>>> That is different, VFIO has it's own contract how it consumes the
+>>> memory from the MM and VFIO breaks all this stuff.
+>>>
+>>> But when you tell VFIO to unmap the memory it doesn't keep accessing
+>>> it in the background like this does.
+>>
+>> To me, this is similar to when QEMU (user space) triggers
+>> KVM_S390_ZPCIOP_DEREG_AEN, to tell KVM to disable AIF and stop using the
+>> page (1) When triggered by the guest explicitly (2) when resetting the VM
+>> (3) when resetting the virtual PCI device / configuration.
+>>
+>> Interrupt gets unregistered from HW (which stops using the page), the pages
+>> get unpinned. Pages get no longer used.
+>>
+>> I guess I am still missing (a) how this is fundamentally different (b) how
+>> it could be done differently.
+> 
+> It uses an address that is already scoped within the KVM memory map
+> and uses KVM's gpa_to_gfn() to translate it to some pinnable page
+> 
+> It is not some independent thing like VFIO, it is explicitly scoped
+> within the existing KVM structure and it does not follow any mutations
+> that are done to the gpa map through the usual KVM APIs.
 
-BTW, try_grab_folio() is also called from follow_hugetlb_page(), which 
-is ordinary GUP and has interrupts enabled if I am not wrong.
+Right, it consumes guest physical addresses that are translated via the KVM memslots.
+Agreed that it does not (and possibly cannot easily) update the hardware when the KVM
+mapping (memslots) would ever change.
+
+I guess it's also not documented that this is not supported.
+
+> 
+>> I'd really be happy to learn how a better approach would look like that does
+>> not use longterm pinnings.
+> 
+> Sounds like the FW sadly needs pinnings. This is why I said it looks
+> like DMA. If possible it would be better to get the pinning through
+> VFIO, eg as a mdev
+> 
+> Otherwise, it would have been cleaner if this was divorced from KVM
+> and took in a direct user pointer, then maybe you could make the
+> argument is its own thing with its own lifetime rules. (then you are
+> kind of making your own mdev)
+
+It would be cleaner if user space would translate the GPA to a HVA and provid
+  that, agreed ...
+
+> 
+> Or, perhaps, this is really part of some radical "irqfd" that we've
+> been on and off talking about specifically to get this area of
+> interrupt bypass uAPI'd properly..
+
+Most probably. It's one of these very special cases ... thankfully:
+
+$ git grep -i longterm | grep kvm
+arch/s390/kvm/pci.c:    npages = pin_user_pages_fast(hva, 1, FOLL_WRITE | FOLL_LONGTERM, pages);
+arch/s390/kvm/pci.c:            npages = pin_user_pages_fast(hva, 1, FOLL_WRITE | FOLL_LONGTERM,
+
 
 -- 
 Thanks,
