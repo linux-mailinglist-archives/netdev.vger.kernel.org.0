@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F0F46F47B3
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 17:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B2C6F47B6
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 17:52:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234659AbjEBPwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 11:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
+        id S234636AbjEBPwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 11:52:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234636AbjEBPwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 11:52:13 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81EC430C0;
-        Tue,  2 May 2023 08:52:10 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d9443c01a7336-1aaed87d8bdso20820195ad.3;
-        Tue, 02 May 2023 08:52:10 -0700 (PDT)
+        with ESMTP id S234625AbjEBPwS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 11:52:18 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0FAE5E;
+        Tue,  2 May 2023 08:52:12 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1aad55244b7so28339905ad.2;
+        Tue, 02 May 2023 08:52:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683042730; x=1685634730;
+        d=gmail.com; s=20221208; t=1683042731; x=1685634731;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=R7DJwzYL5w5i+ufJACiL7UDmRNxJUi8dTGWXWXs5Uuc=;
-        b=hbHyrsOXEnQEiKg37wFZkQd5PiaQpUEn1MzNhGSwRGRMJg17sBrCJ6CcXw0dqxrneG
-         8wFJKciiDRm/WitXrxnfKMVKSIcXCCQZWeXjEGNyN5tVeHA8CD6/47PPjWwTNDjf+ZPr
-         94Q6Oh2ygmGUqm5GVU9Lr2zKz2D/t3YIoAPhn4pCWN1+FvU/RxblYqb2lKweCfN6MCzU
-         th//PpXSF65Qr/ou4nsP6M8bjuiLUADxOffm4yjyEGjcTKl5haSeIiOjYo5BpZQyfUMr
-         1dTivwbS4d1oVmj296NQq/w9CoRBD+IIiNmug6R1MNczX0VsXRrDeNkT5I53zHZ1yaVQ
-         Rulw==
+        bh=chnbx0aexE84U6XPaCif+oK0SPIJniesfJ0+4Zw1ypA=;
+        b=jrJVQ6GUzJ6FR7JPbQIV2Gs8CAEAlZLnWY06ODPxCyTh0mJfRWnowZuTEGNAKobJ03
+         U5pNif7ypsv7drPb0W/CBW74rkYdmo3Z+CDPpE8LaP+h9/lCcHlRnYuZc1S3oQUMk6bi
+         WsjaibHFaO3Fo0qcYVabYCCwAOfK0JswuVcjYjg2WwxgU2A8FTfDzUVImCNYU3aRDV78
+         aOqFN3v15Jl2/gO3DwFkg582EtkWk/Izz3NzG3KpaG6Cj2dZSXTEAJgbHF5o85u7Cg7Q
+         wQOYfFA876dIZ3qjLA5I2xhpIMXmZMv/Q+eDlJRBCrFObWWen0dSvngEu+ks2UlrhZXv
+         nMRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683042730; x=1685634730;
+        d=1e100.net; s=20221208; t=1683042731; x=1685634731;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=R7DJwzYL5w5i+ufJACiL7UDmRNxJUi8dTGWXWXs5Uuc=;
-        b=A27Y2DJra6sO4NwVOemIl88rs5/PVN3D0LwnLL8R5T+ln1Ay/jErto6sc+RsdGEpxH
-         aTXZXXYMJgroIUDJ6MZRx/5ojK5xk3yCcd3SI3QyiynuU654w3LH5acOZywTJEbrl1OA
-         fP6b0OsKrxcjPmaDczHqf7aeZ97f3dCjxOwqT1WNXw/vMKdeEwe39l6Jt102N+/FbMAT
-         myDGhuMg1LcEHDfoYZ0lTgNanAOvHbOv6va5J9FSU4xyFaooO9hJCp0+zLYomHfeq5Pb
-         tRBCV/Niw9Nkzpt/mHX/STqTdu6PccBV4rEXZT7LsgaVo1IaeYJ9pqTl36VABlO+/+9P
-         ee/Q==
-X-Gm-Message-State: AC+VfDy4mRj5VY+0RZ5aBpIvqlECphKFDBjJkOVsEX06lkVdJsACLHVh
-        Os2Obw5EJHqIaLIUCxiC4SA=
-X-Google-Smtp-Source: ACHHUZ5sXafgC+OqnMDAOtgSC/VYmhUoZPPuIyBiN8BnNj6gnVUtZ0wz/1yhbybDEoQBJRLjeeOTeQ==
-X-Received: by 2002:a17:902:e543:b0:1a9:5dfb:11c5 with SMTP id n3-20020a170902e54300b001a95dfb11c5mr20541376plf.35.1683042729800;
-        Tue, 02 May 2023 08:52:09 -0700 (PDT)
+        bh=chnbx0aexE84U6XPaCif+oK0SPIJniesfJ0+4Zw1ypA=;
+        b=YXt0OKTkUhfKGSQMCg8ON5tY7LRO0bG8VVoMGrnLUH9sWezIgxX9ADR8SYpXZHf9Y3
+         qLlbXO3PjY3I3SWGNYg46bRxk6hs3aCH0j5MhsD/NTCBzqAXqXV0aqlBMYxgsQaK1tbO
+         aHCiR/Zw3ulpFjsKC4RHtpb1uDT4VWSaBrQxpDhPNu2HshR8VEqx+OftspovVUXMbZV9
+         Ir1Tl/uzHLuypaDSVLQaHj/VC8dUXSsxDUmxAyA0nojf5baD0kfoe8SXUeD++bPKzwle
+         Dl9lFR0W7q5nXR7PYSWHOOjBoY3IUME8tvXLUfSD77FyH+2QKeGV3603d2p7kQfJ6pSF
+         3RlQ==
+X-Gm-Message-State: AC+VfDyeRlOlqZcCanKvaSwwbkSKYt5NunOZ3X+AhnJshsqNOoO94pWw
+        ENd8c2Pk1TSxGm1U64kPH0Q=
+X-Google-Smtp-Source: ACHHUZ7UO/xEwRCflHJskiiAJAj/9mgv53a0rqVKseGINuZBrtvoju2+8UaTnGWZ0urP3vcdWbaTEg==
+X-Received: by 2002:a17:902:7b94:b0:1a6:7ed8:84f7 with SMTP id w20-20020a1709027b9400b001a67ed884f7mr19045060pll.20.1683042731539;
+        Tue, 02 May 2023 08:52:11 -0700 (PDT)
 Received: from john.lan ([2605:59c8:148:ba10:62ab:a7fd:a4e3:bd70])
-        by smtp.gmail.com with ESMTPSA id o3-20020a170902778300b001a1a07d04e6sm19917212pll.77.2023.05.02.08.52.08
+        by smtp.gmail.com with ESMTPSA id o3-20020a170902778300b001a1a07d04e6sm19917212pll.77.2023.05.02.08.52.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 08:52:09 -0700 (PDT)
+        Tue, 02 May 2023 08:52:11 -0700 (PDT)
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     jakub@cloudflare.com, daniel@iogearbox.net, lmb@isovalent.com,
         edumazet@google.com
 Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
         will@isovalent.com
-Subject: [PATCH bpf v7 04/13] bpf: sockmap, improved check for empty queue
-Date:   Tue,  2 May 2023 08:51:50 -0700
-Message-Id: <20230502155159.305437-5-john.fastabend@gmail.com>
+Subject: [PATCH bpf v7 05/13] bpf: sockmap, handle fin correctly
+Date:   Tue,  2 May 2023 08:51:51 -0700
+Message-Id: <20230502155159.305437-6-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20230502155159.305437-1-john.fastabend@gmail.com>
 References: <20230502155159.305437-1-john.fastabend@gmail.com>
@@ -73,168 +73,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We noticed some rare sk_buffs were stepping past the queue when system was
-under memory pressure. The general theory is to skip enqueueing
-sk_buffs when its not necessary which is the normal case with a system
-that is properly provisioned for the task, no memory pressure and enough
-cpu assigned.
+The sockmap code is returning EAGAIN after a FIN packet is received and no
+more data is on the receive queue. Correct behavior is to return 0 to the
+user and the user can then close the socket. The EAGAIN causes many apps
+to retry which masks the problem. Eventually the socket is evicted from
+the sockmap because its released from sockmap sock free handling. The
+issue creates a delay and can cause some errors on application side.
 
-But, if we can't allocate memory due to an ENOMEM error when enqueueing
-the sk_buff into the sockmap receive queue we push it onto a delayed
-workqueue to retry later. When a new sk_buff is received we then check
-if that queue is empty. However, there is a problem with simply checking
-the queue length. When a sk_buff is being processed from the ingress queue
-but not yet on the sockmap msg receive queue its possible to also recv
-a sk_buff through normal path. It will check the ingress queue which is
-zero and then skip ahead of the pkt being processed.
-
-Previously we used sock lock from both contexts which made the problem
-harder to hit, but not impossible.
-
-To fix instead of popping the skb from the queue entirely we peek the
-skb from the queue and do the copy there. This ensures checks to the
-queue length are non-zero while skb is being processed. Then finally
-when the entire skb has been copied to user space queue or another
-socket we pop it off the queue. This way the queue length check allows
-bypassing the queue only after the list has been completely processed.
-
-To reproduce issue we run NGINX compliance test with sockmap running and
-observe some flakes in our testing that we attributed to this issue.
+To fix this check on sk_msg_recvmsg side if length is zero and FIN flag
+is set then set return to zero. A selftest will be added to check this
+condition.
 
 Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
 Tested-by: William Findlay <will@isovalent.com>
-Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- include/linux/skmsg.h |  1 -
- net/core/skmsg.c      | 32 ++++++++------------------------
- 2 files changed, 8 insertions(+), 25 deletions(-)
+ net/ipv4/tcp_bpf.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 904ff9a32ad6..054d7911bfc9 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -71,7 +71,6 @@ struct sk_psock_link {
- };
- 
- struct sk_psock_work_state {
--	struct sk_buff			*skb;
- 	u32				len;
- 	u32				off;
- };
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 3f95c460c261..bc5ca973400c 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -622,16 +622,12 @@ static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
- 
- static void sk_psock_skb_state(struct sk_psock *psock,
- 			       struct sk_psock_work_state *state,
--			       struct sk_buff *skb,
- 			       int len, int off)
- {
- 	spin_lock_bh(&psock->ingress_lock);
- 	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
--		state->skb = skb;
- 		state->len = len;
- 		state->off = off;
--	} else {
--		sock_drop(psock->sk, skb);
- 	}
- 	spin_unlock_bh(&psock->ingress_lock);
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index ebf917511937..804bd0c247d0 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -174,6 +174,24 @@ static int tcp_msg_wait_data(struct sock *sk, struct sk_psock *psock,
+ 	return ret;
  }
-@@ -642,23 +638,17 @@ static void sk_psock_backlog(struct work_struct *work)
- 	struct sk_psock *psock = container_of(dwork, struct sk_psock, work);
- 	struct sk_psock_work_state *state = &psock->work_state;
- 	struct sk_buff *skb = NULL;
-+	u32 len = 0, off = 0;
- 	bool ingress;
--	u32 len, off;
- 	int ret;
  
- 	mutex_lock(&psock->work_mutex);
--	if (unlikely(state->skb)) {
--		spin_lock_bh(&psock->ingress_lock);
--		skb = state->skb;
-+	if (unlikely(state->len)) {
- 		len = state->len;
- 		off = state->off;
--		state->skb = NULL;
--		spin_unlock_bh(&psock->ingress_lock);
- 	}
--	if (skb)
--		goto start;
- 
--	while ((skb = skb_dequeue(&psock->ingress_skb))) {
-+	while ((skb = skb_peek(&psock->ingress_skb))) {
- 		len = skb->len;
- 		off = 0;
- 		if (skb_bpf_strparser(skb)) {
-@@ -667,7 +657,6 @@ static void sk_psock_backlog(struct work_struct *work)
- 			off = stm->offset;
- 			len = stm->full_len;
- 		}
--start:
- 		ingress = skb_bpf_ingress(skb);
- 		skb_bpf_redirect_clear(skb);
- 		do {
-@@ -677,8 +666,7 @@ static void sk_psock_backlog(struct work_struct *work)
- 							  len, ingress);
- 			if (ret <= 0) {
- 				if (ret == -EAGAIN) {
--					sk_psock_skb_state(psock, state, skb,
--							   len, off);
-+					sk_psock_skb_state(psock, state, len, off);
- 
- 					/* Delay slightly to prioritize any
- 					 * other work that might be here.
-@@ -689,15 +677,16 @@ static void sk_psock_backlog(struct work_struct *work)
- 				/* Hard errors break pipe and stop xmit. */
- 				sk_psock_report_error(psock, ret ? -ret : EPIPE);
- 				sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED);
--				sock_drop(psock->sk, skb);
- 				goto end;
- 			}
- 			off += ret;
- 			len -= ret;
- 		} while (len);
- 
--		if (!ingress)
-+		skb = skb_dequeue(&psock->ingress_skb);
-+		if (!ingress) {
- 			kfree_skb(skb);
++static bool is_next_msg_fin(struct sk_psock *psock)
++{
++	struct scatterlist *sge;
++	struct sk_msg *msg_rx;
++	int i;
++
++	msg_rx = sk_psock_peek_msg(psock);
++	i = msg_rx->sg.start;
++	sge = sk_msg_elem(msg_rx, i);
++	if (!sge->length) {
++		struct sk_buff *skb = msg_rx->skb;
++
++		if (skb && TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN)
++			return true;
++	}
++	return false;
++}
++
+ static int tcp_bpf_recvmsg_parser(struct sock *sk,
+ 				  struct msghdr *msg,
+ 				  size_t len,
+@@ -196,6 +214,19 @@ static int tcp_bpf_recvmsg_parser(struct sock *sk,
+ 	lock_sock(sk);
+ msg_bytes_ready:
+ 	copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
++	/* The typical case for EFAULT is the socket was gracefully
++	 * shutdown with a FIN pkt. So check here the other case is
++	 * some error on copy_page_to_iter which would be unexpected.
++	 * On fin return correct return code to zero.
++	 */
++	if (copied == -EFAULT) {
++		bool is_fin = is_next_msg_fin(psock);
++
++		if (is_fin) {
++			copied = 0;
++			goto out;
 +		}
- 	}
- end:
- 	mutex_unlock(&psock->work_mutex);
-@@ -790,11 +779,6 @@ static void __sk_psock_zap_ingress(struct sk_psock *psock)
- 		skb_bpf_redirect_clear(skb);
- 		sock_drop(psock->sk, skb);
- 	}
--	kfree_skb(psock->work_state.skb);
--	/* We null the skb here to ensure that calls to sk_psock_backlog
--	 * do not pick up the free'd skb.
--	 */
--	psock->work_state.skb = NULL;
- 	__sk_psock_purge_ingress_msg(psock);
- }
- 
-@@ -813,7 +797,6 @@ void sk_psock_stop(struct sk_psock *psock)
- 	spin_lock_bh(&psock->ingress_lock);
- 	sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED);
- 	sk_psock_cork_free(psock);
--	__sk_psock_zap_ingress(psock);
- 	spin_unlock_bh(&psock->ingress_lock);
- }
- 
-@@ -828,6 +811,7 @@ static void sk_psock_destroy(struct work_struct *work)
- 	sk_psock_done_strp(psock);
- 
- 	cancel_delayed_work_sync(&psock->work);
-+	__sk_psock_zap_ingress(psock);
- 	mutex_destroy(&psock->work_mutex);
- 
- 	psock_progs_drop(&psock->progs);
++	}
+ 	if (!copied) {
+ 		long timeo;
+ 		int data;
 -- 
 2.33.0
 
