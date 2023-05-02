@@ -2,59 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC9C6F48E9
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 19:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A8E26F48FA
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 19:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233922AbjEBRJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 13:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50780 "EHLO
+        id S234303AbjEBROn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 13:14:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231964AbjEBRJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 13:09:19 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B4A2AB;
-        Tue,  2 May 2023 10:09:18 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id ffacd0b85a97d-2f7db354092so2547448f8f.2;
-        Tue, 02 May 2023 10:09:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683047356; x=1685639356;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=gDM4DO3TbkRL3r8IKhcmVsV7m/y1S1/C/3x0ontbi30=;
-        b=i+Ng0svdbjvDz1lU1l9oIS0x0EA11QMmwFOFitHGKRiM43QlOtWkKU0hY0Wfdcw2VC
-         qKmLjZ3YTZRUzcb8DpjLz1C1aVhCEfv2AiLR2PidmVAfbisNEPMEJD7T11Cjm6V0j2qV
-         OPzJ0R8I0moMTXA0GQeoWhzKPav3yvaX9dsvS99xspaIb2zr0tlLFodP62ffsXdp5Yn5
-         GtxZ3CQn8XTbv0skW4BbfKpsRnMi/9O3HqdEYcpdQ6ogwMNuen5Omd0vKURs3DEamOy8
-         EkmyOsBLGiuzYnHV+oxhTz1r4oqQUsZSGKJRZ2Pa92PMlXCAv3hbvO7bL5Mc/Peyj7iR
-         GCGg==
+        with ESMTP id S229945AbjEBROl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 13:14:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36451727
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 10:13:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1683047637;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tThVxt1nuGUymGM3Mj1B1ERCCnE2U7N2IjH5Ucb4/08=;
+        b=iFBphMLVXYwmpFoxyeCXAUApOgsa2vpo3eztqcU9od6cSvkbJqyutjKjt28604Dr/A/XxS
+        dAL7PK55M/rHWdleYeJzcWKppJfXNIZnwaOIvqylpuKZl3oSHCi3ffoYYUmSh6qggwjKsY
+        YGdmiqx7BTNf/U48e+xXw+muWNJjgYs=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-342-88Lc2PqcNbWr85nrM8NFZg-1; Tue, 02 May 2023 13:13:54 -0400
+X-MC-Unique: 88Lc2PqcNbWr85nrM8NFZg-1
+Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-30629b36d9bso1076478f8f.0
+        for <netdev@vger.kernel.org>; Tue, 02 May 2023 10:13:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683047357; x=1685639357;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gDM4DO3TbkRL3r8IKhcmVsV7m/y1S1/C/3x0ontbi30=;
-        b=ZiHCCgJhndn9QbGw0nJ1BFztNyfwqufJqf48E3gcVp1AVhkXmfRtotG5gE/fPreDcK
-         ErG/99shDgetbP7uxX6jwblHju99c2XPwpnEctvonBlX7HSPJnrWBXvYPXhC3nz2edm/
-         UTz5pSKAa7DYHz7CjpJ1YSCz8sL1hauhv8W+PJbUFHq6HmgQbWUuIB/jB9LFjMfd566q
-         V0DHgDgR34sItx5CoVVkgGvJiiywFFQ0j4j9oqZXpvCFFcnM7dTYHR6RsG7JvCKeu+h3
-         g2GKUVUD+5Y4PBfe0EoCab52wyCnFdo5GoO2NOu0ovaXkL4/GvhK1M76H+uoXHQ7+/Pl
-         r6zA==
-X-Gm-Message-State: AC+VfDxlA3V0SZD3gmI6Jh9GI8WCDY7vZ0DjVSqUQA5SeCkycqGwjY99
-        zJ4XcCHPbIr8Gmvg7+MDHOw33wQe7XNiCA==
-X-Google-Smtp-Source: ACHHUZ67SZ98oJMphSxIhf0uSE7eN4Ao8YqWJiz9F+C/o0E3hx9WQ6hyoZ7xmQUSgxWHDuBu53CiFw==
-X-Received: by 2002:a5d:6d4b:0:b0:2f5:8e8b:572c with SMTP id k11-20020a5d6d4b000000b002f58e8b572cmr12254538wri.49.1683047356442;
-        Tue, 02 May 2023 10:09:16 -0700 (PDT)
-Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
-        by smtp.gmail.com with ESMTPSA id g2-20020a5d5402000000b002da75c5e143sm31378906wrv.29.2023.05.02.10.09.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 10:09:15 -0700 (PDT)
-Date:   Tue, 2 May 2023 18:09:14 +0100
-From:   Lorenzo Stoakes <lstoakes@gmail.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        d=1e100.net; s=20221208; t=1683047633; x=1685639633;
+        h=content-transfer-encoding:in-reply-to:subject:organization:from
+         :references:cc:to:content-language:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tThVxt1nuGUymGM3Mj1B1ERCCnE2U7N2IjH5Ucb4/08=;
+        b=IYa8D0gog/idaF8qbVo9DJ25SUkXOjVylf48ax5DKERS9iucxhUNsproiiZAggqLrC
+         k9Ihw6vOZ+ambedmWT59gMBp/XQDcXTDPL2++Yqtn7LAdSo6Jsyq0hqT8emUP/W7QRGw
+         Bx2fDuJ0ueP/92olRkv58zFU9WESuWclQ0GewnJYc4YB2Wki+gK9HIHidcNmNjUPGmUl
+         zoJTL6fsGxUSYr3/HR/AxQsboaHPsslLmQXlVepbBz+Ej1mGQtT6LJOGHsHTUcTXcAni
+         N8LlyXgV2YJaQWKQ8GXhzbzHor6Jlaq3k7mLKXWx6kjBe0+wHDXno9rYJ1sudMudJsSr
+         +kRQ==
+X-Gm-Message-State: AC+VfDzKC0XmNA2EN5jYaTJNVRbQP2xPKMEJRp0ixeVm9as5CbsZRfL4
+        eRIrdIhkZnMaXzrRrKrvfTRYSdywDwHZ2dcjRqfKMiHiyjnulcvYY051EpzuwYfR5calpBULYml
+        OnaWfvA2GviptSmhyp2I73yQv
+X-Received: by 2002:adf:fe02:0:b0:2d2:29a4:4457 with SMTP id n2-20020adffe02000000b002d229a44457mr12812816wrr.13.1683047632640;
+        Tue, 02 May 2023 10:13:52 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5MdjSLMNym55tU5r7M2pAs93jqzP8q4u+jG7QWacNZyS3DMZ/LgP/rzfEA9/8iHAVgzgcXOg==
+X-Received: by 2002:adf:fe02:0:b0:2d2:29a4:4457 with SMTP id n2-20020adffe02000000b002d229a44457mr12812755wrr.13.1683047632213;
+        Tue, 02 May 2023 10:13:52 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c700:2400:6b79:2aa:9602:7016? (p200300cbc70024006b7902aa96027016.dip0.t-ipconnect.de. [2003:cb:c700:2400:6b79:2aa:9602:7016])
+        by smtp.gmail.com with ESMTPSA id q11-20020a5d574b000000b003049d7b9f4csm17477958wrw.32.2023.05.02.10.13.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 May 2023 10:13:51 -0700 (PDT)
+Message-ID: <1691115d-dba4-636b-d736-6a20359a67c3@redhat.com>
+Date:   Tue, 2 May 2023 19:13:49 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Content-Language: en-US
+To:     Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
         Matthew Wilcox <willy@infradead.org>,
         Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         Leon Romanovsky <leon@kernel.org>,
@@ -96,139 +107,141 @@ Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
         Matthew Rosato <mjrosato@linux.ibm.com>,
         "Paul E . McKenney" <paulmck@kernel.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Subject: Re: [PATCH v7 1/3] mm/mmap: separate writenotify and dirty tracking
- logic
-Message-ID: <bf04a98a-9de6-4532-a36c-59572d22dd7c@lucifer.local>
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Mike Rapoport <rppt@linux.ibm.com>
 References: <cover.1683044162.git.lstoakes@gmail.com>
- <72a90af5a9e4445a33ae44efa710f112c2694cb1.1683044162.git.lstoakes@gmail.com>
- <56696a72-24fa-958e-e6a1-7a17c9e54081@redhat.com>
- <f777a151-edfc-4882-8aca-9a926179c5bb@lucifer.local>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f777a151-edfc-4882-8aca-9a926179c5bb@lucifer.local>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+ <b3a4441cade9770e00d24f5ecb75c8f4481785a4.1683044162.git.lstoakes@gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v7 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to
+ file-backed mappings
+In-Reply-To: <b3a4441cade9770e00d24f5ecb75c8f4481785a4.1683044162.git.lstoakes@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 05:53:46PM +0100, Lorenzo Stoakes wrote:
-> On Tue, May 02, 2023 at 06:38:53PM +0200, David Hildenbrand wrote:
-> > On 02.05.23 18:34, Lorenzo Stoakes wrote:
-> > > vma_wants_writenotify() is specifically intended for setting PTE page table
-> > > flags, accounting for existing PTE flag state and whether that might
-> > > already be read-only while mixing this check with a check whether the
-> > > filesystem performs dirty tracking.
-> > >
-> > > Separate out the notions of dirty tracking and a PTE write notify checking
-> > > in order that we can invoke the dirty tracking check from elsewhere.
-> > >
-> > > Note that this change introduces a very small duplicate check of the
-> > > separated out vm_ops_needs_writenotify(). This is necessary to avoid making
-> > > vma_needs_dirty_tracking() needlessly complicated (e.g. passing a
-> > > check_writenotify flag or having it assume this check was already
-> > > performed). This is such a small check that it doesn't seem too egregious
-> > > to do this.
-> > >
-> > > Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
-> > > Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-> > > Reviewed-by: Mika Penttilä <mpenttil@redhat.com>
-> > > Reviewed-by: Jan Kara <jack@suse.cz>
-> > > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > ---
-> > >   include/linux/mm.h |  1 +
-> > >   mm/mmap.c          | 36 +++++++++++++++++++++++++++---------
-> > >   2 files changed, 28 insertions(+), 9 deletions(-)
-> > >
-> > > diff --git a/include/linux/mm.h b/include/linux/mm.h
-> > > index 27ce77080c79..7b1d4e7393ef 100644
-> > > --- a/include/linux/mm.h
-> > > +++ b/include/linux/mm.h
-> > > @@ -2422,6 +2422,7 @@ extern unsigned long move_page_tables(struct vm_area_struct *vma,
-> > >   #define  MM_CP_UFFD_WP_ALL                 (MM_CP_UFFD_WP | \
-> > >   					    MM_CP_UFFD_WP_RESOLVE)
-> > > +bool vma_needs_dirty_tracking(struct vm_area_struct *vma);
-> > >   int vma_wants_writenotify(struct vm_area_struct *vma, pgprot_t vm_page_prot);
-> > >   static inline bool vma_wants_manual_pte_write_upgrade(struct vm_area_struct *vma)
-> > >   {
-> > > diff --git a/mm/mmap.c b/mm/mmap.c
-> > > index 5522130ae606..295c5f2e9bd9 100644
-> > > --- a/mm/mmap.c
-> > > +++ b/mm/mmap.c
-> > > @@ -1475,6 +1475,31 @@ SYSCALL_DEFINE1(old_mmap, struct mmap_arg_struct __user *, arg)
-> > >   }
-> > >   #endif /* __ARCH_WANT_SYS_OLD_MMAP */
-> > > +/* Do VMA operations imply write notify is required? */
-> > > +static bool vm_ops_needs_writenotify(const struct vm_operations_struct *vm_ops)
-> > > +{
-> > > +	return vm_ops && (vm_ops->page_mkwrite || vm_ops->pfn_mkwrite);
-> > > +}
-> > > +
-> > > +/*
-> > > + * Does this VMA require the underlying folios to have their dirty state
-> > > + * tracked?
-> > > + */
-> > > +bool vma_needs_dirty_tracking(struct vm_area_struct *vma)
-> > > +{
-> >
-> > Sorry for not noticing this earlier, but ...
->
-> pints_owed++
->
-> >
-> > what about MAP_PRIVATE mappings? When we write, we populate an anon page,
-> > which will work as expected ... because we don't have to notify the fs?
-> >
-> > I think you really also want the "If it was private or non-writable, the
-> > write bit is already clear */" part as well and remove "false" in that case.
-> >
->
-> Not sure a 'write bit is already clear' case is relevant to checking
-> whether a filesystem dirty tracks? That seems specific entirely to the page
-> table bits.
->
-> That's why I didn't include it,
->
-> A !VM_WRITE shouldn't be GUP-writable except for FOLL_FORCE, and that
-> surely could be problematic if VM_MAYWRITE later?
->
-> Thinking about it though a !VM_SHARE should probably can be safely assumed
-> to not be dirty-trackable, so we probably do need to add a check for
-> !VM_SHARED -> !vma_needs_dirty_tracking
->
+[...]
 
-On second thoughts, we explicitly check FOLL_FORCE && !is_cow_mapping() in
-check_vma_flags() so that case cannot occur.
+> +{
+> +	struct address_space *mapping;
+> +
+> +	/*
+> +	 * GUP-fast disables IRQs - this prevents IPIs from causing page tables
+> +	 * to disappear from under us, as well as preventing RCU grace periods
+> +	 * from making progress (i.e. implying rcu_read_lock()).
+> +	 *
+> +	 * This means we can rely on the folio remaining stable for all
+> +	 * architectures, both those that set CONFIG_MMU_GATHER_RCU_TABLE_FREE
+> +	 * and those that do not.
+> +	 *
+> +	 * We get the added benefit that given inodes, and thus address_space,
+> +	 * objects are RCU freed, we can rely on the mapping remaining stable
+> +	 * here with no risk of a truncation or similar race.
+> +	 */
+> +	lockdep_assert_irqs_disabled();
+> +
+> +	/*
+> +	 * If no mapping can be found, this implies an anonymous or otherwise
+> +	 * non-file backed folio so in this instance we permit the pin.
+> +	 *
+> +	 * shmem and hugetlb mappings do not require dirty-tracking so we
+> +	 * explicitly whitelist these.
+> +	 *
+> +	 * Other non dirty-tracked folios will be picked up on the slow path.
+> +	 */
+> +	mapping = folio_mapping(folio);
+> +	return !mapping || shmem_mapping(mapping) || folio_test_hugetlb(folio);
 
-So actually yes we should probably include this on the basis of that and
-the fact that a FOLL_WRITE operation will CoW the MAP_PRIVATE mapping.
+"Folios in the swap cache return the swap mapping" -- you might disallow 
+pinning anonymous pages that are in the swap cache.
 
-This was an (over)abundance of caution.
+I recall that there are corner cases where we can end up with an anon 
+page that's mapped writable but still in the swap cache ... so you'd 
+fallback to the GUP slow path (acceptable for these corner cases, I 
+guess), however especially the comment is a bit misleading then.
 
-Will fix on respin.
+So I'd suggest not dropping the folio_test_anon() check, or open-coding 
+it ... which will make this piece of code most certainly easier to get 
+when staring at folio_mapping(). Or to spell it out in the comment 
+(usually I prefer code over comments).
 
-> > Or was there a good reason to disallow private mappings as well?
-> >
->
-> Until the page is CoW'd walking the page tables will get you to the page
-> cache page right? This was the reason I (perhaps rather too quickly) felt
-> MAP_PRIVATE should be excluded.
->
-> However a FOLL_WRITE would trigger CoW... and then we'd be trivially OK.
->
-> So yeah, ok perhaps I dismissed that a little too soon. I was concerned
-> about some sort of egregious FOLL_FORCE case where somehow we'd end up with
-> the page cache folio. But actually, that probably can't happen...
->
-> > --
-> > Thanks,
-> >
-> > David / dhildenb
-> >
+> +}
+> +
+>   /**
+>    * try_grab_folio() - Attempt to get or pin a folio.
+>    * @page:  pointer to page to be grabbed
+> @@ -123,6 +170,8 @@ static inline struct folio *try_get_folio(struct page *page, int refs)
+>    */
+>   struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
+>   {
+> +	bool is_longterm = flags & FOLL_LONGTERM;
+> +
+>   	if (unlikely(!(flags & FOLL_PCI_P2PDMA) && is_pci_p2pdma_page(page)))
+>   		return NULL;
+>   
+> @@ -136,8 +185,7 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
+>   		 * right zone, so fail and let the caller fall back to the slow
+>   		 * path.
+>   		 */
+> -		if (unlikely((flags & FOLL_LONGTERM) &&
+> -			     !is_longterm_pinnable_page(page)))
+> +		if (unlikely(is_longterm && !is_longterm_pinnable_page(page)))
+>   			return NULL;
+>   
+>   		/*
+> @@ -148,6 +196,16 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
+>   		if (!folio)
+>   			return NULL;
+>   
+> +		/*
+> +		 * Can this folio be safely pinned? We need to perform this
+> +		 * check after the folio is stabilised.
+> +		 */
+> +		if ((flags & FOLL_WRITE) && is_longterm &&
+> +		    !folio_longterm_write_pin_allowed(folio)) {
+> +			folio_put_refs(folio, refs);
+> +			return NULL;
+> +		}
+
+So we perform this change before validating whether the PTE changed.
+
+Hmm, naturally, I would have done it afterwards.
+
+IIRC, without IPI syncs during TLB flush (i.e., 
+CONFIG_MMU_GATHER_RCU_TABLE_FREE), there is the possibility that
+(1) We lookup the pte
+(2) The page was unmapped and free
+(3) The page gets reallocated and used
+(4) We pin the page
+(5) We dereference page->mapping
+
+If we then de-reference page->mapping that gets used by whoever 
+allocated it for something completely different (not a pointer to 
+something reasonable), I wonder if we might be in trouble.
+
+Checking first, whether the PTE changed makes sure that what we pinned 
+and what we're looking at is what we expected.
+
+... I can spot that the page_is_secretmem() check is also done before 
+that. But it at least makes sure that it's still an LRU page before 
+staring at the mapping (making it a little safer?).
+
+BUT, I keep messing up this part of the story. Maybe it all works as 
+expected because we will be synchronizing RCU somehow before actually 
+freeing the page in the !IPI case. ... but I think that's only true for 
+page tables with CONFIG_MMU_GATHER_RCU_TABLE_FREE.
+
+-- 
+Thanks,
+
+David / dhildenb
+
