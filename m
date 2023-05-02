@@ -2,139 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C23B06F3E3C
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 09:12:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C4966F3EB1
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 10:00:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231915AbjEBHLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 03:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
+        id S233718AbjEBIAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 04:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbjEBHLl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 03:11:41 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20EF1FC2
-        for <netdev@vger.kernel.org>; Tue,  2 May 2023 00:11:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1683011498; x=1714547498;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DJve1FIWXG0mHSXEP2qzMKssT+8J/9xfkr5oObJozfc=;
-  b=pq+/WAPb2O1ojMJjjcHYtnzE1yKqVU0i+Sl6i5LQypYjL8C3zcbCv6Ar
-   8LBVDlw9ZRoHlgPaCqhh5WkVtx7VnxC3mPusA1YNLRQGhi/F4TCHXJ0yE
-   CtUZ8xpY7qepGMJ/zkz4NaSPgEf94D3DkZd98+XZeep5N3g5VuDqozm8n
-   xnSdun3wotN4Ja28s18/wtSIMIzQwfD8irGYdQTBxyHGGtlfuCjGYiXqq
-   Fnc9mh1NcZNCvVGeJeo/jPtQlhgOpz7ooiK9AksCHjO50a1kZ0KjRanm+
-   L4XrOhIAx3O5tPs/ssrMUXzrvoJfFREb8uHWTpd8KP+Bddm8nAQU9p7QL
-   w==;
-X-IronPort-AV: E=Sophos;i="5.99,243,1677567600"; 
-   d="scan'208";a="213206477"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 May 2023 00:11:36 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 2 May 2023 00:11:36 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Tue, 2 May 2023 00:11:36 -0700
-Date:   Tue, 2 May 2023 09:11:35 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Ron Eggler <ron.eggler@mistywest.com>
-CC:     <netdev@vger.kernel.org>
-Subject: Re: Unable to TX data on VSC8531
-Message-ID: <20230502071135.bcxg5nip62m7wndb@soft-dev3-1>
-References: <b0cdace8-5aa2-ce78-7cbf-4edf87dbc3a6@mistywest.com>
- <20230501064655.2ovbo3yhkym3zu57@soft-dev3-1>
- <2c2bade5-01d5-7065-13e6-56fcdbf92b5a@mistywest.com>
+        with ESMTP id S229722AbjEBIAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 04:00:20 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E5AE5D;
+        Tue,  2 May 2023 01:00:19 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 9E54422316;
+        Tue,  2 May 2023 08:00:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1683014417; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NP9x04IpamZ+4J4+YQ6L241Lqle1HdNEDLK94FhKL1s=;
+        b=i0Ht6owzagxVsusrh+k5TXS/6F2cGI8FuxyGJtxaFJRM4m4Tbvw8zxYpoPAbak19HBxF5W
+        cxJXamUCHUZLnK6iJcMa2ugn7dBT0o4+Usv0KcVpqAJ9chkraDeslIW2T4hEJ5YlEX4YME
+        8K8Dtc7Sx2s/ac0VicMWDMCjyyb5saQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1683014417;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NP9x04IpamZ+4J4+YQ6L241Lqle1HdNEDLK94FhKL1s=;
+        b=F85KhN7n9ZQMG5OTs4r7YsDZdS0LgI/nHqlYSWjEfVtH7P6F5XG6gXBa2RHb8jxNFawQrD
+        W5FFX4gWEOqqNXDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6DE96134FB;
+        Tue,  2 May 2023 08:00:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id HTxOGxHDUGTwIwAAMHmgww
+        (envelope-from <jack@suse.cz>); Tue, 02 May 2023 08:00:17 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id A2D8AA0735; Tue,  2 May 2023 10:00:16 +0200 (CEST)
+Date:   Tue, 2 May 2023 10:00:16 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     "Kirill A . Shutemov" <kirill@shutemov.name>
+Cc:     David Hildenbrand <david@redhat.com>, Peter Xu <peterx@redhat.com>,
+        Lorenzo Stoakes <lstoakes@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Mika Penttila <mpenttil@redhat.com>,
+        David Howells <dhowells@redhat.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
+ by default
+Message-ID: <20230502080016.4tgmqb4sy2ztfgrd@quack3>
+References: <62ec50da-5f73-559c-c4b3-bde4eb215e08@redhat.com>
+ <6ddc7ac4-4091-632a-7b2c-df2005438ec4@redhat.com>
+ <20230428160925.5medjfxkyvmzfyhq@box.shutemov.name>
+ <39cc0f26-8fc2-79dd-2e84-62238d27fd98@redhat.com>
+ <20230428162207.o3ejmcz7rzezpt6n@box.shutemov.name>
+ <ZEv2196tk5yWvgW5@x1n>
+ <173337c0-14f4-3246-15ff-7fbf03861c94@redhat.com>
+ <20230428165623.pqchgi5gtfhxd5b5@box.shutemov.name>
+ <1039c830-acec-d99b-b315-c2a6e26c34ca@redhat.com>
+ <20230428234332.2vhprztuotlqir4x@box.shutemov.name>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2c2bade5-01d5-7065-13e6-56fcdbf92b5a@mistywest.com>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230428234332.2vhprztuotlqir4x@box.shutemov.name>
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 05/01/2023 13:34, Ron Eggler wrote:
-
-Hi Ron,
+On Sat 29-04-23 02:43:32, Kirill A . Shutemov wrote:
+> I think I found relevant snippet of code that solves similar issue.
+> get_futex_key() uses RCU to stabilize page->mapping after GUP_fast:
 > 
-> Hi Horatiu,
 > 
-> [snip greetings]
+> 		/*
+> 		 * The associated futex object in this case is the inode and
+> 		 * the page->mapping must be traversed. Ordinarily this should
+> 		 * be stabilised under page lock but it's not strictly
+> 		 * necessary in this case as we just want to pin the inode, not
+> 		 * update the radix tree or anything like that.
+> 		 *
+> 		 * The RCU read lock is taken as the inode is finally freed
+> 		 * under RCU. If the mapping still matches expectations then the
+> 		 * mapping->host can be safely accessed as being a valid inode.
+> 		 */
+> 		rcu_read_lock();
 > 
-> > I've posted here previously about the bring up of two network interfaces
-> > on an embedded platform that is using two the Microsemi VSC8531 PHYs.
-> > (previous thread: issues to bring up two VSC8531 PHYs, Thanks to Heiner
-> > Kallweit & Andrew Lunn).
-> > I'm able to seemingly fully access & operate the network interfaces
-> > through ifconfig (and the ip commands) and I set the ip address to match
-> > my /24 network. However, while it looks like I can receive & see traffic
-> > on the line with tcpdump, it appears like none of my frames can go out
-> > in TX direction and hence entries in my arp table mostly remain
-> > incomplete (and if there actually happens to be a complete entry,
-> > sending anything to it doesn't seem to work and the TX counters in
-> > ifconfig stay at 0. How can I further troubleshoot this? I have set the
-> > phy-mode to rgmii-id in the device tree and have experimented with all
-> > the TX_CLK delay register settings in the PHY but have failed to make
-> > any progress.
-> > Some of the VSC phys have this COMA mode, and then you need to pull
-> > down a GPIO to take it out of this mode. I looked a little bit but I
-> > didn't find anything like this for VSC8531 but maybe you can double
-> > check this. But in that case both the RX and TX will not work.
-> > Are there any errors seen in the registers 16 (0x10) or register 17
-> > (0x11)?
-> Good point rewgarding the COMA mode, I have not found anything like it.
-> The RGMII connectivity should be pretty straight forward per the
-> datasheet, TX0-TX4, TX_CLK, TX_CTL, RXD0-RXD4, RX_CLK & RX_CTL.
-> Not sure if you've seen this in the subthread that is  ongoing with
-> Andrew Lunn but as part of it, I did invoke the mii-tool and got a
-> pretty printout of the PHY registers, see below:
+> 		if (READ_ONCE(page->mapping) != mapping) {
+> 			rcu_read_unlock();
+> 			put_page(page);
 > 
-> # mii-tool -vv eth0
-> Using SIOCGMIIPHY=0x8947
-> eth0: negotiated 100baseTx-FD, link ok
->   registers for MII PHY 0:
->     1040 796d 0007 0572 01e1 45e1 0005 2801
->     0000 0300 4000 0000 0000 0000 0000 3000
->     9000 0000 0008 0000 0000 0000 3201 1000
->     0000 a020 0000 0000 802d 0021 0400 0000
-
-Unfortunetly, I can't see anything obvious wrong with the registers.
-
->   product info: vendor 00:01:c1, model 23 rev 2
->   basic mode:   autonegotiation enabled
->   basic status: autonegotiation complete, link ok
->   capabilities: 1000baseT-HD 1000baseT-FD 100baseTx-FD 100baseTx-HD
-> 10baseT-FD 10baseT-HD
->   advertising:  100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
-
-Are you expecting to run at 100Mbit?
-
->   link partner: 1000baseT-HD 1000baseT-FD 100baseTx-FD 100baseTx-HD
-> 10baseT-FD 10baseT-HD flow-control
+> 			goto again;
+> 		}
 > 
-> Alternartively, the registers can be read with phytool also:
+> 		inode = READ_ONCE(mapping->host);
+> 		if (!inode) {
+> 			rcu_read_unlock();
+> 			put_page(page);
 > 
-> # phytool read eth0/0/0x10
-> 0x9000
-> # phytool read eth0/0/0x11
-> 0000
-
-Another thing that you can try, is to put a probe and see if you
-actually see the TXCLK? And if I understand correctly that should be at
-25MHz (because the link speed is 100Mbit).
-
+> 			goto again;
+> 		}
 > 
-> --
-> Ron
+> I think something similar can be used inside GUP_fast too.
+
+Yeah, inodes (and thus struct address_space) is RCU protected these days so
+grabbing RCU lock in gup_fast() will get you enough protection for checking
+aops if you are careful (like the futex code is).
+
+								Honza
 
 -- 
-/Horatiu
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
