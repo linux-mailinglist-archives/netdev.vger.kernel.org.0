@@ -2,175 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93D416F49C0
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:33:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8AFB6F49C5
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:36:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233896AbjEBSdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 14:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59798 "EHLO
+        id S233412AbjEBSf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 14:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233608AbjEBSdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 14:33:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 127FB1988
-        for <netdev@vger.kernel.org>; Tue,  2 May 2023 11:32:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1683052377;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NhpWzKFV6WuY3k3TP6SkZOGPmg0MohvKMd0v7Ellcl4=;
-        b=bxII1+xIDkhN7AHPiEouol7Vuol2WFtGFRssT/gDL+p9fjLm4CcRRYUhyV1Oq0ky4V9zjO
-        9IVcYGRG9hcGUZluaU8kCn/3iA/3gv1g/V9o/s59r5kJ3j2lUmUYpX42ukJu4JUoIAI5vw
-        dDt19eb/65GnmMwqNqxoI8EI9EhSIZ0=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-613-HRTaGkx4Mo66aLTr2rNMHg-1; Tue, 02 May 2023 14:32:53 -0400
-X-MC-Unique: HRTaGkx4Mo66aLTr2rNMHg-1
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-3f16ef3be6eso25352625e9.3
-        for <netdev@vger.kernel.org>; Tue, 02 May 2023 11:32:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683052372; x=1685644372;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NhpWzKFV6WuY3k3TP6SkZOGPmg0MohvKMd0v7Ellcl4=;
-        b=EYN59fhd6glRKpi7kLM0/lK4Nh6CsbP77D/iivAfiuEur1qhEzj1nfKJZwLqLU3QIA
-         aL7Fhu/x3czxmDpaOf+ZMcTTgRg78PRJo6GyJr7f0xfCDtLCninTV2PKr/nE0Gc14c25
-         vhRR03jgQ+3pgbuibHHRV/xZ8d4UEkD4wEKjLkJwNgTpBTPqhCvxsdR3vsOwPzJk7NfJ
-         EiYJMihNhOozzKYP/X6Se3yaE+0SBsxOyedNn7l8ktRovP4pxhUniRPTM+fS7gHJCUgn
-         TccthXlOP+H+VrMmkmoCwBAzDy2FzOCx+eOOM+qr6Y9G4eqCVCrdNpPc2WI43vX5TSOP
-         n7MA==
-X-Gm-Message-State: AC+VfDxxbRtwDDvO5Vw3bNsLV1NqouSjyJrwCXWOeqLVuXgGVBrUyRHr
-        PoIH0F6LBlavqCQg/jjRH/JEp8HNeJGx+F0nYtoQ3HrthcLst5slUCTRKUNseOKTaCiCiQTlcDZ
-        E3NuZX3I6U9gV68g4
-X-Received: by 2002:adf:e38b:0:b0:2dc:cad4:87b9 with SMTP id e11-20020adfe38b000000b002dccad487b9mr11784988wrm.68.1683052372746;
-        Tue, 02 May 2023 11:32:52 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7NTwwDePG2g45V+TgxsNxz1VA7838wfE2TMtMS4WPnQUULqKPl7ToB/3+9718Vn306lnc9dA==
-X-Received: by 2002:adf:e38b:0:b0:2dc:cad4:87b9 with SMTP id e11-20020adfe38b000000b002dccad487b9mr11784980wrm.68.1683052372419;
-        Tue, 02 May 2023 11:32:52 -0700 (PDT)
-Received: from redhat.com ([2.52.10.43])
-        by smtp.gmail.com with ESMTPSA id i11-20020adfe48b000000b002c3f81c51b6sm31546095wrm.90.2023.05.02.11.32.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 11:32:51 -0700 (PDT)
-Date:   Tue, 2 May 2023 14:32:48 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Feng Liu <feliu@nvidia.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        William Tu <witu@nvidia.com>, Parav Pandit <parav@nvidia.com>
-Subject: Re: [PATCH net v2] virtio_net: Fix error unwinding of XDP
- initialization
-Message-ID: <20230502143148-mutt-send-email-mst@kernel.org>
-References: <20230502174134.32276-1-feliu@nvidia.com>
+        with ESMTP id S232830AbjEBSf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 14:35:57 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685AC1727
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 11:35:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UTmUetjHmPNZQ+yJHER8Se9rw4Hn/OvNFl2hzX64i9cD3tHkwC/bwYny7QrqStsez4Bblk/FAJO93oKYS0+1q5LBpW/pc0eiIGkXQT9j9jc1L8NI87JCCBrQVJNIeBDJb0Z+cd3wOakJXGmeNtOACTIatpR8wVRBOD+VJfpuIJ8PRE7+x35dNzDqd/XY0JYbvtXI1MhVWXNukOUcSj2RAsvf5cZlaDloW4eIO69Rf2uovE3xvPjdZTgwl352bYLbP8q2aJ7LIhMAtX/gPWJQYTcFTfIR5J2o9Fdlc7oiRGfrPPbZ0AWpyMOdckR4sfjZu+RIB4WcgpZQ0IFBO36+AQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=n5w8FJXDTH+KNuqccnTDUhZAtkVPZpkiMTlRBlLTmxE=;
+ b=OzgD6+ueDVBbOnNmLMJx6+l4YD27VF14pIvBC63r9qJ4d03olsKxtHBUEWRSUaCMXjYzEPowSrt8/ZWnKtNcCmwSWYhhG8oKO5Al4aQpNwusPgFAQY+ZBP0/aNSPIVLkzoVTaC1L4PsRIuqHAcbbfeB91STU2cEJrJf4/plrhdLdtsIYuM8cU8qD1RIN/sUbGdb9xDdaAxDQoIg7tnOFuKWlTNSMP6MBwLrcAscxSeyvcB4j88mN2l5L4G9r3URrqMW8gzzShsMzh7/67DVzRqu0AIRS8e61FnIcNzh5L1SrN5R6P2/ZZkmcfDpnfY0Y1PwSyUgEV9eKbuVHZI41jQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=n5w8FJXDTH+KNuqccnTDUhZAtkVPZpkiMTlRBlLTmxE=;
+ b=lcHJsTwG9SHFMhwMs+c5s6HQ7mMwW5WQngzgdhnna5d3TH5vxMP0n06Vw70b0whs9VIE5026FTxzh0BBdGy0ooRfE6/9v2Hd//xbAag061KrUHZoA7a8M39JUeVB0exX3Cl9nNSi7NYxRgyANvh/aHub5ublS4dnzCG1RtC2Um8=
+Received: from MW2PR16CA0001.namprd16.prod.outlook.com (2603:10b6:907::14) by
+ BL1PR12MB5064.namprd12.prod.outlook.com (2603:10b6:208:30a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Tue, 2 May
+ 2023 18:35:53 +0000
+Received: from CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:907:0:cafe::ee) by MW2PR16CA0001.outlook.office365.com
+ (2603:10b6:907::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.20 via Frontend
+ Transport; Tue, 2 May 2023 18:35:52 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT009.mail.protection.outlook.com (10.13.175.61) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6363.21 via Frontend Transport; Tue, 2 May 2023 18:35:52 +0000
+Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 2 May
+ 2023 13:35:50 -0500
+From:   Shannon Nelson <shannon.nelson@amd.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <drivers@pensando.io>, Shannon Nelson <shannon.nelson@amd.com>
+Subject: [PATCH v2 net] ionic: catch failure from devlink_alloc
+Date:   Tue, 2 May 2023 11:35:36 -0700
+Message-ID: <20230502183536.22256-1-shannon.nelson@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230502174134.32276-1-feliu@nvidia.com>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT009:EE_|BL1PR12MB5064:EE_
+X-MS-Office365-Filtering-Correlation-Id: 95f95fae-bfa3-4e40-7382-08db4b3c0ee8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gdlzfe/jvHsHVb5exUDqfdeyd4oqBJW3012f5JYK9OhixSKWlpoBUJADuFpUHqsiCZWWMtxkC130ZtR7e6ORQqGB8fqki79bh4bocIRfudW69q1co7rhUdc34g/PSbAu3FiD+HU7KqLPe9WnrGpD/dD194y2ntQGFoh+4Teb3ZR7i3SXQENv74WEtQkRsCg/+gVpEBS567/nOTig3vB6h29G3LCmApuufEy+3uifCe3n3kOgMZgOzPMTD01qYeTcK7up5hpQuS7GjM7nIXGocqKr7/S991RCE9WO0Cbk+z6ikA1qPRS2tvdgp8ZWXijSsjNb/ZqpuST0CtnkfyaVoOKwIYzj/2dhm3jDeodrw0dtKfE+ikAkFVukgxTNKk3qyM3Wa2Fq655YqBniji9JquFxH6VBhdkn/alhnBVyjMP8OoRX1d9t431p/EL61i4pKP+ueO5Vev9t7o4jZJsPlkotTq6kwj7YtL472m8ExU0e8oEbhpY6vb3Pu6jgh8RPfq/LRvaBoKUQtB4kOKl9TGbyiNkSu/5I0j+5GsXv8YniJABEdKIHvNtMOcrr+Alu+QqpgQYr98XtIzShxFnGT+Xp6U4C2JLdXqjdbi2UGBUl3ZyqlGqM/VxBR4kDCzNakuQerbrfe/rcXYjn9qxzIJ9Q72XOlxAuWIVMwANUKRPD+1/W6H9pl6mfj8thaTQ+oVBQmWHB9iOZJUmQMVWw2LyQLSw7qOa01q1fncFF+xY=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(346002)(396003)(39860400002)(451199021)(36840700001)(40470700004)(46966006)(36756003)(86362001)(81166007)(82740400003)(356005)(8676002)(5660300002)(8936002)(4326008)(70206006)(41300700001)(44832011)(316002)(2906002)(40480700001)(70586007)(82310400005)(336012)(47076005)(40460700003)(426003)(2616005)(36860700001)(966005)(16526019)(6666004)(110136005)(54906003)(478600001)(186003)(26005)(1076003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 18:35:52.1886
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 95f95fae-bfa3-4e40-7382-08db4b3c0ee8
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5064
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 01:41:34PM -0400, Feng Liu wrote:
-> When initializing XDP in virtnet_open(), some rq xdp initialization
-> may hit an error causing net device open failed. However, previous
-> rqs have already initialized XDP and enabled NAPI, which is not the
-> expected behavior. Need to roll back the previous rq initialization
-> to avoid leaks in error unwinding of init code.
-> 
-> Also extract a helper function of disable queue pairs, and use newly
-> introduced helper function in error unwinding and virtnet_close;
-> 
-> Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
-> Signed-off-by: Feng Liu <feliu@nvidia.com>
-> Reviewed-by: William Tu <witu@nvidia.com>
-> Reviewed-by: Parav Pandit <parav@nvidia.com>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  drivers/net/virtio_net.c | 31 +++++++++++++++++++++----------
->  1 file changed, 21 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 8d8038538fc4..5cd78e154d14 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1868,6 +1868,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
->  	return received;
->  }
->  
-> +static void virtnet_disable_qp(struct virtnet_info *vi, int qp_index)
-> +{
-> +	virtnet_napi_tx_disable(&vi->sq[qp_index].napi);
-> +	napi_disable(&vi->rq[qp_index].napi);
-> +	xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
-> +}
-> +
->  static int virtnet_open(struct net_device *dev)
->  {
->  	struct virtnet_info *vi = netdev_priv(dev);
-> @@ -1883,20 +1890,27 @@ static int virtnet_open(struct net_device *dev)
->  
->  		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, vi->rq[i].napi.napi_id);
->  		if (err < 0)
-> -			return err;
-> +			goto err_xdp_info_reg;
->  
->  		err = xdp_rxq_info_reg_mem_model(&vi->rq[i].xdp_rxq,
->  						 MEM_TYPE_PAGE_SHARED, NULL);
-> -		if (err < 0) {
-> -			xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
-> -			return err;
-> -		}
-> +		if (err < 0)
-> +			goto err_xdp_reg_mem_model;
->  
->  		virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
->  		virtnet_napi_tx_enable(vi, vi->sq[i].vq, &vi->sq[i].napi);
->  	}
->  
->  	return 0;
-> +
-> +	/* error unwinding of xdp init */
+Add a check for NULL on the alloc return.  If devlink_alloc() fails and
+we try to use devlink_priv() on the NULL return, the kernel gets very
+unhappy and panics. With this fix, the driver load will still fail,
+but at least it won't panic the kernel.
 
-btw we don't really need this comment - it's how all
-error handling is done anyways.
-if you need to roll v3, you can drop it.
+Fixes: df69ba43217d ("ionic: Add basic framework for IONIC Network device driver")
+Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+---
+v2 - fixed up the Fixes tag - thanks, Simon
+	https://lore.kernel.org/netdev/Y%2F8tj+bqGG1g5InQ@vergenet.net/
 
-> +err_xdp_reg_mem_model:
-> +	xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
-> +err_xdp_info_reg:
-> +	for (i = i - 1; i >= 0; i--)
-> +		virtnet_disable_qp(vi, i);
-> +
-> +	return err;
->  }
->  
->  static int virtnet_poll_tx(struct napi_struct *napi, int budget)
-> @@ -2305,11 +2319,8 @@ static int virtnet_close(struct net_device *dev)
->  	/* Make sure refill_work doesn't re-enable napi! */
->  	cancel_delayed_work_sync(&vi->refill);
->  
-> -	for (i = 0; i < vi->max_queue_pairs; i++) {
-> -		virtnet_napi_tx_disable(&vi->sq[i].napi);
-> -		napi_disable(&vi->rq[i].napi);
-> -		xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
-> -	}
-> +	for (i = 0; i < vi->max_queue_pairs; i++)
-> +		virtnet_disable_qp(vi, i);
->  
->  	return 0;
->  }
-> -- 
-> 2.37.1 (Apple Git-137.1)
+ drivers/net/ethernet/pensando/ionic/ionic_devlink.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+index e6ff757895ab..4ec66a6be073 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+@@ -61,6 +61,8 @@ struct ionic *ionic_devlink_alloc(struct device *dev)
+ 	struct devlink *dl;
+ 
+ 	dl = devlink_alloc(&ionic_dl_ops, sizeof(struct ionic), dev);
++	if (!dl)
++		return NULL;
+ 
+ 	return devlink_priv(dl);
+ }
+-- 
+2.17.1
 
