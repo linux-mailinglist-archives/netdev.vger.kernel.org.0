@@ -2,274 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E9516F434F
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 14:09:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7BDE6F439F
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 14:21:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234118AbjEBMJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 08:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
+        id S234182AbjEBMVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 08:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233554AbjEBMJE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 08:09:04 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C0F358B;
-        Tue,  2 May 2023 05:09:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=pz1BFTrMbjtmTLSMUAMwv5KDjqVuW0L+OFuL8UBqI6M=; b=UKrjov+EaCK9CHW/8De9JD8ppd
-        WIAvUqI3xCyhKeUEWy4dg8GrMF+zoqXiitSmj2yLsjJX0In/tnDn/SnOJ9OVUF6SZHXf8cPpDv2KE
-        rQ08+4D83uNLFOaaJ2q9zRzM+XirpW5wcRZ0o9EhGPYg91REe8sz6VwLFkn+kslAqtCMzi0BJcgEi
-        2mr1mvcT0Gp95Sl5NZZEslKSWB2BTNGr+UHLLJMIQkfBdBgAuQbzT9kDg2CBJnJzMrLvk0Kvuyj12
-        uaKVqyt/rexm5oBsVlZbGOAF6Y7t+B9aFsOSgAjh7TQJeIMXCkXoyKQBxq5l4v4HqLq1hhn/9fIjc
-        G2Q4Popw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1ptonk-00GIcJ-0E;
-        Tue, 02 May 2023 12:08:13 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B838C300165;
-        Tue,  2 May 2023 14:08:10 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 784D023C5C351; Tue,  2 May 2023 14:08:10 +0200 (CEST)
-Date:   Tue, 2 May 2023 14:08:10 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
-        Paul McKenney <paulmck@kernel.org>
-Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
- to file-backed mappings
-Message-ID: <20230502120810.GD1597538@hirez.programming.kicks-ass.net>
-References: <cover.1682981880.git.lstoakes@gmail.com>
- <dee4f4ad6532b0f94d073da263526de334d5d7e0.1682981880.git.lstoakes@gmail.com>
- <20230502111334.GP1597476@hirez.programming.kicks-ass.net>
- <ab66d15a-acd0-4d9b-aa12-49cddd12c6a5@lucifer.local>
+        with ESMTP id S233749AbjEBMVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 08:21:22 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2062d.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8a::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF4F1A1
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 05:21:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RvAi82T72wgMY3g9aQHvtsMTzwxcnFZyHglwIo8P95+361cC/nZDRBSZjFmrAgNjcO6hZ+Gje4Whc6D25Dc50i9gjfL+7J3wECAwfFYSpIUQRDctDGw1yz7NS6qkZ3tJjN7JA96Ge0iTZvm9yeuC8imBVNIcDZ3boXBACO9TAuCaz2m76+tUn+uK5Y6AICExm6M/VLTWunYkw0heZANyvdau3mavLYTayFup24M3o0VW2o+Uy4eOYY9zsdOvZM2K8So+YTVQpi0bguaiI5u+SIhhDFNNfOSZ6kIAt91EZCpV31y1AmO9JKyd29HMuc/8PzIU53w23wPIiNPFoMYPJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kLwCoHDQAqhuF1pPJXQz4hD+c51wvTpnIqTgtlRe1fQ=;
+ b=cfgqyLqpf7y9M6ZjMSrFLmdJjremlJXqgfBO/fR11Bzux4XuVoQZbZv7k9qnCIsM7cI0Nhx18ATDgSWApNQFXPRSrbeU9/TqINI7B5txnfc+6b6QtOIqquknsWxQw87JCfn02H2Nk9YnTW+s8xHiOcqCQBMRiJxQ8NgcXS0agCtgfDCWHCRpOtQZ6NFFY0fmWHXE94T7AIrUKng9CRh+GlPZcF9iDk4+vUxEhQ/L3j1uvBsxVdlEcSeekd6XlPJnaRD1n4j4zAvJn0W1Et5vvXixnSJSQE75B0I4qqLy13YurnDnER8gP7pyDdlnkkgDzi+yGFnyns1GKSVM8I9KlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kLwCoHDQAqhuF1pPJXQz4hD+c51wvTpnIqTgtlRe1fQ=;
+ b=gu6BM61JATUG8hHSWILP7bs4wCjPziTxBVsUsUZV9AqcP0aLzLBtJn1a+K4agUAR4pdw1EFBgpONoLZzP6uX13NOIpZ1s38oqvM5WntuDw3f1ncr9HisQ3OGt0glATIzNkXKTMn5/X7z/zTIC6X+dR9ncU0FiTW+gf6CJ09n59LmWxi5FasxML8ZsOg87ZCSkCJZFBylulaSLa2Y0NQVvMYNSaIk4/ZZM0d4aq7PM6pKztMqWGRV0WlR2SspH59cKnkwPO9rBHel3H9y+64x1V7OkrKH1kMsbxvRE3XQKmqPvSTebTfCEvjQ2hJOh+bMC+qPgceBNth8GaxqBGfVxA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by PH0PR12MB7905.namprd12.prod.outlook.com (2603:10b6:510:28b::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Tue, 2 May
+ 2023 12:21:17 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::66d8:40d2:14ed:7697]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::66d8:40d2:14ed:7697%3]) with mapi id 15.20.6340.031; Tue, 2 May 2023
+ 12:21:17 +0000
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, danieller@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] ethtool: Fix uninitialized number of lanes
+Date:   Tue,  2 May 2023 15:20:50 +0300
+Message-Id: <20230502122050.917205-1-idosch@nvidia.com>
+X-Mailer: git-send-email 2.40.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1PR06CA0146.eurprd06.prod.outlook.com
+ (2603:10a6:803:a0::39) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ab66d15a-acd0-4d9b-aa12-49cddd12c6a5@lucifer.local>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|PH0PR12MB7905:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2350980a-a075-413f-70b6-08db4b07bac8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: oe5A4fXD3xWfKvNDlJggadMNSgsrO3v6DmiJByn43mP8HKHOhfzPwf1X6W/O1OblWOT135QCH2DnuRVTBrpmIjjIbLcJUcLgxSbgsJbnmCR/5HcV0/Y+6Dp0inIkPgWarYxBd7K47s7TxMkPOtmBSNQZcAq6e/IlKe8KcU+07c4Etne8FjLHInGUO93+3A7ShyEkyDKSMMHydGd98jxKsAhoe+q1HYhOyoNG8UMnsPlvTlW+3Jb6u7O/Il6RUNP2XDISC7UFJRcVkYNk5/xv2I3IOyvSVt66H0aF3MUF4pm4oNhdvmZwEn0yesl+yDVXFtfALFc6unKUoPZM0Dv1iTmTpaTtFcyS2+M0F9lf9bN79zi3hYKp0QJu09HJCapekMruc9xNXZLP+YqTWMU+zFXi4qqPHBICsba9AjEWEXSpQVzMlyn1gP9R7pTYErRjbQjOtRlcwLuwmU86dxF4x9UBvpvniOQnvEsUF3/auBJruU/IE/aKllSheBGzUYasRQJMq+RF34xfmlqWfPppZ8iVSNj+fSQPAgCVtWk4WiEMeVSRShMtw4FBxVws5/rmjXHLtIZW4OafKOgEGkwd86OxaCZPFzVRcrmvyubi3bM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(136003)(346002)(376002)(366004)(451199021)(316002)(6512007)(6506007)(1076003)(26005)(41300700001)(83380400001)(66476007)(2616005)(186003)(66946007)(66556008)(6486002)(4326008)(38100700002)(966005)(6666004)(6916009)(2906002)(107886003)(36756003)(86362001)(5660300002)(8936002)(8676002)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?juOYO6WpcLASelqRcx7anTTcEin/C9o6q29eTVEHsA7jnRnEY5j5wrTqnLV1?=
+ =?us-ascii?Q?56gvT7FO2U49Lo8uOvGMwZdF1YyJZraC5mclp5bncGBnnFCvMBhOSIn1miiw?=
+ =?us-ascii?Q?PhM6B0p0r28PN67dN6kU3HZqkZvVV1kLPjcHGCSNKWKVe4BZ6N58EwXR2P29?=
+ =?us-ascii?Q?ffQJpgsWGEnktz0e1iDBep3MjqazI1MoyZapPQvm/8HVx3+Vd5FqRTU6nGki?=
+ =?us-ascii?Q?oPTWrSqFkGIqtXtXdqv0JIz+JhVrfW/SDGJukURTH9i+m49Q3WhdMdhlWRqF?=
+ =?us-ascii?Q?xN4R4GsFUqAQIxDtlkW/CFGcmruhk9RiQxWDJF0+M81xp2n3VWW7PwMN9Etl?=
+ =?us-ascii?Q?Y8txExG+SfPrC1QKUDNujoJJdusu1ik+MTEPYiv0ExiuniFT7RdhN0qiJmxE?=
+ =?us-ascii?Q?/yw29ZKAzQY7s3oGTQWSdUGTg1c0bc5mAOrJ++lBh8ksIvtL56/Qe7fVFJRf?=
+ =?us-ascii?Q?PyliLwOpxCylTK6gzZsayJVmSHuBjyMPbosJWZh+kJ/342Gq2DVVxdym+syQ?=
+ =?us-ascii?Q?1Vi8o0BSC74+Q2nvAoP6tVpRgMCkLfgp3C/DNZfmBuUlfWIW0KgffGxko7S9?=
+ =?us-ascii?Q?zlkWrHwV+pQYDn0TNHbt2+AefGKBV7CRJxN4MdfSPg7m/vag6rTxo6uEv+6l?=
+ =?us-ascii?Q?hU6d5ZS1EI5LxKQQQODbDS0+suyAVpRV6XKRgFFFmXKu+ArKBJEkOw8FyMid?=
+ =?us-ascii?Q?bs82JfwHQdPv+kMvpXBbrkmMz756jknkXhqxvliL5qPnSOnbIra0OXT5hoLV?=
+ =?us-ascii?Q?S3sFFlpwbW7/VeLZqjRvzi+PVKSFyOx7l4rgCQxFekLhXPmSv2vqCgDtNNpc?=
+ =?us-ascii?Q?jRkPRElioiwGLWzAnu1brv6Or9IVzOhY6J3MIKkZe/fRotI1Z2u34hHBVkN7?=
+ =?us-ascii?Q?c4zHe9/cxm1M2r2iGb5Rf/M8iPaNeaOGqVBaeoz2l6ltDVbJCyUVumAs/mc3?=
+ =?us-ascii?Q?B0uS2MqZ/G524ebwVeRev2Ru2wAEse2rDa8eO9DbT9Lu0r+E3AcExY5xt79/?=
+ =?us-ascii?Q?eUr5xKqEn+JVvPytTvEp/NVddPWCE6kKvI9trVmctjWu9oT2HR1BXExapM0y?=
+ =?us-ascii?Q?FhpedyCdE/c4s8FDOdZeorq9oJkRqkUHxwJrLYhH5ajWilMZAbVbeoW0ma7m?=
+ =?us-ascii?Q?ezHgxAqitJbW/jE8uJlbBnA6jWffZkNjVU2+RqFNPBCcgk+AkDLBexmwlzKx?=
+ =?us-ascii?Q?W8zxPOuuENhll/qp12ot7N9n/4ndQyB5HwhIC0saU47ScGms/RUUnwXCsOln?=
+ =?us-ascii?Q?syWYvKDLhcK/Y2xMgMz1sROPNow9JcgXsmrZA3L5+YMkAUezMXnp1FkbSXnt?=
+ =?us-ascii?Q?DVx1dSAc3Rwd+ld2NtLVyTH1n7OjpTS6GJdOWLyztGxllr9oM7nqXfb/HJgt?=
+ =?us-ascii?Q?qwddC3WObVRHLf6viPtcNv+/zoVTsgyUpfVyaB0Q9XiOVoZrjTiBEdIvGgv0?=
+ =?us-ascii?Q?mv1MskxzVFVKHHu9JjACiVhywEBwUAuLc/4lFfkSyKNZaJHNARc6M74YrwNe?=
+ =?us-ascii?Q?iNoVxlu3FkQ6mRXN/sqzczA3JJTou3GycVMVhu7maBAgOzrZ6Ra+fg2vOVWw?=
+ =?us-ascii?Q?dSvXWB7jBQTNZaynumUqEzrBKo2pJSva7LCy5Ldd?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2350980a-a075-413f-70b6-08db4b07bac8
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 12:21:17.4894
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: g7ch6LhWfeC2A1GcaJMMwig1LSQwUSZKLDD8KxmMlxb1yYWGbcjAVBKY1Rs+SRHXvK0KKYSAto2YpKqG6IWtGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7905
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 12:25:54PM +0100, Lorenzo Stoakes wrote:
-> On Tue, May 02, 2023 at 01:13:34PM +0200, Peter Zijlstra wrote:
-> > On Tue, May 02, 2023 at 12:11:49AM +0100, Lorenzo Stoakes wrote:
-> > > @@ -95,6 +96,77 @@ static inline struct folio *try_get_folio(struct page *page, int refs)
-> > >  	return folio;
-> > >  }
-> > >
-> > > +#ifdef CONFIG_MMU_GATHER_RCU_TABLE_FREE
-> > > +static bool stabilise_mapping_rcu(struct folio *folio)
-> > > +{
-> > > +	struct address_space *mapping = READ_ONCE(folio->mapping);
-> > > +
-> > > +	rcu_read_lock();
-> > > +
-> > > +	return mapping == READ_ONCE(folio->mapping);
-> >
-> > This doesn't make sense; why bother reading the same thing twice?
-> 
-> The intent is to see whether the folio->mapping has been truncated from
-> underneath us, as per the futex code that Kirill referred to which does
-> something similar [1].
+It is not possible to set the number of lanes when setting link modes
+using the legacy IOCTL ethtool interface. Since 'struct
+ethtool_link_ksettings' is not initialized in this path, drivers receive
+an uninitialized number of lanes in 'struct
+ethtool_link_ksettings::lanes'.
 
-Yeah, but per that 3rd load you got nothing here. Also that futex code
-did the early load to deal with the !mapping case, but you're not doing
-that.
+When this information is later queried from drivers, it results in the
+ethtool code making decisions based on uninitialized memory, leading to
+the following KMSAN splat [1]. In practice, this most likely only
+happens with the tun driver that simply returns whatever it got in the
+set operation.
 
-> > Who cares if the thing changes from before; what you care about is that
-> > the value you see has stable storage, this doesn't help with that.
-> >
-> > > +}
-> > > +
-> > > +static void unlock_rcu(void)
-> > > +{
-> > > +	rcu_read_unlock();
-> > > +}
-> > > +#else
-> > > +static bool stabilise_mapping_rcu(struct folio *)
-> > > +{
-> > > +	return true;
-> > > +}
-> > > +
-> > > +static void unlock_rcu(void)
-> > > +{
-> > > +}
-> > > +#endif
-> >
-> > Anyway, this all can go away. RCU can't progress while you have
-> > interrupts disabled anyway.
-> 
-> There seems to be other code in the kernel that assumes that this is not
-> the case,
+As far as I can tell, this uninitialized memory is not leaked to user
+space thanks to the 'ethtool_ops->cap_link_lanes_supported' check in
+linkmodes_prepare_data().
 
-Yeah, so Paul went back on forth on that a bit. It used to be true in
-the good old days when everything was simple. Then Paul made things
-complicated by separating out sched-RCU bh-RCU and 'regular' RCU
-flavours.
+Fix by initializing the structure in the IOCTL path. Did not find any
+more call sites that pass an uninitialized structure when calling
+'ethtool_ops::set_link_ksettings()'.
 
-At that point disabling IRQs would only (officially) inhibit sched and
-bh RCU flavours, but not the regular RCU.
+[1]
+BUG: KMSAN: uninit-value in ethnl_update_linkmodes net/ethtool/linkmodes.c:273 [inline]
+BUG: KMSAN: uninit-value in ethnl_set_linkmodes+0x190b/0x19d0 net/ethtool/linkmodes.c:333
+ ethnl_update_linkmodes net/ethtool/linkmodes.c:273 [inline]
+ ethnl_set_linkmodes+0x190b/0x19d0 net/ethtool/linkmodes.c:333
+ ethnl_default_set_doit+0x88d/0xde0 net/ethtool/netlink.c:640
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:968 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
+ genl_rcv_msg+0x141a/0x14c0 net/netlink/genetlink.c:1065
+ netlink_rcv_skb+0x3f8/0x750 net/netlink/af_netlink.c:2577
+ genl_rcv+0x40/0x60 net/netlink/genetlink.c:1076
+ netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+ netlink_unicast+0xf41/0x1270 net/netlink/af_netlink.c:1365
+ netlink_sendmsg+0x127d/0x1430 net/netlink/af_netlink.c:1942
+ sock_sendmsg_nosec net/socket.c:724 [inline]
+ sock_sendmsg net/socket.c:747 [inline]
+ ____sys_sendmsg+0xa24/0xe40 net/socket.c:2501
+ ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2555
+ __sys_sendmsg net/socket.c:2584 [inline]
+ __do_sys_sendmsg net/socket.c:2593 [inline]
+ __se_sys_sendmsg net/socket.c:2591 [inline]
+ __x64_sys_sendmsg+0x36b/0x540 net/socket.c:2591
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-But then some years ago Linus convinced Paul that having all these
-separate RCU flavours with separate QS rules was a big pain in the
-backside and Paul munged them all together again.
+Uninit was stored to memory at:
+ tun_get_link_ksettings+0x37/0x60 drivers/net/tun.c:3544
+ __ethtool_get_link_ksettings+0x17b/0x260 net/ethtool/ioctl.c:441
+ ethnl_set_linkmodes+0xee/0x19d0 net/ethtool/linkmodes.c:327
+ ethnl_default_set_doit+0x88d/0xde0 net/ethtool/netlink.c:640
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:968 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
+ genl_rcv_msg+0x141a/0x14c0 net/netlink/genetlink.c:1065
+ netlink_rcv_skb+0x3f8/0x750 net/netlink/af_netlink.c:2577
+ genl_rcv+0x40/0x60 net/netlink/genetlink.c:1076
+ netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+ netlink_unicast+0xf41/0x1270 net/netlink/af_netlink.c:1365
+ netlink_sendmsg+0x127d/0x1430 net/netlink/af_netlink.c:1942
+ sock_sendmsg_nosec net/socket.c:724 [inline]
+ sock_sendmsg net/socket.c:747 [inline]
+ ____sys_sendmsg+0xa24/0xe40 net/socket.c:2501
+ ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2555
+ __sys_sendmsg net/socket.c:2584 [inline]
+ __do_sys_sendmsg net/socket.c:2593 [inline]
+ __se_sys_sendmsg net/socket.c:2591 [inline]
+ __x64_sys_sendmsg+0x36b/0x540 net/socket.c:2591
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-So now, anything that inhibits any of the RCU flavours inhibits them
-all. So disabling IRQs is sufficient.
+Uninit was stored to memory at:
+ tun_set_link_ksettings+0x37/0x60 drivers/net/tun.c:3553
+ ethtool_set_link_ksettings+0x600/0x690 net/ethtool/ioctl.c:609
+ __dev_ethtool net/ethtool/ioctl.c:3024 [inline]
+ dev_ethtool+0x1db9/0x2a70 net/ethtool/ioctl.c:3078
+ dev_ioctl+0xb07/0x1270 net/core/dev_ioctl.c:524
+ sock_do_ioctl+0x295/0x540 net/socket.c:1213
+ sock_ioctl+0x729/0xd90 net/socket.c:1316
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl+0x222/0x400 fs/ioctl.c:856
+ __x64_sys_ioctl+0x96/0xe0 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-> i.e. the futex code, though not sure if that's being run with
-> IRQs disabled...
+Local variable link_ksettings created at:
+ ethtool_set_link_ksettings+0x54/0x690 net/ethtool/ioctl.c:577
+ __dev_ethtool net/ethtool/ioctl.c:3024 [inline]
+ dev_ethtool+0x1db9/0x2a70 net/ethtool/ioctl.c:3078
 
-That futex code runs in preemptible context, per the lock_page() that
-can sleep etc.. :-)
+Fixes: 012ce4dd3102 ("ethtool: Extend link modes settings uAPI with lanes")
+Reported-and-tested-by: syzbot+ef6edd9f1baaa54d6235@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/netdev/0000000000004bb41105fa70f361@google.com/
+Reviewed-by: Danielle Ratson <danieller@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ net/ethtool/ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > > +/*
-> > > + * Used in the GUP-fast path to determine whether a FOLL_PIN | FOLL_LONGTERM |
-> > > + * FOLL_WRITE pin is permitted for a specific folio.
-> > > + *
-> > > + * This assumes the folio is stable and pinned.
-> > > + *
-> > > + * Writing to pinned file-backed dirty tracked folios is inherently problematic
-> > > + * (see comment describing the writeable_file_mapping_allowed() function). We
-> > > + * therefore try to avoid the most egregious case of a long-term mapping doing
-> > > + * so.
-> > > + *
-> > > + * This function cannot be as thorough as that one as the VMA is not available
-> > > + * in the fast path, so instead we whitelist known good cases.
-> > > + *
-> > > + * The folio is stable, but the mapping might not be. When truncating for
-> > > + * instance, a zap is performed which triggers TLB shootdown. IRQs are disabled
-> > > + * so we are safe from an IPI, but some architectures use an RCU lock for this
-> > > + * operation, so we acquire an RCU lock to ensure the mapping is stable.
-> > > + */
-> > > +static bool folio_longterm_write_pin_allowed(struct folio *folio)
-> > > +{
-> > > +	bool ret;
-> > > +
-> > > +	/* hugetlb mappings do not require dirty tracking. */
-> > > +	if (folio_test_hugetlb(folio))
-> > > +		return true;
-> > > +
-> >
-> > This:
-> >
-> > > +	if (stabilise_mapping_rcu(folio)) {
-> > > +		struct address_space *mapping = folio_mapping(folio);
-> >
-> > And this is 3rd read of folio->mapping, just for giggles?
-> 
-> I like to giggle :)
-> 
-> Actually this is to handle the various cases in which the mapping might not
-> be what we want (i.e. have PAGE_MAPPING_FLAGS set) which doesn't appear to
-> have a helper exposed for a check. Given previous review about duplication
-> I felt best to reuse this even though it does access again... yes I felt
-> weird about doing that.
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 59adc4e6e9ee..6bb778e10461 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -574,8 +574,8 @@ static int ethtool_get_link_ksettings(struct net_device *dev,
+ static int ethtool_set_link_ksettings(struct net_device *dev,
+ 				      void __user *useraddr)
+ {
++	struct ethtool_link_ksettings link_ksettings = {};
+ 	int err;
+-	struct ethtool_link_ksettings link_ksettings;
+ 
+ 	ASSERT_RTNL();
+ 
+-- 
+2.39.2
 
-Right, I had a peek inside folio_mapping(), but the point is that this
-3rd load might see yet *another* value of mapping from the prior two
-loads, rendering them somewhat worthless.
-
-> > > +
-> > > +		/*
-> > > +		 * Neither anonymous nor shmem-backed folios require
-> > > +		 * dirty tracking.
-> > > +		 */
-> > > +		ret = folio_test_anon(folio) ||
-> > > +			(mapping && shmem_mapping(mapping));
-> > > +	} else {
-> > > +		/* If the mapping is unstable, fallback to the slow path. */
-> > > +		ret = false;
-> > > +	}
-> > > +
-> > > +	unlock_rcu();
-> > > +
-> > > +	return ret;
-> >
-> > then becomes:
-> >
-> >
-> > 	if (folio_test_anon(folio))
-> > 		return true;
-> 
-> This relies on the mapping so belongs below the lockdep assert imo.
-
-Oh, right you are.
-
-> >
-> > 	/*
-> > 	 * Having IRQs disabled (as per GUP-fast) also inhibits RCU
-> > 	 * grace periods from making progress, IOW. they imply
-> > 	 * rcu_read_lock().
-> > 	 */
-> > 	lockdep_assert_irqs_disabled();
-> >
-> > 	/*
-> > 	 * Inodes and thus address_space are RCU freed and thus safe to
-> > 	 * access at this point.
-> > 	 */
-> > 	mapping = folio_mapping(folio);
-> > 	if (mapping && shmem_mapping(mapping))
-> > 		return true;
-> >
-> > 	return false;
-> >
-> > > +}
-> 
-> I'm more than happy to do this (I'd rather drop the RCU bits if possible)
-> but need to be sure it's safe.
-
-GUP-fast as a whole relies on it :-)
