@@ -2,140 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4D466F4403
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 14:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2179E6F440F
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 14:46:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234099AbjEBMmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 08:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57486 "EHLO
+        id S233286AbjEBMqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 08:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbjEBMmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 08:42:08 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B8659CF;
-        Tue,  2 May 2023 05:42:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=fgFCgKRt+dSv63SBQS0EqzIPjjsNgS5iABtgfP8KMvY=; b=Aptl0C9YZtVHhIGcqwN9psA40r
-        S+G1CNNeqHBhJQCPyxq8JTFXrIC20oKv3sunDSOsd9zMFsFzTHjtJ4CsBZ6fPZJ9Fw97dzhOQkR6+
-        sA6Qpx8UwumRQzMSrCbASWhI8qrfpguY0OMXsvQ70o9rTcpsAPZZjvbqrSSxvzgJPR1S4D4W0npH3
-        w4nNuBkWL7Q9i/HqJgT5Z3cz+f2PzWKV7TdovHV7w5pdECflKTwy6Al+2ErY/vOjCg3YGmjyh4os3
-        kpxblnvQPN/ZGuQQycvMxD3KXzI5YbnQ1+FGHmUmlZl+0aypr5sF9KDduv3PIftxymNZ2vLshSC+K
-        /6KVXkHQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1ptpJW-00GJ5B-34;
-        Tue, 02 May 2023 12:41:04 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 00898300237;
-        Tue,  2 May 2023 14:40:58 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id BB0FB23C5C34C; Tue,  2 May 2023 14:40:58 +0200 (CEST)
-Date:   Tue, 2 May 2023 14:40:58 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        with ESMTP id S233992AbjEBMpP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 08:45:15 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4D35FD9
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 05:45:09 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 41be03b00d2f7-51f1b6e8179so2484193a12.3
+        for <netdev@vger.kernel.org>; Tue, 02 May 2023 05:45:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683031509; x=1685623509;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JL0NFk8yMxL2Uax9qVim0oisHD3hlfOakqQFa+PAb+4=;
+        b=cJYZchaVzuEeqmg3UdyBjWkFgNT4hor6f+jXfzGV36UMY3fam/h+WvORBrwvgLrFst
+         6OFBfkKKGC9+2nv0J3Z1v77u8AWidcrSQ1usFD8ipZe/t5aZxYUHygiH9DLMrmr85ax0
+         y+RMVIwq4FjAExr/S/UgU/LljQc0xi077earMtZgB72Vf04LTa27y7PyBwbVV8g7vPkT
+         63r9hsI0bUAxlUK93NZ6iC8/EWdZ+65e206up7nPbRdbj8e3gsWstvD5px7XNClxk4ST
+         oSjvM8tWu/V+Wd6wNGAJDRJSHQzPB+uuyKDwv/6+O/Z7+ycmmrYILaxV/1hKJJPD5/Sh
+         Pjuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683031509; x=1685623509;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JL0NFk8yMxL2Uax9qVim0oisHD3hlfOakqQFa+PAb+4=;
+        b=DCdmiDFb+BQEchZah8DO8c+0zEWN0OhMVTdVVDGvjupE1JYE/jarUlh58AuMNIx/Y7
+         nZR6bNHmJU5IUCS6PWNBN2EMCepWEY9OoIywB0pE7NN8dAKUaAbsP5m7Ym40opSZZEM2
+         twgr8botD6PH2RrFg1srRWMc7jsWEgfbY0D1cgLV278UqSUgKnUevZenrJ8LZQnMYo3i
+         n5FHAEKiMGHRqne3egFrbqGnYgs5AN1Nv6S9m+qVwZWERA53A+q2YmzEQ4tiJax5BA90
+         jVgjG/GbRzalc4VcGmxlptToDkXIGmsZl4l8OZRSf4XrP019vwAmOSDgbPN7PghyFUHy
+         eu0A==
+X-Gm-Message-State: AC+VfDyjSe/uHAqlLmycV6ssgvHXjBJAj3abkQvn+BkVPeM7RYJfE63l
+        F/UWwAc+5Phy31wXFGwJksQ=
+X-Google-Smtp-Source: ACHHUZ7yN/rOOho1wBDcbm5aHkaTEJzJK21HuVoarHQzUDiPdDtt5MO+z06mQsoLOdHSOKuBZAbw+A==
+X-Received: by 2002:a05:6a20:7f9f:b0:fb:f0b5:1e3d with SMTP id d31-20020a056a207f9f00b000fbf0b51e3dmr1337077pzj.41.1683031508698;
+        Tue, 02 May 2023 05:45:08 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id j6-20020a17090a94c600b0024de0de6ec8sm5575898pjw.17.2023.05.02.05.45.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 May 2023 05:45:07 -0700 (PDT)
+Date:   Tue, 2 May 2023 20:45:02 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
-        Paul McKenney <paulmck@kernel.org>
-Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
- to file-backed mappings
-Message-ID: <20230502124058.GB1597602@hirez.programming.kicks-ass.net>
-References: <cover.1682981880.git.lstoakes@gmail.com>
- <dee4f4ad6532b0f94d073da263526de334d5d7e0.1682981880.git.lstoakes@gmail.com>
- <20230502111334.GP1597476@hirez.programming.kicks-ass.net>
- <ab66d15a-acd0-4d9b-aa12-49cddd12c6a5@lucifer.local>
- <20230502120810.GD1597538@hirez.programming.kicks-ass.net>
+        Eric Dumazet <edumazet@google.com>,
+        Liang Li <liali@redhat.com>, Vincent Bernat <vincent@bernat.ch>
+Subject: Re: [PATCHv2 net 1/4] bonding: fix send_peer_notif overflow
+Message-ID: <ZFEFzvaRmPL5kLE6@Laptop-X1>
+References: <20230427033909.4109569-1-liuhangbin@gmail.com>
+ <20230427033909.4109569-2-liuhangbin@gmail.com>
+ <ZEwmxt4vvw/+2zqI@corigine.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230502120810.GD1597538@hirez.programming.kicks-ass.net>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <ZEwmxt4vvw/+2zqI@corigine.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 02:08:10PM +0200, Peter Zijlstra wrote:
-
-> > >
-> > >
-> > > 	if (folio_test_anon(folio))
-> > > 		return true;
-> > 
-> > This relies on the mapping so belongs below the lockdep assert imo.
+On Fri, Apr 28, 2023 at 10:04:22PM +0200, Simon Horman wrote:
+> On Thu, Apr 27, 2023 at 11:39:06AM +0800, Hangbin Liu wrote:
 > 
-> Oh, right you are.
+> ...
 > 
-> > >
-> > > 	/*
-> > > 	 * Having IRQs disabled (as per GUP-fast) also inhibits RCU
-> > > 	 * grace periods from making progress, IOW. they imply
-> > > 	 * rcu_read_lock().
-> > > 	 */
-> > > 	lockdep_assert_irqs_disabled();
-> > >
-> > > 	/*
-> > > 	 * Inodes and thus address_space are RCU freed and thus safe to
-> > > 	 * access at this point.
-> > > 	 */
-> > > 	mapping = folio_mapping(folio);
-> > > 	if (mapping && shmem_mapping(mapping))
-> > > 		return true;
-> > >
-> > > 	return false;
-> > >
-> > > > +}
+> > diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bond_netlink.c
+> > index c2d080fc4fc4..09a501cdea0c 100644
+> > --- a/drivers/net/bonding/bond_netlink.c
+> > +++ b/drivers/net/bonding/bond_netlink.c
+> > @@ -244,6 +244,12 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+> >  	if (data[IFLA_BOND_PEER_NOTIF_DELAY]) {
+> >  		int delay = nla_get_u32(data[IFLA_BOND_PEER_NOTIF_DELAY]);
+> >  
+> > +		if (delay > 300000) {
+> > +			NL_SET_ERR_MSG_ATTR(extack, data[IFLA_BOND_PEER_NOTIF_DELAY],
+> > +					    "peer_notif_delay should be less than 300s");
+> > +			return -EINVAL;
+> > +		}
+> 
+> Hi Hangbin,
+> 
+> can this limit be implemented using NLA_POLICY_MAX() in bond_policy ?
 
-So arguably you should do *one* READ_ONCE() load of mapping and
-consistently use that, this means open-coding both folio_test_anon() and
-folio_mapping().
+Thanks for the comment, I will update the patch after backing from holiday
+next week.
 
+Hangbin
