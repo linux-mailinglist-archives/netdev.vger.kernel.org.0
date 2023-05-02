@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC8946F3B55
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 02:19:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95B0C6F3B59
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 02:20:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232989AbjEBATC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 20:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
+        id S233185AbjEBAUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 20:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229863AbjEBATA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 20:19:00 -0400
+        with ESMTP id S229863AbjEBAUa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 20:20:30 -0400
 Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C7BE7A;
-        Mon,  1 May 2023 17:18:58 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3420IKXI070147;
-        Mon, 1 May 2023 19:18:20 -0500
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C72DE9;
+        Mon,  1 May 2023 17:20:28 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3420Jwmp070588;
+        Mon, 1 May 2023 19:19:58 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1682986700;
-        bh=2xPdfbXKkI18fLVNxuoUgjV/EL3yFDxzUN/5cXRRZLI=;
+        s=ti-com-17Q1; t=1682986798;
+        bh=YPo3G+O2eNb5kCnGEM20hSWgWUlJO5PPCrrYZP1vQt8=;
         h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=Mp/GBj9c16keBA5h6AuWULyZfvxUqiRJBBzqLd4CLjResFov0q+TNRXLxarWevtAr
-         45Wfog2h9QF8doTMlFTw8WKX19BYhTvqBLMjZxOVdi4ykSALiWZi1OBzrc07WU2l+u
-         XhL3TtEg5n+72xSYecQs0U1+3kt97oAqmNELXxg0=
-Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3420IKTX056702
+        b=agCTe61KyoQ+nKtYl31PuRlkorU5QF5IzV9imSErt8Ou3JwpDRJ119aeCTOrBATtI
+         nP2eIikUarqhRIM69GoljEaD/6LwM1WVSo27wsO1G1baFGi2j7jHhUF1AuDVO4mV/Z
+         c9JDQFH+Dbr9HVrGTVoxEy/8Pny9rJwGiEDOSs7A=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3420JwNn116921
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 1 May 2023 19:18:20 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+        Mon, 1 May 2023 19:19:58 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 1
- May 2023 19:18:20 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ May 2023 19:19:58 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Mon, 1 May 2023 19:18:19 -0500
+ Frontend Transport; Mon, 1 May 2023 19:19:58 -0500
 Received: from localhost (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3420IJ8I011856;
-        Mon, 1 May 2023 19:18:19 -0500
-Date:   Mon, 1 May 2023 19:18:19 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3420JwK2012934;
+        Mon, 1 May 2023 19:19:58 -0500
+Date:   Mon, 1 May 2023 19:19:58 -0500
 From:   Nishanth Menon <nm@ti.com>
 To:     Judith Mendez <jm@ti.com>
 CC:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
@@ -59,15 +59,14 @@ CC:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
         <devicetree@vger.kernel.org>,
         Oliver Hartkopp <socketcan@hartkopp.net>,
         Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH v4 3/4] DO_NOT_MERGE arm64: dts: ti: Add AM62x MCAN MAIN
- domain transceiver overlay
-Message-ID: <20230502001819.ik3srlbfs663wuwg@harmful>
-References: <20230501224624.13866-1-jm@ti.com>
- <20230501224624.13866-4-jm@ti.com>
+Subject: Re: [PATCH v3 4/4] arm64: dts: ti: Enable MCU MCANs for AM62x
+Message-ID: <20230502001958.6ehl2u5oqqu4wq6n@specked>
+References: <20230501223121.21663-1-jm@ti.com>
+ <20230501223121.21663-5-jm@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230501224624.13866-4-jm@ti.com>
+In-Reply-To: <20230501223121.21663-5-jm@ti.com>
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
@@ -79,11 +78,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17:46-20230501, Judith Mendez wrote:
-> Add an overlay for main domain MCAN on AM62x SK. The AM62x
-> SK board does not have on-board CAN transceiver so instead
-> of changing the DTB permanently, add an overlay to enable
-> MAIN domain MCAN and support for 1 CAN transceiver.
+On 17:31-20230501, Judith Mendez wrote:
+> On AM62x there are no hardware interrupts routed to A53 GIC
+> interrupt controller for MCU MCAN IPs, so MCU MCANs were not
+> added to the MCU dtsi. In this patch series an hrtimer is introduced
+> to MCAN driver to generate software interrupts. Now add MCU MCAN
+> nodes to the MCU dtsi but disable the MCAN devices by default.
+> 
+> AM62x does not carry on-board CAN transceivers, so instead of
+> changing DTB permanently use an overlay to enable MCU MCANs and to
+> add CAN transceiver nodes.
+> 
+> If there is no hardware interrupt and timer method is used, remove
+> interrupt properties and add poll-interval to enable the hrtimer
+> per MCAN node.
 > 
 > This DT overlay can be used with the following EVM:
 > Link: https://www.ti.com/tool/TCAN1042DEVM
@@ -93,53 +101,73 @@ On 17:46-20230501, Judith Mendez wrote:
 > Changelog:
 > v3:
 >  1. Add link for specific board
->  
->  arch/arm64/boot/dts/ti/Makefile               |  2 ++
->  .../boot/dts/ti/k3-am625-sk-mcan-main.dtso    | 35 +++++++++++++++++++
->  2 files changed, 37 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso
+> 
+>  arch/arm64/boot/dts/ti/Makefile               |  2 +-
+>  arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi       | 24 ++++++++
+>  .../boot/dts/ti/k3-am625-sk-mcan-mcu.dtso     | 57 +++++++++++++++++++
+NAK - I dont see "DO NOT MERGE" in $subject.
+
+please send this patch addressing previous comments with arch maintainer
+tree not the mcan tree.
+
+>  3 files changed, 82 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
 > 
 > diff --git a/arch/arm64/boot/dts/ti/Makefile b/arch/arm64/boot/dts/ti/Makefile
-> index c83c9d772b81..abe15e76b614 100644
+> index abe15e76b614..c76be3888e4d 100644
 > --- a/arch/arm64/boot/dts/ti/Makefile
 > +++ b/arch/arm64/boot/dts/ti/Makefile
-> @@ -9,8 +9,10 @@
+> @@ -9,7 +9,7 @@
 >  # alphabetically.
 >  
 >  # Boards with AM62x SoC
-> +k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo
-
-NAK.
-https://lore.kernel.org/all/4e406c96-3f47-1695-324f-a9e45be8c142@ti.com/
-
-Same reasons - we don't want specific instance based overlays please -
-that would'nt make sense - maxbitrate will depend on transceiver so it
-has nothing to do with mcan-main or mcan-mcu and has everything to do
-with the board that is plugged in.
-
+> -k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo
+> +k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo k3-am625-sk-mcan-mcu.dtbo
 >  dtb-$(CONFIG_ARCH_K3) += k3-am625-beagleplay.dtb
 >  dtb-$(CONFIG_ARCH_K3) += k3-am625-sk.dtb
-> +dtb-$(CONFIG_ARCH_K3) += k3-am625-sk-mcan.dtb
->  dtb-$(CONFIG_ARCH_K3) += k3-am62-lp-sk.dtb
->  
->  # Boards with AM62Ax SoC
-> diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso
+>  dtb-$(CONFIG_ARCH_K3) += k3-am625-sk-mcan.dtb
+> diff --git a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
+> index 076601a41e84..20462f457643 100644
+> --- a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
+> +++ b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
+> @@ -141,4 +141,28 @@
+>  		/* Tightly coupled to M4F */
+>  		status = "reserved";
+>  	};
+> +
+> +	mcu_mcan1: can@4e00000 {
+> +		compatible = "bosch,m_can";
+> +		reg = <0x00 0x4e00000 0x00 0x8000>,
+> +			  <0x00 0x4e08000 0x00 0x200>;
+> +		reg-names = "message_ram", "m_can";
+> +		power-domains = <&k3_pds 188 TI_SCI_PD_EXCLUSIVE>;
+> +		clocks = <&k3_clks 188 6>, <&k3_clks 188 1>;
+> +		clock-names = "hclk", "cclk";
+> +		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
+> +		status = "disabled";
+> +	};
+> +
+> +	mcu_mcan2: can@4e10000 {
+> +		compatible = "bosch,m_can";
+> +		reg = <0x00 0x4e10000 0x00 0x8000>,
+> +			  <0x00 0x4e18000 0x00 0x200>;
+> +		reg-names = "message_ram", "m_can";
+> +		power-domains = <&k3_pds 189 TI_SCI_PD_EXCLUSIVE>;
+> +		clocks = <&k3_clks 189 6>, <&k3_clks 189 1>;
+> +		clock-names = "hclk", "cclk";
+> +		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
+> +		status = "disabled";
+> +	};
+>  };
+> diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
 > new file mode 100644
-> index 000000000000..0a7b2f394f87
+> index 000000000000..5145b3de4f9b
 > --- /dev/null
-> +++ b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso
-
-If you are going down this road: am625-sk-tcan10242d.dsto (enable main
-and mcu?) or something reasonable. Though looking at the pins, I fail
-to see how this physically plugs into AM625-SK (I am hoping the answer
-isn't breadboard or jumper wires..).
-
-
-
-> @@ -0,0 +1,35 @@
+> +++ b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
+> @@ -0,0 +1,57 @@
 > +// SPDX-License-Identifier: GPL-2.0
 > +/**
-> + * DT overlay for MCAN transceiver in main domain on AM625 SK
+> + * DT overlay for MCAN in MCU domain on AM625 SK
 > + *
 > + * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
 > + */
@@ -150,27 +178,49 @@ isn't breadboard or jumper wires..).
 > +#include "k3-pinctrl.h"
 > +
 > +&{/} {
-> +	transceiver1: can-phy0 {
+> +	transceiver2: can-phy1 {
+> +		compatible = "ti,tcan1042";
+> +		#phy-cells = <0>;
+> +		max-bitrate = <5000000>;
+> +	};
+> +
+> +	transceiver3: can-phy2 {
 > +		compatible = "ti,tcan1042";
 > +		#phy-cells = <0>;
 > +		max-bitrate = <5000000>;
 > +	};
 > +};
 > +
-> +&main_pmx0 {
-> +	main_mcan0_pins_default: main-mcan0-pins-default {
+> +&mcu_pmx0 {
+> +	mcu_mcan1_pins_default: mcu-mcan1-pins-default {
 > +		pinctrl-single,pins = <
-> +			AM62X_IOPAD(0x1dc, PIN_INPUT, 0) /* (E15) MCAN0_RX */
-> +			AM62X_IOPAD(0x1d8, PIN_OUTPUT, 0) /* (C15) MCAN0_TX */
+> +			AM62X_IOPAD(0x038, PIN_INPUT, 0) /* (B3) MCU_MCAN0_RX */
+> +			AM62X_IOPAD(0x034, PIN_OUTPUT, 0) /* (D6) MCU_MCAN0_TX */
+> +		>;
+> +	};
+> +
+> +	mcu_mcan2_pins_default: mcu-mcan2-pins-default {
+> +		pinctrl-single,pins = <
+> +			AM62X_IOPAD(0x040, PIN_INPUT, 0) /* (D4) MCU_MCAN1_RX */
+> +			AM62X_IOPAD(0x03C, PIN_OUTPUT, 0) /* (E5) MCU_MCAN1_TX */
 > +		>;
 > +	};
 > +};
 > +
-> +&main_mcan0 {
-> +	status = "okay";
+> +&mcu_mcan1 {
+> +	poll-interval;
 > +	pinctrl-names = "default";
-> +	pinctrl-0 = <&main_mcan0_pins_default>;
-> +	phys = <&transceiver1>;
+> +	pinctrl-0 = <&mcu_mcan1_pins_default>;
+> +	phys = <&transceiver2>;
+> +	status = "okay";
+> +};
+> +
+> +&mcu_mcan2 {
+> +	poll-interval;
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&mcu_mcan2_pins_default>;
+> +	phys = <&transceiver3>;
+> +	status = "okay";
 > +};
 > -- 
 > 2.17.1
