@@ -2,171 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B11A6F3F90
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 10:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41D0D6F3D4F
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 08:19:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233906AbjEBIs4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 2 May 2023 04:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50338 "EHLO
+        id S229703AbjEBGTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 02:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233929AbjEBIse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 04:48:34 -0400
-X-Greylist: delayed 1018 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 02 May 2023 01:47:07 PDT
-Received: from repostorp.tmes.trendmicro.eu (repostorp.tmes.trendmicro.eu [18.185.115.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CAC61B1
-        for <netdev@vger.kernel.org>; Tue,  2 May 2023 01:47:06 -0700 (PDT)
-Received: from 89.96.76.22_.trendmicro.com (unknown [172.21.178.36])
-        by repostorp.tmes.trendmicro.eu (Postfix) with SMTP id 7115D10008504;
-        Tue,  2 May 2023 08:17:30 +0000 (UTC)
-X-TM-MAIL-RECEIVED-TIME: 1683015445.187000
-X-TM-MAIL-UUID: 14cd5f75-3b1b-4596-a0d5-65d03b22d0a0
-Received: from EXCH000EDG.int.milano (unknown [89.96.76.22])
-        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTP id 2DCF010000F0E;
-        Tue,  2 May 2023 08:17:25 +0000 (UTC)
-Received: from EXCH000HUB.int.milano (10.4.32.33) by EXCH000EDG.int.milano
- (89.96.76.22) with Microsoft SMTP Server (TLS) id 8.3.389.2; Tue, 2 May 2023
- 07:14:30 +0200
-Received: from EXCHSRVR04.int.milano ([10.4.32.36]) by EXCH000HUB.int.milano
- ([10.4.32.33]) with mapi; Tue, 2 May 2023 07:24:04 +0200
-From:   Gregoraci Antonio <Antonio.Gregoraci@istitutotumori.mi.it>
-To:     "21@hotmail.com" <21@hotmail.com>
-Content-Class: urn:content-classes:message
-Date:   Tue, 2 May 2023 07:24:04 +0200
-Subject: ciao/holo
-Thread-Topic: ciao/holo
-Thread-Index: AQHZfLZPmkUTYwMWRk2TH10oZHHsPA==
-Message-ID: <DCA15BFBCFA11D4DAAB69864B5B767D7022DA376D4BA@EXCHSRVR04.int.milano>
-Accept-Language: it-IT, en-US
-Content-Language: it-IT
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-acceptlanguage: it-IT, en-US
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S231953AbjEBGTh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 02:19:37 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4A74692;
+        Mon,  1 May 2023 23:19:10 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id D666A3200958;
+        Tue,  2 May 2023 02:19:08 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 02 May 2023 02:19:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
+        cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm3; t=1683008348; x=1683094748; bh=dR
+        obIkFcnohuw8rzEUyVR4GTSTBhqRrZ5QZv2BLzLaE=; b=bBakIbq6oEgG7UPEnq
+        +mMZy6zZaJfcQHPekoxpY9Prlewb2B7ad4CTaasZ6LsoUIrqA1LaUSkNU3uWGqXf
+        WsAVdf6l21jyDlDAYtbujtnJc16l8ICKVga9Q1sTPeh2zrTcR6C5sQ0/qhlRA4FG
+        hbg3c7IYHI3BwYlkLkVWLX0iZ2TZ/f6fA/xWgmOqf7JDi0i3ElXdvhIKtYami4Eh
+        g5AmhBFmeC3xQEocFdwkY0ar/tHYTsopy8SUJTlURtzTFWazXeM6ASfA29IhTwln
+        EQTKBgpyi+f0zrx0OGx7rnrSccscKzUevVAkkC/nhg8OfQdt4zJ1y7uZki6QfSRJ
+        B3PQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1683008348; x=1683094748; bh=dRobIkFcnohuw
+        8rzEUyVR4GTSTBhqRrZ5QZv2BLzLaE=; b=YEI+IKk5zhvOH+vrzxCmuEWYj3Urr
+        q/YjgHthIMH3J9LvE3OV1nwRw+tbYVjpFSSZLjn3S8rx5bHlT2Kz3ukjKq2fx4+v
+        hYZvVCOVpTIeRrlbK9iFFNYtccVavrEz9cXLa8fuPJmeGkAKAwQLuTvwBrpVc9st
+        p+S2kbNRR+UJlfaNYd6y24jlvf+xEAmKIZdKlssgcCkmRS6dZodwjxuUBpoUU+5k
+        K9T0porV3tFk/WtZguELaM5o5yGo38x7/OaS1KK4htTdww6GUH/YyL4POPe4v7gx
+        bfI2OP+Zo40jRbiUi/Q6GGBrn6oY1kMaNw40z4CBQwMDHhz3zKAahJAig==
+X-ME-Sender: <xms:XKtQZPEdqL6P6G3ViV0Un-rPFbrNT90LlvcOLMRPmurxfgRWt675jg>
+    <xme:XKtQZMVhnRgqeMo7ArOKsXF8kW16qwrNPlmxyTOUEANQyBegJtWpeKXd2fWk-C3f-
+    l5wLh-yqZ8nfhb4yGw>
+X-ME-Received: <xmr:XKtQZBL31c_RxKQZoob8dw4qWb5Zs_zByk_WGsKMAESnUwxFG8kpYcmeT12SmVNJJYaaLNZP>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfedvhedguddthecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enfghrlhcuvffnffculdejmdenucfjughrpehffgfhvfevufffjgfkgggtsehttdertddt
+    redtnecuhfhrohhmpegglhgrughimhhirhcupfhikhhishhhkhhinhcuoehvlhgrughimh
+    hirhesnhhikhhishhhkhhinhdrphifqeenucggtffrrghtthgvrhhnpeeigfdvgeeiieel
+    udehueeuueejieeiheegudevhffggeeguddvveduueehueefgeenucevlhhushhtvghruf
+    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehvlhgrughimhhirhesnhhikhhi
+    shhhkhhinhdrphif
+X-ME-Proxy: <xmx:XKtQZNHKj1_jWT95c1ZGjJzBYSMnkn7ldtlLYAzhJBf628-xbL48yQ>
+    <xmx:XKtQZFXlYFNYfv4WTplXw0Tyb19K2mdIrD8wPtO-oVC83kcRIObE0A>
+    <xmx:XKtQZIOfji876NNcYihLwlQHkgfcBSRk8dtBhRqTRkcJs1aij0mBVQ>
+    <xmx:XKtQZKXAqIcv6GHakvKTvZ7A8dRT9EVURATYT_w9nojPNMfQnMrSzA>
+Feedback-ID: id3b446c5:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 2 May 2023 02:19:04 -0400 (EDT)
+References: <20230501162530.26414-1-vladimir@nikishkin.pw>
+ <20230501101215.46682967@hermes.local>
+User-agent: mu4e 1.8.14; emacs 30.0.50
+From:   Vladimir Nikishkin <vladimir@nikishkin.pw>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        eng.alaamohamedsoliman.am@gmail.com, gnault@redhat.com,
+        razor@blackwall.org, idosch@nvidia.com, liuhangbin@gmail.com,
+        eyal.birger@gmail.com, jtoppins@redhat.com, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next v7 1/2] Add nolocalbypass option to vxlan.
+Date:   Tue, 02 May 2023 13:50:38 +0800
+In-reply-to: <20230501101215.46682967@hermes.local>
+Message-ID: <87ednz9rxn.fsf@laptop.lockywolf.net>
 MIME-Version: 1.0
-X-TM-AS-ERS: 89.96.76.22-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1007-27600.005
-X-TMASE-Result: 10--5.227400-7.000000
-X-TMASE-MatchedRID: JccYzf/alo2Z92UT4XKzJLrGtoyxDGsveQdcpJtf6Y9dnu0Ib701SwHh
-        /n3IojRHZbYzO9ATSR8iCJj+nG0qavLhF3ODt/qxK1L6TVkdgzvlCdi2vYBU/StbLOivsnLTeOW
-        ogtc/Q+ahrVMGjoVW2dAxpCUwUcRX/hmVMkfK7SzUx9DKYBHnGKd2IUv0yPeefmP+r6TihalqvC
-        uMGQ0jzVrpCKOpM18cDPgUX1cE9O7XOxm24IXrxtH1f5d8nY/hPp0VRG6+qR71fgKy39PDlkeEP
-        abtlRsaejwREYpHOiWWyPdl51RNjgZggDg9vQE5YiI8iyJSkA3PjA1BmHzE8+RXFolGtZQMKxg3
-        Xnh5/+zDiMdHGmnNPbRtAWPTXnKS1iTsGwm9KyqJD4Nwayf7WMEE+9IiWn84I+mdUIK7OD5DkWN
-        prDyYFJk4XfWG6Q5wQGLcrfmCk/qcIa7X43Dj+RZPalguHC34Ket9cEJP1Bi3uEP3hiATS9zrRQ
-        ttYVPeCx4e+jnEj2mZrBKqCt7bePcCWN+BhqOU86OXreFgYUsZskwWqoib3O5SxpUwKMktfrqNW
-        IucyHbg+QiHC8Fzei38M+247Q7BEONKxfrChoJKQwOq4OdJRVjKpSEColRJEzBS/LIYH/e0/17g
-        tnMCM+LzNWBegCW2Pt8/Kr/G3CkLbigRnpKlKSBuGJWwgxAra7leoU/OMhNYsCaawSIuKZ+8fb5
-        xkXFaiGn/dlPDQlNmqHcBvRqfu6awXxUcqWbzftwZ3X11IV0=
-X-TMASE-XGENCLOUD: e9885dc0-d19c-47ed-94c0-c1af7d8c7f44-0-0-200-0
-X-TM-Deliver-Signature: C3D758292AA9599F03FB450B62539574
-X-TM-Addin-Auth: 6qIOaFajCDjq5yQd67JEMFQgTtQB792GUkl4pqzxkpuDtt8OvARkam+KA9T
-        k6zYJUJz0AMSGu6B+9Ony2G6d5BYz1LsrLMV+tc6A4XeTCXksfl79bOmZnVHTREmu9Ks6VbyKoN
-        MaVeu43Y3fEzL2HCEei+9xgZ1KNFKMUQxJbEc3KImNLx1BP1/Pd1RlB2UnLElHu7HmqZCPdm6OS
-        KFeMRF4e0sPw8sbpDIcTZsb07hBZz7L5jshuOnEgd6VK2mm1sGpjWx6GdM5pAY4K0609fgww721
-        qGH0i6MLUSqDKoNzhKsYYCNNVb+mMayC4ZcO.fw3nQXMuQjuCn4jZloJzoZdJGYI+SwF/WYMa6e
-        TzjrEJl6HYEniESa+fYFh+wJZgNjNkCLzpeANOywX4WskK9ji88J4RbXZC7ZMLRcsWBzzD5APB0
-        gSxP7+FL2R87flA1hcrQRnejl8PJKemip24xDONQSSkTcieYbnCHGdvQK+gEtK13Y6KlKOP5fo/
-        dfOm3uL4M5STBZuwanDFe7K86U4VvRH4owy6+aNUEUoPzPIANu1feaCTthpHT/YUKJDpuIesoF5
-        MKflPb+93uia+JrjDGkMF2xTtOG4zQoGQVt24LyQc1QFE3TzlNSLv/tveXmeaBqUdOAAbRlPjfd
-        kzcQ==
-X-TM-Addin-ProductCode: EMS
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLACK autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hola y ¿cómo estás? Hay un proyecto que me gustaría discutir con ustedes. todo disponible. Por favor, comuníquese conmigo directamente a mi correo privado.   ( drcc7072@gmail.com
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-============================================================================================================
-La presente comunicazione, che potrebbe contenere informazioni riservate e/o protette da segreto professionale, è indirizzata esclusivamente ai destinatari della medesima qui indicati. Ogni informazione qui contenuta, che non sia relativa alla nostra attività caratteristica, deve essere considerata come non inviata. Nel caso in cui abbiate ricevuto per errore la presente comunicazione, vogliate cortesemente darcene immediata notizia, rispondendo a questo stesso indirizzo di e-mail, e poi procedere alla cancellazione di questo messaggio dal Vostro sistema. E' strettamente proibito e potrebbe essere fonte di violazione di legge qualsiasi uso, comunicazione, copia o diffusione dei contenuti di questa comunicazione da parte di chi la abbia ricevuta per errore o in violazione degli scopi della presente. Ricordiamo che la tecnologia di trasmissione utilizzata non consente di garantire l’autenticità del mittente né l’integrità dei dati
-
-This communication, which may contain confidential and/or legally privileged information, is intended solely for the use of the intended addressees. All information or advice contained in this communication is subject to the terms and conditions provided by the agreement governing each particular client engagement. If you have received this communication in error, please notify us immediately by responding to this email; then please delete it from your system. Any use, disclosure, copying or distribution of the contents of this communication by a not-intended recipient or in violation of the purposes of this communication is strictly prohibited and may be unlawful. The transmission technology used to send this mail can grant neither the sender identity nor the data integrity
-
+Stephen Hemminger <stephen@networkplumber.org> writes:
+
+> On Tue,  2 May 2023 00:25:29 +0800
+> Vladimir Nikishkin <vladimir@nikishkin.pw> wrote:
+>
+>> If a packet needs to be encapsulated towards a local destination IP and
+>> a VXLAN device that matches the destination port and VNI exists, then
+>> the packet will be injected into the Rx path as if it was received by
+>> the target VXLAN device without undergoing encapsulation. If such a
+>> device does not exist, the packet will be dropped.
+>> 
+>> There are scenarios where we do not want to drop such packets and
+>> instead want to let them be encapsulated and locally received by a user
+>> space program that post-processes these VXLAN packets.
+>> 
+>> To that end, add a new VXLAN device attribute that controls whether such
+>> packets are dropped or not. When set ("localbypass") these packets are
+>> dropped and when unset ("nolocalbypass") the packets are encapsulated
+>> and locally delivered to the listening user space application. Default
+>> to "localbypass" to maintain existing behavior.
+>> 
+>> Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
+>
+> Is there some way to use BPF for this. Rather than a special case
+> for some userspace program?
+
+Well, in the first patch this was not a special case, but rather change
+to the default behaviour. (Which, I guess has been a little too
+audacious.)
+
+I am not sure about BPF, but the concrete use-case I have is solvable by
+dedicating a packet to a bogus IP, and doing an nftables double-NAT
+(source and destination) to 127.0.0.1, which is the way I am solving
+this problem now, and I suspect, what most sysadmins who need this
+feature would be doing this without this patch.
+
+In fact, among all the people I have talked to about this issue (on
+#networking@libera.chat, and elsewhere), nobody considered dropping
+packets to be an intuitive thing. The "intuitive logic" here is the
+following:
+
+1) I am sending packets to an ip and a port,
+2) I have a process listening to packets on this IP and port,
+3) Why on Earth are packets not arriving?
+4) Even further, why does local behaviour differ from remote behaviour?
+
+So the "special case" is already there by design. The new option is
+turning off the special case.
+
+I am aware of the fact that heavy-duty network processing people have a
+different perspective on this issue, and that in high-load environments
+every tiny bit of performance is of crucial importance, hence "local
+bypass" is seen not as a dirty heuristic, but rather as an essential
+feature which vastly increases performance, but for "kitchen sink"
+sysadmins the current (not documented) behaviour is just baffling.
+
+So I would argue that having an option that, even though it might not be
+the most frequently used one, is clearly documented as enabling the most
+straightforward behaviour, would be worth it.
+
+And although having a userspace process listening to a vxlan "for
+processing" might not be the most frequently used thing (although I do
+need it), at least being able to see the packets being sent to local
+ports, with, say, tcpdump, in exactly the same way as the packets being
+sent to remote addresses, would help sysadmins debug their setups better
+even when only the most basic tools available.
+
+I hope that this is convincing enough.
+
+P.S. A apologise for not adding the vxlan: and testing/selftests/net:
+prefixes to the patches. I will add them to the next attempt, in
+addition to fixing the other issues that might be discovered.
+
+-- 
+Your sincerely,
+Vladimir Nikishkin (MiEr, lockywolf)
+(Laptop)
+--
+Fastmail.
 
