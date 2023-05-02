@@ -2,115 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8244E6F499B
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:17:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 009ED6F49A6
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:24:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234222AbjEBSRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 14:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54958 "EHLO
+        id S234064AbjEBSYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 14:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbjEBSRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 14:17:34 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768D01BFC;
-        Tue,  2 May 2023 11:17:17 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id ffacd0b85a97d-2fde2879eabso3903389f8f.1;
-        Tue, 02 May 2023 11:17:17 -0700 (PDT)
+        with ESMTP id S229586AbjEBSYE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 14:24:04 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB71DEC;
+        Tue,  2 May 2023 11:24:03 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d9443c01a7336-1aaec6f189cso21971475ad.3;
+        Tue, 02 May 2023 11:24:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683051436; x=1685643436;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=R3bHT20tkh2F79+SFx041a+gGb7WqEwkVCZSdSx9/lw=;
-        b=ABZvkaFx4jKAf56HV0DtLrke19279svzYn5R3maOZMPNdxk0ObOArzxg1z10J93D2a
-         yLqJcK/Q43aIz0gAQN6GUv32LLd4ihSJH2F3lDhmH6FsxDa2erMpPikt/SxAVgopgXh/
-         kePR/OzazJRcy7NYIKiVq0ZpgVDTP1xoUDJqWPO64eI6859mQ7bOQbyBJ1ugVRvqeNck
-         ybXXGPgAtjCcK3M5B0rdV9P+ADK+khmo7zHMhxkuQ2Fp77MhaAhxZbRtET12rtM07E52
-         ixbhgq27zTpHgcZGNlvbBdyVkC5sSxn0J2bqVU/ZNhFeOPyhwZpIeArFjZC3/h2p331x
-         RF/w==
+        d=gmail.com; s=20221208; t=1683051843; x=1685643843;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uyXrnPA+SkyO4YF2T9X8RYQ0xk0l+3Tn+Ec/OwFQBKE=;
+        b=YB3v24W5xyeIsoNG7b4+SsjsszwJ3V0SySFaHCag1NHc5VerC3c+LYDwV/XE4Grcq0
+         vgNCiPnTKvne6m5fX2vS3b4cYJqPco33DYRyolpueX6jDt6fQa286O1tuqW0HgxKQmDn
+         Q/uMBim4/mqZwHJyxvd5SvFirWVaW9KqGmc3snJN1i4jj1sR9s212WJZXx2z6u7cfq76
+         fV9G//AsBOZOKrPdDCOiDCIVWXVmhWynfosVRX0JmDSZ7axiC38HmCrvM1g6hdY6Sjrb
+         pLOnHMylqAUsq2xAhtrRJqmshs4qMrpsHqfKESfZSRJ2oeDgnMHqg90cRePvpvgwdk5x
+         auEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683051436; x=1685643436;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=R3bHT20tkh2F79+SFx041a+gGb7WqEwkVCZSdSx9/lw=;
-        b=BtrwGqy8+TKHBEv4BA5rkYRfc0wvAKYboRvHvKZMiEdX7zofKWvVUopEcH15jMJtaI
-         qZtMgv0dccwIj5oJG3DL1Fxk8d7IQuWxXtXGrQs604L0L5Hp2LkJPyODxijX9WkL8RHX
-         kSlBTKMlJ4EyekRJyh2qsMK4WoKb7KmcZU0s+MCXuk446241EE3eAWCi4zxcRx0kajEW
-         e4D5NH9g733Lp77wLGH5Mv4EdbrdNAVl5R69tFzfpOjKeNqzNn+V8kAL2xlKwaVynHKd
-         y4ehAgXiGMLE56H/hVj4fxdiU6Z5TgAzsp3UzmomHoQhbVIAp1SukbbqmpgglepeljFM
-         Xlzw==
-X-Gm-Message-State: AC+VfDxY2cnTczuUwgig0FXR8RvfhtMNFCgkucuFnli/MQCVzaJo6ft7
-        8VDugpLtyRbifdF0WuWnv5c=
-X-Google-Smtp-Source: ACHHUZ5PfpjRwsbkRTjC3oEfUSuMXhuAYSi7RouJe4rf6mD72BqoN0/2utYW1uSDsC/8YUwsJgFW7w==
-X-Received: by 2002:adf:f147:0:b0:2fd:98a8:e800 with SMTP id y7-20020adff147000000b002fd98a8e800mr13943385wro.7.1683051435620;
-        Tue, 02 May 2023 11:17:15 -0700 (PDT)
-Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
-        by smtp.gmail.com with ESMTPSA id h3-20020a5d5043000000b002c70ce264bfsm31561902wrt.76.2023.05.02.11.17.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 11:17:14 -0700 (PDT)
-Date:   Tue, 2 May 2023 19:17:14 +0100
-From:   Lorenzo Stoakes <lstoakes@gmail.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        d=1e100.net; s=20221208; t=1683051843; x=1685643843;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=uyXrnPA+SkyO4YF2T9X8RYQ0xk0l+3Tn+Ec/OwFQBKE=;
+        b=Yd5i+SylGe1pB4qBXbMsBm1m5L+Moxk0AAruFViTKjJXXbL/7nnmKrDW6iFs7z7Qjq
+         wVjRSm49fzUsdOgyrpx28G2U57GgpE9+n06DPLMt8UI4SFr+BRJWUqUwu8vSoyGkdhRl
+         MknLAfwvx8oUM+5CEg3pSftWD7NLxXQnyFAorhJeVfWEVcxUoRV4ZHs2WhHtyf9bkNNr
+         xKK9lt793VgpotqU3U15X1ZRJn3k34vBfScvRQy2IS3Uymfg5L1pMB6p8KPrQmloyodO
+         dPxjcSU841i5UEW/dJJLwVKL0WwMx7h3Uwgrd+KOTD2FYZSnk/RCYU6cLfyvmBqKmFRt
+         3aQQ==
+X-Gm-Message-State: AC+VfDzSgwCKOLlMmiAN27t4lWalJT7t9jE7RVUf19Shgr/KI/eaQHlS
+        RswEwdkWKKCr0LW8off7wJ8=
+X-Google-Smtp-Source: ACHHUZ4LK12ztNRyp7y/Em4paeVtiFv9NYBulnnc1VUZwjGW57iY/+aNCpzRFQOFa4xyZqxiBXtfHw==
+X-Received: by 2002:a17:902:ec8d:b0:1a6:566b:dd73 with SMTP id x13-20020a170902ec8d00b001a6566bdd73mr23045645plg.60.1683051843232;
+        Tue, 02 May 2023 11:24:03 -0700 (PDT)
+Received: from [10.69.71.131] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id jj2-20020a170903048200b001ab016e7916sm3072086plb.234.2023.05.02.11.24.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 May 2023 11:24:02 -0700 (PDT)
+Message-ID: <6dd0ae37-9de9-c1fa-002c-b2b114b094a5@gmail.com>
+Date:   Tue, 2 May 2023 11:24:01 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH net 1/2] net: dsa: mt7530: fix corrupt frames using trgmii
+ on 40 MHz XTAL MT7621
+Content-Language: en-US
+To:     arinc9.unal@gmail.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH v7 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
- to file-backed mappings
-Message-ID: <3a8c672d-4e6c-4705-9d6c-509d3733eb05@lucifer.local>
-References: <cover.1683044162.git.lstoakes@gmail.com>
- <b3a4441cade9770e00d24f5ecb75c8f4481785a4.1683044162.git.lstoakes@gmail.com>
- <1691115d-dba4-636b-d736-6a20359a67c3@redhat.com>
- <20230502172231.GH1597538@hirez.programming.kicks-ass.net>
- <406fd43a-a051-5fbe-6f66-a43f5e7e7573@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <406fd43a-a051-5fbe-6f66-a43f5e7e7573@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>
+Cc:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20230501121538.57968-1-arinc.unal@arinc9.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230501121538.57968-1-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -119,92 +95,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 07:34:06PM +0200, David Hildenbrand wrote:
-> On 02.05.23 19:22, Peter Zijlstra wrote:
-> > On Tue, May 02, 2023 at 07:13:49PM +0200, David Hildenbrand wrote:
-> > > [...]
-> > >
-> > > > +{
-> > > > +	struct address_space *mapping;
-> > > > +
-> > > > +	/*
-> > > > +	 * GUP-fast disables IRQs - this prevents IPIs from causing page tables
-> > > > +	 * to disappear from under us, as well as preventing RCU grace periods
-> > > > +	 * from making progress (i.e. implying rcu_read_lock()).
-> > > > +	 *
-> > > > +	 * This means we can rely on the folio remaining stable for all
-> > > > +	 * architectures, both those that set CONFIG_MMU_GATHER_RCU_TABLE_FREE
-> > > > +	 * and those that do not.
-> > > > +	 *
-> > > > +	 * We get the added benefit that given inodes, and thus address_space,
-> > > > +	 * objects are RCU freed, we can rely on the mapping remaining stable
-> > > > +	 * here with no risk of a truncation or similar race.
-> > > > +	 */
-> > > > +	lockdep_assert_irqs_disabled();
-> > > > +
-> > > > +	/*
-> > > > +	 * If no mapping can be found, this implies an anonymous or otherwise
-> > > > +	 * non-file backed folio so in this instance we permit the pin.
-> > > > +	 *
-> > > > +	 * shmem and hugetlb mappings do not require dirty-tracking so we
-> > > > +	 * explicitly whitelist these.
-> > > > +	 *
-> > > > +	 * Other non dirty-tracked folios will be picked up on the slow path.
-> > > > +	 */
-> > > > +	mapping = folio_mapping(folio);
-> > > > +	return !mapping || shmem_mapping(mapping) || folio_test_hugetlb(folio);
-> > >
-> > > "Folios in the swap cache return the swap mapping" -- you might disallow
-> > > pinning anonymous pages that are in the swap cache.
-> > >
-> > > I recall that there are corner cases where we can end up with an anon page
-> > > that's mapped writable but still in the swap cache ... so you'd fallback to
-> > > the GUP slow path (acceptable for these corner cases, I guess), however
-> > > especially the comment is a bit misleading then.
-> > >
-> > > So I'd suggest not dropping the folio_test_anon() check, or open-coding it
-> > > ... which will make this piece of code most certainly easier to get when
-> > > staring at folio_mapping(). Or to spell it out in the comment (usually I
-> > > prefer code over comments).
-> >
-> > So how stable is folio->mapping at this point? Can two subsequent reads
-> > get different values? (eg. an actual mapping and NULL)
-> >
-> > If so, folio_mapping() itself seems to be missing a READ_ONCE() to avoid
-> > the compiler from emitting the load multiple times.
->
-> I can only talk about anon pages in this specific call order here (check
-> first, then test if the PTE changed in the meantime): we don't care if we
-> get two different values. If we get a different value the second time,
-> surely we (temporarily) pinned an anon page that is no longer mapped (freed
-> in the meantime). But in that case (even if we read garbage folio->mapping
-> and made the wrong call here), we'll detect afterwards that the PTE changed,
-> and unpin what we (temporarily) pinned. As folio_test_anon() only checks two
-> bits in folio->mapping it's fine, because we won't dereference garbage
-> folio->mapping.
->
-> With folio_mapping() on !anon and READ_ONCE() ... good question. Kirill said
-> it would be fairly stable, but I suspect that it could change (especially if
-> we call it before validating if the PTE changed as I described further
-> below).
->
-> Now, if we read folio->mapping after checking if the page we pinned is still
-> mapped (PTE unchanged), at least the page we pinned cannot be reused in the
-> meantime. I suspect that we can still read "NULL" on the second read. But
-> whatever we dereference from the first read should still be valid, even if
-> the second read would have returned NULL ("rcu freeing").
->
-
-On a specific point - if mapping turns out to be NULL after we confirm
-stable PTE, I'd be inclined to reject and let the slow path take care of
-it, would you agree that that's the correct approach?
-
-I guess you could take that to mean that the page is no longer mapped so is
-safe, but it feels like refusing it would be the safe course.
 
 
-> --
-> Thanks,
->
-> David / dhildenb
->
+On 5/1/2023 5:15 AM, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> 
+> The multi-chip module MT7530 switch with a 40 MHz oscillator on the
+> MT7621AT, MT7621DAT, and MT7621ST SoCs forwards corrupt frames using
+> trgmii.
+> 
+> This is caused by the assumption that MT7621 SoCs have got 150 MHz PLL,
+> hence using the ncpo1 value, 0x0780.
+> 
+> My testing shows this value works on Unielec U7621-06, Bartel's testing
+> shows it won't work on Hi-Link HLK-MT7621A and Netgear WAC104. All devices
+> tested have got 40 MHz oscillators.
+> 
+> Using the value for 125 MHz PLL, 0x0640, works on all boards at hand. The
+> definitions for 125 MHz PLL exist on the Banana Pi BPI-R2 BSP source code
+> whilst 150 MHz PLL don't.
+> 
+> Forwarding frames using trgmii on the MCM MT7530 switch with a 25 MHz
+> oscillator on the said MT7621 SoCs works fine because the ncpo1 value
+> defined for it is for 125 MHz PLL.
+> 
+> Change the 150 MHz PLL comment to 125 MHz PLL, and use the 125 MHz PLL
+> ncpo1 values for both oscillator frequencies.
+> 
+> Link: https://github.com/BPI-SINOVOIP/BPI-R2-bsp/blob/81d24bbce7d99524d0771a8bdb2d6663e4eb4faa/u-boot-mt/drivers/net/rt2880_eth.c#L2195
+> Fixes: 7ef6f6f8d237 ("net: dsa: mt7530: Add MT7621 TRGMII mode support")
+> Tested-by: Bartel Eerdekens <bartel.eerdekens@constell8.be>
+> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
