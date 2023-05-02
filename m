@@ -2,144 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 190586F3DD9
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 08:53:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C23B06F3E3C
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 09:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233727AbjEBGxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 02:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
+        id S231915AbjEBHLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 03:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233705AbjEBGxD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 02:53:03 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B13B4EE6
-        for <netdev@vger.kernel.org>; Mon,  1 May 2023 23:52:31 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-50bcb229adaso2070216a12.2
-        for <netdev@vger.kernel.org>; Mon, 01 May 2023 23:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683010350; x=1685602350;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Qp50p2Ws7bkjK436XWAEC92FxJZeHIdYYG8HIYuRl1w=;
-        b=Y5pd7ipHf5khD4XXKqFvFfxPCqEek3mtfmLwTKDEHg7xHWpfqhktBQFGAo9UHWTgOv
-         3zdZU6nD1TC58buCWqJqP0aLcYi594gaFF1xeJ/KGUYh04G3wDTO0HYvAN15XuSCYxyR
-         kvdu20eomVrXxX9MVwcFM3uZGjOENIcCEhq/vCnK7cByoL+Q8md6dV1FHVe1kthW7V/2
-         Y8kvqlu9h7Jce79Oe4Y7/ZrnnYv9Plkvi4ePgBJQkYAy+gVs2+x3qPVlanp2fqnKkuHO
-         Dt/57xMiYLdgxaZlq7/+ftvHlJaqsCOEwCEU6R4+mAiBGWb7lDakeLjwcir5pzHnAsNp
-         KvIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683010350; x=1685602350;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Qp50p2Ws7bkjK436XWAEC92FxJZeHIdYYG8HIYuRl1w=;
-        b=M4GEqMbDng4KLBXCQkyBGJVX9YfdGbtCxnmwSFlcnAQTCtO5Zk1vlNTRqHwYZBDv6S
-         djphrzE7O8zDiC5XHf4SKyhR5xuCFWlzJLR7JJNLKbmzvh6YjwZ+h0Uhaihtc7jFFi3c
-         z4Gd2sg4r0CPN+D5VdmO58ocKwTAUD0cQ3Rvcw8WVXOWlKtYstFRNn2OIsbATEF0cGs5
-         KykFKk7GEHYDvl3jc0a6ipHwAkj9sriHjYX/WX4r8Aj90DeJ/ql2fMRCxzh7OGU1sAPX
-         cDjQ5vj8UwV4JwEMlNjh0gi0UJUzaFOLTbiPNJjP48axmbjzYTgocvuZT7pruVqyv6B/
-         8uWw==
-X-Gm-Message-State: AC+VfDy0U4h3PM1K3AYskXSeCRbpKQUK00ZmHsSYoc55AMhWucVcnfzU
-        ZzSrEKITEQNkp3wa9NlKgcivgA==
-X-Google-Smtp-Source: ACHHUZ4gBYHT+yHlP2EQUafOqVWSMCUgol+Ynv+bGX1fRtxeQk2R3Ue7g8hGpMWN1q2Xo43rvnlgZQ==
-X-Received: by 2002:a17:907:3f9e:b0:95e:d74d:c4e6 with SMTP id hr30-20020a1709073f9e00b0095ed74dc4e6mr15909803ejc.25.1683010349936;
-        Mon, 01 May 2023 23:52:29 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:bafd:1283:b136:5f6a? ([2a02:810d:15c0:828:bafd:1283:b136:5f6a])
-        by smtp.gmail.com with ESMTPSA id hy13-20020a1709068a6d00b009606806b2fesm6457878ejc.217.2023.05.01.23.52.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 May 2023 23:52:29 -0700 (PDT)
-Message-ID: <c3395692-7dbf-19b2-bd3f-31ba86fa4ac9@linaro.org>
-Date:   Tue, 2 May 2023 08:52:27 +0200
+        with ESMTP id S229449AbjEBHLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 03:11:41 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20EF1FC2
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 00:11:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1683011498; x=1714547498;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DJve1FIWXG0mHSXEP2qzMKssT+8J/9xfkr5oObJozfc=;
+  b=pq+/WAPb2O1ojMJjjcHYtnzE1yKqVU0i+Sl6i5LQypYjL8C3zcbCv6Ar
+   8LBVDlw9ZRoHlgPaCqhh5WkVtx7VnxC3mPusA1YNLRQGhi/F4TCHXJ0yE
+   CtUZ8xpY7qepGMJ/zkz4NaSPgEf94D3DkZd98+XZeep5N3g5VuDqozm8n
+   xnSdun3wotN4Ja28s18/wtSIMIzQwfD8irGYdQTBxyHGGtlfuCjGYiXqq
+   Fnc9mh1NcZNCvVGeJeo/jPtQlhgOpz7ooiK9AksCHjO50a1kZ0KjRanm+
+   L4XrOhIAx3O5tPs/ssrMUXzrvoJfFREb8uHWTpd8KP+Bddm8nAQU9p7QL
+   w==;
+X-IronPort-AV: E=Sophos;i="5.99,243,1677567600"; 
+   d="scan'208";a="213206477"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 May 2023 00:11:36 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 2 May 2023 00:11:36 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Tue, 2 May 2023 00:11:36 -0700
+Date:   Tue, 2 May 2023 09:11:35 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Ron Eggler <ron.eggler@mistywest.com>
+CC:     <netdev@vger.kernel.org>
+Subject: Re: Unable to TX data on VSC8531
+Message-ID: <20230502071135.bcxg5nip62m7wndb@soft-dev3-1>
+References: <b0cdace8-5aa2-ce78-7cbf-4edf87dbc3a6@mistywest.com>
+ <20230501064655.2ovbo3yhkym3zu57@soft-dev3-1>
+ <2c2bade5-01d5-7065-13e6-56fcdbf92b5a@mistywest.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH v4 0/4] Enable multiple MCAN on AM62x
-Content-Language: en-US
-To:     Judith Mendez <jm@ti.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Schuyler Patton <spatton@ti.com>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Simon Horman <simon.horman@corigine.com>
-References: <20230501224624.13866-1-jm@ti.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230501224624.13866-1-jm@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <2c2bade5-01d5-7065-13e6-56fcdbf92b5a@mistywest.com>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/05/2023 00:46, Judith Mendez wrote:
-> On AM62x there is one MCAN in MAIN domain and two in MCU domain.
-> The MCANs in MCU domain were not enabled since there is no
-> hardware interrupt routed to A53 GIC interrupt controller.
-> Therefore A53 Linux cannot be interrupted by MCU MCANs.
-> 
-> This solution instantiates a hrtimer with 1 ms polling interval
-> for MCAN device when there is no hardware interrupt and there is
-> poll-interval property in DTB MCAN node. The hrtimer generates a
-> recurring software interrupt which allows to call the isr. The isr
-> will check if there is pending transaction by reading a register
-> and proceed normally if there is.
-> 
-> On AM62x, this series enables two MCU MCAN which will use the hrtimer
-> implementation. MCANs with hardware interrupt routed to A53 Linux
-> will continue to use the hardware interrupt as expected.
-> 
-> Timer polling method was tested on both classic CAN and CAN-FD
-> at 125 KBPS, 250 KBPS, 1 MBPS and 2.5 MBPS with 4 MBPS bitrate
-> switching.
-> 
-> Letency and CPU load benchmarks were tested on 3x MCAN on AM62x.
-> 1 MBPS timer polling interval is the better timer polling interval
-> since it has comparable latency to hardware interrupt with the worse
-> case being 1ms + CAN frame propagation time and CPU load is not
-> substantial. Latency can be improved further with less than 1 ms
-> polling intervals, howerver it is at the cost of CPU usage since CPU
-> load increases at 0.5 ms.
-> 
-> Note that in terms of power, enabling MCU MCANs with timer-polling
-> implementation might have negative impact since we will have to wake
-> up every 1 ms whether there are CAN packets pending in the RX FIFO or
-> not. This might prevent the CPU from entering into deeper idle states
-> for extended periods of time.
-> 
-> This patch series depends on 'Enable CAN PHY transceiver driver':
-> Link: https://lore.kernel.org/lkml/775ec9ce-7668-429c-a977-6c8995968d6e@app.fastmail.com/T/
-> 
-> v2:
-> Link: https://lore.kernel.org/linux-can/20230424195402.516-1-jm@ti.com/T/#t
-> 
-> V1:
-> Link: https://lore.kernel.org/linux-can/19d8ae7f-7b74-a869-a818-93b74d106709@ti.com/T/#t
-> 
-> RFC:
-> Link: https://lore.kernel.org/linux-can/52a37e51-4143-9017-42ee-8d17c67028e3@ti.com/T/#t
-> 
-> Changes since v3:
-> - Wrong patch sent, resend correct patch series
+The 05/01/2023 13:34, Ron Eggler wrote:
 
-Sending patchsets every 10 minutes does not help us...
+Hi Ron,
+> 
+> Hi Horatiu,
+> 
+> [snip greetings]
+> 
+> > I've posted here previously about the bring up of two network interfaces
+> > on an embedded platform that is using two the Microsemi VSC8531 PHYs.
+> > (previous thread: issues to bring up two VSC8531 PHYs, Thanks to Heiner
+> > Kallweit & Andrew Lunn).
+> > I'm able to seemingly fully access & operate the network interfaces
+> > through ifconfig (and the ip commands) and I set the ip address to match
+> > my /24 network. However, while it looks like I can receive & see traffic
+> > on the line with tcpdump, it appears like none of my frames can go out
+> > in TX direction and hence entries in my arp table mostly remain
+> > incomplete (and if there actually happens to be a complete entry,
+> > sending anything to it doesn't seem to work and the TX counters in
+> > ifconfig stay at 0. How can I further troubleshoot this? I have set the
+> > phy-mode to rgmii-id in the device tree and have experimented with all
+> > the TX_CLK delay register settings in the PHY but have failed to make
+> > any progress.
+> > Some of the VSC phys have this COMA mode, and then you need to pull
+> > down a GPIO to take it out of this mode. I looked a little bit but I
+> > didn't find anything like this for VSC8531 but maybe you can double
+> > check this. But in that case both the RX and TX will not work.
+> > Are there any errors seen in the registers 16 (0x10) or register 17
+> > (0x11)?
+> Good point rewgarding the COMA mode, I have not found anything like it.
+> The RGMII connectivity should be pretty straight forward per the
+> datasheet, TX0-TX4, TX_CLK, TX_CTL, RXD0-RXD4, RX_CLK & RX_CTL.
+> Not sure if you've seen this in the subthread that is  ongoing with
+> Andrew Lunn but as part of it, I did invoke the mii-tool and got a
+> pretty printout of the PHY registers, see below:
+> 
+> # mii-tool -vv eth0
+> Using SIOCGMIIPHY=0x8947
+> eth0: negotiated 100baseTx-FD, link ok
+>   registers for MII PHY 0:
+>     1040 796d 0007 0572 01e1 45e1 0005 2801
+>     0000 0300 4000 0000 0000 0000 0000 3000
+>     9000 0000 0008 0000 0000 0000 3201 1000
+>     0000 a020 0000 0000 802d 0021 0400 0000
 
-Best regards,
-Krzysztof
+Unfortunetly, I can't see anything obvious wrong with the registers.
 
+>   product info: vendor 00:01:c1, model 23 rev 2
+>   basic mode:   autonegotiation enabled
+>   basic status: autonegotiation complete, link ok
+>   capabilities: 1000baseT-HD 1000baseT-FD 100baseTx-FD 100baseTx-HD
+> 10baseT-FD 10baseT-HD
+>   advertising:  100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
+
+Are you expecting to run at 100Mbit?
+
+>   link partner: 1000baseT-HD 1000baseT-FD 100baseTx-FD 100baseTx-HD
+> 10baseT-FD 10baseT-HD flow-control
+> 
+> Alternartively, the registers can be read with phytool also:
+> 
+> # phytool read eth0/0/0x10
+> 0x9000
+> # phytool read eth0/0/0x11
+> 0000
+
+Another thing that you can try, is to put a probe and see if you
+actually see the TXCLK? And if I understand correctly that should be at
+25MHz (because the link speed is 100Mbit).
+
+> 
+> --
+> Ron
+
+-- 
+/Horatiu
