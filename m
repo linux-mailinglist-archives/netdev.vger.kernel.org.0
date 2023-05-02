@@ -2,112 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDD2F6F495C
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 19:58:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 946526F4968
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233823AbjEBR6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 13:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
+        id S234338AbjEBSAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 14:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234369AbjEBR6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 13:58:24 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841BAAD
-        for <netdev@vger.kernel.org>; Tue,  2 May 2023 10:58:23 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-64115eef620so36661151b3a.1
-        for <netdev@vger.kernel.org>; Tue, 02 May 2023 10:58:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683050303; x=1685642303;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tiE1DWJVu6SR5fUQri2EkqUC06NuFzPAjn+VDe/bbX0=;
-        b=a0zP5mMWN/KjUOhGaEfPf8s4GKxrE/biIQPS8edlBr0BnWsUKt+pKjQLHRdaP8j5PS
-         VX1XEEGEg+HLO7JfJlt4fgOQ1fJk1MOLyVigx1xJSDwgvaBueNg889SV/9Qzf+8LuJ6q
-         wO/tzIlmWSO/MjB35RBTm8IfWyJsq0GZAg0rpD053LEIVzybo4ES1xvQHznAI+XjtdXY
-         Q7rT5Ovf8xYv5DjefiHXWQPZUjk7T0fMT7VpBU2nGTNTs+Cv1BD45hdyHmmgdd5gVNOM
-         R1cHAMIn5BaDJdkMExyPI14x3Ab8tAjj283Bn3RgtSekq5QD5Bj1bsHgP2vbPxIyC3Pp
-         CnrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683050303; x=1685642303;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tiE1DWJVu6SR5fUQri2EkqUC06NuFzPAjn+VDe/bbX0=;
-        b=iSZSdvlCs+UxHCy8WepHxrAoNQ9pWlXz3bc2jg1TPk9QTbDqqVCDA1IAXZN8NFsWjC
-         2yay1U48VIKjBNU7FPiPJEHmmemANbxJIcQtXPXi6jrK9Dg6kyUpSs5q8g0DNOL6/jie
-         re4tnuWJkZdhL9fhsowRMpWtv4PV1d6lQrxs/exeOpfIGYrLzkozrf8/0tAgqj7LCuw1
-         +P9EosM69tPadE+JEc1dfMeWnLyM1NNAcBhDUThl3T6HbSBsnIhk/dnLGU4eNePUOgyE
-         z6OjunIBD/JawvOReGa7Fs2U7xyRntKSnR7tPBgBa6xCAVFabtMYJDFu2AOMxyaEqMAJ
-         m3vA==
-X-Gm-Message-State: AC+VfDzLmr0eSKx+o38tKT7kDLXix7T80C9X8tbFdvHPHEWY9+ntTlM3
-        RGIhL8En1VklEtnp4EAekSGIfA==
-X-Google-Smtp-Source: ACHHUZ69sAcGtuvOJ3Hdq1uWU7dgus/z7Ditm8fZh+kuofxEiQ76vpCMTrCfqNdnQubuxw4bWhWcqg==
-X-Received: by 2002:a05:6a20:72a6:b0:f2:817c:2038 with SMTP id o38-20020a056a2072a600b000f2817c2038mr22302768pzk.18.1683050302978;
-        Tue, 02 May 2023 10:58:22 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id n12-20020a056a00212c00b0063f172b1c47sm20469544pfj.35.2023.05.02.10.58.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 10:58:22 -0700 (PDT)
-Date:   Tue, 2 May 2023 10:58:20 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ganesh Babu <ganesh.babu@ekinops.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: mroute6.h: change type of mif6c_pifi to __u32
-Message-ID: <20230502105820.2c27630d@hermes.local>
-In-Reply-To: <20230502085718.0551a86d@kernel.org>
-References: <PAZP264MB4064279CBAB0D7672726F4A1FC889@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
-        <20230328191456.43d2222e@kernel.org>
-        <PAZP264MB406414BA18689729DDE24F3DFC659@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
-        <20230502085718.0551a86d@kernel.org>
+        with ESMTP id S233331AbjEBSAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 14:00:20 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF0B19A5;
+        Tue,  2 May 2023 10:59:59 -0700 (PDT)
+Received: from pps.filterd (m0353728.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 342HtCfP018285;
+        Tue, 2 May 2023 17:59:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=tKOcmURnemGD3X9MwKKbA1wBzSOBFjask02rGsHEkFI=;
+ b=pGW42QcU4OvHnRCzuZyz+bp8b0W5Bpprkj+RsYymzNlLzXNDg/gWYkLPY7NhtKi4FA0B
+ zHqLzMOPGJfyXTlOBipxG+bC1ot2mXLX87mF76LlXelLTOfgjhykuI8RWrHNAI2rSoOp
+ OCuEIUa38azH84QaUER6qhyDyqyWKrkcwjwsj7aMsYFV8+1c8LmKHcKg9YVXFT0VkM41
+ 8OMzxtH0w/tfs/MZV/h2i9i9HyYgG6EV4T1bfswB0WbCYOaOs7dxviKKGR0IWQCLfH8p
+ L9n6UBCmEikHSdghZrXsEkVnoTqJVKAMe64P5f2cXUGp7trdHWfzA2TnEhEg01mvvPsK bg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb7bar2y2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 May 2023 17:59:23 +0000
+Received: from m0353728.ppops.net (m0353728.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 342HwaH5031083;
+        Tue, 2 May 2023 17:59:22 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb7bar2wx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 May 2023 17:59:22 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 342GGd9D009976;
+        Tue, 2 May 2023 17:59:20 GMT
+Received: from smtprelay03.dal12v.mail.ibm.com ([9.208.130.98])
+        by ppma02dal.us.ibm.com (PPS) with ESMTPS id 3q8tv7vn30-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 May 2023 17:59:20 +0000
+Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
+        by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 342HxHXd42664280
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 2 May 2023 17:59:17 GMT
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0286D58056;
+        Tue,  2 May 2023 17:59:17 +0000 (GMT)
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6800558060;
+        Tue,  2 May 2023 17:59:10 +0000 (GMT)
+Received: from [9.60.89.243] (unknown [9.60.89.243])
+        by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Tue,  2 May 2023 17:59:10 +0000 (GMT)
+Message-ID: <2d023b34-643f-33f7-af5e-7e6dce2eed46@linux.ibm.com>
+Date:   Tue, 2 May 2023 13:59:09 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to
+ file-backed mappings
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        David Hildenbrand <david@redhat.com>
+Cc:     Peter Xu <peterx@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Mika Penttila <mpenttil@redhat.com>,
+        Dave Chinner <david@fromorbit.com>,
+        "Theodore Ts'o" <tytso@mit.edu>
+References: <f0acd8e4-8df8-dfae-b6b2-30eea3b14609@redhat.com>
+ <3c17e07a-a7f9-18fc-fa99-fa55a5920803@linux.ibm.com>
+ <ZFEqTo+l/S8IkBQm@nvidia.com> <ZFEtKe/XcnC++ACZ@x1n>
+ <ZFEt/ot6VKOgW1mT@nvidia.com>
+ <4fd5f74f-3739-f469-fd8a-ad0ea22ec966@redhat.com>
+ <ZFE07gfyp0aTsSmL@nvidia.com>
+ <1f29fe90-1482-7435-96bd-687e991a4e5b@redhat.com>
+ <ZFE4A7HbM9vGhACI@nvidia.com>
+ <6681789f-f70e-820d-a185-a17e638dfa53@redhat.com>
+ <ZFFMXswUwsQ6lRi5@nvidia.com>
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <ZFFMXswUwsQ6lRi5@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: SfvWhzu5WAhhXbJnJtyFvuzAckGDG6lf
+X-Proofpoint-ORIG-GUID: uR7mojU5kWzIiwCQMRwlrZc2zx-Sg8rX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-02_10,2023-04-27_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ lowpriorityscore=0 clxscore=1015 impostorscore=0 mlxscore=0 bulkscore=0
+ suspectscore=0 mlxlogscore=999 adultscore=0 malwarescore=0
+ priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2303200000 definitions=main-2305020151
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2 May 2023 08:57:18 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
+On 5/2/23 1:46 PM, Jason Gunthorpe wrote:
+> On Tue, May 02, 2023 at 06:32:23PM +0200, David Hildenbrand wrote:
+>> On 02.05.23 18:19, Jason Gunthorpe wrote:
+>>> On Tue, May 02, 2023 at 06:12:39PM +0200, David Hildenbrand wrote:
+>>>
+>>>>> It missses the general architectural point why we have all these
+>>>>> shootdown mechanims in other places - plares are not supposed to make
+>>>>> these kinds of assumptions. When the userspace unplugs the memory from
+>>>>> KVM or unmaps it from VFIO it is not still being accessed by the
+>>>>> kernel.
+>>>>
+>>>> Yes. Like having memory in a vfio iommu v1 and doing the same (mremap,
+>>>> munmap, MADV_DONTNEED, ...). Which is why we disable MADV_DONTNEED (e.g.,
+>>>> virtio-balloon) in QEMU with vfio.
+>>>
+>>> That is different, VFIO has it's own contract how it consumes the
+>>> memory from the MM and VFIO breaks all this stuff.
+>>>
+>>> But when you tell VFIO to unmap the memory it doesn't keep accessing
+>>> it in the background like this does.
+>>
+>> To me, this is similar to when QEMU (user space) triggers
+>> KVM_S390_ZPCIOP_DEREG_AEN, to tell KVM to disable AIF and stop using the
+>> page (1) When triggered by the guest explicitly (2) when resetting the VM
+>> (3) when resetting the virtual PCI device / configuration.
+>>
+>> Interrupt gets unregistered from HW (which stops using the page), the pages
+>> get unpinned. Pages get no longer used.
+>>
+>> I guess I am still missing (a) how this is fundamentally different (b) how
+>> it could be done differently.
+> 
+> It uses an address that is already scoped within the KVM memory map
+> and uses KVM's gpa_to_gfn() to translate it to some pinnable page
+> 
+> It is not some independent thing like VFIO, it is explicitly scoped
+> within the existing KVM structure and it does not follow any mutations
+> that are done to the gpa map through the usual KVM APIs.
+> 
+>> I'd really be happy to learn how a better approach would look like that does
+>> not use longterm pinnings.
+> 
+> Sounds like the FW sadly needs pinnings. This is why I said it looks
+> like DMA. If possible it would be better to get the pinning through
+> VFIO, eg as a mdev
 
-> On Tue, 2 May 2023 08:07:10 +0000 Ganesh Babu wrote:
-> > Thank you for your response. Regarding the proposed change to
-> > the mif6ctl structure in mroute6.h, I would like to clarify,
-> > that changing the datatype of mif6c_pifi from __u16 to __u32
-> > will not change the offset of the structure members, which
-> > means that the size of the structure remains the same and
-> > the ABI remains compatible. Furthermore, ifindex is treated
-> > as an integer in all the subsystems of the kernel and not
-> > as a 16-bit value. Therefore, changing the datatype of
-> > mif6c_pifi from __u16 to __u32 is a natural and expected
-> > change that aligns with the existing practice in the kernel.
-> > I understand that the mif6ctl structure is part of the uAPI
-> > and changing its geometry is not allowed. However, in this
-> > case, we are not changing the geometry of the structure,
-> > as the size of the structure remains the same and the offset
-> > of the structure members will not change. Thus, the proposed
-> > change will not affect the ABI or the user API. Instead, it
-> > will allow the kernel to handle 32-bit ifindex values without
-> > any issues, which is essential for the smooth functioning of
-> > the PIM6 protocol. I hope this explanation clarifies any
-> > concerns you may have had. Let me know if you have any further
-> > questions or need any more details.  
-> 
-> Please don't top post on the list.
-> 
-> How does the hole look on big endian? Does it occupy the low or 
-> the high bytes?
-> 
-> There's also the problem of old user space possibly not initializing
-> the hole, and passing in garbage.
+Hrm, these are today handled as a vfio-pci device (e.g. no mdev) so that would be a pretty significant change.
 
-Looks like multicast routing is one of the last places with no netlink
-API, and only ioctl. There is no API to modify multicast routes in iproute2.
+> 
+> Otherwise, it would have been cleaner if this was divorced from KVM
+> and took in a direct user pointer, then maybe you could make the
+> argument is its own thing with its own lifetime rules. (then you are
+> kind of making your own mdev)
+
+Problem there is that firmware needs both the location (where to indicate the event) and the identity of the KVM instance (what guest to ship the GISA alert to) so I don't think we can completely divorce them.
+
+> 
+> Or, perhaps, this is really part of some radical "irqfd" that we've
+> been on and off talking about specifically to get this area of
+> interrupt bypass uAPI'd properly..
+
+I investigated that at one point and could not seem to get it to fit; I'll have another look there.
+
+
 
