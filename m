@@ -2,178 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A66A6F4326
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 13:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E9516F434F
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 14:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234014AbjEBL4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 07:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56948 "EHLO
+        id S234118AbjEBMJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 08:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233669AbjEBL4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 07:56:13 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2122.outbound.protection.outlook.com [40.107.244.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8BA649CD;
-        Tue,  2 May 2023 04:56:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rgz8lhGyfrssJOBPIZuyNOxZQZ9XUusPnxMMU3fjzaMYIp8GkghHEhHQNazxWgjqGJPQUi5YK1VQel8q72hg0Juj7RMhAxKM+4kTxXey5YxEFhKyIiVpEtArshecMXv9pz686uC1N58vyd6/kmfykhDqk3/WgTO512PcsO3yaVA75Hod9Ka/6CyQSdYC3g+DzP6TNAUyhBmcOQe8wi1OGInm1le1a4QHJcAR5O51cCen83+7sSRen1hWpD9cx4DdltcPGAbYcMZOT26rtmHkqdDnU0xfOcX8OWQedWB9QbK3LweUw26qqHhLDVk1VEMLqZMLdDhZgJGTU7DWRwDktA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mHQ3YRkewuZS3erDAoZ3sSageix05zh6D7CDJQwtsOY=;
- b=loa5DJq496l245lFVp353QlMUXzsfQsouKXIbUNABJ92sgRtuza4tNcebNEr+37LIDpZLrv/e3nIKgfNbzBhfvWPuNnfgsiYufw6SiAOXkpwWyTITq5OR+LqlND8vsk6p6t69VCi46VhYLt9Crp/zgRabopUO/UUoS4J/hhBW25/PLnpclZHl8UTv/lZXXrLUs1iFX9xYv8uFcIgxH/TosnG7o/cXVne/hdzNefWkJEgxHSLJuNDPP+GaYIXq6ES9kvoI2OiI4iGrsS412IxAS8hrktGPzAyzJUeoeUMRIBsNjJo9ZoihM0rykX2PknyKTTAhNk85faeXEjafi/ACQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mHQ3YRkewuZS3erDAoZ3sSageix05zh6D7CDJQwtsOY=;
- b=JUHHvGFVVlXJz3ANVR3a778PEyA7S91m32KYvS4gTyMTlRBs63fHw11LWOwHXiqEUTKQzx6z0GOv0SB1U2BKDEUCPwiX3FooH4W8ReXfYYqVLp/mLDmvyAjTKttv4G4DqnC5mvvGgxDgucwca5SARTv1v2F4q7L6TRyx2ZYHy6o=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BLAPR13MB4721.namprd13.prod.outlook.com (2603:10b6:208:327::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31; Tue, 2 May
- 2023 11:56:08 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6340.031; Tue, 2 May 2023
- 11:56:08 +0000
-Date:   Tue, 2 May 2023 13:56:02 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
-Cc:     Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233554AbjEBMJE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 08:09:04 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C0F358B;
+        Tue,  2 May 2023 05:09:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=pz1BFTrMbjtmTLSMUAMwv5KDjqVuW0L+OFuL8UBqI6M=; b=UKrjov+EaCK9CHW/8De9JD8ppd
+        WIAvUqI3xCyhKeUEWy4dg8GrMF+zoqXiitSmj2yLsjJX0In/tnDn/SnOJ9OVUF6SZHXf8cPpDv2KE
+        rQ08+4D83uNLFOaaJ2q9zRzM+XirpW5wcRZ0o9EhGPYg91REe8sz6VwLFkn+kslAqtCMzi0BJcgEi
+        2mr1mvcT0Gp95Sl5NZZEslKSWB2BTNGr+UHLLJMIQkfBdBgAuQbzT9kDg2CBJnJzMrLvk0Kvuyj12
+        uaKVqyt/rexm5oBsVlZbGOAF6Y7t+B9aFsOSgAjh7TQJeIMXCkXoyKQBxq5l4v4HqLq1hhn/9fIjc
+        G2Q4Popw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1ptonk-00GIcJ-0E;
+        Tue, 02 May 2023 12:08:13 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B838C300165;
+        Tue,  2 May 2023 14:08:10 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 784D023C5C351; Tue,  2 May 2023 14:08:10 +0200 (CEST)
+Date:   Tue, 2 May 2023 14:08:10 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Lorenzo Stoakes <lstoakes@gmail.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
-Subject: Re: [PATCH] sctp: fix a potential buffer overflow in
- sctp_sched_set_sched()
-Message-ID: <ZFD6UgOFeUCbbIOC@corigine.com>
-References: <20230502082622.2392659-1-Ilia.Gavrilov@infotecs.ru>
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Mika Penttila <mpenttil@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
+        Paul McKenney <paulmck@kernel.org>
+Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
+ to file-backed mappings
+Message-ID: <20230502120810.GD1597538@hirez.programming.kicks-ass.net>
+References: <cover.1682981880.git.lstoakes@gmail.com>
+ <dee4f4ad6532b0f94d073da263526de334d5d7e0.1682981880.git.lstoakes@gmail.com>
+ <20230502111334.GP1597476@hirez.programming.kicks-ass.net>
+ <ab66d15a-acd0-4d9b-aa12-49cddd12c6a5@lucifer.local>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230502082622.2392659-1-Ilia.Gavrilov@infotecs.ru>
-X-ClientProxiedBy: AM4PR0101CA0060.eurprd01.prod.exchangelabs.com
- (2603:10a6:200:41::28) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BLAPR13MB4721:EE_
-X-MS-Office365-Filtering-Correlation-Id: ec41c4d0-e8dc-4540-eacd-08db4b04373a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: z129qO398j2dODTBBiaVG+q3EJj/Rp7Fo1DAWSKW8zeCzedCiHUT8zRhff2u2nvz7kdnkzcze7vBKt1dLlqDkMVRzBcJRv5JQSPvQN5RS4MWKUaSEYKyjNZZ4VwzTSN1fJr3e/IpTYHvHpNUmzSqsMif+RpU0H5/zQM8F/Skw4BlZRl4LzxDeJLVaeZFDHE/eoPcVfKwglRGGZdt3oThkEtQtLnDB5Qj+1o6wH2VA8ykyPXZNw92axICEAWBszpO4kzCmB9cdaqeFIP3LoYaB1WLZV5NuAiGPsC16iczzwHefvBQmIYzMHlHBEAiibome/4qNrS5gQSxmFEt2IMlgTW1IBYbv07J/cXuql0cXAtbmnEtRwxkKNKwNha31slGb6ZFWklT/7sGMxj5I9W5l1m8eWQ2840DuGVRpY6SEecj7s+L6WIzLuxBs5k2OOFzn465M3DhhUXR0YrXLFwk45Px6Ju+2pTrsqyMn55kT2KsFPui+tCBfZK/tC5PIekhEYVPkDyLrw9A2yeQGmCbXcDZKyq1BMkFpYTriJtxCfsMO1ncPGCtYqoUrQoFG0Xb
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(376002)(396003)(39830400003)(366004)(451199021)(38100700002)(478600001)(8936002)(8676002)(86362001)(66946007)(6916009)(66476007)(36756003)(4326008)(66556008)(41300700001)(54906003)(83380400001)(44832011)(7416002)(2906002)(186003)(316002)(6506007)(6512007)(2616005)(5660300002)(6666004)(6486002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Na+DR/3S1I1adMnAdPP6PCYjhE8aqj+xeQG+/hHnwASUjDNgIL5zfw8CnN6V?=
- =?us-ascii?Q?OCfHa/pgQk+utvltD48JCupZ+nF24U6vVLs/mKkEKvnrkxdSJgaOF/7v5DIB?=
- =?us-ascii?Q?fN2hLkXTMtWgt3YdxHzPyA9tOKZppSrWyYDO2lnhIEIn9TuLOlVeJ11K9neK?=
- =?us-ascii?Q?0+BuBswvt9E2rKhfxculJ2uB3MvAvv0Vl8Mq8F7LlBm1ISRvMRXktNl5DH4Y?=
- =?us-ascii?Q?Alrt79f1k3nMDawM44cJzKUhGQ0pZSPeVlbcsWiRWVQlmLUJNOYWXcNucHWl?=
- =?us-ascii?Q?DcIX2v4e1ol6UUblb1KJd+O6/d/wbwaKAWkSVuCOdbiaXoVTTIz2e/zWCBY9?=
- =?us-ascii?Q?2JO5R3gHDgoPQPMSanAO6ckhATja5TuxWWVtimIfZpehVj4y7hVtkcGhOgst?=
- =?us-ascii?Q?6wbLQRwdA+8bEPuKWEUdRUFt0Fw0XgEEcInjC0HCTKKy/h0fKspsEat5NTLT?=
- =?us-ascii?Q?knfw3ygnyy3xo/y1Fwt++Da4nsBF2q4sP/j2KXdzslOnPAFgj+Q/P/o0rmf5?=
- =?us-ascii?Q?OChyfh+W/cl1i4LAfQAdPW7fRSsERPtJvPonw1nvSFe8P2w6a7kFuMUimQOn?=
- =?us-ascii?Q?gzqefVM5zwQd65FPZis9D1VGkkz3UdJOgYJcd8dRWv7EH03Fq+jX7BgsUksR?=
- =?us-ascii?Q?kYgxxLDpflsaluqUoW48bxKxgm09aVx64YFIQB3eCj7EZT/Y0viTOw9m8cgz?=
- =?us-ascii?Q?R0Uug9oDQanmzGOTcPiz5FBhI9r+lKObr3u/Y3OnpZsROJ8s9XLGvD9djmEl?=
- =?us-ascii?Q?RobnAJC4iKMiLkHVDv8awomWsHh8VwKKmi5qTi13IMlFwJ2dAEl96Pas1FOw?=
- =?us-ascii?Q?LiVD2oACBFSxNZGuSgENzQq9XW5Y08538q+9SJdnszNnj3ydaSb9yxgkG83Z?=
- =?us-ascii?Q?NhTew0nZRhiVnZ3Ldr+HCo6yKipIAII+NE9WfW3xfzAueEouYOdTJ0gg6vLc?=
- =?us-ascii?Q?IzLVNIdx9ik6Xp9TSYTs6tuP2MSJDjAHKRNzjIVXjeaCfj9Y087OzE5MWLcu?=
- =?us-ascii?Q?3FC3KkNKqoFRzLelhF4kOrnkyGPfSisqyMzuPSmjyewUvGFnKA00P1GDkZU+?=
- =?us-ascii?Q?eNsHWquGe/qs9fwVNlxZQHOlPNFcE6kkICRCMaN5ruwOfOATc0OYG6ufk0J0?=
- =?us-ascii?Q?S5TOWV2Tw6VOIj1HC7JGfVS/kPg8BN34hrA2yj8Id7m7/8wBfsgTKpC7+NhT?=
- =?us-ascii?Q?XYXHY9GT7Msx2ctXEqpnPLGJ7Pmj1zjTK5JDeqBiGXZeIhhacxtqjFuhzjxN?=
- =?us-ascii?Q?1gtZMm4tqw3Yuc08diVrnMIohI6dIpJX2oQm0C2cQcZslunK85enoJ7OyH5n?=
- =?us-ascii?Q?mcXYmQ20V5iyJ6XL+qK0TLch1LIt7R5580Gv9b5nveYkhjyfn37rFSMVzSsZ?=
- =?us-ascii?Q?P6M6G4Wl8sszevdeOe01Nipt8JUh3m80j29cRlL7IzHjswetJCJFEXuAT+1i?=
- =?us-ascii?Q?XRhgj48jOMFwFZLp/ZVZX58+npV6UaH8n98auK6zwitiZ3Sb2PskRKjXEla3?=
- =?us-ascii?Q?iOl5gdrpZUPpqyPazPiJ59bG/WBo/B+CkebtqshUxK+TcvsxDB4ub5ykWo13?=
- =?us-ascii?Q?n6s2Q75L0gD2s4BWJRluJrGdRHRjc/gdex94QXE0yeWmewKz+pxE5qNMfKps?=
- =?us-ascii?Q?t83ymq8v2WpPMWpWa7beQ47YzFEr+kqaCCi9o3BQtK09eaTqfjnVB7ZC182E?=
- =?us-ascii?Q?qWdiaA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec41c4d0-e8dc-4540-eacd-08db4b04373a
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 11:56:08.2686
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sDDLd51b/H5uBWDLP5XGXWqDoZYFOrN06w6dFDu0vxGiFBai7ZVzxNCx0kkgWepCKavQ10TMn08FkHAbTNtS92adLOpHw6rFxm+2XRatqWU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR13MB4721
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <ab66d15a-acd0-4d9b-aa12-49cddd12c6a5@lucifer.local>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 08:26:30AM +0000, Gavrilov Ilia wrote:
-> The 'sched' index value must be checked before accessing an element
-> of the 'sctp_sched_ops' array. Otherwise, it can lead to buffer overflow.
+On Tue, May 02, 2023 at 12:25:54PM +0100, Lorenzo Stoakes wrote:
+> On Tue, May 02, 2023 at 01:13:34PM +0200, Peter Zijlstra wrote:
+> > On Tue, May 02, 2023 at 12:11:49AM +0100, Lorenzo Stoakes wrote:
+> > > @@ -95,6 +96,77 @@ static inline struct folio *try_get_folio(struct page *page, int refs)
+> > >  	return folio;
+> > >  }
+> > >
+> > > +#ifdef CONFIG_MMU_GATHER_RCU_TABLE_FREE
+> > > +static bool stabilise_mapping_rcu(struct folio *folio)
+> > > +{
+> > > +	struct address_space *mapping = READ_ONCE(folio->mapping);
+> > > +
+> > > +	rcu_read_lock();
+> > > +
+> > > +	return mapping == READ_ONCE(folio->mapping);
+> >
+> > This doesn't make sense; why bother reading the same thing twice?
 > 
-> Note that it's harmless since the 'sched' parameter is checked before
-> calling 'sctp_sched_set_sched'.
-> 
-> Found by InfoTeCS on behalf of Linux Verification Center
-> (linuxtesting.org) with SVACE.
-> 
-> Fixes: 5bbbbe32a431 ("sctp: introduce stream scheduler foundations")
-> Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
+> The intent is to see whether the folio->mapping has been truncated from
+> underneath us, as per the futex code that Kirill referred to which does
+> something similar [1].
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Yeah, but per that 3rd load you got nothing here. Also that futex code
+did the early load to deal with the !mapping case, but you're not doing
+that.
 
-> ---
->  net/sctp/stream_sched.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
+> > Who cares if the thing changes from before; what you care about is that
+> > the value you see has stable storage, this doesn't help with that.
+> >
+> > > +}
+> > > +
+> > > +static void unlock_rcu(void)
+> > > +{
+> > > +	rcu_read_unlock();
+> > > +}
+> > > +#else
+> > > +static bool stabilise_mapping_rcu(struct folio *)
+> > > +{
+> > > +	return true;
+> > > +}
+> > > +
+> > > +static void unlock_rcu(void)
+> > > +{
+> > > +}
+> > > +#endif
+> >
+> > Anyway, this all can go away. RCU can't progress while you have
+> > interrupts disabled anyway.
 > 
-> diff --git a/net/sctp/stream_sched.c b/net/sctp/stream_sched.c
-> index 330067002deb..a339917d7197 100644
-> --- a/net/sctp/stream_sched.c
-> +++ b/net/sctp/stream_sched.c
-> @@ -146,18 +146,19 @@ static void sctp_sched_free_sched(struct sctp_stream *stream)
->  int sctp_sched_set_sched(struct sctp_association *asoc,
->  			 enum sctp_sched_type sched)
->  {
-> -	struct sctp_sched_ops *n = sctp_sched_ops[sched];
-> +	struct sctp_sched_ops *n;
+> There seems to be other code in the kernel that assumes that this is not
+> the case,
 
-nit: reverse xmas tree - longest line to shortest - for local variable
-     declarations in networking code.
+Yeah, so Paul went back on forth on that a bit. It used to be true in
+the good old days when everything was simple. Then Paul made things
+complicated by separating out sched-RCU bh-RCU and 'regular' RCU
+flavours.
 
->  	struct sctp_sched_ops *old = asoc->outqueue.sched;
->  	struct sctp_datamsg *msg = NULL;
->  	struct sctp_chunk *ch;
->  	int i, ret = 0;
->  
-> -	if (old == n)
-> -		return ret;
-> -
->  	if (sched > SCTP_SS_MAX)
->  		return -EINVAL;
->  
-> +	n = sctp_sched_ops[sched];
-> +	if (old == n)
-> +		return ret;
-> +
->  	if (old)
->  		sctp_sched_free_sched(&asoc->stream);
->  
-> -- 
-> 2.30.2
+At that point disabling IRQs would only (officially) inhibit sched and
+bh RCU flavours, but not the regular RCU.
+
+But then some years ago Linus convinced Paul that having all these
+separate RCU flavours with separate QS rules was a big pain in the
+backside and Paul munged them all together again.
+
+So now, anything that inhibits any of the RCU flavours inhibits them
+all. So disabling IRQs is sufficient.
+
+> i.e. the futex code, though not sure if that's being run with
+> IRQs disabled...
+
+That futex code runs in preemptible context, per the lock_page() that
+can sleep etc.. :-)
+
+> > > +/*
+> > > + * Used in the GUP-fast path to determine whether a FOLL_PIN | FOLL_LONGTERM |
+> > > + * FOLL_WRITE pin is permitted for a specific folio.
+> > > + *
+> > > + * This assumes the folio is stable and pinned.
+> > > + *
+> > > + * Writing to pinned file-backed dirty tracked folios is inherently problematic
+> > > + * (see comment describing the writeable_file_mapping_allowed() function). We
+> > > + * therefore try to avoid the most egregious case of a long-term mapping doing
+> > > + * so.
+> > > + *
+> > > + * This function cannot be as thorough as that one as the VMA is not available
+> > > + * in the fast path, so instead we whitelist known good cases.
+> > > + *
+> > > + * The folio is stable, but the mapping might not be. When truncating for
+> > > + * instance, a zap is performed which triggers TLB shootdown. IRQs are disabled
+> > > + * so we are safe from an IPI, but some architectures use an RCU lock for this
+> > > + * operation, so we acquire an RCU lock to ensure the mapping is stable.
+> > > + */
+> > > +static bool folio_longterm_write_pin_allowed(struct folio *folio)
+> > > +{
+> > > +	bool ret;
+> > > +
+> > > +	/* hugetlb mappings do not require dirty tracking. */
+> > > +	if (folio_test_hugetlb(folio))
+> > > +		return true;
+> > > +
+> >
+> > This:
+> >
+> > > +	if (stabilise_mapping_rcu(folio)) {
+> > > +		struct address_space *mapping = folio_mapping(folio);
+> >
+> > And this is 3rd read of folio->mapping, just for giggles?
 > 
+> I like to giggle :)
+> 
+> Actually this is to handle the various cases in which the mapping might not
+> be what we want (i.e. have PAGE_MAPPING_FLAGS set) which doesn't appear to
+> have a helper exposed for a check. Given previous review about duplication
+> I felt best to reuse this even though it does access again... yes I felt
+> weird about doing that.
+
+Right, I had a peek inside folio_mapping(), but the point is that this
+3rd load might see yet *another* value of mapping from the prior two
+loads, rendering them somewhat worthless.
+
+> > > +
+> > > +		/*
+> > > +		 * Neither anonymous nor shmem-backed folios require
+> > > +		 * dirty tracking.
+> > > +		 */
+> > > +		ret = folio_test_anon(folio) ||
+> > > +			(mapping && shmem_mapping(mapping));
+> > > +	} else {
+> > > +		/* If the mapping is unstable, fallback to the slow path. */
+> > > +		ret = false;
+> > > +	}
+> > > +
+> > > +	unlock_rcu();
+> > > +
+> > > +	return ret;
+> >
+> > then becomes:
+> >
+> >
+> > 	if (folio_test_anon(folio))
+> > 		return true;
+> 
+> This relies on the mapping so belongs below the lockdep assert imo.
+
+Oh, right you are.
+
+> >
+> > 	/*
+> > 	 * Having IRQs disabled (as per GUP-fast) also inhibits RCU
+> > 	 * grace periods from making progress, IOW. they imply
+> > 	 * rcu_read_lock().
+> > 	 */
+> > 	lockdep_assert_irqs_disabled();
+> >
+> > 	/*
+> > 	 * Inodes and thus address_space are RCU freed and thus safe to
+> > 	 * access at this point.
+> > 	 */
+> > 	mapping = folio_mapping(folio);
+> > 	if (mapping && shmem_mapping(mapping))
+> > 		return true;
+> >
+> > 	return false;
+> >
+> > > +}
+> 
+> I'm more than happy to do this (I'd rather drop the RCU bits if possible)
+> but need to be sure it's safe.
+
+GUP-fast as a whole relies on it :-)
