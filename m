@@ -1,222 +1,133 @@
-Return-Path: <netdev+bounces-15-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-16-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 11E176F4B4A
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 22:24:22 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 05B496F4B5B
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 22:28:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1CB0C1C208FF
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:24:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F2A831C2096B
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:28:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69DE1944A;
-	Tue,  2 May 2023 20:24:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C00C9473;
+	Tue,  2 May 2023 20:28:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E3DD8F7E
-	for <netdev@vger.kernel.org>; Tue,  2 May 2023 20:24:18 +0000 (UTC)
-Received: from smtp.smtpout.orange.fr (smtp-16.smtpout.orange.fr [80.12.242.16])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5C51997
-	for <netdev@vger.kernel.org>; Tue,  2 May 2023 13:24:15 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.2.178])
-	by smtp.orange.fr with ESMTPA
-	id twXgppIyTDWLHtwXgpzUGe; Tue, 02 May 2023 22:24:13 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-	s=t20230301; t=1683059053;
-	bh=PMrwAhXdyGkz9ytuGeyKVuEYfwV4KQf3cPRbS20fhZU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=MSxDoOzDIu/DiFTeig656t6lYDc/5KleISt5cSLrSnmdxSpe5lubkW36EctN9mU76
-	 Iq2tRyJ3Y+QATWBHdIUf1fXn61S0We2PvD86m0W7tCTHOZ5SYyZlb7YapCbVQ9CWT2
-	 dLGxi+FID4GpeRUO6V/7Hz7j16fTKyOeypOOc52E1rD/e+cUIP6IZxeSkiI/91Z6o2
-	 2mfdT38mOIukQ6vGkb0XGT/fmgu2vXZpRJgZv1b6rKvSkLjL55EJ5PFEJ6X9tQ+UGg
-	 4TILE30vzjSjVaj8aZ4kQ/Dbb71TypClXpVoxJWQGoV6FH0Nc1Buzo3gv9P3eRhQW0
-	 b5tE4r1jDlVJA==
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Tue, 02 May 2023 22:24:13 +0200
-X-ME-IP: 86.243.2.178
-Message-ID: <b1ee9be3-60db-31ea-97dd-916dc80f237c@wanadoo.fr>
-Date: Tue, 2 May 2023 22:24:08 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49E7B9444
+	for <netdev@vger.kernel.org>; Tue,  2 May 2023 20:28:15 +0000 (UTC)
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2061.outbound.protection.outlook.com [40.107.244.61])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF9C1997
+	for <netdev@vger.kernel.org>; Tue,  2 May 2023 13:28:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LD5qevc5N3n67CDQLto8dbNLIDeanFNi8dISI4xCBtZ3N2OJHKg+5KIMA1bPnqA3aT6c9Ht0lnTfHgMc5P8BDSk2gYA6UGl5v8tt6MzFp5bvUeVlxNKKquopKsZauhuORBhPieDw6N9mVA3l+poaEBh0LiC49vDq2eKxbFX0AtO5tGwKqLZ6M4WmQfsatcU9VpCAgc26wccvH81CXsNAp8gWT+Y3vZB6mSc891NEYtp6qi/sjBRSeP+vYtrkA3g9Znx0bXMaxz53gzodbDJj8us6jUCshOx5S1muFlIkVFk0bbBqBJZiEe1vq1Ico5oU73BZKHBnetQMyefO2kTkFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rtdqDptWQDmtmnpd/4SMYFDoxtDFMwuoSucSdJTMwQk=;
+ b=gYzwHD4yElsvaeiFr8IWLz4Uc1Nij0GdXeGxN+JIWCZf93AlvdTUEYYqhY3eX6DxrYQ9ZE0VI3q9LDxlG0mjHQB6TWDdvGSWLlDOuvNqZWzpnuFcwuHTXI3ZzOkjKUaOHhsAKsH8+OtwffWYc1QpQgAx6AYggiBdn4mC8ezRbFHdlfHsN2gNJQpRE/Lw4D2EaDoUn0RUV+HYMTVVhtSk0rVlJAGU4n9vAL7ZAtMDS/QbVibjLcZFb3m3JhdU4GwV4FHzfle1DgG0K7M9E6bt9bFeV0tCEr0cMvYx8aymF0H8EKiMvvk+NDShVO9n2QTIER6h77ANlEdS3zw5VWj5ZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rtdqDptWQDmtmnpd/4SMYFDoxtDFMwuoSucSdJTMwQk=;
+ b=j972VJH2r30GJtOktl9UVHM5LSfL8/bNhOuBWrCOybtjzyn9KJdF4zrNKALElSPhF7mSKdzJNOHjYeMIxIUTHEiiOPOfAJrcEsM0UAL7whyLY1k4JEaknorsT9Lz9XQO4mmdQAgkV0tkDuXPuiChxN2yl8USad8DYuOzbo98UzI=
+Received: from MW4PR04CA0115.namprd04.prod.outlook.com (2603:10b6:303:83::30)
+ by PH7PR12MB6468.namprd12.prod.outlook.com (2603:10b6:510:1f4::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Tue, 2 May
+ 2023 20:28:08 +0000
+Received: from CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::38) by MW4PR04CA0115.outlook.office365.com
+ (2603:10b6:303:83::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31 via Frontend
+ Transport; Tue, 2 May 2023 20:28:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT018.mail.protection.outlook.com (10.13.175.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6363.21 via Frontend Transport; Tue, 2 May 2023 20:28:08 +0000
+Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 2 May
+ 2023 15:28:06 -0500
+From: Shannon Nelson <shannon.nelson@amd.com>
+To: <kuba@kernel.org>, <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC: <drivers@pensando.io>, Shannon Nelson <shannon.nelson@amd.com>
+Subject: [PATCH net] pds_core: remove CONFIG_DEBUG_FS from makefile
+Date: Tue, 2 May 2023 13:27:52 -0700
+Message-ID: <20230502202752.13350-1-shannon.nelson@amd.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v2 net-next 3/6] net: bcmasp: Add support for ASP2.0
- Ethernet controller
-Content-Language: fr
-To: Justin Chen <justinpopo6@gmail.com>, netdev@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- bcm-kernel-feedback-list@broadcom.com
-Cc: justin.chen@broadcom.com, f.fainelli@gmail.com, davem@davemloft.net,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com, andrew@lunn.ch,
- hkallweit1@gmail.com, linux@armlinux.org.uk, richardcochran@gmail.com,
- sumit.semwal@linaro.org, christian.koenig@amd.com
-References: <1682535272-32249-1-git-send-email-justinpopo6@gmail.com>
- <1682535272-32249-4-git-send-email-justinpopo6@gmail.com>
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <1682535272-32249-4-git-send-email-justinpopo6@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT018:EE_|PH7PR12MB6468:EE_
+X-MS-Office365-Filtering-Correlation-Id: e264d476-b42a-4872-6e73-08db4b4bbdee
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	eXG3Pit1dnPiSd+8U6R5OzjehHwjWRTCHipYf5QzLXGEH5nGIAt4gNYyq+34XCn5C6tSNYOkZOK3OJnKQK3GsjXlb8hbzizD0nIgHicuU0bBxklu9X4YJ0pCrZkjxaTeGMxToaxkZJcbXHtXxAJDc9Nj6fnHGAOZK9L85m9T8rJNIfO2/dAHXTYMKBuBxmk4a4KxE2KA2eq3LUp1Xyvbmfv/H2x8ASuanneDzUUhXIRwW1iiWeyOQW6siYswwszzCWtFC8ZTFk+3z5bpcnfVKBXbwyfo7lYYPYloenanXuwYuexylhjouuSNhX57JxKR++mvXtCuw9/RVm09iQaKxCT+KyKDJNG3SMLxNtD7Ybx9rKH8LRXBV7lRIWHZ6Ow3a9yP2LoIkprKOgcxYiEQiHuUXBDBzUIDcLYxkePSVk40LhEdgJI04QJRbryqm6Bt5qTUom2ul6ZHd3/TZ0bxXDVnZB7s2YcfJ+yada1XlkNmSNluJ1DAK2hBzM8LiGPJUMwIv3zMlk9gcxR+Fu7oEsCYw2QyS/w7PFe7hBW2G7qPS6fBej06J4LwJnZ2iqPAK4ZalXyFZ0mbSz2ebw6PIk2Xn7Q5zl8KDpOUXnxGc2ZuraPeeC5o4+d4qjmtu/nAiKdMOe2lqq2XMNDw+aXr5gt6wKEnjj0P+ku5MpYObB1S+TnAjQPBxcmWnqFT8IRFWow2B2LmIefJ+lmbJIKuhBL1nWZoJ7b8KItJTQp1xwQ=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(39860400002)(396003)(346002)(451199021)(36840700001)(40470700004)(46966006)(41300700001)(4326008)(8676002)(70586007)(82740400003)(81166007)(356005)(70206006)(316002)(2906002)(4744005)(40480700001)(44832011)(40460700003)(5660300002)(8936002)(1076003)(16526019)(26005)(6666004)(83380400001)(36860700001)(82310400005)(336012)(186003)(426003)(47076005)(2616005)(36756003)(478600001)(54906003)(86362001)(110136005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 20:28:08.2644
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e264d476-b42a-4872-6e73-08db4b4bbdee
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6468
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Le 26/04/2023 à 20:54, Justin Chen a écrit :
-> Add support for the Broadcom ASP 2.0 Ethernet controller which is first
-> introduced with 72165. This controller features two distinct Ethernet
-> ports that can be independently operated.
-> 
-> This patch supports:
-> 
-> - Wake-on-LAN using magic packets
-> - basic ethtool operations (link, counters, message level)
-> - MAC destination address filtering (promiscuous, ALL_MULTI, etc.)
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
-> ---
+This cruft from previous drafts should have been removed when
+the code was updated to not use the old style dummy helpers.
 
-[...]
+Fixes: 55435ea7729a ("pds_core: initial framework for pds_core PF driver")
+Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+---
+ drivers/net/ethernet/amd/pds_core/Makefile | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> +void bcmasp_disable_all_filters(struct bcmasp_intf *intf)
-> +{
-> +	struct bcmasp_priv *priv = intf->parent;
-> +	unsigned int i;
-
-Hi,
-
-Nit: Some loop index are unsigned int, but most are int.
-This could be done consistantly.
-
-> +
-> +	/* Disable all filters held by this port */
-> +	for (i = ASP_RX_FILT_MDA_RES_COUNT(intf); i < NUM_MDA_FILTERS; i++) {
-> +		if (priv->mda_filters[i].en &&
-> +		    priv->mda_filters[i].port == intf->port)
-> +			bcmasp_en_mda_filter(intf, 0, i);
-> +	}
-> +}
-
-[...]
-
-> +static int bcmasp_probe(struct platform_device *pdev)
-> +{
-> +	struct device_node *ports_node, *intf_node;
-> +	const struct bcmasp_plat_data *pdata;
-> +	struct device *dev = &pdev->dev;
-> +	int ret, i, count = 0, port;
-> +	struct bcmasp_priv *priv;
-> +	struct bcmasp_intf *intf;
-> +
-> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	priv->irq = platform_get_irq(pdev, 0);
-> +	if (priv->irq <= 0) {
-> +		dev_err(dev, "invalid interrupt\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	priv->clk = devm_clk_get_optional_enabled(dev, "sw_asp");
-> +	if (IS_ERR(priv->clk)) {
-> +		dev_err(dev, "failed to request clock\n");
-> +		return PTR_ERR(priv->clk);
-> +	}
-> +
-> +	/* Base from parent node */
-> +	priv->base = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(priv->base)) {
-> +		dev_err(dev, "failed to iomap\n");
-> +		return PTR_ERR(priv->base);
-> +	}
-> +
-> +	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
-> +	if (ret)
-> +		ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-
-I don't think that this fallback is needed.
-See [1].
-
-More over, using dev_err_probe() would slighly simplify the probe 
-function. (saves a few LoC, logs the error code in a human reading format)
-
-[1]: 
-https://lore.kernel.org/lkml/86bf852e-4220-52d4-259d-3455bc24def1@wanadoo.fr/T/#m022abc0051ede3ba1feeb06cefd59e2a8a5c7864
-
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to set DMA mask: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-
-[...]
-
-> +static int __maybe_unused bcmasp_suspend(struct device *d)
-> +{
-> +	struct bcmasp_priv *priv = dev_get_drvdata(d);
-> +	struct bcmasp_intf *intf;
-> +	unsigned int i;
-
-Same
-
-> +	int ret = 0;
-
-no need to initialize, but it is mostmy a matter of taste.
-
-> +
-> +	for (i = 0; i < priv->intf_count; i++) {
-> +		intf = priv->intfs[i];
-> +		if (!intf)
-> +			continue;
-> +
-> +		ret = bcmasp_interface_suspend(intf);
-> +		if (ret)
-> +			break;
-> +	}
-> +
-> +	ret = clk_prepare_enable(priv->clk);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Whether Wake-on-LAN is enabled or not, we can always disable
-> +	 * the shared TX clock
-> +	 */
-> +	bcmasp_core_clock_set(priv, 0, ASP_CTRL_CLOCK_CTRL_ASP_TX_DISABLE);
-> +
-> +	bcmasp_core_clock_select(priv, true);
-> +
-> +	clk_disable_unprepare(priv->clk);
-> +
-> +	return ret;
-> +}
-> +
-> +static int __maybe_unused bcmasp_resume(struct device *d)
-> +{
-> +	struct bcmasp_priv *priv = dev_get_drvdata(d);
-> +	struct bcmasp_intf *intf;
-> +	unsigned int i;
-
-same
-
-> +	int ret = 0;
-
-no need to initialize, but it is mostmy a matter of taste.
-
-Just my 2c,
-CJ
-
+diff --git a/drivers/net/ethernet/amd/pds_core/Makefile b/drivers/net/ethernet/amd/pds_core/Makefile
+index 0abc33ce826c..8239742e681f 100644
+--- a/drivers/net/ethernet/amd/pds_core/Makefile
++++ b/drivers/net/ethernet/amd/pds_core/Makefile
+@@ -9,6 +9,5 @@ pds_core-y := main.o \
+ 	      dev.o \
+ 	      adminq.o \
+ 	      core.o \
++	      debugfs.o \
+ 	      fw.o
+-
+-pds_core-$(CONFIG_DEBUG_FS) += debugfs.o
+-- 
+2.17.1
 
 
