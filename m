@@ -2,232 +2,367 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B77836F4A85
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 21:42:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 698876F4A8B
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 21:44:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbjEBTmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 15:42:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56232 "EHLO
+        id S229560AbjEBToO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 15:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbjEBTmW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 15:42:22 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2054.outbound.protection.outlook.com [40.107.95.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E57811B;
-        Tue,  2 May 2023 12:42:20 -0700 (PDT)
+        with ESMTP id S229455AbjEBToN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 15:44:13 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83ED811B;
+        Tue,  2 May 2023 12:44:11 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VM8uJWeMZcwamClOwlgMMP4Qxr1oDuY8cJ+XJbaHxpXYHL12RCXDoJyQjexuLMc7o5g9iCamBO+5nbEM1uGKv2cTNAMHZ/GQdYYd06C2B2DPwzHcnDfrvEa9kNqAXl7upya/V0vsFWk0MjB2994h0E6dmGbVxR88Ld7vwPfmx/UXULxDGV9dJd8UhDXWQrBiyIBa+oT6zwk/4NnjyivLihaHlS4ifosNW13eGeYdRGcXCWtplT3HkftGrFYMkjZN1mg9LYZ3CP6SzbJ59/khAjZUysQwZ5HHHNSalU7LKfNyd2PmETwuv8ZmDdIVP3tboN7SeieANyt2Z2RfRYZLfA==
+ b=CV2F23//MMB+CFRHs+iw/owuK5TTqPgdpJIJrzzGhz3sVirZx9js/iAg00nrmuq/AK40NOn68WLj4bFtWqGoRUHZAZka+Y4/g6VUu67xxPW9kQaaXV8WQ/RkTUV+M0Xn/iiiVh4BFlRaPIUoUpYF3ko3KVc/V9MJMdyMUV2m1wkvLH6QmtV/+HPazOu82sVC2aq2t53Np/ptJ6dvREFcMZqt3F4WFmegm+t5qV/dSVVasqqFsRjGydyRsatn2MMWxgYcfcSI0ZsuRxrynZpeVddqtf9tMr/0mwWFJeLm0TnEdCWV3qNMZIJH96vpL5OsxkDAMWzkElufts35mBfFmA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pwPyEjXtsuhvn3NUJ8nGOzGZxqwhWDyCm4Oz6h+0hVI=;
- b=WNL5GRY8eOLEL8XyrKlG7k/19rMNG7I55Z+qan4NLdPUDDbGKdan3ntPTEsguplvX39h9YVZPzRlsvnwjqbSdFQcuzpUsQNLNUirkADa3hE8/xn5cqIjoWjV74C8caMTMw11/vPDRraJaEtJsEEKEIHei/9n2AqUSSRo/1UV8OoXmAsghptmjaKNIGdd9LbxTLo4VFCAGmRjy4xTPJraYEtLpnOjiMyvWtZQ2f5/OQkzcK6hPRfMn7WVtg0mzV7nOXIQVB7PfbuN6ehkCRgdjJIhz0KjwLpxoQQzfly3C74FQ+5ZK3e1pLQhslIgilqWBEK+NXZqTdxNbdStv/l9jg==
+ bh=sevXxeZ4gAj9MHyDC/YwIlzyxau7NQUJkL9r8kXr9+I=;
+ b=S0nC0JTSUVPblBnPSmYwrZJ1ZDMLH036I/A0tuj+xfenZqX1zrJ+P9JvnAGXFtVyQnrI2asfYqs+DX6CoKEVBt8TU7E1zYVcCbhQC+WWGXTL/pzSaeUE//FWwSPeIhAQEFTOjVdZ+goAC0aE9P1g7G/1Jb8D3CTUFHLl+zbKJCYz4XPlcJYoa0G55DXge6yNkH62E7qd+0kToQCoKpfrZCswj4v9kl3JgxIkX92uFTrX2JduWTbgJSMgYCmIJPKDiy3lsfnvxUGO1z1P6b4UWLoKR47zKPcmgVjzBV5Ffgkma3up5UYWzi3hOLDk1+q//PjEqfu07KzvQ8qICh+pcA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pwPyEjXtsuhvn3NUJ8nGOzGZxqwhWDyCm4Oz6h+0hVI=;
- b=rtgBiHSS8Ac/V5YTHdcQpBG6pjN3OS5GITiMT/UUCSSj6h65hwqg2Ee0XUjwFuKW+vBJQly26u6Lv5EYShFfBiA9ek6MAwI53StqnK1h4r+0V/eQyk7+pbSX4SD67rwUb1RgLfyTojSYzdOSgC1gQDaKrjOl1f/2YIPhDCAkO9YaWH0yUVeg1TnQMi/Cy5waPOQ/ZfMe2uWhAoOWPcgVBiJbl19yJeCJy+wVTiK9QDD2B+RjB38bBYK4jqosr27yS0NzgK8W0W2MEw57ra/rG4VWTjJDvbW18BQf/xNrpDkz7E1CldeG+b3K7eikf/wfAvbUp8wKOW4erN5wW8LMcg==
+ bh=sevXxeZ4gAj9MHyDC/YwIlzyxau7NQUJkL9r8kXr9+I=;
+ b=eh5Ey218EDZhgMoULAp5IrGfzyfiNYshTtVbmQMluDFfuE7+VJ0oP7ptKFo+x+x69tIvkhmvkPC+fbORv2wHy0xpQ+XrwTjqNOVXJHpCshHwuJ8F5EoxIOB4xvqUf+s5il7WSXi9a+W76WBS0uMn0Kownb+LE7CXHFdCPL5k4jM=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6201.namprd12.prod.outlook.com (2603:10b6:930:26::16)
- by IA0PR12MB8228.namprd12.prod.outlook.com (2603:10b6:208:402::10) with
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BN0PR13MB4759.namprd13.prod.outlook.com (2603:10b6:408:120::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Tue, 2 May
- 2023 19:42:18 +0000
-Received: from CY5PR12MB6201.namprd12.prod.outlook.com
- ([fe80::a7a3:1d9d:1fa:5136]) by CY5PR12MB6201.namprd12.prod.outlook.com
- ([fe80::a7a3:1d9d:1fa:5136%6]) with mapi id 15.20.6363.020; Tue, 2 May 2023
- 19:42:17 +0000
-Message-ID: <a4676198-87d4-7472-425b-16fb4a39704f@nvidia.com>
-Date:   Tue, 2 May 2023 15:42:13 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.0
-Subject: Re: [PATCH net v2] virtio_net: Fix error unwinding of XDP
- initialization
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        William Tu <witu@nvidia.com>, Parav Pandit <parav@nvidia.com>
-References: <20230502174134.32276-1-feliu@nvidia.com>
- <20230502143148-mutt-send-email-mst@kernel.org>
-From:   Feng Liu <feliu@nvidia.com>
-In-Reply-To: <20230502143148-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0132.namprd03.prod.outlook.com
- (2603:10b6:a03:33c::17) To CY5PR12MB6201.namprd12.prod.outlook.com
- (2603:10b6:930:26::16)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31; Tue, 2 May
+ 2023 19:44:09 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6340.031; Tue, 2 May 2023
+ 19:44:08 +0000
+Date:   Tue, 2 May 2023 21:43:25 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Justin Chen <justinpopo6@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        bcm-kernel-feedback-list@broadcom.com, justin.chen@broadcom.com,
+        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        richardcochran@gmail.com, sumit.semwal@linaro.org,
+        christian.koenig@amd.com
+Subject: Re: [PATCH v2 net-next 3/6] net: bcmasp: Add support for ASP2.0
+ Ethernet controller
+Message-ID: <ZFFn3UdlapiTlCam@corigine.com>
+References: <1682535272-32249-1-git-send-email-justinpopo6@gmail.com>
+ <1682535272-32249-4-git-send-email-justinpopo6@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1682535272-32249-4-git-send-email-justinpopo6@gmail.com>
+X-ClientProxiedBy: AM0PR03CA0007.eurprd03.prod.outlook.com
+ (2603:10a6:208:14::20) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6201:EE_|IA0PR12MB8228:EE_
-X-MS-Office365-Filtering-Correlation-Id: 907b70dc-6ada-4d22-bfe5-08db4b45562a
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BN0PR13MB4759:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3e518014-f02a-474c-d5ee-08db4b45980a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yxeuS10Xuy/68Kp8EzmaILn3F3UEA8+HFzQp2Kz0KVYdWChopZPC8k3irr5jCA7+ZLJYYIF8wwWg3e9PIFQEatauUR6hh+byq0YMaQyBiGl6YZ2ZNgq7N7qkF8OR8ooxYGSOFOFNlz9sOxkl2HkCyJ4NZnk0FNJGByp2N81ATGvYWxvYJg2juNe/smdHgFanE2GT/oMiOFvoK/8DQJ8VGhtMbcLscYsDQ5gHnI9c2m7WgN/efAKe6bGvU9wiDl5xRPS9wEpJMu5KhOskOSevEnwKJ+0vOIPc6A0hMiHwed1yns/iGAU1fvYGTBjCnJ1QCtUh/XOR9k/tbASfYQZg3spDpGVOOiLBsD2K/ISgQnE5d7AauSyrjQSwlUFdsQGR769WpoEVcAUxG65nuajSjlxPKumWLrQ1ZqWq2QufZAwVMVeh7ADo4OgUbJlZivnA247g91pCGR91xbkoTo7Yz6Kr3+/ttPAJTwxlU22F+ZXzvfhsP3OnN2iOiB9aLl7ftEy0clPkx2kSV/1zzZr4XDKC1qivkKc0fMBO86qiNCEmnpUJuUlDz8+FHMEWUbQJdO+DGrihUCkW03NltPQgZXpe3KRKCkozlX+GxKK98g0vj7N5Qz7+egZI0+RT3Mp3KHdFxHo/VRrNGAqrOgaK2g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6201.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(366004)(39860400002)(346002)(396003)(376002)(451199021)(2616005)(83380400001)(107886003)(478600001)(31686004)(186003)(54906003)(4326008)(6916009)(66556008)(66476007)(66946007)(6486002)(6666004)(6512007)(6506007)(26005)(316002)(8936002)(8676002)(5660300002)(41300700001)(2906002)(38100700002)(86362001)(31696002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: kg4lNuCdaybcJ73X0mCOpGBfYF4bDmV69X2yEVkZiZrzugGBk2pr+A3WQMamY6EFUHCBfWf9DbktzRQhaL7S5ll86ddZQRG1O7pzhDjWZXBbp/Khd2gniTnpy77865F5UYLkqvD3yQHpqIEVzPpLWW4EBJlH2JQ9e6OAdMRAVw2ywXif5V+/TFdHf9Rm2CjXYa3scpgQ9q89zFisMst/lHQTOMC+t4SsG0EcbvXbu5EQz0aqlp+KtC2Xn975/5GlcmH/Cw4jGG1SlbVSKe1Fr4YWDvCgRRFidssNnFvwDTNxVQdWtMxlmbxTUPfleHJjwcMQed0ad8rihxoIQckOUqcGfsYHKBx6opvihhV07fcgD3bFJgx67MQsrfeEf34+/zx7Kh9it9toffaeX0vjLFC+rhprVJCFJW42polfH7OjtMMsex/CUP43CBddlS7vSEBLtJA0ivwQgv86jnMf6gmMVOISfpZ9UbiDAVNh6wT9VxkOFm9sqX8qyBSNKHc/snlOFHURfMp4UDGPo46ZHDu0PAQmB2+Emrk1a3isEOIa/OKQ/wmI3bUU2FPfALhWksHHI3slEIbFlJ3y6kpjzV+Cmr6ViPfk7EDD/hq5ZxA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(366004)(376002)(346002)(39830400003)(451199021)(41300700001)(5660300002)(8936002)(8676002)(38100700002)(66946007)(66556008)(66476007)(6916009)(4326008)(316002)(2906002)(7416002)(86362001)(44832011)(966005)(6506007)(6512007)(186003)(6486002)(6666004)(83380400001)(36756003)(2616005)(478600001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T1A4MUpIanQzR3FUcjBMNitwcVA3NXBpTzVIamlBeFc0dFJkUVV2RjdSY20y?=
- =?utf-8?B?ZS9LanNIeEI1cmE3Q0NHdG9uOWFhS2ZqQkorejdYWExlRmcvemIyckpiU05M?=
- =?utf-8?B?T2hUckwxdDZqMUpBWG5mSWZzbTdvbHlyWWFDMmpKOG0wQnJ5VlBRVkhnMThv?=
- =?utf-8?B?djdyRm93L0FJTG5sQWREbWk0QUpLOC9yeCtEaHRwWmJ5VmxjR1N5SW9sTmJ5?=
- =?utf-8?B?bzJuTkRENGorSUJIdXNwQ3UrdnFkSThLZi9vT1RDT2s5RjFzWnpXelFRaGd6?=
- =?utf-8?B?V1RUUEVpVUtoM0pPYlU5eVJFZXlqaGtrSjhkdFZ4VjZVNmxwV3ZsdDJMNkli?=
- =?utf-8?B?WnhlUDJNeDh5UUUzclRIUDZpS281eTE4djVOaTJZOTNLb0ZjSlBQTm14SldZ?=
- =?utf-8?B?Q2pBNWN2SGJNVUxZS0tnL2sxUjBvd3ZqRmYwY1NPc0hxak4xZWhYdm5BV1ll?=
- =?utf-8?B?OU1SNjJqYmxzNzJlMHp2QzQ1Z3AvOFE3clRNRW1VdDdZUHJYZzlhTmpCMVlj?=
- =?utf-8?B?K1psVTk0MW13bHdpNWxxbjFSOVR2bEViRlF1SkR4cGtWYnVwYUJ2VjA4dGh6?=
- =?utf-8?B?ZEp2NTJVSDVKUWp2emlSWGtxc3ZNNUx0WWowcS8xdU5oYzFLRm95SkY0bzVx?=
- =?utf-8?B?Y3drR21TUndsMU1JbFF1dkRQT1VuT2o4NXJhenR2WGp5R3JYSXk4TTF0Wlgr?=
- =?utf-8?B?SUdHMjVxcU1jSDJVQ0xjakJsZWJKdERScWdaSmM5NmxaU3pMMzlqTkZwVHRS?=
- =?utf-8?B?VHhBblN2YUtmZWQrVU9taGkzNGlla0FidURIOElucVQ4ai9aTFZFYUl0MDBr?=
- =?utf-8?B?ckRjckdLb2VQNDhmWk9kR3RRRG1DY3lsZTZLcmZuYzc1Zjl3SFluVVUySzFt?=
- =?utf-8?B?TkVqYU9VUHNTc1FnQ1pmVWJObWdEWWloNmEyUllkbW5HdHpVb0Izek1TWWQz?=
- =?utf-8?B?WkxUOUZvcVNybTBQaGQ3UkUxaVlRemQ0ZUd2a2NpbXVPc1NQVzRKTnFKd0Jw?=
- =?utf-8?B?N2ZydTlxRldOWUdlVzh0MXgwNGhtVEZiQUV1VVpucWN2blEwcEJrd1pmTUxR?=
- =?utf-8?B?Yjk3QlkreWpEOXBpYTBBZWlLYVZ2Rkt1alU5cFZmc09obHJvNXdYb2tNNGQ0?=
- =?utf-8?B?Y1J0T1VLR3k2T2ZHNHFLWlVpZU4wTnYxeUZIaDdTeEIwMkN3VlI1TmE0aFJ0?=
- =?utf-8?B?UUhQc1NPbHVPUTZVSVUyZGVyV0poQkQvQUdUdlNkZXdTRmxYMmJXNGVnQisy?=
- =?utf-8?B?eWgzVWErUkh3QnViaExjK1B0cU02ZGVoZ0N4UFpXcmw0SkVzZnhhRGpjYW5o?=
- =?utf-8?B?TitpS3FueUxrbEd3UkorWjFFdGhwVjM0aEU0Wk5lNUMrazRSdEwrbHNONXN6?=
- =?utf-8?B?OXNyN3ZlOTJzQ3p0Q2ZEOVhySWpNOTFiUDlhb250a0wwN0ZsUEVLcWl3aW1G?=
- =?utf-8?B?NlF3SHJTNUxaaWxPckxSV3ZRdFZ6bUdqN0lNa2Jhc2lYTm5vakVOd3NobDZk?=
- =?utf-8?B?bE9TbHkvL3UxZ2NlaGh6bGh5T204ZkF3WUE2K1J1eDJSckgydVZKR2NnenM0?=
- =?utf-8?B?eTNOYWNFSzNYMVdKT1ZVZERxdk9kaEIzdXRZOGV2Q3N5YmhZcG5xZWREMEJq?=
- =?utf-8?B?dVdlVWczMGRGelBvS1lLNTZFZjk5d1lqYzV4WVVaeDhBQ1crYnRTZzh0RFN2?=
- =?utf-8?B?YWtjQkgvRzE5MFZiU2xXQ0g4Q25lZ0RaYzhwQTFlU1p6M3R4c0ZpQlRUQmFm?=
- =?utf-8?B?RnBIc2lEZzhlNWVseDdlOHExWldwdmNLYXlrQmlwWlhKcXhUZ09PN1BKOGM5?=
- =?utf-8?B?d1RNWmpsZi9mYmUvNk5saWN5eVplTWtMZjBtbEkvT1FzV1NtVnhkSHROZ0F5?=
- =?utf-8?B?c0l2SDZTWVVEZFBRSVR4eWxCZlZaTlVNSXp6aUdmd2xoVFFTTk5wakhUUUN4?=
- =?utf-8?B?MVlBRm1WQ2VjYkY0RE11WEVXcG8rUjBVeWozRnpGZXozcHZTSVkzVCsvcGM1?=
- =?utf-8?B?R1ZTQ05DS3QxWS95aC9rQ3RqaXNweTBMb09DMlFNVzJvaEJldmRmYmpvRGh3?=
- =?utf-8?B?MDZUaWp3aVgrckpYNWhQYmJyUlpFYjFHOS9PRWJTVTdud1hyMHdhaTFPNzFL?=
- =?utf-8?Q?YLr9pczwZXGtThX60XAmi6gLx?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 907b70dc-6ada-4d22-bfe5-08db4b45562a
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6201.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hL4PuNNdR2QOsCpZr4CDo/ytjYFG9chMGB7AXy2xixFTeBAFKIvm0shErQct?=
+ =?us-ascii?Q?HOtLtbs8810No/sW/pJjsZLiTtgGQYUkpLJKL3cunZoco7ca/PTj8yKn0sJg?=
+ =?us-ascii?Q?6p0AkIj7YYJYICb7KaW55XECQJrEg8PXIrLsMmpGuW8yjV6dZGrOfiDHTxS/?=
+ =?us-ascii?Q?tnouNXNuwI8xkL3Ak9A2t5sxp5iEBmBdpDUyDeDr9SGsYJD1+yPVyDqzfRUb?=
+ =?us-ascii?Q?zesRcTIqRhQHYpixxzJyAL1ucnMJvrVjBRwskFaqdpNlqrcP18TfzmBKuoio?=
+ =?us-ascii?Q?+QE2fLaJNuQpNaym6UUOE3AKR4DQ+37n1VF9Lvb0H6qwO3iqLpNK7mKKAroG?=
+ =?us-ascii?Q?Bn/2JAPLwNb4AgHXqdGbq7UmJVGsrYAGOVDfq4TiCIM5uikTWkRuLumbGAsI?=
+ =?us-ascii?Q?Gp0ZxTkY7DsHbEnS5dydMOP+V9GzOeWhjxQbHOBkIkmRcspSZpuHRKvemJg5?=
+ =?us-ascii?Q?i5pLnZD8QgeZxImuICkq8DxAzToEwAfitGJLMx2VWTuUUuzlHgrQqgFGLPj9?=
+ =?us-ascii?Q?Qnj1RHhigvy4zJ5feZVs3xOO6HtD1K0l2QGtZ9hV+QgVhAI2yV0V1SfEeg1j?=
+ =?us-ascii?Q?kJoaPnetoYkIu7chkoDE7occ/OG3g045J1tYfJASVUD/6jyOH6ifHPnBa/5F?=
+ =?us-ascii?Q?MlZOQY3Zd87X5m/5lft5XNpk1v1wsovajNYD5zg8jqPwGpZ1DNH4cbFhBScR?=
+ =?us-ascii?Q?FJCJh87cKrnuSAzBw7Ty+vHyasG/9MC7bqNcjqF/5kTklSzMsB5UQMCNLQFD?=
+ =?us-ascii?Q?Ifpi3MYEjotSmyQ0JEwdDgY+t+7WJ4tT/FrOvoDTRETvmvw39Ukh2/aGNjLH?=
+ =?us-ascii?Q?pumZbogyQ7MTb/q1rDE4jc0Xcg01mAOe5x+qDS37tWaLALwY9E+0FOKqH60v?=
+ =?us-ascii?Q?Dd0i0AJc7M+7FoWOzdRW1zHz+UJ1JqvMWhnBNe9IbDFBwPHjhvpBTq226day?=
+ =?us-ascii?Q?54ahkyeSPFgtAPlV13UdCKR8Le+Q9iKNAlO+zlbBhLtzsuZm0Q6c/bInxnny?=
+ =?us-ascii?Q?DhIUGOyqwwTsizopHim8fu1kOhbX5e/rFrigqn6uEqGGOdAM7wS5yxA2GWn7?=
+ =?us-ascii?Q?Ntsmrt17pHBq89cgO2FDUEvnf9Lof0RUR4LyA1/lowtT19kMx4yOKFwAVDsZ?=
+ =?us-ascii?Q?AQ8rykuSl7oQx2uvl7YIwG56Nf3PjAYcRWlaOE1slfwN9qSmj6IDiZLabrwa?=
+ =?us-ascii?Q?uW+5pXQtWtou7A5mVFo6cRx/SCV0gULX4lufY9Xt7Y5x2XqLfmMLxHYTTAF8?=
+ =?us-ascii?Q?SmLvg11J/iLw7sKH2XnUheGV7zjcC2aSnV6knVy9+9OQJsOo54mTAMPMFABx?=
+ =?us-ascii?Q?qZriGbNWSihVIDZIN86iFYBTLC+3R1YokTrxqbW0aGzSKJsCWd6rbY07sCKG?=
+ =?us-ascii?Q?CD7FlEFd9rjxUrVO1UUmKnpqqLRDslGcAOM9F3lgBW8tfc/G8EcRqm3NdAyS?=
+ =?us-ascii?Q?Jxax0lQsrwST2olExAcVDi+2QkOiDTgwXcDOglIC3gzcxMm19yaN8ak9uCC6?=
+ =?us-ascii?Q?MoStyaN/Vsrw+In4582DzRDKq7y3G+VDFaOuBbW3R7DYjZ+axz20ute4lxIy?=
+ =?us-ascii?Q?6iRAE9bT+S6alfTsxMooMt5izZkOsbp77umLRX24d069oDUMP2P835W4KXK4?=
+ =?us-ascii?Q?mPRmvcQmw2D5by3nPtOXJSCZ8gE8SfuqRly3WbzzrbaYqZzYabeqKTLRPOHU?=
+ =?us-ascii?Q?2txyLA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e518014-f02a-474c-d5ee-08db4b45980a
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 19:42:17.5067
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 19:44:08.7914
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z963/t1PIjHe20hvJI9utYV2uLXlDpY4dfEVVE5fw1xBOm7tllt4NeYgmPM8QKWVGk7CigXZeGk2gWjfWTDiTw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8228
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: WantQVpiQfmAjzdxhH8qqwxiXVSehblNhG4HYpWEDNwbNIddsu4q+wlfV0MSVL2WcDqrDmfsQ1MW52K+gwW7HlazXpPPUq8/cqI37VSCPIg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB4759
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 26, 2023 at 11:54:29AM -0700, Justin Chen wrote:
+> Add support for the Broadcom ASP 2.0 Ethernet controller which is first
+> introduced with 72165. This controller features two distinct Ethernet
+> ports that can be independently operated.
+> 
+> This patch supports:
+> 
+> - Wake-on-LAN using magic packets
+> - basic ethtool operations (link, counters, message level)
+> - MAC destination address filtering (promiscuous, ALL_MULTI, etc.)
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 
+...
 
-On 2023-05-02 p.m.2:32, Michael S. Tsirkin wrote:
-> External email: Use caution opening links or attachments
-> 
-> 
-> On Tue, May 02, 2023 at 01:41:34PM -0400, Feng Liu wrote:
->> When initializing XDP in virtnet_open(), some rq xdp initialization
->> may hit an error causing net device open failed. However, previous
->> rqs have already initialized XDP and enabled NAPI, which is not the
->> expected behavior. Need to roll back the previous rq initialization
->> to avoid leaks in error unwinding of init code.
->>
->> Also extract a helper function of disable queue pairs, and use newly
->> introduced helper function in error unwinding and virtnet_close;
->>
->> Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
->> Signed-off-by: Feng Liu <feliu@nvidia.com>
->> Reviewed-by: William Tu <witu@nvidia.com>
->> Reviewed-by: Parav Pandit <parav@nvidia.com>
->> Reviewed-by: Simon Horman <simon.horman@corigine.com>
->> Acked-by: Michael S. Tsirkin <mst@redhat.com>
->> ---
->>   drivers/net/virtio_net.c | 31 +++++++++++++++++++++----------
->>   1 file changed, 21 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->> index 8d8038538fc4..5cd78e154d14 100644
->> --- a/drivers/net/virtio_net.c
->> +++ b/drivers/net/virtio_net.c
->> @@ -1868,6 +1868,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
->>        return received;
->>   }
->>
->> +static void virtnet_disable_qp(struct virtnet_info *vi, int qp_index)
->> +{
->> +     virtnet_napi_tx_disable(&vi->sq[qp_index].napi);
->> +     napi_disable(&vi->rq[qp_index].napi);
->> +     xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
->> +}
->> +
->>   static int virtnet_open(struct net_device *dev)
->>   {
->>        struct virtnet_info *vi = netdev_priv(dev);
->> @@ -1883,20 +1890,27 @@ static int virtnet_open(struct net_device *dev)
->>
->>                err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, vi->rq[i].napi.napi_id);
->>                if (err < 0)
->> -                     return err;
->> +                     goto err_xdp_info_reg;
->>
->>                err = xdp_rxq_info_reg_mem_model(&vi->rq[i].xdp_rxq,
->>                                                 MEM_TYPE_PAGE_SHARED, NULL);
->> -             if (err < 0) {
->> -                     xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
->> -                     return err;
->> -             }
->> +             if (err < 0)
->> +                     goto err_xdp_reg_mem_model;
->>
->>                virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
->>                virtnet_napi_tx_enable(vi, vi->sq[i].vq, &vi->sq[i].napi);
->>        }
->>
->>        return 0;
->> +
->> +     /* error unwinding of xdp init */
-> 
-> btw we don't really need this comment - it's how all
-> error handling is done anyways.
-> if you need to roll v3, you can drop it.
-> 
-Will do, thx
+> diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp.c b/drivers/net/ethernet/broadcom/asp2/bcmasp.c
 
->> +err_xdp_reg_mem_model:
->> +     xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
->> +err_xdp_info_reg:
->> +     for (i = i - 1; i >= 0; i--)
->> +             virtnet_disable_qp(vi, i);
->> +
->> +     return err;
->>   }
->>
->>   static int virtnet_poll_tx(struct napi_struct *napi, int budget)
->> @@ -2305,11 +2319,8 @@ static int virtnet_close(struct net_device *dev)
->>        /* Make sure refill_work doesn't re-enable napi! */
->>        cancel_delayed_work_sync(&vi->refill);
->>
->> -     for (i = 0; i < vi->max_queue_pairs; i++) {
->> -             virtnet_napi_tx_disable(&vi->sq[i].napi);
->> -             napi_disable(&vi->rq[i].napi);
->> -             xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
->> -     }
->> +     for (i = 0; i < vi->max_queue_pairs; i++)
->> +             virtnet_disable_qp(vi, i);
->>
->>        return 0;
->>   }
->> --
->> 2.37.1 (Apple Git-137.1)
-> 
+...
+
+> +static int bcmasp_netfilt_get_reg_offset(struct bcmasp_priv *priv,
+> +					 struct bcmasp_net_filter *nfilt,
+> +					 enum asp_netfilt_reg_type reg_type,
+> +					 u32 offset)
+> +{
+> +	u32 block_index, filter_sel;
+> +
+> +	if (offset < 32) {
+> +		block_index = ASP_RX_FILTER_NET_L2;
+> +		filter_sel = nfilt->hw_index;
+> +	} else if (offset < 64) {
+> +		block_index = ASP_RX_FILTER_NET_L2;
+> +		filter_sel = nfilt->hw_index + 1;
+> +	} else if (offset < 96) {
+> +		block_index = ASP_RX_FILTER_NET_L3_0;
+> +		filter_sel = nfilt->hw_index;
+> +	} else if (offset < 128) {
+> +		block_index = ASP_RX_FILTER_NET_L3_0;
+> +		filter_sel = nfilt->hw_index + 1;
+> +	} else if (offset < 160) {
+> +		block_index = ASP_RX_FILTER_NET_L3_1;
+> +		filter_sel = nfilt->hw_index;
+> +	} else if (offset < 192) {
+> +		block_index = ASP_RX_FILTER_NET_L3_1;
+> +		filter_sel = nfilt->hw_index + 1;
+> +	} else if (offset < 224) {
+> +		block_index = ASP_RX_FILTER_NET_L4;
+> +		filter_sel = nfilt->hw_index;
+> +	} else if (offset < 256) {
+> +		block_index = ASP_RX_FILTER_NET_L4;
+> +		filter_sel = nfilt->hw_index + 1;
+> +	}
+
+block_index and filter_sel are uninitialised if offset doesn't match any
+of the conditions above. Can that happen?
+
+> +
+> +	switch (reg_type) {
+> +	case ASP_NETFILT_MATCH:
+> +		return ASP_RX_FILTER_NET_PAT(filter_sel, block_index,
+> +					     (offset % 32));
+> +	case ASP_NETFILT_MASK:
+> +		return ASP_RX_FILTER_NET_MASK(filter_sel, block_index,
+> +					      (offset % 32));
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +static void bcmasp_netfilt_tcpip4_wr(struct bcmasp_priv *priv,
+> +				     struct bcmasp_net_filter *nfilt,
+> +				     struct ethtool_tcpip4_spec *match,
+> +				     struct ethtool_tcpip4_spec *mask,
+> +				     u32 offset)
+> +{
+> +	__be16 val_16, mask_16;
+> +
+> +	val_16 = htons(ETH_P_IP);
+> +	mask_16 = 0xFFFF;
+
+mask_17 is __be16, but 0xFFFF is host byte order.
+
+Please make sure there are no new warnings when building with W=1 C=1.
+
+...
+
+> +/* If no network filter found, return open filter.
+> + * If no more open filters return NULL
+> + */
+> +struct bcmasp_net_filter *bcmasp_netfilt_get_init(struct bcmasp_intf *intf,
+> +						  int loc, bool wake_filter,
+> +						  bool init)
+> +{
+> +	struct bcmasp_priv *priv = intf->parent;
+> +	struct bcmasp_net_filter *nfilter = NULL;
+> +	int i, open_index = -1;
+
+Please use reverse xmas tree - longest line to shortest - for local
+variable declarations in networking code.
+
+You can check for this using https://github.com/ecree-solarflare/xmastree
+
+...
+
+> +static int bcmasp_combine_set_filter(struct bcmasp_intf *intf,
+> +				     unsigned char *addr, unsigned char *mask,
+> +				     int i)
+> +{
+> +	u64 addr1, addr2, mask1, mask2, mask3;
+> +	struct bcmasp_priv *priv = intf->parent;
+> +
+> +	/* Switch to u64 to help with the calculations */
+> +	addr1 = ether_addr_to_u64(priv->mda_filters[i].addr);
+> +	mask1 = ether_addr_to_u64(priv->mda_filters[i].mask);
+> +	addr2 = ether_addr_to_u64(addr);
+> +	mask2 = ether_addr_to_u64(mask);
+> +
+> +	/* Check if one filter resides within the other */
+> +	mask3 = mask1 & mask2;
+> +	if (mask3 == mask1 && ((addr1 & mask1) == (addr2 & mask1))) {
+> +		/* Filter 2 resides within fitler 1, so everthing is good */
+
+nit: s/fitler/filter/
+
+Please consider running ./scripts/checkpatch.pl --codespell
+
+...
+
+> +static void bcmasp_update_mib_counters(struct bcmasp_intf *priv)
+> +{
+> +	int i, j = 0;
+> +
+> +	for (i = 0; i < BCMASP_STATS_LEN; i++) {
+> +		const struct bcmasp_stats *s;
+> +		u16 offset = 0;
+> +		u32 val = 0;
+> +		char *p;
+> +
+> +		s = &bcmasp_gstrings_stats[i];
+> +		switch (s->type) {
+> +		case BCMASP_STAT_NETDEV:
+> +		case BCMASP_STAT_SOFT:
+> +			continue;
+> +		case BCMASP_STAT_RUNT:
+> +			offset += BCMASP_STAT_OFFSET;
+> +			fallthrough;
+> +		case BCMASP_STAT_MIB_TX:
+> +			offset += BCMASP_STAT_OFFSET;
+> +			fallthrough;
+> +		case BCMASP_STAT_MIB_RX:
+> +			val = umac_rl(priv, UMC_MIB_START + j + offset);
+> +			offset = 0;	/* Reset Offset */
+> +			break;
+> +		case BCMASP_STAT_RX_EDPKT:
+> +			val = rx_edpkt_core_rl(priv->parent, s->reg_offset);
+> +			break;
+> +		case BCMASP_STAT_RX_CTRL:
+> +			offset = bcmasp_stat_fixup_offset(priv, s);
+> +			if (offset != ASP_RX_CTRL_FB_FILT_OUT_FRAME_COUNT)
+> +				offset += sizeof(u32) * priv->port;
+> +			val = rx_ctrl_core_rl(priv->parent, offset);
+> +			break;
+> +		}
+> +
+> +		j += s->stat_sizeof;
+> +		p = (char *)priv + s->stat_offset;
+> +		*(u32 *)p = val;
+
+Is p always 32bit aligned?
+
+> +	}
+> +}
+> +
+> +static void bcmasp_get_ethtool_stats(struct net_device *dev,
+> +				     struct ethtool_stats *stats,
+> +				     u64 *data)
+> +{
+> +	struct bcmasp_intf *priv = netdev_priv(dev);
+> +	int i, j = 0;
+> +
+> +	if (netif_running(dev))
+> +		bcmasp_update_mib_counters(priv);
+> +
+> +	dev->netdev_ops->ndo_get_stats(dev);
+> +
+> +	for (i = 0; i < BCMASP_STATS_LEN; i++) {
+> +		const struct bcmasp_stats *s;
+> +		char *p;
+> +
+> +		s = &bcmasp_gstrings_stats[i];
+> +		if (!bcmasp_stat_available(priv, s->type))
+> +			continue;
+> +		if (s->type == BCMASP_STAT_NETDEV)
+> +			p = (char *)&dev->stats;
+> +		else
+> +			p = (char *)priv;
+> +		p += s->stat_offset;
+> +		if (sizeof(unsigned long) != sizeof(u32) &&
+> +		    s->stat_sizeof == sizeof(unsigned long))
+> +			data[j] = *(unsigned long *)p;
+> +		else
+> +			data[j] = *(u32 *)p;
+
+Maybe memcpy would make this a little easier to read.
+
+> +		j++;
+> +	}
+> +}
+
+...
+
+> diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
+
+...
+
+> +static int bcmasp_init_rx(struct bcmasp_intf *intf)
+> +{
+> +	struct device *kdev = &intf->parent->pdev->dev;
+> +	struct net_device *ndev = intf->ndev;
+> +	void *p;
+> +	dma_addr_t dma;
+> +	struct page *buffer_pg;
+> +	u32 reg;
+> +	int ret;
+> +
+> +	intf->rx_buf_order = get_order(RING_BUFFER_SIZE);
+> +	buffer_pg = alloc_pages(GFP_KERNEL, intf->rx_buf_order);
+> +
+> +	dma = dma_map_page(kdev, buffer_pg, 0, RING_BUFFER_SIZE,
+> +			   DMA_FROM_DEVICE);
+> +	if (dma_mapping_error(kdev, dma)) {
+> +		netdev_err(ndev, "Cannot allocate RX buffer\n");
+
+I think the core will log an error on allocation failure,
+so the message above is not needed.
+
+> +		__free_pages(buffer_pg, intf->rx_buf_order);
+> +		return -ENOMEM;
+> +	}
+
+...
