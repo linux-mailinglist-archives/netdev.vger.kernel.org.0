@@ -1,85 +1,106 @@
-Return-Path: <netdev+bounces-38-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-39-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6C4EC6F4D88
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 01:19:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E66466F4D9A
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 01:33:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4E5661C20992
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 23:19:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 72CE0280D1D
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 23:33:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B630EBA27;
-	Tue,  2 May 2023 23:19:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5EEA0BA2B;
+	Tue,  2 May 2023 23:33:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6EFFAD4C
-	for <netdev@vger.kernel.org>; Tue,  2 May 2023 23:19:01 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78952128;
-	Tue,  2 May 2023 16:18:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=2l5Uv2F7D/BM238Fz1afWDTU9gd8SlLHR7GBsDFXHNE=; b=ua8uarLFqpT95yGaNxhsDrN2JU
-	QFWtZOol6DrBowgnIS3dd8eKz7LG4JvB1lhRFBmTqffhCcvDpiMcpsuqawuIRJnDd5/s0LQgIB//a
-	plFw9s8e8QFQl2QGajvptVWH8abV36oJwIyjecgR4M8SUas4JkWogD8w1SK6NVO1qnJ0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1ptzGY-00Blwb-VN; Wed, 03 May 2023 01:18:38 +0200
-Date: Wed, 3 May 2023 01:18:38 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Shenwei Wang <shenwei.wang@nxp.com>
-Cc: Wei Fang <wei.fang@nxp.com>, "David S. Miller" <davem@davemloft.net>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54A1D9479
+	for <netdev@vger.kernel.org>; Tue,  2 May 2023 23:33:17 +0000 (UTC)
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7572128;
+	Tue,  2 May 2023 16:33:14 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+	id 6D91DC020; Wed,  3 May 2023 01:33:11 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+	t=1683070391; bh=DCCDMXns57nPsLdJGb9E6WpE+yDkCf8eWVUNtOrwEJs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=fElTX+cfICmZL/Fu+WBThks+fQBSCYqochAQKPK3NFK2PEcYAp64RlVcgHOswe7Ad
+	 FeLCZ5ezU6FqXoBLBr37O5mnEhy3HJmFjIb/Hs2pXeopC1IgSxV5LFVRY57YXIhEFr
+	 dOnUf8uF+V/OgDqIcQLPT7bfg4PbRSZUxIM/Hp4BczNij0VK28QB9Ry5t0XNGhENOT
+	 nkspQCmnyMddo99E0cc5YEXQwndjTbsjoXA4G+lRE8kEowC4ENl3OGFdemaYBp47m4
+	 0CGH73YIdSiDoOz7GYfDIl6DhfhQUhAdQBX4r1hqY8t610tHQHryBXBuO1noOl2nGX
+	 /4kj1J4j5SX0w==
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+	by nautica.notk.org (Postfix) with ESMTPS id 5DACFC009;
+	Wed,  3 May 2023 01:33:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+	t=1683070390; bh=DCCDMXns57nPsLdJGb9E6WpE+yDkCf8eWVUNtOrwEJs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gtQ3nlWPVXFopl3E1YZUCIWANx5teA4UF9pzxP7h1tdN/ZfjKGtb9QMHX1t2LtAfI
+	 9OHKoimKjVXbx1cTMLcRLGhh9UY7Uk4f3RTt3/t1z+6PKH9l5R95zp6rVdeH66jilk
+	 KQw1jrFOSj6TnYxiBqetin31Rlg+uA8VeG8e6jFFd3RMkZ11pU8cNAJ8+xT4lD3ewb
+	 DcAOeYNdMdlqd3lnjo23oxG33adB0IETWclFyIr6ZRdE0qiom2KG4hMX5ARklmopHR
+	 iu+T6SB1r0qoZF28eB2VaK9MmeZvyHwHZxDoTWSGtrYE8Mndre1XE/zQl4Y+ZM4Uz8
+	 wuYfVtWC9TgKA==
+Received: from localhost (odin.codewreck.org [local])
+	by odin.codewreck.org (OpenSMTPD) with ESMTPA id 08906240;
+	Tue, 2 May 2023 23:33:04 +0000 (UTC)
+Date: Wed, 3 May 2023 08:32:49 +0900
+From: Dominique Martinet <asmadeus@codewreck.org>
+To: Simon Horman <simon.horman@corigine.com>
+Cc: Eric Van Hensbergen <ericvh@gmail.com>,
+	Latchesar Ionkov <lucho@ionkov.net>,
+	Christian Schoenebeck <linux_oss@crudebyte.com>,
+	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Clark Wang <xiaoning.wang@nxp.com>,
-	NXP Linux Team <linux-imx@nxp.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Alexander Lobakin <alexandr.lobakin@intel.com>,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	imx@lists.linux.dev
-Subject: Re: [PATCH v2 net 2/2] net: fec: restructuring the functions to
- avoid forward declarations
-Message-ID: <6dff0a5b-c74b-4516-8461-26fcd5d615f3@lunn.ch>
-References: <20230502220818.691444-1-shenwei.wang@nxp.com>
- <20230502220818.691444-2-shenwei.wang@nxp.com>
+	v9fs@lists.linux.dev, linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: Re: [PATCH 1/5] 9p: fix ignored return value in v9fs_dir_release
+Message-ID: <ZFGdob9PRHSR-6ff@codewreck.org>
+References: <20230427-scan-build-v1-0-efa05d65e2da@codewreck.org>
+ <20230427-scan-build-v1-1-efa05d65e2da@codewreck.org>
+ <ZFEiOdK0/UxKiPQQ@corigine.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230502220818.691444-2-shenwei.wang@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+In-Reply-To: <ZFEiOdK0/UxKiPQQ@corigine.com>
 
-On Tue, May 02, 2023 at 05:08:18PM -0500, Shenwei Wang wrote:
-> The patch reorganizes functions related to XDP frame transmission, moving
-> them above the fec_enet_run_xdp implementation. This eliminates the need
-> for forward declarations of these functions.
+Thanks for all the reviews!
 
-I'm confused. Are these two patches in the wrong order?
+Simon Horman wrote on Tue, May 02, 2023 at 04:46:17PM +0200:
+> On Thu, Apr 27, 2023 at 08:23:34PM +0900, Dominique Martinet wrote:
+> > retval from filemap_fdatawrite was immediately overwritten by the
+> > following p9_fid_put: preserve any error in fdatawrite if there
+> > was any first.
+> > 
+> > This fixes the following scan-build warning:
+> > fs/9p/vfs_dir.c:220:4: warning: Value stored to 'retval' is never read [deadcode.DeadStores]
+> >                         retval = filemap_fdatawrite(inode->i_mapping);
+> >                         ^        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> Perhaps:
+> 
+> Fixes: 89c58cb395ec ("fs/9p: fix error reporting in v9fs_dir_release")
 
-The reason that i asked you to fix the forward declaration in net-next
-is that it makes your fix two patches. Sometimes that is not obvious
-to people back porting patches, and one gets lost, causing build
-problems. So it is better to have a single patch which is maybe not
-100% best practice merged to stable, and then a cleanup patch merged
-to the head of development.
+Right, this one warrants a fix tag as it's the only real bug in this
+series.
+I'll add the Fixes and fix the typo in patch 5 and send a v2 later
+today.
 
-   Andrew
+-- 
+Dominique Martinet | Asmadeus
 
