@@ -2,259 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ECAB6F42BE
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 13:26:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C77306F42CD
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 13:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233857AbjEBL0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 07:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40096 "EHLO
+        id S233958AbjEBL3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 07:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233286AbjEBL0V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 07:26:21 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004C355B3;
-        Tue,  2 May 2023 04:25:58 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id 5b1f17b1804b1-3f19afc4f60so21803475e9.1;
-        Tue, 02 May 2023 04:25:58 -0700 (PDT)
+        with ESMTP id S233644AbjEBL3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 07:29:19 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on20719.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::719])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531B95FF1;
+        Tue,  2 May 2023 04:28:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LzMu8xtTVBWmEm6o8pCcfD3nxkHP9tnfqlOryj3UgPTyLOTILAV1COSQRsBqAfjyVAsHZn4v34EIninQ+PkIL3kAukxGJbCSpZDQZH/XskRDiJCRYM5fntSy6P2X3oMHwTbOgF0jzGHDExGwKtjy4KRZi4H+1zKPLSd74wm7R3dhR0dDICQComcrlRNnYvRUfrymFE+7A3EZkIg14W+NFvVXoydh1Ba15nVnDT0uUSerJhR0GSNkkvFsQ0KNCbvW6cw0ZmFyah251W9iQMc7VJ4omFzcCbz+jQNT2JCTecHkI8tm9Fe8FU4S+U9gPt6Q2WzUlKDnm+ISScC9sqMWcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VQ5IyvemDr+lZLT2sbnEZzDQXbEYBDd5MT6XIxpnKiU=;
+ b=it2QJKzNGJMpbzGqbIRibVuzkWKU+R5WefsiGIaHZEy74JAZtI3zpnj+JJBLzrhpFH5Bk2OlG167VSlv5vtOL1HkIP+p3pHNUrjAmwCm1EOe+xiDtYtVttsUXY81WG6CNCYVKI4Rqd5O8GPuyRgplHm4Qorx9lxhAyGKINZ25pTFwmORBY5B+8G/cLw/6WaKi51BGWLqZypTXLSK86wHlOlgan8gBgCLT3dNINXMj80sS8+UBnRELt3qN5giGXR4HqN/SYbGwWPrnWZMsAmNrKFep98s3My/JFH1ajB6vzshm5pRSw5HNiL6zE+WXrN5c5H7IDDFkuF0zil0f9X4Yg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683026756; x=1685618756;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kRs10HvNSyY4aofcI1ZBj0OmWfT5cmFsMr/bJt88upc=;
-        b=XbCA26o8ji4R6knYZSzqsn4arwaV1Ls0n54VsyC3sh0XCRguzgo6WYIfgRd6ISDSt5
-         EBSoA9d4ff6fzLEyt8lDCARZg417MLQF6Cda/Sj/INzQf8UAiKe9xq0jxanbbaCXb5ca
-         ird2BaI1KxOxusUCTot0hGE3b9bTAKbhtLRXrHuQGz9T8uWtgcTXX8dIbFH7KEZ4Kx3x
-         hkafrI1ZIb5hjjqlu7SHj32Whz0HqU8FAWd32BMv5U68yhvj+Y+9qvyWPtF3JeOa0fAk
-         0LZ+VwuYrUAvzeXVUWDYBhwsrMj6iQZb8+GlJtH8P8givV/slC/aXYHm9iipyqYaaUke
-         iRuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683026756; x=1685618756;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kRs10HvNSyY4aofcI1ZBj0OmWfT5cmFsMr/bJt88upc=;
-        b=Xdz41b+r+0Qfl0a+GgeimCOSw0dik0TtG4B75On2Q0szcX1w/5bmcL5X6dDYSMcbi7
-         kQM1wKNBkT+dpivHJRvzKjfl1JcJ60w6CMCVTGB+TQ+eG9SM8WbwFEDibmpHJLTpbJMp
-         V83Tl0zFge+hrZLmi+DLhjoM3qu/vAtsQof2vNDJAytkiDEX1aN3CEgAkd/hLGRap3XS
-         1XmrwSDo+IbxNA7SAqvTeUEv39EDxUUbMo7byjbiLVVo5Do+Kaqy3FYXCfLJDH+Ah19e
-         SzycoTi81ov5lQHt4PIr9SUL/ZQrthMNbF5o3kJOcD4RWg7LyVjA7WX1uqxLEVfUVB3G
-         REWw==
-X-Gm-Message-State: AC+VfDwyOgxvqojOFM11FxYpuZN6X1Lufw1MNhDhGNKxqP5XTjORujY/
-        dF6GYzfBg9ULQVXkqww6FgU=
-X-Google-Smtp-Source: ACHHUZ5LhZMn8zC/XVOdRH0O9q5eFynI6mY/ADOayr/C7Ur8HRCDGD1BQqumNxthDJQRB5HwenjdKQ==
-X-Received: by 2002:a5d:544c:0:b0:306:264d:5667 with SMTP id w12-20020a5d544c000000b00306264d5667mr6360015wrv.41.1683026756161;
-        Tue, 02 May 2023 04:25:56 -0700 (PDT)
-Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
-        by smtp.gmail.com with ESMTPSA id s4-20020adfeb04000000b003047f7a7ad1sm21455310wrn.71.2023.05.02.04.25.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 04:25:55 -0700 (PDT)
-Date:   Tue, 2 May 2023 12:25:54 +0100
-From:   Lorenzo Stoakes <lstoakes@gmail.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>
-Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
- to file-backed mappings
-Message-ID: <ab66d15a-acd0-4d9b-aa12-49cddd12c6a5@lucifer.local>
-References: <cover.1682981880.git.lstoakes@gmail.com>
- <dee4f4ad6532b0f94d073da263526de334d5d7e0.1682981880.git.lstoakes@gmail.com>
- <20230502111334.GP1597476@hirez.programming.kicks-ass.net>
-MIME-Version: 1.0
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VQ5IyvemDr+lZLT2sbnEZzDQXbEYBDd5MT6XIxpnKiU=;
+ b=kqcNz002/yOzkILtVKETwdjqcLMKmGq3ynXMOsn2XWjys4smf2EgJwB/46LL1AKeZ7NhoglzJMc6QrVIFUMlEXc2zVfjsTqBP18Xp15m2eIAs9pvaxjyyRW+32zdKky81YDb28hjCJexG62CWvlthtdLb/bEF3V2l3dO//hLRzk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MW3PR13MB4137.namprd13.prod.outlook.com (2603:10b6:303:5b::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31; Tue, 2 May
+ 2023 11:28:10 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6340.031; Tue, 2 May 2023
+ 11:28:10 +0000
+Date:   Tue, 2 May 2023 13:28:02 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Tom Rix <trix@redhat.com>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] igb: Define igb_pm_ops conditionally on CONFIG_PM
+Message-ID: <ZFDzwkvMH1LdVKuF@corigine.com>
+References: <20230428200009.2224348-1-trix@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230502111334.GP1597476@hirez.programming.kicks-ass.net>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230428200009.2224348-1-trix@redhat.com>
+X-ClientProxiedBy: AM8P189CA0007.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:218::12) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW3PR13MB4137:EE_
+X-MS-Office365-Filtering-Correlation-Id: d86dbb20-1627-4393-cac8-08db4b004efb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: e74aq3rd2umd0757KPWBBfwdoVrumPnkz8DuUAPSUv8WaMdoPmnqZj6ddfhDeb3f02y79IGlDoZvTsQUUupcau9OpxttMnGv61BNJ4sWI1LFj/3Ad2D0EOzX3GLjnVovsp09/+RmcwLYMr/wbmqLAlLReOE9FLOMfp3UqvRSdPoSDK831TIpR5Ap7LfTjkzj7QEh9wH9w4u6H//W9ZjbEQMzzrAaQpHGs2hWe8nvcBPiADSaSR6oDgsQ8OH6AW4u5dNB+f6ABlNfn5OHlneAEex9r1WUYt4c+oam9VtrKzdVoDRw6Uwo2n3LjifblJELavZMzGA0en66ly1DVaPqM7v1AljbNSrkaMUZeFhTRPBXpz+ttJTyM2ARtiThSn4WToYBVRRrfLHZm7v5inAozgomEuhDw2W2olrOWSnSXw156AB038msFMWzI9HXg+XL7v8Ztf4m0jDU1Ci1Ie+wpm4amW5NDk3k+jI4uD1luLRrcZN3etqrFmKfo2erVz0z+AKVezZggI7WExfdJ08DLm1QEF9eBSp7Kq7Gw4dJc1/SD74NrAAj3bs/k9xBjL3FVPA6ZtFWM9hGdldqpVvHRng9WIDzZ1tstCx66m+Uh8w=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39840400004)(136003)(376002)(396003)(346002)(451199021)(38100700002)(7416002)(86362001)(44832011)(8676002)(8936002)(5660300002)(4326008)(6916009)(66476007)(66556008)(66946007)(41300700001)(316002)(4744005)(2906002)(6512007)(6506007)(6666004)(6486002)(186003)(36756003)(2616005)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1QU/1KqJPkVwWSx2LMJ0bzVxNVtKvdlSkPcetPPZj0Bq3D0rNwEoJeYA8wZO?=
+ =?us-ascii?Q?kZrJEAck7BKVX4XV+a7ClNLCPCed4XR6qBLpPd0u8fCYY0xbJOe/DenU2VxG?=
+ =?us-ascii?Q?KVFEA8dq9UrLzF52f/kWZ8/qjLzDFWVlIUDhNu2uqOCVCbfFpwST2NqhMED3?=
+ =?us-ascii?Q?AxKMGIO6L6qIl/qtKQRWeCnNfMVQ9v87+bH3LORCKvcwo/Ciufoh3rjYxics?=
+ =?us-ascii?Q?5XOHGXEDoF+NeX0zzlcZaCO+lP6hVUNFFB7zHNvrBxtcopB2gLQ9RFgeSO+N?=
+ =?us-ascii?Q?kMvr9JLzaZncUIKPS70o792zdTWEDIVIc9Thkgfmr81s4Vbqf96MiDYqaaLn?=
+ =?us-ascii?Q?lhOdw5yzYyRpltd78RC7jX1GAL3PzhM9KoW4HyrI1PpiChuvC1R4mGGPxBLb?=
+ =?us-ascii?Q?jvEBwz70GLD9pVAc83Q20LU8qQpS3hmOi+4ngIxa4zNusAxOErUIHvDatgJS?=
+ =?us-ascii?Q?iVnSJlYdCl62HMQ9SDFjzEYgfPY64Ovkp8oNmMovmikaagFlMDYiYpW6b62K?=
+ =?us-ascii?Q?B3NpY0UEX0yj0Ikjb/s6ZLD4Ao2GFMTcps8QLYG90EoIffF+G0xJh9L/d+oV?=
+ =?us-ascii?Q?CJHKXNcuXcgchIEAXnTXtGG2JGsrhRFjGTwWbq040F47QeYu5/KgVOs53pAc?=
+ =?us-ascii?Q?xa48DsBVRiu8UO8+B3qSGT+jjmNi+btuvKt0LPRcrDKQWc0QhKp7tS5PdujU?=
+ =?us-ascii?Q?GM9qTiNnG3PbeodrqJZKtFtU2U65D4kLb7WCM5NvdVN91Mzc9CIBpFpJmVPv?=
+ =?us-ascii?Q?g2yj+MZlvp/DgRG98BgO64NeLpOz8Y4mxLT/AcJAgGF+43n0D2VqskGId0j7?=
+ =?us-ascii?Q?9wZhu2hqtHmUoSNaLRUzYfnGohqniA20u5jI0ja8wucR/rXfajvgoZM6Gy+R?=
+ =?us-ascii?Q?ZEb3BNLLkT+7HYe6tWJBM47BTzBiJatqdGPzFEoi08q83M4QvttO8AM/LRqp?=
+ =?us-ascii?Q?B3Pav1DtAWJzcZnfdGpeHJ0qEZ4m9MejKmIHyWsail5dlgtq7DiPtfMnCHrW?=
+ =?us-ascii?Q?RoXTVAKCLqpnTlSg0CMDvf1Sy9P8o5lH4Eiqtu9jhRzXXLyAr/leH6AUHI4Z?=
+ =?us-ascii?Q?AijTd/mAkaxBJv7aOZ9VfHvHewBt885/7PP+o5ygyrMARLBOBom62hyX/cWl?=
+ =?us-ascii?Q?SYjKMRHbrSlUT7xrDORaumnBIpLAMJ8W+qroWqOqbpJIKZXQuxZAZC5Jq6mu?=
+ =?us-ascii?Q?gouHn2mnMo63mQgNSqWgNm0pEKUkF1B4YQwM75dwSb3UeNM5NahpDauGAvur?=
+ =?us-ascii?Q?4SDWUpJCvVMKjq9tMsJOqEc8la6dKPeaagN0LtvLEAh30NGrZu5RtGj5wrVi?=
+ =?us-ascii?Q?LQmC2OWE6LM/BxpHPvx8VA4uuKxImRv1X04a7MbLS5lhQPK+Vx1rmYg3JaT+?=
+ =?us-ascii?Q?VFaJPU9ccSK8N/nB6cs/q5sHMjNCw4luTXy/1z4R9QTIBYzyyPJbIBJEbFCx?=
+ =?us-ascii?Q?OIzL+oGMwAg2FFoF5aMREHDj6sMATi3M40vsIuTZoApKFCiTRpE/5Ddy7Th4?=
+ =?us-ascii?Q?EDdOxiG0l6f1MWFusEc8E3dbLEQ4FXvYsFHNCByChMkz5iDkHZoUq9F0CeQH?=
+ =?us-ascii?Q?sK/HM1UcroPTghtiku3YdPpcn83R8kuMs/otCpvVwqFahNOZGO5C+FHHDPZ8?=
+ =?us-ascii?Q?Iwnt1SDcg9qnFdhoYnZcR+4m3O7zY4OkiRukxxGFHa7GuPZcrmrtiSclExK7?=
+ =?us-ascii?Q?W7cjQg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d86dbb20-1627-4393-cac8-08db4b004efb
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 11:28:10.4180
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MtPCO9R1msM0dbC+7ZPLwlRYRx7GPXp3H0nBGQNP3zEElCD4GbOB+Fd5Cx5LoJH/QN6VXoMPCe8sTccWiY0VjMmbCFQ2eNDY7IjRlqQU6NM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR13MB4137
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 01:13:34PM +0200, Peter Zijlstra wrote:
-> On Tue, May 02, 2023 at 12:11:49AM +0100, Lorenzo Stoakes wrote:
-> > @@ -95,6 +96,77 @@ static inline struct folio *try_get_folio(struct page *page, int refs)
-> >  	return folio;
-> >  }
-> >
-> > +#ifdef CONFIG_MMU_GATHER_RCU_TABLE_FREE
-> > +static bool stabilise_mapping_rcu(struct folio *folio)
-> > +{
-> > +	struct address_space *mapping = READ_ONCE(folio->mapping);
-> > +
-> > +	rcu_read_lock();
-> > +
-> > +	return mapping == READ_ONCE(folio->mapping);
->
-> This doesn't make sense; why bother reading the same thing twice?
+On Fri, Apr 28, 2023 at 04:00:09PM -0400, Tom Rix wrote:
+> For s390, gcc with W=1 reports
+> drivers/net/ethernet/intel/igb/igb_main.c:186:32: error:
+>   'igb_pm_ops' defined but not used [-Werror=unused-const-variable=]
+>   186 | static const struct dev_pm_ops igb_pm_ops = {
+>       |                                ^~~~~~~~~~
+> 
+> The only use of igb_pm_ops is conditional on CONFIG_PM.
+> The definition of igb_pm_ops should also be conditional on CONFIG_PM
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
-The intent is to see whether the folio->mapping has been truncated from
-underneath us, as per the futex code that Kirill referred to which does
-something similar [1].
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
->
-> Who cares if the thing changes from before; what you care about is that
-> the value you see has stable storage, this doesn't help with that.
->
-> > +}
-> > +
-> > +static void unlock_rcu(void)
-> > +{
-> > +	rcu_read_unlock();
-> > +}
-> > +#else
-> > +static bool stabilise_mapping_rcu(struct folio *)
-> > +{
-> > +	return true;
-> > +}
-> > +
-> > +static void unlock_rcu(void)
-> > +{
-> > +}
-> > +#endif
->
-> Anyway, this all can go away. RCU can't progress while you have
-> interrupts disabled anyway.
-
-There seems to be other code in the kernel that assumes that this is not
-the case, i.e. the futex code, though not sure if that's being run with
-IRQs disabled... if not and it's absolutely certain that we need no special
-handling for the RCU case, then happy days and more than glad to remove
-this bit.
-
-I'm far from an expert on RCU (I need to gain a better understanding of it)
-so I'm deferring how best to proceed on _this part_ to the community.
-
->
-> > +/*
-> > + * Used in the GUP-fast path to determine whether a FOLL_PIN | FOLL_LONGTERM |
-> > + * FOLL_WRITE pin is permitted for a specific folio.
-> > + *
-> > + * This assumes the folio is stable and pinned.
-> > + *
-> > + * Writing to pinned file-backed dirty tracked folios is inherently problematic
-> > + * (see comment describing the writeable_file_mapping_allowed() function). We
-> > + * therefore try to avoid the most egregious case of a long-term mapping doing
-> > + * so.
-> > + *
-> > + * This function cannot be as thorough as that one as the VMA is not available
-> > + * in the fast path, so instead we whitelist known good cases.
-> > + *
-> > + * The folio is stable, but the mapping might not be. When truncating for
-> > + * instance, a zap is performed which triggers TLB shootdown. IRQs are disabled
-> > + * so we are safe from an IPI, but some architectures use an RCU lock for this
-> > + * operation, so we acquire an RCU lock to ensure the mapping is stable.
-> > + */
-> > +static bool folio_longterm_write_pin_allowed(struct folio *folio)
-> > +{
-> > +	bool ret;
-> > +
-> > +	/* hugetlb mappings do not require dirty tracking. */
-> > +	if (folio_test_hugetlb(folio))
-> > +		return true;
-> > +
->
-> This:
->
-> > +	if (stabilise_mapping_rcu(folio)) {
-> > +		struct address_space *mapping = folio_mapping(folio);
->
-> And this is 3rd read of folio->mapping, just for giggles?
-
-I like to giggle :)
-
-Actually this is to handle the various cases in which the mapping might not
-be what we want (i.e. have PAGE_MAPPING_FLAGS set) which doesn't appear to
-have a helper exposed for a check. Given previous review about duplication
-I felt best to reuse this even though it does access again... yes I felt
-weird about doing that.
-
->
-> > +
-> > +		/*
-> > +		 * Neither anonymous nor shmem-backed folios require
-> > +		 * dirty tracking.
-> > +		 */
-> > +		ret = folio_test_anon(folio) ||
-> > +			(mapping && shmem_mapping(mapping));
-> > +	} else {
-> > +		/* If the mapping is unstable, fallback to the slow path. */
-> > +		ret = false;
-> > +	}
-> > +
-> > +	unlock_rcu();
-> > +
-> > +	return ret;
->
-> then becomes:
->
->
-> 	if (folio_test_anon(folio))
-> 		return true;
-
-This relies on the mapping so belongs below the lockdep assert imo.
-
->
-> 	/*
-> 	 * Having IRQs disabled (as per GUP-fast) also inhibits RCU
-> 	 * grace periods from making progress, IOW. they imply
-> 	 * rcu_read_lock().
-> 	 */
-> 	lockdep_assert_irqs_disabled();
->
-> 	/*
-> 	 * Inodes and thus address_space are RCU freed and thus safe to
-> 	 * access at this point.
-> 	 */
-> 	mapping = folio_mapping(folio);
-> 	if (mapping && shmem_mapping(mapping))
-> 		return true;
->
-> 	return false;
->
-> > +}
-
-I'm more than happy to do this (I'd rather drop the RCU bits if possible)
-but need to be sure it's safe.
