@@ -2,133 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB1E76F45F9
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 16:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 779D26F464D
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 16:46:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234433AbjEBOX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 10:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
+        id S234001AbjEBOqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 10:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234105AbjEBOX4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 10:23:56 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1A6C7;
-        Tue,  2 May 2023 07:23:55 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-54f99770f86so54797907b3.1;
-        Tue, 02 May 2023 07:23:55 -0700 (PDT)
+        with ESMTP id S233548AbjEBOq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 10:46:29 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2101.outbound.protection.outlook.com [40.107.243.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143591716;
+        Tue,  2 May 2023 07:46:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J1GjSA14ehGDf5L2NdyRnOqYw3HFTpDskupOiseDKy09JOotapxpFWMTImC7RYZohW2AR8gLV2GWKy08cvOF0JfGPTa0nqlNufiBMto8xOzZk6ftpuRDj5BDJadGDnFcHYooVSrSQkzhLe8a8E1rvf+bEBOR0jQti8Pv+GqAEz18+klL2NW9qr2Pu+xKBt2fnlAgvjabjpsjBhElc+Tewpt/j7xRQ+d9hjsKKBNoF0HWd2jPIFqRCkkyHce+QRs7e33cdyAMbnfnRHoc+2xVJ6sazAHxBythCYe7X5uJWvoLDatNsXvUdy4VsObXZArck+1Z4pBnLhFtDnTgYBOXTQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=o9nV0Cyfybjn+2YJIjlzLFXFLtnPcrx8uTUbks71vnA=;
+ b=F5LUx5opdTdworOOETPQPYfOBLByQAlNpERFess75uIy7ULJHbpr4sxsTfqCT7kZNYDTeoWQPGlrv2bcL5nfr4vUf/sI25cZj8JUTT6F9sQnszvOVjAhxPLZoGnkcyJsGb1rhTHDGL/6sn+lnSt+gaErYEuYGUnX+CXTVI0wW1YG9zgfv+LTFDl4arAGaaZLGCJw8CoE73hwHO9OVC7G4KWHUpsUwG/E996rpDRBOwfvZV0DdFlBDk2wR/d9JeLG7tw/rYOmsJR0U8IDDIXCwvqGQyjdvzodONtciFIS/nTgpZU6lVfoTAPmyxCqlY3/2KM2Adcsd92+XKqZQFxVnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683037434; x=1685629434;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=c0tlagjndETqb4vyl9KGLxF15wJn4anPJZnJmgfkl/c=;
-        b=K0PkrtQ+McSujB9A84EzlIqNHv14cBXmdu0ZfjZR66RfrojtRlfd1cM89jykYnoLas
-         ahin8shKK2L9dFH6MUWrR55xDe8f8gh5x9odaYy4mgE7Pr+Bg3XSDh+uqQiFcMK48cBw
-         tzaoPg/s531lh3IhLmKWRF5rlfBCTxm1mJUs/XJHd2SqUwbJqgZTOk9EE7/iVclcXygo
-         LKjBGqwshg8Eyf7N9FLItvApIk3tw7tGZui91egVoayoQJSvp4u2k1fOt6fb6yctB69P
-         0aiJn3KQjVKeoLpjwXJ2TNkBPeFyAU3REy3BwpbtWZgKMJxjOBSAMrfB4Cln6O2B1P7D
-         s8dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683037434; x=1685629434;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=c0tlagjndETqb4vyl9KGLxF15wJn4anPJZnJmgfkl/c=;
-        b=Fpah8PIDxNHNQswxrsY8JYHdS9JL0P9Li2d+d6twNANN0RvnlFSww9mCXgOgjstyX3
-         glF+Xp8nUgUWzSamUIkkZC7amuYwaSeNXKcd28XB6hdkBPDewvgTxIvFSO62gHIh9fGI
-         2Bpr89YnVzpVIiYF5YOkLvUGuOk6jSc9mEN2MFm3B/7AOw/ZpnH2+9wu/Kkc4mOMmXcn
-         qLa+lM9i+feEX83p40CpkazpxoHRDfkxc8Ax+5VAYulZBX742pPirhkKMm1iPyMLDNz9
-         5stDeS9mq48mlXRgWMSQwq9OKaIVcLQaX9C8mOEah8pO4mTrVkcPE0un0hh7epCFpnJC
-         68Hg==
-X-Gm-Message-State: AC+VfDyZejIoeC5+z83xT5pVxolVwwFR44RXwbsqBNUMbE7oIrwgxO7m
-        FyUQ6eMxgfOOfTF5+632HYdzK7VzicWWwKKZlIc=
-X-Google-Smtp-Source: ACHHUZ612ecIhlT53wUK861pkbcYeetJfXMcpglfdDpv12oWa8U2/fHmhebQXi0TgNnTn4mW2dnC+YzD9TX5x1MML18=
-X-Received: by 2002:a0d:d087:0:b0:55a:613c:8480 with SMTP id
- s129-20020a0dd087000000b0055a613c8480mr5494440ywd.51.1683037434369; Tue, 02
- May 2023 07:23:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <ZFD6UgOFeUCbbIOC@corigine.com> <20230502130316.2680585-1-Ilia.Gavrilov@infotecs.ru>
-In-Reply-To: <20230502130316.2680585-1-Ilia.Gavrilov@infotecs.ru>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 2 May 2023 10:23:35 -0400
-Message-ID: <CADvbK_cFyMqw1BxTtq9nz2T-V=hLL4fwiUd_vv0pPkzA=v3Faw@mail.gmail.com>
-Subject: Re: [PATCH net v2] sctp: fix a potential buffer overflow in sctp_sched_set_sched()
-To:     Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o9nV0Cyfybjn+2YJIjlzLFXFLtnPcrx8uTUbks71vnA=;
+ b=JSqDGGHQbrwExoSo1897P6nY4lfYiOttRxkyReyAQnBgN+5JARX6NQx6KvSDL/NX1kU71f3T/b9ubzSTETPD97u6/Oki1Uq/a8WZo81Lg62BNcnpbzgwSbWXCpkw3K2f2U1r6kvTso5BEFy5blwf5ta8SLOB7tZzrX4g/rEdPr8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MN2PR13MB3648.namprd13.prod.outlook.com (2603:10b6:208:1e8::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.20; Tue, 2 May
+ 2023 14:46:24 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6340.031; Tue, 2 May 2023
+ 14:46:24 +0000
+Date:   Tue, 2 May 2023 16:46:17 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, v9fs@lists.linux.dev,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/5] 9p: fix ignored return value in v9fs_dir_release
+Message-ID: <ZFEiOdK0/UxKiPQQ@corigine.com>
+References: <20230427-scan-build-v1-0-efa05d65e2da@codewreck.org>
+ <20230427-scan-build-v1-1-efa05d65e2da@codewreck.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230427-scan-build-v1-1-efa05d65e2da@codewreck.org>
+X-ClientProxiedBy: AS4P251CA0008.EURP251.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d2::16) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3648:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2953b82b-9064-4536-99f0-08db4b1c0086
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cLBoew0nQkd+aNYB3IlGQVvUKY39OyLXyXT2MG6vaGHtS0DMPPvfTQRqmy3pyqeJNQRl3aOnxkE1JUhDP7TklzYZK+cKar8Nw32d1zYWFWI2nFGmi9vCMkkcQwfFlXVgoKdJANIvd8fO2W4fWFUVH345TC27IC646V2Q72JLjS2x1KdjH1DPPDtLXiDWAED4RFt6gZLTLswoH+m9RLSO0NBwG9uWliZ4m5LqMfJIvwW8C48UDq6ODesdwdWqzRWR7XQmy3evGf10WrcpOiVijvZmkin/vwTrrekMcdIHz3o451L/6f41YlHncCoqHztzNURywLN2LMvr+jTD5RGjnRJFBNA8vyg3tZnG5Nx70FCPwcOBHQoqIPQtYxvvnZlZphhgF0gEBwkb1w7RF5e0GuVqH+L/ZO4RBs8eclaPKZehKDVSUSJOlbw1lsUk3kC3KgeapxG4v1Pe64nSvG0WYQnCWgcAZ1sm/TaKH116/ZVEm6Hx66teTiu9mfnh+1qwnVb2ZXcuCC2e3zvVe9Oc3MXk6yFyIa+2rgodF6nx8CahBpwvVfz5diAjvceX/6cE
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39830400003)(346002)(376002)(366004)(396003)(451199021)(38100700002)(44832011)(4744005)(2906002)(7416002)(8936002)(5660300002)(8676002)(36756003)(86362001)(2616005)(478600001)(6666004)(54906003)(6512007)(6506007)(6486002)(186003)(83380400001)(6916009)(4326008)(66556008)(66476007)(66946007)(41300700001)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pgFkRkjIY43GUT8llDzLtsT/FdNefwY0Jx5wJdpTfzgVOVWuqisdcW0NaAMb?=
+ =?us-ascii?Q?BidJ4ZJc0tVnBV+ox76RHj1LL9xCriRetIBET9uKbgkYU6RH+dJ1f76c5niT?=
+ =?us-ascii?Q?BnNzAlN7Ct0hByCIr9g8kCjj3JUUY0SW2xUzM1BsvDk6oFCptRyLRqyOXwfz?=
+ =?us-ascii?Q?PRT5EN5VKeOBVSqC12w/Jq6vFr8JIRGRXT/gLv1ZhXYo1oY6+ysQdvFzTmIj?=
+ =?us-ascii?Q?oEEq7KTJJmZXBVMUWV70MtQR9bk/NIc/MNAkgyCjkL+Dcy/eN16e0nMQ2QVF?=
+ =?us-ascii?Q?THoTPUcrV5RNczUtA9JquvvgyfhXwAbKnXNiYiZb8yo87r33+Kdovn+LWqSI?=
+ =?us-ascii?Q?A/lOGj7pJcB53xfrcnR8VdwDmRns/+rUBl+BM8iRiLQaGfAwzNAOvas/ZVDE?=
+ =?us-ascii?Q?7ctzdECjvzBuUcNYTxytyKgz//mC0XbdnF7k7jm78bpr06BfnQc9+PIDipzp?=
+ =?us-ascii?Q?QJjBTI6DczaZhKwicOGY2IbmWby37buonp7GeIHNaLv723J7X8lbykniVgAv?=
+ =?us-ascii?Q?/xCBaOWjbeElrQimbiHNVO02e1WPoP8x9UpBGpHkDpAo5VFTV3cwC5xj2qTR?=
+ =?us-ascii?Q?jto3xBs2K/MSbZX7IXgNYVUgU7Z0D+ASMCmPwrEU2PnXEmERFKxF1tC8zLJo?=
+ =?us-ascii?Q?ZpeTQuF4UQ32v90knvgS4WpUqpFsKwls3qfwKROzMnO0tMCAzwRhW+R0mlL5?=
+ =?us-ascii?Q?0OwukcVMBldDNCiwYibW2T+XV/Nh0NI8wyaJmoor7cgh24i6aaLfaLalWTPf?=
+ =?us-ascii?Q?hT/Z5HYtPRN79YiaPC3hj3OfY2M9tjP9AlT0AfOhllGdPFSxoWz2tW7zs0i/?=
+ =?us-ascii?Q?cAAPl5ofdjCs/+r9uxk5c0Bf1WvrYgwCohx/jS5Ol7UaAe1txz29y9QCTaDm?=
+ =?us-ascii?Q?nhUPTLL0iik6ndLtTqicbqy8EQRqPRnerWTiEXEKbVgpQgtYA6gKPdnLt4dj?=
+ =?us-ascii?Q?Dz3plxDMqocptojwEHHL5lMhCFjyfB73oAvlTFfK87P0RVt04CwWXMJ8ddBj?=
+ =?us-ascii?Q?JZM/x3ujsm1y58ejQV4sgFVQeOhNg/Uc/7//HM8jaqsJnjlHQ+AtG7WmSLML?=
+ =?us-ascii?Q?ca00tqF9Jg+dQZ4rfakeix0k3mqs+XvS0EFAiIUTn/llS4RPE2p3GPkZGUnc?=
+ =?us-ascii?Q?tNYSv5bLiLKFgl4JtgIXd9GIOjxbcY2+SK2W+64mJCmeJh2RiblTmRnfH6ml?=
+ =?us-ascii?Q?63UOoKmP0htgGYTFQFsiwt27Au6VSoB+MPAQqZdQ7SA3Nz8OEF0ZZsmeC/1/?=
+ =?us-ascii?Q?RZJ3CzsuMfKI3UF74eSnFHUiifpB1Q9pk0TvqXAPhbFcITFkJjPJY6CxU8RN?=
+ =?us-ascii?Q?hHcFNw4g+s9etxfcSc4g/xMOHmFyotGLLaFwZdyjPpW9nV00GEHbECCIgA8J?=
+ =?us-ascii?Q?v2j5JFlVR9UnGGSxwdv7QavLv3i3pM21ILuHdx4cFz/M05VQP+cvHyy08NTc?=
+ =?us-ascii?Q?ydXlkr1Q0agl0OtB81ODEl4YI4uNg63ch1vtDLiOeXnQAIcLIcsUbXz8vXRU?=
+ =?us-ascii?Q?mRcK0utcd2emQR4gO+CFX6H7UJiOmg6ecr23X0QEXDZbEPA6jiaCEpcAaXYC?=
+ =?us-ascii?Q?beATP7Q+JbIt4yPKUr96ZJqISJzvpoRKxU1xJy3Qq/YlH/SsMm7auvgpyQt5?=
+ =?us-ascii?Q?zTWxHoEEpMXvs7Va8Z1Y/Bx+/13gAfOszzhqZNiEJbAaxVu2DDurgpey318f?=
+ =?us-ascii?Q?ksY3aA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2953b82b-9064-4536-99f0-08db4b1c0086
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 14:46:24.6114
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /pfJjh6iu6GxOuUqi2ipeJq8sKhBqmZGDqZKY3djG67R0uPRvQsaEL59p887lZNqkAU7RmN3nhqnjJP3wbeBkqHg8bwaUlThSxTGW+6dGS8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3648
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 2, 2023 at 9:03=E2=80=AFAM Gavrilov Ilia <Ilia.Gavrilov@infotec=
-s.ru> wrote:
->
-> The 'sched' index value must be checked before accessing an element
-> of the 'sctp_sched_ops' array. Otherwise, it can lead to buffer overflow.
->
-> Note that it's harmless since the 'sched' parameter is checked before
-> calling 'sctp_sched_set_sched'.
->
-> Found by InfoTeCS on behalf of Linux Verification Center
-> (linuxtesting.org) with SVACE.
->
-> Fixes: 5bbbbe32a431 ("sctp: introduce stream scheduler foundations")
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
-> ---
-> V2:
->  - Change the order of local variables
->  - Specify the target tree in the subject
->  net/sctp/stream_sched.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
->
-> diff --git a/net/sctp/stream_sched.c b/net/sctp/stream_sched.c
-> index 330067002deb..4d076a9b8592 100644
-> --- a/net/sctp/stream_sched.c
-> +++ b/net/sctp/stream_sched.c
-> @@ -146,18 +146,19 @@ static void sctp_sched_free_sched(struct sctp_strea=
-m *stream)
->  int sctp_sched_set_sched(struct sctp_association *asoc,
->                          enum sctp_sched_type sched)
->  {
-> -       struct sctp_sched_ops *n =3D sctp_sched_ops[sched];
->         struct sctp_sched_ops *old =3D asoc->outqueue.sched;
->         struct sctp_datamsg *msg =3D NULL;
-> +       struct sctp_sched_ops *n;
->         struct sctp_chunk *ch;
->         int i, ret =3D 0;
->
-> -       if (old =3D=3D n)
-> -               return ret;
-> -
->         if (sched > SCTP_SS_MAX)
->                 return -EINVAL;
->
-> +       n =3D sctp_sched_ops[sched];
-> +       if (old =3D=3D n)
-> +               return ret;
-> +
->         if (old)
->                 sctp_sched_free_sched(&asoc->stream);
->
-> --
-> 2.30.2
+On Thu, Apr 27, 2023 at 08:23:34PM +0900, Dominique Martinet wrote:
+> retval from filemap_fdatawrite was immediately overwritten by the
+> following p9_fid_put: preserve any error in fdatawrite if there
+> was any first.
+> 
+> This fixes the following scan-build warning:
+> fs/9p/vfs_dir.c:220:4: warning: Value stored to 'retval' is never read [deadcode.DeadStores]
+>                         retval = filemap_fdatawrite(inode->i_mapping);
+>                         ^        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
+Perhaps:
+
+Fixes: 89c58cb395ec ("fs/9p: fix error reporting in v9fs_dir_release")
+
+> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
