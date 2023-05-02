@@ -2,133 +2,362 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B6BF6F44A1
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 15:05:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 247C76F44AD
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 15:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234343AbjEBNF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 09:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
+        id S233824AbjEBNH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 09:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234029AbjEBNFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 09:05:03 -0400
-Received: from mx0.infotecs.ru (mx0.infotecs.ru [91.244.183.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 641CB5252;
-        Tue,  2 May 2023 06:04:07 -0700 (PDT)
-Received: from mx0.infotecs-nt (localhost [127.0.0.1])
-        by mx0.infotecs.ru (Postfix) with ESMTP id 00E2910B66F1;
-        Tue,  2 May 2023 16:03:25 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx0.infotecs.ru 00E2910B66F1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infotecs.ru; s=mx;
-        t=1683032605; bh=XeUJxsBSQd1pjrQXTV5YP3H+DxqnTGptCJyjoilPwJg=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=DGsaepVYzleqpK/ZFnyAanNKuYVsN+7vqFFjhly7VO7T2ke37yOfWvRGXkZkKAkQw
-         U5cZcETyQBiRXSLU5ucnK2YSPaOMlu/dH4gw1dUKpA4/vpWx5p2jNBcn5+Kn8wND+r
-         Uu8pTZnnuoV+0B8Ww4SC1ehiqo6qh4WznO9w6sy4=
-Received: from msk-exch-02.infotecs-nt (msk-exch-02.infotecs-nt [10.0.7.192])
-        by mx0.infotecs-nt (Postfix) with ESMTP id F0DE130A2CA0;
-        Tue,  2 May 2023 16:03:24 +0300 (MSK)
-From:   Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
-To:     Simon Horman <simon.horman@corigine.com>
-CC:     Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
-Subject: [PATCH net v2] sctp: fix a potential buffer overflow in
- sctp_sched_set_sched()
-Thread-Topic: [PATCH net v2] sctp: fix a potential buffer overflow in
- sctp_sched_set_sched()
-Thread-Index: AQHZfPZ6+AjI4Yq7k0+w8RGcNMvKHg==
-Date:   Tue, 2 May 2023 13:03:24 +0000
-Message-ID: <20230502130316.2680585-1-Ilia.Gavrilov@infotecs.ru>
-References: <ZFD6UgOFeUCbbIOC@corigine.com>
-In-Reply-To: <ZFD6UgOFeUCbbIOC@corigine.com>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.17.0.10]
-x-exclaimer-md-config: 208ac3cd-1ed4-4982-a353-bdefac89ac0a
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S233271AbjEBNHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 09:07:54 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2857D4C2B;
+        Tue,  2 May 2023 06:07:53 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-9505214c47fso761757466b.1;
+        Tue, 02 May 2023 06:07:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683032871; x=1685624871;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+GJbRK7NkBHT5P0SByo+bizLoBFa/LKd0gSPw0CG9Yo=;
+        b=heKzPGB40eEZ3mu2tTF8ufuteeVqQJG6vKU8HLGtIlfTaLFZHKXUU+q9dnF12ULBe3
+         fAXGweIdFWnpz6BOmop/7OeCNPq1AutngcHCWKUNG/5kPLgsFEvqY51rQ7yOxCdUAOwd
+         AO6i33I+VJSnsHyE208yxHd82oBUjL9tY4CYxJfjBNxQ/QgrB9+u2uH1OvDMZP18NMkJ
+         HFpu83oPmeiuPJRNEhSPX//9AeDAJE1cXhXaB6hkch77P9jMiIFxFoySZKVDIyNvPIjK
+         a/cmP8npQ/aC6f1C+CVdZgPDgSsY5v4R5pbA8IgmNJCch99SqiqYD0SNRQ2u+yH5j6U9
+         hDfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683032871; x=1685624871;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+GJbRK7NkBHT5P0SByo+bizLoBFa/LKd0gSPw0CG9Yo=;
+        b=S/VMJTmUDdUp2KusW+1W6Ag5aCXWld/IBWw44GlBkpMktvxb6bdQYCaO5UDO+FupYr
+         ZVN0zKxmwfF0SfyN+CFGziqOK813GjHibovMOTrhEvM+STq0Ky/lNQ9BVY+vaOJbWPdd
+         7iNK5nlDCBVXfwn7mtmMBH5u52q0t3CLGYWSkj1eCXpJS3BiwduzP0xjg1lcK6mkvMo8
+         U4TsG3H5rN57qYd3B/PGf9dISlTaAilM/P8PCQ9yXnWxKKGhFFEf6nLj9mvhtjsVXQEc
+         hIjiQzpy08ULjVZRJdwh8ItTZQT5xvajTh2y7Emgqdmfrv9DBZpbfz8NO7wGGxA/bxp8
+         4gjQ==
+X-Gm-Message-State: AC+VfDw3mVXSOuNBni3HhVTllvUycq7c5xZ5MowZiUD4Jz2vMAeRSu76
+        spjbeDFrjHsGxoesWgMVaoU=
+X-Google-Smtp-Source: ACHHUZ44X9DtAeoyHRZNkRdg7pdRHPunZQB32m64P/Zy5iQ+QdWEYwBbFJz7+J+f/BRXCAk/+E9eIQ==
+X-Received: by 2002:a17:907:1c24:b0:94e:c43f:316b with SMTP id nc36-20020a1709071c2400b0094ec43f316bmr17066747ejc.19.1683032871384;
+        Tue, 02 May 2023 06:07:51 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::20ef? ([2620:10d:c092:600::2:18ee])
+        by smtp.gmail.com with ESMTPSA id s16-20020a170906169000b0094ec3271be5sm16043180ejd.53.2023.05.02.06.07.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 May 2023 06:07:51 -0700 (PDT)
+Message-ID: <49866ae2-db19-083c-6498-e7d9d62e8267@gmail.com>
+Date:   Tue, 2 May 2023 14:03:39 +0100
 MIME-Version: 1.0
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 177118 [May 02 2023]
-X-KLMS-AntiSpam-Version: 5.9.59.0
-X-KLMS-AntiSpam-Envelope-From: Ilia.Gavrilov@infotecs.ru
-X-KLMS-AntiSpam-Rate: 0
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 510 510 bc345371020d3ce827abc4c710f5f0ecf15eaf2e, {Tracking_from_domain_doesnt_match_to}, 127.0.0.199:7.1.2;infotecs.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2023/05/02 11:01:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/05/02 09:07:00 #21205017
-X-KLMS-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Content-Language: en-US
+To:     Adrien Delorme <delorme.ade@outlook.com>,
+        "david.laight@aculab.com" <david.laight@aculab.com>
+Cc:     "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>, "leit@fb.com" <leit@fb.com>,
+        "leitao@debian.org" <leitao@debian.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "marcelo.leitner@gmail.com" <marcelo.leitner@gmail.com>,
+        "matthieu.baerts@tessares.net" <matthieu.baerts@tessares.net>,
+        "mptcp@lists.linux.dev" <mptcp@lists.linux.dev>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "willemb@google.com" <willemb@google.com>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>
+References: <GV1P193MB200533CC9A694C4066F4807CEA6F9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <GV1P193MB200533CC9A694C4066F4807CEA6F9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'sched' index value must be checked before accessing an element
-of the 'sctp_sched_ops' array. Otherwise, it can lead to buffer overflow.
+On 5/2/23 10:21, Adrien Delorme wrote:
+>  From Adrien Delorme
+> 
+>> From: David Ahern
+>> Sent: 12 April 2023 7:39
+>>> Sent: 11 April 2023 16:28
+>> ....
+>>> Christoph's patch set a few years back that removed set_fs broke the
+>>> ability to do in-kernel ioctl and {s,g}setsockopt calls. I did not
+>>> follow that change; was it a deliberate intent to not allow these
+>>> in-kernel calls vs wanting to remove the set_fs? e.g., can we add a
+>>> kioctl variant for in-kernel use of the APIs?
+>>
+>> I think that was a side effect, and with no in-tree in-kernel
+>> users (apart from limited calls in bpf) it was deemed acceptable.
+>> (It is a PITA for any code trying to use SCTP in kernel.)
+>>
+>> One problem is that not all sockopt calls pass the correct length.
+>> And some of them can have very long buffers.
+>> Not to mention the ones that are read-modify-write.
+>>
+>> A plausible solution is to pass a 'fat pointer' that contains
+>> some, or all, of:
+>>        - A userspace buffer pointer.
+>>        - A kernel buffer pointer.
+>>        - The length supplied by the user.
+>>        - The length of the kernel buffer.
+>>        = The number of bytes to copy on completion.
+>> For simple user requests the syscall entry/exit code
+>> would copy the data to a short on-stack buffer.
+>> Kernel users just pass the kernel address.
+>> Odd requests can just use the user pointer.
+>>
+>> Probably needs accessors that add in an offset.
+>>
+>> It might also be that some of the problematic sockopt
+>> were in decnet - now removed.
+> 
+> Hello everyone,
+> 
+> I'm currently working on an implementation of {get,set} sockopt.
+> Since this thread is already talking about it, I hope that I replying at the correct place.
 
-Note that it's harmless since the 'sched' parameter is checked before
-calling 'sctp_sched_set_sched'.
+Hi Adrien, I believe Breno is working on set/getsockopt as well
+and had similar patches for awhile, but that would need for some
+problems to be solved first, e.g. try and decide whether it copies
+to a ptr as the syscall versions or would get/return optval
+directly in sqe/cqe. And also where to store bits that you pass
+in struct args_setsockopt_uring, and whether to rely on SQE128
+or not.
 
-Found by InfoTeCS on behalf of Linux Verification Center
-(linuxtesting.org) with SVACE.
 
-Fixes: 5bbbbe32a431 ("sctp: introduce stream scheduler foundations")
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
----
-V2:
- - Change the order of local variables=20
- - Specify the target tree in the subject
- net/sctp/stream_sched.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+> My implementation is rather simple using a struct that will be used to pass the necessary info throught sqe->cmd.
+> 
+> Here is my implementation based of kernel version 6.3 :
+> 
+> Signed-off-by: Adrien Delorme <delorme.ade@outlook.com>
+> 
+> diff -uprN a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
+> --- a/include/uapi/linux/io_uring.h     2023-04-23 15:02:52.000000000 -0400
+> +++ b/include/uapi/linux/io_uring.h     2023-04-24 07:55:21.406981696 -0400
+> @@ -235,6 +235,25 @@ enum io_uring_op {
+>    */
+> #define IORING_URING_CMD_FIXED (1U << 0)
+> 
+> +/* struct io_uring_cmd->cmd_op flags for socket operations */
+> +#define IO_URING_CMD_OP_GETSOCKOPT 0x0
+> +#define IO_URING_CMD_OP_SETSOCKOPT 0x1
+> +
+> +/* Struct to pass args for IO_URING_CMD_OP_GETSOCKOPT and IO_URING_CMD_OP_SETSOCKOPT operations */
+> +struct args_setsockopt_uring{
 
-diff --git a/net/sctp/stream_sched.c b/net/sctp/stream_sched.c
-index 330067002deb..4d076a9b8592 100644
---- a/net/sctp/stream_sched.c
-+++ b/net/sctp/stream_sched.c
-@@ -146,18 +146,19 @@ static void sctp_sched_free_sched(struct sctp_stream =
-*stream)
- int sctp_sched_set_sched(struct sctp_association *asoc,
- 			 enum sctp_sched_type sched)
- {
--	struct sctp_sched_ops *n =3D sctp_sched_ops[sched];
- 	struct sctp_sched_ops *old =3D asoc->outqueue.sched;
- 	struct sctp_datamsg *msg =3D NULL;
-+	struct sctp_sched_ops *n;
- 	struct sctp_chunk *ch;
- 	int i, ret =3D 0;
-=20
--	if (old =3D=3D n)
--		return ret;
--
- 	if (sched > SCTP_SS_MAX)
- 		return -EINVAL;
-=20
-+	n =3D sctp_sched_ops[sched];
-+	if (old =3D=3D n)
-+		return ret;
-+
- 	if (old)
- 		sctp_sched_free_sched(&asoc->stream);
-=20
---=20
-2.30.2
+The name of the structure is quite inconsistent with the
+rest. It's better to be io_[uring_]_sockopt_arg or some
+variation.
+
+> +       int                             level;
+> +       int                     optname;
+> +       char __user *   user_optval;
+> +       int                     optlen;
+
+That's uapi, there should not be __user, and field sizes
+should be more portable, i.e. use __u32, __u64, etc, look
+through the file.
+
+Would need to look into the get/setsockopt implementation
+before saying anything about uring_cmd_{set,get}sockopt.
+
+
+> +};
+> +
+> +struct args_getsockopt_uring{
+> +       int                             level;
+> +       int                     optname;
+> +       char __user *   user_optval;
+> +       int      __user *       optlen;
+> +};
+> +
+> 
+> /*
+>    * sqe->fsync_flags
+> diff -uprN a/net/socket.c b/net/socket.c
+> --- a/net/socket.c      2023-04-23 15:02:52.000000000 -0400
+> +++ b/net/socket.c      2023-04-24 08:06:44.800981696 -0400
+> @@ -108,6 +108,11 @@
+> #include <linux/ptp_clock_kernel.h>
+> #include <trace/events/sock.h>
+> 
+> +#ifdef CONFIG_IO_URING
+> +#include <uapi/linux/io_uring.h>
+> +#include <linux/io_uring.h>
+> +#endif
+> +
+> #ifdef CONFIG_NET_RX_BUSY_POLL
+> unsigned int sysctl_net_busy_read __read_mostly;
+> unsigned int sysctl_net_busy_poll __read_mostly;
+> @@ -132,6 +137,11 @@ static ssize_t sock_splice_read(struct f
+>                                  struct pipe_inode_info *pipe, size_t len,
+>                                  unsigned int flags);
+> 
+> +
+> +#ifdef CONFIG_IO_URING
+> +int socket_uring_cmd_handler(struct io_uring_cmd *cmd, unsigned int flags);
+> +#endif
+> +
+> #ifdef CONFIG_PROC_FS
+> static void sock_show_fdinfo(struct seq_file *m, struct file *f)
+> {
+> @@ -166,6 +176,9 @@ static const struct file_operations sock
+>          .splice_write = generic_splice_sendpage,
+>          .splice_read =  sock_splice_read,
+>          .show_fdinfo =  sock_show_fdinfo,
+> +#ifdef CONFIG_IO_URING
+> +       .uring_cmd = socket_uring_cmd_handler,
+> +#endif
+> };
+> 
+> static const char * const pf_family_names[] = {
+> @@ -2330,6 +2343,126 @@ SYSCALL_DEFINE5(getsockopt, int, fd, int
+>          return __sys_getsockopt(fd, level, optname, optval, optlen);
+> }
+> 
+> +#ifdef CONFIG_IO_URING
+> +
+> +/*
+> + * Make getsockopt operation with io_uring.
+> + * This fonction is based of the __sys_getsockopt without sockfd_lookup_light
+> + * since io_uring retrieves it for us.
+> + */
+> +int uring_cmd_getsockopt(struct socket *sock, int level, int optname, char __user *optval,
+> +               int __user *optlen)
+> +{
+> +       int err;
+> +       int max_optlen;
+> +
+> +       err = security_socket_getsockopt(sock, level, optname);
+> +       if (err)
+> +               goto out_put;
+> +
+> +       if (!in_compat_syscall())
+> +               max_optlen = BPF_CGROUP_GETSOCKOPT_MAX_OPTLEN(optlen);
+> +
+> +       if (level == SOL_SOCKET)
+> +               err = sock_getsockopt(sock, level, optname, optval, optlen);
+> +       else if (unlikely(!sock->ops->getsockopt))
+> +               err = -EOPNOTSUPP;
+> +       else
+> +               err = sock->ops->getsockopt(sock, level, optname, optval,
+> +                                           optlen);
+> +
+> +       if (!in_compat_syscall())
+> +               err = BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock->sk, level, optname,
+> +                                                    optval, optlen, max_optlen,
+> +                                                    err);
+> +out_put:
+> +       return err;
+> +}
+> +
+> +/*
+> + * Make setsockopt operation with io_uring.
+> + * This fonction is based of the __sys_setsockopt without sockfd_lookup_light
+> + * since io_uring retrieves it for us.
+> + */
+> +int uring_cmd_setsockopt(struct socket *sock, int level, int optname, char *user_optval,
+> +               int optlen)
+> +{
+> +       sockptr_t optval = USER_SOCKPTR(user_optval);
+> +       char *kernel_optval = NULL;
+> +       int err;
+> +
+> +       if (optlen < 0)
+> +               return -EINVAL;
+> +
+> +       err = security_socket_setsockopt(sock, level, optname);
+> +       if (err)
+> +               goto out_put;
+> +
+> +       if (!in_compat_syscall())
+> +               err = BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock->sk, &level, &optname,
+> +                                                    user_optval, &optlen,
+> +                                                    &kernel_optval);
+> +       if (err < 0)
+> +               goto out_put;
+> +       if (err > 0) {
+> +               err = 0;
+> +               goto out_put;
+> +       }
+> +
+> +       if (kernel_optval)
+> +               optval = KERNEL_SOCKPTR(kernel_optval);
+> +       if (level == SOL_SOCKET && !sock_use_custom_sol_socket(sock))
+> +               err = sock_setsockopt(sock, level, optname, optval, optlen);
+> +       else if (unlikely(!sock->ops->setsockopt))
+> +               err = -EOPNOTSUPP;
+> +       else
+> +               err = sock->ops->setsockopt(sock, level, optname, optval,
+> +                                           optlen);
+> +       kfree(kernel_optval);
+> +out_put:
+> +       return err;
+> +}
+> +
+> +/*
+> + * Handler uring_cmd socket file_operations.
+> + *
+> + * Operation code and struct are defined in /include/uapi/linux/io_uring.h
+> + * The io_uring ring needs to be set with the flags : IORING_SETUP_SQE128 and IORING_SETUP_CQE32
+> + *
+> + */
+> +int socket_uring_cmd_handler(struct io_uring_cmd *cmd, unsigned int flags){
+> +
+> +       /* Retrieve socket */
+> +       struct socket *sock = sock_from_file(cmd->file);
+> +
+> +       if (!sock)
+> +               return -EINVAL;
+> +
+> +       /* Does the requested operation */
+> +       switch (cmd->cmd_op) {
+> +               case IO_URING_CMD_OP_GETSOCKOPT:
+> +                       struct args_getsockopt_uring *values_get = (struct args_getsockopt_uring *) cmd->cmd;
+> +                       return uring_cmd_getsockopt(sock,
+> +                                                                               values_get->level,
+> +                                                                               values_get->optname,
+> +                                                                               values_get->user_optval,
+> +                                                                               values_get->optlen);
+> +
+> +               case IO_URING_CMD_OP_SETSOCKOPT:
+> +                       struct args_setsockopt_uring *values_set = (struct args_setsockopt_uring *) cmd->cmd;
+> +                       return uring_cmd_setsockopt(sock,
+> +                                                                               values_set->level,
+> +                                                                               values_set->optname,
+> +                                                                               values_set->user_optval,
+> +                                                                               values_set->optlen);
+> +               default:
+> +                       break;
+> +
+> +       }
+> +       return -EINVAL;
+> +}
+> +#endif
+> +
+> /*
+>    *     Shutdown a socket.
+>    */
+> 
+> I would appreciate any feedback or advice you may have on this work. Hopefully it will be of some kind of help. Thank you for your time and consideration.
+> 
+> Adrien
+
+-- 
+Pavel Begunkov
