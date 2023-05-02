@@ -2,47 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28AEB6F47EF
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 18:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5973E6F481A
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 18:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232096AbjEBQGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 12:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
+        id S233610AbjEBQNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 12:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjEBQGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 12:06:13 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2070.outbound.protection.outlook.com [40.107.244.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A8E2729;
-        Tue,  2 May 2023 09:06:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jhmGzh681uutod86E8L+sutKfbq5MPT76xKlekrrPfKuNAh/FTAaFkio7AOo4dVU7gGiZg7vZxLAUOmfr/WEBp+thgjnWie18ci5VgLqjHbHQu/r1ZZsOpcIYkxGwVSDrqjLEuZRMSbYnW1FGfmQGi6DYdMZUe6aEsvD28VUgn58U2HABB3xTAFMasMLa/xUwj1fj1VMQlsB4L52/2m8L+3g39lNAFWdyuypmrLIu1yhrrxe/k6DR6/hnbS/41Eg6a9w+vycr6O73sD0sGg9Zz5BtazezbFusfqoVyYPSQISaU6mb7yAn8gua+fIR9NT6RDk8r6hc34n38arYxc4Cw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PvsjZKlfUz8S70g1y0riYC6e/TEogbaKLWsZdxnFqwQ=;
- b=mmRiezjh1pvT0RpGDMf8NOKvriwq/KilGV/vM5wJ8HaPDipmjjht0OPoOZsJX0fW1m952pK/og4/5t5Yr/QDPFOMYrK0KH0qkZkB+6V+eSjuGCwprKvVHmuwHpf5429FydnMovlf9QjUIvMJyL2g4vlXCxs7UDWUutbdTkiut8N3CSEPo+5ZV/sHCqjyVEtnRAhXUtt68+PNtJi6igQxM3+z6Rs9C/11n7IlOuxGWn+iwLD2tx8/DzK9Hb5T+klilKDJb20QeL1SU1y3MGBpuXxvtFQHNm/DDD1lnvE2e7nizdGuea9fzYD5ugGAPeogn8UyZ//1WHW/GhXwyjqrWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PvsjZKlfUz8S70g1y0riYC6e/TEogbaKLWsZdxnFqwQ=;
- b=PuZzf4aE4qb9ylVDOWUK43OmTysBG7xoBBPS3hJHyNgMweHEl4u+T1yPglkAQM/lOI19mtmon+681mjgmMxS50CDTliJDmBAAimKFDbPPgYQTb+g82SrsUUoAPDWIGffJhNCFhXm67B9UvqKWC3YkiyirwwFqsoU5yZtzriWf+G+GEGueKvdztMvfQqLmkY3u3hwxJ8sFXFmBr2qwQ85SrSIZ6ZyFWS9OeQA39/LXp96wsT+hfU2gwd2ck2lT4QIk0lm1BJTOYU0SEwhtTelmz87UPf6ypjNI1D6YquZ7cYBp0xIMM8LS48ec2cbrnCbNhEHLN87H+N3qAI/Xq1IlQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA1PR12MB7496.namprd12.prod.outlook.com (2603:10b6:208:418::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31; Tue, 2 May
- 2023 16:06:09 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6340.030; Tue, 2 May 2023
- 16:06:09 +0000
-Date:   Tue, 2 May 2023 13:06:06 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     David Hildenbrand <david@redhat.com>
+        with ESMTP id S233731AbjEBQNg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 12:13:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72E740C6
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 09:12:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1683043965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9eeDMuJZPu6ODufcZPGNKxI5KHuttnVPRF879rkqTz8=;
+        b=cQnG4DdNYdOhHazE3htSj/DonSxwedTaMSDjqT92vixMWyCwtULOSqillkoKGeMjoSqEt3
+        jU+ovfA1bhesE22X6FtK4po3E9Kk39eix9x7lahDAHcgJE/Yduat2XaRss1PCs9kU6Raat
+        r7sc2GV0sq2jrUAlCyy4gTyObF6RLSU=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-301-EMQuewQ9MOmlfTJabZ_Icg-1; Tue, 02 May 2023 12:12:44 -0400
+X-MC-Unique: EMQuewQ9MOmlfTJabZ_Icg-1
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f315735edeso109411765e9.1
+        for <netdev@vger.kernel.org>; Tue, 02 May 2023 09:12:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683043963; x=1685635963;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=9eeDMuJZPu6ODufcZPGNKxI5KHuttnVPRF879rkqTz8=;
+        b=mBAvA5Gv4Cpb+9TKtwh8HTOJ27gCzamprw/DQd+WIM7Rm/4PNKSEEZZlhZYiQeW9AB
+         sKHvrYI9Ta3dEHy2APBFAoO0RRppKP6nSXAJalA8NeaTW0k+SqtFBXkE+BS6jz8YYO5y
+         PmHdSeTYY9PTeT52eQJVICMASMiHLnJhf5zSvyPxmNEOJhNq0Ne5vzMTUKHMQXkXWYiP
+         3X0RAEE1PFErMjDog+wtrzaR057sEZjsA4cwLxisYZ7MyP07HH8HAgsrgrjUd8XfQhnG
+         SK82ip4yZxYyHtpk1ewM1VFVeH3fVzyBCEPGnnqfMhuq8PK3mYY6JIBC/zAs7obk14qb
+         Jjrw==
+X-Gm-Message-State: AC+VfDwY45l+ZGPx7/YrVF0lpMFuvBmxiHYB0uPeJNQDjszv7d07eEfy
+        nRT/2djf3HWhJHeOMHZwGQLn+hpkgF5krllrlh7lZf4vYP3Zn0UYBrsGNykCwwtCQ4NnkyJkuQp
+        qTNunFuia7huySklT
+X-Received: by 2002:adf:e911:0:b0:2f6:661:c03c with SMTP id f17-20020adfe911000000b002f60661c03cmr13759777wrm.28.1683043963190;
+        Tue, 02 May 2023 09:12:43 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ50FlsdEb7AJE6SqMVbMDAUvRqWZ/pApIWnjC3i8JYXqQp98IhMaOQg4hPFsdc+YA9Dmgqv7g==
+X-Received: by 2002:adf:e911:0:b0:2f6:661:c03c with SMTP id f17-20020adfe911000000b002f60661c03cmr13759744wrm.28.1683043962801;
+        Tue, 02 May 2023 09:12:42 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c700:2400:6b79:2aa:9602:7016? (p200300cbc70024006b7902aa96027016.dip0.t-ipconnect.de. [2003:cb:c700:2400:6b79:2aa:9602:7016])
+        by smtp.gmail.com with ESMTPSA id v3-20020adfedc3000000b003062c0ef959sm6522031wro.69.2023.05.02.09.12.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 May 2023 09:12:42 -0700 (PDT)
+Message-ID: <1f29fe90-1482-7435-96bd-687e991a4e5b@redhat.com>
+Date:   Tue, 2 May 2023 18:12:39 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to
+ file-backed mappings
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Peter Xu <peterx@redhat.com>,
         Matthew Rosato <mjrosato@linux.ibm.com>,
         Christian Borntraeger <borntraeger@linux.ibm.com>,
@@ -88,123 +110,85 @@ Cc:     Peter Xu <peterx@redhat.com>,
         Mika Penttila <mpenttil@redhat.com>,
         Dave Chinner <david@fromorbit.com>,
         Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
- to file-backed mappings
-Message-ID: <ZFE07gfyp0aTsSmL@nvidia.com>
 References: <ad60d5d2-cfdf-df9f-aef1-7a0d3facbece@redhat.com>
  <ZFEVQmFGL3GxZMaf@nvidia.com>
  <1ffbbfb7-6bca-0ab0-1a96-9ca81d5fa373@redhat.com>
  <ZFEYblElll3pWtn5@nvidia.com>
  <f0acd8e4-8df8-dfae-b6b2-30eea3b14609@redhat.com>
  <3c17e07a-a7f9-18fc-fa99-fa55a5920803@linux.ibm.com>
- <ZFEqTo+l/S8IkBQm@nvidia.com>
- <ZFEtKe/XcnC++ACZ@x1n>
+ <ZFEqTo+l/S8IkBQm@nvidia.com> <ZFEtKe/XcnC++ACZ@x1n>
  <ZFEt/ot6VKOgW1mT@nvidia.com>
  <4fd5f74f-3739-f469-fd8a-ad0ea22ec966@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4fd5f74f-3739-f469-fd8a-ad0ea22ec966@redhat.com>
-X-ClientProxiedBy: BL1PR13CA0345.namprd13.prod.outlook.com
- (2603:10b6:208:2c6::20) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB7496:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0dcadfd7-c335-471a-7577-08db4b27242d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tjayExv7THwfCl1MZy4iRcE70yt92ZXuCOxJWLAunijHpdMjKGrYBVym2uCDi1jPxVzh41tfbYSucz0NqIUeVO3UqHik7U51ehnXzT5cYV9/Mi4A9gogJOl+LSEty0xj9e9sRCXHJhRaaeSVpsUDE8bJHTtxfpjlZEWkPwtZ7v4y5rzDzJprG+SZQAky37WfXjljsX0Z6xLboAJjp5/2T/QxMy9rYoJNDvcb1z74b0TaOkyf92qwgEgmPDzzsU9dKav4Pgmu7rCil4EhDgedTOdab9PPcdhEbTHMSPp+LW+FDotbRT7Tqf2YUsogMjhddYwGjfZAwCF7Gnvfrs/qpcc7r28vOAogjXdZI06HflmPwGQLB1I1KNTaR8fVaw7blzh3qvY/lQf4Q5u7NkbPDIy1mK5QjA9Jf6hEu7u7tHw6WbcfFrSr81d3LOWAPQ/NHBOlPxnlF47Y88tXvwlekgNgJ8wXujWioNvxB//ML2quMZcfpWjCymIgHl8U9H3er1vfBr2S9PokbjQQdu2ksih0XLhfcad9kPknD4YaQcm7SLEEQvD7KLOtzy6jQvRJ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(376002)(366004)(396003)(39860400002)(451199021)(26005)(186003)(54906003)(2616005)(83380400001)(53546011)(6512007)(2906002)(6506007)(7416002)(7406005)(66476007)(66556008)(66946007)(38100700002)(5660300002)(8676002)(8936002)(41300700001)(86362001)(36756003)(478600001)(316002)(6916009)(6666004)(6486002)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EyfrVfisrQXbXsv3vSilyaqAZvp91G83EvPKjJ7zwaTkB7YmWUL1DiPhcF0M?=
- =?us-ascii?Q?vlBotcLbL/B8fqtZ4+2M5jXNAJmTs6MmzimPlHWwltykbQFJ2Fka+46FoNHT?=
- =?us-ascii?Q?EtyZ1IXwj3Y+enXIPtOXlf9/z8S6POgSeyCHfNncok7MmOK5VpeyJbuTCpns?=
- =?us-ascii?Q?hEI5ZP/lqswrfPtvrGZ5Oh1/CORMwcJbTozsH6Fz24ogniKlV2iheBvetCmf?=
- =?us-ascii?Q?RUDz7eD/gwo2DBTLE7mYXTy4btnpTEaVOALb81E+U/iZYieGD+I5EBj4XxwX?=
- =?us-ascii?Q?WbJq2fXCZgqbSrP9iFc1wrR22+luaj30wv+njQg4jAIMI4rbaaWMhf8N2GRy?=
- =?us-ascii?Q?XMc5tP/bGmy7DbKo6futpJmrHdUSgFml/x0kDQufQNhnlmu5UCMjDu5t2Sex?=
- =?us-ascii?Q?1wG/FmGZKw1g11MQiYX6qFzjOhn8ri/pBq1xF0nqeWeASFyr/7vL6zKu8AAo?=
- =?us-ascii?Q?WmvyBXcgXVefPYicSVswfO+iu3jaYRNPiZSQ0zjbQCSPGhJ3sI2n9YJ7fHSe?=
- =?us-ascii?Q?A+xzHg+izRHm6uksVkUabL7t9LlLjotMfIIFzTyj2mwDJZNuJ8jbi1TnKfZW?=
- =?us-ascii?Q?zLlLomKNo5Eggf43VtD6PR0e28eX6HgBtMdHw37gRqIR/RtgvhyBj+NC3voh?=
- =?us-ascii?Q?q3qL6WKSoF/0uQp4Wt4jqIV9p2QkgFY4e+4em+hIo6QKDL3TfLvz2WVwqgO1?=
- =?us-ascii?Q?8aL37orQRDtPqcTsO91Bw+QvjDbbRTJZVKKGcu61n1Cw9AjxUd0jdixojU62?=
- =?us-ascii?Q?xf1JzdyD3wPu/YujHKShl/dluMgZyTpBxkhYpkSvGT2V4981O56+PXs40fAU?=
- =?us-ascii?Q?+UbHQgWuwFihhjpfkV7xiBdo2NYbB3GEEPNLn6hg39BqO62v1kO28uao4xUU?=
- =?us-ascii?Q?696LCYHVmxCLBD5S5WMl1g35pOea/iSI96D+hdiSlNzvR9lwIkpjlQPDyHC4?=
- =?us-ascii?Q?Xk2VpkYtQV6+zSR8U1SMpO5tyIFtMvO4p984YkOGPUXnZsLw8nEASQhjptG9?=
- =?us-ascii?Q?DTIhYAD8eBt6WtFVPhky9bMuMOXEkwA17FD8z6yIxtWLa/OLMn19l8sIIlYF?=
- =?us-ascii?Q?gbOEw/NPEYytdanvzAZTm+OrT+/K3vlo28HNkQ4FLvQ3SIvLABhZOfnQghhx?=
- =?us-ascii?Q?7Pm79i4bLT9t+03pbQ6dQDxHOynsi4Awmh9oocAENXpL4Rysdy7lZq1CHiDM?=
- =?us-ascii?Q?q9BSjqJz3UIu9XNL5qR2licARyeL1cgvSbCS0qh1DBo5JS3ttH8TN5OkSmoe?=
- =?us-ascii?Q?H3nxXvl9N2BCNkfmeUQz35X+FkXq8PxAm7IBbTe594xXKezdKkclLcI6wTOa?=
- =?us-ascii?Q?OqCUN/RuiUpZCu+I2jy8W+SbJWyrWljpDJoGAkmitD5V/AVeWIH0D7oh03rj?=
- =?us-ascii?Q?67tDrUElu8rrmRvRwftar3UTzBu2lAAN7DN4B/e5E5Omc9ikQLLSqjbW4L14?=
- =?us-ascii?Q?6TAGwclD+SjOS+wDQTNqfvAQeFMAUpBZ8VU0AxKOILuQyXc638JK2Ait02yQ?=
- =?us-ascii?Q?1aAK79EFQgxnbJnFhKZKfzq5mqB1UGTJqH+CR3KG6c2T4IlcSMstMQDKzm4K?=
- =?us-ascii?Q?+HetzouApPdXQ7Ldcz3ZK+cUVYsUMPjUrBVCvI0U?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0dcadfd7-c335-471a-7577-08db4b27242d
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 16:06:08.7890
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JvjkgzuqOIMkwUwm3XciPFwIr6BgvB8jvTItrVjP548EMk8AepW6KVfEhhnnctaL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7496
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+ <ZFE07gfyp0aTsSmL@nvidia.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <ZFE07gfyp0aTsSmL@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 05:45:40PM +0200, David Hildenbrand wrote:
-> On 02.05.23 17:36, Jason Gunthorpe wrote:
-> > On Tue, May 02, 2023 at 11:32:57AM -0400, Peter Xu wrote:
-> > > > How does s390 avoid mmu notifiers without having lots of problems?? It
-> > > > is not really optional to hook the invalidations if you need to build
-> > > > a shadow page table..
-> > > 
-> > > Totally no idea on s390 details, but.. per my read above, if the firmware
-> > > needs to make sure the page is always available (so no way to fault it in
-> > > on demand), which means a longterm pinning seems appropriate here.
-> > > 
-> > > Then if pinned a must, there's no need for mmu notifiers (as the page will
-> > > simply not be invalidated anyway)?
-> > 
-> > And what if someone deliberately changes the mapping?  memory hotplug
-> > in the VM, or whatever?
+On 02.05.23 18:06, Jason Gunthorpe wrote:
+> On Tue, May 02, 2023 at 05:45:40PM +0200, David Hildenbrand wrote:
+>> On 02.05.23 17:36, Jason Gunthorpe wrote:
+>>> On Tue, May 02, 2023 at 11:32:57AM -0400, Peter Xu wrote:
+>>>>> How does s390 avoid mmu notifiers without having lots of problems?? It
+>>>>> is not really optional to hook the invalidations if you need to build
+>>>>> a shadow page table..
+>>>>
+>>>> Totally no idea on s390 details, but.. per my read above, if the firmware
+>>>> needs to make sure the page is always available (so no way to fault it in
+>>>> on demand), which means a longterm pinning seems appropriate here.
+>>>>
+>>>> Then if pinned a must, there's no need for mmu notifiers (as the page will
+>>>> simply not be invalidated anyway)?
+>>>
+>>> And what if someone deliberately changes the mapping?  memory hotplug
+>>> in the VM, or whatever?
+>>
+>> Besides s390 not supporting memory hotplug in VMs (yet): if the guest wants
+>> a different guest physical address, I guess that's the problem of the guest,
+>> and it can update it:
+>>
+>> KVM_S390_ZPCIOP_REG_AEN is triggered from QEMU via
+>> s390_pci_kvm_aif_enable(), triggered by the guest via a special instruction.
+>>
+>> If the hypervisor changes the mapping, it's just the same thing as mixing
+>> e.g. MADV_DONTNEED with longterm pinning in vfio: don't do it. And if you do
+>> it, you get to keep the mess you created for your VM.
+>>
+>> Linux will make sure to not change the mapping: for example, page migration
+>> of a pinned page will fail.
+>>
+>> But maybe I am missing something important here.
 > 
-> Besides s390 not supporting memory hotplug in VMs (yet): if the guest wants
-> a different guest physical address, I guess that's the problem of the guest,
-> and it can update it:
-> 
-> KVM_S390_ZPCIOP_REG_AEN is triggered from QEMU via
-> s390_pci_kvm_aif_enable(), triggered by the guest via a special instruction.
-> 
-> If the hypervisor changes the mapping, it's just the same thing as mixing
-> e.g. MADV_DONTNEED with longterm pinning in vfio: don't do it. And if you do
-> it, you get to keep the mess you created for your VM.
-> 
-> Linux will make sure to not change the mapping: for example, page migration
-> of a pinned page will fail.
->
-> But maybe I am missing something important here.
+> It missses the general architectural point why we have all these
+> shootdown mechanims in other places - plares are not supposed to make
+> these kinds of assumptions. When the userspace unplugs the memory from
+> KVM or unmaps it from VFIO it is not still being accessed by the
+> kernel.
 
-It missses the general architectural point why we have all these
-shootdown mechanims in other places - plares are not supposed to make
-these kinds of assumptions. When the userspace unplugs the memory from
-KVM or unmaps it from VFIO it is not still being accessed by the
-kernel.
+Yes. Like having memory in a vfio iommu v1 and doing the same (mremap, 
+munmap, MADV_DONTNEED, ...). Which is why we disable MADV_DONTNEED 
+(e.g., virtio-balloon) in QEMU with vfio.
 
-Functional bug or not, it is inconsistent with how this is designed to
-work.
+> 
+> Functional bug or not, it is inconsistent with how this is designed to
+> work.
 
-Jason
+Sorry to say, I *really* don't see how that is supposed to work with a 
+page that *cannot* be faulted back in on demand.
+
+-- 
+Thanks,
+
+David / dhildenb
+
