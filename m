@@ -2,42 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0561E6F4501
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 15:30:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43C1A6F4670
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 16:54:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234138AbjEBNa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 09:30:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
+        id S234501AbjEBOyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 10:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233158AbjEBNaY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 09:30:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F0310E3;
-        Tue,  2 May 2023 06:30:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7200D62462;
-        Tue,  2 May 2023 13:30:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0848C433D2;
-        Tue,  2 May 2023 13:30:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1683034221;
-        bh=sfX70rgX6LXhrIEHuYX+oDxJVNsw5R+p+cnfXJBH4Ks=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=jyXMf9In6AHy1bmkdNltyyjI4MUbC8e1Nymm1lHaYc13hX4IbCgWT9V4SOi6ONxsF
-         Ieomw9/iBjC7qecZnGCUMcS6RkJvEzMLW2GGx/Qd54Z94gH4w1HHDQh7SxF59TSnuK
-         +Zj2iJxRCjsgra2wnCM1vBUC2R4dw26dZpx0OztkUYSsShRB4maw/iwZGeQQut1cBG
-         ZnU1hWx+7MQW6Mdt4nzDFTjRcv0yA3sMmo1oOhm8nH9iDrs7QF1yX+clv9U1n7g5pi
-         RKdMfKMJck/ZDnJUuqrF/lzSP3RN1fcvhHHrs7fPuQXKT4HRwoWX1XbTA0TsumoH6N
-         J1++5bovfKEPg==
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 61ED715405AD; Tue,  2 May 2023 06:30:21 -0700 (PDT)
-Date:   Tue, 2 May 2023 06:30:21 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
+        with ESMTP id S233656AbjEBOyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 10:54:13 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096C294;
+        Tue,  2 May 2023 07:54:09 -0700 (PDT)
+Received: from pps.filterd (m0353727.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 342EdZdk028872;
+        Tue, 2 May 2023 14:51:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=tvKXBWnlz0b5+aQlCNEu6+3OmKoLlKf53S2AiWh20Gw=;
+ b=qm9m5dEZtOLmivZUrVzml2i80JCmcJlovyIs0CX7sqBrmYldckjgWJ0jTqwUiT3JOLRX
+ TYvWyTY2X0eR+PbzUu+SHKl7A4DYz/Amilf7PjvUlFmjyHzUdnL5UfeQqcrwxZh2XjPz
+ ivFOJoH/cBEJUZ8YCHQ89pbQbLOpBM4laf9C4cAcrtvfPbAnxGV0upEtvSMjnMU1kCb3
+ oSSNyUmxB9aoz2J5hw2Riuxy2A11KAZ45iVZkazU7LP1OggfrOLHgWjUGAPG56cKIf68
+ Pl6cyerz5wHv/yNResTo9aP3u03WK0UNb9yQPi5bJi5BX8mPdvWG24N9okn4L0OvGJqJ 6A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb3cy2xkc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 May 2023 14:51:23 +0000
+Received: from m0353727.ppops.net (m0353727.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 342Ee3I7031001;
+        Tue, 2 May 2023 14:51:22 GMT
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb3cy2xej-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 May 2023 14:51:22 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 342ASRsp004760;
+        Tue, 2 May 2023 13:35:41 GMT
+Received: from smtprelay05.dal12v.mail.ibm.com ([9.208.130.101])
+        by ppma03dal.us.ibm.com (PPS) with ESMTPS id 3q8tv83d3s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 May 2023 13:35:41 +0000
+Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
+        by smtprelay05.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 342DZcZY42074434
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 2 May 2023 13:35:38 GMT
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 62E845803F;
+        Tue,  2 May 2023 13:35:38 +0000 (GMT)
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ED27458056;
+        Tue,  2 May 2023 13:35:33 +0000 (GMT)
+Received: from [9.60.89.243] (unknown [9.60.89.243])
+        by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Tue,  2 May 2023 13:35:33 +0000 (GMT)
+Message-ID: <651bfe55-6e2a-0337-d755-c8d606f5317e@linux.ibm.com>
+Date:   Tue, 2 May 2023 09:35:33 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to
+ file-backed mappings
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Lorenzo Stoakes <lstoakes@gmail.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
         Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
         Matthew Wilcox <willy@infradead.org>,
@@ -46,6 +75,7 @@ Cc:     Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
         Christian Benvenuti <benve@cisco.com>,
         Nelson Escobar <neescoba@cisco.com>,
         Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
         Arnaldo Carvalho de Melo <acme@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -78,220 +108,80 @@ Cc:     Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
         Mika Penttila <mpenttil@redhat.com>,
         David Hildenbrand <david@redhat.com>,
         Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>
-Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
- to file-backed mappings
-Message-ID: <b00d066f-1eb7-4765-a6ff-6aacb073109d@paulmck-laptop>
-Reply-To: paulmck@kernel.org
+        "Theodore Ts'o" <tytso@mit.edu>, Peter Xu <peterx@redhat.com>
 References: <cover.1682981880.git.lstoakes@gmail.com>
  <dee4f4ad6532b0f94d073da263526de334d5d7e0.1682981880.git.lstoakes@gmail.com>
- <20230502111334.GP1597476@hirez.programming.kicks-ass.net>
- <ab66d15a-acd0-4d9b-aa12-49cddd12c6a5@lucifer.local>
- <20230502120810.GD1597538@hirez.programming.kicks-ass.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230502120810.GD1597538@hirez.programming.kicks-ass.net>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+ <fbad9e18-f727-9703-33cf-545a2d33af76@linux.ibm.com>
+ <7d56b424-ba79-4b21-b02c-c89705533852@lucifer.local>
+ <a6bb0334-9aba-9fd8-6a9a-9d4a931b6da2@linux.ibm.com>
+Content-Language: en-US
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <a6bb0334-9aba-9fd8-6a9a-9d4a931b6da2@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ZPrSR9updbvWPwyMNBfY5bx1g1NlsSpS
+X-Proofpoint-ORIG-GUID: 15UZwaO7bNwP-hIqLmrVVyC5p7mTDFXL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-02_09,2023-04-27_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
+ malwarescore=0 priorityscore=1501 lowpriorityscore=0 adultscore=0
+ suspectscore=0 mlxscore=0 spamscore=0 impostorscore=0 mlxlogscore=965
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2305020124
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 02:08:10PM +0200, Peter Zijlstra wrote:
-> On Tue, May 02, 2023 at 12:25:54PM +0100, Lorenzo Stoakes wrote:
-> > On Tue, May 02, 2023 at 01:13:34PM +0200, Peter Zijlstra wrote:
-> > > On Tue, May 02, 2023 at 12:11:49AM +0100, Lorenzo Stoakes wrote:
-> > > > @@ -95,6 +96,77 @@ static inline struct folio *try_get_folio(struct page *page, int refs)
-> > > >  	return folio;
-> > > >  }
-> > > >
-> > > > +#ifdef CONFIG_MMU_GATHER_RCU_TABLE_FREE
-> > > > +static bool stabilise_mapping_rcu(struct folio *folio)
-> > > > +{
-> > > > +	struct address_space *mapping = READ_ONCE(folio->mapping);
-> > > > +
-> > > > +	rcu_read_lock();
-> > > > +
-> > > > +	return mapping == READ_ONCE(folio->mapping);
-> > >
-> > > This doesn't make sense; why bother reading the same thing twice?
-> > 
-> > The intent is to see whether the folio->mapping has been truncated from
-> > underneath us, as per the futex code that Kirill referred to which does
-> > something similar [1].
+On 5/2/23 9:04 AM, Christian Borntraeger wrote:
 > 
-> Yeah, but per that 3rd load you got nothing here. Also that futex code
-> did the early load to deal with the !mapping case, but you're not doing
-> that.
 > 
-> > > Who cares if the thing changes from before; what you care about is that
-> > > the value you see has stable storage, this doesn't help with that.
-> > >
-> > > > +}
-> > > > +
-> > > > +static void unlock_rcu(void)
-> > > > +{
-> > > > +	rcu_read_unlock();
-> > > > +}
-> > > > +#else
-> > > > +static bool stabilise_mapping_rcu(struct folio *)
-> > > > +{
-> > > > +	return true;
-> > > > +}
-> > > > +
-> > > > +static void unlock_rcu(void)
-> > > > +{
-> > > > +}
-> > > > +#endif
-> > >
-> > > Anyway, this all can go away. RCU can't progress while you have
-> > > interrupts disabled anyway.
-> > 
-> > There seems to be other code in the kernel that assumes that this is not
-> > the case,
+> Am 02.05.23 um 14:54 schrieb Lorenzo Stoakes:
+>> On Tue, May 02, 2023 at 02:46:28PM +0200, Christian Borntraeger wrote:
+>>> Am 02.05.23 um 01:11 schrieb Lorenzo Stoakes:
+>>>> Writing to file-backed dirty-tracked mappings via GUP is inherently broken
+>>>> as we cannot rule out folios being cleaned and then a GUP user writing to
+>>>> them again and possibly marking them dirty unexpectedly.
+>>>>
+>>>> This is especially egregious for long-term mappings (as indicated by the
+>>>> use of the FOLL_LONGTERM flag), so we disallow this case in GUP-fast as
+>>>> we have already done in the slow path.
+>>>
+>>> Hmm, does this interfer with KVM on s390 and PCI interpretion of interrupt delivery?
+>>> It would no longer work with file backed memory, correct?
+>>>
+>>> See
+>>> arch/s390/kvm/pci.c
+>>>
+>>> kvm_s390_pci_aif_enable
+>>> which does have
+>>> FOLL_WRITE | FOLL_LONGTERM
+>>> to
+>>>
+>>
+>> Does this memory map a dirty-tracked file? It's kind of hard to dig into where
+>> the address originates from without going through a ton of code. In worst case
+>> if the fast code doesn't find a whitelist it'll fall back to slow path which
+>> explicitly checks for dirty-tracked filesystem.
 > 
-> Yeah, so Paul went back on forth on that a bit. It used to be true in
-> the good old days when everything was simple. Then Paul made things
-> complicated by separating out sched-RCU bh-RCU and 'regular' RCU
-> flavours.
-
-Almost.  ;-)
-
-The way I made things complicated was instead by creating preemptible RCU
-for the real-time effort.  The original non-preemptible RCU was still
-required for a number of use cases (for example, waiting for hardware
-interrupt handlers), so it had to stay.  Separately, network-based DoS
-attacks necessitated adding RCU bh.
-
-> At that point disabling IRQs would only (officially) inhibit sched and
-> bh RCU flavours, but not the regular RCU.
-
-Quite right.
-
-> But then some years ago Linus convinced Paul that having all these
-> separate RCU flavours with separate QS rules was a big pain in the
-> backside and Paul munged them all together again.
-
-What happened was that someone used one flavor of RCU reader and a
-different flavor of RCU updater, creating an exploitable bug.  
-
-http://www2.rdrop.com/~paulmck/RCU/cve.2019.01.23e.pdf
-https://www.youtube.com/watch?v=hZX1aokdNiY
-
-And Linus asked that this bug be ruled out, so...
-
-> So now, anything that inhibits any of the RCU flavours inhibits them
-> all. So disabling IRQs is sufficient.
-
-...for v4.20 and later, exactly.
-
-							Thanx, Paul
-
-> > i.e. the futex code, though not sure if that's being run with
-> > IRQs disabled...
+> It does pin from whatever QEMU uses as backing for the guest.
+>>
+>> We can reintroduce a flag to permit exceptions if this is really broken, are you
+>> able to test? I don't have an s390 sat around :)
 > 
-> That futex code runs in preemptible context, per the lock_page() that
-> can sleep etc.. :-)
+> Matt (Rosato on cc) probably can. In the end, it would mean having
+>   <memoryBacking>
+>     <source type="file"/>
+>   </memoryBacking>
 > 
-> > > > +/*
-> > > > + * Used in the GUP-fast path to determine whether a FOLL_PIN | FOLL_LONGTERM |
-> > > > + * FOLL_WRITE pin is permitted for a specific folio.
-> > > > + *
-> > > > + * This assumes the folio is stable and pinned.
-> > > > + *
-> > > > + * Writing to pinned file-backed dirty tracked folios is inherently problematic
-> > > > + * (see comment describing the writeable_file_mapping_allowed() function). We
-> > > > + * therefore try to avoid the most egregious case of a long-term mapping doing
-> > > > + * so.
-> > > > + *
-> > > > + * This function cannot be as thorough as that one as the VMA is not available
-> > > > + * in the fast path, so instead we whitelist known good cases.
-> > > > + *
-> > > > + * The folio is stable, but the mapping might not be. When truncating for
-> > > > + * instance, a zap is performed which triggers TLB shootdown. IRQs are disabled
-> > > > + * so we are safe from an IPI, but some architectures use an RCU lock for this
-> > > > + * operation, so we acquire an RCU lock to ensure the mapping is stable.
-> > > > + */
-> > > > +static bool folio_longterm_write_pin_allowed(struct folio *folio)
-> > > > +{
-> > > > +	bool ret;
-> > > > +
-> > > > +	/* hugetlb mappings do not require dirty tracking. */
-> > > > +	if (folio_test_hugetlb(folio))
-> > > > +		return true;
-> > > > +
-> > >
-> > > This:
-> > >
-> > > > +	if (stabilise_mapping_rcu(folio)) {
-> > > > +		struct address_space *mapping = folio_mapping(folio);
-> > >
-> > > And this is 3rd read of folio->mapping, just for giggles?
-> > 
-> > I like to giggle :)
-> > 
-> > Actually this is to handle the various cases in which the mapping might not
-> > be what we want (i.e. have PAGE_MAPPING_FLAGS set) which doesn't appear to
-> > have a helper exposed for a check. Given previous review about duplication
-> > I felt best to reuse this even though it does access again... yes I felt
-> > weird about doing that.
-> 
-> Right, I had a peek inside folio_mapping(), but the point is that this
-> 3rd load might see yet *another* value of mapping from the prior two
-> loads, rendering them somewhat worthless.
-> 
-> > > > +
-> > > > +		/*
-> > > > +		 * Neither anonymous nor shmem-backed folios require
-> > > > +		 * dirty tracking.
-> > > > +		 */
-> > > > +		ret = folio_test_anon(folio) ||
-> > > > +			(mapping && shmem_mapping(mapping));
-> > > > +	} else {
-> > > > +		/* If the mapping is unstable, fallback to the slow path. */
-> > > > +		ret = false;
-> > > > +	}
-> > > > +
-> > > > +	unlock_rcu();
-> > > > +
-> > > > +	return ret;
-> > >
-> > > then becomes:
-> > >
-> > >
-> > > 	if (folio_test_anon(folio))
-> > > 		return true;
-> > 
-> > This relies on the mapping so belongs below the lockdep assert imo.
-> 
-> Oh, right you are.
-> 
-> > >
-> > > 	/*
-> > > 	 * Having IRQs disabled (as per GUP-fast) also inhibits RCU
-> > > 	 * grace periods from making progress, IOW. they imply
-> > > 	 * rcu_read_lock().
-> > > 	 */
-> > > 	lockdep_assert_irqs_disabled();
-> > >
-> > > 	/*
-> > > 	 * Inodes and thus address_space are RCU freed and thus safe to
-> > > 	 * access at this point.
-> > > 	 */
-> > > 	mapping = folio_mapping(folio);
-> > > 	if (mapping && shmem_mapping(mapping))
-> > > 		return true;
-> > >
-> > > 	return false;
-> > >
-> > > > +}
-> > 
-> > I'm more than happy to do this (I'd rather drop the RCU bits if possible)
-> > but need to be sure it's safe.
-> 
-> GUP-fast as a whole relies on it :-)
+> In libvirt I guess.
+
+I am running with this series applied using a QEMU guest with memory-backend-file (using the above libvirt snippet) for a few different PCI device types and AEN forwarding (e.g. what is setup in kvm_s390_pci_aif_enable) is still working.
+
