@@ -2,225 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1B916F40DA
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 12:15:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FE7C6F4192
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 12:28:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233759AbjEBKPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 06:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
+        id S233862AbjEBK20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 06:28:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233769AbjEBKPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 06:15:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D14558B
-        for <netdev@vger.kernel.org>; Tue,  2 May 2023 03:14:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1683022459;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=A/eyem5wqQi2Y4xvRCBkRhjqs6JPxWfrgrFUYgDwDuk=;
-        b=ZmmcpW+YPRidve+h2KEYCtFn9EKLNiIr2CjEhvvDFaoCgv20bWYpeGF0nkWzKVD/JkdnFF
-        YbxgdnN3W959Y4EB0pAtkEDMlcLKxMgJi+7/rssez6kQ2a4tXoJI0EpB+J17hP64UCiY5M
-        zxQ2eCkn/jHaFfKD3A44yYIz4ztpInA=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-491-inrDMbUlPPW-2aPgkpnVSw-1; Tue, 02 May 2023 06:14:18 -0400
-X-MC-Unique: inrDMbUlPPW-2aPgkpnVSw-1
-Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-2f55d641ef9so563600f8f.0
-        for <netdev@vger.kernel.org>; Tue, 02 May 2023 03:14:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683022457; x=1685614457;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+        with ESMTP id S233864AbjEBK1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 06:27:40 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14014EFA
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 03:26:17 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-94f0dd117dcso609141766b.3
+        for <netdev@vger.kernel.org>; Tue, 02 May 2023 03:26:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1683023176; x=1685615176;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=A/eyem5wqQi2Y4xvRCBkRhjqs6JPxWfrgrFUYgDwDuk=;
-        b=jbqhjxxVq1z7xd8t0J1z4GGbJggYL4vf1mKT953oXFflyntv0qkF3WGxu3+Y9EeK+X
-         9KKF7eTgvyRpY8/tyw5PgSOoR+sM2HYGXaLQQC5U+GbKrWRHE2QI34aenLJuwDkFn8Ap
-         KRD7ZeahYhQxL+nrSt5ClIBPtEcgpL2Knv43PJyXqSOk6GTQgwm+KpY12Psx4GoxqTWX
-         2o9eSuvYNPLPtcuArZac/lEEGYmGNsqw0O/I8PhbxP7qvjnvYWR9dKmLoVXFixvaplVO
-         opJzN+fnunQcy8Ahz4wC4e/UbrCYMFwsF7FcM9LRP+R6WsY3RCh/m7esYA+IluC/Hs76
-         wylg==
-X-Gm-Message-State: AC+VfDwar9/ew06uIv0rkxWQkcf4rkGo7XnnciAcfZdWLqv3Ronwstbq
-        so0DZneC7EA4RKewPsa/ceIbi0HdFTHYhdrkf+l+Tvn6uBLgwYC1k0Us2pGlFKcmnsPSBoP/K2n
-        F49Vd/IIWj1M3n6rE
-X-Received: by 2002:a05:600c:4a93:b0:3f1:78bd:c38b with SMTP id b19-20020a05600c4a9300b003f178bdc38bmr1561061wmp.4.1683022457017;
-        Tue, 02 May 2023 03:14:17 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4px8CSTzQsHfapsduu+b33p8uTaLWpKauxkgtrfrxbHlZ2SB3EWiBLZSKqVAVTtUD4VHFZDw==
-X-Received: by 2002:a05:600c:4a93:b0:3f1:78bd:c38b with SMTP id b19-20020a05600c4a9300b003f178bdc38bmr1561044wmp.4.1683022456720;
-        Tue, 02 May 2023 03:14:16 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-253-104.dyn.eolo.it. [146.241.253.104])
-        by smtp.gmail.com with ESMTPSA id l2-20020a05600c4f0200b003ee74c25f12sm38902239wmq.35.2023.05.02.03.14.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 03:14:16 -0700 (PDT)
-Message-ID: <2d198b1f309a5c7b44cfae80647148eb922050e7.camel@redhat.com>
-Subject: Re: [PATCH net-next v7 2/2] Add tests for vxlan nolocalbypass
- option.
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Vladimir Nikishkin <vladimir@nikishkin.pw>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        eng.alaamohamedsoliman.am@gmail.com, gnault@redhat.com,
-        razor@blackwall.org, idosch@nvidia.com, liuhangbin@gmail.com,
-        eyal.birger@gmail.com, jtoppins@redhat.com, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Date:   Tue, 02 May 2023 12:14:14 +0200
-In-Reply-To: <20230501162530.26414-2-vladimir@nikishkin.pw>
-References: <20230501162530.26414-1-vladimir@nikishkin.pw>
-         <20230501162530.26414-2-vladimir@nikishkin.pw>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        bh=Y+VcOBuPZ9Z6a80tOn//2hFrGUX4xkAkZldzuFsuPH8=;
+        b=qr3J9ipcosMHDXmRvIvE5R9kCb45BRSvttmk05Vu3qiiyuL/xmn4oMezVu65IeVt6J
+         g/rcpXX0b6ge20z1gQf+ht4R1mdAh+ED5/Xx0zIzM/jLGJLOsqMN0VahZV5elWK7vTIc
+         cNcfHIthwFsgZePnnlEW2ASPZhmO03givYSvF1LUOq0FRyQpVhSKgmSe0q+AeEkXw+/X
+         YplF35ms1Pn7Ue0A7PHpGMAn9znYPq1frA28NzVljMKNCTs23L+2aLEuiiIArPyMAb+w
+         wIiYpw/satrJpNjLI2Nb2O3gd8qriOy1ZLtknvPI/qUVEh9acJrrydWFeOPG9yPCzXcn
+         BTww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683023176; x=1685615176;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Y+VcOBuPZ9Z6a80tOn//2hFrGUX4xkAkZldzuFsuPH8=;
+        b=Frb/O0GjQJnrLFukY0K+drRraolkH0rN4d2U0lgLeGhVHwdbZAneXcN4bYukMZnDbL
+         rR8VdPKNdvZjSOUeVcNVYedYIFgf842a6YQgwhY2bqsN3DFCqf/i1RQQOrPNve4eAZmK
+         7+w5zoK6u5VLRczMGqb8xuYUpe7fYCN6tMdOr2aHlx93a8eliopsCnz5kvvT4Gp6+8cd
+         v3oLaEBje96t9F4GgK7Pqv3XXHEKuKzyZqZB5XXjLCwpL9DJEXnPxsTQeMy1iKbEGqjL
+         A2qFBNHCKjRIGL93B5QSVVJxIog72tr9tj3/pmu856+d+221PO4RsYSuLUPVaYvg9/Og
+         CBoA==
+X-Gm-Message-State: AC+VfDxbLGJohnGpNYaROXHukDL7J+4e9fZ4p1QSFgPXA1ojtBPP8iUj
+        RCuzc5+2eP79xwLbES1qj4DKQQ==
+X-Google-Smtp-Source: ACHHUZ73eZoSNWO8O/kr6zY6yMMGXUMAmeVST3CQP9jC3dSuRhCXNIN06aw+TR22xaH76y2JRiEVuw==
+X-Received: by 2002:a17:907:988:b0:94a:171:83b1 with SMTP id bf8-20020a170907098800b0094a017183b1mr13689748ejc.2.1683023176109;
+        Tue, 02 May 2023 03:26:16 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:bafd:1283:b136:5f6a? ([2a02:810d:15c0:828:bafd:1283:b136:5f6a])
+        by smtp.gmail.com with ESMTPSA id a13-20020a1709066d4d00b0094a9b9c4979sm15788738ejt.88.2023.05.02.03.26.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 May 2023 03:26:15 -0700 (PDT)
+Message-ID: <a5e18c4f-b906-5c9d-ec93-836401dcd3ea@linaro.org>
+Date:   Tue, 2 May 2023 12:26:14 +0200
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH net-next V7] dt-bindings: net: xlnx,axi-ethernet: convert
+ bindings document to yaml
+Content-Language: en-US
+To:     "Gaddam, Sarath Babu Naidu" <sarath.babu.naidu.gaddam@amd.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>
+Cc:     "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "radhey.shyam.pandey@xilinx.com" <radhey.shyam.pandey@xilinx.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Sarangi, Anirudha" <anirudha.sarangi@amd.com>,
+        "Katakam, Harini" <harini.katakam@amd.com>,
+        "git (AMD-Xilinx)" <git@amd.com>
+References: <20230308061223.1358637-1-sarath.babu.naidu.gaddam@amd.com>
+ <5d074e6b-7fe1-ab7f-8690-cfb1bead6927@linaro.org>
+ <MW5PR12MB559880B0E220BDBD64E06D2487889@MW5PR12MB5598.namprd12.prod.outlook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <MW5PR12MB559880B0E220BDBD64E06D2487889@MW5PR12MB5598.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-05-02 at 00:25 +0800, Vladimir Nikishkin wrote:
-> Add test to make sure that the localbypass option is on by default.
->=20
-> Add test to change vxlan localbypass to nolocalbypass and check
-> that packets are delivered to userspace.
->=20
-> Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
-> ---
->  tools/testing/selftests/net/Makefile          |   1 +
->  .../selftests/net/test_vxlan_nolocalbypass.sh | 234 ++++++++++++++++++
->  2 files changed, 235 insertions(+)
->  create mode 100755 tools/testing/selftests/net/test_vxlan_nolocalbypass.=
-sh
->=20
-> diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftes=
-ts/net/Makefile
-> index c12df57d5539..7f3ab2a93ed6 100644
-> --- a/tools/testing/selftests/net/Makefile
-> +++ b/tools/testing/selftests/net/Makefile
-> @@ -84,6 +84,7 @@ TEST_GEN_FILES +=3D ip_local_port_range
->  TEST_GEN_FILES +=3D bind_wildcard
->  TEST_PROGS +=3D test_vxlan_mdb.sh
->  TEST_PROGS +=3D test_bridge_neigh_suppress.sh
-> +TEST_PROGS +=3D test_vxlan_nolocalbypass.sh
-> =20
->  TEST_FILES :=3D settings
-> =20
-> diff --git a/tools/testing/selftests/net/test_vxlan_nolocalbypass.sh b/to=
-ols/testing/selftests/net/test_vxlan_nolocalbypass.sh
-> new file mode 100755
-> index 000000000000..d8e48ab1e7e0
-> --- /dev/null
-> +++ b/tools/testing/selftests/net/test_vxlan_nolocalbypass.sh
-> @@ -0,0 +1,234 @@
-> +#!/bin/bash
-> +# SPDX-License-Identifier: GPL-2.0
-> +
-> +# This file is testing that the [no]localbypass option for a vxlan devic=
-e is
-> +# working. With the nolocalbypass option, packets to a local destination=
-, which
-> +# have no corresponding vxlan in the kernel, will be delivered to usersp=
-ace, for
-> +# any userspace process to process. In this test tcpdump plays the role =
-of such a
-> +# process. This is what the test 1 is checking.
-> +# The test 2 checks that without the nolocalbypass (which is equivalent =
-to the
-> +# localbypass option), the packets do not reach userspace.
-> +
-> +EXIT_SUCCESS=3D0
-> +EXIT_FAIL=3D1
-> +ksft_skip=3D4
-> +nsuccess=3D0
-> +nfail=3D0
-> +
-> +ret=3D0
-> +
-> +TESTS=3D"
-> +changelink_nolocalbypass_simple
-> +"
-> +VERBOSE=3D0
-> +PAUSE_ON_FAIL=3Dno
-> +PAUSE=3Dno
-> +
-> +
-> +NETNS_NAME=3Dvxlan_nolocalbypass_test
-> +
-> +########################################################################=
-########
-> +# Utilities
-> +
-> +log_test()
-> +{
-> +	local rc=3D$1
-> +	local expected=3D$2
-> +	local msg=3D"$3"
-> +
-> +	if [ ${rc} -eq ${expected} ]; then
-> +		printf "TEST: %-60s  [ OK ]\n" "${msg}"
-> +		nsuccess=3D$((nsuccess+1))
-> +	else
-> +		ret=3D1
-> +		nfail=3D$((nfail+1))
-> +		printf "TEST: %-60s  [FAIL]\n" "${msg}"
-> +		if [ "$VERBOSE" =3D "1" ]; then
-> +			echo "    rc=3D$rc, expected $expected"
-> +		fi
-> +
-> +		if [ "${PAUSE_ON_FAIL}" =3D "yes" ]; then
-> +		echo
-> +			echo "hit enter to continue, 'q' to quit"
-> +			read a
-> +			[ "$a" =3D "q" ] && exit 1
-> +		fi
-> +	fi
-> +
-> +	if [ "${PAUSE}" =3D "yes" ]; then
-> +		echo
-> +		echo "hit enter to continue, 'q' to quit"
-> +		read a
-> +		[ "$a" =3D "q" ] && exit 1
-> +	fi
-> +
-> +	[ "$VERBOSE" =3D "1" ] && echo
-> +}
-> +
-> +run_cmd()
-> +{
-> +	local cmd=3D"$1"
-> +	local out
-> +	local stderr=3D"2>/dev/null"
-> +
-> +	if [ "$VERBOSE" =3D "1" ]; then
-> +		printf "COMMAND: $cmd\n"
-> +		stderr=3D
-> +	fi
-> +
-> +	out=3D$(eval $cmd $stderr)
-> +	rc=3D$?
-> +	if [ "$VERBOSE" =3D "1" -a -n "$out" ]; then
-> +		echo "    $out"
-> +	fi
-> +
-> +	return $rc
-> +}
-> +
-> +socat_check_packets()
-> +{
-> +  echo TODO
-> +  exit 1
+On 28/03/2023 14:52, Gaddam, Sarath Babu Naidu wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> Sent: Tuesday, March 14, 2023 9:22 PM
+>> To: Gaddam, Sarath Babu Naidu
+>> <sarath.babu.naidu.gaddam@amd.com>; davem@davemloft.net;
+>> edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
+>> robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org
+>> Cc: michal.simek@xilinx.com; radhey.shyam.pandey@xilinx.com;
+>> netdev@vger.kernel.org; devicetree@vger.kernel.org; linux-arm-
+>> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Sarangi,
+>> Anirudha <anirudha.sarangi@amd.com>; Katakam, Harini
+>> <harini.katakam@amd.com>; git (AMD-Xilinx) <git@amd.com>
+>> Subject: Re: [PATCH net-next V7] dt-bindings: net: xlnx,axi-ethernet:
+>> convert bindings document to yaml
+>>
+>> On 08/03/2023 07:12, Sarath Babu Naidu Gaddam wrote:
+>>> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+>>>
+>>> Convert the bindings document for Xilinx AXI Ethernet Subsystem from
+>>> txt to yaml. No changes to existing binding description.
+>>>
+>>
+>> (...)
+>>
+>>> +properties:
+>>> +  compatible:
+>>> +    enum:
+>>> +      - xlnx,axi-ethernet-1.00.a
+>>> +      - xlnx,axi-ethernet-1.01.a
+>>> +      - xlnx,axi-ethernet-2.01.a
+>>> +
+>>> +  reg:
+>>> +    description:
+>>> +      Address and length of the IO space, as well as the address
+>>> +      and length of the AXI DMA controller IO space, unless
+>>> +      axistream-connected is specified, in which case the reg
+>>> +      attribute of the node referenced by it is used.
+>>
+>> Did you test it with axistream-connected? The schema and description
+>> feel contradictory and tests would point the issue.
+> 
+> Thanks for review comments. We tested with axistream-connected and
+> did not observe any errors. Do you anticipate any issues/errors ?
 
-Minor nit: please use a consistent number of spaces to indent e.g. 4
+Yes, I anticipate errors. What you wrote here looks incorrect based on
+the schema.
 
-Note that net-next is currently close, you should submit the next
-revision when net-next reopens after May 8th.
+Also, See also my further comments (or you ignored them?).
 
-Cheers,
+You can come many months after my review to ask about details, to be
+sure I will forget the topic.
 
-Paolo
+
+Best regards,
+Krzysztof
 
