@@ -2,183 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 028566F47E1
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 18:00:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28AEB6F47EF
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 18:06:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234669AbjEBQAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 12:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37646 "EHLO
+        id S232096AbjEBQGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 12:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234661AbjEBQAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 12:00:36 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A36E40F7;
-        Tue,  2 May 2023 09:00:33 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-3062c1e7df8so1815260f8f.1;
-        Tue, 02 May 2023 09:00:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683043232; x=1685635232;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=k2Qjj4J2QVS6E2WwvS7hIj33LnIvaIzNxIftN5wfh5k=;
-        b=B5tpiBn1yYsDx6uA2yL6fh/eKiWy7z1jl57c/Y/LBE+sMmdW/sxsuYXzTnLN1xAhUf
-         aI8haoVSdQofqR8wCoHrVisw+ejVRZoRIkII4AXf9YnGJ9nso5oFESEKjfXtAxeM48Cq
-         KQhB4Kb6Xt3trALiZSZUDJpS1T0LvKyNkEOLnoYD8BUMyPrLS96wWe9b5EXzAXamNhEz
-         2x7b3GswjbkK6g5ouwND4PLtZV4oiG/DiuSu2vfBhlRlZDZ6PT+r/nB0FjTUsC2UJ9Ws
-         864RwLoGZLVJJ3lFAlAoO831G56km3Y/LZe2B1gLy/lBzj0Elbfw9DvXWXe6he8mKVrH
-         1xqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683043232; x=1685635232;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=k2Qjj4J2QVS6E2WwvS7hIj33LnIvaIzNxIftN5wfh5k=;
-        b=lwyV0e0ZX4X6qCEh2kWYmh5Y0j+GFW/dRFC6givjj02XRBVGv5PM2fEYYSnRLRvsD8
-         /PBJR2s70OPaU7tTNKc5xlglPmJ1VrNmeB8vfFXvG1T7iFK+vR+PY1HDF1xCpNSDeMoR
-         DX4y0D8n4QjrR4/MIJsF6VrsE17hHIddIKoWgt9MPSWc4Q6brUBURuW+52c4ygNuvIgs
-         qvfYSdw1n3SSFlV6AL++DsoYYFYk9S4TI8pJ8f6wxz+htXnfTJ88o3MPsgevydwvgWp2
-         E1K0/mJEmlBfr77BITliUIRLpE8UrnQgEn4KNb4o0Aho2PsFCDk/iEeP9sOAENAuQmoU
-         WZWQ==
-X-Gm-Message-State: AC+VfDxu1UhPS+VDdnfS55zZcWg6LyBtZIueoDeFmWcRJTxmuPNFMV+g
-        eI6RUVArKuJ737OQHtnNciA=
-X-Google-Smtp-Source: ACHHUZ6s1EAJEBgbHny09eQlPTJ+1OymgLdTQ2UByJxCsNR8mRXDrVDy5fn0HmL6hBnELTLmvUtf8Q==
-X-Received: by 2002:a5d:4c8c:0:b0:306:2a46:4b11 with SMTP id z12-20020a5d4c8c000000b003062a464b11mr6178283wrs.43.1683043231975;
-        Tue, 02 May 2023 09:00:31 -0700 (PDT)
-Received: from Ansuel-xps. ([176.201.39.129])
-        by smtp.gmail.com with ESMTPSA id o17-20020a5d4751000000b003063a92bbf5sm1297780wrs.70.2023.05.02.09.00.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 09:00:31 -0700 (PDT)
-Message-ID: <6451339f.5d0a0220.88ec5.8829@mx.google.com>
-X-Google-Original-Message-ID: <ZFEzncaVV/MqzQ69@Ansuel-xps.>
-Date:   Tue, 2 May 2023 18:00:29 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        Lee Jones <lee@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229457AbjEBQGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 12:06:13 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2070.outbound.protection.outlook.com [40.107.244.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A8E2729;
+        Tue,  2 May 2023 09:06:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jhmGzh681uutod86E8L+sutKfbq5MPT76xKlekrrPfKuNAh/FTAaFkio7AOo4dVU7gGiZg7vZxLAUOmfr/WEBp+thgjnWie18ci5VgLqjHbHQu/r1ZZsOpcIYkxGwVSDrqjLEuZRMSbYnW1FGfmQGi6DYdMZUe6aEsvD28VUgn58U2HABB3xTAFMasMLa/xUwj1fj1VMQlsB4L52/2m8L+3g39lNAFWdyuypmrLIu1yhrrxe/k6DR6/hnbS/41Eg6a9w+vycr6O73sD0sGg9Zz5BtazezbFusfqoVyYPSQISaU6mb7yAn8gua+fIR9NT6RDk8r6hc34n38arYxc4Cw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PvsjZKlfUz8S70g1y0riYC6e/TEogbaKLWsZdxnFqwQ=;
+ b=mmRiezjh1pvT0RpGDMf8NOKvriwq/KilGV/vM5wJ8HaPDipmjjht0OPoOZsJX0fW1m952pK/og4/5t5Yr/QDPFOMYrK0KH0qkZkB+6V+eSjuGCwprKvVHmuwHpf5429FydnMovlf9QjUIvMJyL2g4vlXCxs7UDWUutbdTkiut8N3CSEPo+5ZV/sHCqjyVEtnRAhXUtt68+PNtJi6igQxM3+z6Rs9C/11n7IlOuxGWn+iwLD2tx8/DzK9Hb5T+klilKDJb20QeL1SU1y3MGBpuXxvtFQHNm/DDD1lnvE2e7nizdGuea9fzYD5ugGAPeogn8UyZ//1WHW/GhXwyjqrWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PvsjZKlfUz8S70g1y0riYC6e/TEogbaKLWsZdxnFqwQ=;
+ b=PuZzf4aE4qb9ylVDOWUK43OmTysBG7xoBBPS3hJHyNgMweHEl4u+T1yPglkAQM/lOI19mtmon+681mjgmMxS50CDTliJDmBAAimKFDbPPgYQTb+g82SrsUUoAPDWIGffJhNCFhXm67B9UvqKWC3YkiyirwwFqsoU5yZtzriWf+G+GEGueKvdztMvfQqLmkY3u3hwxJ8sFXFmBr2qwQ85SrSIZ6ZyFWS9OeQA39/LXp96wsT+hfU2gwd2ck2lT4QIk0lm1BJTOYU0SEwhtTelmz87UPf6ypjNI1D6YquZ7cYBp0xIMM8LS48ec2cbrnCbNhEHLN87H+N3qAI/Xq1IlQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA1PR12MB7496.namprd12.prod.outlook.com (2603:10b6:208:418::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31; Tue, 2 May
+ 2023 16:06:09 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6340.030; Tue, 2 May 2023
+ 16:06:09 +0000
+Date:   Tue, 2 May 2023 13:06:06 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Peter Xu <peterx@redhat.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 08/11] leds: trigger: netdev: add support for LED hw
- control
-References: <20230427001541.18704-1-ansuelsmth@gmail.com>
- <20230427001541.18704-9-ansuelsmth@gmail.com>
- <d2c86cf0-d57f-4358-9765-3983a145e1ab@lunn.ch>
-MIME-Version: 1.0
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Mika Penttila <mpenttil@redhat.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH v6 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
+ to file-backed mappings
+Message-ID: <ZFE07gfyp0aTsSmL@nvidia.com>
+References: <ad60d5d2-cfdf-df9f-aef1-7a0d3facbece@redhat.com>
+ <ZFEVQmFGL3GxZMaf@nvidia.com>
+ <1ffbbfb7-6bca-0ab0-1a96-9ca81d5fa373@redhat.com>
+ <ZFEYblElll3pWtn5@nvidia.com>
+ <f0acd8e4-8df8-dfae-b6b2-30eea3b14609@redhat.com>
+ <3c17e07a-a7f9-18fc-fa99-fa55a5920803@linux.ibm.com>
+ <ZFEqTo+l/S8IkBQm@nvidia.com>
+ <ZFEtKe/XcnC++ACZ@x1n>
+ <ZFEt/ot6VKOgW1mT@nvidia.com>
+ <4fd5f74f-3739-f469-fd8a-ad0ea22ec966@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d2c86cf0-d57f-4358-9765-3983a145e1ab@lunn.ch>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <4fd5f74f-3739-f469-fd8a-ad0ea22ec966@redhat.com>
+X-ClientProxiedBy: BL1PR13CA0345.namprd13.prod.outlook.com
+ (2603:10b6:208:2c6::20) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB7496:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0dcadfd7-c335-471a-7577-08db4b27242d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tjayExv7THwfCl1MZy4iRcE70yt92ZXuCOxJWLAunijHpdMjKGrYBVym2uCDi1jPxVzh41tfbYSucz0NqIUeVO3UqHik7U51ehnXzT5cYV9/Mi4A9gogJOl+LSEty0xj9e9sRCXHJhRaaeSVpsUDE8bJHTtxfpjlZEWkPwtZ7v4y5rzDzJprG+SZQAky37WfXjljsX0Z6xLboAJjp5/2T/QxMy9rYoJNDvcb1z74b0TaOkyf92qwgEgmPDzzsU9dKav4Pgmu7rCil4EhDgedTOdab9PPcdhEbTHMSPp+LW+FDotbRT7Tqf2YUsogMjhddYwGjfZAwCF7Gnvfrs/qpcc7r28vOAogjXdZI06HflmPwGQLB1I1KNTaR8fVaw7blzh3qvY/lQf4Q5u7NkbPDIy1mK5QjA9Jf6hEu7u7tHw6WbcfFrSr81d3LOWAPQ/NHBOlPxnlF47Y88tXvwlekgNgJ8wXujWioNvxB//ML2quMZcfpWjCymIgHl8U9H3er1vfBr2S9PokbjQQdu2ksih0XLhfcad9kPknD4YaQcm7SLEEQvD7KLOtzy6jQvRJ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(376002)(366004)(396003)(39860400002)(451199021)(26005)(186003)(54906003)(2616005)(83380400001)(53546011)(6512007)(2906002)(6506007)(7416002)(7406005)(66476007)(66556008)(66946007)(38100700002)(5660300002)(8676002)(8936002)(41300700001)(86362001)(36756003)(478600001)(316002)(6916009)(6666004)(6486002)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EyfrVfisrQXbXsv3vSilyaqAZvp91G83EvPKjJ7zwaTkB7YmWUL1DiPhcF0M?=
+ =?us-ascii?Q?vlBotcLbL/B8fqtZ4+2M5jXNAJmTs6MmzimPlHWwltykbQFJ2Fka+46FoNHT?=
+ =?us-ascii?Q?EtyZ1IXwj3Y+enXIPtOXlf9/z8S6POgSeyCHfNncok7MmOK5VpeyJbuTCpns?=
+ =?us-ascii?Q?hEI5ZP/lqswrfPtvrGZ5Oh1/CORMwcJbTozsH6Fz24ogniKlV2iheBvetCmf?=
+ =?us-ascii?Q?RUDz7eD/gwo2DBTLE7mYXTy4btnpTEaVOALb81E+U/iZYieGD+I5EBj4XxwX?=
+ =?us-ascii?Q?WbJq2fXCZgqbSrP9iFc1wrR22+luaj30wv+njQg4jAIMI4rbaaWMhf8N2GRy?=
+ =?us-ascii?Q?XMc5tP/bGmy7DbKo6futpJmrHdUSgFml/x0kDQufQNhnlmu5UCMjDu5t2Sex?=
+ =?us-ascii?Q?1wG/FmGZKw1g11MQiYX6qFzjOhn8ri/pBq1xF0nqeWeASFyr/7vL6zKu8AAo?=
+ =?us-ascii?Q?WmvyBXcgXVefPYicSVswfO+iu3jaYRNPiZSQ0zjbQCSPGhJ3sI2n9YJ7fHSe?=
+ =?us-ascii?Q?A+xzHg+izRHm6uksVkUabL7t9LlLjotMfIIFzTyj2mwDJZNuJ8jbi1TnKfZW?=
+ =?us-ascii?Q?zLlLomKNo5Eggf43VtD6PR0e28eX6HgBtMdHw37gRqIR/RtgvhyBj+NC3voh?=
+ =?us-ascii?Q?q3qL6WKSoF/0uQp4Wt4jqIV9p2QkgFY4e+4em+hIo6QKDL3TfLvz2WVwqgO1?=
+ =?us-ascii?Q?8aL37orQRDtPqcTsO91Bw+QvjDbbRTJZVKKGcu61n1Cw9AjxUd0jdixojU62?=
+ =?us-ascii?Q?xf1JzdyD3wPu/YujHKShl/dluMgZyTpBxkhYpkSvGT2V4981O56+PXs40fAU?=
+ =?us-ascii?Q?+UbHQgWuwFihhjpfkV7xiBdo2NYbB3GEEPNLn6hg39BqO62v1kO28uao4xUU?=
+ =?us-ascii?Q?696LCYHVmxCLBD5S5WMl1g35pOea/iSI96D+hdiSlNzvR9lwIkpjlQPDyHC4?=
+ =?us-ascii?Q?Xk2VpkYtQV6+zSR8U1SMpO5tyIFtMvO4p984YkOGPUXnZsLw8nEASQhjptG9?=
+ =?us-ascii?Q?DTIhYAD8eBt6WtFVPhky9bMuMOXEkwA17FD8z6yIxtWLa/OLMn19l8sIIlYF?=
+ =?us-ascii?Q?gbOEw/NPEYytdanvzAZTm+OrT+/K3vlo28HNkQ4FLvQ3SIvLABhZOfnQghhx?=
+ =?us-ascii?Q?7Pm79i4bLT9t+03pbQ6dQDxHOynsi4Awmh9oocAENXpL4Rysdy7lZq1CHiDM?=
+ =?us-ascii?Q?q9BSjqJz3UIu9XNL5qR2licARyeL1cgvSbCS0qh1DBo5JS3ttH8TN5OkSmoe?=
+ =?us-ascii?Q?H3nxXvl9N2BCNkfmeUQz35X+FkXq8PxAm7IBbTe594xXKezdKkclLcI6wTOa?=
+ =?us-ascii?Q?OqCUN/RuiUpZCu+I2jy8W+SbJWyrWljpDJoGAkmitD5V/AVeWIH0D7oh03rj?=
+ =?us-ascii?Q?67tDrUElu8rrmRvRwftar3UTzBu2lAAN7DN4B/e5E5Omc9ikQLLSqjbW4L14?=
+ =?us-ascii?Q?6TAGwclD+SjOS+wDQTNqfvAQeFMAUpBZ8VU0AxKOILuQyXc638JK2Ait02yQ?=
+ =?us-ascii?Q?1aAK79EFQgxnbJnFhKZKfzq5mqB1UGTJqH+CR3KG6c2T4IlcSMstMQDKzm4K?=
+ =?us-ascii?Q?+HetzouApPdXQ7Ldcz3ZK+cUVYsUMPjUrBVCvI0U?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0dcadfd7-c335-471a-7577-08db4b27242d
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 16:06:08.7890
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JvjkgzuqOIMkwUwm3XciPFwIr6BgvB8jvTItrVjP548EMk8AepW6KVfEhhnnctaL
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7496
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 30, 2023 at 07:55:13PM +0200, Andrew Lunn wrote:
-> On Thu, Apr 27, 2023 at 02:15:38AM +0200, Christian Marangi wrote:
-> > Add support for LED hw control for the netdev trigger.
+On Tue, May 02, 2023 at 05:45:40PM +0200, David Hildenbrand wrote:
+> On 02.05.23 17:36, Jason Gunthorpe wrote:
+> > On Tue, May 02, 2023 at 11:32:57AM -0400, Peter Xu wrote:
+> > > > How does s390 avoid mmu notifiers without having lots of problems?? It
+> > > > is not really optional to hook the invalidations if you need to build
+> > > > a shadow page table..
+> > > 
+> > > Totally no idea on s390 details, but.. per my read above, if the firmware
+> > > needs to make sure the page is always available (so no way to fault it in
+> > > on demand), which means a longterm pinning seems appropriate here.
+> > > 
+> > > Then if pinned a must, there's no need for mmu notifiers (as the page will
+> > > simply not be invalidated anyway)?
 > > 
-> > The trigger on calling set_baseline_state to configure a new mode, will
-> > do various check to verify if hw control can be used for the requested
-> > mode in the validate_requested_mode() function.
-> > 
-> > It will first check if the LED driver supports hw control for the netdev
-> > trigger, then will check if the requested mode are in the trigger mode
-> > mask and finally will call hw_control_set() to apply the requested mode.
-> > 
-> > To use such mode, interval MUST be set to the default value and net_dev
-> > MUST be empty. If one of these 2 value are not valid, hw control will
-> > never be used and normal software fallback is used.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  drivers/leds/trigger/ledtrig-netdev.c | 52 +++++++++++++++++++++++++++
-> >  1 file changed, 52 insertions(+)
-> > 
-> > diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-> > index 8cd876647a27..61bc19fd0c7a 100644
-> > --- a/drivers/leds/trigger/ledtrig-netdev.c
-> > +++ b/drivers/leds/trigger/ledtrig-netdev.c
-> > @@ -68,6 +68,13 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
-> >  	int current_brightness;
-> >  	struct led_classdev *led_cdev = trigger_data->led_cdev;
-> >  
-> > +	/* Already validated, hw control is possible with the requested mode */
-> > +	if (trigger_data->hw_control) {
-> > +		led_cdev->hw_control_set(led_cdev, trigger_data->mode);
-> > +
-> > +		return;
-> > +	}
-> > +
-> >  	current_brightness = led_cdev->brightness;
-> >  	if (current_brightness)
-> >  		led_cdev->blink_brightness = current_brightness;
-> > @@ -95,6 +102,51 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
-> >  static int validate_requested_mode(struct led_netdev_data *trigger_data,
-> >  				   unsigned long mode, bool *can_use_hw_control)
-> >  {
-> > +	unsigned int interval = atomic_read(&trigger_data->interval);
-> > +	unsigned long hw_supported_mode, hw_mode = 0, sw_mode = 0;
-> > +	struct led_classdev *led_cdev = trigger_data->led_cdev;
-> > +	unsigned long default_interval = msecs_to_jiffies(50);
-> > +	bool force_sw = false;
-> > +	int i, ret;
-> > +
-> > +	hw_supported_mode = led_cdev->trigger_supported_flags_mask;
-> > +
+> > And what if someone deliberately changes the mapping?  memory hotplug
+> > in the VM, or whatever?
 > 
-> > +		if (interval == default_interval && !trigger_data->net_dev &&
-> > +		    !force_sw && test_bit(i, &hw_supported_mode))
-> > +			set_bit(i, &hw_mode);
-> > +		else
-> > +			set_bit(i, &sw_mode);
-> > +	}
-> > +
+> Besides s390 not supporting memory hotplug in VMs (yet): if the guest wants
+> a different guest physical address, I guess that's the problem of the guest,
+> and it can update it:
 > 
-> > +	/* Check if the requested mode is supported */
-> > +	ret = led_cdev->hw_control_is_supported(led_cdev, hw_mode);
-> > +	if (ret)
-> > +		return ret;
+> KVM_S390_ZPCIOP_REG_AEN is triggered from QEMU via
+> s390_pci_kvm_aif_enable(), triggered by the guest via a special instruction.
 > 
-> Hi Christian
+> If the hypervisor changes the mapping, it's just the same thing as mixing
+> e.g. MADV_DONTNEED with longterm pinning in vfio: don't do it. And if you do
+> it, you get to keep the mess you created for your VM.
 > 
-> What is the purpose of led_cdev->trigger_supported_flags_mask? I don't
-> see why it is needed when you are also going to ask the PHY if it can
-> support the specific blink pattern the user is requesting.
+> Linux will make sure to not change the mapping: for example, page migration
+> of a pinned page will fail.
+>
+> But maybe I am missing something important here.
 
-The idea is to have a place where a trigger can quickly check the single
-mode supported before the entire mode map is validated, but I understand
-that this can totally be dropped with some extra code from both trigger
-and LED driver.
+It missses the general architectural point why we have all these
+shootdown mechanims in other places - plares are not supposed to make
+these kinds of assumptions. When the userspace unplugs the memory from
+KVM or unmaps it from VFIO it is not still being accessed by the
+kernel.
 
-While refactoring the netdev triger mode validation I notice it was very
-handy and simplified the check logic having a mask of the single mode
-supported. But this might be not needed for now and we can think of a
-better approach later when we will introduce hardware only modes.
+Functional bug or not, it is inconsistent with how this is designed to
+work.
 
-> 
-> The problem i have with the Marvell PHY, and other PHYs i've looked at
-> datasheets for, is that hardware does not work like this. It has a
-> collection of blinking modes, which are a mixture of link speeds, rx
-> activity, and tx activity. It supports just a subset of all
-> possibilities.
-> 
-> I think this function can be simplified. Simply ask the LED via
-> hw_control_is_supported() does it support this mode. If yes, offload
-> it, if not use software blinking.
-
-Yep, I will consider dropping it to slim this series even further.
-
-> 
->     Andrew
-
--- 
-	Ansuel
+Jason
