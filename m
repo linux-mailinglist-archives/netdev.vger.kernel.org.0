@@ -1,165 +1,92 @@
-Return-Path: <netdev-owner@vger.kernel.org>
+Return-Path: <netdev+bounces-1-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38AA46F4A91
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 21:45:34 +0200 (CEST)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbjEBTp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 15:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbjEBTp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 15:45:27 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EAFA11B;
-        Tue,  2 May 2023 12:45:25 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id ffacd0b85a97d-3062d764455so1899863f8f.3;
-        Tue, 02 May 2023 12:45:25 -0700 (PDT)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 457CA6F4AB8
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 22:00:26 +0200 (CEST)
+Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 96D671C2092E
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:00:23 +0000 (UTC)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB2BA8F7D;
+	Tue,  2 May 2023 20:00:22 +0000 (UTC)
+X-Original-To: netdev@vger.kernel.org
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9EFE8F6E
+	for <netdev@vger.kernel.org>; Tue,  2 May 2023 20:00:22 +0000 (UTC)
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD31A0
+	for <netdev@vger.kernel.org>; Tue,  2 May 2023 13:00:19 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id d75a77b69052e-3ef3ce7085bso19025411cf.2
+        for <netdev@vger.kernel.org>; Tue, 02 May 2023 13:00:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683056724; x=1685648724;
+        d=linuxfoundation.org; s=google; t=1683057618; x=1685649618;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WEozocFtC1MF/eLKX6k60Tc4cyy/cZXp+rUuv759qKQ=;
-        b=KZxln+oq3LImf+LRQFD0qCtu0AGSzG9KubXRD4Q1Gt470PKWTvPO46MkvYdANnDfot
-         WMCQBXBgzJOU5SuTc0nXZDekxwER2q70iXjYkDIft41htRddfCiBrbeyPJhS9KTxbxhm
-         Rw1Wh6X34LNKhiCODiYNzteLUt8HJSjqzkU6H9SHuTZDm0yVtMmfXC8bMbsq8LyYtWZT
-         TISJEBgqXIO/tUfJtqG4tbXbKetuph1sJqI+cL2fLt3oid5sjpVht6WM6UImaT915aIp
-         BiokOY1tlqo1e1QRqTXlcNaiNx3EfCN0++cfyFZLy42mdPJqiMo20waAOZISMRNpvhQ9
-         2lXw==
+        bh=m22Whz12MOrn6qwLKIXfkU6Kg85kYB5zJc6MlSfNyn8=;
+        b=aZ3LuHo8Q/0KoJ/H0jpLEKSg9ECOtTMsBI/wORH7VMAkB0lRI+pm2+yjX9Unac5mKF
+         JbOFL5xvI3KlVn6lDeJwZwToS6sAi+R6IpDj4obtIzMovcUrep5Hv8/FCjqrF0vw2386
+         5q0wqxU7TofJR/3Y74GQZ8Z4+7UA9/OxZJBXY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683056724; x=1685648724;
+        d=1e100.net; s=20221208; t=1683057618; x=1685649618;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=WEozocFtC1MF/eLKX6k60Tc4cyy/cZXp+rUuv759qKQ=;
-        b=hvL/7UVvnG7rJPQL9zS7+Ib5CcmImNWe7A9ArnAr99aK11wLSwwUyovGd/kqMwpJ87
-         dU83Ac23Z/JD3Q2oeVFfP9dkqRk6oWSqeHViqBrVeKJe3Ki05ngR6Yw1icmUzt1SibCe
-         yTnM6TbvLrswlEtpFqb0iboR5IWZ4apgAILZFsnuLxbcG5WuPThgR8542BrEa7AFXCnK
-         rcz2qnd3PnqDrqLj8O20GTUY6enuMJjYG5wOs/sA4KM0/a0jIHqe4dtuRwbNHu6mH0Ve
-         r4r6ETt5LM8JUnVtJdGb8baLiuKukX+f0eTFtfSxmJ5lQSgj6+8GhlddDzDbBTt/CD7W
-         bpsg==
-X-Gm-Message-State: AC+VfDyvgbS5niHkIQIZq0MswM4fMzxlNDJdjU+qnLEE/TFVAMwoKeMh
-        YCqCRaPxSFvPImA/HUS51aE=
-X-Google-Smtp-Source: ACHHUZ7giPh3fJflokbwuOw6F1c/R5MgKKjdAh0Buc08SMS5g5jeGTWiITv4rffr9WhhPRfzUnNUeA==
-X-Received: by 2002:a5d:5384:0:b0:2fe:562c:c0dc with SMTP id d4-20020a5d5384000000b002fe562cc0dcmr13408438wrv.40.1683056723727;
-        Tue, 02 May 2023 12:45:23 -0700 (PDT)
-Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
-        by smtp.gmail.com with ESMTPSA id bl13-20020adfe24d000000b003062d3daf79sm6288950wrb.107.2023.05.02.12.45.22
+        bh=m22Whz12MOrn6qwLKIXfkU6Kg85kYB5zJc6MlSfNyn8=;
+        b=bpqLf1UY3C2KPpup0MqNBEf8RA6q/iALlug6hBu8roOVwzN46yRUwLRqPsYjBemgTr
+         uOmV8/dpNfMZYrWIFO63YU5/oyoY0bYCYUY3qXIOKgT8efkkiMWHwaiYcBjdNqCw7vDF
+         X2+SjCvUiBwdeGLdDNKm0lv/jmwwxlvhMU/GOUhx4sCMru7tuL3ypKAMJHgzmdcjb/LK
+         9haLhN1ZDh7Lxr5SoZl+u7jt3AJWbg9jwn5i/dgORBawDz16hYAYbS9B3HCdevNPp34V
+         UV8qjc/IJSYrog0tLXIXvWzm3bax52Xl70/cr+4egc2QrEZ6qvfyV/ToC/+S3F0OpO7g
+         6H2A==
+X-Gm-Message-State: AC+VfDySxiU4rcqlXZrKi7MhIuLJ3I9h8UP2vuvmToKauM+I7nOQ7sd/
+	SCPLJZmFPvdgcHSFeujjr/r76Q==
+X-Google-Smtp-Source: ACHHUZ7YOeweLiDcykE2UF1S9ueJejhfnPi+iPKs5EgfeeKG4ff27E/p5GdBQoUsknEn3qrUk31qBg==
+X-Received: by 2002:ac8:5e53:0:b0:3bf:be7d:b3e5 with SMTP id i19-20020ac85e53000000b003bfbe7db3e5mr27994084qtx.41.1683057618193;
+        Tue, 02 May 2023 13:00:18 -0700 (PDT)
+Received: from meerkat.local (bras-base-mtrlpq5031w-grc-30-209-226-106-132.dsl.bell.ca. [209.226.106.132])
+        by smtp.gmail.com with ESMTPSA id y144-20020a376496000000b0074e0dd4de87sm9913602qkb.111.2023.05.02.13.00.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 12:45:23 -0700 (PDT)
-Date:   Tue, 2 May 2023 20:45:22 +0100
-From:   Lorenzo Stoakes <lstoakes@gmail.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Subject: Re: [PATCH v7 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
- to file-backed mappings
-Message-ID: <bd75a53d-d461-488c-af8c-b7e483c22e41@lucifer.local>
-References: <cover.1683044162.git.lstoakes@gmail.com>
- <b3a4441cade9770e00d24f5ecb75c8f4481785a4.1683044162.git.lstoakes@gmail.com>
- <505b7df8-bb60-7564-af28-b99875eea12a@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <505b7df8-bb60-7564-af28-b99875eea12a@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
+        Tue, 02 May 2023 13:00:17 -0700 (PDT)
+Date: Tue, 2 May 2023 16:00:16 -0400
+From: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org, netdev-driver-reviewers@vger.kernel.org, 
+	John 'Warthog9' Hawley <warthog9@kernel.org>
+Subject: Re: [ANN] Mailing list migration - Tue, May 2nd
+Message-ID: <20230502-dreamland-anthem-45dc50@meerkat>
+References: <20230425140614.7cfe3854@kernel.org>
 Precedence: bulk
-List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
+List-Id: <netdev.vger.kernel.org>
+List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230425140614.7cfe3854@kernel.org>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, May 02, 2023 at 09:17:53PM +0200, David Hildenbrand wrote:
-> > +static bool folio_longterm_write_pin_allowed(struct folio *folio)
-> > +{
-> > +	struct address_space *mapping;
-> > +
-> > +	/*
-> > +	 * GUP-fast disables IRQs - this prevents IPIs from causing page tables
-> > +	 * to disappear from under us, as well as preventing RCU grace periods
-> > +	 * from making progress (i.e. implying rcu_read_lock()).
-> > +	 *
-> > +	 * This means we can rely on the folio remaining stable for all
-> > +	 * architectures, both those that set CONFIG_MMU_GATHER_RCU_TABLE_FREE
-> > +	 * and those that do not.
-> > +	 *
-> > +	 * We get the added benefit that given inodes, and thus address_space,
-> > +	 * objects are RCU freed, we can rely on the mapping remaining stable
-> > +	 * here with no risk of a truncation or similar race.
-> > +	 */
-> > +	lockdep_assert_irqs_disabled();
-> > +
-> > +	/*
-> > +	 * If no mapping can be found, this implies an anonymous or otherwise
-> > +	 * non-file backed folio so in this instance we permit the pin.
-> > +	 *
-> > +	 * shmem and hugetlb mappings do not require dirty-tracking so we
-> > +	 * explicitly whitelist these.
-> > +	 *
-> > +	 * Other non dirty-tracked folios will be picked up on the slow path.
-> > +	 */
-> > +	mapping = folio_mapping(folio);
-> > +	return !mapping || shmem_mapping(mapping) || folio_test_hugetlb(folio);
-> > +}
->
-> BTW, try_grab_folio() is also called from follow_hugetlb_page(), which is
-> ordinary GUP and has interrupts enabled if I am not wrong.
+On Tue, Apr 25, 2023 at 02:06:14PM -0700, Jakub Kicinski wrote:
+> We are planning to perform a migration of email distribution for 
+> the netdev@vger mailing list on Tue, May 2nd (4PM EDT / 1PM PDT).
 
-It does hold the PTL though, so can't fiddle with the entry.
+Hi, all:
 
-But that does suggest folio_test_hugetlb() should be put _before_ the irq
-disabled assertion then :)
+This is now. There will be a series of test messages I will send in this
+thread that are safe to ignore.
 
->
-> --
-> Thanks,
->
-> David / dhildenb
->
+Once the move is complete and everything is verified looking good, I will let
+everyone know.
+
+-K
+
