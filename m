@@ -2,121 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A346F49E6
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:48:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B57096F49F1
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:53:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229514AbjEBSsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 14:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37826 "EHLO
+        id S229549AbjEBSxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 14:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbjEBSsU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 14:48:20 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2064.outbound.protection.outlook.com [40.107.92.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D3E10C6
-        for <netdev@vger.kernel.org>; Tue,  2 May 2023 11:48:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NXzeH39zVhLOU3sgt0//I0Z3S9HjFX7odXfJpNWzDpo51vYEpA6Sgee3HcLY9pwfrLg4ROC7tP6DjUb2FsiaGYybIWB+hZC5MptRrFoHp/QIQrJldPyU7aLshxSpOk2Od+mlopLuCvl3xzEYXbuz4HmzIi1U8GOb9B7iGDc7g9hRrXgGICbgOv0qDJyxuhhCMjYPIs5DVFELHWsR5S7xzo1ySZj7Nn0UK5b9lomKIk/mkqjLr3Cf/LMzg6IHCfnVaHjLscL8mtTEHP7h+xieO7hl8nILqRPoP/YECDRoEzMiwk9N2JK8Y5OZaqGx2z3U2RPirKW3heJRDKqwD/8P/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3/d7AG06gzXV4tyTSWg9Jmq0LflRO+iFh2CDtEhmBws=;
- b=YpZGGDc+j52HR7WOzpHrLfKWeiymK/Bf1Y5ypda1IFnnPz0h2nRzOvj+Yt06GypsAcNlfj11BB9TLmEXLPLXd2WQuNtnfO3JEQdvZvpJ+NGaaqQk4//DP7K9g8mfPb0S/Px5bKRa4ad/K6MMahbVXba0U55i0UXKecblCuxuw5Pa8ek6kQwiBy4WWd6ER6dkNY6Fj4PdIwUllG7/pFhpX0yb5mvQ0hkDr6iQsH+O3fjL7xbGUP9wFEmAgOpG7rmQuTaEHzOxIV+UJGq9gDhbRlfLip/vhwsAT4wL5Q50gUkiLLETPz/9Opm4qRtQ8zD+HWP7m4LMZXmw8VCtEQW8mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3/d7AG06gzXV4tyTSWg9Jmq0LflRO+iFh2CDtEhmBws=;
- b=adYUeNwTgIDrZ2/vuaItTPCQ/4vLUFF/xV+3iVe13W//kJaiJcs7YZ/238ery1SrKyOQf7NXziTAjKQowCsx577JheDnpIBDCOtI6vrxcIVUGgKuoA40dLawtto6XrfCU0uL9uM/bABC+4hVNb/jM68zLFXFOx4VilBoRuS375E=
-Received: from DM6PR11CA0039.namprd11.prod.outlook.com (2603:10b6:5:14c::16)
- by CH2PR12MB4117.namprd12.prod.outlook.com (2603:10b6:610:ae::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31; Tue, 2 May
- 2023 18:48:16 +0000
-Received: from DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:14c:cafe::51) by DM6PR11CA0039.outlook.office365.com
- (2603:10b6:5:14c::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30 via Frontend
- Transport; Tue, 2 May 2023 18:48:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT012.mail.protection.outlook.com (10.13.173.109) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6363.20 via Frontend Transport; Tue, 2 May 2023 18:48:16 +0000
-Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 2 May
- 2023 13:48:14 -0500
-From:   Shannon Nelson <shannon.nelson@amd.com>
-To:     <kuba@kernel.org>, <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <drivers@pensando.io>, Shannon Nelson <shannon.nelson@amd.com>
-Subject: [PATCH net] ionic: remove noise from ethtool rxnfc error msg
-Date:   Tue, 2 May 2023 11:47:40 -0700
-Message-ID: <20230502184740.22722-1-shannon.nelson@amd.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S229508AbjEBSxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 14:53:34 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7D6E78;
+        Tue,  2 May 2023 11:53:33 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-3f178da21b5so27542825e9.3;
+        Tue, 02 May 2023 11:53:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683053612; x=1685645612;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=TKK6aVpjuVU0zocvvzx2NbMr8G38Leo7ZXygkcERGR4=;
+        b=jT2Ze1BFSPANcjCx4YcSDsjU1FiI4f5SmDTIL5/oTgcpjUvLjtzuLvRH05Bo5BUlYA
+         qVEKklhBVPjmFaFDEMRVR+ue7Gtso382k3buRqEG6lWw87eXFHlSWfUFyjMyUW9R0MWH
+         4xmD3hAU3EhxU5P6CIAoSu9SCbn+dxxiD6eq3TCe1ufBZhHEzauGYyXQJqZLvo6j6W80
+         ls4t0c6POelCUOF3mcMCzYXkWAf0cF1oKxZ5TO203hnDDNYN1Lcnqs4OdSnV5pG1yVks
+         k+tMkFqvqzWwkX0nAqGkIZEQZ1fkoGmZi8S9B0ZmI1rfitvHnxspT7dy6bGjbUYqceuN
+         GCVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683053612; x=1685645612;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TKK6aVpjuVU0zocvvzx2NbMr8G38Leo7ZXygkcERGR4=;
+        b=hLXjBniekhV5CFSmcgrX3kpfmkTbdSekZ8RPLv7GyrhavZ437ifPmNI6tj6+Hkpcug
+         EJQFh4FiatIi9Bb+BhSe6AEF1JM/RA0XF3YoQwtYBOgm3uFa19lWAO40Z33wKl+7McJd
+         nPIaH8FBjRcgu2/3NmLRJ1t/siGzCGFcE096WEmbg2/pg4JVAokCSTD1CDpiz/tDoMEi
+         5qwBMlg5gLKK+7aZzepvOCpHLKE9rR5oCYztoJYL1XmBhtET5LhbAl1x7Gesti7nU1zI
+         59mZ9WjXO0/Tsz9nc0/7m25WOT2AMZFpqAYTAxKrav9rHyKAnjOLHtO54hZNX/0Qj19p
+         pQuQ==
+X-Gm-Message-State: AC+VfDy+9UQRxAj5pfOJNuXuo329B5oz2/+rh1UuM6LYt0wMcSgmq9h3
+        XvJnTl0JN+1FSW/LPy42qzI=
+X-Google-Smtp-Source: ACHHUZ7qBkKeVcJYF3HVFy70TfXWnSC+pmhIvAlKW7Ydykfbneuk4r/VXOqXv1LhyTw5KsdoKuYxAg==
+X-Received: by 2002:a05:6000:124b:b0:306:31b7:abe4 with SMTP id j11-20020a056000124b00b0030631b7abe4mr4532656wrx.14.1683053611747;
+        Tue, 02 May 2023 11:53:31 -0700 (PDT)
+Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
+        by smtp.gmail.com with ESMTPSA id b5-20020a056000054500b002e5ff05765esm32028462wrf.73.2023.05.02.11.53.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 May 2023 11:53:31 -0700 (PDT)
+Date:   Tue, 2 May 2023 19:53:30 +0100
+From:   Lorenzo Stoakes <lstoakes@gmail.com>
+To:     Matthew Rosato <mjrosato@linux.ibm.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Mika Penttila <mpenttil@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>
+Subject: Re: [PATCH v7 0/3] mm/gup: disallow GUP writing to file-backed
+ mappings by default
+Message-ID: <92fd5d71-ef9b-4971-944a-2a7bd74b5970@lucifer.local>
+References: <cover.1683044162.git.lstoakes@gmail.com>
+ <ce86e956-173f-848a-a1f3-f102134ccd94@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT012:EE_|CH2PR12MB4117:EE_
-X-MS-Office365-Filtering-Correlation-Id: a2c49ca7-c248-4cc1-dede-08db4b3dca64
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /BKHIQoNB4NJkX/vIK5gkYGRoW/ogK9ijZIIGMUYmhhSxbM67NxmFfqDu4rSgcXiDFXQNl8I+40ACvlawwNQTmGBnGIdagPMThNRZYzzfvAZQTVAfadreWTqbOnrWVN06E1DRJYCazpEo2cCkU07EwOiD8xd7s7+YgHSMmUyk3Zc+JSPUYnEOJjCV2W6uxk5porDGHqZpjeHGXGKquLvM1eQZfcFmbpwFPJugJsmhX6+mu6FIiXfM14X5iWP39cFVauPLEn5itBVuSOdrrNXsbLWbDM6da4ai/xjIKEfQy1vAjE2QAy0qn6/11UgUyvmJWDaCSNnFyhAfqxKSc8VvXMrYTm1wSOPmlFqyXM4Sp/XsYqEeVTSUcanuvtnp72GclwVzV2jU1CfDK7jsNEztley6bVNlAdbkGmCIqiPkcJvGaAe6iPMz3D7rb7q5IZuLKX3jzr2JS2ahCpdnzqpNo7qpWsgDkSvnRdUQkSdS6O4jCDoXedMIGMzyGVc7Ci1w6hVk7lW9e/joEeYyoDXvTOZ2srlPWfZcvlG1m0PFHzcaxigMfCQws++1xk1Kqi4CWxTS9gy6cQpLXrFfXU5L6v+qu5TrQ/pRIn+LTAwCRXKDsjr7nI2ZwV2wHpBwzxA7Mim/jOZkVyPPq3CZP91b3f4dWPkwN0GoIkJ5h6Of3QPbOB3iCGn/0GFOm5MgaSKt/UdxqFkMGlD2f5g71UnR026gHmC7ynj3vAHObkP35o=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(39860400002)(346002)(136003)(451199021)(46966006)(36840700001)(40470700004)(36756003)(86362001)(110136005)(316002)(4326008)(54906003)(41300700001)(70206006)(70586007)(6666004)(478600001)(5660300002)(2906002)(40480700001)(8676002)(8936002)(4744005)(82310400005)(44832011)(426003)(82740400003)(81166007)(356005)(2616005)(16526019)(186003)(26005)(1076003)(36860700001)(336012)(83380400001)(47076005)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 18:48:16.2972
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2c49ca7-c248-4cc1-dede-08db4b3dca64
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4117
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ce86e956-173f-848a-a1f3-f102134ccd94@linux.ibm.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It seems that ethtool is calling into .get_rxnfc more often with
-ETHTOOL_GRXCLSRLCNT which ionic doesn't know about.  We don't
-need to log a message about it, just return not supported.
+On Tue, May 02, 2023 at 02:45:01PM -0400, Matthew Rosato wrote:
+> On 5/2/23 12:34 PM, Lorenzo Stoakes wrote:
+> > Writing to file-backed mappings which require folio dirty tracking using
+> > GUP is a fundamentally broken operation, as kernel write access to GUP
+> > mappings do not adhere to the semantics expected by a file system.
+> >
+> > A GUP caller uses the direct mapping to access the folio, which does not
+> > cause write notify to trigger, nor does it enforce that the caller marks
+> > the folio dirty.
+> >
+> > The problem arises when, after an initial write to the folio, writeback
+> > results in the folio being cleaned and then the caller, via the GUP
+> > interface, writes to the folio again.
+> >
+> > As a result of the use of this secondary, direct, mapping to the folio no
+> > write notify will occur, and if the caller does mark the folio dirty, this
+> > will be done so unexpectedly.
+> >
+> > For example, consider the following scenario:-
+> >
+> > 1. A folio is written to via GUP which write-faults the memory, notifying
+> >    the file system and dirtying the folio.
+> > 2. Later, writeback is triggered, resulting in the folio being cleaned and
+> >    the PTE being marked read-only.
+> > 3. The GUP caller writes to the folio, as it is mapped read/write via the
+> >    direct mapping.
+> > 4. The GUP caller, now done with the page, unpins it and sets it dirty
+> >    (though it does not have to).
+> >
+> > This change updates both the PUP FOLL_LONGTERM slow and fast APIs. As
+> > pin_user_pages_fast_only() does not exist, we can rely on a slightly
+> > imperfect whitelisting in the PUP-fast case and fall back to the slow case
+> > should this fail.
+> >
+> > v7:
+> > - Fixed very silly bug in writeable_file_mapping_allowed() inverting the
+> >   logic.
+> > - Removed unnecessary RCU lock code and replaced with adaptation of Peter's
+> >   idea.
+> > - Removed unnecessary open-coded folio_test_anon() in
+> >   folio_longterm_write_pin_allowed() and restructured to generally permit
+> >   NULL folio_mapping().
+> >
+>
+> FWIW, I realize you are planning another respin, but I went and tried this version out on s390 -- Now when using a memory backend file and vfio-pci on s390 I see vfio_pin_pages_remote failing consistently.  However, the pin_user_pages_fast(FOLL_WRITE | FOLL_LONGTERM) in kvm_s390_pci_aif_enable will still return positive.
+>
 
-Fixes: aa3198819bea6 ("ionic: Add RSS support")
-Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
----
- drivers/net/ethernet/pensando/ionic/ionic_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hey thanks very much for checking that :)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index cf33503468a3..9b2b96fa36af 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -794,7 +794,7 @@ static int ionic_get_rxnfc(struct net_device *netdev,
- 		info->data = lif->nxqs;
- 		break;
- 	default:
--		netdev_err(netdev, "Command parameter %d is not supported\n",
-+		netdev_dbg(netdev, "Command parameter %d is not supported\n",
- 			   info->cmd);
- 		err = -EOPNOTSUPP;
- 	}
--- 
-2.17.1
+This version will unconditionally apply the retriction to non-FOLL_LONGTERM
+by mistake (ugh) but vfio_pin_pages_remote() does seem to be setting
+FOLL_LONGTERM anyway so this seems a legitimate test.
 
+Interesting the _fast() variant succeeds...
+
+David, Jason et al. can speak more to the ins and outs of these
+virtualisation cases which I am not so familiar with, but I wonder if we do
+need a flag to provide an exception for VFIO.
