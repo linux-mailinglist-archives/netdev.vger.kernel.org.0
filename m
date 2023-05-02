@@ -2,56 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B57096F49F1
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 804886F4A03
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 20:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229549AbjEBSxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 14:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39252 "EHLO
+        id S229567AbjEBS7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 May 2023 14:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbjEBSxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 14:53:34 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7D6E78;
-        Tue,  2 May 2023 11:53:33 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-3f178da21b5so27542825e9.3;
-        Tue, 02 May 2023 11:53:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683053612; x=1685645612;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TKK6aVpjuVU0zocvvzx2NbMr8G38Leo7ZXygkcERGR4=;
-        b=jT2Ze1BFSPANcjCx4YcSDsjU1FiI4f5SmDTIL5/oTgcpjUvLjtzuLvRH05Bo5BUlYA
-         qVEKklhBVPjmFaFDEMRVR+ue7Gtso382k3buRqEG6lWw87eXFHlSWfUFyjMyUW9R0MWH
-         4xmD3hAU3EhxU5P6CIAoSu9SCbn+dxxiD6eq3TCe1ufBZhHEzauGYyXQJqZLvo6j6W80
-         ls4t0c6POelCUOF3mcMCzYXkWAf0cF1oKxZ5TO203hnDDNYN1Lcnqs4OdSnV5pG1yVks
-         k+tMkFqvqzWwkX0nAqGkIZEQZ1fkoGmZi8S9B0ZmI1rfitvHnxspT7dy6bGjbUYqceuN
-         GCVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683053612; x=1685645612;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TKK6aVpjuVU0zocvvzx2NbMr8G38Leo7ZXygkcERGR4=;
-        b=hLXjBniekhV5CFSmcgrX3kpfmkTbdSekZ8RPLv7GyrhavZ437ifPmNI6tj6+Hkpcug
-         EJQFh4FiatIi9Bb+BhSe6AEF1JM/RA0XF3YoQwtYBOgm3uFa19lWAO40Z33wKl+7McJd
-         nPIaH8FBjRcgu2/3NmLRJ1t/siGzCGFcE096WEmbg2/pg4JVAokCSTD1CDpiz/tDoMEi
-         5qwBMlg5gLKK+7aZzepvOCpHLKE9rR5oCYztoJYL1XmBhtET5LhbAl1x7Gesti7nU1zI
-         59mZ9WjXO0/Tsz9nc0/7m25WOT2AMZFpqAYTAxKrav9rHyKAnjOLHtO54hZNX/0Qj19p
-         pQuQ==
-X-Gm-Message-State: AC+VfDy+9UQRxAj5pfOJNuXuo329B5oz2/+rh1UuM6LYt0wMcSgmq9h3
-        XvJnTl0JN+1FSW/LPy42qzI=
-X-Google-Smtp-Source: ACHHUZ7qBkKeVcJYF3HVFy70TfXWnSC+pmhIvAlKW7Ydykfbneuk4r/VXOqXv1LhyTw5KsdoKuYxAg==
-X-Received: by 2002:a05:6000:124b:b0:306:31b7:abe4 with SMTP id j11-20020a056000124b00b0030631b7abe4mr4532656wrx.14.1683053611747;
-        Tue, 02 May 2023 11:53:31 -0700 (PDT)
-Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
-        by smtp.gmail.com with ESMTPSA id b5-20020a056000054500b002e5ff05765esm32028462wrf.73.2023.05.02.11.53.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 11:53:31 -0700 (PDT)
-Date:   Tue, 2 May 2023 19:53:30 +0100
-From:   Lorenzo Stoakes <lstoakes@gmail.com>
-To:     Matthew Rosato <mjrosato@linux.ibm.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        with ESMTP id S229562AbjEBS7d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 14:59:33 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235CCDC
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 11:59:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=FvSMqnwpZ7YArJ7yAdLPKVO6ucbLedkU0RVbReJGMsg=; b=im1a3K9i2SW/qcYQ+dg7YIx54R
+        rqscrI7KXcuedVTnRv1n+NvojKZ8Pv7yJ66Rw4J7w1GUOIvGxdWPY9o3J6bSmaNY7WypGTY5kFX6G
+        4fAfplgI0bffu7hYgq9CahhkRrCxbsclQIK0NDDndRSlyyUcZZxo9ce1rrzb39UXaHz7f6VHQkyd+
+        2VKyz/QNJklZieaviHL5Uyk4p3FjzNvnl7ThlhtDQz+BPdeiJgIfAxCyJ8VO2dSMCh+JoOem2ypc/
+        hrxIhdofIBgvBLxhoYyV+nXLl3JnIPGV/t1H3b7ZLcslLCefANRiKQdnNwSgfeH9Q6kKGwHrq/haU
+        8dIy61iw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1ptvDk-00GOxZ-0V;
+        Tue, 02 May 2023 18:59:28 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id AAFBE3002BF;
+        Tue,  2 May 2023 20:59:26 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 89DBC241B3FAB; Tue,  2 May 2023 20:59:26 +0200 (CEST)
+Date:   Tue, 2 May 2023 20:59:26 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
         Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
         Matthew Wilcox <willy@infradead.org>,
@@ -60,7 +49,6 @@ Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         Christian Benvenuti <benve@cisco.com>,
         Nelson Escobar <neescoba@cisco.com>,
         Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
         Arnaldo Carvalho de Melo <acme@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -91,85 +79,43 @@ Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         "Kirill A . Shutemov" <kirill@shutemov.name>,
         Pavel Begunkov <asml.silence@gmail.com>,
         Mika Penttila <mpenttil@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
         Dave Chinner <david@fromorbit.com>,
         Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
         "Paul E . McKenney" <paulmck@kernel.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Subject: Re: [PATCH v7 0/3] mm/gup: disallow GUP writing to file-backed
- mappings by default
-Message-ID: <92fd5d71-ef9b-4971-944a-2a7bd74b5970@lucifer.local>
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH v7 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
+ to file-backed mappings
+Message-ID: <20230502185926.GE4253@hirez.programming.kicks-ass.net>
 References: <cover.1683044162.git.lstoakes@gmail.com>
- <ce86e956-173f-848a-a1f3-f102134ccd94@linux.ibm.com>
+ <b3a4441cade9770e00d24f5ecb75c8f4481785a4.1683044162.git.lstoakes@gmail.com>
+ <1691115d-dba4-636b-d736-6a20359a67c3@redhat.com>
+ <20230502172231.GH1597538@hirez.programming.kicks-ass.net>
+ <406fd43a-a051-5fbe-6f66-a43f5e7e7573@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ce86e956-173f-848a-a1f3-f102134ccd94@linux.ibm.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <406fd43a-a051-5fbe-6f66-a43f5e7e7573@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 02, 2023 at 02:45:01PM -0400, Matthew Rosato wrote:
-> On 5/2/23 12:34 PM, Lorenzo Stoakes wrote:
-> > Writing to file-backed mappings which require folio dirty tracking using
-> > GUP is a fundamentally broken operation, as kernel write access to GUP
-> > mappings do not adhere to the semantics expected by a file system.
-> >
-> > A GUP caller uses the direct mapping to access the folio, which does not
-> > cause write notify to trigger, nor does it enforce that the caller marks
-> > the folio dirty.
-> >
-> > The problem arises when, after an initial write to the folio, writeback
-> > results in the folio being cleaned and then the caller, via the GUP
-> > interface, writes to the folio again.
-> >
-> > As a result of the use of this secondary, direct, mapping to the folio no
-> > write notify will occur, and if the caller does mark the folio dirty, this
-> > will be done so unexpectedly.
-> >
-> > For example, consider the following scenario:-
-> >
-> > 1. A folio is written to via GUP which write-faults the memory, notifying
-> >    the file system and dirtying the folio.
-> > 2. Later, writeback is triggered, resulting in the folio being cleaned and
-> >    the PTE being marked read-only.
-> > 3. The GUP caller writes to the folio, as it is mapped read/write via the
-> >    direct mapping.
-> > 4. The GUP caller, now done with the page, unpins it and sets it dirty
-> >    (though it does not have to).
-> >
-> > This change updates both the PUP FOLL_LONGTERM slow and fast APIs. As
-> > pin_user_pages_fast_only() does not exist, we can rely on a slightly
-> > imperfect whitelisting in the PUP-fast case and fall back to the slow case
-> > should this fail.
-> >
-> > v7:
-> > - Fixed very silly bug in writeable_file_mapping_allowed() inverting the
-> >   logic.
-> > - Removed unnecessary RCU lock code and replaced with adaptation of Peter's
-> >   idea.
-> > - Removed unnecessary open-coded folio_test_anon() in
-> >   folio_longterm_write_pin_allowed() and restructured to generally permit
-> >   NULL folio_mapping().
-> >
->
-> FWIW, I realize you are planning another respin, but I went and tried this version out on s390 -- Now when using a memory backend file and vfio-pci on s390 I see vfio_pin_pages_remote failing consistently.  However, the pin_user_pages_fast(FOLL_WRITE | FOLL_LONGTERM) in kvm_s390_pci_aif_enable will still return positive.
->
+On Tue, May 02, 2023 at 07:34:06PM +0200, David Hildenbrand wrote:
+> Now, if we read folio->mapping after checking if the page we pinned is still
+> mapped (PTE unchanged), at least the page we pinned cannot be reused in the
+> meantime. I suspect that we can still read "NULL" on the second read. But
+> whatever we dereference from the first read should still be valid, even if
+> the second read would have returned NULL ("rcu freeing").
 
-Hey thanks very much for checking that :)
+Right, but given it's the compiler adding loads we're not sure what if
+anything it uses and it gets very hard to reason about the code.
 
-This version will unconditionally apply the retriction to non-FOLL_LONGTERM
-by mistake (ugh) but vfio_pin_pages_remote() does seem to be setting
-FOLL_LONGTERM anyway so this seems a legitimate test.
-
-Interesting the _fast() variant succeeds...
-
-David, Jason et al. can speak more to the ins and outs of these
-virtualisation cases which I am not so familiar with, but I wonder if we do
-need a flag to provide an exception for VFIO.
+This is where READ_ONCE() helps, we instruct the compiler to only do a
+single load and we can still reason about the code.
