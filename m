@@ -1,181 +1,358 @@
-Return-Path: <netdev+bounces-24-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-25-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 35EDC6F4BE6
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 23:10:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id ED17D6F4C27
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 23:27:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 04AE6280CCA
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 21:10:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4408D1C20988
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 21:27:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BA147AD52;
-	Tue,  2 May 2023 21:10:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81465A93A;
+	Tue,  2 May 2023 21:27:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8960AD51
-	for <netdev@vger.kernel.org>; Tue,  2 May 2023 21:10:18 +0000 (UTC)
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B98F10F3;
-	Tue,  2 May 2023 14:10:16 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-50b8d2eed3dso5756965a12.0;
-        Tue, 02 May 2023 14:10:16 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FAF89470
+	for <netdev@vger.kernel.org>; Tue,  2 May 2023 21:27:07 +0000 (UTC)
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FB31710;
+	Tue,  2 May 2023 14:27:05 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id 3f1490d57ef6-b9e2b65d006so3675071276.3;
+        Tue, 02 May 2023 14:27:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683061814; x=1685653814;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1683062824; x=1685654824;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+r72bqexG+rME9xqJaabiEonH/iTgj+QfgYgCEcVdbw=;
-        b=iTmt2cczFrVTgTBlIcDC+ivG4rOlFKXY3C/sYC8MCqxdInz15UUcN8qInwnS9oqEMV
-         B5PSiQT27+5zArADX0mvbTB4NSAIblLOQX9cOW2KThSAyShhq4tzLSGS09NEwkrr4HFU
-         gLR1lFXfuzfh9eTr0picITSeW3tPlXi1/ZsNMezovvGnSKSkPVz3Am2zA28RSuyKPa9L
-         z8LLp4f/dtkk8nwtquS3gC6K4pJCUFna3lwgIm+Dk1ywDyVBDkyySkpk8t1r6Nc5wdMe
-         ZlJxctTxGMN1Y3w5301bahtdC65gZuosH2z7u9SjUuu7laDbCPBtTtwo8lcI/SQfUzZ9
-         1utg==
+        bh=knJwrsz/sIaCpvJlUBXXveg4rz275IOOMyO2S8skkn0=;
+        b=FJFilFFe+xcy0Goi384A3gDjzqh7Mpu2K0IiO0fXyu9H/2M9/ZqZtN0+JfztjniGaH
+         xNFxefNlAxu0F1hRaQqHO6LVePxhrrk84DXos5DnbJhXTQj9WI8pYTLDH+7UiuwtOU6W
+         TognYxinD4urmTZ8fDh+xy2xLQLJ3LEJ+VfeAnujsiN2mi8nVBgrctHp/Bog+O7OCgKK
+         9a5v8WK/R0tYTuVJ5wd66LnWvGcSWQhcBYRrYQxGUZBVHCzK0JX1aFMPOQ01wWYNtsFB
+         fF5ri9piz9HbHyAYkVDkds+XtluySg97e/zBp6qKxjMh+Sh28za4YeWvxT2w3YX1G55D
+         ePVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683061814; x=1685653814;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1683062824; x=1685654824;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+r72bqexG+rME9xqJaabiEonH/iTgj+QfgYgCEcVdbw=;
-        b=f934nWEfKEbWua0+MIJ0nnJhqhu5dMNdDgQZfqmq4Q/RYwYlz7+qw4aJKaSpABlk8F
-         n1G9kgMObnc3chfpo5PQ92pbY9Gax/Bt23FAz7emFCpfDg9NyNKW3nLnjTNyGQVQJUlZ
-         M9PXhQV7gKbYmdIECVQiCAeOHZ+xdpRwnLKLibGkRzl1dto6NKTJ9GrytQUy2lkxSeCz
-         ieamwCwNe8XVcpWNAbXpGdjRD4NoQuhE0oBP1NH6JwMUV5u780f+/ux2PBzG1PlyRgSZ
-         xM1Jod3PsAw42QJiUXr9YquCQ7LIfBBqnCMaKgXlDXiZWyT75Sz1gZ4Ny9GmxzlPEYSD
-         JkKA==
-X-Gm-Message-State: AC+VfDzn5AFAbz3c1Vt83qqLrqqYjj731DlLr0ltgv2YcbcBtV7AEl+0
-	gCr4vgbXXR5n4w3YK6whS0E=
-X-Google-Smtp-Source: ACHHUZ4yvHziWGRT6Cgp5/TQI9ylFHVVk5ToXA3uzoqZOuswJi79HLre8X3Wo3N1vdkK6mynoKBsVA==
-X-Received: by 2002:a05:6402:10d7:b0:50b:cc52:3fd3 with SMTP id p23-20020a05640210d700b0050bcc523fd3mr3961480edu.41.1683061814545;
-        Tue, 02 May 2023 14:10:14 -0700 (PDT)
-Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id a24-20020a50ff18000000b0050bd19ec39bsm1178620edu.83.2023.05.02.14.10.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 14:10:14 -0700 (PDT)
-From: arinc9.unal@gmail.com
-X-Google-Original-From: arinc.unal@arinc9.com
-To: Sean Wang <sean.wang@mediatek.com>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	DENG Qingfang <dqfext@gmail.com>,
-	Daniel Golle <daniel@makrotopia.org>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	=?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Cc: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-	Richard van Schagen <richard@routerhints.com>,
-	Richard van Schagen <vschagen@cs.com>,
-	Frank Wunderlich <frank-w@public-files.de>,
-	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-	mithat.guner@xeront.com,
-	erkin.bozoglu@xeront.com,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 net 2/2] net: dsa: mt7530: fix network connectivity with multiple CPU ports
-Date: Wed,  3 May 2023 00:09:47 +0300
-Message-Id: <20230502210947.6815-2-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230502210947.6815-1-arinc.unal@arinc9.com>
-References: <20230502210947.6815-1-arinc.unal@arinc9.com>
+        bh=knJwrsz/sIaCpvJlUBXXveg4rz275IOOMyO2S8skkn0=;
+        b=DSNGZpaPrQDIoDo2WSwfINuRQEBTrMbiUY1HolxZfmTv6vsXRIKwPQsu2yvzO4FgbG
+         ivFTtct/UNbnfrmYYGME+a2vwBasF8BV0nPzxNNbRUicH8F0PzhaZ1HEiiFWOxyStQ7V
+         DBM0Y0H4uXWCYsiQnq1xnaDJIDjY7Un7k/b1sNfn87t7AVEh6kKHMWqIz40WsK2Tm05H
+         wsmWcQxRxTjuy1enKm+QhF8yd9bPv89jYErooHL2FK5j3pMuuIsmp0aNfkU8FiNJ/uos
+         i1HzqUOj4gj1KBJrndI1eADu/CEyeHJJOpw2SrfWyxMOhMuTc599mFrq3D9B6773196j
+         OySQ==
+X-Gm-Message-State: AC+VfDw0YuPlwhe0SH2P/GSzpajJWCBdwHV1xyp+veq025TwLHaxILW1
+	TobpIIl3dlEnC0IOPknAbpgA04ooEoA0bJSj0zM=
+X-Google-Smtp-Source: ACHHUZ67XFCw3cwTsEZASwArZ6eMGgnCmgBwASY6jVyY4SqJlTx9++fkBScoIcBRK/7P3UhkeQJ28OyjpkRGAs8HeYA=
+X-Received: by 2002:a25:58c4:0:b0:b99:e0ff:5f16 with SMTP id
+ m187-20020a2558c4000000b00b99e0ff5f16mr14580089ybb.18.1683062824368; Tue, 02
+ May 2023 14:27:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+References: <1682535272-32249-1-git-send-email-justinpopo6@gmail.com>
+ <1682535272-32249-4-git-send-email-justinpopo6@gmail.com> <ZFFn3UdlapiTlCam@corigine.com>
+In-Reply-To: <ZFFn3UdlapiTlCam@corigine.com>
+From: Justin Chen <justinpopo6@gmail.com>
+Date: Tue, 2 May 2023 14:26:53 -0700
+Message-ID: <CAJx26kV9E7M5ULoPqT8eJ5byaUEZDtW6v25f3DT04xs4NGcd6g@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 3/6] net: bcmasp: Add support for ASP2.0
+ Ethernet controller
+To: Simon Horman <simon.horman@corigine.com>
+Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, bcm-kernel-feedback-list@broadcom.com, 
+	justin.chen@broadcom.com, f.fainelli@gmail.com, davem@davemloft.net, 
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org, 
+	krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com, andrew@lunn.ch, 
+	hkallweit1@gmail.com, linux@armlinux.org.uk, richardcochran@gmail.com, 
+	sumit.semwal@linaro.org, christian.koenig@amd.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+On Tue, May 2, 2023 at 12:44=E2=80=AFPM Simon Horman <simon.horman@corigine=
+.com> wrote:
+>
+> On Wed, Apr 26, 2023 at 11:54:29AM -0700, Justin Chen wrote:
+> > Add support for the Broadcom ASP 2.0 Ethernet controller which is first
+> > introduced with 72165. This controller features two distinct Ethernet
+> > ports that can be independently operated.
+> >
+> > This patch supports:
+> >
+> > - Wake-on-LAN using magic packets
+> > - basic ethtool operations (link, counters, message level)
+> > - MAC destination address filtering (promiscuous, ALL_MULTI, etc.)
+> >
+> > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> > Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+>
+> ...
+>
+> > diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp.c b/drivers/net/=
+ethernet/broadcom/asp2/bcmasp.c
+>
+> ...
+>
+> > +static int bcmasp_netfilt_get_reg_offset(struct bcmasp_priv *priv,
+> > +                                      struct bcmasp_net_filter *nfilt,
+> > +                                      enum asp_netfilt_reg_type reg_ty=
+pe,
+> > +                                      u32 offset)
+> > +{
+> > +     u32 block_index, filter_sel;
+> > +
+> > +     if (offset < 32) {
+> > +             block_index =3D ASP_RX_FILTER_NET_L2;
+> > +             filter_sel =3D nfilt->hw_index;
+> > +     } else if (offset < 64) {
+> > +             block_index =3D ASP_RX_FILTER_NET_L2;
+> > +             filter_sel =3D nfilt->hw_index + 1;
+> > +     } else if (offset < 96) {
+> > +             block_index =3D ASP_RX_FILTER_NET_L3_0;
+> > +             filter_sel =3D nfilt->hw_index;
+> > +     } else if (offset < 128) {
+> > +             block_index =3D ASP_RX_FILTER_NET_L3_0;
+> > +             filter_sel =3D nfilt->hw_index + 1;
+> > +     } else if (offset < 160) {
+> > +             block_index =3D ASP_RX_FILTER_NET_L3_1;
+> > +             filter_sel =3D nfilt->hw_index;
+> > +     } else if (offset < 192) {
+> > +             block_index =3D ASP_RX_FILTER_NET_L3_1;
+> > +             filter_sel =3D nfilt->hw_index + 1;
+> > +     } else if (offset < 224) {
+> > +             block_index =3D ASP_RX_FILTER_NET_L4;
+> > +             filter_sel =3D nfilt->hw_index;
+> > +     } else if (offset < 256) {
+> > +             block_index =3D ASP_RX_FILTER_NET_L4;
+> > +             filter_sel =3D nfilt->hw_index + 1;
+> > +     }
+>
+> block_index and filter_sel are uninitialised if offset doesn't match any
+> of the conditions above. Can that happen?
+>
 
-On mt753x_cpu_port_enable() there's code that enables flooding for the CPU
-port only. Since mt753x_cpu_port_enable() runs twice when both CPU ports
-are enabled, port 6 becomes the only port to forward the frames to. But
-port 5 is the active port, so no frames received from the user ports will
-be forwarded to port 5 which breaks network connectivity.
+Nope. This is a helper function for netfilter read and write reg, we
+check offset sizes in those functions.
 
-Every bit of the BC_FFP, UNM_FFP, and UNU_FFP bits represents a port. Fix
-this issue by setting the bit that corresponds to the CPU port without
-overwriting the other bits.
+> > +
+> > +     switch (reg_type) {
+> > +     case ASP_NETFILT_MATCH:
+> > +             return ASP_RX_FILTER_NET_PAT(filter_sel, block_index,
+> > +                                          (offset % 32));
+> > +     case ASP_NETFILT_MASK:
+> > +             return ASP_RX_FILTER_NET_MASK(filter_sel, block_index,
+> > +                                           (offset % 32));
+> > +     default:
+> > +             return -EINVAL;
+> > +     }
+> > +}
+>
+> ...
+>
+> > +static void bcmasp_netfilt_tcpip4_wr(struct bcmasp_priv *priv,
+> > +                                  struct bcmasp_net_filter *nfilt,
+> > +                                  struct ethtool_tcpip4_spec *match,
+> > +                                  struct ethtool_tcpip4_spec *mask,
+> > +                                  u32 offset)
+> > +{
+> > +     __be16 val_16, mask_16;
+> > +
+> > +     val_16 =3D htons(ETH_P_IP);
+> > +     mask_16 =3D 0xFFFF;
+>
+> mask_17 is __be16, but 0xFFFF is host byte order.
+>
+> Please make sure there are no new warnings when building with W=3D1 C=3D1=
+.
+>
+> ...
+>
+> > +/* If no network filter found, return open filter.
+> > + * If no more open filters return NULL
+> > + */
+> > +struct bcmasp_net_filter *bcmasp_netfilt_get_init(struct bcmasp_intf *=
+intf,
+> > +                                               int loc, bool wake_filt=
+er,
+> > +                                               bool init)
+> > +{
+> > +     struct bcmasp_priv *priv =3D intf->parent;
+> > +     struct bcmasp_net_filter *nfilter =3D NULL;
+> > +     int i, open_index =3D -1;
+>
+> Please use reverse xmas tree - longest line to shortest - for local
+> variable declarations in networking code.
+>
+> You can check for this using https://github.com/ecree-solarflare/xmastree
+>
+> ...
+>
+> > +static int bcmasp_combine_set_filter(struct bcmasp_intf *intf,
+> > +                                  unsigned char *addr, unsigned char *=
+mask,
+> > +                                  int i)
+> > +{
+> > +     u64 addr1, addr2, mask1, mask2, mask3;
+> > +     struct bcmasp_priv *priv =3D intf->parent;
+> > +
+> > +     /* Switch to u64 to help with the calculations */
+> > +     addr1 =3D ether_addr_to_u64(priv->mda_filters[i].addr);
+> > +     mask1 =3D ether_addr_to_u64(priv->mda_filters[i].mask);
+> > +     addr2 =3D ether_addr_to_u64(addr);
+> > +     mask2 =3D ether_addr_to_u64(mask);
+> > +
+> > +     /* Check if one filter resides within the other */
+> > +     mask3 =3D mask1 & mask2;
+> > +     if (mask3 =3D=3D mask1 && ((addr1 & mask1) =3D=3D (addr2 & mask1)=
+)) {
+> > +             /* Filter 2 resides within fitler 1, so everthing is good=
+ */
+>
+> nit: s/fitler/filter/
+>
+> Please consider running ./scripts/checkpatch.pl --codespell
+>
+> ...
+>
+> > +static void bcmasp_update_mib_counters(struct bcmasp_intf *priv)
+> > +{
+> > +     int i, j =3D 0;
+> > +
+> > +     for (i =3D 0; i < BCMASP_STATS_LEN; i++) {
+> > +             const struct bcmasp_stats *s;
+> > +             u16 offset =3D 0;
+> > +             u32 val =3D 0;
+> > +             char *p;
+> > +
+> > +             s =3D &bcmasp_gstrings_stats[i];
+> > +             switch (s->type) {
+> > +             case BCMASP_STAT_NETDEV:
+> > +             case BCMASP_STAT_SOFT:
+> > +                     continue;
+> > +             case BCMASP_STAT_RUNT:
+> > +                     offset +=3D BCMASP_STAT_OFFSET;
+> > +                     fallthrough;
+> > +             case BCMASP_STAT_MIB_TX:
+> > +                     offset +=3D BCMASP_STAT_OFFSET;
+> > +                     fallthrough;
+> > +             case BCMASP_STAT_MIB_RX:
+> > +                     val =3D umac_rl(priv, UMC_MIB_START + j + offset)=
+;
+> > +                     offset =3D 0;     /* Reset Offset */
+> > +                     break;
+> > +             case BCMASP_STAT_RX_EDPKT:
+> > +                     val =3D rx_edpkt_core_rl(priv->parent, s->reg_off=
+set);
+> > +                     break;
+> > +             case BCMASP_STAT_RX_CTRL:
+> > +                     offset =3D bcmasp_stat_fixup_offset(priv, s);
+> > +                     if (offset !=3D ASP_RX_CTRL_FB_FILT_OUT_FRAME_COU=
+NT)
+> > +                             offset +=3D sizeof(u32) * priv->port;
+> > +                     val =3D rx_ctrl_core_rl(priv->parent, offset);
+> > +                     break;
+> > +             }
+> > +
+> > +             j +=3D s->stat_sizeof;
+> > +             p =3D (char *)priv + s->stat_offset;
+> > +             *(u32 *)p =3D val;
+>
+> Is p always 32bit aligned?
+>
 
-Clear the bits beforehand only for the MT7531 switch. According to the
-documents MT7621 Giga Switch Programming Guide v0.3 and MT7531 Reference
-Manual for Development Board v1.0, after reset, the BC_FFP, UNM_FFP, and
-UNU_FFP bits are set to 1 for MT7531, 0 for MT7530.
+Nope. I can make sure it is 32 bit aligned.
 
-The commit 5e5502e012b8 ("net: dsa: mt7530: fix roaming from DSA user
-ports") silently changed the method to set the bits on the MT7530_MFC.
-Instead of clearing the relevant bits before mt7530_cpu_port_enable()
-which runs under a for loop, the commit started doing it on
-mt7530_cpu_port_enable().
+Acked, the other comments. Will submit v3 when net-next window is
+open. Thank you for the review.
 
-Back then, this didn't really matter as only a single CPU port could be
-used since the CPU port number was hardcoded. The driver was later changed
-with commit 1f9a6abecf53 ("net: dsa: mt7530: get cpu-port via dp->cpu_dp
-instead of constant") to retrieve the CPU port via dp->cpu_dp. With that,
-this silent change became an issue for when using multiple CPU ports.
+Justin
 
-Fixes: 5e5502e012b8 ("net: dsa: mt7530: fix roaming from DSA user ports")
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
-
-v3: Remove my tested-by tag as Florian pointed out it's implied with my
-signed-off-by tag.
-
-v2: Add the fixes tag and information about the commit that caused this
-issue.
-
----
- drivers/net/dsa/mt7530.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 7d9f9563dbda..9bc54e1348cb 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1002,9 +1002,9 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
- 	mt7530_write(priv, MT7530_PVC_P(port),
- 		     PORT_SPEC_TAG);
- 
--	/* Disable flooding by default */
--	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
--		   BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port)));
-+	/* Enable flooding on the CPU port */
-+	mt7530_set(priv, MT7530_MFC, BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) |
-+		   UNU_FFP(BIT(port)));
- 
- 	/* Set CPU port number */
- 	if (priv->id == ID_MT7621)
-@@ -2367,6 +2367,10 @@ mt7531_setup_common(struct dsa_switch *ds)
- 	/* Enable and reset MIB counters */
- 	mt7530_mib_reset(ds);
- 
-+	/* Disable flooding on all ports */
-+	mt7530_clear(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK |
-+		     UNU_FFP_MASK);
-+
- 	for (i = 0; i < MT7530_NUM_PORTS; i++) {
- 		/* Disable forwarding by default on all ports */
- 		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
--- 
-2.39.2
-
+> > +     }
+> > +}
+> > +
+> > +static void bcmasp_get_ethtool_stats(struct net_device *dev,
+> > +                                  struct ethtool_stats *stats,
+> > +                                  u64 *data)
+> > +{
+> > +     struct bcmasp_intf *priv =3D netdev_priv(dev);
+> > +     int i, j =3D 0;
+> > +
+> > +     if (netif_running(dev))
+> > +             bcmasp_update_mib_counters(priv);
+> > +
+> > +     dev->netdev_ops->ndo_get_stats(dev);
+> > +
+> > +     for (i =3D 0; i < BCMASP_STATS_LEN; i++) {
+> > +             const struct bcmasp_stats *s;
+> > +             char *p;
+> > +
+> > +             s =3D &bcmasp_gstrings_stats[i];
+> > +             if (!bcmasp_stat_available(priv, s->type))
+> > +                     continue;
+> > +             if (s->type =3D=3D BCMASP_STAT_NETDEV)
+> > +                     p =3D (char *)&dev->stats;
+> > +             else
+> > +                     p =3D (char *)priv;
+> > +             p +=3D s->stat_offset;
+> > +             if (sizeof(unsigned long) !=3D sizeof(u32) &&
+> > +                 s->stat_sizeof =3D=3D sizeof(unsigned long))
+> > +                     data[j] =3D *(unsigned long *)p;
+> > +             else
+> > +                     data[j] =3D *(u32 *)p;
+>
+> Maybe memcpy would make this a little easier to read.
+>
+> > +             j++;
+> > +     }
+> > +}
+>
+> ...
+>
+> > diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c b/drivers=
+/net/ethernet/broadcom/asp2/bcmasp_intf.c
+>
+> ...
+>
+> > +static int bcmasp_init_rx(struct bcmasp_intf *intf)
+> > +{
+> > +     struct device *kdev =3D &intf->parent->pdev->dev;
+> > +     struct net_device *ndev =3D intf->ndev;
+> > +     void *p;
+> > +     dma_addr_t dma;
+> > +     struct page *buffer_pg;
+> > +     u32 reg;
+> > +     int ret;
+> > +
+> > +     intf->rx_buf_order =3D get_order(RING_BUFFER_SIZE);
+> > +     buffer_pg =3D alloc_pages(GFP_KERNEL, intf->rx_buf_order);
+> > +
+> > +     dma =3D dma_map_page(kdev, buffer_pg, 0, RING_BUFFER_SIZE,
+> > +                        DMA_FROM_DEVICE);
+> > +     if (dma_mapping_error(kdev, dma)) {
+> > +             netdev_err(ndev, "Cannot allocate RX buffer\n");
+>
+> I think the core will log an error on allocation failure,
+> so the message above is not needed.
+>
+> > +             __free_pages(buffer_pg, intf->rx_buf_order);
+> > +             return -ENOMEM;
+> > +     }
+>
+> ...
 
