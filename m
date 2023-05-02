@@ -2,173 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DCB16F3CCB
-	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 06:44:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B11A6F3F90
+	for <lists+netdev@lfdr.de>; Tue,  2 May 2023 10:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233450AbjEBEog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 May 2023 00:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46580 "EHLO
+        id S233906AbjEBIs4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 2 May 2023 04:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233416AbjEBEof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 00:44:35 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126B430FD
-        for <netdev@vger.kernel.org>; Mon,  1 May 2023 21:44:34 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id 98e67ed59e1d1-24b725d6898so2146319a91.2
-        for <netdev@vger.kernel.org>; Mon, 01 May 2023 21:44:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683002673; x=1685594673;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kmzeFw2KpvheSlrtQxpnFeN/1gMHt3CE0Q5AjpkUpLU=;
-        b=FMGk0Stoda2C52B9ZzVuDnekPRz8bNUjzwYva/SbC5Sfvqxq+07KzBmb14vj4dBWx6
-         U6Wus/VzVy30z9Jpwmm3VDMs4EOXw9l6KN1K2S9q/kMf6LYB02ffwn6mVCAk/PednKCy
-         BoJEiu0zm63Gv5VHDwUhdE5ZH1Q55X9kmiIVUokxTI8B40mL6XEgJI8naBfVf/IWykAb
-         P8wcY4t7e1E7s6dPg65eAx9kwhVryKXX2JojtGyVQvVTSeQFsOFoBK6P4+uQVHRzbMfA
-         qNLtg5puOa35s9I9ZJ2YQyufXot1EY1fLrD8TiXihVaaPrXGvoA/fQneS/QMB9sj56aa
-         r8GA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683002673; x=1685594673;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kmzeFw2KpvheSlrtQxpnFeN/1gMHt3CE0Q5AjpkUpLU=;
-        b=crKBrjovpRcjzSkkHqAur6irWNxsDL9glqATvr/tIozswZkvonFLVi+Wk0FhU//w9K
-         n8/0yfEEWRbzCTulL+F3QrWI6iVhVBSgnfgxy6k4zm0ONFqlNtkSMSrVoyuZAe64+yVN
-         sBCyoXZrVSjM4CT2QO9X8FQ+Uq0nATtgZ1lbNodfV3b8L7rqUbFFfxkNLA1fFvuOYN3N
-         8rH5SZlhZmedbgsduf/LYcDyYNd6xL/OZRXlOQghwutdW9+i00zzUDvINkbXto3WaMLF
-         BPz6U+5hmsjqaduTJQlPRJMC09JNPu1pwdqZBftM0pp/qI8DiAwewBkFDqB6aANwFxKd
-         mRFw==
-X-Gm-Message-State: AC+VfDwmMWoqEscyEiUXAZfQxBvUGg3gf6aSq3foRbpxvDud74nL3Vku
-        OVFX0FmY30f1t+uz53Xjv7VFQezUXyizp7t6ahw=
-X-Google-Smtp-Source: ACHHUZ4NROOKKH5scgw/zPhO6MCmiwIBpWhTLY7QITxzlC3SJN06CyeI0sPCPolcr0LDI46jAPFv9rsqfcSTDD4WxCo=
-X-Received: by 2002:a17:90b:3548:b0:24d:f880:5192 with SMTP id
- lt8-20020a17090b354800b0024df8805192mr6586372pjb.19.1683002673416; Mon, 01
- May 2023 21:44:33 -0700 (PDT)
+        with ESMTP id S233929AbjEBIse (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 May 2023 04:48:34 -0400
+X-Greylist: delayed 1018 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 02 May 2023 01:47:07 PDT
+Received: from repostorp.tmes.trendmicro.eu (repostorp.tmes.trendmicro.eu [18.185.115.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CAC61B1
+        for <netdev@vger.kernel.org>; Tue,  2 May 2023 01:47:06 -0700 (PDT)
+Received: from 89.96.76.22_.trendmicro.com (unknown [172.21.178.36])
+        by repostorp.tmes.trendmicro.eu (Postfix) with SMTP id 7115D10008504;
+        Tue,  2 May 2023 08:17:30 +0000 (UTC)
+X-TM-MAIL-RECEIVED-TIME: 1683015445.187000
+X-TM-MAIL-UUID: 14cd5f75-3b1b-4596-a0d5-65d03b22d0a0
+Received: from EXCH000EDG.int.milano (unknown [89.96.76.22])
+        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTP id 2DCF010000F0E;
+        Tue,  2 May 2023 08:17:25 +0000 (UTC)
+Received: from EXCH000HUB.int.milano (10.4.32.33) by EXCH000EDG.int.milano
+ (89.96.76.22) with Microsoft SMTP Server (TLS) id 8.3.389.2; Tue, 2 May 2023
+ 07:14:30 +0200
+Received: from EXCHSRVR04.int.milano ([10.4.32.36]) by EXCH000HUB.int.milano
+ ([10.4.32.33]) with mapi; Tue, 2 May 2023 07:24:04 +0200
+From:   Gregoraci Antonio <Antonio.Gregoraci@istitutotumori.mi.it>
+To:     "21@hotmail.com" <21@hotmail.com>
+Content-Class: urn:content-classes:message
+Date:   Tue, 2 May 2023 07:24:04 +0200
+Subject: ciao/holo
+Thread-Topic: ciao/holo
+Thread-Index: AQHZfLZPmkUTYwMWRk2TH10oZHHsPA==
+Message-ID: <DCA15BFBCFA11D4DAAB69864B5B767D7022DA376D4BA@EXCHSRVR04.int.milano>
+Accept-Language: it-IT, en-US
+Content-Language: it-IT
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+acceptlanguage: it-IT, en-US
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20230423032437.285014-1-glipus@gmail.com> <20230426165835.443259-1-kory.maincent@bootlin.com>
- <CAP5jrPE3wpVBHvyS-C4PN71QgKXrA5GVsa+D=RSaBOjEKnD2vw@mail.gmail.com>
- <20230427102945.09cf0d7f@kmaincent-XPS-13-7390> <CAP5jrPH5kQzqzeQwmynOYLisbzL1TUf=AwA=cRbCtxU4Y6dp9Q@mail.gmail.com>
- <20230428101103.02a91264@kmaincent-XPS-13-7390> <CAP5jrPH1=fw7ayEFuzQZKXSkcXeGfUy134yEANzDcSyvwOB-2g@mail.gmail.com>
- <4c27d467-95a3-fb9a-52be-bcb54f7d1aaf@linux.dev> <CAP5jrPE8rriDGVrXwszj8DrrGvmRaqnbRzWuCTfhpt4g9G9FLw@mail.gmail.com>
-In-Reply-To: <CAP5jrPE8rriDGVrXwszj8DrrGvmRaqnbRzWuCTfhpt4g9G9FLw@mail.gmail.com>
-From:   Max Georgiev <glipus@gmail.com>
-Date:   Mon, 1 May 2023 22:44:22 -0600
-Message-ID: <CAP5jrPH1Xn5Sja8wqB_oybrv6mubaP+nhpOjRHN8TCDW2=Auhw@mail.gmail.com>
-Subject: Re: [RFC PATCH v4 0/5] New NDO methods ndo_hwtstamp_get/set
-To:     Vadim Fedorenko <vadim.fedorenko@linux.dev>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com,
-        richardcochran@gmail.com, gerhard@engleder-embedded.com,
-        thomas.petazzoni@bootlin.com,
-        =?UTF-8?Q?K=C3=B6ry_Maincent?= <kory.maincent@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-TM-AS-ERS: 89.96.76.22-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1007-27600.005
+X-TMASE-Result: 10--5.227400-7.000000
+X-TMASE-MatchedRID: JccYzf/alo2Z92UT4XKzJLrGtoyxDGsveQdcpJtf6Y9dnu0Ib701SwHh
+        /n3IojRHZbYzO9ATSR8iCJj+nG0qavLhF3ODt/qxK1L6TVkdgzvlCdi2vYBU/StbLOivsnLTeOW
+        ogtc/Q+ahrVMGjoVW2dAxpCUwUcRX/hmVMkfK7SzUx9DKYBHnGKd2IUv0yPeefmP+r6TihalqvC
+        uMGQ0jzVrpCKOpM18cDPgUX1cE9O7XOxm24IXrxtH1f5d8nY/hPp0VRG6+qR71fgKy39PDlkeEP
+        abtlRsaejwREYpHOiWWyPdl51RNjgZggDg9vQE5YiI8iyJSkA3PjA1BmHzE8+RXFolGtZQMKxg3
+        Xnh5/+zDiMdHGmnNPbRtAWPTXnKS1iTsGwm9KyqJD4Nwayf7WMEE+9IiWn84I+mdUIK7OD5DkWN
+        prDyYFJk4XfWG6Q5wQGLcrfmCk/qcIa7X43Dj+RZPalguHC34Ket9cEJP1Bi3uEP3hiATS9zrRQ
+        ttYVPeCx4e+jnEj2mZrBKqCt7bePcCWN+BhqOU86OXreFgYUsZskwWqoib3O5SxpUwKMktfrqNW
+        IucyHbg+QiHC8Fzei38M+247Q7BEONKxfrChoJKQwOq4OdJRVjKpSEColRJEzBS/LIYH/e0/17g
+        tnMCM+LzNWBegCW2Pt8/Kr/G3CkLbigRnpKlKSBuGJWwgxAra7leoU/OMhNYsCaawSIuKZ+8fb5
+        xkXFaiGn/dlPDQlNmqHcBvRqfu6awXxUcqWbzftwZ3X11IV0=
+X-TMASE-XGENCLOUD: e9885dc0-d19c-47ed-94c0-c1af7d8c7f44-0-0-200-0
+X-TM-Deliver-Signature: C3D758292AA9599F03FB450B62539574
+X-TM-Addin-Auth: 6qIOaFajCDjq5yQd67JEMFQgTtQB792GUkl4pqzxkpuDtt8OvARkam+KA9T
+        k6zYJUJz0AMSGu6B+9Ony2G6d5BYz1LsrLMV+tc6A4XeTCXksfl79bOmZnVHTREmu9Ks6VbyKoN
+        MaVeu43Y3fEzL2HCEei+9xgZ1KNFKMUQxJbEc3KImNLx1BP1/Pd1RlB2UnLElHu7HmqZCPdm6OS
+        KFeMRF4e0sPw8sbpDIcTZsb07hBZz7L5jshuOnEgd6VK2mm1sGpjWx6GdM5pAY4K0609fgww721
+        qGH0i6MLUSqDKoNzhKsYYCNNVb+mMayC4ZcO.fw3nQXMuQjuCn4jZloJzoZdJGYI+SwF/WYMa6e
+        TzjrEJl6HYEniESa+fYFh+wJZgNjNkCLzpeANOywX4WskK9ji88J4RbXZC7ZMLRcsWBzzD5APB0
+        gSxP7+FL2R87flA1hcrQRnejl8PJKemip24xDONQSSkTcieYbnCHGdvQK+gEtK13Y6KlKOP5fo/
+        dfOm3uL4M5STBZuwanDFe7K86U4VvRH4owy6+aNUEUoPzPIANu1feaCTthpHT/YUKJDpuIesoF5
+        MKflPb+93uia+JrjDGkMF2xTtOG4zQoGQVt24LyQc1QFE3TzlNSLv/tveXmeaBqUdOAAbRlPjfd
+        kzcQ==
+X-TM-Addin-ProductCode: EMS
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 1, 2023 at 10:35=E2=80=AFPM Max Georgiev <glipus@gmail.com> wro=
-te:
->
-> On Sat, Apr 29, 2023 at 1:45=E2=80=AFPM Vadim Fedorenko
-> <vadim.fedorenko@linux.dev> wrote:
-> >
-> > On 28.04.2023 15:14, Max Georgiev wrote:
-> > > On Fri, Apr 28, 2023 at 2:11=E2=80=AFAM K=C3=B6ry Maincent <kory.main=
-cent@bootlin.com> wrote:
-> > >>
-> > >> On Thu, 27 Apr 2023 22:57:27 -0600
-> > >> Max Georgiev <glipus@gmail.com> wrote:
-> > >>
-> > >>> Sorry, I'm still learning the kernel patch communication rules.
-> > >>> Thank you for guiding me here.
-> > >>
-> > >> Also, each Linux merging subtree can have its own rules.
-> > >> I also, was not aware of net special merging rules:
-> > >> https://www.kernel.org/doc/html/latest/process/maintainer-netdev.htm=
-l
-> > >>
-> > >>
-> > >>> On Thu, Apr 27, 2023 at 2:43=E2=80=AFAM K=C3=B6ry Maincent <kory.ma=
-incent@bootlin.com>
-> > >>> wrote:
-> > >>>>
-> > >>>> On Wed, 26 Apr 2023 22:00:43 -0600
-> > >>>> Max Georgiev <glipus@gmail.com> wrote:
-> > >>>>
-> > >>>>>
-> > >>>>> Thank you for giving it a try!
-> > >>>>> I'll drop the RFC tag starting from the next iteration.
-> > >>>>
-> > >>>> Sorry I didn't know the net-next submission rules. In fact keep th=
-e RFC tag
-> > >>>> until net-next open again.
-> > >>>> http://vger.kernel.org/~davem/net-next.html
-> > >>>>
-> > >>>> Your patch series don't appear in the cover letter thread:
-> > >>>> https://lore.kernel.org/all/20230423032437.285014-1-glipus@gmail.c=
-om/
-> > >>>> I don't know if it comes from your e-mail or just some issue from =
-lore but
-> > >>>> could you check it?
-> > >>>
-> > >>> Could you please elaborate what's missing in the cover letter?
-> > >>> Should the cover letter contain the latest version of the patch
-> > >>> stack (v4, then v5, etc.) and some description of the differences
-> > >>> between the patch versions?
-> > >>> Let me look up some written guidance on this.
-> > >>
-> > >> I don't know how you send your patch series but when you look on you=
-r e-mail
-> > >> thread the patches are not present:
-> > >> https://lore.kernel.org/all/20230423032437.285014-1-glipus@gmail.com=
-/
-> > >>
-> > >> It is way easier to find your patches when you have all the patches =
-of the
-> > >> series in the e-mail thread.
-> > >>
-> > >
-> > > Aha, I see the problem now. I guess it has something to do with "--in=
--reply-to"
-> > > git send-email optio or similar options.
-> > >
-> > >> Here for example they are in the thread:
-> > >> https://lore.kernel.org/all/20230406173308.401924-1-kory.maincent@bo=
-otlin.com/
-> > >>
-> > >> Do you use git send-email?
-> > >
-> > > Yes, I use "git format-patch" to generate individual patch files for
-> > > every patch in the
-> > > stack, and then I use "git send-email" to send out these patches on-b=
-y-one.
-> > >
-> >
-> > The problem is, as K=C3=B6ry has mentioned already, in sending patches =
-one-by-one.
-> > You can provide a directory with patches to git send-email and it will =
-take all
-> > of them at once. You can try it with --dry-run and check that all pacth=
-es have
-> > the same In-Reply-To and References headers.
->
-> So the best practice for sending patch stacks is to run "git
-> send-email ..." against
-> a folder containing the freshly generated patch files!
-> Thank you for the guidance!
->
-> >
-> > > Is there a recommended way to send out stacks of patches?
-> >
+Hola y ¿cómo estás? Hay un proyecto que me gustaría discutir con ustedes. todo disponible. Por favor, comuníquese conmigo directamente a mi correo privado.   ( drcc7072@gmail.com
 
-Is it better this time?
-https://lore.kernel.org/netdev/20230502043150.17097-1-glipus@gmail.com/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+============================================================================================================
+La presente comunicazione, che potrebbe contenere informazioni riservate e/o protette da segreto professionale, è indirizzata esclusivamente ai destinatari della medesima qui indicati. Ogni informazione qui contenuta, che non sia relativa alla nostra attività caratteristica, deve essere considerata come non inviata. Nel caso in cui abbiate ricevuto per errore la presente comunicazione, vogliate cortesemente darcene immediata notizia, rispondendo a questo stesso indirizzo di e-mail, e poi procedere alla cancellazione di questo messaggio dal Vostro sistema. E' strettamente proibito e potrebbe essere fonte di violazione di legge qualsiasi uso, comunicazione, copia o diffusione dei contenuti di questa comunicazione da parte di chi la abbia ricevuta per errore o in violazione degli scopi della presente. Ricordiamo che la tecnologia di trasmissione utilizzata non consente di garantire l’autenticità del mittente né l’integrità dei dati
+
+This communication, which may contain confidential and/or legally privileged information, is intended solely for the use of the intended addressees. All information or advice contained in this communication is subject to the terms and conditions provided by the agreement governing each particular client engagement. If you have received this communication in error, please notify us immediately by responding to this email; then please delete it from your system. Any use, disclosure, copying or distribution of the contents of this communication by a not-intended recipient or in violation of the purposes of this communication is strictly prohibited and may be unlawful. The transmission technology used to send this mail can grant neither the sender identity nor the data integrity
+
+
