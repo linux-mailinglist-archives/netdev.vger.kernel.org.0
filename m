@@ -1,227 +1,194 @@
-Return-Path: <netdev+bounces-156-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-157-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 546FA6F5833
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 14:53:40 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 833D26F5836
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 14:54:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B0B54281581
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 12:53:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2D1E22815B8
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 12:54:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFFF2D516;
-	Wed,  3 May 2023 12:53:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5CBC1D51F;
+	Wed,  3 May 2023 12:54:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F18E4A11
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 12:53:36 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED465598
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 05:53:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683118413;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=O7omNY6vy02Lp1suD+qs+FsdVxhpMQyx9ZjsBrwK7NY=;
-	b=QKjJceLJ/iW84TrXPDatVCC93CdO4fyAG6v4kar+BZz3th030/jQF7VrMnWXJHo0e7wLRO
-	2KjJi3s88s+sp+wjNNlfNOZyrPotcRqRX8cQ3Zn0xfD2W/5P6oD5WwKYdNwVlJG4sVgeNQ
-	Ux77DNMv0lYWfElTl0/4sZWIbYi5P4I=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-567-niaThQYdOnKliunEtb7UPw-1; Wed, 03 May 2023 08:53:32 -0400
-X-MC-Unique: niaThQYdOnKliunEtb7UPw-1
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f336ecf58cso14063815e9.1
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 05:53:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683118411; x=1685710411;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=O7omNY6vy02Lp1suD+qs+FsdVxhpMQyx9ZjsBrwK7NY=;
-        b=clZDnE4NwUweXN8jrquCZz730+kk8Gs8qupAgKUmuLKFSeJlBcXGQcuFeef7JB7P+1
-         MPSj3tzJJNxD8A+Qe706naweW1sSySvrDrI1kLrNcmIOugYF61R0QGnPym0g7SqzibmZ
-         tYuzgDADNolZRwSTunk/iBRUDEiIdZQgIbuO/YsTat65IPLSl+gVArpAUQbJqpHIdv6I
-         HnEGnl1ZLDbnewX9sNs1bWQ6iVmnhFfeOnN+NkjUEeGJUQDQiRgsX4BJ0yIcoQalsC8H
-         vqT0lZA4phZrclN4DC3edtJ9EwwuIFZ3Dx3eJThhbuXtHcp3aG9iAJnmZZg/h6U22t5q
-         dP/A==
-X-Gm-Message-State: AC+VfDwHuBptMXwYbt30BcQxSMxcd/tfwcPI0IY48II3yK995LGDxxLg
-	l8vZ2L14pm07u07qQ4HKhUK67DG9e8XPdME7XB5PMd/ODTaMwRs738NMJWwyFWYDTMvNHlVs6Mz
-	BHoOisv+MpUtQGg18
-X-Received: by 2002:a7b:ce8b:0:b0:3f1:7fc0:4dbc with SMTP id q11-20020a7bce8b000000b003f17fc04dbcmr15191392wmj.38.1683118411265;
-        Wed, 03 May 2023 05:53:31 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5Zn0nW8Gp1TbS9lzJwairWR12aoba8GxaRMOEMvQIPhrgSVoh91x6yDqo37mi1fS7EneKCbQ==
-X-Received: by 2002:a7b:ce8b:0:b0:3f1:7fc0:4dbc with SMTP id q11-20020a7bce8b000000b003f17fc04dbcmr15191354wmj.38.1683118410893;
-        Wed, 03 May 2023 05:53:30 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c711:6a00:9109:6424:1804:a441? (p200300cbc7116a00910964241804a441.dip0.t-ipconnect.de. [2003:cb:c711:6a00:9109:6424:1804:a441])
-        by smtp.gmail.com with ESMTPSA id a24-20020a05600c225800b003f349d14010sm1849938wmm.38.2023.05.03.05.53.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 May 2023 05:53:30 -0700 (PDT)
-Message-ID: <976fcec0-d132-3a27-bbd2-01b21571bca2@redhat.com>
-Date: Wed, 3 May 2023 14:53:27 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AE12BA48
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 12:54:15 +0000 (UTC)
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2069.outbound.protection.outlook.com [40.107.20.69])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3818A5B8E;
+	Wed,  3 May 2023 05:54:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F7UZ5izzcMVwQlkdPsyEx7uKALNf5r3pWJpbQAFEKV5t91srspbno07nu+B7yAcoTmqJ5z956sQcN3aHYJQvdThvF5UksxwQRAudrF1qI07/e9YjYBfQ7YGH8BjGJS/EPQSGKehe5i21Uc8DVkbl9ypkh6XW+msCk9r/0GciEuy5gULKaVJZjHjzCTzTpfaaa6F6chTMfmiNBXnhQpcHPl9ffBB3xRK2XZXHDswV0Lk/GUA/IiIewVrWHuu495c2Boh+Fr+Hhd/R2+nEyhLv+X/WlsgZIrrENd8VphANTQo5K8aooDkeFNSpKRMG/BcChVQHCxE3p8JlMVYYrCmdjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J1pegviFNKEfEYzKVHDkWuINnzcTFT4C4zjTceQhmVw=;
+ b=MjHRvBjirbxy1H5z0Y0PTEVcqkK0AGRTDpC883A3luQypSSXf1bhfzPk8pGwpU3UaunUGGV8vRYfZ4JeM2Bc7t93tTz5gHrh6VlsMyyDE3ThSdd2E6at2n0HeyeUO9hAev1Y+m87Qou7X0uWFSk3KQPSq/2Bey6ecU5d4bANB8/UIXukX6BfJ45d1OiUDfexspe9rDholyqr2mdWga/egnwusaZLSGby5CPv3IVel85i+RiFhBJp/oyuJi5JefD51EXIuzuTswgPCYJGHbwDC7cH99H5GIti/g8Kfy+JNbf8tlZp0k0bTmTUCixdKNJ/fGL/rayvDqf3e667vqv0xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J1pegviFNKEfEYzKVHDkWuINnzcTFT4C4zjTceQhmVw=;
+ b=KPec+naJHq32pPEgvaXGC0rB1ThvnkJIbJceSILIgOZJ/F8AE/5EWiWmoqhfpq4UJbPn1btHbwnazU//qfKprqUo/RMtCd6KU9f80UDkmOXfM0SMk9DYhckxjHtfbIaxDiLiGS7MXmleUgj7sI54bA0UdGDCKLVJbsyCFzYvON8=
+Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
+ by AS5PR04MB9998.eurprd04.prod.outlook.com (2603:10a6:20b:67e::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Wed, 3 May
+ 2023 12:53:57 +0000
+Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
+ ([fe80::28fb:82ec:7a6:62f3]) by PAXPR04MB9185.eurprd04.prod.outlook.com
+ ([fe80::28fb:82ec:7a6:62f3%5]) with mapi id 15.20.6363.022; Wed, 3 May 2023
+ 12:53:57 +0000
+From: Shenwei Wang <shenwei.wang@nxp.com>
+To: Andrew Lunn <andrew@lunn.ch>
+CC: Wei Fang <wei.fang@nxp.com>, "David S. Miller" <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, Clark Wang <xiaoning.wang@nxp.com>, dl-linux-imx
+	<linux-imx@nxp.com>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
+	<daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, John
+ Fastabend <john.fastabend@gmail.com>, Alexander Lobakin
+	<alexandr.lobakin@intel.com>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "imx@lists.linux.dev" <imx@lists.linux.dev>
+Subject: RE: [EXT] Re: [PATCH v2 net 2/2] net: fec: restructuring the
+ functions to avoid forward declarations
+Thread-Topic: [EXT] Re: [PATCH v2 net 2/2] net: fec: restructuring the
+ functions to avoid forward declarations
+Thread-Index: AQHZfUKo4ZwVUtEG3EOjLFQNjL7Wpa9HnlQAgADiOCA=
+Date: Wed, 3 May 2023 12:53:57 +0000
+Message-ID:
+ <PAXPR04MB9185BD38BA486104EE5B7213896C9@PAXPR04MB9185.eurprd04.prod.outlook.com>
+References: <20230502220818.691444-1-shenwei.wang@nxp.com>
+ <20230502220818.691444-2-shenwei.wang@nxp.com>
+ <6dff0a5b-c74b-4516-8461-26fcd5d615f3@lunn.ch>
+In-Reply-To: <6dff0a5b-c74b-4516-8461-26fcd5d615f3@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PAXPR04MB9185:EE_|AS5PR04MB9998:EE_
+x-ms-office365-filtering-correlation-id: 1c7f7222-0086-4257-ff4d-08db4bd57551
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ NK5eUnc3NDeJdzED0JjyVcdLmfJNn8JaTzJHumsM2Xxrh5EBFQQj0YiO63KatzyeKtMg4/8hx8s4vwL3Q3yEqZC3iNohO/3TBnFeVh8sUkeXT4dMJZ8kbhUYeZuzugP5LWKP19JqwQVO6UxSPYCeU3u488M8iWZ3k5C+BshF7jwLZbjvDV2M4JCsQ4ejyDJvezZzxRmUF9EpP5zuX/v9X3RoRxs73oU7mqy6b+9L/dENA1Pp1POgLQHGC/DJ/TJA0WdytJ7f0yss+m7fmiCm0rtFzJKFOKc0kEvg9IWw3VFRZzb1qj+L8tQcZKTevhzqyYByF76xVWI9SK7XwiPQ6adxkfatToEKU7XgwAirSAhyEAbM752aOwH9BwRbNiZvZBusYKGJBgxnSdpQmzGWMWa9ZzXuJPUhvbi1FbTjdmEkD+iWYa9uBXutwngn9m4viAOXBsLgRslpUpp9ThfYXQiAREYi1G9/A3lkErT5E57cJWjA41ktH7wxexhkMD3hch8ifvMjnA+0a0UMwrOqECU+kmD5ioroc6X9EOo9tjRt/h3I1DB9Mrpz9STosRf1LxfOGDXEKMQ5PnVBfJzS3ptAjxijaczu62zkQzuNBFoO96kdvYwBUVxCjmLP9/AL
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(396003)(346002)(39860400002)(376002)(451199021)(122000001)(8936002)(66476007)(76116006)(66946007)(33656002)(186003)(5660300002)(316002)(8676002)(4326008)(55016003)(6916009)(64756008)(66446008)(2906002)(66556008)(9686003)(53546011)(38100700002)(55236004)(52536014)(41300700001)(26005)(44832011)(6506007)(7416002)(478600001)(38070700005)(54906003)(83380400001)(86362001)(7696005)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?jn2VxE1MgBcVsYfoLFXZ489C/gxCdrRgJTmgXJ9r1HMblrU8BTtCaHtOy2XU?=
+ =?us-ascii?Q?ziJcuxZzwiqstisYo6UrbzwQRSIAPVZk3SFK8qUqiWVELyjA0+muFk+eY4XG?=
+ =?us-ascii?Q?49JmJasyZqaNrZcyz0DEnss8D2La6ymeTPyp/gda5uIzNuMOU2RRHMTuBBDe?=
+ =?us-ascii?Q?EhVVqJNsYfBoClaC5EYHqmbaqq1CG+Jwh7b/cTBM0UsTmw6V4b/BWLJLIeZN?=
+ =?us-ascii?Q?8EIu5jfwXqazZTSfPKFeEQkrVAvKMreR5aXntfPCM/HkMJGAkiMCV8oQT15p?=
+ =?us-ascii?Q?s0OfgGBit3lZRT1q7CcR/zQzpcAjP4C2Nq9sw+NlvsdBhGhNd09pV0hobe8/?=
+ =?us-ascii?Q?YU3SOcDuhfg2BEO9WMexTyTk4cxljoEP9pPQL4cN5Bv9CffXWsMq1aHQpAAu?=
+ =?us-ascii?Q?Y1DKDVaTq4gxUtazEKqVWtx6WOaAYifwRS3c2nO8ksm4PRg3kMAGCa2x0PyY?=
+ =?us-ascii?Q?xNXiffXcVOBHvVLAXhR4JFGaJHr89rVO462wB0TzPxUNN6FKEdDg4isQ0fcj?=
+ =?us-ascii?Q?wkOjKBwXztC6Xn72ZTy8xnL8VsIzfzRkl1whHATT+hCXhj0zdfKuqYKo2YSw?=
+ =?us-ascii?Q?ScRnYrZpeDJVbPn7eA/Fcy534/CKUqWi+S0GmW56CRFFUX87V7ehVPN6wSsQ?=
+ =?us-ascii?Q?gU2uBjPJWGD68CdYJCLqgS4gRm2fR6MZkzToShe2qkDv2o62CxD4iMQn5fW7?=
+ =?us-ascii?Q?+QOAvlxSuuVxgTleCbb/TCyP8cQ5V59cPENhh2lqwZU3jJYswAeFRbm54i7X?=
+ =?us-ascii?Q?xEiMHlcrzW5vkihxLT/dotsST1ZmP9Fpixyz493s2M2gZ6sDHvvLLl8K7fZQ?=
+ =?us-ascii?Q?6NWIaUfx8slUbb379sT6/lVLsQjT0VsYAG02N9Ua8g6kl/z75HRFs38idVq8?=
+ =?us-ascii?Q?7S2mGVPfbKph9VsjY9IG4nC3Q7NhKx4MI/TwcGuJC/puGcPk/4Ak0LQwG+Mu?=
+ =?us-ascii?Q?wz6C0cBaLjJibR8IqbQS6YWsfUf+WUGbm390s3QL8wKa4pkV/TCt8Isgroj2?=
+ =?us-ascii?Q?szy6OvMtiNPBcB7UGwnclhK2ddvuKB50P1MYLOYRfAs2FyQ8jxYRAu1dbYcy?=
+ =?us-ascii?Q?nYSswr7nWLlFjsiaEWyw8voUxPjSBMM6xiOcWUt4EmyJIOnyQUAzZX8xx3cK?=
+ =?us-ascii?Q?TMm04bCF/izysY75QzWxavDOzp8GuwaiVRUSxHLOznpHLP3UYyjbZ8CrsLka?=
+ =?us-ascii?Q?FcvzzD8O8zGr5GSLNJmWcNF/tuIsrlYhHd6FmnbLXudHA4ussBqtk4l6gCMQ?=
+ =?us-ascii?Q?X4JZOmrVHW8CmDJaqIw/ELVVvetjO1/yldy9S4OZguxMdRAJSl1eKeATNrSy?=
+ =?us-ascii?Q?PgHv8BBezOg2aJ9lalr+7bFOBsGBLFCIVh7FtinrIncYWbpMxFcjZk1maoX3?=
+ =?us-ascii?Q?kFHPfIXCg79cliMfZE3nz7VQlRrt/Yxo0FVcst0dQKqDcLO8MJ3nHQIagzMC?=
+ =?us-ascii?Q?+vOJt3ZC/DQgsQ1EpC602rHlb+UvluW0RPHW1IWKWTYsRUlpm+VzwQKqU1iA?=
+ =?us-ascii?Q?O4SwjpD4riW1zGLKIwPVlo1ZRqEMIbhqvECaQecwVx7CJvEQMt7p3zMVfaf2?=
+ =?us-ascii?Q?CjbOfR9d54lOZv/PvLpukXQj2Sylx8R/9tRNfwxK?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v8 0/3] mm/gup: disallow GUP writing to file-backed
- mappings by default
-Content-Language: en-US
-To: Matthew Rosato <mjrosato@linux.ibm.com>,
- Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
- Matthew Wilcox <willy@infradead.org>,
- Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
- Leon Romanovsky <leon@kernel.org>, Christian Benvenuti <benve@cisco.com>,
- Nelson Escobar <neescoba@cisco.com>, Bernard Metzler <bmt@zurich.ibm.com>,
- Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>,
- Arnaldo Carvalho de Melo <acme@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>,
- Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
- Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>,
- Bjorn Topel <bjorn@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>,
- Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
- Jonathan Lemon <jonathan.lemon@gmail.com>,
- "David S . Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Christian Brauner <brauner@kernel.org>,
- Richard Cochran <richardcochran@gmail.com>,
- Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
- Jesper Dangaard Brouer <hawk@kernel.org>,
- John Fastabend <john.fastabend@gmail.com>, linux-fsdevel@vger.kernel.org,
- linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
- bpf@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
- Jan Kara <jack@suse.cz>, "Kirill A . Shutemov" <kirill@shutemov.name>,
- Pavel Begunkov <asml.silence@gmail.com>, Mika Penttila
- <mpenttil@redhat.com>, Dave Chinner <david@fromorbit.com>,
- Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
- "Paul E . McKenney" <paulmck@kernel.org>,
- Christian Borntraeger <borntraeger@linux.ibm.com>
-References: <cover.1683067198.git.lstoakes@gmail.com>
- <20d078c5-4ee6-18dc-d3a5-d76b6a68f64e@linux.ibm.com>
- <1b34e9a4-83c0-2f44-1457-dd8800b9287a@redhat.com>
- <80e3b8ee-c16d-062f-f483-06e21282e59c@linux.ibm.com>
-From: David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <80e3b8ee-c16d-062f-f483-06e21282e59c@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-	version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c7f7222-0086-4257-ff4d-08db4bd57551
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2023 12:53:57.1304
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2FKcXd7ufU308xLFhr+YeGi+r7AxahnecrE0nTd/n/3KW0t+Exb5nvoUnBv5bR7+w1nTZmSxPsig5IZRAYTqrA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS5PR04MB9998
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 03.05.23 13:25, Matthew Rosato wrote:
-> On 5/3/23 3:08 AM, David Hildenbrand wrote:
->> On 03.05.23 02:31, Matthew Rosato wrote:
->>> On 5/2/23 6:51 PM, Lorenzo Stoakes wrote:
->>>> Writing to file-backed mappings which require folio dirty tracking using
->>>> GUP is a fundamentally broken operation, as kernel write access to GUP
->>>> mappings do not adhere to the semantics expected by a file system.
->>>>
->>>> A GUP caller uses the direct mapping to access the folio, which does not
->>>> cause write notify to trigger, nor does it enforce that the caller marks
->>>> the folio dirty.
->>>>
->>>> The problem arises when, after an initial write to the folio, writeback
->>>> results in the folio being cleaned and then the caller, via the GUP
->>>> interface, writes to the folio again.
->>>>
->>>> As a result of the use of this secondary, direct, mapping to the folio no
->>>> write notify will occur, and if the caller does mark the folio dirty, this
->>>> will be done so unexpectedly.
->>>>
->>>> For example, consider the following scenario:-
->>>>
->>>> 1. A folio is written to via GUP which write-faults the memory, notifying
->>>>      the file system and dirtying the folio.
->>>> 2. Later, writeback is triggered, resulting in the folio being cleaned and
->>>>      the PTE being marked read-only.
->>>> 3. The GUP caller writes to the folio, as it is mapped read/write via the
->>>>      direct mapping.
->>>> 4. The GUP caller, now done with the page, unpins it and sets it dirty
->>>>      (though it does not have to).
->>>>
->>>> This change updates both the PUP FOLL_LONGTERM slow and fast APIs. As
->>>> pin_user_pages_fast_only() does not exist, we can rely on a slightly
->>>> imperfect whitelisting in the PUP-fast case and fall back to the slow case
->>>> should this fail.
->>>>
->>>> v8:
->>>> - Fixed typo writeable -> writable.
->>>> - Fixed bug in writable_file_mapping_allowed() - must check combination of
->>>>     FOLL_PIN AND FOLL_LONGTERM not either/or.
->>>> - Updated vma_needs_dirty_tracking() to include write/shared to account for
->>>>     MAP_PRIVATE mappings.
->>>> - Move to open-coding the checks in folio_pin_allowed() so we can
->>>>     READ_ONCE() the mapping and avoid unexpected compiler loads. Rename to
->>>>     account for fact we now check flags here.
->>>> - Disallow mapping == NULL or mapping & PAGE_MAPPING_FLAGS other than
->>>>     anon. Defer to slow path.
->>>> - Perform GUP-fast check _after_ the lowest page table level is confirmed to
->>>>     be stable.
->>>> - Updated comments and commit message for final patch as per Jason's
->>>>     suggestions.
->>>
->>> Tested again on s390 using QEMU with a memory backend file (on ext4) and vfio-pci -- This time both vfio_pin_pages_remote (which will call pin_user_pages_remote(flags | FOLL_LONGTERM)) and the pin_user_pages_fast(FOLL_WRITE | FOLL_LONGTERM) in kvm_s390_pci_aif_enable are being allowed (e.g. returning positive pin count)
->>
->> At least it's consistent now ;) And it might be working as expected ...
->>
->> In v7:
->> * pin_user_pages_fast() succeeded
->> * vfio_pin_pages_remote() failed
->>
->> But also in v7:
->> * GUP-fast allows pinning (anonymous) pages in MAP_PRIVATE file
->>    mappings
->> * Ordinary GUP allows pinning pages in MAP_PRIVATE file mappings
->>
->> In v8:
->> * pin_user_pages_fast() succeeds
->> * vfio_pin_pages_remote() succeeds
->>
->> But also in v8:
->> * GUP-fast allows pinning (anonymous) pages in MAP_PRIVATE file
->>    mappings
->> * Ordinary GUP allows pinning pages in MAP_PRIVATE file mappings
->>
->>
->> I have to speculate, but ... could it be that you are using a private mapping?
->>
->> In QEMU, unfortunately, the default for memory-backend-file is "share=off" (private) ... for memory-backend-memfd it is "share=on" (shared). The default is stupid ...
->>
->> If you invoke QEMU manually, can you specify "share=on" for the memory-backend-file? I thought libvirt would always default to "share=on" for file mappings (everything else doesn't make much sense) ... but you might have to specify
->>      <access mode="shared"/>
->> in addition to
->>      <source type="file"/>
->>
-> 
-> Ah, there we go.  Yes, I was using the default of share=off.  When I instead specify share=on, now the pins will fail in both cases.
-> 
 
-Out of curiosity, how does that manifest?
 
-I assume the VM is successfully created and as Linux tries initializing 
-and using the device, we get a bunch of errors inside the VM, correct?
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Tuesday, May 2, 2023 6:19 PM
+> To: Shenwei Wang <shenwei.wang@nxp.com>
+> Cc: Wei Fang <wei.fang@nxp.com>; David S. Miller <davem@davemloft.net>;
+> Eric Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>;
+> Paolo Abeni <pabeni@redhat.com>; Clark Wang <xiaoning.wang@nxp.com>; dl-
+> linux-imx <linux-imx@nxp.com>; Alexei Starovoitov <ast@kernel.org>; Danie=
+l
+> Borkmann <daniel@iogearbox.net>; Jesper Dangaard Brouer
+> <hawk@kernel.org>; John Fastabend <john.fastabend@gmail.com>; Alexander
+> Lobakin <alexandr.lobakin@intel.com>; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org; imx@lists.linux.dev
+> Subject: [EXT] Re: [PATCH v2 net 2/2] net: fec: restructuring the functio=
+ns to
+> avoid forward declarations
+>=20
+> Caution: This is an external email. Please take care when clicking links =
+or
+> opening attachments. When in doubt, report the message using the 'Report =
+this
+> email' button
+>=20
+>=20
+> On Tue, May 02, 2023 at 05:08:18PM -0500, Shenwei Wang wrote:
+> > The patch reorganizes functions related to XDP frame transmission,
+> > moving them above the fec_enet_run_xdp implementation. This eliminates
+> > the need for forward declarations of these functions.
+>=20
+> I'm confused. Are these two patches in the wrong order?
+>=20
+> The reason that i asked you to fix the forward declaration in net-next is=
+ that it
+> makes your fix two patches. Sometimes that is not obvious to people back
+> porting patches, and one gets lost, causing build problems. So it is bett=
+er to have
+> a single patch which is maybe not 100% best practice merged to stable, an=
+d then
+> a cleanup patch merged to the head of development.
+>=20
 
--- 
+If that is the case, we should forgo the second patch. Its purpose was to r=
+eorganize=20
+function order such that the subsequent patch to net-next enabling XDP_TX w=
+ould not=20
+encounter forward declaration issues.
+
 Thanks,
+Shenwei
 
-David / dhildenb
-
+>    Andrew
 
