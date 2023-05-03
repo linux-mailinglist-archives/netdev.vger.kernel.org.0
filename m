@@ -1,134 +1,104 @@
-Return-Path: <netdev+bounces-105-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-106-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2D1F66F52BC
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 10:09:34 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 899A96F52CA
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 10:10:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 14E8F1C20B84
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 08:09:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4581C280C7B
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 08:10:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A151F63BE;
-	Wed,  3 May 2023 08:09:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 023537461;
+	Wed,  3 May 2023 08:10:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96DED138F
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 08:09:30 +0000 (UTC)
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2124ED1
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 01:09:03 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-94f6c285d92so936491966b.3
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 01:09:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1683101342; x=1685693342;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jFzfNEO9N0rAd0IFSTlhL/1/k8fjRgZbN+iRGB6LEKU=;
-        b=lKN7VlvPrYcsCywJxCAEmjv2pVo5SdKgxV9kxVicMrTQ+TkD4FDlZpTaeSZSqVziBk
-         L0apNiNKvoZFNrq7aqkxz5aT4W7OnzkBcggtyrDaTxzqSjsh/R75GM9SDtHnuCiYDeLf
-         cLQiVyAbzhSyZYHrpTKOl0ADkvr+d0UL+N/lrs16ZIAdEQdNpsqP0RApBXY3Sr4yNI+l
-         Fw8HiwNCb9WmNyw4WDcyoQt7lO/el8ozB6ZqltT/LFA/MdCq6ZNmX9dPTUKKw4imF3PX
-         AclElk8u7kwnWmfsJMhW+lbKTgZt2KYQcfIiBzK+rn+W3bguMqU/iqCX9BXDSQzqMW57
-         LmGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683101342; x=1685693342;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jFzfNEO9N0rAd0IFSTlhL/1/k8fjRgZbN+iRGB6LEKU=;
-        b=l1dy7+0Vbr1h6ga0tUBkFs9y9IHeYV4jOCSFIDINeXssmo7ppv5L+Pc9LbK6++lFQU
-         s4EJ1C6PH+nQG5OULYMTOVw175GeWNA8COwP00s4FT0hJpog64odZqdgO+lvODx2UoXB
-         2bUsQZirY0nODxcoxep3vr/OB+xbSEBE0Ros+zC7CXnQdpf/8C1MwlSJYnmyt1RhqrKg
-         Yb/dNkObVvSvbZhIH3bD7v0frGT/R78UalswRupCBqUgGb69tIerbW+4D7SJIFNG4CMD
-         Ow37cO5/yrMk6rcx242jjqQKNcNBuJ5sqhlkNJoai8RzyR/O4rOTOk9qKN6KZEWxympY
-         bNRg==
-X-Gm-Message-State: AC+VfDwFaTieZETU9cbVUIEplmJ1Dwig1Wsrm2rpQu2sDyk3KbjdQV4x
-	4KOMhCAs1Ysa5e72F6KxqbTicg==
-X-Google-Smtp-Source: ACHHUZ5n2wZ9MUJaRcjAEgAzJu51k/4LrzZRMOXMfsvy1FLjJyPTF9duZadCiXNMd/IA+v5s4ajGZQ==
-X-Received: by 2002:a17:907:9288:b0:953:3e29:f35c with SMTP id bw8-20020a170907928800b009533e29f35cmr2175425ejc.45.1683101341714;
-        Wed, 03 May 2023 01:09:01 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id bo2-20020a0564020b2200b0050bc6983041sm416801edb.96.2023.05.03.01.09.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 01:09:01 -0700 (PDT)
-Date: Wed, 3 May 2023 10:09:00 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Vadim Fedorenko <vadfed@meta.com>
-Cc: Jakub Kicinski <kuba@kernel.org>,
-	Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Milena Olech <milena.olech@intel.com>,
-	Michal Michalik <michal.michalik@intel.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Vadim Fedorenko <vadim.fedorenko@linux.dev>, poros@redhat.com,
-	mschmidt@redhat.com, netdev@vger.kernel.org,
-	linux-clk@vger.kernel.org
-Subject: Re: [RFC PATCH v7 2/8] dpll: Add DPLL framework base functions
-Message-ID: <ZFIWnDjVQ1YrHBRg@nanopsycho>
-References: <20230428002009.2948020-1-vadfed@meta.com>
- <20230428002009.2948020-3-vadfed@meta.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8C901FA6
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 08:10:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5B4D4C433D2;
+	Wed,  3 May 2023 08:10:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683101424;
+	bh=3CHjCfDp7Pv1imQOgY8v/8hC+1fjQAX3ePTWSqAm0Ic=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=PXVetXbzlgbgqSTBlWdksSXEucudPVn0TnQkAGHcNCeNIIPdu7v6GwkonOnMLxV5s
+	 +mpH4+WUduwKk3llXkd83O4Tb3hTU/tUBv+9G7mo3iUe0pUyABaWuCyX1g18Fv3U3q
+	 7Woz1mh/ePQpFs4lrRJmOWTkvue6uT7gsExl5KWFUtED0EabYyZluDUUprOFMIcwJ+
+	 u1Kh6fH4r1aSmI3Q1rro9bsnmnh1UC7opDvTg5ngDT3aWwUFyVhKgub+WLGK9KTvys
+	 6X202vUf7a+RZfS8s1heuciqcIemNSOacQDH56mFFEb9pr9dErJsTdaVbGQc0Vi5qQ
+	 EiRq13Xzn0m6Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3BB92C395FD;
+	Wed,  3 May 2023 08:10:24 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230428002009.2948020-3-vadfed@meta.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net PATCH v5 00/11] octeontx2: Miscellaneous fixes
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168310142423.16336.14588338859037879117.git-patchwork-notify@kernel.org>
+Date: Wed, 03 May 2023 08:10:24 +0000
+References: <20230503070944.960190-1-saikrishnag@marvell.com>
+In-Reply-To: <20230503070944.960190-1-saikrishnag@marvell.com>
+To: Sai Krishna <saikrishnag@marvell.com>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ simon.horman@corigine.com, leon@kernel.org, sgoutham@marvell.com,
+ gakula@marvell.com, lcherian@marvell.com, jerinj@marvell.com,
+ hkelam@marvell.com, sbhatta@marvell.com
 
-Fri, Apr 28, 2023 at 02:20:03AM CEST, vadfed@meta.com wrote:
->From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+Hello:
 
-[...]
+This series was applied to netdev/net.git (main)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed, 3 May 2023 12:39:33 +0530 you wrote:
+> This patchset includes following fixes.
+> 
+> Patch #1 Fix for the race condition while updating APR table
+> 
+> Patch #2 Fix end bit position in NPC scan config
+> 
+> Patch #3 Fix depth of CAM, MEM table entries
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v5,01/11] octeontx2-af: Secure APR table update with the lock
+    https://git.kernel.org/netdev/net/c/048486f81d01
+  - [net,v5,02/11] octeontx2-af: Fix start and end bit for scan config
+    https://git.kernel.org/netdev/net/c/c60a6b90e789
+  - [net,v5,03/11] octeontx2-af: Fix depth of cam and mem table.
+    https://git.kernel.org/netdev/net/c/60999cb83554
+  - [net,v5,04/11] octeontx2-pf: Increase the size of dmac filter flows
+    https://git.kernel.org/netdev/net/c/2a6eecc592b4
+  - [net,v5,05/11] octeontx2-af: Add validation for lmac type
+    https://git.kernel.org/netdev/net/c/cb5edce27176
+  - [net,v5,06/11] octeontx2-af: Update correct mask to filter IPv4 fragments
+    https://git.kernel.org/netdev/net/c/2075bf150ddf
+  - [net,v5,07/11] octeontx2-af: Update/Fix NPC field hash extract feature
+    https://git.kernel.org/netdev/net/c/406bed11fb91
+  - [net,v5,08/11] octeontx2-af: Fix issues with NPC field hash extract
+    https://git.kernel.org/netdev/net/c/f66155905959
+  - [net,v5,09/11] octeontx2-af: Skip PFs if not enabled
+    https://git.kernel.org/netdev/net/c/5eb1b7220948
+  - [net,v5,10/11] octeontx2-pf: Disable packet I/O for graceful exit
+    https://git.kernel.org/netdev/net/c/c926252205c4
+  - [net,v5,11/11] octeontx2-vf: Detach LF resources on probe cleanup
+    https://git.kernel.org/netdev/net/c/99ae1260fdb5
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
->+static struct dpll_pin *
->+dpll_pin_alloc(u64 clock_id, u8 pin_idx, struct module *module,
->+	       const struct dpll_pin_properties *prop)
->+{
->+	struct dpll_pin *pin;
->+	int ret, fs_size;
->+
->+	pin = kzalloc(sizeof(*pin), GFP_KERNEL);
->+	if (!pin)
->+		return ERR_PTR(-ENOMEM);
->+	pin->pin_idx = pin_idx;
->+	pin->clock_id = clock_id;
->+	pin->module = module;
->+	refcount_set(&pin->refcount, 1);
->+	if (WARN_ON(!prop->label)) {
-
-Why exactly label has to be mandatory? In mlx5, I have no use for it.
-Please make it optional. IIRC, I asked for this in the last review
-as well.
-
-
->+		ret = -EINVAL;
->+		goto err;
->+	}
->+	pin->prop.label = kstrdup(prop->label, GFP_KERNEL);
-
-Labels should be static const string. Do you see a usecase when you need
-to dup it? If not, remove this please.
-
-
-
->+	if (!pin->prop.label) {
->+		ret = -ENOMEM;
->+		goto err;
->+	}
-
-
-[...]
 
