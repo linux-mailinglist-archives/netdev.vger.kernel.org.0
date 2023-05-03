@@ -1,62 +1,63 @@
-Return-Path: <netdev+bounces-129-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-128-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D47CC6F5513
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 11:44:11 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id A9F116F5512
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 11:44:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 376611C20D4B
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 09:44:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0D7791C20D1E
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 09:44:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C8732BA42;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBF74BA3E;
 	Wed,  3 May 2023 09:43:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC84ABA3F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1982BA2B
 	for <netdev@vger.kernel.org>; Wed,  3 May 2023 09:43:27 +0000 (UTC)
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC9649F2;
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1AA5263;
 	Wed,  3 May 2023 02:43:10 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id d2e1a72fcca58-63b60365f53so5567457b3a.0;
+Received: by mail-pj1-x1032.google.com with SMTP id 98e67ed59e1d1-24df4ecdb87so2530739a91.0;
         Wed, 03 May 2023 02:43:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683106990; x=1685698990;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=sqvmzpSfh7BOiDMlgneo0+djsuuObhP2Z0rVZr4lDOg=;
-        b=UwZnD9/fcZrkqOZCSC4bWh3iltR4zy8emhX+MwX88jpqXu9K4Shg2M1HnVL0Q+0/Iq
-         E37lv5Aw1Rc4Zfq1bnwyTl9sSK7fjYIPashCAKyCYub7ExiqBQhKa72+acewDM1LAOWA
-         dTO8nu1LkJd6SX0fZ3TF2iBWC2QwXATraPdlM4Dno/IwF0KnVB/8wlO+h/JWP/u45D2O
-         Ui/jXm1HfjHsxrRI05+vK4Fb8Qz11EI74TpMyEWmzQKbkvpo65vKoHH+NIfBoPUQG+Sl
-         fKbyczCRGx2WFq+WcwmrcK6lgM1s+abjL1yls/I8D/S+cSj9gx1PDzlW9c7GIflpKLo9
-         ohMQ==
+        d=gmail.com; s=20221208; t=1683106989; x=1685698989;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lf1muhsbXKVkAwjXlKT/F7FUM0glVIhlYmlwBoDu1aY=;
+        b=YM2916vWfm7x9AMOkdWOmzG7o1YqSh7s6l13OGUlMKGKTJyEHUVKWOM8ufj9V5kGxG
+         SMyufMgf0+DpWUzDcvkWrZ/H4Itx+Xcwm2u9Jh5Z2iDrVhq+0vnevfZPzuPAfqwDYkph
+         tBQ2mUauBjlpMdfihD3aFsniVPRxhu16sPa35HS/wX3yG/3+lG/jnKSCx4HHDp/Ma5Ad
+         WQHWHtcwWoXShw824+Hx3TQ9GNlX2a6VZgV1Z6WQDGDdu+Zj7cQXrl0YC6tj8dFHLFN+
+         EGgXcikNnR5N52veoo3UmYAG5+CUK6cmw+Ohkfiafw4mg+nDVOUJmo1vcxiqhwwgthIy
+         CzUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683106990; x=1685698990;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=sqvmzpSfh7BOiDMlgneo0+djsuuObhP2Z0rVZr4lDOg=;
-        b=jpN+cJDJxx94C/Ki+9L8DOGZCf2LxvJCeI+EMP0lOf+GU9BDi2Ahq7QTKDj/XDwirL
-         BIIHfZJpLwF+atmn+oAwSuFp4ylOFHc67k42j4u2RwiBygKdE5k6oKRcXptxua1WUvQC
-         s1VaxDW/Z8DyFa/ZwVz01/h63Ys2mBeqPXpdfgvDdK8Vaw6rSxevO/GQMfCjcDmsLCpw
-         hpobKRa1JWFonv2kwqo3H0SaeKIh5TxnnvNG1dDJMHypmTcD2eGVHix9sbeFEeZoKxSx
-         galu4MIefw5ZDWHQ8q1Dwtl5pEcPI3tYC6NQDd1CJl5E16Evc3dpGHzxU81dtKgbmfWs
-         Ygew==
-X-Gm-Message-State: AC+VfDyFl19offU6SyGWhNizxp7bu1VpssdopBA18u6D2tc9R1z15OtS
-	BJQaxTMaKBE5kjPHQXbVMdkQYgYmn9Y=
-X-Google-Smtp-Source: ACHHUZ68zLDVQf2eKV+GWEFtaAUCrBh4nVjOqbrBcNzLH77grDT5QnN10SAIAwuYdcVOs3f2UdcPKA==
-X-Received: by 2002:a05:6a00:140e:b0:63d:3f74:9df7 with SMTP id l14-20020a056a00140e00b0063d3f749df7mr26228464pfu.34.1683106990046;
-        Wed, 03 May 2023 02:43:10 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683106989; x=1685698989;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lf1muhsbXKVkAwjXlKT/F7FUM0glVIhlYmlwBoDu1aY=;
+        b=WUbW//fzFsMc0J/GDRZsi+lGI/ckEYZUehzLj1b6rXyUfaCLoA0L9GgIhpwuQhbK7J
+         Iwvd3Bq/vVysp3WHyxsCmovcFAzUvufp8YsPyTQwP+STx+HAmmRaSNTwP6YfZeXyWBgy
+         nbeE3iK9UVaSMuEwISOldoGXenzfxZBx1zsbC5P/qjFD8an8tkAAyS6pme5t8mgn+Tm/
+         HUgKLQRLkX7AvlOTj/anfkY5j5yvbrXSyFhGB15tmTNfFKuzd42ZH85vSRpk2XImgVB2
+         UqhJe+ILLwFK3yaJlL3A7RQY+TRrULVmlgjPJVicjDxyl9jOMa06ybm6wLYp+2yCfD95
+         gYjw==
+X-Gm-Message-State: AC+VfDwDYtNNNpKwxtreQxGefeXtlG110Ri/G2CvnitDmkz9OLLsUGPe
+	fCTfyAbdUC50o4kMs7u45DM=
+X-Google-Smtp-Source: ACHHUZ6D3bEwAna5pJ35KiqvNz1/3tcxtz47rD6lwT8t6NI81BCMEJ7K454Tv1UfL8Rgdp0GnF9Xkw==
+X-Received: by 2002:a17:90a:7f82:b0:23a:ad68:25a7 with SMTP id m2-20020a17090a7f8200b0023aad6825a7mr20214530pjl.2.1683106989559;
+        Wed, 03 May 2023 02:43:09 -0700 (PDT)
 Received: from debian.me (subs03-180-214-233-11.three.co.id. [180.214.233.11])
-        by smtp.gmail.com with ESMTPSA id a10-20020aa780ca000000b00642ea56f06dsm4714307pfn.26.2023.05.03.02.43.08
+        by smtp.gmail.com with ESMTPSA id pf8-20020a17090b1d8800b00247abbb157fsm942966pjb.31.2023.05.03.02.43.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 03 May 2023 02:43:08 -0700 (PDT)
 Received: by debian.me (Postfix, from userid 1000)
-	id 72091106250; Wed,  3 May 2023 16:43:04 +0700 (WIB)
+	id A25321055AC; Wed,  3 May 2023 16:43:04 +0700 (WIB)
 From: Bagas Sanjaya <bagasdotme@gmail.com>
 To: Linux Networking <netdev@vger.kernel.org>,
 	Linux Random Direct Memory Access <linux-rdma@vger.kernel.org>,
@@ -75,17 +76,19 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	Maher Sanalla <msanalla@nvidia.com>,
 	Rahul Rameshbabu <rrameshbabu@nvidia.com>,
 	Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH net 0/4] Documentation fixes for Mellanox mlx5 devlink info
-Date: Wed,  3 May 2023 16:42:45 +0700
-Message-Id: <20230503094248.28931-1-bagasdotme@gmail.com>
+Subject: [PATCH net 1/4] Documentation: net/mlx5: Wrap vnic reporter devlink commands in code blocks
+Date: Wed,  3 May 2023 16:42:46 +0700
+Message-Id: <20230503094248.28931-2-bagasdotme@gmail.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230503094248.28931-1-bagasdotme@gmail.com>
+References: <20230503094248.28931-1-bagasdotme@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=727; i=bagasdotme@gmail.com; h=from:subject; bh=aer6HOi8fhrQqjCrvQO5H7xohlct7D9hbyMhJQSmMaE=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDClBOt0c/+q31OZdnq4UzW/CxJX4Y5n/r6tWx70fJq04t NjRd5ZkRykLgxgXg6yYIsukRL6m07uMRC60r3WEmcPKBDKEgYtTACayNpqRYdbFvP67ryc1a231 ly4WXvO+Izayq3xe20enoNxcufRjAYwMTTteXTn0tDhCb5p9lf9O26zbMt859AQuccqKtpWceHu OAQA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2073; i=bagasdotme@gmail.com; h=from:subject; bh=tMWudNgiUasGarVpCzAepBusDqbWwgKJHD+hWHPr4uY=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDClBOtMEvaW5Txo2aX94pLHw1pwXE+R+/np0NVBwkYSE1 Kzl0w24O0pZGMS4GGTFFFkmJfI1nd5lJHKhfa0jzBxWJpAhDFycAjCRqc4M/2OcC4RdFe7dFnE/ 670zTYTvotamKcni+QFFfydv2HcpUZWRYeexBza9y8Ryz6r/9P2UtIrdNHjR8g2ianyTTFzecl5 I5AQA
 X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -95,23 +98,44 @@ X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Here is fixes for mlx5 devlink info documentation. The first fixes
-htmldocs warnings on the mainline, while the rest is formatting fixes.
+Sphinx reports htmldocs warnings:
 
-Bagas Sanjaya (4):
-  Documentation: net/mlx5: Wrap vnic reporter devlink commands in code
-    blocks
-  Documentation: net/mlx5: Use bullet and definition lists for vnic
-    counters description
-  Documentation: net/mlx5: Add blank line separator before numbered
-    lists
-  Documentation: net/mlx5: Wrap notes in admonition blocks
+Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst:287: WARNING: Unexpected indentation.
+Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst:288: WARNING: Block quote ends without a blank line; unexpected unindent.
+Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst:290: WARNING: Unexpected indentation.
 
- .../ethernet/mellanox/mlx5/devlink.rst        | 60 ++++++++++++-------
- 1 file changed, 37 insertions(+), 23 deletions(-)
+Fix above warnings by wrapping diagnostic devlink commands in "vnic
+reporter" section in code blocks to be consistent with other devlink
+command snippets.
 
+Fixes: b0bc615df488ab ("net/mlx5: Add vnic devlink health reporter to PFs/VFs")
+Fixes: cf14af140a5ad0 ("net/mlx5e: Add vnic devlink health reporter to representors")
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ .../device_drivers/ethernet/mellanox/mlx5/devlink.rst     | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-base-commit: c6d96df9fa2c1d19525239d4262889cce594ce6c
+diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst
+index 3a7a714cc08f0a..0f0598caea145f 100644
+--- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst
++++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst
+@@ -283,10 +283,14 @@ nic_receive_steering_discard: number of packets that completed RX flow
+ steering but were discarded due to a mismatch in flow table.
+ 
+ User commands examples:
+-- Diagnose PF/VF vnic counters
++
++- Diagnose PF/VF vnic counters::
++
+         $ devlink health diagnose pci/0000:82:00.1 reporter vnic
++
+ - Diagnose representor vnic counters (performed by supplying devlink port of the
+-  representor, which can be obtained via devlink port command)
++  representor, which can be obtained via devlink port command)::
++
+         $ devlink health diagnose pci/0000:82:00.1/65537 reporter vnic
+ 
+ NOTE: This command can run over all interfaces such as PF/VF and representor ports.
 -- 
 An old man doll... just what I always wanted! - Clara
 
