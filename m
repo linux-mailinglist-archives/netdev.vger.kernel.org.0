@@ -1,441 +1,239 @@
-Return-Path: <netdev+bounces-119-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-116-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B6AA36F53A0
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 10:48:28 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7ED4B6F5316
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 10:25:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CF76C1C20CEC
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 08:48:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B22E31C20CEF
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 08:25:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D9D227477;
-	Wed,  3 May 2023 08:48:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF1A87485;
+	Wed,  3 May 2023 08:25:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9014EA5
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 08:48:24 +0000 (UTC)
-X-Greylist: delayed 1515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 03 May 2023 01:48:21 PDT
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B43E4F;
-	Wed,  3 May 2023 01:48:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-	Content-ID:Content-Description;
-	bh=H589cbbiMvCLoUQ4GsA6KT295qFVd297zqkGtpsRAfw=; b=XPo/rVtahqVhwDH+QWGnIy9N8t
-	V1DQSFFQ/ziSDN9Tkbk+Po0OzNufTsxItIcEUPwqH/6IcYGXxvNVPtUKbkhg1+CG2tlkXSETJxsdo
-	+BBZqHy7xURl/3hgRprmE35jLJ5Pp31v3SS9DozAHSYAgpyEME9mPnFP48iM15HJJQe0FjxzBjKwy
-	BVslW4IRSD3OLwF21/BXLF6Q3uE1sW/rZw6Q8M4ptdwVLEA5Yvbb8KindWvlZKF8N6NckXYN+2F9u
-	Jia/1wa4sf9W1LFzCYGqPFDkTAAqDw5lSv9JGZuo5amCb3R7KaLbrf8aa5z9L8z20mKl+tqUrBsIM
-	gdQ/zW6eQiw87hnyW24MJQCd6luBXIP0kqtz2pQ++s/WONSDTCpIpwUUFgkQOC3i5xRNQLeHKt6Zt
-	Q+MJ8sWP35ChHApPikY6quwLB+kzIbVCCGcA463b95ypZOjkffYuxSRAiJ+cXyJDi1SRJnk83DZQL
-	ezZBYGHVp5xAANsJ0Blj37NeNeIdGa2XewdiAFouDtjErI4I1eJFJSWHu/tpP/Rj/GRbhMdftMYIx
-	At0zqb7MKjSYFmwsoONcHCSJzdozT/vsCH4BfxVdWWLa+7Hwqi/KWX/bu61GVrWOTTXwZwsVKOwYZ
-	AivwsQDHH59pbbqSZdxFMYiiQOiq3dd3sxqTFjTS4=;
-From: Christian Schoenebeck <linux_oss@crudebyte.com>
-To: Eric Van Hensbergen <ericvh@gmail.com>,
- Latchesar Ionkov <lucho@ionkov.net>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Dominique Martinet <asmadeus@codewreck.org>
-Cc: Simon Horman <simon.horman@corigine.com>, v9fs@lists.linux.dev,
- linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
- Dominique Martinet <asmadeus@codewreck.org>
-Subject:
- Re: [PATCH v2 5/5] 9p: remove dead stores (variable set again without being
- read)
-Date: Wed, 03 May 2023 10:22:46 +0200
-Message-ID: <3207385.lLoMtQYYpd@silver>
-In-Reply-To: <20230427-scan-build-v2-5-bb96a6e6a33b@codewreck.org>
-References:
- <20230427-scan-build-v2-0-bb96a6e6a33b@codewreck.org>
- <20230427-scan-build-v2-5-bb96a6e6a33b@codewreck.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7C963D74
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 08:25:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFA87C433D2;
+	Wed,  3 May 2023 08:25:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683102302;
+	bh=kwzoBQZbVOKI8X38a9WPQVh/mLTbCm/vUGPzuw89sg0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=PT0whP1E+mgi59P5RFe0ZUWHc1CN40uMogfW95xuo2vJWngdL38JbJ3/FSx4Uo8+R
+	 O9tl6YfOp+XpDJooRySMyGn4bLyGkcCZSFYAJddQXGzNeSlHiQpZowOZPAktBt0GFI
+	 NIwTsWL5sC7hch0UywWB/N/HlyFY9HcYgNKof1wXernyPTyQisdcIPllny0Sf5SMBj
+	 VX/qD1dswQB/7oTICH5np6AdOCFVOPIlGZ6v3JxOM9STzFlp/QyG+Vc/P/nUlMGfnQ
+	 EthWt9TEs16Bxgve8hjKDk897H4eizujxgBssRNUZ84RNncTTg7U9HSyARna8zQPie
+	 3yQ9jZtzDSk5w==
+Date: Wed, 3 May 2023 11:24:58 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Ding Hui <dinghui@sangfor.com.cn>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+	jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+	keescook@chromium.org, grzegorzx.szczurek@intel.com,
+	mateusz.palczewski@intel.com, mitch.a.williams@intel.com,
+	gregory.v.rose@intel.com, jeffrey.t.kirsher@intel.com,
+	michal.kubiak@intel.com, simon.horman@corigine.com,
+	madhu.chittim@intel.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+	pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
+Subject: Re: [PATCH net v4 2/2] iavf: Fix out-of-bounds when setting channels
+ on remove
+Message-ID: <20230503082458.GH525452@unreal>
+References: <20230503031541.27855-1-dinghui@sangfor.com.cn>
+ <20230503031541.27855-3-dinghui@sangfor.com.cn>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230503031541.27855-3-dinghui@sangfor.com.cn>
 
-On Wednesday, May 3, 2023 9:49:29 AM CEST Dominique Martinet wrote:
-> The 9p code for some reason used to initialize variables outside of the
-> declaration, e.g. instead of just initializing the variable like this:
+On Wed, May 03, 2023 at 11:15:41AM +0800, Ding Hui wrote:
+> If we set channels greater when iavf_remove, the waiting reset done
+> will be timeout, then returned with error but changed num_active_queues
+> directly, that will lead to OOB like the following logs. Because the
+> num_active_queues is greater than tx/rx_rings[] allocated actually.
 > 
-> int retval = 0
+> Reproducer:
 > 
-> We would be doing this:
+>   [root@host ~]# cat repro.sh
+>   #!/bin/bash
 > 
-> int retval;
-> retval = 0;
-
-OK, but AFAICS this patch would simply remove all initializations. I would
-expect at least a default initialization at variable declaration instead.
-
-> This is perfectly fine and the compiler will just optimize dead stores
-> anyway, but scan-build seems to think this is a problem and there are
-> many of these warnings making the output of scan-build full of such
-> warnings:
-> fs/9p/vfs_inode.c:916:2: warning: Value stored to 'retval' is never read [deadcode.DeadStores]
->         retval = 0;
->         ^        ~
-
-Honestly I don't see much value in this warning. Can't we just disable this
-warning for 9p code or is this just controllable for the entire project?
-
-Turning variables uninitialized might be fine now, but it also makes the code
-error prone for future changes.
-
-> I have no strong opinion here, but if we want to regularly run
-> scan-build we should fix these just to silence the messages.
+>   pf_dbsf="0000:41:00.0"
+>   vf0_dbsf="0000:41:02.0"
+>   g_pids=()
 > 
-> I've confirmed these all are indeed ok to remove.
+>   function do_set_numvf()
+>   {
+>       echo 2 >/sys/bus/pci/devices/${pf_dbsf}/sriov_numvfs
+>       sleep $((RANDOM%3+1))
+>       echo 0 >/sys/bus/pci/devices/${pf_dbsf}/sriov_numvfs
+>       sleep $((RANDOM%3+1))
+>   }
 > 
+>   function do_set_channel()
+>   {
+>       local nic=$(ls -1 --indicator-style=none /sys/bus/pci/devices/${vf0_dbsf}/net/)
+>       [ -z "$nic" ] && { sleep $((RANDOM%3)) ; return 1; }
+>       ifconfig $nic 192.168.18.5 netmask 255.255.255.0
+>       ifconfig $nic up
+>       ethtool -L $nic combined 1
+>       ethtool -L $nic combined 4
+>       sleep $((RANDOM%3))
+>   }
+> 
+>   function on_exit()
+>   {
+>       local pid
+>       for pid in "${g_pids[@]}"; do
+>           kill -0 "$pid" &>/dev/null && kill "$pid" &>/dev/null
+>       done
+>       g_pids=()
+>   }
+> 
+>   trap "on_exit; exit" EXIT
+> 
+>   while :; do do_set_numvf ; done &
+>   g_pids+=($!)
+>   while :; do do_set_channel ; done &
+>   g_pids+=($!)
+> 
+>   wait
+> 
+> Result:
+> 
+> [ 3506.152887] iavf 0000:41:02.0: Removing device
+> [ 3510.400799] ==================================================================
+> [ 3510.400820] BUG: KASAN: slab-out-of-bounds in iavf_free_all_tx_resources+0x156/0x160 [iavf]
+> [ 3510.400823] Read of size 8 at addr ffff88b6f9311008 by task repro.sh/55536
+> [ 3510.400823]
+> [ 3510.400830] CPU: 101 PID: 55536 Comm: repro.sh Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
+> [ 3510.400832] Hardware name: Powerleader PR2008AL/H12DSi-N6, BIOS 2.0 04/09/2021
+> [ 3510.400835] Call Trace:
+> [ 3510.400851]  dump_stack+0x71/0xab
+> [ 3510.400860]  print_address_description+0x6b/0x290
+> [ 3510.400865]  ? iavf_free_all_tx_resources+0x156/0x160 [iavf]
+> [ 3510.400868]  kasan_report+0x14a/0x2b0
+> [ 3510.400873]  iavf_free_all_tx_resources+0x156/0x160 [iavf]
+> [ 3510.400880]  iavf_remove+0x2b6/0xc70 [iavf]
+> [ 3510.400884]  ? iavf_free_all_rx_resources+0x160/0x160 [iavf]
+> [ 3510.400891]  ? wait_woken+0x1d0/0x1d0
+> [ 3510.400895]  ? notifier_call_chain+0xc1/0x130
+> [ 3510.400903]  pci_device_remove+0xa8/0x1f0
+> [ 3510.400910]  device_release_driver_internal+0x1c6/0x460
+> [ 3510.400916]  pci_stop_bus_device+0x101/0x150
+> [ 3510.400919]  pci_stop_and_remove_bus_device+0xe/0x20
+> [ 3510.400924]  pci_iov_remove_virtfn+0x187/0x420
+> [ 3510.400927]  ? pci_iov_add_virtfn+0xe10/0xe10
+> [ 3510.400929]  ? pci_get_subsys+0x90/0x90
+> [ 3510.400932]  sriov_disable+0xed/0x3e0
+> [ 3510.400936]  ? bus_find_device+0x12d/0x1a0
+> [ 3510.400953]  i40e_free_vfs+0x754/0x1210 [i40e]
+> [ 3510.400966]  ? i40e_reset_all_vfs+0x880/0x880 [i40e]
+> [ 3510.400968]  ? pci_get_device+0x7c/0x90
+> [ 3510.400970]  ? pci_get_subsys+0x90/0x90
+> [ 3510.400982]  ? pci_vfs_assigned.part.7+0x144/0x210
+> [ 3510.400987]  ? __mutex_lock_slowpath+0x10/0x10
+> [ 3510.400996]  i40e_pci_sriov_configure+0x1fa/0x2e0 [i40e]
+> [ 3510.401001]  sriov_numvfs_store+0x214/0x290
+> [ 3510.401005]  ? sriov_totalvfs_show+0x30/0x30
+> [ 3510.401007]  ? __mutex_lock_slowpath+0x10/0x10
+> [ 3510.401011]  ? __check_object_size+0x15a/0x350
+> [ 3510.401018]  kernfs_fop_write+0x280/0x3f0
+> [ 3510.401022]  vfs_write+0x145/0x440
+> [ 3510.401025]  ksys_write+0xab/0x160
+> [ 3510.401028]  ? __ia32_sys_read+0xb0/0xb0
+> [ 3510.401031]  ? fput_many+0x1a/0x120
+> [ 3510.401032]  ? filp_close+0xf0/0x130
+> [ 3510.401038]  do_syscall_64+0xa0/0x370
+> [ 3510.401041]  ? page_fault+0x8/0x30
+> [ 3510.401043]  entry_SYSCALL_64_after_hwframe+0x65/0xca
+> [ 3510.401073] RIP: 0033:0x7f3a9bb842c0
+> [ 3510.401079] Code: 73 01 c3 48 8b 0d d8 cb 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 89 24 2d 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 fe dd 01 00 48 89 04 24
+> [ 3510.401080] RSP: 002b:00007ffc05f1fe18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> [ 3510.401083] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f3a9bb842c0
+> [ 3510.401085] RDX: 0000000000000002 RSI: 0000000002327408 RDI: 0000000000000001
+> [ 3510.401086] RBP: 0000000002327408 R08: 00007f3a9be53780 R09: 00007f3a9c8a4700
+> [ 3510.401086] R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000000002
+> [ 3510.401087] R13: 0000000000000001 R14: 00007f3a9be52620 R15: 0000000000000001
+> [ 3510.401090]
+> [ 3510.401093] Allocated by task 76795:
+> [ 3510.401098]  kasan_kmalloc+0xa6/0xd0
+> [ 3510.401099]  __kmalloc+0xfb/0x200
+> [ 3510.401104]  iavf_init_interrupt_scheme+0x26f/0x1310 [iavf]
+> [ 3510.401108]  iavf_watchdog_task+0x1d58/0x4050 [iavf]
+> [ 3510.401114]  process_one_work+0x56a/0x11f0
+> [ 3510.401115]  worker_thread+0x8f/0xf40
+> [ 3510.401117]  kthread+0x2a0/0x390
+> [ 3510.401119]  ret_from_fork+0x1f/0x40
+> [ 3510.401122]  0xffffffffffffffff
+> [ 3510.401123]
+> 
+> If we detected removing is in processing, we can avoid unnecessary
+> waiting and return error faster.
+> 
+> On the other hand in timeout handling, we should keep the original
+> num_active_queues and reset num_req_queues to 0.
+> 
+> Fixes: 4e5e6b5d9d13 ("iavf: Fix return of set the new channel count")
+> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+> Cc: Donglin Peng <pengdonglin@sangfor.com.cn>
+> Cc: Huang Cun <huangcun@sangfor.com.cn>
 > Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+> Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
 > ---
->  fs/9p/vfs_inode.c      |  6 ------
->  fs/9p/vfs_inode_dotl.c |  1 -
->  net/9p/client.c        | 46 ++++++++++++----------------------------------
->  3 files changed, 12 insertions(+), 41 deletions(-)
+> v3 to v4:
+>   - nothing changed
 > 
-> diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
-> index 3791f642c502..99305e97287c 100644
-> --- a/fs/9p/vfs_inode.c
-> +++ b/fs/9p/vfs_inode.c
-> @@ -164,7 +164,6 @@ int v9fs_uflags2omode(int uflags, int extended)
->  {
->  	int ret;
+> v2 to v3:
+>   - fix review tag
+> 
+> v1 to v2:
+>   - add reproduction script
+> 
+> ---
+>  drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+> index 6f171d1d85b7..d8a3c0cfedd0 100644
+> --- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+> +++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+> @@ -1857,13 +1857,15 @@ static int iavf_set_channels(struct net_device *netdev,
+>  	/* wait for the reset is done */
+>  	for (i = 0; i < IAVF_RESET_WAIT_COMPLETE_COUNT; i++) {
+>  		msleep(IAVF_RESET_WAIT_MS);
+> +		if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
+> +			return -EOPNOTSUPP;
+
+This makes no sense without locking as change to __IAVF_IN_REMOVE_TASK
+can happen any time.
+
+Thanks
+
+>  		if (adapter->flags & IAVF_FLAG_RESET_PENDING)
+>  			continue;
+>  		break;
+>  	}
+>  	if (i == IAVF_RESET_WAIT_COMPLETE_COUNT) {
+>  		adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
+> -		adapter->num_active_queues = num_req;
+> +		adapter->num_req_queues = 0;
+>  		return -EOPNOTSUPP;
+>  	}
 >  
-> -	ret = 0;
->  	switch (uflags&3) {
->  	default:
->  	case O_RDONLY:
-> @@ -604,7 +603,6 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
->  
->  	p9_debug(P9_DEBUG_VFS, "name %pd\n", dentry);
->  
-> -	err = 0;
->  	name = dentry->d_name.name;
->  	dfid = v9fs_parent_fid(dentry);
->  	if (IS_ERR(dfid)) {
-> @@ -816,8 +814,6 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
->  	if (!(flags & O_CREAT) || d_really_is_positive(dentry))
->  		return finish_no_open(file, res);
->  
-> -	err = 0;
-> -
->  	v9ses = v9fs_inode2v9ses(dir);
->  	perm = unixmode2p9mode(v9ses, mode);
->  	p9_omode = v9fs_uflags2omode(flags, v9fs_proto_dotu(v9ses));
-> @@ -913,7 +909,6 @@ v9fs_vfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
->  		return -EINVAL;
->  
->  	p9_debug(P9_DEBUG_VFS, "\n");
-> -	retval = 0;
->  	old_inode = d_inode(old_dentry);
->  	new_inode = d_inode(new_dentry);
->  	v9ses = v9fs_inode2v9ses(old_inode);
-> @@ -1067,7 +1062,6 @@ static int v9fs_vfs_setattr(struct mnt_idmap *idmap,
->  	if (retval)
->  		return retval;
->  
-> -	retval = -EPERM;
->  	v9ses = v9fs_dentry2v9ses(dentry);
->  	if (iattr->ia_valid & ATTR_FILE) {
->  		fid = iattr->ia_file->private_data;
-> diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
-> index 3acf2bcb69cc..43e282f21962 100644
-> --- a/fs/9p/vfs_inode_dotl.c
-> +++ b/fs/9p/vfs_inode_dotl.c
-> @@ -367,7 +367,6 @@ static int v9fs_vfs_mkdir_dotl(struct mnt_idmap *idmap,
->  	struct posix_acl *dacl = NULL, *pacl = NULL;
->  
->  	p9_debug(P9_DEBUG_VFS, "name %pd\n", dentry);
-> -	err = 0;
->  	v9ses = v9fs_inode2v9ses(dir);
->  
->  	omode |= S_IFDIR;
-> diff --git a/net/9p/client.c b/net/9p/client.c
-> index a3340268ec8d..86bbc7147fc1 100644
-> --- a/net/9p/client.c
-> +++ b/net/9p/client.c
-> @@ -904,7 +904,7 @@ EXPORT_SYMBOL(do_trace_9p_fid_put);
->  
->  static int p9_client_version(struct p9_client *c)
->  {
-> -	int err = 0;
-> +	int err;
->  	struct p9_req_t *req;
->  	char *version = NULL;
->  	int msize;
-> @@ -975,7 +975,6 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
->  	struct p9_client *clnt;
->  	char *client_id;
->  
-> -	err = 0;
->  	clnt = kmalloc(sizeof(*clnt), GFP_KERNEL);
->  	if (!clnt)
->  		return ERR_PTR(-ENOMEM);
-> @@ -1094,7 +1093,7 @@ struct p9_fid *p9_client_attach(struct p9_client *clnt, struct p9_fid *afid,
->  				const char *uname, kuid_t n_uname,
->  				const char *aname)
->  {
-> -	int err = 0;
-> +	int err;
->  	struct p9_req_t *req;
->  	struct p9_fid *fid;
->  	struct p9_qid qid;
-> @@ -1147,7 +1146,6 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
->  	struct p9_req_t *req;
->  	u16 nwqids, count;
->  
-> -	err = 0;
->  	wqids = NULL;
->  	clnt = oldfid->clnt;
->  	if (clone) {
-> @@ -1224,7 +1222,6 @@ int p9_client_open(struct p9_fid *fid, int mode)
->  	clnt = fid->clnt;
->  	p9_debug(P9_DEBUG_9P, ">>> %s fid %d mode %d\n",
->  		 p9_is_proto_dotl(clnt) ? "TLOPEN" : "TOPEN", fid->fid, mode);
-> -	err = 0;
->  
->  	if (fid->mode != -1)
->  		return -EINVAL;
-> @@ -1262,7 +1259,7 @@ EXPORT_SYMBOL(p9_client_open);
->  int p9_client_create_dotl(struct p9_fid *ofid, const char *name, u32 flags,
->  			  u32 mode, kgid_t gid, struct p9_qid *qid)
->  {
-> -	int err = 0;
-> +	int err;
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  	int iounit;
-> @@ -1314,7 +1311,6 @@ int p9_client_fcreate(struct p9_fid *fid, const char *name, u32 perm, int mode,
->  
->  	p9_debug(P9_DEBUG_9P, ">>> TCREATE fid %d name %s perm %d mode %d\n",
->  		 fid->fid, name, perm, mode);
-> -	err = 0;
->  	clnt = fid->clnt;
->  
->  	if (fid->mode != -1)
-> @@ -1350,7 +1346,7 @@ EXPORT_SYMBOL(p9_client_fcreate);
->  int p9_client_symlink(struct p9_fid *dfid, const char *name,
->  		      const char *symtgt, kgid_t gid, struct p9_qid *qid)
->  {
-> -	int err = 0;
-> +	int err;
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  
-> @@ -1402,13 +1398,12 @@ EXPORT_SYMBOL(p9_client_link);
->  
->  int p9_client_fsync(struct p9_fid *fid, int datasync)
->  {
-> -	int err;
-> +	int err = 0;
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  
->  	p9_debug(P9_DEBUG_9P, ">>> TFSYNC fid %d datasync:%d\n",
->  		 fid->fid, datasync);
-> -	err = 0;
->  	clnt = fid->clnt;
->  
->  	req = p9_client_rpc(clnt, P9_TFSYNC, "dd", fid->fid, datasync);
-> @@ -1428,7 +1423,7 @@ EXPORT_SYMBOL(p9_client_fsync);
->  
->  int p9_client_clunk(struct p9_fid *fid)
->  {
-> -	int err;
-> +	int err = 0;
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  	int retries = 0;
-> @@ -1436,7 +1431,6 @@ int p9_client_clunk(struct p9_fid *fid)
->  again:
->  	p9_debug(P9_DEBUG_9P, ">>> TCLUNK fid %d (try %d)\n",
->  		 fid->fid, retries);
-> -	err = 0;
->  	clnt = fid->clnt;
->  
->  	req = p9_client_rpc(clnt, P9_TCLUNK, "d", fid->fid);
-> @@ -1465,12 +1459,11 @@ EXPORT_SYMBOL(p9_client_clunk);
->  
->  int p9_client_remove(struct p9_fid *fid)
->  {
-> -	int err;
-> +	int err = 0;
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  
->  	p9_debug(P9_DEBUG_9P, ">>> TREMOVE fid %d\n", fid->fid);
-> -	err = 0;
->  	clnt = fid->clnt;
->  
->  	req = p9_client_rpc(clnt, P9_TREMOVE, "d", fid->fid);
-> @@ -1680,7 +1673,6 @@ struct p9_wstat *p9_client_stat(struct p9_fid *fid)
->  	if (!ret)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  
->  	req = p9_client_rpc(clnt, P9_TSTAT, "d", fid->fid);
-> @@ -1733,7 +1725,6 @@ struct p9_stat_dotl *p9_client_getattr_dotl(struct p9_fid *fid,
->  	if (!ret)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  
->  	req = p9_client_rpc(clnt, P9_TGETATTR, "dq", fid->fid, request_mask);
-> @@ -1812,11 +1803,10 @@ static int p9_client_statsize(struct p9_wstat *wst, int proto_version)
->  
->  int p9_client_wstat(struct p9_fid *fid, struct p9_wstat *wst)
->  {
-> -	int err;
-> +	int err = 0;
->  	struct p9_req_t *req;
->  	struct p9_client *clnt;
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  	wst->size = p9_client_statsize(wst, clnt->proto_version);
->  	p9_debug(P9_DEBUG_9P, ">>> TWSTAT fid %d\n",
-> @@ -1851,11 +1841,10 @@ EXPORT_SYMBOL(p9_client_wstat);
->  
->  int p9_client_setattr(struct p9_fid *fid, struct p9_iattr_dotl *p9attr)
->  {
-> -	int err;
-> +	int err = 0;
->  	struct p9_req_t *req;
->  	struct p9_client *clnt;
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  	p9_debug(P9_DEBUG_9P, ">>> TSETATTR fid %d\n", fid->fid);
->  	p9_debug(P9_DEBUG_9P, "    valid=%x mode=%x uid=%d gid=%d size=%lld\n",
-> @@ -1887,7 +1876,6 @@ int p9_client_statfs(struct p9_fid *fid, struct p9_rstatfs *sb)
->  	struct p9_req_t *req;
->  	struct p9_client *clnt;
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  
->  	p9_debug(P9_DEBUG_9P, ">>> TSTATFS fid %d\n", fid->fid);
-> @@ -1921,11 +1909,10 @@ EXPORT_SYMBOL(p9_client_statfs);
->  int p9_client_rename(struct p9_fid *fid,
->  		     struct p9_fid *newdirfid, const char *name)
->  {
-> -	int err;
-> +	int err = 0;
->  	struct p9_req_t *req;
->  	struct p9_client *clnt;
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  
->  	p9_debug(P9_DEBUG_9P, ">>> TRENAME fid %d newdirfid %d name %s\n",
-> @@ -1949,11 +1936,10 @@ EXPORT_SYMBOL(p9_client_rename);
->  int p9_client_renameat(struct p9_fid *olddirfid, const char *old_name,
->  		       struct p9_fid *newdirfid, const char *new_name)
->  {
-> -	int err;
-> +	int err = 0;
->  	struct p9_req_t *req;
->  	struct p9_client *clnt;
->  
-> -	err = 0;
->  	clnt = olddirfid->clnt;
->  
->  	p9_debug(P9_DEBUG_9P,
-> @@ -1986,7 +1972,6 @@ struct p9_fid *p9_client_xattrwalk(struct p9_fid *file_fid,
->  	struct p9_client *clnt;
->  	struct p9_fid *attr_fid;
->  
-> -	err = 0;
->  	clnt = file_fid->clnt;
->  	attr_fid = p9_fid_create(clnt);
->  	if (!attr_fid) {
-> @@ -2027,14 +2012,13 @@ EXPORT_SYMBOL_GPL(p9_client_xattrwalk);
->  int p9_client_xattrcreate(struct p9_fid *fid, const char *name,
->  			  u64 attr_size, int flags)
->  {
-> -	int err;
-> +	int err = 0;
->  	struct p9_req_t *req;
->  	struct p9_client *clnt;
->  
->  	p9_debug(P9_DEBUG_9P,
->  		 ">>> TXATTRCREATE fid %d name  %s size %llu flag %d\n",
->  		 fid->fid, name, attr_size, flags);
-> -	err = 0;
->  	clnt = fid->clnt;
->  	req = p9_client_rpc(clnt, P9_TXATTRCREATE, "dsqd",
->  			    fid->fid, name, attr_size, flags);
-> @@ -2063,7 +2047,6 @@ int p9_client_readdir(struct p9_fid *fid, char *data, u32 count, u64 offset)
->  	p9_debug(P9_DEBUG_9P, ">>> TREADDIR fid %d offset %llu count %d\n",
->  		 fid->fid, offset, count);
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  
->  	rsize = fid->iounit;
-> @@ -2122,7 +2105,6 @@ int p9_client_mknod_dotl(struct p9_fid *fid, const char *name, int mode,
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  	p9_debug(P9_DEBUG_9P,
->  		 ">>> TMKNOD fid %d name %s mode %d major %d minor %d\n",
-> @@ -2153,7 +2135,6 @@ int p9_client_mkdir_dotl(struct p9_fid *fid, const char *name, int mode,
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  	p9_debug(P9_DEBUG_9P, ">>> TMKDIR fid %d name %s mode %d gid %d\n",
->  		 fid->fid, name, mode, from_kgid(&init_user_ns, gid));
-> @@ -2182,7 +2163,6 @@ int p9_client_lock_dotl(struct p9_fid *fid, struct p9_flock *flock, u8 *status)
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  	p9_debug(P9_DEBUG_9P,
->  		 ">>> TLOCK fid %d type %i flags %d start %lld length %lld proc_id %d client_id %s\n",
-> @@ -2214,7 +2194,6 @@ int p9_client_getlock_dotl(struct p9_fid *fid, struct p9_getlock *glock)
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  	p9_debug(P9_DEBUG_9P,
->  		 ">>> TGETLOCK fid %d, type %i start %lld length %lld proc_id %d client_id %s\n",
-> @@ -2251,7 +2230,6 @@ int p9_client_readlink(struct p9_fid *fid, char **target)
->  	struct p9_client *clnt;
->  	struct p9_req_t *req;
->  
-> -	err = 0;
->  	clnt = fid->clnt;
->  	p9_debug(P9_DEBUG_9P, ">>> TREADLINK fid %d\n", fid->fid);
->  
+> -- 
+> 2.17.1
 > 
 > 
-
-
-
-
 
