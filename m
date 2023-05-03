@@ -1,142 +1,88 @@
-Return-Path: <netdev+bounces-101-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-102-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0FF116F5266
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 09:57:08 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6AC586F5274
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 10:00:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 53A081C20BA4
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 07:57:05 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C261E1C20AEA
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 08:00:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1DAB863AD;
-	Wed,  3 May 2023 07:57:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13BF363B2;
+	Wed,  3 May 2023 08:00:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C1521C15
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 07:57:04 +0000 (UTC)
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90BB2736
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 00:57:00 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50bd87539c2so1870910a12.0
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 00:57:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1683100619; x=1685692619;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=pcYFfZqejHZcwp6Yf370vPWTJUqUejy/+clrmToxzqI=;
-        b=olDiilzCabAGiFawMWw7motGsETub6lHxM/WovTgYKHi1YXDv/jO0fLpvUPxuI6SEY
-         AnJmrxUvXv74KkirN14i5EkJD0o/00UrFAs12SeFh0qIFrPGsbycIoSXNCo8DUVB/Fej
-         SH1mxGk1GfOWpqzCsKZSRcxVnPEcLEPDccLXVaS0Sp+EEkrt5z61aKH23a7Fv8pqdDVL
-         +6zDalgXJBKwh0eoXNcwLGPomF+uen0Zx0CqOjGOdDbn2u4gsy7Hj3UMqDNpzUG1bV34
-         D8ADLZTOPFVd/TEJO1P+5ptI5y0v9z+ipJx5bfJIu74uSUa7mCQYT8sprl7AzZy2WWOS
-         m8ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683100619; x=1685692619;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pcYFfZqejHZcwp6Yf370vPWTJUqUejy/+clrmToxzqI=;
-        b=exnDfcCKTGzzE+uWdppp66o7LR8GQe3ZeNq1kWUDNEWNUlI99Z2a53Gd3tQlyzUvYy
-         d5fiVnCKrcSDcn12phT12E3ZUDADlTlPg6G+dodvXBPAAMDp6qsbjrsAvJ//6NCe6ggR
-         KtWDYTePsSkfm2tROqtzOJ5N6d0uYCgFmCLwfMUk7IkX7h2QZ3AVp9HAtMM73a4m/fvi
-         zSIjimjrkJTHrP31mQvrDB+Gvbi0NxQ48bDrJszqmqDtlPHLRXQWZxXpXcmLPADmDaS9
-         mbI6K2gw5YDNSRseuGdJ+6wb6K7/ipG5zCikMfVIOwOG25sqKrioQS7NnZfAxYUO5uCU
-         uTiQ==
-X-Gm-Message-State: AC+VfDxejM/n+Kt8eg2ulgau5AikZART9//HMWKGRvzx6ypF0p+9Zu9u
-	wZbVS8EA4udeCwwmpa5vcVd02/MwdnPnmyw4H+g=
-X-Google-Smtp-Source: ACHHUZ75tPCKlOQ/bn/9cUaJxhFluM9jLzpY4mk18g4A1GcSnQv350qD16SCW+v0l8wSswuicKZcUg==
-X-Received: by 2002:a17:907:9724:b0:962:582d:89d7 with SMTP id jg36-20020a170907972400b00962582d89d7mr2527333ejc.38.1683100619256;
-        Wed, 03 May 2023 00:56:59 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id g22-20020a170906595600b0094ed3abc937sm16841404ejr.82.2023.05.03.00.56.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 00:56:58 -0700 (PDT)
-Date: Wed, 3 May 2023 09:56:57 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-	Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-	Vadim Fedorenko <vadfed@meta.com>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	Paolo Abeni <pabeni@redhat.com>, poros <poros@redhat.com>,
-	mschmidt <mschmidt@redhat.com>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-	"Olech, Milena" <milena.olech@intel.com>,
-	"Michalik, Michal" <michal.michalik@intel.com>
-Subject: Re: [PATCH RFC v6 2/6] dpll: Add DPLL framework base functions
-Message-ID: <ZFITyWvVcqgRtN+Q@nanopsycho>
-References: <ZBA8ofFfKigqZ6M7@nanopsycho>
- <DM6PR11MB4657120805D656A745EF724E9BBE9@DM6PR11MB4657.namprd11.prod.outlook.com>
- <ZBGOWQW+1JFzNsTY@nanopsycho>
- <20230403111812.163b7d1d@kernel.org>
- <ZDJulCXj9H8LH+kl@nanopsycho>
- <20230410153149.602c6bad@kernel.org>
- <ZDwg88x3HS2kd6lY@nanopsycho>
- <20230417124942.4305abfa@kernel.org>
- <ZFDPaXlJainSOqmV@nanopsycho>
- <20230502083244.19543d26@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B158423AF
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 08:00:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5CF91C433A4;
+	Wed,  3 May 2023 08:00:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683100821;
+	bh=hs/2ZMPXNyQHVQBAjvuBziSuly5LxIFID8MWydHsfGQ=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=XI31lsKOk5daDIkD32JiljILIqbHR2Up9/f0ZN7z4jAEHINFJWdcjD9fKrZCyS5/T
+	 gUcKceBjC4wlenJ27bY7tI78JN4p87dwbRCPRRRs3tPYRCzQdT5f8J986YyrWpMizm
+	 pDN4OQm/5XdWMcbLFKIkW2j+oZDuyRplRR4EXMnFFTiNCm37vAu1euTPJCXvka7W3N
+	 l1fsMVMwUw6AKsXy6Pp6Frg/sWm2aIuoLfaBPqJLeEebeZsg/0gFdkeGdUvXU9DjBV
+	 sCYWfc4POEteQ27Go5iFKVzgPxe8o/o5ueNBkdUJrkGZ/dJuhH67UQ+chxNGE0h4pH
+	 6kGSQbVFGV2WA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 434C2E5FFC9;
+	Wed,  3 May 2023 08:00:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230502083244.19543d26@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 1/3] netfilter: nf_tables: hit ENOENT on unexisting
+ chain/flowtable update with missing attributes
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168310082126.9142.6120600309430037427.git-patchwork-notify@kernel.org>
+Date: Wed, 03 May 2023 08:00:21 +0000
+References: <20230503063250.13700-2-pablo@netfilter.org>
+In-Reply-To: <20230503063250.13700-2-pablo@netfilter.org>
+To: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: netfilter-devel@vger.kernel.org, davem@davemloft.net,
+ netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
+ edumazet@google.com
 
-Adding back the cclist stripped due to Claws bug.
+Hello:
 
-Tue, May 02, 2023 at 05:32:44PM CEST, kuba@kernel.org wrote:
->On Tue, 2 May 2023 10:52:57 +0200 Jiri Pirko wrote:
->> >> Index internal within a single instance. Like Intel guys, they have 1
->> >> clock wired up with multiple DPLLs. The driver gives every DPLL index.
->> >> This is internal, totally up to the driver decision. Similar concept to
->> >> devlink port index.  
->> >
->> >devlink port index ended up as a pretty odd beast with drivers encoding
->> >various information into it, using locally grown schemes.
->> >
->> >Hard no on doing that in dpll, it should not be exposed to the user.  
->> 
->> So you say to have ID fully dynamic and non deterministic? I'm lost a
->> bit.
->
->Yup, non-deterministic, just a cyclic ID allocated by the core starting
->from 1. Finding the right device / pin needs to be done via
->informational attributes not making assumptions about the ID.
+This series was applied to netdev/net.git (main)
+by Pablo Neira Ayuso <pablo@netfilter.org>:
 
-Okay.
+On Wed,  3 May 2023 08:32:48 +0200 you wrote:
+> If user does not specify hook number and priority, then assume this is
+> a chain/flowtable update. Therefore, report ENOENT which provides a
+> better hint than EINVAL. Set on extended netlink error report to refer
+> to the chain name.
+> 
+> Fixes: 5b6743fb2c2a ("netfilter: nf_tables: skip flowtable hooknum and priority on device updates")
+> Fixes: 5efe72698a97 ("netfilter: nf_tables: support for adding new devices to an existing netdev chain")
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> 
+> [...]
 
-When netdev will have pin ID in the RT netlink message (as it is done
-in RFCv7), it is easy to get the pin/dpll for netdev. No problem there.
+Here is the summary with links:
+  - [net,1/3] netfilter: nf_tables: hit ENOENT on unexisting chain/flowtable update with missing attributes
+    https://git.kernel.org/netdev/net/c/8509f62b0b07
+  - [net,2/3] selftests: netfilter: fix libmnl pkg-config usage
+    https://git.kernel.org/netdev/net/c/de4773f0235a
+  - [net,3/3] netfilter: nf_tables: deactivate anonymous set from preparation phase
+    https://git.kernel.org/netdev/net/c/c1592a89942e
 
-However, for non-SyncE usecase, how do you imagine scripts to work?
-I mean, the script have to obtain dpll/pin ID by deterministic
-module_name/clock_id/idx tuple.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-There are 2 options to do that:
-1) dump all dplls/pins and do lookup in userspace
-2) get a dpll/pin according to given module_name/clock_id/idx tuple
 
-The first approach is not very nice.
-The currently pushed RFCv7 of the patchset does not support 2)
-
-Now if we add support for 2), we basically use module_name/clock_id/idx
-as a handle for "get cmd". My point is, why can't we use it for "set
-cmd" as well and avoid the ID entirely?
-
-What am I missing here?
 
