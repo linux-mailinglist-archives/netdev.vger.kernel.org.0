@@ -1,153 +1,187 @@
-Return-Path: <netdev+bounces-161-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-162-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id C077F6F5913
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 15:27:57 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B4B866F591E
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 15:35:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 63622281598
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 13:27:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 373E81C20D90
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 13:35:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 33B96D530;
-	Wed,  3 May 2023 13:27:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 806D0D531;
+	Wed,  3 May 2023 13:35:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 228EA4A11
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 13:27:54 +0000 (UTC)
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04842E67
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 06:27:48 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-272-JMRr_rtRNKmaWdX7u8fSMw-1; Wed, 03 May 2023 14:27:46 +0100
-X-MC-Unique: JMRr_rtRNKmaWdX7u8fSMw-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 3 May
- 2023 14:27:44 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Wed, 3 May 2023 14:27:44 +0100
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Adrien Delorme' <delorme.ade@outlook.com>, Pavel Begunkov
-	<asml.silence@gmail.com>
-CC: "axboe@kernel.dk" <axboe@kernel.dk>, "davem@davemloft.net"
-	<davem@davemloft.net>, "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
-	"dsahern@kernel.org" <dsahern@kernel.org>, "edumazet@google.com"
-	<edumazet@google.com>, "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-	"kuba@kernel.org" <kuba@kernel.org>, "leit@fb.com" <leit@fb.com>,
-	"leitao@debian.org" <leitao@debian.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "marcelo.leitner@gmail.com"
-	<marcelo.leitner@gmail.com>, "matthieu.baerts@tessares.net"
-	<matthieu.baerts@tessares.net>, "mptcp@lists.linux.dev"
-	<mptcp@lists.linux.dev>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, "willemb@google.com"
-	<willemb@google.com>, "willemdebruijn.kernel@gmail.com"
-	<willemdebruijn.kernel@gmail.com>
-Subject: RE: [PATCH 0/5] add initial io_uring_cmd support for sockets
-Thread-Topic: [PATCH 0/5] add initial io_uring_cmd support for sockets
-Thread-Index: AQHZfPcbeWikE8uGs0CEhT1cqCE61a9Ido9ggAASYTA=
-Date: Wed, 3 May 2023 13:27:44 +0000
-Message-ID: <9233101ff5794556a0873832ebad4445@AcuMS.aculab.com>
-References: <GV1P193MB200533CC9A694C4066F4807CEA6F9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
- <49866ae2-db19-083c-6498-e7d9d62e8267@gmail.com>
- <GV1P193MB2005214F383309B8466C6361EA6C9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
-In-Reply-To: <GV1P193MB2005214F383309B8466C6361EA6C9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7112F321E
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 13:35:25 +0000 (UTC)
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012B51FDB
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 06:35:23 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-55a010774a5so61101557b3.3
+        for <netdev@vger.kernel.org>; Wed, 03 May 2023 06:35:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683120923; x=1685712923;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=o/HzLEhIjuKFWd0RmFL36ROlVagTDI2BEogjapWI9fE=;
+        b=CHqYWrUvFft88y3Ie/yjLfqFqQDr/3nmeELynOfcjsZBZO+9t/ZkxPO7Xt9IYyD5Ja
+         iqEQGPsDJSMDjcbdlCH1SJpd2MynoEZgR3BMmB6ksYIRzmtf5DaSk2z4TbiibiOvwQRo
+         gcEzKligRtyOdC0kH6YJaJWPBdxWw/13QtdO+EcJieEu4Q43kTias/MeXN+0TTTsjl48
+         yUFGJyZr19GwXntLKFj+jWUjhuYdHgihghPp0drmOzlGzQ6V0RmD/uMancNWWjzwWeO8
+         dcbCJtgZJuTtcxVQ3GCiuHGPLnx1jUG+6tpiIWKjDgrAw0E0keiXj91Yh7xZx49KSMb/
+         nbFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683120923; x=1685712923;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=o/HzLEhIjuKFWd0RmFL36ROlVagTDI2BEogjapWI9fE=;
+        b=TO57ObYTPsxP47dAWYA2mwI6btlcJJwy6/rSifKKHRAkzaqXpnVLjUPAPU5hS4h1ED
+         wHvz0LZaPRkJxDDyg5mP1R64TgHJvhf1qX3K9HUfMT/He+VOCbvai3Q0KAAj01RKuLNt
+         ufIZ7MfgDHsWQ707ndH9XZ7DRzVNRCBJiktOvAhmTu4NsM1SKFA3YBPgyQkC6lGP6ba6
+         sTMltkVvemrqWPpF662CaNEWsTvtKVLV24sBIdufABKJzecXIlO85V/SQMtCyVIQnKSy
+         Aau9LzsH3Rlqkgi3SSPhvxQ5fLcXLlZeSQEo76uSD/yH5vy/fELiOC/DOBsjKRckG14w
+         2RLg==
+X-Gm-Message-State: AC+VfDx5zwJueyMUybPATIB8sSjCmoBF+grSJaXpyPGIfZtZSFmER31v
+	8HedHJFp9cgdd0J9rrIRBTU/7mlP8D/UwtTMHAQ=
+X-Google-Smtp-Source: ACHHUZ4iOD46TqNB4nqJSJSwhMMr5RF1VvGbd6DIIcEcSAYZ4fkdOAtL676ahXM19aIlE1DV9NrzD5YcqPS1T6FIRrY=
+X-Received: by 2002:a81:6c8f:0:b0:55a:1022:7814 with SMTP id
+ h137-20020a816c8f000000b0055a10227814mr11707619ywc.28.1683120922218; Wed, 03
+ May 2023 06:35:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+References: <cover.1683065352.git.lucien.xin@gmail.com> <0d328807d5087d0b6d03c3d2e5f355cd44ed576a.1683065352.git.lucien.xin@gmail.com>
+ <DB9PR05MB90784F5E870CF98996BD406A886C9@DB9PR05MB9078.eurprd05.prod.outlook.com>
+In-Reply-To: <DB9PR05MB90784F5E870CF98996BD406A886C9@DB9PR05MB9078.eurprd05.prod.outlook.com>
+From: Xin Long <lucien.xin@gmail.com>
+Date: Wed, 3 May 2023 09:35:02 -0400
+Message-ID: <CADvbK_f5YPuY0eaZj5JcixUU7rFQosuAWg8PdorrGz08ve6DmA@mail.gmail.com>
+Subject: Re: [PATCHv2 net 2/3] tipc: do not update mtu if msg_max is too small
+ in mtu negotiation
+To: Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
+Cc: network dev <netdev@vger.kernel.org>, 
+	"tipc-discussion@lists.sourceforge.net" <tipc-discussion@lists.sourceforge.net>, 
+	"davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>, 
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Jon Maloy <jmaloy@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-RnJvbTogQWRyaWVuIERlbG9ybWUNCj4gU2VudDogMDMgTWF5IDIwMjMgMTQ6MTENCj4gDQo+IEZy
-b20gQWRyaWVuIERlbG9ybWUNCj4gPiBGcm9twqA6IFBhdmVsIEJlZ3Vua292DQo+ID4gU2VudCA6
-IDIgTWF5IDIwMjMgMTU6MDQNCj4gPiBPbiA1LzIvMjMgMTA6MjEsIEFkcmllbiBEZWxvcm1lIHdy
-b3RlOg0KPiA+ID4gIEZyb20gQWRyaWVuIERlbG9ybWUNCj4gPiA+DQo+ID4gPj4gRnJvbTogRGF2
-aWQgQWhlcm4NCj4gPiA+PiBTZW50OiAxMiBBcHJpbCAyMDIzIDc6MzkNCj4gPiA+Pj4gU2VudDog
-MTEgQXByaWwgMjAyMyAxNjoyOA0KPiA+ID4+IC4uLi4NCj4gPiA+PiBPbmUgcHJvYmxlbSBpcyB0
-aGF0IG5vdCBhbGwgc29ja29wdCBjYWxscyBwYXNzIHRoZSBjb3JyZWN0IGxlbmd0aC4NCj4gPiA+
-PiBBbmQgc29tZSBvZiB0aGVtIGNhbiBoYXZlIHZlcnkgbG9uZyBidWZmZXJzLg0KPiA+ID4+IE5v
-dCB0byBtZW50aW9uIHRoZSBvbmVzIHRoYXQgYXJlIHJlYWQtbW9kaWZ5LXdyaXRlLg0KPiA+ID4+
-DQo+ID4gPj4gQSBwbGF1c2libGUgc29sdXRpb24gaXMgdG8gcGFzcyBhICdmYXQgcG9pbnRlcicg
-dGhhdCBjb250YWlucyBzb21lLA0KPiA+ID4+IG9yIGFsbCwgb2Y6DQo+ID4gPj4gICAgICAgIC0g
-QSB1c2Vyc3BhY2UgYnVmZmVyIHBvaW50ZXIuDQo+ID4gPj4gICAgICAgIC0gQSBrZXJuZWwgYnVm
-ZmVyIHBvaW50ZXIuDQo+ID4gPj4gICAgICAgIC0gVGhlIGxlbmd0aCBzdXBwbGllZCBieSB0aGUg
-dXNlci4NCj4gPiA+PiAgICAgICAgLSBUaGUgbGVuZ3RoIG9mIHRoZSBrZXJuZWwgYnVmZmVyLg0K
-PiA+ID4+ICAgICAgICA9IFRoZSBudW1iZXIgb2YgYnl0ZXMgdG8gY29weSBvbiBjb21wbGV0aW9u
-Lg0KPiA+ID4+IEZvciBzaW1wbGUgdXNlciByZXF1ZXN0cyB0aGUgc3lzY2FsbCBlbnRyeS9leGl0
-IGNvZGUgd291bGQgY29weSB0aGUNCj4gPiA+PiBkYXRhIHRvIGEgc2hvcnQgb24tc3RhY2sgYnVm
-ZmVyLg0KPiA+ID4+IEtlcm5lbCB1c2VycyBqdXN0IHBhc3MgdGhlIGtlcm5lbCBhZGRyZXNzLg0K
-PiA+ID4+IE9kZCByZXF1ZXN0cyBjYW4ganVzdCB1c2UgdGhlIHVzZXIgcG9pbnRlci4NCj4gPiA+
-Pg0KPiA+ID4+IFByb2JhYmx5IG5lZWRzIGFjY2Vzc29ycyB0aGF0IGFkZCBpbiBhbiBvZmZzZXQu
-DQo+ID4gPj4NCj4gPiA+PiBJdCBtaWdodCBhbHNvIGJlIHRoYXQgc29tZSBvZiB0aGUgcHJvYmxl
-bWF0aWMgc29ja29wdCB3ZXJlIGluIGRlY25ldA0KPiA+ID4+IC0gbm93IHJlbW92ZWQuDQo+ID4g
-Pg0KPiA+ID4gSGVsbG8gZXZlcnlvbmUsDQo+ID4gPg0KPiA+ID4gSSdtIGN1cnJlbnRseSB3b3Jr
-aW5nIG9uIGFuIGltcGxlbWVudGF0aW9uIG9mIHtnZXQsc2V0fSBzb2Nrb3B0Lg0KPiA+ID4gU2lu
-Y2UgdGhpcyB0aHJlYWQgaXMgYWxyZWFkeSB0YWxraW5nIGFib3V0IGl0LCBJIGhvcGUgdGhhdCBJ
-IHJlcGx5aW5nIGF0IHRoZQ0KPiA+IGNvcnJlY3QgcGxhY2UuDQo+ID4NCj4gPiBIaSBBZHJpZW4s
-IEkgYmVsaWV2ZSBCcmVubyBpcyB3b3JraW5nIG9uIHNldC9nZXRzb2Nrb3B0IGFzIHdlbGwgYW5k
-IGhhZA0KPiA+IHNpbWlsYXIgcGF0Y2hlcyBmb3IgYXdoaWxlLCBidXQgdGhhdCB3b3VsZCBuZWVk
-IGZvciBzb21lIHByb2JsZW1zIHRvIGJlDQo+ID4gc29sdmVkIGZpcnN0LCBlLmcuIHRyeSBhbmQg
-ZGVjaWRlIHdoZXRoZXIgaXQgY29waWVzIHRvIGEgcHRyIGFzIHRoZSBzeXNjYWxsDQo+ID4gdmVy
-c2lvbnMgb3Igd291bGQgZ2V0L3JldHVybiBvcHR2YWwgZGlyZWN0bHkgaW4gc3FlL2NxZS4gQW5k
-IGFsc28gd2hlcmUgdG8NCj4gPiBzdG9yZSBiaXRzIHRoYXQgeW91IHBhc3MgaW4gc3RydWN0IGFy
-Z3Nfc2V0c29ja29wdF91cmluZywgYW5kIHdoZXRoZXIgdG8gcmVseQ0KPiA+IG9uIFNRRTEyOCBv
-ciBub3QuDQo+ID4NCj4gDQo+IEhlbGxvIFBhdmVsLA0KPiBUaGF0IGlzIGdvb2QgdG8gaGVhci4g
-SWYgcG9zc2libGUgSSB3b3VsZCBsaWtlIHRvIHByb3ZpZGUgc29tZSBoZWxwLg0KPiBJIGxvb2tl
-ZCBhdCB0aGUgZ2V0c29ja29wdCBpbXBsZW1lbnRhdGlvbi4gRnJvbSB3aGF0IEknbSBzZWVpbmcs
-IEkgYmVsaWV2ZSB0aGF0IGl0IHdvdWxkIGJlIGVhc2llciB0bw0KPiBjb3BpZXMgdG8gYSBwdHIg
-YXMgdGhlIHN5c2NhbGwuDQo+IFRoZSBsZW5ndGggb2YgdGhlIG91dHB1dCBpcyB1c3VhbGx5IDQg
-Ynl0ZXMgKHNvbWV0aW1lcyBsZXNzKSBidXQgaW4gYSBsb3Qgb2YgY2FzZXMsIHRoaXMgbGVuZ3Ro
-IGlzDQo+IHZhcmlhYmxlLiBTb21ldGltZSBpdCBjYW4gZXZlbiBiZSBiaWdnZXIgdGhhdCB0aGUg
-U1FFMTI4IHJpbmcuDQo+IA0KPiBIZXJlIGlzIGEgbm9uLWV4aGF1c3RpdmUgbGlzdCBvZiB0aG9z
-ZSBjYXNlcyA6DQo+IC9uZXQvaXB2NC90Y3AuYyA6IGludCBkb190Y3BfZ2V0c29ja29wdCguLi4p
-DQo+ICAgLSBUQ1BfSU5GTyA6IHVwIHRvIDI0MCBieXRlcw0KPiAgIC0gVENQX0NDX0lORk8gYW5k
-IFRDUF9SRVBBSVJfV0lORE9XIDogdXAgdG8gMjAgYnl0ZXMNCj4gICAtIFRDUF9DT05HRVNUSU9O
-IGFuZCBUQ1BfVUxQIDogdXAgdG8gMTYgYnl0ZXMNCj4gICAtIFRDUF9aRVJPQ1BPWV9SRUNFSVZF
-IDogdXAgdG8gNjQgYnl0ZXMNCj4gL25ldC9hdG0vY29tbXVuLmMgOiBpbnQgdmNjX2dldHNvY2tv
-cHQoLi4uKQ0KPiAgIC0gU09fQVRNUU9TIDogdXAgdG8gODggYnl0ZXMNCj4gICAtIFNPX0FUTVBW
-QyA6IHVwIHRvIDE2IGJ5dGVzDQo+IC9uZXQvaXB2NC9pb19zb2NrZ2x1ZS5jIDogaW50IGRvX2lw
-X2dldHNvY2tvcHQoLi4uKQ0KPiAgIC0gTUNBU1RfTVNGSUxURVIgOiB1cCB0byAxNDQgYnl0ZXMN
-Cj4gICAtIElQX01TRklMVEVSIDogMTYgYnl0ZXMgbWluaW11bQ0KPiANCj4gSSB3aWxsIGxvb2sg
-aW50byBzZXRzb2Nrb3B0IGJ1dCBJIGJlbGlldmUgaXQgbWlnaHQgYmUgdGhlIHNhbWUuDQo+IElm
-IG5lZWRlZCBJIGNhbiBhbHNvIGNvbXBsZXRlIHRoaXMgbGlzdC4NCj4gSG93ZXZlciB0aGVyZSBh
-cmUgc29tZSBjYXNlcyB3aGVyZSBpdCBpcyBoYXJkIHRvIGRldGVybWluYXRlIGEgbWF4aW11bSBh
-bW91bnQgb2YgYnl0ZXMgaW4gYWR2YW5jZS4NCg0KQWxzbyBsb29rIGF0IFNDVFAgLSBpdCBoYXMg
-c29tZSB2ZXJ5IGxvbmcgYnVmZmVycy4NCkFsbW9zdCBhbnkgY29kZSB0aGF0IHVzZXMgU0NUUCBu
-ZWVkcyB0byB1c2UgdGhlIFNDVFBfU1RBVFVTDQpyZXF1ZXN0IHRvIGdldCB0aGUgbmVnb3RpYXRl
-ZCBudW1iZXIgb2YgZGF0YSBzdHJlYW1zDQoodGhhdCBvbmUgaXMgcmVsYXRpdmVseSBzaG9ydCku
-DQpJSVJDIHRoZXJlIGFyZSBhbHNvIGdldHNvY2tvcHQoKSB0aGF0IGFyZSByZWFkL21vZGlmeS93
-cml0ZSENCg0KVGhlcmUgd2lsbCBhbHNvIGJlIHVzZXIgY29kZSB0aGF0IHN1cHBsaWVzIGEgdmVy
-eSBsb25nIGJ1ZmZlcg0KKHRvbyBsb25nIHRvIGFsbG9jYXRlIGluIGtlcm5lbCkgZm9yIHNvbWUg
-dmFyaWFibGUgbGVuZ3RoIHJlcXVlc3RzLg0KDQpTbyB0aGUgZ2VuZXJpYyBzeXN0ZW0gY2FsbCBj
-b2RlIGNhbiBhbGxvY2F0ZSBhIHNob3J0IChlZyBvbi1zdGFjaykNCmJ1ZmZlciBmb3Igc2hvcnQg
-cmVxdWVzdHMgYW5kIHRoZW4gcGFzcyBib3RoIHRoZSB1c2VyIGFuZCBrZXJuZWwNCmFkZHJlc3Nl
-cyAoYW5kIGxlbmd0aHMpIHRocm91Z2ggdG8gdGhlIHByb3RvY29sIGZ1bmN0aW9ucy4NCkFueXRo
-aW5nIHRoYXQgbmVlZHMgYSBiaWcgYnVmZmVyIGNhbiBkaXJlY3RseSBjb3B5IHRvL2Zyb20NCmFu
-ZCB1c2VyIGJ1ZmZlcnMsIGtlcm5lbCBjYWxsZXJzIHdvdWxkIG5lZWQgdG8gcGFzcyBhIGJpZyBl
-bm91Z2gNCmJ1ZmZlci4NCg0KQnV0IHRoZSBjb2RlIGZvciBzbWFsbCBidWZmZXJzIHdvdWxkIGJl
-IG11Y2ggc2ltcGxpZmllZCBmb3INCmJvdGgga2VybmVsIGFuZCB1c2VyIGFjY2Vzcy4NCg0KCURh
-dmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
-dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
-Mzg2IChXYWxlcykNCg==
+On Tue, May 2, 2023 at 11:31=E2=80=AFPM Tung Quang Nguyen
+<tung.q.nguyen@dektech.com.au> wrote:
+>
+> >When doing link mtu negotiation, a malicious peer may send Activate msg
+> >with a very small mtu, e.g. 4 in Shuang's testing, without checking for
+> >the minimum mtu, l->mtu will be set to 4 in tipc_link_proto_rcv(), then
+> >n->links[bearer_id].mtu is set to 4294967228, which is a overflow of
+> >'4 - INT_H_SIZE - EMSG_OVERHEAD' in tipc_link_mss().
+> >
+> >With tipc_link.mtu =3D 4, tipc_link_xmit() kept printing the warning:
+> >
+> > tipc: Too large msg, purging xmit list 1 5 0 40 4!
+> > tipc: Too large msg, purging xmit list 1 15 0 60 4!
+> >
+> >And with tipc_link_entry.mtu 4294967228, a huge skb was allocated in
+> >named_distribute(), and when purging it in tipc_link_xmit(), a crash
+> >was even caused:
+> >
+> >  general protection fault, probably for non-canonical address 0x2100001=
+011000dd: 0000 [#1] PREEMPT SMP PTI
+> >  CPU: 0 PID: 0 Comm: swapper/0 Kdump: loaded Not tainted 6.3.0.neta #19
+> >  RIP: 0010:kfree_skb_list_reason+0x7e/0x1f0
+> >  Call Trace:
+> >   <IRQ>
+> >   skb_release_data+0xf9/0x1d0
+> >   kfree_skb_reason+0x40/0x100
+> >   tipc_link_xmit+0x57a/0x740 [tipc]
+> >   tipc_node_xmit+0x16c/0x5c0 [tipc]
+> >   tipc_named_node_up+0x27f/0x2c0 [tipc]
+> >   tipc_node_write_unlock+0x149/0x170 [tipc]
+> >   tipc_rcv+0x608/0x740 [tipc]
+> >   tipc_udp_recv+0xdc/0x1f0 [tipc]
+> >   udp_queue_rcv_one_skb+0x33e/0x620
+> >   udp_unicast_rcv_skb.isra.72+0x75/0x90
+> >   __udp4_lib_rcv+0x56d/0xc20
+> >   ip_protocol_deliver_rcu+0x100/0x2d0
+> >
+> >This patch fixes it by checking the new mtu against tipc_bearer_min_mtu(=
+),
+> >and not updating mtu if it is too small.
+> >
+> >v1->v2:
+> >  - do the msg_max check against the min MTU early, as Tung suggested.
+> Please move above version change comment to after "---".
+I think it's correct to NOT use ''---' for version changes, see the
+comment from davem:
 
+  https://lore.kernel.org/netdev/20160415.172858.253625178036493951.davem@d=
+avemloft.net/
+
+unless there are some new rules I missed.
+
+Thanks.
+
+> >
+> >Fixes: ed193ece2649 ("tipc: simplify link mtu negotiation")
+> >Reported-by: Shuang Li <shuali@redhat.com>
+> >Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> >---
+> > net/tipc/link.c | 9 ++++++---
+> > 1 file changed, 6 insertions(+), 3 deletions(-)
+> >
+> >diff --git a/net/tipc/link.c b/net/tipc/link.c
+> >index b3ce24823f50..2eff1c7949cb 100644
+> >--- a/net/tipc/link.c
+> >+++ b/net/tipc/link.c
+> >@@ -2200,7 +2200,7 @@ static int tipc_link_proto_rcv(struct tipc_link *l=
+, struct sk_buff *skb,
+> >       struct tipc_msg *hdr =3D buf_msg(skb);
+> >       struct tipc_gap_ack_blks *ga =3D NULL;
+> >       bool reply =3D msg_probe(hdr), retransmitted =3D false;
+> >-      u32 dlen =3D msg_data_sz(hdr), glen =3D 0;
+> >+      u32 dlen =3D msg_data_sz(hdr), glen =3D 0, msg_max;
+> >       u16 peers_snd_nxt =3D  msg_next_sent(hdr);
+> >       u16 peers_tol =3D msg_link_tolerance(hdr);
+> >       u16 peers_prio =3D msg_linkprio(hdr);
+> >@@ -2239,6 +2239,9 @@ static int tipc_link_proto_rcv(struct tipc_link *l=
+, struct sk_buff *skb,
+> >       switch (mtyp) {
+> >       case RESET_MSG:
+> >       case ACTIVATE_MSG:
+> >+              msg_max =3D msg_max_pkt(hdr);
+> >+              if (msg_max < tipc_bearer_min_mtu(l->net, l->bearer_id))
+> >+                      break;
+> >               /* Complete own link name with peer's interface name */
+> >               if_name =3D  strrchr(l->name, ':') + 1;
+> >               if (sizeof(l->name) - (if_name - l->name) <=3D TIPC_MAX_I=
+F_NAME)
+> >@@ -2283,8 +2286,8 @@ static int tipc_link_proto_rcv(struct tipc_link *l=
+, struct sk_buff *skb,
+> >               l->peer_session =3D msg_session(hdr);
+> >               l->in_session =3D true;
+> >               l->peer_bearer_id =3D msg_bearer_id(hdr);
+> >-              if (l->mtu > msg_max_pkt(hdr))
+> >-                      l->mtu =3D msg_max_pkt(hdr);
+> >+              if (l->mtu > msg_max)
+> >+                      l->mtu =3D msg_max;
+> >               break;
+> >
+> >       case STATE_MSG:
+> >--
+> >2.39.1
+>
 
