@@ -1,219 +1,174 @@
-Return-Path: <netdev+bounces-75-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-77-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 477DB6F50A6
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 09:09:04 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id C6AA76F50C4
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 09:10:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 88FBC1C20A8F
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 07:09:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D1FF51C20B4F
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 07:10:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7A18111D;
-	Wed,  3 May 2023 07:09:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A31C1FA6;
+	Wed,  3 May 2023 07:10:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADAFDEBF
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 07:09:00 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE28269D
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 00:08:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683097738;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pHJN0MwZt1Qkyg0FwWKVsL71HOfF8cRCNsnTVzqCki0=;
-	b=D0/wd8rnEWmWlMr/XtAwPijjPgbMq3yz/a2EVkmuofSTffQGzLgpGF8mN/V2Jxn3wkdOyB
-	5d3gacQGLWuGX6k6KvcUmopGW4FLfyRmQHYnAiy73XmV+Kas85MRoiu6d1EQRrLTHdUvRJ
-	rHz1AFHTLD06s9XnbCrv+pJXicnhUJs=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-47-1X6Zm6a-MdCcyfYQJuJoLA-1; Wed, 03 May 2023 03:08:57 -0400
-X-MC-Unique: 1X6Zm6a-MdCcyfYQJuJoLA-1
-Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-3062b468a36so1091616f8f.1
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 00:08:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683097736; x=1685689736;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :content-language:references:cc:to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pHJN0MwZt1Qkyg0FwWKVsL71HOfF8cRCNsnTVzqCki0=;
-        b=lj9yeuiQhhX86u+EANSnlY0HEUDc+5zYhm3FdUd2bdw1j6bBnlp2Jp5J8IFak4dN8Y
-         dSQN44bdjY/aAhvST2SnQMaJewCQb79fxnrpDswIUvtJOB14dPK/22KWN9OkuOomJLfz
-         fHTeSkC/ww97VJXGFtuSgDVugQ5jSxIq8G7Hos6Z+9UCgwr2F8KnBS1RS4FL7asPQlNl
-         5litco5HPMoYOAAQQEYddoZ8ltiAWTKX549QJTUsXZXS+Qcu8d4oIKCmhz3WBe5s3v46
-         z5kB+6IG9LVVlUajqq4e6/Z0Gxg9maoxnhDjfpCUuLI6C/BPqFQORXW1p/6lkga5xDQc
-         mRQQ==
-X-Gm-Message-State: AC+VfDxqjTGNhNnpQWSlePkiSZ2aTHLZdOH3p678kLN9V76ZOqZfL7Ye
-	WatNCLvgm8RaQeoOB+Zj7Pikh9M7ziwHBSmZqqURfolQmyr4fgGu3uHhLTM0hT8i3RBEhpNg7KR
-	coTUdBiaG60gbEJh8
-X-Received: by 2002:a5d:6410:0:b0:306:3a28:f950 with SMTP id z16-20020a5d6410000000b003063a28f950mr3061912wru.7.1683097735925;
-        Wed, 03 May 2023 00:08:55 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7NT02o8A0M+QHO4dvjy7p83osecccZDAuDP/z0mhC15FeHFbBpxcPnSHMrIpl83AzT6cM6xQ==
-X-Received: by 2002:a5d:6410:0:b0:306:3a28:f950 with SMTP id z16-20020a5d6410000000b003063a28f950mr3061838wru.7.1683097735470;
-        Wed, 03 May 2023 00:08:55 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c711:6a00:9109:6424:1804:a441? (p200300cbc7116a00910964241804a441.dip0.t-ipconnect.de. [2003:cb:c711:6a00:9109:6424:1804:a441])
-        by smtp.gmail.com with ESMTPSA id v2-20020a1cf702000000b003f32f013c3csm962580wmh.6.2023.05.03.00.08.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 May 2023 00:08:54 -0700 (PDT)
-Message-ID: <1b34e9a4-83c0-2f44-1457-dd8800b9287a@redhat.com>
-Date: Wed, 3 May 2023 09:08:52 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FAB41C39
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 07:10:21 +0000 (UTC)
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27212736;
+	Wed,  3 May 2023 00:10:14 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34369xsr003337;
+	Wed, 3 May 2023 00:09:59 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=6Mcsx5t9iR9kcFBpaV+wzj9CUlqadPfT07oLtT9p/0k=;
+ b=a6iHMGBVq87mTHctmJEogOUBVU7gDbHsdggE48vyKmjn99es2ofQhEnwFMHRyxfa+BZm
+ BLH9QsrULCCwQyIgMZW/ryG3lXemCIeFwICXgHI9zlCX13JjYXLc6ZpDBQGwcABwDIY6
+ iaXatoil+aOONwfjD47JyRcuIj1JWHofuEBKAp43SrrcoqM8SZl1hRTtPI1ld2HAqfqc
+ O6g18CG/diFxHPdUgXx7SUNhxSumCOCNSooYoi7Ioihc9bVvRJufpin83siKyYGHTBiy
+ foBorHIgRiOOFdXq1J8BQpYnYxelSg1gIRTYlgUlabhNmYLpTNaew4lXGyxxyWPZMgrJ fg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3q92rp3m6s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+	Wed, 03 May 2023 00:09:58 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 3 May
+ 2023 00:09:51 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Wed, 3 May 2023 00:09:51 -0700
+Received: from hyd1425.marvell.com (unknown [10.29.37.83])
+	by maili.marvell.com (Postfix) with ESMTP id 1D3D23F70A6;
+	Wed,  3 May 2023 00:09:46 -0700 (PDT)
+From: Sai Krishna <saikrishnag@marvell.com>
+To: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <simon.horman@corigine.com>,
+        <leon@kernel.org>, <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <lcherian@marvell.com>, <jerinj@marvell.com>, <hkelam@marvell.com>,
+        <sbhatta@marvell.com>
+CC: Sai Krishna <saikrishnag@marvell.com>
+Subject: [net PATCH v5 00/11] octeontx2: Miscellaneous fixes
+Date: Wed, 3 May 2023 12:39:33 +0530
+Message-ID: <20230503070944.960190-1-saikrishnag@marvell.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-To: Matthew Rosato <mjrosato@linux.ibm.com>,
- Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
- Matthew Wilcox <willy@infradead.org>,
- Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
- Leon Romanovsky <leon@kernel.org>, Christian Benvenuti <benve@cisco.com>,
- Nelson Escobar <neescoba@cisco.com>, Bernard Metzler <bmt@zurich.ibm.com>,
- Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>,
- Arnaldo Carvalho de Melo <acme@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>,
- Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
- Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>,
- Bjorn Topel <bjorn@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>,
- Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
- Jonathan Lemon <jonathan.lemon@gmail.com>,
- "David S . Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Christian Brauner <brauner@kernel.org>,
- Richard Cochran <richardcochran@gmail.com>,
- Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
- Jesper Dangaard Brouer <hawk@kernel.org>,
- John Fastabend <john.fastabend@gmail.com>, linux-fsdevel@vger.kernel.org,
- linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
- bpf@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
- Jan Kara <jack@suse.cz>, "Kirill A . Shutemov" <kirill@shutemov.name>,
- Pavel Begunkov <asml.silence@gmail.com>, Mika Penttila
- <mpenttil@redhat.com>, Dave Chinner <david@fromorbit.com>,
- Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
- "Paul E . McKenney" <paulmck@kernel.org>,
- Christian Borntraeger <borntraeger@linux.ibm.com>
-References: <cover.1683067198.git.lstoakes@gmail.com>
- <20d078c5-4ee6-18dc-d3a5-d76b6a68f64e@linux.ibm.com>
-Content-Language: en-US
-From: David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v8 0/3] mm/gup: disallow GUP writing to file-backed
- mappings by default
-In-Reply-To: <20d078c5-4ee6-18dc-d3a5-d76b6a68f64e@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: QrAfS2EDw5wxNmfugFTLrNCvJlDd8Xho
+X-Proofpoint-GUID: QrAfS2EDw5wxNmfugFTLrNCvJlDd8Xho
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-03_04,2023-04-27_01,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 03.05.23 02:31, Matthew Rosato wrote:
-> On 5/2/23 6:51 PM, Lorenzo Stoakes wrote:
->> Writing to file-backed mappings which require folio dirty tracking using
->> GUP is a fundamentally broken operation, as kernel write access to GUP
->> mappings do not adhere to the semantics expected by a file system.
->>
->> A GUP caller uses the direct mapping to access the folio, which does not
->> cause write notify to trigger, nor does it enforce that the caller marks
->> the folio dirty.
->>
->> The problem arises when, after an initial write to the folio, writeback
->> results in the folio being cleaned and then the caller, via the GUP
->> interface, writes to the folio again.
->>
->> As a result of the use of this secondary, direct, mapping to the folio no
->> write notify will occur, and if the caller does mark the folio dirty, this
->> will be done so unexpectedly.
->>
->> For example, consider the following scenario:-
->>
->> 1. A folio is written to via GUP which write-faults the memory, notifying
->>     the file system and dirtying the folio.
->> 2. Later, writeback is triggered, resulting in the folio being cleaned and
->>     the PTE being marked read-only.
->> 3. The GUP caller writes to the folio, as it is mapped read/write via the
->>     direct mapping.
->> 4. The GUP caller, now done with the page, unpins it and sets it dirty
->>     (though it does not have to).
->>
->> This change updates both the PUP FOLL_LONGTERM slow and fast APIs. As
->> pin_user_pages_fast_only() does not exist, we can rely on a slightly
->> imperfect whitelisting in the PUP-fast case and fall back to the slow case
->> should this fail.
->>
->> v8:
->> - Fixed typo writeable -> writable.
->> - Fixed bug in writable_file_mapping_allowed() - must check combination of
->>    FOLL_PIN AND FOLL_LONGTERM not either/or.
->> - Updated vma_needs_dirty_tracking() to include write/shared to account for
->>    MAP_PRIVATE mappings.
->> - Move to open-coding the checks in folio_pin_allowed() so we can
->>    READ_ONCE() the mapping and avoid unexpected compiler loads. Rename to
->>    account for fact we now check flags here.
->> - Disallow mapping == NULL or mapping & PAGE_MAPPING_FLAGS other than
->>    anon. Defer to slow path.
->> - Perform GUP-fast check _after_ the lowest page table level is confirmed to
->>    be stable.
->> - Updated comments and commit message for final patch as per Jason's
->>    suggestions.
-> 
-> Tested again on s390 using QEMU with a memory backend file (on ext4) and vfio-pci -- This time both vfio_pin_pages_remote (which will call pin_user_pages_remote(flags | FOLL_LONGTERM)) and the pin_user_pages_fast(FOLL_WRITE | FOLL_LONGTERM) in kvm_s390_pci_aif_enable are being allowed (e.g. returning positive pin count)
+This patchset includes following fixes.
 
-At least it's consistent now ;) And it might be working as expected ...
+Patch #1 Fix for the race condition while updating APR table 
+ 
+Patch #2 Fix end bit position in NPC scan config 
 
-In v7:
-* pin_user_pages_fast() succeeded
-* vfio_pin_pages_remote() failed
+Patch #3 Fix depth of CAM, MEM table entries
 
-But also in v7:
-* GUP-fast allows pinning (anonymous) pages in MAP_PRIVATE file
-   mappings
-* Ordinary GUP allows pinning pages in MAP_PRIVATE file mappings
+Patch #4 Fix in increase the size of DMAC filter flows
 
-In v8:
-* pin_user_pages_fast() succeeds
-* vfio_pin_pages_remote() succeeds
+Patch #5 Fix driver crash resulting from invalid interface type
+information retrieved from firmware
 
-But also in v8:
-* GUP-fast allows pinning (anonymous) pages in MAP_PRIVATE file
-   mappings
-* Ordinary GUP allows pinning pages in MAP_PRIVATE file mappings
+Patch #6 Fix incorrect mask used while installing filters involving
+fragmented packets
 
+Patch #7 Fixes for NPC field hash extract w.r.t IPV6 hash reduction,
+         IPV6 filed hash configuration.
 
-I have to speculate, but ... could it be that you are using a private 
-mapping?
+Patch #8 Fix for NPC hardware parser configuration destination 
+         address hash, IPV6 endianness issues.
 
-In QEMU, unfortunately, the default for memory-backend-file is 
-"share=off" (private) ... for memory-backend-memfd it is "share=on" 
-(shared). The default is stupid ...
+Patch #9 Fix for skipping mbox initialization for PFs disabled by firmware.
 
-If you invoke QEMU manually, can you specify "share=on" for the 
-memory-backend-file? I thought libvirt would always default to 
-"share=on" for file mappings (everything else doesn't make much sense) 
-... but you might have to specify
-	<access mode="shared"/>
-in addition to
-	<source type="file"/>
+Patch #10 Fix disabling packet I/O in case of mailbox timeout.
+
+Patch #11 Fix detaching LF resources in case of VF probe fail.
+
+Geetha sowjanya (1):
+  octeontx2-af: Secure APR table update with the lock
+
+Hariprasad Kelam (1):
+  octeontx2-af: Add validation for lmac type
+
+Ratheesh Kannoth (6):
+  octeontx2-af: Fix start and end bit for scan config
+  octeontx2-af: Fix depth of cam and mem table.
+  octeontx2-pf: Increase the size of dmac filter flows
+  octeontx2-af: Update/Fix NPC field hash extract feature
+  octeontx2-af: Fix issues with NPC field hash extract
+  octeontx2-af: Skip PFs if not enabled
+
+Subbaraya Sundeep (2):
+  octeontx2-pf: Disable packet I/O for graceful exit
+  octeontx2-vf: Detach LF resources on probe cleanup
+
+Suman Ghosh (1):
+  octeontx2-af: Update correct mask to filter IPv4 fragments
+
+---
+v5 changes:
+	Fixed review comments given by Simon Horman
+        1. Split the patch.
+	2. Modified/Elaborated commit messages.
+	3. Fixed duplicate code using goto statements.
+
+v4 changes:
+	Fixed review comments given by Simon Horman
+        1. Replaced kcalloc() with bitmap_zalloc().
+	2. Modified/Elaborated commit messages.
+        3. Fixed end bit position in NPC exact match bitmap enable.
+
+v3 changes:
+	Fixed review comments given by Simon Horman
+        1. Split the patches
+        2. Replaced devm_kcalloc() with kcalloc.
+        3. Remove un-necessary validation before free_percpu
+	4. Modified/Elaborated commit message
+        5. Move the lock to inner function "rvu_get_lmtaddr()" to
+           avoid synchronization issues.
+
+v2 changes:
+	Fixed review comments given by Leon Romanovsky
+	1. Updated lmac_type in case of invalid lmac
+	2. Modified commit message
+
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   |   8 ++
+ .../net/ethernet/marvell/octeontx2/af/mbox.c  |   5 +-
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  19 ++-
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |  49 +++++--
+ .../ethernet/marvell/octeontx2/af/rvu_cn10k.c |  13 +-
+ .../marvell/octeontx2/af/rvu_npc_fs.c         |  26 ++--
+ .../marvell/octeontx2/af/rvu_npc_fs.h         |   4 +
+ .../marvell/octeontx2/af/rvu_npc_hash.c       | 125 ++++++++++--------
+ .../marvell/octeontx2/af/rvu_npc_hash.h       |  10 +-
+ .../marvell/octeontx2/nic/otx2_common.h       |   4 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  11 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_tc.c  |   2 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |   2 +-
+ 13 files changed, 187 insertions(+), 91 deletions(-)
 
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
 
