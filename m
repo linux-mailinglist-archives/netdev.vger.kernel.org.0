@@ -1,357 +1,211 @@
-Return-Path: <netdev+bounces-215-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-216-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 20B4A6F5F14
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 21:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 674E86F5F1F
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 21:29:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 67EA92817C8
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 19:26:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2010A2817D5
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 19:29:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A0960DF67;
-	Wed,  3 May 2023 19:26:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB712DF72;
+	Wed,  3 May 2023 19:29:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8727029A8
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 19:26:44 +0000 (UTC)
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E9E6A77;
-	Wed,  3 May 2023 12:26:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683142002; x=1714678002;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=slMgmYOSxKLgS8bbjGFOb1rliN6mtZHs/LGQ9p8/u/8=;
-  b=Cyh8Eg+861YMBEgt0ADniAx/IUOICr98OWIxwoHq6vrDBdf/+k238CI3
-   zWW12Fg4dVOZdEF0vIg3llQDyvQdpejl6yKaxJjT9YaK2rW0MzGdoSrbg
-   4k/dkDXndoB/YTueGZkRQvUzFfp/E2sc6WAON8gWSNtjIg27FisfSTvn3
-   uscxP9jcdSYtOudn4uODh43A5SmS1k+TvTCTZSaRwtdl97kfBWWn/N84E
-   WgKsc4u+jYytzctOyVgTaxkgV6BGybLn+QwNuAMcXxHV53X2jjGl1d/wl
-   PvdQKFiA74x+LJB8FiFJ1E64uU0NrBWHi987s59XULMEqUVBlLt49OdFN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10699"; a="435059496"
-X-IronPort-AV: E=Sophos;i="5.99,248,1677571200"; 
-   d="scan'208";a="435059496"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2023 12:26:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10699"; a="690819175"
-X-IronPort-AV: E=Sophos;i="5.99,248,1677571200"; 
-   d="scan'208";a="690819175"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga007.jf.intel.com with ESMTP; 03 May 2023 12:26:41 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 3 May 2023 12:26:41 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 3 May 2023 12:26:40 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 3 May 2023 12:26:40 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.49) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 3 May 2023 12:26:40 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BRD2X04yZlWSNQZym1hsyYlkNMWDBNIFApbP939rgEImcxmQ4fHVIEyFZi/IZB9Rs+IG6h6kiwuVoHKAFIB2m7Z9HcS3W5NtLxRXyOkpcPZ71cQywmXSrng3tizQGQftNP5MU6CujrNpZC4Whx37gfxP4ZtI0FfMp9qEHXLt7FI4gKoefl2XiKr+7gtqSVcM6hYnxeZdWqhNm1cKpl7oHe72lzWUTDs7r1jgFOzugTuhl07OmE8zgOYGswdE08dGR3aSQ86c8q8X9Q+GeD2wJG2GHPtBtR1aV/epbxcy4ZdgvgFQHKnwz7P7ir/NN4X+0rSvg2+QlYOfaeei0uSRXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uZL1kt+ZplBqELcrr1xQeMrLqN6GShfAcqWjajzH3Qo=;
- b=P08F2rMtvFSPX8gqr3h/Q7UbDDFoa0RmH2103hBMzLGicLHJ6/51q2YPvUyQ8YADOOhznaS6EVGJbsHe+tvK6bEgqhGgSTHg4816KkhutnmsNAW5J+Jw0kfAvU/S7WIXKe5qV67VUTeGEvVAVbLDbUyLxiIVgn8AK1nOJU7949C0c/+A+Lwj54wh42w+QDdO36N4i577tVwLiZZ2qwplVOi4oJhAcMH7ZKcW2dE8+nke3oAz2j4RkGBtaf3UA5+1SQH/Q/fn8Rn5ycLph+ek0HxS249N2DHcUCqOAeMGbofVt+/BoMfv4AshxTzttABYbwrHulGnZTGVgvQWuz3iVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SN7PR11MB7420.namprd11.prod.outlook.com (2603:10b6:806:328::20)
- by DM6PR11MB4609.namprd11.prod.outlook.com (2603:10b6:5:28f::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.22; Wed, 3 May
- 2023 19:26:37 +0000
-Received: from SN7PR11MB7420.namprd11.prod.outlook.com
- ([fe80::5194:555b:c468:f14f]) by SN7PR11MB7420.namprd11.prod.outlook.com
- ([fe80::5194:555b:c468:f14f%7]) with mapi id 15.20.6363.022; Wed, 3 May 2023
- 19:26:37 +0000
-Message-ID: <60859f1d-3ca1-8318-705f-2964834f071d@intel.com>
-Date: Wed, 3 May 2023 13:26:27 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [Intel-wired-lan] [PATCH net v4 2/2] iavf: Fix out-of-bounds when
- setting channels on remove
-Content-Language: en-US
-To: Ding Hui <dinghui@sangfor.com.cn>, <davem@davemloft.net>,
-	<edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-	<intel-wired-lan@lists.osuosl.org>, <jesse.brandeburg@intel.com>,
-	<anthony.l.nguyen@intel.com>
-CC: <keescook@chromium.org>, <grzegorzx.szczurek@intel.com>,
-	<mitch.a.williams@intel.com>, <linux-kernel@vger.kernel.org>,
-	<huangcun@sangfor.com.cn>, <gregory.v.rose@intel.com>,
-	<michal.kubiak@intel.com>, <jeffrey.t.kirsher@intel.com>,
-	<simon.horman@corigine.com>, <pengdonglin@sangfor.com.cn>,
-	<netdev@vger.kernel.org>, <linux-hardening@vger.kernel.org>
-References: <20230503031541.27855-1-dinghui@sangfor.com.cn>
- <20230503031541.27855-3-dinghui@sangfor.com.cn>
-From: Ahmed Zaki <ahmed.zaki@intel.com>
-In-Reply-To: <20230503031541.27855-3-dinghui@sangfor.com.cn>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0006.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:15::11) To SN7PR11MB7420.namprd11.prod.outlook.com
- (2603:10b6:806:328::20)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A4ABDF44
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 19:29:21 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2DC7AB6
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 12:29:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683142150;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jRwjvZ2VKO5tJCw7F2X8M4sdJim7dIHGW9ircHbAPdA=;
+	b=PH292c4aaBNGaQ6dmTxLO8H9iX1j/+tEvfBygeb1vPJxXz7qM/sOQYEypxdxYzEhYdR4Np
+	McJ3KcnXgJpIpqs1ugumFwEXWLQNj9/LUdkdMx4D/ec6RXzJe7lZVs6RWC2zMcbA1fq5x9
+	g9boZRUlRKzGxsfPDrX7BhcSIIjpFlg=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-195-4RIABJoxN7qF4ViH_-bKWA-1; Wed, 03 May 2023 15:29:09 -0400
+X-MC-Unique: 4RIABJoxN7qF4ViH_-bKWA-1
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-61b5af37298so23097376d6.2
+        for <netdev@vger.kernel.org>; Wed, 03 May 2023 12:29:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683142149; x=1685734149;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jRwjvZ2VKO5tJCw7F2X8M4sdJim7dIHGW9ircHbAPdA=;
+        b=UqrhiTbHwl6ZSUqvym61IKZ1n7ZLHjX9i3Yrr1YfB9HBRm8DsH2Kv7EtnzgrPrfUSj
+         lwjtThYepSDCHv904GZ13qI2RclrpWP/dDEMvIQbxc7G9ule1ZdmW/5RbM0knRMCJoNi
+         5Wis9JS9OAc1jrgzsDx4T4D6M7ljqtNrHQUCn0MiGJbbXh/f8+eSlvknnoXqL41XGlJj
+         4nHUB9G2MdqkEVCN7qx6tQQ0NfSfWj14uBuhN6vrOOW1eYCPDMdBftD2hu4pIP90KA1o
+         o/LZBLlTofIwSwKd/VGGt+BADvvmiH0xyPapCZ97PCk70ynObYmJhHWl+9IBqTs1NfyC
+         lUiQ==
+X-Gm-Message-State: AC+VfDxm04uGDr9yoNqogLB6N7DxH/COUKKyAsCzn51+w23Gs2bXvpVK
+	pgGKUu620tY+2fOnD694gZ50EW4hYlo6z/2OiiqaZAeyFnEHISB7Qc/sAsLUuEdgWVyPf8B03vE
+	aXePvACstq65GjwJpQnoW4IZt
+X-Received: by 2002:a05:6214:1949:b0:61b:6c88:4bd3 with SMTP id q9-20020a056214194900b0061b6c884bd3mr8654980qvk.47.1683142149160;
+        Wed, 03 May 2023 12:29:09 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7VOT2ZatXLqDl2g8Nzo8ESPBlGcGo/BveO2meXQifLvoHE06HAOD7NyAv1gygW9NYItHalLA==
+X-Received: by 2002:a05:6214:1949:b0:61b:6c88:4bd3 with SMTP id q9-20020a056214194900b0061b6c884bd3mr8654955qvk.47.1683142148829;
+        Wed, 03 May 2023 12:29:08 -0700 (PDT)
+Received: from [10.0.0.97] ([24.225.234.80])
+        by smtp.gmail.com with ESMTPSA id w29-20020ac84d1d000000b003e4ee0f5234sm11845724qtv.87.2023.05.03.12.29.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 May 2023 12:29:08 -0700 (PDT)
+Message-ID: <d7ccfcc9-b446-66ad-ab04-baa1cdbbe0ce@redhat.com>
+Date: Wed, 3 May 2023 15:29:07 -0400
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN7PR11MB7420:EE_|DM6PR11MB4609:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5e9eea1c-54af-433e-3a77-08db4c0c5001
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EdZ9ZjJnVO0xJKjW3I6I/XxaMKnEebno73q7Dflpu+Pg8Yvy4K6yP1xasgVt+E4urL+7axQUBPTiImDSPeOC29KIAWvtWPjheM9JW9U2DZ2rEWM1dQDjbPsMfBgg6mq6IX6yGfTqtEo9s3bXSsZD5nbx/osrg6f7t+hwBBwePxuTusQKtE9aYUfskyl4iU244WwK70PDFvGLYRw26ggFLEcEfMQiDGRsmLAYGQ+2bC86gUz/KujbktYNfaxqursgrKwUwT1yUWU6zfmSVhbkG8lJKdEQ5tarotc3rgxDrN2D3y/wo+gm3ooB+Hrc40gc4n9ru++D8Og3HbziTnRJ9Is8zt9h2AciRNYdkOuS0SI2VqLoSJE9RehCJ1lVxSxaDYG3QogzklZllwkBJYJdFbPIqubSfMQYl0Nawb6jM9ZVE3blVE2hKaRnhEHwacuz0EP9Br8pOj3yEEE8SlU+g+xJXmfqKQGhYufkd+zqoTj96MBYLL6A4f5DVPproy46jPfsPchp6HvI3sGCH7OIm/9SJK7DNzzTLXP7Vrm2jcKKVBboF5+6Poi6hycDk7KX92PA61KyXYz3Vi9yipNQKeen7Zfx46bEExGTq0+E3um0NWHKxDavjIndcB+BqU2nOA9YHLoBY90sLsGBcJ7sGw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN7PR11MB7420.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(39860400002)(366004)(396003)(376002)(136003)(451199021)(38100700002)(66946007)(316002)(84970400001)(6636002)(4326008)(31686004)(41300700001)(6486002)(6666004)(82960400001)(66476007)(478600001)(66556008)(8676002)(86362001)(31696002)(26005)(5660300002)(7416002)(44832011)(8936002)(6512007)(6506007)(53546011)(2906002)(2616005)(186003)(36756003)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R21XekRIUFNEL21tQXc2NmZBZE5mOGhUYXZjYUorQ2p2dVBjQ1NZQnBwREIw?=
- =?utf-8?B?bjJ2U3FJRmVRellyQmcva0pPZ3Y4UkFYTEk2dm15eEZtOE5CSEZGSTdiTC9v?=
- =?utf-8?B?VlRWeUJhNTYrSGZOM0ZtMUZ5RGJ5b2Q3djQxcSs5UVlSZWU4UWdTWmRrckNx?=
- =?utf-8?B?LzhkbU4vbjdoQTNFZzcrdDZSVGg3OWdzYlhYc2IwNGJJSFl5cEFpWUhmTTl1?=
- =?utf-8?B?Z3JEWnNtK2o0ZktYaHJzN0NxNC9tRXVjMSszV1c0SDdNL1VNaXArNVN2Z3Za?=
- =?utf-8?B?bzFxOGZEZEhBRWJtZ3dOU3hFTCtPSkxZdDhUUzFHZG9GKzdLNmlZV3RtKzRj?=
- =?utf-8?B?QkgrSlY1WTRvR3p2bUFqVjRHQWJ0M0Z5NUVONVRnWVBOeWEwejVIRFBxTVE0?=
- =?utf-8?B?QkJUeVpnSEJ0bm5qMVJheXl6RzBHOW5tVEgrYzVNNmRLdXFFQWVIc05NUHE2?=
- =?utf-8?B?ZVlNNldPN2xDOGdHQWcvaWVnNGpWTGd3dkhTTitaK3BSeGR4eDdZZVl0QWRX?=
- =?utf-8?B?UjlvdWRLbkVDc0tQRUkzUmlyeXgvMi9OWG8wWjJTZ2grbG9qQUJ3M2o4K3FY?=
- =?utf-8?B?dkV4RDFqREMzenU3d2lGSlY3ak1wbVFiYWh0ZFhhcFB2MTZZU1ByV1FiVHRy?=
- =?utf-8?B?UEFabGVKcnp6VlA2aTYxdVJlR1RoSktERktjbWpzTG8vbXFVUEwxSmFPZmZs?=
- =?utf-8?B?VU5qcnE0OUNnbWIwTGJVem15cThISVVZZHhoZ0Z2djYydjltaGNmcTM2UWw3?=
- =?utf-8?B?U3NGdmZ2eGJCREFvRzVqdkM2NHpVSStDMUtDZjZQeWpTcmY2dFZMMVMrZ0F3?=
- =?utf-8?B?NnEwVmJDWWxkUEdHV2JKbTVnNElTd3FydHVudlVyVGlRbWIxSjRDb1BaczVj?=
- =?utf-8?B?Q1NRTnlvV3h5RTZoRGFPSXlDdFFGWFZmcUROYlgvdm5URWJ0bmxSTmpqbTN1?=
- =?utf-8?B?aGJJNmZ4ODQ3Ymw4dExaay9OVUdJbjhkazNzd3VJMk90SlBRdXhPd25QN3g2?=
- =?utf-8?B?Z0FXanVPWWxhNURaT20rWkttVFlLL0NSZVZ6RjMxRk5VZTNSSzM2U2k5bHlk?=
- =?utf-8?B?dTZsUjJnd1dmWXpQdXFxeTVXMjFQK1d1V0ZSdnNkdnlzeEFaeGJSYk1YUk5X?=
- =?utf-8?B?ZVp5LzZJSWF5MkZzTmMyMDA5emhRVEUzeStseDhaVTRYVUVwUElxQlU0Nml6?=
- =?utf-8?B?TjVjZ1l4TzdVSVVCditVS09OcU13UWs2U0lQMHU5VmY5bDJXTHJhdEpJaWYy?=
- =?utf-8?B?aVppTXI5ck00S3JLRi83ZUVBSVRqd2NaUGoweXV6ZjlXZmlNQnFtM1FISnF0?=
- =?utf-8?B?NktQM2VRZy9hT3dRQStOaklLK2JaWFpHcnIvbWcycHVUbjg1SlVGZGM5RGk3?=
- =?utf-8?B?bXpCUUtQM1dLckI1S1QvNnpNOStRT3RHQnQ5QWpGc3RGb0dOWmt1aEJFNUl5?=
- =?utf-8?B?TjZ1bjc1Nkw4SDBBSHh1NTdwS05GNzVJdFE1cmVVQUhJeGdKcWpWUW5wWGxj?=
- =?utf-8?B?b2l4RUNyY2IySWt1TzVhRjVNck0wcWljSS9CKzVLK0hUQXM5alFDb240eEJU?=
- =?utf-8?B?bXBKdzROWG0wQXcyN0NKTzZaWW1kSGhTWDliUzk5OWZWTGQzODVqdzJPeitq?=
- =?utf-8?B?M1JDTnpMWHV3ZDh6N1ZiNVcwa09DcVJxa2Y1bis4MnBZcGF1Nlh6WWpiMUFu?=
- =?utf-8?B?bTFRZW9xU1FvUGNuczhmdkxZWlFIeHk5c0dPM1BQekZqMmRhTjV0bWFXSzdz?=
- =?utf-8?B?ak9HVG9WZVRSbzEwcmdFZk9QV3ptU25GbzFHNWFrWFlsM2lVR3NOSGJ2dVRL?=
- =?utf-8?B?NElaRUFQNmxab290UWFhR0VheExHMW1kNGRtZVpwM0tTQXpXamExTVJVL2VT?=
- =?utf-8?B?dVkxbi9LdVdCaHhYTlYwMEJyZ2kxdm04NlBUdTduMEd5NzdJNlBwTWZpNmMw?=
- =?utf-8?B?a251eXpEQldYUDdMTmhOY0hxWWNWTkEyMnpEQ0VXQUx2RC9FT002cDRIRHlJ?=
- =?utf-8?B?QVQyc01UQWZqZjYxSEhPMk5vWWd0MDM0aVRxbHE1YlFNeUtDbHlvNGNySXFE?=
- =?utf-8?B?cVFneTFTTU12NklTUGtzRXVibUhyU3ZPT1VibXhVUmw4VGdyWFpoaGRTTU1W?=
- =?utf-8?Q?oNWFHNWBiSqZj7S6JDHr26dng?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e9eea1c-54af-433e-3a77-08db4c0c5001
-X-MS-Exchange-CrossTenant-AuthSource: SN7PR11MB7420.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2023 19:26:37.1765
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iyQNKJBvJxySflyudnO1bPzuhk1gApUq893PyHtuUiUy0Q4fbLmjolaqGPREPr6vLOJsmlNLOMYKzDI0QZLeTA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4609
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-8.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCHv2 net 2/3] tipc: do not update mtu if msg_max is too small
+ in mtu negotiation
+To: Xin Long <lucien.xin@gmail.com>,
+ Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
+Cc: network dev <netdev@vger.kernel.org>,
+ "tipc-discussion@lists.sourceforge.net"
+ <tipc-discussion@lists.sourceforge.net>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "kuba@kernel.org" <kuba@kernel.org>, Eric Dumazet <edumazet@google.com>,
+ Paolo Abeni <pabeni@redhat.com>
+References: <cover.1683065352.git.lucien.xin@gmail.com>
+ <0d328807d5087d0b6d03c3d2e5f355cd44ed576a.1683065352.git.lucien.xin@gmail.com>
+ <DB9PR05MB90784F5E870CF98996BD406A886C9@DB9PR05MB9078.eurprd05.prod.outlook.com>
+ <CADvbK_f5YPuY0eaZj5JcixUU7rFQosuAWg8PdorrGz08ve6DmA@mail.gmail.com>
+Content-Language: en-US
+From: Jon Maloy <jmaloy@redhat.com>
+In-Reply-To: <CADvbK_f5YPuY0eaZj5JcixUU7rFQosuAWg8PdorrGz08ve6DmA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
-On 2023-05-02 21:15, Ding Hui wrote:
-> If we set channels greater when iavf_remove, the waiting reset done
-> will be timeout, then returned with error but changed num_active_queues
-> directly, that will lead to OOB like the following logs. Because the
-> num_active_queues is greater than tx/rx_rings[] allocated actually.
->
-> Reproducer:
->
->    [root@host ~]# cat repro.sh
->    #!/bin/bash
->
->    pf_dbsf="0000:41:00.0"
->    vf0_dbsf="0000:41:02.0"
->    g_pids=()
->
->    function do_set_numvf()
->    {
->        echo 2 >/sys/bus/pci/devices/${pf_dbsf}/sriov_numvfs
->        sleep $((RANDOM%3+1))
->        echo 0 >/sys/bus/pci/devices/${pf_dbsf}/sriov_numvfs
->        sleep $((RANDOM%3+1))
->    }
->
->    function do_set_channel()
->    {
->        local nic=$(ls -1 --indicator-style=none /sys/bus/pci/devices/${vf0_dbsf}/net/)
->        [ -z "$nic" ] && { sleep $((RANDOM%3)) ; return 1; }
->        ifconfig $nic 192.168.18.5 netmask 255.255.255.0
->        ifconfig $nic up
->        ethtool -L $nic combined 1
->        ethtool -L $nic combined 4
->        sleep $((RANDOM%3))
->    }
->
->    function on_exit()
->    {
->        local pid
->        for pid in "${g_pids[@]}"; do
->            kill -0 "$pid" &>/dev/null && kill "$pid" &>/dev/null
->        done
->        g_pids=()
->    }
->
->    trap "on_exit; exit" EXIT
->
->    while :; do do_set_numvf ; done &
->    g_pids+=($!)
->    while :; do do_set_channel ; done &
->    g_pids+=($!)
->
->    wait
->
-> Result:
->
-> [ 3506.152887] iavf 0000:41:02.0: Removing device
-> [ 3510.400799] ==================================================================
-> [ 3510.400820] BUG: KASAN: slab-out-of-bounds in iavf_free_all_tx_resources+0x156/0x160 [iavf]
-> [ 3510.400823] Read of size 8 at addr ffff88b6f9311008 by task repro.sh/55536
-> [ 3510.400823]
-> [ 3510.400830] CPU: 101 PID: 55536 Comm: repro.sh Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
-> [ 3510.400832] Hardware name: Powerleader PR2008AL/H12DSi-N6, BIOS 2.0 04/09/2021
-> [ 3510.400835] Call Trace:
-> [ 3510.400851]  dump_stack+0x71/0xab
-> [ 3510.400860]  print_address_description+0x6b/0x290
-> [ 3510.400865]  ? iavf_free_all_tx_resources+0x156/0x160 [iavf]
-> [ 3510.400868]  kasan_report+0x14a/0x2b0
-> [ 3510.400873]  iavf_free_all_tx_resources+0x156/0x160 [iavf]
-> [ 3510.400880]  iavf_remove+0x2b6/0xc70 [iavf]
-> [ 3510.400884]  ? iavf_free_all_rx_resources+0x160/0x160 [iavf]
-> [ 3510.400891]  ? wait_woken+0x1d0/0x1d0
-> [ 3510.400895]  ? notifier_call_chain+0xc1/0x130
-> [ 3510.400903]  pci_device_remove+0xa8/0x1f0
-> [ 3510.400910]  device_release_driver_internal+0x1c6/0x460
-> [ 3510.400916]  pci_stop_bus_device+0x101/0x150
-> [ 3510.400919]  pci_stop_and_remove_bus_device+0xe/0x20
-> [ 3510.400924]  pci_iov_remove_virtfn+0x187/0x420
-> [ 3510.400927]  ? pci_iov_add_virtfn+0xe10/0xe10
-> [ 3510.400929]  ? pci_get_subsys+0x90/0x90
-> [ 3510.400932]  sriov_disable+0xed/0x3e0
-> [ 3510.400936]  ? bus_find_device+0x12d/0x1a0
-> [ 3510.400953]  i40e_free_vfs+0x754/0x1210 [i40e]
-> [ 3510.400966]  ? i40e_reset_all_vfs+0x880/0x880 [i40e]
-> [ 3510.400968]  ? pci_get_device+0x7c/0x90
-> [ 3510.400970]  ? pci_get_subsys+0x90/0x90
-> [ 3510.400982]  ? pci_vfs_assigned.part.7+0x144/0x210
-> [ 3510.400987]  ? __mutex_lock_slowpath+0x10/0x10
-> [ 3510.400996]  i40e_pci_sriov_configure+0x1fa/0x2e0 [i40e]
-> [ 3510.401001]  sriov_numvfs_store+0x214/0x290
-> [ 3510.401005]  ? sriov_totalvfs_show+0x30/0x30
-> [ 3510.401007]  ? __mutex_lock_slowpath+0x10/0x10
-> [ 3510.401011]  ? __check_object_size+0x15a/0x350
-> [ 3510.401018]  kernfs_fop_write+0x280/0x3f0
-> [ 3510.401022]  vfs_write+0x145/0x440
-> [ 3510.401025]  ksys_write+0xab/0x160
-> [ 3510.401028]  ? __ia32_sys_read+0xb0/0xb0
-> [ 3510.401031]  ? fput_many+0x1a/0x120
-> [ 3510.401032]  ? filp_close+0xf0/0x130
-> [ 3510.401038]  do_syscall_64+0xa0/0x370
-> [ 3510.401041]  ? page_fault+0x8/0x30
-> [ 3510.401043]  entry_SYSCALL_64_after_hwframe+0x65/0xca
-> [ 3510.401073] RIP: 0033:0x7f3a9bb842c0
-> [ 3510.401079] Code: 73 01 c3 48 8b 0d d8 cb 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 89 24 2d 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 fe dd 01 00 48 89 04 24
-> [ 3510.401080] RSP: 002b:00007ffc05f1fe18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> [ 3510.401083] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f3a9bb842c0
-> [ 3510.401085] RDX: 0000000000000002 RSI: 0000000002327408 RDI: 0000000000000001
-> [ 3510.401086] RBP: 0000000002327408 R08: 00007f3a9be53780 R09: 00007f3a9c8a4700
-> [ 3510.401086] R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000000002
-> [ 3510.401087] R13: 0000000000000001 R14: 00007f3a9be52620 R15: 0000000000000001
-> [ 3510.401090]
-> [ 3510.401093] Allocated by task 76795:
-> [ 3510.401098]  kasan_kmalloc+0xa6/0xd0
-> [ 3510.401099]  __kmalloc+0xfb/0x200
-> [ 3510.401104]  iavf_init_interrupt_scheme+0x26f/0x1310 [iavf]
-> [ 3510.401108]  iavf_watchdog_task+0x1d58/0x4050 [iavf]
-> [ 3510.401114]  process_one_work+0x56a/0x11f0
-> [ 3510.401115]  worker_thread+0x8f/0xf40
-> [ 3510.401117]  kthread+0x2a0/0x390
-> [ 3510.401119]  ret_from_fork+0x1f/0x40
-> [ 3510.401122]  0xffffffffffffffff
-> [ 3510.401123]
->
-> If we detected removing is in processing, we can avoid unnecessary
-> waiting and return error faster.
->
-> On the other hand in timeout handling, we should keep the original
-> num_active_queues and reset num_req_queues to 0.
->
-> Fixes: 4e5e6b5d9d13 ("iavf: Fix return of set the new channel count")
-> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
-> Cc: Donglin Peng <pengdonglin@sangfor.com.cn>
-> Cc: Huang Cun <huangcun@sangfor.com.cn>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
-> ---
-> v3 to v4:
->    - nothing changed
->
-> v2 to v3:
->    - fix review tag
->
-> v1 to v2:
->    - add reproduction script
->
-> ---
->   drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-> index 6f171d1d85b7..d8a3c0cfedd0 100644
-> --- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-> +++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-> @@ -1857,13 +1857,15 @@ static int iavf_set_channels(struct net_device *netdev,
->   	/* wait for the reset is done */
->   	for (i = 0; i < IAVF_RESET_WAIT_COMPLETE_COUNT; i++) {
->   		msleep(IAVF_RESET_WAIT_MS);
-> +		if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
-> +			return -EOPNOTSUPP;
->   		if (adapter->flags & IAVF_FLAG_RESET_PENDING)
->   			continue;
->   		break;
->   	}
->   	if (i == IAVF_RESET_WAIT_COMPLETE_COUNT) {
->   		adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
-> -		adapter->num_active_queues = num_req;
-> +		adapter->num_req_queues = 0;
->   		return -EOPNOTSUPP;
->   	}
->   
 
+On 2023-05-03 09:35, Xin Long wrote:
+> On Tue, May 2, 2023 at 11:31 PM Tung Quang Nguyen
+> <tung.q.nguyen@dektech.com.au> wrote:
+>>> When doing link mtu negotiation, a malicious peer may send Activate msg
+>>> with a very small mtu, e.g. 4 in Shuang's testing, without checking for
+>>> the minimum mtu, l->mtu will be set to 4 in tipc_link_proto_rcv(), then
+>>> n->links[bearer_id].mtu is set to 4294967228, which is a overflow of
+>>> '4 - INT_H_SIZE - EMSG_OVERHEAD' in tipc_link_mss().
+>>>
+>>> With tipc_link.mtu = 4, tipc_link_xmit() kept printing the warning:
+>>>
+>>> tipc: Too large msg, purging xmit list 1 5 0 40 4!
+>>> tipc: Too large msg, purging xmit list 1 15 0 60 4!
+>>>
+>>> And with tipc_link_entry.mtu 4294967228, a huge skb was allocated in
+>>> named_distribute(), and when purging it in tipc_link_xmit(), a crash
+>>> was even caused:
+>>>
+>>>   general protection fault, probably for non-canonical address 0x2100001011000dd: 0000 [#1] PREEMPT SMP PTI
+>>>   CPU: 0 PID: 0 Comm: swapper/0 Kdump: loaded Not tainted 6.3.0.neta #19
+>>>   RIP: 0010:kfree_skb_list_reason+0x7e/0x1f0
+>>>   Call Trace:
+>>>    <IRQ>
+>>>    skb_release_data+0xf9/0x1d0
+>>>    kfree_skb_reason+0x40/0x100
+>>>    tipc_link_xmit+0x57a/0x740 [tipc]
+>>>    tipc_node_xmit+0x16c/0x5c0 [tipc]
+>>>    tipc_named_node_up+0x27f/0x2c0 [tipc]
+>>>    tipc_node_write_unlock+0x149/0x170 [tipc]
+>>>    tipc_rcv+0x608/0x740 [tipc]
+>>>    tipc_udp_recv+0xdc/0x1f0 [tipc]
+>>>    udp_queue_rcv_one_skb+0x33e/0x620
+>>>    udp_unicast_rcv_skb.isra.72+0x75/0x90
+>>>    __udp4_lib_rcv+0x56d/0xc20
+>>>    ip_protocol_deliver_rcu+0x100/0x2d0
+>>>
+>>> This patch fixes it by checking the new mtu against tipc_bearer_min_mtu(),
+>>> and not updating mtu if it is too small.
+>>>
+>>> v1->v2:
+>>>   - do the msg_max check against the min MTU early, as Tung suggested.
+>> Please move above version change comment to after "---".
+> I think it's correct to NOT use ''---' for version changes, see the
+> comment from davem:
+>
+>    https://lore.kernel.org/netdev/20160415.172858.253625178036493951.davem@davemloft.net/
+>
+> unless there are some new rules I missed.
+I have not seen this one before, and I disagree with David here. Many of 
+the changes
+between versions are trivial, and some comments even incomprehensible 
+once the patch has
+been applied.
+I have always put them after the "---" comment, and I will continue to 
+do so until David starts
+rejecting such patches.
 
-Thanks.
+But ok, do as you find right.
 
-Reviewed-by: Ahmed Zaki <ahmed.zaki@intel.com>
+///jon
 
+>
+> Thanks.
+>
+>>> Fixes: ed193ece2649 ("tipc: simplify link mtu negotiation")
+>>> Reported-by: Shuang Li <shuali@redhat.com>
+>>> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+>>> ---
+>>> net/tipc/link.c | 9 ++++++---
+>>> 1 file changed, 6 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/net/tipc/link.c b/net/tipc/link.c
+>>> index b3ce24823f50..2eff1c7949cb 100644
+>>> --- a/net/tipc/link.c
+>>> +++ b/net/tipc/link.c
+>>> @@ -2200,7 +2200,7 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
+>>>        struct tipc_msg *hdr = buf_msg(skb);
+>>>        struct tipc_gap_ack_blks *ga = NULL;
+>>>        bool reply = msg_probe(hdr), retransmitted = false;
+>>> -      u32 dlen = msg_data_sz(hdr), glen = 0;
+>>> +      u32 dlen = msg_data_sz(hdr), glen = 0, msg_max;
+>>>        u16 peers_snd_nxt =  msg_next_sent(hdr);
+>>>        u16 peers_tol = msg_link_tolerance(hdr);
+>>>        u16 peers_prio = msg_linkprio(hdr);
+>>> @@ -2239,6 +2239,9 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
+>>>        switch (mtyp) {
+>>>        case RESET_MSG:
+>>>        case ACTIVATE_MSG:
+>>> +              msg_max = msg_max_pkt(hdr);
+>>> +              if (msg_max < tipc_bearer_min_mtu(l->net, l->bearer_id))
+>>> +                      break;
+>>>                /* Complete own link name with peer's interface name */
+>>>                if_name =  strrchr(l->name, ':') + 1;
+>>>                if (sizeof(l->name) - (if_name - l->name) <= TIPC_MAX_IF_NAME)
+>>> @@ -2283,8 +2286,8 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
+>>>                l->peer_session = msg_session(hdr);
+>>>                l->in_session = true;
+>>>                l->peer_bearer_id = msg_bearer_id(hdr);
+>>> -              if (l->mtu > msg_max_pkt(hdr))
+>>> -                      l->mtu = msg_max_pkt(hdr);
+>>> +              if (l->mtu > msg_max)
+>>> +                      l->mtu = msg_max;
+>>>                break;
+>>>
+>>>        case STATE_MSG:
+>>> --
+>>> 2.39.1
 
 
