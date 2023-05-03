@@ -1,212 +1,323 @@
-Return-Path: <netdev+bounces-158-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-159-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 64DCC6F58BE
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 15:12:35 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4D8CB6F58CF
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 15:16:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1ACA5280F60
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 13:12:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 924261C20A80
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 13:16:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D55A0D526;
-	Wed,  3 May 2023 13:12:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC33AD527;
+	Wed,  3 May 2023 13:16:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD665321E
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 13:12:31 +0000 (UTC)
-Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02olkn2106.outbound.protection.outlook.com [40.92.49.106])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8405B90;
-	Wed,  3 May 2023 06:11:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ASIZyUS4ffBJyQJLvrRxec+emTg7GrvzXNwyXjDhCBw5YaqfD531NZDAu3ykeK/TD0R6MVDNTGQb4DDvNvnmxqApEP5/11UCj36C2WHgUqwjVjvlVYFi+cquyW2dV+pwJdjiEcxuHenbVXnCXRrm1FwOK9PcHNLOmvvtcUuCuEbpHp8q03GI4F9/rQMoOB3hQOmvqO0KS26xHgPqHuRtfibNwSRNGNOFLOuUkOLGOwHh3cMXAGKli3mCmqxe8rd3udqqasBIWtfRk/dOGm1yh6s3pE2Vw+VovkhiyLiRJKQAQ80sOk/2VglJyM4Hk/Bdxp3uZXWffWRypfnUPuzM2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1LqDn8E3+ZjWnA1NbCEZRWb0nxecRZGAbNexUC1wUuU=;
- b=a3ajiIMbU8M7og8mUKowpMeTGmOKdEXK4nof4f9YQT9cmYvrx6fPte4lNxUD4G+qhOnyJr4JQJGoGTzqsCR87b1jBrr+QnwWHrSo+0Q0tZqFvmOzbnnFmYiiotShIJ644v+LyVHReCcKsuClDaBlzh+zcR2Xn+qajIbIhwJ0HVjyfkuXI19DTHl6rkkL+6gMrzcUkKilp8JkTWe49T9EXMaU4nTQWqQ99Li2YNZZs0beGfT/GhprfggsYsbuR+1hHnA7gJtPrh+r3qfD1WuNumS/iXCwpIIZJxxeXJuN3aYzGxD1CEV8y0wFL3Q+2/0VX4BjXw4jZZOC8ILs+HmSug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1LqDn8E3+ZjWnA1NbCEZRWb0nxecRZGAbNexUC1wUuU=;
- b=W9q2sMSq2uiLRMja6uMh2kSaSb4XWhB64M5/5IlwJnt2ZCzBi+UFAOUAs9KZhuvrR2MXgVgouo+RhSkrMJ8x3VnaetczMbJa/Y6zsOYWW4jU1f89apxkreTGb0WC948iSsam+dd9Yp7f5bkff8hBsEt2bp8elAh5X0tymUAbkzbOXRASFqRrKr8S+8qaueRXuLoeHFvwxTb6Wm4okBTt77+3FwEamuOMO1ERf/sCZsvKMhAcISH7jVfZkQ6LDeBc3eojh5A7D/zKMAJNO55WKxflaKUORSKB3DgDE8F08Lj5ZH6pbvj7YkvaiBizyFmTpwd6X5GpCtQxFwpJQXuivg==
-Received: from GV1P193MB2005.EURP193.PROD.OUTLOOK.COM (2603:10a6:150:25::22)
- by GV1P193MB2264.EURP193.PROD.OUTLOOK.COM (2603:10a6:150:29::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.21; Wed, 3 May
- 2023 13:11:22 +0000
-Received: from GV1P193MB2005.EURP193.PROD.OUTLOOK.COM
- ([fe80::7394:8920:7e89:7cc1]) by GV1P193MB2005.EURP193.PROD.OUTLOOK.COM
- ([fe80::7394:8920:7e89:7cc1%4]) with mapi id 15.20.6363.021; Wed, 3 May 2023
- 13:11:22 +0000
-From: Adrien Delorme <delorme.ade@outlook.com>
-To: Pavel Begunkov <asml.silence@gmail.com>, "david.laight@aculab.com"
-	<david.laight@aculab.com>
-CC: "axboe@kernel.dk" <axboe@kernel.dk>, "davem@davemloft.net"
-	<davem@davemloft.net>, "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
-	"dsahern@kernel.org" <dsahern@kernel.org>, "edumazet@google.com"
-	<edumazet@google.com>, "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-	"kuba@kernel.org" <kuba@kernel.org>, "leit@fb.com" <leit@fb.com>,
-	"leitao@debian.org" <leitao@debian.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "marcelo.leitner@gmail.com"
-	<marcelo.leitner@gmail.com>, "matthieu.baerts@tessares.net"
-	<matthieu.baerts@tessares.net>, "mptcp@lists.linux.dev"
-	<mptcp@lists.linux.dev>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, "willemb@google.com"
-	<willemb@google.com>, "willemdebruijn.kernel@gmail.com"
-	<willemdebruijn.kernel@gmail.com>
-Subject: RE: [PATCH 0/5] add initial io_uring_cmd support for sockets
-Thread-Topic: [PATCH 0/5] add initial io_uring_cmd support for sockets
-Thread-Index: AQHZfPcbeWikE8uGs0CEhT1cqCE61a9Ido9g
-Date: Wed, 3 May 2023 13:11:22 +0000
-Message-ID:
- <GV1P193MB2005214F383309B8466C6361EA6C9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
-References:
- <GV1P193MB200533CC9A694C4066F4807CEA6F9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
- <49866ae2-db19-083c-6498-e7d9d62e8267@gmail.com>
-In-Reply-To: <49866ae2-db19-083c-6498-e7d9d62e8267@gmail.com>
-Accept-Language: fr-FR, en-US
-Content-Language: fr-FR
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [CAfFIVjbgyQQDAEHMlD8CcP1pgHk4Lzw]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: GV1P193MB2005:EE_|GV1P193MB2264:EE_
-x-ms-office365-filtering-correlation-id: 04f62c61-9448-4d24-c3dc-08db4bd7e447
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- yIAh4UwxsA0VrRV7YMKSAfXYn5Y1PyCYmOjrbx27OMDagfwD1GAaccaiDa1w4dwP+gFAfGVX+el1mdNKtz4r9iVfxP0nL8GfmvNX0UotBtTy57M/rfhSE4xmL1DvGAXyZllF2Cv9TCOwMUb0Bmuiij1kwi8KmaeS31kScILzu2Lll/yWGi3gir81lgJvsfr5Kj4gxzoA3oji1vukyx+CBr1x5E+z7SbYo6Kt8JiN5ASn2ce2dRv3VWfUqavdUIL1FBTxXXHDQLDti3HJ/9bPBC5VyNsqsAj52B5NeIkUQWmCnfhcN5SfL+Y47nuVxAdzogK0Ouxc2N6XanpharyRZnlfvxLWVJZ2bUo85ttej1tBtm2NqYX43QG6rNSCcW2OvvXXsIYtIw6rioVTet5q7lVlfJEf35s9lc6TbjpZ1hUdtkmhLbkMNtvqlqKPfp5loGRkYFeu/DT5c2EuS7HFtJ4BAR7FSFr6Cgm2nC9AYPYtzI81fhmWUYZLiQfdsvyPIuKM4AJWqwemPALbnMrRlIA3evQRni8kmWZnpPsZtTJ8D65p93cJHw1JdUZfRCgBeiCj9mRMtCyoutADfd1EnPgeGrjdf2cU+tK+7Fxia/bXK4cHm0iZ4RxEEeefiepa
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?ajZlc2RpcjU2cmdtOXY2WStZTFpuemFKNEttZmxWRmJ0Y2ptMElVNmZjMElH?=
- =?utf-8?B?dVByWGc5SGh1RVpMWk9KSGR1MlIySXhGaktYNkxFVTRPOFQ5ZXMrZzNSQnND?=
- =?utf-8?B?M25saHljd0ZxNE5GbGoweFlaQmhmdW4wcWlHd2xZZ2oxZFJNLzFua2FMckRV?=
- =?utf-8?B?VXVzVjZlQXc1aWFJZmoyeXZuK0hPQURLQkltekxsQzMwQmxrQzgwY2wxQXQ5?=
- =?utf-8?B?ZjVVVFZWTTQxMGowOXUzTXp5Q093cDYwaVIzcDV1TE4vaS9iY3VUZE1ZVWZh?=
- =?utf-8?B?d2Z0WHgvWTUwVGJ2eXdGRlRBYm43empRbXpSV0NKWmwyamNJd0V1a0dSTDBu?=
- =?utf-8?B?bGxZUDJlSjg3VUlmcXRSOStYaklqR2RtU015K0xMSnNVTlExeExpeTlLRkxH?=
- =?utf-8?B?Nzh5VFl6V3FwbVFkU1d1enBiVWhVWFNSaGlPamlqSE5YMGFvV2FOZmtoOVRh?=
- =?utf-8?B?cmp3cDdoT1JIbGFzbGNQWmFJVEdBbkhOb0g5RkdwNFFvU255cFBXbGFwYUdS?=
- =?utf-8?B?UEtiT0hQYW1TM0F6VXRWNGN3V3dYeGRISk15RTBXYlRvUTBjQ0EyRzdCanFp?=
- =?utf-8?B?bkZLM1BldFJaNkNpeEVNcjM3c24reCtkR2s3Ui96cHRENXRXekFkSXVqNEs3?=
- =?utf-8?B?N1IrODVFbktjRWZDaFNva2dkaHpHMjdGYUNhb3pKU0pBYU90N3E1dVpWRkRX?=
- =?utf-8?B?T2V2L21wQnJWMUZSYjdPOHd0cURXSzhtNmxWbmhHN1hYVE9kZDFIMmQ2Tnda?=
- =?utf-8?B?V3hJd2MvRm8zZTVLWEU4dG9DK245RmdxeUVqaDY5SzZNaURsTit6TU1OZ1FI?=
- =?utf-8?B?bTM5OWRXN1UxRkdtOWE2TXk4SEszcTY4YU9PaUZlUVFmUlJIZ1pUaERjaTF4?=
- =?utf-8?B?Wjl1Y2ZLNjdzZ2hVSE45SlcxR04zcXdzQXprdkY3MjE3d1EvR1RhOGlYZ0Z2?=
- =?utf-8?B?eHVwUlBGUXk1dXNuVEFnallqYlprZVhSd0JJRnU3ZjVNWWFPeU1PdVBqWTFM?=
- =?utf-8?B?T3I2NllWUGdmTTRKV1NlcUJSVHEvRHJtNExRcC82MWQ5MXgybW5oNVdqU3dX?=
- =?utf-8?B?amJ1NFhGRE1oYnhZMDdnWE9pY3FLRjRWVkpxRXY2UGcrRHhSZnZVWFJJZlJl?=
- =?utf-8?B?aGpmT1FQajJ2cFhaY1RnMXRFNnhLanRtWmRwdXhub3BjY3BvRFV5bVZPdWUw?=
- =?utf-8?B?MG5kWWZkakFQejE3NFBKbG5SbjBQV1Z4V1JBWDNMV0h0aWdreHpqWmRWcFFE?=
- =?utf-8?B?eTFmVGNzWUFaZ2NWT3g0M1FKRHhYRXJBRWhlNEU3TE93QUZoVHFXMmZEb2py?=
- =?utf-8?B?ajhHam0vYjY0bUkralNjM1NHWXJjQk1RNFhnQ1gyd3I0bHEvT1QrSE1NUEJO?=
- =?utf-8?B?REZreVY2cjBJNG5uTFVPV3NEM1VKM3E0N05CZWV4b1BhQkxVM3NpbVpQTTBJ?=
- =?utf-8?B?cEhtS3BhMkNuU2M0MFpjYmEyYXJDbWJhN3Z6MVF2MWhPMlgyS2VqVUlkSmN1?=
- =?utf-8?B?aVpwcUNRRGZlSWZDdzMyUGVWN3JlaW1KR0syQzhlKzdDeEczQTlDT3dCNHdZ?=
- =?utf-8?B?eGN2bEJLbkpkZU4zbjFzM3JiNlRlRDZreWxodys2R0tDbnFjbHJDZ0xvdFlo?=
- =?utf-8?B?cXRoejBWR3JwR3MrS1dRMlJmSWpjbUE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD9ED46AC
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 13:16:38 +0000 (UTC)
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E2010E5;
+	Wed,  3 May 2023 06:16:34 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+	by mx.sberdevices.ru (Postfix) with ESMTP id 4D40D5FD07;
+	Wed,  3 May 2023 16:16:31 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+	s=mail; t=1683119791;
+	bh=oJa6zRIW6ExnYdlJqYkiQciUyQThT8srxGj/Jr4u8+s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	b=SeEb2+j4Zww+nQMJ5SjyhkxylPtWRf1JFVZgDMulXwQ7ActRsgHI06MJtLEVZAyQ/
+	 cafxeqj7b7HrIUu/CBqD6hcm397Jy0FzBCniCbo9SaCYxgWTN4mAyERg6qu/aB8eGZ
+	 dSj7/6c7E++OzPVNBMg41k5wpzWQRK6a6EOWMvyuLkLkGzEm+/OaDyuHCXDj8JnIfT
+	 O0+UO8lNY1qJOdh4xB4VKGqCgdez594g8qNwzFBv6A5uLsDsCFSXbApnS2hjj9rY6Y
+	 3TtIjKROlRi0dXxH+BgtKyNv6q316i5PlqiLz26dSzEa7YQ29yOTUidmh/HJ1iaHMn
+	 iQ3lzLeLQ8zvg==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+	by mx.sberdevices.ru (Postfix) with ESMTP;
+	Wed,  3 May 2023 16:16:26 +0300 (MSK)
+Message-ID: <a9ee9ef5-e707-65ff-3128-41d09fbe8655@sberdevices.ru>
+Date: Wed, 3 May 2023 16:11:59 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: GV1P193MB2005.EURP193.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04f62c61-9448-4d24-c3dc-08db4bd7e447
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2023 13:11:22.2533
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1P193MB2264
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [RFC PATCH v2 00/15] vsock: MSG_ZEROCOPY flag support
+Content-Language: en-US
+To: Stefano Garzarella <sgarzare@redhat.com>
+CC: Stefan Hajnoczi <stefanha@redhat.com>, "David S. Miller"
+	<davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+	<kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, "Michael S. Tsirkin"
+	<mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Bobby Eshleman
+	<bobby.eshleman@bytedance.com>, <kvm@vger.kernel.org>,
+	<virtualization@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <kernel@sberdevices.ru>, <oxffffaa@gmail.com>
+References: <20230423192643.1537470-1-AVKrasnov@sberdevices.ru>
+ <i6swadylt57hrtxhpl5ag7s3dks536wg3vxoa7nuu2x37gxsbi@uj7od5ueq6yp>
+From: Arseniy Krasnov <avkrasnov@sberdevices.ru>
+In-Reply-To: <i6swadylt57hrtxhpl5ag7s3dks536wg3vxoa7nuu2x37gxsbi@uj7od5ueq6yp>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/05/03 11:33:00 #21212261
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-6.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-DQpGcm9tIEFkcmllbiBEZWxvcm1lDQo+IEZyb23CoDogUGF2ZWwgQmVndW5rb3YgDQo+IFNlbnQg
-OiAyIE1heSAyMDIzIDE1OjA0DQo+IE9uIDUvMi8yMyAxMDoyMSwgQWRyaWVuIERlbG9ybWUgd3Jv
-dGU6DQo+ID4gIEZyb20gQWRyaWVuIERlbG9ybWUNCj4gPg0KPiA+PiBGcm9tOiBEYXZpZCBBaGVy
-bg0KPiA+PiBTZW50OiAxMiBBcHJpbCAyMDIzIDc6MzkNCj4gPj4+IFNlbnQ6IDExIEFwcmlsIDIw
-MjMgMTY6MjgNCj4gPj4gLi4uLg0KPiA+PiBPbmUgcHJvYmxlbSBpcyB0aGF0IG5vdCBhbGwgc29j
-a29wdCBjYWxscyBwYXNzIHRoZSBjb3JyZWN0IGxlbmd0aC4NCj4gPj4gQW5kIHNvbWUgb2YgdGhl
-bSBjYW4gaGF2ZSB2ZXJ5IGxvbmcgYnVmZmVycy4NCj4gPj4gTm90IHRvIG1lbnRpb24gdGhlIG9u
-ZXMgdGhhdCBhcmUgcmVhZC1tb2RpZnktd3JpdGUuDQo+ID4+DQo+ID4+IEEgcGxhdXNpYmxlIHNv
-bHV0aW9uIGlzIHRvIHBhc3MgYSAnZmF0IHBvaW50ZXInIHRoYXQgY29udGFpbnMgc29tZSwNCj4g
-Pj4gb3IgYWxsLCBvZjoNCj4gPj4gICAgICAgIC0gQSB1c2Vyc3BhY2UgYnVmZmVyIHBvaW50ZXIu
-DQo+ID4+ICAgICAgICAtIEEga2VybmVsIGJ1ZmZlciBwb2ludGVyLg0KPiA+PiAgICAgICAgLSBU
-aGUgbGVuZ3RoIHN1cHBsaWVkIGJ5IHRoZSB1c2VyLg0KPiA+PiAgICAgICAgLSBUaGUgbGVuZ3Ro
-IG9mIHRoZSBrZXJuZWwgYnVmZmVyLg0KPiA+PiAgICAgICAgPSBUaGUgbnVtYmVyIG9mIGJ5dGVz
-IHRvIGNvcHkgb24gY29tcGxldGlvbi4NCj4gPj4gRm9yIHNpbXBsZSB1c2VyIHJlcXVlc3RzIHRo
-ZSBzeXNjYWxsIGVudHJ5L2V4aXQgY29kZSB3b3VsZCBjb3B5IHRoZQ0KPiA+PiBkYXRhIHRvIGEg
-c2hvcnQgb24tc3RhY2sgYnVmZmVyLg0KPiA+PiBLZXJuZWwgdXNlcnMganVzdCBwYXNzIHRoZSBr
-ZXJuZWwgYWRkcmVzcy4NCj4gPj4gT2RkIHJlcXVlc3RzIGNhbiBqdXN0IHVzZSB0aGUgdXNlciBw
-b2ludGVyLg0KPiA+Pg0KPiA+PiBQcm9iYWJseSBuZWVkcyBhY2Nlc3NvcnMgdGhhdCBhZGQgaW4g
-YW4gb2Zmc2V0Lg0KPiA+Pg0KPiA+PiBJdCBtaWdodCBhbHNvIGJlIHRoYXQgc29tZSBvZiB0aGUg
-cHJvYmxlbWF0aWMgc29ja29wdCB3ZXJlIGluIGRlY25ldA0KPiA+PiAtIG5vdyByZW1vdmVkLg0K
-PiA+DQo+ID4gSGVsbG8gZXZlcnlvbmUsDQo+ID4NCj4gPiBJJ20gY3VycmVudGx5IHdvcmtpbmcg
-b24gYW4gaW1wbGVtZW50YXRpb24gb2Yge2dldCxzZXR9IHNvY2tvcHQuDQo+ID4gU2luY2UgdGhp
-cyB0aHJlYWQgaXMgYWxyZWFkeSB0YWxraW5nIGFib3V0IGl0LCBJIGhvcGUgdGhhdCBJIHJlcGx5
-aW5nIGF0IHRoZQ0KPiBjb3JyZWN0IHBsYWNlLg0KPiANCj4gSGkgQWRyaWVuLCBJIGJlbGlldmUg
-QnJlbm8gaXMgd29ya2luZyBvbiBzZXQvZ2V0c29ja29wdCBhcyB3ZWxsIGFuZCBoYWQNCj4gc2lt
-aWxhciBwYXRjaGVzIGZvciBhd2hpbGUsIGJ1dCB0aGF0IHdvdWxkIG5lZWQgZm9yIHNvbWUgcHJv
-YmxlbXMgdG8gYmUNCj4gc29sdmVkIGZpcnN0LCBlLmcuIHRyeSBhbmQgZGVjaWRlIHdoZXRoZXIg
-aXQgY29waWVzIHRvIGEgcHRyIGFzIHRoZSBzeXNjYWxsDQo+IHZlcnNpb25zIG9yIHdvdWxkIGdl
-dC9yZXR1cm4gb3B0dmFsIGRpcmVjdGx5IGluIHNxZS9jcWUuIEFuZCBhbHNvIHdoZXJlIHRvDQo+
-IHN0b3JlIGJpdHMgdGhhdCB5b3UgcGFzcyBpbiBzdHJ1Y3QgYXJnc19zZXRzb2Nrb3B0X3VyaW5n
-LCBhbmQgd2hldGhlciB0byByZWx5DQo+IG9uIFNRRTEyOCBvciBub3QuDQo+IA0KDQpIZWxsbyBQ
-YXZlbCwNClRoYXQgaXMgZ29vZCB0byBoZWFyLiBJZiBwb3NzaWJsZSBJIHdvdWxkIGxpa2UgdG8g
-cHJvdmlkZSBzb21lIGhlbHAuIA0KSSBsb29rZWQgYXQgdGhlIGdldHNvY2tvcHQgaW1wbGVtZW50
-YXRpb24uIEZyb20gd2hhdCBJJ20gc2VlaW5nLCBJIGJlbGlldmUgdGhhdCBpdCB3b3VsZCBiZSBl
-YXNpZXIgdG8gY29waWVzIHRvIGEgcHRyIGFzIHRoZSBzeXNjYWxsLg0KVGhlIGxlbmd0aCBvZiB0
-aGUgb3V0cHV0IGlzIHVzdWFsbHkgNCBieXRlcyAoc29tZXRpbWVzIGxlc3MpIGJ1dCBpbiBhIGxv
-dCBvZiBjYXNlcywgdGhpcyBsZW5ndGggaXMgdmFyaWFibGUuIFNvbWV0aW1lIGl0IGNhbiBldmVu
-IGJlIGJpZ2dlciB0aGF0IHRoZSBTUUUxMjggcmluZy4NCg0KSGVyZSBpcyBhIG5vbi1leGhhdXN0
-aXZlIGxpc3Qgb2YgdGhvc2UgY2FzZXMgOiANCi9uZXQvaXB2NC90Y3AuYyA6IGludCBkb190Y3Bf
-Z2V0c29ja29wdCguLi4pDQogIC0gVENQX0lORk8gOiB1cCB0byAyNDAgYnl0ZXMNCiAgLSBUQ1Bf
-Q0NfSU5GTyBhbmQgVENQX1JFUEFJUl9XSU5ET1cgOiB1cCB0byAyMCBieXRlcw0KICAtIFRDUF9D
-T05HRVNUSU9OIGFuZCBUQ1BfVUxQIDogdXAgdG8gMTYgYnl0ZXMNCiAgLSBUQ1BfWkVST0NQT1lf
-UkVDRUlWRSA6IHVwIHRvIDY0IGJ5dGVzICANCi9uZXQvYXRtL2NvbW11bi5jIDogaW50IHZjY19n
-ZXRzb2Nrb3B0KC4uLikNCiAgLSBTT19BVE1RT1MgOiB1cCB0byA4OCBieXRlcw0KICAtIFNPX0FU
-TVBWQyA6IHVwIHRvIDE2IGJ5dGVzDQovbmV0L2lwdjQvaW9fc29ja2dsdWUuYyA6IGludCBkb19p
-cF9nZXRzb2Nrb3B0KC4uLikNCiAgLSBNQ0FTVF9NU0ZJTFRFUiA6IHVwIHRvIDE0NCBieXRlcw0K
-ICAtIElQX01TRklMVEVSIDogMTYgYnl0ZXMgbWluaW11bQ0KDQpJIHdpbGwgbG9vayBpbnRvIHNl
-dHNvY2tvcHQgYnV0IEkgYmVsaWV2ZSBpdCBtaWdodCBiZSB0aGUgc2FtZS4gDQpJZiBuZWVkZWQg
-SSBjYW4gYWxzbyBjb21wbGV0ZSB0aGlzIGxpc3QuIA0KSG93ZXZlciB0aGVyZSBhcmUgc29tZSBj
-YXNlcyB3aGVyZSBpdCBpcyBoYXJkIHRvIGRldGVybWluYXRlIGEgbWF4aW11bSBhbW91bnQgb2Yg
-Ynl0ZXMgaW4gYWR2YW5jZS4gDQoNCkFzIHRvIHdoZXJlIHRoZSBieXRlcyBzaG91bGQgYmUgc3Rv
-cmVkIEkgd2FzIHRoaW5raW5nIG9mIGVpdGhlciA6DQogIC0gQXMgYSBwb2ludGVyIGluIHNxZS0+
-YWRkciBzbyB0aGUgU1FFMTI4IGlzIG5vdCBuZWVkZWQgDQogIC0gSW4gc3FlLT5jbWQgYXMgYSBz
-dHJ1Y3QgYnV0IGZyb20gbXkgdW5kZXJzdGFuZGluZywgdGhlIFNRRTEyOCBpcyBuZWVkZWQNCj4g
-DQo+ID4gTXkgaW1wbGVtZW50YXRpb24gaXMgcmF0aGVyIHNpbXBsZSB1c2luZyBhIHN0cnVjdCB0
-aGF0IHdpbGwgYmUgdXNlZCB0byBwYXNzDQo+IHRoZSBuZWNlc3NhcnkgaW5mbyB0aHJvdWdodCBz
-cWUtPmNtZC4NCj4gPg0KPiA+IEhlcmUgaXMgbXkgaW1wbGVtZW50YXRpb24gYmFzZWQgb2Yga2Vy
-bmVsIHZlcnNpb24gNi4zIDoNCj4gPiAuLi4NCj4gPiArLyogU3RydWN0IHRvIHBhc3MgYXJncyBm
-b3IgSU9fVVJJTkdfQ01EX09QX0dFVFNPQ0tPUFQgYW5kDQo+ID4gK0lPX1VSSU5HX0NNRF9PUF9T
-RVRTT0NLT1BUIG9wZXJhdGlvbnMgKi8gc3RydWN0DQo+ID4gK2FyZ3Nfc2V0c29ja29wdF91cmlu
-Z3sNCj4gDQo+IFRoZSBuYW1lIG9mIHRoZSBzdHJ1Y3R1cmUgaXMgcXVpdGUgaW5jb25zaXN0ZW50
-IHdpdGggdGhlIHJlc3QuIEl0J3MgYmV0dGVyIHRvIGJlDQo+IGlvX1t1cmluZ19dX3NvY2tvcHRf
-YXJnIG9yIHNvbWUgdmFyaWF0aW9uLg0KPiANCj4gPiArICAgICAgIGludCAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgbGV2ZWw7DQo+ID4gKyAgICAgICBpbnQgICAgICAgICAgICAgICAgICAg
-ICBvcHRuYW1lOw0KPiA+ICsgICAgICAgY2hhciBfX3VzZXIgKiAgIHVzZXJfb3B0dmFsOw0KPiA+
-ICsgICAgICAgaW50ICAgICAgICAgICAgICAgICAgICAgb3B0bGVuOw0KPiANCj4gVGhhdCdzIHVh
-cGksIHRoZXJlIHNob3VsZCBub3QgYmUgX191c2VyLCBhbmQgZmllbGQgc2l6ZXMgc2hvdWxkIGJl
-IG1vcmUNCj4gcG9ydGFibGUsIGkuZS4gdXNlIF9fdTMyLCBfX3U2NCwgZXRjLCBsb29rIHRocm91
-Z2ggdGhlIGZpbGUuDQo+IA0KPiBXb3VsZCBuZWVkIHRvIGxvb2sgaW50byB0aGUgZ2V0L3NldHNv
-Y2tvcHQgaW1wbGVtZW50YXRpb24gYmVmb3JlIHNheWluZw0KPiBhbnl0aGluZyBhYm91dCB1cmlu
-Z19jbWRfe3NldCxnZXR9c29ja29wdC4NCj4gLi4uDQo+IFBhdmVsIEJlZ3Vua292DQoNClRoYW5r
-IHlvdSBmb3IgdGhlIHJldmlldy4NCkFkcmllbiBEZWxvcm1lDQotLQ0KDQo=
+
+
+On 03.05.2023 15:52, Stefano Garzarella wrote:
+> Hi Arseniy,
+> Sorry for the delay, but I have been very busy.
+
+Hello, no problem!
+
+> 
+> I can't apply this series on master or net-next, can you share with me
+> the base commit?
+
+Here is my base:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=b103bab0944be030954e5de23851b37980218f54
+
+> 
+> On Sun, Apr 23, 2023 at 10:26:28PM +0300, Arseniy Krasnov wrote:
+>> Hello,
+>>
+>>                           DESCRIPTION
+>>
+>> this is MSG_ZEROCOPY feature support for virtio/vsock. I tried to follow
+>> current implementation for TCP as much as possible:
+>>
+>> 1) Sender must enable SO_ZEROCOPY flag to use this feature. Without this
+>>   flag, data will be sent in "classic" copy manner and MSG_ZEROCOPY
+>>   flag will be ignored (e.g. without completion).
+>>
+>> 2) Kernel uses completions from socket's error queue. Single completion
+>>   for single tx syscall (or it can merge several completions to single
+>>   one). I used already implemented logic for MSG_ZEROCOPY support:
+>>   'msg_zerocopy_realloc()' etc.
+>>
+>> Difference with copy way is not significant. During packet allocation,
+>> non-linear skb is created, then I call 'pin_user_pages()' for each page
+>> from user's iov iterator and add each returned page to the skb as fragment.
+>> There are also some updates for vhost and guest parts of transport - in
+>> both cases i've added handling of non-linear skb for virtio part. vhost
+>> copies data from such skb to the guest's rx virtio buffers. In the guest,
+>> virtio transport fills tx virtio queue with pages from skb.
+>>
+>> This version has several limits/problems:
+>>
+>> 1) As this feature totally depends on transport, there is no way (or it
+>>   is difficult) to check whether transport is able to handle it or not
+>>   during SO_ZEROCOPY setting. Seems I need to call AF_VSOCK specific
+>>   setsockopt callback from setsockopt callback for SOL_SOCKET, but this
+>>   leads to lock problem, because both AF_VSOCK and SOL_SOCKET callback
+>>   are not considered to be called from each other. So in current version
+>>   SO_ZEROCOPY is set successfully to any type (e.g. transport) of
+>>   AF_VSOCK socket, but if transport does not support MSG_ZEROCOPY,
+>>   tx routine will fail with EOPNOTSUPP.
+> 
+> Do you plan to fix this in the next versions?
+> 
+> If it is too complicated, I think we can have this limitation until we
+> find a good solution.
+> 
+
+I'll try to fix it again, but just didn't pay attention on it in v2.
+
+>>
+>> 2) When MSG_ZEROCOPY is used, for each tx system call we need to enqueue
+>>   one completion. In each completion there is flag which shows how tx
+>>   was performed: zerocopy or copy. This leads that whole message must
+>>   be send in zerocopy or copy way - we can't send part of message with
+>>   copying and rest of message with zerocopy mode (or vice versa). Now,
+>>   we need to account vsock credit logic, e.g. we can't send whole data
+>>   once - only allowed number of bytes could sent at any moment. In case
+>>   of copying way there is no problem as in worst case we can send single
+>>   bytes, but zerocopy is more complex because smallest transmission
+>>   unit is single page. So if there is not enough space at peer's side
+>>   to send integer number of pages (at least one) - we will wait, thus
+>>   stalling tx side. To overcome this problem i've added simple rule -
+>>   zerocopy is possible only when there is enough space at another side
+>>   for whole message (to check, that current 'msghdr' was already used
+>>   in previous tx iterations i use 'iov_offset' field of it's iov iter).
+> 
+> So, IIUC if MSG_ZEROCOPY is set, but there isn't enough space in the
+> destination we temporarily disable zerocopy, also if MSG_ZEROCOPY is set.
+> Right?
+
+Exactly, user still needs to get completion (because SO_ZEROCOPY is enabled and
+MSG_ZEROCOPY flag as used). But completion structure contains information that
+there was copying instead of zerocopying.
+
+> 
+> If it is the case it seems reasonable to me.
+> 
+>>
+>> 3) loopback transport is not supported, because it requires to implement
+>>   non-linear skb handling in dequeue logic (as we "send" fragged skb
+>>   and "receive" it from the same queue). I'm going to implement it in
+>>   next versions.
+>>
+>>   ^^^ fixed in v2
+>>
+>> 4) Current implementation sets max length of packet to 64KB. IIUC this
+>>   is due to 'kmalloc()' allocated data buffers. I think, in case of
+>>   MSG_ZEROCOPY this value could be increased, because 'kmalloc()' is
+>>   not touched for data - user space pages are used as buffers. Also
+>>   this limit trims every message which is > 64KB, thus such messages
+>>   will be send in copy mode due to 'iov_offset' check in 2).
+>>
+>>   ^^^ fixed in v2
+>>
+>>                         PATCHSET STRUCTURE
+>>
+>> Patchset has the following structure:
+>> 1) Handle non-linear skbuff on receive in virtio/vhost.
+>> 2) Handle non-linear skbuff on send in virtio/vhost.
+>> 3) Updates for AF_VSOCK.
+>> 4) Enable MSG_ZEROCOPY support on transports.
+>> 5) Tests/tools/docs updates.
+>>
+>>                            PERFORMANCE
+>>
+>> Performance: it is a little bit tricky to compare performance between
+>> copy and zerocopy transmissions. In zerocopy way we need to wait when
+>> user buffers will be released by kernel, so it something like synchronous
+>> path (wait until device driver will process it), while in copy way we
+>> can feed data to kernel as many as we want, don't care about device
+>> driver. So I compared only time which we spend in the 'send()' syscall.
+>> Then if this value will be combined with total number of transmitted
+>> bytes, we can get Gbit/s parameter. Also to avoid tx stalls due to not
+>> enough credit, receiver allocates same amount of space as sender needs.
+>>
+>> Sender:
+>> ./vsock_perf --sender <CID> --buf-size <buf size> --bytes 256M [--zc]
+>>
+>> Receiver:
+>> ./vsock_perf --vsk-size 256M
+>>
+>> G2H transmission (values are Gbit/s):
+>>
+>> *-------------------------------*
+>> |          |         |          |
+>> | buf size |   copy  | zerocopy |
+>> |          |         |          |
+>> *-------------------------------*
+>> |   4KB    |    3    |    10    |
+>> *-------------------------------*
+>> |   32KB   |    9    |    45    |
+>> *-------------------------------*
+>> |   256KB  |    24   |    195   |
+>> *-------------------------------*
+>> |    1M    |    27   |    270   |
+>> *-------------------------------*
+>> |    8M    |    22   |    277   |
+>> *-------------------------------*
+>>
+>> H2G:
+>>
+>> *-------------------------------*
+>> |          |         |          |
+>> | buf size |   copy  | zerocopy |
+>> |          |         |          |
+>> *-------------------------------*
+>> |   4KB    |    17   |    11    |
+> 
+> Do you know why in this case zerocopy is slower in this case?
+> Could be the cost of pin/unpin pages?
+May be, i think i need to analyze such enormous difference more. Also about
+pin/unpin: i found that there is already implemented function to fill non-linear
+skb with pages from user's iov: __zerocopy_sg_from_iter() in net/core/datagram.c.
+It uses 'get_user_pages()' instead of 'pin_user_pages()'. May be in my case it
+is also valid to user 'get_XXX()' instead of 'pin_XXX()', because it is used by
+TCP MSG_ZEROCOPY and iouring MSG_ZEROCOPY.
+
+> 
+>> *-------------------------------*
+>> |   32KB   |    30   |    66    |
+>> *-------------------------------*
+>> |   256KB  |    38   |    179   |
+>> *-------------------------------*
+>> |    1M    |    38   |    234   |
+>> *-------------------------------*
+>> |    8M    |    28   |    279   |
+>> *-------------------------------*
+>>
+>> Loopback:
+>>
+>> *-------------------------------*
+>> |          |         |          |
+>> | buf size |   copy  | zerocopy |
+>> |          |         |          |
+>> *-------------------------------*
+>> |   4KB    |    8    |    7     |
+>> *-------------------------------*
+>> |   32KB   |    34   |    42    |
+>> *-------------------------------*
+>> |   256KB  |    43   |    83    |
+>> *-------------------------------*
+>> |    1M    |    40   |    109   |
+>> *-------------------------------*
+>> |    8M    |    40   |    171   |
+>> *-------------------------------*
+>>
+>> I suppose that huge difference above between both modes has two reasons:
+>> 1) We don't need to copy data.
+>> 2) We don't need to allocate buffer for data, only for header.
+>>
+>> Zerocopy is faster than classic copy mode, but of course it requires
+>> specific architecture of application due to user pages pinning, buffer
+>> size and alignment.
+>>
+>> If host fails to send data with "Cannot allocate memory", check value
+>> /proc/sys/net/core/optmem_max - it is accounted during completion skb
+>> allocation.
+> 
+> What the user needs to do? Increase it?
+> 
+Yes, i'll update it.
+>>
+>>                            TESTING
+>>
+>> This patchset includes set of tests for MSG_ZEROCOPY feature. I tried to
+>> cover new code as much as possible so there are different cases for
+>> MSG_ZEROCOPY transmissions: with disabled SO_ZEROCOPY and several io
+>> vector types (different sizes, alignments, with unmapped pages). I also
+>> run tests with loopback transport and running vsockmon.
+> 
+> Thanks for the test again :-)
+> 
+> This cover letter is very good, with a lot of details, but please add
+> more details in each single patch, explaining the reason of the changes,
+> otherwise it is very difficult to review, because it is a very big
+> change.
+> 
+> I'll do a per-patch review in the next days.
+
+Sure, thanks! In v3 i'm also working on io_uring test, because this thing also
+supports MSG_ZEROCOPY, so we can do virtio/vsock + MSG_ZEROCOPY + io_uring.
+
+Thanks, Arseniy
+
+> 
+> Thanks,
+> Stefano
+> 
 
