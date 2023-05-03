@@ -1,249 +1,153 @@
-Return-Path: <netdev+bounces-160-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-161-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0B40E6F5907
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 15:25:07 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C077F6F5913
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 15:27:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 843FB2815B1
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 13:25:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 63622281598
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 13:27:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 57348D52E;
-	Wed,  3 May 2023 13:25:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 33B96D530;
+	Wed,  3 May 2023 13:27:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43D4A46AC
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 13:25:03 +0000 (UTC)
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC82E5264;
-	Wed,  3 May 2023 06:25:00 -0700 (PDT)
-Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 343DLiYp026377;
-	Wed, 3 May 2023 13:24:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=t7Z4GyVofl8KH3R21cSalBDAwo0cz6K18KiapRYFmk0=;
- b=YTahdXHZ9DCOaPJBHL5p3suGYwh5W+ixnWjdslkKzhwc5k+XtxGshINN/kF3W7r4WWIX
- 6ZgsmHsfdrefkhAnJ4negVLnhkiGNC6502w7rL5x2UPgVPtYTvpKa+AufaacO+PA/E/y
- Uy8bIuQSm8rD0Xun0yNYesGuH0Dh9GqkNE1hx7+5CIe7FFbScORvseZv/ZyZUuf8Qw3k
- /lmqU9KgkczXTQHUno7tgFoNnQbr7YlUDDINMwHfOVQZpI6z7AuP1DC7UDQkFA6xuai1
- EvFrwtFTbR0z67ksMoSjyEwoSGgBkuL3sZxNaKFmgmbxPyz8+w86frDkCNxhhc6Snt2h jQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qbr9h8nwe-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 03 May 2023 13:24:25 +0000
-Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 343DBqHf024587;
-	Wed, 3 May 2023 13:24:23 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qbr9h8nug-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 03 May 2023 13:24:23 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-	by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 343CUqk5026692;
-	Wed, 3 May 2023 13:24:20 GMT
-Received: from smtprelay07.wdc07v.mail.ibm.com ([9.208.129.116])
-	by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3q8tv99qcw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 03 May 2023 13:24:20 +0000
-Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
-	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 343DOG0i16581142
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 3 May 2023 13:24:16 GMT
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B23CF58055;
-	Wed,  3 May 2023 13:24:16 +0000 (GMT)
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3AEDA5804E;
-	Wed,  3 May 2023 13:24:09 +0000 (GMT)
-Received: from [9.160.35.135] (unknown [9.160.35.135])
-	by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Wed,  3 May 2023 13:24:09 +0000 (GMT)
-Message-ID: <0cb48a73-db45-1207-2150-821086eab5df@linux.ibm.com>
-Date: Wed, 3 May 2023 09:24:08 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 228EA4A11
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 13:27:54 +0000 (UTC)
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04842E67
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 06:27:48 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-272-JMRr_rtRNKmaWdX7u8fSMw-1; Wed, 03 May 2023 14:27:46 +0100
+X-MC-Unique: JMRr_rtRNKmaWdX7u8fSMw-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 3 May
+ 2023 14:27:44 +0100
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.048; Wed, 3 May 2023 14:27:44 +0100
+From: David Laight <David.Laight@ACULAB.COM>
+To: 'Adrien Delorme' <delorme.ade@outlook.com>, Pavel Begunkov
+	<asml.silence@gmail.com>
+CC: "axboe@kernel.dk" <axboe@kernel.dk>, "davem@davemloft.net"
+	<davem@davemloft.net>, "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
+	"dsahern@kernel.org" <dsahern@kernel.org>, "edumazet@google.com"
+	<edumazet@google.com>, "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+	"kuba@kernel.org" <kuba@kernel.org>, "leit@fb.com" <leit@fb.com>,
+	"leitao@debian.org" <leitao@debian.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "marcelo.leitner@gmail.com"
+	<marcelo.leitner@gmail.com>, "matthieu.baerts@tessares.net"
+	<matthieu.baerts@tessares.net>, "mptcp@lists.linux.dev"
+	<mptcp@lists.linux.dev>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "willemb@google.com"
+	<willemb@google.com>, "willemdebruijn.kernel@gmail.com"
+	<willemdebruijn.kernel@gmail.com>
+Subject: RE: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Thread-Topic: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Thread-Index: AQHZfPcbeWikE8uGs0CEhT1cqCE61a9Ido9ggAASYTA=
+Date: Wed, 3 May 2023 13:27:44 +0000
+Message-ID: <9233101ff5794556a0873832ebad4445@AcuMS.aculab.com>
+References: <GV1P193MB200533CC9A694C4066F4807CEA6F9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
+ <49866ae2-db19-083c-6498-e7d9d62e8267@gmail.com>
+ <GV1P193MB2005214F383309B8466C6361EA6C9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
+In-Reply-To: <GV1P193MB2005214F383309B8466C6361EA6C9@GV1P193MB2005.EURP193.PROD.OUTLOOK.COM>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v8 0/3] mm/gup: disallow GUP writing to file-backed
- mappings by default
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To: David Hildenbrand <david@redhat.com>,
-        Lorenzo Stoakes
- <lstoakes@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila
- <mpenttil@redhat.com>,
-        Dave Chinner <david@fromorbit.com>, "Theodore Ts'o" <tytso@mit.edu>,
-        Peter Xu <peterx@redhat.com>, "Paul E . McKenney" <paulmck@kernel.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-References: <cover.1683067198.git.lstoakes@gmail.com>
- <20d078c5-4ee6-18dc-d3a5-d76b6a68f64e@linux.ibm.com>
- <1b34e9a4-83c0-2f44-1457-dd8800b9287a@redhat.com>
- <80e3b8ee-c16d-062f-f483-06e21282e59c@linux.ibm.com>
- <976fcec0-d132-3a27-bbd2-01b21571bca2@redhat.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <976fcec0-d132-3a27-bbd2-01b21571bca2@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: bBGbjL1BT7NUlN6uohu087clNiuGmNkf
-X-Proofpoint-GUID: Dn-rOS0FmD-1OwpBDUptu9MfNXcH6pk3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-03_08,2023-05-03_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=814 bulkscore=0
- adultscore=0 phishscore=0 spamscore=0 suspectscore=0 malwarescore=0
- priorityscore=1501 impostorscore=0 mlxscore=0 lowpriorityscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2305030110
-X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 5/3/23 8:53 AM, David Hildenbrand wrote:
-> On 03.05.23 13:25, Matthew Rosato wrote:
->> On 5/3/23 3:08 AM, David Hildenbrand wrote:
->>> On 03.05.23 02:31, Matthew Rosato wrote:
->>>> On 5/2/23 6:51 PM, Lorenzo Stoakes wrote:
->>>>> Writing to file-backed mappings which require folio dirty tracking using
->>>>> GUP is a fundamentally broken operation, as kernel write access to GUP
->>>>> mappings do not adhere to the semantics expected by a file system.
->>>>>
->>>>> A GUP caller uses the direct mapping to access the folio, which does not
->>>>> cause write notify to trigger, nor does it enforce that the caller marks
->>>>> the folio dirty.
->>>>>
->>>>> The problem arises when, after an initial write to the folio, writeback
->>>>> results in the folio being cleaned and then the caller, via the GUP
->>>>> interface, writes to the folio again.
->>>>>
->>>>> As a result of the use of this secondary, direct, mapping to the folio no
->>>>> write notify will occur, and if the caller does mark the folio dirty, this
->>>>> will be done so unexpectedly.
->>>>>
->>>>> For example, consider the following scenario:-
->>>>>
->>>>> 1. A folio is written to via GUP which write-faults the memory, notifying
->>>>>      the file system and dirtying the folio.
->>>>> 2. Later, writeback is triggered, resulting in the folio being cleaned and
->>>>>      the PTE being marked read-only.
->>>>> 3. The GUP caller writes to the folio, as it is mapped read/write via the
->>>>>      direct mapping.
->>>>> 4. The GUP caller, now done with the page, unpins it and sets it dirty
->>>>>      (though it does not have to).
->>>>>
->>>>> This change updates both the PUP FOLL_LONGTERM slow and fast APIs. As
->>>>> pin_user_pages_fast_only() does not exist, we can rely on a slightly
->>>>> imperfect whitelisting in the PUP-fast case and fall back to the slow case
->>>>> should this fail.
->>>>>
->>>>> v8:
->>>>> - Fixed typo writeable -> writable.
->>>>> - Fixed bug in writable_file_mapping_allowed() - must check combination of
->>>>>     FOLL_PIN AND FOLL_LONGTERM not either/or.
->>>>> - Updated vma_needs_dirty_tracking() to include write/shared to account for
->>>>>     MAP_PRIVATE mappings.
->>>>> - Move to open-coding the checks in folio_pin_allowed() so we can
->>>>>     READ_ONCE() the mapping and avoid unexpected compiler loads. Rename to
->>>>>     account for fact we now check flags here.
->>>>> - Disallow mapping == NULL or mapping & PAGE_MAPPING_FLAGS other than
->>>>>     anon. Defer to slow path.
->>>>> - Perform GUP-fast check _after_ the lowest page table level is confirmed to
->>>>>     be stable.
->>>>> - Updated comments and commit message for final patch as per Jason's
->>>>>     suggestions.
->>>>
->>>> Tested again on s390 using QEMU with a memory backend file (on ext4) and vfio-pci -- This time both vfio_pin_pages_remote (which will call pin_user_pages_remote(flags | FOLL_LONGTERM)) and the pin_user_pages_fast(FOLL_WRITE | FOLL_LONGTERM) in kvm_s390_pci_aif_enable are being allowed (e.g. returning positive pin count)
->>>
->>> At least it's consistent now ;) And it might be working as expected ...
->>>
->>> In v7:
->>> * pin_user_pages_fast() succeeded
->>> * vfio_pin_pages_remote() failed
->>>
->>> But also in v7:
->>> * GUP-fast allows pinning (anonymous) pages in MAP_PRIVATE file
->>>    mappings
->>> * Ordinary GUP allows pinning pages in MAP_PRIVATE file mappings
->>>
->>> In v8:
->>> * pin_user_pages_fast() succeeds
->>> * vfio_pin_pages_remote() succeeds
->>>
->>> But also in v8:
->>> * GUP-fast allows pinning (anonymous) pages in MAP_PRIVATE file
->>>    mappings
->>> * Ordinary GUP allows pinning pages in MAP_PRIVATE file mappings
->>>
->>>
->>> I have to speculate, but ... could it be that you are using a private mapping?
->>>
->>> In QEMU, unfortunately, the default for memory-backend-file is "share=off" (private) ... for memory-backend-memfd it is "share=on" (shared). The default is stupid ...
->>>
->>> If you invoke QEMU manually, can you specify "share=on" for the memory-backend-file? I thought libvirt would always default to "share=on" for file mappings (everything else doesn't make much sense) ... but you might have to specify
->>>      <access mode="shared"/>
->>> in addition to
->>>      <source type="file"/>
->>>
->>
->> Ah, there we go.  Yes, I was using the default of share=off.  When I instead specify share=on, now the pins will fail in both cases.
->>
-> 
-> Out of curiosity, how does that manifest?
-> 
-> I assume the VM is successfully created and as Linux tries initializing and using the device, we get a bunch of errors inside the VM, correct?
-> 
-
-Yes, that's correct.
-
-Which error comes first (an attempt at mapping something via type1 iommu or an attempt to register AEN) depends on the device type and the order of operations of the associated driver.  But in either case, you're going to see guest errors associated with that action.  mlx5 and ism give up rather quickly and just fail their probe. nvme in the guest is persistent and its actions keep re-attempting to setup AEN by issuing the associated instruction; but the associated blockdev will never show up. 
+RnJvbTogQWRyaWVuIERlbG9ybWUNCj4gU2VudDogMDMgTWF5IDIwMjMgMTQ6MTENCj4gDQo+IEZy
+b20gQWRyaWVuIERlbG9ybWUNCj4gPiBGcm9twqA6IFBhdmVsIEJlZ3Vua292DQo+ID4gU2VudCA6
+IDIgTWF5IDIwMjMgMTU6MDQNCj4gPiBPbiA1LzIvMjMgMTA6MjEsIEFkcmllbiBEZWxvcm1lIHdy
+b3RlOg0KPiA+ID4gIEZyb20gQWRyaWVuIERlbG9ybWUNCj4gPiA+DQo+ID4gPj4gRnJvbTogRGF2
+aWQgQWhlcm4NCj4gPiA+PiBTZW50OiAxMiBBcHJpbCAyMDIzIDc6MzkNCj4gPiA+Pj4gU2VudDog
+MTEgQXByaWwgMjAyMyAxNjoyOA0KPiA+ID4+IC4uLi4NCj4gPiA+PiBPbmUgcHJvYmxlbSBpcyB0
+aGF0IG5vdCBhbGwgc29ja29wdCBjYWxscyBwYXNzIHRoZSBjb3JyZWN0IGxlbmd0aC4NCj4gPiA+
+PiBBbmQgc29tZSBvZiB0aGVtIGNhbiBoYXZlIHZlcnkgbG9uZyBidWZmZXJzLg0KPiA+ID4+IE5v
+dCB0byBtZW50aW9uIHRoZSBvbmVzIHRoYXQgYXJlIHJlYWQtbW9kaWZ5LXdyaXRlLg0KPiA+ID4+
+DQo+ID4gPj4gQSBwbGF1c2libGUgc29sdXRpb24gaXMgdG8gcGFzcyBhICdmYXQgcG9pbnRlcicg
+dGhhdCBjb250YWlucyBzb21lLA0KPiA+ID4+IG9yIGFsbCwgb2Y6DQo+ID4gPj4gICAgICAgIC0g
+QSB1c2Vyc3BhY2UgYnVmZmVyIHBvaW50ZXIuDQo+ID4gPj4gICAgICAgIC0gQSBrZXJuZWwgYnVm
+ZmVyIHBvaW50ZXIuDQo+ID4gPj4gICAgICAgIC0gVGhlIGxlbmd0aCBzdXBwbGllZCBieSB0aGUg
+dXNlci4NCj4gPiA+PiAgICAgICAgLSBUaGUgbGVuZ3RoIG9mIHRoZSBrZXJuZWwgYnVmZmVyLg0K
+PiA+ID4+ICAgICAgICA9IFRoZSBudW1iZXIgb2YgYnl0ZXMgdG8gY29weSBvbiBjb21wbGV0aW9u
+Lg0KPiA+ID4+IEZvciBzaW1wbGUgdXNlciByZXF1ZXN0cyB0aGUgc3lzY2FsbCBlbnRyeS9leGl0
+IGNvZGUgd291bGQgY29weSB0aGUNCj4gPiA+PiBkYXRhIHRvIGEgc2hvcnQgb24tc3RhY2sgYnVm
+ZmVyLg0KPiA+ID4+IEtlcm5lbCB1c2VycyBqdXN0IHBhc3MgdGhlIGtlcm5lbCBhZGRyZXNzLg0K
+PiA+ID4+IE9kZCByZXF1ZXN0cyBjYW4ganVzdCB1c2UgdGhlIHVzZXIgcG9pbnRlci4NCj4gPiA+
+Pg0KPiA+ID4+IFByb2JhYmx5IG5lZWRzIGFjY2Vzc29ycyB0aGF0IGFkZCBpbiBhbiBvZmZzZXQu
+DQo+ID4gPj4NCj4gPiA+PiBJdCBtaWdodCBhbHNvIGJlIHRoYXQgc29tZSBvZiB0aGUgcHJvYmxl
+bWF0aWMgc29ja29wdCB3ZXJlIGluIGRlY25ldA0KPiA+ID4+IC0gbm93IHJlbW92ZWQuDQo+ID4g
+Pg0KPiA+ID4gSGVsbG8gZXZlcnlvbmUsDQo+ID4gPg0KPiA+ID4gSSdtIGN1cnJlbnRseSB3b3Jr
+aW5nIG9uIGFuIGltcGxlbWVudGF0aW9uIG9mIHtnZXQsc2V0fSBzb2Nrb3B0Lg0KPiA+ID4gU2lu
+Y2UgdGhpcyB0aHJlYWQgaXMgYWxyZWFkeSB0YWxraW5nIGFib3V0IGl0LCBJIGhvcGUgdGhhdCBJ
+IHJlcGx5aW5nIGF0IHRoZQ0KPiA+IGNvcnJlY3QgcGxhY2UuDQo+ID4NCj4gPiBIaSBBZHJpZW4s
+IEkgYmVsaWV2ZSBCcmVubyBpcyB3b3JraW5nIG9uIHNldC9nZXRzb2Nrb3B0IGFzIHdlbGwgYW5k
+IGhhZA0KPiA+IHNpbWlsYXIgcGF0Y2hlcyBmb3IgYXdoaWxlLCBidXQgdGhhdCB3b3VsZCBuZWVk
+IGZvciBzb21lIHByb2JsZW1zIHRvIGJlDQo+ID4gc29sdmVkIGZpcnN0LCBlLmcuIHRyeSBhbmQg
+ZGVjaWRlIHdoZXRoZXIgaXQgY29waWVzIHRvIGEgcHRyIGFzIHRoZSBzeXNjYWxsDQo+ID4gdmVy
+c2lvbnMgb3Igd291bGQgZ2V0L3JldHVybiBvcHR2YWwgZGlyZWN0bHkgaW4gc3FlL2NxZS4gQW5k
+IGFsc28gd2hlcmUgdG8NCj4gPiBzdG9yZSBiaXRzIHRoYXQgeW91IHBhc3MgaW4gc3RydWN0IGFy
+Z3Nfc2V0c29ja29wdF91cmluZywgYW5kIHdoZXRoZXIgdG8gcmVseQ0KPiA+IG9uIFNRRTEyOCBv
+ciBub3QuDQo+ID4NCj4gDQo+IEhlbGxvIFBhdmVsLA0KPiBUaGF0IGlzIGdvb2QgdG8gaGVhci4g
+SWYgcG9zc2libGUgSSB3b3VsZCBsaWtlIHRvIHByb3ZpZGUgc29tZSBoZWxwLg0KPiBJIGxvb2tl
+ZCBhdCB0aGUgZ2V0c29ja29wdCBpbXBsZW1lbnRhdGlvbi4gRnJvbSB3aGF0IEknbSBzZWVpbmcs
+IEkgYmVsaWV2ZSB0aGF0IGl0IHdvdWxkIGJlIGVhc2llciB0bw0KPiBjb3BpZXMgdG8gYSBwdHIg
+YXMgdGhlIHN5c2NhbGwuDQo+IFRoZSBsZW5ndGggb2YgdGhlIG91dHB1dCBpcyB1c3VhbGx5IDQg
+Ynl0ZXMgKHNvbWV0aW1lcyBsZXNzKSBidXQgaW4gYSBsb3Qgb2YgY2FzZXMsIHRoaXMgbGVuZ3Ro
+IGlzDQo+IHZhcmlhYmxlLiBTb21ldGltZSBpdCBjYW4gZXZlbiBiZSBiaWdnZXIgdGhhdCB0aGUg
+U1FFMTI4IHJpbmcuDQo+IA0KPiBIZXJlIGlzIGEgbm9uLWV4aGF1c3RpdmUgbGlzdCBvZiB0aG9z
+ZSBjYXNlcyA6DQo+IC9uZXQvaXB2NC90Y3AuYyA6IGludCBkb190Y3BfZ2V0c29ja29wdCguLi4p
+DQo+ICAgLSBUQ1BfSU5GTyA6IHVwIHRvIDI0MCBieXRlcw0KPiAgIC0gVENQX0NDX0lORk8gYW5k
+IFRDUF9SRVBBSVJfV0lORE9XIDogdXAgdG8gMjAgYnl0ZXMNCj4gICAtIFRDUF9DT05HRVNUSU9O
+IGFuZCBUQ1BfVUxQIDogdXAgdG8gMTYgYnl0ZXMNCj4gICAtIFRDUF9aRVJPQ1BPWV9SRUNFSVZF
+IDogdXAgdG8gNjQgYnl0ZXMNCj4gL25ldC9hdG0vY29tbXVuLmMgOiBpbnQgdmNjX2dldHNvY2tv
+cHQoLi4uKQ0KPiAgIC0gU09fQVRNUU9TIDogdXAgdG8gODggYnl0ZXMNCj4gICAtIFNPX0FUTVBW
+QyA6IHVwIHRvIDE2IGJ5dGVzDQo+IC9uZXQvaXB2NC9pb19zb2NrZ2x1ZS5jIDogaW50IGRvX2lw
+X2dldHNvY2tvcHQoLi4uKQ0KPiAgIC0gTUNBU1RfTVNGSUxURVIgOiB1cCB0byAxNDQgYnl0ZXMN
+Cj4gICAtIElQX01TRklMVEVSIDogMTYgYnl0ZXMgbWluaW11bQ0KPiANCj4gSSB3aWxsIGxvb2sg
+aW50byBzZXRzb2Nrb3B0IGJ1dCBJIGJlbGlldmUgaXQgbWlnaHQgYmUgdGhlIHNhbWUuDQo+IElm
+IG5lZWRlZCBJIGNhbiBhbHNvIGNvbXBsZXRlIHRoaXMgbGlzdC4NCj4gSG93ZXZlciB0aGVyZSBh
+cmUgc29tZSBjYXNlcyB3aGVyZSBpdCBpcyBoYXJkIHRvIGRldGVybWluYXRlIGEgbWF4aW11bSBh
+bW91bnQgb2YgYnl0ZXMgaW4gYWR2YW5jZS4NCg0KQWxzbyBsb29rIGF0IFNDVFAgLSBpdCBoYXMg
+c29tZSB2ZXJ5IGxvbmcgYnVmZmVycy4NCkFsbW9zdCBhbnkgY29kZSB0aGF0IHVzZXMgU0NUUCBu
+ZWVkcyB0byB1c2UgdGhlIFNDVFBfU1RBVFVTDQpyZXF1ZXN0IHRvIGdldCB0aGUgbmVnb3RpYXRl
+ZCBudW1iZXIgb2YgZGF0YSBzdHJlYW1zDQoodGhhdCBvbmUgaXMgcmVsYXRpdmVseSBzaG9ydCku
+DQpJSVJDIHRoZXJlIGFyZSBhbHNvIGdldHNvY2tvcHQoKSB0aGF0IGFyZSByZWFkL21vZGlmeS93
+cml0ZSENCg0KVGhlcmUgd2lsbCBhbHNvIGJlIHVzZXIgY29kZSB0aGF0IHN1cHBsaWVzIGEgdmVy
+eSBsb25nIGJ1ZmZlcg0KKHRvbyBsb25nIHRvIGFsbG9jYXRlIGluIGtlcm5lbCkgZm9yIHNvbWUg
+dmFyaWFibGUgbGVuZ3RoIHJlcXVlc3RzLg0KDQpTbyB0aGUgZ2VuZXJpYyBzeXN0ZW0gY2FsbCBj
+b2RlIGNhbiBhbGxvY2F0ZSBhIHNob3J0IChlZyBvbi1zdGFjaykNCmJ1ZmZlciBmb3Igc2hvcnQg
+cmVxdWVzdHMgYW5kIHRoZW4gcGFzcyBib3RoIHRoZSB1c2VyIGFuZCBrZXJuZWwNCmFkZHJlc3Nl
+cyAoYW5kIGxlbmd0aHMpIHRocm91Z2ggdG8gdGhlIHByb3RvY29sIGZ1bmN0aW9ucy4NCkFueXRo
+aW5nIHRoYXQgbmVlZHMgYSBiaWcgYnVmZmVyIGNhbiBkaXJlY3RseSBjb3B5IHRvL2Zyb20NCmFu
+ZCB1c2VyIGJ1ZmZlcnMsIGtlcm5lbCBjYWxsZXJzIHdvdWxkIG5lZWQgdG8gcGFzcyBhIGJpZyBl
+bm91Z2gNCmJ1ZmZlci4NCg0KQnV0IHRoZSBjb2RlIGZvciBzbWFsbCBidWZmZXJzIHdvdWxkIGJl
+IG11Y2ggc2ltcGxpZmllZCBmb3INCmJvdGgga2VybmVsIGFuZCB1c2VyIGFjY2Vzcy4NCg0KCURh
+dmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
+dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
+Mzg2IChXYWxlcykNCg==
 
 
