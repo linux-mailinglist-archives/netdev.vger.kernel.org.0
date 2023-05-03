@@ -1,125 +1,156 @@
-Return-Path: <netdev+bounces-152-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-153-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 97FFC6F57D9
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 14:23:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id F3DFC6F57F5
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 14:32:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DA4331C20E55
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 12:23:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 160F71C20EE0
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 12:32:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 24933D516;
-	Wed,  3 May 2023 12:23:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91E278F5D;
+	Wed,  3 May 2023 12:32:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1446A46AC
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 12:23:40 +0000 (UTC)
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6325C5587;
-	Wed,  3 May 2023 05:23:39 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 1269222769;
-	Wed,  3 May 2023 12:23:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1683116618; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 801AB321E
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 12:32:38 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB8059F1
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 05:32:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683117156;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=1aj1/GqmVdeLgj770nx57dpPk5kBLDi8DCbCRfjzh5A=;
-	b=3NSXZIBV+sB8PZpGuqg7j7n8qezGfY59qBYR1exU5COZm9JyT9WUogVvLcs81qYBbfvqTY
-	mnX9FTtzTqJpjpLJssAtkgFMC3626NBevjRpjBUsu/GsQRAklTmpZ0tVpjZx/50KtzKew7
-	WJAWtn4yVvG1AV2zmBPL7ip1zuxzjEw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1683116618;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1aj1/GqmVdeLgj770nx57dpPk5kBLDi8DCbCRfjzh5A=;
-	b=GiNeFG3RUj/NEfWs7b+o/rT+gYLe6AH5qkekOLk5kVlW7cm1ufoaBPPhgnK6nVOXCmbvBg
-	CJswCYKv5MvQ1ODw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 03F881331F;
-	Wed,  3 May 2023 12:23:38 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id NKzrAEpSUmQ3egAAMHmgww
-	(envelope-from <jack@suse.cz>); Wed, 03 May 2023 12:23:38 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id 85A0FA0744; Wed,  3 May 2023 14:23:37 +0200 (CEST)
-Date: Wed, 3 May 2023 14:23:37 +0200
-From: Jan Kara <jack@suse.cz>
-To: syzbot <syzbot+48011b86c8ea329af1b9@syzkaller.appspotmail.com>
-Cc: akpm@linux-foundation.org, hch@lst.de, jack@suse.com,
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, netdev@vger.kernel.org,
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [mm?] [udf?] KASAN: null-ptr-deref Read in filemap_fault
-Message-ID: <20230503122337.fxyfchh4ximvnuwn@quack3>
-References: <00000000000090900c05fa656913@google.com>
- <0000000000004a34a305fac69bcb@google.com>
+	bh=Gi64OX3Of2seO335Lxc+tT0UY6TwkdsRC//xSV8lTrE=;
+	b=CsxpmawxutyNthI9x4bsvdxcrca1hiSs7kLx7rmGo1xFFaT7CCvm3/iQp47IaV/D4FaotC
+	+ixpfusaqf/Vh9uYZ1SC1hlPpsrylwz5enqfdGeYms1M+m9IdM61iI97Ka7Mu4Bni49tYN
+	hn/dPJj2jYL31KuGhpIcvmAfOEgY/us=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-27-QeBUEEkIONCq2gO6fi7vDg-1; Wed, 03 May 2023 08:32:33 -0400
+X-MC-Unique: QeBUEEkIONCq2gO6fi7vDg-1
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-61b64cb44c7so30243176d6.2
+        for <netdev@vger.kernel.org>; Wed, 03 May 2023 05:32:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683117153; x=1685709153;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Gi64OX3Of2seO335Lxc+tT0UY6TwkdsRC//xSV8lTrE=;
+        b=bB2xgtsCDsRqXyCnFkCsL/vVYCyDJ32ZLnkA2HgbtCo0/7DKWMH5ZpHaBBJzYIQ4C8
+         JiTdLzj8m/Fmc/90eJ5aUMWQBfO3XgpWuKpZ/g+s4fyRCeePU0cPS7cNdd1rBEvyVuT1
+         EN0j/ui9N7e3Bu5S8y4MVoI34vaE9KHEUlr4yUAi0WehwWkuBfOK1AfIMKy/7VFdOb2j
+         Y5D6WpK9DeJb10AAFArCEicAlU0HuprMY1F5lhzwTbKW9fP0T9G6iNw79vIhWxjlCDS+
+         7BxkSb9UpQ47YvfyITRcwW1+5LYbgm8pxwhmBSkS7McFaX0ElIqFbM7Ft+FZHRM341G0
+         zrQA==
+X-Gm-Message-State: AC+VfDzAsQWQQ41qQ8Eg57fzrRwGorh9vw+O96pXXJEpp5oLsHjyMnK0
+	dzCzwAi6jNCd0iUbHUyYCdU4G5P0Ur2KUhe0n81wVuUkc+/Tjv2cmW41H/8cR0Ff6DSpJxbcm+R
+	5ObeB86Ph9L9iTY1re0xCjQ8X
+X-Received: by 2002:a05:6214:2b06:b0:5b5:9c2:8c29 with SMTP id jx6-20020a0562142b0600b005b509c28c29mr10558694qvb.12.1683117153213;
+        Wed, 03 May 2023 05:32:33 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7gD3DZqKFg22wLfhmmFhk3KWfQV1G/GfCVYnFgmZALN4tXOUdfnVs05JyYA1d20ExjdNJAIw==
+X-Received: by 2002:a05:6214:2b06:b0:5b5:9c2:8c29 with SMTP id jx6-20020a0562142b0600b005b509c28c29mr10558669qvb.12.1683117152962;
+        Wed, 03 May 2023 05:32:32 -0700 (PDT)
+Received: from [192.168.1.31] (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id l17-20020a056214029100b005e8f61012e9sm10300002qvv.26.2023.05.03.05.32.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 May 2023 05:32:32 -0700 (PDT)
+Message-ID: <e0d252e7-a025-511e-22b3-c46f1f7ac054@redhat.com>
+Date: Wed, 3 May 2023 05:32:29 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000004a34a305fac69bcb@google.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SORTED_RECIPS,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.1
+Subject: Re: [PATCH] pds_core: add stub macros for pdsc_debufs_* when !
+ CONFIG_DEBUG_FS
+Content-Language: en-US
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: shannon.nelson@amd.com, brett.creeley@amd.com, davem@davemloft.net,
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230502145220.2927464-1-trix@redhat.com>
+ <ZFIO4FixTx1HC1RJ@nanopsycho>
+From: Tom Rix <trix@redhat.com>
+In-Reply-To: <ZFIO4FixTx1HC1RJ@nanopsycho>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed 03-05-23 02:23:19, syzbot wrote:
-> syzbot has bisected this issue to:
-> 
-> commit 66dabbb65d673aef40dd17bf62c042be8f6d4a4b
-> Author: Christoph Hellwig <hch@lst.de>
-> Date:   Tue Mar 7 14:34:10 2023 +0000
-> 
->     mm: return an ERR_PTR from __filemap_get_folio
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15220608280000
-> start commit:   865fdb08197e Merge tag 'input-for-v6.4-rc0' of git://git.k..
-> git tree:       upstream
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=17220608280000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=13220608280000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=d1c8518c09009bad
-> dashboard link: https://syzkaller.appspot.com/bug?extid=48011b86c8ea329af1b9
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=137594c4280000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10cfd602280000
-> 
-> Reported-by: syzbot+48011b86c8ea329af1b9@syzkaller.appspotmail.com
-> Fixes: 66dabbb65d67 ("mm: return an ERR_PTR from __filemap_get_folio")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-Actually looking into commit 66dabbb65d67 it seems it has two problems -
-one in filemap_fault() where in:
+On 5/3/23 12:36 AM, Jiri Pirko wrote:
+> Tue, May 02, 2023 at 04:52:20PM CEST, trix@redhat.com wrote:
+>> When CONFIG_DEBUG_FS is not defined there is this representative link error
+>> ld: drivers/net/ethernet/amd/pds_core/main.o: in function `pdsc_remove':
+>> main.c:(.text+0x35c): undefined reference to `pdsc_debugfs_del_dev
+>>
+>> Avoid these link errors when CONFIG_DEBUG_FS is not defined by
+>> providing some empty macros.
+>>
+>> Signed-off-by: Tom Rix <trix@redhat.com>
+>> ---
+>> drivers/net/ethernet/amd/pds_core/core.h | 12 ++++++++++++
+>> 1 file changed, 12 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/amd/pds_core/core.h b/drivers/net/ethernet/amd/pds_core/core.h
+>> index e545fafc4819..0b39a6dc65c8 100644
+>> --- a/drivers/net/ethernet/amd/pds_core/core.h
+>> +++ b/drivers/net/ethernet/amd/pds_core/core.h
+>> @@ -261,6 +261,7 @@ int pdsc_dl_enable_validate(struct devlink *dl, u32 id,
+>>
+>> void __iomem *pdsc_map_dbpage(struct pdsc *pdsc, int page_num);
+>>
+>> +#ifdef CONFIG_DEBUG_FS
+>> void pdsc_debugfs_create(void);
+>> void pdsc_debugfs_destroy(void);
+>> void pdsc_debugfs_add_dev(struct pdsc *pdsc);
+>> @@ -270,6 +271,17 @@ void pdsc_debugfs_add_viftype(struct pdsc *pdsc);
+>> void pdsc_debugfs_add_irqs(struct pdsc *pdsc);
+>> void pdsc_debugfs_add_qcq(struct pdsc *pdsc, struct pdsc_qcq *qcq);
+>> void pdsc_debugfs_del_qcq(struct pdsc_qcq *qcq);
+>> +#else
+>> +#define pdsc_debugfs_create()
+>> +#define pdsc_debugfs_destroy()
+>> +#define pdsc_debugfs_add_dev(pdsc)
+>> +#define pdsc_debugfs_del_dev(pdsc)
+>> +#define pdsc_debugfs_add_ident(pdsc)
+>> +#define pdsc_debugfs_add_viftype(pdsc)
+>> +#define pdsc_debugfs_add_irqs(pdsc)
+>> +#define pdsc_debugfs_add_qcq(pdsc, qcq)
+>> +#define pdsc_debugfs_del_qcq(qcq)
+> Usually this is done using static inline stub functions. Any reason to
+> not to do it in the same way?
 
-               if (IS_ERR(folio)) {
-                        if (fpin)
-                                goto out_retry;
+I do not mind changing the patch if that is what is required.
 
-we need to clear folio so that we don't try to folio_put() the error
-pointer. And another in afs_dir_get_folio() where the changes effectively
-make that function return ERR_PTR instead of NULL as well which will then
-confuse afs_edit_dir_add() and other callers (which were not updated).
+However I believe Paolo said the change was being handled by another patch.
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Tom
+
+>
+>
+>> +#endif
+>>
+>> int pdsc_err_to_errno(enum pds_core_status_code code);
+>> bool pdsc_is_fw_running(struct pdsc *pdsc);
+>> -- 
+>> 2.27.0
+>>
+
 
