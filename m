@@ -1,142 +1,119 @@
-Return-Path: <netdev+bounces-221-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-222-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 621246F5FF4
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 22:16:07 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 95EC96F6067
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 23:04:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 95258281817
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 20:16:05 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AE0F41C21041
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 21:04:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81B4ABE5D;
-	Wed,  3 May 2023 20:16:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1EC53BE6F;
+	Wed,  3 May 2023 21:04:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 745D9DF44
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 20:16:03 +0000 (UTC)
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E4D9008
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 13:15:31 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-94f7a7a3351so1081230166b.2
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 13:15:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20221208; t=1683144929; x=1685736929;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lDXPHFc8bD1fIdJW+036nVAJoJcg5BRFBoU1YEshWLU=;
-        b=ekURvzXz7isgKnvapcsA97dTtk4w0bwSLfJTc31O22NN/wSYegu7i3TCjn/irNHXEk
-         QjITunay8Vl+BNPbe3VGZHRwPIf3LAmQ7rPcYi7ocEp27oqH6T2e4pCZ6v6hVGYlel3D
-         X/XL2xNpTfc8Rmd3dJlVT9wFIlPrJpcFRuxRoCDYe2oL5rl5C2bAJGJnsGhbJwf9oPSu
-         PLLf0lKSNr4kEckw39ALEHBzED1brCHLr1/rtPsqYDMbHB6gKkf68pOagVGycQMx3U4m
-         2V+7rHQCQ12wej8qV73nV2mBBOr1H8mMKH1UzdNoOYna8zmzo/sRd4+5687yLmTZSwfJ
-         hNdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683144929; x=1685736929;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lDXPHFc8bD1fIdJW+036nVAJoJcg5BRFBoU1YEshWLU=;
-        b=RMi3ZW4bERJJAtk/AhTVaLUcnKSFVNT5+yVtAkmjBfyknaVR6MRTCySJF3y6VAQTeA
-         Sk3VKka+/pOGMd8SLyGa8VUimmLO113evHdlupOjJCGeO4PKPlp7rPXshaY5AkpfMws4
-         xHLgKA4wZjZgx8c2rclKRxPCF1j+NGVQ92UGo0gS/vRGBePPAGZ/acaR+LIPHS9PpRT2
-         LG26rjgzcdesWPVUbG9XaongIjUODs4N18KDbE2q4zOSJPyOQF3QrKpjugzSXPTrvvEL
-         wJ2rMqC8m0qCeYvOuYW2tVrfNHuHHOl7dXgoql/gp/HJno/TVw296UTMiq4CQ//KP9X/
-         5KZA==
-X-Gm-Message-State: AC+VfDwHlDMlT5vTANDTwH+U+mOdUNbzMd5fC0Wez6fi2QylFyk1gmHJ
-	RP3AeNVkdScUgeZqCJaKqaM=
-X-Google-Smtp-Source: ACHHUZ6atgdKt1NUVDJmIGriCe9/lZ7efnIM0H+Ld1Ov38D0Tiw4EvW/JcgSKk+DT7IkLeubr7w7CQ==
-X-Received: by 2002:a17:906:9c84:b0:94e:1069:151d with SMTP id fj4-20020a1709069c8400b0094e1069151dmr5283585ejc.10.1683144929258;
-        Wed, 03 May 2023 13:15:29 -0700 (PDT)
-Received: from tycho (p200300c1c74c0400ba8584fffebf2b17.dip0.t-ipconnect.de. [2003:c1:c74c:400:ba85:84ff:febf:2b17])
-        by smtp.gmail.com with ESMTPSA id vv1-20020a170907a68100b00957278cfb2dsm16338923ejc.79.2023.05.03.13.15.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 13:15:28 -0700 (PDT)
-Sender: Zahari Doychev <zahari.doychev@googlemail.com>
-Date: Wed, 3 May 2023 22:15:27 +0200
-From: Zahari Doychev <zahari.doychev@linux.com>
-To: Ido Schimmel <idosch@idosch.org>
-Cc: netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com, 
-	jiri@resnulli.us, davem@davemloft.net, edumazet@google.com, kuba@kernel.org, 
-	pabeni@redhat.com, hmehrtens@maxlinear.com, aleksander.lobakin@intel.com, 
-	simon.horman@corigine.com, Zahari Doychev <zdoychev@maxlinear.com>
-Subject: Re: [PATCH net-next v4 2/3] net: flower: add support for matching
- cfm fields
-Message-ID: <j6nx4m5li4lazpm5garenctjpyftsqva4x3jd27mdgb4qti3xs@dvrgcqm24hbx>
-References: <20230425211630.698373-1-zahari.doychev@linux.com>
- <20230425211630.698373-3-zahari.doychev@linux.com>
- <ZE6AFQuv+yi7RxUL@shredder>
- <yabevxsc5uqezsjwjalqbnliu2yspl3v2drspd5a6a76nxdjon@47q7jzo2r3bl>
- <ZE9ij6it2lvS0SFB@shredder>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12BEFBE4C
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 21:04:11 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B58DB7A96
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 14:04:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683147848;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=8sEtZ4KKiBJy1POn8D3R9hO+Z4vqPZk3VVqn1QTUgNY=;
+	b=G/xtCcOn5HSGHUw+9L1WB/q5binKSRQF9T88ya+/YwTNOnR5lMAWrRKhs5fjSW380pYATS
+	gWAe0k3tWf+dGDhmwxzK5XPAoh6tInqxC0x17I0r/meSAcwttkNapDxaSeL2493gYiGWhH
+	aNlxOgDlL0UHHxDrXgPnxT9TkNO4T0E=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-451-fJg2bl7TOeqo1WYiWd5sJg-1; Wed, 03 May 2023 17:04:05 -0400
+X-MC-Unique: fJg2bl7TOeqo1WYiWd5sJg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B3B4710504A5;
+	Wed,  3 May 2023 21:04:04 +0000 (UTC)
+Received: from fedora-x1.redhat.com (unknown [10.22.10.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 3B0452166B26;
+	Wed,  3 May 2023 21:04:03 +0000 (UTC)
+From: Kamal Heib <kheib@redhat.com>
+To: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Leon Romanovsky <leonro@nvidia.com>,
+	netdev@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	kheib@redhat.com
+Subject: [PATCH iproute2-next] rdma: Report device protocol
+Date: Wed,  3 May 2023 17:03:42 -0400
+Message-Id: <20230503210342.66155-1-kheib@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZE9ij6it2lvS0SFB@shredder>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 01, 2023 at 09:56:15AM +0300, Ido Schimmel wrote:
-> On Sun, Apr 30, 2023 at 06:35:13PM +0200, Zahari Doychev wrote:
-> > On Sun, Apr 30, 2023 at 05:49:57PM +0300, Ido Schimmel wrote:
-> > > On Tue, Apr 25, 2023 at 11:16:29PM +0200, Zahari Doychev wrote:
-> > > > +static const struct nla_policy cfm_opt_policy[TCA_FLOWER_KEY_CFM_OPT_MAX] = {
-> > > > +	[TCA_FLOWER_KEY_CFM_MD_LEVEL]	= NLA_POLICY_MAX(NLA_U8, 7),
-> > > 
-> > > Instead of 7, can you use FIELD_MAX(FLOW_DIS_CFM_MDL_MASK) like you did
-> > > in the previous version?
-> > > 
-> > 
-> > It seems that the macro can be use only inside functions. I wanted to use it
-> > but I was getting the following error:
-> > 
-> > linux/include/linux/bitfield.h:86:9: error: braced-group within expression allowed only inside a function
-> 
-> I see. Another option that I personally find better than hard-coding 7
-> is the below:
+Add support for reporting the device protocol.
 
-I was thinking about the same. I will change it in the next version.
+$ rdma dev
+11: mlx5_0: node_type ca proto roce fw 12.28.2006
+    node_guid 248a:0703:004b:f094 sys_image_guid 248a:0703:004b:f094
+12: mlx5_1: node_type ca proto ib fw 12.28.2006
+    node_guid 248a:0703:0049:d4f0 sys_image_guid 248a:0703:0049:d4f0
+13: mlx5_2: node_type ca proto ib fw 12.28.2006
+    node_guid 248a:0703:0049:d4f1 sys_image_guid 248a:0703:0049:d4f0
+17: siw0: node_type rnic proto iw node_guid
+    0200:00ff:fe00:0000 sys_image_guid 0200:00ff:fe00:0000
 
-Thanks,
-Zahari
+Signed-off-by: Kamal Heib <kheib@redhat.com>
+---
+ rdma/dev.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-> 
-> diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-> index 479b66b11d2d..52f30906b210 100644
-> --- a/include/net/flow_dissector.h
-> +++ b/include/net/flow_dissector.h
-> @@ -317,6 +317,7 @@ struct flow_dissector_key_cfm {
->  };
->  
->  #define FLOW_DIS_CFM_MDL_MASK GENMASK(7, 5)
-> +#define FLOW_DIS_CFM_MDL_MAX 7
->  
->  enum flow_dissector_key_id {
->         FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
-> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> index 5d77da484a88..85fc77063866 100644
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -772,7 +772,8 @@ mpls_stack_entry_policy[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1] = {
->  };
->  
->  static const struct nla_policy cfm_opt_policy[TCA_FLOWER_KEY_CFM_OPT_MAX] = {
-> -       [TCA_FLOWER_KEY_CFM_MD_LEVEL]   = NLA_POLICY_MAX(NLA_U8, 7),
-> +       [TCA_FLOWER_KEY_CFM_MD_LEVEL]   = NLA_POLICY_MAX(NLA_U8,
-> +                                                        FLOW_DIS_CFM_MDL_MAX),
->         [TCA_FLOWER_KEY_CFM_OPCODE]     = { .type = NLA_U8 },
->  };
+diff --git a/rdma/dev.c b/rdma/dev.c
+index c684dde4a56f..04c2a574405c 100644
+--- a/rdma/dev.c
++++ b/rdma/dev.c
+@@ -189,6 +189,16 @@ static void dev_print_node_type(struct rd *rd, struct nlattr **tb)
+ 			   node_str);
+ }
+ 
++static void dev_print_dev_proto(struct rd *rd, struct nlattr **tb)
++{
++       const char *str;
++       if (!tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL])
++               return;
++
++       str = mnl_attr_get_str(tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL]);
++       print_color_string(PRINT_ANY, COLOR_NONE, "proto", "proto %s ", str);
++}
++
+ static int dev_parse_cb(const struct nlmsghdr *nlh, void *data)
+ {
+ 	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX] = {};
+@@ -206,6 +216,7 @@ static int dev_parse_cb(const struct nlmsghdr *nlh, void *data)
+ 	print_color_string(PRINT_ANY, COLOR_NONE, "ifname", "%s: ", name);
+ 
+ 	dev_print_node_type(rd, tb);
++	dev_print_dev_proto(rd, tb);
+ 	dev_print_fw(rd, tb);
+ 	dev_print_node_guid(rd, tb);
+ 	dev_print_sys_image_guid(rd, tb);
+-- 
+2.40.1
+
 
