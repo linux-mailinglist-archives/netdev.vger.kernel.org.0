@@ -1,187 +1,118 @@
-Return-Path: <netdev+bounces-125-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-129-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 83C3D6F54FA
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 11:42:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D47CC6F5513
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 11:44:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AE0EE1C20CD4
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 09:42:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 376611C20D4B
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 09:44:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 32D869475;
-	Wed,  3 May 2023 09:42:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C8732BA42;
+	Wed,  3 May 2023 09:43:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 231B4ED2
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 09:42:37 +0000 (UTC)
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A6E4ED3;
-	Wed,  3 May 2023 02:42:34 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id af79cd13be357-75131c2997bso144244485a.1;
-        Wed, 03 May 2023 02:42:34 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC84ABA3F
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 09:43:27 +0000 (UTC)
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC9649F2;
+	Wed,  3 May 2023 02:43:10 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id d2e1a72fcca58-63b60365f53so5567457b3a.0;
+        Wed, 03 May 2023 02:43:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683106953; x=1685698953;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UswhBddqVaXIV7KahhOAL0L+vAcJJ2NqdC/L7ARqHLI=;
-        b=bBkeJTcutU1gEMmYbPqloKEmhZKGZR3vpAPR7Ly0UkZvZDSfS7SqZtHaoocQe4Xkua
-         ruNsGSw4EPvXfAczKkPscYyr7DOnesMtTPrEsZwtu/v8VA0C2oPy8KAiyqUYmd4ST1Mt
-         F4a3P3xeHlxoRjr5qfxHgTvKW5G2kHD979Wo+p2GYDISigYAmzacBXZdDX2UkDVJbLAH
-         K2v1SDwptNS+y+cBH86OVLtfuf3Hdu4FcHBkXnoXoAD6u7Q3fOEHAn51J3tzAGuQsvKG
-         Wsge8r7s9YnWEYWFCkvC2AAVGeD6+Kb/zJq0qmgLAME0Ci2Bt1iJtx0ORC3WEsRfb2uV
-         9b/w==
+        d=gmail.com; s=20221208; t=1683106990; x=1685698990;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=sqvmzpSfh7BOiDMlgneo0+djsuuObhP2Z0rVZr4lDOg=;
+        b=UwZnD9/fcZrkqOZCSC4bWh3iltR4zy8emhX+MwX88jpqXu9K4Shg2M1HnVL0Q+0/Iq
+         E37lv5Aw1Rc4Zfq1bnwyTl9sSK7fjYIPashCAKyCYub7ExiqBQhKa72+acewDM1LAOWA
+         dTO8nu1LkJd6SX0fZ3TF2iBWC2QwXATraPdlM4Dno/IwF0KnVB/8wlO+h/JWP/u45D2O
+         Ui/jXm1HfjHsxrRI05+vK4Fb8Qz11EI74TpMyEWmzQKbkvpo65vKoHH+NIfBoPUQG+Sl
+         fKbyczCRGx2WFq+WcwmrcK6lgM1s+abjL1yls/I8D/S+cSj9gx1PDzlW9c7GIflpKLo9
+         ohMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683106953; x=1685698953;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UswhBddqVaXIV7KahhOAL0L+vAcJJ2NqdC/L7ARqHLI=;
-        b=U39WTqd3NMwtFhujE19T71JNvVgRVzaD+WtGaBNJHhoZQ6b70O4zAdilUuaoxcL15A
-         WSfbouWYDkmgR3oOFcADg9rf9VUYGTuU2LuA5vTtZcaZDMFU2AdYY+geLGxHvBM7YL8w
-         eqV64Y3mMdyQB7TC+s0zBFlk4jtnOcLWIPNKNfI4+t+8BYDjJ6AX6eOvLPBkP0I6y3CA
-         34NEYFB3tX/09i6tDPvUrM9xirBpsgM52UgzghR9FE22MIaUPm2q8yEMOydpJi+Khf7s
-         XlB5HVkztC7TFQVsGGVYlY42PD5FZkqJ8T7q2WzBHHGAV/0B19Vy8RFUZRdUf96o6sMV
-         wEWQ==
-X-Gm-Message-State: AC+VfDwJdsLUXhkIEKJiaMtj3Owk4CzhIIWxuUso1ZY08IQUqmWixlOB
-	caO/UaOKRdcqEW+rF3F3t0IIypJ5CoWTP6oA1/s=
-X-Google-Smtp-Source: ACHHUZ6FApUZmpoYv7ei9QTTm9Bil42o9GopYVbQ7LWiRSSlgewFbtRxNZlhfGGbv7z1d3UtbL2jGNKCTm/YkX9t5jM=
-X-Received: by 2002:a05:6214:d64:b0:5ef:653e:169b with SMTP id
- 4-20020a0562140d6400b005ef653e169bmr2275095qvs.8.1683106953183; Wed, 03 May
- 2023 02:42:33 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683106990; x=1685698990;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sqvmzpSfh7BOiDMlgneo0+djsuuObhP2Z0rVZr4lDOg=;
+        b=jpN+cJDJxx94C/Ki+9L8DOGZCf2LxvJCeI+EMP0lOf+GU9BDi2Ahq7QTKDj/XDwirL
+         BIIHfZJpLwF+atmn+oAwSuFp4ylOFHc67k42j4u2RwiBygKdE5k6oKRcXptxua1WUvQC
+         s1VaxDW/Z8DyFa/ZwVz01/h63Ys2mBeqPXpdfgvDdK8Vaw6rSxevO/GQMfCjcDmsLCpw
+         hpobKRa1JWFonv2kwqo3H0SaeKIh5TxnnvNG1dDJMHypmTcD2eGVHix9sbeFEeZoKxSx
+         galu4MIefw5ZDWHQ8q1Dwtl5pEcPI3tYC6NQDd1CJl5E16Evc3dpGHzxU81dtKgbmfWs
+         Ygew==
+X-Gm-Message-State: AC+VfDyFl19offU6SyGWhNizxp7bu1VpssdopBA18u6D2tc9R1z15OtS
+	BJQaxTMaKBE5kjPHQXbVMdkQYgYmn9Y=
+X-Google-Smtp-Source: ACHHUZ68zLDVQf2eKV+GWEFtaAUCrBh4nVjOqbrBcNzLH77grDT5QnN10SAIAwuYdcVOs3f2UdcPKA==
+X-Received: by 2002:a05:6a00:140e:b0:63d:3f74:9df7 with SMTP id l14-20020a056a00140e00b0063d3f749df7mr26228464pfu.34.1683106990046;
+        Wed, 03 May 2023 02:43:10 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-11.three.co.id. [180.214.233.11])
+        by smtp.gmail.com with ESMTPSA id a10-20020aa780ca000000b00642ea56f06dsm4714307pfn.26.2023.05.03.02.43.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 May 2023 02:43:08 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+	id 72091106250; Wed,  3 May 2023 16:43:04 +0700 (WIB)
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Linux Networking <netdev@vger.kernel.org>,
+	Linux Random Direct Memory Access <linux-rdma@vger.kernel.org>,
+	Linux Documentation <linux-doc@vger.kernel.org>,
+	Linux Networking <linux-kernel@vger.kernel.org>
+Cc: Saeed Mahameed <saeedm@nvidia.com>,
+	Leon Romanovsky <leon@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Bagas Sanjaya <bagasdotme@gmail.com>,
+	Gal Pressman <gal@nvidia.com>,
+	Tariq Toukan <tariqt@nvidia.com>,
+	Maher Sanalla <msanalla@nvidia.com>,
+	Rahul Rameshbabu <rrameshbabu@nvidia.com>,
+	Moshe Shemesh <moshe@nvidia.com>
+Subject: [PATCH net 0/4] Documentation fixes for Mellanox mlx5 devlink info
+Date: Wed,  3 May 2023 16:42:45 +0700
+Message-Id: <20230503094248.28931-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <1683092380-29551-1-git-send-email-quic_rohiagar@quicinc.com> <1683092380-29551-3-git-send-email-quic_rohiagar@quicinc.com>
-In-Reply-To: <1683092380-29551-3-git-send-email-quic_rohiagar@quicinc.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 3 May 2023 12:41:56 +0300
-Message-ID: <CAHp75VegxMgAamS3ORiJ2=D4MH7asD9PiWrM+3JAm-QOuEgcrg@mail.gmail.com>
-Subject: Re: [PATCH v5 2/3] pinctrl: qcom: Refactor target specific pinctrl driver
-To: Rohit Agarwal <quic_rohiagar@quicinc.com>
-Cc: agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org, 
-	linus.walleij@linaro.org, robh+dt@kernel.org, 
-	krzysztof.kozlowski+dt@linaro.org, richardcochran@gmail.com, 
-	manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-Developer-Signature: v=1; a=openpgp-sha256; l=727; i=bagasdotme@gmail.com; h=from:subject; bh=aer6HOi8fhrQqjCrvQO5H7xohlct7D9hbyMhJQSmMaE=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDClBOt0c/+q31OZdnq4UzW/CxJX4Y5n/r6tWx70fJq04t NjRd5ZkRykLgxgXg6yYIsukRL6m07uMRC60r3WEmcPKBDKEgYtTACayNpqRYdbFvP67ryc1a231 ly4WXvO+Izayq3xe20enoNxcufRjAYwMTTteXTn0tDhCb5p9lf9O26zbMt859AQuccqKtpWceHu OAQA=
+X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 3, 2023 at 8:39=E2=80=AFAM Rohit Agarwal <quic_rohiagar@quicinc=
-.com> wrote:
->
-> Update the msm_function and msm_pingroup structure to reuse the generic
+Here is fixes for mlx5 devlink info documentation. The first fixes
+htmldocs warnings on the mainline, while the rest is formatting fixes.
 
-structures
+Bagas Sanjaya (4):
+  Documentation: net/mlx5: Wrap vnic reporter devlink commands in code
+    blocks
+  Documentation: net/mlx5: Use bullet and definition lists for vnic
+    counters description
+  Documentation: net/mlx5: Add blank line separator before numbered
+    lists
+  Documentation: net/mlx5: Wrap notes in admonition blocks
 
-> pinfunction and pingroup structures. Also refactor pinctrl drivers to adj=
-ust
-> the new macro and updated structure defined in pinctrl.h and pinctrl_msm.=
-h
-> respectively.
+ .../ethernet/mellanox/mlx5/devlink.rst        | 60 ++++++++++++-------
+ 1 file changed, 37 insertions(+), 23 deletions(-)
 
-Thanks for this, my comments below.
 
-...
+base-commit: c6d96df9fa2c1d19525239d4262889cce594ce6c
+-- 
+An old man doll... just what I always wanted! - Clara
 
->  #define FUNCTION(fname)                                        \
->         [APQ_MUX_##fname] =3D {                           \
-> -               .name =3D #fname,                         \
-> -               .groups =3D fname##_groups,               \
-> -               .ngroups =3D ARRAY_SIZE(fname##_groups),  \
-> -       }
-> +               .func =3D PINCTRL_PINFUNCTION(#fname,                    =
- \
-> +                                       fname##_groups,                 \
-> +                                       ARRAY_SIZE(fname##_groups))      =
-       \
-> +                       }
-
-Does it really make sense to keep an additional wrapper data type that
-does not add any value? Can't we simply have
-
-  #define FUNCTION(fname)      [...fname] =3D PINCTRL_PINFUNCTION(...)
-
-?
-
-...
-
-> +               .grp =3D PINCTRL_PINGROUP("gpio"#id, gpio##id##_pins,    =
- \
-> +                       (unsigned int)ARRAY_SIZE(gpio##id##_pins)),     \
-
-Why do you need this casting? Same Q to all the rest of the similar cases.
-
-...
-
-> +#include <linux/pinctrl/pinctrl.h>
-
-Keep it separate, and below the generic ones...
-
->  #include <linux/pm.h>
->  #include <linux/types.h>
->
-
-...like here (note also a blank line).
-
-...
-
->  /**
->   * struct msm_function - a pinmux function
-> - * @name:    Name of the pinmux function.
-> - * @groups:  List of pingroups for this function.
-> - * @ngroups: Number of entries in @groups.
-> + * @func: Generic data of the pin function (name and groups of pins)
->   */
->  struct msm_function {
-> -       const char *name;
-> -       const char * const *groups;
-> -       unsigned ngroups;
-> +       struct pinfunction func;
->  };
-
-But why? Just kill the entire structure.
-
-...
-
->  #define FUNCTION(fname)                                        \
-
-This definition appears in many files, instead you can make a generic
-to this drivers one and use it here
-
-#define QCOM_FUNCTION(_prefix_, _fname_)
-  [_prefix_##_fname_] =3D PINCTRL_PINFUNCTION(...)
-
-#define FUNCTION(fname) QCOM_FUNCTION(msm_mux, fname)
-
-(this just a pseudocode, might not even be compilable)
-
->         [msm_mux_##fname] =3D {                           \
-> -               .name =3D #fname,                         \
-> -               .groups =3D fname##_groups,               \
-> -               .ngroups =3D ARRAY_SIZE(fname##_groups),  \
-> +               .func =3D PINCTRL_PINFUNCTION(#fname,                    =
- \
-> +                                       fname##_groups,                 \
-> +                                       ARRAY_SIZE(fname##_groups))      =
-       \
->         }
-
---=20
-With Best Regards,
-Andy Shevchenko
 
