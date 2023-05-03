@@ -1,119 +1,144 @@
-Return-Path: <netdev+bounces-134-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-135-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5C20D6F5581
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 12:00:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 45B5C6F5593
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 12:07:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B3F5E1C20E40
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 10:00:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 692EE1C20E67
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 10:07:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 07043BA55;
-	Wed,  3 May 2023 10:00:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A71A1D2F1;
+	Wed,  3 May 2023 10:07:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBE16BA3F
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 10:00:39 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6FD268B
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 03:00:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683108037;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/6nW/ulj6fgmoP9Hji3Y8JXnyxUQC9ywV4YbenugH1I=;
-	b=QMUmp2wq9rEOFMRszGBiIsNkeBeAUlmMB9Bg2xbWTnnw7F0NKSQ7vODggV1wfhQc/pGhEw
-	FaaH/3UGMddG60r8w46S0oXWzR69N68Q/kM1wsbG23U2CBHCFWMVwx3+gnXHrmywXeXWS2
-	gDjHPokn+OTi0N2cRLwYZZjBfosdSww=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-645-ADvnQnE1O9qN-6NdavcVhg-1; Wed, 03 May 2023 06:00:35 -0400
-X-MC-Unique: ADvnQnE1O9qN-6NdavcVhg-1
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-30635d18e55so765898f8f.2
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 03:00:35 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95F8ED2E7
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 10:07:13 +0000 (UTC)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1094C00
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 03:07:06 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-50bc1612940so7746691a12.2
+        for <netdev@vger.kernel.org>; Wed, 03 May 2023 03:07:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=wetterwald-eu.20221208.gappssmtp.com; s=20221208; t=1683108424; x=1685700424;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=FvY1iB10ETyrHnUXN8mM6pYNstiGe/MefiCTLkYgMZg=;
+        b=be0uvJtLz+kXBpzX9ERHNgOWRWhn6LxTweqnEhS7oHCJZuJgzN8n0Fw7/QmsbUHotU
+         NrHL1mtY0RbR28wtC2eLnCz9IMCdfZURcK7mzBc7CsZa+noscbP78o7VATOAhQcZy3Zn
+         39WH0EP1Ib+NIxkF5YxbIdNdWTCEtB9bu8ipE3B3IHCq1UBp2wCYiXkVj1rg9Trg1hRR
+         +z5cd+dYaMw9A0GeqoqCetljsRKI/4yCRUr8e5aUanDPI1Z9ul7a76NG6FCybMUXYMUb
+         8tpiXblXBKC/FKkhNR6zg8TacFmu3b51AMYKp0TwobKbA/pi89LRLZOn4m3jHTkXcVYQ
+         Xpaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683108034; x=1685700034;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/6nW/ulj6fgmoP9Hji3Y8JXnyxUQC9ywV4YbenugH1I=;
-        b=TSeyl0QlXLTEBwKO/U7k+ZSlq1gbGMH75Xf4yL4aQu9jiBZK4U3fADgXVKFePgpLom
-         V/lMnJhYcAb04Pz7s52liRYKp3YOpKf2NnzwHAwA+J8DiH0XRnl+KxSd4VN6d2NpGqKx
-         0IpkOP4cVHRcBNMAVqYbj2pfvcwWNL/WgrSvEc/2eod2YZhDVCQhNFBLNd4Nog7eswMp
-         pnv/cUIWGk3YrsbjibHLygKZtJc7ztHudtLjpzcmPTazLL5PXtcHScA//MRVoXGdflFF
-         6abkp4a1CWLFg84SBAbA9VQGfJTgn9a1J4ujZVinKFnAOLDpav8YyOjkdpb+nrqI5nrT
-         USCA==
-X-Gm-Message-State: AC+VfDwrN67aKZUW8ES3fumoh7c9R2OTLnaxOPOh7E6fm3mtzamTHXCb
-	N69qExHW81y186Os+3wWzwEe24pTPMan8JoanKvZCUiQnmHI/Xfm4JnGbUCJvXFfIzGf2Kgpi97
-	ADcUFAtPWKbcxxweE
-X-Received: by 2002:a5d:4f90:0:b0:2f8:f144:a22c with SMTP id d16-20020a5d4f90000000b002f8f144a22cmr14188536wru.62.1683108034790;
-        Wed, 03 May 2023 03:00:34 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5sZP/W3eAA1sD5mGDayMPgI7uxdRqkhgoaxqYxdWD5TDfzw7oHq1zZ2xQsVtBHq7cLgK1BLg==
-X-Received: by 2002:a5d:4f90:0:b0:2f8:f144:a22c with SMTP id d16-20020a5d4f90000000b002f8f144a22cmr14188495wru.62.1683108034475;
-        Wed, 03 May 2023 03:00:34 -0700 (PDT)
-Received: from vschneid.remote.csb ([154.57.232.159])
-        by smtp.gmail.com with ESMTPSA id l18-20020a05600012d200b002ceacff44c7sm33457472wrx.83.2023.05.03.03.00.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 03:00:34 -0700 (PDT)
-From: Valentin Schneider <vschneid@redhat.com>
-To: Yury Norov <yury.norov@gmail.com>
-Cc: Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
- linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org, Saeed Mahameed
- <saeedm@nvidia.com>, Pawel Chmielewski <pawel.chmielewski@intel.com>, Leon
- Romanovsky <leon@kernel.org>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Andy
- Shevchenko <andriy.shevchenko@linux.intel.com>, Rasmus Villemoes
- <linux@rasmusvillemoes.dk>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra
- <peterz@infradead.org>, Juri Lelli <juri.lelli@redhat.com>, Vincent
- Guittot <vincent.guittot@linaro.org>, Dietmar Eggemann
- <dietmar.eggemann@arm.com>, Steven Rostedt <rostedt@goodmis.org>, Ben
- Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>, Daniel Bristot
- de Oliveira <bristot@redhat.com>, Tariq Toukan <tariqt@nvidia.com>, Gal
- Pressman <gal@nvidia.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Heiko Carstens <hca@linux.ibm.com>, Barry
- Song <baohua@kernel.org>
-Subject: Re: [PATCH v2 0/8] sched/topology: add for_each_numa_cpu() macro
-In-Reply-To: <CAAH8bW9SBrFG+gkH2sT4O_tEQaM-bNT2++v0iyjnuf_aME2DNg@mail.gmail.com>
-References: <20230430171809.124686-1-yury.norov@gmail.com>
- <xhsmhildak6t0.mognet@vschneid.remote.csb>
- <CAAH8bW9SBrFG+gkH2sT4O_tEQaM-bNT2++v0iyjnuf_aME2DNg@mail.gmail.com>
-Date: Wed, 03 May 2023 11:00:32 +0100
-Message-ID: <xhsmhfs8dka4f.mognet@vschneid.remote.csb>
+        d=1e100.net; s=20221208; t=1683108424; x=1685700424;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FvY1iB10ETyrHnUXN8mM6pYNstiGe/MefiCTLkYgMZg=;
+        b=Zccg5i+bIe7l0p3WNY5ymx0bLi6ioacUYFIFVD5O36zlfNtz+ELBIGmgzay36M/NjU
+         KIrNtlMG+OGzsy3wmmqZJsKEx0aeFxq0UHY41Nnt/0Tilbh3b0Ai727q+x07c16t1EE2
+         hCvZhFzlN8RphCP5FLYxRXowBfItvCiUizrF6Z7c4ksOHGs3cHSx74DL2z2wyB1iQzU3
+         M8r1kDxvsBRaaAB05miPF+fz5Z68MEvjBW4gXqgkRRpX381Bj8LCJpDhbrEdepZXJSAe
+         RwuQjF8gkNQVrvgGuU0XKfDkbVgBqXI9Eq/z3qrNjI2QPpuzJ5p91JIVK3t5qQOAVqtU
+         +tog==
+X-Gm-Message-State: AC+VfDwU55DmUnI8gVpyOwV+s/wFve5mIGNB+Xzw3I6i1aErtD2JERIj
+	UxKr+pkVDRCcQQQolk0i6+8Kvpbw1SQ5kxH17zP0278KPSm7m53ZVpKlvA==
+X-Google-Smtp-Source: ACHHUZ53C99XGb5yRJQMa3Wz+tDLOKvfEypmnIort4wbPgk5Z80A2zgxcRXxmUuS769t9zCh9azECM0510eunqtC1Qw=
+X-Received: by 2002:a17:907:86a8:b0:94f:6627:22b5 with SMTP id
+ qa40-20020a17090786a800b0094f662722b5mr2794647ejc.47.1683108424657; Wed, 03
+ May 2023 03:07:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+From: Martin Wetterwald <martin@wetterwald.eu>
+Date: Wed, 3 May 2023 12:06:53 +0200
+Message-ID: <CAFERDQ1yq=jBGu8e2qJeoNFYmKt4jeB835efsYMxGLbLf4cfbQ@mail.gmail.com>
+Subject: [PATCH] net: ipconfig: Allow DNS to be overwritten by DHCPACK
+To: davem@davemloft.net, dsahern@kernel.org
+Cc: netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 02/05/23 14:58, Yury Norov wrote:
->> LGTM, I ran the tests on a few NUMA topologies and that all seems to behave
->> as expected. Thanks for working on this!
->>
->> Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+Some DHCP server implementations only send the important requested DHCP
+options in the final BOOTP reply (DHCPACK).
+One example is systemd-networkd.
+However, RFC2131, in section 4.3.1 states:
+
+> Once the network address and lease have been determined, the server
+> constructs a DHCPOFFER message with the offered configuration
+> parameters.
+> [...]
+> The server MUST return to the client:
+> [...]
+> o Parameters requested by the client, according to the following
+>   rules:
 >
-> Thank you Valentin. If you spent time testing the series, why
-> don't you add your Tested-by?
+>      -- IF the server has been explicitly configured with a default
+>         value for the parameter, the server MUST include that value
+>         in an appropriate option in the 'option' field, ELSE
 
-Well, I only ran the test_bitmap stuff and checked the output of the
-iterator then, I didn't get to test on actual hardware with a mellanox card
-:-)
+I've reported the issue here:
+https://github.com/systemd/systemd/issues/27471
 
-But yeah, I suppose that does count for the rest, so feel free to add to
-all patches but #5:
+Linux PNP DHCP client implementation only takes into account the DNS
+servers received in the first BOOTP reply (DHCPOFFER).
+This usually isn't an issue as servers are required to put the same
+values in the DHCPOFFER and DHCPACK.
+However, RFC2131, in section 4.3.2 states:
 
-Tested-by: Valentin Schneider <vschneid@redhat.com>
+> Any configuration parameters in the DHCPACK message SHOULD NOT
+> conflict with those in the earlier DHCPOFFER message to which the
+> client is responding.  The client SHOULD use the parameters in the
+> DHCPACK message for configuration.
 
+When making Linux PNP DHCP client (cmdline ip=dhcp) interact with
+systemd-networkd DHCP server, an interesting "protocol misunderstanding"
+happens:
+Because DNS servers were only specified in the DHCPACK and not in the
+DHCPOFFER, Linux will not catch the correct DNS servers: in the first
+BOOTP reply (DHCPOFFER), it sees that there is no DNS, and sets as
+fallback the IP of the DHCP server itself. When the second BOOTP reply
+comes (DHCPACK), it's already too late: the kernel will not overwrite
+the fallback setting it has set previously.
+
+This patch makes the kernel care more about the latest BOOTP reply
+received for DNS servers selection. A subsequent BOOTP reply wins (in
+the case of DHCP, this makes DHCPACK win over DHCPOFFER).
+
+Signed-off-by: Martin Wetterwald <martin@wetterwald.eu>
+---
+ net/ipv4/ipconfig.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
+index e90bc0aa85c7..c125095453da 100644
+--- a/net/ipv4/ipconfig.c
++++ b/net/ipv4/ipconfig.c
+@@ -937,9 +937,11 @@ static void __init ic_do_bootp_ext(u8 *ext)
+         servers= *ext/4;
+         if (servers > CONF_NAMESERVERS_MAX)
+             servers = CONF_NAMESERVERS_MAX;
+-        for (i = 0; i < servers; i++) {
+-            if (ic_nameservers[i] == NONE)
++        for (i = 0; i < CONF_NAMESERVERS_MAX; i++) {
++            if (i < servers)
+                 memcpy(&ic_nameservers[i], ext+1+4*i, 4);
++            else
++                ic_nameservers[i] = NONE;
+         }
+         break;
+     case 12:    /* Host name */
+-- 
+2.40.1
 
