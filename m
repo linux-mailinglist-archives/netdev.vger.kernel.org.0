@@ -1,301 +1,227 @@
-Return-Path: <netdev+bounces-155-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-156-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D80476F5831
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 14:53:02 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 546FA6F5833
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 14:53:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EA7391C20EC7
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 12:52:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B0B54281581
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 12:53:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2EE50D51C;
-	Wed,  3 May 2023 12:52:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFFF2D516;
+	Wed,  3 May 2023 12:53:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 178EB63DC
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 12:52:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F18E4A11
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 12:53:36 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BA85275
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 05:52:54 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED465598
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 05:53:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683118368;
+	s=mimecast20190719; t=1683118413;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=LNd8A4raflq8+zrsoLkAbucJm9t+51+2qlFUdBGjsEY=;
-	b=GzXEa3z7a5+4GtOpuHR/bCbzed2q9lZvQ/IChtvdF0/KfCErlWiET3ZE7NPpOys/5VVz2y
-	sliSSYbFy2nPbhelCQu7A1hHqP5g0VtVL3cK2j3jwGzdLfwqjpsIGgY1bR45vSu+TuO/Gg
-	aPjSJHz7tpEmAT842VaibuLNBRxp04c=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=O7omNY6vy02Lp1suD+qs+FsdVxhpMQyx9ZjsBrwK7NY=;
+	b=QKjJceLJ/iW84TrXPDatVCC93CdO4fyAG6v4kar+BZz3th030/jQF7VrMnWXJHo0e7wLRO
+	2KjJi3s88s+sp+wjNNlfNOZyrPotcRqRX8cQ3Zn0xfD2W/5P6oD5WwKYdNwVlJG4sVgeNQ
+	Ux77DNMv0lYWfElTl0/4sZWIbYi5P4I=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-391-Mgs8k8L3O-KzmulM-R-7ig-1; Wed, 03 May 2023 08:52:47 -0400
-X-MC-Unique: Mgs8k8L3O-KzmulM-R-7ig-1
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-74df56fa31dso290093985a.3
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 05:52:47 -0700 (PDT)
+ us-mta-567-niaThQYdOnKliunEtb7UPw-1; Wed, 03 May 2023 08:53:32 -0400
+X-MC-Unique: niaThQYdOnKliunEtb7UPw-1
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f336ecf58cso14063815e9.1
+        for <netdev@vger.kernel.org>; Wed, 03 May 2023 05:53:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683118366; x=1685710366;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LNd8A4raflq8+zrsoLkAbucJm9t+51+2qlFUdBGjsEY=;
-        b=bPgfWvSKek+6kNjFUJKg+J5vTBoxnDX/AnqMzc41GKA6Qt42t370opBiKMMYA6M/9X
-         aLpvQfNMbMKJyibbpfDI3f+i/bxPrXHVpNLPXAQ2FQUt5l7HLB4kEBkK1aiyURgluZFu
-         UrvGkS4fTM7cHEP6XWrHi5ABw/ycAFrixm7bVgaQAC0fh2zntxUv0KoXTxaUctVETR1Y
-         c9fsS1w4UFDbDcbTdRTr1xx8huofANqpoWHK+1nQUJGT3pCVIfBrLU+L3licju1khLTr
-         VnWQwZxrJykFUj7QYLyTpzeR60xAFgWWEOXZ2Tr91PQLlefX0kwElwJ8Y+50Sav/0VLs
-         G71Q==
-X-Gm-Message-State: AC+VfDy3TWmm2l7fXVuI1JWI45eNKg1ZXa5pgd1jZoXOxh6E6v/0F1XS
-	sjSAwxR8YHX7IJf16Wkl73GqtP5zndiuwcRSZ3DCyw+Mrwbl+AcaiEfPPQV/qf4YX1D3QWwBmDO
-	p2JN9JESXHGo/Jejj
-X-Received: by 2002:ac8:7fca:0:b0:3e4:df94:34fa with SMTP id b10-20020ac87fca000000b003e4df9434famr33038271qtk.37.1683118366601;
-        Wed, 03 May 2023 05:52:46 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5Hwjqhg4ApArDnu7YxuS1xrHnrqrBaWciP0xeNo0p91H+MTSlfSPQ2esF0rfgbIR/lMzqdwA==
-X-Received: by 2002:ac8:7fca:0:b0:3e4:df94:34fa with SMTP id b10-20020ac87fca000000b003e4df9434famr33038243qtk.37.1683118366311;
-        Wed, 03 May 2023 05:52:46 -0700 (PDT)
-Received: from sgarzare-redhat ([185.29.96.107])
-        by smtp.gmail.com with ESMTPSA id dz16-20020a05620a2b9000b0074df16f36f1sm10501546qkb.108.2023.05.03.05.52.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 05:52:45 -0700 (PDT)
-Date: Wed, 3 May 2023 14:52:35 +0200
-From: Stefano Garzarella <sgarzare@redhat.com>
-To: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	"Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, 
-	Bobby Eshleman <bobby.eshleman@bytedance.com>, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, 
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@sberdevices.ru, 
-	oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v2 00/15] vsock: MSG_ZEROCOPY flag support
-Message-ID: <i6swadylt57hrtxhpl5ag7s3dks536wg3vxoa7nuu2x37gxsbi@uj7od5ueq6yp>
-References: <20230423192643.1537470-1-AVKrasnov@sberdevices.ru>
+        d=1e100.net; s=20221208; t=1683118411; x=1685710411;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=O7omNY6vy02Lp1suD+qs+FsdVxhpMQyx9ZjsBrwK7NY=;
+        b=clZDnE4NwUweXN8jrquCZz730+kk8Gs8qupAgKUmuLKFSeJlBcXGQcuFeef7JB7P+1
+         MPSj3tzJJNxD8A+Qe706naweW1sSySvrDrI1kLrNcmIOugYF61R0QGnPym0g7SqzibmZ
+         tYuzgDADNolZRwSTunk/iBRUDEiIdZQgIbuO/YsTat65IPLSl+gVArpAUQbJqpHIdv6I
+         HnEGnl1ZLDbnewX9sNs1bWQ6iVmnhFfeOnN+NkjUEeGJUQDQiRgsX4BJ0yIcoQalsC8H
+         vqT0lZA4phZrclN4DC3edtJ9EwwuIFZ3Dx3eJThhbuXtHcp3aG9iAJnmZZg/h6U22t5q
+         dP/A==
+X-Gm-Message-State: AC+VfDwHuBptMXwYbt30BcQxSMxcd/tfwcPI0IY48II3yK995LGDxxLg
+	l8vZ2L14pm07u07qQ4HKhUK67DG9e8XPdME7XB5PMd/ODTaMwRs738NMJWwyFWYDTMvNHlVs6Mz
+	BHoOisv+MpUtQGg18
+X-Received: by 2002:a7b:ce8b:0:b0:3f1:7fc0:4dbc with SMTP id q11-20020a7bce8b000000b003f17fc04dbcmr15191392wmj.38.1683118411265;
+        Wed, 03 May 2023 05:53:31 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5Zn0nW8Gp1TbS9lzJwairWR12aoba8GxaRMOEMvQIPhrgSVoh91x6yDqo37mi1fS7EneKCbQ==
+X-Received: by 2002:a7b:ce8b:0:b0:3f1:7fc0:4dbc with SMTP id q11-20020a7bce8b000000b003f17fc04dbcmr15191354wmj.38.1683118410893;
+        Wed, 03 May 2023 05:53:30 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c711:6a00:9109:6424:1804:a441? (p200300cbc7116a00910964241804a441.dip0.t-ipconnect.de. [2003:cb:c711:6a00:9109:6424:1804:a441])
+        by smtp.gmail.com with ESMTPSA id a24-20020a05600c225800b003f349d14010sm1849938wmm.38.2023.05.03.05.53.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 May 2023 05:53:30 -0700 (PDT)
+Message-ID: <976fcec0-d132-3a27-bbd2-01b21571bca2@redhat.com>
+Date: Wed, 3 May 2023 14:53:27 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20230423192643.1537470-1-AVKrasnov@sberdevices.ru>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v8 0/3] mm/gup: disallow GUP writing to file-backed
+ mappings by default
+Content-Language: en-US
+To: Matthew Rosato <mjrosato@linux.ibm.com>,
+ Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
+ linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+ Matthew Wilcox <willy@infradead.org>,
+ Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+ Leon Romanovsky <leon@kernel.org>, Christian Benvenuti <benve@cisco.com>,
+ Nelson Escobar <neescoba@cisco.com>, Bernard Metzler <bmt@zurich.ibm.com>,
+ Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>,
+ Arnaldo Carvalho de Melo <acme@kernel.org>,
+ Mark Rutland <mark.rutland@arm.com>,
+ Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+ Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+ Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>,
+ Bjorn Topel <bjorn@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>,
+ Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+ Jonathan Lemon <jonathan.lemon@gmail.com>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Christian Brauner <brauner@kernel.org>,
+ Richard Cochran <richardcochran@gmail.com>,
+ Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+ Jesper Dangaard Brouer <hawk@kernel.org>,
+ John Fastabend <john.fastabend@gmail.com>, linux-fsdevel@vger.kernel.org,
+ linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
+ bpf@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
+ Jan Kara <jack@suse.cz>, "Kirill A . Shutemov" <kirill@shutemov.name>,
+ Pavel Begunkov <asml.silence@gmail.com>, Mika Penttila
+ <mpenttil@redhat.com>, Dave Chinner <david@fromorbit.com>,
+ Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
+ "Paul E . McKenney" <paulmck@kernel.org>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>
+References: <cover.1683067198.git.lstoakes@gmail.com>
+ <20d078c5-4ee6-18dc-d3a5-d76b6a68f64e@linux.ibm.com>
+ <1b34e9a4-83c0-2f44-1457-dd8800b9287a@redhat.com>
+ <80e3b8ee-c16d-062f-f483-06e21282e59c@linux.ibm.com>
+From: David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <80e3b8ee-c16d-062f-f483-06e21282e59c@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Arseniy,
-Sorry for the delay, but I have been very busy.
+On 03.05.23 13:25, Matthew Rosato wrote:
+> On 5/3/23 3:08 AM, David Hildenbrand wrote:
+>> On 03.05.23 02:31, Matthew Rosato wrote:
+>>> On 5/2/23 6:51 PM, Lorenzo Stoakes wrote:
+>>>> Writing to file-backed mappings which require folio dirty tracking using
+>>>> GUP is a fundamentally broken operation, as kernel write access to GUP
+>>>> mappings do not adhere to the semantics expected by a file system.
+>>>>
+>>>> A GUP caller uses the direct mapping to access the folio, which does not
+>>>> cause write notify to trigger, nor does it enforce that the caller marks
+>>>> the folio dirty.
+>>>>
+>>>> The problem arises when, after an initial write to the folio, writeback
+>>>> results in the folio being cleaned and then the caller, via the GUP
+>>>> interface, writes to the folio again.
+>>>>
+>>>> As a result of the use of this secondary, direct, mapping to the folio no
+>>>> write notify will occur, and if the caller does mark the folio dirty, this
+>>>> will be done so unexpectedly.
+>>>>
+>>>> For example, consider the following scenario:-
+>>>>
+>>>> 1. A folio is written to via GUP which write-faults the memory, notifying
+>>>>      the file system and dirtying the folio.
+>>>> 2. Later, writeback is triggered, resulting in the folio being cleaned and
+>>>>      the PTE being marked read-only.
+>>>> 3. The GUP caller writes to the folio, as it is mapped read/write via the
+>>>>      direct mapping.
+>>>> 4. The GUP caller, now done with the page, unpins it and sets it dirty
+>>>>      (though it does not have to).
+>>>>
+>>>> This change updates both the PUP FOLL_LONGTERM slow and fast APIs. As
+>>>> pin_user_pages_fast_only() does not exist, we can rely on a slightly
+>>>> imperfect whitelisting in the PUP-fast case and fall back to the slow case
+>>>> should this fail.
+>>>>
+>>>> v8:
+>>>> - Fixed typo writeable -> writable.
+>>>> - Fixed bug in writable_file_mapping_allowed() - must check combination of
+>>>>     FOLL_PIN AND FOLL_LONGTERM not either/or.
+>>>> - Updated vma_needs_dirty_tracking() to include write/shared to account for
+>>>>     MAP_PRIVATE mappings.
+>>>> - Move to open-coding the checks in folio_pin_allowed() so we can
+>>>>     READ_ONCE() the mapping and avoid unexpected compiler loads. Rename to
+>>>>     account for fact we now check flags here.
+>>>> - Disallow mapping == NULL or mapping & PAGE_MAPPING_FLAGS other than
+>>>>     anon. Defer to slow path.
+>>>> - Perform GUP-fast check _after_ the lowest page table level is confirmed to
+>>>>     be stable.
+>>>> - Updated comments and commit message for final patch as per Jason's
+>>>>     suggestions.
+>>>
+>>> Tested again on s390 using QEMU with a memory backend file (on ext4) and vfio-pci -- This time both vfio_pin_pages_remote (which will call pin_user_pages_remote(flags | FOLL_LONGTERM)) and the pin_user_pages_fast(FOLL_WRITE | FOLL_LONGTERM) in kvm_s390_pci_aif_enable are being allowed (e.g. returning positive pin count)
+>>
+>> At least it's consistent now ;) And it might be working as expected ...
+>>
+>> In v7:
+>> * pin_user_pages_fast() succeeded
+>> * vfio_pin_pages_remote() failed
+>>
+>> But also in v7:
+>> * GUP-fast allows pinning (anonymous) pages in MAP_PRIVATE file
+>>    mappings
+>> * Ordinary GUP allows pinning pages in MAP_PRIVATE file mappings
+>>
+>> In v8:
+>> * pin_user_pages_fast() succeeds
+>> * vfio_pin_pages_remote() succeeds
+>>
+>> But also in v8:
+>> * GUP-fast allows pinning (anonymous) pages in MAP_PRIVATE file
+>>    mappings
+>> * Ordinary GUP allows pinning pages in MAP_PRIVATE file mappings
+>>
+>>
+>> I have to speculate, but ... could it be that you are using a private mapping?
+>>
+>> In QEMU, unfortunately, the default for memory-backend-file is "share=off" (private) ... for memory-backend-memfd it is "share=on" (shared). The default is stupid ...
+>>
+>> If you invoke QEMU manually, can you specify "share=on" for the memory-backend-file? I thought libvirt would always default to "share=on" for file mappings (everything else doesn't make much sense) ... but you might have to specify
+>>      <access mode="shared"/>
+>> in addition to
+>>      <source type="file"/>
+>>
+> 
+> Ah, there we go.  Yes, I was using the default of share=off.  When I instead specify share=on, now the pins will fail in both cases.
+> 
 
-I can't apply this series on master or net-next, can you share with me
-the base commit?
+Out of curiosity, how does that manifest?
 
-On Sun, Apr 23, 2023 at 10:26:28PM +0300, Arseniy Krasnov wrote:
->Hello,
->
->                           DESCRIPTION
->
->this is MSG_ZEROCOPY feature support for virtio/vsock. I tried to follow
->current implementation for TCP as much as possible:
->
->1) Sender must enable SO_ZEROCOPY flag to use this feature. Without this
->   flag, data will be sent in "classic" copy manner and MSG_ZEROCOPY
->   flag will be ignored (e.g. without completion).
->
->2) Kernel uses completions from socket's error queue. Single completion
->   for single tx syscall (or it can merge several completions to single
->   one). I used already implemented logic for MSG_ZEROCOPY support:
->   'msg_zerocopy_realloc()' etc.
->
->Difference with copy way is not significant. During packet allocation,
->non-linear skb is created, then I call 'pin_user_pages()' for each page
->from user's iov iterator and add each returned page to the skb as fragment.
->There are also some updates for vhost and guest parts of transport - in
->both cases i've added handling of non-linear skb for virtio part. vhost
->copies data from such skb to the guest's rx virtio buffers. In the guest,
->virtio transport fills tx virtio queue with pages from skb.
->
->This version has several limits/problems:
->
->1) As this feature totally depends on transport, there is no way (or it
->   is difficult) to check whether transport is able to handle it or not
->   during SO_ZEROCOPY setting. Seems I need to call AF_VSOCK specific
->   setsockopt callback from setsockopt callback for SOL_SOCKET, but this
->   leads to lock problem, because both AF_VSOCK and SOL_SOCKET callback
->   are not considered to be called from each other. So in current version
->   SO_ZEROCOPY is set successfully to any type (e.g. transport) of
->   AF_VSOCK socket, but if transport does not support MSG_ZEROCOPY,
->   tx routine will fail with EOPNOTSUPP.
+I assume the VM is successfully created and as Linux tries initializing 
+and using the device, we get a bunch of errors inside the VM, correct?
 
-Do you plan to fix this in the next versions?
-
-If it is too complicated, I think we can have this limitation until we
-find a good solution.
-
->
->2) When MSG_ZEROCOPY is used, for each tx system call we need to enqueue
->   one completion. In each completion there is flag which shows how tx
->   was performed: zerocopy or copy. This leads that whole message must
->   be send in zerocopy or copy way - we can't send part of message with
->   copying and rest of message with zerocopy mode (or vice versa). Now,
->   we need to account vsock credit logic, e.g. we can't send whole data
->   once - only allowed number of bytes could sent at any moment. In case
->   of copying way there is no problem as in worst case we can send single
->   bytes, but zerocopy is more complex because smallest transmission
->   unit is single page. So if there is not enough space at peer's side
->   to send integer number of pages (at least one) - we will wait, thus
->   stalling tx side. To overcome this problem i've added simple rule -
->   zerocopy is possible only when there is enough space at another side
->   for whole message (to check, that current 'msghdr' was already used
->   in previous tx iterations i use 'iov_offset' field of it's iov iter).
-
-So, IIUC if MSG_ZEROCOPY is set, but there isn't enough space in the
-destination we temporarily disable zerocopy, also if MSG_ZEROCOPY is set.
-Right?
-
-If it is the case it seems reasonable to me.
-
->
->3) loopback transport is not supported, because it requires to implement
->   non-linear skb handling in dequeue logic (as we "send" fragged skb
->   and "receive" it from the same queue). I'm going to implement it in
->   next versions.
->
->   ^^^ fixed in v2
->
->4) Current implementation sets max length of packet to 64KB. IIUC this
->   is due to 'kmalloc()' allocated data buffers. I think, in case of
->   MSG_ZEROCOPY this value could be increased, because 'kmalloc()' is
->   not touched for data - user space pages are used as buffers. Also
->   this limit trims every message which is > 64KB, thus such messages
->   will be send in copy mode due to 'iov_offset' check in 2).
->
->   ^^^ fixed in v2
->
->                         PATCHSET STRUCTURE
->
->Patchset has the following structure:
->1) Handle non-linear skbuff on receive in virtio/vhost.
->2) Handle non-linear skbuff on send in virtio/vhost.
->3) Updates for AF_VSOCK.
->4) Enable MSG_ZEROCOPY support on transports.
->5) Tests/tools/docs updates.
->
->                            PERFORMANCE
->
->Performance: it is a little bit tricky to compare performance between
->copy and zerocopy transmissions. In zerocopy way we need to wait when
->user buffers will be released by kernel, so it something like synchronous
->path (wait until device driver will process it), while in copy way we
->can feed data to kernel as many as we want, don't care about device
->driver. So I compared only time which we spend in the 'send()' syscall.
->Then if this value will be combined with total number of transmitted
->bytes, we can get Gbit/s parameter. Also to avoid tx stalls due to not
->enough credit, receiver allocates same amount of space as sender needs.
->
->Sender:
->./vsock_perf --sender <CID> --buf-size <buf size> --bytes 256M [--zc]
->
->Receiver:
->./vsock_perf --vsk-size 256M
->
->G2H transmission (values are Gbit/s):
->
->*-------------------------------*
->|          |         |          |
->| buf size |   copy  | zerocopy |
->|          |         |          |
->*-------------------------------*
->|   4KB    |    3    |    10    |
->*-------------------------------*
->|   32KB   |    9    |    45    |
->*-------------------------------*
->|   256KB  |    24   |    195   |
->*-------------------------------*
->|    1M    |    27   |    270   |
->*-------------------------------*
->|    8M    |    22   |    277   |
->*-------------------------------*
->
->H2G:
->
->*-------------------------------*
->|          |         |          |
->| buf size |   copy  | zerocopy |
->|          |         |          |
->*-------------------------------*
->|   4KB    |    17   |    11    |
-
-Do you know why in this case zerocopy is slower in this case?
-Could be the cost of pin/unpin pages?
-
->*-------------------------------*
->|   32KB   |    30   |    66    |
->*-------------------------------*
->|   256KB  |    38   |    179   |
->*-------------------------------*
->|    1M    |    38   |    234   |
->*-------------------------------*
->|    8M    |    28   |    279   |
->*-------------------------------*
->
->Loopback:
->
->*-------------------------------*
->|          |         |          |
->| buf size |   copy  | zerocopy |
->|          |         |          |
->*-------------------------------*
->|   4KB    |    8    |    7     |
->*-------------------------------*
->|   32KB   |    34   |    42    |
->*-------------------------------*
->|   256KB  |    43   |    83    |
->*-------------------------------*
->|    1M    |    40   |    109   |
->*-------------------------------*
->|    8M    |    40   |    171   |
->*-------------------------------*
->
->I suppose that huge difference above between both modes has two reasons:
->1) We don't need to copy data.
->2) We don't need to allocate buffer for data, only for header.
->
->Zerocopy is faster than classic copy mode, but of course it requires
->specific architecture of application due to user pages pinning, buffer
->size and alignment.
->
->If host fails to send data with "Cannot allocate memory", check value
->/proc/sys/net/core/optmem_max - it is accounted during completion skb
->allocation.
-
-What the user needs to do? Increase it?
-
->
->                            TESTING
->
->This patchset includes set of tests for MSG_ZEROCOPY feature. I tried to
->cover new code as much as possible so there are different cases for
->MSG_ZEROCOPY transmissions: with disabled SO_ZEROCOPY and several io
->vector types (different sizes, alignments, with unmapped pages). I also
->run tests with loopback transport and running vsockmon.
-
-Thanks for the test again :-)
-
-This cover letter is very good, with a lot of details, but please add
-more details in each single patch, explaining the reason of the changes,
-otherwise it is very difficult to review, because it is a very big
-change.
-
-I'll do a per-patch review in the next days.
-
+-- 
 Thanks,
-Stefano
+
+David / dhildenb
 
 
