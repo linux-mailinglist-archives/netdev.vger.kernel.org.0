@@ -1,196 +1,168 @@
-Return-Path: <netdev+bounces-175-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-176-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BB0DF6F5A27
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 16:33:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3980F6F5A3A
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 16:38:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E7F8A1C20F63
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 14:33:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5FB34281671
+	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 14:38:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D3EF1078A;
-	Wed,  3 May 2023 14:33:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 530731078E;
+	Wed,  3 May 2023 14:38:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B5BDD2F7
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 14:33:44 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887497695
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 07:33:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683124387;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nFXd5ix15SvNReqhl4i1pG9MIhuegRONOWBlaLSwSeQ=;
-	b=jOjXn/+Ze6v00vPc9Bw5aM91h6OaAspjWeWS9H/Yhpecb7Sy+fv+xMGVn+337aulV21WL9
-	ELPXoBt2AmnFDxWQUXvHATA+LzQ/L9aBQfe3/l0rMN4s4Kd35ddwOiKS/RQQrpG/TCnkSO
-	TH8+ZIfrZoKgE+59Xatsf8PPTmPgOto=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-114-OP6W6UKUNEa4aFEVtf2Ecg-1; Wed, 03 May 2023 10:33:06 -0400
-X-MC-Unique: OP6W6UKUNEa4aFEVtf2Ecg-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-3f170a1fbe7so31848945e9.2
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 07:33:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683124385; x=1685716385;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nFXd5ix15SvNReqhl4i1pG9MIhuegRONOWBlaLSwSeQ=;
-        b=DeGdGjWuaNahqIb6UPp557a3PJozFc8PItDJnDxj3UWFXd97JCFgTPRCyjwVQX3v+t
-         XEvXyi0iFfyqEuywyKmAYSTxAKKVX+TqZ3uidwEj+s6U/6L/UbAXEJnWPZMtrTPRBG5F
-         E4wuVWvAo7yL6JfYL9001n3uhZ7Phqa9tD5+auC7M4xnsWbNSqLbxmuP/E6uC0CxU+HB
-         Rj9AqyFKOcRd6BtZONS/k83pMIdSQQKWNpFsZpAMxFpMTIImXCLL/74q27gZhLLOHTaU
-         npJ5VXuh9TuGMPVPZcxSqejHNKXOb1m7nvWgzbf/7Bw47gu+5mYiGhZ0c+e0XT4i7BMS
-         ECqQ==
-X-Gm-Message-State: AC+VfDxnvFvVSyHjsp/L8AE0XWMMl8WybM6vhHnOMxfK1VMFIqKcJb5k
-	9E0800q5fPhaIz6WLgPOxcHAMH+X1hhuvRkZo+WvmBEqTyEaRlECflhpnsMhdRpzjHfzXcieHVv
-	KR7FnaoNi79Cgenek
-X-Received: by 2002:a1c:f217:0:b0:3f2:5641:1477 with SMTP id s23-20020a1cf217000000b003f256411477mr15136894wmc.2.1683124384973;
-        Wed, 03 May 2023 07:33:04 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6IA1wfeoYMvE0N/oKVhaMpFqr+HbxFL4frAmX6LWoafreyHi/p/vsvnASiXOwopn3+i8VKyw==
-X-Received: by 2002:a1c:f217:0:b0:3f2:5641:1477 with SMTP id s23-20020a1cf217000000b003f256411477mr15136833wmc.2.1683124384528;
-        Wed, 03 May 2023 07:33:04 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c711:6a00:9109:6424:1804:a441? (p200300cbc7116a00910964241804a441.dip0.t-ipconnect.de. [2003:cb:c711:6a00:9109:6424:1804:a441])
-        by smtp.gmail.com with ESMTPSA id u24-20020a7bc058000000b003f173987ec2sm2063013wmc.22.2023.05.03.07.33.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 May 2023 07:33:03 -0700 (PDT)
-Message-ID: <052b66e9-eed2-15a4-cecf-fa26f5cc49c9@redhat.com>
-Date: Wed, 3 May 2023 16:33:01 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4360A3C27
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 14:38:24 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518B14EEC
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 07:38:22 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1puDc9-00088a-Id; Wed, 03 May 2023 16:37:53 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	(Authenticated sender: mkl-all@blackshift.org)
+	by smtp.blackshift.org (Postfix) with ESMTPSA id 1E13E1BD106;
+	Wed,  3 May 2023 14:37:45 +0000 (UTC)
+Date: Wed, 3 May 2023 16:37:44 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Peter Hong <peter_hong@fintek.com.tw>
+Cc: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+	Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+	wg@grandegger.com, Steen.Hegelund@microchip.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, frank.jungclaus@esd.eu,
+	linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+	netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
+Subject: Re: [PATCH V5] can: usb: f81604: add Fintek F81604 support
+Message-ID: <20230503-companion-sincere-573fc8d234d8-mkl@pengutronix.de>
+References: <20230420024403.13830-1-peter_hong@fintek.com.tw>
+ <CAMZ6RqKWrtBMFSD=BzGuCbvj=+3X-A-oW9haJ7=4kyL2AbEuHQ@mail.gmail.com>
+ <51991fc1-0746-608f-b3bb-78b64e6d1a3e@fintek.com.tw>
+ <CAMZ6Rq+zsC4F-mNhjKvqgPQuLhnnX1y79J=qOT8szPvkHY86VQ@mail.gmail.com>
+ <f9c007ae-fcfb-4091-c202-2c27e3ba1151@fintek.com.tw>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v8 2/3] mm/gup: disallow FOLL_LONGTERM GUP-nonfast writing
- to file-backed mappings
-Content-Language: en-US
-To: Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
- Matthew Wilcox <willy@infradead.org>,
- Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
- Leon Romanovsky <leon@kernel.org>, Christian Benvenuti <benve@cisco.com>,
- Nelson Escobar <neescoba@cisco.com>, Bernard Metzler <bmt@zurich.ibm.com>,
- Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>,
- Arnaldo Carvalho de Melo <acme@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>,
- Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
- Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>,
- Bjorn Topel <bjorn@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>,
- Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
- Jonathan Lemon <jonathan.lemon@gmail.com>,
- "David S . Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Christian Brauner <brauner@kernel.org>,
- Richard Cochran <richardcochran@gmail.com>,
- Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
- Jesper Dangaard Brouer <hawk@kernel.org>,
- John Fastabend <john.fastabend@gmail.com>, linux-fsdevel@vger.kernel.org,
- linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
- bpf@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
- Jan Kara <jack@suse.cz>, "Kirill A . Shutemov" <kirill@shutemov.name>,
- Pavel Begunkov <asml.silence@gmail.com>, Mika Penttila
- <mpenttil@redhat.com>, Dave Chinner <david@fromorbit.com>,
- Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- "Paul E . McKenney" <paulmck@kernel.org>,
- Christian Borntraeger <borntraeger@linux.ibm.com>
-References: <cover.1683067198.git.lstoakes@gmail.com>
- <f7533317ee29a1a4aa54afe0002367a4cd288a1d.1683067198.git.lstoakes@gmail.com>
-From: David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <f7533317ee29a1a4aa54afe0002367a4cd288a1d.1683067198.git.lstoakes@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="2zdnzbummcllnzbh"
+Content-Disposition: inline
+In-Reply-To: <f9c007ae-fcfb-4091-c202-2c27e3ba1151@fintek.com.tw>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 03.05.23 00:51, Lorenzo Stoakes wrote:
-> Writing to file-backed mappings which require folio dirty tracking using
-> GUP is a fundamentally broken operation, as kernel write access to GUP
-> mappings do not adhere to the semantics expected by a file system.
-> 
-> A GUP caller uses the direct mapping to access the folio, which does not
-> cause write notify to trigger, nor does it enforce that the caller marks
-> the folio dirty.
-> 
-> The problem arises when, after an initial write to the folio, writeback
-> results in the folio being cleaned and then the caller, via the GUP
-> interface, writes to the folio again.
-> 
-> As a result of the use of this secondary, direct, mapping to the folio no
-> write notify will occur, and if the caller does mark the folio dirty, this
-> will be done so unexpectedly.
-> 
-> For example, consider the following scenario:-
-> 
-> 1. A folio is written to via GUP which write-faults the memory, notifying
->     the file system and dirtying the folio.
-> 2. Later, writeback is triggered, resulting in the folio being cleaned and
->     the PTE being marked read-only.
-> 3. The GUP caller writes to the folio, as it is mapped read/write via the
->     direct mapping.
-> 4. The GUP caller, now done with the page, unpins it and sets it dirty
->     (though it does not have to).
-> 
-> This results in both data being written to a folio without writenotify, and
-> the folio being dirtied unexpectedly (if the caller decides to do so).
-> 
-> This issue was first reported by Jan Kara [1] in 2018, where the problem
-> resulted in file system crashes.
-> 
-> This is only relevant when the mappings are file-backed and the underlying
-> file system requires folio dirty tracking. File systems which do not, such
-> as shmem or hugetlb, are not at risk and therefore can be written to
-> without issue.
-> 
-> Unfortunately this limitation of GUP has been present for some time and
-> requires future rework of the GUP API in order to provide correct write
-> access to such mappings.
-> 
-> However, for the time being we introduce this check to prevent the most
-> egregious case of this occurring, use of the FOLL_LONGTERM pin.
-> 
-> These mappings are considerably more likely to be written to after
-> folios are cleaned and thus simply must not be permitted to do so.
-> 
-> This patch changes only the slow-path GUP functions, a following patch
-> adapts the GUP-fast path along similar lines.
-> 
-> [1]:https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz/
-> 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
-> Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-> Reviewed-by: Mika Penttilä <mpenttil@redhat.com>
-> Reviewed-by: Jan Kara <jack@suse.cz>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
 
-Acked-by: David Hildenbrand <david@redhat.com>
+--2zdnzbummcllnzbh
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On 02.05.2023 10:53:43, Peter Hong wrote:
+> Hi Vincent, Michal and Marc,
+>=20
+> Vincent MAILHOL =E6=96=BC 2023/4/21 =E4=B8=8B=E5=8D=88 03:30 =E5=AF=AB=E9=
+=81=93:
+> > Hi Peter and Michal,
+> >=20
+> > On Fry. 21 Apr. 2023 at 12:14, Peter Hong <peter_hong@fintek.com.tw> wr=
+ote:
+> > > Hi Vincent,
+> > >=20
+> > > Vincent MAILHOL =E6=96=BC 2023/4/20 =E4=B8=8B=E5=8D=88 08:02 =E5=AF=
+=AB=E9=81=93:
+> > > > Hi Peter,
+> > > >=20
+> > > > Here are my comments. Now, it is mostly nitpicks. I guess that this=
+ is
+> > > > the final round.
+> > > >=20
+> > > > On Thu. 20 avr. 2023 at 11:44, Ji-Ze Hong (Peter Hong)
+> > > > <peter_hong@fintek.com.tw> wrote:
+> > > > > +static void f81604_handle_tx(struct f81604_port_priv *priv,
+> > > > > +                            struct f81604_int_data *data)
+> > > > > +{
+> > > > > +       struct net_device *netdev =3D priv->netdev;
+> > > > > +       struct net_device_stats *stats;
+> > > > > +
+> > > > > +       stats =3D &netdev->stats;
+> > > > Merge the declaration with the initialization.
+> > > If I merge initialization into declaration, it's may violation RCT?
+> > > How could I change about this ?
+> > @Michal: You requested RTC in:
+> >=20
+> > https://lore.kernel.org/linux-can/ZBgKSqaFiImtTThv@localhost.localdomai=
+n/
+> >=20
+> > I looked at the kernel documentation but I could not find "Reverse
+> > Chistmas Tree". Can you point me to where this is defined?
+> >=20
+> > In the above case, I do not think RCT should apply.
+> >=20
+> > I think that this:
+> >=20
+> >          struct net_device *netdev =3D priv->netdev;
+> >          struct net_device_stats *stats =3D &netdev->stats;
+> >=20
+> > Is better than that:
+> >=20
+> >          struct net_device *netdev =3D priv->netdev;
+> >          struct net_device_stats *stats;
+> >=20
+> >          stats =3D &netdev->stats;
+> >=20
+> > Arbitrarily splitting the definition and assignment does not make sense=
+ to me.
+> >=20
+> > Thank you for your comments.
+>=20
+> The RCT coding style seems a bit confuse. How about refactoring of next
+> step? @Marc ?
 
--- 
-Thanks,
+I don't are that much about RCT (so far my upstream has not complained).
+Either of the above is fine with me.
 
-David / dhildenb
+regards,
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--2zdnzbummcllnzbh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRScbUACgkQvlAcSiqK
+BOg7fgf/Rcocbit+eYsSyvu1J/b+f2NEUYAwjDYH8JKZ3qY1jHq4uPsd81dYGTJA
+MqBRikUZ9+9uIBf7oZPCapOYuVbSn8oRjphmRogLpJhos3xFOj9YyvK/ghypUbce
+5Ywi7RI5VFeoSuxBYh/7uCyWB5dpGi59SUNXACijeBVva1cFluCvBeNVOJ98mAjV
+oJp00jvJOtnsr8ARwxUWcM/y4N7N3276FQInKisfPCiiVPoec8xhplJRkr8kLcMB
+aBsL29t4yy+5LTZJ4cE8GPS9sn1buJqnmKjKrLc1IWTsaWabv1QrKRKPx1SLK3ro
+DeWlwoup2kKYXnccclJTGR6hmIlrhg==
+=SrP+
+-----END PGP SIGNATURE-----
+
+--2zdnzbummcllnzbh--
 
