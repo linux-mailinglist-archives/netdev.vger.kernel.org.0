@@ -1,52 +1,67 @@
-Return-Path: <netdev+bounces-412-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-413-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6B51B6F767B
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:07:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DD15F6F767F
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:08:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D028D281208
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:06:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 11C1A28127E
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:07:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A506171BA;
-	Thu,  4 May 2023 19:48:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 660C0171C1;
+	Thu,  4 May 2023 19:48:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 828BF171B8
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 069D9C433EF;
-	Thu,  4 May 2023 19:48:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0EFF171BE
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76662C433D2;
+	Thu,  4 May 2023 19:48:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229707;
-	bh=Wn4gTbf57LwpDRCHeR+QJZofpS9uoSncq21OSvW/Kd4=;
-	h=From:To:Cc:Subject:Date:From;
-	b=V34eRnmWmYxi5GwmJfPXgAkcbqSk+TZsgLezIJDIhJv1MYgtnJMzz3ruT/LYLPrJK
-	 mcTjkLifykf9V4yayroX5ypHU/UrWAaXK8zwDaRhEIi3X/LGJKUN0uBxlklsF2fjoh
-	 xbFr4grIQBfIXuIcTpVm3YUBo1mEwF/hKwFvd93eJ7h+JimfUiq0Em0RFMIj5vGaLz
-	 oqQdTGr8+qP9pCzNCEPTOGAUltg7+n8fJj5aMnA7Zs3q0n+GJP7/ZYfvtzfQoAJg4a
-	 NGJo5hM9yONmX11BxUr3nf1OX37ndg/VEkM7LmCXA6cQYqa+PAzAvqWaOeRY+fbQNF
-	 GD/oVJRcxQxUA==
+	s=k20201202; t=1683229713;
+	bh=C2j/AT/nP4s4wQkqsrksdlFglKDmaSdw3XqGBuSGaZY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=CfCgddr9Dk5kdNpAHO6Hiw1Lww9nDbIAgnItVf+D4aVk5afiUjL535ZHfestWC3bW
+	 HBwW0XfViD316m33waWZuASpFBmxvUX9oBfh7w9TGkuil42mhyfuVmweNzyNao7cVu
+	 0hjNR1vYzZYQrEgSomMo/JYDD8peMX1RXCpmJssLiSqFIIKBhoJ1Am7RROyo4Yvg6J
+	 EwS6eca/MuJR/FzeTnKU8pvgHAQ/g1CH89zbBTrdXK+XFqajOg2V+soD5hBfZoy2g2
+	 1XKqUbCLm4R2I8Flih+xO1hFuNT/TRClw4ujuNFilbtUQTmOWXDCJa1GiEKfoBjm1w
+	 8mUD1hp3iPGYg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Kees Cook <keescook@chromium.org>,
+Cc: Hector Martin <marcan@marcan.st>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Arend van Spriel <arend.vanspriel@broadcom.com>,
 	Kalle Valo <kvalo@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
+	Sasha Levin <sashal@kernel.org>,
+	aspriel@gmail.com,
+	franky.lin@broadcom.com,
+	hante.meuleman@broadcom.com,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	ian.lin@infineon.com,
+	chi-hsien.lin@infineon.com,
+	wright.feng@cypress.com,
+	hdegoede@redhat.com,
+	wataru.gohda@cypress.com,
+	prasanna.kerekoppa@cypress.com,
+	ramesh.rangavittal@infineon.com,
 	linux-wireless@vger.kernel.org,
-	netdev@vger.kernel.org,
-	Kalle Valo <quic_kvalo@quicinc.com>,
-	Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.15 01/30] wifi: ath: Silence memcpy run-time false positive warning
-Date: Thu,  4 May 2023 15:47:54 -0400
-Message-Id: <20230504194824.3808028-1-sashal@kernel.org>
+	brcm80211-dev-list.pdl@broadcom.com,
+	SHA-cyfmac-dev-list@infineon.com,
+	netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 03/30] wifi: brcmfmac: cfg80211: Pass the PMK in binary instead of hex
+Date: Thu,  4 May 2023 15:47:56 -0400
+Message-Id: <20230504194824.3808028-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230504194824.3808028-1-sashal@kernel.org>
+References: <20230504194824.3808028-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -57,71 +72,55 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Kees Cook <keescook@chromium.org>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit bfcc8ba45eb87bfaaff900bbad2b87b204899d41 ]
+[ Upstream commit 89b89e52153fda2733562776c7c9d9d3ebf8dd6d ]
 
-The memcpy() in ath_key_config() was attempting to write across
-neighboring struct members in struct ath_keyval. Introduce a wrapping
-struct_group, kv_values, to be the addressable target of the memcpy
-without overflowing an individual member. Silences the false positive
-run-time warning:
+Apparently the hex passphrase mechanism does not work on newer
+chips/firmware (e.g. BCM4387). It seems there was a simple way of
+passing it in binary all along, so use that and avoid the hexification.
 
-  memcpy: detected field-spanning write (size 32) of single field "hk.kv_val" at drivers/net/wireless/ath/key.c:506 (size 16)
+OpenBSD has been doing it like this from the beginning, so this should
+work on all chips.
 
-Link: https://bbs.archlinux.org/viewtopic.php?id=282254
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20230210054310.never.554-kees@kernel.org
+Also clear the structure before setting the PMK. This was leaking
+uninitialized stack contents to the device.
+
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230214092423.15175-6-marcan@marcan.st
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath.h | 12 +++++++-----
- drivers/net/wireless/ath/key.c |  2 +-
- 2 files changed, 8 insertions(+), 6 deletions(-)
+ .../wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath.h b/drivers/net/wireless/ath/ath.h
-index f083fb9038c36..f02a308a9ffc5 100644
---- a/drivers/net/wireless/ath/ath.h
-+++ b/drivers/net/wireless/ath/ath.h
-@@ -96,11 +96,13 @@ struct ath_keyval {
- 	u8 kv_type;
- 	u8 kv_pad;
- 	u16 kv_len;
--	u8 kv_val[16]; /* TK */
--	u8 kv_mic[8]; /* Michael MIC key */
--	u8 kv_txmic[8]; /* Michael MIC TX key (used only if the hardware
--			 * supports both MIC keys in the same key cache entry;
--			 * in that case, kv_mic is the RX key) */
-+	struct_group(kv_values,
-+		u8 kv_val[16]; /* TK */
-+		u8 kv_mic[8]; /* Michael MIC key */
-+		u8 kv_txmic[8]; /* Michael MIC TX key (used only if the hardware
-+				 * supports both MIC keys in the same key cache entry;
-+				 * in that case, kv_mic is the RX key) */
-+	);
- };
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index fc622e6b329a3..5f55abf3bb6df 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -1350,13 +1350,14 @@ static int brcmf_set_pmk(struct brcmf_if *ifp, const u8 *pmk_data, u16 pmk_len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+ 	struct brcmf_wsec_pmk_le pmk;
+-	int i, err;
++	int err;
++
++	memset(&pmk, 0, sizeof(pmk));
  
- enum ath_cipher {
-diff --git a/drivers/net/wireless/ath/key.c b/drivers/net/wireless/ath/key.c
-index 61b59a804e308..b7b61d4f02bae 100644
---- a/drivers/net/wireless/ath/key.c
-+++ b/drivers/net/wireless/ath/key.c
-@@ -503,7 +503,7 @@ int ath_key_config(struct ath_common *common,
+-	/* convert to firmware key format */
+-	pmk.key_len = cpu_to_le16(pmk_len << 1);
+-	pmk.flags = cpu_to_le16(BRCMF_WSEC_PASSPHRASE);
+-	for (i = 0; i < pmk_len; i++)
+-		snprintf(&pmk.key[2 * i], 3, "%02x", pmk_data[i]);
++	/* pass pmk directly */
++	pmk.key_len = cpu_to_le16(pmk_len);
++	pmk.flags = cpu_to_le16(0);
++	memcpy(pmk.key, pmk_data, pmk_len);
  
- 	hk.kv_len = key->keylen;
- 	if (key->keylen)
--		memcpy(hk.kv_val, key->key, key->keylen);
-+		memcpy(&hk.kv_values, key->key, key->keylen);
- 
- 	if (!(key->flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
- 		switch (vif->type) {
+ 	/* store psk in firmware */
+ 	err = brcmf_fil_cmd_data_set(ifp, BRCMF_C_SET_WSEC_PMK,
 -- 
 2.39.2
 
