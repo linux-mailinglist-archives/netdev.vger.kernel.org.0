@@ -1,54 +1,52 @@
-Return-Path: <netdev+bounces-402-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-403-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D25A46F75FA
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:03:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id CF67B6F7610
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:04:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2CA5D1C2151F
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:03:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 473C7281221
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:03:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5007CC15F;
-	Thu,  4 May 2023 19:47:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4ECCA154B2;
+	Thu,  4 May 2023 19:47:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D906010962
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:47:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57064C4339B;
-	Thu,  4 May 2023 19:47:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEC28E57A
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:47:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64096C433A0;
+	Thu,  4 May 2023 19:47:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229662;
-	bh=cC4elgfiylqXr8hIERqShOfpHyjdVbTDkCkdTG2+fmY=;
+	s=k20201202; t=1683229666;
+	bh=ULgldKHcQe/oiOaENBpSwoJGPj/4CsTxUBA9RRpJm0E=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=LsKjQmPcU87cBMHh5abmhiyoga8h40iHpVsUpVyFVT5nJ+xVtjUe+Qo7zzIInxXGV
-	 ksFYsHqZwS5Qx5rv/1qCSERb1IBx7K1QVPamv4nVG/NclNQ4LKzka1DkOXmuA8zWhH
-	 isVteQHcboCCsqQSPnueGZfmhR+/i9p3ad43MGKsWA4HF7bFRfemUQXsnZFToLlH97
-	 NDAUD1A/SCgFRwOEn4CfEr5O8XBavmfuFuzfy0sOV5y5Xlb7TdIoANJh8V3SzZTO+m
-	 2WNTv8rGEAoVD5rvJzHVo7wfn+Wq5ghwiSp7BihEY6Unlu4g4WNoehShNEfmje5yYo
-	 Pwd7Vdv8LTLXQ==
+	b=JTWYmVkPwxqKzSUcJC5vHIfOv45eYsFzdd+d33hABoLKVhtrykb3wIeBmqY8t4oga
+	 WoQuEATxUI0e9nBRUYHDPn40YhzV21FoXQ+lQW5shoWSjs+PKwJVXgVopbB9v/c5Mm
+	 VbojstvqkPaiaFEIjRfKJ9Z6t2miz4w5eiWihl97OcNvf0Udu704rKMDv6GL58dknd
+	 S1iyFjjMoYgZnhQHk/AJuv5BGyJwzmhe9GiKn7svbGdVOWhCDbgKtzvhipMw2tdRXl
+	 C84ay3mUqSLkAAPrJo5AX7hsaRxVPXs8SZ7ATEuwhOZdRcuxNpKpnrsa1iHA5qA26y
+	 8OBURH7kaeNFg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Hyunwoo Kim <imv4bel@gmail.com>,
+Cc: Johannes Berg <johannes.berg@intel.com>,
 	Gregory Greenman <gregory.greenman@intel.com>,
-	Johannes Berg <johannes.berg@intel.com>,
 	Sasha Levin <sashal@kernel.org>,
 	kvalo@kernel.org,
 	davem@davemloft.net,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	avraham.stern@intel.com,
-	emmanuel.grumbach@intel.com,
+	miriam.rachel.korenblit@intel.com,
 	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 30/49] wifi: iwlwifi: pcie: Fix integer overflow in iwl_write_to_user_buf
-Date: Thu,  4 May 2023 15:46:07 -0400
-Message-Id: <20230504194626.3807438-30-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 31/49] wifi: iwlwifi: mvm: fix ptk_pn memory leak
+Date: Thu,  4 May 2023 15:46:08 -0400
+Message-Id: <20230504194626.3807438-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194626.3807438-1-sashal@kernel.org>
 References: <20230504194626.3807438-1-sashal@kernel.org>
@@ -62,54 +60,46 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Hyunwoo Kim <imv4bel@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 58d1b717879bfeabe09b35e41ad667c79933eb2e ]
+[ Upstream commit d066a530af8e1833c7ea2cef7784004700c85f79 ]
 
-An integer overflow occurs in the iwl_write_to_user_buf() function,
-which is called by the iwl_dbgfs_monitor_data_read() function.
+If adding a key to firmware fails we leak the allocated ptk_pn.
+This shouldn't happen in practice, but we should still fix it.
 
-static bool iwl_write_to_user_buf(char __user *user_buf, ssize_t count,
-				  void *buf, ssize_t *size,
-				  ssize_t *bytes_copied)
-{
-	int buf_size_left = count - *bytes_copied;
-
-	buf_size_left = buf_size_left - (buf_size_left % sizeof(u32));
-	if (*size > buf_size_left)
-		*size = buf_size_left;
-
-If the user passes a SIZE_MAX value to the "ssize_t count" parameter,
-the ssize_t count parameter is assigned to "int buf_size_left".
-Then compare "*size" with "buf_size_left" . Here, "buf_size_left" is a
-negative number, so "*size" is assigned "buf_size_left" and goes into
-the third argument of the copy_to_user function, causing a heap overflow.
-
-This is not a security vulnerability because iwl_dbgfs_monitor_data_read()
-is a debugfs operation with 0400 privileges.
-
-Signed-off-by: Hyunwoo Kim <imv4bel@gmail.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20230414130637.2d80ace81532.Iecfba549e0e0be21bbb0324675392e42e75bd5ad@changeid
+Link: https://lore.kernel.org/r/20230414130637.99446ffd02bc.I82a2ad6ec1395f188e0a1677cc619e3fcb1feac9@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-index bd50f52a1aade..def5b804c7ffc 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-@@ -2854,7 +2854,7 @@ static bool iwl_write_to_user_buf(char __user *user_buf, ssize_t count,
- 				  void *buf, ssize_t *size,
- 				  ssize_t *bytes_copied)
- {
--	int buf_size_left = count - *bytes_copied;
-+	ssize_t buf_size_left = count - *bytes_copied;
- 
- 	buf_size_left = buf_size_left - (buf_size_left % sizeof(u32));
- 	if (*size > buf_size_left)
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index a841268e0709f..801098c5183b6 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -3445,7 +3445,7 @@ static int __iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
+ 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
+ 	struct iwl_mvm *mvm = IWL_MAC80211_GET_MVM(hw);
+ 	struct iwl_mvm_sta *mvmsta = NULL;
+-	struct iwl_mvm_key_pn *ptk_pn;
++	struct iwl_mvm_key_pn *ptk_pn = NULL;
+ 	int keyidx = key->keyidx;
+ 	int ret, i;
+ 	u8 key_offset;
+@@ -3590,6 +3590,10 @@ static int __iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
+ 		if (ret) {
+ 			IWL_WARN(mvm, "set key failed\n");
+ 			key->hw_key_idx = STA_KEY_IDX_INVALID;
++			if (ptk_pn) {
++				RCU_INIT_POINTER(mvmsta->ptk_pn[keyidx], NULL);
++				kfree(ptk_pn);
++			}
+ 			/*
+ 			 * can't add key for RX, but we don't need it
+ 			 * in the device for TX so still return 0,
 -- 
 2.39.2
 
