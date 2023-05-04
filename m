@@ -1,172 +1,135 @@
-Return-Path: <netdev+bounces-325-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-326-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 28C326F71A3
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:55:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 569B36F71C9
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:17:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5C802280DD5
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 17:55:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 78202280DBD
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 18:17:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0FA7EBE4C;
-	Thu,  4 May 2023 17:55:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 519C0BE65;
+	Thu,  4 May 2023 18:17:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02EE24A35
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 17:55:34 +0000 (UTC)
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECA92694;
-	Thu,  4 May 2023 10:55:33 -0700 (PDT)
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1aaea43def7so5419155ad.2;
-        Thu, 04 May 2023 10:55:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683222933; x=1685814933;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kYGmSvNgFDY7g35LY35L0BjxtnZwRN1BFpVvX5bSjqA=;
-        b=FGxtAsbS7c91Wes4epS1OwkuW/gKvQO1KCveikOJ0pePTF1iuC7n7O8/8AY89Tsfb1
-         lY+0iw/eD3guAJiFbd1BoydIZgGZ6ph78pZPPat4mBzNhgFsub0tI6QjdDn+5pt+wvTe
-         Waf4EZVMc5BJ4pNl2hn/O73KILcXY9Kg11hDqiGFcaYK0WC4Z4FO7lxT2wiKUIc2XStA
-         J/ZE2U/ff9eizeqjMXDgCF52quR7iUkz9GM/6IpOdezDdeaBsGQdymHhJL0PQao4fwV4
-         XzI+3jqCNRWd/HdjdmTKwUZrxTwOcx6aFVBG5MN7jZZbIRJCwIrkaobahFMqAfxvhJYF
-         eZkg==
-X-Gm-Message-State: AC+VfDzYUU4AXQ84MjH0SUrR8sB2jAahKCsU5PLOUbLCjqY8tDRNbwdA
-	ouNXVKWpMu8gVeQ+v09ZTLo=
-X-Google-Smtp-Source: ACHHUZ7KuPnRR+3jp8S9m88zEhOWRMOn2zzLuliNOUx9/rxh/nwh2z6tIFO3RCXtHKL7OY8spYpQgA==
-X-Received: by 2002:a17:902:d50a:b0:1a6:5fa2:3293 with SMTP id b10-20020a170902d50a00b001a65fa23293mr5686816plg.56.1683222932569;
-        Thu, 04 May 2023 10:55:32 -0700 (PDT)
-Received: from sultan-box.localdomain ([142.147.89.230])
-        by smtp.gmail.com with ESMTPSA id f14-20020a170902ab8e00b001aafe56ea70sm7076770plr.5.2023.05.04.10.55.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 May 2023 10:55:32 -0700 (PDT)
-Date: Thu, 4 May 2023 10:55:29 -0700
-From: Sultan Alsawaf <sultan@kerneltoast.com>
-To: Johannes Berg <johannes@sipsolutions.net>
-Cc: "Greenman, Gregory" <gregory.greenman@intel.com>,
-	Kalle Valo <kvalo@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"Goodstein, Mordechay" <mordechay.goodstein@intel.com>,
-	"Coelho, Luciano" <luciano.coelho@intel.com>,
-	"Sisodiya, Mukesh" <mukesh.sisodiya@intel.com>,
-	"linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] wifi: iwlwifi: Fix spurious packet drops with RSS
-Message-ID: <ZFPxkRKep27H74Su@sultan-box.localdomain>
-References: <20230430001348.3552-1-sultan@kerneltoast.com>
- <8d2b0aec270b8cd0111654dc4b361987a112d3ce.camel@sipsolutions.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E1929479
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 18:17:13 +0000 (UTC)
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2073.outbound.protection.outlook.com [40.107.101.73])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465AC65B4
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 11:17:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EF+VN/VjRmRVKNHQQKPKB8fzua9vlTML7BQcZiRXcQraheWEF73YXpYja5uImDcHCz5RK9AobnlLVT1d9GEKCUktgIZa6s6PC7PmudsHYxScjyJUffjzbx60zbjtM6ds8t2UxHlAl6TbvxXPoNXawdetI+C+7lV98pobngXn4qqm+3W71wRZLuMDH/ciGx3Q4s/1BEYxWY2jwMUuw/QoAWQQIrEGu4LIhMN2MspsOLt543SIcFj4GWrY7NcF8VHoM3yQgjQiUd0FqAOxWJwf6x0OsRYdJvyW75PmoKIH06GY5DelL9KRcs8PX8MaY4sy6cOOETy36PdekY6RGu8WJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iD3pITt4MhMivB84KYp5XDYM2RA2qWjiXN1CWKmEXRg=;
+ b=SWgQY6lQ4LhEOyxFHO8MwNQU9c7gJeulG1enRwYiaFDh3QDwbz3ya7nbbXIy21Y/1kRro4hjC+MxZ+OcWTCt5WrBIhSCyceFuc45cUEa3J0UVi0+Et32MtA/T7DN43RLK6Frdm61HrCdb6YneJD9NSZ0lQNnUQK2PyHnTCUsb68iVEEH+WRoLCWyGFQ88cOSJmRzO5Va17s+vayyzzGsUYupnyXs369sniWEn5I8nnCvYhS5eMH9//DrYPCeI4jBkimNC7ml3/hkjrl7ZuPxwBTYvGv/cstiDo4DYu22v3wVt4kBYV3q8km7VXRFH0M3lZ8eyUapB9HwTXu3a9cU5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iD3pITt4MhMivB84KYp5XDYM2RA2qWjiXN1CWKmEXRg=;
+ b=r72/X0vMjnAFuCFvtYQDuzONUq6s2sNZN+TBHfXTmGLtD87IplorC+UranTxszc3i20Mw/qMPzoPYW+kn0YI9a+5rC8m7sKF6BG/XdfefaeEPmtMY+vLAPql22rDzYVOLJrzLHw9XRwTDJkRQTMfpTOI3nE5b3CxrhwISBui3fyon4TJGOKWXz7yKow1+fHbnhbMiDkRxiRqPdrEY4HUbvs181iCqz0xTARBqZMg6fvTARgutnzUzHVL2TNajoFdlQuYHvo3jLUDYXUtP2YIREb8j8MHyIcUXC1lTy9SOM+hUO5G12zXkeeawz1f28JFP8XB7RK5vEKD2g1VvDqIvw==
+Received: from MW4P221CA0028.NAMP221.PROD.OUTLOOK.COM (2603:10b6:303:8b::33)
+ by PH0PR12MB7791.namprd12.prod.outlook.com (2603:10b6:510:280::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.26; Thu, 4 May
+ 2023 18:17:06 +0000
+Received: from CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8b:cafe::9c) by MW4P221CA0028.outlook.office365.com
+ (2603:10b6:303:8b::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.26 via Frontend
+ Transport; Thu, 4 May 2023 18:17:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CO1NAM11FT037.mail.protection.outlook.com (10.13.174.91) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6363.27 via Frontend Transport; Thu, 4 May 2023 18:17:05 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 4 May 2023
+ 11:16:55 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 4 May 2023
+ 11:16:54 -0700
+Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server id 15.2.986.37 via Frontend Transport; Thu, 4 May
+ 2023 11:16:51 -0700
+From: Vlad Buslov <vladbu@nvidia.com>
+To: <pabeni@redhat.com>, <davem@davemloft.net>, <kuba@kernel.org>
+CC: <netdev@vger.kernel.org>, <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>,
+	<jiri@resnulli.us>, <marcelo.leitner@gmail.com>, <paulb@nvidia.com>,
+	<simon.horman@corigine.com>, <ivecera@redhat.com>, <pctammela@mojatatu.com>,
+	Vlad Buslov <vladbu@nvidia.com>
+Subject: [PATCH net v2 0/3] Fixes for miss to tc action series
+Date: Thu, 4 May 2023 20:16:13 +0200
+Message-ID: <20230504181616.2834983-1-vladbu@nvidia.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8d2b0aec270b8cd0111654dc4b361987a112d3ce.camel@sipsolutions.net>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT037:EE_|PH0PR12MB7791:EE_
+X-MS-Office365-Filtering-Correlation-Id: ea8540aa-0169-4b93-03e7-08db4ccbc42f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	c61stB5VVPNk+d+MFt55MGk6xSz9MwynkG3MW19oM0vZ+i5YlBKEOtQKX2EQXySbAGtdVjNa+pX8YoE27Wx5PSbjOA/hPSesGPizOhS6swhURqJh8LiguYeQNXT6KppYLs7U7UooGzOCg6njvQJH7loEt8q7ngsXXuHKNsaFD423tYmmJP1Xaar0ga4yXv7k2fUH+cjOEE5cuB7ZSo7fznPU7aph9lmm6pGZTGPHfI5jukhkt+Zri0paWzaIgS2DB/Fxd4zbG4VQ9WE4SFBbT6INnnVq1G0qqPCmjowhsRJ8OjnUop2OoPhiRP0F4oaBiMocfLe/aKLkJO6fkMljL5shkhG210wYfjnL0QlHpzi9toi1Dv2g7asNLi3rzLMdQg7h/s94wDOJrsWaF1xw70vWHckzCOkhtI0o5zShek0zkaP5Z30YC68K0Fpl0Ra3cNikcGyjp4o/b71CUVXMU/Vw6sMudqnZSLqncYAQxRoBC3q7sB+Ar6hzrC5OaiixfGfe54Kbo63atO8hSObGH8K5Z1epEu5mQ863ha0vOrFGILAVeOYW5ffhEucPTh98czyBDCQJRfZbiBuVzCFIUJPwm6WBEzgNnkTVgKK0dyvn7zZo6sBNbYYQj/9YukXZtz8C7j/JfMNT7oEQOjzfnNPQnRduDuc7YQ6Mn/HNNsoNPZd8p1eJZvr2drlCmWlSoVzV+HbPonjSTQk2NMuWuA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(136003)(376002)(346002)(451199021)(40470700004)(46966006)(36840700001)(40460700003)(478600001)(2616005)(7696005)(82310400005)(6666004)(86362001)(41300700001)(7416002)(47076005)(36860700001)(316002)(5660300002)(8676002)(8936002)(356005)(7636003)(82740400003)(107886003)(40480700001)(70586007)(70206006)(426003)(83380400001)(4326008)(36756003)(336012)(110136005)(4744005)(2906002)(186003)(54906003)(1076003)(26005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 18:17:05.5607
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea8540aa-0169-4b93-03e7-08db4ccbc42f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7791
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 04, 2023 at 02:10:50PM +0200, Johannes Berg wrote:
-> [let's see if my reply will make it to the list, the original seems to
-> not have]
-> 
-> On Sun, 2023-04-30 at 00:13 +0000, Sultan Alsawaf wrote:
-> > From: Sultan Alsawaf <sultan@kerneltoast.com>
-> > 
-> > When RSS is used and one of the RX queues lags behind others by more than
-> > 2048 frames, then new frames arriving on the lagged RX queue are
-> > incorrectly treated as old rather than new by the reorder buffer, and are
-> > thus spuriously dropped. This is because the reorder buffer treats frames
-> > as old when they have an SN that is more than 2048 away from the head SN,
-> > which causes the reorder buffer to drop frames that are actually valid.
-> > 
-> > The odds of this occurring naturally increase with the number of
-> > RX queues used, so CPUs with many threads are more susceptible to
-> > encountering spurious packet drops caused by this issue.
-> > 
-> > As it turns out, the firmware already detects when a frame is either old or
-> > duplicated and exports this information, but it's currently unused. Using
-> > these firmware bits to decide when frames are old or duplicated fixes the
-> > spurious drops.
-> 
-> So I assume you tested it now, and it works? Somehow I had been under
-> the impression we never got it to work back when...
+Changes V1 -> V2:
 
-Yep, I've been using this for about a year and have let it run through the
-original iperf3 reproducer I mentioned on bugzilla for hours with no stalls. My
-big git clones don't freeze anymore either. :)
+- Added new patch reverting Ivan's fix for the same issue.
 
-What I wasn't able to get working was the big reorder buffer cleanup that's made
-possible by using these firmware bits. The explicit queue sync can be removed
-easily, but there were further potential cleanups you had mentioned that I
-wasn't able to get working.
+Vlad Buslov (3):
+  net/sched: flower: fix filter idr initialization
+  Revert "net/sched: flower: Fix wrong handle assignment during filter
+    change"
+  net/sched: flower: fix error handler on replace
 
-I hadn't submitted this patch until now because I was hoping to get the big
-cleanup done simultaneously but I got too busy until now. Since this small patch
-does fix the issue, my thought is that this could be merged and sent to stable,
-and with subsequent patches I can chip away at cleaning up the reorder buffer.
+ net/sched/cls_flower.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-> > Johannes mentions that the 9000 series' firmware doesn't support these
-> > bits, so disable RSS on the 9000 series chipsets since they lack a
-> > mechanism to properly detect old and duplicated frames.
-> 
-> Indeed, I checked this again, I also somehow thought it was backported
-> to some versions but doesn't look like. We can either leave those old
-> ones broken (they only shipped with fewer cores anyway), or just disable
-> it as you did here, not sure. RSS is probably not as relevant with those
-> slower speeds anyway.
+-- 
+2.39.2
 
-Agreed, I think it's worth disabling RSS on 9000 series to fix it there. If the
-RX queues are heavily backed up and incoming packets are not released fast
-enough due to a slow CPU, then I think the spurious drops could happen somewhat
-regularly on slow devices using 9000 series.
-
-It's probably also difficult to judge the impact/frequency of these spurious
-drops in the wild due to TCP retries potentially masking them. The issue can be
-very noticeable when a lot of packets are spuriously dropped at once though, so
-I think it's certainly worth the tradeoff to disable RSS on the older chipsets.
-
-> > +++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-> > @@ -918,7 +918,6 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
-> >         struct iwl_mvm_sta *mvm_sta;
-> >         struct iwl_mvm_baid_data *baid_data;
-> >         struct iwl_mvm_reorder_buffer *buffer;
-> > -       struct sk_buff *tail;
-> >         u32 reorder = le32_to_cpu(desc->reorder_data);
-> >         bool amsdu = desc->mac_flags2 & IWL_RX_MPDU_MFLG2_AMSDU;
-> >         bool last_subframe =
-> > @@ -1020,7 +1019,7 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
-> >                                  rx_status->device_timestamp, queue);
-> > 
-> >         /* drop any oudated packets */
-> > -       if (ieee80211_sn_less(sn, buffer->head_sn))
-> > +       if (reorder & IWL_RX_MPDU_REORDER_BA_OLD_SN)
-> >                 goto drop;
-> > 
-> >         /* release immediately if allowed by nssn and no stored frames */
-> > @@ -1068,24 +1067,12 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
-> >                 return false;
-> >         }
-> 
-> All that "send queue sync" code in the middle that was _meant_ to fix
-> this issue but I guess never really did can also be removed, no? And the
-> timer, etc. etc.
-
-Indeed, and removing the queue sync + timer are easy. Would you prefer I send
-additional patches for at least those cleanups before the fix itself can be
-considered for merging?
-
-Sultan
 
