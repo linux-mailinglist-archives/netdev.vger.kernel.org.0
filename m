@@ -1,97 +1,104 @@
-Return-Path: <netdev+bounces-455-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-466-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A9B8F6F76E2
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:22:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BD6B76F77C7
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 23:07:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CBFF2280F29
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:21:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B2E981C21447
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:07:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 07832156D6;
-	Thu,  4 May 2023 19:52:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2EFF4156D3;
+	Thu,  4 May 2023 21:07:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C936BEED3
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:52:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 383AEC433A0;
-	Thu,  4 May 2023 19:52:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229959;
-	bh=XK2jckxn7goA5rrfx5GMbq6wI1FUq3RW3PpLAeR04DA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=LDGE1sC4rWpfdPJvVOI4EpKmIwomgFzSkl4wdtx0/u21zB9sztv566dtV8TK208qL
-	 5Q6lqNcH2+sWBHWk4wI3YB+wEr9RLl7PjngYtr5GIDyITrTySfKM3+7f5Ujz93R9LI
-	 MarZTfEzbqHgPRPTxJG95lgGg+AkZJx/ZL9VKDqlOEp0bWkBXgPXtzTROPtS04hAhT
-	 qEZ3vrUHDtUnkZ5jCIeg+jbzeD8APO5SAIBqMs5Xnh7dst9LwdMg+ki1nKYGqC406D
-	 VoYlh/eAL0Crtno+Se2A4KnZi4W/qw1sywN8Fgk8/FdKvXLxnMIlayyCSJYuc+YZAj
-	 6XSF7gPG6hcDw==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Min Li <lm0963hack@gmail.com>,
-	syzbot+9519d6b5b79cf7787cf3@syzkaller.appspotmail.com,
-	Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-	Sasha Levin <sashal@kernel.org>,
-	marcel@holtmann.org,
-	johan.hedberg@gmail.com,
-	luiz.dentz@gmail.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	linux-bluetooth@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 13/13] Bluetooth: L2CAP: fix "bad unlock balance" in l2cap_disconnect_rsp
-Date: Thu,  4 May 2023 15:52:05 -0400
-Message-Id: <20230504195207.3809116-13-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230504195207.3809116-1-sashal@kernel.org>
-References: <20230504195207.3809116-1-sashal@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 204B07C
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 21:07:24 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB761180
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 14:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+	Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+	In-Reply-To:References; bh=n66NeFRKQ3BlMvYkEUNiU3uPu+QBWiVgoOISQI65bQY=; b=pu
+	7y6MlnQiiaQW2hwUP08WRlRiI+x8uudDR62CtHTFSsGSGChIED4Q2dI3im/EqX9mPLJj6CbBUIuHs
+	v6Yxton/RvSZNPCvLv/NtviYuqIJgb+yOn/b7JiIxDa1DR2gyHchjeg6Rl1SZeEzDluNhJc+YcoBm
+	LmuS+tUdLiB9eCI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1puf2b-00BwUh-Cf; Thu, 04 May 2023 21:55:01 +0200
+Date: Thu, 4 May 2023 21:55:01 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: Vladimir Oltean <olteanv@gmail.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Steffen =?iso-8859-1?Q?B=E4tz?= <steffen@innosonix.de>,
+	netdev <netdev@vger.kernel.org>
+Subject: Re: mv88e6320: Failed to forward PTP multicast
+Message-ID: <5cd6a70c-ea13-4547-958f-5806f86bfa10@lunn.ch>
+References: <CAOMZO5AMOVAZe+w3FiRO-9U98Foba5Oy4f_C0K7bGNxHA1qz_w@mail.gmail.com>
+ <7b8243a3-9976-484c-a0d0-d4f3debbe979@lunn.ch>
+ <CAOMZO5DXH1wS9YYPWXYr-TvM+9Tj8F0bY0_kd_EAjrcCpEJJ7A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOMZO5DXH1wS9YYPWXYr-TvM+9Tj8F0bY0_kd_EAjrcCpEJJ7A@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-From: Min Li <lm0963hack@gmail.com>
+On Thu, May 04, 2023 at 04:40:53PM -0300, Fabio Estevam wrote:
+> Hi Andrew,
+> 
+> On Thu, May 4, 2023 at 4:21 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> 
+> > Do you see the PTP traffic on eth1?
+> 
+> Yes, PTP traffic is seen on eth1.
 
-[ Upstream commit 25e97f7b1866e6b8503be349eeea44bb52d661ce ]
+So it is not a Marvell DSA issue. The frame is making it into the
+Linux bridge.
 
-conn->chan_lock isn't acquired before l2cap_get_chan_by_scid,
-if l2cap_get_chan_by_scid returns NULL, then 'bad unlock balance'
-is triggered.
+> > What MAC address is the PTP traffic using? Is it a link local MAC
+> > address? There are some range of MAC addresses which you are not
+> > supposed to forward across a bridge. e.g. you don't forward BPDUs.
+> > Take a look at br_handle_frame(). Maybe you can play with
+> > group_fwd_mask.
+> 
+> In our case, it is a multicast MAC.
 
-Reported-by: syzbot+9519d6b5b79cf7787cf3@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/all/000000000000894f5f05f95e9f4d@google.com/
-Signed-off-by: Min Li <lm0963hack@gmail.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/bluetooth/l2cap_core.c | 1 -
- 1 file changed, 1 deletion(-)
+So not 01-80-C2-00-00-0E ?
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 6f47cb69775d6..b0bb4cf52a7ee 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -4392,7 +4392,6 @@ static inline int l2cap_disconnect_rsp(struct l2cap_conn *conn,
- 
- 	chan = l2cap_get_chan_by_scid(conn, scid);
- 	if (!chan) {
--		mutex_unlock(&conn->chan_lock);
- 		return 0;
- 	}
- 
--- 
-2.39.2
+I don't know how reliable it is, but see:
 
+https://www.ieee802.org/1/files/public/docs2012/new-tc-messenger-tc-ptp-forwarding-1112-v02.pdf
+
+Slide 5 says:
+
+• 01-1B-19-00-00-00 – a general group address
+  • An 802.1Q VLAN Bridge would forward the frame unchanged.
+• 01-80-C2-00-00-0E – Individual LAN Scope group ad
+  • An 802.1Q VLAN Bridge would drop the frame.
+
+Maybe you are falling into this second case?
+
+You really need to find out where in the Linux bridge it is getting
+dropped. It should then be obvious why.
+
+	 Andrew
 
