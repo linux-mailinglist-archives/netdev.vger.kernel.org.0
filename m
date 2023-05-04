@@ -1,52 +1,53 @@
-Return-Path: <netdev+bounces-363-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-364-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BA2646F7441
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:50:00 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 018F36F7442
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:50:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 005971C21409
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:49:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 915FD280C2E
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:50:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 84405101E0;
-	Thu,  4 May 2023 19:43:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 134A1101DF;
+	Thu,  4 May 2023 19:43:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45406101DC
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:43:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC303C433EF;
-	Thu,  4 May 2023 19:43:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 329EDF4E6
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:43:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D8FFC4331E;
+	Thu,  4 May 2023 19:43:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229431;
-	bh=jY04o1EPXJzQvN2WWPPKNlEl+rWfPtb4YloCDiiBgAg=;
+	s=k20201202; t=1683229433;
+	bh=xU5+GS7Z0ZOvuzry9gq4roNZWabzqWYxzl3qKvzYpew=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=qz4CoQTO3xJiVrthljTzq5DoPrjPXVjlSyK02jsPoyxtEafpp2Mh/xYERzVc25Xiz
-	 69eVNqIDHn8WXQegG5pb/OPur9jyvPRGFarQLiRnlvWLrkjh1GHgDU9mQPqhgkXLCw
-	 4mJDEuSKRzdieReqkRhYdzYOd489HexXsShDxVnP/bGNxFFmhJmb6iWDsnC0WDKS21
-	 iJPqZgUtOrt8Yh9ShReXmulkDTctGF06N79FuGRS7h3EAhXjgZ3HcI7hXZKRXDNWgQ
-	 BmeenNmjmZAYhV3Ic/SwEyyeqsBeJ1FNDbOuKyb+R83Y9TSdW5AJSjA9OxcF1xjsE3
-	 3vQdpcWMkI6Tw==
+	b=a7b4sj4xXhZ5+eYZPEJQz6+D1isnmoaGm2xsUtumGSaB2kkGz3RM2PovuEtDFctgo
+	 N1HM3eVfAc0vJOkZxT3RF39s2CwxSt1M7V29kSMOZB+PDh99plSTDKFKvuzoV0D82r
+	 n1EZh7QfGGLxJuHH7W5fGAgAoc/Kba1fJ//lUK07WPjvP6OcvtAOCenZjAmj5oTCYS
+	 9CLV+VSnnfH7gFyp0Vg8HYdLgh0+xzvoloLIOcdcjfWG+8Z1OZ8lXUlZsLhJuLT0pc
+	 XoRP2k4MvVOHVzcSVCo/iqNVixy5a0p4xBQbKJG7NzhWHuWqFQPPm6bL8e6OEK715L
+	 IhlPYvmEN+4qA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Nagarajan Maran <quic_nmaran@quicinc.com>,
-	Kalle Valo <quic_kvalo@quicinc.com>,
+Cc: Larry Finger <Larry.Finger@lwfinger.net>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Ping-Ke Shih <pkshih@realtek.com>,
+	Kalle Valo <kvalo@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
-	kvalo@kernel.org,
+	tony0620emma@gmail.com,
 	davem@davemloft.net,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	ath11k@lists.infradead.org,
 	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.3 46/59] wifi: ath11k: Fix SKB corruption in REO destination ring
-Date: Thu,  4 May 2023 15:41:29 -0400
-Message-Id: <20230504194142.3805425-46-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.3 47/59] wifi: rtw88: Fix memory leak in rtw88_usb
+Date: Thu,  4 May 2023 15:41:30 -0400
+Message-Id: <20230504194142.3805425-47-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194142.3805425-1-sashal@kernel.org>
 References: <20230504194142.3805425-1-sashal@kernel.org>
@@ -60,78 +61,64 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Nagarajan Maran <quic_nmaran@quicinc.com>
+From: Larry Finger <Larry.Finger@lwfinger.net>
 
-[ Upstream commit f9fff67d2d7ca6fa8066132003a3deef654c55b1 ]
+[ Upstream commit 59a3a312009723e3e5082899655fdcc420e2b47a ]
 
-While running traffics for a long time, randomly an RX descriptor
-filled with value "0" from REO destination ring is received.
-This descriptor which is invalid causes the wrong SKB (SKB stored in
-the IDR lookup with buffer id "0") to be fetched which in turn
-causes SKB memory corruption issue and the same leads to crash
-after some time.
+Kmemleak shows the following leak arising from routine in the usb
+probe routine:
 
-Changed the start id for idr allocation to "1" and the buffer id "0"
-is reserved for error validation. Introduced Sanity check to validate
-the descriptor, before processing the SKB.
+unreferenced object 0xffff895cb29bba00 (size 512):
+  comm "(udev-worker)", pid 534, jiffies 4294903932 (age 102751.088s)
+  hex dump (first 32 bytes):
+    77 30 30 30 00 00 00 00 02 2f 2d 2b 30 00 00 00  w000...../-+0...
+    02 00 2a 28 00 00 00 00 ff 55 ff ff ff 00 00 00  ..*(.....U......
+  backtrace:
+    [<ffffffff9265fa36>] kmalloc_trace+0x26/0x90
+    [<ffffffffc17eec41>] rtw_usb_probe+0x2f1/0x680 [rtw_usb]
+    [<ffffffffc03e19fd>] usb_probe_interface+0xdd/0x2e0 [usbcore]
+    [<ffffffff92b4f2fe>] really_probe+0x18e/0x3d0
+    [<ffffffff92b4f5b8>] __driver_probe_device+0x78/0x160
+    [<ffffffff92b4f6bf>] driver_probe_device+0x1f/0x90
+    [<ffffffff92b4f8df>] __driver_attach+0xbf/0x1b0
+    [<ffffffff92b4d350>] bus_for_each_dev+0x70/0xc0
+    [<ffffffff92b4e51e>] bus_add_driver+0x10e/0x210
+    [<ffffffff92b50935>] driver_register+0x55/0xf0
+    [<ffffffffc03e0708>] usb_register_driver+0x88/0x140 [usbcore]
+    [<ffffffff92401153>] do_one_initcall+0x43/0x210
+    [<ffffffff9254f42a>] do_init_module+0x4a/0x200
+    [<ffffffff92551d1c>] __do_sys_finit_module+0xac/0x120
+    [<ffffffff92ee6626>] do_syscall_64+0x56/0x80
+    [<ffffffff9300006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-Crash Signature :
+The leak was verified to be real by unloading the driver, which resulted
+in a dangling pointer to the allocation.
 
-Unable to handle kernel paging request at virtual address 3f004900
-PC points to "b15_dma_inv_range+0x30/0x50"
-LR points to "dma_cache_maint_page+0x8c/0x128".
-The Backtrace obtained is as follows:
-[<8031716c>] (b15_dma_inv_range) from [<80313a4c>] (dma_cache_maint_page+0x8c/0x128)
-[<80313a4c>] (dma_cache_maint_page) from [<80313b90>] (__dma_page_dev_to_cpu+0x28/0xcc)
-[<80313b90>] (__dma_page_dev_to_cpu) from [<7fb5dd68>] (ath11k_dp_process_rx+0x1e8/0x4a4 [ath11k])
-[<7fb5dd68>] (ath11k_dp_process_rx [ath11k]) from [<7fb53c20>] (ath11k_dp_service_srng+0xb0/0x2ac [ath11k])
-[<7fb53c20>] (ath11k_dp_service_srng [ath11k]) from [<7f67bba4>] (ath11k_pci_ext_grp_napi_poll+0x1c/0x78 [ath11k_pci])
-[<7f67bba4>] (ath11k_pci_ext_grp_napi_poll [ath11k_pci]) from [<807d5cf4>] (__napi_poll+0x28/0xb8)
-[<807d5cf4>] (__napi_poll) from [<807d5f28>] (net_rx_action+0xf0/0x280)
-[<807d5f28>] (net_rx_action) from [<80302148>] (__do_softirq+0xd0/0x280)
-[<80302148>] (__do_softirq) from [<80320408>] (irq_exit+0x74/0xd4)
-[<80320408>] (irq_exit) from [<803638a4>] (__handle_domain_irq+0x90/0xb4)
-[<803638a4>] (__handle_domain_irq) from [<805bedec>] (gic_handle_irq+0x58/0x90)
-[<805bedec>] (gic_handle_irq) from [<80301a78>] (__irq_svc+0x58/0x8c)
+The allocated memory is freed in rtw_usb_intf_deinit().
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
-
-Signed-off-by: Nagarajan Maran <quic_nmaran@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20230403191533.28114-1-quic_nmaran@quicinc.com
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Ping-Ke Shih <pkshih@realtek.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230417160331.23071-1-Larry.Finger@lwfinger.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp_rx.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/wireless/realtek/rtw88/usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 294c6fcfa1aa8..32a4f88861d58 100644
---- a/drivers/net/wireless/ath/ath11k/dp_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -389,10 +389,10 @@ int ath11k_dp_rxbufs_replenish(struct ath11k_base *ab, int mac_id,
- 			goto fail_free_skb;
+diff --git a/drivers/net/wireless/realtek/rtw88/usb.c b/drivers/net/wireless/realtek/rtw88/usb.c
+index 68e1b782d1992..05c7326443614 100644
+--- a/drivers/net/wireless/realtek/rtw88/usb.c
++++ b/drivers/net/wireless/realtek/rtw88/usb.c
+@@ -780,6 +780,7 @@ static void rtw_usb_intf_deinit(struct rtw_dev *rtwdev,
+ 	struct rtw_usb *rtwusb = rtw_get_usb_priv(rtwdev);
  
- 		spin_lock_bh(&rx_ring->idr_lock);
--		buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 0,
--				   rx_ring->bufs_max * 3, GFP_ATOMIC);
-+		buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 1,
-+				   (rx_ring->bufs_max * 3) + 1, GFP_ATOMIC);
- 		spin_unlock_bh(&rx_ring->idr_lock);
--		if (buf_id < 0)
-+		if (buf_id <= 0)
- 			goto fail_dma_unmap;
+ 	usb_put_dev(rtwusb->udev);
++	kfree(rtwusb->usb_data);
+ 	usb_set_intfdata(intf, NULL);
+ }
  
- 		desc = ath11k_hal_srng_src_get_next_entry(ab, srng);
-@@ -2665,6 +2665,9 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
- 				   cookie);
- 		mac_id = FIELD_GET(DP_RXDMA_BUF_COOKIE_PDEV_ID, cookie);
- 
-+		if (unlikely(buf_id == 0))
-+			continue;
-+
- 		ar = ab->pdevs[mac_id].ar;
- 		rx_ring = &ar->dp.rx_refill_buf_ring;
- 		spin_lock_bh(&rx_ring->idr_lock);
 -- 
 2.39.2
 
