@@ -1,143 +1,169 @@
-Return-Path: <netdev+bounces-252-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-253-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 09D146F665F
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 09:57:20 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D19F66F6672
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 10:00:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0CF141C20FBC
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 07:57:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 04A1E1C20FBC
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 08:00:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F31F4A28;
-	Thu,  4 May 2023 07:57:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63C564A2A;
+	Thu,  4 May 2023 08:00:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AF11A2D
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 07:57:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FED7C433EF;
-	Thu,  4 May 2023 07:57:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683187034;
-	bh=BD+fImah7ymy/XPLoxovcxIHeqcAUrR7ThJMZGqhmUY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VMHxVyXZq7ct+QcEYLotgmRTbNBd5yimQJFWEju0LmqS+/NJuq7PfQIXnuCnqiGTp
-	 5sY39fh68shTCdPyuY90UGqnoBypLT/0OCdQsyv51DE4GdjfPD6LSDFTfcI5yDb5BM
-	 OVj6y8h2zCcYPXNjHQCMd8dEZlkVBQmeOr8lYAXW0B5iZLrmPVWgjsps1DepNFoFcr
-	 atcpa0nlFVIKoiiQEm06sVCvwO6xncK28bFXPWJVsEKJYkRxnyYHpN5AsxYzuKU6jb
-	 wrq9VM7Ule78SRjOnSNJGraAXSjbkfTTgOveVa1Pz4vW+J/jtUb5BAGHvPImEE0Vjd
-	 hAyiW2J4mZBpA==
-Date: Thu, 4 May 2023 10:57:09 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: "Chittim, Madhu" <madhu.chittim@intel.com>
-Cc: Ding Hui <dinghui@sangfor.com.cn>, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	intel-wired-lan@lists.osuosl.org, jesse.brandeburg@intel.com,
-	anthony.l.nguyen@intel.com, keescook@chromium.org,
-	grzegorzx.szczurek@intel.com, mateusz.palczewski@intel.com,
-	mitch.a.williams@intel.com, gregory.v.rose@intel.com,
-	jeffrey.t.kirsher@intel.com, michal.kubiak@intel.com,
-	simon.horman@corigine.com, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-	pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
-Subject: Re: [PATCH net v4 2/2] iavf: Fix out-of-bounds when setting channels
- on remove
-Message-ID: <20230504075709.GS525452@unreal>
-References: <20230503031541.27855-1-dinghui@sangfor.com.cn>
- <20230503031541.27855-3-dinghui@sangfor.com.cn>
- <20230503082458.GH525452@unreal>
- <d2351c0f-0bfe-9422-f6f3-f0a0db58c729@sangfor.com.cn>
- <20230503162932.GN525452@unreal>
- <941ad3cc-22d6-3459-dfbc-36bc47a8a22a@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 579F22108
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 08:00:22 +0000 (UTC)
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679182728
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 01:00:18 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id 4fb4d7f45d1cf-50bd2d7ba74so14474724a12.1
+        for <netdev@vger.kernel.org>; Thu, 04 May 2023 01:00:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=wetterwald-eu.20221208.gappssmtp.com; s=20221208; t=1683187216; x=1685779216;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=D/DjbZvCvofx+Tj+rLu8xubteNfMiQhOc00PCHdavuQ=;
+        b=HhckALLG2sNTpMXbgVdoUEEbC37wsx8yFCgo8A4N26tD8yqnp/IcfCpJkS0EYXdN2c
+         KP6rCr06jkCg1EhdX/oc1u0eUFswa9gFIMskGiQ2uwux6g7dPq2z8Eamy76C/zol0DlQ
+         Axlj9QYyFm06ibM9ZS2+Q3FBTomHvY5ORXbVWyMwsAJvKXNW1pe3ER8wnKFc4G2Gps7D
+         9z7Ito2tAfnJx+FhHosSjT5JdvJzg1C1Ivuovvi5Z43Rn8TQyJvwYaFa+RMGkeYo13zK
+         HWfL1Je5cjgenTT2X0gQk2ApdmnW15X9B7kFktLWAZp7K1ZZoCzUzwkJCLmDImSevBOg
+         AGzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683187216; x=1685779216;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=D/DjbZvCvofx+Tj+rLu8xubteNfMiQhOc00PCHdavuQ=;
+        b=XLqb3R89pdAKr6w0wFhtjKKgWgSbIX7vmx+MVFYZZUcYzJwDtPtU0ui3ACtjOSN49f
+         n87AGPn6tcDl1OQRqI/cFsZG6Hwhxx8egy2Jf07yUgsedpsgUuNzIQbYJUMsHtlLTGp6
+         ggX7P1hOOBR+bVEOG/I/tMCvauNmJjaYpPP1JFwwEtuXp/7uHwV4rjZbcNZ0gEaUOXhc
+         Y21PgDezU7ElH0AjxEFs74XBo1tT37oyD+mwwDsE9va+BWPtcJQcMyQqkF6UU8SMU9qx
+         M5jLKyD0pE5XJKNixEEk8KPULuvnAb4Tt8L3zEJlrVACsbUvBkQ1x664ZuZyp4Aro6aC
+         tAlg==
+X-Gm-Message-State: AC+VfDyXJGKnw+Qhhf8iHKWx3D4Gp/yBfa39jolvChUEqrZrV3YfEAYk
+	URBx27WpEyJDOTwOBpN4/IGtCkYkgOeqbM67CY2bXQ==
+X-Google-Smtp-Source: ACHHUZ4alPbKmCmqk6Lpl1JEvX8t6ilAV08qMfCljgdTdr4QswmON1TfYxPtihfgVwxrirPldzTk2j1f5QGQre5+Btc=
+X-Received: by 2002:a17:906:9b8b:b0:953:483e:93f8 with SMTP id
+ dd11-20020a1709069b8b00b00953483e93f8mr4098119ejc.16.1683187215795; Thu, 04
+ May 2023 01:00:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <941ad3cc-22d6-3459-dfbc-36bc47a8a22a@intel.com>
+References: <CAFERDQ1yq=jBGu8e2qJeoNFYmKt4jeB835efsYMxGLbLf4cfbQ@mail.gmail.com>
+ <20230503195112.23adbe7b@kernel.org>
+In-Reply-To: <20230503195112.23adbe7b@kernel.org>
+From: Martin Wetterwald <martin@wetterwald.eu>
+Date: Thu, 4 May 2023 10:00:04 +0200
+Message-ID: <CAFERDQ3hgA490w2zWmiDQu-HfA-DLWWkL4s8z4iZAPwPZvw=LA@mail.gmail.com>
+Subject: [PATCH v2] net: ipconfig: Allow DNS to be overwritten by DHCPACK
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: davem@davemloft.net, dsahern@kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, May 03, 2023 at 12:22:00PM -0700, Chittim, Madhu wrote:
-> 
-> 
-> On 5/3/2023 9:29 AM, Leon Romanovsky wrote:
-> > On Wed, May 03, 2023 at 10:00:49PM +0800, Ding Hui wrote:
-> > > On 2023/5/3 4:24 下午, Leon Romanovsky wrote:
-> > > > On Wed, May 03, 2023 at 11:15:41AM +0800, Ding Hui wrote:
-> > > 
-> > > > > 
-> > > > > If we detected removing is in processing, we can avoid unnecessary
-> > > > > waiting and return error faster.
-> > > > > 
-> > > > > On the other hand in timeout handling, we should keep the original
-> > > > > num_active_queues and reset num_req_queues to 0.
-> > > > > 
-> > > > > Fixes: 4e5e6b5d9d13 ("iavf: Fix return of set the new channel count")
-> > > > > Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
-> > > > > Cc: Donglin Peng <pengdonglin@sangfor.com.cn>
-> > > > > Cc: Huang Cun <huangcun@sangfor.com.cn>
-> > > > > Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> > > > > Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
-> > > > > ---
-> > > > > v3 to v4:
-> > > > >     - nothing changed
-> > > > > 
-> > > > > v2 to v3:
-> > > > >     - fix review tag
-> > > > > 
-> > > > > v1 to v2:
-> > > > >     - add reproduction script
-> > > > > 
-> > > > > ---
-> > > > >    drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 4 +++-
-> > > > >    1 file changed, 3 insertions(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-> > > > > index 6f171d1d85b7..d8a3c0cfedd0 100644
-> > > > > --- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-> > > > > +++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-> > > > > @@ -1857,13 +1857,15 @@ static int iavf_set_channels(struct net_device *netdev,
-> > > > >    	/* wait for the reset is done */
-> > > > >    	for (i = 0; i < IAVF_RESET_WAIT_COMPLETE_COUNT; i++) {
-> > > > >    		msleep(IAVF_RESET_WAIT_MS);
-> > > > > +		if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
-> > > > > +			return -EOPNOTSUPP;
-> > > > 
-> > > > This makes no sense without locking as change to __IAVF_IN_REMOVE_TASK
-> > > > can happen any time.
-> > > > 
-> > > 
-> > > The state doesn't need to be that precise here, it is optimized only for
-> > > the fast path. During the lifecycle of the adapter, the __IAVF_IN_REMOVE_TASK
-> > > state will only be set and not cleared.
-> > > 
-> > > If we didn't detect the "removing" state, we also can fallback to timeout
-> > > handling.
-> > > 
-> > > So I don't think the locking is necessary here, what do the maintainers
-> > > at Intel think?
-> > 
-> > I'm not Intel maintainer, but your change, explanation and the following
-> > line from your commit message aren't really aligned.
-> > 
-> > [ 3510.400799] ==================================================================
-> > [ 3510.400820] BUG: KASAN: slab-out-of-bounds in iavf_free_all_tx_resources+0x156/0x160 [iavf]
-> > 
-> > 
-> 
-> __IAVF_IN_REMOVE_TASK is being set only in iavf_remove() and the above
-> change is ok in terms of coming out of setting channels early enough while
-> remove is in progress.
+Some DHCP server implementations only send the important requested DHCP
+options in the final BOOTP reply (DHCPACK).
+One example is systemd-networkd.
+However, RFC2131, in section 4.3.1 states:
 
-It is not, __IAVF_IN_REMOVE_TASK, set bit can be changed any time during
-iavf_set_channels() and if it is not, I would expect test_bit(..) placed
-at the beginning of iavf_set_channels() or even earlier.
+> The server MUST return to the client:
+> [...]
+> o Parameters requested by the client, according to the following
+>   rules:
+>
+>      -- IF the server has been explicitly configured with a default
+>         value for the parameter, the server MUST include that value
+>         in an appropriate option in the 'option' field, ELSE
 
-Thanks
+I've reported the issue here:
+https://github.com/systemd/systemd/issues/27471
+
+Linux PNP DHCP client implementation only takes into account the DNS
+servers received in the first BOOTP reply (DHCPOFFER).
+This usually isn't an issue as servers are required to put the same
+values in the DHCPOFFER and DHCPACK.
+However, RFC2131, in section 4.3.2 states:
+
+> Any configuration parameters in the DHCPACK message SHOULD NOT
+> conflict with those in the earlier DHCPOFFER message to which the
+> client is responding.  The client SHOULD use the parameters in the
+> DHCPACK message for configuration.
+
+When making Linux PNP DHCP client (cmdline ip=dhcp) interact with
+systemd-networkd DHCP server, an interesting "protocol misunderstanding"
+happens:
+Because DNS servers were only specified in the DHCPACK and not in the
+DHCPOFFER, Linux will not catch the correct DNS servers: in the first
+BOOTP reply (DHCPOFFER), it sees that there is no DNS, and sets as
+fallback the IP of the DHCP server itself. When the second BOOTP reply
+comes (DHCPACK), it's already too late: the kernel will not overwrite
+the fallback setting it has set previously.
+
+This patch makes the kernel overwrite its fallback DNS by DNS servers
+specified in the DHCPACK if any.
+---
+v2:
+  - Only overwrite DNS servers if it was the fallback DNS.
+
+ net/ipv4/ipconfig.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
+index e90bc0aa85c7..aa90273073c1 100644
+--- a/net/ipv4/ipconfig.c
++++ b/net/ipv4/ipconfig.c
+@@ -179,6 +179,9 @@ static volatile int ic_got_reply __initdata;    /*
+Proto(s) that replied */
+ #endif
+ #ifdef IPCONFIG_DHCP
+ static int ic_dhcp_msgtype __initdata;    /* DHCP msg type received */
++
++/* DHCPACK can overwrite DNS if fallback was set upon first BOOTP reply */
++static int ic_nameservers_fallback __initdata;
+ #endif
+
+
+@@ -938,7 +941,12 @@ static void __init ic_do_bootp_ext(u8 *ext)
+         if (servers > CONF_NAMESERVERS_MAX)
+             servers = CONF_NAMESERVERS_MAX;
+         for (i = 0; i < servers; i++) {
++#ifdef IPCONFIG_DHCP
++            if (ic_nameservers[i] == NONE ||
++                ic_nameservers_fallback)
++#else
+             if (ic_nameservers[i] == NONE)
++#endif
+                 memcpy(&ic_nameservers[i], ext+1+4*i, 4);
+         }
+         break;
+@@ -1158,8 +1166,12 @@ static int __init ic_bootp_recv(struct sk_buff
+*skb, struct net_device *dev, str
+     ic_addrservaddr = b->iph.saddr;
+     if (ic_gateway == NONE && b->relay_ip)
+         ic_gateway = b->relay_ip;
+-    if (ic_nameservers[0] == NONE)
++    if (ic_nameservers[0] == NONE) {
+         ic_nameservers[0] = ic_servaddr;
++#ifdef IPCONFIG_DHCP
++        ic_nameservers_fallback = 1;
++#endif
++    }
+     ic_got_reply = IC_BOOTP;
+
+ drop_unlock:
+-- 
+2.40.1
 
