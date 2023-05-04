@@ -1,53 +1,55 @@
-Return-Path: <netdev+bounces-354-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-355-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C36376F73D8
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:46:36 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 95AFD6F73E5
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:46:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 090E11C21150
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:46:34 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 196CC280E6B
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:46:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6559BC13B;
-	Thu,  4 May 2023 19:43:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 909D9C146;
+	Thu,  4 May 2023 19:43:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 808C7C132
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:43:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECCC4C4339C;
-	Thu,  4 May 2023 19:43:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03D2FC143
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:43:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07718C433A0;
+	Thu,  4 May 2023 19:43:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229391;
-	bh=FJKz7GuFKFBOzfkNFgYGuEfZN2BQnBKG66ivIzIIz98=;
+	s=k20201202; t=1683229395;
+	bh=HuACdH04/SnLKjru+SlGem+Rq1yUiRQJ7uVm4GqiOps=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rNbGylv1s04VU+xSwv6hqPjPsBYIYJjkiFXm98/Ztv3eqD3SG3evad0PlTpPXNBg+
-	 CoMjAdZ4ZfxfIZeUOp4hAWDBcLKj/eTUvZGjKpQpN6XdEG2bOpB1jw6BsUKqsbEQbv
-	 p46aYoB4IAq3s/9DKn2/9npkXG7oykD3bIyUduW4qb2N42aN5qc2os77VDLJeyJU+k
-	 SElefQ3Y4tS4l1HetxdSwwrbW5PRRpsbXuC40jCwao5xW5V72PV3oG2Qyhid1+ErRx
-	 l3nK21+6NcqtkabnjGJejtHiklQ+VltvJm8ZPpGhiNS3sYEL/XrTAebo7JHkRfB8Qb
-	 aYxojB3psqYrw==
+	b=cNTfMDqYwVeImw6BpqzN3/LpRc8BwPwHQ6AwQHk0XWTRcm1r9eH2etpj257we2xtX
+	 9sOZlQF0OziX6IfZGc4gKIUArqk0ubsPErU7ZaP//02MqftUa/T/nUfy27WZkArV5e
+	 e4aKk7PrJgg4nGYEfv/yQvkq+8Q0k92zKUrZ2jTJnWMaOyMj0CROxp3YTmCiVS99bo
+	 WTSWXbslp3fJAoPCaiVYS/5C0tq7YLmOT13dOqabQytOWESPhqg540OZxWKX1UZExH
+	 nsA1eQChGZUyFzwdBw/vAwFNgXgQgtGNVlJ8ImePH0luOT5XsqGLhSI9i8HmnKAXrg
+	 1KEHK03ckwd/A==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>,
-	Simon Horman <simon.horman@corigine.com>,
-	Jamal Hadi Salim <jhs@mojatatu.com>,
-	Jakub Kicinski <kuba@kernel.org>,
+Cc: Daniel Gabay <daniel.gabay@intel.com>,
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Johannes Berg <johannes.berg@intel.com>,
 	Sasha Levin <sashal@kernel.org>,
-	xiyou.wangcong@gmail.com,
-	jiri@resnulli.us,
+	kvalo@kernel.org,
 	davem@davemloft.net,
 	edumazet@google.com,
+	kuba@kernel.org,
 	pabeni@redhat.com,
-	vinicius.gomes@intel.com,
+	mukesh.sisodiya@intel.com,
+	golan.ben.ami@intel.com,
+	yaara.baruch@intel.com,
+	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.3 34/59] net/sched: pass netlink extack to mqprio and taprio offload
-Date: Thu,  4 May 2023 15:41:17 -0400
-Message-Id: <20230504194142.3805425-34-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.3 35/59] wifi: iwlwifi: pcie: fix possible NULL pointer dereference
+Date: Thu,  4 May 2023 15:41:18 -0400
+Message-Id: <20230504194142.3805425-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194142.3805425-1-sashal@kernel.org>
 References: <20230504194142.3805425-1-sashal@kernel.org>
@@ -61,121 +63,54 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Daniel Gabay <daniel.gabay@intel.com>
 
-[ Upstream commit c54876cd5961ce0f8e74807f79a6739cd6b35ddf ]
+[ Upstream commit b655b9a9f8467684cfa8906713d33b71ea8c8f54 ]
 
-With the multiplexed ndo_setup_tc() model which lacks a first-class
-struct netlink_ext_ack * argument, the only way to pass the netlink
-extended ACK message down to the device driver is to embed it within the
-offload structure.
+It is possible that iwl_pci_probe() will fail and free the trans,
+then afterwards iwl_pci_remove() will be called and crash by trying
+to access trans which is already freed, fix it.
 
-Do this for struct tc_mqprio_qopt_offload and struct tc_taprio_qopt_offload.
+iwlwifi 0000:01:00.0: Detected crf-id 0xa5a5a5a2, cnv-id 0xa5a5a5a2
+		      wfpm id 0xa5a5a5a2
+iwlwifi 0000:01:00.0: Can't find a correct rfid for crf id 0x5a2
+...
+BUG: kernel NULL pointer dereference, address: 0000000000000028
+...
+RIP: 0010:iwl_pci_remove+0x12/0x30 [iwlwifi]
+pci_device_remove+0x3e/0xb0
+device_release_driver_internal+0x103/0x1f0
+driver_detach+0x4c/0x90
+bus_remove_driver+0x5c/0xd0
+driver_unregister+0x31/0x50
+pci_unregister_driver+0x40/0x90
+iwl_pci_unregister_driver+0x15/0x20 [iwlwifi]
+__exit_compat+0x9/0x98 [iwlwifi]
+__x64_sys_delete_module+0x147/0x260
 
-Since struct tc_taprio_qopt_offload also contains a tc_mqprio_qopt_offload
-structure, and since device drivers might effectively reuse their mqprio
-implementation for the mqprio portion of taprio, we make taprio set the
-extack in both offload structures to point at the same netlink extack
-message.
-
-In fact, the taprio handling is a bit more tricky, for 2 reasons.
-
-First is because the offload structure has a longer lifetime than the
-extack structure. The driver is supposed to populate the extack
-synchronously from ndo_setup_tc() and leave it alone afterwards.
-To not have any use-after-free surprises, we zero out the extack pointer
-when we leave taprio_enable_offload().
-
-The second reason is because taprio does overwrite the extack message on
-ndo_setup_tc() error. We need to switch to the weak form of setting an
-extack message, which preserves a potential message set by the driver.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Daniel Gabay <daniel.gabay@intel.com>
+Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
+Link: https://lore.kernel.org/r/20230413213309.082f6e21341b.I0db21d7fa9a828d571ca886713bd0b5d0b6e1e5c@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/pkt_sched.h |  2 ++
- net/sched/sch_mqprio.c  |  5 ++++-
- net/sched/sch_taprio.c  | 12 ++++++++++--
- 3 files changed, 16 insertions(+), 3 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index 2016839991a42..fc688c7e95951 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -167,6 +167,7 @@ struct tc_mqprio_caps {
- struct tc_mqprio_qopt_offload {
- 	/* struct tc_mqprio_qopt must always be the first element */
- 	struct tc_mqprio_qopt qopt;
-+	struct netlink_ext_ack *extack;
- 	u16 mode;
- 	u16 shaper;
- 	u32 flags;
-@@ -194,6 +195,7 @@ struct tc_taprio_sched_entry {
- 
- struct tc_taprio_qopt_offload {
- 	struct tc_mqprio_qopt_offload mqprio;
-+	struct netlink_ext_ack *extack;
- 	u8 enable;
- 	ktime_t base_time;
- 	u64 cycle_time;
-diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index 48ed87b91086e..fc6225f15fcdb 100644
---- a/net/sched/sch_mqprio.c
-+++ b/net/sched/sch_mqprio.c
-@@ -33,9 +33,12 @@ static int mqprio_enable_offload(struct Qdisc *sch,
- 				 const struct tc_mqprio_qopt *qopt,
- 				 struct netlink_ext_ack *extack)
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index 99768d6a60322..49e8a27ecce54 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -1699,6 +1699,9 @@ static void iwl_pci_remove(struct pci_dev *pdev)
  {
--	struct tc_mqprio_qopt_offload mqprio = {.qopt = *qopt};
- 	struct mqprio_sched *priv = qdisc_priv(sch);
- 	struct net_device *dev = qdisc_dev(sch);
-+	struct tc_mqprio_qopt_offload mqprio = {
-+		.qopt = *qopt,
-+		.extack = extack,
-+	};
- 	int err, i;
+ 	struct iwl_trans *trans = pci_get_drvdata(pdev);
  
- 	switch (priv->mode) {
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 1f469861eae32..cbad430191721 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1520,7 +1520,9 @@ static int taprio_enable_offload(struct net_device *dev,
- 		return -ENOMEM;
- 	}
- 	offload->enable = 1;
-+	offload->extack = extack;
- 	mqprio_qopt_reconstruct(dev, &offload->mqprio.qopt);
-+	offload->mqprio.extack = extack;
- 	taprio_sched_to_offload(dev, sched, offload, &caps);
++	if (!trans)
++		return;
++
+ 	iwl_drv_stop(trans->drv);
  
- 	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
-@@ -1528,14 +1530,20 @@ static int taprio_enable_offload(struct net_device *dev,
- 
- 	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
- 	if (err < 0) {
--		NL_SET_ERR_MSG(extack,
--			       "Device failed to setup taprio offload");
-+		NL_SET_ERR_MSG_WEAK(extack,
-+				    "Device failed to setup taprio offload");
- 		goto done;
- 	}
- 
- 	q->offloaded = true;
- 
- done:
-+	/* The offload structure may linger around via a reference taken by the
-+	 * device driver, so clear up the netlink extack pointer so that the
-+	 * driver isn't tempted to dereference data which stopped being valid
-+	 */
-+	offload->extack = NULL;
-+	offload->mqprio.extack = NULL;
- 	taprio_offload_free(offload);
- 
- 	return err;
+ 	iwl_trans_pcie_free(trans);
 -- 
 2.39.2
 
