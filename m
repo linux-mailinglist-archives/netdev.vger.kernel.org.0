@@ -1,129 +1,123 @@
-Return-Path: <netdev+bounces-334-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-335-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C70B06F7201
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:39:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 35C196F7213
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:44:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 08CBF1C21248
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 18:39:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 229351C21254
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 18:44:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F522BE63;
-	Thu,  4 May 2023 18:39:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9892FBE77;
+	Thu,  4 May 2023 18:44:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AA104C69
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 18:39:31 +0000 (UTC)
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493194EC4
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 11:39:30 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id d9443c01a7336-1ab0b1ee76eso1217175ad.1
-        for <netdev@vger.kernel.org>; Thu, 04 May 2023 11:39:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683225569; x=1685817569;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=ehZuAmw3GYhEksIe47PtL2Ib/nyhsk2V69Qn2+qX3EQ=;
-        b=ncw8qvhgeFeMJe1JQlTle2wN21mPOrW5nweJNBoa9Y2ugT++vTNKo7pwytQBE2FowA
-         mstwMEsGCnP+P0lCDjV1j5/+//T3xhDkzFYSw+Skvi6skEVLquUK0eGTXXl9WINPd1RB
-         Gjkru245H0Nb9fKcbMVhioACbTXnwxkcanzj+sRQ32cGNIjmff7f5wOZ7NMPckcW0C/7
-         y78AAWXhAheroiMXX7f4gkPXRRH4rQdcLSUeSoc4Sicm8Fjc5KNg8Q2TDwcT0LK8xk/+
-         5fzUWKmW+IFI2F/hNFi+74QGe66E+pFRIrTWpPuUNseLsnc5qZNDt6rjLEBoLSUHBAIJ
-         qNyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683225569; x=1685817569;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ehZuAmw3GYhEksIe47PtL2Ib/nyhsk2V69Qn2+qX3EQ=;
-        b=SnSmdx1MA188IHd/I5YGoaxCpD62i+q8Zfl7aOKIyv0xdatFqMTK0tddQQtZIRhGn4
-         pEJ2ioWpSyGnCdMsLo1IF+Ih2ZeyydCtoalDyIq3a787U7ZEIaUNmp8x5aPQfSYsMSJH
-         KdYw8ZpON+m2GRJfEAWHs8CPa23eq1CO3mzQgUYdAdexJrz3NmBMLlnPVCDDCAhm2VEp
-         oHNIGTG+mDdW+kWO6dRZ7Y1u6eLCuPN8bMB8JYRGcaueiP/FNeoGWbK4MBJkLA2KWvJo
-         I9/+qRZo7avKvAXZQTFyx1VVKigxfrXL5NY6I7P7yVskaAKTO8i0jv4GAKa0gbLONGEH
-         8R3w==
-X-Gm-Message-State: AC+VfDztaCiLfpM5QkfuBvpHrFNGtb5SSPMdAYdjdHhyipfQDzTyv13P
-	/HjM84oMvEKfYJqoxr055hxcHjQe7MVegjPzqlnSXlP6kD8=
-X-Google-Smtp-Source: ACHHUZ47NJKGKF69G/qJ23lWrvBdVYCC8wL1JEZ5KpqGO52zk8BwG2piINqWRnRdWljbcc9tOerTnrAI0y9n/ZQF2Do=
-X-Received: by 2002:a17:902:ecc7:b0:1a0:53ba:ff1f with SMTP id
- a7-20020a170902ecc700b001a053baff1fmr12677409plh.0.1683225568723; Thu, 04 May
- 2023 11:39:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E59D5BE65
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 18:44:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52BD8C433EF;
+	Thu,  4 May 2023 18:44:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683225862;
+	bh=AXfZhTl4CAMvddsRCT4gxAh0YyM5asyL2fZDOM7392g=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=WKzVy8mPC9n4w3mgqz2/js9aYICqzA/fx0l7jqU1fyyLMgzs58E4YbmFonjUjLpAX
+	 RXe/3eLky0H5Cs0KIvtPPR4oo9oZFLtMP7VzzqlgILoNr0H2qmTSzvGt1ppUb8WXr6
+	 nzHs/4eUk/xNEyKwRTA1WLVx8BAC0Rlayl7S7ihPDjVy8OVRFvmobPBGitk7/zVHMy
+	 JZ3pT8ZfhY8xRAoptCgeuCh2IExIbvSmgtu1XW8UlUzsBGyI+lLw2IiWMzETsybIkC
+	 7XTawLFp+29cXqL60yUsacTMnt3qHf3kvV7xZXF/96ookU4ADuzOBi+xXvGvta0vN5
+	 /HvEpodh8j7sQ==
+Date: Thu, 4 May 2023 11:44:21 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>, Vadim
+ Fedorenko <vadim.fedorenko@linux.dev>, Vadim Fedorenko <vadfed@meta.com>,
+ Jonathan Lemon <jonathan.lemon@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
+ poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ linux-arm-kernel@lists.infradead.org, "linux-clk@vger.kernel.org"
+ <linux-clk@vger.kernel.org>, "Olech, Milena" <milena.olech@intel.com>,
+ "Michalik, Michal" <michal.michalik@intel.com>
+Subject: Re: [PATCH RFC v6 2/6] dpll: Add DPLL framework base functions
+Message-ID: <20230504114421.51415018@kernel.org>
+In-Reply-To: <ZFPwqu5W8NE6Luvk@nanopsycho>
+References: <ZDJulCXj9H8LH+kl@nanopsycho>
+	<20230410153149.602c6bad@kernel.org>
+	<ZDwg88x3HS2kd6lY@nanopsycho>
+	<20230417124942.4305abfa@kernel.org>
+	<ZFDPaXlJainSOqmV@nanopsycho>
+	<20230502083244.19543d26@kernel.org>
+	<ZFITyWvVcqgRtN+Q@nanopsycho>
+	<20230503191643.12a6e559@kernel.org>
+	<ZFOQWmkBUtgVR06R@nanopsycho>
+	<20230504090401.597a7a61@kernel.org>
+	<ZFPwqu5W8NE6Luvk@nanopsycho>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: Fabio Estevam <festevam@gmail.com>
-Date: Thu, 4 May 2023 15:39:17 -0300
-Message-ID: <CAOMZO5AMOVAZe+w3FiRO-9U98Foba5Oy4f_C0K7bGNxHA1qz_w@mail.gmail.com>
-Subject: mv88e6320: Failed to forward PTP multicast
-To: Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>, 
-	Florian Fainelli <f.fainelli@gmail.com>, =?UTF-8?Q?Steffen_B=C3=A4tz?= <steffen@innosonix.de>
-Cc: netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi,
+On Thu, 4 May 2023 19:51:38 +0200 Jiri Pirko wrote:
+> >> What is the next intelligible element to identify DPLL device here?  
+> >
+> >I don't know. We can always add more as needed.
+> >We presuppose that the devices are identifiable, so whatever info
+> >is used to identify them goes here.  
+> 
+> Allright. So in case of ptp_ocp and mlx5, module_name and clock_id
+> are enough. In case of ice, DPLL_A_TYPE, attr is the one to make
+> distinction between the 2 dpll instances there
+> 
+> So for now, we can have:
+>  CMD_GET_ID
+>    -> DPLL_A_MODULE_NAME  
+>       DPLL_A_CLOCK_ID
+>       DPLL_A_TYPE
+>    <- DPLL_A_ID
+> 
+> 
+> if user passes a subset which would not provide a single match, we error
+> out with -EINVAL and proper exack message. Makes sense?
 
-We are running kernel 6.1.26 on an imx8mn-based board with a Marvell
-mv88e6320 switch.
+Yup, that sounds good to me.
 
-eth1 and eth2 are the mv88e6320 ports. We connect a PTP sync source to eth1
-and we notice that after setting up vlan_filtering on a bridge, the PTP
-packets are no longer forwarded by the switch.
+> >Same answer. Could be a name of the pin according to ASIC docs.
+> >Could be the ball name for a BGA package. Anything that's meaningful.  
+> 
+> Okay, for pin, the type and label would probably do:
+>  CMD_GET_PIN_ID
+>    -> DPLL_A_MODULE_NAME  
+>       DPLL_A_CLOCK_ID
+>       DPLL_A_PIN_TYPE
+>       DPLL_A_PIN_LABEL
 
-Below is the networking setup.
+Label sounds dangerously open ended, too. Would that be the SMA
+connector label (i.e. front panel label)? Or also applicable to
+internal pins? It'd be easier to talk details if we had the user
+facing documentation that ships with these products.
 
-It does not matter if we assign an IP and sniff on the br0 or on the veth2,
-PTP multicast is not appearing. Some multicast like ARP does come through.
-Flags on br0: multicast_snooping = 1, mcast_flood  =1, mcast_router = 1
-
-Any ideas as to how we can get the PTP packets to be forwarded?
-
-Thanks,
-
-Fabio Estevam
-
-# Add bridge
-ip link add name br0 type bridge
-sleep 1
-
-# Activate VLAN filtering
-ip link set dev br0 type bridge vlan_filtering 1
-
-# Add veth pairs
- ip link add veth1 type veth peer name veth2
-
-sleep 1
-# Set Interfaces to be part of the bridge
-ip link set eth1 master br0
-ip link set eth2 master br0
-ip link set veth1 master br0
-
-sleep 1
-# Bring down interfaces
-ip link set eth1 down
-ip link set eth2 down
-
-sleep 1
-# Bring up interfaces
-ip link set br0 up
-ip link set veth1 up
-ip link set veth2 up
-ip link set eth1 up
-ip link set eth2 up
-
-sleep 1
-ip addr add 192.168.0.1/24 dev veth2
-
-tcpdump -i veth2 dst port 319 or dst port 320
+>    <- DPLL_A_PIN_ID
+> 
+> Again, if user passes a subset which would not provide a single match,
+> we error out with -EINVAL and proper exack message.
+> 
+> If there is only one pin for example, user query of DPLL_A_MODULE_NAME
+> and DPLL_A_CLOCK_ID would do return a single match. No need to pass
+> anything else.
+> 
+> I think this could work with both ice and ptp_ocp, correct guys?
+> 
+> For mlx5, I will have 2 or more pins with same module name, clock id
+> and type. For these SyncE pins the label does not really make sense.
+> But I don't have to query, because the PIN_ID is going to be exposed for
+> netdev over RT netlink. Clicks.
+> 
+> Makes sense?
 
