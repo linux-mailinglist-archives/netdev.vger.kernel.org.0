@@ -1,180 +1,132 @@
-Return-Path: <netdev+bounces-284-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-285-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EC07C6F6D89
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 16:14:53 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id ADDB46F6DA4
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 16:24:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DF13B280D40
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 14:14:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 809F51C21139
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 14:24:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4ED27749B;
-	Thu,  4 May 2023 14:14:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A41C9FC1E;
+	Thu,  4 May 2023 14:24:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 344CD186A
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 14:14:49 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E1483FC
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 07:14:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 973AB7E
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 14:24:31 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA7A5BBD
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 07:24:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683209686;
+	s=mimecast20190719; t=1683210269;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=A4cdyKkEPxoDEMVbGTjlqEi5Ug+DxEbcQNE++nqieDU=;
-	b=LdWdr2Np6NgEYB1MZ2LzN2Ki8rfXKaF1ecSmXQK4vObepZtDnkPinHk7fDttUGEhhf3MP/
-	WDJy0N0bnoRFDidoo57bBkE9AU508EsFmKaiX5tX2grP/pWjGvRghM8aYCjdj3k+oWircC
-	lLts9Tu11ZyXbbY6nB9uVnoRxut3ON8=
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
- [209.85.210.200]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=LOzsHxc5BgpQ8oc2mk4fuEbtTU3ybZLEMBOpZWsooMc=;
+	b=dFMMoT9KYDcfRwja2d/hZBbmBhiQDaRNpT+oCHlWvXyeUWxF6LVbvlGFYMPNkvB43A0RvU
+	qQB3w5BND15e3m5oJw+KZk5CyXO4BPNSk96D8oWBgiLsX6ashooMq9nRsoT8SW70DcM/zf
+	c5wi2c2rRHZ/oCL2ULJgmDe461tvy/s=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-224-5mPJj3eEP3qGCnmJPxuaRA-1; Thu, 04 May 2023 10:14:44 -0400
-X-MC-Unique: 5mPJj3eEP3qGCnmJPxuaRA-1
-Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-643989eed04so137274b3a.1
-        for <netdev@vger.kernel.org>; Thu, 04 May 2023 07:14:44 -0700 (PDT)
+ us-mta-649-RSTbbRwGOt-TamPODZm30g-1; Thu, 04 May 2023 10:24:26 -0400
+X-MC-Unique: RSTbbRwGOt-TamPODZm30g-1
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-61a3c7657aeso173306d6.0
+        for <netdev@vger.kernel.org>; Thu, 04 May 2023 07:24:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683209683; x=1685801683;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=A4cdyKkEPxoDEMVbGTjlqEi5Ug+DxEbcQNE++nqieDU=;
-        b=Vff+rdeMnI3Xz42TpkIzkhpyT64pdfK4gtKorD71Ksp6QadRTMzoiQhyv/2QjiMx1o
-         2p5CazEpvnp1mbVOxr5Weaa2Xa5n3jkN5/ixeukyHjgkBol3OA/XMinT4wt53AiTld+j
-         XeChnOvk/n9X6lv7G3MJ3VlaarrubCOE/VKPAOhmhyKNjTjUohWrz53cGcvqJ/Q2Asq/
-         cAEtmufQxgcJFPlrewAyHVygw11M/6ffwYQkYlVVaGto1Blr7F89LEL/dLMSL9JTIzUH
-         VwDqzC/0lqq+MlDtuDdSZorq07MPpLZxdhvfY8mzrmvD44DY9HNNHubG/+spzH0i8Csr
-         6cIQ==
-X-Gm-Message-State: AC+VfDxuK+A/9rr63XIU9oZApspm5FDi8jCUKh7mkIBanptu0Hb2szOK
-	0Dg3lkqdK1GXdTz4e+gQ49X/wMEa50WsXrx9MeubyOBReLTfQ6yP2S/WnA/uaOAY9DagEdxn61z
-	aAAvr+HVSmc/2GYy3iDqadz2omBodes2ookpVZHXL06U=
-X-Received: by 2002:a05:6a00:248b:b0:643:6fa2:9bef with SMTP id c11-20020a056a00248b00b006436fa29befmr2894109pfv.20.1683209683099;
-        Thu, 04 May 2023 07:14:43 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4y7cBClrLOAGdXVFtpclUAEu+7WeDA4VqonOPsm46O5gkdhb1DHoEQcktMPokcUbxSTVmQhEARopB669XN6Qg=
-X-Received: by 2002:a05:6a00:248b:b0:643:6fa2:9bef with SMTP id
- c11-20020a056a00248b00b006436fa29befmr2894069pfv.20.1683209682774; Thu, 04
- May 2023 07:14:42 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683210264; x=1685802264;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=LOzsHxc5BgpQ8oc2mk4fuEbtTU3ybZLEMBOpZWsooMc=;
+        b=LPrCCdElZYfWo2khKXxoSDZkdN6qfUd0KrZzoYosca4ti/1wcwCVEU0sUZXQK3cy2D
+         WojBNlkame1HBIo6rhrOOGvLozWdewBrfKxXjGwszRjD8N94XVFuB7DpQ5U4ejF8coA7
+         XzenfBr3jF2uIS0hHQxwc02WWZXBNJ2JWlIlagRVl9IcaVP00oDNH0hUx4JEfOyHr7k+
+         IiEO+zz+vmTWiA41LGdSfwfC2xvKwiNIFlgYLk6wyNDz1WqFecB/hkkA7G7YQ+1ORidz
+         Z4Zyn8GnuAcrATg/8nfZBlqLObLXEtLb3yXBom/69QyqmE//C2da/brI3WG55rBbVTKZ
+         G6Jw==
+X-Gm-Message-State: AC+VfDxLylP+Nuo2uZ1pS++J0FH3ZbUxmrk1M10Gk1pDCmnxUJnqUoaM
+	NIGpxaRf3wVBGRAY1kMQr5r+t8MLSnEBmEUR2ESgeSYhIG52K1z581Dk9fnAO/PGRVg9Vx8pUeI
+	WN/84WSEif6XlfS1M
+X-Received: by 2002:a05:6214:5199:b0:616:870c:96b8 with SMTP id kl25-20020a056214519900b00616870c96b8mr31698346qvb.3.1683210264575;
+        Thu, 04 May 2023 07:24:24 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6fuP9Q846qlkHZ88KB3rzhNDszjpLNiXYkhPpTFzfn7gNfCzcHHiwdeLmQzdeevOsXqvEGRg==
+X-Received: by 2002:a05:6214:5199:b0:616:870c:96b8 with SMTP id kl25-20020a056214519900b00616870c96b8mr31698302qvb.3.1683210264244;
+        Thu, 04 May 2023 07:24:24 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-244-79.dyn.eolo.it. [146.241.244.79])
+        by smtp.gmail.com with ESMTPSA id h3-20020a0cf203000000b0061c073dd45dsm624017qvk.45.2023.05.04.07.24.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 May 2023 07:24:23 -0700 (PDT)
+Message-ID: <5c325bab5f4b4503c7740fd73e9ab603285d0315.camel@redhat.com>
+Subject: Re: [PATCH net 2/2] net/sched: flower: fix error handler on replace
+From: Paolo Abeni <pabeni@redhat.com>
+To: Vlad Buslov <vladbu@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+Cc: Ivan Vecera <ivecera@redhat.com>, Simon Horman
+ <simon.horman@corigine.com>,  Pedro Tammela <pctammela@mojatatu.com>,
+ davem@davemloft.net, netdev@vger.kernel.org, jhs@mojatatu.com, 
+ xiyou.wangcong@gmail.com, jiri@resnulli.us, marcelo.leitner@gmail.com, 
+ paulb@nvidia.com
+Date: Thu, 04 May 2023 16:24:20 +0200
+In-Reply-To: <87mt2kqkke.fsf@nvidia.com>
+References: <20230426121415.2149732-1-vladbu@nvidia.com>
+	 <20230426121415.2149732-3-vladbu@nvidia.com>
+	 <4a647080-cdf6-17e3-6e21-50250722e698@mojatatu.com>
+	 <87bkjasmtw.fsf@nvidia.com>
+	 <1bf81145-0996-e473-4053-09f410195984@redhat.com>
+	 <ZEtxvPaa/L3jHa2d@corigine.com>
+	 <bf6591ac-2526-6ca8-b60b-70536a31ae2a@redhat.com>
+	 <87354ks1ob.fsf@nvidia.com> <20230502194452.23e99a2c@kernel.org>
+	 <87mt2kqkke.fsf@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230419-upstream-lsm-next-20230419-mptcp-sublows-user-ctx-v2-0-e7a3c8c15676@tessares.net>
-In-Reply-To: <20230419-upstream-lsm-next-20230419-mptcp-sublows-user-ctx-v2-0-e7a3c8c15676@tessares.net>
-From: Ondrej Mosnacek <omosnace@redhat.com>
-Date: Thu, 4 May 2023 16:14:31 +0200
-Message-ID: <CAFqZXNt16B5A2o6fZeN5b1coNCW2m6kp7JToJFDorvPajhFyxA@mail.gmail.com>
-Subject: Re: [PATCH LSM v2 0/2] security: SELinux/LSM label with MPTCP and accept
-To: Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc: Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>, 
-	"Serge E. Hallyn" <serge@hallyn.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
-	Eric Paris <eparis@parisplace.org>, Paolo Abeni <pabeni@redhat.com>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, mptcp@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org, linux-security-module@vger.kernel.org, 
-	selinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Apr 20, 2023 at 7:17=E2=80=AFPM Matthieu Baerts
-<matthieu.baerts@tessares.net> wrote:
->
-> In [1], Ondrej Mosnacek explained they discovered the (userspace-facing)
-> sockets returned by accept(2) when using MPTCP always end up with the
-> label representing the kernel (typically system_u:system_r:kernel_t:s0),
-> while it would make more sense to inherit the context from the parent
-> socket (the one that is passed to accept(2)). Thanks to the
-> participation of Paul Moore in the discussions, modifications on MPTCP
-> side have started and the result is available here.
->
-> Paolo Abeni worked hard to refactor the initialisation of the first
-> subflow of a listen socket. The first subflow allocation is no longer
-> done at the initialisation of the socket but later, when the connection
-> request is received or when requested by the userspace. This was a
-> prerequisite to proper support of SELinux/LSM labels with MPTCP and
-> accept. The last batch containing the commit ddb1a072f858 ("mptcp: move
-> first subflow allocation at mpc access time") [2] has been recently
-> accepted and applied in netdev/net-next repo [3].
->
-> This series of 2 patches is based on top of the lsm/next branch. Despite
-> the fact they depend on commits that are in netdev/net-next repo to
-> support the new feature, they can be applied in lsm/next without
-> creating conflicts with net-next or causing build issues. These two
-> patches on top of lsm/next still passes all the MPTCP-specific tests.
-> The only thing is that the new feature only works properly with the
-> patches that are on netdev/net-next. The tests with the new labels have
-> been done on top of them.
->
-> Regarding the two patches, the first one introduces a new LSM hook
-> called from MPTCP side when creating a new subflow socket. This hook
-> allows the security module to relabel the subflow according to the owing
-> process. The second one implements this new hook on the SELinux side.
->
-> Link: https://lore.kernel.org/netdev/CAFqZXNs2LF-OoQBUiiSEyranJUXkPLcCfBk=
-MkwFeM6qEwMKCTw@mail.gmail.com/ [1]
-> Link: https://git.kernel.org/netdev/net-next/c/ddb1a072f858 [2]
-> Link: https://lore.kernel.org/netdev/20230414-upstream-net-next-20230414-=
-mptcp-refactor-first-subflow-init-v1-0-04d177057eb9@tessares.net/ [3]
-> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> ---
-> Changes in v2:
-> - Address Paul's comments, see the notes on each patch
-> - Link to v1: https://lore.kernel.org/r/20230419-upstream-lsm-next-202304=
-19-mptcp-sublows-user-ctx-v1-0-9d4064cb0075@tessares.net
->
-> ---
-> Paolo Abeni (2):
->       security, lsm: Introduce security_mptcp_add_subflow()
->       selinux: Implement mptcp_add_subflow hook
->
->  include/linux/lsm_hook_defs.h |  1 +
->  include/linux/security.h      |  6 ++++++
->  net/mptcp/subflow.c           |  6 ++++++
->  security/security.c           | 17 +++++++++++++++++
->  security/selinux/hooks.c      | 16 ++++++++++++++++
->  security/selinux/netlabel.c   |  8 ++++++--
->  6 files changed, 52 insertions(+), 2 deletions(-)
-> ---
-> base-commit: d82dcd9e21b77d338dc4875f3d4111f0db314a7c
-> change-id: 20230419-upstream-lsm-next-20230419-mptcp-sublows-user-ctx-eee=
-658fafcba
->
-> Best regards,
-> --
-> Matthieu Baerts <matthieu.baerts@tessares.net>
->
+On Thu, 2023-05-04 at 16:40 +0300, Vlad Buslov wrote:
+> On Tue 02 May 2023 at 19:44, Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Fri, 28 Apr 2023 14:03:19 +0300 Vlad Buslov wrote:
+> > > Note that with these changes (both accepted patch and preceding diff)
+> > > you are exposing filter to dapapath access (datapath looks up filter =
+via
+> > > hash table, not idr) with its handle set to 0 initially and then rese=
+nt
+> > > while already accessible. After taking a quick look at Paul's
+> > > miss-to-action code it seems that handle value used by datapath is ta=
+ken
+> > > from struct tcf_exts_miss_cookie_node not from filter directly, so su=
+ch
+> > > approach likely doesn't break anything existing, but I might have mis=
+sed
+> > > something.
+> >=20
+> > Did we deadlock in this discussion, or the issue was otherwise fixed?
+>=20
+> From my side I explained why in my opinion Ivan's fix doesn't cover all
+> cases and my approach is better overall. Don't know what else to discuss
+> since it seems that everyone agreed.
 
-I haven't yet looked closer at the code in this series, but I can at
-least confirm that with the series (applied on top of net-next) the
-selinux-testsuite now passes when run under mptcpize, with one caveat:
+Do I read correctly that we need a revert of Ivan's patch to safely
+apply this series? If so, could you please repost including such
+revert?
 
-The "client" test prog in the inet_socket subtest sets the SO_SNDTIMEO
-socket option on the client socket, but the subtest takes
-significantly longer to complete than when run without mptcpize. That
-suggests to me that there is possibly some (pre-existing) issue with
-MPTCP where the send/receive timeouts are not being passed to the
-subflow socket(s), leading to a longer wait (I guess the default is
-higher?) when the timeout is expected to be hit (there are test cases
-where we expect packets to be dropped due to SELinux access controls,
-which we detect via timeout). I'm only taking a wild guess at the root
-cause here, but I hope you guys will be able to figure it out and fix
-whatever needs fixing :)
+Thanks.
 
---
-Ondrej Mosnacek
-Senior Software Engineer, Linux Security - SELinux kernel
-Red Hat, Inc.
+Paolo
 
 
