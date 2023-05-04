@@ -1,322 +1,333 @@
-Return-Path: <netdev+bounces-473-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-474-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0A2B36F7814
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 23:29:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id E98986F78F3
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 00:20:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9C207280E49
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:29:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A0B1B280E65
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:20:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 451A4F4F4;
-	Thu,  4 May 2023 21:28:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67196C155;
+	Thu,  4 May 2023 22:20:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35CD97C;
-	Thu,  4 May 2023 21:28:09 +0000 (UTC)
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A6F1385B;
-	Thu,  4 May 2023 14:28:07 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-3f1cfed93e2so10308845e9.3;
-        Thu, 04 May 2023 14:28:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683235686; x=1685827686;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dzVetoXFThODit0E7mMHMWIHrhpZxQrnLOp5tRzJpqI=;
-        b=nOgXz15Rlikh5/hm1hcR8y16xly2jvn/0es/Zc9yq4acLbcvNZbwLJbjX0XfaROBKq
-         hT3+R9xbFnKRu5iRyRj/++h4/T2Kd9EddSpwLcRMTxHs0D0JPRWkyavrq2ssvkoH0Irj
-         Mtjq54wAmg4jQa2lSX6Tx4BqLIF5F/VLobjK2SzwNXOAm4+4rKt6YJ+0iB0PKiuJ6FIY
-         n3FjMaFOGnBYkhG4Bi1VZVS6sB7z6Q/7YLfQZT1J28aLKECpytpg0Dzlo2U7b61Ho+jd
-         8ASw3Bc3OAjx73vdiVdsB3QSpTqzwjwKSjV0EZIbZp1sJZcO22R6cH8V/Sz49y5+JvgI
-         NURA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683235686; x=1685827686;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dzVetoXFThODit0E7mMHMWIHrhpZxQrnLOp5tRzJpqI=;
-        b=CXYdOe0dgIQL70FKCihF4iWGv+RDhJOKdUq2WKi16pr4yGRDmgSQ9D43tJ3ttXMclh
-         A0oFW0zbsHJ1n/C23MZ0iLFpdBwJAagiviuO/yL0EYRVqJSPXKMv7MwwmjKelq7xzvex
-         uvvBjSzZXG8J03vgxBdyGfY0trOW+fm2mRX8lMqidtjLV6mtPVbLPLQdNG2sKl8wxQP8
-         L+5j6LzWDOCftF9st63sO0MNFl4z27TotHpdpPOOxgSaOrE/X0WPk7ObRfDREXN92dEd
-         23aLEr4kNCuLvm14wbG/6u+SDWqJ2ClKqDXpntCSSkec4nPnRRUHCDYDyQcJf8v/UC2C
-         7S4g==
-X-Gm-Message-State: AC+VfDxhiMLCZSfeEvLVv5iOpscG8EdHTrOgiJs57XlQblSLXLV0ZYvs
-	dk0f42rK2ys9oNVEIXJmFiY=
-X-Google-Smtp-Source: ACHHUZ6ra+wmDjEQbaqshQqZbutymT+fRGXcVri8kM8kvCkLDrHqc2vp8UnNsvrczq/pShQhnBi+AQ==
-X-Received: by 2002:a05:600c:2257:b0:3f1:7277:ea6 with SMTP id a23-20020a05600c225700b003f172770ea6mr620777wmm.31.1683235685758;
-        Thu, 04 May 2023 14:28:05 -0700 (PDT)
-Received: from lucifer.home (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
-        by smtp.googlemail.com with ESMTPSA id h15-20020a05600c314f00b003f1978bbcd6sm51617562wmo.3.2023.05.04.14.28.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 May 2023 14:28:04 -0700 (PDT)
-From: Lorenzo Stoakes <lstoakes@gmail.com>
-To: linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>,
-	Jens Axboe <axboe@kernel.dk>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEB377C
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 22:20:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C8DEC433EF;
+	Thu,  4 May 2023 22:20:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683238850;
+	bh=rwx7iUdSi9ZJ936Oee+tnrMgzVQXpxJNfSPrASIpy3Q=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=YKsUVpu0ptYjRBovoU/uOo2fA0BLiAZ1A+MBoqqjLC4c5AS7LeMY8bwZEN8loP+Gs
+	 32n4NOnIJBMoV5gKsEAkVHH0nJiXS1gPKnCxotZljfqR1V4u4dNPWyAWtx8U0yfbCT
+	 SXACPyg87+6r2MlTf67MfYt+OvW2G2HHVFp3SnMXecSyCAEHHBTsJrSqfGym4NDomP
+	 DMk3EPIfkqNi9tsmpRaccspQfjuesw8vkZMyprA6GPQvMtpC8eQpyHfbZysO7RoPlU
+	 xIdDEW6wAuoObJ8PfmRChxOfCuTrKWbAgYzUDSL4n2lAZB9iu7OBv8SWzhKNMd8m7j
+	 3LCQ1rhIJRL5w==
+Date: Thu, 4 May 2023 17:20:48 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+	Mahesh J Salgaonkar <mahesh@linux.ibm.com>,
+	Oliver O'Halloran <oohall@gmail.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Saeed Mahameed <saeedm@nvidia.com>,
 	Leon Romanovsky <leon@kernel.org>,
-	Christian Benvenuti <benve@cisco.com>,
-	Nelson Escobar <neescoba@cisco.com>,
-	Bernard Metzler <bmt@zurich.ibm.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Jiri Olsa <jolsa@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>,
-	Ian Rogers <irogers@google.com>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	Bjorn Topel <bjorn@kernel.org>,
-	Magnus Karlsson <magnus.karlsson@intel.com>,
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	"David S . Miller" <davem@davemloft.net>,
+	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Christian Brauner <brauner@kernel.org>,
-	Richard Cochran <richardcochran@gmail.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	John Fastabend <john.fastabend@gmail.com>,
-	linux-fsdevel@vger.kernel.org,
-	linux-perf-users@vger.kernel.org,
-	netdev@vger.kernel.org,
-	bpf@vger.kernel.org,
-	Oleg Nesterov <oleg@redhat.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	John Hubbard <jhubbard@nvidia.com>,
-	Jan Kara <jack@suse.cz>,
-	"Kirill A . Shutemov" <kirill@shutemov.name>,
-	Pavel Begunkov <asml.silence@gmail.com>,
-	Mika Penttila <mpenttil@redhat.com>,
-	David Hildenbrand <david@redhat.com>,
-	Dave Chinner <david@fromorbit.com>,
-	Theodore Ts'o <tytso@mit.edu>,
-	Peter Xu <peterx@redhat.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Paul E . McKenney" <paulmck@kernel.org>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Lorenzo Stoakes <lstoakes@gmail.com>
-Subject: [PATCH v9 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to file-backed mappings
-Date: Thu,  4 May 2023 22:27:53 +0100
-Message-Id: <a27d39b87ded7f3dad5fd4181edb106393660453.1683235180.git.lstoakes@gmail.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <cover.1683235180.git.lstoakes@gmail.com>
-References: <cover.1683235180.git.lstoakes@gmail.com>
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Stefan Roese <sr@denx.de>, Jim Wilson <wilson@tuliptree.org>,
+	David Abdurachmanov <david.abdurachmanov@gmail.com>,
+	Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+	linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 7/7] PCI: Work around PCIe link training failures
+Message-ID: <20230504222048.GA887151@bhelgaas>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2304060116380.13659@angie.orcam.me.uk>
 
-Writing to file-backed dirty-tracked mappings via GUP is inherently broken
-as we cannot rule out folios being cleaned and then a GUP user writing to
-them again and possibly marking them dirty unexpectedly.
+On Thu, Apr 06, 2023 at 01:21:31AM +0100, Maciej W. Rozycki wrote:
+> Attempt to handle cases such as with a downstream port of the ASMedia 
+> ASM2824 PCIe switch where link training never completes and the link 
+> continues switching between speeds indefinitely with the data link layer 
+> never reaching the active state.
 
-This is especially egregious for long-term mappings (as indicated by the
-use of the FOLL_LONGTERM flag), so we disallow this case in GUP-fast as
-we have already done in the slow path.
+We're going to land this series this cycle, come hell or high water.
 
-We have access to less information in the fast path as we cannot examine
-the VMA containing the mapping, however we can determine whether the folio
-is anonymous or belonging to a whitelisted filesystem - specifically
-hugetlb and shmem mappings.
+We talked about reusing pcie_retrain_link() earlier.  IIRC that didn't
+work: ASPM needs to use PCI_EXP_LNKSTA_LT because not all devices
+support PCI_EXP_LNKSTA_DLLLA, and you need PCI_EXP_LNKSTA_DLLLA
+because the erratum makes PCI_EXP_LNKSTA_LT flap.
 
-We take special care to ensure that both the folio and mapping are safe to
-access when performing these checks and document folio_fast_pin_allowed()
-accordingly.
+What if we made pcie_retrain_link() reusable by making it:
 
-It's important to note that there are no APIs allowing users to specify
-FOLL_FAST_ONLY for a PUP-fast let alone with FOLL_LONGTERM, so we can
-always rely on the fact that if we fail to pin on the fast path, the code
-will fall back to the slow path which can perform the more thorough check.
+  bool pcie_retrain_link(struct pci_dev *pdev, u16 link_status_bit)
 
-Suggested-by: David Hildenbrand <david@redhat.com>
-Suggested-by: Kirill A . Shutemov <kirill@shutemov.name>
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Acked-by: David Hildenbrand <david@redhat.com>
----
- mm/gup.c | 101 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 101 insertions(+)
+so ASPM could use pcie_retrain_link(link->pdev, PCI_EXP_LNKSTA_LT) and
+you could use pcie_retrain_link(dev, PCI_EXP_LNKSTA_DLLLA)?
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 0ea9ebec9547..ef43ffb3d1fe 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -18,6 +18,7 @@
- #include <linux/migrate.h>
- #include <linux/mm_inline.h>
- #include <linux/sched/mm.h>
-+#include <linux/shmem_fs.h>
- 
- #include <asm/mmu_context.h>
- #include <asm/tlbflush.h>
-@@ -2379,6 +2380,82 @@ EXPORT_SYMBOL(get_user_pages_unlocked);
-  */
- #ifdef CONFIG_HAVE_FAST_GUP
- 
-+/*
-+ * Used in the GUP-fast path to determine whether a pin is permitted for a
-+ * specific folio.
-+ *
-+ * This call assumes the caller has pinned the folio, that the lowest page table
-+ * level still points to this folio, and that interrupts have been disabled.
-+ *
-+ * Writing to pinned file-backed dirty tracked folios is inherently problematic
-+ * (see comment describing the writable_file_mapping_allowed() function). We
-+ * therefore try to avoid the most egregious case of a long-term mapping doing
-+ * so.
-+ *
-+ * This function cannot be as thorough as that one as the VMA is not available
-+ * in the fast path, so instead we whitelist known good cases and if in doubt,
-+ * fall back to the slow path.
-+ */
-+static bool folio_fast_pin_allowed(struct folio *folio, unsigned int flags)
-+{
-+	struct address_space *mapping;
-+	unsigned long mapping_flags;
-+
-+	/*
-+	 * If we aren't pinning then no problematic write can occur. A long term
-+	 * pin is the most egregious case so this is the one we disallow.
-+	 */
-+	if ((flags & (FOLL_PIN | FOLL_LONGTERM | FOLL_WRITE)) !=
-+	    (FOLL_PIN | FOLL_LONGTERM | FOLL_WRITE))
-+		return true;
-+
-+	/* The folio is pinned, so we can safely access folio fields. */
-+
-+	if (WARN_ON_ONCE(folio_test_slab(folio)))
-+		return false;
-+
-+	/* hugetlb mappings do not require dirty-tracking. */
-+	if (folio_test_hugetlb(folio))
-+		return true;
-+
-+	/*
-+	 * GUP-fast disables IRQs. When IRQS are disabled, RCU grace periods
-+	 * cannot proceed, which means no actions performed under RCU can
-+	 * proceed either.
-+	 *
-+	 * inodes and thus their mappings are freed under RCU, which means the
-+	 * mapping cannot be freed beneath us and thus we can safely dereference
-+	 * it.
-+	 */
-+	lockdep_assert_irqs_disabled();
-+
-+	/*
-+	 * However, there may be operations which _alter_ the mapping, so ensure
-+	 * we read it once and only once.
-+	 */
-+	mapping = READ_ONCE(folio->mapping);
-+
-+	/*
-+	 * The mapping may have been truncated, in any case we cannot determine
-+	 * if this mapping is safe - fall back to slow path to determine how to
-+	 * proceed.
-+	 */
-+	if (!mapping)
-+		return false;
-+
-+	/* Anonymous folios pose no problem. */
-+	mapping_flags = (unsigned long)mapping & PAGE_MAPPING_FLAGS;
-+	if (mapping_flags)
-+		return mapping_flags & PAGE_MAPPING_ANON;
-+
-+	/*
-+	 * At this point, we know the mapping is non-null and points to an
-+	 * address_space object. The only remaining whitelisted file system is
-+	 * shmem.
-+	 */
-+	return shmem_mapping(mapping);
-+}
-+
- static void __maybe_unused undo_dev_pagemap(int *nr, int nr_start,
- 					    unsigned int flags,
- 					    struct page **pages)
-@@ -2464,6 +2541,11 @@ static int gup_pte_range(pmd_t pmd, pmd_t *pmdp, unsigned long addr,
- 			goto pte_unmap;
- 		}
- 
-+		if (!folio_fast_pin_allowed(folio, flags)) {
-+			gup_put_folio(folio, 1, flags);
-+			goto pte_unmap;
-+		}
-+
- 		if (!pte_write(pte) && gup_must_unshare(NULL, flags, page)) {
- 			gup_put_folio(folio, 1, flags);
- 			goto pte_unmap;
-@@ -2656,6 +2738,11 @@ static int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
- 		return 0;
- 	}
- 
-+	if (!folio_fast_pin_allowed(folio, flags)) {
-+		gup_put_folio(folio, refs, flags);
-+		return 0;
-+	}
-+
- 	if (!pte_write(pte) && gup_must_unshare(NULL, flags, &folio->page)) {
- 		gup_put_folio(folio, refs, flags);
- 		return 0;
-@@ -2722,6 +2809,10 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
- 		return 0;
- 	}
- 
-+	if (!folio_fast_pin_allowed(folio, flags)) {
-+		gup_put_folio(folio, refs, flags);
-+		return 0;
-+	}
- 	if (!pmd_write(orig) && gup_must_unshare(NULL, flags, &folio->page)) {
- 		gup_put_folio(folio, refs, flags);
- 		return 0;
-@@ -2762,6 +2853,11 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
- 		return 0;
- 	}
- 
-+	if (!folio_fast_pin_allowed(folio, flags)) {
-+		gup_put_folio(folio, refs, flags);
-+		return 0;
-+	}
-+
- 	if (!pud_write(orig) && gup_must_unshare(NULL, flags, &folio->page)) {
- 		gup_put_folio(folio, refs, flags);
- 		return 0;
-@@ -2797,6 +2893,11 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, unsigned long addr,
- 		return 0;
- 	}
- 
-+	if (!folio_fast_pin_allowed(folio, flags)) {
-+		gup_put_folio(folio, refs, flags);
-+		return 0;
-+	}
-+
- 	*nr += refs;
- 	folio_set_referenced(folio);
- 	return 1;
--- 
-2.40.1
+Maybe do it two steps?
 
+  1) Move pcie_retrain_link() just after pcie_wait_for_link() and make
+  it take link->pdev instead of link.
+
+  2) Add the bit parameter.
+
+I'm OK with having pcie_retrain_link() in pci.c, but the surrounding
+logic about restricting to 2.5GT/s, retraining, removing the
+restriction, retraining again is stuff I'd rather have in quirks.c so
+it doesn't clutter pci.c.
+
+I think it'd be good if the pci_device_add() path made clear that this
+is a workaround for a problem, e.g.,
+
+  void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
+  {
+    ...
+    if (pcie_link_failed(dev))
+      pcie_fix_link_train(dev);
+
+where pcie_fix_link_train() could live in quirks.c (with a stub when
+CONFIG_PCI_QUIRKS isn't enabled).  It *might* even be worth adding it
+and the stub first because that's a trivial patch and wouldn't clutter
+the probe.c git history with all the grotty details about ASM2824 and
+this topology.
+
+> +int pcie_downstream_link_retrain(struct pci_dev *dev)
+> +{
+> +	static const struct pci_device_id ids[] = {
+> +		{ PCI_VDEVICE(ASMEDIA, 0x2824) }, /* ASMedia ASM2824 */
+> +		{}
+> +	};
+> +	u16 lnksta, lnkctl2;
+> +
+> +	if (!pci_is_pcie(dev) || !pcie_downstream_port(dev) ||
+> +	    !pcie_cap_has_lnkctl2(dev) || !dev->link_active_reporting)
+> +		return -1;
+> +
+> +	pcie_capability_read_word(dev, PCI_EXP_LNKCTL2, &lnkctl2);
+> +	pcie_capability_read_word(dev, PCI_EXP_LNKSTA, &lnksta);
+> +	if ((lnksta & (PCI_EXP_LNKSTA_LBMS | PCI_EXP_LNKSTA_DLLLA)) ==
+> +	    PCI_EXP_LNKSTA_LBMS) {
+
+You go to some trouble to make sure PCI_EXP_LNKSTA_LBMS is set, and I
+can't remember what the reason is.  If you make a preparatory patch
+like this, it would give a place for that background, e.g.,
+
+  +bool pcie_link_failed(struct pci_dev *dev)
+  +{
+  +       u16 lnksta;
+  +
+  +       if (!pci_is_pcie(dev) || !pcie_downstream_port(dev) ||
+  +           !pcie_cap_has_lnkctl2(dev) || !dev->link_active_reporting)
+  +               return false;
+  +
+  +       pcie_capability_read_word(dev, PCI_EXP_LNKSTA, &lnksta);
+  +       if ((lnksta & (PCI_EXP_LNKSTA_LBMS | PCI_EXP_LNKSTA_DLLLA)) ==
+  +                       PCI_EXP_LNKSTA_LBMS)
+  +               return true;
+  +
+  +       return false;
+  +}
+
+If this is a generic thing and checking PCI_EXP_LNKSTA_LBMS makes
+sense for everybody, it could go in pci.c; otherwise it could go in
+quirks.c as well.  I guess it's not *truly* generic anyway because it
+only detects link training failures for devices that have LNKCTL2 and
+link_active_reporting.
+
+> +		unsigned long timeout;
+> +		u16 lnkctl;
+> +
+> +		pci_info(dev, "broken device, retraining non-functional downstream link at 2.5GT/s\n");
+> +
+> +		pcie_capability_read_word(dev, PCI_EXP_LNKCTL, &lnkctl);
+> +		lnkctl |= PCI_EXP_LNKCTL_RL;
+> +		lnkctl2 &= ~PCI_EXP_LNKCTL2_TLS;
+> +		lnkctl2 |= PCI_EXP_LNKCTL2_TLS_2_5GT;
+> +		pcie_capability_write_word(dev, PCI_EXP_LNKCTL2, lnkctl2);
+> +		pcie_capability_write_word(dev, PCI_EXP_LNKCTL, lnkctl);
+> +		/*
+> +		 * Due to an erratum in some devices the Retrain Link bit
+> +		 * needs to be cleared again manually to allow the link
+> +		 * training to succeed.
+> +		 */
+> +		lnkctl &= ~PCI_EXP_LNKCTL_RL;
+> +		if (dev->clear_retrain_link)
+> +			pcie_capability_write_word(dev, PCI_EXP_LNKCTL,
+> +						   lnkctl);
+> +
+> +		timeout = jiffies + PCIE_LINK_RETRAIN_TIMEOUT;
+> +		do {
+> +			pcie_capability_read_word(dev, PCI_EXP_LNKSTA,
+> +					     &lnksta);
+> +			if (lnksta & PCI_EXP_LNKSTA_DLLLA)
+> +				break;
+> +			usleep_range(10000, 20000);
+> +		} while (time_before(jiffies, timeout));
+> +
+> +		if (!(lnksta & PCI_EXP_LNKSTA_DLLLA)) {
+> +			pci_info(dev, "retraining failed\n");
+> +			return -1;
+> +		}
+> +	}
+
+> +	if (IS_ENABLED(CONFIG_PCI_QUIRKS) && (lnksta & PCI_EXP_LNKSTA_DLLLA) &&
+> +	    (lnkctl2 & PCI_EXP_LNKCTL2_TLS) == PCI_EXP_LNKCTL2_TLS_2_5GT &&
+> +	    pci_match_id(ids, dev)) {
+> +		u32 lnkcap;
+> +		u16 lnkctl;
+> +
+> +		pci_info(dev, "removing 2.5GT/s downstream link speed restriction\n");
+> +		pcie_capability_read_dword(dev, PCI_EXP_LNKCAP, &lnkcap);
+> +		pcie_capability_read_word(dev, PCI_EXP_LNKCTL, &lnkctl);
+> +		lnkctl |= PCI_EXP_LNKCTL_RL;
+> +		lnkctl2 &= ~PCI_EXP_LNKCTL2_TLS;
+> +		lnkctl2 |= lnkcap & PCI_EXP_LNKCAP_SLS;
+> +		pcie_capability_write_word(dev, PCI_EXP_LNKCTL2, lnkctl2);
+> +		pcie_capability_write_word(dev, PCI_EXP_LNKCTL, lnkctl);
+
+This starts a retrain; should we wait for training to complete?
+
+> +	}
+
+If we put most of this into a pcie_fix_link_train() (separated from
+detecting the *need* to fix something), could it be made to look
+sort of like this?  (I suppose you'd want to return bool and rename
+it that reads naturally, e.g., "pcie_link_forcibly_retrained()",
+"pcie_link_retrained()", etc)
+
+  +void pcie_fix_link_train(struct pci_dev *dev)
+  +{
+  +       u16 lnkctl2;
+  +       u32 lnkcap;
+  +       bool linkup;
+  +
+  +       pci_info(dev, "attempting link retrain at 2.5GT/s\n");
+  +       pcie_capability_read_word(dev, PCI_EXP_LNKCTL2, &lnkctl2);
+  +       lnkctl2 &= ~PCI_EXP_LNKCTL2_TLS;
+  +       lnkctl2 |= PCI_EXP_LNKCTL2_TLS_2_5GT;
+  +       pcie_capability_write_word(dev, PCI_EXP_LNKCTL2, lnkctl2);
+  +
+  +       linkup = pcie_retrain_link(dev, PCI_EXP_LNKSTA_DLLLA);
+  +       if (!linkup) {
+  +               pci_info(dev, "retraining failed\n");
+  +               return;
+  +       }
+  +
+  +       if (LNKCAP supports only 2.5GT/s)
+  +               return;
+  +
+  +       if (!pci_match_id(ids, dev))
+  +               return;
+
+Your comment said "if we know this is *safe*"; I can't remember if
+pci_match_id() is there to avoid a known problem?
+
+  +
+  +       pci_info(dev, "attempting link retrain at max supported rate\n");
+  +       pcie_capability_read_dword(dev, PCI_EXP_LNKCAP, &lnkcap);
+  +       lnkctl2 &= ~PCI_EXP_LNKCTL2_TLS;
+  +       lnkctl2 |= lnkcap & PCI_EXP_LNKCAP_SLS;
+  +       pcie_capability_write_word(dev, PCI_EXP_LNKCTL2, lnkctl2);
+  +
+  +       linkup = pcie_retrain_link(dev, PCI_EXP_LNKSTA_DLLLA);
+  +       if (!linkup)
+  +               pci_info(dev, "retraining failed\n");
+  +}
+
+> +
+> +	return 0;
+> +}
+> +
+> +/* Same as above, but called for a downstream device.  */
+> +static int pcie_upstream_link_retrain(struct pci_dev *dev)
+> +{
+> +	struct pci_dev *bridge;
+> +
+> +	bridge = pci_upstream_bridge(dev);
+> +	if (bridge)
+> +		return pcie_downstream_link_retrain(bridge);
+> +	else
+> +		return -1;
+> +}
+> +
+>  static int pci_acs_enable;
+>  
+>  /**
+> @@ -1148,8 +1274,8 @@ void pci_resume_bus(struct pci_bus *bus)
+>  
+>  static int pci_dev_wait(struct pci_dev *dev, char *reset_type, int timeout)
+>  {
+> +	int retrain = 0;
+>  	int delay = 1;
+> -	u32 id;
+>  
+>  	/*
+>  	 * After reset, the device should not silently discard config
+> @@ -1163,21 +1289,37 @@ static int pci_dev_wait(struct pci_dev *
+>  	 * Command register instead of Vendor ID so we don't have to
+>  	 * contend with the CRS SV value.
+>  	 */
+> -	pci_read_config_dword(dev, PCI_COMMAND, &id);
+> -	while (PCI_POSSIBLE_ERROR(id)) {
+> +	for (;;) {
+> +		u32 id;
+> +
+> +		pci_read_config_dword(dev, PCI_COMMAND, &id);
+> +		if (!PCI_POSSIBLE_ERROR(id)) {
+> +			if (delay > PCI_RESET_WAIT)
+> +				pci_info(dev, "ready %dms after %s\n",
+> +					 delay - 1, reset_type);
+> +			break;
+> +		}
+> +
+>  		if (delay > timeout) {
+>  			pci_warn(dev, "not ready %dms after %s; giving up\n",
+>  				 delay - 1, reset_type);
+>  			return -ENOTTY;
+>  		}
+>  
+> -		if (delay > PCI_RESET_WAIT)
+> +		if (delay > PCI_RESET_WAIT) {
+> +			if (!retrain) {
+> +				retrain = 1;
+> +				if (pcie_upstream_link_retrain(dev) == 0) {
+> +					delay = 1;
+> +					continue;
+> +				}
+> +			}
+>  			pci_info(dev, "not ready %dms after %s; waiting\n",
+>  				 delay - 1, reset_type);
+> +		}
+
+Thanks for fixing this in the reset path, too.  Can we move this part
+to a separate patch?  It's related to the rest of the patch, but it
+looks so much different that I think it would be easier to understand
+by itself.
+
+I think I might try to fold the pcie_upstream_link_retrain() directly
+in here because the "upstream link retrain" in the function name
+doesn't really make sense in PCIe terms.
+
+Bjorn
 
