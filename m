@@ -1,169 +1,157 @@
-Return-Path: <netdev+bounces-253-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-254-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D19F66F6672
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 10:00:25 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 302946F66D8
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 10:09:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 04A1E1C20FBC
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 08:00:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 68447280CE9
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 08:09:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63C564A2A;
-	Thu,  4 May 2023 08:00:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 86F5D4A31;
+	Thu,  4 May 2023 08:09:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 579F22108
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 08:00:22 +0000 (UTC)
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679182728
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 01:00:18 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id 4fb4d7f45d1cf-50bd2d7ba74so14474724a12.1
-        for <netdev@vger.kernel.org>; Thu, 04 May 2023 01:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=wetterwald-eu.20221208.gappssmtp.com; s=20221208; t=1683187216; x=1685779216;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=D/DjbZvCvofx+Tj+rLu8xubteNfMiQhOc00PCHdavuQ=;
-        b=HhckALLG2sNTpMXbgVdoUEEbC37wsx8yFCgo8A4N26tD8yqnp/IcfCpJkS0EYXdN2c
-         KP6rCr06jkCg1EhdX/oc1u0eUFswa9gFIMskGiQ2uwux6g7dPq2z8Eamy76C/zol0DlQ
-         Axlj9QYyFm06ibM9ZS2+Q3FBTomHvY5ORXbVWyMwsAJvKXNW1pe3ER8wnKFc4G2Gps7D
-         9z7Ito2tAfnJx+FhHosSjT5JdvJzg1C1Ivuovvi5Z43Rn8TQyJvwYaFa+RMGkeYo13zK
-         HWfL1Je5cjgenTT2X0gQk2ApdmnW15X9B7kFktLWAZp7K1ZZoCzUzwkJCLmDImSevBOg
-         AGzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683187216; x=1685779216;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=D/DjbZvCvofx+Tj+rLu8xubteNfMiQhOc00PCHdavuQ=;
-        b=XLqb3R89pdAKr6w0wFhtjKKgWgSbIX7vmx+MVFYZZUcYzJwDtPtU0ui3ACtjOSN49f
-         n87AGPn6tcDl1OQRqI/cFsZG6Hwhxx8egy2Jf07yUgsedpsgUuNzIQbYJUMsHtlLTGp6
-         ggX7P1hOOBR+bVEOG/I/tMCvauNmJjaYpPP1JFwwEtuXp/7uHwV4rjZbcNZ0gEaUOXhc
-         Y21PgDezU7ElH0AjxEFs74XBo1tT37oyD+mwwDsE9va+BWPtcJQcMyQqkF6UU8SMU9qx
-         M5jLKyD0pE5XJKNixEEk8KPULuvnAb4Tt8L3zEJlrVACsbUvBkQ1x664ZuZyp4Aro6aC
-         tAlg==
-X-Gm-Message-State: AC+VfDyXJGKnw+Qhhf8iHKWx3D4Gp/yBfa39jolvChUEqrZrV3YfEAYk
-	URBx27WpEyJDOTwOBpN4/IGtCkYkgOeqbM67CY2bXQ==
-X-Google-Smtp-Source: ACHHUZ4alPbKmCmqk6Lpl1JEvX8t6ilAV08qMfCljgdTdr4QswmON1TfYxPtihfgVwxrirPldzTk2j1f5QGQre5+Btc=
-X-Received: by 2002:a17:906:9b8b:b0:953:483e:93f8 with SMTP id
- dd11-20020a1709069b8b00b00953483e93f8mr4098119ejc.16.1683187215795; Thu, 04
- May 2023 01:00:15 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A1964A2E
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 08:09:50 +0000 (UTC)
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2062.outbound.protection.outlook.com [40.107.105.62])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4167448C;
+	Thu,  4 May 2023 01:09:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mIBM7SWA4ERZc15X9hD8khSPHQKb6BBXr84UXV9MNoPg0VxlkKkDVj6ax0pyjRHgzNBD2oh3advHrK4/SNO4fZBvA4ruoFabk92j0d75toPOs8PDCL4MToP4BuQ/sObRvBqWMsCgvALxpFGzKXCIcIVZyGZGC+k/bd3oDQLaUAGhzMcf5TKGINy//gCYmXsnO+ofs0Z5l6cvfPYu/zx5tGHHh/AUCVTiQDT6OSZjkacZ0aU8RmhdDkr/NSM0OvT8LLfqpuEdLOXwzljsI35jxnlJKehd1B0JpTzf+jvIeYqs9MVGcJKzIWfQJ6mkx1ApimQ+zbldbM47J8tYFUyjXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CHIq+GJR8HtVKUjGFYRG1IaqZqVQFVcMcS1xAyAeam0=;
+ b=KZel5r/t6+hX9fCMxLuWIUUyrKwn5+dLYANX7QFSSOSMfQPfaub80M9MbauV4NQdZdkjUQH5U+eC6C34qFSHHohzwv1fRZjrZ3JZUhoMJd7O594mXY8ayX8FHrgPO77tN/tPNkcCSj/v4huBnd5MdNv4bAXJeVTjiNovkv2aBsxVotskKBhwfFE/VTFhKAcsw8bS+XYy2IqBOcoGxW3uW0QId/yeWH4KZnsacQJQNzUznXbT0AFehyTZ4n7FdOFE3rC0bHmBff5x1a242kBVj4J2EmQxMahoCjdyDJbyKbFTK2ulIbd2Uk11zMYVSx+XODHyGbsmd3PXAMoRRNQvoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CHIq+GJR8HtVKUjGFYRG1IaqZqVQFVcMcS1xAyAeam0=;
+ b=FMIVqNDIMC7n9q3nwRGcbAErZusOIZkLVHk9cZXh2VTUsScj+hrNqMyOJdn6PYYHSxv3cWZrTgg44O5UdPQWq2fagFWrnL6cbxYeXi2G4xO5fUjHbWPiMGskBpblMwMci4/n3o1OC52kYer0KZt2Ku6knvJPSDKBi9zGPQ7ivVE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM5PR04MB3139.eurprd04.prod.outlook.com (2603:10a6:206:8::20)
+ by PAWPR04MB9805.eurprd04.prod.outlook.com (2603:10a6:102:37e::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.22; Thu, 4 May
+ 2023 08:09:46 +0000
+Received: from AM5PR04MB3139.eurprd04.prod.outlook.com
+ ([fe80::c559:9b57:14ef:ac7]) by AM5PR04MB3139.eurprd04.prod.outlook.com
+ ([fe80::c559:9b57:14ef:ac7%4]) with mapi id 15.20.6340.031; Thu, 4 May 2023
+ 08:09:46 +0000
+From: wei.fang@nxp.com
+To: claudiu.manoil@nxp.com,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: enetc: check the index of the SFI rather than the handle
+Date: Thu,  4 May 2023 16:03:59 +0800
+Message-Id: <20230504080400.3036266-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0002.apcprd02.prod.outlook.com
+ (2603:1096:3:17::14) To AM5PR04MB3139.eurprd04.prod.outlook.com
+ (2603:10a6:206:8::20)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAFERDQ1yq=jBGu8e2qJeoNFYmKt4jeB835efsYMxGLbLf4cfbQ@mail.gmail.com>
- <20230503195112.23adbe7b@kernel.org>
-In-Reply-To: <20230503195112.23adbe7b@kernel.org>
-From: Martin Wetterwald <martin@wetterwald.eu>
-Date: Thu, 4 May 2023 10:00:04 +0200
-Message-ID: <CAFERDQ3hgA490w2zWmiDQu-HfA-DLWWkL4s8z4iZAPwPZvw=LA@mail.gmail.com>
-Subject: [PATCH v2] net: ipconfig: Allow DNS to be overwritten by DHCPACK
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: davem@davemloft.net, dsahern@kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM5PR04MB3139:EE_|PAWPR04MB9805:EE_
+X-MS-Office365-Filtering-Correlation-Id: 439bf16e-ca75-4fc3-9bf3-08db4c76ec7b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Gx4CravZ0V5KMp0LSNFAeuO+KpMqFcKTqonnp7s7QqKXalvm0lNUqg3st5crhKsG23oEc4X7GiQlQAYGmd/plKm59qP5R4T0weI7yQdJ8vkaGORLGmM3osaHv6w7rCfEpi443/9xDtb6yIrCFednow/nIgdETzvHoyoAI/mher+0OzsXHdOF7vG+mrhzw50thsI9hDsocrwZb0MDUPObRmSDuhOmblrWB4FjIpMZ6uFLpW5LjfElp9mgFFh1DY4MmbgfInHrjPARZgC+j2Qc/FwpLONuutLTAhW+8aa082jsLH4ZfVXFwJt130LH5R35KaWfk8FhjgrnufyOX01gXd39/EcRIvhx3qbhCkuTQn8/Eg9McEm70sYscz1PxkYDoNOUvEiHBHrkN9buZYOMIU26z/I5QC9l9anQ6ryrZp6sIcMjbCWykgu2CV9Dt3ZArFus27fMW+B842qByIIn5XjOkwBgsKIMayzSdHT13MZzeD4+H0kEvxR1Mg5kgpk6BzpCRtijf/oGkBd0s3omjNcRaigOa82TCoiulhDBpHTj6WX4IWxpIzC6KgXTdfhKx30GWVozqeIc9+9gb9gBJpUCO2QlRJsaTvtVjiNEowGaL3CUXohk1YmFlQloFp/S
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM5PR04MB3139.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(136003)(376002)(366004)(346002)(451199021)(2906002)(38100700002)(38350700002)(9686003)(1076003)(2616005)(6506007)(26005)(6512007)(186003)(83380400001)(36756003)(8676002)(8936002)(5660300002)(316002)(6666004)(86362001)(478600001)(52116002)(6486002)(4326008)(41300700001)(66476007)(66946007)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Xb36fZhFQtDAckl8RAisjMOJNnrcA+TRm+kW0aRmcorNlbuIII+tR1G2ENwb?=
+ =?us-ascii?Q?IJrYTnmYcK0OWka2VSuhoBV72BGC2nYTSDp1pXoYIu0T/NNcv3I+W925x4Gm?=
+ =?us-ascii?Q?c2xjaeBUw/OlCciu0l79Cx3RbxBMvH4yjsnwHeg5r7Wr39wxGGPeMSwY911o?=
+ =?us-ascii?Q?hoGvTFkXbe9yXthFjAtv6swScDV79h9Yb3vAfF+Bfc5xRWZFkZnSbNsjb27v?=
+ =?us-ascii?Q?DhjUCunJrkJYqwWYlru+JCUqIV5eh9qfi50v44RsqPNbTEbrCsx/d2XVcxUL?=
+ =?us-ascii?Q?NKAnX9REtBj7TB7K2sw5Rvb2vbnkKwwTh+Mtgp5Qrn2YDR2mTmRHVOkZ4+QJ?=
+ =?us-ascii?Q?KDsxmZEH0WEPdBC1+GPHmoQ4Le6dOhLn+j7kv637903eUMepIFQjscdZcN3Y?=
+ =?us-ascii?Q?0bPSQv+FeHyW3eoNbzGzmBgxxBTaWh2B0BE3z1+G2k1gfTmjuoD73PGV0+KX?=
+ =?us-ascii?Q?aq2cp+cIQJObyyfbbvWKC7ZTPnp0FZYpF64HoMqBxanqYOSeJ8HnMyJ8mlG3?=
+ =?us-ascii?Q?gC+JkcjbY9ppRM46Rb7Xov395CAGuOpW1ePpeaI/XJjqlL2Q+tBMqYeHGQ7Z?=
+ =?us-ascii?Q?Mx64578c73ukICO6r4TzqKFNf/HMufekuYTVuijgLnUUdo6VsMXrTPPR+O/r?=
+ =?us-ascii?Q?g1x6KQSiaiRzE7DQPYhE5PPF97uMHUd/sNb5rd8CUFyKrl0pvjqp6AdPzFej?=
+ =?us-ascii?Q?ql0exIPqaRu9Qn80ZLltxSE/abpJjTpMFa1ns5Y7Ew37HnHdknr7cNSa4ohR?=
+ =?us-ascii?Q?5ijFej0CBbjwLb5Gl0vHUt2PCAmpggKzDtjTh7T4kZFcM0XPQRsShWbfq5os?=
+ =?us-ascii?Q?ngQ3njvYO+q4GCCOds7+ZaHZRCQy56A9WXViZcqRJKpZ/XaldG0zPTnfocZu?=
+ =?us-ascii?Q?2iXsc757bMagd/24T9WPTSYORVL0l9cSsesb/rF+np7aVWoNAJb3+AXkIE0Z?=
+ =?us-ascii?Q?IpzOWieEPvxDAj4uY1NMsfFXQzI2bPq6+iYvScH2B5OI3DV/RhZkL0CQUSVY?=
+ =?us-ascii?Q?C7EtSPcImoIGqc8viAzFnGWjpGRL1E653dkogTdbZ3PglS8MjWf7bu2JppBS?=
+ =?us-ascii?Q?t20FFQYDURMJnQbhAOLdGuSy9qHEVUhoQJfsJOLQYivPkxQRxs0u3bbdjjzy?=
+ =?us-ascii?Q?jcTp9xjhd+etn3tsR9sS+cBG6+CWEvAODQLIA3vy/cNcZm3tD0I72LZyCrwy?=
+ =?us-ascii?Q?GvrqE8Fm+VxUu7pbi1SXKQR+xLQb8V16NgAp9Mwutu5lAzorBAckvo1fK+ZH?=
+ =?us-ascii?Q?nlLmufCLPE7xvy9/vU+DL0lWHGozJ0GTEMHZjeBzxCeYl/yvWbJV+2fjN4uO?=
+ =?us-ascii?Q?oOgSWls/ZZRjRbgojseScJA/a7IKkWn6Ejcb8DlIbxu5USDCFF10VBuKSW0q?=
+ =?us-ascii?Q?zQk9Y4NiLFDtqZEjWq5VRsvOSoNvh4c60JzaLGGfnmU+2agFz2n1L0PnVp65?=
+ =?us-ascii?Q?ScWJxBuLK6J68Lz+9whoo3r3T6hlivMo4R8Sjt1LBD/GD0GbRx4JleiQaHBZ?=
+ =?us-ascii?Q?v6hsxvnxO2r2fCOU1/glFu8zdPJ0xzlLZA7ZM2wp5pBhBnHNkVUisoFQqLLn?=
+ =?us-ascii?Q?U/sudl1c80f/vNEI4GwEAcxY2xPMmrRXCl1SmTyB?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 439bf16e-ca75-4fc3-9bf3-08db4c76ec7b
+X-MS-Exchange-CrossTenant-AuthSource: AM5PR04MB3139.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 08:09:46.3860
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IwoCi5EYLQOdthe/tuKO7KqAgVIinY6FCa40IhozkWsvZfSXSqcg4btk5OMuvwtFpojWCtAbRBI1cAMA9+O35A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR04MB9805
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Some DHCP server implementations only send the important requested DHCP
-options in the final BOOTP reply (DHCPACK).
-One example is systemd-networkd.
-However, RFC2131, in section 4.3.1 states:
+From: Wei Fang <wei.fang@nxp.com>
 
-> The server MUST return to the client:
-> [...]
-> o Parameters requested by the client, according to the following
->   rules:
->
->      -- IF the server has been explicitly configured with a default
->         value for the parameter, the server MUST include that value
->         in an appropriate option in the 'option' field, ELSE
+We should check whether the current SFI (Stream Filter Instance) table
+is full before creating a new SFI entry. However, the previous logic
+checks the handle by mistake and might lead to unpredictable behavior.
 
-I've reported the issue here:
-https://github.com/systemd/systemd/issues/27471
-
-Linux PNP DHCP client implementation only takes into account the DNS
-servers received in the first BOOTP reply (DHCPOFFER).
-This usually isn't an issue as servers are required to put the same
-values in the DHCPOFFER and DHCPACK.
-However, RFC2131, in section 4.3.2 states:
-
-> Any configuration parameters in the DHCPACK message SHOULD NOT
-> conflict with those in the earlier DHCPOFFER message to which the
-> client is responding.  The client SHOULD use the parameters in the
-> DHCPACK message for configuration.
-
-When making Linux PNP DHCP client (cmdline ip=dhcp) interact with
-systemd-networkd DHCP server, an interesting "protocol misunderstanding"
-happens:
-Because DNS servers were only specified in the DHCPACK and not in the
-DHCPOFFER, Linux will not catch the correct DNS servers: in the first
-BOOTP reply (DHCPOFFER), it sees that there is no DNS, and sets as
-fallback the IP of the DHCP server itself. When the second BOOTP reply
-comes (DHCPACK), it's already too late: the kernel will not overwrite
-the fallback setting it has set previously.
-
-This patch makes the kernel overwrite its fallback DNS by DNS servers
-specified in the DHCPACK if any.
+Fixes: 888ae5a3952b ("net: enetc: add tc flower psfp offload driver")
+Signed-off-by: Wei Fang <wei.fang@nxp.com>
 ---
-v2:
-  - Only overwrite DNS servers if it was the fallback DNS.
+ drivers/net/ethernet/freescale/enetc/enetc_qos.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- net/ipv4/ipconfig.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
-index e90bc0aa85c7..aa90273073c1 100644
---- a/net/ipv4/ipconfig.c
-+++ b/net/ipv4/ipconfig.c
-@@ -179,6 +179,9 @@ static volatile int ic_got_reply __initdata;    /*
-Proto(s) that replied */
- #endif
- #ifdef IPCONFIG_DHCP
- static int ic_dhcp_msgtype __initdata;    /* DHCP msg type received */
-+
-+/* DHCPACK can overwrite DNS if fallback was set upon first BOOTP reply */
-+static int ic_nameservers_fallback __initdata;
- #endif
-
-
-@@ -938,7 +941,12 @@ static void __init ic_do_bootp_ext(u8 *ext)
-         if (servers > CONF_NAMESERVERS_MAX)
-             servers = CONF_NAMESERVERS_MAX;
-         for (i = 0; i < servers; i++) {
-+#ifdef IPCONFIG_DHCP
-+            if (ic_nameservers[i] == NONE ||
-+                ic_nameservers_fallback)
-+#else
-             if (ic_nameservers[i] == NONE)
-+#endif
-                 memcpy(&ic_nameservers[i], ext+1+4*i, 4);
-         }
-         break;
-@@ -1158,8 +1166,12 @@ static int __init ic_bootp_recv(struct sk_buff
-*skb, struct net_device *dev, str
-     ic_addrservaddr = b->iph.saddr;
-     if (ic_gateway == NONE && b->relay_ip)
-         ic_gateway = b->relay_ip;
--    if (ic_nameservers[0] == NONE)
-+    if (ic_nameservers[0] == NONE) {
-         ic_nameservers[0] = ic_servaddr;
-+#ifdef IPCONFIG_DHCP
-+        ic_nameservers_fallback = 1;
-+#endif
-+    }
-     ic_got_reply = IC_BOOTP;
-
- drop_unlock:
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+index 130ebf6853e6..83c27bbbc6ed 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+@@ -1247,7 +1247,7 @@ static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
+ 		int index;
+ 
+ 		index = enetc_get_free_index(priv);
+-		if (sfi->handle < 0) {
++		if (index < 0) {
+ 			NL_SET_ERR_MSG_MOD(extack, "No Stream Filter resource!");
+ 			err = -ENOSPC;
+ 			goto free_fmi;
 -- 
-2.40.1
+2.25.1
+
 
