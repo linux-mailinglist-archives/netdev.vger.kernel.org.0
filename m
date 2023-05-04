@@ -1,52 +1,58 @@
-Return-Path: <netdev+bounces-433-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-434-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C42116F76B9
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:14:11 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 211F76F76BD
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:14:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CC17D1C21505
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:14:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DFCF128103A
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:14:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C7971118E;
-	Thu,  4 May 2023 19:50:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 84E8B11199;
+	Thu,  4 May 2023 19:50:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4418411183
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F7D8C43322;
-	Thu,  4 May 2023 19:50:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC66711183
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:50:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F5E1C433A1;
+	Thu,  4 May 2023 19:50:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229834;
-	bh=t0cKe2cHOnGAtsQCasBMgUnSszKnn56mYy16TcMhNkk=;
+	s=k20201202; t=1683229836;
+	bh=DyWMNvOJp0id+Tv6ElaHdFkRkTOFDlqeM3fbyRlkDRg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=iP1XAdaFx5GRIge9jZHkk8wpwA/PNBmfYRCnwab1cxRDtXdadgGRcfuq0YJyzxAgY
-	 d3vp70ewPmrumyM5WsY/vHZ6Z39bD6/oseSYuczdGG1UCofxaIMcv3h5LZutbtceiO
-	 VuCLI7VgudMZMQ89/nvtrTM5qr9zWDEceMDXjd4cpBl9b8xgOs3FsJ10V3xLq6Or/k
-	 6THtArwquSJTFUQnGye//FuEZ4fKMDP09i1YHCWR8fIj2ltbvNB+Yw3rX7mxY2ZIe2
-	 72eTqHFq8mCimc1Njsp21KL2qWUhEGSFWczj/a+aefbM9cRSB6kpLnjA4038vsniub
-	 McAATKj2m5npw==
+	b=QWX/jr0ZF7pt53oFNX9b3X39GZvUAmc1ATTyGp1HocZQ0St0oL2oGLH47QcP9PP+e
+	 0MMVGsEvv3fle5F8Wm0Yl9RyKBc3foid8PPEVTIrhTuBRTf62rg0TZiydCVkN0T9Na
+	 lOVaAN56FGhSLvLkUlPpPZRFvjL9DWNUZrAJl6q23llr/Lbe35Mx3AHbMVU5Iaahxm
+	 Ax/c0FDPDcCBkJcf6lkPqFZ7gUH1WNuRymB+CYrRChLLSS4kJIbHcif2NU+DvmjwXf
+	 +EoU8k8N0eKykJzWHRyO68Eys7xRfc2iMmf+1iTv7jw3SBCkr/bqVFRUpTysJAvi6r
+	 faQnzUG5rKhQw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Nagarajan Maran <quic_nmaran@quicinc.com>,
-	Kalle Valo <quic_kvalo@quicinc.com>,
+Cc: Simon Horman <horms@kernel.org>,
+	Horatiu Vultur <horatiu.vultur@microchip.com>,
+	Pablo Neira Ayuso <pablo@netfilter.org>,
 	Sasha Levin <sashal@kernel.org>,
-	kvalo@kernel.org,
 	davem@davemloft.net,
+	dsahern@kernel.org,
+	horms@verge.net.au,
+	ja@ssi.bg,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	ath11k@lists.infradead.org,
-	linux-wireless@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 21/24] wifi: ath11k: Fix SKB corruption in REO destination ring
-Date: Thu,  4 May 2023 15:49:34 -0400
-Message-Id: <20230504194937.3808414-21-sashal@kernel.org>
+	kadlec@netfilter.org,
+	fw@strlen.de,
+	netdev@vger.kernel.org,
+	lvs-devel@vger.kernel.org,
+	netfilter-devel@vger.kernel.org,
+	coreteam@netfilter.org
+Subject: [PATCH AUTOSEL 5.10 22/24] ipvs: Update width of source for ip_vs_sync_conn_options
+Date: Thu,  4 May 2023 15:49:35 -0400
+Message-Id: <20230504194937.3808414-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194937.3808414-1-sashal@kernel.org>
 References: <20230504194937.3808414-1-sashal@kernel.org>
@@ -60,78 +66,88 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Nagarajan Maran <quic_nmaran@quicinc.com>
+From: Simon Horman <horms@kernel.org>
 
-[ Upstream commit f9fff67d2d7ca6fa8066132003a3deef654c55b1 ]
+[ Upstream commit e3478c68f6704638d08f437cbc552ca5970c151a ]
 
-While running traffics for a long time, randomly an RX descriptor
-filled with value "0" from REO destination ring is received.
-This descriptor which is invalid causes the wrong SKB (SKB stored in
-the IDR lookup with buffer id "0") to be fetched which in turn
-causes SKB memory corruption issue and the same leads to crash
-after some time.
+In ip_vs_sync_conn_v0() copy is made to struct ip_vs_sync_conn_options.
+That structure looks like this:
 
-Changed the start id for idr allocation to "1" and the buffer id "0"
-is reserved for error validation. Introduced Sanity check to validate
-the descriptor, before processing the SKB.
+struct ip_vs_sync_conn_options {
+        struct ip_vs_seq        in_seq;
+        struct ip_vs_seq        out_seq;
+};
 
-Crash Signature :
+The source of the copy is the in_seq field of struct ip_vs_conn.  Whose
+type is struct ip_vs_seq. Thus we can see that the source - is not as
+wide as the amount of data copied, which is the width of struct
+ip_vs_sync_conn_option.
 
-Unable to handle kernel paging request at virtual address 3f004900
-PC points to "b15_dma_inv_range+0x30/0x50"
-LR points to "dma_cache_maint_page+0x8c/0x128".
-The Backtrace obtained is as follows:
-[<8031716c>] (b15_dma_inv_range) from [<80313a4c>] (dma_cache_maint_page+0x8c/0x128)
-[<80313a4c>] (dma_cache_maint_page) from [<80313b90>] (__dma_page_dev_to_cpu+0x28/0xcc)
-[<80313b90>] (__dma_page_dev_to_cpu) from [<7fb5dd68>] (ath11k_dp_process_rx+0x1e8/0x4a4 [ath11k])
-[<7fb5dd68>] (ath11k_dp_process_rx [ath11k]) from [<7fb53c20>] (ath11k_dp_service_srng+0xb0/0x2ac [ath11k])
-[<7fb53c20>] (ath11k_dp_service_srng [ath11k]) from [<7f67bba4>] (ath11k_pci_ext_grp_napi_poll+0x1c/0x78 [ath11k_pci])
-[<7f67bba4>] (ath11k_pci_ext_grp_napi_poll [ath11k_pci]) from [<807d5cf4>] (__napi_poll+0x28/0xb8)
-[<807d5cf4>] (__napi_poll) from [<807d5f28>] (net_rx_action+0xf0/0x280)
-[<807d5f28>] (net_rx_action) from [<80302148>] (__do_softirq+0xd0/0x280)
-[<80302148>] (__do_softirq) from [<80320408>] (irq_exit+0x74/0xd4)
-[<80320408>] (irq_exit) from [<803638a4>] (__handle_domain_irq+0x90/0xb4)
-[<803638a4>] (__handle_domain_irq) from [<805bedec>] (gic_handle_irq+0x58/0x90)
-[<805bedec>] (gic_handle_irq) from [<80301a78>] (__irq_svc+0x58/0x8c)
+The copy is safe because the next field in is another struct ip_vs_seq.
+Make use of struct_group() to annotate this.
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
+Flagged by gcc-13 as:
 
-Signed-off-by: Nagarajan Maran <quic_nmaran@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20230403191533.28114-1-quic_nmaran@quicinc.com
+ In file included from ./include/linux/string.h:254,
+                  from ./include/linux/bitmap.h:11,
+                  from ./include/linux/cpumask.h:12,
+                  from ./arch/x86/include/asm/paravirt.h:17,
+                  from ./arch/x86/include/asm/cpuid.h:62,
+                  from ./arch/x86/include/asm/processor.h:19,
+                  from ./arch/x86/include/asm/timex.h:5,
+                  from ./include/linux/timex.h:67,
+                  from ./include/linux/time32.h:13,
+                  from ./include/linux/time.h:60,
+                  from ./include/linux/stat.h:19,
+                  from ./include/linux/module.h:13,
+                  from net/netfilter/ipvs/ip_vs_sync.c:38:
+ In function 'fortify_memcpy_chk',
+     inlined from 'ip_vs_sync_conn_v0' at net/netfilter/ipvs/ip_vs_sync.c:606:3:
+ ./include/linux/fortify-string.h:529:25: error: call to '__read_overflow2_field' declared with attribute warning: detected read beyond size of field (2nd parameter); maybe use struct_group()? [-Werror=attribute-warning]
+   529 |                         __read_overflow2_field(q_size_field, size);
+       |
+
+Compile tested only.
+
+Signed-off-by: Simon Horman <horms@kernel.org>
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp_rx.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ include/net/ip_vs.h             | 6 ++++--
+ net/netfilter/ipvs/ip_vs_sync.c | 2 +-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 578fdc446bc03..583bcf148403b 100644
---- a/drivers/net/wireless/ath/ath11k/dp_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -324,10 +324,10 @@ int ath11k_dp_rxbufs_replenish(struct ath11k_base *ab, int mac_id,
- 			goto fail_free_skb;
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index d609e957a3ec0..c02c3bb0fe091 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -549,8 +549,10 @@ struct ip_vs_conn {
+ 	 */
+ 	struct ip_vs_app        *app;           /* bound ip_vs_app object */
+ 	void                    *app_data;      /* Application private data */
+-	struct ip_vs_seq        in_seq;         /* incoming seq. struct */
+-	struct ip_vs_seq        out_seq;        /* outgoing seq. struct */
++	struct_group(sync_conn_opt,
++		struct ip_vs_seq  in_seq;       /* incoming seq. struct */
++		struct ip_vs_seq  out_seq;      /* outgoing seq. struct */
++	);
  
- 		spin_lock_bh(&rx_ring->idr_lock);
--		buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 0,
--				   rx_ring->bufs_max * 3, GFP_ATOMIC);
-+		buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 1,
-+				   (rx_ring->bufs_max * 3) + 1, GFP_ATOMIC);
- 		spin_unlock_bh(&rx_ring->idr_lock);
--		if (buf_id < 0)
-+		if (buf_id <= 0)
- 			goto fail_dma_unmap;
+ 	const struct ip_vs_pe	*pe;
+ 	char			*pe_data;
+diff --git a/net/netfilter/ipvs/ip_vs_sync.c b/net/netfilter/ipvs/ip_vs_sync.c
+index daab857c52a80..fc8db03d3efca 100644
+--- a/net/netfilter/ipvs/ip_vs_sync.c
++++ b/net/netfilter/ipvs/ip_vs_sync.c
+@@ -603,7 +603,7 @@ static void ip_vs_sync_conn_v0(struct netns_ipvs *ipvs, struct ip_vs_conn *cp,
+ 	if (cp->flags & IP_VS_CONN_F_SEQ_MASK) {
+ 		struct ip_vs_sync_conn_options *opt =
+ 			(struct ip_vs_sync_conn_options *)&s[1];
+-		memcpy(opt, &cp->in_seq, sizeof(*opt));
++		memcpy(opt, &cp->sync_conn_opt, sizeof(*opt));
+ 	}
  
- 		desc = ath11k_hal_srng_src_get_next_entry(ab, srng);
-@@ -2564,6 +2564,9 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
- 				   cookie);
- 		mac_id = FIELD_GET(DP_RXDMA_BUF_COOKIE_PDEV_ID, cookie);
- 
-+		if (unlikely(buf_id == 0))
-+			continue;
-+
- 		ar = ab->pdevs[mac_id].ar;
- 		rx_ring = &ar->dp.rx_refill_buf_ring;
- 		spin_lock_bh(&rx_ring->idr_lock);
+ 	m->nr_conns++;
 -- 
 2.39.2
 
