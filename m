@@ -1,48 +1,55 @@
-Return-Path: <netdev+bounces-399-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-400-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B31936F75D2
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:02:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 817A86F75F0
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:03:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0DCF71C214CF
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:02:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8524328101A
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:02:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 028E711C9D;
-	Thu,  4 May 2023 19:47:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8998511CBB;
+	Thu,  4 May 2023 19:47:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85E3211C96
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:47:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F8AC4339E;
-	Thu,  4 May 2023 19:47:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC8BC11C95
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:47:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 218C7C4339B;
+	Thu,  4 May 2023 19:47:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229622;
-	bh=rBaENMPcYH9khGCnR9G8YZifplk6iDBMO+D/7Fp0kkc=;
+	s=k20201202; t=1683229654;
+	bh=tUeLxEpG/h++lckzMpmkZHbKYJMZxZK9Sx2cU7BImo4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=T2GAaN8uS9LASk+7hqDtxroBxlHyf+aytQQquk837rHHXtW2yyQcQ8TGW8GKK+8uK
-	 qjfxQ9WAC95Q2AvwPZtMSYylqc8Jd0kerqSoW88muqSWsY0ItGq70d64Tksop2ukaw
-	 vcHtAsYe4fF+HWG+A4KNglTopgh4iKtaCJpiubNGraF/1lPC9jRMWRwXe3rLtwEIJ1
-	 8NP4Y/4CI0fRBIXiKPCO1vNbhEC3MKBziot8QyMLzr1z2PI69SAHz1a5GyfRGBuFL3
-	 vSTjJ0kfC1Tgh00ecH5FTF9kLeJr/K+F3JyHK0b7TrsL3PdAg/bIle18u9aA9iufn+
-	 7xHvQrsvGfa+g==
+	b=FG5S+nD/Pj2jryJx5ke9bw+pbdkTDHCjTTgZw+2lIhdUCTyAdkInk5mHB3tQpD7DK
+	 vyZrAwyoA0ez+n6+ggCFk6dlObMsPNiK3IoGssPUKoOgYmLPskVNU7Zip9AoAGAd2J
+	 odMqZCU6UEz7iAYsm2c+hMB+Uzx1c53PFvuQgUypyu4rcl86VPQ1qTBgyOuYLTgUmb
+	 70M4KfvRR9b+w1lzL4oz/HUIfkkEFkIKJiJAsFGyrJwJ29YmbQ1QBLctXb8sxHjkxZ
+	 8jlI/uSjJQSKgo0RLqCv4RTx4QSNRldO7yPVeopmauPdqj34ZJR1kd8VUafh0osspi
+	 PYvvW4aqZtcjQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Nick Child <nnac123@linux.ibm.com>,
-	Jakub Kicinski <kuba@kernel.org>,
+Cc: Daniel Gabay <daniel.gabay@intel.com>,
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Johannes Berg <johannes.berg@intel.com>,
 	Sasha Levin <sashal@kernel.org>,
+	kvalo@kernel.org,
 	davem@davemloft.net,
 	edumazet@google.com,
+	kuba@kernel.org,
 	pabeni@redhat.com,
+	mukesh.sisodiya@intel.com,
+	yaara.baruch@intel.com,
+	golan.ben.ami@intel.com,
+	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 13/49] netdev: Enforce index cap in netdev_get_tx_queue
-Date: Thu,  4 May 2023 15:45:50 -0400
-Message-Id: <20230504194626.3807438-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 28/49] wifi: iwlwifi: pcie: fix possible NULL pointer dereference
+Date: Thu,  4 May 2023 15:46:05 -0400
+Message-Id: <20230504194626.3807438-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194626.3807438-1-sashal@kernel.org>
 References: <20230504194626.3807438-1-sashal@kernel.org>
@@ -56,38 +63,54 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Nick Child <nnac123@linux.ibm.com>
+From: Daniel Gabay <daniel.gabay@intel.com>
 
-[ Upstream commit 1cc6571f562774f1d928dc8b3cff50829b86e970 ]
+[ Upstream commit b655b9a9f8467684cfa8906713d33b71ea8c8f54 ]
 
-When requesting a TX queue at a given index, warn on out-of-bounds
-referencing if the index is greater than the allocated number of
-queues.
+It is possible that iwl_pci_probe() will fail and free the trans,
+then afterwards iwl_pci_remove() will be called and crash by trying
+to access trans which is already freed, fix it.
 
-Specifically, since this function is used heavily in the networking
-stack use DEBUG_NET_WARN_ON_ONCE to avoid executing a new branch on
-every packet.
+iwlwifi 0000:01:00.0: Detected crf-id 0xa5a5a5a2, cnv-id 0xa5a5a5a2
+		      wfpm id 0xa5a5a5a2
+iwlwifi 0000:01:00.0: Can't find a correct rfid for crf id 0x5a2
+...
+BUG: kernel NULL pointer dereference, address: 0000000000000028
+...
+RIP: 0010:iwl_pci_remove+0x12/0x30 [iwlwifi]
+pci_device_remove+0x3e/0xb0
+device_release_driver_internal+0x103/0x1f0
+driver_detach+0x4c/0x90
+bus_remove_driver+0x5c/0xd0
+driver_unregister+0x31/0x50
+pci_unregister_driver+0x40/0x90
+iwl_pci_unregister_driver+0x15/0x20 [iwlwifi]
+__exit_compat+0x9/0x98 [iwlwifi]
+__x64_sys_delete_module+0x147/0x260
 
-Signed-off-by: Nick Child <nnac123@linux.ibm.com>
-Link: https://lore.kernel.org/r/20230321150725.127229-2-nnac123@linux.ibm.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Daniel Gabay <daniel.gabay@intel.com>
+Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
+Link: https://lore.kernel.org/r/20230413213309.082f6e21341b.I0db21d7fa9a828d571ca886713bd0b5d0b6e1e5c@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdevice.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index b072449b0f1ac..eac51e22a52a8 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2428,6 +2428,7 @@ static inline
- struct netdev_queue *netdev_get_tx_queue(const struct net_device *dev,
- 					 unsigned int index)
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index 4f699862e7f73..9c8908526194b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -1686,6 +1686,9 @@ static void iwl_pci_remove(struct pci_dev *pdev)
  {
-+	DEBUG_NET_WARN_ON_ONCE(index >= dev->num_tx_queues);
- 	return &dev->_tx[index];
- }
+ 	struct iwl_trans *trans = pci_get_drvdata(pdev);
  
++	if (!trans)
++		return;
++
+ 	iwl_drv_stop(trans->drv);
+ 
+ 	iwl_trans_pcie_free(trans);
 -- 
 2.39.2
 
