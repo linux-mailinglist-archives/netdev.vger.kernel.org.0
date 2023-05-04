@@ -1,123 +1,158 @@
-Return-Path: <netdev+bounces-332-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-333-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BFAE56F71DE
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:21:48 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2E3F26F71FB
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:34:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7B960280D94
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 18:21:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CE157280E26
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 18:34:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 344FCBE6C;
-	Thu,  4 May 2023 18:21:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8881279FA;
+	Thu,  4 May 2023 18:34:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27EBDBA36
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 18:21:31 +0000 (UTC)
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A9F6A72
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 11:21:29 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-192adab8f0eso738923fac.2
-        for <netdev@vger.kernel.org>; Thu, 04 May 2023 11:21:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1683224489; x=1685816489;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cH146kBq5tGDwGlMfHStcSePjRBn5Pd4S2x8wbLQlaA=;
-        b=1gJ1XEIMcqlAkxjfgvUrA6rTDoVRyPif8+JJEPG0qupdPvQ8YfpR0OWpNTbrOViOBu
-         TR/3Zo8mlLk4OGSFMIe8q5kT4dICBx9EalYrcsXVmp42MasWn8zWU4f+qvkBdky9ZJhF
-         dKzH6WOqlmMvXOR6P04yGL48SH+y6TqB8rq38nDcTcb9vy2iq2Wg2lYkuPGiuTP0UfTK
-         vPQUDaBEHys5ejsk24YfcOFdk9AIYVdy10z24RH2jQQts3Ln1EVLqxDwKwOAoMHV9nh4
-         T2b7SkVkwMCYbTI9q4oNgP6cTuGGVhLNXNAEV8IHBL+UlO3GRXIF3BMSs7txuLbZbWOZ
-         ohTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683224489; x=1685816489;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cH146kBq5tGDwGlMfHStcSePjRBn5Pd4S2x8wbLQlaA=;
-        b=N7RIIpr828q4vHCG+qapfDdC3pe4ZdSR7AKAhzNgcLCCtHhDQldVrEaxVdIKLYrAhh
-         wd8wj2kWxfBlrM2uQEkFvMAbVWzIuaJba+Pzjlxfr2mX45jmV1urFj2Q9SSa5uiSTGcE
-         CeSjAxadKb1BDAGKzJKk5KNiWcUj1u6/KK02xYa8yMFxeOQck7SeFjptOuuWV4uP0laZ
-         iIfpuLiS/tQeL+OTP1LJDU9OG7FPhe6uOvt7Aql5pUArdqjoKvsXwpnzw35h4QEQupCi
-         MVgLsObSUGK76Zwhh1cR314jc02QCDNTQfTkgGhkA5o/HUK6NaKoxIJ4fphRKYfwxhOz
-         4jJA==
-X-Gm-Message-State: AC+VfDx/ma6Ei8zRN1+lpF8IJSD68avN/SXuvwetKthk2nD8qLya2sh5
-	q5xaV3gy4cBpAtAe+4a8WREgAZvNv7ragDnaJaU=
-X-Google-Smtp-Source: ACHHUZ5HsppDh9Vk6jRjs/fJMT777FkTNKvx61UjfWZl8yu8zoywscMeFz9eM20JH4XdI7ItEfoMRw==
-X-Received: by 2002:a05:6870:4504:b0:17e:a21c:8983 with SMTP id e4-20020a056870450400b0017ea21c8983mr1094772oao.57.1683224489083;
-        Thu, 04 May 2023 11:21:29 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:1f7c:197f:18de:768b? ([2804:14d:5c5e:44fb:1f7c:197f:18de:768b])
-        by smtp.gmail.com with ESMTPSA id o5-20020a05687072c500b00183f77dcdadsm901727oak.33.2023.05.04.11.21.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 May 2023 11:21:28 -0700 (PDT)
-Message-ID: <32445b61-a0f9-4211-5784-1285188a3ecf@mojatatu.com>
-Date: Thu, 4 May 2023 15:21:24 -0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77AB1FC02
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 18:34:52 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2042.outbound.protection.outlook.com [40.107.220.42])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD4249DC
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 11:34:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=N4142Fwian9S0WfrKv6A1YFMLsLXLErmYhx4m69zpgjZNLuCVTGdm6DJeznNaGXieqwsyK6guCQkel9UpAYDrKLswJrj2pxvDbswAS3HniZJZQzuVWFd+8tEcU7PB+668/w9fJ3a+S6tYFtF+z3BkVKsfeZiEfDgtORk/+mixFzrizPa/jTXeTBvdeRK3o9c3mhjsoj2RZTnVwn6MjCPemdHsMR3o6QniKEbyo0467rmX3jXLNrWAEVU6dNT312i12rSy4zwOLCyYAsjL0VR6+pyoq4EjeHPviU0RbL5BTsGc6Tek6hvk1vcZMgS0cBgqkRFcLPwIx0iNpFqZWWm4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0/StxlrhFOBpIGyiKlvEiHX7efqQ7YXNnudWt/DW4Fc=;
+ b=J+0oz/bG0EDdIaJnr7Vt/Wl24jPi/svMIWYw5/xxSqdaTEMedF7v7iGRPL2/InrVgWhYZnvfemwkHF+SenhWQQbIVMXxMe+LLcxgdpfPomcHFWMSZG320jJ6RYycaUDmCTJOWuSs0itT9xGUAB9nT9S2kF2ESHPN6ixdO+HFtT6xgVKE5aroh+DfWZYHseR82lx4pRzoDXoJN0gpBJJwEAigAnFFEWyGdUT6BVaLQ3y4Y0/qaKLmGLqzz0tIQmgIB3BE5y76I0a+W3mhalQqQ7H/zpR1dilWNaxfugIQUKnNupYjN6van8RjN+r1Mu2C9B5BUEu4ZaWEdosFsT8CoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0/StxlrhFOBpIGyiKlvEiHX7efqQ7YXNnudWt/DW4Fc=;
+ b=lNNtDtIQPa/QXabpJpEeAOf5s47njS4r98v9ZG/afwIumD+vf0x+Z5C/VZBnofUWInZ1U0HqZX7lWT2FberAmrtjVmR6YqS0aSiiX8FSs9bcIA++hxRwPby1ptnzpRG+VUnzgYSTZoZ4qOls0/QR7oLMSOpGpszqQsBzsHcbGKpHMd4pzaC42ULVtDEEuqNO5t6qDlTePaEMof/3fzPXRiRyh0AEmypouSCE62I/Vp+FNdvgxmQl/BORisB0ns6etdtzqEwEHBawPCriBZaT1Kx/Vq0cSZ1FYPOvs5+/of2CjV/91FWOo8hfLKZTv9vPs7ZfKrlh8Lv8AviHVNs6Mg==
+Received: from MW4PR03CA0276.namprd03.prod.outlook.com (2603:10b6:303:b5::11)
+ by BN9PR12MB5290.namprd12.prod.outlook.com (2603:10b6:408:103::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.26; Thu, 4 May
+ 2023 18:34:48 +0000
+Received: from CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b5:cafe::da) by MW4PR03CA0276.outlook.office365.com
+ (2603:10b6:303:b5::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.26 via Frontend
+ Transport; Thu, 4 May 2023 18:34:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT036.mail.protection.outlook.com (10.13.174.124) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6363.27 via Frontend Transport; Thu, 4 May 2023 18:34:48 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 4 May 2023
+ 11:34:32 -0700
+Received: from fedora.nvidia.com (10.126.230.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 4 May 2023
+ 11:34:28 -0700
+References: <20230426121415.2149732-1-vladbu@nvidia.com>
+ <20230426121415.2149732-3-vladbu@nvidia.com>
+ <4a647080-cdf6-17e3-6e21-50250722e698@mojatatu.com>
+ <87bkjasmtw.fsf@nvidia.com>
+ <1bf81145-0996-e473-4053-09f410195984@redhat.com>
+ <ZEtxvPaa/L3jHa2d@corigine.com>
+ <bf6591ac-2526-6ca8-b60b-70536a31ae2a@redhat.com>
+ <87354ks1ob.fsf@nvidia.com> <20230502194452.23e99a2c@kernel.org>
+ <87mt2kqkke.fsf@nvidia.com>
+ <5c325bab5f4b4503c7740fd73e9ab603285d0315.camel@redhat.com>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Vlad Buslov <vladbu@nvidia.com>
+To: Paolo Abeni <pabeni@redhat.com>
+CC: Jakub Kicinski <kuba@kernel.org>, Ivan Vecera <ivecera@redhat.com>, "Simon
+ Horman" <simon.horman@corigine.com>, Pedro Tammela <pctammela@mojatatu.com>,
+	<davem@davemloft.net>, <netdev@vger.kernel.org>, <jhs@mojatatu.com>,
+	<xiyou.wangcong@gmail.com>, <jiri@resnulli.us>, <marcelo.leitner@gmail.com>,
+	<paulb@nvidia.com>
+Subject: Re: [PATCH net 2/2] net/sched: flower: fix error handler on replace
+Date: Thu, 4 May 2023 21:32:40 +0300
+In-Reply-To: <5c325bab5f4b4503c7740fd73e9ab603285d0315.camel@redhat.com>
+Message-ID: <87ild8q72m.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net v2 3/3] net/sched: flower: fix error handler on
- replace
-Content-Language: en-US
-To: Vlad Buslov <vladbu@nvidia.com>, pabeni@redhat.com, davem@davemloft.net,
- kuba@kernel.org
-Cc: netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
- jiri@resnulli.us, marcelo.leitner@gmail.com, paulb@nvidia.com,
- simon.horman@corigine.com, ivecera@redhat.com
-References: <20230504181616.2834983-1-vladbu@nvidia.com>
- <20230504181616.2834983-4-vladbu@nvidia.com>
-From: Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <20230504181616.2834983-4-vladbu@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT036:EE_|BN9PR12MB5290:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2162405c-abfe-4034-f18b-08db4cce3dd8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	zQqsPvj8FnZaAKYwKodkxg/Gn70GUyOKlnsItTs7NtcopW/QHHy9h285mpPQiAY0FmN6SWdnxJ2AfubF8UAWXX6BC8nP9KBkyIBVbktkXjO/9iUpK+I1AB+YstDzrZw9G52oH3jvBF3wRMcSAazdWacJBpP72LNnrwfEJ7P2+k/k97d4+Mq+gr9aEk6sGExAuNvbyO59sgI40PRDWKbdRXxxxrK5m+h7Gdf7KAt6Mjowl3T8oCitWh2O0e0gIWNlIKiM/HnCrgiAYwWs1t2P+3tk37os1CvZZemcTubn7q7dIRWiI1UdTiTYo/xxZ1ssiMQl6HPLCuvm4KuFrypcs2VjQacolGcKQL+yG63C7gqVdplpjbVVXSFFg9HLZKw7u8IJU81bkBmJWnsZ7FAIK5OLs5jjpFOdytGHMbKaAYmY3cNt6raBkEBF7xEIPkaNlS79V8ALpwgowKS+zjnA1ybCtYGTCrAnGkEPeI2/4TQJhRAmcQMBXqXIt6hwzDOTRaij3Vzi873V1ZK1kNthipc/NLb2sgwHCE4ebRVObQ2SfXn/ekUtrlYTnYvNCFYgvrIM6Qr+BWZd+jgoZeBOBkFjdxUCLQrnkmQrLu9dnFormDIADqPenHcWIOQthsdggvbedxolPl4+vnIwX9515oVTGRLtVUsebIJ3QAJjTtPd+EhuXr1nvhGsIvYikQbK+u8SaaEYLeSMgI44zYXzZw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(39860400002)(346002)(136003)(451199021)(36840700001)(46966006)(40470700004)(316002)(36860700001)(8676002)(5660300002)(8936002)(2616005)(70206006)(82740400003)(47076005)(4326008)(6916009)(70586007)(86362001)(426003)(83380400001)(2906002)(336012)(7416002)(186003)(16526019)(40460700003)(26005)(40480700001)(6666004)(7696005)(36756003)(107886003)(54906003)(41300700001)(356005)(7636003)(82310400005)(478600001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 18:34:48.6252
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2162405c-abfe-4034-f18b-08db4cce3dd8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5290
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 04/05/2023 15:16, Vlad Buslov wrote:
-> When replacing a filter (i.e. 'fold' pointer is not NULL) the insertion of
-> new filter to idr is postponed until later in code since handle is already
-> provided by the user. However, the error handling code in fl_change()
-> always assumes that the new filter had been inserted into idr. If error
-> handler is reached when replacing existing filter it may remove it from idr
-> therefore making it unreachable for delete or dump afterwards. Fix the
-> issue by verifying that 'fold' argument wasn't provided by caller before
-> calling idr_remove().
-> 
-> Fixes: 08a0063df3ae ("net/sched: flower: Move filter handle initialization earlier")
-> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 
-Reviewed-by: Pedro Tammela <pctammela@mojatatu.com>
+On Thu 04 May 2023 at 16:24, Paolo Abeni <pabeni@redhat.com> wrote:
+> On Thu, 2023-05-04 at 16:40 +0300, Vlad Buslov wrote:
+>> On Tue 02 May 2023 at 19:44, Jakub Kicinski <kuba@kernel.org> wrote:
+>> > On Fri, 28 Apr 2023 14:03:19 +0300 Vlad Buslov wrote:
+>> > > Note that with these changes (both accepted patch and preceding diff)
+>> > > you are exposing filter to dapapath access (datapath looks up filter via
+>> > > hash table, not idr) with its handle set to 0 initially and then resent
+>> > > while already accessible. After taking a quick look at Paul's
+>> > > miss-to-action code it seems that handle value used by datapath is taken
+>> > > from struct tcf_exts_miss_cookie_node not from filter directly, so such
+>> > > approach likely doesn't break anything existing, but I might have missed
+>> > > something.
+>> > 
+>> > Did we deadlock in this discussion, or the issue was otherwise fixed?
+>> 
+>> From my side I explained why in my opinion Ivan's fix doesn't cover all
+>> cases and my approach is better overall. Don't know what else to discuss
+>> since it seems that everyone agreed.
+>
+> Do I read correctly that we need a revert of Ivan's patch to safely
+> apply this series? If so, could you please repost including such
+> revert?
 
-> ---
->   net/sched/cls_flower.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> index ac4f344c52e0..9dbc43388e57 100644
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -2339,7 +2339,8 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
->   errout_mask:
->   	fl_mask_put(head, fnew->mask);
->   errout_idr:
-> -	idr_remove(&head->handle_idr, fnew->handle);
-> +	if (!fold)
-> +		idr_remove(&head->handle_idr, fnew->handle);
->   	__fl_put(fnew);
->   errout_tb:
->   	kfree(tb);
+I don't believe our fixes conflict, it is just that Ivan's should become
+redundant with mine applied. Anyway, I've just sent V2 with added
+revert.
 
 
