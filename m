@@ -1,53 +1,61 @@
-Return-Path: <netdev+bounces-359-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-360-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6B1116F7420
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:48:29 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8C7266F7425
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:48:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 88F341C213BD
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:48:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B4BA81C21385
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:48:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7FA7CF4FD;
-	Thu,  4 May 2023 19:43:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 001E8C12A;
+	Thu,  4 May 2023 19:43:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2DD3F4ED
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9D3EC4339B;
-	Thu,  4 May 2023 19:43:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77AD1F4ED
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:43:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 118F5C4339B;
+	Thu,  4 May 2023 19:43:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229411;
-	bh=mmm9lHBhX+OdRGdo5vBJXE3H0w3wBS8JU5CFAfWiQKQ=;
+	s=k20201202; t=1683229416;
+	bh=MJS4dzAVZY1D72hkrMes3j6B2EDrslbNlLubS/o/zaQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=t3pcpCBU/WpdrG39q5JpugdmYwQchm+lNWenGxJS9+Ofg3IXEppStTAVRW6SZL00U
-	 uUQwYy7lIhYR94wxiAWzWKhfINc1G/hynX69A/9ngT1XJkVA1Q6oFhA2JOMRBqJPxM
-	 cYemZmYrc73dfLJjpK+KDDzzu8bojW9KGcgHlEzf0LH9mmB2nIi9Mx4V2Tr9n4maLS
-	 uHveRn6E4dSfWLwyIX2VyaCAkaOwvk67sjL3DB4JgbHokWnHqXIZhwr57QAnV/Ojb3
-	 vb9C3EyeKJuTKEsetNGqN2+6hcRou55nbzeYnhucmR+b6gOeW24h9fpWqjY2xMRsUj
-	 LP3UkGwsmYDRw==
+	b=BLlQjG263BsbE6scllCxPBc+WPhqR6fw9OU5nUVmQH6+tSJLNj+Hnj34dkZjyy+Ag
+	 ZDuq2/OTKoFecYEIIuT9fiQjx1wzarJbT4e/FY0J3pUMzQvQseZutHcp/j8haNRkGu
+	 xhbH4v/9RhzFSgkf/oprxrZX2wldcDJUY7THDr5fglcicNDBoZ7gYjoB+j1fN1NuTZ
+	 WoZizABj6LFktxYIr9N+DvS7MgfBhANGzzBo3kjjkMId+EkJhS6hQVQfijWbXMYD62
+	 50hdYhPfHoRMhgsMEPkUsNs3P+F9P5DyQA04stEc3Ya+1TZhnl+VvsXpg6UIrzQbHR
+	 JOYW8SibsbRkg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Harshitha Prem <quic_hprem@quicinc.com>,
-	Nagarajan Maran <quic_nmaran@quicinc.com>,
-	Kalle Valo <quic_kvalo@quicinc.com>,
+Cc: Reese Russell <git@qrsnap.io>,
+	Felix Fietkau <nbd@nbd.name>,
 	Sasha Levin <sashal@kernel.org>,
+	lorenzo@kernel.org,
+	ryder.lee@mediatek.com,
 	kvalo@kernel.org,
 	davem@davemloft.net,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	ath11k@lists.infradead.org,
+	matthias.bgg@gmail.com,
+	sean.wang@mediatek.com,
+	deren.wu@mediatek.com,
+	sridhar.samudrala@intel.com,
+	gch981213@gmail.com,
+	greearb@candelatech.com,
 	linux-wireless@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.3 40/59] wifi: ath11k: Ignore frags from uninitialized peer in dp.
-Date: Thu,  4 May 2023 15:41:23 -0400
-Message-Id: <20230504194142.3805425-40-sashal@kernel.org>
+	netdev@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.3 41/59] wifi: mt76: mt7921: add Netgear AXE3000 (A8000) support
+Date: Thu,  4 May 2023 15:41:24 -0400
+Message-Id: <20230504194142.3805425-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194142.3805425-1-sashal@kernel.org>
 References: <20230504194142.3805425-1-sashal@kernel.org>
@@ -61,116 +69,43 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Harshitha Prem <quic_hprem@quicinc.com>
+From: Reese Russell <git@qrsnap.io>
 
-[ Upstream commit a06bfb3c9f69f303692cdae87bc0899d2ae8b2a6 ]
+[ Upstream commit 03eb52dd78cab08f13925aeec8315fbdbcba3253 ]
 
-When max virtual ap interfaces are configured in all the bands with
-ACS and hostapd restart is done every 60s, a crash is observed at
-random times.
-In this certain scenario, a fragmented packet is received for
-self peer, for which rx_tid and rx_frags are not initialized in
-datapath. While handling this fragment, crash is observed as the
-rx_frag list is uninitialised and when we walk in
-ath11k_dp_rx_h_sort_frags, skb null leads to exception.
+Issue: Though the Netgear AXE3000 (A8000) is based on the mt7921
+chipset because of the unique USB VID:PID combination this device
+does not initialize/register. Thus making it not plug and play.
 
-To address this, before processing received fragments we check
-dp_setup_done flag is set to ensure that peer has completed its
-dp peer setup for fragment queue, else ignore processing the
-fragments.
+Fix: Adds support for the Netgear AXE3000 (A8000) based on the Mediatek
+mt7921au chipset. The method of action is adding the USD VID/PID
+pair to the mt7921u_device_table[] array.
 
-Call trace:
-  ath11k_dp_process_rx_err+0x550/0x1084 [ath11k]
-  ath11k_dp_service_srng+0x70/0x370 [ath11k]
-  0xffffffc009693a04
-  __napi_poll+0x30/0xa4
-  net_rx_action+0x118/0x270
-  __do_softirq+0x10c/0x244
-  irq_exit+0x64/0xb4
-  __handle_domain_irq+0x88/0xac
-  gic_handle_irq+0x74/0xbc
-  el1_irq+0xf0/0x1c0
-  arch_cpu_idle+0x10/0x18
-  do_idle+0x104/0x248
-  cpu_startup_entry+0x20/0x64
-  rest_init+0xd0/0xdc
-  arch_call_rest_init+0xc/0x14
-  start_kernel+0x480/0x4b8
-  Code: f9400281 f94066a2 91405021 b94a0023 (f9406401)
+Notes: A retail sample of the Netgear AXE3000 (A8000) yeilds the following
+from lsusb D 0846:9060 NetGear, Inc. Wireless_Device. This pair
+0846:9060 VID:PID has been reported by other users on Github.
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
-
-Signed-off-by: Harshitha Prem <quic_hprem@quicinc.com>
-Signed-off-by: Nagarajan Maran <quic_nmaran@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20230403184155.8670-2-quic_nmaran@quicinc.com
+Signed-off-by: Reese Russell <git@qrsnap.io>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp.c    | 4 +++-
- drivers/net/wireless/ath/ath11k/dp_rx.c | 8 ++++++++
- drivers/net/wireless/ath/ath11k/peer.h  | 1 +
- 3 files changed, 12 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/usb.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp.c b/drivers/net/wireless/ath/ath11k/dp.c
-index f5156a7fbdd7a..d070bcb3fe247 100644
---- a/drivers/net/wireless/ath/ath11k/dp.c
-+++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -36,6 +36,7 @@ void ath11k_dp_peer_cleanup(struct ath11k *ar, int vdev_id, const u8 *addr)
- 	}
- 
- 	ath11k_peer_rx_tid_cleanup(ar, peer);
-+	peer->dp_setup_done = false;
- 	crypto_free_shash(peer->tfm_mmic);
- 	spin_unlock_bh(&ab->base_lock);
- }
-@@ -72,7 +73,8 @@ int ath11k_dp_peer_setup(struct ath11k *ar, int vdev_id, const u8 *addr)
- 	ret = ath11k_peer_rx_frag_setup(ar, addr, vdev_id);
- 	if (ret) {
- 		ath11k_warn(ab, "failed to setup rx defrag context\n");
--		return ret;
-+		tid--;
-+		goto peer_clean;
- 	}
- 
- 	/* TODO: Setup other peer specific resource used in data path */
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index b65a84a882641..294c6fcfa1aa8 100644
---- a/drivers/net/wireless/ath/ath11k/dp_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -3138,6 +3138,7 @@ int ath11k_peer_rx_frag_setup(struct ath11k *ar, const u8 *peer_mac, int vdev_id
- 	}
- 
- 	peer->tfm_mmic = tfm;
-+	peer->dp_setup_done = true;
- 	spin_unlock_bh(&ab->base_lock);
- 
- 	return 0;
-@@ -3583,6 +3584,13 @@ static int ath11k_dp_rx_frag_h_mpdu(struct ath11k *ar,
- 		ret = -ENOENT;
- 		goto out_unlock;
- 	}
-+	if (!peer->dp_setup_done) {
-+		ath11k_warn(ab, "The peer %pM [%d] has uninitialized datapath\n",
-+			    peer->addr, peer_id);
-+		ret = -ENOENT;
-+		goto out_unlock;
-+	}
-+
- 	rx_tid = &peer->rx_tid[tid];
- 
- 	if ((!skb_queue_empty(&rx_tid->rx_frags) && seqno != rx_tid->cur_sn) ||
-diff --git a/drivers/net/wireless/ath/ath11k/peer.h b/drivers/net/wireless/ath/ath11k/peer.h
-index 6dd17bafe3a0c..9bd385d0a38c9 100644
---- a/drivers/net/wireless/ath/ath11k/peer.h
-+++ b/drivers/net/wireless/ath/ath11k/peer.h
-@@ -35,6 +35,7 @@ struct ath11k_peer {
- 	u16 sec_type;
- 	u16 sec_type_grp;
- 	bool is_authorized;
-+	bool dp_setup_done;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
+index 8fef09ed29c91..a95ec388653c5 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
+@@ -18,6 +18,9 @@ static const struct usb_device_id mt7921u_device_table[] = {
+ 	/* Comfast CF-952AX */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(0x3574, 0x6211, 0xff, 0xff, 0xff),
+ 		.driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
++	/* Netgear, Inc. [A8000,AXE3000] */
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x0846, 0x9060, 0xff, 0xff, 0xff),
++		.driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
+ 	{ },
  };
  
- void ath11k_peer_unmap_event(struct ath11k_base *ab, u16 peer_id);
 -- 
 2.39.2
 
