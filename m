@@ -1,243 +1,192 @@
-Return-Path: <netdev+bounces-330-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-331-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 28ED06F71DB
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:21:11 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7AD716F71DD
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:21:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0FC99280DE3
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 18:21:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B45451C21219
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 18:21:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB796BE4C;
-	Thu,  4 May 2023 18:21:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1433BA5F;
+	Thu,  4 May 2023 18:21:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D035B7E7
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 18:21:06 +0000 (UTC)
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8898E9C
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 11:21:04 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id 46e09a7af769-6a606135408so703414a34.0
-        for <netdev@vger.kernel.org>; Thu, 04 May 2023 11:21:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1683224464; x=1685816464;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8zDsQYS3FCzF6OgNzC1vlfEBQ7ZONxUiJEBAHQhpHWI=;
-        b=HXCKj6Ccifi26SewtGFEsuFb0OyTjE2UAxIXoZz99du7vIkb47yu0n7u0rfBMeloRn
-         y55qA+Hmio7qB71LH5hVdcGXXc/8aX54PERMaTOfgOHKjKh69n0ZWXgPCi7NjPkINM7o
-         +Xnf5IBRO54CIAlWgpzTQ2bgNVNGA4sXbWs2NiwHy/+FXdPsc2KQfmqXZo1xpR9La//f
-         ZC+chcnPt3Kjv9qRAtJVKY6NxYDzd2ae64zUcaLDbWpmGcULA8rpSGsMEJyd1elGWtnG
-         lYkV8U50TwnQBlUbIUNEVWhsJ0Pr5wcBOuFv4h93NLwC+feSYdC0ebOE+3bUwGG5HJ/Q
-         WN6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683224464; x=1685816464;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8zDsQYS3FCzF6OgNzC1vlfEBQ7ZONxUiJEBAHQhpHWI=;
-        b=konwQe6xgzA9a4XleClHUscs9m/AGPj6v+KWfwvoJ6WV0ePOPuDVVxnKRrj2yc2sRH
-         20aTAtsS/A9mmMT1/uvdFuksBHGtD6n8LnAPUIKzN34HqkqcrLg2mz5d6nB774gpYU5m
-         23aLJB1LFJMSag/jPuZQsLq8teqY3OinFs26FNF0CKXJSbXc578S7GJTTPCn8IOShep1
-         qy/hk73KTIcupeJLNviRXX8v1qLZcEcsPB6prtA0aHRk8KTcT3yB5SPUJ67hZU2jD+lD
-         4D1LX+c2gvhZ9A37f9hGy0fA8l6SThWWjvQ66rz5uuE7xhRf9ZwvaIsVcMBjarDKvwCR
-         dS2w==
-X-Gm-Message-State: AC+VfDxgVZbugu55+CIY4lN4R4OrHDgtMDc2GMaDKyPRb47/ma250QQL
-	cgDy7CK5CPBJnvHiHit9aGW0OQ==
-X-Google-Smtp-Source: ACHHUZ4/oap22Nf2AlvNfNfJ2d+wcnGH981tYSs/aOnq3xEPR6on5uGwNLS78Vya6/MIQ+4LpDv2Lw==
-X-Received: by 2002:a05:6830:1e2d:b0:6a6:5a4a:a691 with SMTP id t13-20020a0568301e2d00b006a65a4aa691mr407188otr.15.1683224463821;
-        Thu, 04 May 2023 11:21:03 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:1f7c:197f:18de:768b? ([2804:14d:5c5e:44fb:1f7c:197f:18de:768b])
-        by smtp.gmail.com with ESMTPSA id r2-20020a9d7cc2000000b006a7b28e052dsm1974494otn.40.2023.05.04.11.21.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 May 2023 11:21:03 -0700 (PDT)
-Message-ID: <d39cf0ab-ff17-c149-22ff-1aa8f5f1cb3c@mojatatu.com>
-Date: Thu, 4 May 2023 15:20:58 -0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E6643C0A
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 18:21:25 +0000 (UTC)
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B041700;
+	Thu,  4 May 2023 11:21:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R9yz5TQhXQpGJtSSO+UDEYUtJvmEm2aWWVzHcUvr6DuM8kQ1zckBjGeoc4WDknxUc7UiipiRXrdW4Y7OzehxnCkpVW+QuYs2Xgkz3KrgqEXVk/70OXYzsNs/wv4qGZtzlXHNFKNyiCg2jfMvV2dYDOEyoHeuyGJVOvWYgZI5oyFVy4D9SEu9RHW0cns04bdA22k9pO+m8saaet0SvCVYbBsORSvzN1R10nGlusEhSHt72Y2XAZKFX2cTvRHl5jzc5y5YBoXdvkdyi70YvrM2u/g1MgiDeX/obLLWUJDR5tp8zB1awKNPR+riKtFWjoNOm1uFIIoICjsjwlOc8Vpm0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=40xlEVGwDyiK1x8Po2kejK4YLjvZ70ZbmRz46lGFe8Q=;
+ b=WJIR/YHTT1JCkruBnshX9cYtFhz3H6zKxl1x9Wi7jvgIW3tLvOCniehOsAalM2hNtJ4VBAxaOecULnV2Ab3dARYQUMw/e1drzpQsE9JilH7nagr7aW9W5wO6/LVKXltHagyRk0mELcm31P0lC45yfzhCObewW7pUJwssfsuorTqzrITUikJyCFgyPgs1I6fvOoGTPst94GN+0OE9po7urILCbKlQvQNNBwKkST9RPLMo2BRGHvDXKrWrYp2U2KxGDxE3e60zjWfFn2XZy0pIzOXlvFuotaNNUYpw/vENfhk2ufrg2F4P4WTnUwS7/T+q7qhvgKaJS3WrgI4lO5PtSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=40xlEVGwDyiK1x8Po2kejK4YLjvZ70ZbmRz46lGFe8Q=;
+ b=WC/TVdeMbXvfUwhEWFw45MVQbONZFOH6rwM8nndow48Urfu5bOMc20mcGBlUcbEtrH6yByrdc6CrdR+hVkdOPFyVvVNQqpEMErcnMDdtXH15iTwalxMN9oO3bmnTWVm+vwizoOni8RCOMg7PxZnHt8THQGQVEw3VPkTa9Dm9xeM4OOm+CT0UgvqoHxF6ibxswCkkyIzpI5eggPbKFBpgcCc9ABVY65PDk7SVMI24eemtQw0LFhLsbSOjLhZ5s1Rlp26enYicpaXGnn4nfUsVwD6fvnMdLkYHMstFd8CxrVwwTEh0wMwWKAspQfhB7IwID8jAXunBlBvGSz6UHfpC8A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BL0PR12MB4947.namprd12.prod.outlook.com (2603:10b6:208:17d::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.22; Thu, 4 May
+ 2023 18:21:22 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6363.022; Thu, 4 May 2023
+ 18:21:21 +0000
+Date: Thu, 4 May 2023 15:21:20 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Brett Creeley <brett.creeley@amd.com>
+Cc: kvm@vger.kernel.org, netdev@vger.kernel.org, alex.williamson@redhat.com,
+	yishaih@nvidia.com, shameerali.kolothum.thodi@huawei.com,
+	kevin.tian@intel.com, shannon.nelson@amd.com, drivers@pensando.io
+Subject: Re: [PATCH v9 vfio 5/7] vfio/pds: Add support for dirty page tracking
+Message-ID: <ZFP3oAFNoKNCv46R@nvidia.com>
+References: <20230422010642.60720-1-brett.creeley@amd.com>
+ <20230422010642.60720-6-brett.creeley@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230422010642.60720-6-brett.creeley@amd.com>
+X-ClientProxiedBy: BLAP220CA0008.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:208:32c::13) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net v2 1/3] net/sched: flower: fix filter idr
- initialization
-To: Vlad Buslov <vladbu@nvidia.com>, pabeni@redhat.com, davem@davemloft.net,
- kuba@kernel.org
-Cc: netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
- jiri@resnulli.us, marcelo.leitner@gmail.com, paulb@nvidia.com,
- simon.horman@corigine.com, ivecera@redhat.com
-References: <20230504181616.2834983-1-vladbu@nvidia.com>
- <20230504181616.2834983-2-vladbu@nvidia.com>
-Content-Language: en-US
-From: Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <20230504181616.2834983-2-vladbu@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL0PR12MB4947:EE_
+X-MS-Office365-Filtering-Correlation-Id: dffc3ee9-2ee8-4dde-5028-08db4ccc5cad
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	BDGDbqi67ZXPa1FuZO9ZaOIfMVwFaI9I1WNJjArR8/JWxNzWGIUwJJhDewmBcTICDh1YMk1fGHwu3ApHAbQg6BnBY/JKrlvtwVajBd/degfilA0gvc+inxhiqRsDm2idtgNCSCwwJLcd+WPJsIfdTbdQBNOYieRNZjrKDxAsAAT2K91A3G6j6RN81CjwK5H6EGYTKMuR56Wp7tzKfhAitkYtp94LRETah8sYkR4Rnl9gEiZQJJP+GF7lQDPc8sdWlrzAShwNpkhaHdtEpdcmW7eoV7mLnGNWM16jiSFqPVgzckj18oLddJZrzbdANPI8pLiFoNNcraRXyDZT2aZFWaaH6eOLUCP05XZT8kSZZxwlDB3FxWqkqcUsLKuQoPBDlmQIOCxDG7wqKpdGTBI7qJOoNckX26S/dAt9/cc21La5zq+hSP/LooAHnvvJdA0o2x0d+w6i2NHbKtPTD1f1ZcrzwV0aFzTQB2RmG5YBSkefMgPk0NBy0Ab7Z3d0wi2Pi9Kn9bvK2Sk1/Ghiu1gtF0v4BhKGCnvg6TMtofn5aqa+7R8jckm4nN0xqm50ei/HzCdsaIPrm8GPa2vbgNMRn6FokEI1gGWZTc8AUUAfIe0=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(136003)(396003)(366004)(346002)(451199021)(26005)(6506007)(6512007)(186003)(2616005)(5660300002)(2906002)(83380400001)(8936002)(8676002)(6486002)(6916009)(41300700001)(36756003)(66946007)(38100700002)(478600001)(66476007)(66556008)(4326008)(316002)(86362001)(14143004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?BIFCW4BT1oniTUsRWSNYWINMhgV/fhcoV9nPjLiSK2iVkTkWWkXwrjZAKv5g?=
+ =?us-ascii?Q?gz8xVtbgGKREYteTMg8ntWAOZ/kzFDsMx+lM59TMSfB3QyyHsx5IpUMMEmRO?=
+ =?us-ascii?Q?NyGaWsq++4SUyL59/xUU8LynLaaYl/0FZRbeW9zpXywsBOoZODaqWT7a6bjf?=
+ =?us-ascii?Q?VIbX4cvgN1lelUn2wg6RicyG0xH3raiFAhMcKuj8jMS4PLiQk7Fn1nB4vYjA?=
+ =?us-ascii?Q?1wlGF6/gKTU8oTH1FslepBJpDjp2QivyI9AWO3oAMPOrlpaM9encdHQlkd+6?=
+ =?us-ascii?Q?WEdvcMaLpRXDULnvt7rctpQ8pO0cHqpfXH1TSsKrgx/QwDQ98HeL58TU/Nqo?=
+ =?us-ascii?Q?VTY1waLgwDqQl2rWgL5m+w+MTncVdwerKfrm9o4dTF4MVXbCknq997vFVfOQ?=
+ =?us-ascii?Q?KpQeWgTnRmF597wJ+D0jfmOFGJ52XpnGR/OAp6nv56J2P0bcD0mXcf4R2+ya?=
+ =?us-ascii?Q?EC+/fNY8zMTBTWS2Hw5Ie+48BYjk6KzDE2/c8pg3lSJURoocB1Yjgsyqa3Og?=
+ =?us-ascii?Q?AVqCeqjv98JeYdTFKQelhA1j/BQrvjKG0DbW4RIUMGnSt1YOkWbfhRB2mL1T?=
+ =?us-ascii?Q?f12lDBc8t3FdiyBLPBygcgt/HkuzBT9bPYmX/nK16xz3CfTb3ZtmG0frcRe8?=
+ =?us-ascii?Q?83h/aFrOsG8d4M4Bx3KbBoKYxlFBZ1td+K6617YINwQq4Tl1gaWaIzJfg1kE?=
+ =?us-ascii?Q?2uik7E7OcIMkZjSE9sKXisc07sznnRV/B/VZQzQLAK9iI0rmvDyNwNdIRLzN?=
+ =?us-ascii?Q?Yl3oj2LJxVYdPqCVVL5n1vsgZFeB7Wf52QiwP6eqaIFtuz/24HWWAUfIl3vB?=
+ =?us-ascii?Q?itLMlSVkKQc0nX8pxfTlJJhHMcmYPd/8aosnBiBUNyBMbss4AQBO2iS8PglF?=
+ =?us-ascii?Q?5xI+/udDFSRwXomYlX4Yba+XGkCe8IY1m2pIpQKFsiOivZr29K36wOBlDCtl?=
+ =?us-ascii?Q?/Yl3k30azFJnf+zpYKHW1EFugzCUMhhYP9rvIORjoMzOqxhyYt7yJo8uFE2B?=
+ =?us-ascii?Q?WOfdUy++pPb1yA31OegQ/A0Ctaa2A7Uhwdygg6qrbFBEJKdvmfe3FjcED7v/?=
+ =?us-ascii?Q?/DgoCa4X60fWyJp+YZ4RC8Dwf9pLBEctPfdkCSl8QFpavoxKIDwQdzCtaItV?=
+ =?us-ascii?Q?XeE5gnPpRb01MawTAxfbRGa8gp8KamEpFnfTrUJVmz2myaRjtKylg10l5IFE?=
+ =?us-ascii?Q?jFMzc8Pxaj+XcqzZ2xhuJFOIbrw5gHi4hraHS9EeiXRhtg5kCkCtN1GlRM09?=
+ =?us-ascii?Q?WJfN3zaL7GjhQb3O3wtWyMUyY09PTHccchZKoCgGgshlfXCEkPBDh03DfCIH?=
+ =?us-ascii?Q?4Y/T/Mynh3cI2F+UemPCd+gpBWh0g/ffZuEaJbANtD0DGslS5L2EPMQg+2ka?=
+ =?us-ascii?Q?uSh0njqCpH4S/MR9VrH/Y7Ti2eY0ZSX9p7nY1fga4XXBpcwZFCnSRYUJ0Hwn?=
+ =?us-ascii?Q?2FtWUSzIg9wdqMEkAfi//D1+yVcvPLDuRxHwm14HomzESbnjiJ9/fM80OgGK?=
+ =?us-ascii?Q?BbqNApRo4qYx3g24w791Q+SvLYBnOzQSGDXI94SqK0L1teRoQHp77rqudZhm?=
+ =?us-ascii?Q?fuVPGvgQTWbl+S3FilMm/N/6hZNW5gmAn4p70Vfq?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dffc3ee9-2ee8-4dde-5028-08db4ccc5cad
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 18:21:21.6601
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cxLEbCdGmnsY9h4shNXPhJC7YVUzuQgJyyQjzqd3mWQz7ma08p+Hy699y1QnKamZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4947
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 04/05/2023 15:16, Vlad Buslov wrote:
-> The cited commit moved idr initialization too early in fl_change() which
-> allows concurrent users to access the filter that is still being
-> initialized and is in inconsistent state, which, in turn, can cause NULL
-> pointer dereference [0]. Since there is no obvious way to fix the ordering
-> without reverting the whole cited commit, alternative approach taken to
-> first insert NULL pointer into idr in order to allocate the handle but
-> still cause fl_get() to return NULL and prevent concurrent users from
-> seeing the filter while providing miss-to-action infrastructure with valid
-> handle id early in fl_change().
-> 
-> [  152.434728] general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] SMP KASAN
-> [  152.436163] KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-> [  152.437269] CPU: 4 PID: 3877 Comm: tc Not tainted 6.3.0-rc4+ #5
-> [  152.438110] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-> [  152.439644] RIP: 0010:fl_dump_key+0x8b/0x1d10 [cls_flower]
-> [  152.440461] Code: 01 f2 02 f2 c7 40 08 04 f2 04 f2 c7 40 0c 04 f3 f3 f3 65 48 8b 04 25 28 00 00 00 48 89 84 24 00 01 00 00 48 89 c8 48 c1 e8 03 <0f> b6 04 10 84 c0 74 08 3c 03 0f 8e 98 19 00 00 8b 13 85 d2 74 57
-> [  152.442885] RSP: 0018:ffff88817a28f158 EFLAGS: 00010246
-> [  152.443851] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> [  152.444826] RDX: dffffc0000000000 RSI: ffffffff8500ae80 RDI: ffff88810a987900
-> [  152.445791] RBP: ffff888179d88240 R08: ffff888179d8845c R09: ffff888179d88240
-> [  152.446780] R10: ffffed102f451e48 R11: 00000000fffffff2 R12: ffff88810a987900
-> [  152.447741] R13: ffffffff8500ae80 R14: ffff88810a987900 R15: ffff888149b3c738
-> [  152.448756] FS:  00007f5eb2a34800(0000) GS:ffff88881ec00000(0000) knlGS:0000000000000000
-> [  152.449888] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  152.450685] CR2: 000000000046ad19 CR3: 000000010b0bd006 CR4: 0000000000370ea0
-> [  152.451641] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [  152.452628] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [  152.453588] Call Trace:
-> [  152.454032]  <TASK>
-> [  152.454447]  ? netlink_sendmsg+0x7a1/0xcb0
-> [  152.455109]  ? sock_sendmsg+0xc5/0x190
-> [  152.455689]  ? ____sys_sendmsg+0x535/0x6b0
-> [  152.456320]  ? ___sys_sendmsg+0xeb/0x170
-> [  152.456916]  ? do_syscall_64+0x3d/0x90
-> [  152.457529]  ? entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  152.458321]  ? ___sys_sendmsg+0xeb/0x170
-> [  152.458958]  ? __sys_sendmsg+0xb5/0x140
-> [  152.459564]  ? do_syscall_64+0x3d/0x90
-> [  152.460122]  ? entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  152.460852]  ? fl_dump_key_options.part.0+0xea0/0xea0 [cls_flower]
-> [  152.461710]  ? _raw_spin_lock+0x7a/0xd0
-> [  152.462299]  ? _raw_read_lock_irq+0x30/0x30
-> [  152.462924]  ? nla_put+0x15e/0x1c0
-> [  152.463480]  fl_dump+0x228/0x650 [cls_flower]
-> [  152.464112]  ? fl_tmplt_dump+0x210/0x210 [cls_flower]
-> [  152.464854]  ? __kmem_cache_alloc_node+0x1a7/0x330
-> [  152.465592]  ? nla_put+0x15e/0x1c0
-> [  152.466160]  tcf_fill_node+0x515/0x9a0
-> [  152.466766]  ? tc_setup_offload_action+0xf0/0xf0
-> [  152.467463]  ? __alloc_skb+0x13c/0x2a0
-> [  152.468067]  ? __build_skb_around+0x330/0x330
-> [  152.468814]  ? fl_get+0x107/0x1a0 [cls_flower]
-> [  152.469503]  tc_del_tfilter+0x718/0x1330
-> [  152.470115]  ? is_bpf_text_address+0xa/0x20
-> [  152.470765]  ? tc_ctl_chain+0xee0/0xee0
-> [  152.471335]  ? __kernel_text_address+0xe/0x30
-> [  152.471948]  ? unwind_get_return_address+0x56/0xa0
-> [  152.472639]  ? __thaw_task+0x150/0x150
-> [  152.473218]  ? arch_stack_walk+0x98/0xf0
-> [  152.473839]  ? __stack_depot_save+0x35/0x4c0
-> [  152.474501]  ? stack_trace_save+0x91/0xc0
-> [  152.475119]  ? security_capable+0x51/0x90
-> [  152.475741]  rtnetlink_rcv_msg+0x2c1/0x9d0
-> [  152.476387]  ? rtnl_calcit.isra.0+0x2b0/0x2b0
-> [  152.477042]  ? __sys_sendmsg+0xb5/0x140
-> [  152.477664]  ? do_syscall_64+0x3d/0x90
-> [  152.478255]  ? entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  152.479010]  ? __stack_depot_save+0x35/0x4c0
-> [  152.479679]  ? __stack_depot_save+0x35/0x4c0
-> [  152.480346]  netlink_rcv_skb+0x12c/0x360
-> [  152.480929]  ? rtnl_calcit.isra.0+0x2b0/0x2b0
-> [  152.481517]  ? do_syscall_64+0x3d/0x90
-> [  152.482061]  ? netlink_ack+0x1550/0x1550
-> [  152.482612]  ? rhashtable_walk_peek+0x170/0x170
-> [  152.483262]  ? kmem_cache_alloc_node+0x1af/0x390
-> [  152.483875]  ? _copy_from_iter+0x3d6/0xc70
-> [  152.484528]  netlink_unicast+0x553/0x790
-> [  152.485168]  ? netlink_attachskb+0x6a0/0x6a0
-> [  152.485848]  ? unwind_next_frame+0x11cc/0x1a10
-> [  152.486538]  ? arch_stack_walk+0x61/0xf0
-> [  152.487169]  netlink_sendmsg+0x7a1/0xcb0
-> [  152.487799]  ? netlink_unicast+0x790/0x790
-> [  152.488355]  ? iovec_from_user.part.0+0x4d/0x220
-> [  152.488990]  ? _raw_spin_lock+0x7a/0xd0
-> [  152.489598]  ? netlink_unicast+0x790/0x790
-> [  152.490236]  sock_sendmsg+0xc5/0x190
-> [  152.490796]  ____sys_sendmsg+0x535/0x6b0
-> [  152.491394]  ? import_iovec+0x7/0x10
-> [  152.491964]  ? kernel_sendmsg+0x30/0x30
-> [  152.492561]  ? __copy_msghdr+0x3c0/0x3c0
-> [  152.493160]  ? do_syscall_64+0x3d/0x90
-> [  152.493706]  ___sys_sendmsg+0xeb/0x170
-> [  152.494283]  ? may_open_dev+0xd0/0xd0
-> [  152.494858]  ? copy_msghdr_from_user+0x110/0x110
-> [  152.495541]  ? __handle_mm_fault+0x2678/0x4ad0
-> [  152.496205]  ? copy_page_range+0x2360/0x2360
-> [  152.496862]  ? __fget_light+0x57/0x520
-> [  152.497449]  ? mas_find+0x1c0/0x1c0
-> [  152.498026]  ? sockfd_lookup_light+0x1a/0x140
-> [  152.498703]  __sys_sendmsg+0xb5/0x140
-> [  152.499306]  ? __sys_sendmsg_sock+0x20/0x20
-> [  152.499951]  ? do_user_addr_fault+0x369/0xd80
-> [  152.500595]  do_syscall_64+0x3d/0x90
-> [  152.501185]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  152.501917] RIP: 0033:0x7f5eb294f887
-> [  152.502494] Code: 0a 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
-> [  152.505008] RSP: 002b:00007ffd2c708f78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> [  152.506152] RAX: ffffffffffffffda RBX: 00000000642d9472 RCX: 00007f5eb294f887
-> [  152.507134] RDX: 0000000000000000 RSI: 00007ffd2c708fe0 RDI: 0000000000000003
-> [  152.508113] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
-> [  152.509119] R10: 00007f5eb2808708 R11: 0000000000000246 R12: 0000000000000001
-> [  152.510068] R13: 0000000000000000 R14: 00007ffd2c70d1b8 R15: 0000000000485400
-> [  152.511031]  </TASK>
-> [  152.511444] Modules linked in: cls_flower sch_ingress openvswitch nsh mlx5_vdpa vringh vhost_iotlb vdpa mlx5_ib mlx5_core rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi ib_umad rdma_cm ib_ipoib iw_cm ib_cm ib_uverbs ib_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter overlay zram zsmalloc fuse [last unloaded: mlx5_core]
-> [  152.515720] ---[ end trace 0000000000000000 ]---
-> 
-> Fixes: 08a0063df3ae ("net/sched: flower: Move filter handle initialization earlier")
-> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+On Fri, Apr 21, 2023 at 06:06:40PM -0700, Brett Creeley wrote:
+> +int
+> +pds_vfio_dirty_status_cmd(struct pds_vfio_pci_device *pds_vfio,
+> +			  u64 regions_dma, u8 *max_regions,
+> +			  u8 *num_regions)
+> +{
+> +	union pds_core_adminq_cmd cmd = {
+> +		.lm_dirty_status.opcode = PDS_LM_CMD_DIRTY_STATUS,
+> +		.lm_dirty_status.vf_id = cpu_to_le16(pds_vfio->vf_id),
+> +	};
 
-Reviewed-by: Pedro Tammela <pctammela@mojatatu.com>
+You can write these as 
 
-> ---
->   net/sched/cls_flower.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> index 6ab6aadc07b8..4dc3a9007f30 100644
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -2210,10 +2210,10 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
->   		spin_lock(&tp->lock);
->   		if (!handle) {
->   			handle = 1;
-> -			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
-> +			err = idr_alloc_u32(&head->handle_idr, NULL, &handle,
->   					    INT_MAX, GFP_ATOMIC);
->   		} else {
-> -			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
-> +			err = idr_alloc_u32(&head->handle_idr, NULL, &handle,
->   					    handle, GFP_ATOMIC);
->   
->   			/* Filter with specified handle was concurrently
-> @@ -2378,7 +2378,7 @@ static void fl_walk(struct tcf_proto *tp, struct tcf_walker *arg,
->   	rcu_read_lock();
->   	idr_for_each_entry_continue_ul(&head->handle_idr, f, tmp, id) {
->   		/* don't return filters that are being deleted */
-> -		if (!refcount_inc_not_zero(&f->refcnt))
-> +		if (!f || !refcount_inc_not_zero(&f->refcnt))
->   			continue;
->   		rcu_read_unlock();
->   
+.lm_dirty_status = {
+ .opcode = ..,
+ .vf_if = ..,
+},
 
+And save some stuttering
+
+> +static int
+> +pds_vfio_dirty_alloc_bitmaps(struct pds_vfio_dirty *dirty,
+> +			     u32 nbits)
+> +{
+> +	unsigned long *host_seq_bmp, *host_ack_bmp;
+> +
+> +	host_seq_bmp = bitmap_zalloc(nbits, GFP_KERNEL);
+> +	if (!host_seq_bmp)
+> +		return -ENOMEM;
+> +
+> +	host_ack_bmp = bitmap_zalloc(nbits, GFP_KERNEL);
+> +	if (!host_ack_bmp) {
+> +		bitmap_free(host_seq_bmp);
+> +		return -ENOMEM;
+> +	}
+
+nbits looks way too big to call bitmap_zalloc?
+
+> +static int
+> +__pds_vfio_dirty_alloc_sgl(struct pds_vfio_pci_device *pds_vfio,
+> +			   struct pds_vfio_bmp_info *bmp_info,
+> +			   u32 page_count)
+> +{
+> +	struct pci_dev *pdev = pds_vfio->vfio_coredev.pdev;
+> +	struct device *pdsc_dev = &pci_physfn(pdev)->dev;
+> +	struct pds_lm_sg_elem *sgl;
+> +	dma_addr_t sgl_addr;
+> +	size_t sgl_size;
+> +	u32 max_sge;
+> +
+> +	max_sge = DIV_ROUND_UP(page_count, PAGE_SIZE * 8);
+> +	sgl_size = max_sge * sizeof(struct pds_lm_sg_elem);
+> +
+> +	sgl = kzalloc(sgl_size, GFP_KERNEL);
+> +	if (!sgl)
+> +		return -ENOMEM;
+> +
+> +	sgl_addr = dma_map_single(pdsc_dev, sgl, sgl_size, DMA_TO_DEVICE);
+
+This needs to use the streaming API in pds_vfio_dirty_seq_ack()
+
+Jason
 
