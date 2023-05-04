@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-239-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-240-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id AFE676F6333
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 05:15:31 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id EBB676F6335
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 05:15:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9E46B280D09
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 03:15:29 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4BBCE1C210CF
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 03:15:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 71193EB8;
-	Thu,  4 May 2023 03:15:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1F78EC0;
+	Thu,  4 May 2023 03:15:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64DCE7C
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 03:15:27 +0000 (UTC)
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A714710F3
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 20:15:25 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id d9443c01a7336-1aaf91ae451so41356435ad.1
-        for <netdev@vger.kernel.org>; Wed, 03 May 2023 20:15:25 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A607C
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 03:15:35 +0000 (UTC)
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9FD02690
+	for <netdev@vger.kernel.org>; Wed,  3 May 2023 20:15:33 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1ab01bf474aso31151885ad.1
+        for <netdev@vger.kernel.org>; Wed, 03 May 2023 20:15:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1683170125; x=1685762125;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xkrmk35Ky/85BXeTs5JHeSBG+pv+CkQQNQ4vZFORK28=;
-        b=H0xKmXg00rizh7koD72fKkzR5N23zr1oeXxjphDXAOULpcivedUmDRe4ACkOFDa0RS
-         CF57WbP4QUCHkEmu1irEOUxWFWSog21Pn6RzGKK1kcNZeKF5qeQfIO+97BnoME/c8uTR
-         4qnqNrc0huw7UYuOFQfwc2AOutSVDR3Gqo3CaRyCciu+jkfRHew9HHmJGd1AqX7N0bhh
-         4+l/eRrXr6hTlzgvTp61oM/lnOBV42hSzNkSgTrfPVy/ve+EyOQIwB9GaiEEEcITHti2
-         agIvqBHu737c8fOv1J7DGaDMokxDMLk5MPH8KTEhB2NXxfhloZ9GoNKAK3P7MVJ1LakT
-         h4ew==
+        d=bytedance.com; s=google; t=1683170133; x=1685762133;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4couG4BvY3JielUUZmpwOAXPZt7eiYYa/cnyqJtYMcY=;
+        b=RdIpHuXrIdZdrLZD5GQY5cDg6P+FgWa4EpLYMB+eMiwXeySE3PqhoXIEbj9y1HswHy
+         FdZb8DebR9Ai3PUYWSWIfBQEbv4DIt3NpKTPNECZWgrNWKx1lnbcg7fCbOyhrqjXxWw9
+         St42hO8jXLTQzCsp479eSYDbAeu0RmqscYkFgEUasmQeV8N4t4pGq4RrWm9AAnrwQ23a
+         KQbah8ecHaW31WzSFNFNT7cSMeV3J7hlftVN/TR07lQXMrTzO0TUbI+LGcHQzeUMWKZ8
+         efaSbI+l43x5sZvhbMzMOBUK+XJV7SOQ8GSkA/KtqVuZ/HIscRkB8O2MAhUNNDDMfYP0
+         BiIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683170125; x=1685762125;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Xkrmk35Ky/85BXeTs5JHeSBG+pv+CkQQNQ4vZFORK28=;
-        b=XlzgNdaiXpWXtSOezNc+/Cmj4aTQsqoU8t+cvSazTVaP1S6w0AcYecs6iIBtsWnvbq
-         Kt/0C1ZY70ffdfVMF2gi41FevsxAiWJexCHrpEdxiWrhVVCFdtUL+briwPquxVdqRb+R
-         V0eYxR0LqPPPhked+QtTlxXT2gqJI/blr5f7irEnypshwCJE7DT8qR/wl26me8Wkp9Lc
-         LYZ+UvcYNSFMKhTwd/wo9KuM80G11lSHNiBjYhuj+PEKeQGsN/J58nuVJeXMIpvup5Kq
-         0jmNvOy8O6t5G1yRzwiqYWIsRl21W0+A1Z3634b3kn6RpI224M8VstuEPG4kXx2H8IF5
-         1oZg==
-X-Gm-Message-State: AC+VfDzjLIp6RhzqIrdDHlhyfo20vWj2ghc/KEjEiz3XVl9S2NqlaZD0
-	XaooBMwZuMjgmETX4nNxoU7vyQ==
-X-Google-Smtp-Source: ACHHUZ4hu7USx+KN5GnVZpqUhumPBe2XDJMTC8+jNBH1K/EIRNRF1Sn3d1dZRLNXpaqNA/qanVhE5w==
-X-Received: by 2002:a17:902:ecc5:b0:1ab:1d81:f8f1 with SMTP id a5-20020a170902ecc500b001ab1d81f8f1mr2724951plh.46.1683170125157;
-        Wed, 03 May 2023 20:15:25 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683170133; x=1685762133;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4couG4BvY3JielUUZmpwOAXPZt7eiYYa/cnyqJtYMcY=;
+        b=YuvwHaKaZGvZds5PrFP8gwehBDu2tSfrPXM1T5X7arkW8f8u4h0bMZkX5NhsDnwft+
+         /C65Gijk7bM9p8at+NXfjiyRb2BTOlR5uBpKX9Ke/eKY/jPeqGbcGcXlydbtBzdxaRgL
+         /Wh8vV2wQjNhed+qLOM/pOddKSY3drT2x5ffygEjPVCAuFAKJdRb86keIGmeGeq07kj7
+         2qtXyX4/Ld+41RXWwuILuemrb6Zvpq1u47yEp448n1jnbPhyAT3u71RMzl5KZs+597zf
+         ni3WH0htKv1NDhtaLUgbPEjl/KrxJyNJunLEDHBmvmv7kge7y+AVt9tCvsIOoqdQkf+r
+         /Mzw==
+X-Gm-Message-State: AC+VfDy/vqkFGesseEASDiilEFnQlkFgeTYacNV1kg0fOtOZZqc6KUj4
+	m451AAU1m+JAcSYJK2hhDTU4nQ==
+X-Google-Smtp-Source: ACHHUZ6AjhdkvWkT8w6Mj92ZHNvWQaJQGVrTeNa+kPUUJwxK5WvIueleFWkG5v9xszzcYw/nCiJ2Wg==
+X-Received: by 2002:a17:902:7444:b0:1ab:ab1:f8aa with SMTP id e4-20020a170902744400b001ab0ab1f8aamr2135234plt.17.1683170133183;
+        Wed, 03 May 2023 20:15:33 -0700 (PDT)
 Received: from C02F52LSML85.bytedance.net ([139.177.225.254])
-        by smtp.gmail.com with ESMTPSA id ix7-20020a170902f80700b001aaecc15d66sm7146121plb.289.2023.05.03.20.15.17
+        by smtp.gmail.com with ESMTPSA id ix7-20020a170902f80700b001aaecc15d66sm7146121plb.289.2023.05.03.20.15.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 20:15:24 -0700 (PDT)
+        Wed, 03 May 2023 20:15:32 -0700 (PDT)
 From: Feng zhou <zhoufeng.zf@bytedance.com>
 To: martin.lau@linux.dev,
 	ast@kernel.org,
@@ -80,10 +81,12 @@ Cc: bpf@vger.kernel.org,
 	yangzhenze@bytedance.com,
 	wangdongdong.6@bytedance.com,
 	zhoufeng.zf@bytedance.com
-Subject: [PATCH bpf-next v5 0/2] Introduce a new kfunc of bpf_task_under_cgroup
-Date: Thu,  4 May 2023 11:15:10 +0800
-Message-Id: <20230504031513.13749-1-zhoufeng.zf@bytedance.com>
+Subject: [PATCH bpf-next v5 1/2] bpf: Add bpf_task_under_cgroup() kfunc
+Date: Thu,  4 May 2023 11:15:11 +0800
+Message-Id: <20230504031513.13749-2-zhoufeng.zf@bytedance.com>
 X-Mailer: git-send-email 2.39.2 (Apple Git-143)
+In-Reply-To: <20230504031513.13749-1-zhoufeng.zf@bytedance.com>
+References: <20230504031513.13749-1-zhoufeng.zf@bytedance.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -100,43 +103,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Feng Zhou <zhoufeng.zf@bytedance.com>
 
-Trace sched related functions, such as enqueue_task_fair, it is necessary to
-specify a task instead of the current task which within a given cgroup.
+Add a kfunc that's similar to the bpf_current_task_under_cgroup.
+The difference is that it is a designated task.
 
-Feng Zhou (2):
-  bpf: Add bpf_task_under_cgroup() kfunc
-  selftests/bpf: Add testcase for bpf_task_under_cgroup
+When hook sched related functions, sometimes it is necessary to
+specify a task instead of the current task.
 
-Changelog:
-v4->v5: Addressed comments from Yonghong Song
-- Some code format modifications.
-Details in here:
-https://lore.kernel.org/all/20230428071737.43849-1-zhoufeng.zf@bytedance.com/
+Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+---
+ kernel/bpf/helpers.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-v3->v4: Addressed comments from Yonghong Song
-- Modify test cases and test other tasks, not the current task.
-Details in here:
-https://lore.kernel.org/all/20230427023019.73576-1-zhoufeng.zf@bytedance.com/
-
-v2->v3: Addressed comments from Alexei Starovoitov
-- Modify the comment information of the function.
-- Narrow down the testcase's hook point
-Details in here:
-https://lore.kernel.org/all/20230421090403.15515-1-zhoufeng.zf@bytedance.com/
-
-v1->v2: Addressed comments from Alexei Starovoitov
-- Add kfunc instead.
-Details in here:
-https://lore.kernel.org/all/20230420072657.80324-1-zhoufeng.zf@bytedance.com/
-
- kernel/bpf/helpers.c                          | 20 +++++++
- tools/testing/selftests/bpf/DENYLIST.s390x    |  1 +
- .../bpf/prog_tests/task_under_cgroup.c        | 54 +++++++++++++++++++
- .../bpf/progs/test_task_under_cgroup.c        | 51 ++++++++++++++++++
- 4 files changed, 126 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
-
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index bb6b4637ebf2..453cbd312366 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -2149,6 +2149,25 @@ __bpf_kfunc struct cgroup *bpf_cgroup_from_id(u64 cgid)
+ 		return NULL;
+ 	return cgrp;
+ }
++
++/**
++ * bpf_task_under_cgroup - wrap task_under_cgroup_hierarchy() as a kfunc, test
++ * task's membership of cgroup ancestry.
++ * @task: the task to be tested
++ * @ancestor: possible ancestor of @task's cgroup
++ *
++ * Tests whether @task's default cgroup hierarchy is a descendant of @ancestor.
++ * It follows all the same rules as cgroup_is_descendant, and only applies
++ * to the default hierarchy.
++ */
++__bpf_kfunc long bpf_task_under_cgroup(struct task_struct *task,
++				       struct cgroup *ancestor)
++{
++	if (unlikely(!ancestor || !task))
++		return -EINVAL;
++
++	return task_under_cgroup_hierarchy(task, ancestor);
++}
+ #endif /* CONFIG_CGROUPS */
+ 
+ /**
+@@ -2400,6 +2419,7 @@ BTF_ID_FLAGS(func, bpf_cgroup_acquire, KF_ACQUIRE | KF_RCU | KF_RET_NULL)
+ BTF_ID_FLAGS(func, bpf_cgroup_release, KF_RELEASE)
+ BTF_ID_FLAGS(func, bpf_cgroup_ancestor, KF_ACQUIRE | KF_RCU | KF_RET_NULL)
+ BTF_ID_FLAGS(func, bpf_cgroup_from_id, KF_ACQUIRE | KF_RET_NULL)
++BTF_ID_FLAGS(func, bpf_task_under_cgroup, KF_RCU)
+ #endif
+ BTF_ID_FLAGS(func, bpf_task_from_pid, KF_ACQUIRE | KF_RET_NULL)
+ BTF_SET8_END(generic_btf_ids)
 -- 
 2.20.1
 
