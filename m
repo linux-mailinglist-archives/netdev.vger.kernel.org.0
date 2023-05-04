@@ -1,52 +1,53 @@
-Return-Path: <netdev+bounces-386-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-387-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id E18986F7575
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:57:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id CC5906F7581
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:58:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9C3B6280E74
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:57:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 88D1E280F50
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:58:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BE7AF1096E;
-	Thu,  4 May 2023 19:46:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B565C1097A;
+	Thu,  4 May 2023 19:46:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2001710961
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:46:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4022C433A0;
-	Thu,  4 May 2023 19:46:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C61210961
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D910C433A4;
+	Thu,  4 May 2023 19:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229563;
-	bh=ANj1/Mdt11UKjqOjZLYLvGkukMF6iBUj/697rQNawaA=;
+	s=k20201202; t=1683229565;
+	bh=xU5+GS7Z0ZOvuzry9gq4roNZWabzqWYxzl3qKvzYpew=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=CvkuNqXX5kpWuYgERI1/yvsbFdlCM2eZ6QhRYnn5INWMb8gZ0zGXYpn/HFfgC3afE
-	 3KWNepofn1o7WcWBhVFCc9k+LM6aIbKM3qmQWRo5zofbEaMKDdVfyovZnyEK2meQRS
-	 WI1Q3962EkqOOXJ6sCJGzyjEqJil2n5O3HpB2FTDioOmhJn/KZKtxlk1kPtZm+4lsD
-	 x0Qtr4GRDdVkeY/BKkAdlN7UMBs9OVfE863hp/J67sjCTx6Xiflabdr8+AcOBiLwkE
-	 2FgY7i/6DyuedXqH3pH6HnTqPtf3rhw2acqpFku4yQ6W5LqLfMTgzpiZWjs467ijhT
-	 sm7hgaRNJmR4g==
+	b=XwXn1xyjBbrzpWZzkeqWrU1e2NtZ2DUlZ1nB/aWbgt7AAlow9IHC8y28Vnt6H1Vuw
+	 jEZbHKxZcyIB8hgEqqTxZhR67LSEqo2yYoWHg72/iBd4MQumYyhhtOsLKYTj0OIS/D
+	 yj7lq2919LtCuLQ28uU4vJMxNXBIVMtw4KqWcORwpABCK2sQfHio1Neu8aN5rBH9/h
+	 EtEBPpqgi14Iouk05ME4pBZaePPsB7DX/Wo3BGatMhaUdO3+bS1KiKMLYmi9ZYOWn+
+	 U+cUCT9mN3SFLAvJDgJGgprlrVx/m8VuxovWicziEv3BIPfBb27GN6gFsnBBd8OAOu
+	 zTiDEc5k0aG9A==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Nagarajan Maran <quic_nmaran@quicinc.com>,
-	Kalle Valo <quic_kvalo@quicinc.com>,
+Cc: Larry Finger <Larry.Finger@lwfinger.net>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Ping-Ke Shih <pkshih@realtek.com>,
+	Kalle Valo <kvalo@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
-	kvalo@kernel.org,
+	tony0620emma@gmail.com,
 	davem@davemloft.net,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	ath11k@lists.infradead.org,
 	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.2 40/53] wifi: ath11k: Fix SKB corruption in REO destination ring
-Date: Thu,  4 May 2023 15:44:00 -0400
-Message-Id: <20230504194413.3806354-40-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.2 41/53] wifi: rtw88: Fix memory leak in rtw88_usb
+Date: Thu,  4 May 2023 15:44:01 -0400
+Message-Id: <20230504194413.3806354-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194413.3806354-1-sashal@kernel.org>
 References: <20230504194413.3806354-1-sashal@kernel.org>
@@ -60,78 +61,64 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Nagarajan Maran <quic_nmaran@quicinc.com>
+From: Larry Finger <Larry.Finger@lwfinger.net>
 
-[ Upstream commit f9fff67d2d7ca6fa8066132003a3deef654c55b1 ]
+[ Upstream commit 59a3a312009723e3e5082899655fdcc420e2b47a ]
 
-While running traffics for a long time, randomly an RX descriptor
-filled with value "0" from REO destination ring is received.
-This descriptor which is invalid causes the wrong SKB (SKB stored in
-the IDR lookup with buffer id "0") to be fetched which in turn
-causes SKB memory corruption issue and the same leads to crash
-after some time.
+Kmemleak shows the following leak arising from routine in the usb
+probe routine:
 
-Changed the start id for idr allocation to "1" and the buffer id "0"
-is reserved for error validation. Introduced Sanity check to validate
-the descriptor, before processing the SKB.
+unreferenced object 0xffff895cb29bba00 (size 512):
+  comm "(udev-worker)", pid 534, jiffies 4294903932 (age 102751.088s)
+  hex dump (first 32 bytes):
+    77 30 30 30 00 00 00 00 02 2f 2d 2b 30 00 00 00  w000...../-+0...
+    02 00 2a 28 00 00 00 00 ff 55 ff ff ff 00 00 00  ..*(.....U......
+  backtrace:
+    [<ffffffff9265fa36>] kmalloc_trace+0x26/0x90
+    [<ffffffffc17eec41>] rtw_usb_probe+0x2f1/0x680 [rtw_usb]
+    [<ffffffffc03e19fd>] usb_probe_interface+0xdd/0x2e0 [usbcore]
+    [<ffffffff92b4f2fe>] really_probe+0x18e/0x3d0
+    [<ffffffff92b4f5b8>] __driver_probe_device+0x78/0x160
+    [<ffffffff92b4f6bf>] driver_probe_device+0x1f/0x90
+    [<ffffffff92b4f8df>] __driver_attach+0xbf/0x1b0
+    [<ffffffff92b4d350>] bus_for_each_dev+0x70/0xc0
+    [<ffffffff92b4e51e>] bus_add_driver+0x10e/0x210
+    [<ffffffff92b50935>] driver_register+0x55/0xf0
+    [<ffffffffc03e0708>] usb_register_driver+0x88/0x140 [usbcore]
+    [<ffffffff92401153>] do_one_initcall+0x43/0x210
+    [<ffffffff9254f42a>] do_init_module+0x4a/0x200
+    [<ffffffff92551d1c>] __do_sys_finit_module+0xac/0x120
+    [<ffffffff92ee6626>] do_syscall_64+0x56/0x80
+    [<ffffffff9300006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-Crash Signature :
+The leak was verified to be real by unloading the driver, which resulted
+in a dangling pointer to the allocation.
 
-Unable to handle kernel paging request at virtual address 3f004900
-PC points to "b15_dma_inv_range+0x30/0x50"
-LR points to "dma_cache_maint_page+0x8c/0x128".
-The Backtrace obtained is as follows:
-[<8031716c>] (b15_dma_inv_range) from [<80313a4c>] (dma_cache_maint_page+0x8c/0x128)
-[<80313a4c>] (dma_cache_maint_page) from [<80313b90>] (__dma_page_dev_to_cpu+0x28/0xcc)
-[<80313b90>] (__dma_page_dev_to_cpu) from [<7fb5dd68>] (ath11k_dp_process_rx+0x1e8/0x4a4 [ath11k])
-[<7fb5dd68>] (ath11k_dp_process_rx [ath11k]) from [<7fb53c20>] (ath11k_dp_service_srng+0xb0/0x2ac [ath11k])
-[<7fb53c20>] (ath11k_dp_service_srng [ath11k]) from [<7f67bba4>] (ath11k_pci_ext_grp_napi_poll+0x1c/0x78 [ath11k_pci])
-[<7f67bba4>] (ath11k_pci_ext_grp_napi_poll [ath11k_pci]) from [<807d5cf4>] (__napi_poll+0x28/0xb8)
-[<807d5cf4>] (__napi_poll) from [<807d5f28>] (net_rx_action+0xf0/0x280)
-[<807d5f28>] (net_rx_action) from [<80302148>] (__do_softirq+0xd0/0x280)
-[<80302148>] (__do_softirq) from [<80320408>] (irq_exit+0x74/0xd4)
-[<80320408>] (irq_exit) from [<803638a4>] (__handle_domain_irq+0x90/0xb4)
-[<803638a4>] (__handle_domain_irq) from [<805bedec>] (gic_handle_irq+0x58/0x90)
-[<805bedec>] (gic_handle_irq) from [<80301a78>] (__irq_svc+0x58/0x8c)
+The allocated memory is freed in rtw_usb_intf_deinit().
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
-
-Signed-off-by: Nagarajan Maran <quic_nmaran@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20230403191533.28114-1-quic_nmaran@quicinc.com
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Ping-Ke Shih <pkshih@realtek.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230417160331.23071-1-Larry.Finger@lwfinger.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp_rx.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/wireless/realtek/rtw88/usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 1786d83f8f2ed..38be646bc0214 100644
---- a/drivers/net/wireless/ath/ath11k/dp_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -389,10 +389,10 @@ int ath11k_dp_rxbufs_replenish(struct ath11k_base *ab, int mac_id,
- 			goto fail_free_skb;
+diff --git a/drivers/net/wireless/realtek/rtw88/usb.c b/drivers/net/wireless/realtek/rtw88/usb.c
+index 68e1b782d1992..05c7326443614 100644
+--- a/drivers/net/wireless/realtek/rtw88/usb.c
++++ b/drivers/net/wireless/realtek/rtw88/usb.c
+@@ -780,6 +780,7 @@ static void rtw_usb_intf_deinit(struct rtw_dev *rtwdev,
+ 	struct rtw_usb *rtwusb = rtw_get_usb_priv(rtwdev);
  
- 		spin_lock_bh(&rx_ring->idr_lock);
--		buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 0,
--				   rx_ring->bufs_max * 3, GFP_ATOMIC);
-+		buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 1,
-+				   (rx_ring->bufs_max * 3) + 1, GFP_ATOMIC);
- 		spin_unlock_bh(&rx_ring->idr_lock);
--		if (buf_id < 0)
-+		if (buf_id <= 0)
- 			goto fail_dma_unmap;
+ 	usb_put_dev(rtwusb->udev);
++	kfree(rtwusb->usb_data);
+ 	usb_set_intfdata(intf, NULL);
+ }
  
- 		desc = ath11k_hal_srng_src_get_next_entry(ab, srng);
-@@ -2665,6 +2665,9 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
- 				   cookie);
- 		mac_id = FIELD_GET(DP_RXDMA_BUF_COOKIE_PDEV_ID, cookie);
- 
-+		if (unlikely(buf_id == 0))
-+			continue;
-+
- 		ar = ab->pdevs[mac_id].ar;
- 		rx_ring = &ar->dp.rx_refill_buf_ring;
- 		spin_lock_bh(&rx_ring->idr_lock);
 -- 
 2.39.2
 
