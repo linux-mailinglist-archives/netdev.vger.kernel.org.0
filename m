@@ -1,52 +1,53 @@
-Return-Path: <netdev+bounces-403-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-404-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CF67B6F7610
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 9AC5F6F761C
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:04:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 473C7281221
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:03:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9A0DC2811B6
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:04:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4ECCA154B2;
-	Thu,  4 May 2023 19:47:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6EE2F168A5;
+	Thu,  4 May 2023 19:47:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEC28E57A
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:47:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64096C433A0;
-	Thu,  4 May 2023 19:47:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA08E168A3
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:47:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ADB3C4339E;
+	Thu,  4 May 2023 19:47:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229666;
-	bh=ULgldKHcQe/oiOaENBpSwoJGPj/4CsTxUBA9RRpJm0E=;
+	s=k20201202; t=1683229669;
+	bh=DZKU6XSyyuM1gByFJC0vIm3uimmnBCy1jTXJ/4/A0vE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=JTWYmVkPwxqKzSUcJC5vHIfOv45eYsFzdd+d33hABoLKVhtrykb3wIeBmqY8t4oga
-	 WoQuEATxUI0e9nBRUYHDPn40YhzV21FoXQ+lQW5shoWSjs+PKwJVXgVopbB9v/c5Mm
-	 VbojstvqkPaiaFEIjRfKJ9Z6t2miz4w5eiWihl97OcNvf0Udu704rKMDv6GL58dknd
-	 S1iyFjjMoYgZnhQHk/AJuv5BGyJwzmhe9GiKn7svbGdVOWhCDbgKtzvhipMw2tdRXl
-	 C84ay3mUqSLkAAPrJo5AX7hsaRxVPXs8SZ7ATEuwhOZdRcuxNpKpnrsa1iHA5qA26y
-	 8OBURH7kaeNFg==
+	b=qKha44qjgMkKhpbxHjr1tV5F5agZrW46StTHSxKtKnA7nq71/OUT1o159Zi6g6kx+
+	 u6FHolQgnE2tffU57SEWt3fpof1u6D4x2zMS7t/J33KUjFr0wyRCBgvGatUWlEXv7v
+	 zv/gASALGOLzM7joP3j8jK44XDUqZtJiVnJYPPzEc4eXlpBA6RAJxyKqy7d92fs/ot
+	 B5BUvQ++QovuFuN6IFVx7nZUijs94vWypYaeDtA0oUSd2MXndVtKOpC+i6Z2iR3Cm6
+	 c8Uuhlc6PKxiZBOc7xVVAksHU9YknFMFIYspxob9yfN91ODcvbkt2UOO5ajhbg3vAe
+	 iP+nOnqXf4wdA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Johannes Berg <johannes.berg@intel.com>,
-	Gregory Greenman <gregory.greenman@intel.com>,
+Cc: Harshitha Prem <quic_hprem@quicinc.com>,
+	Nagarajan Maran <quic_nmaran@quicinc.com>,
+	Kalle Valo <quic_kvalo@quicinc.com>,
 	Sasha Levin <sashal@kernel.org>,
 	kvalo@kernel.org,
 	davem@davemloft.net,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	miriam.rachel.korenblit@intel.com,
+	ath11k@lists.infradead.org,
 	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 31/49] wifi: iwlwifi: mvm: fix ptk_pn memory leak
-Date: Thu,  4 May 2023 15:46:08 -0400
-Message-Id: <20230504194626.3807438-31-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 33/49] wifi: ath11k: Ignore frags from uninitialized peer in dp.
+Date: Thu,  4 May 2023 15:46:10 -0400
+Message-Id: <20230504194626.3807438-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194626.3807438-1-sashal@kernel.org>
 References: <20230504194626.3807438-1-sashal@kernel.org>
@@ -60,46 +61,116 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Harshitha Prem <quic_hprem@quicinc.com>
 
-[ Upstream commit d066a530af8e1833c7ea2cef7784004700c85f79 ]
+[ Upstream commit a06bfb3c9f69f303692cdae87bc0899d2ae8b2a6 ]
 
-If adding a key to firmware fails we leak the allocated ptk_pn.
-This shouldn't happen in practice, but we should still fix it.
+When max virtual ap interfaces are configured in all the bands with
+ACS and hostapd restart is done every 60s, a crash is observed at
+random times.
+In this certain scenario, a fragmented packet is received for
+self peer, for which rx_tid and rx_frags are not initialized in
+datapath. While handling this fragment, crash is observed as the
+rx_frag list is uninitialised and when we walk in
+ath11k_dp_rx_h_sort_frags, skb null leads to exception.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20230414130637.99446ffd02bc.I82a2ad6ec1395f188e0a1677cc619e3fcb1feac9@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+To address this, before processing received fragments we check
+dp_setup_done flag is set to ensure that peer has completed its
+dp peer setup for fragment queue, else ignore processing the
+fragments.
+
+Call trace:
+  ath11k_dp_process_rx_err+0x550/0x1084 [ath11k]
+  ath11k_dp_service_srng+0x70/0x370 [ath11k]
+  0xffffffc009693a04
+  __napi_poll+0x30/0xa4
+  net_rx_action+0x118/0x270
+  __do_softirq+0x10c/0x244
+  irq_exit+0x64/0xb4
+  __handle_domain_irq+0x88/0xac
+  gic_handle_irq+0x74/0xbc
+  el1_irq+0xf0/0x1c0
+  arch_cpu_idle+0x10/0x18
+  do_idle+0x104/0x248
+  cpu_startup_entry+0x20/0x64
+  rest_init+0xd0/0xdc
+  arch_call_rest_init+0xc/0x14
+  start_kernel+0x480/0x4b8
+  Code: f9400281 f94066a2 91405021 b94a0023 (f9406401)
+
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
+
+Signed-off-by: Harshitha Prem <quic_hprem@quicinc.com>
+Signed-off-by: Nagarajan Maran <quic_nmaran@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20230403184155.8670-2-quic_nmaran@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/dp.c    | 4 +++-
+ drivers/net/wireless/ath/ath11k/dp_rx.c | 8 ++++++++
+ drivers/net/wireless/ath/ath11k/peer.h  | 1 +
+ 3 files changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index a841268e0709f..801098c5183b6 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -3445,7 +3445,7 @@ static int __iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
- 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
- 	struct iwl_mvm *mvm = IWL_MAC80211_GET_MVM(hw);
- 	struct iwl_mvm_sta *mvmsta = NULL;
--	struct iwl_mvm_key_pn *ptk_pn;
-+	struct iwl_mvm_key_pn *ptk_pn = NULL;
- 	int keyidx = key->keyidx;
- 	int ret, i;
- 	u8 key_offset;
-@@ -3590,6 +3590,10 @@ static int __iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
- 		if (ret) {
- 			IWL_WARN(mvm, "set key failed\n");
- 			key->hw_key_idx = STA_KEY_IDX_INVALID;
-+			if (ptk_pn) {
-+				RCU_INIT_POINTER(mvmsta->ptk_pn[keyidx], NULL);
-+				kfree(ptk_pn);
-+			}
- 			/*
- 			 * can't add key for RX, but we don't need it
- 			 * in the device for TX so still return 0,
+diff --git a/drivers/net/wireless/ath/ath11k/dp.c b/drivers/net/wireless/ath/ath11k/dp.c
+index f5156a7fbdd7a..d070bcb3fe247 100644
+--- a/drivers/net/wireless/ath/ath11k/dp.c
++++ b/drivers/net/wireless/ath/ath11k/dp.c
+@@ -36,6 +36,7 @@ void ath11k_dp_peer_cleanup(struct ath11k *ar, int vdev_id, const u8 *addr)
+ 	}
+ 
+ 	ath11k_peer_rx_tid_cleanup(ar, peer);
++	peer->dp_setup_done = false;
+ 	crypto_free_shash(peer->tfm_mmic);
+ 	spin_unlock_bh(&ab->base_lock);
+ }
+@@ -72,7 +73,8 @@ int ath11k_dp_peer_setup(struct ath11k *ar, int vdev_id, const u8 *addr)
+ 	ret = ath11k_peer_rx_frag_setup(ar, addr, vdev_id);
+ 	if (ret) {
+ 		ath11k_warn(ab, "failed to setup rx defrag context\n");
+-		return ret;
++		tid--;
++		goto peer_clean;
+ 	}
+ 
+ 	/* TODO: Setup other peer specific resource used in data path */
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index e964e1b722871..1786d83f8f2ed 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -3138,6 +3138,7 @@ int ath11k_peer_rx_frag_setup(struct ath11k *ar, const u8 *peer_mac, int vdev_id
+ 	}
+ 
+ 	peer->tfm_mmic = tfm;
++	peer->dp_setup_done = true;
+ 	spin_unlock_bh(&ab->base_lock);
+ 
+ 	return 0;
+@@ -3583,6 +3584,13 @@ static int ath11k_dp_rx_frag_h_mpdu(struct ath11k *ar,
+ 		ret = -ENOENT;
+ 		goto out_unlock;
+ 	}
++	if (!peer->dp_setup_done) {
++		ath11k_warn(ab, "The peer %pM [%d] has uninitialized datapath\n",
++			    peer->addr, peer_id);
++		ret = -ENOENT;
++		goto out_unlock;
++	}
++
+ 	rx_tid = &peer->rx_tid[tid];
+ 
+ 	if ((!skb_queue_empty(&rx_tid->rx_frags) && seqno != rx_tid->cur_sn) ||
+diff --git a/drivers/net/wireless/ath/ath11k/peer.h b/drivers/net/wireless/ath/ath11k/peer.h
+index 6dd17bafe3a0c..9bd385d0a38c9 100644
+--- a/drivers/net/wireless/ath/ath11k/peer.h
++++ b/drivers/net/wireless/ath/ath11k/peer.h
+@@ -35,6 +35,7 @@ struct ath11k_peer {
+ 	u16 sec_type;
+ 	u16 sec_type_grp;
+ 	bool is_authorized;
++	bool dp_setup_done;
+ };
+ 
+ void ath11k_peer_unmap_event(struct ath11k_base *ab, u16 peer_id);
 -- 
 2.39.2
 
