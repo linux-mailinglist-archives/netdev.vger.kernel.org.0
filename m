@@ -1,109 +1,137 @@
-Return-Path: <netdev+bounces-244-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-245-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 97F586F64DB
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 08:22:25 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9E7E36F656D
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 09:06:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A5B75280CE9
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 06:22:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 706BB1C20FA6
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 07:06:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0A081386;
-	Thu,  4 May 2023 06:22:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEF50139F;
+	Thu,  4 May 2023 07:06:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A36C2ED2
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 06:22:21 +0000 (UTC)
-Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E415D199E;
-	Wed,  3 May 2023 23:22:09 -0700 (PDT)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R541e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vhe9zcQ_1683181325;
-Received: from 30.221.129.60(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0Vhe9zcQ_1683181325)
-          by smtp.aliyun-inc.com;
-          Thu, 04 May 2023 14:22:06 +0800
-Message-ID: <38151aa1-10f4-9104-1b92-640e153d39da@linux.alibaba.com>
-Date: Thu, 4 May 2023 14:22:03 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF5CAA2D
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 07:06:20 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648B0270C
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 00:06:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683183978;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7iM8ql6U32hllNnQM8/MvCWRLr14Z6gVQHMHyvjhAJs=;
+	b=aGDu/bNBlBaZI0bP+pV1nVfaTezeIFModt2rR7Kk5AgxvU70TciGGgTBHA6x2hjJnx8uLb
+	H9TtQUpy+zE82NnqPSVjGlt3rp1TTj2IBW1tOSOnNmatpK/pquKOO8ecMQWHn1u+IaxvyL
+	7B1da+5Hun/+0jWnv6AyrJMYPorZcms=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-343-G-pWvLKwND6j8aixmZncpQ-1; Thu, 04 May 2023 03:06:17 -0400
+X-MC-Unique: G-pWvLKwND6j8aixmZncpQ-1
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-3f315735edeso31328535e9.1
+        for <netdev@vger.kernel.org>; Thu, 04 May 2023 00:06:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683183976; x=1685775976;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7iM8ql6U32hllNnQM8/MvCWRLr14Z6gVQHMHyvjhAJs=;
+        b=bqVnz3uKQ4K1e9so6B3yNFL+uB3AE58tzfzHdD8O+DSC+6+vz1NZsuVBcTdaUjG4A6
+         RWC8ndhmKfXhKiRZqduNUCbbex6yDxBb9JUrMgCs2iG2qdylAa04xcZ8oeVn4SIXxbU2
+         GqDxg2kOu93vtmPYiRUHPIDc5SeE2EKGoCAuSEoHz86VJSX+cn8zRkLyLLp4iMeC9Fl7
+         trVzODqSkxNF62V4wi+MnKhksNEU+BxDu5t4iACKSctsroL6d+UGIxi2INqUeupNeJ+S
+         paqeEIfUR54t2KJASJAoinaG0hqBGfsg5u+/k5qSLqXCNwi/kHf/rssXcHCALcQyXNHQ
+         w+CA==
+X-Gm-Message-State: AC+VfDzYgPL6L8sjzpmOoProeksHhbfPlM8KNBazm5WMkL7lrRzO2s5O
+	ZAmjNkONmZ6KeDdLn8T5oXQ7STEC4wduPLw+APqbwYxrSAZLJi+hxzTOfWROGdLoYYeP5slRbus
+	Z/LEVJd0KMo1hArmS
+X-Received: by 2002:adf:f950:0:b0:2f1:b74:5d8a with SMTP id q16-20020adff950000000b002f10b745d8amr1675318wrr.5.1683183976225;
+        Thu, 04 May 2023 00:06:16 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4CgwTMT0Nhemerdz6SF54k/h2cU7j+aMDelbq7ULOYa16/suNYC6YVRr/AAzrrM8mjZYvILA==
+X-Received: by 2002:adf:f950:0:b0:2f1:b74:5d8a with SMTP id q16-20020adff950000000b002f10b745d8amr1675292wrr.5.1683183975895;
+        Thu, 04 May 2023 00:06:15 -0700 (PDT)
+Received: from redhat.com ([31.187.78.120])
+        by smtp.gmail.com with ESMTPSA id s1-20020adff801000000b00300aee6c9cesm35957612wrp.20.2023.05.04.00.06.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 May 2023 00:06:15 -0700 (PDT)
+Date: Thu, 4 May 2023 03:06:10 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Wenliang Wang <wangwenliang.1995@bytedance.com>
+Cc: jasowang@redhat.com, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, zhengqi.arch@bytedance.com,
+	willemdebruijn.kernel@gmail.com,
+	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, xuanzhuo@linux.alibaba.com
+Subject: Re: [PATCH v4] virtio_net: suppress cpu stall when free_unused_bufs
+Message-ID: <20230504030546-mutt-send-email-mst@kernel.org>
+References: <1683167226-7012-1-git-send-email-wangwenliang.1995@bytedance.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [RFC PATCH net-next v5 2/9] net/smc: Decouple ism_dev from SMC-D
- DMB registration
-To: Simon Horman <simon.horman@corigine.com>
-Cc: kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, linux-s390@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <1682252271-2544-1-git-send-email-guwen@linux.alibaba.com>
- <1682252271-2544-3-git-send-email-guwen@linux.alibaba.com>
- <ZEva5rj3DWQEmix8@corigine.com>
-From: Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <ZEva5rj3DWQEmix8@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-14.2 required=5.0 tests=BAYES_00,
-	ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1683167226-7012-1-git-send-email-wangwenliang.1995@bytedance.com>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
-
-On 2023/4/28 22:40, Simon Horman wrote:
-
-> On Sun, Apr 23, 2023 at 08:17:44PM +0800, Wen Gu wrote:
->> This patch tries to decouple ISM device from SMC-D DMB registration,
->> So that the register_dmb option is not restricted to be used by ISM
->> device.
->>
->> Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
->> ---
->>   drivers/s390/net/ism_drv.c | 5 +++--
->>   include/net/smc.h          | 4 ++--
->>   net/smc/smc_ism.c          | 7 ++-----
->>   3 files changed, 7 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
->> index 8acb9eb..5eeb54d 100644
->> --- a/drivers/s390/net/ism_drv.c
->> +++ b/drivers/s390/net/ism_drv.c
->> @@ -796,9 +796,10 @@ static int smcd_query_rgid(struct smcd_dev *smcd, u64 rgid, u32 vid_valid,
->>   }
->>   
->>   static int smcd_register_dmb(struct smcd_dev *smcd, struct smcd_dmb *dmb,
->> -			     struct ism_client *client)
->> +			     void *client_priv)
->>   {
->> -	return ism_register_dmb(smcd->priv, (struct ism_dmb *)dmb, client);
->> +	return ism_register_dmb(smcd->priv, (struct ism_dmb *)dmb,
->> +				(struct ism_client *)client_priv);
+On Thu, May 04, 2023 at 10:27:06AM +0800, Wenliang Wang wrote:
+> For multi-queue and large ring-size use case, the following error
+> occurred when free_unused_bufs:
+> rcu: INFO: rcu_sched self-detected stall on CPU.
 > 
-> Hi Wen Gu,
-> 
-> a minor nit from my side: there is no need to cast a void pointer to
-> another type.
-> 
->>   }
->>   
->>   static int smcd_unregister_dmb(struct smcd_dev *smcd, struct smcd_dmb *dmb)
-> 
-> ...
+> Fixes: 986a4f4d452d ("virtio_net: multiqueue support")
+> Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
 
-Hi Simon Horman,
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-Thanks for your review and suggestions in this patch and others.
-I will take them in the next version.
+Probably a good idea for stable, too.
 
-Thanks!
-Wen Gu
+> ---
+> v2:
+> -add need_resched check.
+> -apply same logic to sq.
+> v3:
+> -use cond_resched instead.
+> v4:
+> -add fixes tag
+> ---
+>  drivers/net/virtio_net.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 8d8038538fc4..a12ae26db0e2 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3560,12 +3560,14 @@ static void free_unused_bufs(struct virtnet_info *vi)
+>  		struct virtqueue *vq = vi->sq[i].vq;
+>  		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
+>  			virtnet_sq_free_unused_buf(vq, buf);
+> +		cond_resched();
+>  	}
+>  
+>  	for (i = 0; i < vi->max_queue_pairs; i++) {
+>  		struct virtqueue *vq = vi->rq[i].vq;
+>  		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
+>  			virtnet_rq_free_unused_buf(vq, buf);
+> +		cond_resched();
+>  	}
+>  }
+>  
+> -- 
+> 2.20.1
+
 
