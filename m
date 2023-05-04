@@ -1,107 +1,120 @@
-Return-Path: <netdev+bounces-478-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-479-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6750E6F79BC
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 01:36:47 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E20D06F79C2
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 01:38:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C9A2A280F72
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 23:36:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E55111C2163B
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 23:38:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8680CD53E;
-	Thu,  4 May 2023 23:36:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D4D5E547;
+	Thu,  4 May 2023 23:38:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78A81C142
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 23:36:43 +0000 (UTC)
-Received: from sonic309-21.consmr.mail.ne1.yahoo.com (sonic309-21.consmr.mail.ne1.yahoo.com [66.163.184.147])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F01512E86
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 16:36:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1683243401; bh=BAi4uS2WiT10qtC/CKY/kibMDj1d2qG9nAXyjlNXEv0=; h=Date:From:To:Subject:References:From:Subject:Reply-To; b=WoQQniL1340wR/qBQKAtUjy1Mg4UwCSTddReryJ17m/PZdSXa3tvsKAJSCzA8oxpiGPcpvyU5ou/wF07TyPv+xR/S6qfUv2iATpiyslkOMORByvRSa+kZJF1Eu7BTPNiv7onaEkcFp/kWmVP9/UENi4t3CHqPplUiH0CuWNB4oVyBCaajkYbtceLoUfPDmoqHLFHJg4Vh7m7r5XooyYKKaATsnettC32g+rMTwjsiqbcVr9Deima+a0OgBV+nk1u6psRsnh4nqNHoAgglLHla1Pb44jzp5jk9GkPFToaYVCMFN+qreQsocx/I4ZbPp4dNqQGJZ7oZBGA2qLZDegFXQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1683243401; bh=SZTCgP7D1xTr/c5Lq2SznugxsFDF2r30igHE+Gya8lm=; h=X-Sonic-MF:Date:From:To:Subject:From:Subject; b=FbYwvkfCPfGLRG4N8XvuU8FQRWbx3i/LO8akhnSm1cl2bop0DR3Sm9Cg6veF5s+a4RPaUi0qJV532B7FsA/4Lk6krkQq1L9mQtQPE4n9fZ7+oXaqPZFCYVwXLKBHx1TzID8kdRfIzX/dpJCwlfRB8qZI1Fhzf/SWVqQHNQTvW5nBl+8D9f/5V2eE+Pe+X6NlIw8V90C99s9njLDJ60dNj7Rr45M9GvYsVD4jYve4+iwtO2Fa5JEXooAgpO9dKDsvO8lHfGZK8mY3WRURpNzDm1OOnArsn9+EWSbQ/Mug7kSsv339K4WeYnWT2+Ls1jno/i/Nu8J7GOhw3y9uJTzS5Q==
-X-YMail-OSG: RaPl7.oVM1mAmL0urcpKm1WZj0eayxGBDZOgWtA6rAyWbG0Jdlj6OJQKK1vSPfV
- cI6qq7qUYkgN3gl0gKe0yzpSvv.3O6Ykk3SVn_bNmbdKq3WV6zUPn8gPD8bgSUYLoCt8s.HHokOl
- RGlq2Q2DEtc_wRqpK7FDnCuFXG2Pn5Vc7oF1KgE5o.NKN4FxWML1y_sTBpw_IwYJ_0rxKfJZ.AzG
- NG34mcXEKyti.PivMScYTIS6Txq7hYpyOYmG2jVdT70tFsaBhROJBN9cS1TtEOlfq70BAqu1O0YC
- SkWQAVop5AIig.Rb_0_PXIIiAc434DX56OAULVH7N_o6e21rDYSEPFCDNajxKk9E9XPZ.Zpk_gzV
- TQD8.RbxcxQI1cz7NPRnFIygaD4n_z0hzzn5RkZaG5FgpxC68cP_MGgalUZdemBLITH8xmnUmXPF
- jg_YrV7xb9qUadJ2B13h9KQZ4lAbTGpujzG99SrUUUBXfnsQ3LTycMvCuskY.WluGEZ_lgBQvYqT
- HYG_N89hDSX4VuwEyUs3dJaovGZCutuu_tuHXhf614.ykNzMPnN7hZ1obMD_fq.VjRITwZeGm2D_
- cc3bi7vO2xmnRtputqrMjuLJ9F_5u0mOvmFBctd1ixwQy.InsPFb78rEkNToa0FqoOHejojbjn8I
- o5iJ1Mzg12TIVfOZnG4.kUcDHPO.fH53Zly4SYLNcpFrSq3uqVsxozXHjiesYxboEntAWzQksNeK
- fiBEmKy1lGMuh0YZQuOUCOTDwWY3_LxAs8MjZY_byhHTSq3MdLy8BsshNQdYKZc6IXinCH7ZEAL6
- XmO8ayGwc1gbZQmx8Px5u3cWgoGiBzASKrUw1UcW3lQ7mpo0vAXOl9vxKvC9DYzhH2C2wVsQpmBh
- my.6aBCRykkyUpYut2CQ_xBuNxSe75fbndIgEAYfMxU5EcJv7PvuB0FGzmKO8Tewr1G_XF_9fGki
- yVeNmJTIpsAaDTVGz0EGHdB1i7bUgpB2YRUYpjvAGEFhRU0Q32IARO4idDMPw3hoPJXSylEISwvG
- YHOe01HWDB.lKNDbwn6CeOPwXqKcpwoalc6eyOb9Drs8UwwbpcsgDrkr5smDiKXqqnTSNmenkUgk
- Ybbmkn6Rgz0OzR5D7OqaxdTkV4_9JVy8UyUMkHhUXoG7iu8ocKitOHXSEKVr6CHqiJ57oVSNGexu
- 4ACP_ziLfvSi.DXBCsQJnTBTaj9LNU_.pWat5E91vaKnMONJK_2Pp1Xiq_1ilWMRf1qr32TwAWzP
- NldqiU7zLz.LzNsp.eZ5hC4gpRtOXYvJX3zGyfFcyR7eFsy4omiie6fJ4_vM.iAn1wn50uEo2sXW
- NyNekEt90guqvUzJWrnMY7iv_NCLGyXTPIfCTr0dr8Fq.iD7P1vddYcliWmZ96XXqxJvshoJ9wd.
- ICbYyW12qrGFFCwvEu..xl8mWbt.MfmweT40gWUF5mcv.uqg2uWsboBotRT3Y5u9ciJjq3JHJ_Xl
- s9lD2qA.QcX_YM9I91WclCplDUMW5s2bx0K92CuGYw0ODRjRG7hicHpWuD07OKzayaLMbnW.joJg
- cCdE.pBy_hxwXZfpV6W65OBADC.Q5cj9MGomjaYAOU2YFI1ktyURGuhXjnDBq4s5HAjenXdzx4OR
- LfDyxyNq446SRMv1v6ddhtibW9ViLcdMlIWREGYRuRITT6l909ouuTRgS2IgYlR3PRGTMlbn52CU
- xu4H_WXttRg9tt7woTXX_.q2QT9wBGwGZtBsNzOpsILqcikvUxxmVIqDIKyZg.5UWK3TYGbmUoeK
- AE8pXajPgPVqjy7Xij40ReTQ2b8H7BZz9gXIokJTzbylHPGUCOz4ReG4PMAxRIydbfdY75sxfddf
- 1l3UU8UTv4blAeahfGdNpFS.RDQkU5JA39fqtgPuDCb7HLsufafpGeInSdr5a2ekCYfxVETqjxT3
- K9vhxwQgPRDss.3uiXjkOsUnLUL.eJgI8SMLpqZabUN7CxwQbHEhqPzIDvjUlsZsiRfKP3e4oGB7
- c9qkDw8rSXkkC_TfUSrsO5nR3TRUJWKC2ZFhGCBFLdzxPMMbJFcVS4T4xWbH6iQ_dUktpyjsqwqL
- o5CaXhEZGZN9LrM2b2x.eySjcIH_f0p_8zbsz_ThXI6hT69EVEEYBY_TfW3dxtD7tNBB5nNwx.i.
- WeVnUT9_o7mgmfBELSdW0_Hv4DjgS.7E33vRW8LjPU5FiyvVOTVA.hqvCKLGxsxXQO99KP2nrFeu
- PZvRo2wg5iyWF2r.KN.S1pkX6vXOHXIFGE6Jh4viCW4RCgm9A
-X-Sonic-MF: <schneiderman.richard@yahoo.com>
-X-Sonic-ID: 81f5bb71-aa0f-4a9f-ab87-87127724a337
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.ne1.yahoo.com with HTTP; Thu, 4 May 2023 23:36:41 +0000
-Date: Thu, 4 May 2023 23:36:37 +0000 (UTC)
-From: Richard Schneiderman <schneiderman.richard@yahoo.com>
-To: "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <533870578.436621.1683243397555@mail.yahoo.com>
-Subject: r8125b ethernet hardware
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71446156C1
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 23:38:23 +0000 (UTC)
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8AD12096
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 16:38:21 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id af79cd13be357-74df41e2e61so59126585a.3
+        for <netdev@vger.kernel.org>; Thu, 04 May 2023 16:38:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1683243501; x=1685835501;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/gY9M2acR+3B99eJKlwcbq+RpQy8KwY2Igz1huywzWE=;
+        b=JyA0TP+u0mMW2vF/60NL6mFNPKLg9sWn/tFvYi/QJWrcoMlG1YkAsZ1X20PMUmoHBC
+         ZZA0q0zC/mD1lVBjl4io7sNWViCxhUVv8WFRROQYCUjqtHua+Ueb2w7QgkSDC/8O7vMR
+         SLHn8f6fwiPisHuQaux7DJi7v7QOTaNIiBSoNBW39F9TTKAo1t0RDOQ5wdirRmCxYIPP
+         QX8pzm9G+6xKn/ODWyVK1V4Md1sVFMkeSPKWOD4meZkQ3qTo6YlIG5zixR9XvcdZtwez
+         UOfXYXzWXCIljZxiQdIIuQN6CLcLn+Ki24mrqSpvpBCm8l9NmdB9FQkc+iOe+OPvd2Yv
+         HrNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683243501; x=1685835501;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/gY9M2acR+3B99eJKlwcbq+RpQy8KwY2Igz1huywzWE=;
+        b=TV0xAJd3KXbx8Rybl1N8HNsjsEtr1sINDA18KxIG/wMCn5D44WLFv+ot8w+0NQmSh5
+         pPA7ChyNgP6EtbRNdEyr0Gwf2KK0Pqvc2XOVikza7z7fEfwy1cEwBsDu+acQ3lE8q22l
+         0jci5yD9BLvv94SI1JbpC+L+k17cj1gRTA8tPL2QxjPV7KVEgJmV+29R28vLWmi4wJzc
+         G8v6bFfFL4HjnXoxpLMCbNM5sqcvvz2ywNqnStfTs66Ah5YMPoRtAr7kvs9hyvTttEPG
+         FEXIENJthviavsFoozOa8Ze72K1V/H6vHq1lj8t1u52J+ftzQCGEOMkQiAEEY/o2Eb8K
+         mlGg==
+X-Gm-Message-State: AC+VfDz5RCDzd2F2DlHprsxI2EM4uFWXugAUqPJPccCqPdeklg4FN0Rm
+	RElmxnT30t0VOWYWwVvvDWlricEOBXH1IRKtWZ0=
+X-Google-Smtp-Source: ACHHUZ6il3y3jDyNzcEsRrGhcU8Lm4PUG80720FMJjXDvsBU1bYgpSLHGU+pWZPADpl/29depSqZug==
+X-Received: by 2002:ac8:5746:0:b0:3ef:469a:7f8c with SMTP id 6-20020ac85746000000b003ef469a7f8cmr8635553qtx.67.1683243501115;
+        Thu, 04 May 2023 16:38:21 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id c6-20020a05620a134600b0074cf009f443sm164113qkl.85.2023.05.04.16.38.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 May 2023 16:38:20 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1puiWh-007jip-RK;
+	Thu, 04 May 2023 20:38:19 -0300
+Date: Thu, 4 May 2023 20:38:19 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Chuck Lever III <chuck.lever@oracle.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Eli Cohen <elic@nvidia.com>,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	linux-rdma <linux-rdma@vger.kernel.org>,
+	"open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: system hang on start-up (mlx5?)
+Message-ID: <ZFRB6zydIoADEMLz@ziepe.ca>
+References: <A1E5B427-897B-409E-B8E3-E417678E81F6@oracle.com>
+ <DM8PR12MB54003FBFCABCCB37EE807B45AB6C9@DM8PR12MB5400.namprd12.prod.outlook.com>
+ <91176545-61D2-44BF-B736-513B78728DC7@oracle.com>
+ <20230504072953.GP525452@unreal>
+ <46EB453C-3CEB-43E8-BEE5-CD788162A3C9@oracle.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <533870578.436621.1683243397555.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.21417 YMailNorrin
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <46EB453C-3CEB-43E8-BEE5-CD788162A3C9@oracle.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi LinuxDevs,
+On Thu, May 04, 2023 at 07:02:48PM +0000, Chuck Lever III wrote:
+> 
+> 
+> > On May 4, 2023, at 3:29 AM, Leon Romanovsky <leon@kernel.org> wrote:
+> > 
+> > On Wed, May 03, 2023 at 02:02:33PM +0000, Chuck Lever III wrote:
+> >> 
+> >> 
+> >>> On May 3, 2023, at 2:34 AM, Eli Cohen <elic@nvidia.com> wrote:
+> >>> 
+> >>> Hi Chuck,
+> >>> 
+> >>> Just verifying, could you make sure your server and card firmware are up to date?
+> >> 
+> >> Device firmware updated to 16.35.2000; no change.
+> >> 
+> >> System firmware is dated September 2016. I'll see if I can get
+> >> something more recent installed.
+> > 
+> > We are trying to reproduce this issue internally.
+> 
+> More information. I captured the serial console during boot.
+> Here are the last messages:
 
-I have a Gigabyte Aorus Elite z690 AX ddr4 board.=C2=A0 I'm sure you're fam=
-iliar with the r8125B ethernet issues.=C2=A0 So on the 5.19 kernel, if i ru=
-n the r8169 driver i get a disconnect pretty quicky from my ethernet, aroun=
-d 20 min,=C2=A0 If i compile the recent r8125 module from realtek, i can ca=
-n just over an hour before disconnect.
+Oh I wonder if this is connected to Thomas's recent interrupt and MSI
+rework? Might need to bisection search around those big series
 
-the r8169 module seems a bit longer using kernel 6.1.3, sometimes an hour.=
-=C2=A0 I"m using mainline installer for ubuntu to switch kernels.
-
-So hear are my questions.
-
-1. Will this ever be resolved?
-2. Is RealTek working on this.=C2=A0 Even with the win10 drivers, i'm getti=
-ng disconnects but the connection comes back immediately.=C2=A0 ubuntu requ=
-ires a reboot.=C2=A0 the 10.056 windows driver seems to be the most stable.
-
-3.=C2=A0 Would you be able to set me up, so that i can be of some assistanc=
-e to resolve?
-
-Hoping to hear from you guys.
-
-Thanks,
-Richard Schneiderman
+Jason
 
