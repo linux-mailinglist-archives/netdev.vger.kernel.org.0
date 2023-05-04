@@ -1,104 +1,148 @@
-Return-Path: <netdev+bounces-466-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-465-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BD6B76F77C7
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 23:07:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BC24E6F77A6
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 23:01:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B2E981C21447
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:07:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D9C6B1C214E5
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:01:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2EFF4156D3;
-	Thu,  4 May 2023 21:07:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5010B156C7;
+	Thu,  4 May 2023 21:01:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 204B07C
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 21:07:24 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB761180
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 14:07:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-	Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-	In-Reply-To:References; bh=n66NeFRKQ3BlMvYkEUNiU3uPu+QBWiVgoOISQI65bQY=; b=pu
-	7y6MlnQiiaQW2hwUP08WRlRiI+x8uudDR62CtHTFSsGSGChIED4Q2dI3im/EqX9mPLJj6CbBUIuHs
-	v6Yxton/RvSZNPCvLv/NtviYuqIJgb+yOn/b7JiIxDa1DR2gyHchjeg6Rl1SZeEzDluNhJc+YcoBm
-	LmuS+tUdLiB9eCI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1puf2b-00BwUh-Cf; Thu, 04 May 2023 21:55:01 +0200
-Date: Thu, 4 May 2023 21:55:01 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Vladimir Oltean <olteanv@gmail.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Steffen =?iso-8859-1?Q?B=E4tz?= <steffen@innosonix.de>,
-	netdev <netdev@vger.kernel.org>
-Subject: Re: mv88e6320: Failed to forward PTP multicast
-Message-ID: <5cd6a70c-ea13-4547-958f-5806f86bfa10@lunn.ch>
-References: <CAOMZO5AMOVAZe+w3FiRO-9U98Foba5Oy4f_C0K7bGNxHA1qz_w@mail.gmail.com>
- <7b8243a3-9976-484c-a0d0-d4f3debbe979@lunn.ch>
- <CAOMZO5DXH1wS9YYPWXYr-TvM+9Tj8F0bY0_kd_EAjrcCpEJJ7A@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43EC07C
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 21:01:44 +0000 (UTC)
+Received: from smtpout.efficios.com (unknown [IPv6:2607:5300:203:b2ee::31e5])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04CCAD25;
+	Thu,  4 May 2023 14:01:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=efficios.com;
+	s=smtpout1; t=1683230734;
+	bh=4eWXzqJGW3r8CsJlCJi50P2D2+UPMfjU80F5mDNGm64=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=j4elbQnqRi3jTLzFpSiA0lk6IUePnELvzLSch+U+lB44pmffUULxho7cstr32fRmp
+	 yyx1I+uF0AnCbCfOeFuhbpm9M+MKLg3C4I0HuLxBmbbEeVApWLWZDZ8PL8JKHyf52K
+	 13KvbCwD6QqP5tZR/5f610cJ4pLH1mRtE2vw0WUp2+pvQuWZgzCXbomISIxP/sd/u7
+	 cA0w22qS71+/mFkQ6qgxcoQVSCrPm+fOwAuiNHV/Ve2xDcRtJT8qpXrdm/z12eKFGR
+	 T3pJWBfjoN+FX3vOSg9dJ8gqXIA00bDqrxNK+2LL6Y+7FuE0di03m3j7FiuY4jVvTT
+	 CFcEQmkiCs0/A==
+Received: from localhost.localdomain (192-222-143-198.qc.cable.ebox.net [192.222.143.198])
+	by smtpout.efficios.com (Postfix) with ESMTPSA id 4QC4Yp2nzCz11jJ;
+	Thu,  4 May 2023 16:05:34 -0400 (EDT)
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org
+Subject: [RFC PATCH 11/13] netdevice.h: Fix parentheses around macro parameter use
+Date: Thu,  4 May 2023 16:05:25 -0400
+Message-Id: <20230504200527.1935944-12-mathieu.desnoyers@efficios.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230504200527.1935944-1-mathieu.desnoyers@efficios.com>
+References: <20230504200527.1935944-1-mathieu.desnoyers@efficios.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOMZO5DXH1wS9YYPWXYr-TvM+9Tj8F0bY0_kd_EAjrcCpEJJ7A@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RDNS_NONE,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 04, 2023 at 04:40:53PM -0300, Fabio Estevam wrote:
-> Hi Andrew,
-> 
-> On Thu, May 4, 2023 at 4:21 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> 
-> > Do you see the PTP traffic on eth1?
-> 
-> Yes, PTP traffic is seen on eth1.
+Add missing parentheses around macro parameter use in the following
+pattern:
 
-So it is not a Marvell DSA issue. The frame is making it into the
-Linux bridge.
+- "x - 1" changed for "(x) - 1",
+- "x->member" changed for "(x)->member".
 
-> > What MAC address is the PTP traffic using? Is it a link local MAC
-> > address? There are some range of MAC addresses which you are not
-> > supposed to forward across a bridge. e.g. you don't forward BPDUs.
-> > Take a look at br_handle_frame(). Maybe you can play with
-> > group_fwd_mask.
-> 
-> In our case, it is a multicast MAC.
+to ensure operator precedence behaves as expected.
 
-So not 01-80-C2-00-00-0E ?
+Remove useless parentheses around macro parameter use in the following
+pattern:
 
-I don't know how reliable it is, but see:
+- m((x), y) changed for m(x, y), because comma has the lowest operator
+  precedence, which makes the extra comma useless.
 
-https://www.ieee802.org/1/files/public/docs2012/new-tc-messenger-tc-ptp-forwarding-1112-v02.pdf
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+---
+ include/linux/netdevice.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Slide 5 says:
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 08fbd4622ccf..5a357262a45b 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -283,7 +283,7 @@ struct hh_cache {
+ 	/* cached hardware header; allow for machine alignment needs.        */
+ #define HH_DATA_MOD	16
+ #define HH_DATA_OFF(__len) \
+-	(HH_DATA_MOD - (((__len - 1) & (HH_DATA_MOD - 1)) + 1))
++	(HH_DATA_MOD - ((((__len) - 1) & (HH_DATA_MOD - 1)) + 1))
+ #define HH_DATA_ALIGN(__len) \
+ 	(((__len)+(HH_DATA_MOD-1))&~(HH_DATA_MOD - 1))
+ 	unsigned long	hh_data[HH_DATA_ALIGN(LL_MAX_HEADER) / sizeof(long)];
+@@ -4459,7 +4459,7 @@ static inline void netif_tx_unlock_bh(struct net_device *dev)
+ }
+ 
+ #define HARD_TX_LOCK(dev, txq, cpu) {			\
+-	if ((dev->features & NETIF_F_LLTX) == 0) {	\
++	if (((dev)->features & NETIF_F_LLTX) == 0) {	\
+ 		__netif_tx_lock(txq, cpu);		\
+ 	} else {					\
+ 		__netif_tx_acquire(txq);		\
+@@ -4467,12 +4467,12 @@ static inline void netif_tx_unlock_bh(struct net_device *dev)
+ }
+ 
+ #define HARD_TX_TRYLOCK(dev, txq)			\
+-	(((dev->features & NETIF_F_LLTX) == 0) ?	\
++	((((dev)->features & NETIF_F_LLTX) == 0) ?	\
+ 		__netif_tx_trylock(txq) :		\
+ 		__netif_tx_acquire(txq))
+ 
+ #define HARD_TX_UNLOCK(dev, txq) {			\
+-	if ((dev->features & NETIF_F_LLTX) == 0) {	\
++	if (((dev)->features & NETIF_F_LLTX) == 0) {	\
+ 		__netif_tx_unlock(txq);			\
+ 	} else {					\
+ 		__netif_tx_release(txq);		\
+@@ -4534,7 +4534,7 @@ static inline void netif_addr_unlock_bh(struct net_device *dev)
+  * rcu_read_lock held.
+  */
+ #define for_each_dev_addr(dev, ha) \
+-		list_for_each_entry_rcu(ha, &dev->dev_addrs.list, list)
++		list_for_each_entry_rcu(ha, &(dev)->dev_addrs.list, list)
+ 
+ /* These functions live elsewhere (drivers/net/net_init.c, but related) */
+ 
+@@ -5237,6 +5237,6 @@ extern struct net_device *blackhole_netdev;
+ /* Note: Avoid these macros in fast path, prefer per-cpu or per-queue counters. */
+ #define DEV_STATS_INC(DEV, FIELD) atomic_long_inc(&(DEV)->stats.__##FIELD)
+ #define DEV_STATS_ADD(DEV, FIELD, VAL) 	\
+-		atomic_long_add((VAL), &(DEV)->stats.__##FIELD)
++		atomic_long_add(VAL, &(DEV)->stats.__##FIELD)
+ 
+ #endif	/* _LINUX_NETDEVICE_H */
+-- 
+2.25.1
 
-• 01-1B-19-00-00-00 – a general group address
-  • An 802.1Q VLAN Bridge would forward the frame unchanged.
-• 01-80-C2-00-00-0E – Individual LAN Scope group ad
-  • An 802.1Q VLAN Bridge would drop the frame.
-
-Maybe you are falling into this second case?
-
-You really need to find out where in the Linux bridge it is getting
-dropped. It should then be obvious why.
-
-	 Andrew
 
