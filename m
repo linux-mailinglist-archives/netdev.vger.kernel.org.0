@@ -1,170 +1,140 @@
-Return-Path: <netdev+bounces-277-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-278-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C665E6F6AE9
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 14:11:11 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 999696F6B1C
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 14:23:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 087F61C210FA
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 12:11:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C3908280D05
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 12:23:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C93B8FC0C;
-	Thu,  4 May 2023 12:11:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40812FC10;
+	Thu,  4 May 2023 12:23:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE83EFBE1
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 12:11:08 +0000 (UTC)
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F2E5BB1;
-	Thu,  4 May 2023 05:11:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-	Resent-Cc:Resent-Message-ID; bh=/QXPslg/3qx/2kW3J+zsuUr+vnPh+T8eN64JH56Qscg=;
-	t=1683202267; x=1684411867; b=PSFxoIfXUypASoldpClIM2t1TlpzRktBgjpIIg11neYYz0B
-	3y9o2fuEXT1DrHP0c1YtOkHAQJIlFQpee49rYysVjyqkFJQCwOf07r4+1dWJi/jjWLWibCLeaOhfq
-	sEa5llk6XUfVznhLm1jHGpTtiXfRTQVTEnazM8x/2zCG2aCU33qh/nNCqXr1JdKTdJvYadvKOJ8UE
-	IxAaeIfORRak0d5tsYutAEysusScHs9tyTPDh7YdKpjCJrvpFoymbYSACccnT56/b1ZG+mDIndcBz
-	WOxuSpu0gylFbfTv9ohV5BLSfDMDyP+9sZqlmaPL6qqNWQwb/3gwrUYIW7RgRpkw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.96)
-	(envelope-from <johannes@sipsolutions.net>)
-	id 1puXnQ-00GwbM-06;
-	Thu, 04 May 2023 14:10:52 +0200
-Message-ID: <8d2b0aec270b8cd0111654dc4b361987a112d3ce.camel@sipsolutions.net>
-Subject: Re: [PATCH] wifi: iwlwifi: Fix spurious packet drops with RSS
-From: Johannes Berg <johannes@sipsolutions.net>
-To: Sultan Alsawaf <sultan@kerneltoast.com>
-Cc: "Greenman, Gregory" <gregory.greenman@intel.com>, Kalle Valo
- <kvalo@kernel.org>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
- <pabeni@redhat.com>, "Goodstein, Mordechay"
- <mordechay.goodstein@intel.com>,  "Coelho, Luciano"
- <luciano.coelho@intel.com>, "Sisodiya, Mukesh" <mukesh.sisodiya@intel.com>,
-  "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date: Thu, 04 May 2023 14:10:50 +0200
-In-Reply-To: <20230430001348.3552-1-sultan@kerneltoast.com>
-References: <20230430001348.3552-1-sultan@kerneltoast.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D635FBF3
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 12:23:24 +0000 (UTC)
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2067.outbound.protection.outlook.com [40.107.244.67])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8891F5FFF;
+	Thu,  4 May 2023 05:23:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i1374J21mPbNjA29/d3CSzTye/LojxouVALIc6OejJZxPujjdnpngYL+FfsD5ikXrBgY4WV+nEPLr+jaxjxdncV2GEpob95zpOh/4Ot2X9Y3V3Ch4f8ekldfVVakc6YiIVxiYOqd+w/gWTfGhFt5772g7iTvdPYVkm076j+9pbwJ+FpmQY8/8l+npi9JR+X330ZNlsHyl0ltRFhpcsqcCneKjb3teQAZ1m9xqM19H6rZ7ari5m94yuiccwcl33NdeZn1Fc4mwDDIC/JxXAeQvAWddaAWlmdgzuBCY5BmtiZ7DO9fnEUV0EBk2mleth+QL3Q0ygk7vzMF0gSX53ZPgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YJNtSYSQwvU3ZQfWsmt7ngegvYtfWD+rjVkQWZXafD4=;
+ b=ZAbbVITIxyKSXtvXhrheIElHEvt8VFkZVA2OoytczVYAOYmrByCkJkFR4L8wF0jliWE/0mlKTF/wBOeifR5yHiMk9a+Nh9bOOTazPw5h08Ra/dDyq4R1q1iQL4l6LzbqZXvW4XzG/PeO9Gnqe/3ddFfbgoHMp5H1ojo8UkBJw2Ep2qTYeaDT6aoozwPse24hCVdeCj04Mg5v6Q5wQAUEsb0nHPGGBV/FyOWbwdIK6LsWlICHBLQYFnp/oZWBVjE2X7qBFaN6zaWeZxdMaVVwgn90yf/SnwM/iOQNhFx/BGd+bDL7FTgjiNhyoDc2GA6lS+2Y1jL4LLG5HLi4SNsjGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YJNtSYSQwvU3ZQfWsmt7ngegvYtfWD+rjVkQWZXafD4=;
+ b=JVGlZFMbPFHC190MFQl0yH/a9wDQbmi0h/r/G1p31wpWu5Sq8Rho80dYXJ6sqLb8J3+G1RoFjmVRhzCJEK63u9LVeDBW/e1QxBL72K8ngoJqqsxZp8cF6ZH5B/PSkzNMzxMT8WZkQgtfEa0diwhiiJ5dB9OyMcr4qlBV3G8nucKIwZMwcLMtwfFmJGUhv0y+QVcKejRbJKYv+8sb8WtBp4x8mwek9qPhbIJ2JyFuhsdwhfC896y7Ji2d7brH++8JO11u8e2ceH0DGxW1KInqUznEN5Q2O4QLpaQ5YmO8YiAXR0oqa2f9qM3pQTwk6JUc8dNe2FAPMrqt560jycCDYA==
+Received: from MW4PR04CA0380.namprd04.prod.outlook.com (2603:10b6:303:81::25)
+ by SJ0PR12MB6760.namprd12.prod.outlook.com (2603:10b6:a03:44c::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.22; Thu, 4 May
+ 2023 12:23:19 +0000
+Received: from CO1NAM11FT030.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:81:cafe::19) by MW4PR04CA0380.outlook.office365.com
+ (2603:10b6:303:81::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.26 via Frontend
+ Transport; Thu, 4 May 2023 12:23:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT030.mail.protection.outlook.com (10.13.174.125) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6363.26 via Frontend Transport; Thu, 4 May 2023 12:23:18 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 4 May 2023
+ 05:23:07 -0700
+Received: from localhost (10.126.230.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 4 May 2023
+ 05:23:06 -0700
+Date: Thu, 4 May 2023 15:23:03 +0300
+From: Leon Romanovsky <leonro@nvidia.com>
+To: Kamal Heib <kheib@redhat.com>
+CC: Stephen Hemminger <stephen@networkplumber.org>, <netdev@vger.kernel.org>,
+	<linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH iproute2-next v2] rdma: Report device protocol
+Message-ID: <20230504122303.GZ525452@unreal>
+References: <20230504120918.98777-1-kheib@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230504120918.98777-1-kheib@redhat.com>
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT030:EE_|SJ0PR12MB6760:EE_
+X-MS-Office365-Filtering-Correlation-Id: df1f9dfb-039f-4d7c-ed12-08db4c9a5823
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	C+runmBNxSFjNApXfycV3yy45JVddMmNuzKYTR7WNekP/GDzmF8ENnv5BeTo/bNnnjxTdFzvlNUySxUyolYslkFbe0AUI8vrOE8a3YJdnzdQkOWR99CSrWmUBbzeStmgn7RjI001fXOKkUaifLAk8p482zl2vRxw925Cxz29SENKM7llgF5U9t9SL9C48GHIh+nIlmcUt7WL4yHuUVNIXaZI1SpdT6hG+Ryxvjh6p6IhBVVtnPfNlzj+85sZW8G3Fjfz5EG0wY4gY/P7PJBSSvszqYokvtjV70Z/itEsd0oLVS6Vi5/FgRMMDgpkZJFIiELyMjTPrbxxzNFnrg7hSGesoO8RivXcwJphqFNrxy9grTm6QCRYfs+oH9ULnKscUISo2HCtoVHNFBdqLhrPdUvAMLWAkFxXSs1WzFM+T7a6zC0X0izxnBqYo04W7fKEKFUPNjoFvDBk//s5OXQCKshK0SczIwz04pl4ho2AQ/DJ+ttlsXvg8xEqAGkeAJtdiTAm+1nnDQa4S1o9KfxGT2MecsxNx8hsmljRQLRlbz+8BCsdggnqHm3Vo5T31zsrFU8luflScBOMKzSHRAw2srLE0Djt6CVIWrMH4CRNTG4UDa+JvSmSVUxt2/k/xdHkaj+Oh7ljezBWZFDlfZ9ag2sPcFVVCsXPnh/+Qkqu36kegbjHtbf+JPDa7hmxbaFBQvQoUqqp0VgjiW/eQFgc+g==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(7916004)(4636009)(346002)(376002)(136003)(39860400002)(396003)(451199021)(46966006)(40470700004)(36840700001)(36860700001)(47076005)(54906003)(6666004)(478600001)(16526019)(9686003)(186003)(33716001)(26005)(1076003)(426003)(4744005)(2906002)(4326008)(41300700001)(70586007)(70206006)(82310400005)(6916009)(356005)(7636003)(5660300002)(86362001)(8676002)(40480700001)(8936002)(316002)(33656002)(40460700003)(82740400003)(336012);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 12:23:18.9075
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: df1f9dfb-039f-4d7c-ed12-08db4c9a5823
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT030.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6760
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-[let's see if my reply will make it to the list, the original seems to
-not have]
+On Thu, May 04, 2023 at 08:09:18AM -0400, Kamal Heib wrote:
+> Add support for reporting the device protocol.
+> 
+> 11: mlx5_0: node_type ca protocol roce fw 12.28.2006
+>     node_guid 248a:0703:004b:f094 sys_image_guid 248a:0703:004b:f094
+> 12: mlx5_1: node_type ca protocol ib fw 12.28.2006
+>     node_guid 248a:0703:0049:d4f0 sys_image_guid 248a:0703:0049:d4f0
+> 13: mlx5_2: node_type ca protocol ib fw 12.28.2006
+>     node_guid 248a:0703:0049:d4f1 sys_image_guid 248a:0703:0049:d4f0
+> 19: siw0: node_type rnic protocol iw node_guid 0200:00ff:fe00:0000
+>     sys_image_guid 0200:00ff:fe00:0000
+> 
+> Signed-off-by: Kamal Heib <kheib@redhat.com>
+> ---
+> v2: Use protocol instead of proto.
+> ---
+>  rdma/dev.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
 
-On Sun, 2023-04-30 at 00:13 +0000, Sultan Alsawaf wrote:
-> From: Sultan Alsawaf <sultan@kerneltoast.com>
->=20
-> When RSS is used and one of the RX queues lags behind others by more than
-> 2048 frames, then new frames arriving on the lagged RX queue are
-> incorrectly treated as old rather than new by the reorder buffer, and are
-> thus spuriously dropped. This is because the reorder buffer treats frames
-> as old when they have an SN that is more than 2048 away from the head SN,
-> which causes the reorder buffer to drop frames that are actually valid.
->=20
-> The odds of this occurring naturally increase with the number of
-> RX queues used, so CPUs with many threads are more susceptible to
-> encountering spurious packet drops caused by this issue.
->=20
-> As it turns out, the firmware already detects when a frame is either old =
-or
-> duplicated and exports this information, but it's currently unused. Using
-> these firmware bits to decide when frames are old or duplicated fixes the
-> spurious drops.
-
-So I assume you tested it now, and it works? Somehow I had been under
-the impression we never got it to work back when...
-
-> Johannes mentions that the 9000 series' firmware doesn't support these
-> bits, so disable RSS on the 9000 series chipsets since they lack a
-> mechanism to properly detect old and duplicated frames.
-
-Indeed, I checked this again, I also somehow thought it was backported
-to some versions but doesn't look like. We can either leave those old
-ones broken (they only shipped with fewer cores anyway), or just disable
-it as you did here, not sure. RSS is probably not as relevant with those
-slower speeds anyway.
-
-> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-> @@ -918,7 +918,6 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
->         struct iwl_mvm_sta *mvm_sta;
->         struct iwl_mvm_baid_data *baid_data;
->         struct iwl_mvm_reorder_buffer *buffer;
-> -       struct sk_buff *tail;
->         u32 reorder =3D le32_to_cpu(desc->reorder_data);
->         bool amsdu =3D desc->mac_flags2 & IWL_RX_MPDU_MFLG2_AMSDU;
->         bool last_subframe =3D
-> @@ -1020,7 +1019,7 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
->                                  rx_status->device_timestamp, queue);
->=20
->         /* drop any oudated packets */
-> -       if (ieee80211_sn_less(sn, buffer->head_sn))
-> +       if (reorder & IWL_RX_MPDU_REORDER_BA_OLD_SN)
->                 goto drop;
->=20
->         /* release immediately if allowed by nssn and no stored frames */
-> @@ -1068,24 +1067,12 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
->                 return false;
->         }
-
-All that "send queue sync" code in the middle that was _meant_ to fix
-this issue but I guess never really did can also be removed, no? And the
-timer, etc. etc.
-
-johannes
-
-[leaving full quote for the benefit of the mailing list]
-
->=20
-> -       index =3D sn % buffer->buf_size;
-> -
-> -       /*
-> -        * Check if we already stored this frame
-> -        * As AMSDU is either received or not as whole, logic is simple:
-> -        * If we have frames in that position in the buffer and the last =
-frame
-> -        * originated from AMSDU had a different SN then it is a retransm=
-ission.
-> -        * If it is the same SN then if the subframe index is incrementin=
-g it
-> -        * is the same AMSDU - otherwise it is a retransmission.
-> -        */
-> -       tail =3D skb_peek_tail(&entries[index].e.frames);
-> -       if (tail && !amsdu)
-> -               goto drop;
-> -       else if (tail && (sn !=3D buffer->last_amsdu ||
-> -                         buffer->last_sub_index >=3D sub_frame_idx))
-> +       /* drop any duplicated packets */
-> +       if (desc->status & cpu_to_le32(IWL_RX_MPDU_STATUS_DUPLICATE))
->                 goto drop;
->=20
->         /* put in reorder buffer */
-> +       index =3D sn % buffer->buf_size;
->         __skb_queue_tail(&entries[index].e.frames, skb);
->         buffer->num_stored++;
->         entries[index].e.reorder_time =3D jiffies;
-> --
-> 2.40.1
->=20
-
+Thanks,
+Acked-by: Leon Romanovsky <leonro@nvidia.com>
 
