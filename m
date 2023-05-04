@@ -1,52 +1,53 @@
-Return-Path: <netdev+bounces-417-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-418-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 16FEB6F768A
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:08:33 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 52DA36F768E
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:08:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 541FE1C21364
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:08:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 59EF81C21363
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:08:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6289D171DF;
-	Thu,  4 May 2023 19:48:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF67B17AAD;
+	Thu,  4 May 2023 19:48:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8F7A171C9;
-	Thu,  4 May 2023 19:48:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D09EC4339C;
-	Thu,  4 May 2023 19:48:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B2F517AAC
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D68CDC4339E;
+	Thu,  4 May 2023 19:48:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229726;
-	bh=xQe8JHhVWU4chUfRjCf0RNQOPxaRYxs0I4eIGguwbYQ=;
+	s=k20201202; t=1683229730;
+	bh=ap9ES+0J9zF9fx9c4TX8dKCjJ0YlaLD8/Kl/HGurlRk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rCGj+3UsiWBw+AkWwbS1+uaRiEZfcP8wS2ks/pNAP8mN9TJZee5tS0FQDlwoNGjJS
-	 N4/LBq5WM/ZHHurz5lIthwsehmjjgWBUPiQue9/7QHo3CpazQrdiDqnJkZBs0hip0X
-	 iPzlqCwWoAR3YCeIRrIQKTHIcTnGSRD2qnn7n+ZXi9f0+KWCapDmJIm7jll0owOEu0
-	 wL+ISGZk9gabCiT/x6uZc6FiDK3iIhS+QItgQoj/ICVm0LBbV7QM1Ts8zGbzDVwye7
-	 ytD4DBylA/vlMGw5GYPNtatH81Cv05Qtr9SEegOC6qwGVZl600JQaHj8jqVKNF9eUr
-	 A/ZUj16FEAedg==
+	b=CNsOgYe7ybTEr/Uosx539mc+VC0p8loKZcNt/8swnsuzqEVyniwmVievmRjRoIzZ/
+	 GDV8fibSsCc3dGtKEjZOF7L3Bgogg4u4rVXW4PxqzGDWkzIbkwSSA+bSNgshUoEWLu
+	 UZQUsZ8pmRdJQCs8yyB5PbzhZY/sAXnu/jp/kcwvtTAbb5rE585pggVe0cW9z7tSG0
+	 NQUC//kgVrAUBpY1KAAdat+SEunhpZS7tvHiYknEzRSBSlR09ebHu5RzL4jxGzOw4R
+	 Kh9VbJWD4Sy/2DiMOZq+b767tgHCnr0Ft3ht4fOLo0m5hix8NOM/he73mKyiiEXpkF
+	 ccT3ls2gtzy4g==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Nathan Chancellor <nathan@kernel.org>,
-	Horatiu Vultur <horatiu.vultur@microchip.com>,
-	Paolo Abeni <pabeni@redhat.com>,
+Cc: Nick Child <nnac123@linux.ibm.com>,
+	Piotr Raczynski <piotr.raczynski@intel.com>,
+	Jakub Kicinski <kuba@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
 	davem@davemloft.net,
 	edumazet@google.com,
-	kuba@kernel.org,
-	ndesaulniers@google.com,
-	mkl@pengutronix.de,
-	netdev@vger.kernel.org,
-	llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 08/30] net: pasemi: Fix return type of pasemi_mac_start_tx()
-Date: Thu,  4 May 2023 15:48:01 -0400
-Message-Id: <20230504194824.3808028-8-sashal@kernel.org>
+	pabeni@redhat.com,
+	kuniyu@amazon.com,
+	liuhangbin@gmail.com,
+	jiri@resnulli.us,
+	andy.ren@getcruise.com,
+	netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 09/30] net: Catch invalid index in XPS mapping
+Date: Thu,  4 May 2023 15:48:02 -0400
+Message-Id: <20230504194824.3808028-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194824.3808028-1-sashal@kernel.org>
 References: <20230504194824.3808028-1-sashal@kernel.org>
@@ -60,52 +61,41 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Nick Child <nnac123@linux.ibm.com>
 
-[ Upstream commit c8384d4a51e7cb0e6587f3143f29099f202c5de1 ]
+[ Upstream commit 5dd0dfd55baec0742ba8f5625a0dd064aca7db16 ]
 
-With clang's kernel control flow integrity (kCFI, CONFIG_CFI_CLANG),
-indirect call targets are validated against the expected function
-pointer prototype to make sure the call target is valid to help mitigate
-ROP attacks. If they are not identical, there is a failure at run time,
-which manifests as either a kernel panic or thread getting killed. A
-warning in clang aims to catch these at compile time, which reveals:
+When setting the XPS value of a TX queue, warn the user once if the
+index of the queue is greater than the number of allocated TX queues.
 
-  drivers/net/ethernet/pasemi/pasemi_mac.c:1665:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = pasemi_mac_start_tx,
-                                    ^~~~~~~~~~~~~~~~~~~
-  1 error generated.
+Previously, this scenario went uncaught. In the best case, it resulted
+in unnecessary allocations. In the worst case, it resulted in
+out-of-bounds memory references through calls to `netdev_get_tx_queue(
+dev, index)`. Therefore, it is important to inform the user but not
+worth returning an error and risk downing the netdevice.
 
-->ndo_start_xmit() in 'struct net_device_ops' expects a return type of
-'netdev_tx_t', not 'int'. Adjust the return type of
-pasemi_mac_start_tx() to match the prototype's to resolve the warning.
-While PowerPC does not currently implement support for kCFI, it could in
-the future, which means this warning becomes a fatal CFI failure at run
-time.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1750
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Link: https://lore.kernel.org/r/20230319-pasemi-incompatible-pointer-types-strict-v1-1-1b9459d8aef0@kernel.org
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Nick Child <nnac123@linux.ibm.com>
+Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
+Link: https://lore.kernel.org/r/20230321150725.127229-1-nnac123@linux.ibm.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/pasemi/pasemi_mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/dev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
-index 7e096b2888b92..b223488318ad7 100644
---- a/drivers/net/ethernet/pasemi/pasemi_mac.c
-+++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
-@@ -1423,7 +1423,7 @@ static void pasemi_mac_queue_csdesc(const struct sk_buff *skb,
- 	write_dma_reg(PAS_DMA_TXCHAN_INCR(txring->chan.chno), 2);
- }
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7fc8ae7f3cd5b..5c1cd25e851c7 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -2574,6 +2574,8 @@ int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
+ 	struct xps_map *map, *new_map;
+ 	unsigned int nr_ids;
  
--static int pasemi_mac_start_tx(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t pasemi_mac_start_tx(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct pasemi_mac * const mac = netdev_priv(dev);
- 	struct pasemi_mac_txring * const txring = tx_ring(mac);
++	WARN_ON_ONCE(index >= dev->num_tx_queues);
++
+ 	if (dev->num_tc) {
+ 		/* Do not allow XPS on subordinate device directly */
+ 		num_tc = dev->num_tc;
 -- 
 2.39.2
 
