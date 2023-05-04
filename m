@@ -1,40 +1,39 @@
-Return-Path: <netdev+bounces-413-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-414-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DD15F6F767F
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id AF6CC6F7686
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:08:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 11C1A28127E
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:07:19 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9FC7D2812F8
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:07:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 660C0171C1;
-	Thu,  4 May 2023 19:48:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 644D3171CB;
+	Thu,  4 May 2023 19:48:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0EFF171BE
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76662C433D2;
-	Thu,  4 May 2023 19:48:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EE9C171C8
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28CA6C433D2;
+	Thu,  4 May 2023 19:48:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229713;
-	bh=C2j/AT/nP4s4wQkqsrksdlFglKDmaSdw3XqGBuSGaZY=;
+	s=k20201202; t=1683229721;
+	bh=uJmVQczrtWGPtgLBMQ68RwNzsAb7TE8Wz3b9oQ7xbeI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=CfCgddr9Dk5kdNpAHO6Hiw1Lww9nDbIAgnItVf+D4aVk5afiUjL535ZHfestWC3bW
-	 HBwW0XfViD316m33waWZuASpFBmxvUX9oBfh7w9TGkuil42mhyfuVmweNzyNao7cVu
-	 0hjNR1vYzZYQrEgSomMo/JYDD8peMX1RXCpmJssLiSqFIIKBhoJ1Am7RROyo4Yvg6J
-	 EwS6eca/MuJR/FzeTnKU8pvgHAQ/g1CH89zbBTrdXK+XFqajOg2V+soD5hBfZoy2g2
-	 1XKqUbCLm4R2I8Flih+xO1hFuNT/TRClw4ujuNFilbtUQTmOWXDCJa1GiEKfoBjm1w
-	 8mUD1hp3iPGYg==
+	b=t9D68Ki7a1hCyWxc1eMMPVlOVUMVwV6VQXC2iqicWbymP6ac9YSEk75SUtMfzDDDa
+	 aMquuaSsBXaqEoU4yLXL8pg21cMPbMYXHQPYnUrLFt+lz/VdWymksbXr8ymfk9uazG
+	 547HrHY9z5H/Z1bXaJwCn3bVBkXxbXF3JwZni4BdyyGAzdDjNpRFeAWJISzSF+rTlP
+	 1cZXJ4UVoVFfew54fhRb7Fvf21hpnFB+wuRVspQTMqlAMnHulC+CiL1JN28DS2KzeS
+	 Qgc1rVvrfAJ7EEf29rR6pCSy3uxt5DxPz0sHzufvRtH3ni8s0nir/3dk07yi9JYkz4
+	 XoUX4eY0IrOpg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Hector Martin <marcan@marcan.st>,
-	Linus Walleij <linus.walleij@linaro.org>,
+Cc: Jisoo Jang <jisoo.jang@yonsei.ac.kr>,
 	Arend van Spriel <arend.vanspriel@broadcom.com>,
 	Kalle Valo <kvalo@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
@@ -45,20 +44,20 @@ Cc: Hector Martin <marcan@marcan.st>,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	ian.lin@infineon.com,
 	chi-hsien.lin@infineon.com,
+	ian.lin@infineon.com,
 	wright.feng@cypress.com,
+	marcan@marcan.st,
 	hdegoede@redhat.com,
-	wataru.gohda@cypress.com,
 	prasanna.kerekoppa@cypress.com,
 	ramesh.rangavittal@infineon.com,
 	linux-wireless@vger.kernel.org,
 	brcm80211-dev-list.pdl@broadcom.com,
 	SHA-cyfmac-dev-list@infineon.com,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 03/30] wifi: brcmfmac: cfg80211: Pass the PMK in binary instead of hex
-Date: Thu,  4 May 2023 15:47:56 -0400
-Message-Id: <20230504194824.3808028-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 06/30] wifi: brcmfmac: slab-out-of-bounds read in brcmf_get_assoc_ies()
+Date: Thu,  4 May 2023 15:47:59 -0400
+Message-Id: <20230504194824.3808028-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194824.3808028-1-sashal@kernel.org>
 References: <20230504194824.3808028-1-sashal@kernel.org>
@@ -72,55 +71,171 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Hector Martin <marcan@marcan.st>
+From: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
 
-[ Upstream commit 89b89e52153fda2733562776c7c9d9d3ebf8dd6d ]
+[ Upstream commit 0da40e018fd034d87c9460123fa7f897b69fdee7 ]
 
-Apparently the hex passphrase mechanism does not work on newer
-chips/firmware (e.g. BCM4387). It seems there was a simple way of
-passing it in binary all along, so use that and avoid the hexification.
+Fix a slab-out-of-bounds read that occurs in kmemdup() called from
+brcmf_get_assoc_ies().
+The bug could occur when assoc_info->req_len, data from a URB provided
+by a USB device, is bigger than the size of buffer which is defined as
+WL_EXTRA_BUF_MAX.
 
-OpenBSD has been doing it like this from the beginning, so this should
-work on all chips.
+Add the size check for req_len/resp_len of assoc_info.
 
-Also clear the structure before setting the PMK. This was leaking
-uninitialized stack contents to the device.
+Found by a modified version of syzkaller.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+[   46.592467][    T7] ==================================================================
+[   46.594687][    T7] BUG: KASAN: slab-out-of-bounds in kmemdup+0x3e/0x50
+[   46.596572][    T7] Read of size 3014656 at addr ffff888019442000 by task kworker/0:1/7
+[   46.598575][    T7]
+[   46.599157][    T7] CPU: 0 PID: 7 Comm: kworker/0:1 Tainted: G           O      5.14.0+ #145
+[   46.601333][    T7] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+[   46.604360][    T7] Workqueue: events brcmf_fweh_event_worker
+[   46.605943][    T7] Call Trace:
+[   46.606584][    T7]  dump_stack_lvl+0x8e/0xd1
+[   46.607446][    T7]  print_address_description.constprop.0.cold+0x93/0x334
+[   46.608610][    T7]  ? kmemdup+0x3e/0x50
+[   46.609341][    T7]  kasan_report.cold+0x79/0xd5
+[   46.610151][    T7]  ? kmemdup+0x3e/0x50
+[   46.610796][    T7]  kasan_check_range+0x14e/0x1b0
+[   46.611691][    T7]  memcpy+0x20/0x60
+[   46.612323][    T7]  kmemdup+0x3e/0x50
+[   46.612987][    T7]  brcmf_get_assoc_ies+0x967/0xf60
+[   46.613904][    T7]  ? brcmf_notify_vif_event+0x3d0/0x3d0
+[   46.614831][    T7]  ? lock_chain_count+0x20/0x20
+[   46.615683][    T7]  ? mark_lock.part.0+0xfc/0x2770
+[   46.616552][    T7]  ? lock_chain_count+0x20/0x20
+[   46.617409][    T7]  ? mark_lock.part.0+0xfc/0x2770
+[   46.618244][    T7]  ? lock_chain_count+0x20/0x20
+[   46.619024][    T7]  brcmf_bss_connect_done.constprop.0+0x241/0x2e0
+[   46.620019][    T7]  ? brcmf_parse_configure_security.isra.0+0x2a0/0x2a0
+[   46.620818][    T7]  ? __lock_acquire+0x181f/0x5790
+[   46.621462][    T7]  brcmf_notify_connect_status+0x448/0x1950
+[   46.622134][    T7]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[   46.622736][    T7]  ? brcmf_cfg80211_join_ibss+0x7b0/0x7b0
+[   46.623390][    T7]  ? find_held_lock+0x2d/0x110
+[   46.623962][    T7]  ? brcmf_fweh_event_worker+0x19f/0xc60
+[   46.624603][    T7]  ? mark_held_locks+0x9f/0xe0
+[   46.625145][    T7]  ? lockdep_hardirqs_on_prepare+0x3e0/0x3e0
+[   46.625871][    T7]  ? brcmf_cfg80211_join_ibss+0x7b0/0x7b0
+[   46.626545][    T7]  brcmf_fweh_call_event_handler.isra.0+0x90/0x100
+[   46.627338][    T7]  brcmf_fweh_event_worker+0x557/0xc60
+[   46.627962][    T7]  ? brcmf_fweh_call_event_handler.isra.0+0x100/0x100
+[   46.628736][    T7]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[   46.629396][    T7]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[   46.629970][    T7]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
+[   46.630649][    T7]  process_one_work+0x92b/0x1460
+[   46.631205][    T7]  ? pwq_dec_nr_in_flight+0x330/0x330
+[   46.631821][    T7]  ? rwlock_bug.part.0+0x90/0x90
+[   46.632347][    T7]  worker_thread+0x95/0xe00
+[   46.632832][    T7]  ? __kthread_parkme+0x115/0x1e0
+[   46.633393][    T7]  ? process_one_work+0x1460/0x1460
+[   46.633957][    T7]  kthread+0x3a1/0x480
+[   46.634369][    T7]  ? set_kthread_struct+0x120/0x120
+[   46.634933][    T7]  ret_from_fork+0x1f/0x30
+[   46.635431][    T7]
+[   46.635687][    T7] Allocated by task 7:
+[   46.636151][    T7]  kasan_save_stack+0x1b/0x40
+[   46.636628][    T7]  __kasan_kmalloc+0x7c/0x90
+[   46.637108][    T7]  kmem_cache_alloc_trace+0x19e/0x330
+[   46.637696][    T7]  brcmf_cfg80211_attach+0x4a0/0x4040
+[   46.638275][    T7]  brcmf_attach+0x389/0xd40
+[   46.638739][    T7]  brcmf_usb_probe+0x12de/0x1690
+[   46.639279][    T7]  usb_probe_interface+0x2aa/0x760
+[   46.639820][    T7]  really_probe+0x205/0xb70
+[   46.640342][    T7]  __driver_probe_device+0x311/0x4b0
+[   46.640876][    T7]  driver_probe_device+0x4e/0x150
+[   46.641445][    T7]  __device_attach_driver+0x1cc/0x2a0
+[   46.642000][    T7]  bus_for_each_drv+0x156/0x1d0
+[   46.642543][    T7]  __device_attach+0x23f/0x3a0
+[   46.643065][    T7]  bus_probe_device+0x1da/0x290
+[   46.643644][    T7]  device_add+0xb7b/0x1eb0
+[   46.644130][    T7]  usb_set_configuration+0xf59/0x16f0
+[   46.644720][    T7]  usb_generic_driver_probe+0x82/0xa0
+[   46.645295][    T7]  usb_probe_device+0xbb/0x250
+[   46.645786][    T7]  really_probe+0x205/0xb70
+[   46.646258][    T7]  __driver_probe_device+0x311/0x4b0
+[   46.646804][    T7]  driver_probe_device+0x4e/0x150
+[   46.647387][    T7]  __device_attach_driver+0x1cc/0x2a0
+[   46.647926][    T7]  bus_for_each_drv+0x156/0x1d0
+[   46.648454][    T7]  __device_attach+0x23f/0x3a0
+[   46.648939][    T7]  bus_probe_device+0x1da/0x290
+[   46.649478][    T7]  device_add+0xb7b/0x1eb0
+[   46.649936][    T7]  usb_new_device.cold+0x49c/0x1029
+[   46.650526][    T7]  hub_event+0x1c98/0x3950
+[   46.650975][    T7]  process_one_work+0x92b/0x1460
+[   46.651535][    T7]  worker_thread+0x95/0xe00
+[   46.651991][    T7]  kthread+0x3a1/0x480
+[   46.652413][    T7]  ret_from_fork+0x1f/0x30
+[   46.652885][    T7]
+[   46.653131][    T7] The buggy address belongs to the object at ffff888019442000
+[   46.653131][    T7]  which belongs to the cache kmalloc-2k of size 2048
+[   46.654669][    T7] The buggy address is located 0 bytes inside of
+[   46.654669][    T7]  2048-byte region [ffff888019442000, ffff888019442800)
+[   46.656137][    T7] The buggy address belongs to the page:
+[   46.656720][    T7] page:ffffea0000651000 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x19440
+[   46.657792][    T7] head:ffffea0000651000 order:3 compound_mapcount:0 compound_pincount:0
+[   46.658673][    T7] flags: 0x100000000010200(slab|head|node=0|zone=1)
+[   46.659422][    T7] raw: 0100000000010200 0000000000000000 dead000000000122 ffff888100042000
+[   46.660363][    T7] raw: 0000000000000000 0000000000080008 00000001ffffffff 0000000000000000
+[   46.661236][    T7] page dumped because: kasan: bad access detected
+[   46.661956][    T7] page_owner tracks the page as allocated
+[   46.662588][    T7] page last allocated via order 3, migratetype Unmovable, gfp_mask 0x52a20(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP), pid 7, ts 31136961085, free_ts 0
+[   46.664271][    T7]  prep_new_page+0x1aa/0x240
+[   46.664763][    T7]  get_page_from_freelist+0x159a/0x27c0
+[   46.665340][    T7]  __alloc_pages+0x2da/0x6a0
+[   46.665847][    T7]  alloc_pages+0xec/0x1e0
+[   46.666308][    T7]  allocate_slab+0x380/0x4e0
+[   46.666770][    T7]  ___slab_alloc+0x5bc/0x940
+[   46.667264][    T7]  __slab_alloc+0x6d/0x80
+[   46.667712][    T7]  kmem_cache_alloc_trace+0x30a/0x330
+[   46.668299][    T7]  brcmf_usbdev_qinit.constprop.0+0x50/0x470
+[   46.668885][    T7]  brcmf_usb_probe+0xc97/0x1690
+[   46.669438][    T7]  usb_probe_interface+0x2aa/0x760
+[   46.669988][    T7]  really_probe+0x205/0xb70
+[   46.670487][    T7]  __driver_probe_device+0x311/0x4b0
+[   46.671031][    T7]  driver_probe_device+0x4e/0x150
+[   46.671604][    T7]  __device_attach_driver+0x1cc/0x2a0
+[   46.672192][    T7]  bus_for_each_drv+0x156/0x1d0
+[   46.672739][    T7] page_owner free stack trace missing
+[   46.673335][    T7]
+[   46.673620][    T7] Memory state around the buggy address:
+[   46.674213][    T7]  ffff888019442700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[   46.675083][    T7]  ffff888019442780: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[   46.675994][    T7] >ffff888019442800: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   46.676875][    T7]                    ^
+[   46.677323][    T7]  ffff888019442880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   46.678190][    T7]  ffff888019442900: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   46.679052][    T7] ==================================================================
+[   46.679945][    T7] Disabling lock debugging due to kernel taint
+[   46.680725][    T7] Kernel panic - not syncing:
+
 Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
 Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20230214092423.15175-6-marcan@marcan.st
+Link: https://lore.kernel.org/r/20230309104457.22628-1-jisoo.jang@yonsei.ac.kr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index fc622e6b329a3..5f55abf3bb6df 100644
+index 5f55abf3bb6df..15b5214ccb753 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -1350,13 +1350,14 @@ static int brcmf_set_pmk(struct brcmf_if *ifp, const u8 *pmk_data, u16 pmk_len)
- {
- 	struct brcmf_pub *drvr = ifp->drvr;
- 	struct brcmf_wsec_pmk_le pmk;
--	int i, err;
-+	int err;
-+
-+	memset(&pmk, 0, sizeof(pmk));
- 
--	/* convert to firmware key format */
--	pmk.key_len = cpu_to_le16(pmk_len << 1);
--	pmk.flags = cpu_to_le16(BRCMF_WSEC_PASSPHRASE);
--	for (i = 0; i < pmk_len; i++)
--		snprintf(&pmk.key[2 * i], 3, "%02x", pmk_data[i]);
-+	/* pass pmk directly */
-+	pmk.key_len = cpu_to_le16(pmk_len);
-+	pmk.flags = cpu_to_le16(0);
-+	memcpy(pmk.key, pmk_data, pmk_len);
- 
- 	/* store psk in firmware */
- 	err = brcmf_fil_cmd_data_set(ifp, BRCMF_C_SET_WSEC_PMK,
+@@ -5891,6 +5891,11 @@ static s32 brcmf_get_assoc_ies(struct brcmf_cfg80211_info *cfg,
+ 		(struct brcmf_cfg80211_assoc_ielen_le *)cfg->extra_buf;
+ 	req_len = le32_to_cpu(assoc_info->req_len);
+ 	resp_len = le32_to_cpu(assoc_info->resp_len);
++	if (req_len > WL_EXTRA_BUF_MAX || resp_len > WL_EXTRA_BUF_MAX) {
++		bphy_err(drvr, "invalid lengths in assoc info: req %u resp %u\n",
++			 req_len, resp_len);
++		return -EINVAL;
++	}
+ 	if (req_len) {
+ 		err = brcmf_fil_iovar_data_get(ifp, "assoc_req_ies",
+ 					       cfg->extra_buf,
 -- 
 2.39.2
 
