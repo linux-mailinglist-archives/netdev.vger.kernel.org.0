@@ -1,172 +1,108 @@
-Return-Path: <netdev+bounces-346-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-340-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5FDD76F737C
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:43:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E0E6E6F733F
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 21:41:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0985F280DF5
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:43:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 14E0A1C212EB
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 19:41:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FA5CEEA2;
-	Thu,  4 May 2023 19:42:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A82BEEEDD;
+	Thu,  4 May 2023 19:41:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D156EBA51
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:42:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14D15C433D2;
-	Thu,  4 May 2023 19:42:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229331;
-	bh=eVObgVYGaBUCFFfzDGHorAtyuHFPD6PGbq0l1GO/YfI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rokXvsmR8bHbP+H+0XYAsqPyazY/mqrgBtkhYiW4PBQCRbTAetgKalyxafw63iMjP
-	 KxtyG7x10C7k20JcJo2lrtfCe/1vfAD17CCNSFFC4lD5bdrTlTRykZHMtYkZzKeHpc
-	 G1eXufgmE5PII4AXAaXVHtfByzNP7GvJnMNyHPBzn+HYUk8F+3TCqRmk1x9nfYbywJ
-	 EcT6jSRzas25Qax2dVMXPCEBwafLOtJsdc30aDnEeW4VwRnB5S0yx34OcFCkfj3YMy
-	 UUsk184bticZKnDfMb7D8DMrxIxd2/9D59cE/m/do3oxn2qyN3YmBbkIZaOX6/x5TE
-	 Tq3eaWrzkKxmQ==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Hector Martin <marcan@marcan.st>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Arend van Spriel <arend.vanspriel@broadcom.com>,
-	Kalle Valo <kvalo@kernel.org>,
-	Sasha Levin <sashal@kernel.org>,
-	aspriel@gmail.com,
-	franky.lin@broadcom.com,
-	hante.meuleman@broadcom.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	ian.lin@infineon.com,
-	alep@cypress.com,
-	marex@denx.de,
-	rmk+kernel@armlinux.org.uk,
-	wright.feng@cypress.com,
-	linux-wireless@vger.kernel.org,
-	brcm80211-dev-list.pdl@broadcom.com,
-	SHA-cyfmac-dev-list@infineon.com,
-	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.3 07/59] wifi: brcmfmac: pcie: Add IDs/properties for BCM4387
-Date: Thu,  4 May 2023 15:40:50 -0400
-Message-Id: <20230504194142.3805425-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230504194142.3805425-1-sashal@kernel.org>
-References: <20230504194142.3805425-1-sashal@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D785EEDC
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:41:06 +0000 (UTC)
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3522961AF
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 12:41:05 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id d9443c01a7336-1ab0b1ee76eso1323375ad.1
+        for <netdev@vger.kernel.org>; Thu, 04 May 2023 12:41:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683229264; x=1685821264;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Q9YSMqbos6Lm0Mu7ecCbIm7Uvwg+s3D7TbmUe7hhEwU=;
+        b=oEiKXSvOvfF3i/XXfnVXZ8CoZbyZegrVrGHw814nVnxxRcLtxIx8rKAjP7U5Vt2zwE
+         fOFTm+9ZVBITcVi2aKjEBYQ3bSrAk9c9RMpzPdm6k4kpXupW+g68xU8rKohsU2mKfc/h
+         uzMBGuMQt2EqPfQLaX3vUGllkY4cAZEyfbKvbnjMxWaf9dwIBrAzhWsn5RSMBNrNWwfP
+         /D5NR+uIYLlWPAclTJaQuaEre+Q63Hm2zEaiJa2OLELLEYXwOPr8pzPTJ1OH0lVKXyI7
+         TWFxPeVw2aCGlDuoh90UcheaJ+8PzXi18rcCYOALxBQvOBOCjBtRBdxjtrazRxNl0SQt
+         KqMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683229264; x=1685821264;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Q9YSMqbos6Lm0Mu7ecCbIm7Uvwg+s3D7TbmUe7hhEwU=;
+        b=Eg+IWqLjEBJLM1s1OpkrHD7/ya4SDS/MP6aXT2u7SxP8SLML/MXk4R9gC0anlviIlD
+         LHSRpLmj6JPmj9ElPsER/KBeWj4u5Sf0vlSyZJFlCZNnf9cJz24BvnJDDXgLTAlJLFDJ
+         34qNETIGiOxMZbHE7egsOYFuewBqWbMVv7aEmhvk5GcSwIkai8tN8mBWoR4YDu/KOizK
+         m4CocuLu1qu21kobsbBMNRr3tsdZvyjHreAPWTqRJFh42rei4TZE8pN9AujzDhhXGRGY
+         tnW8t8fxcxrE0D/XKbVI//k1FavRqZRSyeyGVaEzlcyRLDI/BLU8PFF1oFrFMN9wvFmX
+         CWTw==
+X-Gm-Message-State: AC+VfDxyUZQoGrn02hyuI/vF9h302ZdvBLwwRA76bhDZi2nR9PPv+bji
+	99LKicQx3pe984LaAMvFvA+GfWYJYyMAyPAL38s=
+X-Google-Smtp-Source: ACHHUZ4rbCqg0lIH4ewfYsRcjMlB2JPkD5ML4hMrlU5+1mOJM2ulG2Ypf/x2lEm8RQD/JCgjxNSiBcsAnA/xqTm3Fqc=
+X-Received: by 2002:a17:903:2307:b0:1aa:d544:c5bb with SMTP id
+ d7-20020a170903230700b001aad544c5bbmr12702130plh.4.1683229264605; Thu, 04 May
+ 2023 12:41:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <CAOMZO5AMOVAZe+w3FiRO-9U98Foba5Oy4f_C0K7bGNxHA1qz_w@mail.gmail.com>
+ <7b8243a3-9976-484c-a0d0-d4f3debbe979@lunn.ch>
+In-Reply-To: <7b8243a3-9976-484c-a0d0-d4f3debbe979@lunn.ch>
+From: Fabio Estevam <festevam@gmail.com>
+Date: Thu, 4 May 2023 16:40:53 -0300
+Message-ID: <CAOMZO5DXH1wS9YYPWXYr-TvM+9Tj8F0bY0_kd_EAjrcCpEJJ7A@mail.gmail.com>
+Subject: Re: mv88e6320: Failed to forward PTP multicast
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Vladimir Oltean <olteanv@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, 
+	=?UTF-8?Q?Steffen_B=C3=A4tz?= <steffen@innosonix.de>, 
+	netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-From: Hector Martin <marcan@marcan.st>
+Hi Andrew,
 
-[ Upstream commit 117ace4014cce3fb78b40eb8028bb0f4fc37dd6f ]
+On Thu, May 4, 2023 at 4:21=E2=80=AFPM Andrew Lunn <andrew@lunn.ch> wrote:
 
-This chip is present on Apple M1 Pro/Max (t600x) platforms:
+> Do you see the PTP traffic on eth1?
 
-* maldives   (apple,j314s): MacBook Pro (14-inch, M1 Pro, 2021)
-* maldives   (apple,j314c): MacBook Pro (14-inch, M1 Max, 2021)
-* madagascar (apple,j316s): MacBook Pro (16-inch, M1 Pro, 2021)
-* madagascar (apple,j316c): MacBook Pro (16-inch, M1 Max, 2021)
+Yes, PTP traffic is seen on eth1.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20230214092423.15175-7-marcan@marcan.st
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c   | 2 ++
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c   | 8 ++++++++
- .../net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 2 ++
- 3 files changed, 12 insertions(+)
+> What MAC address is the PTP traffic using? Is it a link local MAC
+> address? There are some range of MAC addresses which you are not
+> supposed to forward across a bridge. e.g. you don't forward BPDUs.
+> Take a look at br_handle_frame(). Maybe you can play with
+> group_fwd_mask.
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-index 8073f31be27d9..9cdbd8d438439 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-@@ -737,6 +737,8 @@ static u32 brcmf_chip_tcm_rambase(struct brcmf_chip_priv *ci)
- 		return 0x170000;
- 	case BRCM_CC_4378_CHIP_ID:
- 		return 0x352000;
-+	case BRCM_CC_4387_CHIP_ID:
-+		return 0x740000;
- 	default:
- 		brcmf_err("unknown chip: %s\n", ci->pub.name);
- 		break;
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index 2835ef4edb18f..d2dad5414f396 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -67,6 +67,7 @@ BRCMF_FW_DEF(4366C, "brcmfmac4366c-pcie");
- BRCMF_FW_DEF(4371, "brcmfmac4371-pcie");
- BRCMF_FW_CLM_DEF(4377B3, "brcmfmac4377b3-pcie");
- BRCMF_FW_CLM_DEF(4378B1, "brcmfmac4378b1-pcie");
-+BRCMF_FW_CLM_DEF(4387C2, "brcmfmac4387c2-pcie");
- 
- /* firmware config files */
- MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.txt");
-@@ -101,6 +102,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_4371_CHIP_ID, 0xFFFFFFFF, 4371),
- 	BRCMF_FW_ENTRY(BRCM_CC_4377_CHIP_ID, 0xFFFFFFFF, 4377B3), /* revision ID 4 */
- 	BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0xFFFFFFFF, 4378B1), /* revision ID 3 */
-+	BRCMF_FW_ENTRY(BRCM_CC_4387_CHIP_ID, 0xFFFFFFFF, 4387C2), /* revision ID 7 */
- };
- 
- #define BRCMF_PCIE_FW_UP_TIMEOUT		5000 /* msec */
-@@ -2048,6 +2050,11 @@ static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
- 		base = 0x1120;
- 		words = 0x170;
- 		break;
-+	case BRCM_CC_4387_CHIP_ID:
-+		coreid = BCMA_CORE_GCI;
-+		base = 0x113c;
-+		words = 0x170;
-+		break;
- 	default:
- 		/* OTP not supported on this chip */
- 		return 0;
-@@ -2662,6 +2669,7 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_DEVICE_ID, CYW),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4377_DEVICE_ID, WCC),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4378_DEVICE_ID, WCC),
-+	BRCMF_PCIE_DEVICE(BRCM_PCIE_4387_DEVICE_ID, WCC),
- 
- 	{ /* end: all zeroes */ }
- };
-diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-index 896615f579522..44684bf1b9acc 100644
---- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-@@ -54,6 +54,7 @@
- #define BRCM_CC_4371_CHIP_ID		0x4371
- #define BRCM_CC_4377_CHIP_ID		0x4377
- #define BRCM_CC_4378_CHIP_ID		0x4378
-+#define BRCM_CC_4387_CHIP_ID		0x4387
- #define CY_CC_4373_CHIP_ID		0x4373
- #define CY_CC_43012_CHIP_ID		43012
- #define CY_CC_43439_CHIP_ID		43439
-@@ -95,6 +96,7 @@
- #define BRCM_PCIE_43596_DEVICE_ID	0x4415
- #define BRCM_PCIE_4377_DEVICE_ID	0x4488
- #define BRCM_PCIE_4378_DEVICE_ID	0x4425
-+#define BRCM_PCIE_4387_DEVICE_ID	0x4433
- 
- /* brcmsmac IDs */
- #define BCM4313_D11N2G_ID	0x4727	/* 4313 802.11n 2.4G device */
--- 
-2.39.2
+In our case, it is a multicast MAC.
 
+The same traffic flows correctly when the bridge is not VLAN aware.
+
+After VLAN is activated:
+
+# Activate VLAN filtering
+ip link set dev br0 type bridge vlan_filtering 1
+
+Then the flow stops.
+
+Thanks
 
