@@ -1,232 +1,128 @@
-Return-Path: <netdev+bounces-416-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-412-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 90D346F7687
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:08:20 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6B51B6F767B
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:07:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3FFC21C214AB
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:08:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D028D281208
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:06:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21754171D8;
-	Thu,  4 May 2023 19:48:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A506171BA;
+	Thu,  4 May 2023 19:48:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10BF9171B8
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:47 +0000 (UTC)
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E096C31B1F;
-	Thu,  4 May 2023 12:48:31 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id 6a1803df08f44-61aecee26feso4298426d6.2;
-        Thu, 04 May 2023 12:48:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683229650; x=1685821650;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=6VXMMoQpmmLLTqAMK/HVD6CSjpNQIit8KTC+MR0S3So=;
-        b=kC+uuqSY01yFv7otF/TCzd5ztxBa3KWC+PzsGqMUr+4fuCZYgDUbctV5Vu8D8kbpaI
-         QCJBlq3XnAHiRV8eGxrg/lHtwErOvEck6ejQNn8yek0DFvCPnwQN0shWSe2iswQ28Tz0
-         S9VQRisxTkJfiqZxi+QBeYqXw3UR5MPLoFQMgQoENRQBG9t7KD0wrOzLHHVGCmwmoDf3
-         QlUSBzA7NWmuW3tLOcPgycXjLZ8/V6AqMpESI5hrfvPeAjVyjhRORMYtyQRDMaKaDyZv
-         IIPeEP6XfQKRH4X/Tiy+rjefrVruq9O5+7Q+WlSqXJ22b9vRvrlrn1rl7Tkc6+8VgLET
-         Lzuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683229650; x=1685821650;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6VXMMoQpmmLLTqAMK/HVD6CSjpNQIit8KTC+MR0S3So=;
-        b=UteTEpHSb00GWVXm9TwZBcuG93FWCPsDDnuuHSshezfkuhphTk1iB080MY0zskc1Qx
-         L9hTAynED92pOo8x+j52h/vNc4Znlr86uF2e2WaozYoyy7pPHfl0BB2tn9gBhhkg2Q6C
-         Q743MfDtt5pQWIgUev5V6SajIfRySYiCmSR3nnnIskqDDrOg0MdjKIgTAPZeNRy9NTg6
-         jbF78qGeaqPqcIelEAYSB/ebtURt5v8Qc8fC5BJqhRJlMvNZdz3Opuv0OaHpJhIP9dNu
-         tADjTQ++8wEewnlM/mw8NNTeZ7mZPF0SCLsR1/tH3NDGQKNYgNvF5k1S86RYLkqiNUxq
-         XbLA==
-X-Gm-Message-State: AC+VfDzOGJBcIDb4TYthKQFqyCXEjx9q0Y2xJQNngW7rrgGRF3zT5iLi
-	69h5Q0FlxUEPi01IrxnKq+M=
-X-Google-Smtp-Source: ACHHUZ4uWSbbxncNGTC0bS6QLcwxmysVOskKXs82cMchY6pJ8W2C2JSPuNmQJKbRNVwTySact/rF3Q==
-X-Received: by 2002:a05:6214:1307:b0:5ef:4ecb:cf9d with SMTP id pn7-20020a056214130700b005ef4ecbcf9dmr19293065qvb.6.1683229650575;
-        Thu, 04 May 2023 12:47:30 -0700 (PDT)
-Received: from pm2-ws13.praxislan02.com (207-172-141-204.s8906.c3-0.slvr-cbr1.lnh-slvr.md.cable.rcncustomer.com. [207.172.141.204])
-        by smtp.gmail.com with ESMTPSA id k12-20020a0cf58c000000b0061eaef8ff84sm354723qvm.28.2023.05.04.12.47.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 May 2023 12:47:29 -0700 (PDT)
-From: Jason Andryuk <jandryuk@gmail.com>
-To: Eric Van Hensbergen <ericvh@kernel.org>,
-	Latchesar Ionkov <lucho@ionkov.net>,
-	Dominique Martinet <asmadeus@codewreck.org>,
-	Christian Schoenebeck <linux_oss@crudebyte.com>
-Cc: Jason Andryuk <jandryuk@gmail.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 828BF171B8
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 069D9C433EF;
+	Thu,  4 May 2023 19:48:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683229707;
+	bh=Wn4gTbf57LwpDRCHeR+QJZofpS9uoSncq21OSvW/Kd4=;
+	h=From:To:Cc:Subject:Date:From;
+	b=V34eRnmWmYxi5GwmJfPXgAkcbqSk+TZsgLezIJDIhJv1MYgtnJMzz3ruT/LYLPrJK
+	 mcTjkLifykf9V4yayroX5ypHU/UrWAaXK8zwDaRhEIi3X/LGJKUN0uBxlklsF2fjoh
+	 xbFr4grIQBfIXuIcTpVm3YUBo1mEwF/hKwFvd93eJ7h+JimfUiq0Em0RFMIj5vGaLz
+	 oqQdTGr8+qP9pCzNCEPTOGAUltg7+n8fJj5aMnA7Zs3q0n+GJP7/ZYfvtzfQoAJg4a
+	 NGJo5hM9yONmX11BxUr3nf1OX37ndg/VEkM7LmCXA6cQYqa+PAzAvqWaOeRY+fbQNF
+	 GD/oVJRcxQxUA==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Kees Cook <keescook@chromium.org>,
+	Kalle Valo <kvalo@kernel.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
-	v9fs@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: [PATCH v3] 9p: Remove INET dependency
-Date: Thu,  4 May 2023 15:47:23 -0400
-Message-Id: <20230504194725.546460-1-jandryuk@gmail.com>
-X-Mailer: git-send-email 2.40.1
+	linux-wireless@vger.kernel.org,
+	netdev@vger.kernel.org,
+	Kalle Valo <quic_kvalo@quicinc.com>,
+	Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 01/30] wifi: ath: Silence memcpy run-time false positive warning
+Date: Thu,  4 May 2023 15:47:54 -0400
+Message-Id: <20230504194824.3808028-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-9pfs can run over assorted transports, so it doesn't have an INET
-dependency.  Drop it and remove the includes of linux/inet.h.
+From: Kees Cook <keescook@chromium.org>
 
-NET_9P_FD/trans_fd.o builds without INET or UNIX and is usable over
-plain file descriptors.  However, tcp and unix functionality is still
-built and would generate runtime failures if used.  Add imply INET and
-UNIX to NET_9P_FD, so functionality is enabled by default but can still
-be explicitly disabled.
+[ Upstream commit bfcc8ba45eb87bfaaff900bbad2b87b204899d41 ]
 
-This allows configuring 9pfs over Xen with INET and UNIX disabled.
+The memcpy() in ath_key_config() was attempting to write across
+neighboring struct members in struct ath_keyval. Introduce a wrapping
+struct_group, kv_values, to be the addressable target of the memcpy
+without overflowing an individual member. Silences the false positive
+run-time warning:
 
-Signed-off-by: Jason Andryuk <jandryuk@gmail.com>
+  memcpy: detected field-spanning write (size 32) of single field "hk.kv_val" at drivers/net/wireless/ath/key.c:506 (size 16)
+
+Link: https://bbs.archlinux.org/viewtopic.php?id=282254
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20230210054310.never.554-kees@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-v3
-s/unusable/usable/
+ drivers/net/wireless/ath/ath.h | 12 +++++++-----
+ drivers/net/wireless/ath/key.c |  2 +-
+ 2 files changed, 8 insertions(+), 6 deletions(-)
 
-v2
-Add imply INET and UNIX
----
- fs/9p/Kconfig          | 2 +-
- fs/9p/vfs_addr.c       | 1 -
- fs/9p/vfs_dentry.c     | 1 -
- fs/9p/vfs_dir.c        | 1 -
- fs/9p/vfs_file.c       | 1 -
- fs/9p/vfs_inode.c      | 1 -
- fs/9p/vfs_inode_dotl.c | 1 -
- fs/9p/vfs_super.c      | 1 -
- net/9p/Kconfig         | 2 ++
- 9 files changed, 3 insertions(+), 8 deletions(-)
-
-diff --git a/fs/9p/Kconfig b/fs/9p/Kconfig
-index d7bc93447c85..0c63df574ee7 100644
---- a/fs/9p/Kconfig
-+++ b/fs/9p/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config 9P_FS
- 	tristate "Plan 9 Resource Sharing Support (9P2000)"
--	depends on INET && NET_9P
-+	depends on NET_9P
- 	select NETFS_SUPPORT
- 	help
- 	  If you say Y here, you will get experimental support for
-diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
-index 6f46d7e4c750..425956eb9fde 100644
---- a/fs/9p/vfs_addr.c
-+++ b/fs/9p/vfs_addr.c
-@@ -12,7 +12,6 @@
- #include <linux/file.h>
- #include <linux/stat.h>
- #include <linux/string.h>
--#include <linux/inet.h>
- #include <linux/pagemap.h>
- #include <linux/sched.h>
- #include <linux/swap.h>
-diff --git a/fs/9p/vfs_dentry.c b/fs/9p/vfs_dentry.c
-index 65fa2df5e49b..f16f73581634 100644
---- a/fs/9p/vfs_dentry.c
-+++ b/fs/9p/vfs_dentry.c
-@@ -13,7 +13,6 @@
- #include <linux/pagemap.h>
- #include <linux/stat.h>
- #include <linux/string.h>
--#include <linux/inet.h>
- #include <linux/namei.h>
- #include <linux/sched.h>
- #include <linux/slab.h>
-diff --git a/fs/9p/vfs_dir.c b/fs/9p/vfs_dir.c
-index 3d74b04fe0de..52bf87934650 100644
---- a/fs/9p/vfs_dir.c
-+++ b/fs/9p/vfs_dir.c
-@@ -13,7 +13,6 @@
- #include <linux/stat.h>
- #include <linux/string.h>
- #include <linux/sched.h>
--#include <linux/inet.h>
- #include <linux/slab.h>
- #include <linux/uio.h>
- #include <linux/fscache.h>
-diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
-index 44c15eb2b908..367a851eaa82 100644
---- a/fs/9p/vfs_file.c
-+++ b/fs/9p/vfs_file.c
-@@ -14,7 +14,6 @@
- #include <linux/file.h>
- #include <linux/stat.h>
- #include <linux/string.h>
--#include <linux/inet.h>
- #include <linux/list.h>
- #include <linux/pagemap.h>
- #include <linux/utsname.h>
-diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
-index 1d523bec0a94..502ac74e4959 100644
---- a/fs/9p/vfs_inode.c
-+++ b/fs/9p/vfs_inode.c
-@@ -15,7 +15,6 @@
- #include <linux/pagemap.h>
- #include <linux/stat.h>
- #include <linux/string.h>
--#include <linux/inet.h>
- #include <linux/namei.h>
- #include <linux/sched.h>
- #include <linux/slab.h>
-diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
-index 331ed60d8fcb..a7da49906d99 100644
---- a/fs/9p/vfs_inode_dotl.c
-+++ b/fs/9p/vfs_inode_dotl.c
-@@ -13,7 +13,6 @@
- #include <linux/pagemap.h>
- #include <linux/stat.h>
- #include <linux/string.h>
--#include <linux/inet.h>
- #include <linux/namei.h>
- #include <linux/sched.h>
- #include <linux/slab.h>
-diff --git a/fs/9p/vfs_super.c b/fs/9p/vfs_super.c
-index 266c4693e20c..10449994a972 100644
---- a/fs/9p/vfs_super.c
-+++ b/fs/9p/vfs_super.c
-@@ -12,7 +12,6 @@
- #include <linux/file.h>
- #include <linux/stat.h>
- #include <linux/string.h>
--#include <linux/inet.h>
- #include <linux/pagemap.h>
- #include <linux/mount.h>
- #include <linux/sched.h>
-diff --git a/net/9p/Kconfig b/net/9p/Kconfig
-index deabbd376cb1..00ebce9e5a65 100644
---- a/net/9p/Kconfig
-+++ b/net/9p/Kconfig
-@@ -17,6 +17,8 @@ if NET_9P
+diff --git a/drivers/net/wireless/ath/ath.h b/drivers/net/wireless/ath/ath.h
+index f083fb9038c36..f02a308a9ffc5 100644
+--- a/drivers/net/wireless/ath/ath.h
++++ b/drivers/net/wireless/ath/ath.h
+@@ -96,11 +96,13 @@ struct ath_keyval {
+ 	u8 kv_type;
+ 	u8 kv_pad;
+ 	u16 kv_len;
+-	u8 kv_val[16]; /* TK */
+-	u8 kv_mic[8]; /* Michael MIC key */
+-	u8 kv_txmic[8]; /* Michael MIC TX key (used only if the hardware
+-			 * supports both MIC keys in the same key cache entry;
+-			 * in that case, kv_mic is the RX key) */
++	struct_group(kv_values,
++		u8 kv_val[16]; /* TK */
++		u8 kv_mic[8]; /* Michael MIC key */
++		u8 kv_txmic[8]; /* Michael MIC TX key (used only if the hardware
++				 * supports both MIC keys in the same key cache entry;
++				 * in that case, kv_mic is the RX key) */
++	);
+ };
  
- config NET_9P_FD
- 	default NET_9P
-+	imply INET
-+	imply UNIX
- 	tristate "9P FD Transport"
- 	help
- 	  This builds support for transports over TCP, Unix sockets and
+ enum ath_cipher {
+diff --git a/drivers/net/wireless/ath/key.c b/drivers/net/wireless/ath/key.c
+index 61b59a804e308..b7b61d4f02bae 100644
+--- a/drivers/net/wireless/ath/key.c
++++ b/drivers/net/wireless/ath/key.c
+@@ -503,7 +503,7 @@ int ath_key_config(struct ath_common *common,
+ 
+ 	hk.kv_len = key->keylen;
+ 	if (key->keylen)
+-		memcpy(hk.kv_val, key->key, key->keylen);
++		memcpy(&hk.kv_values, key->key, key->keylen);
+ 
+ 	if (!(key->flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
+ 		switch (vif->type) {
 -- 
-2.40.1
+2.39.2
 
 
