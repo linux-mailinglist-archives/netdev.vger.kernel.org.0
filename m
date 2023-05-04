@@ -1,77 +1,56 @@
-Return-Path: <netdev+bounces-258-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-259-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3AEF86F6726
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 10:19:25 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3378F6F6744
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 10:26:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E25AA280CF7
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 08:19:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 803611C20986
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 08:26:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 89DF84A39;
-	Thu,  4 May 2023 08:19:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE5984A39;
+	Thu,  4 May 2023 08:26:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ADFF1849
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 08:19:21 +0000 (UTC)
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE826188;
-	Thu,  4 May 2023 01:19:01 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-	by smtp-out1.suse.de (Postfix) with ESMTP id 6C3EE21A0A;
-	Thu,  4 May 2023 08:19:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1683188340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SE8kDKCZ+c7mbSXXTz1hB+Dc3q2ET+MJaBGMBHVPxuE=;
-	b=qqz81J5rXY29diS8dUxT+DwNdzGK03QVBciwBhGWhqRQYup+b8Fx/Vd6kZw/QWsvcpzjXC
-	fJOsyi2Qe6oCHu9GO8DwDv0sv5N6b2t/vZtpLQhAs4v5rZLc0qPE3AjvtOHgwdzWGaGBI3
-	gXOBWYAtmSv8bMK5QqT4LWdMBIdi/48=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1683188340;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SE8kDKCZ+c7mbSXXTz1hB+Dc3q2ET+MJaBGMBHVPxuE=;
-	b=gUTCV9PWALmLrNF0TgfPTygIvQjiP/f738/GOu8YAausAc8/ewqmtapHC5ben6FjHaamr7
-	HUUa/uQHMaUZDmAQ==
-Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by relay2.suse.de (Postfix) with ESMTPS id D2F132C141;
-	Thu,  4 May 2023 08:18:59 +0000 (UTC)
-Date: Thu, 4 May 2023 10:18:58 +0200
-From: Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To: Quentin Monnet <quentin@isovalent.com>
-Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-	Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Alexander Lobakin <alobakin@mailbox.org>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Andrii Nakryiko <andrii@kernel.org>,
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-	Song Liu <songliubraving@fb.com>,
-	Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 bpf 02/11] bpftool: define a local bpf_perf_link to
- fix accessing its fields
-Message-ID: <20230504081858.GV15906@kitsune.suse.cz>
-References: <20220421003152.339542-1-alobakin@pm.me>
- <20220421003152.339542-3-alobakin@pm.me>
- <20230414095457.GG63923@kunlun.suse.cz>
- <9952dc32-f464-c85a-d812-946d6b0ac734@intel.com>
- <20230414162821.GK63923@kunlun.suse.cz>
- <CAEf4BzYx=dSXp-TkpjzyhSP+9WY71uR4Xq4Um5YzerbfOtJOfA@mail.gmail.com>
- <20230421073904.GJ15906@kitsune.suse.cz>
- <CACdoK4+KdM-sQKMO9WXk7kTL-x=Renjd0MuvSRT3JKbtzByyHQ@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 553B41C10
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 08:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F311DC433EF;
+	Thu,  4 May 2023 08:26:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683188787;
+	bh=rcaycbeN8aPOjP9E5Mbp7ZhlZYzPrs40+UjyKL7xQXQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OcsYHAUx9pW2KkBahMehpenMUQCkGke3bY/1G5R6e89EXzRf8GkLlvzyNcqCTTkAQ
+	 41Ze/gCJZoVWE8oDBLRwjiQ8VFbs2Y5gQo5dA1OUaqaSdtUJ3B6Hy6UAK8UZmLya19
+	 cVsVC3prmiOyuWEftJhEqUmDesq2duZEdGygqhb1sishq7x3SPOXRdyxWIMljHHKKA
+	 25IWhSiM+JbBQRCb7s8CDumiPuvPgnMKCgPjkn1tR4eoGIFbyw/URvm/zD/l3iNjiA
+	 0hxqjeiV+1n01JsC/cYOdPkcUjbpcCtOTSssMILIKXQQ/Ar02d9eEzUgAVszYp3L+Y
+	 gYvJwkRVUxUPg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+	(envelope-from <johan@kernel.org>)
+	id 1puUIM-0005Nf-5x; Thu, 04 May 2023 10:26:34 +0200
+Date: Thu, 4 May 2023 10:26:34 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: Johan Hovold <johan+linaro@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Johan Hedberg <johan.hedberg@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/2] Bluetooth: fix debugfs registration
+Message-ID: <ZFNsOm7GvSkBi4Tc@hovoldconsulting.com>
+References: <20230424124852.12625-1-johan+linaro@kernel.org>
+ <20230424124852.12625-2-johan+linaro@kernel.org>
+ <CABBYNZLBQjWVb=z8mffi4RmeKS-+RDLV+XF8bR2MiJ-ZOaFVHA@mail.gmail.com>
+ <ZFIHj9OAJkRvSscs@hovoldconsulting.com>
+ <CABBYNZJ23E50J2gfi5NgHj_bXMuVTHk29s+BH-zMhhWmRsd0Pg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -81,112 +60,91 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACdoK4+KdM-sQKMO9WXk7kTL-x=Renjd0MuvSRT3JKbtzByyHQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+In-Reply-To: <CABBYNZJ23E50J2gfi5NgHj_bXMuVTHk29s+BH-zMhhWmRsd0Pg@mail.gmail.com>
 
-Hello,
-
-On Thu, May 04, 2023 at 12:43:52AM +0100, Quentin Monnet wrote:
-> On Fri, 21 Apr 2023 at 08:39, Michal Suchánek <msuchanek@suse.de> wrote:
+On Wed, May 03, 2023 at 10:34:06AM -0700, Luiz Augusto von Dentz wrote:
+> Hi Johan,
+> 
+> On Wed, May 3, 2023 at 12:04 AM Johan Hovold <johan@kernel.org> wrote:
 > >
-> > On Thu, Apr 20, 2023 at 04:07:38PM -0700, Andrii Nakryiko wrote:
-> > > On Fri, Apr 14, 2023 at 9:28 AM Michal Suchánek <msuchanek@suse.de> wrote:
-> > > >
-> > > > On Fri, Apr 14, 2023 at 05:18:27PM +0200, Alexander Lobakin wrote:
-> > > > > From: Michal Suchánek <msuchanek@suse.de>
-> > > > > Date: Fri, 14 Apr 2023 11:54:57 +0200
-> > > > >
-> > > > > > Hello,
-> > > > >
-> > > > > Hey-hey,
-> > > > >
-> > > > > >
-> > > > > > On Thu, Apr 21, 2022 at 12:38:58AM +0000, Alexander Lobakin wrote:
-> > > > > >> When building bpftool with !CONFIG_PERF_EVENTS:
-> > > > > >>
-> > > > > >> skeleton/pid_iter.bpf.c:47:14: error: incomplete definition of type 'struct bpf_perf_link'
-> > > > > >>         perf_link = container_of(link, struct bpf_perf_link, link);
-> > > > > >>                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > > > >> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:74:22: note: expanded from macro 'container_of'
-> > > > > >>                 ((type *)(__mptr - offsetof(type, member)));    \
-> > > > > >>                                    ^~~~~~~~~~~~~~~~~~~~~~
-> > > > > >> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:68:60: note: expanded from macro 'offsetof'
-> > > > > >>  #define offsetof(TYPE, MEMBER)  ((unsigned long)&((TYPE *)0)->MEMBER)
-> > > > > >>                                                   ~~~~~~~~~~~^
-> > > > > >> skeleton/pid_iter.bpf.c:44:9: note: forward declaration of 'struct bpf_perf_link'
-> > > > > >>         struct bpf_perf_link *perf_link;
-> > > > > >>                ^
-> > > > > >>
-> > > > > >> &bpf_perf_link is being defined and used only under the ifdef.
-> > > > > >> Define struct bpf_perf_link___local with the `preserve_access_index`
-> > > > > >> attribute inside the pid_iter BPF prog to allow compiling on any
-> > > > > >> configs. CO-RE will substitute it with the real struct bpf_perf_link
-> > > > > >> accesses later on.
-> > > > > >> container_of() is not CO-REd, but it is a noop for
-> > > > > >> bpf_perf_link <-> bpf_link and the local copy is a full mirror of
-> > > > > >> the original structure.
-> > > > > >>
-> > > > > >> Fixes: cbdaf71f7e65 ("bpftool: Add bpf_cookie to link output")
-> > > > > >
-> > > > > > This does not solve the problem completely. Kernels that don't have
-> > > > > > CONFIG_PERF_EVENTS in the first place are also missing the enum value
-> > > > > > BPF_LINK_TYPE_PERF_EVENT which is used as the condition for handling the
-> > > > > > cookie.
-> > > > >
-> > > > > Sorry, I haven't been working with my home/private stuff for more than a
-> > > > > year already. I may get back to it some day when I'm tired of Lua (curse
-> > > > > words, sorry :D), but for now the series is "a bit" abandoned.
-> > > >
-> > > > This part still appllies and works for me with the caveat that
-> > > > BPF_LINK_TYPE_PERF_EVENT also needs to be defined.
-> > > >
-> > > > > I think there was alternative solution proposed there, which promised to
-> > > > > be more flexible. But IIRC it also doesn't touch the enum (was it added
-> > > > > recently? Because it was building just fine a year ago on config without
-> > > > > perf events).
-> > > >
-> > > > It was added in 5.15. Not sure there is a kernel.org LTS kernel usable
-> > > > for CO-RE that does not have it, technically 5.4 would work if it was
-> > > > built monolithic, it does not have module BTF, only kernel IIRC.
-> > > >
-> > > > Nonetheless, the approach to handling features completely missing in the
-> > > > running kernel should be figured out one way or another. I would be
-> > > > surprised if this was the last feature to be added that bpftool needs to
-> > > > know about.
+> > On Tue, May 02, 2023 at 04:37:51PM -0700, Luiz Augusto von Dentz wrote:
+> > > Hi Johan,
 > > >
-> > > Are we talking about bpftool built from kernel sources or from Github?
-> > > Kernel source version should have access to latest UAPI headers and so
-> > > BPF_LINK_TYPE_PERF_EVENT should be available. Github version, if it
-> > > doesn't do that already, can use UAPI headers distributed (and used
-> > > for building) with libbpf through submodule.
+> > > On Mon, Apr 24, 2023 at 5:50 AM Johan Hovold <johan+linaro@kernel.org> wrote:
+> > > >
+> > > > Since commit ec6cef9cd98d ("Bluetooth: Fix SMP channel registration for
+> > > > unconfigured controllers") the debugfs interface for unconfigured
+> > > > controllers will be created when the controller is configured.
+> > > >
+> > > > There is however currently nothing preventing a controller from being
+> > > > configured multiple time (e.g. setting the device address using btmgmt)
+> > > > which results in failed attempts to register the already registered
+> > > > debugfs entries:
+> > > >
+> > > >         debugfs: File 'features' in directory 'hci0' already present!
+> > > >         debugfs: File 'manufacturer' in directory 'hci0' already present!
+> > > >         debugfs: File 'hci_version' in directory 'hci0' already present!
+> > > >         ...
+> > > >         debugfs: File 'quirk_simultaneous_discovery' in directory 'hci0' already present!
+> > > >
+> > > > Add a controller flag to avoid trying to register the debugfs interface
+> > > > more than once.
+> > > >
+> > > > Fixes: ec6cef9cd98d ("Bluetooth: Fix SMP channel registration for unconfigured controllers")
+> > > > Cc: stable@vger.kernel.org      # 4.0
+> > > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > > > ---
 > >
-> > It does have a copy of the uapi headers but apparently does not use
-> > them. Using them directly might cause conflict with vmlinux.h, though.
+> > > > diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+> > > > index 632be1267288..a8785126df75 100644
+> > > > --- a/net/bluetooth/hci_sync.c
+> > > > +++ b/net/bluetooth/hci_sync.c
+> > > > @@ -4501,6 +4501,9 @@ static int hci_init_sync(struct hci_dev *hdev)
+> > > >             !hci_dev_test_flag(hdev, HCI_CONFIG))
+> > > >                 return 0;
+> > > >
+> > > > +       if (hci_dev_test_and_set_flag(hdev, HCI_DEBUGFS_CREATED))
+> > > > +               return 0;
+> > >
+> > > Can't we just use HCI_SETUP like we do with in create_basic:
+> > >
+> > >     if (hci_dev_test_flag(hdev, HCI_SETUP))
+> > >         hci_debugfs_create_basic(hdev);
+> > >
+> > > Actually we might as well move these checks directly inside the
+> > > hci_debugfs function to make sure these only take effect during the
+> > > setup/first init.
+> >
+> > The problem is that commit ec6cef9cd98d ("Bluetooth: Fix SMP channel
+> > registration for unconfigured controllers") started deferring creation
+> > of most parts of the debugfs interface until the controller is
+> > configured (e.g. as some information is not available until then).
+> >
+> > Moving everything back to setup-time would effectively revert that.
 > 
-> Indeed, using the UAPI header here conflicts with vmlinux.h.
+> Not moving back but just doing something like:
 > 
-> Looking again at some code I started last year but never finalised, I
-> used the following approach, redefining BPF_LINK_TYPE_PERF_EVENT with
-> CO-RE:
+> diff --git a/net/bluetooth/hci_debugfs.c b/net/bluetooth/hci_debugfs.c
+> index ec0df2f9188e..a6e94c29fc5a 100644
+> --- a/net/bluetooth/hci_debugfs.c
+> +++ b/net/bluetooth/hci_debugfs.c
+> @@ -310,6 +310,9 @@ DEFINE_INFO_ATTRIBUTE(firmware_info, fw_info);
 > 
->     enum bpf_link_type___local {
->         BPF_LINK_TYPE_PERF_EVENT___local = 7,
->     };
+>  void hci_debugfs_create_common(struct hci_dev *hdev)
+>  {
+> +       if (!hci_dev_test_flag(hdev, HCI_SETUP))
+> +               return;
+> +
+>         debugfs_create_file("features", 0444, hdev->debugfs, hdev,
+>                             &features_fops);
+>         debugfs_create_u16("manufacturer", 0444, hdev->debugfs,
+> 
 
-That's the same as I did except I used simple define instead of this
-fake enum.
+What I tried to explain above is that doing this would always create
+the attributes as setup-time rather than at config-time, which
+effectively reverts commit ec6cef9cd98d ("Bluetooth: Fix SMP channel
+registration for unconfigured controllers"). And doing so looks like it
+would amount to a regression.
 
-The enum only has value when it is complete and the compiler can check
-that a switch uses only known values, and can confuse things when values
-are missing.
-
-Thanks
-
-Michal
+Johan
 
