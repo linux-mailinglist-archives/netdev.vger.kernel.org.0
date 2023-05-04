@@ -1,50 +1,52 @@
-Return-Path: <netdev+bounces-415-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-417-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 289B86F7689
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:08:32 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 16FEB6F768A
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:08:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3A66A28140C
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:07:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 541FE1C21364
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:08:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E10C171D0;
-	Thu,  4 May 2023 19:48:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6289D171DF;
+	Thu,  4 May 2023 19:48:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14BDF171C9
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7E77C433EF;
-	Thu,  4 May 2023 19:48:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8F7A171C9;
+	Thu,  4 May 2023 19:48:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D09EC4339C;
+	Thu,  4 May 2023 19:48:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229722;
-	bh=D3HFRz81ELLnL2rMyKxPa4d1b3X56uDXG5yFWKmllng=;
+	s=k20201202; t=1683229726;
+	bh=xQe8JHhVWU4chUfRjCf0RNQOPxaRYxs0I4eIGguwbYQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ujOYKxtwswkh80Pwne51Ydy52ohfK2xrm+SMquaSjjqMU4cQM/6oZaoOny6avQtcp
-	 EbdcCxoHygIHP/s/qbKl5NzYDyFZ1sXjQjftkhH7SXaBmKEKA2hsjqQC7/ucEuPyG+
-	 LBUo842Hp/E0FRgO3Qp3y+LVqd6tDcQoECqFWu3y5jk/lvtRAN0Y4qN8gpOzCklGAe
-	 UaIr/x1gSDnv1fmvir1hBV+lLkGrnmjXdl3fFldlZxi9pwmUZfrciTaPVXm3WOFRrF
-	 edv5mSyY2SbZNYt3xTzBMTh8UQajZlSLTEPBkaXsIZcbsjlCzKLrOjckZK8kVuDBmQ
-	 YT+e7k0djKPAA==
+	b=rCGj+3UsiWBw+AkWwbS1+uaRiEZfcP8wS2ks/pNAP8mN9TJZee5tS0FQDlwoNGjJS
+	 N4/LBq5WM/ZHHurz5lIthwsehmjjgWBUPiQue9/7QHo3CpazQrdiDqnJkZBs0hip0X
+	 iPzlqCwWoAR3YCeIRrIQKTHIcTnGSRD2qnn7n+ZXi9f0+KWCapDmJIm7jll0owOEu0
+	 wL+ISGZk9gabCiT/x6uZc6FiDK3iIhS+QItgQoj/ICVm0LBbV7QM1Ts8zGbzDVwye7
+	 ytD4DBylA/vlMGw5GYPNtatH81Cv05Qtr9SEegOC6qwGVZl600JQaHj8jqVKNF9eUr
+	 A/ZUj16FEAedg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Maxim Korotkov <korotkov.maxim.s@gmail.com>,
-	Pavan Chebbi <pavan.chebbi@broadcom.com>,
-	Jakub Kicinski <kuba@kernel.org>,
+Cc: Nathan Chancellor <nathan@kernel.org>,
+	Horatiu Vultur <horatiu.vultur@microchip.com>,
+	Paolo Abeni <pabeni@redhat.com>,
 	Sasha Levin <sashal@kernel.org>,
-	michael.chan@broadcom.com,
 	davem@davemloft.net,
 	edumazet@google.com,
-	pabeni@redhat.com,
-	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 07/30] bnxt: avoid overflow in bnxt_get_nvram_directory()
-Date: Thu,  4 May 2023 15:48:00 -0400
-Message-Id: <20230504194824.3808028-7-sashal@kernel.org>
+	kuba@kernel.org,
+	ndesaulniers@google.com,
+	mkl@pengutronix.de,
+	netdev@vger.kernel.org,
+	llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.15 08/30] net: pasemi: Fix return type of pasemi_mac_start_tx()
+Date: Thu,  4 May 2023 15:48:01 -0400
+Message-Id: <20230504194824.3808028-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194824.3808028-1-sashal@kernel.org>
 References: <20230504194824.3808028-1-sashal@kernel.org>
@@ -58,40 +60,52 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Maxim Korotkov <korotkov.maxim.s@gmail.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 7c6dddc239abe660598c49ec95ea0ed6399a4b2a ]
+[ Upstream commit c8384d4a51e7cb0e6587f3143f29099f202c5de1 ]
 
-The value of an arithmetic expression is subject
-of possible overflow due to a failure to cast operands to a larger data
-type before performing arithmetic. Used macro for multiplication instead
-operator for avoiding overflow.
+With clang's kernel control flow integrity (kCFI, CONFIG_CFI_CLANG),
+indirect call targets are validated against the expected function
+pointer prototype to make sure the call target is valid to help mitigate
+ROP attacks. If they are not identical, there is a failure at run time,
+which manifests as either a kernel panic or thread getting killed. A
+warning in clang aims to catch these at compile time, which reveals:
 
-Found by Security Code and Linux Verification
-Center (linuxtesting.org) with SVACE.
+  drivers/net/ethernet/pasemi/pasemi_mac.c:1665:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
+          .ndo_start_xmit         = pasemi_mac_start_tx,
+                                    ^~~~~~~~~~~~~~~~~~~
+  1 error generated.
 
-Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Link: https://lore.kernel.org/r/20230309174347.3515-1-korotkov.maxim.s@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+->ndo_start_xmit() in 'struct net_device_ops' expects a return type of
+'netdev_tx_t', not 'int'. Adjust the return type of
+pasemi_mac_start_tx() to match the prototype's to resolve the warning.
+While PowerPC does not currently implement support for kCFI, it could in
+the future, which means this warning becomes a fatal CFI failure at run
+time.
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1750
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Link: https://lore.kernel.org/r/20230319-pasemi-incompatible-pointer-types-strict-v1-1-1b9459d8aef0@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
+ drivers/net/ethernet/pasemi/pasemi_mac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index bc9812a0a91c3..3c9ba116d5aff 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2709,7 +2709,7 @@ static int bnxt_get_nvram_directory(struct net_device *dev, u32 len, u8 *data)
- 	if (rc)
- 		return rc;
+diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
+index 7e096b2888b92..b223488318ad7 100644
+--- a/drivers/net/ethernet/pasemi/pasemi_mac.c
++++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
+@@ -1423,7 +1423,7 @@ static void pasemi_mac_queue_csdesc(const struct sk_buff *skb,
+ 	write_dma_reg(PAS_DMA_TXCHAN_INCR(txring->chan.chno), 2);
+ }
  
--	buflen = dir_entries * entry_length;
-+	buflen = mul_u32_u32(dir_entries, entry_length);
- 	buf = hwrm_req_dma_slice(bp, req, buflen, &dma_handle);
- 	if (!buf) {
- 		hwrm_req_drop(bp, req);
+-static int pasemi_mac_start_tx(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t pasemi_mac_start_tx(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct pasemi_mac * const mac = netdev_priv(dev);
+ 	struct pasemi_mac_txring * const txring = tx_ring(mac);
 -- 
 2.39.2
 
