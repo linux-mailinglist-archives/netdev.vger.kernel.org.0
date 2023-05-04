@@ -1,55 +1,52 @@
-Return-Path: <netdev+bounces-406-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-407-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CDA7D6F7620
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:05:58 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3F7B26F762A
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:06:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D471D281316
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:05:05 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 56A091C2162E
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:05:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D7CE168C2;
-	Thu,  4 May 2023 19:48:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9420C168CB;
+	Thu,  4 May 2023 19:48:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B010F4E4
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA52C433D2;
-	Thu,  4 May 2023 19:47:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A475F4EB
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:48:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8855C4339C;
+	Thu,  4 May 2023 19:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229681;
-	bh=RsNOV0EPmfZckX+21rdsSrb+cHo2tv2tYFdzs7k/Z+4=;
+	s=k20201202; t=1683229682;
+	bh=ANj1/Mdt11UKjqOjZLYLvGkukMF6iBUj/697rQNawaA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=AUFDeCF/mNtrJ77EY403tBjx6JITkVH9ZyoGp/KwBHBdNs9Nk8XR56z6H2nknCPzV
-	 ZglSpyrzzI3jzMhiDrwEzZyhLYKIcVFgY7EPsjjuT2vV+si73n2fm1aBkmeOnkvYkk
-	 5lutBZ3LZYxuc6D6QO4NTR+wteZA6++62ikjpHDI8ntVws7cW3uWS/5wSnK/t2b1wq
-	 x2hnm5mGOhel+QVnwJ+k87g7HqyEBM5vL9DwSz1xWBZk34J0580GyKH2SQx534Pxg0
-	 wTQc24swg1+udZktE0nZfQqV5EN72OCU42pqqx+vQyV6gvLR8AXvweQY0o+04tpjiP
-	 Zy6GsFYQxoXeQ==
+	b=bs/+x8yfpnrck5YNa6JgTsrXiD7eS1JQlxdfM5PXXcQ3kZYufu+OOLNkandS+nWcV
+	 cRAINo57BXlLWb+AtEE838WsqKGFHUz/Z8BZM//LeWL+CXINU5aXmxyhtzMQvXQjiH
+	 v9iizTS5Dmup36eKeqpg7Nzvd4hOBpng4Jxkl6PgCqeMWgjCTeirfbfvllC2bTB22v
+	 jp1uCK7qszYt0ll4pb2BziQuCstrP73T/+jr0s0m+faFWswXqlY1TtAnBE/ngoNb/y
+	 F0yZcjWbG7zqVn+Cu4HOz3I4W5ByCbVvYAXX2Ukk1IPyCNp96CT6RebIKzUkkipbFh
+	 LK7pjxrTYr1ew==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Hans de Goede <hdegoede@redhat.com>,
-	Kees Cook <keescook@chromium.org>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Johannes Berg <johannes.berg@intel.com>,
+Cc: Nagarajan Maran <quic_nmaran@quicinc.com>,
+	Kalle Valo <quic_kvalo@quicinc.com>,
 	Sasha Levin <sashal@kernel.org>,
-	gregory.greenman@intel.com,
 	kvalo@kernel.org,
 	davem@davemloft.net,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	benjamin.berg@intel.com,
+	ath11k@lists.infradead.org,
 	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 36/49] wifi: iwlwifi: dvm: Fix memcpy: detected field-spanning write backtrace
-Date: Thu,  4 May 2023 15:46:13 -0400
-Message-Id: <20230504194626.3807438-36-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 37/49] wifi: ath11k: Fix SKB corruption in REO destination ring
+Date: Thu,  4 May 2023 15:46:14 -0400
+Message-Id: <20230504194626.3807438-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504194626.3807438-1-sashal@kernel.org>
 References: <20230504194626.3807438-1-sashal@kernel.org>
@@ -63,69 +60,78 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Nagarajan Maran <quic_nmaran@quicinc.com>
 
-[ Upstream commit ef16799640865f937719f0771c93be5dca18adc6 ]
+[ Upstream commit f9fff67d2d7ca6fa8066132003a3deef654c55b1 ]
 
-A received TKIP key may be up to 32 bytes because it may contain
-MIC rx/tx keys too. These are not used by iwl and copying these
-over overflows the iwl_keyinfo.key field.
+While running traffics for a long time, randomly an RX descriptor
+filled with value "0" from REO destination ring is received.
+This descriptor which is invalid causes the wrong SKB (SKB stored in
+the IDR lookup with buffer id "0") to be fetched which in turn
+causes SKB memory corruption issue and the same leads to crash
+after some time.
 
-Add a check to not copy more data to iwl_keyinfo.key then will fit.
+Changed the start id for idr allocation to "1" and the buffer id "0"
+is reserved for error validation. Introduced Sanity check to validate
+the descriptor, before processing the SKB.
 
-This fixes backtraces like this one:
+Crash Signature :
 
- memcpy: detected field-spanning write (size 32) of single field "sta_cmd.key.key" at drivers/net/wireless/intel/iwlwifi/dvm/sta.c:1103 (size 16)
- WARNING: CPU: 1 PID: 946 at drivers/net/wireless/intel/iwlwifi/dvm/sta.c:1103 iwlagn_send_sta_key+0x375/0x390 [iwldvm]
- <snip>
- Hardware name: Dell Inc. Latitude E6430/0H3MT5, BIOS A21 05/08/2017
- RIP: 0010:iwlagn_send_sta_key+0x375/0x390 [iwldvm]
- <snip>
- Call Trace:
-  <TASK>
-  iwl_set_dynamic_key+0x1f0/0x220 [iwldvm]
-  iwlagn_mac_set_key+0x1e4/0x280 [iwldvm]
-  drv_set_key+0xa4/0x1b0 [mac80211]
-  ieee80211_key_enable_hw_accel+0xa8/0x2d0 [mac80211]
-  ieee80211_key_replace+0x22d/0x8e0 [mac80211]
- <snip>
+Unable to handle kernel paging request at virtual address 3f004900
+PC points to "b15_dma_inv_range+0x30/0x50"
+LR points to "dma_cache_maint_page+0x8c/0x128".
+The Backtrace obtained is as follows:
+[<8031716c>] (b15_dma_inv_range) from [<80313a4c>] (dma_cache_maint_page+0x8c/0x128)
+[<80313a4c>] (dma_cache_maint_page) from [<80313b90>] (__dma_page_dev_to_cpu+0x28/0xcc)
+[<80313b90>] (__dma_page_dev_to_cpu) from [<7fb5dd68>] (ath11k_dp_process_rx+0x1e8/0x4a4 [ath11k])
+[<7fb5dd68>] (ath11k_dp_process_rx [ath11k]) from [<7fb53c20>] (ath11k_dp_service_srng+0xb0/0x2ac [ath11k])
+[<7fb53c20>] (ath11k_dp_service_srng [ath11k]) from [<7f67bba4>] (ath11k_pci_ext_grp_napi_poll+0x1c/0x78 [ath11k_pci])
+[<7f67bba4>] (ath11k_pci_ext_grp_napi_poll [ath11k_pci]) from [<807d5cf4>] (__napi_poll+0x28/0xb8)
+[<807d5cf4>] (__napi_poll) from [<807d5f28>] (net_rx_action+0xf0/0x280)
+[<807d5f28>] (net_rx_action) from [<80302148>] (__do_softirq+0xd0/0x280)
+[<80302148>] (__do_softirq) from [<80320408>] (irq_exit+0x74/0xd4)
+[<80320408>] (irq_exit) from [<803638a4>] (__handle_domain_irq+0x90/0xb4)
+[<803638a4>] (__handle_domain_irq) from [<805bedec>] (gic_handle_irq+0x58/0x90)
+[<805bedec>] (gic_handle_irq) from [<80301a78>] (__irq_svc+0x58/0x8c)
 
-Link: https://www.alionet.org/index.php?topic=1469.0
-Link: https://lore.kernel.org/linux-wireless/20230218191056.never.374-kees@kernel.org/
-Link: https://lore.kernel.org/linux-wireless/68760035-7f75-1b23-e355-bfb758a87d83@redhat.com/
-Cc: Kees Cook <keescook@chromium.org>
-Suggested-by: Johannes Berg <johannes@sipsolutions.net>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
+
+Signed-off-by: Nagarajan Maran <quic_nmaran@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20230403191533.28114-1-quic_nmaran@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/dvm/sta.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/dp_rx.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/sta.c b/drivers/net/wireless/intel/iwlwifi/dvm/sta.c
-index cef43cf80620a..8b01ab986cb13 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/sta.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/sta.c
-@@ -1081,6 +1081,7 @@ static int iwlagn_send_sta_key(struct iwl_priv *priv,
- {
- 	__le16 key_flags;
- 	struct iwl_addsta_cmd sta_cmd;
-+	size_t to_copy;
- 	int i;
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 1786d83f8f2ed..38be646bc0214 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -389,10 +389,10 @@ int ath11k_dp_rxbufs_replenish(struct ath11k_base *ab, int mac_id,
+ 			goto fail_free_skb;
  
- 	spin_lock_bh(&priv->sta_lock);
-@@ -1100,7 +1101,9 @@ static int iwlagn_send_sta_key(struct iwl_priv *priv,
- 		sta_cmd.key.tkip_rx_tsc_byte2 = tkip_iv32;
- 		for (i = 0; i < 5; i++)
- 			sta_cmd.key.tkip_rx_ttak[i] = cpu_to_le16(tkip_p1k[i]);
--		memcpy(sta_cmd.key.key, keyconf->key, keyconf->keylen);
-+		/* keyconf may contain MIC rx/tx keys which iwl does not use */
-+		to_copy = min_t(size_t, sizeof(sta_cmd.key.key), keyconf->keylen);
-+		memcpy(sta_cmd.key.key, keyconf->key, to_copy);
- 		break;
- 	case WLAN_CIPHER_SUITE_WEP104:
- 		key_flags |= STA_KEY_FLG_KEY_SIZE_MSK;
+ 		spin_lock_bh(&rx_ring->idr_lock);
+-		buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 0,
+-				   rx_ring->bufs_max * 3, GFP_ATOMIC);
++		buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 1,
++				   (rx_ring->bufs_max * 3) + 1, GFP_ATOMIC);
+ 		spin_unlock_bh(&rx_ring->idr_lock);
+-		if (buf_id < 0)
++		if (buf_id <= 0)
+ 			goto fail_dma_unmap;
+ 
+ 		desc = ath11k_hal_srng_src_get_next_entry(ab, srng);
+@@ -2665,6 +2665,9 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
+ 				   cookie);
+ 		mac_id = FIELD_GET(DP_RXDMA_BUF_COOKIE_PDEV_ID, cookie);
+ 
++		if (unlikely(buf_id == 0))
++			continue;
++
+ 		ar = ab->pdevs[mac_id].ar;
+ 		rx_ring = &ar->dp.rx_refill_buf_ring;
+ 		spin_lock_bh(&rx_ring->idr_lock);
 -- 
 2.39.2
 
