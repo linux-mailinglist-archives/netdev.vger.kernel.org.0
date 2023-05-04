@@ -1,53 +1,55 @@
-Return-Path: <netdev+bounces-439-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-440-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 725466F76C7
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:16:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 53FA96F76C8
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 22:16:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5194D280E0E
-	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:16:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0BDA5280DA4
+	for <lists+netdev@lfdr.de>; Thu,  4 May 2023 20:16:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 62BB6101F7;
-	Thu,  4 May 2023 19:51:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1C471950E;
+	Thu,  4 May 2023 19:51:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB7CE111BE
-	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C42C4339C;
-	Thu,  4 May 2023 19:51:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD95419507
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 19:51:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3EDBC433D2;
+	Thu,  4 May 2023 19:51:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683229861;
-	bh=oyC3VBu1GT95DmqeVEJB3ixryq3YgShqX3+9xq4nxTA=;
+	s=k20201202; t=1683229879;
+	bh=gyPQeB27qRBOEmUX6wQZplbuE1HpAQh69Z00+4a2jHo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Tq8bOf/omd1tKFI9g2iizIu/P4QU6ZuxWiOkmofW9aoKo4ruDsHRHTcPIsR4hm3v9
-	 btHtDiH9PKs7k8uT4DketGmMaJhWVV7UgmFUiCbfWjbrPIHjiAwsrtIcMgzsS4fcfd
-	 569/lLFnmYzQtoosgQ5N2CAMWO7T9OeOQi11kPj1xGA0zAO+9dNfihZn82GF0eFsMT
-	 Pu+skYLl3wNRJimfaA1B+u70eVxqEgAxSZcpwKiqAPt27maVrKM8DYPtG0Qp1FmRnE
-	 a5+2jhnFZIiGEDTmSIyQmeBTvUxfa5yeDfsRr7Q8QxUnoadW8G6N2e1KjIG1UzQqkC
-	 BiABXepwBdThQ==
+	b=V99sU1EUgNH3caANXpaYEvhMUYwYgD36sH6iMTW+Rdx5+iFkwmqlfDxzrqJynVJ0g
+	 /wlubsGgWEqK3yA9g7uMx2buT0j21GCKt424PVFAtl00/BUgqkZMOUHs8B4pI2oXdS
+	 pYgFIJARBkVEibTFoNJJ5CmejaUJguMhSBR8P1Y7Mv1e/8LhSOE4IU5ocLEtsIQ8Bv
+	 D76G8scrGoSsxLyOFbr54deb57LAk072sSVRVIfT9AC/er3XpVz2zSBQb5ja1aO40I
+	 TNba/yjnNeuLgAFNIOFzQjaxRPYtKSP9PwY0bQDD2yvf7UaylncvbouMxX5QFVL9ur
+	 AJi+un59vadlQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Nick Child <nnac123@linux.ibm.com>,
-	Piotr Raczynski <piotr.raczynski@intel.com>,
-	Jakub Kicinski <kuba@kernel.org>,
+Cc: Daniel Gabay <daniel.gabay@intel.com>,
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Johannes Berg <johannes.berg@intel.com>,
 	Sasha Levin <sashal@kernel.org>,
+	kvalo@kernel.org,
 	davem@davemloft.net,
 	edumazet@google.com,
+	kuba@kernel.org,
 	pabeni@redhat.com,
-	kuniyu@amazon.com,
-	liuhangbin@gmail.com,
-	jiri@resnulli.us,
-	andy.ren@getcruise.com,
+	mukesh.sisodiya@intel.com,
+	golan.ben.ami@intel.com,
+	yaara.baruch@intel.com,
+	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 06/18] net: Catch invalid index in XPS mapping
-Date: Thu,  4 May 2023 15:50:28 -0400
-Message-Id: <20230504195042.3808716-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 15/18] wifi: iwlwifi: pcie: fix possible NULL pointer dereference
+Date: Thu,  4 May 2023 15:50:37 -0400
+Message-Id: <20230504195042.3808716-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230504195042.3808716-1-sashal@kernel.org>
 References: <20230504195042.3808716-1-sashal@kernel.org>
@@ -61,41 +63,54 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Nick Child <nnac123@linux.ibm.com>
+From: Daniel Gabay <daniel.gabay@intel.com>
 
-[ Upstream commit 5dd0dfd55baec0742ba8f5625a0dd064aca7db16 ]
+[ Upstream commit b655b9a9f8467684cfa8906713d33b71ea8c8f54 ]
 
-When setting the XPS value of a TX queue, warn the user once if the
-index of the queue is greater than the number of allocated TX queues.
+It is possible that iwl_pci_probe() will fail and free the trans,
+then afterwards iwl_pci_remove() will be called and crash by trying
+to access trans which is already freed, fix it.
 
-Previously, this scenario went uncaught. In the best case, it resulted
-in unnecessary allocations. In the worst case, it resulted in
-out-of-bounds memory references through calls to `netdev_get_tx_queue(
-dev, index)`. Therefore, it is important to inform the user but not
-worth returning an error and risk downing the netdevice.
+iwlwifi 0000:01:00.0: Detected crf-id 0xa5a5a5a2, cnv-id 0xa5a5a5a2
+		      wfpm id 0xa5a5a5a2
+iwlwifi 0000:01:00.0: Can't find a correct rfid for crf id 0x5a2
+...
+BUG: kernel NULL pointer dereference, address: 0000000000000028
+...
+RIP: 0010:iwl_pci_remove+0x12/0x30 [iwlwifi]
+pci_device_remove+0x3e/0xb0
+device_release_driver_internal+0x103/0x1f0
+driver_detach+0x4c/0x90
+bus_remove_driver+0x5c/0xd0
+driver_unregister+0x31/0x50
+pci_unregister_driver+0x40/0x90
+iwl_pci_unregister_driver+0x15/0x20 [iwlwifi]
+__exit_compat+0x9/0x98 [iwlwifi]
+__x64_sys_delete_module+0x147/0x260
 
-Signed-off-by: Nick Child <nnac123@linux.ibm.com>
-Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
-Link: https://lore.kernel.org/r/20230321150725.127229-1-nnac123@linux.ibm.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Daniel Gabay <daniel.gabay@intel.com>
+Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
+Link: https://lore.kernel.org/r/20230413213309.082f6e21341b.I0db21d7fa9a828d571ca886713bd0b5d0b6e1e5c@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1a4e20c4ba053..2a3b56abd7f47 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -2244,6 +2244,8 @@ int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
- 	bool active = false;
- 	unsigned int nr_ids;
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index f34297fd453c0..5153314e85554 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -1173,6 +1173,9 @@ static void iwl_pci_remove(struct pci_dev *pdev)
+ {
+ 	struct iwl_trans *trans = pci_get_drvdata(pdev);
  
-+	WARN_ON_ONCE(index >= dev->num_tx_queues);
++	if (!trans)
++		return;
 +
- 	if (dev->num_tc) {
- 		/* Do not allow XPS on subordinate device directly */
- 		num_tc = dev->num_tc;
+ 	iwl_drv_stop(trans->drv);
+ 
+ 	iwl_trans_pcie_free(trans);
 -- 
 2.39.2
 
