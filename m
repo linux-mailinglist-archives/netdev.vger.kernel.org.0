@@ -1,200 +1,257 @@
-Return-Path: <netdev+bounces-584-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-585-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DD99C6F84AF
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 16:16:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 54DDB6F84B9
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 16:18:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6E498281022
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 14:16:53 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4D88C1C218F3
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 14:18:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2160CC2C5;
-	Fri,  5 May 2023 14:16:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6AAE7C15B;
+	Fri,  5 May 2023 14:17:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E35C1FAB
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 14:16:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58EA5C2CC
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 14:17:59 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490322D56
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 07:16:49 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00E61491C
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 07:17:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683296208;
+	s=mimecast20190719; t=1683296274;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=hQtfdULdSvD0JHxZLBgiy4HejSjwOhquH5OGzliVEtg=;
-	b=EM2ura0UpAqhWBYw7h6yOqAf4g1Mtsdgvd2Dh2qbsAdOvM+0SR+yNmCznVGDYMSPn4xn0C
-	iDBcHBpBBxlTn8tfUaJEoXxBJQq+G7HufgFsNCZP4luhApwAHAorvkBLYBvg/yU/ADZCqt
-	IjcV9XScY0r5KB6ScUpzIfF2UpliqKQ=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=P1oCIf84RG7+6O7buoOZWskEuD34mndm17BNvxGm8Ys=;
+	b=g1oy7ZgCX0OrxVWueZVL8Ig8xpKqwHPBLmRUabw7UVcHTNQmkcIoD0TkRoEPUkLhlVCZNu
+	nKvA3/dNPQ+yCFGK2WZKs5Skxd62IlxgwhMJACMPe+v+RV/zy7qT4wkGH2YymZkk9RF0G/
+	IboG1D/uVgRBaDVzvLhHDaeOC8e7xwY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-48-HTDMCvPUOHu3Sw3lv8rPzA-1; Fri, 05 May 2023 10:16:47 -0400
-X-MC-Unique: HTDMCvPUOHu3Sw3lv8rPzA-1
-Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-64378a8b332so970247b3a.2
-        for <netdev@vger.kernel.org>; Fri, 05 May 2023 07:16:40 -0700 (PDT)
+ us-mta-484-7buTL3jGP06nFjZxwYTXqw-1; Fri, 05 May 2023 10:17:47 -0400
+X-MC-Unique: 7buTL3jGP06nFjZxwYTXqw-1
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f32b3835e9so7389465e9.1
+        for <netdev@vger.kernel.org>; Fri, 05 May 2023 07:17:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683296200; x=1685888200;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hQtfdULdSvD0JHxZLBgiy4HejSjwOhquH5OGzliVEtg=;
-        b=Ssa3QtMjMuA7jTpbHCYcOLATfi8te99xRm+nXjlHUrV3ocRvOdwqu4WCZaLdRqfX81
-         TlcJQo20dmo+nsU6hjWQ7p2DRtcDqmqRN4P1T70zqFSETvzM4qHQJpxkEEPrQXpdO6pD
-         q+CEmgemAPFDmwhFSz/aWheQw8jLJ0JDey9oLlUXisiTII83G2u72EjkALbtDS47FP25
-         jgGwjMBUbg0YJVGlsQiP7ImWSvj6w431d21y+EAjFUQfvON2HMLIfx8aB/g3k6TcT+5O
-         QW1eqJpB5jY5Jp9/WYclbkyLPUVdGmRdC1dGmM3j11x8YWGAXcSkWLraoOgcxGHTTruL
-         iYqw==
-X-Gm-Message-State: AC+VfDxphL+Bnztz3nwzynbJbosjAtG05Y2qNSup7HsR4fRlAWgU02o4
-	UlWzhLP1d74Ww0UBJdCRPy+UgSuZ84yD+aq+XTVDA19/hlWICpIy4AlceiNdEV0yv2C5xY5fUOg
-	c78z2+ozdm6EExur2ZvP4swaLWqIKFAtT
-X-Received: by 2002:a05:6a00:1747:b0:63c:e253:a692 with SMTP id j7-20020a056a00174700b0063ce253a692mr2409776pfc.15.1683296200109;
-        Fri, 05 May 2023 07:16:40 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6mtxXj7DMVyAnEBbSIbKGOxmXfWEDkrJMvTzQz3xakLYGwlu3RNE//5PvMJFJvDrwgPGQHOJBcCZUFZi6smSg=
-X-Received: by 2002:a05:6a00:1747:b0:63c:e253:a692 with SMTP id
- j7-20020a056a00174700b0063ce253a692mr2409748pfc.15.1683296199774; Fri, 05 May
- 2023 07:16:39 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683296262; x=1685888262;
+        h=content-transfer-encoding:in-reply-to:subject:organization:from
+         :content-language:references:cc:to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=P1oCIf84RG7+6O7buoOZWskEuD34mndm17BNvxGm8Ys=;
+        b=PvJEj9UoAbprjZ2WBV4//USMRUw3i4GyNOWp5tgQUG2NYbXjqBup1QMt9nFCVlSRvr
+         6bAjnUI20uUlGLxMKe12nB2hP9O7N2RXrEOQrwOPlwzf3kmvRoe3/o0G4TFyBV5cCq9J
+         nDSSnTU6PLHnYd4BUQqZ223u79VFI/052qj20sJsntbQWkomqRXs7OepgLus/W6JXaBa
+         ODjzyJPmucqrGmdEcLmxkpWe0SnwzLfcRzoeHSvB0oauRUZE3rOpiMl5U7SRRC0M/Kkk
+         AJfPAnZzWrDTdvUsVxPYO5qp3C9tGcIfEOhZVsxV7MU3TkqZx/UWnVFgh0lHGTVuuXg5
+         PWhw==
+X-Gm-Message-State: AC+VfDx2GbMe+7ipsW156mOA4315r3i1z0R+OEil4Zn3GlDTB1BKbvRH
+	tLCc/VR715WVzHS1FyX7pRaqaIiqS4TifwHz1I6e030s7/11iO5h7liGvUza5w6xcelAn3I3E4I
+	tOzeNPsSHgv8iyceh
+X-Received: by 2002:adf:e948:0:b0:2fb:87f7:3812 with SMTP id m8-20020adfe948000000b002fb87f73812mr1224206wrn.1.1683296261853;
+        Fri, 05 May 2023 07:17:41 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5TcJqqd654Tk6HhTBKZ1iWhCqzdn+unDXZ1fRotGzitSWjcybH0sIfqEWc/QeEZR4qCpa8LQ==
+X-Received: by 2002:adf:e948:0:b0:2fb:87f7:3812 with SMTP id m8-20020adfe948000000b002fb87f73812mr1224169wrn.1.1683296261426;
+        Fri, 05 May 2023 07:17:41 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c71f:6900:2b25:fc69:599e:3986? (p200300cbc71f69002b25fc69599e3986.dip0.t-ipconnect.de. [2003:cb:c71f:6900:2b25:fc69:599e:3986])
+        by smtp.gmail.com with ESMTPSA id h14-20020a5d6e0e000000b0030631dcbea6sm2548971wrz.77.2023.05.05.07.17.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 May 2023 07:17:40 -0700 (PDT)
+Message-ID: <ae9a1134-4f5b-4c26-6822-adff838c8702@redhat.com>
+Date: Fri, 5 May 2023 16:17:38 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230419-upstream-lsm-next-20230419-mptcp-sublows-user-ctx-v2-0-e7a3c8c15676@tessares.net>
- <CAFqZXNt16B5A2o6fZeN5b1coNCW2m6kp7JToJFDorvPajhFyxA@mail.gmail.com> <11201df515ec41db88ad915fd1e425e62c4f81e5.camel@redhat.com>
-In-Reply-To: <11201df515ec41db88ad915fd1e425e62c4f81e5.camel@redhat.com>
-From: Ondrej Mosnacek <omosnace@redhat.com>
-Date: Fri, 5 May 2023 16:16:28 +0200
-Message-ID: <CAFqZXNsR4cTTFbToszUhOPr5pJNET3jJMDFPXB73RD-eqRg5_Q@mail.gmail.com>
-Subject: Re: [PATCH LSM v2 0/2] security: SELinux/LSM label with MPTCP and accept
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: Matthieu Baerts <matthieu.baerts@tessares.net>, Paul Moore <paul@paul-moore.com>, 
-	James Morris <jmorris@namei.org>, "Serge E. Hallyn" <serge@hallyn.com>, 
-	Stephen Smalley <stephen.smalley.work@gmail.com>, Eric Paris <eparis@parisplace.org>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, mptcp@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org, linux-security-module@vger.kernel.org, 
-	selinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+To: Lorenzo Stoakes <lstoakes@gmail.com>
+Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Jens Axboe <axboe@kernel.dk>, Matthew Wilcox <willy@infradead.org>,
+ Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+ Leon Romanovsky <leon@kernel.org>, Christian Benvenuti <benve@cisco.com>,
+ Nelson Escobar <neescoba@cisco.com>, Bernard Metzler <bmt@zurich.ibm.com>,
+ Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>,
+ Arnaldo Carvalho de Melo <acme@kernel.org>,
+ Mark Rutland <mark.rutland@arm.com>,
+ Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+ Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+ Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>,
+ Bjorn Topel <bjorn@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>,
+ Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+ Jonathan Lemon <jonathan.lemon@gmail.com>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Christian Brauner <brauner@kernel.org>,
+ Richard Cochran <richardcochran@gmail.com>,
+ Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+ Jesper Dangaard Brouer <hawk@kernel.org>,
+ John Fastabend <john.fastabend@gmail.com>, linux-fsdevel@vger.kernel.org,
+ linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
+ bpf@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
+ Jan Kara <jack@suse.cz>, "Kirill A . Shutemov" <kirill@shutemov.name>,
+ Pavel Begunkov <asml.silence@gmail.com>, Mika Penttila
+ <mpenttil@redhat.com>, Dave Chinner <david@fromorbit.com>,
+ Theodore Ts'o <tytso@mit.edu>, Peter Xu <peterx@redhat.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ "Paul E . McKenney" <paulmck@kernel.org>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>
+References: <cover.1683067198.git.lstoakes@gmail.com>
+ <a690186fc37e1ea92556a7dbd0887fe201fcc709.1683067198.git.lstoakes@gmail.com>
+ <e4c92510-9756-d9a1-0055-4cd64a0c76d9@redhat.com>
+ <c2a6311c-7fdc-4d12-9a3f-d2eed954c468@lucifer.local>
+Content-Language: en-US
+From: David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v8 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing to
+ file-backed mappings
+In-Reply-To: <c2a6311c-7fdc-4d12-9a3f-d2eed954c468@lucifer.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 4, 2023 at 6:13=E2=80=AFPM Paolo Abeni <pabeni@redhat.com> wrot=
-e:
-> On Thu, 2023-05-04 at 16:14 +0200, Ondrej Mosnacek wrote:
-> > On Thu, Apr 20, 2023 at 7:17=E2=80=AFPM Matthieu Baerts
-> > <matthieu.baerts@tessares.net> wrote:
-> > >
-> > > In [1], Ondrej Mosnacek explained they discovered the (userspace-faci=
-ng)
-> > > sockets returned by accept(2) when using MPTCP always end up with the
-> > > label representing the kernel (typically system_u:system_r:kernel_t:s=
-0),
-> > > while it would make more sense to inherit the context from the parent
-> > > socket (the one that is passed to accept(2)). Thanks to the
-> > > participation of Paul Moore in the discussions, modifications on MPTC=
-P
-> > > side have started and the result is available here.
-> > >
-> > > Paolo Abeni worked hard to refactor the initialisation of the first
-> > > subflow of a listen socket. The first subflow allocation is no longer
-> > > done at the initialisation of the socket but later, when the connecti=
-on
-> > > request is received or when requested by the userspace. This was a
-> > > prerequisite to proper support of SELinux/LSM labels with MPTCP and
-> > > accept. The last batch containing the commit ddb1a072f858 ("mptcp: mo=
-ve
-> > > first subflow allocation at mpc access time") [2] has been recently
-> > > accepted and applied in netdev/net-next repo [3].
-> > >
-> > > This series of 2 patches is based on top of the lsm/next branch. Desp=
-ite
-> > > the fact they depend on commits that are in netdev/net-next repo to
-> > > support the new feature, they can be applied in lsm/next without
-> > > creating conflicts with net-next or causing build issues. These two
-> > > patches on top of lsm/next still passes all the MPTCP-specific tests.
-> > > The only thing is that the new feature only works properly with the
-> > > patches that are on netdev/net-next. The tests with the new labels ha=
-ve
-> > > been done on top of them.
-> > >
-> > > Regarding the two patches, the first one introduces a new LSM hook
-> > > called from MPTCP side when creating a new subflow socket. This hook
-> > > allows the security module to relabel the subflow according to the ow=
-ing
-> > > process. The second one implements this new hook on the SELinux side.
-> > >
-> > > Link: https://lore.kernel.org/netdev/CAFqZXNs2LF-OoQBUiiSEyranJUXkPLc=
-CfBkMkwFeM6qEwMKCTw@mail.gmail.com/ [1]
-> > > Link: https://git.kernel.org/netdev/net-next/c/ddb1a072f858 [2]
-> > > Link: https://lore.kernel.org/netdev/20230414-upstream-net-next-20230=
-414-mptcp-refactor-first-subflow-init-v1-0-04d177057eb9@tessares.net/ [3]
-> > > Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> > > ---
-> > > Changes in v2:
-> > > - Address Paul's comments, see the notes on each patch
-> > > - Link to v1: https://lore.kernel.org/r/20230419-upstream-lsm-next-20=
-230419-mptcp-sublows-user-ctx-v1-0-9d4064cb0075@tessares.net
-> > >
-> > > ---
-> > > Paolo Abeni (2):
-> > >       security, lsm: Introduce security_mptcp_add_subflow()
-> > >       selinux: Implement mptcp_add_subflow hook
-> > >
-> > >  include/linux/lsm_hook_defs.h |  1 +
-> > >  include/linux/security.h      |  6 ++++++
-> > >  net/mptcp/subflow.c           |  6 ++++++
-> > >  security/security.c           | 17 +++++++++++++++++
-> > >  security/selinux/hooks.c      | 16 ++++++++++++++++
-> > >  security/selinux/netlabel.c   |  8 ++++++--
-> > >  6 files changed, 52 insertions(+), 2 deletions(-)
-> > > ---
-> > > base-commit: d82dcd9e21b77d338dc4875f3d4111f0db314a7c
-> > > change-id: 20230419-upstream-lsm-next-20230419-mptcp-sublows-user-ctx=
--eee658fafcba
-> > >
-> > > Best regards,
-> > > --
-> > > Matthieu Baerts <matthieu.baerts@tessares.net>
-> > >
-> >
-> > I haven't yet looked closer at the code in this series, but I can at
-> > least confirm that with the series (applied on top of net-next) the
-> > selinux-testsuite now passes when run under mptcpize, with one caveat:
-> >
-> > The "client" test prog in the inet_socket subtest sets the SO_SNDTIMEO
-> > socket option on the client socket, but the subtest takes
-> > significantly longer to complete than when run without mptcpize. That
-> > suggests to me that there is possibly some (pre-existing) issue with
-> > MPTCP where the send/receive timeouts are not being passed to the
-> > subflow socket(s), leading to a longer wait (I guess the default is
-> > higher?)
->
-> Indeed the behavior you describe is due to some mptcp bug in handling
-> the SO_{SND,RCV}TIMEO socket tions, and it's really unrelated to the
-> initially reported selinux issue.
+>> And there is nothing wrong about pinning an anon page that's still in the
+>> swapcache. The following folio_test_anon() check will allow them.
+>>
+>> The check made sense in page_mapping(), but here it's not required.
+> 
+> Waaaaaaaaaait a second, you were saying before:-
+> 
+>    "Folios in the swap cache return the swap mapping" -- you might disallow
+>    pinning anonymous pages that are in the swap cache.
+> 
+>    I recall that there are corner cases where we can end up with an anon
+>    page that's mapped writable but still in the swap cache ... so you'd
+>    fallback to the GUP slow path (acceptable for these corner cases, I
+>    guess), however especially the comment is a bit misleading then.
+> 
+> So are we allowing or disallowing pinning anon swap cache pages? :P
 
-Definitely unrelated, just wanted to report the bug :)
+If we have an exclusive anon page that's still in the swap cache, sure! :)
 
-> If you could file an issue on our tracker, that would help ;)
+I think there are ways that can be done, and nothing would actually 
+break. (I even wrote selftests in the cow selftests for that to amke 
+sure it works as expected)
 
-I was about to ask where that tracker is, but then it occured to me to
-check MAINTAINERS and the link is right there, so yes, will do :)
+> 
+> I mean slow path would allow them if they are just marked anon so I'm inclined
+> to allow them.
 
+Exactly my reasoning.
 
---
-Ondrej Mosnacek
-Senior Software Engineer, Linux Security - SELinux kernel
-Red Hat, Inc.
+The less checks the better (especially if ordinary GUP just allows for 
+pinning it) :)
+
+> 
+>>
+>> I do agree regarding folio_test_slab(), though. Should we WARN in case we
+>> would have one?
+>>
+>> if (WARN_ON_ONCE(folio_test_slab(folio)))
+>> 	return false;
+>>
+> 
+> God help us if we have a slab page at this point, so agreed worth doing, it
+> would surely have to arise from some dreadful bug/memory corruption.
+> 
+
+Or some nasty race condition that we managed to ignore with rechecking 
+if the PTEs/PMDs changed :)
+
+>>> +	if (unlikely(folio_test_slab(folio) || folio_test_swapcache(folio)))
+>>> +		return false;
+>>> +
+>>> +	/* hugetlb mappings do not require dirty-tracking. */
+>>> +	if (folio_test_hugetlb(folio))
+>>> +		return true;
+>>> +
+>>> +	/*
+>>> +	 * GUP-fast disables IRQs. When IRQS are disabled, RCU grace periods
+>>> +	 * cannot proceed, which means no actions performed under RCU can
+>>> +	 * proceed either.
+>>> +	 *
+>>> +	 * inodes and thus their mappings are freed under RCU, which means the
+>>> +	 * mapping cannot be freed beneath us and thus we can safely dereference
+>>> +	 * it.
+>>> +	 */
+>>> +	lockdep_assert_irqs_disabled();
+>>> +
+>>> +	/*
+>>> +	 * However, there may be operations which _alter_ the mapping, so ensure
+>>> +	 * we read it once and only once.
+>>> +	 */
+>>> +	mapping = READ_ONCE(folio->mapping);
+>>> +
+>>> +	/*
+>>> +	 * The mapping may have been truncated, in any case we cannot determine
+>>> +	 * if this mapping is safe - fall back to slow path to determine how to
+>>> +	 * proceed.
+>>> +	 */
+>>> +	if (!mapping)
+>>> +		return false;
+>>> +
+>>> +	/* Anonymous folios are fine, other non-file backed cases are not. */
+>>> +	mapping_flags = (unsigned long)mapping & PAGE_MAPPING_FLAGS;
+>>> +	if (mapping_flags)
+>>> +		return mapping_flags == PAGE_MAPPING_ANON;
+>>
+>> KSM pages are also (shared) anonymous folios, and that check would fail --
+>> which is ok (the following unsharing checks rejects long-term pinning them),
+>> but a bit inconstent with your comment and folio_test_anon().
+>>
+>> It would be more consistent (with your comment and also the folio_test_anon
+>> implementation) to have here:
+>>
+>> 	return mapping_flags & PAGE_MAPPING_ANON;
+>>
+> 
+> I explicitly excluded KSM out of fear that could be some breakage given they're
+> wrprotect'd + expected to CoW though? But I guess you mean they'd get picked up
+> by the unshare and so it doesn't matter + we wouldn't want to exclude an
+> PG_anon_exclusive case?
+
+Yes, unsharing handles that in the ordinary GUP and GUP-fast case. And 
+unsharing is neither GUP-fast nor even longterm specific (for anon pages).
+
+Reason I'm brining this up is that I think it's best if we let 
+folio_fast_pin_allowed() just check for what's absolutely GUP-fast specific.
+
+> 
+> I'll make the change in any case given the unshare check!
+> 
+> I notice the gup_huge_pgd() doesn't do an unshare but I mean, a PGD-sized huge
+> page probably isn't going to be CoW'd :P
+
+I spotted exactly the same thing and wondered about that (after all I 
+added all that unsharing logic ... so I should know). I'm sure there 
+must be a reason I didn't add it ;)
+
+... probably we should just add it even though it might essentially be 
+dead code for now (at least the cow selftests would try with each and 
+every hugetlb size and eventually reveal the problem on whatever arch 
+ends up using that code ... ).
+
+Do you want to send a patch to add unsharing to gup_huge_pgd() as well?
+
+-- 
+Thanks,
+
+David / dhildenb
 
 
