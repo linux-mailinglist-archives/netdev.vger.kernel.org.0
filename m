@@ -1,84 +1,135 @@
-Return-Path: <netdev+bounces-499-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-500-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6712E6F7D2D
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 08:44:36 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1F0EC6F7D32
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 08:45:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 88650280F0F
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 06:44:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1B8711C216E3
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 06:45:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 427DA1C3F;
-	Fri,  5 May 2023 06:44:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87ECF1C2B;
+	Fri,  5 May 2023 06:45:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 364121103
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 06:44:32 +0000 (UTC)
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C261A1;
-	Thu,  4 May 2023 23:44:31 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id d9443c01a7336-1aaef97652fso9508025ad.0;
-        Thu, 04 May 2023 23:44:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683269070; x=1685861070;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=lcb6du/6ul2ZZvoBbbIRcrwG3WFW/CFEGtboAQCpB8Q=;
-        b=XOn6y/ARvg1r5XZCjSjMNtACAHAOUD8gJwjoODAr66ppagVjXmAc/xwe1JQyM1bNYa
-         4grxNXYiXqsQGbOthBW7zJJEvY5DXrX2zDmdfnpbcR0qfUUi9EFsCio+XtG8ki/7fEKs
-         Bg1UU7I9Bj0+qa0aC2Tr7oyiONAYyfmqP62dpNvhk0peP4hE+I1vxJ9kVFlrBOdj0qan
-         LXBeU/jR5vtW8CLQxm15j4GDk1AcdwUoQvFaYaYGGabWeEHjUade6OSydy9fV8qZwxS0
-         KsYTZFImYpfu6xQovgss37f2WadS8Oq+xOeoZ5wGQfnogYhn0pDTENJs3uhcSs8g7G9o
-         VCyQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B5E2ED1
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 06:45:45 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E649C83C1
+	for <netdev@vger.kernel.org>; Thu,  4 May 2023 23:45:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683269143;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=tKpAY5tib+SQpvOchvtEiIJtmEfRPK050PpqPwR0jHc=;
+	b=E/gmzDGQb7hGYt6db/K4LxrH/AXze2JSpgv3P59uV4RgeW5bz4MF39MM35WTVZwgo3audw
+	6y/cbFfdsO+rhUm5yhRojZh5Akds0Ya4NmXNnXefYo82LA+bNMuA46YL3WOcX6dknIrUlC
+	wPuWb3xehBdH4u4iAf6wKXpqKKAIRIs=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-515-t2H4zE4fOriRhWKnFTNx3A-1; Fri, 05 May 2023 02:45:41 -0400
+X-MC-Unique: t2H4zE4fOriRhWKnFTNx3A-1
+Received: by mail-lf1-f72.google.com with SMTP id 2adb3069b0e04-4f13ecb8f01so741794e87.1
+        for <netdev@vger.kernel.org>; Thu, 04 May 2023 23:45:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683269070; x=1685861070;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lcb6du/6ul2ZZvoBbbIRcrwG3WFW/CFEGtboAQCpB8Q=;
-        b=iVXOgMqdPZiPz17U75vEnAHLNllyXT0YncA3mS3LiTvqnJfkF770PAsorstjdIC2DG
-         I5JP4bEzbkNzHBV00rZbT9BCLRt4AjNXiGhoIguF4lnBJUlnJUUOhUaw59IqqcQRh8of
-         b0Xwd/rSg2BixDFRoXudPYHwgJ72lR7+k4xUSTSmFnsduxQ7Mx3wdB4s+HE14zO91aax
-         YhVSwXFkjbS/gsUwGXe+g1bherT0CFwZb1VQv2MxJpuuCLWEYQhiH9Ae1+85OtLPifd/
-         LW8oVRFVCnIkdm9HOtNF76ITZO0WyBt0BcczQpbjCOdDwPM021Jdq0DRCdb22QZMSguv
-         Xj6w==
-X-Gm-Message-State: AC+VfDymA3MgfHiJRvmjHM6kOsutJXP6UcPqSRi2fsAG3ZpC20bhl2VJ
-	Htn7QY//vZlrWhCJdz51/SFxKeks/Zi3piVujddqSaIiGrw=
-X-Google-Smtp-Source: ACHHUZ4DaiEqMfo/Gg+hpCm76xziUt8ugcYQexmO3BwK9iOzJLyjVGrzPLkx1AxR2hu1QdhM9KVBmHmINEMxQjxuvF0=
-X-Received: by 2002:a17:902:7481:b0:1a9:7e26:d72 with SMTP id
- h1-20020a170902748100b001a97e260d72mr441025pll.9.1683269070005; Thu, 04 May
- 2023 23:44:30 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683269140; x=1685861140;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=tKpAY5tib+SQpvOchvtEiIJtmEfRPK050PpqPwR0jHc=;
+        b=fbZaUKy39dXgiO9TL8jXdeqbAhY86jlkhYW7Fs/+hi8izN1/1v9u8qNr04CXYIrajf
+         e8Nk/LVW8cy6VJh1zQaen47QK0Gu3T0yH7IZj48R47DVHKcITlYNEpNr0FKqnQmwzg7s
+         hxTL/ATH9bvBppzTX1axbxlRURnACvj6lQ50ttIxc0FIQ0LkVT9STIIycAPgh7svbvmh
+         s0uy9osA+TRZT0NkUOyUhDWyIKepi57R98LlMslLPQ3MWSXzAmvkPPWmItdLOetOElNo
+         4HcbvKpVnvIJ/bH2rKhvER0bsYfa/CG7BPNqZUC9m/SCDGRwxBo2IGdG+pzRaIoe3gAU
+         0TlA==
+X-Gm-Message-State: AC+VfDzlVtk5H6hbjn+YTPjg7ZDYKzpu/xeOGD8GfkLIrnd1jPeI/to8
+	u1Sv6vk7iwv8P7wBz3h6ZRK2eQ2goCAyQ0XZZ6avbXGTeobYRnxo9bbeXxuvp8EKwIOnNpO9zUy
+	Xb+QAyb1dn6n0/yFizN6Kqn35skWRamIH
+X-Received: by 2002:ac2:442a:0:b0:4dd:afd7:8f1 with SMTP id w10-20020ac2442a000000b004ddafd708f1mr243040lfl.52.1683269139921;
+        Thu, 04 May 2023 23:45:39 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5P/6Ery2ecRIgtV5T5zf4Jc/nCqTDngMKXH4mXgZ7mTAePFoMVTxdzE82a2WU80aozee42X8+tx+80IrXPk0s=
+X-Received: by 2002:ac2:442a:0:b0:4dd:afd7:8f1 with SMTP id
+ w10-20020ac2442a000000b004ddafd708f1mr243034lfl.52.1683269139638; Thu, 04 May
+ 2023 23:45:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: Ujjal Roy <royujjal@gmail.com>
-Date: Fri, 5 May 2023 12:14:17 +0530
-Message-ID: <CAE2MWk=wReoU4W62=oUt8a_GBMdvJBCWYO3rUxvoX3i-SF-6Tw@mail.gmail.com>
-Subject: Sending Multicast General QUERY with unicast dest MAC
-To: Kernel <netdev@vger.kernel.org>, Kernel <linux-kernel@vger.kernel.org>
+References: <202305051424047152799@zte.com.cn>
+In-Reply-To: <202305051424047152799@zte.com.cn>
+From: Jason Wang <jasowang@redhat.com>
+Date: Fri, 5 May 2023 14:45:28 +0800
+Message-ID: <CACGkMEsmf3PgxmhgRCsPZe7fRWHDXQ=TtYu5Tgx1=_Ymyvi-pA@mail.gmail.com>
+Subject: Re: [PATCH] vhost_net: Use fdget() and fdput()
+To: ye.xingchen@zte.com.cn
+Cc: mst@redhat.com, kvm@vger.kernel.org, 
+	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi All,
+On Fri, May 5, 2023 at 2:24=E2=80=AFPM <ye.xingchen@zte.com.cn> wrote:
+>
+> From: Ye Xingchen <ye.xingchen@zte.com.cn>
+>
+> convert the fget()/fput() uses to fdget()/fdput().
 
-I am not getting much information from RCF about MAC addresses, apart
-from 23 bits of the group IP address to be part of 3 octets of MAC.
+What's the advantages of this?
 
-So, can you please give some input on this. Does it make sense to send
-an explicit general QUERY with dest MAC as unicast - to any wifi
-station on connect?
+Thanks
 
-Thanks,
-UjjaL Roy
+>
+> Signed-off-by: Ye Xingchen <ye.xingchen@zte.com.cn>
+> ---
+>  drivers/vhost/net.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> index ae2273196b0c..5b3fe4805182 100644
+> --- a/drivers/vhost/net.c
+> +++ b/drivers/vhost/net.c
+> @@ -1466,17 +1466,17 @@ static struct ptr_ring *get_tap_ptr_ring(struct f=
+ile *file)
+>
+>  static struct socket *get_tap_socket(int fd)
+>  {
+> -       struct file *file =3D fget(fd);
+> +       struct fd f =3D fdget(fd);
+>         struct socket *sock;
+>
+> -       if (!file)
+> +       if (!f.file)
+>                 return ERR_PTR(-EBADF);
+> -       sock =3D tun_get_socket(file);
+> +       sock =3D tun_get_socket(f.file);
+>         if (!IS_ERR(sock))
+>                 return sock;
+> -       sock =3D tap_get_socket(file);
+> +       sock =3D tap_get_socket(f.file);
+>         if (IS_ERR(sock))
+> -               fput(file);
+> +               fdput(f);
+>         return sock;
+>  }
+>
+> --
+> 2.25.1
+>
+
 
