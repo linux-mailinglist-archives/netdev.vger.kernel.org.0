@@ -1,370 +1,273 @@
-Return-Path: <netdev+bounces-639-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-640-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3FBEB6F8B98
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 23:49:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id DE0246F8C3C
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 00:08:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 796391C21A1D
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 21:49:21 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3350A1C21A31
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 22:08:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64D57FBE4;
-	Fri,  5 May 2023 21:49:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 213E8101E1;
+	Fri,  5 May 2023 22:08:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60785DF71
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 21:49:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCBC7C4339B;
-	Fri,  5 May 2023 21:49:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683323358;
-	bh=unYNDvEC27rA57Olp50XGY/VQhkogxfy74i10B/Ekuc=;
-	h=From:To:Cc:Subject:Date:From;
-	b=MhzdebxQHGJpkd3fj39DGmU7qAQAP+co5EgxqXIDKdHGH31gOQ44WZFqku4d5D07G
-	 1qSy7VjugN2MT5BGvlzdEi3G9hEYhyOKoGVg50nojN54uEzjvewC861IPWeDlWHgsG
-	 WaSCKK0BV8zdrLmdL2D1jMYW9jPgcEkXBbmGbyymFwPeeB3qPqJ8QzWEv4UogoMOh4
-	 xEz6344p3kliHX/xJRWicXD2RdB78vFWBkbLf9pmVNngPMeVv52+2YVNbVOzRzbIFp
-	 bEp8cYIND0eI4v271QjK+KPww7FaqxXZpBrWP0l1YY2kPSankxyLc1htB2LFxUoqWy
-	 Qzg5B61+2i5+A==
-From: Jakub Kicinski <kuba@kernel.org>
-To: torvalds@linux-foundation.org
-Cc: kuba@kernel.org,
-	davem@davemloft.net,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	pabeni@redhat.com
-Subject: [GIT PULL] Networking for v6.4-rc1
-Date: Fri,  5 May 2023 14:49:17 -0700
-Message-Id: <20230505214917.1453870-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.40.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03DC4C8C5;
+	Fri,  5 May 2023 22:08:11 +0000 (UTC)
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A945599;
+	Fri,  5 May 2023 15:08:01 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-3f4000ec6ecso23411115e9.0;
+        Fri, 05 May 2023 15:08:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683324479; x=1685916479;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hTk40pEIa6sggozNPGL/VTk1LAwsz/xKnNcnmk0Uw40=;
+        b=qUXPIJOEcmVya4t4Z8BVExBOKsEpEyw/+X5BvfMyQWS4PlaTFXXK19eB3j72mNNlXx
+         5KwlgukleyM6txF/8ewbTiGaIVAL0aS5iPiL2DguJHX1EKvTqQeBFw9kNcGNauP4Rmnq
+         N53ZSsL+dWBOp24Ek5DYYwdR+UEXfMDCZWNDAvOZAZHqaeE4rpT6pLpAIKnPiKqG8wEN
+         /tUv8TLuf2pvomk+ViSv52atgQ6+iy8lhTHOt6WBz7zIPkomsTHnPv5yCkfCgX1fE956
+         foFDLn8x4GwP8/4sRIH7I2dBPzR4l0uV0HdkxC8YxRxom0JmqU7dC872WFhKm6lwVuYL
+         umag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683324479; x=1685916479;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hTk40pEIa6sggozNPGL/VTk1LAwsz/xKnNcnmk0Uw40=;
+        b=Wh2R/Eer+dPWFZP/yTT/NU3V4rnFcqVkn0P9OA/iuAV+8YfJY+sSIvZ70Yrefc3b6G
+         G29ePhymbo1LMPSRdVtH6HkL4DMyLoStMP4ylG8xiF0GQKHKmamy2YEjTtCKmEYMBsW1
+         FqjwVRcadby1eP7qOK+qr+xmtcMH0Wr4MEpwo39962g/YVCRlgK0dsNRNyFuorLh83eR
+         jqsl4nvf3Pg72N/O+/IMbm1tFdf6VdKHXFNDPgxsK4vXu4LTMQAvBnxa5ZRJ0Wwjrb8J
+         O8atZGBL6n7Ar28uolEapDpLBLHh5T4f6Nl6a/waLXwW5SeLNYGxF6esdxjt55FfzK2J
+         oVVg==
+X-Gm-Message-State: AC+VfDx7LSA4WMNcMeUNRAzNwBf0p9wz2yA1SFjEzJsEpyFfwMVMmnrg
+	EgsdW0r4+SpwVP/FsIhiGpE=
+X-Google-Smtp-Source: ACHHUZ4mH83mCyTOoGWHtxkKNT6uM9KmncozyTwpylz+11m1DNl/kRNCToS5r+sQq24bid7g2GcEDw==
+X-Received: by 2002:a05:600c:218f:b0:3f0:a0bb:58ef with SMTP id e15-20020a05600c218f00b003f0a0bb58efmr2184588wme.25.1683324479379;
+        Fri, 05 May 2023 15:07:59 -0700 (PDT)
+Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
+        by smtp.gmail.com with ESMTPSA id a20-20020a1cf014000000b003f173c566b5sm9137978wmb.5.2023.05.05.15.07.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 May 2023 15:07:58 -0700 (PDT)
+Date: Fri, 5 May 2023 23:07:57 +0100
+From: Lorenzo Stoakes <lstoakes@gmail.com>
+To: David Hildenbrand <david@redhat.com>
+Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+	Matthew Wilcox <willy@infradead.org>,
+	Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+	Leon Romanovsky <leon@kernel.org>,
+	Christian Benvenuti <benve@cisco.com>,
+	Nelson Escobar <neescoba@cisco.com>,
+	Bernard Metzler <bmt@zurich.ibm.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Arnaldo Carvalho de Melo <acme@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+	Ian Rogers <irogers@google.com>,
+	Adrian Hunter <adrian.hunter@intel.com>,
+	Bjorn Topel <bjorn@kernel.org>,
+	Magnus Karlsson <magnus.karlsson@intel.com>,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+	Jonathan Lemon <jonathan.lemon@gmail.com>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Christian Brauner <brauner@kernel.org>,
+	Richard Cochran <richardcochran@gmail.com>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>,
+	linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+	netdev@vger.kernel.org, bpf@vger.kernel.org,
+	Oleg Nesterov <oleg@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+	"Kirill A . Shutemov" <kirill@shutemov.name>,
+	Pavel Begunkov <asml.silence@gmail.com>,
+	Mika Penttila <mpenttil@redhat.com>,
+	Dave Chinner <david@fromorbit.com>, Theodore Ts'o <tytso@mit.edu>,
+	Peter Xu <peterx@redhat.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Paul E . McKenney" <paulmck@kernel.org>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>
+Subject: Re: [PATCH v8 3/3] mm/gup: disallow FOLL_LONGTERM GUP-fast writing
+ to file-backed mappings
+Message-ID: <52ac98ca-378e-452c-9dbf-93ea39bb5583@lucifer.local>
+References: <cover.1683067198.git.lstoakes@gmail.com>
+ <a690186fc37e1ea92556a7dbd0887fe201fcc709.1683067198.git.lstoakes@gmail.com>
+ <e4c92510-9756-d9a1-0055-4cd64a0c76d9@redhat.com>
+ <c2a6311c-7fdc-4d12-9a3f-d2eed954c468@lucifer.local>
+ <ae9a1134-4f5b-4c26-6822-adff838c8702@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-Hi Linus!
-
-The following changes since commit 6e98b09da931a00bf4e0477d0fa52748bf28fcce:
-
-  Merge tag 'net-next-6.4' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2023-04-26 16:07:23 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git net-6.4-rc1
-
-for you to fetch changes up to 644bca1d48139ad77570c24d22bafaf8e438cf03:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2023-05-05 13:35:45 -0700)
-
-----------------------------------------------------------------
-Including fixes from netfilter.
-
-Current release - regressions:
-
- - sched: act_pedit: free pedit keys on bail from offset check
-
-Current release - new code bugs:
-
- - pds_core:
-  - Kconfig fixes (DEBUGFS and AUXILIARY_BUS)
-  - fix mutex double unlock in error path
-
-Previous releases - regressions:
-
- - sched: cls_api: remove block_cb from driver_list before freeing
-
- - nf_tables: fix ct untracked match breakage
-
- - eth: mtk_eth_soc: drop generic vlan rx offload
-
- - sched: flower: fix error handler on replace
-
-Previous releases - always broken:
-
- - tcp: fix skb_copy_ubufs() vs BIG TCP
-
- - ipv6: fix skb hash for some RST packets
-
- - af_packet: don't send zero-byte data in packet_sendmsg_spkt()
-
- - rxrpc: timeout handling fixes after moving client call connection
-   to the I/O thread
-
- - ixgbe: fix panic during XDP_TX with > 64 CPUs
-
- - igc: RMW the SRRCTL register to prevent losing timestamp config
-
- - dsa: mt7530: fix corrupt frames using TRGMII on 40 MHz XTAL MT7621
-
- - r8152:
-   - fix flow control issue of RTL8156A
-   - fix the poor throughput for 2.5G devices
-   - move setting r8153b_rx_agg_chg_indicate() to fix coalescing
-   - enable autosuspend
-
- - ncsi: clear Tx enable mode when handling a Config required AEN
-
- - octeontx2-pf: macsec: fixes for CN10KB ASIC rev
-
-Misc:
-
- - 9p: remove INET dependency
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Andrea Mayer (1):
-      selftests: srv6: make srv6_end_dt46_l3vpn_test more robust
-
-Andy Moreton (1):
-      sfc: Fix module EEPROM reporting for QSFP modules
-
-Angelo Dureghello (1):
-      net: dsa: mv88e6xxx: add mv88e6321 rsvd2cpu
-
-Antoine Tenart (1):
-      net: ipv6: fix skb hash for some RST packets
-
-Arınç ÜNAL (2):
-      net: dsa: mt7530: fix corrupt frames using trgmii on 40 MHz XTAL MT7621
-      net: dsa: mt7530: fix network connectivity with multiple CPU ports
-
-Christophe JAILLET (1):
-      mISDN: Use list_count_nodes()
-
-Cong Wang (1):
-      sit: update dev->needed_headroom in ipip6_tunnel_bind_dev()
-
-Cosmo Chou (1):
-      net/ncsi: clear Tx enable mode when handling a Config required AEN
-
-David Howells (4):
-      rxrpc: Fix potential data race in rxrpc_wait_to_be_connected()
-      rxrpc: Fix hard call timeout units
-      rxrpc: Make it so that a waiting process can be aborted
-      rxrpc: Fix timeout of a call that hasn't yet been granted a channel
-
-David S. Miller (5):
-      Merge branch 'r8152-fixes'
-      Merge branch 'rxrpc-timeout-fixes'
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
-      Merge branch 'octeontx2-af-fixes'
-      Merge branch 'tc-action-fixes'
-
-Eric Dumazet (1):
-      tcp: fix skb_copy_ubufs() vs BIG TCP
-
-Felix Fietkau (1):
-      net: ethernet: mtk_eth_soc: drop generic vlan rx offload, only use DSA untagging
-
-Florian Fainelli (1):
-      net: bcmgenet: Remove phy_stop() from bcmgenet_netif_stop()
-
-Florian Westphal (1):
-      netfilter: nf_tables: fix ct untracked match breakage
-
-Geetha sowjanya (4):
-      octeonxt2-af: mcs: Fix per port bypass config
-      octeontx2-af: mcs: Config parser to skip 8B header
-      octeontx2-af: mcs: Fix MCS block interrupt
-      octeontx2-af: Secure APR table update with the lock
-
-Hariprasad Kelam (1):
-      octeontx2-af: Add validation for lmac type
-
-Hayes Wang (4):
-      r8152: fix flow control issue of RTL8156A
-      r8152: fix the poor throughput for 2.5G devices
-      r8152: move setting r8153b_rx_agg_chg_indicate()
-      r8152: fix the autosuspend doesn't work
-
-Ido Schimmel (1):
-      ethtool: Fix uninitialized number of lanes
-
-Ivan Vecera (1):
-      net/sched: flower: Fix wrong handle assignment during filter change
-
-Jakub Kicinski (1):
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next
-
-Jason Andryuk (1):
-      9p: Remove INET dependency
-
-Jeremy Sowden (1):
-      selftests: netfilter: fix libmnl pkg-config usage
-
-John Hickey (1):
-      ixgbe: Fix panic during XDP_TX with > 64 CPUs
-
-Kuniyuki Iwashima (1):
-      af_packet: Don't send zero-byte data in packet_sendmsg_spkt().
-
-Lorenzo Bianconi (1):
-      bonding: add xdp_features support
-
-Martin Habets (1):
-      sfc: Add back mailing list
-
-Michal Swiatkowski (1):
-      ice: block LAN in case of VF to VF offload
-
-Pablo Neira Ayuso (2):
-      netfilter: nf_tables: hit ENOENT on unexisting chain/flowtable update with missing attributes
-      netfilter: nf_tables: deactivate anonymous set from preparation phase
-
-Paolo Abeni (2):
-      Merge branch 'macsec-fixes-for-cn10kb'
-      Merge tag 'nf-23-05-03' of git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
-
-Pedro Tammela (1):
-      net/sched: act_pedit: free pedit keys on bail from offset check
-
-Ratheesh Kannoth (6):
-      octeontx2-af: Fix start and end bit for scan config
-      octeontx2-af: Fix depth of cam and mem table.
-      octeontx2-pf: Increase the size of dmac filter flows
-      octeontx2-af: Update/Fix NPC field hash extract feature
-      octeontx2-af: Fix issues with NPC field hash extract
-      octeontx2-af: Skip PFs if not enabled
-
-Shannon Nelson (5):
-      ionic: remove noise from ethtool rxnfc error msg
-      ionic: catch failure from devlink_alloc
-      pds_core: remove CONFIG_DEBUG_FS from makefile
-      pds_core: add AUXILIARY_BUS and NET_DEVLINK to Kconfig
-      pds_core: fix mutex double unlock in error path
-
-Shenwei Wang (1):
-      net: fec: correct the counting of XDP sent frames
-
-Song Yoong Siang (1):
-      igc: read before write to SRRCTL register
-
-Subbaraya Sundeep (8):
-      octeontx2-af: mcs: Write TCAM_DATA and TCAM_MASK registers at once
-      octeontx2-pf: mcs: Fix NULL pointer dereferences
-      octeontx2-pf: mcs: Match macsec ethertype along with DMAC
-      octeontx2-pf: mcs: Clear stats before freeing resource
-      octeontx2-pf: mcs: Fix shared counters logic
-      octeontx2-pf: mcs: Do not reset PN while updating secy
-      octeontx2-pf: Disable packet I/O for graceful exit
-      octeontx2-vf: Detach LF resources on probe cleanup
-
-Suman Ghosh (1):
-      octeontx2-af: Update correct mask to filter IPv4 fragments
-
-Tom Rix (1):
-      net: atlantic: Define aq_pm_ops conditionally on CONFIG_PM
-
-Victor Nogueira (1):
-      net/sched: act_mirred: Add carrier check
-
-Vlad Buslov (4):
-      net/sched: cls_api: remove block_cb from driver_list before freeing
-      net/sched: flower: fix filter idr initialization
-      Revert "net/sched: flower: Fix wrong handle assignment during filter change"
-      net/sched: flower: fix error handler on replace
-
-Wei Fang (1):
-      net: enetc: check the index of the SFI rather than the handle
-
-Wenliang Wang (1):
-      virtio_net: suppress cpu stall when free_unused_bufs
-
-wuych (1):
-      atlantic:hw_atl2:hw_atl2_utils_fw: Remove unnecessary (void*) conversions
-
- MAINTAINERS                                        |   1 +
- drivers/isdn/mISDN/dsp_cmx.c                       |  15 +--
- drivers/net/bonding/bond_main.c                    |  29 +++++
- drivers/net/bonding/bond_options.c                 |   2 +
- drivers/net/dsa/mt7530.c                           |  14 ++-
- drivers/net/dsa/mv88e6xxx/chip.c                   |   1 +
- drivers/net/ethernet/amd/Kconfig                   |   2 +
- drivers/net/ethernet/amd/pds_core/Makefile         |   3 +-
- drivers/net/ethernet/amd/pds_core/main.c           |  21 ++--
- .../net/ethernet/aquantia/atlantic/aq_pci_func.c   |   2 +
- .../aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c   |   4 +-
- drivers/net/ethernet/broadcom/genet/bcmgenet.c     |   1 -
- drivers/net/ethernet/freescale/enetc/enetc_qos.c   |   2 +-
- drivers/net/ethernet/freescale/fec_main.c          |  13 ++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.c        |   3 +-
- drivers/net/ethernet/intel/igc/igc_base.h          |  11 +-
- drivers/net/ethernet/intel/igc/igc_main.c          |   7 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c       |   3 -
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |   6 +-
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |   8 ++
- drivers/net/ethernet/marvell/octeontx2/af/mbox.c   |   5 +-
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  19 +++-
- drivers/net/ethernet/marvell/octeontx2/af/mcs.c    | 110 +++++++++---------
- drivers/net/ethernet/marvell/octeontx2/af/mcs.h    |  26 ++---
- .../ethernet/marvell/octeontx2/af/mcs_cnf10kb.c    |  63 +++++++++++
- .../net/ethernet/marvell/octeontx2/af/mcs_reg.h    |   6 +-
- .../net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c |  37 ++++++
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  49 ++++++--
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   1 +
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |   2 +
- .../net/ethernet/marvell/octeontx2/af/rvu_cn10k.c  |  13 ++-
- .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    |   5 +-
- .../net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c |  26 +++--
- .../net/ethernet/marvell/octeontx2/af/rvu_npc_fs.h |   4 +
- .../ethernet/marvell/octeontx2/af/rvu_npc_hash.c   | 125 ++++++++++++---------
- .../ethernet/marvell/octeontx2/af/rvu_npc_hash.h   |  10 +-
- .../ethernet/marvell/octeontx2/nic/cn10k_macsec.c  |  48 +++++---
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   6 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  14 ++-
- .../net/ethernet/marvell/octeontx2/nic/otx2_tc.c   |   2 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |   2 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.c        | 106 +++++++----------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h        |   1 -
- .../net/ethernet/pensando/ionic/ionic_devlink.c    |   2 +
- .../net/ethernet/pensando/ionic/ionic_ethtool.c    |   2 +-
- drivers/net/ethernet/sfc/mcdi_port_common.c        |  11 +-
- drivers/net/usb/r8152.c                            |  85 +++++++++-----
- drivers/net/virtio_net.c                           |   2 +
- fs/9p/Kconfig                                      |   2 +-
- fs/9p/vfs_addr.c                                   |   1 -
- fs/9p/vfs_dentry.c                                 |   1 -
- fs/9p/vfs_dir.c                                    |   1 -
- fs/9p/vfs_file.c                                   |   1 -
- fs/9p/vfs_inode.c                                  |   1 -
- fs/9p/vfs_inode_dotl.c                             |   1 -
- fs/9p/vfs_super.c                                  |   1 -
- fs/afs/afs.h                                       |   4 +-
- fs/afs/internal.h                                  |   2 +-
- fs/afs/rxrpc.c                                     |   8 +-
- include/net/af_rxrpc.h                             |  21 ++--
- include/net/bonding.h                              |   1 +
- include/net/netfilter/nf_tables.h                  |   1 +
- net/9p/Kconfig                                     |   2 +
- net/core/skbuff.c                                  |  20 +++-
- net/ethtool/ioctl.c                                |   2 +-
- net/ipv6/sit.c                                     |   8 +-
- net/ipv6/tcp_ipv6.c                                |   2 +-
- net/ncsi/ncsi-aen.c                                |   1 +
- net/netfilter/nf_tables_api.c                      |  41 +++++--
- net/netfilter/nft_ct_fast.c                        |  14 ++-
- net/netfilter/nft_dynset.c                         |   2 +-
- net/netfilter/nft_lookup.c                         |   2 +-
- net/netfilter/nft_objref.c                         |   2 +-
- net/packet/af_packet.c                             |   2 +-
- net/rxrpc/af_rxrpc.c                               |   3 +
- net/rxrpc/ar-internal.h                            |   1 +
- net/rxrpc/call_object.c                            |   9 +-
- net/rxrpc/sendmsg.c                                |  22 ++--
- net/sched/act_mirred.c                             |   2 +-
- net/sched/act_pedit.c                              |   4 +-
- net/sched/cls_api.c                                |   1 +
- net/sched/cls_flower.c                             |   9 +-
- .../selftests/net/srv6_end_dt46_l3vpn_test.sh      |  10 +-
- tools/testing/selftests/netfilter/Makefile         |   7 +-
- 84 files changed, 735 insertions(+), 407 deletions(-)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ae9a1134-4f5b-4c26-6822-adff838c8702@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
+
+On Fri, May 05, 2023 at 04:17:38PM +0200, David Hildenbrand wrote:
+> > > And there is nothing wrong about pinning an anon page that's still in the
+> > > swapcache. The following folio_test_anon() check will allow them.
+> > >
+> > > The check made sense in page_mapping(), but here it's not required.
+> >
+> > Waaaaaaaaaait a second, you were saying before:-
+> >
+> >    "Folios in the swap cache return the swap mapping" -- you might disallow
+> >    pinning anonymous pages that are in the swap cache.
+> >
+> >    I recall that there are corner cases where we can end up with an anon
+> >    page that's mapped writable but still in the swap cache ... so you'd
+> >    fallback to the GUP slow path (acceptable for these corner cases, I
+> >    guess), however especially the comment is a bit misleading then.
+> >
+> > So are we allowing or disallowing pinning anon swap cache pages? :P
+>
+> If we have an exclusive anon page that's still in the swap cache, sure! :)
+>
+> I think there are ways that can be done, and nothing would actually break.
+> (I even wrote selftests in the cow selftests for that to amke sure it works
+> as expected)
+>
+> >
+> > I mean slow path would allow them if they are just marked anon so I'm inclined
+> > to allow them.
+>
+> Exactly my reasoning.
+>
+> The less checks the better (especially if ordinary GUP just allows for
+> pinning it) :)
+
+Yeah a lot of my decision making on this has been trying to be conservative
+about what we filter for but you get this weird inversion whereby if you're
+too conservative about what you allow, you are actually being more
+outlandish about what you disallow and vice-versa.
+
+>
+> >
+> > >
+> > > I do agree regarding folio_test_slab(), though. Should we WARN in case we
+> > > would have one?
+> > >
+> > > if (WARN_ON_ONCE(folio_test_slab(folio)))
+> > > 	return false;
+> > >
+> >
+> > God help us if we have a slab page at this point, so agreed worth doing, it
+> > would surely have to arise from some dreadful bug/memory corruption.
+> >
+>
+> Or some nasty race condition that we managed to ignore with rechecking if
+> the PTEs/PMDs changed :)
+
+Well that should be sorted now :)
+
+>
+> > > > +	if (unlikely(folio_test_slab(folio) || folio_test_swapcache(folio)))
+> > > > +		return false;
+> > > > +
+> > > > +	/* hugetlb mappings do not require dirty-tracking. */
+> > > > +	if (folio_test_hugetlb(folio))
+> > > > +		return true;
+> > > > +
+> > > > +	/*
+> > > > +	 * GUP-fast disables IRQs. When IRQS are disabled, RCU grace periods
+> > > > +	 * cannot proceed, which means no actions performed under RCU can
+> > > > +	 * proceed either.
+> > > > +	 *
+> > > > +	 * inodes and thus their mappings are freed under RCU, which means the
+> > > > +	 * mapping cannot be freed beneath us and thus we can safely dereference
+> > > > +	 * it.
+> > > > +	 */
+> > > > +	lockdep_assert_irqs_disabled();
+> > > > +
+> > > > +	/*
+> > > > +	 * However, there may be operations which _alter_ the mapping, so ensure
+> > > > +	 * we read it once and only once.
+> > > > +	 */
+> > > > +	mapping = READ_ONCE(folio->mapping);
+> > > > +
+> > > > +	/*
+> > > > +	 * The mapping may have been truncated, in any case we cannot determine
+> > > > +	 * if this mapping is safe - fall back to slow path to determine how to
+> > > > +	 * proceed.
+> > > > +	 */
+> > > > +	if (!mapping)
+> > > > +		return false;
+> > > > +
+> > > > +	/* Anonymous folios are fine, other non-file backed cases are not. */
+> > > > +	mapping_flags = (unsigned long)mapping & PAGE_MAPPING_FLAGS;
+> > > > +	if (mapping_flags)
+> > > > +		return mapping_flags == PAGE_MAPPING_ANON;
+> > >
+> > > KSM pages are also (shared) anonymous folios, and that check would fail --
+> > > which is ok (the following unsharing checks rejects long-term pinning them),
+> > > but a bit inconstent with your comment and folio_test_anon().
+> > >
+> > > It would be more consistent (with your comment and also the folio_test_anon
+> > > implementation) to have here:
+> > >
+> > > 	return mapping_flags & PAGE_MAPPING_ANON;
+> > >
+> >
+> > I explicitly excluded KSM out of fear that could be some breakage given they're
+> > wrprotect'd + expected to CoW though? But I guess you mean they'd get picked up
+> > by the unshare and so it doesn't matter + we wouldn't want to exclude an
+> > PG_anon_exclusive case?
+>
+> Yes, unsharing handles that in the ordinary GUP and GUP-fast case. And
+> unsharing is neither GUP-fast nor even longterm specific (for anon pages).
+>
+> Reason I'm brining this up is that I think it's best if we let
+> folio_fast_pin_allowed() just check for what's absolutely GUP-fast specific.
+
+Ack, indeed it's a separate thing, see above for the contradictory nature
+of wanting to be cautious but then accidentally making your change _more
+radical_ than you intended...!
+
+>
+> >
+> > I'll make the change in any case given the unshare check!
+> >
+> > I notice the gup_huge_pgd() doesn't do an unshare but I mean, a PGD-sized huge
+> > page probably isn't going to be CoW'd :P
+>
+> I spotted exactly the same thing and wondered about that (after all I added
+> all that unsharing logic ... so I should know). I'm sure there must be a
+> reason I didn't add it ;)
+>
+> ... probably we should just add it even though it might essentially be dead
+> code for now (at least the cow selftests would try with each and every
+> hugetlb size and eventually reveal the problem on whatever arch ends up
+> using that code ... ).
+>
+> Do you want to send a patch to add unsharing to gup_huge_pgd() as well?
+>
+
+Sure will do!
+
+> --
+> Thanks,
+>
+> David / dhildenb
+>
 
