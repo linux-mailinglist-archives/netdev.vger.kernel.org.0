@@ -1,105 +1,85 @@
-Return-Path: <netdev+bounces-534-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-535-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 45C546F7F8E
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 11:07:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 26F716F7F9A
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 11:10:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B2FE3280FB8
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 09:07:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 47B9C280EB6
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 09:10:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A11E86FBE;
-	Fri,  5 May 2023 09:07:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BEC76FC4;
+	Fri,  5 May 2023 09:10:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 961771FC9
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 09:07:29 +0000 (UTC)
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.35])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617BE19423;
-	Fri,  5 May 2023 02:07:13 -0700 (PDT)
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4QCPvL3lxxz5B15h;
-	Fri,  5 May 2023 17:06:54 +0800 (CST)
-Received: from xaxapp02.zte.com.cn ([10.88.97.241])
-	by mse-fl1.zte.com.cn with SMTP id 34596cX0093745;
-	Fri, 5 May 2023 17:06:38 +0800 (+08)
-	(envelope-from ye.xingchen@zte.com.cn)
-Received: from mapi (xaxapp02[null])
-	by mapi (Zmail) with MAPI id mid31;
-	Fri, 5 May 2023 17:06:41 +0800 (CST)
-Date: Fri, 5 May 2023 17:06:41 +0800 (CST)
-X-Zmail-TransId: 2afa6454c7210c6-ea699
-X-Mailer: Zmail v1.0
-Message-ID: <202305051706416319733@zte.com.cn>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 809AB4A35
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 09:10:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 329D2C4339C;
+	Fri,  5 May 2023 09:10:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683277821;
+	bh=sBckcYMOqWQrqFbjrvsya0tY3+7VZWb2oYkleqiwi8o=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=opmgLlQzvTpu/dD+474YGzu9wBBByQhGLS+3IyP04fvfOL35PUGcZu4SfwDh8RLvC
+	 on6Wy7boIMJ2szX1bbznsgFqNGzPjoCHolQIxlgYobDgqhFGgPrhKNiG75ApOazXwL
+	 u6O2oV9Q6FG7OuchmmQUcdeAR8a9pKdE5h2b+omtYW0kywh7P1sRUBWA2rsrXl44y/
+	 bCj8DW1Kkf4cZqoTbzNR3mqdHZTtrfoWJbQN9zabM+seRhlmp3FXjhwUgny5MNSa1q
+	 fAQ0qsf2QxVy5+RMSxPHOaYKygKcmARt1YteSnfBsmnpZ66nISABAPXo9+fQxDAa1U
+	 F/dlv0q2NYZKA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1B8C5E5FFC4;
+	Fri,  5 May 2023 09:10:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-From: <ye.xingchen@zte.com.cn>
-To: <davem@davemloft.net>
-Cc: <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: =?UTF-8?B?W1BBVENIXSBuZXQ6IHNvY2tldDogVXNlIGZkZ2V0KCkgYW5kIGZkcHV0KCk=?=
-Content-Type: text/plain;
-	charset="UTF-8"
-X-MAIL:mse-fl1.zte.com.cn 34596cX0093745
-X-Fangmail-Gw-Spam-Type: 0
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6454C72E.002/4QCPvL3lxxz5B15h
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: bcmgenet: Remove phy_stop() from
+ bcmgenet_netif_stop()
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168327782110.8511.3849273203627486340.git-patchwork-notify@kernel.org>
+Date: Fri, 05 May 2023 09:10:21 +0000
+References: <20230504230727.729539-1-f.fainelli@gmail.com>
+In-Reply-To: <20230504230727.729539-1-f.fainelli@gmail.com>
+To: Florian Fainelli <f.fainelli@gmail.com>
+Cc: netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+ linux@armlinux.org.uk, opendmb@gmail.com,
+ bcm-kernel-feedback-list@broadcom.com, davem@davemloft.net,
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ linux-kernel@vger.kernel.org
 
-From: Ye Xingchen <ye.xingchen@zte.com.cn>
+Hello:
 
-By using the fdget function, the socket object, can be quickly obtained
-from the process's file descriptor table without the need to obtain the
-file descriptor first before passing it as a parameter to the fget
-function.
+This patch was applied to netdev/net.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-Signed-off-by: Ye Xingchen <ye.xingchen@zte.com.cn>
----
- net/socket.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+On Thu,  4 May 2023 16:07:27 -0700 you wrote:
+> The call to phy_stop() races with the later call to phy_disconnect(),
+> resulting in concurrent phy_suspend() calls being run from different
+> CPUs. The final call to phy_disconnect() ensures that the PHY is
+> stopped and suspended, too.
+> 
+> Fixes: c96e731c93ff ("net: bcmgenet: connect and disconnect from the PHY state machine")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+> [...]
 
-diff --git a/net/socket.c b/net/socket.c
-index a7b4b37d86df..84daba774432 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -528,19 +528,18 @@ EXPORT_SYMBOL(sock_from_file);
+Here is the summary with links:
+  - [net] net: bcmgenet: Remove phy_stop() from bcmgenet_netif_stop()
+    https://git.kernel.org/netdev/net/c/93e0401e0fc0
 
- struct socket *sockfd_lookup(int fd, int *err)
- {
--	struct file *file;
-+	struct fd f = fdget(fd);
- 	struct socket *sock;
-
--	file = fget(fd);
--	if (!file) {
-+	if (!f.file) {
- 		*err = -EBADF;
- 		return NULL;
- 	}
-
--	sock = sock_from_file(file);
-+	sock = sock_from_file(f.file);
- 	if (!sock) {
- 		*err = -ENOTSOCK;
--		fput(file);
-+		fdput(f);
- 	}
- 	return sock;
- }
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
 
