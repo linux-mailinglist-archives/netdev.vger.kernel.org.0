@@ -1,116 +1,115 @@
-Return-Path: <netdev+bounces-609-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-610-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BD1966F885E
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 20:05:52 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 793976F88B8
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 20:39:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B4D6B1C2195C
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 18:05:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C35DB28109A
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 18:39:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F7D7C8CD;
-	Fri,  5 May 2023 18:05:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63C3A4C99;
+	Fri,  5 May 2023 18:39:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BCCA2F33
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 18:05:49 +0000 (UTC)
-X-Greylist: delayed 1584 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 05 May 2023 11:05:47 PDT
-Received: from mx.dolansoft.org (s2.dolansoft.org [212.51.146.245])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3330B160B1
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 11:05:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=brun.one;
-	s=s1; h=MIME-Version:Message-Id:To:Subject:From:Date:In-Reply-To:References:
-	From:To:CC:Subject:Date:Message-ID:Reply-To;
-	bh=d5IHyIyxtDU3efblvNQ2dzovcfL520dwiR9VmtOuS3k=; b=F0CFttPRbtk3MwH5pI5JH0p/PX
-	9P82sqSQYwqBaYjqRpM24G1tYzraYOV5NuKunIa9YQBUdeTDCtuUTv8y+V7RYqoSbLX4Tmd4wOjjl
-	sb992JeB52y1z8rq2CxBpZfiW6O9XKAlQEROx/q3P/cRIXObTtoL12qId3klqUYlsDJvlqLuzqMk7
-	u3eOnDMpCHgoHsgDO3pIlBfss4jK1BIxW+9wNZOp0V9CmRP2FYHpIfQ0DgDjzQAAg5pHnUThWBEBn
-	BR8K1mRnK+O5gC4sOaggMgskg2aNIuNP+x4pW8UMl0gyvqUXbxSSZbZ0/vaePI8JxyfWrzUOeZ5my
-	n2ArCAFw==;
-Received: from [212.51.153.89] (helo=[192.168.12.232])
-	by mx.dolansoft.org with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <lorenz@dolansoft.org>)
-	id 1puzOq-000a4K-2O
-	for netdev@vger.kernel.org;
-	Fri, 05 May 2023 17:39:20 +0000
-Date: Fri, 05 May 2023 19:39:12 +0200
-From: Lorenz Brun <lorenz@brun.one>
-Subject: Quirks for exotic SFP module
-To: netdev@vger.kernel.org
-Message-Id: <C157UR.RELZCR5M9XI83@brun.one>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53D4D156EF
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 18:39:44 +0000 (UTC)
+Received: from smtp.smtpout.orange.fr (smtp-25.smtpout.orange.fr [80.12.242.25])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A6E1E984
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 11:39:41 -0700 (PDT)
+Received: from pop-os.home ([86.243.2.178])
+	by smtp.orange.fr with ESMTPA
+	id v0L9pk2E0Gtqgv0L9pZwJH; Fri, 05 May 2023 20:39:39 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+	s=t20230301; t=1683311979;
+	bh=mnw6geelSaRq346Pzls6ofHvmuoLhwJOFudxBY6bbI8=;
+	h=From:To:Cc:Subject:Date;
+	b=HNyqmFrTormmtYO1mKS6qptrkzhC39BrHqC9jF3blBVbhK2TbhTTgNuCo94rx0J9K
+	 6hBRWsiD/e+zisqWN/uxReWAtn5HDIS/M7SWxq85LhDBdwnDX6vVahdn179f9WAD9M
+	 j7pUd4x1S+Q4sxpvtlY/ubPb4OTkig2uv+jzXREk1pJJ+cgEFAiVJkb5e1zX4h3+iC
+	 ydc2TMMhmSvhdSFwgDsfuD+Htn1OwaE4iIPK0B8U2Al6bio7FHcn9V/6Cwu3ejoyRr
+	 e51zKNApddwBEw95Net0SVx8JMDxA/7IpZkUpM/lnnoPBAnk2yj6wsCET6lSrvcOQ+
+	 Kngrr0jYJCexg==
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Fri, 05 May 2023 20:39:39 +0200
+X-ME-IP: 86.243.2.178
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: Tobias Waldekranz <tobias@waldekranz.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	netdev@vger.kernel.org
+Subject: [PATCH net] net: mdio: mvusb: Fix an error handling path in mvusb_mdio_probe()
+Date: Fri,  5 May 2023 20:39:33 +0200
+Message-Id: <bd2244d44b914dec1aeccee4eba2e7e8135b585b.1683311885.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Sender: lorenz@dolansoft.org
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi netdev members,
+Should of_mdiobus_register() fail, a previous usb_get_dev() call should be
+undone as in the .disconnect function.
 
-I have some SFP modules which contain a G.fast modem (Metanoia MT5321). 
-In my case I have ones without built-in flash, which means that they 
-come up in bootloader mode. Their EEPROM is emulated by the onboard 
-CPU/DSP and is pretty much completely incorrect, the claimed checksum 
-is 0x00. Luckily there seems to be valid vendor and part number 
-information to quirk off of.
+Fixes: 04e37d92fbed ("net: phy: add marvell usb to mdio controller")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/mdio/mdio-mvusb.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-I've implemented a detection mechanism analogous to the Cotsworks one, 
-which catches my modules. Since the bootloader is in ROM, we sadly 
-cannot overwrite the bad data, so I just made it skip the CRC check if 
-this is an affected device and the expected CRC is zero.
-
-There is also the issue of the module advertising 1000BASE-T:
-
- Identifier : 0x03 (SFP)
- Extended identifier : 0x04 (GBIC/SFP defined by 2-wire interface ID)
- Connector : 0x22 (RJ45)
- Transceiver codes : 0x00 0x00 0x00 0x08 0x00 0x00 0x00 0x00 0x00
- Transceiver type : Ethernet: 1000BASE-T
- Encoding : 0x01 (8B/10B)
- BR, Nominal : 0MBd
- Rate identifier : 0x00 (unspecified)
- Length (SMF,km) : 0km
- Length (SMF) : 0m
- Length (50um) : 0m
- Length (62.5um) : 0m
- Length (Copper) : 0m
- Length (OM3) : 0m
- Laser wavelength : 0nm
- Vendor name : METANOIA
- Vendor OUI : 00:00:00
- Vendor PN : MT5321
- Vendor rev : 0001
- Option values : 0x08 0x00
- Option : Retimer or CDR implemented
- BR margin, max : 0%
- BR margin, min : 0%
- Vendor SN :
- Date code : ________
-
-But the module internally has an AR8033 1000BASE-X to RGMII converter 
-which is then connected to the modem SoC, so as far as I am aware this 
-is incorrect and could cause Linux to do things like autonegotiation 
-which definitely does not work here. So this probably needs to be 
-quirked away. Anything else I have missed which needs to be changed?
-
-Also, should the quirks and the workaround for the missing checksum be 
-separate?
-
-Thanks for your help!
-Regards,
-Lorenz
-
+diff --git a/drivers/net/mdio/mdio-mvusb.c b/drivers/net/mdio/mdio-mvusb.c
+index 68fc55906e78..554837c21e73 100644
+--- a/drivers/net/mdio/mdio-mvusb.c
++++ b/drivers/net/mdio/mdio-mvusb.c
+@@ -67,6 +67,7 @@ static int mvusb_mdio_probe(struct usb_interface *interface,
+ 	struct device *dev = &interface->dev;
+ 	struct mvusb_mdio *mvusb;
+ 	struct mii_bus *mdio;
++	int ret;
+ 
+ 	mdio = devm_mdiobus_alloc_size(dev, sizeof(*mvusb));
+ 	if (!mdio)
+@@ -87,7 +88,15 @@ static int mvusb_mdio_probe(struct usb_interface *interface,
+ 	mdio->write = mvusb_mdio_write;
+ 
+ 	usb_set_intfdata(interface, mvusb);
+-	return of_mdiobus_register(mdio, dev->of_node);
++	ret = of_mdiobus_register(mdio, dev->of_node);
++	if (ret)
++		goto put_dev;
++
++	return 0;
++
++put_dev:
++	usb_put_dev(mvusb->udev);
++	return ret;
+ }
+ 
+ static void mvusb_mdio_disconnect(struct usb_interface *interface)
+-- 
+2.34.1
 
 
