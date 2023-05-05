@@ -1,177 +1,165 @@
-Return-Path: <netdev+bounces-565-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-564-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5FF456F8322
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 14:40:04 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7DBF76F831F
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 14:39:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B6FF71C218D5
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 12:40:00 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AC639280FE6
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 12:39:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8019B79FC;
-	Fri,  5 May 2023 12:39:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D9AE079F3;
+	Fri,  5 May 2023 12:39:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C0E8156CD
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 12:39:51 +0000 (UTC)
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51021CFD9
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 05:39:49 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id a640c23a62f3a-94a34a14a54so334358666b.1
-        for <netdev@vger.kernel.org>; Fri, 05 May 2023 05:39:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C417B749C
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 12:39:40 +0000 (UTC)
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2124.outbound.protection.outlook.com [40.107.94.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0F311B4D;
+	Fri,  5 May 2023 05:39:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Uqtmelylh9gYO4lFHk4J5/ljkNX+1NhstJSfNLfja4qsboHZH1G/l51R9reB+tcfMIwydsDOb681kjKTkgjvWXDKJHt4+7OH1hyqBiD1f0c0qL0iuJFnl0LB6MBPk6Wi+BwW8wB3wuAdogPG9MvGLWEIDOn+S359r7UqKfZbpN8OjRX4szMoYx8D3wGZgLoKz8evgjNg35pgLt7kHC53BsoZeXb2JDt/aT/Ccv/PitYzwwbnchIrIFRid0C/n0IKSZrLqyQmm4iU6b2aOWndWtm5jXqa5SzqktmV7UWtygWNXuGbWSn+1hsBzrIo6TyvEtWbISI/NfAiHAAz+x8oHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1IZQlzr3wA2bRfIfuoS+Z2z9pieaEu5jipx/8YyE7jY=;
+ b=PI7hq6b6npRyDTJQulw3HwGHldt+ezJQ6eu9kDiEP1iVghtm/hMshnPMhb8D3DK0i1JYuZjxF4BAajuB9cxtmP73LmfGLwMpWrJgw1ufVx4GNZMuf+Ihs+x4flCY8YhjXUwMUjfWxroEVbNgO3vUtm9dzW7/rlTpOGzGHPCFQjisfMtoWjcznllz6rV2mtev/hxvbSKgtttzJ1GxiMh8Y/ZoLCdtFTyW8jYbDHzJiLv3I8RWsBoOJjzjZSSkTOYYfy00hNRuajjcObLHeqYlhRNxDKUab20MK44VpdtzFxuWg82Avx65s/DuzMGtYNVuWLGqLfhAHdNM7RS1ZVOvSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1683290388; x=1685882388;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=F/JdDhiv34w+Wck7q3/xIhZSxhvoEqSEFRkvAcvQ/Po=;
-        b=yKVO2FTCC1RN1QdH3pfIOGEu21WaItYK5sMbKKDzINEA6nJJhhWEYSARfgkM/NaFxn
-         MO91KBrnSBnQPv47lWLov+oV8d99L9mKw9o/ZHchcpLyPPYh9pJ8vIJozccxAf3UZZwQ
-         rWi0sQRmLBLip1G06RceQo/wZDiZo19k/4Kl0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683290388; x=1685882388;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=F/JdDhiv34w+Wck7q3/xIhZSxhvoEqSEFRkvAcvQ/Po=;
-        b=X/qxuVqNFi3aJK5bM1JmFdQqEPi1A8j+vwWMxbEAs/Z6joDAS/o7zeWKgKMjTPW3U2
-         rf/IJkXUnuaun3scfPa0ra3KBZ0QXwSecl7ngr2p4bPo++W9cM1UjPYKW/XBU1hl2ocX
-         RGGj8DXBCVCfwqYP+z1ZWe4k/4AbjVDqVeD4pUFHwQ5V/5mfXrOaEwEUX9x8SO1W/NiQ
-         5BbvOdJnVqDBm+OhfKuNLzgLesoZ/n6pgfYnsCCYk9CpgZBB+F4rATORH0aXLCHFkCU8
-         E6dAz3s7UwmQlsudzsj8/k+YuVgZAVpBJXb5HDwdSZxfgJYLoYxF3Q0bMl4Bdrx0nJXe
-         3ykQ==
-X-Gm-Message-State: AC+VfDwsf/msHfm7uLWPb4kC1ZO0Kq97bKlSd8YQLI0pwtN9xepUQb78
-	TXMKnFbUVzRglqMops6FZaUqSg==
-X-Google-Smtp-Source: ACHHUZ4EMmK+sWMZIPI6mvu3MouTljTrM94efrXc0ilcY7Zaz19SfMhs5sghyjbcew/Cn5ZyLSCvlA==
-X-Received: by 2002:a17:906:4fce:b0:965:a414:7cd6 with SMTP id i14-20020a1709064fce00b00965a4147cd6mr1195885ejw.17.1683290388362;
-        Fri, 05 May 2023 05:39:48 -0700 (PDT)
-Received: from cloudflare.com (79.184.132.119.ipv4.supernova.orange.pl. [79.184.132.119])
-        by smtp.gmail.com with ESMTPSA id k19-20020a170906129300b0094e954fd015sm902426ejb.175.2023.05.05.05.39.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 May 2023 05:39:47 -0700 (PDT)
-References: <20230502155159.305437-1-john.fastabend@gmail.com>
- <20230502155159.305437-9-john.fastabend@gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From: Jakub Sitnicki <jakub@cloudflare.com>
-To: John Fastabend <john.fastabend@gmail.com>
-Cc: daniel@iogearbox.net, lmb@isovalent.com, edumazet@google.com,
- bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
- andrii@kernel.org, will@isovalent.com
-Subject: Re: [PATCH bpf v7 08/13] bpf: sockmap, incorrectly handling copied_seq
-Date: Fri, 05 May 2023 14:14:12 +0200
-In-reply-to: <20230502155159.305437-9-john.fastabend@gmail.com>
-Message-ID: <87zg6jvtnx.fsf@cloudflare.com>
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1IZQlzr3wA2bRfIfuoS+Z2z9pieaEu5jipx/8YyE7jY=;
+ b=GZIV8jHyoiR2F1IcYqOyWLSljT+5gpcJQ1lR/KE3zwi99VaKhtnKeXeZZ9Q/qqmhnYbyXEKDgcRNHtk3oih/EYEiyy0/AD3b8aYikhzInnc93SjU0Y52p+yFtNZpNntTBDVbFS8m2kW9ubW57lclhQISZW3wU2cHUREEdBJfrZU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BLAPR13MB4626.namprd13.prod.outlook.com (2603:10b6:208:334::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.27; Fri, 5 May
+ 2023 12:39:35 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6363.026; Fri, 5 May 2023
+ 12:39:35 +0000
+Date: Fri, 5 May 2023 14:39:25 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Jason Andryuk <jandryuk@gmail.com>
+Cc: Christian Schoenebeck <linux_oss@crudebyte.com>,
+	Eric Van Hensbergen <ericvh@kernel.org>,
+	Latchesar Ionkov <lucho@ionkov.net>,
+	Dominique Martinet <asmadeus@codewreck.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	v9fs@lists.linux.dev, linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: Re: [PATCH v2] 9p: Remove INET dependency
+Message-ID: <ZFT4/SYt9QUsyHBP@corigine.com>
+References: <20230503141123.23290-1-jandryuk@gmail.com>
+ <4317357.pJ3umoczA4@silver>
+ <CAKf6xpscky_LLxStzZ6uAyeWPXC3gALsA_zVFpF8X7uktw=MxQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKf6xpscky_LLxStzZ6uAyeWPXC3gALsA_zVFpF8X7uktw=MxQ@mail.gmail.com>
+X-ClientProxiedBy: AM0PR04CA0044.eurprd04.prod.outlook.com
+ (2603:10a6:208:1::21) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BLAPR13MB4626:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0270a2dd-1ae6-4b0e-49b2-08db4d65c82d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	01c3HdbWuRenYyqvAsgVtJwqDq4VV/WttImF6W1xVoDt1RmDcsrA6LEj/pGwnP3QcRhmheJchvlrAoOP96/Yuhk4gILnnqvKEKQloWyi+pbngB0b+uVgJkjcMivBO4h4UGdLjd/zdaROK4nxf4ES9VSfWHBa7y8KjgCwMqwY2QtawWBOBU2kQk6p87oYvYqATRqOBs9Z4LfNRvcgefH/kri+aq9aDfHtO2pXV09hWlffpB1sPMhOJuxRc6Baq5FRQdDOi2x7tU1CShTGmneNBWDac4k1gklrIxIRsN8khMBJhQm+IR+awzgjg5pZuVyzbsoKzcZQeMgM9AMDiv8CxkcBvOyK4QlM/PefdOyf0Tv8gS7fqjFmrBjcsdMClFssm0mtdbkxA4GfRvEIhRQK9HfoQCzM2YGgXUG8+EBzmppJzSj2PqaPDR9j5MXkOl28XJSt8ba/UGoU6g04MzHA+lUnlq0YMtP+SY5wNucZ2COzWk4O34Ux5WaYqyzfiZIZddTyq7wGJ8a4d5/i4284V+pCZ6wgQaVQGcCHYneGmRgMBBmHKqQWCah77cpRPA6wxftFR01y2sNTlS8kf21s8m//H/JTu9+B4f0YLBkDJcQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(346002)(39830400003)(396003)(376002)(451199021)(36756003)(86362001)(6666004)(54906003)(316002)(6916009)(4326008)(66946007)(66556008)(66476007)(6486002)(478600001)(41300700001)(5660300002)(8676002)(8936002)(2906002)(7416002)(4744005)(44832011)(38100700002)(186003)(2616005)(6506007)(53546011)(6512007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?UGNvZUxvcmpvVlBYSVM2WEtGSVVuaXJsUllsbmloMDU5V1Y0V0xzdGs3aVFC?=
+ =?utf-8?B?V2c2QWRabTZLaXExaFhrR3hYNmhIbEVtT3hXSWxvLzFoeTRsd1dnRnl6cGZI?=
+ =?utf-8?B?ZUI0VUZkR0RVNEhsamRjT1V0eW4xQTRKeHIwSjRmdXhoSWZQa3MwTHRGQkd0?=
+ =?utf-8?B?ZlQ4QWpocURCUDlvLzMxVC9hYlRGWUNmbGtnM2h4Wk56S090cmJOQXNEVzFw?=
+ =?utf-8?B?bTY4RTFLT2JCUkphMkRTdjZMZFd6UUtCL0lpeXR4YlZnUzZiL2dFQlJqekNK?=
+ =?utf-8?B?bHlBWlpJR2t5TnpaYnpsL3NDMFNNNDBuSVpmMVpzMmp3elZpdVFSbkU3Y2t6?=
+ =?utf-8?B?K2JtSzJnczMxRzVRdDhoczFKV3ovSUVITGxGOG9wZGMwbTk0YXZOc0JrTUkv?=
+ =?utf-8?B?UEoyTStLQVV3UmM1Tzk5aHpwdDZVMFJMRkJPZmlEcUVyT2t6dHNWdml1bWQv?=
+ =?utf-8?B?ajRQTytxNlRxWUo4bEpTVXBJeXVsWDdEeHRHdjVSVWZjZmtjZHRzZlY4NVdS?=
+ =?utf-8?B?N3NlTHowTG1BbGNabTBzV0Z6YjlOdGJVcS9yMEs5MHhxYnRjL29UUGQzUnFI?=
+ =?utf-8?B?SGdydzdnN0FGUnRleDJ3aWJ3QjdwUEpMWHBrRnFmRXdOalg0Y3NKa0hLb3lH?=
+ =?utf-8?B?OG5uY3UwZXdYZXo2VEN4akRRaTJseURyZW53bGtiMlN2aDZ0WlB1MVRIYVFU?=
+ =?utf-8?B?ZEFHZnFLYU1zN1RIUi82MTc1UlMyY21GcmxWKzhrZ1VsZURUMXRLT2wrd2NF?=
+ =?utf-8?B?RVdrTG4vemZFcXFGQ3JDaFlkeEZSbU5uSkNPZlpXVllNUEM4RlAyeTJtYzZi?=
+ =?utf-8?B?V3J0RWNOZStvdm9pTDJKTDNzbGRsZzM2TDNEb3l3b0hmaHZiMmdZaHk4OW9i?=
+ =?utf-8?B?ZG1XQmpBVmtnNXV6ZDBZWUIvc1NKZDMzOGtaNm4vY1B6UVBFUndTQmhIbGdL?=
+ =?utf-8?B?ODBxSWRSNW1FY0RaV1pzbXlKcHRqY2hyMDNOd1ZtTkVRWS95OVVuUXNCb0Jo?=
+ =?utf-8?B?VmQ0SE1pdFNRZ0xoemhzZ0Q0ZGVaemx3eUs5SGIwME1TS3gzelNnTHpGVGRU?=
+ =?utf-8?B?YkZ1NjV2WjR1TnJyeHBmUC80b29vMUE4c3FoMlJTcHcxbmRBWktydVlpWFNo?=
+ =?utf-8?B?SGk3WVY5MWU5YVNMWUdPem1EM2JnNVdHdkFVMzJHOEVrY0pTcXhHUkNoSmhw?=
+ =?utf-8?B?ZkdIUm9rb0hVcDl5U0ZvLzZ2eHptVE1UVjhJbDNlN3IzMXVmczBZeVF1VXBZ?=
+ =?utf-8?B?emJPVnBUYm85WlcxeTk3N3VnMWQ4ZitkOEhaaWV2VU1mVUx3L3RjR1oyT3Zz?=
+ =?utf-8?B?WWoydjVibHQvbENZNVJQcCtjSFNyQ2JEaU12ektvK0dINy9henVwbkIwWi9n?=
+ =?utf-8?B?LzJjRVJPQnhNWk92L3lEanNCYk43a2dzREs4ZEpsNzExNEN3bmZnSGNPMloz?=
+ =?utf-8?B?dzB3NnJCVkdxMVh5RE9XNG5jQzRpcFdIY3ZObDVhOWx1eVB5UUhEVWg1NnNQ?=
+ =?utf-8?B?TTByYjFqRU81ckRwNzQ4SXVtb2hRUmJWa005VUgwRlFFTHJHTzI2V0JtNWNU?=
+ =?utf-8?B?aXJ1c0JGQlFzY2lLcHVEemZSYzZ0QzdLcnBmRzIvc0dIaTg5Y2I2RlI5V3Uz?=
+ =?utf-8?B?REJDQlBNb1pMS3ZNRDdYekJSYkdrVlo3ZnFMQTZMSXZ1UUwwcWRVQzBHZDNG?=
+ =?utf-8?B?MFN4aklGQzRjVDlYV3F4di9kZGFZRDhTa2pQUHpSQ3hMTE5Pc3dqYnBFcjFm?=
+ =?utf-8?B?RnRsaFp1VEdla3UrR0JKd2JTWTVXVnhuRlo4WGg0QVF1cm5zVUxDSkRzZWhR?=
+ =?utf-8?B?bWxyTGhmdUVHbmxFWFNMT0xoaEJsdm5iNUpXUjRMeENVZnd0Z2JLVFdpQmJH?=
+ =?utf-8?B?UWlvRU84ZWswTVdGS2VSWEpwZUhValRTNmo2R0dXeS9qc0laOCtxR0QxSkVq?=
+ =?utf-8?B?SFVKVEpDWmJnSmJPSkZNZnA1WVhUUHo2Q0RRZUgwdXpUTk4xZXJZbW5jcjNy?=
+ =?utf-8?B?L1dwNUF4TWozN3k4THVjajgvMXlPTWVyaU8zKzFTSUptV1NTWTBuTlhWSUx6?=
+ =?utf-8?B?UXdGM01Uclc4a3k3MjNObHorZTZ1L0d6MmZhaFVGVmxwRXhhY3h1emNJcXd6?=
+ =?utf-8?B?TTBtZnlLa3RRUkpQZVgrRjZNd2ttaDZ4VFQxZTJVZ2hFY0NEVk16WXhXSTZ2?=
+ =?utf-8?B?MGdDZ3B2STRoTEVtUE9aRG1pbTZ5cjdlbVhaYUhHY2dZYVd2ZGN3T3MySzRI?=
+ =?utf-8?B?S3JibnFTQ2RsaWNmU20zMHVDOHdBPT0=?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0270a2dd-1ae6-4b0e-49b2-08db4d65c82d
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2023 12:39:35.1506
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nPVqKkQv3nkG3byKPgtDTMuo0D0DXr371q3WXBts7LrmTH7MVtgIoB/7EoX4f5vMtuu2g29ct/i77uaGt8KKjVqkqzUgYK2zfXK+GI7zyxk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR13MB4626
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 02, 2023 at 08:51 AM -07, John Fastabend wrote:
-> The read_skb() logic is incrementing the tcp->copied_seq which is used for
-> among other things calculating how many outstanding bytes can be read by
-> the application. This results in application errors, if the application
-> does an ioctl(FIONREAD) we return zero because this is calculated from
-> the copied_seq value.
->
-> To fix this we move tcp->copied_seq accounting into the recv handler so
-> that we update these when the recvmsg() hook is called and data is in
-> fact copied into user buffers. This gives an accurate FIONREAD value
-> as expected and improves ACK handling. Before we were calling the
-> tcp_rcv_space_adjust() which would update 'number of bytes copied to
-> user in last RTT' which is wrong for programs returning SK_PASS. The
-> bytes are only copied to the user when recvmsg is handled.
->
-> Doing the fix for recvmsg is straightforward, but fixing redirect and
-> SK_DROP pkts is a bit tricker. Build a tcp_psock_eat() helper and then
-> call this from skmsg handlers. This fixes another issue where a broken
-> socket with a BPF program doing a resubmit could hang the receiver. This
-> happened because although read_skb() consumed the skb through sock_drop()
-> it did not update the copied_seq. Now if a single reccv socket is
-> redirecting to many sockets (for example for lb) the receiver sk will be
-> hung even though we might expect it to continue. The hang comes from
-> not updating the copied_seq numbers and memory pressure resulting from
-> that.
->
-> We have a slight layer problem of calling tcp_eat_skb even if its not
-> a TCP socket. To fix we could refactor and create per type receiver
-> handlers. I decided this is more work than we want in the fix and we
-> already have some small tweaks depending on caller that use the
-> helper skb_bpf_strparser(). So we extend that a bit and always set
-> the strparser bit when it is in use and then we can gate the
-> seq_copied updates on this.
->
-> Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
->  include/net/tcp.h  | 10 ++++++++++
->  net/core/skmsg.c   |  7 +++++--
->  net/ipv4/tcp.c     | 10 +---------
->  net/ipv4/tcp_bpf.c | 28 +++++++++++++++++++++++++++-
->  4 files changed, 43 insertions(+), 12 deletions(-)
->
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index db9f828e9d1e..76bf0a11bdc7 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -1467,6 +1467,8 @@ static inline void tcp_adjust_rcv_ssthresh(struct sock *sk)
->  }
->  
->  void tcp_cleanup_rbuf(struct sock *sk, int copied);
-> +void __tcp_cleanup_rbuf(struct sock *sk, int copied);
-> +
->  
->  /* We provision sk_rcvbuf around 200% of sk_rcvlowat.
->   * If 87.5 % (7/8) of the space has been consumed, we want to override
-> @@ -2323,6 +2325,14 @@ int tcp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore);
->  void tcp_bpf_clone(const struct sock *sk, struct sock *newsk);
->  #endif /* CONFIG_BPF_SYSCALL */
->  
-> +#ifdef CONFIG_INET
-> +void tcp_eat_skb(struct sock *sk, struct sk_buff *skb);
-> +#else
-> +static inline void tcp_eat_skb(struct sock *sk, struct sk_buff *skb)
-> +{
-> +}
-> +#endif
-> +
->  int tcp_bpf_sendmsg_redir(struct sock *sk, bool ingress,
->  			  struct sk_msg *msg, u32 bytes, int flags);
->  #endif /* CONFIG_NET_SOCK_MSG */
-> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> index 3c0663f5cc3e..18c4f4015559 100644
-> --- a/net/core/skmsg.c
-> +++ b/net/core/skmsg.c
-> @@ -1017,11 +1017,14 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
->  		}
->  		break;
->  	case __SK_REDIRECT:
-> +		tcp_eat_skb(psock->sk, skb);
->  		err = sk_psock_skb_redirect(psock, skb);
->  		break;
->  	case __SK_DROP:
->  	default:
->  out_free:
-> +		tcp_eat_skb(psock->sk, skb);
-> +		skb_bpf_redirect_clear(skb);
->  		sock_drop(psock->sk, skb);
->  	}
->  
+On Thu, May 04, 2023 at 07:55:17AM -0400, Jason Andryuk wrote:
+> On Thu, May 4, 2023 at 6:58 AM Christian Schoenebeck
+> <linux_oss@crudebyte.com> wrote:
+> >
+> > On Wednesday, May 3, 2023 4:11:20 PM CEST Jason Andryuk wrote:
+> > > 9pfs can run over assorted transports, so it doesn't have an INET
+> > > dependency.  Drop it and remove the includes of linux/inet.h.
+> > >
+> > > NET_9P_FD/trans_fd.o builds without INET or UNIX and is unusable over
+> >
+> > s/unusable/usable/ ?
+> 
+> Whoops!  Yes, you are correct.  Thanks for catching that.
 
-I have a feeling you wanted to factor out the common
-skb_bpf_redirect_clear() into out_free: block, but maybe forgot to
-update the jump sites?
+That notwithstanding, this looks good to me.
 
-[...]
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+
 
