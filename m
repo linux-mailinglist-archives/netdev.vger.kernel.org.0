@@ -1,142 +1,321 @@
-Return-Path: <netdev+bounces-574-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-575-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6B4176F83AA
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 15:16:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 73D9A6F83B0
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 15:17:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 18D7B281070
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 13:16:42 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1D04E28105A
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 13:17:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2F87C12B;
-	Fri,  5 May 2023 13:16:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 230C1BA35;
+	Fri,  5 May 2023 13:17:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6D7A156F3
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 13:16:20 +0000 (UTC)
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2117.outbound.protection.outlook.com [40.107.94.117])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3F41E98D
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 06:16:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j7yc60bpE2xL8pfa095FYn7xsLFyq3WlLMrkblR5twClC59Gl7m9ES+MfD0J4hWjfnzxbAstAysAfNAlZvKEZUEMpthTQqBxRtNNmHquYo19gyvnj+tZVk+McffiKDxFUbDhwF/vXzTkzxpApKWYKxBVamd+G/g3RGUriG6tVwjyY3nxdMSVEr9kQWr0fH2a9aYw5l1DfRIU9uGOpIxbhiXhhoJNlg8Okv9vGGWZIG5TCmU/ypWTNBMW60aTuNIsUYAyiUzEhgRFFRMKdBi75j5eL4miO7TCRUHAGYGMnTyd1/hjAZlap1/pCPCq6a8I7u5yG32f1tJyTz80KgcM3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Fdpu4lEIkLmFKhfV8Z6Qjo5ELkOEeUs9MRNCLbDozeA=;
- b=HKSWP6kLz7rvb4tBiWlDik6oihOhQOsnGyyp6smV4qFm9T8BAtzmNpnY6sPTbCv54B551Wcg5XDeq06UGzHi6Bw3rZDSwMfWLwFMg9hP+fJNhyOw0qf8VHo8YTmyHc+1Cfc0Si0uOisJUl4Cp+PFJp00UjQft8kH9FSe7nO1cRHcoLwk6plV18flyopLow64vj3LLUDQowQc1g+wFRHlfkjX/lFgY+h+NJaeQuLhCdB/ivmIyQtOxsEV/tjUqkcRWO7p+sYQu1AMx2R1HvlanJml/4CVBT6bQPMYsPIOjPBmX0isIoV7ij4GBOm0vrGA7qSNcA6rCMi5LFdftMFc6g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fdpu4lEIkLmFKhfV8Z6Qjo5ELkOEeUs9MRNCLbDozeA=;
- b=CsHDmskDAcTMFlAPBBK3FpJhgOqMl6yHUGv3BrqUOOJauDcKKvo4bJXsoTMRix6WY6VdTbVPyOmsUUTVaADnXYLm7Pu8AxdlNehqXgDYSfgwEanH2cmswnUbzZyys5evuvy6YRANh1rCFarwleEUY1kItctxKoDKHTl3zch3nWE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH2PR13MB4555.namprd13.prod.outlook.com (2603:10b6:610:61::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21; Fri, 5 May
- 2023 13:16:17 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6363.026; Fri, 5 May 2023
- 13:16:17 +0000
-Date: Fri, 5 May 2023 15:16:11 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Chuck Lever <cel@kernel.org>
-Cc: kernel-tls-handshake@lists.linux.dev, netdev@vger.kernel.org,
-	dan.carpenter@linaro.org
-Subject: Re: [PATCH 5/5] net/handshake: Enable the SNI extension to work
- properly
-Message-ID: <ZFUBm/jRSfmr47CF@corigine.com>
-References: <168321371754.16695.4217960864733718685.stgit@oracle-102.nfsv4bat.org>
- <168321397496.16695.17457090959897234928.stgit@oracle-102.nfsv4bat.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <168321397496.16695.17457090959897234928.stgit@oracle-102.nfsv4bat.org>
-X-ClientProxiedBy: AM4PR0202CA0014.eurprd02.prod.outlook.com
- (2603:10a6:200:89::24) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 126E06FAE
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 13:17:09 +0000 (UTC)
+Received: from out-38.mta0.migadu.com (out-38.mta0.migadu.com [IPv6:2001:41d0:1004:224b::26])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95753593
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 06:16:58 -0700 (PDT)
+Message-ID: <7be22f4a-3fd5-f579-6824-56b4feafdb03@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1683292617;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=MZxYl1jtunKQOO10NrRAuzbgY/i7QTUMoq4lJixqYAU=;
+	b=BlD3JdqVzHARaO2bvmouAcb9JCuLc40Ki6kpM8s8UP9NGo+smkXS/lzARZcNP47USgL67d
+	u26fO13vCwdkUEviaFIx9cwTLa9sf8GBsUuAd7CbFCwhkTmdD4lGxyzKRAUw19jRNhqJmL
+	9dwqd+cHer3r6GAxAWfK0wyaR2AeDqI=
+Date: Fri, 5 May 2023 14:16:53 +0100
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB4555:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2e6f7779-df29-456e-17dd-08db4d6ae8fe
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	mii+J3nmr+Bqo0PjzzotO2CZhz0xeo6eWq9HA3jER/DCQl1D5+abjUAIKt16PiGQejux5lE9zstwe6217TUKaWM0WCTjGibz3DlPZJbvYP4cDNtLU4YxEL67zht5NIU5dIWbDoqOxz6CcN/aV/EmMHRgqT6iP8blDhHd1nehFnCc0a7H57MZvp8SQcz5C9etszdT90Jcr8noyMwUpXq7Qf7w/yPs+i6sHN1Nx6hAP2wTSIWv+b/AeWis1pMmtiNobn1oCx4bu12Jek/nAWXzweJYluZC/m0atG0QpguxO5Fagqp6gwfMaX8j0FSciMpuUr+surcAwZCgfS2fmY6sRYZ7dWCU362cuASZB0hb6y6txE/4b8N39JwZ0CXPhvC9Cp3Zk2EE4RcvQpHuAFZU4UIOopHNAesxUNFGr+sIHGo3HxdfOko0+Bcamwvkc50RmmgCBUu5QtLXqzuQSXXdiiVZhAGS4aEjtB7h1JrMetsYiSV8/Ox2v56ucAL6EsflyiFVr88JSiW1VNrQBLEPv0eVH+NchPwEZ5/rsxQag0TioYKqUgnMTCGjK8OxqqSY
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39840400004)(366004)(376002)(346002)(136003)(451199021)(2616005)(36756003)(6512007)(8676002)(41300700001)(6506007)(6486002)(6666004)(186003)(83380400001)(8936002)(66476007)(66556008)(66946007)(478600001)(316002)(4326008)(6916009)(86362001)(5660300002)(44832011)(38100700002)(2906002)(4744005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?BnlaT/8DxxZuMyuLSGduUrFWtRBvNLVxByn8iW08hBjRNzYvWCe26pGJHtNb?=
- =?us-ascii?Q?4oYbZKKrQ0WKCEG67CL/4OvJoKTVjwOdnTJ0XwvN6z5crjoLSHesmjjCqP4r?=
- =?us-ascii?Q?0t2dxdPYsS5s+xOHa/62MrOu5b43RNlORwjXnDbG7iWHVstzwYO9PM0YvAnB?=
- =?us-ascii?Q?ra25jVPEgRen4eKYO3qg9X9DWjYPy4Y3m/kDgkaHsZMhg73HUi7s89FhoIIP?=
- =?us-ascii?Q?tW6YaDITAitv74Pnxa6iBmF3XUbR34segHGctPb8T7CJSsXB3EuMrySSWAm5?=
- =?us-ascii?Q?YQaGNxdZVusxtCFEQInhOR/Zm4Uqz/0mOO4rq3SY7szwSPBw5nGaSeIj30Zj?=
- =?us-ascii?Q?+K4o5j+Wdj1GQeZpU28W7B5a2TJMhJbTiIJniEJIcBrpIhRXKIxnkmzKLKXM?=
- =?us-ascii?Q?W3ZqAYKqNfP9PACOwq9GlVPgT1PqxOaujIdazTXhEzBYo2nALMFUGvn2I6V6?=
- =?us-ascii?Q?oF1FkE8kQJ4M1MKfbrJGyUs68Js9RQjAicduN2ZcnhKhK3nMxJKQ1EC8zZMb?=
- =?us-ascii?Q?fkdkIIOaoLM3iuM+eD/PmwqyDI/qH4ZxDf0/lmKQn3r8+cl3x07ZMtfU3my2?=
- =?us-ascii?Q?FGu96StaIeHnzflEdnq42WDdswy0fDGKl/ZbQJeKOhQf7cvO1QZbfMIj4gfB?=
- =?us-ascii?Q?gOaU0MolpioZEFXzzHeizNXBxPNRvtH5cpbLNyDk/KLA14qCk3TaDPmpZEa8?=
- =?us-ascii?Q?6FTL4qwYzQHMdbmz1nSRH6KZrUOqQAMlbTZz9Z7DJUbJXRjTm62WjW0nCnRx?=
- =?us-ascii?Q?es5fJmvjIsMrTQJs7uoyu4SBQxdOKgL2hkQjOOFnkBerAj/gwOmg3QII6ap2?=
- =?us-ascii?Q?yBj5cOMMQONPL3n7bgLp/FHdixZhySQWS2x9liLTnb/FYpL59WBWMXECH+zQ?=
- =?us-ascii?Q?+1+5Gcy2KmMNsv5H4cMxrr8cIe5C9+1XSvpTGtp62OEaQh706UImlWX4Kh98?=
- =?us-ascii?Q?oYV3BIGQTyvX7omnclJE+kUF93bmiOHi1KFzcqIWsGRZjm8QhbhEDTckbEZF?=
- =?us-ascii?Q?rh8WiWCWAq+a0OBjQ9f5is5nPgL10jDtP4PjqoBnMIl75BDO9tShQHzglLNH?=
- =?us-ascii?Q?thnJMXmiIvABG0KEdlGn+o5Lvyt+F6ZggS80DwLorQVHjvzLPaq3zgXMrYZI?=
- =?us-ascii?Q?5QzW2RLJJNJtp5pYfEmxLweObALvRpiom1Ml7Ja/XUAZgAQQdmTvGsDR/2D3?=
- =?us-ascii?Q?RdI9vgHJnBYHg8WmPlxP49sC2KxzvJ76VibTsbkNuoV1Ii+WpuJxUMop77Lj?=
- =?us-ascii?Q?wN8l+P2R7T+iLzc6PceUrEoGvve5yrLuLGTXfiDj8xvM3tc/i01CsOa7T7M5?=
- =?us-ascii?Q?+FABvmM9rmp1ihgGfKE5nspF2o5ivbFS0naEpqaqowtiaiH8g9xTWUULwYwi?=
- =?us-ascii?Q?pOvWnmhxiywF0lJ5J1yIGMaD3eBtGRccSAAuzMaI8YVSxSp/4cTtD2HW72xZ?=
- =?us-ascii?Q?4fVxP9Dqzj/pB5KrOxro4ppOKeYNjb2oQMM748sqKgHevWeLInYKFayCFH0g?=
- =?us-ascii?Q?SkXy5P03mhBazPmJgEi+5M3A1CVpNV6kyLvnNjgTJsPjNk8kuVyB8N1CGD/S?=
- =?us-ascii?Q?MVnl+ct9Ck4kNG73Ehi0HhmZVwfI45NQ7WjCdnNRTP5J/bVqcrDsRaMQePq0?=
- =?us-ascii?Q?F2hxvVMz+JkUjQxWr5YRHDsrZowzDvPJgAG3Giq69wurg3MOkGKQZhuvKDbV?=
- =?us-ascii?Q?NVd46w=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e6f7779-df29-456e-17dd-08db4d6ae8fe
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2023 13:16:17.5277
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jYksJWfV1+tbXLC/97tI+/+V8dbUhfRG9lUxf3bxAxhfT/RVV64pnK0ub1BlHcEGuafYWNiwhDiO2h2wZy3Do2jq1Z+YdigcUyrkl7BU2Ic=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB4555
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+Subject: Re: [RFC PATCH v7 3/8] dpll: documentation on DPLL subsystem
+ interface
+To: Jakub Kicinski <kuba@kernel.org>, Vadim Fedorenko <vadfed@meta.com>
+Cc: Jiri Pirko <jiri@resnulli.us>,
+ Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+ Jonathan Lemon <jonathan.lemon@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
+ Milena Olech <milena.olech@intel.com>,
+ Michal Michalik <michal.michalik@intel.com>,
+ linux-arm-kernel@lists.infradead.org, poros@redhat.com, mschmidt@redhat.com,
+ netdev@vger.kernel.org, linux-clk@vger.kernel.org
+References: <20230428002009.2948020-1-vadfed@meta.com>
+ <20230428002009.2948020-4-vadfed@meta.com>
+ <20230504120431.036cb8ba@kernel.org>
+Content-Language: en-US
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <20230504120431.036cb8ba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 04, 2023 at 11:26:17AM -0400, Chuck Lever wrote:
-> From: Chuck Lever <chuck.lever@oracle.com>
+On 04/05/2023 20:04, Jakub Kicinski wrote:
+> On Thu, 27 Apr 2023 17:20:04 -0700 Vadim Fedorenko wrote:
+>> From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+>>
+>> Add documentation explaining common netlink interface to configure DPLL
+>> devices and monitoring events. Common way to implement DPLL device in
+>> a driver is also covered.
+>>
+>> Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+>> Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 > 
-> Enable the upper layer protocol to specify the SNI peername. This
-> avoids the need for tlshd to use a DNS lookup, which can return a
-> hostname that doesn't match the incoming certificate's SubjectName.
-> 
-> Fixes: 2fd5532044a8 ("net/handshake: Add a kernel API for requesting a TLSv1.3 handshake")
-> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+> nit: let's put documentation as patch 1, it's more natural for
+> a reviewer to start from the docs.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Ok, sure, will do it.
+And I agree to almost all the comments here, but for some I have, 
+questions below.
+
+>> diff --git a/Documentation/dpll.rst b/Documentation/dpll.rst
+>> new file mode 100644
+>> index 000000000000..fba5bc027967
+>> --- /dev/null
+>> +++ b/Documentation/dpll.rst
+>> @@ -0,0 +1,408 @@
+>> +.. SPDX-License-Identifier: GPL-2.0
+>> +
+>> +===============================
+>> +The Linux kernel dpll subsystem
+>> +===============================
+>> +
+>> +
+> 
+> nit: two empty lines here...
+> 
+>> +The main purpose of dpll subsystem is to provide general interface
+>> +to configure devices that use any kind of Digital PLL and could use
+>> +different sources of signal to synchronize to as well as different
+>> +types of outputs.
+>> +The main interface is NETLINK_GENERIC based protocol with an event
+>> +monitoring multicast group defined.
+>> +
+>> +
+>> +Device object
+>> +=============
+> 
+> .. but none after the section start? One nl to separate things, please.
+> 
+>> +Single dpll device object means single Digital PLL circuit and bunch of
+>> +pins connected with it.
+> 
+> s/bunch of pins connected with it/bunch of connected pins/
+> 
+>> +It provides its supported working modes and current status to the user
+> 
+> "reports the supported modes of operation" ?
+> 
+>> +in response to the `do` request of netlink command
+>> +``DPLL_CMD_DEVICE_GET`` and list of dplls registered in the subsystem
+>> +with `dump` netlink request of same command.
+>> +Requesting configuration of dpll device is done with `do` request of
+> 
+> Changing the configuration ?
+> 
+>> +netlink ``DPLL_CMD_DEVICE_SET`` command.
+>> +
+>> +
+>> +Pin object
+>> +==========
+>> +A pin is amorphic object which represents either source or output, it
+> 
+> Is the terminology mixing on purpose?
+> Source or drain vs input or output ?
+> 
+>> +could be internal component of the device, as well as externaly
+>> +connected.
+>> +The number of pins per dpll vary, but usually multiple pins shall be
+>> +provided for a single dpll device.
+>> +Pin's properties, capabilities and status is provided to the user in
+>> +response to `do` request of netlink ``DPLL_CMD_PIN_GET`` command.
+>> +It is also possible to list all the pins that were registered in the
+>> +system with `dump` request of ``DPLL_CMD_PIN_GET`` command.
+>> +Configuration of a pin can be changed by `do` request of netlink
+>> +``DPLL_CMD_PIN_SET`` command.
+>> +
+>> +
+>> +Pin selection
+>> +=============
+>> +In general selected pin (the one which signal is driving the dpll
+>> +device) can be obtained from ``DPLL_A_PIN_STATE`` attribute, and only
+>> +one pin shall be in ``DPLL_PIN_STATE_CONNECTED`` state for any dpll
+>> +device.
+>> +
+>> +Pin selection can be done either manualy or automatically, depending on
+> 
+> manually, spellcheck?
+> 
+>> +hardware capabilities and active dpll device work mode
+>> +(``DPLL_A_MODE`` attribute). The consequence is that, there are
+>> +differences for each mode in terms of available pin states, as well
+>> +as for the states the user can request for a dpll device.
+>> +
+>> +In manual mode (``DPLL_MODE_MANUAL``) the user can request or receive
+>> +one of following pin states:
+>> +- ``DPLL_PIN_STATE_CONNECTED`` - the pin is used to drive dpll device
+>> +- ``DPLL_PIN_STATE_DISCONNECTED`` - the pin is not used to drive dpll
+>> +  device
+>> +
+>> +In automatic mode (``DPLL_MODE_AUTOMATIC``) the user can request or
+>> +receive one of following pin states:
+>> +- ``DPLL_PIN_STATE_SELECTABLE`` - the pin shall be considered as valid
+>> +  source for automatic selection algorithm
+>> +- ``DPLL_PIN_STATE_DISCONNECTED`` - the pin shall be not considered as
+>> +  a valid source for automatic selection algorithm
+>> +In automatic mode (``DPLL_MODE_AUTOMATIC``) the user can only receive
+>> +pin state ``DPLL_PIN_STATE_CONNECTED`` once automatic selection
+>> +algorithm locks a dpll device with one of the sources.
+> 
+> But there's a lot more modes in the mode enum :S
+> 
+>> +Shared pins
+>> +===========
+>> +A single pin object can be registered to multiple dpll devices.
+> 
+> s/registered/attached/ ?
+> 
+>> +Then there are two groups of configuration knobs:
+>> +1) Set on a pin - the configuration affects all dpll devices pin is
+>> +   registered to. (i.e. ``PIN_FREQUENCY``, ``PIN_DIRECTION``),
+> 
+> Why is direction set on a pin? We can't chain DPLLs?
+
+We can chain DPLLs using pins only. We don't have any interface to
+configure 2 pins to connect 2 different DPLLs to each other at the same 
+time. The configuration should take care of one pin being input and
+other one being output. That's why we have direction property attached
+to the pin, not the DPLL itself.
+
+>> +2) Set on a pin-dpll tuple - the configuration affects only selected
+>> +   dpll device. (i.e. PIN_PRIO, PIN_STATE).
+>> +
+>> +
+>> +MUX-type pins
+>> +=============
+>> +A pin can be MUX-type, it aggregates child pins and serves as a pin
+>> +multiplexer. One or more pins are registered with MUX-type instead of
+>> +being directly registered to a dpll device.
+>> +Pins registered with a MUX-type provide user with additional nested
+>> +attribute ``DPLL_A_PIN_PARENT`` for each parent they were registered
+>> +with.
+>> +If a pin was registered with multiple parent pins, they behave like a
+>> +multiple output multiplexer. In this case output of a
+>> +``DPLL_CMD_PIN_GET`` would contain multiple pin-parent nested
+>> +attributes with current state related to each parent, like:
+>> +
+>> +``'pin': [{
+>> +        'device': [{'bus-name': 'pci',
+>> +                    'dev-name': '0000:21:00.0_0', 'id': 0}],
+>> +        'pin-direction': {'doc': 'pin used as a source of a signal',
+>> +                          'name': 'source'},
+>> +        'pin-idx': 13,
+>> +        'pin-parent': [{'pin-parent-idx': 2,
+>> +                        'pin-state': {'doc': 'pin disconnected',
+>> +                                      'name': 'disconnected'}},
+>> +                       {'pin-parent-idx': 3,
+>> +                        'pin-state': {'doc': 'pin disconnected',
+>> +                                      'name': 'disconnected'}}],
+>> +        }]``
+>> +
+>> +Only one child pin can provide it's signal to the parent MUX-type pin at
+>> +a time, the selection is done with requesting change of child pin state
+>> +to ``DPLL_PIN_STATE_CONNECTED`` and providing a target MUX-type pin
+>> +index value in ``DPLL_A_PARENT_PIN_IDX``.
+>> +
+>> +Pin priority
+>> +============
+>> +Some devices might offer a capability of automatic pin selection mode
+>> +(enum value ``DPLL_MODE_AUTOMATIC`` of ``DPLL_A_MODE`` attribute).
+>> +Usually such automatic selection is offloaded to the hardware,
+> 
+> offloaded is a dirty word, s/offloaded to/performed by/
+> 
+>> +which means only pins directly connected to the dpll are capable of
+>> +automatic source pin selection.
+> 
+> s/are capable of/can be used in the/
+> 
+>> +In automatic selection mode, the user cannot manually select a source
+>> +pin for the device, instead the user shall provide all directly
+>> +connected pins with a priority ``DPLL_A_PIN_PRIO``, the device would
+>> +pick a highest priority valid signal and connect with it.
+> 
+> s/connect with it/use it to control the DPLL device/ ?
+> 
+>> +Child pin of MUX-type is not capable of automatic source pin selection,
+>> +in order to configure a source of a MUX-type pin, the user needs to
+>> +request desired pin state of the child pin on the parent - it is done
+>> +with providing additional attribute for pin set state request - index
+>> +of parent pin he wish to propagate its signal to
+>> +(``DPLL_A_PARENT_PIN_IDX``).
+>> +
+>> +
+>> +Configuration commands group
+>> +============================
+>> +
+> 
+> oh and the new lines after headers appear ;)
+> 
+>> +Configuration commands are used to get or dump information about
+> 
+> s/or dump//
+> the netlink ability to query or dump is not something specific to dpll,
+> I wouldn't mention it so many times.
+> 
+>> +registered dpll devices (and pins), as well as set configuration of
+>> +device or pins. As dpll device could not be abstract and reflects real
+> 
+> Missing an article before dpll device, maybe "each dpll device", or 'a
+> dppl device' or 'dpll devices" (plural)
+> 
+> s/could/must/
+> 
+>> +hardware, there is no way to add new dpll device via netlink from user
+>> +space and each device should be registered by it's driver.
+>> +
+>> +All netlink commands require ``GENL_ADMIN_PERM``. This is to prevent
+>> +any spamming/D.o.S. from unauthorized userspace applications.
+> 
+> no dots in DoS
+> 
+>> +In general it is possible to configure multiple parameters at once.
+> 
+> s/In general//
+> Should we say that we don't guarantee the change will be atomic in that
+> case?
+
+I agree, I'll add this explicitly in the next version.
+
+>> +Device driver implementation
+>> +============================
+>> +
+>> +Device is allocated by ``dpll_device_get`` call. Second call with the
+>> +same arguments doesn't create new object but provides pointer to
+>> +previously created device for given arguments, it also increase refcount
+>> +of that object.
+>> +Device is deallocated by ``dpll_device_put`` call, which first decreases
+>> +the refcount, once refcount is cleared the object is destroyed.
+> 
+> You can add () after the function name and render the kdoc at the end
+> of this doc. The `` marking will then be unnecessary.
+> 
+Mmm... any examples of such a way of creating documentation? I was
+following tls*.rst style, but without copying code-blocks.
 
 
