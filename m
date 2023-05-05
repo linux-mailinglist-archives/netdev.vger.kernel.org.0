@@ -1,165 +1,175 @@
-Return-Path: <netdev+bounces-564-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-566-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7DBF76F831F
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 14:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 246136F836C
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 15:02:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AC639280FE6
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 12:39:42 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A020F280FBC
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 13:02:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D9AE079F3;
-	Fri,  5 May 2023 12:39:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7612BA935;
+	Fri,  5 May 2023 13:02:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C417B749C
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 12:39:40 +0000 (UTC)
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2124.outbound.protection.outlook.com [40.107.94.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0F311B4D;
-	Fri,  5 May 2023 05:39:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Uqtmelylh9gYO4lFHk4J5/ljkNX+1NhstJSfNLfja4qsboHZH1G/l51R9reB+tcfMIwydsDOb681kjKTkgjvWXDKJHt4+7OH1hyqBiD1f0c0qL0iuJFnl0LB6MBPk6Wi+BwW8wB3wuAdogPG9MvGLWEIDOn+S359r7UqKfZbpN8OjRX4szMoYx8D3wGZgLoKz8evgjNg35pgLt7kHC53BsoZeXb2JDt/aT/Ccv/PitYzwwbnchIrIFRid0C/n0IKSZrLqyQmm4iU6b2aOWndWtm5jXqa5SzqktmV7UWtygWNXuGbWSn+1hsBzrIo6TyvEtWbISI/NfAiHAAz+x8oHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1IZQlzr3wA2bRfIfuoS+Z2z9pieaEu5jipx/8YyE7jY=;
- b=PI7hq6b6npRyDTJQulw3HwGHldt+ezJQ6eu9kDiEP1iVghtm/hMshnPMhb8D3DK0i1JYuZjxF4BAajuB9cxtmP73LmfGLwMpWrJgw1ufVx4GNZMuf+Ihs+x4flCY8YhjXUwMUjfWxroEVbNgO3vUtm9dzW7/rlTpOGzGHPCFQjisfMtoWjcznllz6rV2mtev/hxvbSKgtttzJ1GxiMh8Y/ZoLCdtFTyW8jYbDHzJiLv3I8RWsBoOJjzjZSSkTOYYfy00hNRuajjcObLHeqYlhRNxDKUab20MK44VpdtzFxuWg82Avx65s/DuzMGtYNVuWLGqLfhAHdNM7RS1ZVOvSA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1IZQlzr3wA2bRfIfuoS+Z2z9pieaEu5jipx/8YyE7jY=;
- b=GZIV8jHyoiR2F1IcYqOyWLSljT+5gpcJQ1lR/KE3zwi99VaKhtnKeXeZZ9Q/qqmhnYbyXEKDgcRNHtk3oih/EYEiyy0/AD3b8aYikhzInnc93SjU0Y52p+yFtNZpNntTBDVbFS8m2kW9ubW57lclhQISZW3wU2cHUREEdBJfrZU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BLAPR13MB4626.namprd13.prod.outlook.com (2603:10b6:208:334::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.27; Fri, 5 May
- 2023 12:39:35 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6363.026; Fri, 5 May 2023
- 12:39:35 +0000
-Date: Fri, 5 May 2023 14:39:25 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Jason Andryuk <jandryuk@gmail.com>
-Cc: Christian Schoenebeck <linux_oss@crudebyte.com>,
-	Eric Van Hensbergen <ericvh@kernel.org>,
-	Latchesar Ionkov <lucho@ionkov.net>,
-	Dominique Martinet <asmadeus@codewreck.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	v9fs@lists.linux.dev, linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH v2] 9p: Remove INET dependency
-Message-ID: <ZFT4/SYt9QUsyHBP@corigine.com>
-References: <20230503141123.23290-1-jandryuk@gmail.com>
- <4317357.pJ3umoczA4@silver>
- <CAKf6xpscky_LLxStzZ6uAyeWPXC3gALsA_zVFpF8X7uktw=MxQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKf6xpscky_LLxStzZ6uAyeWPXC3gALsA_zVFpF8X7uktw=MxQ@mail.gmail.com>
-X-ClientProxiedBy: AM0PR04CA0044.eurprd04.prod.outlook.com
- (2603:10a6:208:1::21) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65E656FBE
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 13:02:38 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F5846B9
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 06:02:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=if6jBNx0TnA3067zHwSDSRmQBzqrtpjXvSP6SUmWnxo=; b=m7Ex3IOL/sBwjg3BRacBHuftfn
+	3kv+T3N5yCAVfO5GMKqvQcrgoGfBFDUQbCU9IOoF774tI2w2IVvZrH4+quPZApNAJ9Fa9HQw31qw+
+	INEw2HY5SuCe514qMloWareU3ZQyd1yXJcMJk5vEKDiKUoEj5D6jRSbi2iLfeCGox9e4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1puv4v-00Bzxn-FR; Fri, 05 May 2023 15:02:29 +0200
+Date: Fri, 5 May 2023 15:02:29 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: Vladimir Oltean <olteanv@gmail.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Steffen =?iso-8859-1?Q?B=E4tz?= <steffen@innosonix.de>,
+	netdev <netdev@vger.kernel.org>
+Subject: Re: mv88e6320: Failed to forward PTP multicast
+Message-ID: <5e21a8da-b31f-4ec8-8b46-099af5a8b8af@lunn.ch>
+References: <CAOMZO5AMOVAZe+w3FiRO-9U98Foba5Oy4f_C0K7bGNxHA1qz_w@mail.gmail.com>
+ <7b8243a3-9976-484c-a0d0-d4f3debbe979@lunn.ch>
+ <CAOMZO5DXH1wS9YYPWXYr-TvM+9Tj8F0bY0_kd_EAjrcCpEJJ7A@mail.gmail.com>
+ <CAOMZO5Dk44QSTg2rh_HPHXg=H7BJ+x1h95M+t8nr2CLW+8pABw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BLAPR13MB4626:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0270a2dd-1ae6-4b0e-49b2-08db4d65c82d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	01c3HdbWuRenYyqvAsgVtJwqDq4VV/WttImF6W1xVoDt1RmDcsrA6LEj/pGwnP3QcRhmheJchvlrAoOP96/Yuhk4gILnnqvKEKQloWyi+pbngB0b+uVgJkjcMivBO4h4UGdLjd/zdaROK4nxf4ES9VSfWHBa7y8KjgCwMqwY2QtawWBOBU2kQk6p87oYvYqATRqOBs9Z4LfNRvcgefH/kri+aq9aDfHtO2pXV09hWlffpB1sPMhOJuxRc6Baq5FRQdDOi2x7tU1CShTGmneNBWDac4k1gklrIxIRsN8khMBJhQm+IR+awzgjg5pZuVyzbsoKzcZQeMgM9AMDiv8CxkcBvOyK4QlM/PefdOyf0Tv8gS7fqjFmrBjcsdMClFssm0mtdbkxA4GfRvEIhRQK9HfoQCzM2YGgXUG8+EBzmppJzSj2PqaPDR9j5MXkOl28XJSt8ba/UGoU6g04MzHA+lUnlq0YMtP+SY5wNucZ2COzWk4O34Ux5WaYqyzfiZIZddTyq7wGJ8a4d5/i4284V+pCZ6wgQaVQGcCHYneGmRgMBBmHKqQWCah77cpRPA6wxftFR01y2sNTlS8kf21s8m//H/JTu9+B4f0YLBkDJcQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(346002)(39830400003)(396003)(376002)(451199021)(36756003)(86362001)(6666004)(54906003)(316002)(6916009)(4326008)(66946007)(66556008)(66476007)(6486002)(478600001)(41300700001)(5660300002)(8676002)(8936002)(2906002)(7416002)(4744005)(44832011)(38100700002)(186003)(2616005)(6506007)(53546011)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UGNvZUxvcmpvVlBYSVM2WEtGSVVuaXJsUllsbmloMDU5V1Y0V0xzdGs3aVFC?=
- =?utf-8?B?V2c2QWRabTZLaXExaFhrR3hYNmhIbEVtT3hXSWxvLzFoeTRsd1dnRnl6cGZI?=
- =?utf-8?B?ZUI0VUZkR0RVNEhsamRjT1V0eW4xQTRKeHIwSjRmdXhoSWZQa3MwTHRGQkd0?=
- =?utf-8?B?ZlQ4QWpocURCUDlvLzMxVC9hYlRGWUNmbGtnM2h4Wk56S090cmJOQXNEVzFw?=
- =?utf-8?B?bTY4RTFLT2JCUkphMkRTdjZMZFd6UUtCL0lpeXR4YlZnUzZiL2dFQlJqekNK?=
- =?utf-8?B?bHlBWlpJR2t5TnpaYnpsL3NDMFNNNDBuSVpmMVpzMmp3elZpdVFSbkU3Y2t6?=
- =?utf-8?B?K2JtSzJnczMxRzVRdDhoczFKV3ovSUVITGxGOG9wZGMwbTk0YXZOc0JrTUkv?=
- =?utf-8?B?UEoyTStLQVV3UmM1Tzk5aHpwdDZVMFJMRkJPZmlEcUVyT2t6dHNWdml1bWQv?=
- =?utf-8?B?ajRQTytxNlRxWUo4bEpTVXBJeXVsWDdEeHRHdjVSVWZjZmtjZHRzZlY4NVdS?=
- =?utf-8?B?N3NlTHowTG1BbGNabTBzV0Z6YjlOdGJVcS9yMEs5MHhxYnRjL29UUGQzUnFI?=
- =?utf-8?B?SGdydzdnN0FGUnRleDJ3aWJ3QjdwUEpMWHBrRnFmRXdOalg0Y3NKa0hLb3lH?=
- =?utf-8?B?OG5uY3UwZXdYZXo2VEN4akRRaTJseURyZW53bGtiMlN2aDZ0WlB1MVRIYVFU?=
- =?utf-8?B?ZEFHZnFLYU1zN1RIUi82MTc1UlMyY21GcmxWKzhrZ1VsZURUMXRLT2wrd2NF?=
- =?utf-8?B?RVdrTG4vemZFcXFGQ3JDaFlkeEZSbU5uSkNPZlpXVllNUEM4RlAyeTJtYzZi?=
- =?utf-8?B?V3J0RWNOZStvdm9pTDJKTDNzbGRsZzM2TDNEb3l3b0hmaHZiMmdZaHk4OW9i?=
- =?utf-8?B?ZG1XQmpBVmtnNXV6ZDBZWUIvc1NKZDMzOGtaNm4vY1B6UVBFUndTQmhIbGdL?=
- =?utf-8?B?ODBxSWRSNW1FY0RaV1pzbXlKcHRqY2hyMDNOd1ZtTkVRWS95OVVuUXNCb0Jo?=
- =?utf-8?B?VmQ0SE1pdFNRZ0xoemhzZ0Q0ZGVaemx3eUs5SGIwME1TS3gzelNnTHpGVGRU?=
- =?utf-8?B?YkZ1NjV2WjR1TnJyeHBmUC80b29vMUE4c3FoMlJTcHcxbmRBWktydVlpWFNo?=
- =?utf-8?B?SGk3WVY5MWU5YVNMWUdPem1EM2JnNVdHdkFVMzJHOEVrY0pTcXhHUkNoSmhw?=
- =?utf-8?B?ZkdIUm9rb0hVcDl5U0ZvLzZ2eHptVE1UVjhJbDNlN3IzMXVmczBZeVF1VXBZ?=
- =?utf-8?B?emJPVnBUYm85WlcxeTk3N3VnMWQ4ZitkOEhaaWV2VU1mVUx3L3RjR1oyT3Zz?=
- =?utf-8?B?WWoydjVibHQvbENZNVJQcCtjSFNyQ2JEaU12ektvK0dINy9henVwbkIwWi9n?=
- =?utf-8?B?LzJjRVJPQnhNWk92L3lEanNCYk43a2dzREs4ZEpsNzExNEN3bmZnSGNPMloz?=
- =?utf-8?B?dzB3NnJCVkdxMVh5RE9XNG5jQzRpcFdIY3ZObDVhOWx1eVB5UUhEVWg1NnNQ?=
- =?utf-8?B?TTByYjFqRU81ckRwNzQ4SXVtb2hRUmJWa005VUgwRlFFTHJHTzI2V0JtNWNU?=
- =?utf-8?B?aXJ1c0JGQlFzY2lLcHVEemZSYzZ0QzdLcnBmRzIvc0dIaTg5Y2I2RlI5V3Uz?=
- =?utf-8?B?REJDQlBNb1pMS3ZNRDdYekJSYkdrVlo3ZnFMQTZMSXZ1UUwwcWRVQzBHZDNG?=
- =?utf-8?B?MFN4aklGQzRjVDlYV3F4di9kZGFZRDhTa2pQUHpSQ3hMTE5Pc3dqYnBFcjFm?=
- =?utf-8?B?RnRsaFp1VEdla3UrR0JKd2JTWTVXVnhuRlo4WGg0QVF1cm5zVUxDSkRzZWhR?=
- =?utf-8?B?bWxyTGhmdUVHbmxFWFNMT0xoaEJsdm5iNUpXUjRMeENVZnd0Z2JLVFdpQmJH?=
- =?utf-8?B?UWlvRU84ZWswTVdGS2VSWEpwZUhValRTNmo2R0dXeS9qc0laOCtxR0QxSkVq?=
- =?utf-8?B?SFVKVEpDWmJnSmJPSkZNZnA1WVhUUHo2Q0RRZUgwdXpUTk4xZXJZbW5jcjNy?=
- =?utf-8?B?L1dwNUF4TWozN3k4THVjajgvMXlPTWVyaU8zKzFTSUptV1NTWTBuTlhWSUx6?=
- =?utf-8?B?UXdGM01Uclc4a3k3MjNObHorZTZ1L0d6MmZhaFVGVmxwRXhhY3h1emNJcXd6?=
- =?utf-8?B?TTBtZnlLa3RRUkpQZVgrRjZNd2ttaDZ4VFQxZTJVZ2hFY0NEVk16WXhXSTZ2?=
- =?utf-8?B?MGdDZ3B2STRoTEVtUE9aRG1pbTZ5cjdlbVhaYUhHY2dZYVd2ZGN3T3MySzRI?=
- =?utf-8?B?S3JibnFTQ2RsaWNmU20zMHVDOHdBPT0=?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0270a2dd-1ae6-4b0e-49b2-08db4d65c82d
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2023 12:39:35.1506
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nPVqKkQv3nkG3byKPgtDTMuo0D0DXr371q3WXBts7LrmTH7MVtgIoB/7EoX4f5vMtuu2g29ct/i77uaGt8KKjVqkqzUgYK2zfXK+GI7zyxk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR13MB4626
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOMZO5Dk44QSTg2rh_HPHXg=H7BJ+x1h95M+t8nr2CLW+8pABw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 04, 2023 at 07:55:17AM -0400, Jason Andryuk wrote:
-> On Thu, May 4, 2023 at 6:58 AM Christian Schoenebeck
-> <linux_oss@crudebyte.com> wrote:
-> >
-> > On Wednesday, May 3, 2023 4:11:20 PM CEST Jason Andryuk wrote:
-> > > 9pfs can run over assorted transports, so it doesn't have an INET
-> > > dependency.  Drop it and remove the includes of linux/inet.h.
-> > >
-> > > NET_9P_FD/trans_fd.o builds without INET or UNIX and is unusable over
-> >
-> > s/unusable/usable/ ?
+> I gave you incorrect information, sorry about that.
 > 
-> Whoops!  Yes, you are correct.  Thanks for catching that.
+> Let me restart and share the test results.
+> 
+> We have made 2 tests. The only difference is the absence of "ip link
+> set dev vswitch0 type bridge vlan_filtering 1" in test 2
 
-That notwithstanding, this looks good to me.
+O.K, so we are back to the switch hardware.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+I notice you have an extra, unneeded, down/up in you script. Is that
+required to produce the problem?
 
+> 
+> Test 1.) No PTP traffic on ETH1 can be sniffed after config
+> ----------------------------------------------------------------------------
+> ip addr del 172.16.42.199/22 dev eth1
+> # Add bridge
+> ip link add name vswitch0 type bridge
+> sleep 1
+> ip link set dev vswitch0 type bridge vlan_filtering 1
+> sleep 1
+> ip link set eth1 master vswitch0
+> ip link set eth2 master vswitch0
+> 
+> sleep 1
+> ip link set eth1 down
+> ip link set eth2 down
+> 
+> sleep 1
+> ip link set vswitch0 up
+> ip link set eth1 up
+> ip link set eth2 up
+> 
+> sleep 1
+> ip addr add 172.16.42.199/22 dev eth1
+> 
+> sleep 1
+> tcpdump -i eth1 dst port 319 or dst port 320
+> ----------- ------------------------------
+> 
+> Test 2.) PTP traffic on ETH1 can be sniffed after config
+> ------------------------------------------------------------------------
+> ip addr del 172.16.42.199/22 dev eth1
+> 
+> # Add bridge
+> ip link add name vswitch0 type bridge
+> 
+> sleep 1
+> ip link set eth1 master vswitch0
+> ip link set eth2 master vswitch0
+> 
+> sleep 1
+> ip link set eth1 down
+> ip link set eth2 down
+> 
+> sleep 1
+> ip link set vswitch0 up
+> ip link set eth1 up
+> ip link set eth2 up
+> 
+> sleep 1
+> ip addr add 172.16.42.199/22 dev eth1
+> 
+> sleep 1
+> tcpdump -i eth1 dst port 319 or dst port 320
+> ----------- ------------------------------
+> 
+> Please find attached the log of PTP sniffing on eth1 from test 2.
+> 
+> There is no such MAC address as 01-80-C2-00-00-0E.
+
+> 08:21:25.544600 00:1d:c1:18:73:fe (oui Unknown) > 01:00:5e:00:01:81 (oui Unknown), ethertype IPv4 (0x0800), length 94: (tos 0xb8, ttl 1, id 0, offset 0, flags [DF], proto UDP (17), length 80)
+>     172.16.41.45.3187 > 224.0.1.129.ptp-general: [udp sum ok] PTPv1 (not implemented)
+
+So some background....
+
+I mention 01-80-C2-00-00-0E because the switch looks for specific
+types of frames and forwards them to the CPU, independent of the
+status of the port. So for example, BPDUs used for spanning tree, use
+a MAC address in the range 01-80-C2-00-00-XX, so the switch forwards
+them to the CPU. PTP using 01-80-C2-00-00-0E would also match and get
+forwarded to the CPU.
+
+You are using 01:00:5e:00:01:81, so that is just general
+multicast. The hardware matching for PTP is probably not going to
+match on that.
+
+What might also be playing a role here, maybe, is IGMP snooping. Does
+your downstream PTP client issue IGMP join requests for the group, and
+does the Linux bridge see them? If IGMP snooping is active, and there
+is no IGMP signalling, there is no need to actually forward the PTP
+frames, since nobody is interested in them. If there is a client
+interested in the traffic, you would expect to see a multicast FDB
+entry added to the switch in order that it forwards the multicast to
+the CPU. However, this does not really fit the vlan_filtering.
+
+When i look at your tcpdump traffic, i don't see a VLAN for your PTP
+traffic. So i'm assuming it is untagged. You also don't appear to be
+setting a default VLAN PVID. If you define it, untagged traffic gets
+tagged on ingress and is then handled like tagged traffic.
+
+So this is probably why your traffic is dropped. Try:
+
+ip link set dev vswitch0 type bridge vlan_filtering 1 vlan_default_pvid 42
+
+So that untagged traffic gets tagged as VLAN 42.
+
+I'm not too familiar with all this VLAN stuff. So i could be telling
+your wrong information.... 'self' is also importing in way's i don't
+really understand. Vladimir and Tobias are the experts here.
+
+   Andrew
 
