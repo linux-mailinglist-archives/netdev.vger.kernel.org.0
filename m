@@ -1,417 +1,133 @@
-Return-Path: <netdev+bounces-516-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-520-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 39A746F7DF9
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 09:34:09 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 75D5C6F7E5A
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 10:06:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ABE37280FAC
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 07:34:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A98DC1C2173E
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 08:06:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E6921C2B;
-	Fri,  5 May 2023 07:31:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D90BA4C92;
+	Fri,  5 May 2023 08:06:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 138C4156EF
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 07:31:43 +0000 (UTC)
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4715217FF1
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 00:31:31 -0700 (PDT)
-X-QQ-mid: bizesmtp75t1683271780twqcy74p
-Received: from wxdbg.localdomain.com ( [36.24.99.3])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 05 May 2023 15:29:39 +0800 (CST)
-X-QQ-SSF: 01400000000000I0Z000000A0000000
-X-QQ-FEAT: RmDZc/K2LPE4RaE4Uq6JKwhHuNGW512GpCL4OINCGKFm8m/llPDcO8MU97dS1
-	aQffaEEJb+phNinlDRnvOwrG27kuxkLJ2O1fwfIJDiguoQBqukyioHc210kt6gnbUM1LXVo
-	EyTTYUoF8Grj3yU+NURpy/nCaLxiSdH1gC2Dy+8xNLj66XinkUvZcf7xE1rjbw6ePS9iLdf
-	MNdgTi6EViv/8SqCoJrX/msy8Xuc+Z35k/PF2/loy/NK7T+fhOEkzxKBxzy6VHxjo+/xeMS
-	142oHBvEgPwxK7NYEsZaOpHH0AphPNad1sPJT1DwED5Maps9d/bwe+jnk0y3qGO5fhAOAMq
-	ik9x5oOJjZ2Q3ecDIkrPiC2m72dhPOfG0ahBoaFPd74rBT1mWqRA6oYnTZFdXRKQfUSMhzt
-	8fglHsLRkod3UqAdMCqIQQ==
-X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 3727653971484972568
-From: Jiawen Wu <jiawenwu@trustnetic.com>
-To: netdev@vger.kernel.org,
-	jarkko.nikula@linux.intel.com,
-	andriy.shevchenko@linux.intel.com,
-	mika.westerberg@linux.intel.com,
-	jsd@semihalf.com,
-	Jose.Abreu@synopsys.com,
-	andrew@lunn.ch,
-	hkallweit1@gmail.com,
-	linux@armlinux.org.uk
-Cc: linux-i2c@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	mengyuanlou@net-swift.com,
-	Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [RFC PATCH net-next v6 9/9] net: txgbe: Support phylink MAC layer
-Date: Fri,  5 May 2023 15:42:28 +0800
-Message-Id: <20230505074228.84679-10-jiawenwu@trustnetic.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20230505074228.84679-1-jiawenwu@trustnetic.com>
-References: <20230505074228.84679-1-jiawenwu@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C81BE185F
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 08:06:24 +0000 (UTC)
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420C417FEE
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 01:06:23 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-50bceaf07b8so2755867a12.3
+        for <netdev@vger.kernel.org>; Fri, 05 May 2023 01:06:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683273982; x=1685865982;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=OQO9GYfoHR6v1wHD1SYJTb+uKa+0Nagnqvl5fRP9gAI=;
+        b=B4/XH9pNgJf799/Y3A3ZQrs8OS694RPV08fNlPYBylNm3ZZSRYWvwUVXaurUycjA98
+         qBSDdwNE+s2roQmRredqGRfCiumzPSjJMAw3Rc9s8Xk4bZYszWRg7scsxw54rHn43GnG
+         Y4XUWwiZ61jqBCJ59Reg4WaY9/P6eboTP78SzYHs5pW5yohxVUvST1ZajwfFrDS7gO6D
+         1VssYkaClHB/tFpgW5Qqppr9L0NfPkJrRVc+obNDcebUhfnL3PXTF4m1bZ3mM7urVb7G
+         FznlW0cNf24Q1e7UKsyQt+Z5NsogQdxKkq3mJ6f1FVKZINd2fqevhb1QACnQAUzMeMyd
+         Rdng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683273982; x=1685865982;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OQO9GYfoHR6v1wHD1SYJTb+uKa+0Nagnqvl5fRP9gAI=;
+        b=M1Y+ek/UsdqTtHiihxfvQ3rq8q6A2YFsq2YWpyp6O5X4++cL4Y8DcrX0jcHfifYP+Y
+         n/K3NK8AgDS1W5ATWB7uz2PYS5xIzd3FCSkryGKEUhGGfpAl2Sfv+cCt3SsKa+nqaTk2
+         DVTeqFMcAIZoxFaaO0zO9FUFleBgaFTCQwYqFqKsNZWL5n14zD9eYYwDGSZex+yVwm9U
+         OASI0o9zaaO1Wj3pjkUvwOCPvCSBQG7CYyOsNQCSUwCUZKi/9R7mjvM5Ifo0yIg1qBcY
+         RnLdZGasWX2hlteXoRIbjZjGh4jQDp+H/2iuVRUjqgJ1KyWAImE9JJbRM8QjOfsuohfC
+         joFA==
+X-Gm-Message-State: AC+VfDz83lyWQfmIqCBls1FTXADAFViRjwwo0ou0y+ICEJaMF5ACuarg
+	bxL2EgH+SKVkd5rzItLXgns=
+X-Google-Smtp-Source: ACHHUZ7sYz5EISJlOIo3r2jQ6+gqM6fCr4Of5HxKSunmjDpBLIn1hcrE5PYoRJ19hxHcLjh4NtfdcA==
+X-Received: by 2002:aa7:cf92:0:b0:50b:c3a3:be7c with SMTP id z18-20020aa7cf92000000b0050bc3a3be7cmr588573edx.30.1683273981659;
+        Fri, 05 May 2023 01:06:21 -0700 (PDT)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id h21-20020a170906719500b0095952f1b1b7sm603406ejk.201.2023.05.05.01.06.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 May 2023 01:06:21 -0700 (PDT)
+Date: Fri, 5 May 2023 09:06:18 +0100
+From: Martin Habets <habetsm.xilinx@gmail.com>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+	edumazet@google.com, netdev@vger.kernel.org, ecree.xilinx@gmail.com,
+	linux-net-drivers@amd.com
+Subject: Re: [PATCH net] sfc: Add back mailing list
+Message-ID: <ZFS4+g1GzU+d7/ZS@gmail.com>
+Mail-Followup-To: Leon Romanovsky <leon@kernel.org>, davem@davemloft.net,
+	kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+	netdev@vger.kernel.org, ecree.xilinx@gmail.com,
+	linux-net-drivers@amd.com
+References: <168318528134.31137.11625787711228662726.stgit@palantir17.mph.net>
+ <20230504081049.GU525452@unreal>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230504081049.GU525452@unreal>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add phylink support to Wangxun 10Gb Ethernet controller for the 10GBASE-R
-interface.
+On Thu, May 04, 2023 at 11:10:49AM +0300, Leon Romanovsky wrote:
+> On Thu, May 04, 2023 at 08:28:01AM +0100, Martin Habets wrote:
+> > We used to have a mailing list in the MAINTAINERS file, but removed this
+> > when we became part of Xilinx as it stopped working.
+> > Now inside AMD we have the list again. Add it back so patches will be seen
+> > by all sfc developers.
+> 
+> They are invited to join netdev community and read mailing list directly.
 
-Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
----
- drivers/net/ethernet/wangxun/Kconfig          |   1 +
- .../ethernet/wangxun/txgbe/txgbe_ethtool.c    |  28 +++++
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  23 ++--
- .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 113 +++++++++++++++++-
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |   5 +
- 5 files changed, 154 insertions(+), 16 deletions(-)
+We're not all using lore and lei yet. Until we are this list helps us
+respond quicker to emails.
 
-diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
-index f3fb273e6fd0..2ca163f07359 100644
---- a/drivers/net/ethernet/wangxun/Kconfig
-+++ b/drivers/net/ethernet/wangxun/Kconfig
-@@ -46,6 +46,7 @@ config TXGBE
- 	select REGMAP
- 	select COMMON_CLK
- 	select PCS_XPCS
-+	select PHYLINK
- 	select LIBWX
- 	select SFP
- 	help
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
-index d914e9a05404..859da112586a 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
-@@ -6,11 +6,39 @@
- #include <linux/netdevice.h>
- 
- #include "../libwx/wx_ethtool.h"
-+#include "../libwx/wx_type.h"
-+#include "txgbe_type.h"
- #include "txgbe_ethtool.h"
- 
-+static int txgbe_nway_reset(struct net_device *netdev)
-+{
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
-+
-+	return phylink_ethtool_nway_reset(txgbe->phylink);
-+}
-+
-+static int txgbe_get_link_ksettings(struct net_device *netdev,
-+				    struct ethtool_link_ksettings *cmd)
-+{
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
-+
-+	return phylink_ethtool_ksettings_get(txgbe->phylink, cmd);
-+}
-+
-+static int txgbe_set_link_ksettings(struct net_device *netdev,
-+				    const struct ethtool_link_ksettings *cmd)
-+{
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
-+
-+	return phylink_ethtool_ksettings_set(txgbe->phylink, cmd);
-+}
-+
- static const struct ethtool_ops txgbe_ethtool_ops = {
- 	.get_drvinfo		= wx_get_drvinfo,
-+	.nway_reset		= txgbe_nway_reset,
- 	.get_link		= ethtool_op_get_link,
-+	.get_link_ksettings	= txgbe_get_link_ksettings,
-+	.set_link_ksettings	= txgbe_set_link_ksettings,
- };
- 
- void txgbe_set_ethtool_ops(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index ded04e9e136f..bdf735e863eb 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -7,6 +7,7 @@
- #include <linux/netdevice.h>
- #include <linux/string.h>
- #include <linux/etherdevice.h>
-+#include <linux/phylink.h>
- #include <net/ip.h>
- #include <linux/if_vlan.h>
- 
-@@ -204,7 +205,8 @@ static int txgbe_request_irq(struct wx *wx)
- 
- static void txgbe_up_complete(struct wx *wx)
- {
--	u32 reg;
-+	struct net_device *netdev = wx->netdev;
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
- 
- 	wx_control_hw(wx, true);
- 	wx_configure_vectors(wx);
-@@ -213,24 +215,16 @@ static void txgbe_up_complete(struct wx *wx)
- 	smp_mb__before_atomic();
- 	wx_napi_enable_all(wx);
- 
-+	phylink_start(txgbe->phylink);
-+
- 	/* clear any pending interrupts, may auto mask */
- 	rd32(wx, WX_PX_IC(0));
- 	rd32(wx, WX_PX_IC(1));
- 	rd32(wx, WX_PX_MISC_IC);
- 	txgbe_irq_enable(wx, true);
- 
--	/* Configure MAC Rx and Tx when link is up */
--	reg = rd32(wx, WX_MAC_RX_CFG);
--	wr32(wx, WX_MAC_RX_CFG, reg);
--	wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
--	reg = rd32(wx, WX_MAC_WDG_TIMEOUT);
--	wr32(wx, WX_MAC_WDG_TIMEOUT, reg);
--	reg = rd32(wx, WX_MAC_TX_CFG);
--	wr32(wx, WX_MAC_TX_CFG, (reg & ~WX_MAC_TX_CFG_SPEED_MASK) | WX_MAC_TX_CFG_SPEED_10G);
--
- 	/* enable transmits */
--	netif_tx_start_all_queues(wx->netdev);
--	netif_carrier_on(wx->netdev);
-+	netif_tx_start_all_queues(netdev);
- }
- 
- static void txgbe_reset(struct wx *wx)
-@@ -264,7 +258,6 @@ static void txgbe_disable_device(struct wx *wx)
- 		wx_disable_rx_queue(wx, wx->rx_ring[i]);
- 
- 	netif_tx_stop_all_queues(netdev);
--	netif_carrier_off(netdev);
- 	netif_tx_disable(netdev);
- 
- 	wx_irq_disable(wx);
-@@ -295,8 +288,12 @@ static void txgbe_disable_device(struct wx *wx)
- 
- static void txgbe_down(struct wx *wx)
- {
-+	struct net_device *netdev = wx->netdev;
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
-+
- 	txgbe_disable_device(wx);
- 	txgbe_reset(wx);
-+	phylink_stop(txgbe->phylink);
- 
- 	wx_clean_all_tx_rings(wx);
- 	wx_clean_all_rx_rings(wx);
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-index 5276c66486f5..d22d1c222564 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-@@ -10,11 +10,13 @@
- #include <linux/clkdev.h>
- #include <linux/clk-provider.h>
- #include <linux/pcs/pcs-xpcs.h>
-+#include <linux/phylink.h>
- #include <linux/mdio.h>
- #include <linux/i2c.h>
- #include <linux/pci.h>
- 
- #include "../libwx/wx_type.h"
-+#include "../libwx/wx_lib.h"
- #include "../libwx/wx_hw.h"
- #include "txgbe_type.h"
- #include "txgbe_phy.h"
-@@ -156,6 +158,95 @@ static int txgbe_mdio_pcs_init(struct txgbe *txgbe)
- 	return 0;
- }
- 
-+static struct phylink_pcs *txgbe_phylink_mac_select(struct phylink_config *config,
-+						    phy_interface_t interface)
-+{
-+	struct txgbe *txgbe = netdev_to_txgbe(to_net_dev(config->dev));
-+
-+	return &txgbe->xpcs->pcs;
-+}
-+
-+static void txgbe_mac_config(struct phylink_config *config, unsigned int mode,
-+			     const struct phylink_link_state *state)
-+{
-+}
-+
-+static void txgbe_mac_link_down(struct phylink_config *config,
-+				unsigned int mode, phy_interface_t interface)
-+{
-+	struct wx *wx = netdev_priv(to_net_dev(config->dev));
-+
-+	wr32m(wx, WX_MAC_TX_CFG, WX_MAC_TX_CFG_TE, 0);
-+}
-+
-+static void txgbe_mac_link_up(struct phylink_config *config,
-+			      struct phy_device *phy,
-+			      unsigned int mode, phy_interface_t interface,
-+			      int speed, int duplex,
-+			      bool tx_pause, bool rx_pause)
-+{
-+	struct wx *wx = netdev_priv(to_net_dev(config->dev));
-+	u32 txcfg, wdg;
-+
-+	txcfg = rd32(wx, WX_MAC_TX_CFG);
-+	txcfg &= ~WX_MAC_TX_CFG_SPEED_MASK;
-+
-+	switch (speed) {
-+	case SPEED_10000:
-+		txcfg |= WX_MAC_TX_CFG_SPEED_10G;
-+		break;
-+	case SPEED_1000:
-+	case SPEED_100:
-+	case SPEED_10:
-+		txcfg |= WX_MAC_TX_CFG_SPEED_1G;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	wr32(wx, WX_MAC_TX_CFG, txcfg | WX_MAC_TX_CFG_TE);
-+
-+	/* Re configure MAC Rx */
-+	wr32m(wx, WX_MAC_RX_CFG, WX_MAC_RX_CFG_RE, WX_MAC_RX_CFG_RE);
-+	wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
-+	wdg = rd32(wx, WX_MAC_WDG_TIMEOUT);
-+	wr32(wx, WX_MAC_WDG_TIMEOUT, wdg);
-+}
-+
-+static const struct phylink_mac_ops txgbe_mac_ops = {
-+	.mac_select_pcs = txgbe_phylink_mac_select,
-+	.mac_config = txgbe_mac_config,
-+	.mac_link_down = txgbe_mac_link_down,
-+	.mac_link_up = txgbe_mac_link_up,
-+};
-+
-+static int txgbe_phylink_init(struct txgbe *txgbe)
-+{
-+	struct phylink_config *config;
-+	struct fwnode_handle *fwnode;
-+	struct wx *wx = txgbe->wx;
-+	phy_interface_t phy_mode;
-+	struct phylink *phylink;
-+
-+	config = devm_kzalloc(&wx->pdev->dev, sizeof(*config), GFP_KERNEL);
-+	if (!config)
-+		return -ENOMEM;
-+
-+	config->dev = &wx->netdev->dev;
-+	config->type = PHYLINK_NETDEV;
-+	config->mac_capabilities = MAC_10000FD | MAC_1000FD | MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
-+	phy_mode = PHY_INTERFACE_MODE_10GBASER;
-+	__set_bit(PHY_INTERFACE_MODE_10GBASER, config->supported_interfaces);
-+	fwnode = software_node_fwnode(txgbe->nodes.group[SWNODE_PHYLINK]);
-+	phylink = phylink_create(config, fwnode, phy_mode, &txgbe_mac_ops);
-+	if (IS_ERR(phylink))
-+		return PTR_ERR(phylink);
-+
-+	txgbe->phylink = phylink;
-+
-+	return 0;
-+}
-+
- static int txgbe_gpio_get(struct gpio_chip *chip, unsigned int offset)
- {
- 	struct wx *wx = gpiochip_get_data(chip);
-@@ -302,7 +393,9 @@ static void txgbe_irq_handler(struct irq_desc *desc)
- 	irq_hw_number_t hwirq;
- 	unsigned long gpioirq;
- 	struct gpio_chip *gc;
--	u32 gpio;
-+	u32 gpio, eicr, reg;
-+
-+	eicr = wx_misc_isb(wx, WX_ISB_MISC);
- 
- 	chained_irq_enter(chip, desc);
- 
-@@ -319,6 +412,11 @@ static void txgbe_irq_handler(struct irq_desc *desc)
- 
- 	chained_irq_exit(chip, desc);
- 
-+	if (eicr & (TXGBE_PX_MISC_ETH_LK | TXGBE_PX_MISC_ETH_LKDN)) {
-+		reg = rd32(wx, TXGBE_CFG_PORT_ST);
-+		phylink_mac_change(txgbe->phylink, !!(reg & TXGBE_CFG_PORT_ST_LINK_UP));
-+	}
-+
- 	/* unmask interrupt */
- 	if (netif_running(wx->netdev))
- 		wx_intr_enable(wx, TXGBE_INTR_MISC(wx));
-@@ -494,16 +592,22 @@ int txgbe_init_phy(struct txgbe *txgbe)
- 		goto err_unregister_swnode;
- 	}
- 
-+	ret = txgbe_phylink_init(txgbe);
-+	if (ret) {
-+		wx_err(txgbe->wx, "failed to init phylink\n");
-+		goto err_destroy_xpcs;
-+	}
-+
- 	ret = txgbe_gpio_init(txgbe);
- 	if (ret) {
- 		wx_err(txgbe->wx, "failed to init gpio\n");
--		goto err_destroy_xpcs;
-+		goto err_destroy_phylink;
- 	}
- 
- 	ret = txgbe_clock_register(txgbe);
- 	if (ret) {
- 		wx_err(txgbe->wx, "failed to register clock: %d\n", ret);
--		goto err_destroy_xpcs;
-+		goto err_destroy_phylink;
- 	}
- 
- 	ret = txgbe_i2c_register(txgbe);
-@@ -525,6 +629,8 @@ int txgbe_init_phy(struct txgbe *txgbe)
- err_unregister_clk:
- 	clkdev_drop(txgbe->clock);
- 	clk_unregister(txgbe->clk);
-+err_destroy_phylink:
-+	phylink_destroy(txgbe->phylink);
- err_destroy_xpcs:
- 	xpcs_destroy(txgbe->xpcs);
- err_unregister_swnode:
-@@ -539,6 +645,7 @@ void txgbe_remove_phy(struct txgbe *txgbe)
- 	platform_device_unregister(txgbe->i2c_dev);
- 	clkdev_drop(txgbe->clock);
- 	clk_unregister(txgbe->clk);
-+	phylink_destroy(txgbe->phylink);
- 	xpcs_destroy(txgbe->xpcs);
- 	software_node_unregister_node_group(txgbe->nodes.group);
- }
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index 75b9c7ae3c21..a889f340b14d 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -80,6 +80,10 @@
- 				TXGBE_PX_MISC_INT_ERR | \
- 				TXGBE_PX_MISC_GPIO)
- 
-+/* Port cfg registers */
-+#define TXGBE_CFG_PORT_ST                       0x14404
-+#define TXGBE_CFG_PORT_ST_LINK_UP               BIT(0)
-+
- /* I2C registers */
- #define TXGBE_I2C_BASE                          0x14900
- 
-@@ -180,6 +184,7 @@ struct txgbe {
- 	struct txgbe_nodes nodes;
- 	struct mdio_device *mdiodev;
- 	struct dw_xpcs *xpcs;
-+	struct phylink *phylink;
- 	struct platform_device *sfp_dev;
- 	struct platform_device *i2c_dev;
- 	struct clk_lookup *clock;
--- 
-2.27.0
+> 
+> > 
+> > Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
+> > ---
+> >  MAINTAINERS |    1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index ebd26b3ca90e..dcab6b41ad8d 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -18987,6 +18987,7 @@ SFC NETWORK DRIVER
+> >  M:	Edward Cree <ecree.xilinx@gmail.com>
+> >  M:	Martin Habets <habetsm.xilinx@gmail.com>
+> >  L:	netdev@vger.kernel.org
+> > +L:	linux-net-drivers@amd.com
+> 
+> Is this open list or we will get bounce messages every time we send to it?
 
+We've been using this and other open lists we have for several months now
+and have not noticed any bounces. This list is as open as the old one we've
+had since 2009.
+
+> 
+> Thanks
+> 
+> >  S:	Supported
+> >  F:	Documentation/networking/devlink/sfc.rst
+> >  F:	drivers/net/ethernet/sfc/
+> > 
+> > 
+> > 
 
