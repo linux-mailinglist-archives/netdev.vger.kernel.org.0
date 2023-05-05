@@ -1,127 +1,164 @@
-Return-Path: <netdev+bounces-590-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-591-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id ADEEB6F85C5
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 17:31:23 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id EE91E6F85EA
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 17:35:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F34451C218E0
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 15:31:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E9C4E1C215B6
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 15:35:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91C12C2C9;
-	Fri,  5 May 2023 15:31:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E1B0C2D5;
+	Fri,  5 May 2023 15:35:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FB146FAE;
-	Fri,  5 May 2023 15:31:18 +0000 (UTC)
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6BC180;
-	Fri,  5 May 2023 08:30:53 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id 2adb3069b0e04-4f14ec8d72aso140216e87.1;
-        Fri, 05 May 2023 08:30:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683300652; x=1685892652;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gYNlJmAOtKtfCnorNb9MVLj9uuZyFnPCEwDPQXYr3J0=;
-        b=N3lxpxjdqxeax2LBueQJL04Eay58+TdawdWIDQjiNSM1Tf9JXjeS+AxanPXBHv7z6k
-         Iwbuo8nDYr5ikG94DjUdqyZfaqjKm4k6ZkAUEywTlV+rJJyNOnA9hwX2o/PY2cN+iiLf
-         /5vLZOnioON+Ai2ax9Gc9EdhVBRhwZhFnKRLMmxcDfE3jnp7ubHk0FhdPEjVzZqL+1hu
-         nPgiY6C/TnQGb5V/gTbi8TnxCBAf0cWxxxCbFWO7RKU1aggkJryymmJ4kf8vcXigp2gI
-         69/gwJNmRyIdIpwXrGjQd/m+Q48r0ubRnDYFYPZv81IDDJGMuQRr9Bj+v6c8/GX7XusH
-         QLfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683300652; x=1685892652;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gYNlJmAOtKtfCnorNb9MVLj9uuZyFnPCEwDPQXYr3J0=;
-        b=BAmrPFMWycSXzALMUEXxguUQXPopqTMJpG/UOgBVkZRhh2xMdYoEgsMVqFGBfrsUfK
-         dMd4GlN2LsVqqtT2/Hy0qHe/NJKaAzX0bmovrWTjcL8pQSeo140JDdMsqTjjQQl2qZDP
-         oa8MVA6x2VGqTEI0F9sDzsLFF0x1XyXWr6rVKDD0Ahyw/XdrVUkDuAuiergKB2uR9om2
-         5vOg/OGLh37DhXRh82K0uXuKZiWYvNBQrzOxbu2SjWGeD8wRMqsibsWOkmFDiN40nd2i
-         dS4C4ELZeQMRL5beWSnOlTlPvgXPKOxBc7M3K1QZ2ooRmXRRtMYXbFaq3/hNz00gtwes
-         kApQ==
-X-Gm-Message-State: AC+VfDwkAOZFp4RwGTWc+xJFaD7M0sSHx1gkPzdXziONS7OoJ9LvmHQp
-	pm2rUsCR9w11IgZwEvxCGkRMeU4/fcdRHuhfLfkmeMQehFE=
-X-Google-Smtp-Source: ACHHUZ4bBjtxh9txrK2d45mebtAIPEiJjgOB+YyAj55cXoaJnoRQxw+4Pe8gKVrged1LXNOUxt7lNWf0h7guf6E6Ojc=
-X-Received: by 2002:ac2:41c1:0:b0:4ef:bcb6:a74c with SMTP id
- d1-20020ac241c1000000b004efbcb6a74cmr660754lfi.61.1683300651984; Fri, 05 May
- 2023 08:30:51 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 295485383
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 15:35:16 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2047.outbound.protection.outlook.com [40.107.220.47])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3958AD09;
+	Fri,  5 May 2023 08:35:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P3paf9vh5M2ebimmGbkTykqJWNZi64RYIVoR3Ig6DpVCFspjUv7dWqexTKkZEX9tFX+5a9LHc/QaqNMdnoxWTl622BblL+AthV2lUXxViGDYCwRy0GvIQdBzb18n0nSHemNJCcDXleGRcohuwYrENpyfwFsfXqCzgwn805knC3vjpLCgUkJ8rn3Oyk1KlX+/O3KxYSfWWEvSHrJrFvL02J7MZVY7vxLkyws6RoIRKCtkG2Stw1cbYG+F4K1qlh86ABdpJHmvgv7+H6lUP86HqjAlrc60Hi2vDeZS6RhZ9bK7jEGPDpBHa/7tvdIF8Ae9apOuZRgM/7UNgRuBtjyWwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LBmVE/2E6j17oMUvH9Y/RSpJKvJbaX1M+s3/D6oDoN4=;
+ b=a7OC956IA859i/bVdOv5sWU4ummPHF1HcAscO9w8yCq85cej/BhdfxYYaUkvqcYMxs8Lz1UD1pt2DCHZXnTZ0EO5fc1/J77oaV8L4oU4N/GdoBk0PnyVi3GacLU1fI8GAZ/F9E5EF7YUGyRnwCI02XqNDedfbJtztprpqcE9bvdX58nB0rVo83bDbS/ylXGiianWf4kQjfakUpbmQ9kNW+nMKPiZ7HfwdjNIKMoJkRbp5+E0C+p0iWw+DA/1tvX5IU4UPpkALTi/xPolUmJI6Bd4W06A4qs1gJGPRSrb0nf7HJbFCRzfKwxzXNa9BsVnyzNSelxHvnlh3fshYqxS2Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LBmVE/2E6j17oMUvH9Y/RSpJKvJbaX1M+s3/D6oDoN4=;
+ b=sXgzmzXDsE6dCEzvgRIAc67C9CG8b1UcyelZ8616dn7HDVEZrS6GcJ94Dc3x2KEF9jNtXD8BfazrOPkWGl4CGkwriSZUI63ol+Rw4fG4ok2EuGsS+X6jD4Zyhnf0djDZkiBCUsnqFaveoKmJrzgFyyjLxJEvuDEc56Ar1PBKbxM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH0PR12MB7982.namprd12.prod.outlook.com (2603:10b6:510:28d::5)
+ by PH7PR12MB6739.namprd12.prod.outlook.com (2603:10b6:510:1aa::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.26; Fri, 5 May
+ 2023 15:35:05 +0000
+Received: from PH0PR12MB7982.namprd12.prod.outlook.com
+ ([fe80::e19e:fb58:51b2:447f]) by PH0PR12MB7982.namprd12.prod.outlook.com
+ ([fe80::e19e:fb58:51b2:447f%5]) with mapi id 15.20.6363.026; Fri, 5 May 2023
+ 15:35:05 +0000
+Message-ID: <8146fc21-9fdd-37fd-434a-c5705934d4a4@amd.com>
+Date: Fri, 5 May 2023 08:35:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v9 vfio 2/7] vfio/pds: Initial support for pds_vfio VFIO
+ driver
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Brett Creeley <brett.creeley@amd.com>
+Cc: kvm@vger.kernel.org, netdev@vger.kernel.org, alex.williamson@redhat.com,
+ yishaih@nvidia.com, shameerali.kolothum.thodi@huawei.com,
+ kevin.tian@intel.com, shannon.nelson@amd.com, drivers@pensando.io
+References: <20230422010642.60720-1-brett.creeley@amd.com>
+ <20230422010642.60720-3-brett.creeley@amd.com> <ZFPq0xdDWKYFDcTz@nvidia.com>
+From: Brett Creeley <bcreeley@amd.com>
+In-Reply-To: <ZFPq0xdDWKYFDcTz@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR05CA0071.namprd05.prod.outlook.com
+ (2603:10b6:a03:74::48) To PH0PR12MB7982.namprd12.prod.outlook.com
+ (2603:10b6:510:28d::5)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230502165754.16728-1-will@kernel.org> <2cb24299-5322-6482-024a-427024f03b7d@meta.com>
-In-Reply-To: <2cb24299-5322-6482-024a-427024f03b7d@meta.com>
-From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date: Fri, 5 May 2023 08:30:40 -0700
-Message-ID: <CAADnVQ+m_jJHTpYDvOuD1LOvgKgGPD5VHfUobMa3NF+uyu7Sbg@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Fix mask generation for 32-bit narrow loads of
- 64-bit fields
-To: Yonghong Song <yhs@meta.com>
-Cc: Will Deacon <will@kernel.org>, bpf <bpf@vger.kernel.org>, 
-	LKML <linux-kernel@vger.kernel.org>, Network Development <netdev@vger.kernel.org>, 
-	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
-	John Fastabend <john.fastabend@gmail.com>, Krzesimir Nowak <krzesimir@kinvolk.io>, 
-	Yonghong Song <yhs@fb.com>, Andrey Ignatov <rdna@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR12MB7982:EE_|PH7PR12MB6739:EE_
+X-MS-Office365-Filtering-Correlation-Id: 486d583b-383a-42d0-3c6e-08db4d7e4cae
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	qK2pUbwXWQD7bCc6e+IC4ufNhzxni7W3/a2p0i4rgk5tgQeQ0tEMbbs/bkwS0P1NIqorbcOgZTGX1ywMT8XGVrbSsSOkTNm29hJKliZYXL4o4LDbRBFwFqamhquQWNMCa6u8Pi5DG20UAMHEBsZZjsujkuP34ZlqR9LIhFqChr59wtbIS8YsUOjZIxS8ac1xh0ucMUD0ksPDAARhCwJTYl+xZ/83S9YOK01cyPhKGVDWldhG6V8aFhCZO0zv9mBJMBu0E8cTAM+nuT9vxhutFbKgX2e8rq/kUyFuL0ziFXYx20+pHus+f2RhlTGOSc92PBkHjEcnjGRsazndY4UjI8YmF4CzplJ8D6mrSy2/r+ek8Sn93QGQoYGegU+B0qioZQERIi4MLiqDP3NC4lAm7WEO+b2pNo4nU4IaBVLyNe5f44bf+XeXjP8JRYa+yuBdbLxxDqjH9TssWs69c67LLFhvvN+RzFBfCJ1wKERplet1z+t+3VNdHJxwckFMXmvMSmLnjeIw+E03VyNxIC2ZZt+Q0lT5kPjwCI6DN4ymE9LLyiiIitQ1YcOijwAtZ5eQqTvG97Bml01ny36T6VYiB8K2sd8trgaSiVbQ1BWYRifg/otMOz0pq2Y59R0T/hgyAX4/8zvnEkFNRuNIVfrkKg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB7982.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(366004)(376002)(39860400002)(451199021)(316002)(66556008)(8676002)(5660300002)(8936002)(2616005)(4326008)(4744005)(6636002)(66946007)(66476007)(31696002)(83380400001)(2906002)(31686004)(186003)(6512007)(26005)(53546011)(6506007)(6486002)(36756003)(38100700002)(41300700001)(478600001)(110136005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Ym01cXcwZU00M3l2NWRuaFN0VlladjNsTENLd1B1eDBKNFR2K0g1VkFPS1Jj?=
+ =?utf-8?B?R0YyaVRrOHlVcEV5MTArZFF2MUR6V2lscW16M1ZON1hhcllPdVEzYy9kRncx?=
+ =?utf-8?B?czNUNzczYVc0bmN0b1FQdFFTMjN2a29zdUY4c0VtN0FmV3Q3MTFrc0xjR21v?=
+ =?utf-8?B?cXE2MS9YKy90RkFrYThDUTFPTmJwT0Rwd2lKQTRyblBSMmtQWS9wRnZWdGRW?=
+ =?utf-8?B?VnBzV3d2MHFNbE4yem13cVM3K1pOTGRHWjVuVDN4QUt2eGdRbmhLVWpUVWEy?=
+ =?utf-8?B?KzdWTm80eGRCOUxVMmg3MWVib3dFU1p1NGgxTkVJVGhnQno5MW4vNjI2WlVE?=
+ =?utf-8?B?NDBDalFxK091ZTA2dFVQejBJT2xHSThSdVZLUm9HRktuSzIyWldyamJwQWs1?=
+ =?utf-8?B?S0h4Ti8vVW9TYlpZNnZwWXgrSWhhaGtUVHBHMjdKZklqN0E1bGNmR1RBWEtC?=
+ =?utf-8?B?c2gxNWM4VGN3cThoLzQ1SUE5Vm43eklSMzdlWitRUmJVWTA0UitEbWRwMlJR?=
+ =?utf-8?B?dzZhWHg3cFI2dk1QN1J4bmRnTzU3VWJLR1R1UExFK1F1dmg4a3VZSDNTTkNn?=
+ =?utf-8?B?ejdXMm1NM1JzN2tyS3FlOTFyMzk1VUVIaU9ITjk1Y1RlS2JNQWg2WXVWYUow?=
+ =?utf-8?B?U3huNE16ZlhaT05CNUpZcFd0VEVoQmJwbExRckZ5eGQyMHdINXo4dFlTM2Ur?=
+ =?utf-8?B?MnNxRzVMN25jd0szNVhFeHNZYkNwZ3NISVozL084YTdydTZrS1hpbGU0cXA2?=
+ =?utf-8?B?NXZaRk5KY1FZM0tOaUx1TDhEMHdmRllKdmFVb3B0Z3N0Vm5kVmNidkhoL0kz?=
+ =?utf-8?B?UjNxTktmWnE3bTVISHMzdWlpc3ZOQUNVVTVTeGVwZENyT3hsbFZjeFYvbUN1?=
+ =?utf-8?B?dG1QSXV4SjhaZzhQenJHcXAxa2pZRG5lTDloY1lZNnQ0aFBqWXV1ZlNnd3NQ?=
+ =?utf-8?B?d2xkUitWN2hvS2Z1aURFc1NaZU1wMmdNSTFsaDFQTDlnY3RZNWQxdFd0bEFH?=
+ =?utf-8?B?dnpJSllzWFF1bTg0Rytzd3JMRnAwb2lDSHBySnFZZ1FjSjRxbDlVNGNGSnEv?=
+ =?utf-8?B?L0tYcDlCWHRZdjdCaWt1RWJXTCtNVmpHRDRJeGxRanhJeWlSQ3BsMGpuUXJ5?=
+ =?utf-8?B?aU41SkV2dEt6M2lIL2dJUVlSeU5IbmlOS2dGalhMb0dGWGV4Y3YydWlJem8y?=
+ =?utf-8?B?L0g3YTM0TzZKOFZuV0ZDdElhT1pZOUpOZXpqZnhCUmhyWkprNjUrZmJkSTg3?=
+ =?utf-8?B?Uy80bXFYeHM0M0NtZ21aRkNpMkdyaWtQN3dWWFFMN3hoUTZjWmxQOUdiM1pH?=
+ =?utf-8?B?WjliZFNSajBiQk9TS0tua0ZjMXdNQkxPY1lyVUtHR1hCYzRhRkMvSFMxUTZX?=
+ =?utf-8?B?Nk1US0RGNTZmbXZjUjRtVHpDeUVBa0RjVGZuUG1YSjhJQ0RVbUVYaURUTWR3?=
+ =?utf-8?B?RXdJdE1QUnlXbVR1c3dWQ1ZmQitkL0ZKbFMwam9Db2FmaktHZHlJL2kzVld6?=
+ =?utf-8?B?Q3NjWEJOaG5GWjB5UGErdTNldlJaeElXeUZERVBTVE96MEJRdXhrN2I2OE56?=
+ =?utf-8?B?aXFobTJaL0hZL2RyVmx3Q2RYdy84WWZEV2xONkN0eGkrSUh1MytnbFhVb255?=
+ =?utf-8?B?WmprMnpDZ3Izd0gxZ0dXWGh6Ym1pbGtFWll3VWhIeWM5TFIrN2lLRU1Vcy9N?=
+ =?utf-8?B?OVJsV1B5WWMwVHFUbzh6bDZleFNCVUhGOXZTSUROOUNNWDBVYXovbWVHTmJo?=
+ =?utf-8?B?Q0dkdm1XZWp0TnEvekhlYnlxNUlhR3E1NEpFYXQyR29ZY1ZKZkFRUzVFUlpH?=
+ =?utf-8?B?RmxKWmVVQ3ZpRVlHZklYZU9OU3VZVmx3WXBjVmdWQjl4Z2VxV1NETEVIdVk2?=
+ =?utf-8?B?YlBwSTBqY2xER2dHT1FlT0ZGTHJjQlBYSnNncFJwTC82YlpQUUdUd2s0eTY1?=
+ =?utf-8?B?bXBwZSt6SEJ4YStuVk1ScmNZUTdNV3QyRThvWWRWQW15Z0VEWEdPQ1ZoYnZS?=
+ =?utf-8?B?ZE04M0YybndrOXFhRWRqeEozSTFHOGhaZi9hZzhoTDlncmRpK2luakxac3FB?=
+ =?utf-8?B?YmgxN3o2OWVUTkYzYWxnSWZjZ3E4OU1ocWt5WXNBRndYTUlISitDRVhac0pk?=
+ =?utf-8?Q?/0WMpSrd57Y5rbWd4+1s9CwYh?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 486d583b-383a-42d0-3c6e-08db4d7e4cae
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB7982.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2023 15:35:05.1839
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5ZxVzfy+95WWRThwbHdI/nDP1VNPzY6L2YFEF3TJXYYyCqafvknbwzaHLrEwZBD3Bc+eT/E0X+k+rafjyJH3xA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6739
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 4, 2023 at 1:18=E2=80=AFPM Yonghong Song <yhs@meta.com> wrote:
->
->
->
-> On 5/2/23 9:57 AM, Will Deacon wrote:
-> > A narrow load from a 64-bit context field results in a 64-bit load
-> > followed potentially by a 64-bit right-shift and then a bitwise AND
-> > operation to extract the relevant data.
-> >
-> > In the case of a 32-bit access, an immediate mask of 0xffffffff is used
-> > to construct a 64-bit BPP_AND operation which then sign-extends the mas=
-k
-> > value and effectively acts as a glorified no-op.
-> >
-> > Fix the mask generation so that narrow loads always perform a 32-bit AN=
-D
-> > operation.
-> >
-> > Cc: Alexei Starovoitov <ast@kernel.org>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: Krzesimir Nowak <krzesimir@kinvolk.io>
-> > Cc: Yonghong Song <yhs@fb.com>
-> > Cc: Andrey Ignatov <rdna@fb.com>
-> > Fixes: 31fd85816dbe ("bpf: permits narrower load from bpf program conte=
-xt fields")
-> > Signed-off-by: Will Deacon <will@kernel.org>
->
->
-> Thanks for the fix! You didn't miss anything. It is a bug and we did not
-> find it probably because user always use 'u64 val =3D ctx->u64_field' in
-> their bpf code...
->
-> But I think the commit message can be improved. An example to show the
-> difference without and with this patch can explain the issue much better.
->
-> Acked-by: Yonghong Song <yhs@fb.com>
+On 5/4/2023 10:26 AM, Jason Gunthorpe wrote:
+> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
+> 
+> 
+> On Fri, Apr 21, 2023 at 06:06:37PM -0700, Brett Creeley wrote:
+> 
+>> +static int
+>> +pds_vfio_pci_probe(struct pci_dev *pdev,
+>> +                const struct pci_device_id *id)
+>> +{
+> 
+> This indenting scheme is not kernel style. I generally suggest people
+> run their code through clang-format and go through and take most of
+> the changes. Most of what it sugges for this series is good
+> 
+> This GNU style of left aligning the function name should not be
+> in the kernel.
+> 
+> Jason
 
-If I'm reading it correctly it's indeed a bug.
-alu64(and, 0xffffFFFF) is a nop
-but it should have been
-alu32(and, 0xffffFFFF) which will clear upper 32-bit, right?
-Would be good to have a selftest for this.
+I will align and fix it in the next revision. Thanks for the review.
+
+Brett
 
