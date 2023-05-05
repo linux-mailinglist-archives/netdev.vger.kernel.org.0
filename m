@@ -1,94 +1,124 @@
-Return-Path: <netdev+bounces-607-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-608-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 59DD76F87C9
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 19:40:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D431B6F8822
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 19:53:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6FA091C21950
-	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 17:40:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 17CDB2807F3
+	for <lists+netdev@lfdr.de>; Fri,  5 May 2023 17:53:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC97EC8C4;
-	Fri,  5 May 2023 17:40:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AA5A2C8CA;
+	Fri,  5 May 2023 17:53:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB870BE62
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 17:40:21 +0000 (UTC)
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0BDF1
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 10:40:20 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-50bc3a2d333so3164124a12.0
-        for <netdev@vger.kernel.org>; Fri, 05 May 2023 10:40:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98EECBE73
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 17:53:15 +0000 (UTC)
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0DD20757
+	for <netdev@vger.kernel.org>; Fri,  5 May 2023 10:52:49 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id 4fb4d7f45d1cf-50bc1612940so4029496a12.2
+        for <netdev@vger.kernel.org>; Fri, 05 May 2023 10:52:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1683308419; x=1685900419;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=0oBOSqhhaoBmXD0LBMvyZMXJBBJNYX+Topc5ijdmXI8=;
-        b=t+u++Aw45D89f3fDxhqYIuNL8DNXF0phQeQntUmFwzTjyVuKdDsljwnD+nJFyI6PQp
-         HBFDQ257+QXFf2vyMzIVognMHU4XXYaBwAcXvJ+JBnq63f7VNbQopXutLbB9BfjiehPh
-         WlyQ3bDMknzcs5jx8/0wxvVPBnn5icGG+E5cw=
+        d=linaro.org; s=google; t=1683309151; x=1685901151;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6sUv+mxYLqvu3NJwUUp7JPVxNoacj7K8gOnMggCQwI0=;
+        b=M1VZtkM0ywzlajTqWZXGk82E3QZX7h/h9qN2QiTl5IB6oCnyM7vqfryA1Cy+WAtERo
+         JS66N5pzJJQ0lgPBcEt+33wkO9kO24juExekk70M8ri7Za8L79eCLw/L9esxyM27SOwD
+         xoUHriGv05ZG81jrceRk4HKJzBhR+9nmKWX7lD6XLBreg8XQw2N28uxVLq6oIv8M1lDe
+         CoDNhfupqIaW8lO3dvoP1o7HJcU/MqYzIDqon/xoEQJoPzxTcouuFnht9fys8u1apaiY
+         QC8664pXj9ZX9guj/RJbGQ5lyzu3AGhzwmX9Rt7mC9ovXdoueV2xUTK1yCxuGfiKbIKa
+         /+pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683308419; x=1685900419;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0oBOSqhhaoBmXD0LBMvyZMXJBBJNYX+Topc5ijdmXI8=;
-        b=cy7Hy0gIseMwA8wgjqoRQRdt6CupwFLShy9E6ncyHRisRyFFz91eVMmDM8DF/LKSNN
-         z8ElV4smBum+vxr1H/o3ujo4On7IoBj/B/e6WSy2siAU5m6lSNjYnYZ/PmdWSb9aQehj
-         plE30yfeQPuGfZsVHuIQYHjVceUSaP2bVLxSXOHSOm5JrtcYnLdtoX10+dxH/6q7B7v2
-         ev+K6atGfWADKJY1Os+2D2SjMushboTzZAwU/1mNqCGDuUv+oFDTZIcAz+AMTqO6MvrE
-         FSwiGF9ILAWx2YoBvaJFeqPmzJtzM1jG0dFKZkyxD5HKxkF+QsJj8OjwzrKEDrXpBP6T
-         nBvg==
-X-Gm-Message-State: AC+VfDxqAUt1iU0SleOTyTYYtMeDpi15lPo2SUsjVfpzjGw1QiUuPzwn
-	jVhgtjJuFC/YHx/jfGpBtNNycg==
-X-Google-Smtp-Source: ACHHUZ4uAi6poDBxDSeHyV00tlVBo8UvFfODxaZvspI2szvZgexJN5L3yv4gf/UJrcEqxjzLtKw8BQ==
-X-Received: by 2002:a17:907:ea9:b0:958:5474:a84a with SMTP id ho41-20020a1709070ea900b009585474a84amr2352212ejc.38.1683308418957;
-        Fri, 05 May 2023 10:40:18 -0700 (PDT)
-Received: from cloudflare.com (79.184.132.119.ipv4.supernova.orange.pl. [79.184.132.119])
-        by smtp.gmail.com with ESMTPSA id o18-20020a170906359200b009534603453dsm1180377ejb.131.2023.05.05.10.40.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 May 2023 10:40:18 -0700 (PDT)
-References: <20230502155159.305437-1-john.fastabend@gmail.com>
- <20230502155159.305437-11-john.fastabend@gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From: Jakub Sitnicki <jakub@cloudflare.com>
-To: John Fastabend <john.fastabend@gmail.com>
-Cc: daniel@iogearbox.net, lmb@isovalent.com, edumazet@google.com,
- bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
- andrii@kernel.org, will@isovalent.com
-Subject: Re: [PATCH bpf v7 10/13] bpf: sockmap, build helper to create
- connected socket pair
-Date: Fri, 05 May 2023 19:39:58 +0200
-In-reply-to: <20230502155159.305437-11-john.fastabend@gmail.com>
-Message-ID: <87bkiyn0ce.fsf@cloudflare.com>
+        d=1e100.net; s=20221208; t=1683309151; x=1685901151;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6sUv+mxYLqvu3NJwUUp7JPVxNoacj7K8gOnMggCQwI0=;
+        b=BGa2lxqHWUfY9+f9rh+jPtfvdpK6Ll5nICKipIsYtHEerd+RLDRXsAVEwatUMSzNlV
+         /2F87U8onqCFWtVWdoT8qH9obsJUgU/dC30Dg6etHseGa/7zPvBZjW5HbE5h7Kryl2vr
+         rfSh+ZTD3j0cw2oTDmUduf7a9nKX90iDkHkqJmOxlpojPchy87BPwx5L8p5CQ6Ddr83T
+         NHuDPopQKCVH/FBkkFvPbCTOCn8Ef2l8JyyxTDU8+lNMqkMO5zaKHweq35/UOHgXTxn7
+         FhDB5ZuJGu3Zhwqxd/LMhfWSLDaweQZ2VDldurnAYcErPcKerSKltJQBN7VMeANm0Z9q
+         0t6w==
+X-Gm-Message-State: AC+VfDyqd0JMMjzqRERQe3+f8z/O8OFNDR/ClqXQrysWAtMQdpDORFyY
+	m7oVsQ16R8ID+KPobZ9ZdPYyfQ==
+X-Google-Smtp-Source: ACHHUZ5KpVgBxX/ctiq3aH7QlmcztFKjWUetQv4Px3BNI5sTnDbBf1pnLETF1U6N9rL6emZOqvn+QQ==
+X-Received: by 2002:a17:907:1687:b0:958:cc8:bd55 with SMTP id hc7-20020a170907168700b009580cc8bd55mr2736877ejc.0.1683309151533;
+        Fri, 05 May 2023 10:52:31 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:52e:24ce:bbc1:127d? ([2a02:810d:15c0:828:52e:24ce:bbc1:127d])
+        by smtp.gmail.com with ESMTPSA id bz6-20020a1709070aa600b0095850aef138sm1202538ejc.6.2023.05.05.10.52.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 May 2023 10:52:30 -0700 (PDT)
+Message-ID: <5e470654-11c8-929f-cfd4-5ca03519bec2@linaro.org>
+Date: Fri, 5 May 2023 19:52:29 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v2 1/2] dt-bindings: net: motorcomm: Add pad driver
+ strength cfg
+Content-Language: en-US
+To: Samin Guo <samin.guo@starfivetech.com>, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, netdev@vger.kernel.org,
+ Peter Geis <pgwipeout@gmail.com>, Frank <Frank.Sae@motor-comm.com>
+Cc: "David S . Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
+ Russell King <linux@armlinux.org.uk>,
+ Yanhong Wang <yanhong.wang@starfivetech.com>
+References: <20230505090558.2355-1-samin.guo@starfivetech.com>
+ <20230505090558.2355-2-samin.guo@starfivetech.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230505090558.2355-2-samin.guo@starfivetech.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 02, 2023 at 08:51 AM -07, John Fastabend wrote:
-> A common operation for testing is to spin up a pair of sockets that are
-> connected. Then we can use these to run specific tests that need to
-> send data, check BPF programs and so on.
->
-> The sockmap_listen programs already have this logic lets move it into
-> the new sockmap_helpers header file for general use.
->
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+On 05/05/2023 11:05, Samin Guo wrote:
+> The motorcomm phy (YT8531) supports the ability to adjust the drive
+> strength of the rx_clk/rx_data, the value range of pad driver
+> strength is 0 to 7.
+> 
+> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
 > ---
+>  .../devicetree/bindings/net/motorcomm,yt8xxx.yaml    | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> index 157e3bbcaf6f..29a1997a1577 100644
+> --- a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> @@ -52,6 +52,18 @@ properties:
+>        for a timer.
+>      type: boolean
+>  
+> +  motorcomm,rx-clk-driver-strength:
+> +    description: drive strength of rx_clk pad.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+> +    default: 3
 
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+No improvements after Andrew's comment.
+
+Best regards,
+Krzysztof
+
 
