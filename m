@@ -1,99 +1,166 @@
-Return-Path: <netdev+bounces-664-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-665-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D14526F8D6C
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 03:15:20 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 31E356F8D85
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 03:30:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C586428114A
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 01:15:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2B3A6281153
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 01:30:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9EECE10EA;
-	Sat,  6 May 2023 01:15:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B48F51118;
+	Sat,  6 May 2023 01:30:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 901CA10E6
-	for <netdev@vger.kernel.org>; Sat,  6 May 2023 01:15:16 +0000 (UTC)
-Received: from mx.dolansoft.org (s2.dolansoft.org [212.51.146.245])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324DF2688
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 18:15:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=brun.one;
-	s=s1; h=MIME-Version:References:In-Reply-To:Message-Id:Cc:To:Subject:From:
-	Date:From:To:Subject:Date:Message-ID:Reply-To;
-	bh=URoXoNLC5/ZoioacUDvP4w5F1qb1ezwOK73xGk96/fc=; b=LcOpyL1MWbBf7+064gI1UaR3Pv
-	Hnl92Z3d2c/ia4R0zfEMhP/a5oQy2XKGD3J16BoPAL7oSi+8bbyBPRaKvSNi4z4/D87D9PraQcdzX
-	E7ZkFGcG3i7y+FTEy9KXZrDA31HlZMFFur/wNaDOSPuk9F3a3MLTG0BCPmHKmIMB71XVzQfEr28W1
-	51sgq4dmWStCQCdGzehuvVHc0GWIpIkeqXyULpfclkEQqImXVPjI29QagscO5IZUqb9Ru+CG2F+70
-	X6+YhiGOHf5lJQcAARdp5ykEp1QDq7NQNRNKacLlHj/BkRlA9ZcfNcF2TjKZU4zN88VIkgGgvJfT7
-	YWokDVWQ==;
-Received: from [212.51.153.89] (helo=[192.168.12.232])
-	by mx.dolansoft.org with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <lorenz@dolansoft.org>)
-	id 1pv6W1-000acb-1J;
-	Sat, 06 May 2023 01:15:13 +0000
-Date: Sat, 06 May 2023 03:15:07 +0200
-From: Lorenz Brun <lorenz@brun.one>
-Subject: Re: Quirks for exotic SFP module
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>
-Message-Id: <75Q7UR.PII4PI72J55K3@brun.one>
-In-Reply-To: <8adbd20c-6de0-49ab-aabe-faf845d9a5d9@lunn.ch>
-References: <C157UR.RELZCR5M9XI83@brun.one>
-	<7ed07d2e-ef0e-4e27-9ac6-96d60ae0e630@lunn.ch>
-	<CQF7UR.5191D6UPT6U8@brun.one>
-	<d75c2138-76c6-49fe-96c3-39401f18b831@lunn.ch>
-	<DVN7UR.QEVJPHB8FG6I1@brun.one>
-	<8adbd20c-6de0-49ab-aabe-faf845d9a5d9@lunn.ch>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1BDF10E6
+	for <netdev@vger.kernel.org>; Sat,  6 May 2023 01:30:27 +0000 (UTC)
+Received: from out28-4.mail.aliyun.com (out28-4.mail.aliyun.com [115.124.28.4])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CCF1991;
+	Fri,  5 May 2023 18:30:23 -0700 (PDT)
+X-Alimail-AntiSpam:AC=CONTINUE;BC=0.1096482|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.122501-0.00138785-0.876111;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047208;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=15;RT=15;SR=0;TI=SMTPD_---.SZWUQ06_1683336615;
+Received: from 10.0.2.15(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.SZWUQ06_1683336615)
+          by smtp.aliyun-inc.com;
+          Sat, 06 May 2023 09:30:16 +0800
+Message-ID: <ba94f81c-3fc0-303c-f0f9-8fd0ab7d33fe@motor-comm.com>
+Date: Sat, 6 May 2023 09:29:28 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Sender: lorenz@dolansoft.org
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v2 2/2] net: phy: motorcomm: Add pad drive strength cfg
+ support
+To: Samin Guo <samin.guo@starfivetech.com>, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, netdev@vger.kernel.org,
+ Peter Geis <pgwipeout@gmail.com>
+Cc: "David S . Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
+ Russell King <linux@armlinux.org.uk>,
+ Yanhong Wang <yanhong.wang@starfivetech.com>
+References: <20230505090558.2355-1-samin.guo@starfivetech.com>
+ <20230505090558.2355-3-samin.guo@starfivetech.com>
+Content-Language: en-US
+From: Frank Sae <Frank.Sae@motor-comm.com>
+In-Reply-To: <20230505090558.2355-3-samin.guo@starfivetech.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Am Sa, 6. Mai 2023 um 03:05:10 +02:00:00 schrieb Andrew Lunn 
-<andrew@lunn.ch>:
->>  I tested and I got a bunch of addresses showing up on i2c master 
->> connected
->>  to the module. 1b, 30, 31, 34, 35, 36, 50 and 53. But I'm still not 
->> sure why
->>  we'd want to talk MDIO with this module. AFAIK MDIO is an Ethernet 
->> thing,
->>  the module is talking G.fast to the outside which is a completely 
->> different
->>  protocol from a completely different family of protocols. It has 
->> its own
->>  management protocol which runs over Ethernet.
+
+
+On 2023/5/5 17:05, Samin Guo wrote:
+> The motorcomm phy (YT8531) supports the ability to adjust the drive
+> strength of the rx_clk/rx_data, and the default strength may not be
+> suitable for all boards. So add configurable options to better match
+> the boards.(e.g. StarFive VisionFive 2)
 > 
-> One reason you might want to talk to the PHY is to correct is
-> configuration. 1000Base-X includes inband signalling. There are some
-> Copper SFP which have the inband signalling disabled. And that can
-> make the host unhappy, it fails to link up. It varies from host to
-> host. Some work, some don't.
+> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+> ---
+>  drivers/net/phy/motorcomm.c | 46 +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+> 
+> diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
+> index 2fa5a90e073b..191650bb1454 100644
+> --- a/drivers/net/phy/motorcomm.c
+> +++ b/drivers/net/phy/motorcomm.c
+> @@ -236,6 +236,7 @@
+>   */
+>  #define YTPHY_WCR_TYPE_PULSE			BIT(0)
+>  
+> +#define YTPHY_PAD_DRIVE_STRENGTH_REG		0xA010
+>  #define YTPHY_SYNCE_CFG_REG			0xA012
+>  #define YT8521_SCR_SYNCE_ENABLE			BIT(5)
+>  /* 1b0 output 25m clock
+> @@ -260,6 +261,14 @@
+>  #define YT8531_SCR_CLK_SRC_REF_25M		4
+>  #define YT8531_SCR_CLK_SRC_SSC_25M		5
+>  
+> +#define YT8531_RGMII_RXC_DS_DEFAULT		0x3
+> +#define YT8531_RGMII_RXC_DS_MAX			0x7
+> +#define YT8531_RGMII_RXC_DS			GENMASK(15, 13)
+> +#define YT8531_RGMII_RXD_DS_DEFAULT		0x3
+> +#define YT8531_RGMII_RXD_DS_MAX			0x7
+> +#define YT8531_RGMII_RXD_DS_LOW			GENMASK(5, 4) /* Bit 1/0 of rxd_ds */
+> +#define YT8531_RGMII_RXD_DS_HI			BIT(12) /* Bit 2 of rxd_ds */
 
-Oh, so you're talking about signalling on the AR8033 <-> Linux Host 
-part of the link. I actually wasn't aware that 1000Base-X did in-band 
-signalling, TIL. Since the I2C bus is connected to the modem SoC it 
-would have to forward any MDIO to the AR8033 transceiver, right? This 
-would also be a bit weird as the AR8033 is connected "backwards", i.e. 
-with RGMII facing towards the Modem SoC and 1000Base-X towards the 
-Linux host.
 
-Regards,
-Lorenz
+YT8531_RGMII_xxx is bit define for YTPHY_PAD_DRIVE_STRENGTH_REG, so it is better to put it under the define of YTPHY_PAD_DRIVE_STRENGTH_REG.
 
+YT8531_RGMII_xxx bit define as reverse order:
+#define YTPHY_PAD_DRIVE_STRENGTH_REG		0xA010
+#define YT8531_RGMII_RXC_DS			GENMASK(15, 13)
+#define YT8531_RGMII_RXD_DS_HI			BIT(12) /* Bit 2 of rxd_ds */     <-------
+#define YT8531_RGMII_RXD_DS_LOW			GENMASK(5, 4) /* Bit 1/0 of rxd_ds */
+...
 
+> +
+>  /* Extended Register  end */
+>  
+>  #define YTPHY_DTS_OUTPUT_CLK_DIS		0
+> @@ -1495,6 +1504,7 @@ static int yt8531_config_init(struct phy_device *phydev)
+>  {
+>  	struct device_node *node = phydev->mdio.dev.of_node;
+>  	int ret;
+> +	u32 ds, val;
+>  
+>  	ret = ytphy_rgmii_clk_delay_config_with_lock(phydev);
+>  	if (ret < 0)
+> @@ -1518,6 +1528,42 @@ static int yt8531_config_init(struct phy_device *phydev)
+>  			return ret;
+>  	}
+>  
+> +	ds = YT8531_RGMII_RXC_DS_DEFAULT;
+> +	if (!of_property_read_u32(node, "motorcomm,rx-clk-driver-strength", &val)) {
+> +		if (val > YT8531_RGMII_RXC_DS_MAX)
+> +			return -EINVAL;
+> +
+> +		ds = val;
+> +	}
+> +
+> +	ret = ytphy_modify_ext_with_lock(phydev,
+> +					 YTPHY_PAD_DRIVE_STRENGTH_REG,
+> +					 YT8531_RGMII_RXC_DS,
+> +					 FIELD_PREP(YT8531_RGMII_RXC_DS, ds));
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ds = FIELD_PREP(YT8531_RGMII_RXD_DS_LOW, YT8531_RGMII_RXD_DS_DEFAULT);
+> +	if (!of_property_read_u32(node, "motorcomm,rx-data-driver-strength", &val)) {
+> +		if (val > YT8531_RGMII_RXD_DS_MAX)
+> +			return -EINVAL;
+> +
+> +		if (val > FIELD_MAX(YT8531_RGMII_RXD_DS_LOW)) {
+> +			ds = val & FIELD_MAX(YT8531_RGMII_RXD_DS_LOW);
+> +			ds = FIELD_PREP(YT8531_RGMII_RXD_DS_LOW, ds);
+> +			ds |= YT8531_RGMII_RXD_DS_HI;
+> +		} else {
+> +			ds = FIELD_PREP(YT8531_RGMII_RXD_DS_LOW, val);
+> +		}
+> +	}
+> +
+> +	ret = ytphy_modify_ext_with_lock(phydev,
+> +					 YTPHY_PAD_DRIVE_STRENGTH_REG,
+> +					 YT8531_RGMII_RXD_DS_LOW | YT8531_RGMII_RXD_DS_HI,
+> +					 ds);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	return 0;
+>  }
+>  
 
