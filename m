@@ -1,48 +1,48 @@
-Return-Path: <netdev+bounces-679-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-680-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A09756F8E8D
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 06:30:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 888156F8E8E
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 06:30:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CBDD61C21AE1
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 04:30:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CE83B1C21A9D
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 04:30:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 26F2415CA;
-	Sat,  6 May 2023 04:30:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E88C185B;
+	Sat,  6 May 2023 04:30:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16AA77E
-	for <netdev@vger.kernel.org>; Sat,  6 May 2023 04:30:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DEE97E
+	for <netdev@vger.kernel.org>; Sat,  6 May 2023 04:30:01 +0000 (UTC)
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1210C7DA7
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B32E47DAD
 	for <netdev@vger.kernel.org>; Fri,  5 May 2023 21:29:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1683347399; x=1714883399;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kRztacwXfFUHbjrWpRgZmJUk0s6dwckr0HsOvh5WjLI=;
-  b=f6dpw7aQhTKtmcb+cYqJa+Vh8quQV3V9rM9Di5n0LOPiyWwbjyxBIRRe
-   5ViGC3VOXy292rXPV+eMl+u1N4UbzTS2nPst3J06Xa3EiJOcMoLGkJYEp
-   ZOKx83Lxrn7VBAVRbDNj6FtkW425to2gxmLAGNjz1sXFYPEsHPqrXZfxz
-   gkzXRWJUU9fVEb5ls2atUX0M8wKn6MT7xFaNzBqEtCWVZfmOPGnbfwL8l
-   ULx0PP7v2PABlJy9VaKl/ZYG2FJBRMIWY/xYBwx+c/GEw4p1mwi80hXTL
-   31jUWwsrBmBqNWoAdHlCE/Gi03w0HE9EHZmEDE0KBsRrhhAgbGG7U5b0J
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kYnoriSTSuT4AS/YHsRMbxkYam/5OI5KU4BV16/guzs=;
+  b=Su5e2oSdP9t1/VLV6scggPybO0QP6ui1SPlVezcrabU2vEd+YCh0i4kT
+   rEq7Zdq6BKp/fNq7HdESNriENyt5xuxuA3QbZKgKjMKTjz8yHUItAYpzl
+   7DuDtXbe2+WbYmgKY+gIxwPgU9UTAMd4JaT1LyNUWY7ApV9+JB/bSY0g8
+   jEC7qWHEwNcxSWIpk7rArRkTL4Rr0o3uQ1QlFipj7+vHdpSam6gpAKqCm
+   O6Isml3MzbXCHaKhmMmRr66AvCHVhkI9MN0E7b5/0d1UwIoGacpLs1kzE
+   WGNDNlE3FIYkK0eQ60I40aEhwqH09NIhmNCY0aT0n4L/VZGZysv+F+cyV
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10701"; a="377424888"
+X-IronPort-AV: E=McAfee;i="6600,9927,10701"; a="377424896"
 X-IronPort-AV: E=Sophos;i="5.99,254,1677571200"; 
-   d="scan'208";a="377424888"
+   d="scan'208";a="377424896"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2023 21:29:58 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2023 21:29:59 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10701"; a="944157218"
+X-IronPort-AV: E=McAfee;i="6600,9927,10701"; a="944157221"
 X-IronPort-AV: E=Sophos;i="5.99,254,1677571200"; 
-   d="scan'208";a="944157218"
+   d="scan'208";a="944157221"
 Received: from b49691a74c54.jf.intel.com ([10.45.76.121])
   by fmsmga006.fm.intel.com with ESMTP; 05 May 2023 21:29:58 -0700
 From: Cathy Zhang <cathy.zhang@intel.com>
@@ -57,10 +57,12 @@ Cc: jesse.brandeburg@intel.com,
 	cathy.zhang@intel.com,
 	eric.dumazet@gmail.com,
 	netdev@vger.kernel.org
-Subject: [PATCH 0/2] net: fix memcg overhead caused by sk->sk_forward_alloc size
-Date: Fri,  5 May 2023 21:29:56 -0700
-Message-Id: <20230506042958.15051-1-cathy.zhang@intel.com>
+Subject: [PATCH 1/2] net: Keep sk->sk_forward_alloc as a proper size
+Date: Fri,  5 May 2023 21:29:57 -0700
+Message-Id: <20230506042958.15051-2-cathy.zhang@intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230506042958.15051-1-cathy.zhang@intel.com>
+References: <20230506042958.15051-1-cathy.zhang@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -76,41 +78,95 @@ X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Dear Reviewers,
+Before commit 4890b686f408 ("net: keep sk->sk_forward_alloc as small as
+possible"), each TCP can forward allocate up to 2 MB of memory and
+tcp_memory_allocated might hit tcp memory limitation quite soon. To
+reduce the memory pressure, that commit keeps sk->sk_forward_alloc as
+small as possible, which will be less than 1 page size if SO_RESERVE_MEM
+is not specified.
 
-memcg charge overhead is observed while we benchmark memcached with
-memtier by running containers. It's caused by commit 4890b686f408 ("net:
-Keep sk->sk_forward_alloc as small as possible"), which aims to reduce
-system memory pressure, but makes the per-socket forward allocated
-memory too small. The impact of this change is to trigger more
-frequently memory allocation during TCP connection lifecycle and leads
-to memcg charge overhead finally.
+However, with commit 4890b686f408 ("net: keep sk->sk_forward_alloc as
+small as possible"), memcg charge hot paths are observed while system is
+stressed with a large amount of connections. That is because
+sk->sk_forward_alloc is too small and it's always less than
+sk->truesize, network handlers like tcp_rcv_established() should jump to
+slow path more frequently to increase sk->sk_forward_alloc. Each memory
+allocation will trigger memcg charge, then perf top shows the following
+contention paths on the busy system.
 
-To avoid memcg charge overhead mentioned above, this series defines 64KB
-as reclaim threshold when uncharging per-socket memory. It reduces the
-frequency of memory allocation and charging during TCP connection, and
-it's much less than the original 2MB per-socket reserved memory before
+    16.77%  [kernel]            [k] page_counter_try_charge
+    16.56%  [kernel]            [k] page_counter_cancel
+    15.65%  [kernel]            [k] try_charge_memcg
+
+In order to avoid the memcg overhead and performance penalty,
+sk->sk_forward_alloc should be kept with a proper size instead of as
+small as possible. Keep memory up to 64KB from reclaims when uncharging
+sk_buff memory, which is closer to the maximum size of sk_buff. It will
+help reduce the frequency of allocating memory during TCP connection.
+The original reclaim threshold for reserved memory per-socket is 2MB, so
+the extraneous memory reserved now is about 32 times less than before
 commit 4890b686f408 ("net: keep sk->sk_forward_alloc as small as
-possibile"). Run memcached/memtier test with the 64KB reclaim threshold,
-RPS gains around 2.01x.
+possible").
 
-This series also provides a new ABI /proc/sys/net/core/reclaim_threshold
-with flexibility to tune the reclaim threshold according to system
-running status.
+Run memcached with memtier_benchamrk to verify the optimization fix. 8
+server-client pairs are created with bridge network on localhost, server
+and client of the same pair share 28 logical CPUs.
 
-This series is based on the latest tip/master tree.
+Results (Average for 5 run)
+RPS (with/without patch)	+2.01x
 
-Thanks for your time to help review and your feedback will be greatly!
+Fixes: 4890b686f408 ("net: keep sk->sk_forward_alloc as small as possible")
 
-Cathy Zhang (2):
-  net: Keep sk->sk_forward_alloc as a proper size
-  net: Add sysctl_reclaim_threshold
+Signed-off-by: Cathy Zhang <cathy.zhang@intel.com>
+Signed-off-by: Lizhen You <lizhen.you@intel.com>
+Tested-by: Long Tao <tao.long@intel.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Reviewed-by: Tim Chen <tim.c.chen@linux.intel.com>
+Reviewed-by: Suresh Srinivas <suresh.srinivas@intel.com>
+---
+ include/net/sock.h | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
- Documentation/admin-guide/sysctl/net.rst | 12 ++++++++++++
- include/net/sock.h                       | 24 +++++++++++++++++++++++-
- net/core/sysctl_net_core.c               | 14 ++++++++++++++
- 3 files changed, 49 insertions(+), 1 deletion(-)
-
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 8b7ed7167243..6d2960479a80 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1657,12 +1657,33 @@ static inline void sk_mem_charge(struct sock *sk, int size)
+ 	sk->sk_forward_alloc -= size;
+ }
+ 
++/* The following macro controls memory reclaiming in sk_mem_uncharge().
++ */
++#define SK_RECLAIM_THRESHOLD	(1 << 16)
+ static inline void sk_mem_uncharge(struct sock *sk, int size)
+ {
++	int reclaimable;
++
+ 	if (!sk_has_account(sk))
+ 		return;
+ 	sk->sk_forward_alloc += size;
+-	sk_mem_reclaim(sk);
++
++	reclaimable = sk->sk_forward_alloc - sk_unused_reserved_mem(sk);
++
++	/* Reclaim memory to reduce memory pressure when multiple sockets
++	 * run in parallel. However, if we reclaim all pages and keep
++	 * sk->sk_forward_alloc as small as possible, it will cause
++	 * paths like tcp_rcv_established() going to the slow path with
++	 * much higher rate for forwarded memory expansion, which leads
++	 * to contention hot points and performance drop.
++	 *
++	 * In order to avoid the above issue, it's necessary to keep
++	 * sk->sk_forward_alloc with a proper size while doing reclaim.
++	 */
++	if (reclaimable > SK_RECLAIM_THRESHOLD) {
++		reclaimable -= SK_RECLAIM_THRESHOLD;
++		__sk_mem_reclaim(sk, reclaimable);
++	}
+ }
+ 
+ /*
+-- 
 2.34.1
 
 
