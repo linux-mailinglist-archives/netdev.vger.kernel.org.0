@@ -1,116 +1,129 @@
-Return-Path: <netdev+bounces-682-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-683-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5432C6F8F09
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 08:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2D9AD6F8FBA
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 09:14:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6135C281173
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 06:20:34 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 58DA4281070
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 07:14:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D0CC156EB;
-	Sat,  6 May 2023 06:20:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EBA7E1C06;
+	Sat,  6 May 2023 07:13:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 609F11851
-	for <netdev@vger.kernel.org>; Sat,  6 May 2023 06:20:32 +0000 (UTC)
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AF2270D
-	for <netdev@vger.kernel.org>; Fri,  5 May 2023 23:20:30 -0700 (PDT)
-Received: from [185.238.219.2] (helo=[192.168.44.27]); authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1pvBHM-0005z1-Kv; Sat, 06 May 2023 08:20:24 +0200
-Message-ID: <9284a9ec-d7c9-68e8-7384-07291894937b@leemhuis.info>
-Date: Sat, 6 May 2023 08:20:23 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA82815B9
+	for <netdev@vger.kernel.org>; Sat,  6 May 2023 07:13:58 +0000 (UTC)
+Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7F64C1E;
+	Sat,  6 May 2023 00:13:56 -0700 (PDT)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+	by fd01.gateway.ufhost.com (Postfix) with ESMTP id 57CCD24DE83;
+	Sat,  6 May 2023 15:13:54 +0800 (CST)
+Received: from EXMBX062.cuchost.com (172.16.6.62) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sat, 6 May
+ 2023 15:13:54 +0800
+Received: from [192.168.120.40] (171.223.208.138) by EXMBX062.cuchost.com
+ (172.16.6.62) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sat, 6 May
+ 2023 15:13:53 +0800
+Message-ID: <f2b54fc5-81a6-45ae-0218-193a993333ab@starfivetech.com>
+Date: Sat, 6 May 2023 15:13:51 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [regression] Kernel OOPS on boot with Kernel 6.3(.1) and RTL8153
- Gigabit Ethernet Adapter
-Content-Language: en-US, de-DE
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Linux regressions mailing list <regressions@lists.linux.dev>,
- =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
- Hayes Wang <hayeswang@realtek.com>, netdev@vger.kernel.org,
- Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
- "David S. Miller" <davem@davemloft.net>, Stanislav Fomichev <sdf@fomichev.me>
-References: <ec4be122-e213-ca5b-f5d6-e8f9c3fd3bee@leemhuis.info>
- <87lei36q27.fsf@miraculix.mork.no> <20230505120436.6ff8cfca@kernel.org>
- <57dbce31-daa9-9674-513e-f123b94950da@leemhuis.info>
- <20230505123744.16666106@kernel.org>
-From: "Linux regression tracking (Thorsten Leemhuis)"
- <regressions@leemhuis.info>
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
-In-Reply-To: <20230505123744.16666106@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1683354030;5c601940;
-X-HE-SMSGID: 1pvBHM-0005z1-Kv
+Subject: Re: [PATCH v2 2/2] net: phy: motorcomm: Add pad drive strength cfg
+ support
+Content-Language: en-US
+To: Andrew Lunn <andrew@lunn.ch>
+CC: <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<netdev@vger.kernel.org>, Peter Geis <pgwipeout@gmail.com>, Frank
+	<Frank.Sae@motor-comm.com>, "David S . Miller" <davem@davemloft.net>, "Eric
+ Dumazet" <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>, Yanhong Wang
+	<yanhong.wang@starfivetech.com>
+References: <20230505090558.2355-1-samin.guo@starfivetech.com>
+ <20230505090558.2355-3-samin.guo@starfivetech.com>
+ <fc516e65-cde2-4a65-a3c5-bd8c939e7eb1@lunn.ch>
+From: Guo Samin <samin.guo@starfivetech.com>
+In-Reply-To: <fc516e65-cde2-4a65-a3c5-bd8c939e7eb1@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX062.cuchost.com
+ (172.16.6.62)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
+Re: [PATCH v2 2/2] net: phy: motorcomm: Add pad drive strength cfg suppor=
+t
+From: Andrew Lunn <andrew@lunn.ch>
+to: Samin Guo <samin.guo@starfivetech.com>
+data: 2023/5/5
 
-On 05.05.23 21:37, Jakub Kicinski wrote:
-> On Fri, 5 May 2023 21:20:15 +0200 Linux regression tracking (Thorsten
-> Leemhuis) wrote:
->>> Thorsten, how is the communication supposed to work in this case?
->>> Can you ask the reporter to test this?  
->>
->> I'd prefer to not become the man-in-the middle, that just delays things
->> and is fragile; but I can do that occasionally if developers really are
->> unwilling to go to bugzilla.
->>
->> Bugbot afaics will solve this, but using it right now would require me
->> to do something some maintainers don't like. See this sub-thread:
->>
->> https://lore.kernel.org/all/1f0ebf13-ab0f-d512-6106-3ebf7cb372f1@leemhuis.info/
->>
->> :-/
->>
->> This got me thinking: we could tell bugbot to start monitoring this
->> thread and then tell the reporter to CC to the new bug bugbot created.
->> Ugly, but might work.
->>
->>> I don't see them on CC...  
->>
->> Yeah, as stated in the initial mail of this thread: I sadly can't CC
->> them, because bugzilla.kernel.org tells users upon registration their
->> "email address will never be displayed to logged out users"... #sigh
->>
->> I wish things were different, I'm unhappy about this situation myself.
-> 
-> Let's work something out, because forwarding enough info for Bjorn to
-> respond on the list means that we now have the conversation going in
-> both places. So it's confusing & double the work for developers.
+>>  #define YTPHY_DTS_OUTPUT_CLK_DIS		0
+>> @@ -1495,6 +1504,7 @@ static int yt8531_config_init(struct phy_device =
+*phydev)
+>>  {
+>>  	struct device_node *node =3D phydev->mdio.dev.of_node;
+>>  	int ret;
+>> +	u32 ds, val;
+>=20
+> Reverse Christmas tree.  Sort these longest first, shortest last.
+>=20
+Thanks, will fix.
+> Otherwise this looks O.K.
+>=20
+> The only open question is if real unit should be used, uA, not some
+> magic numbers. Lets see what the DT Maintainers say.
+>=20
+>       Andrew
 
-I know, I know, but I saw no other way.
+Hi Andrew,
 
-> I don't seem to have the permissions on BZ, but I'm guessing we could
-> do the opposite - you could flip bugbot on first to have it flush the BZ
-> report to the list, and then reply on the list with regzbot tracking?
+As I communicated with Frank, Motorcomm doesn't give specific units on th=
+eir datasheet, except for magic numbers.
+Tried to ask Motorcomm last week, but it seems that they themselves do no=
+t know what the unit is and have no response so far.
 
-That's the plan for the future, but for now I don't want to do that, as
-it might mess up other peoples workflows, as hinted above already and
-discussed here:
 
-https://lore.kernel.org/all/1f0ebf13-ab0f-d512-6106-3ebf7cb372f1@leemhuis.info/
+Below is all the relevant information I found=EF=BC=9A
 
-That was only recently, but if you jump in there as well it might
-persuade Konstantin to enable bugbot for other products/components. Then
-I could and would do what you suggested.
+Pad Drive Strength Cfg (EXT_0xA010)
 
-Ciao, Thorsten
+Bit   |  Symbol           |  Access |  Default |  Description
+15:13 |  Rgmii_sw_dr_rx   |  RW     |  0x3     |  Drive strenght of rx_cl=
+k pad.
+                                               |  3'b111: strongest; 3'b0=
+00: weakest.
+
+12    |  Rgmii_sw_dr[2]   |  RW     |  0x0     |  Bit 2 of Rgmii_sw_dr[2:=
+0], refer to ext A010[5:4]
+
+5:4   |  Rgmii_sw_dr[1:0] |  RW     |  0x3     |  Bit 1 and 0 of Rgmii_sw=
+_dr, Drive strenght of rxd/rx_ctl rgmii pad.
+                                               |  3'b111: strongest; 3'b0=
+00: weakest
+
+
+
+Best regards,
+Samin
 
