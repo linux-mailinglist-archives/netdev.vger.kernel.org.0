@@ -1,43 +1,43 @@
-Return-Path: <netdev+bounces-660-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-661-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 242B66F8D37
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 02:47:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8BDA86F8D38
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 02:47:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 15F02281181
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 00:47:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 47D22281158
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 00:47:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 96873EC3;
-	Sat,  6 May 2023 00:47:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 96B5BEC3;
+	Sat,  6 May 2023 00:47:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3BC4621;
-	Sat,  6 May 2023 00:47:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F4BEC433D2;
-	Sat,  6 May 2023 00:47:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03B4F621;
+	Sat,  6 May 2023 00:47:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 953D6C433D2;
+	Sat,  6 May 2023 00:47:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683334025;
-	bh=VudGxq1D7OyOAMqXLSH6yW5wjYf40RGPSvsQrHbIwpU=;
+	s=k20201202; t=1683334044;
+	bh=aDpweWMjQuVTT5Ut+AsOxd7z3mNVCL1824CEVBYrfIk=;
 	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=oePL+z45mek07X87FKg02R/B0JiVTG/mdIraE7XvTpy1Effm8nbr9FUNxqnKGdOHO
-	 F2rIlhgb/hQFXQ9nWwiLKXTOdspV5Hl3l/cJg+uCIXxpVE6DrtWsx3cdYYToVop4CB
-	 JjEPq0JF+1WDvb0Dl+nhty5NUl1XMiVbfIrDK0gd8ly/l3BYwIE5UHDWZ+LOmAZJbp
-	 YMn1Jq4cb/9tm0wV0wtJehCH9BvG0mhD04nEb2mPsROk44LDtIAwtYO6ZZhbB+zkSe
-	 QBcxBFbMcedVqngRzWwAIkwdp/MwH+ghwMMcx7i+Wiy1/lk8ZjGgVvG6qmWR6IOett
-	 CZWqSTuryfPIQ==
-Subject: [PATCH v2 4/6] net/handshake: handshake_genl_notify() shouldn't
- ignore @flags
+	b=iNgUaQt/LdgF0Y6X2ljGI7Pdm62MeJUdIytZRAg7pLkodTYqjA5kafePIB37cOuuw
+	 gNOoSiSV/aCmYWgnJ/rWtOSe+xMgUoiYOZ4gOe6LGgdT6msnyX1Y1LjZtop+VApGRv
+	 arxUlPFBnbyysPUUNuqQCmP43qrU5lIy6QQbzuyninhy4qibi9/5/IaRvVjNJnn3Mn
+	 ZXAoqXxa2HMAlMZM+Z9rXBmoIiWCqFgCK5WTqkEh6tBE2F/XPcNi8AZw7Lpkz5zIii
+	 ODog0dQVIIR3+xyPP7iPshLXBB2jkbD3JxYu4PptWs7SsZnGlaYhzyWmMxP5s8gfSq
+	 JP36JSDFXxEjA==
+Subject: [PATCH v2 5/6] net/handshake: Unpin sock->file if a handshake is
+ cancelled
 From: Chuck Lever <cel@kernel.org>
 To: kernel-tls-handshake@lists.linux.dev
 Cc: netdev@vger.kernel.org, dan.carpenter@linaro.org
-Date: Fri, 05 May 2023 20:46:54 -0400
+Date: Fri, 05 May 2023 20:47:13 -0400
 Message-ID: 
- <168333400429.7813.12377237975512449615.stgit@oracle-102.nfsv4bat.org>
+ <168333403089.7813.511134747683134976.stgit@oracle-102.nfsv4bat.org>
 In-Reply-To: 
  <168333373851.7813.11884763481187785511.stgit@oracle-102.nfsv4bat.org>
 References: 
@@ -54,26 +54,50 @@ Content-Transfer-Encoding: 7bit
 
 From: Chuck Lever <chuck.lever@oracle.com>
 
-Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+If user space never calls DONE, sock->file's reference count remains
+elevated. Enable sock->file to be freed eventually in this case.
+
+Reported-by: Jakub Kacinski <kuba@kernel.org>
 Fixes: 3b3009ea8abb ("net/handshake: Create a NETLINK service for handling handshake requests")
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- net/handshake/netlink.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/handshake/handshake.h |    1 +
+ net/handshake/request.c   |    4 ++++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
-index 11cc275d726a..e865fcf68433 100644
---- a/net/handshake/netlink.c
-+++ b/net/handshake/netlink.c
-@@ -48,7 +48,7 @@ int handshake_genl_notify(struct net *net, const struct handshake_proto *proto,
- 				proto->hp_handler_class))
- 		return -ESRCH;
+diff --git a/net/handshake/handshake.h b/net/handshake/handshake.h
+index 4dac965c99df..8aeaadca844f 100644
+--- a/net/handshake/handshake.h
++++ b/net/handshake/handshake.h
+@@ -31,6 +31,7 @@ struct handshake_req {
+ 	struct list_head		hr_list;
+ 	struct rhash_head		hr_rhash;
+ 	unsigned long			hr_flags;
++	struct file			*hr_file;
+ 	const struct handshake_proto	*hr_proto;
+ 	struct sock			*hr_sk;
+ 	void				(*hr_odestruct)(struct sock *sk);
+diff --git a/net/handshake/request.c b/net/handshake/request.c
+index 94d5cef3e048..d78d41abb3d9 100644
+--- a/net/handshake/request.c
++++ b/net/handshake/request.c
+@@ -239,6 +239,7 @@ int handshake_req_submit(struct socket *sock, struct handshake_req *req,
+ 	}
+ 	req->hr_odestruct = req->hr_sk->sk_destruct;
+ 	req->hr_sk->sk_destruct = handshake_sk_destruct;
++	req->hr_file = sock->file;
  
--	msg = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	msg = genlmsg_new(GENLMSG_DEFAULT_SIZE, flags);
- 	if (!msg)
- 		return -ENOMEM;
+ 	ret = -EOPNOTSUPP;
+ 	net = sock_net(req->hr_sk);
+@@ -334,6 +335,9 @@ bool handshake_req_cancel(struct sock *sk)
+ 		return false;
+ 	}
+ 
++	/* Request accepted and waiting for DONE */
++	fput(req->hr_file);
++
+ out_true:
+ 	trace_handshake_cancel(net, req, sk);
  
 
 
