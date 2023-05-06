@@ -1,794 +1,274 @@
-Return-Path: <netdev+bounces-702-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-703-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 899876F9221
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 14:42:40 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0B1CC6F922F
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 15:11:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AE1021C21A2F
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 12:42:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A2CD1281132
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 13:11:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B10A13D7A;
-	Sat,  6 May 2023 12:42:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A5EC8801;
+	Sat,  6 May 2023 13:11:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98A0A1FB6
-	for <netdev@vger.kernel.org>; Sat,  6 May 2023 12:42:36 +0000 (UTC)
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9201255BA
-	for <netdev@vger.kernel.org>; Sat,  6 May 2023 05:42:32 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-3f37a36b713so28381745e9.1
-        for <netdev@vger.kernel.org>; Sat, 06 May 2023 05:42:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1683376951; x=1685968951;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ETgLzuZWXDBo2DHuWZo+FP0Rii2eMT28R1ZVGASO7IE=;
-        b=f+MlINBUUQTtKqlEMgrIDKKzW2Xy5k96vPeNcj0TDariCtHMJjD3OYxKxS9sybVNXF
-         7xSlVc7lfvBH5dIUnk8X/H5n4EB0YwKXdP65ElwXC6nIFkQ6YJeYI8Oc+Xs2e5O5feMc
-         OvWfTgnENZEWqo+6an8tCNyjldAYub+MW8pbw3dqgxMU0auoHxwxG1zT62B61TywQ+73
-         vlarRD7RY0R5nDxMBvY5Is6mD53cbPZQHTu5yKoC4mJI46A/x7Q0/l9kzkudpgFc+Hyu
-         tCzKwncOP53nYZspJT2ItCcL6MDcCwHV6VelRyJbHRP05E0UHy6jbfPONktWS36AXf1q
-         SbWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683376951; x=1685968951;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ETgLzuZWXDBo2DHuWZo+FP0Rii2eMT28R1ZVGASO7IE=;
-        b=BmTPQJ20r6GEr89kOGaMkfEGqjYW+D+bqjclRb6OResob2FeeNeiTYMnCqbrUdsU3v
-         MrSojJKv2S0vYpC8/1w6UkC7Pojpnpz9/z9gDMVOsNMfeDIn2+7txDmlDpXgg/+Htw7b
-         BMrypfMqlgBsB4SBGPI6epskdT8WR9f6Fk8TEWC91pYupjDWUrY2QVoeJVNHkpOmuLUT
-         N8r77wd8qoyWylNaXnrVcR0ahqWVxxY7Cvpx+I9HQL3Zi0LonMGX+Y2TXV/ylo+y7Cko
-         niPbTuyucmrzIjMNIuu0jOo4njl8W8bpIbAzSUmzElux3C3kS0IUJcvmfwZM4x9gu7sl
-         c2HQ==
-X-Gm-Message-State: AC+VfDwYksDG4EqUUZ1mz58/vkG9J5hGmrfhoydX9fQT5B/5u5GrcITu
-	LNuVAGcQwZJz6KXskg5asxgVYg==
-X-Google-Smtp-Source: ACHHUZ4DB9W/qlrG1KUfME6RoG3W96oQFkowVAagb0oJbEjxqWQLEx10AfUVgGn0tXZQJ2RU89qa2w==
-X-Received: by 2002:a05:600c:2055:b0:3f1:806a:83d5 with SMTP id p21-20020a05600c205500b003f1806a83d5mr3116458wmg.20.1683376950783;
-        Sat, 06 May 2023 05:42:30 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id z24-20020a1cf418000000b003f3e50eb606sm10657841wma.13.2023.05.06.05.42.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 May 2023 05:42:29 -0700 (PDT)
-Date: Sat, 6 May 2023 14:42:28 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-Cc: Vadim Fedorenko <vadfed@meta.com>, Jakub Kicinski <kuba@kernel.org>,
-	Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Milena Olech <milena.olech@intel.com>,
-	Michal Michalik <michal.michalik@intel.com>,
-	linux-arm-kernel@lists.infradead.org, poros@redhat.com,
-	mschmidt@redhat.com, netdev@vger.kernel.org,
-	linux-clk@vger.kernel.org
-Subject: Re: [RFC PATCH v7 6/8] ptp_ocp: implement DPLL ops
-Message-ID: <ZFZLNLE567nhS6xs@nanopsycho>
-References: <20230428002009.2948020-1-vadfed@meta.com>
- <20230428002009.2948020-7-vadfed@meta.com>
- <ZFN6lwE2Up8xV+I6@nanopsycho>
- <11b00a89-0882-8583-d624-63d0d0b29c85@linux.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF29B1FD5;
+	Sat,  6 May 2023 13:11:14 +0000 (UTC)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C83A1A1E6;
+	Sat,  6 May 2023 06:11:10 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QD79Q4pt3zTk9v;
+	Sat,  6 May 2023 21:06:34 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Sat, 6 May
+ 2023 21:11:06 +0800
+Subject: Re: [PATCH RFC net-next/mm V3 1/2] page_pool: Remove workqueue in new
+ shutdown scheme
+From: Yunsheng Lin <linyunsheng@huawei.com>
+To: Jesper Dangaard Brouer <jbrouer@redhat.com>, Ilias Apalodimas
+	<ilias.apalodimas@linaro.org>, <netdev@vger.kernel.org>, Eric Dumazet
+	<eric.dumazet@gmail.com>, <linux-mm@kvack.org>, Mel Gorman
+	<mgorman@techsingularity.net>
+CC: <brouer@redhat.com>, <lorenzo@kernel.org>,
+	=?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+	<bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, Jakub
+ Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Andrew Morton
+	<akpm@linux-foundation.org>, <willy@infradead.org>
+References: <168269854650.2191653.8465259808498269815.stgit@firesoul>
+ <168269857929.2191653.13267688321246766547.stgit@firesoul>
+ <387f4653-1986-3ffe-65e7-448a59002ed0@huawei.com>
+ <3785321f-b2f8-d753-7efc-78ee40e6d0b6@redhat.com>
+ <fb8bbf84-20c2-c398-d972-949e909e2c51@huawei.com>
+Message-ID: <d7bb9ebf-4294-13a5-294d-5b9dcc821a07@huawei.com>
+Date: Sat, 6 May 2023 21:11:06 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <11b00a89-0882-8583-d624-63d0d0b29c85@linux.dev>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <fb8bbf84-20c2-c398-d972-949e909e2c51@huawei.com>
+Content-Type: multipart/mixed;
+	boundary="------------438291E38F866DE9078DBE4B"
+Content-Language: en-US
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-8.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Fri, May 05, 2023 at 03:43:08PM CEST, vadim.fedorenko@linux.dev wrote:
->On 04/05/2023 10:27, Jiri Pirko wrote:
->> Fri, Apr 28, 2023 at 02:20:07AM CEST, vadfed@meta.com wrote:
->> > From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
->> > 
->> > Implement basic DPLL operations in ptp_ocp driver as the
->> > simplest example of using new subsystem.
->> > 
->> > Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
->> > ---
->> > drivers/ptp/Kconfig   |   1 +
->> > drivers/ptp/ptp_ocp.c | 327 +++++++++++++++++++++++++++++++++++-------
->> > 2 files changed, 276 insertions(+), 52 deletions(-)
->> > 
->> > diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
->> > index b00201d81313..e3575c2e34dc 100644
->> > --- a/drivers/ptp/Kconfig
->> > +++ b/drivers/ptp/Kconfig
->> > @@ -177,6 +177,7 @@ config PTP_1588_CLOCK_OCP
->> > 	depends on COMMON_CLK
->> > 	select NET_DEVLINK
->> > 	select CRC16
->> > +	select DPLL
->> > 	help
->> > 	  This driver adds support for an OpenCompute time card.
->> > 
->> > diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
->> > index 2b63f3487645..100e5da0aeb3 100644
->> > --- a/drivers/ptp/ptp_ocp.c
->> > +++ b/drivers/ptp/ptp_ocp.c
->> > @@ -23,6 +23,7 @@
->> > #include <linux/mtd/mtd.h>
->> > #include <linux/nvmem-consumer.h>
->> > #include <linux/crc16.h>
->> > +#include <linux/dpll.h>
->> > 
->> > #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
->> > #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
->> > @@ -261,12 +262,21 @@ enum ptp_ocp_sma_mode {
->> > 	SMA_MODE_OUT,
->> > };
->> > 
->> > +static struct dpll_pin_frequency ptp_ocp_sma_freq[] = {
->> 
->> const
->
->Forgot about this one, will change it.
->
->> 
->> > +	DPLL_PIN_FREQUENCY_1PPS,
->> > +	DPLL_PIN_FREQUENCY_10MHZ,
->> > +	DPLL_PIN_FREQUENCY_IRIG_B,
->> > +	DPLL_PIN_FREQUENCY_DCF77,
->> > +};
->> > +
->> > struct ptp_ocp_sma_connector {
->> > 	enum	ptp_ocp_sma_mode mode;
->> > 	bool	fixed_fcn;
->> > 	bool	fixed_dir;
->> > 	bool	disabled;
->> > 	u8	default_fcn;
->> > +	struct dpll_pin		   *dpll_pin;
->> > +	struct dpll_pin_properties dpll_prop;
->> > };
->> > 
->> > struct ocp_attr_group {
->> > @@ -295,6 +305,7 @@ struct ptp_ocp_serial_port {
->> > 
->> > #define OCP_BOARD_ID_LEN		13
->> > #define OCP_SERIAL_LEN			6
->> > +#define OCP_SMA_NUM			4
->> > 
->> > struct ptp_ocp {
->> > 	struct pci_dev		*pdev;
->> > @@ -351,8 +362,9 @@ struct ptp_ocp {
->> > 	u32			ts_window_adjust;
->> > 	u64			fw_cap;
->> > 	struct ptp_ocp_signal	signal[4];
->> > -	struct ptp_ocp_sma_connector sma[4];
->> > +	struct ptp_ocp_sma_connector sma[OCP_SMA_NUM];
->> > 	const struct ocp_sma_op *sma_op;
->> > +	struct dpll_device *dpll;
->> > };
->> > 
->> > #define OCP_REQ_TIMESTAMP	BIT(0)
->> > @@ -836,6 +848,7 @@ static DEFINE_IDR(ptp_ocp_idr);
->> > struct ocp_selector {
->> > 	const char *name;
->> > 	int value;
->> > +	u64 frequency;
->> > };
->> > 
->> > static const struct ocp_selector ptp_ocp_clock[] = {
->> > @@ -856,31 +869,31 @@ static const struct ocp_selector ptp_ocp_clock[] = {
->> > #define SMA_SELECT_MASK		GENMASK(14, 0)
->> > 
->> > static const struct ocp_selector ptp_ocp_sma_in[] = {
->> > -	{ .name = "10Mhz",	.value = 0x0000 },
->> > -	{ .name = "PPS1",	.value = 0x0001 },
->> > -	{ .name = "PPS2",	.value = 0x0002 },
->> > -	{ .name = "TS1",	.value = 0x0004 },
->> > -	{ .name = "TS2",	.value = 0x0008 },
->> > -	{ .name = "IRIG",	.value = 0x0010 },
->> > -	{ .name = "DCF",	.value = 0x0020 },
->> > -	{ .name = "TS3",	.value = 0x0040 },
->> > -	{ .name = "TS4",	.value = 0x0080 },
->> > -	{ .name = "FREQ1",	.value = 0x0100 },
->> > -	{ .name = "FREQ2",	.value = 0x0200 },
->> > -	{ .name = "FREQ3",	.value = 0x0400 },
->> > -	{ .name = "FREQ4",	.value = 0x0800 },
->> > -	{ .name = "None",	.value = SMA_DISABLE },
->> > +	{ .name = "10Mhz",  .value = 0x0000,      .frequency = 10000000 },
->> > +	{ .name = "PPS1",   .value = 0x0001,      .frequency = 1 },
->> > +	{ .name = "PPS2",   .value = 0x0002,      .frequency = 1 },
->> > +	{ .name = "TS1",    .value = 0x0004,      .frequency = 0 },
->> > +	{ .name = "TS2",    .value = 0x0008,      .frequency = 0 },
->> > +	{ .name = "IRIG",   .value = 0x0010,      .frequency = 10000 },
->> > +	{ .name = "DCF",    .value = 0x0020,      .frequency = 77500 },
->> > +	{ .name = "TS3",    .value = 0x0040,      .frequency = 0 },
->> > +	{ .name = "TS4",    .value = 0x0080,      .frequency = 0 },
->> > +	{ .name = "FREQ1",  .value = 0x0100,      .frequency = 0 },
->> > +	{ .name = "FREQ2",  .value = 0x0200,      .frequency = 0 },
->> > +	{ .name = "FREQ3",  .value = 0x0400,      .frequency = 0 },
->> > +	{ .name = "FREQ4",  .value = 0x0800,      .frequency = 0 },
->> > +	{ .name = "None",   .value = SMA_DISABLE, .frequency = 0 },
->> > 	{ }
->> > };
->> > 
->> > static const struct ocp_selector ptp_ocp_sma_out[] = {
->> > -	{ .name = "10Mhz",	.value = 0x0000 },
->> > -	{ .name = "PHC",	.value = 0x0001 },
->> > -	{ .name = "MAC",	.value = 0x0002 },
->> > -	{ .name = "GNSS1",	.value = 0x0004 },
->> > -	{ .name = "GNSS2",	.value = 0x0008 },
->> > -	{ .name = "IRIG",	.value = 0x0010 },
->> > -	{ .name = "DCF",	.value = 0x0020 },
->> > +	{ .name = "10Mhz",	.value = 0x0000,  .frequency = 10000000 },
->> > +	{ .name = "PHC",	.value = 0x0001,  .frequency = 1 },
->> > +	{ .name = "MAC",	.value = 0x0002,  .frequency = 1 },
->> > +	{ .name = "GNSS1",	.value = 0x0004,  .frequency = 1 },
->> > +	{ .name = "GNSS2",	.value = 0x0008,  .frequency = 1 },
->> > +	{ .name = "IRIG",	.value = 0x0010,  .frequency = 10000 },
->> > +	{ .name = "DCF",	.value = 0x0020,  .frequency = 77000 },
->> > 	{ .name = "GEN1",	.value = 0x0040 },
->> > 	{ .name = "GEN2",	.value = 0x0080 },
->> > 	{ .name = "GEN3",	.value = 0x0100 },
->> > @@ -891,15 +904,15 @@ static const struct ocp_selector ptp_ocp_sma_out[] = {
->> > };
->> > 
->> > static const struct ocp_selector ptp_ocp_art_sma_in[] = {
->> > -	{ .name = "PPS1",	.value = 0x0001 },
->> > -	{ .name = "10Mhz",	.value = 0x0008 },
->> > +	{ .name = "PPS1",	.value = 0x0001,  .frequency = 1 },
->> > +	{ .name = "10Mhz",	.value = 0x0008,  .frequency = 1000000 },
->> > 	{ }
->> > };
->> > 
->> > static const struct ocp_selector ptp_ocp_art_sma_out[] = {
->> > -	{ .name = "PHC",	.value = 0x0002 },
->> > -	{ .name = "GNSS",	.value = 0x0004 },
->> > -	{ .name = "10Mhz",	.value = 0x0010 },
->> > +	{ .name = "PHC",	.value = 0x0002,  .frequency = 1 },
->> > +	{ .name = "GNSS",	.value = 0x0004,  .frequency = 1 },
->> > +	{ .name = "10Mhz",	.value = 0x0010,  .frequency = 10000000 },
->> > 	{ }
->> > };
->> > 
->> > @@ -2283,22 +2296,34 @@ ptp_ocp_sma_fb_set_inputs(struct ptp_ocp *bp, int sma_nr, u32 val)
->> > static void
->> > ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
->> > {
->> > +	struct dpll_pin_properties prop = {
->> 
->> Why don't you have this as static const outside the function?
->> 
->
->Because I'm changing label string for every pin. I cannot change it in
->the const object.
+--------------438291E38F866DE9078DBE4B
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
-No you don't. You just copy prop to bp->sma[i].dpll_prop. Prop does not
-change.
+On 2023/5/5 8:54, Yunsheng Lin wrote:
+> It is not exactly the kind of refcnt bias trick in my mind, I was thinking
+> about using pool->pages_state_hold_cnt as refcnt bias and merge it to
+> pool->pages_state_release_cnt as needed, maybe I need to try to implement
+> that to see if it turn out to be what I want it to be.
+> 
 
+I did try implementing the above idea, not sure is there anything missing
+yet as I only do the compile testing.
 
->
->> 
->> > +		.label = NULL,
->> 
->> Pointless init.
->
->Agree
->
->> > +		.type = DPLL_PIN_TYPE_EXT,
->> > +		.capabilities = DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE,
->> > +		.freq_supported_num = ARRAY_SIZE(ptp_ocp_sma_freq),
->> > +		.freq_supported = ptp_ocp_sma_freq,
->> > +
->> > +	};
->> > 	u32 reg;
->> > 	int i;
->> > 
->> > 	/* defaults */
->> > +	for (i = 0; i < OCP_SMA_NUM; i++) {
->> > +		bp->sma[i].default_fcn = i & 1;
->> > +		bp->sma[i].dpll_prop = prop;
->> > +		bp->sma[i].dpll_prop.label = bp->ptp_info.pin_config[i].name;
->> > +	}
->> > 	bp->sma[0].mode = SMA_MODE_IN;
->> > 	bp->sma[1].mode = SMA_MODE_IN;
->> > 	bp->sma[2].mode = SMA_MODE_OUT;
->> > 	bp->sma[3].mode = SMA_MODE_OUT;
->> > -	for (i = 0; i < 4; i++)
->> > -		bp->sma[i].default_fcn = i & 1;
->> > -
->> > 	/* If no SMA1 map, the pin functions and directions are fixed. */
->> > 	if (!bp->sma_map1) {
->> > -		for (i = 0; i < 4; i++) {
->> > +		for (i = 0; i < OCP_SMA_NUM; i++) {
->> > 			bp->sma[i].fixed_fcn = true;
->> > 			bp->sma[i].fixed_dir = true;
->> > +			bp->sma[1].dpll_prop.capabilities &=
->> > +				~DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE;
->> > 		}
->> > 		return;
->> > 	}
->> > @@ -2308,7 +2333,7 @@ ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
->> > 	 */
->> > 	reg = ioread32(&bp->sma_map2->gpio2);
->> > 	if (reg == 0xffffffff) {
->> > -		for (i = 0; i < 4; i++)
->> > +		for (i = 0; i < OCP_SMA_NUM; i++)
->> > 			bp->sma[i].fixed_dir = true;
->> > 	} else {
->> > 		reg = ioread32(&bp->sma_map1->gpio1);
->> > @@ -2330,7 +2355,7 @@ static const struct ocp_sma_op ocp_fb_sma_op = {
->> > };
->> > 
->> > static int
->> > -ptp_ocp_fb_set_pins(struct ptp_ocp *bp)
->> > +ptp_ocp_set_pins(struct ptp_ocp *bp)
->> > {
->> > 	struct ptp_pin_desc *config;
->> > 	int i;
->> > @@ -2397,16 +2422,16 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
->> > 
->> > 	ptp_ocp_tod_init(bp);
->> > 	ptp_ocp_nmea_out_init(bp);
->> > -	ptp_ocp_sma_init(bp);
->> > 	ptp_ocp_signal_init(bp);
->> > 
->> > 	err = ptp_ocp_attr_group_add(bp, fb_timecard_groups);
->> > 	if (err)
->> > 		return err;
->> > 
->> > -	err = ptp_ocp_fb_set_pins(bp);
->> > +	err = ptp_ocp_set_pins(bp);
->> > 	if (err)
->> > 		return err;
->> > +	ptp_ocp_sma_init(bp);
->> > 
->> > 	return ptp_ocp_init_clock(bp);
->> > }
->> > @@ -2446,6 +2471,14 @@ ptp_ocp_register_resources(struct ptp_ocp *bp, kernel_ulong_t driver_data)
->> > static void
->> > ptp_ocp_art_sma_init(struct ptp_ocp *bp)
->> > {
->> > +	struct dpll_pin_properties prop = {
->> > +		.label = NULL,
->> > +		.type = DPLL_PIN_TYPE_EXT,
->> > +		.capabilities = 0,
->> 
->> Same comment as to the similar prop struct above. Plus another pointless
->> init here.
->> 
->
->Will remove pointless init.
->
->> 
->> > +		.freq_supported_num = ARRAY_SIZE(ptp_ocp_sma_freq),
->> > +		.freq_supported = ptp_ocp_sma_freq,
->> > +
->> > +	};
->> > 	u32 reg;
->> > 	int i;
->> > 
->> > @@ -2460,16 +2493,16 @@ ptp_ocp_art_sma_init(struct ptp_ocp *bp)
->> > 	bp->sma[2].default_fcn = 0x10;	/* OUT: 10Mhz */
->> > 	bp->sma[3].default_fcn = 0x02;	/* OUT: PHC */
->> > 
->> > -	/* If no SMA map, the pin functions and directions are fixed. */
->> > -	if (!bp->art_sma) {
->> > -		for (i = 0; i < 4; i++) {
->> > +
->> > +	for (i = 0; i < OCP_SMA_NUM; i++) {
->> > +		/* If no SMA map, the pin functions and directions are fixed. */
->> > +		bp->sma[i].dpll_prop = prop;
->> > +		bp->sma[i].dpll_prop.label = bp->ptp_info.pin_config[i].name;
->> > +		if (!bp->art_sma) {
->> > 			bp->sma[i].fixed_fcn = true;
->> > 			bp->sma[i].fixed_dir = true;
->> > +			continue;
->> > 		}
->> > -		return;
->> > -	}
->> > -
->> > -	for (i = 0; i < 4; i++) {
->> > 		reg = ioread32(&bp->art_sma->map[i].gpio);
->> > 
->> > 		switch (reg & 0xff) {
->> > @@ -2480,9 +2513,13 @@ ptp_ocp_art_sma_init(struct ptp_ocp *bp)
->> > 		case 1:
->> > 		case 8:
->> > 			bp->sma[i].mode = SMA_MODE_IN;
->> > +			bp->sma[i].dpll_prop.capabilities =
->> > +				DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE;
->> > 			break;
->> > 		default:
->> > 			bp->sma[i].mode = SMA_MODE_OUT;
->> > +			bp->sma[i].dpll_prop.capabilities =
->> > +				DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE;
->> > 			break;
->> > 		}
->> > 	}
->> > @@ -2549,6 +2586,9 @@ ptp_ocp_art_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
->> > 	/* Enable MAC serial port during initialisation */
->> > 	iowrite32(1, &bp->board_config->mro50_serial_activate);
->> > 
->> > +	err = ptp_ocp_set_pins(bp);
->> > +	if (err)
->> > +		return err;
->> > 	ptp_ocp_sma_init(bp);
->> > 
->> > 	err = ptp_ocp_attr_group_add(bp, art_timecard_groups);
->> > @@ -2690,16 +2730,9 @@ sma4_show(struct device *dev, struct device_attribute *attr, char *buf)
->> > }
->> > 
->> > static int
->> > -ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
->> > +ptp_ocp_sma_store_val(struct ptp_ocp *bp, int val, enum ptp_ocp_sma_mode mode, int sma_nr)
->> > {
->> > 	struct ptp_ocp_sma_connector *sma = &bp->sma[sma_nr - 1];
->> > -	enum ptp_ocp_sma_mode mode;
->> > -	int val;
->> > -
->> > -	mode = sma->mode;
->> > -	val = sma_parse_inputs(bp->sma_op->tbl, buf, &mode);
->> > -	if (val < 0)
->> > -		return val;
->> > 
->> > 	if (sma->fixed_dir && (mode != sma->mode || val & SMA_DISABLE))
->> > 		return -EOPNOTSUPP;
->> > @@ -2734,6 +2767,20 @@ ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
->> > 	return val;
->> > }
->> > 
->> > +static int
->> > +ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
->> > +{
->> > +	struct ptp_ocp_sma_connector *sma = &bp->sma[sma_nr - 1];
->> > +	enum ptp_ocp_sma_mode mode;
->> > +	int val;
->> > +
->> > +	mode = sma->mode;
->> > +	val = sma_parse_inputs(bp->sma_op->tbl, buf, &mode);
->> > +	if (val < 0)
->> > +		return val;
->> > +	return ptp_ocp_sma_store_val(bp, val, mode, sma_nr);
->> > +}
->> > +
->> > static ssize_t
->> > sma1_store(struct device *dev, struct device_attribute *attr,
->> > 	   const char *buf, size_t count)
->> > @@ -4172,12 +4219,148 @@ ptp_ocp_detach(struct ptp_ocp *bp)
->> > 	device_unregister(&bp->dev);
->> > }
->> > 
->> > +static int ptp_ocp_dpll_lock_status_get(const struct dpll_device *dpll,
->> > +					void *priv,
->> > +					enum dpll_lock_status *status,
->> > +					struct netlink_ext_ack *extack)
->> > +{
->> > +	struct ptp_ocp *bp = priv;
->> > +	int sync;
->> > +
->> > +	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
->> > +	*status = sync ? DPLL_LOCK_STATUS_LOCKED : DPLL_LOCK_STATUS_UNLOCKED;
->> 
->> Does your device support event delivery in case of the status change?
->> ice and mlx5 drivers do poll for changes in this area anyway. It's a
->> part of this patchset. You should do the same if your device does
->> not support events.
->> 
->> Could you please implement notifications using
->> dpll_device_notify() for status change and dpll_pin_notify() for pin
->> state change?
->> 
->
->We are working on implementation of interrupt-based notifications, that's why
->I didn't implement polling code. Hopefully it will be ready before the
->non-RFC patchset submission.
+--------------438291E38F866DE9078DBE4B
+Content-Type: text/plain; charset="UTF-8"; name="page_pool_remove_wq.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="page_pool_remove_wq.patch"
 
-Do polling implementation if not and replace by interrupt driver later.
-Point is, there have to be notifications from day 1.
-
-
->
->> 
->> > +
->> > +	return 0;
->> > +}
->> > +
->> > +static int ptp_ocp_dpll_source_idx_get(const struct dpll_device *dpll,
->> > +				       void *priv, u32 *idx,
->> > +				       struct netlink_ext_ack *extack)
->> > +{
->> > +	struct ptp_ocp *bp = priv;
->> > +
->> > +	if (bp->pps_select) {
->> > +		*idx = ioread32(&bp->pps_select->gpio1);
->> > +		return 0;
->> > +	}
->> > +	return -EINVAL;
->> > +}
->> > +
->> > +static int ptp_ocp_dpll_mode_get(const struct dpll_device *dpll, void *priv,
->> > +				 u32 *mode, struct netlink_ext_ack *extack)
->> > +{
->> > +	*mode = DPLL_MODE_AUTOMATIC;
->> > +	return 0;
->> > +}
->> > +
->> > +static bool ptp_ocp_dpll_mode_supported(const struct dpll_device *dpll,
->> > +					void *priv, const enum dpll_mode mode,
->> > +					struct netlink_ext_ack *extack)
->> > +{
->> > +	return mode == DPLL_MODE_AUTOMATIC;
->> > +}
->> > +
->> > +static int ptp_ocp_dpll_direction_get(const struct dpll_pin *pin,
->> > +				      void *pin_priv,
->> > +				      const struct dpll_device *dpll,
->> > +				      void *priv,
->> > +				      enum dpll_pin_direction *direction,
->> > +				      struct netlink_ext_ack *extack)
->> > +{
->> > +	struct ptp_ocp_sma_connector *sma = pin_priv;
->> > +
->> > +	*direction = sma->mode == SMA_MODE_IN ?
->> > +				  DPLL_PIN_DIRECTION_SOURCE :
->> > +				  DPLL_PIN_DIRECTION_OUTPUT;
->> > +	return 0;
->> > +}
->> > +
->> > +static int ptp_ocp_dpll_direction_set(const struct dpll_pin *pin,
->> > +				      void *pin_priv,
->> > +				      const struct dpll_device *dpll,
->> > +				      void *dpll_priv,
->> > +				      enum dpll_pin_direction direction,
->> > +				      struct netlink_ext_ack *extack)
->> > +{
->> > +	struct ptp_ocp_sma_connector *sma = pin_priv;
->> > +	struct ptp_ocp *bp = dpll_priv;
->> > +	enum ptp_ocp_sma_mode mode;
->> > +	int sma_nr = (sma - bp->sma);
->> > +
->> > +	if (sma->fixed_dir)
->> 
->> I believe that this is a pointless check as DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE
->> is not set and therefore the check in dpll_pin_direction_set() will be
->> true and -EOPNOTSUPP will be returned from there.
->> Remove this.
->
->Yep, will do it.
->
->> 
->> > +		return -EOPNOTSUPP;
->> > +	mode = direction == DPLL_PIN_DIRECTION_SOURCE ?
->> > +			    SMA_MODE_IN : SMA_MODE_OUT;
->> > +	return ptp_ocp_sma_store_val(bp, 0, mode, sma_nr);
->> 
->> You need sma_nr just here. Why can't you change ptp_ocp_sma_store_val()
->> to accept struct ptp_ocp_sma_connector * instead avoiding the need for
->> tne sma_nr completely?
->> 
->
->I wanted to add minimal changes to the driver, I will consider changing this
->as a separate net-next patch.
-
-Hmm, you do change ptp_ocp_sma_store_val() here anyway. Could be an
-extra patch in this patchset before this one if you want to have it
-separate.
-
-
->
->> 
->> > +}
->> > +
->> > +static int ptp_ocp_dpll_frequency_set(const struct dpll_pin *pin,
->> > +				      void *pin_priv,
->> > +				      const struct dpll_device *dpll,
->> > +				      void *dpll_priv, u64 frequency,
->> > +				      struct netlink_ext_ack *extack)
->> > +{
->> > +	struct ptp_ocp_sma_connector *sma = pin_priv;
->> > +	struct ptp_ocp *bp = dpll_priv;
->> > +	const struct ocp_selector *tbl;
->> > +	int sma_nr = (sma - bp->sma);
->> > +	int val, i;
->> > +
->> > +	if (sma->fixed_fcn)
->> 
->> In that case, just fill up a single frequency in the properties,
->> avoid this check-fail and let the dpll core handle it.
->> 
->
->Makes sense.
->
->> 
->> > +		return -EOPNOTSUPP;
->> > +
->> > +	tbl = bp->sma_op->tbl[sma->mode];
->> > +	for (i = 0; tbl[i].name; i++)
->> > +		if (tbl[i].frequency == frequency)
->> > +			return ptp_ocp_sma_store_val(bp, val, sma->mode, sma_nr);
->> > +	return -EINVAL;
->> > +}
->> > +
->> > +static int ptp_ocp_dpll_frequency_get(const struct dpll_pin *pin,
->> > +				      void *pin_priv,
->> > +				      const struct dpll_device *dpll,
->> > +				      void *dpll_priv, u64 *frequency,
->> > +				      struct netlink_ext_ack *extack)
->> > +{
->> > +	struct ptp_ocp_sma_connector *sma = pin_priv;
->> > +	struct ptp_ocp *bp = dpll_priv;
->> > +	const struct ocp_selector *tbl;
->> > +	int sma_nr = (sma - bp->sma);
->> 
->> 1) void "()"s here.
->> 2) why don't you fill the sma_nr in struct ptp_ocp_sma_connector to make
->>     this easier to follow? IDK, just a suggestion, take or leave.
->> 
->> Same applies to the the rest of similar occurances above.
->> 
->
->Will do it, yes.
->
->> 
->> > +	u32 val;
->> > +	int i;
->> > +
->> > +	val = bp->sma_op->get(bp, sma_nr);
->> > +	tbl = bp->sma_op->tbl[sma->mode];
->> > +	for (i = 0; tbl[i].name; i++)
->> > +		if (val == tbl[i].value) {
->> > +			*frequency = tbl[i].frequency;
->> > +			return 0;
->> > +		}
->> > +
->> > +	return -EINVAL;
->> > +}
->> > +
->> > +static const struct dpll_device_ops dpll_ops = {
->> > +	.lock_status_get = ptp_ocp_dpll_lock_status_get,
->> > +	.source_pin_idx_get = ptp_ocp_dpll_source_idx_get,
->> 
->> This op is a leftover, in dpll core it is not called. This was removed
->> and agreed that drivers should implement state_on_dpll_get() op for pins
->> to see which one is connected.
->> 
->> Please fix here and remove the leftover from DPLL patch #2 as well.
-
-Did you miss this by any chance?
-
-
->> 
->> 
->> > +	.mode_get = ptp_ocp_dpll_mode_get,
->> > +	.mode_supported = ptp_ocp_dpll_mode_supported,
->> > +};
->> > +
->> > +static const struct dpll_pin_ops dpll_pins_ops = {
->> > +	.frequency_get = ptp_ocp_dpll_frequency_get,
->> > +	.frequency_set = ptp_ocp_dpll_frequency_set,
->> > +	.direction_get = ptp_ocp_dpll_direction_get,
->> > +	.direction_set = ptp_ocp_dpll_direction_set,
->> > +};
->> > +
->> > static int
->> > ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->> > {
->> > 	struct devlink *devlink;
->> > 	struct ptp_ocp *bp;
->> > -	int err;
->> > +	int err, i;
->> > +	u64 clkid;
->> > 
->> > 	devlink = devlink_alloc(&ptp_ocp_devlink_ops, sizeof(*bp), &pdev->dev);
->> > 	if (!devlink) {
->> > @@ -4227,8 +4410,39 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->> > 
->> > 	ptp_ocp_info(bp);
->> > 	devlink_register(devlink);
->> > -	return 0;
->> > 
->> > +	clkid = pci_get_dsn(pdev);
->> > +	bp->dpll = dpll_device_get(clkid, 0, THIS_MODULE);
->> 
->> I suggested this the last time, but again: Could you please:
->> 1) rename dpll_device_get to __dpll_device_get
->> 2) introduce dpll_device_get as a macro filling up THIS_MODULE
->> 
->> Then drivers will just call always:
->> bp->dpll = dpll_device_get(clkid, 0);
->> and the macro will fillup the module automatically.
->> 
->> Please do the same for dpll_pin_get()
->> 
->
->Not sure why I have missed this part, but sure will do it.
-
-Awesome.
-
-
->
->> 
->> > +	if (IS_ERR(bp->dpll)) {
->> > +		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
->> 
->> You need to fix your error path to call devlink_unregister() in this
->> case.
->> 
->> 
->> > +		goto out;
->> > +	}
->> > +
->> > +	err = dpll_device_register(bp->dpll, DPLL_TYPE_PPS, &dpll_ops, bp, &pdev->dev);
->> > +	if (err)
->> 
->> You need to fix your error path to call dpll_device_put() in this
->> case.
->> 
->
->Ok, I'll re-check and update the error path for the next version.
->
->> 
->> > +		goto out;
->> > +
->> > +	for (i = 0; i < OCP_SMA_NUM; i++) {
->> > +		bp->sma[i].dpll_pin = dpll_pin_get(clkid, i, THIS_MODULE, &bp->sma[i].dpll_prop);
->> > +		if (IS_ERR(bp->sma[i].dpll_pin))
->> > +			goto out_dpll;
->> > +
->> > +		err = dpll_pin_register(bp->dpll, bp->sma[i].dpll_pin, &dpll_pins_ops,
->> > +					&bp->sma[i], NULL);
->> > +		if (err) {
->> > +			dpll_pin_put(bp->sma[i].dpll_pin);
->> > +			goto out_dpll;
->> > +		}
->> > +	}
->> > +
->> > +	return 0;
->> > +out_dpll:
->> > +	while (i) {
->> > +		--i;
->> 
->> 	while (i--) {
->> 	?
->> 
->> > +		dpll_pin_unregister(bp->dpll, bp->sma[i].dpll_pin, &dpll_pins_ops, &bp->sma[i]);
->> > +		dpll_pin_put(bp->sma[i].dpll_pin);
->> > +	}
->> > +	dpll_device_put(bp->dpll);
->> > out:
->> > 	ptp_ocp_detach(bp);
->> > out_disable:
->> > @@ -4243,7 +4457,16 @@ ptp_ocp_remove(struct pci_dev *pdev)
->> > {
->> > 	struct ptp_ocp *bp = pci_get_drvdata(pdev);
->> > 	struct devlink *devlink = priv_to_devlink(bp);
->> > +	int i;
->> > 
->> > +	for (i = 0; i < OCP_SMA_NUM; i++) {
->> > +		if (bp->sma[i].dpll_pin) {
->> 
->> Remove this pointless check. It is always true.
->
->Agree.
->
->> 
->> 
->> > +			dpll_pin_unregister(bp->dpll, bp->sma[i].dpll_pin, &dpll_pins_ops, bp);
->> > +			dpll_pin_put(bp->sma[i].dpll_pin);
->> > +		}
->> > +	}
->> > +	dpll_device_unregister(bp->dpll, &dpll_ops, bp);
->> > +	dpll_device_put(bp->dpll);
->> > 	devlink_unregister(devlink);
->> > 	ptp_ocp_detach(bp);
->> > 	pci_disable_device(pdev);
->> > -- 
->> > 2.34.1
->> > 
->
+ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbmV0L3BhZ2VfcG9vbC5oIGIvaW5jbHVkZS9uZXQvcGFn
+ZV9wb29sLmgKaW5kZXggYzhlYzJmMzQ3MjJiLi5iZDhkYWNjMmFkZmQgMTAwNjQ0Ci0tLSBh
+L2luY2x1ZGUvbmV0L3BhZ2VfcG9vbC5oCisrKyBiL2luY2x1ZGUvbmV0L3BhZ2VfcG9vbC5o
+CkBAIC01MCw2ICs1MCwxMCBAQAogCQkJCSBQUF9GTEFHX0RNQV9TWU5DX0RFViB8XAogCQkJ
+CSBQUF9GTEFHX1BBR0VfRlJBRykKIAorCisvKiBJbnRlcm5hbCBmbGFnOiBQUCBpbiBzaHV0
+ZG93biBwaGFzZSwgd2FpdGluZyBmb3IgaW5mbGlnaHQgcGFnZXMgKi8KKyNkZWZpbmUgUFBf
+RkxBR19TSFVURE9XTglCSVQoOCkKKwogLyoKICAqIEZhc3QgYWxsb2NhdGlvbiBzaWRlIGNh
+Y2hlIGFycmF5L3N0YWNrCiAgKgpAQCAtMTUxLDExICsxNTUsNiBAQCBzdGF0aWMgaW5saW5l
+IHU2NCAqcGFnZV9wb29sX2V0aHRvb2xfc3RhdHNfZ2V0KHU2NCAqZGF0YSwgdm9pZCAqc3Rh
+dHMpCiBzdHJ1Y3QgcGFnZV9wb29sIHsKIAlzdHJ1Y3QgcGFnZV9wb29sX3BhcmFtcyBwOwog
+Ci0Jc3RydWN0IGRlbGF5ZWRfd29yayByZWxlYXNlX2R3OwotCXZvaWQgKCpkaXNjb25uZWN0
+KSh2b2lkICopOwotCXVuc2lnbmVkIGxvbmcgZGVmZXJfc3RhcnQ7Ci0JdW5zaWduZWQgbG9u
+ZyBkZWZlcl93YXJuOwotCiAJdTMyIHBhZ2VzX3N0YXRlX2hvbGRfY250OwogCXVuc2lnbmVk
+IGludCBmcmFnX29mZnNldDsKIAlzdHJ1Y3QgcGFnZSAqZnJhZ19wYWdlOwpAQCAtMTY1LDYg
+KzE2NCw3IEBAIHN0cnVjdCBwYWdlX3Bvb2wgewogCS8qIHRoZXNlIHN0YXRzIGFyZSBpbmNy
+ZW1lbnRlZCB3aGlsZSBpbiBzb2Z0aXJxIGNvbnRleHQgKi8KIAlzdHJ1Y3QgcGFnZV9wb29s
+X2FsbG9jX3N0YXRzIGFsbG9jX3N0YXRzOwogI2VuZGlmCisJdm9pZCAoKmRpc2Nvbm5lY3Qp
+KHZvaWQgKik7CiAJdTMyIHhkcF9tZW1faWQ7CiAKIAkvKgpAQCAtMjA2LDggKzIwNiw2IEBA
+IHN0cnVjdCBwYWdlX3Bvb2wgewogCSAqIHJlZmNudCBzZXJ2ZXMgcHVycG9zZSBpcyB0byBz
+aW1wbGlmeSBkcml2ZXJzIGVycm9yIGhhbmRsaW5nLgogCSAqLwogCXJlZmNvdW50X3QgdXNl
+cl9jbnQ7Ci0KLQl1NjQgZGVzdHJveV9jbnQ7CiB9OwogCiBzdHJ1Y3QgcGFnZSAqcGFnZV9w
+b29sX2FsbG9jX3BhZ2VzKHN0cnVjdCBwYWdlX3Bvb2wgKnBvb2wsIGdmcF90IGdmcCk7CmRp
+ZmYgLS1naXQgYS9pbmNsdWRlL3RyYWNlL2V2ZW50cy9wYWdlX3Bvb2wuaCBiL2luY2x1ZGUv
+dHJhY2UvZXZlbnRzL3BhZ2VfcG9vbC5oCmluZGV4IGNhNTM0NTAxMTU4Yi4uMjAwZjUzOWYx
+YTcwIDEwMDY0NAotLS0gYS9pbmNsdWRlL3RyYWNlL2V2ZW50cy9wYWdlX3Bvb2wuaAorKysg
+Yi9pbmNsdWRlL3RyYWNlL2V2ZW50cy9wYWdlX3Bvb2wuaApAQCAtMjMsNyArMjMsNiBAQCBU
+UkFDRV9FVkVOVChwYWdlX3Bvb2xfcmVsZWFzZSwKIAkJX19maWVsZChzMzIsCWluZmxpZ2h0
+KQogCQlfX2ZpZWxkKHUzMiwJaG9sZCkKIAkJX19maWVsZCh1MzIsCXJlbGVhc2UpCi0JCV9f
+ZmllbGQodTY0LAljbnQpCiAJKSwKIAogCVRQX2Zhc3RfYXNzaWduKApAQCAtMzEsMTIgKzMw
+LDExIEBAIFRSQUNFX0VWRU5UKHBhZ2VfcG9vbF9yZWxlYXNlLAogCQlfX2VudHJ5LT5pbmZs
+aWdodAk9IGluZmxpZ2h0OwogCQlfX2VudHJ5LT5ob2xkCQk9IGhvbGQ7CiAJCV9fZW50cnkt
+PnJlbGVhc2UJPSByZWxlYXNlOwotCQlfX2VudHJ5LT5jbnQJCT0gcG9vbC0+ZGVzdHJveV9j
+bnQ7CiAJKSwKIAotCVRQX3ByaW50aygicGFnZV9wb29sPSVwIGluZmxpZ2h0PSVkIGhvbGQ9
+JXUgcmVsZWFzZT0ldSBjbnQ9JWxsdSIsCisJVFBfcHJpbnRrKCJwYWdlX3Bvb2w9JXAgaW5m
+bGlnaHQ9JWQgaG9sZD0ldSByZWxlYXNlPSV1IiwKIAkJX19lbnRyeS0+cG9vbCwgX19lbnRy
+eS0+aW5mbGlnaHQsIF9fZW50cnktPmhvbGQsCi0JCV9fZW50cnktPnJlbGVhc2UsIF9fZW50
+cnktPmNudCkKKwkJX19lbnRyeS0+cmVsZWFzZSkKICk7CiAKIFRSQUNFX0VWRU5UKHBhZ2Vf
+cG9vbF9zdGF0ZV9yZWxlYXNlLApkaWZmIC0tZ2l0IGEvbmV0L2NvcmUvcGFnZV9wb29sLmMg
+Yi9uZXQvY29yZS9wYWdlX3Bvb2wuYwppbmRleCBlMjEyZTlkN2VkY2IuLjZiMzM5M2YwYzE5
+NCAxMDA2NDQKLS0tIGEvbmV0L2NvcmUvcGFnZV9wb29sLmMKKysrIGIvbmV0L2NvcmUvcGFn
+ZV9wb29sLmMKQEAgLTE5MCw3ICsxOTAsOCBAQCBzdGF0aWMgaW50IHBhZ2VfcG9vbF9pbml0
+KHN0cnVjdCBwYWdlX3Bvb2wgKnBvb2wsCiAJaWYgKHB0cl9yaW5nX2luaXQoJnBvb2wtPnJp
+bmcsIHJpbmdfcXNpemUsIEdGUF9LRVJORUwpIDwgMCkKIAkJcmV0dXJuIC1FTk9NRU07CiAK
+LQlhdG9taWNfc2V0KCZwb29sLT5wYWdlc19zdGF0ZV9yZWxlYXNlX2NudCwgMCk7CisJYXRv
+bWljX3NldCgmcG9vbC0+cGFnZXNfc3RhdGVfcmVsZWFzZV9jbnQsIElOVF9NQVggLyAyKTsK
+Kwlwb29sLT5wYWdlc19zdGF0ZV9ob2xkX2NudCA9IElOVF9NQVggLyAyOwogCiAJLyogRHJp
+dmVyIGNhbGxpbmcgcGFnZV9wb29sX2NyZWF0ZSgpIGFsc28gY2FsbCBwYWdlX3Bvb2xfZGVz
+dHJveSgpICovCiAJcmVmY291bnRfc2V0KCZwb29sLT51c2VyX2NudCwgMSk7CkBAIC0zNDQs
+NiArMzQ1LDE1IEBAIHN0YXRpYyB2b2lkIHBhZ2VfcG9vbF9jbGVhcl9wcF9pbmZvKHN0cnVj
+dCBwYWdlICpwYWdlKQogCXBhZ2UtPnBwID0gTlVMTDsKIH0KIAorc3RhdGljIHZvaWQgcGFn
+ZV9wb29sX2hvbGRfY250X2RlYyhzdHJ1Y3QgcGFnZV9wb29sICpwb29sKQoreworCWlmIChs
+aWtlbHkoLS1wb29sLT5wYWdlc19zdGF0ZV9ob2xkX2NudCkpCisJCXJldHVybjsKKworCXBv
+b2wtPnBhZ2VzX3N0YXRlX2hvbGRfY250ID0gSU5UX01BWCAvIDI7CisJYXRvbWljX2FkZChJ
+TlRfTUFYIC8gMiwgJnBvb2wtPnBhZ2VzX3N0YXRlX3JlbGVhc2VfY250KTsKK30KKwogc3Rh
+dGljIHN0cnVjdCBwYWdlICpfX3BhZ2VfcG9vbF9hbGxvY19wYWdlX29yZGVyKHN0cnVjdCBw
+YWdlX3Bvb2wgKnBvb2wsCiAJCQkJCQkgZ2ZwX3QgZ2ZwKQogewpAQCAtMzY0LDcgKzM3NCw4
+IEBAIHN0YXRpYyBzdHJ1Y3QgcGFnZSAqX19wYWdlX3Bvb2xfYWxsb2NfcGFnZV9vcmRlcihz
+dHJ1Y3QgcGFnZV9wb29sICpwb29sLAogCXBhZ2VfcG9vbF9zZXRfcHBfaW5mbyhwb29sLCBw
+YWdlKTsKIAogCS8qIFRyYWNrIGhvdyBtYW55IHBhZ2VzIGFyZSBoZWxkICdpbi1mbGlnaHQn
+ICovCi0JcG9vbC0+cGFnZXNfc3RhdGVfaG9sZF9jbnQrKzsKKwlwYWdlX3Bvb2xfaG9sZF9j
+bnRfZGVjKHBvb2wpOworCiAJdHJhY2VfcGFnZV9wb29sX3N0YXRlX2hvbGQocG9vbCwgcGFn
+ZSwgcG9vbC0+cGFnZXNfc3RhdGVfaG9sZF9jbnQpOwogCXJldHVybiBwYWdlOwogfQpAQCAt
+NDEwLDcgKzQyMSw3IEBAIHN0YXRpYyBzdHJ1Y3QgcGFnZSAqX19wYWdlX3Bvb2xfYWxsb2Nf
+cGFnZXNfc2xvdyhzdHJ1Y3QgcGFnZV9wb29sICpwb29sLAogCQlwYWdlX3Bvb2xfc2V0X3Bw
+X2luZm8ocG9vbCwgcGFnZSk7CiAJCXBvb2wtPmFsbG9jLmNhY2hlW3Bvb2wtPmFsbG9jLmNv
+dW50KytdID0gcGFnZTsKIAkJLyogVHJhY2sgaG93IG1hbnkgcGFnZXMgYXJlIGhlbGQgJ2lu
+LWZsaWdodCcgKi8KLQkJcG9vbC0+cGFnZXNfc3RhdGVfaG9sZF9jbnQrKzsKKwkJcGFnZV9w
+b29sX2hvbGRfY250X2RlYyhwb29sKTsKIAkJdHJhY2VfcGFnZV9wb29sX3N0YXRlX2hvbGQo
+cG9vbCwgcGFnZSwKIAkJCQkJICAgcG9vbC0+cGFnZXNfc3RhdGVfaG9sZF9jbnQpOwogCX0K
+QEAgLTQ0NSwyNCArNDU2LDggQEAgc3RydWN0IHBhZ2UgKnBhZ2VfcG9vbF9hbGxvY19wYWdl
+cyhzdHJ1Y3QgcGFnZV9wb29sICpwb29sLCBnZnBfdCBnZnApCiB9CiBFWFBPUlRfU1lNQk9M
+KHBhZ2VfcG9vbF9hbGxvY19wYWdlcyk7CiAKLS8qIENhbGN1bGF0ZSBkaXN0YW5jZSBiZXR3
+ZWVuIHR3byB1MzIgdmFsdWVzLCB2YWxpZCBpZiBkaXN0YW5jZSBpcyBiZWxvdyAyXigzMSkK
+LSAqICBodHRwczovL2VuLndpa2lwZWRpYS5vcmcvd2lraS9TZXJpYWxfbnVtYmVyX2FyaXRo
+bWV0aWMjR2VuZXJhbF9Tb2x1dGlvbgotICovCi0jZGVmaW5lIF9kaXN0YW5jZShhLCBiKQko
+czMyKSgoYSkgLSAoYikpCi0KLXN0YXRpYyBzMzIgcGFnZV9wb29sX2luZmxpZ2h0KHN0cnVj
+dCBwYWdlX3Bvb2wgKnBvb2wpCi17Ci0JdTMyIHJlbGVhc2VfY250ID0gYXRvbWljX3JlYWQo
+JnBvb2wtPnBhZ2VzX3N0YXRlX3JlbGVhc2VfY250KTsKLQl1MzIgaG9sZF9jbnQgPSBSRUFE
+X09OQ0UocG9vbC0+cGFnZXNfc3RhdGVfaG9sZF9jbnQpOwotCXMzMiBpbmZsaWdodDsKLQot
+CWluZmxpZ2h0ID0gX2Rpc3RhbmNlKGhvbGRfY250LCByZWxlYXNlX2NudCk7CiAKLQl0cmFj
+ZV9wYWdlX3Bvb2xfcmVsZWFzZShwb29sLCBpbmZsaWdodCwgaG9sZF9jbnQsIHJlbGVhc2Vf
+Y250KTsKLQlXQVJOKGluZmxpZ2h0IDwgMCwgIk5lZ2F0aXZlKCVkKSBpbmZsaWdodCBwYWNr
+ZXQtcGFnZXMiLCBpbmZsaWdodCk7Ci0KLQlyZXR1cm4gaW5mbGlnaHQ7Ci19CitzdGF0aWMg
+dm9pZCBwYWdlX3Bvb2xfZnJlZShzdHJ1Y3QgcGFnZV9wb29sICpwb29sKTsKIAogLyogRGlz
+Y29ubmVjdHMgYSBwYWdlIChmcm9tIGEgcGFnZV9wb29sKS4gIEFQSSB1c2VycyBjYW4gaGF2
+ZSBhIG5lZWQKICAqIHRvIGRpc2Nvbm5lY3QgYSBwYWdlIChmcm9tIGEgcGFnZV9wb29sKSwg
+dG8gYWxsb3cgaXQgdG8gYmUgdXNlZCBhcwpAQCAtNDkzLDggKzQ4OCwxMiBAQCB2b2lkIHBh
+Z2VfcG9vbF9yZWxlYXNlX3BhZ2Uoc3RydWN0IHBhZ2VfcG9vbCAqcG9vbCwgc3RydWN0IHBh
+Z2UgKnBhZ2UpCiAJLyogVGhpcyBtYXkgYmUgdGhlIGxhc3QgcGFnZSByZXR1cm5lZCwgcmVs
+ZWFzaW5nIHRoZSBwb29sLCBzbwogCSAqIGl0IGlzIG5vdCBzYWZlIHRvIHJlZmVyZW5jZSBw
+b29sIGFmdGVyd2FyZHMuCiAJICovCi0JY291bnQgPSBhdG9taWNfaW5jX3JldHVybl9yZWxh
+eGVkKCZwb29sLT5wYWdlc19zdGF0ZV9yZWxlYXNlX2NudCk7CisJY291bnQgPSBhdG9taWNf
+ZGVjX3JldHVybl9yZWxheGVkKCZwb29sLT5wYWdlc19zdGF0ZV9yZWxlYXNlX2NudCk7CisK
+IAl0cmFjZV9wYWdlX3Bvb2xfc3RhdGVfcmVsZWFzZShwb29sLCBwYWdlLCBjb3VudCk7CisK
+KwlpZiAodW5saWtlbHkoIWNvdW50KSkKKwkJcGFnZV9wb29sX2ZyZWUocG9vbCk7CiB9CiBF
+WFBPUlRfU1lNQk9MKHBhZ2VfcG9vbF9yZWxlYXNlX3BhZ2UpOwogCkBAIC01MTMsMTEgKzUx
+MiwyMCBAQCBzdGF0aWMgdm9pZCBwYWdlX3Bvb2xfcmV0dXJuX3BhZ2Uoc3RydWN0IHBhZ2Vf
+cG9vbCAqcG9vbCwgc3RydWN0IHBhZ2UgKnBhZ2UpCiBzdGF0aWMgYm9vbCBwYWdlX3Bvb2xf
+cmVjeWNsZV9pbl9yaW5nKHN0cnVjdCBwYWdlX3Bvb2wgKnBvb2wsIHN0cnVjdCBwYWdlICpw
+YWdlKQogewogCWludCByZXQ7Ci0JLyogQkggcHJvdGVjdGlvbiBub3QgbmVlZGVkIGlmIGN1
+cnJlbnQgaXMgc29mdGlycSAqLwotCWlmIChpbl9zb2Z0aXJxKCkpCi0JCXJldCA9IHB0cl9y
+aW5nX3Byb2R1Y2UoJnBvb2wtPnJpbmcsIHBhZ2UpOwotCWVsc2UKLQkJcmV0ID0gcHRyX3Jp
+bmdfcHJvZHVjZV9iaCgmcG9vbC0+cmluZywgcGFnZSk7CisKKwlwYWdlX3Bvb2xfcmluZ19s
+b2NrKHBvb2wpOworCisJLyogRG8gdGhlIGNoZWNrIHdpdGhpbiBzcGlubG9jayB0byBwYWly
+IHdpdGggZmxhZ3Mgc2V0dGluZworCSAqIGluIHBhZ2VfcG9vbF9kZXN0cm95KCkuCisJICov
+CisJaWYgKHVubGlrZWx5KHBvb2wtPnAuZmxhZ3MgJiBQUF9GTEFHX1NIVVRET1dOKSkgewor
+CQlwYWdlX3Bvb2xfcmluZ191bmxvY2socG9vbCk7CisJCXJldHVybiBmYWxzZTsKKwl9CisK
+KwlyZXQgPSBfX3B0cl9yaW5nX3Byb2R1Y2UoJnBvb2wtPnJpbmcsIHBhZ2UpOworCisJcGFn
+ZV9wb29sX3JpbmdfdW5sb2NrKHBvb2wpOwogCiAJaWYgKCFyZXQpIHsKIAkJcmVjeWNsZV9z
+dGF0X2luYyhwb29sLCByaW5nKTsKQEAgLTYzNCw5ICs2NDIsMjAgQEAgdm9pZCBwYWdlX3Bv
+b2xfcHV0X3BhZ2VfYnVsayhzdHJ1Y3QgcGFnZV9wb29sICpwb29sLCB2b2lkICoqZGF0YSwK
+IAlpZiAodW5saWtlbHkoIWJ1bGtfbGVuKSkKIAkJcmV0dXJuOwogCisJaSA9IDA7CisKIAkv
+KiBCdWxrIHByb2R1Y2VyIGludG8gcHRyX3JpbmcgcGFnZV9wb29sIGNhY2hlICovCiAJcGFn
+ZV9wb29sX3JpbmdfbG9jayhwb29sKTsKLQlmb3IgKGkgPSAwOyBpIDwgYnVsa19sZW47IGkr
+KykgeworCisJLyogRG8gdGhlIGNoZWNrIHdpdGhpbiBzcGlubG9jayB0byBwYWlyIHdpdGgg
+ZmxhZ3Mgc2V0dGluZworCSAqIGluIHBhZ2VfcG9vbF9kZXN0cm95KCkuCisJICovCisJaWYg
+KHVubGlrZWx5KHBvb2wtPnAuZmxhZ3MgJiBQUF9GTEFHX1NIVVRET1dOKSkgeworCQlwYWdl
+X3Bvb2xfcmluZ191bmxvY2socG9vbCk7CisJCWdvdG8gcmV0dXJuX3BhZ2U7CisJfQorCisJ
+Zm9yICg7IGkgPCBidWxrX2xlbjsgaSsrKSB7CiAJCWlmIChfX3B0cl9yaW5nX3Byb2R1Y2Uo
+JnBvb2wtPnJpbmcsIGRhdGFbaV0pKSB7CiAJCQkvKiByaW5nIGZ1bGwgKi8KIAkJCXJlY3lj
+bGVfc3RhdF9pbmMocG9vbCwgcmluZ19mdWxsKTsKQEAgLTY1MCw4ICs2NjksMTAgQEAgdm9p
+ZCBwYWdlX3Bvb2xfcHV0X3BhZ2VfYnVsayhzdHJ1Y3QgcGFnZV9wb29sICpwb29sLCB2b2lk
+ICoqZGF0YSwKIAlpZiAobGlrZWx5KGkgPT0gYnVsa19sZW4pKQogCQlyZXR1cm47CiAKLQkv
+KiBwdHJfcmluZyBjYWNoZSBmdWxsLCBmcmVlIHJlbWFpbmluZyBwYWdlcyBvdXRzaWRlIHBy
+b2R1Y2VyIGxvY2sKLQkgKiBzaW5jZSBwdXRfcGFnZSgpIHdpdGggcmVmY250ID09IDEgY2Fu
+IGJlIGFuIGV4cGVuc2l2ZSBvcGVyYXRpb24KK3JldHVybl9wYWdlOgorCS8qIHB0cl9yaW5n
+IGNhY2hlIGZ1bGwgb3IgaW4gc2h1dGRvd24gbW9kZSwgZnJlZSByZW1haW5pbmcgcGFnZXMK
+KwkgKiBvdXRzaWRlIHByb2R1Y2VyIGxvY2sgc2luY2UgcHV0X3BhZ2UoKSB3aXRoIHJlZmNu
+dCA9PSAxIGNhbgorCSAqIGJlIGFuIGV4cGVuc2l2ZSBvcGVyYXRpb24KIAkgKi8KIAlmb3Ig
+KDsgaSA8IGJ1bGtfbGVuOyBpKyspCiAJCXBhZ2VfcG9vbF9yZXR1cm5fcGFnZShwb29sLCBk
+YXRhW2ldKTsKQEAgLTc2OCwxMyArNzg5LDEwIEBAIHN0YXRpYyB2b2lkIHBhZ2VfcG9vbF9m
+cmVlKHN0cnVjdCBwYWdlX3Bvb2wgKnBvb2wpCiAJa2ZyZWUocG9vbCk7CiB9CiAKLXN0YXRp
+YyB2b2lkIHBhZ2VfcG9vbF9lbXB0eV9hbGxvY19jYWNoZV9vbmNlKHN0cnVjdCBwYWdlX3Bv
+b2wgKnBvb2wpCitzdGF0aWMgdm9pZCBwYWdlX3Bvb2xfc2NydWIoc3RydWN0IHBhZ2VfcG9v
+bCAqcG9vbCkKIHsKIAlzdHJ1Y3QgcGFnZSAqcGFnZTsKIAotCWlmIChwb29sLT5kZXN0cm95
+X2NudCkKLQkJcmV0dXJuOwotCiAJLyogRW1wdHkgYWxsb2MgY2FjaGUsIGFzc3VtZSBjYWxs
+ZXIgbWFkZSBzdXJlIHRoaXMgaXMKIAkgKiBuby1sb25nZXIgaW4gdXNlLCBhbmQgcGFnZV9w
+b29sX2FsbG9jX3BhZ2VzKCkgY2Fubm90IGJlCiAJICogY2FsbCBjb25jdXJyZW50bHkuCkBA
+IC03ODUsNTIgKzgwMyw2IEBAIHN0YXRpYyB2b2lkIHBhZ2VfcG9vbF9lbXB0eV9hbGxvY19j
+YWNoZV9vbmNlKHN0cnVjdCBwYWdlX3Bvb2wgKnBvb2wpCiAJfQogfQogCi1zdGF0aWMgdm9p
+ZCBwYWdlX3Bvb2xfc2NydWIoc3RydWN0IHBhZ2VfcG9vbCAqcG9vbCkKLXsKLQlwYWdlX3Bv
+b2xfZW1wdHlfYWxsb2NfY2FjaGVfb25jZShwb29sKTsKLQlwb29sLT5kZXN0cm95X2NudCsr
+OwotCi0JLyogTm8gbW9yZSBjb25zdW1lcnMgc2hvdWxkIGV4aXN0LCBidXQgcHJvZHVjZXJz
+IGNvdWxkIHN0aWxsCi0JICogYmUgaW4tZmxpZ2h0LgotCSAqLwotCXBhZ2VfcG9vbF9lbXB0
+eV9yaW5nKHBvb2wpOwotfQotCi1zdGF0aWMgaW50IHBhZ2VfcG9vbF9yZWxlYXNlKHN0cnVj
+dCBwYWdlX3Bvb2wgKnBvb2wpCi17Ci0JaW50IGluZmxpZ2h0OwotCi0JcGFnZV9wb29sX3Nj
+cnViKHBvb2wpOwotCWluZmxpZ2h0ID0gcGFnZV9wb29sX2luZmxpZ2h0KHBvb2wpOwotCWlm
+ICghaW5mbGlnaHQpCi0JCXBhZ2VfcG9vbF9mcmVlKHBvb2wpOwotCi0JcmV0dXJuIGluZmxp
+Z2h0OwotfQotCi1zdGF0aWMgdm9pZCBwYWdlX3Bvb2xfcmVsZWFzZV9yZXRyeShzdHJ1Y3Qg
+d29ya19zdHJ1Y3QgKndxKQotewotCXN0cnVjdCBkZWxheWVkX3dvcmsgKmR3cSA9IHRvX2Rl
+bGF5ZWRfd29yayh3cSk7Ci0Jc3RydWN0IHBhZ2VfcG9vbCAqcG9vbCA9IGNvbnRhaW5lcl9v
+Zihkd3EsIHR5cGVvZigqcG9vbCksIHJlbGVhc2VfZHcpOwotCWludCBpbmZsaWdodDsKLQot
+CWluZmxpZ2h0ID0gcGFnZV9wb29sX3JlbGVhc2UocG9vbCk7Ci0JaWYgKCFpbmZsaWdodCkK
+LQkJcmV0dXJuOwotCi0JLyogUGVyaW9kaWMgd2FybmluZyAqLwotCWlmICh0aW1lX2FmdGVy
+X2VxKGppZmZpZXMsIHBvb2wtPmRlZmVyX3dhcm4pKSB7Ci0JCWludCBzZWMgPSAoczMyKSgo
+dTMyKWppZmZpZXMgLSAodTMyKXBvb2wtPmRlZmVyX3N0YXJ0KSAvIEhaOwotCi0JCXByX3dh
+cm4oIiVzKCkgc3RhbGxlZCBwb29sIHNodXRkb3duICVkIGluZmxpZ2h0ICVkIHNlY1xuIiwK
+LQkJCV9fZnVuY19fLCBpbmZsaWdodCwgc2VjKTsKLQkJcG9vbC0+ZGVmZXJfd2FybiA9IGpp
+ZmZpZXMgKyBERUZFUl9XQVJOX0lOVEVSVkFMOwotCX0KLQotCS8qIFN0aWxsIG5vdCByZWFk
+eSB0byBiZSBkaXNjb25uZWN0ZWQsIHJldHJ5IGxhdGVyICovCi0Jc2NoZWR1bGVfZGVsYXll
+ZF93b3JrKCZwb29sLT5yZWxlYXNlX2R3LCBERUZFUl9USU1FKTsKLX0KLQogdm9pZCBwYWdl
+X3Bvb2xfdXNlX3hkcF9tZW0oc3RydWN0IHBhZ2VfcG9vbCAqcG9vbCwgdm9pZCAoKmRpc2Nv
+bm5lY3QpKHZvaWQgKiksCiAJCQkgICBzdHJ1Y3QgeGRwX21lbV9pbmZvICptZW0pCiB7CkBA
+IC04NjQsMTUgKzgzNiwyNSBAQCB2b2lkIHBhZ2VfcG9vbF9kZXN0cm95KHN0cnVjdCBwYWdl
+X3Bvb2wgKnBvb2wpCiAKIAlwYWdlX3Bvb2xfdW5saW5rX25hcGkocG9vbCk7CiAJcGFnZV9w
+b29sX2ZyZWVfZnJhZyhwb29sKTsKKwlwYWdlX3Bvb2xfc2NydWIocG9vbCk7CiAKLQlpZiAo
+IXBhZ2VfcG9vbF9yZWxlYXNlKHBvb2wpKQotCQlyZXR1cm47CisJLyogd2hlbiBwYWdlX3Bv
+b2xfZGVzdHJveSgpIGlzIGNhbGxlZCwgaXQgaXMgYXNzdW1lZCB0aGF0IG5vCisJICogcGFn
+ZSB3aWxsIGJlIHJlY3ljbGVkIHRvIHBvb2wtPmFsbG9jIGNhY2hlLCB3ZSBvbmx5IG5lZWQg
+dG8KKwkgKiBtYWtlIHN1cmUgbm8gcGFnZSB3aWxsIGJlIHJlY3ljbGVkIHRvIHBvb2wtPnJp
+bmcgYnkgc2V0dGluZworCSAqIFBQX0ZMQUdfU0hVVERPV04gd2l0aGluIHNwaW5sb2NrIHRv
+IHBhaXIgd2l0aCBmbGFncyBjaGVja2luZworCSAqIHdpdGhpbiBzcGlubG9jay4KKwkgKi8K
+KwlwYWdlX3Bvb2xfcmluZ19sb2NrKHBvb2wpOworCXBvb2wtPnAuZmxhZ3MgfD0gUFBfRkxB
+R19TSFVURE9XTjsKKwlwYWdlX3Bvb2xfcmluZ191bmxvY2socG9vbCk7CiAKLQlwb29sLT5k
+ZWZlcl9zdGFydCA9IGppZmZpZXM7Ci0JcG9vbC0+ZGVmZXJfd2FybiAgPSBqaWZmaWVzICsg
+REVGRVJfV0FSTl9JTlRFUlZBTDsKKwlwYWdlX3Bvb2xfZW1wdHlfcmluZyhwb29sKTsKKwor
+CWlmIChhdG9taWNfc3ViX3JldHVybl9yZWxheGVkKHBvb2wtPnBhZ2VzX3N0YXRlX2hvbGRf
+Y250LAorCQkJCSAgICAgICZwb29sLT5wYWdlc19zdGF0ZV9yZWxlYXNlX2NudCkpCisJCXJl
+dHVybjsKIAotCUlOSVRfREVMQVlFRF9XT1JLKCZwb29sLT5yZWxlYXNlX2R3LCBwYWdlX3Bv
+b2xfcmVsZWFzZV9yZXRyeSk7Ci0Jc2NoZWR1bGVfZGVsYXllZF93b3JrKCZwb29sLT5yZWxl
+YXNlX2R3LCBERUZFUl9USU1FKTsKKwlwYWdlX3Bvb2xfZnJlZShwb29sKTsKIH0KIEVYUE9S
+VF9TWU1CT0wocGFnZV9wb29sX2Rlc3Ryb3kpOwogCg==
+--------------438291E38F866DE9078DBE4B--
 
