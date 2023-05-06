@@ -1,257 +1,794 @@
-Return-Path: <netdev+bounces-701-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-702-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F32616F91DC
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 14:08:18 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 899876F9221
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 14:42:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DF00A1C21B0D
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 12:08:15 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AE1021C21A2F
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 12:42:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 019D48493;
-	Sat,  6 May 2023 12:08:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B10A13D7A;
+	Sat,  6 May 2023 12:42:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4BE81FAF;
-	Sat,  6 May 2023 12:08:12 +0000 (UTC)
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2051.outbound.protection.outlook.com [40.107.100.51])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B79F120AB;
-	Sat,  6 May 2023 05:08:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dXE8ff3hUPEGyTimDfKA/IpTq3WpPU6jIGYmxydZP+gfEyNJAvtrm4wCAGvnCP0GRa3m03vKYPqp83USZtCR7U7jA+NrZIDoc2/npcxi4SrP/aq2uVmslsPuHhiQODje6jDWdBuoxTqS9AF/XDu5/hKgZKniVh1rM1ygIYKRO3Izix9viq/ZECyo457kveLFpM86YRDcHETq28iHeAxDc3bHf3O0UjdeL9Uhae4mqiOv7YCZuG7OTXxdsXF3xSoYza/1X7lkqagCwO9HUBsTwtO+gOMsgaJEM2qgmvOXU/FntDAQI5ZOZCSiU5gO4/VXZ95Xi6sBUh9dJ/C5TMO96Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=A0uZbdqij7ky3yBnJTqb6eXQqTAglrPVfDaC43XBFx4=;
- b=QUzDFbOchl2RDaiDr6132Zq8iEJDl8LhkQUmwScjiu8sanKGjqRGA6/bjSxfiKsMt9/1bYwHMHDylB0xwiy2Mj5eBYDQI8USmG2WfwHPraH8aC6n8AFV0/ACRx6bIn1eztJchGvCMphk/klIqGLs7YMGYr2dMgsuBnr4vG9wnFLN/XBuikGefkp09bJ8zsLWivjOg9WWhQgBiumUUmjXzyjSK8rIAtTRKef9xtvESvkO6vHqk1nuRrj8elnu25RUKUGa52UViI3LTOxjwoUn1j4fkyNTq1qFa8K9tug8HqntqRl8RFMMHBBJT8vrAQ/OvXIRaLxTFu2wErWHCOK/+Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A0uZbdqij7ky3yBnJTqb6eXQqTAglrPVfDaC43XBFx4=;
- b=oLMmTQrXo8oHOU6aDEQWU6MHr6nG265RnKTQZYBnUjnQywraNz/qPAiElYPe6q1ELujMv+ct5J7mWnu8+Pzehp+5H0sOqyxP6QY/m47tDXlyeVd4GqUH2k0e63euw0HfCHI1gFEEVOMieTIpYPSvs9cCxx17rU53tbo42SABcx7cN6YhbK52D6Y8iaGOPSJCStVV7CBfMqAouTPwgT8+VwqvDaCWNomqdIWui1chKw7g9gelLwnAunqfWgBi8ISmCd6bU97b1C6IyABBps6dQ92DpqtWurTTYeKiwev/3zJ5ZaDkXHVXP2Z3AIs/fQoTtxnE9WnoWng+kK1wSJATuw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6201.namprd12.prod.outlook.com (2603:10b6:930:26::16)
- by MW3PR12MB4491.namprd12.prod.outlook.com (2603:10b6:303:5c::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.29; Sat, 6 May
- 2023 12:08:06 +0000
-Received: from CY5PR12MB6201.namprd12.prod.outlook.com
- ([fe80::a7a3:1d9d:1fa:5136]) by CY5PR12MB6201.namprd12.prod.outlook.com
- ([fe80::a7a3:1d9d:1fa:5136%6]) with mapi id 15.20.6363.029; Sat, 6 May 2023
- 12:08:06 +0000
-Message-ID: <559ad341-2278-5fad-6805-c7f632e9894e@nvidia.com>
-Date: Sat, 6 May 2023 08:08:02 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.0
-Subject: Re: [PATCH net v3] virtio_net: Fix error unwinding of XDP
- initialization
-To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: Jason Wang <jasowang@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>,
- Simon Horman <simon.horman@corigine.com>, Bodong Wang <bodong@nvidia.com>,
- William Tu <witu@nvidia.com>, Parav Pandit <parav@nvidia.com>,
- virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-References: <20230503003525.48590-1-feliu@nvidia.com>
- <1683340417.612963-3-xuanzhuo@linux.alibaba.com>
-From: Feng Liu <feliu@nvidia.com>
-In-Reply-To: <1683340417.612963-3-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SJ0P220CA0016.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:a03:41b::23) To CY5PR12MB6201.namprd12.prod.outlook.com
- (2603:10b6:930:26::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98A0A1FB6
+	for <netdev@vger.kernel.org>; Sat,  6 May 2023 12:42:36 +0000 (UTC)
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9201255BA
+	for <netdev@vger.kernel.org>; Sat,  6 May 2023 05:42:32 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-3f37a36b713so28381745e9.1
+        for <netdev@vger.kernel.org>; Sat, 06 May 2023 05:42:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1683376951; x=1685968951;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ETgLzuZWXDBo2DHuWZo+FP0Rii2eMT28R1ZVGASO7IE=;
+        b=f+MlINBUUQTtKqlEMgrIDKKzW2Xy5k96vPeNcj0TDariCtHMJjD3OYxKxS9sybVNXF
+         7xSlVc7lfvBH5dIUnk8X/H5n4EB0YwKXdP65ElwXC6nIFkQ6YJeYI8Oc+Xs2e5O5feMc
+         OvWfTgnENZEWqo+6an8tCNyjldAYub+MW8pbw3dqgxMU0auoHxwxG1zT62B61TywQ+73
+         vlarRD7RY0R5nDxMBvY5Is6mD53cbPZQHTu5yKoC4mJI46A/x7Q0/l9kzkudpgFc+Hyu
+         tCzKwncOP53nYZspJT2ItCcL6MDcCwHV6VelRyJbHRP05E0UHy6jbfPONktWS36AXf1q
+         SbWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683376951; x=1685968951;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ETgLzuZWXDBo2DHuWZo+FP0Rii2eMT28R1ZVGASO7IE=;
+        b=BmTPQJ20r6GEr89kOGaMkfEGqjYW+D+bqjclRb6OResob2FeeNeiTYMnCqbrUdsU3v
+         MrSojJKv2S0vYpC8/1w6UkC7Pojpnpz9/z9gDMVOsNMfeDIn2+7txDmlDpXgg/+Htw7b
+         BMrypfMqlgBsB4SBGPI6epskdT8WR9f6Fk8TEWC91pYupjDWUrY2QVoeJVNHkpOmuLUT
+         N8r77wd8qoyWylNaXnrVcR0ahqWVxxY7Cvpx+I9HQL3Zi0LonMGX+Y2TXV/ylo+y7Cko
+         niPbTuyucmrzIjMNIuu0jOo4njl8W8bpIbAzSUmzElux3C3kS0IUJcvmfwZM4x9gu7sl
+         c2HQ==
+X-Gm-Message-State: AC+VfDwYksDG4EqUUZ1mz58/vkG9J5hGmrfhoydX9fQT5B/5u5GrcITu
+	LNuVAGcQwZJz6KXskg5asxgVYg==
+X-Google-Smtp-Source: ACHHUZ4DB9W/qlrG1KUfME6RoG3W96oQFkowVAagb0oJbEjxqWQLEx10AfUVgGn0tXZQJ2RU89qa2w==
+X-Received: by 2002:a05:600c:2055:b0:3f1:806a:83d5 with SMTP id p21-20020a05600c205500b003f1806a83d5mr3116458wmg.20.1683376950783;
+        Sat, 06 May 2023 05:42:30 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id z24-20020a1cf418000000b003f3e50eb606sm10657841wma.13.2023.05.06.05.42.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 May 2023 05:42:29 -0700 (PDT)
+Date: Sat, 6 May 2023 14:42:28 +0200
+From: Jiri Pirko <jiri@resnulli.us>
+To: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+Cc: Vadim Fedorenko <vadfed@meta.com>, Jakub Kicinski <kuba@kernel.org>,
+	Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+	Jonathan Lemon <jonathan.lemon@gmail.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Milena Olech <milena.olech@intel.com>,
+	Michal Michalik <michal.michalik@intel.com>,
+	linux-arm-kernel@lists.infradead.org, poros@redhat.com,
+	mschmidt@redhat.com, netdev@vger.kernel.org,
+	linux-clk@vger.kernel.org
+Subject: Re: [RFC PATCH v7 6/8] ptp_ocp: implement DPLL ops
+Message-ID: <ZFZLNLE567nhS6xs@nanopsycho>
+References: <20230428002009.2948020-1-vadfed@meta.com>
+ <20230428002009.2948020-7-vadfed@meta.com>
+ <ZFN6lwE2Up8xV+I6@nanopsycho>
+ <11b00a89-0882-8583-d624-63d0d0b29c85@linux.dev>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6201:EE_|MW3PR12MB4491:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2f90a787-3e77-4643-d04a-08db4e2a8ced
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	dGSwnioJ5yDT+VoD77EL1OodEFumLf4+RN1InXfr/C5jbs3g6gv/B077h8s7AVaKh1r666ZMtsaSiB2rwxbAmjLfSCUTjp8vAEBlmgvVr4+jf89p6Q2ttRW8gV82NgPdzvxRv5Q9v+GyJ5prG+bGdyXxJTyLfOiV7mbl+RqSW7lbvFzeRNWmwF31xZ+UAVDKpdC2Gc6zs5bwe+nKViDfbGrJMyqL6JiCR5iRwUptUv/r6lz1oZ82vMpyrFNnFNG5sNlCYCbae4RX1ixnG+K1+0hUON9vU7DXnNIT80zWOEm7vBCPuylLgE/7gs7CaRxiWX+8y/FxSOuNeF9T2ySNXB1poN0cYBxyq/wAO7UGFruZyw60skHP8EOCU/p+10YBkkzIRbtfFfAmi8jRi9BYQT1hOnLngZpk0iiJ4Cn4AfKB3x/q/hYAaaL8c4zHjYGkIzUeq7Opf04kuRYGjXUeNLqnNOgmz1uDZ1gBZE+fLUIUJ8biscYAJk+B/7S+CCJhodFbMfDNQdoK3kFfjUIVTw0BnDc47xhP7Uz8WXKWPBnbX4A5/ZyipO1g+xBzbBo6XWLrC6RafrRmNjAW667fFEWMf4YvH+LoVDf+f33Udzf6qtC3Pinwli3ffJaIpLAoB3emeXOUKd0QOHgIi1wpBw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6201.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(376002)(346002)(136003)(366004)(451199021)(86362001)(8676002)(8936002)(6916009)(6486002)(66946007)(66476007)(66556008)(4326008)(5660300002)(31696002)(36756003)(38100700002)(478600001)(83380400001)(2616005)(26005)(41300700001)(2906002)(186003)(316002)(6512007)(6506007)(54906003)(31686004)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QnFzQkVDMU9tNzMwKy9DM2tIUEJsWHhwRCtnQ0dGNXRmR2VPZG1DbkVySzRq?=
- =?utf-8?B?QUszNDE4b1NDemNsd3VaNU1XMFQxaXB6NytxRWdLMUdKbEdiTWFoL1lCbTUv?=
- =?utf-8?B?RGQrT0JuZGpZQVN3Si9sMTFpemxNc0h5TS9MU1dZMmhTK2ErRzBnYlR1cEMx?=
- =?utf-8?B?SFBqdVp6eGxEeUo5WkdIU3J3MWVWeWxoMk9KQitjc1lnK2hqM1AvWG5KVFY4?=
- =?utf-8?B?WG5rc29CQWFab2xPU09HTytMVUFQVVpObnBIdHg1MUxrRDRmRDBjSTQ0TTF4?=
- =?utf-8?B?ak03L1hrTHJ6S3BTVCt0elRvQVhmd1MzRHBJT0Y5YjNjN0w4Q0FKbFEwRDBt?=
- =?utf-8?B?LzBsMDJkaTdzUnpScjV1a2VrWGRhak9SVEJQczBjREFrckF4R2laOXg4Z2xB?=
- =?utf-8?B?TUdPbXBsUktKSHFKL1hPYW4yWk8wVkQwN0o2cFNTRSs3UUxLWmgyUmgyNllP?=
- =?utf-8?B?ZzByNkNuM2JDYjQ1RlVjTE9taG1kNUlsd1hSaVdiVE1TenJYZUhrdURUZUdN?=
- =?utf-8?B?emp5czNUOERTTStuMmZLMnYyUVd6NkZEVS9hQ1JFQS8xQWEvT1A0QW5CeXdr?=
- =?utf-8?B?Q2xOWk4vS2FWcmJRZXIyNjltQ05aNWpicDEreFR6SExBWDNtbEp5QzZ0ZGIx?=
- =?utf-8?B?K25WS2MwOFA4dWc5T05ra2x2NGtCc3YycWtVdUY1aE5hYWJpMTQzclpIaUx3?=
- =?utf-8?B?UVpMbjhBSVhDTm1GNUc4NE5DK2swc0VNK2hFWUlPeVFzUnRzZ1dZaDhFSjYw?=
- =?utf-8?B?VDduVXdSakw3Rlh4eUJkZFVDZjhJUmlmN25IOWRpZjFHeGo2eHllZmNzVnFN?=
- =?utf-8?B?cjFSM2FjN1hwNDJSRldnZEhrTmh4Ri9xRU43dlFnbiszM2VuV0FpQWc1Mklu?=
- =?utf-8?B?OTRLQldySzAvVHl2UHVITkF0Qm5OZFpFdTJ0TUxvYllvOWMxaHRiRmtycEto?=
- =?utf-8?B?K05mckZDWEVRYXBYWTFKZ3JROWxNVWJoUVdENHIrcXREbXRaZldkaWJlLzlx?=
- =?utf-8?B?RFZLcVFGWDk1cTZrYkt2c3dqOElHSC96TE1jYTVSQVlpUkQ5Q053NkFma2Q0?=
- =?utf-8?B?dlV4emhKekZhaHVneEh2ZCtqSG1tdm8wSG1qbTlaQ3FWSTMzRGlRa3VZOXQ5?=
- =?utf-8?B?dnNacy9ZRjIxeDluenQ3aTNTTW01dGNvVGxjaTZSNHdLNm5ZMTluNVVPbVRr?=
- =?utf-8?B?bldENE1Yc2s5eDJ2MEswcENIVktUNDJIcW9wWjE3RjZjb0srTlEwdkNCVG5H?=
- =?utf-8?B?OGw2UFRGWVZGNWtiakZBM1J3NjV0TTJ0bVorQnJucjhyVjlDbWlOc1NPNGtC?=
- =?utf-8?B?Ti9HM1B5NkI5aXQraEJwVkU1MCszOCtIdTI4NmlBM1NzRnkrTXdmbUNCWlRn?=
- =?utf-8?B?YzhvQmgxaUN4ZDEveURqNjQwMmhlVzBCLzArRFZmdHQzZktsOC95VlVtWEtG?=
- =?utf-8?B?ZVFtOXZWdnE5aFdHcVUza040UjJFcVJEdTZrQ0xPcjB3Uk16THh1ZTlObWpa?=
- =?utf-8?B?dWFBS3hvNVFIREp5RXM3Q0w4cVFWOEYvUk1yM2laSTV1ekVXVmg5b0M4Ukhv?=
- =?utf-8?B?MUhldDhhWVRuOFJSZm1JNVdabGZ0RGtmV0Fob1NqMkFpODJsUklBdWd3UDNJ?=
- =?utf-8?B?WEtTSlJlVmlOVTJUV2VtSk5UbnJsZHJ1WXNEdUlIMUlNNkdEZEFBS09jSDNo?=
- =?utf-8?B?OUZkNnJ0Y2wrUkJmQUptY2J6WDErUWRva0hURmVueFhCTExwWHRkQlFKc1hq?=
- =?utf-8?B?cXpJbjdUR09hTzM5YThkYmNxWmp5RktxamIxdDJ0WThjOXFLb29JM3ltbmEr?=
- =?utf-8?B?MzBoNG1IdWdjWHlSSHV4cFNmUHVOQVlpamZ5SlluMWRidnpHeVZKb2NRTzhn?=
- =?utf-8?B?emRxZ3RxTkxoS0t4MnJOOGdiSzQ4MWREUUM5SG0rRDZZWGMyRmphd21iSkhY?=
- =?utf-8?B?NzdpNHZOcVJMQmtNOWd1WFpFSmpORHdXZUxZVGt5cjA1V1lJYUVkOE1JZEt1?=
- =?utf-8?B?STNjWTArMGIyU05WMGN0bTdXQnpnWS8yS3dKV2FCNFpYcnBkd01adGpPWVZn?=
- =?utf-8?B?ekhpQWxiRm5lRU5mMTAxeFdXWDRTVEFRVG1sc0JxU0FVVU9ZVW45MTVmRDE5?=
- =?utf-8?Q?wESGpbZqGFiDUGAceedy00Qwn?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f90a787-3e77-4643-d04a-08db4e2a8ced
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6201.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2023 12:08:06.6772
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iMXt3A6k1oOmPTGnSdHcg0g5iyH6nTCqpdNbX9gv0/r7s3uv5wndoF0PHHDjyRvQH13OsvVahoSO1MBOn8ZJIA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4491
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <11b00a89-0882-8583-d624-63d0d0b29c85@linux.dev>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Fri, May 05, 2023 at 03:43:08PM CEST, vadim.fedorenko@linux.dev wrote:
+>On 04/05/2023 10:27, Jiri Pirko wrote:
+>> Fri, Apr 28, 2023 at 02:20:07AM CEST, vadfed@meta.com wrote:
+>> > From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+>> > 
+>> > Implement basic DPLL operations in ptp_ocp driver as the
+>> > simplest example of using new subsystem.
+>> > 
+>> > Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+>> > ---
+>> > drivers/ptp/Kconfig   |   1 +
+>> > drivers/ptp/ptp_ocp.c | 327 +++++++++++++++++++++++++++++++++++-------
+>> > 2 files changed, 276 insertions(+), 52 deletions(-)
+>> > 
+>> > diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+>> > index b00201d81313..e3575c2e34dc 100644
+>> > --- a/drivers/ptp/Kconfig
+>> > +++ b/drivers/ptp/Kconfig
+>> > @@ -177,6 +177,7 @@ config PTP_1588_CLOCK_OCP
+>> > 	depends on COMMON_CLK
+>> > 	select NET_DEVLINK
+>> > 	select CRC16
+>> > +	select DPLL
+>> > 	help
+>> > 	  This driver adds support for an OpenCompute time card.
+>> > 
+>> > diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+>> > index 2b63f3487645..100e5da0aeb3 100644
+>> > --- a/drivers/ptp/ptp_ocp.c
+>> > +++ b/drivers/ptp/ptp_ocp.c
+>> > @@ -23,6 +23,7 @@
+>> > #include <linux/mtd/mtd.h>
+>> > #include <linux/nvmem-consumer.h>
+>> > #include <linux/crc16.h>
+>> > +#include <linux/dpll.h>
+>> > 
+>> > #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
+>> > #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
+>> > @@ -261,12 +262,21 @@ enum ptp_ocp_sma_mode {
+>> > 	SMA_MODE_OUT,
+>> > };
+>> > 
+>> > +static struct dpll_pin_frequency ptp_ocp_sma_freq[] = {
+>> 
+>> const
+>
+>Forgot about this one, will change it.
+>
+>> 
+>> > +	DPLL_PIN_FREQUENCY_1PPS,
+>> > +	DPLL_PIN_FREQUENCY_10MHZ,
+>> > +	DPLL_PIN_FREQUENCY_IRIG_B,
+>> > +	DPLL_PIN_FREQUENCY_DCF77,
+>> > +};
+>> > +
+>> > struct ptp_ocp_sma_connector {
+>> > 	enum	ptp_ocp_sma_mode mode;
+>> > 	bool	fixed_fcn;
+>> > 	bool	fixed_dir;
+>> > 	bool	disabled;
+>> > 	u8	default_fcn;
+>> > +	struct dpll_pin		   *dpll_pin;
+>> > +	struct dpll_pin_properties dpll_prop;
+>> > };
+>> > 
+>> > struct ocp_attr_group {
+>> > @@ -295,6 +305,7 @@ struct ptp_ocp_serial_port {
+>> > 
+>> > #define OCP_BOARD_ID_LEN		13
+>> > #define OCP_SERIAL_LEN			6
+>> > +#define OCP_SMA_NUM			4
+>> > 
+>> > struct ptp_ocp {
+>> > 	struct pci_dev		*pdev;
+>> > @@ -351,8 +362,9 @@ struct ptp_ocp {
+>> > 	u32			ts_window_adjust;
+>> > 	u64			fw_cap;
+>> > 	struct ptp_ocp_signal	signal[4];
+>> > -	struct ptp_ocp_sma_connector sma[4];
+>> > +	struct ptp_ocp_sma_connector sma[OCP_SMA_NUM];
+>> > 	const struct ocp_sma_op *sma_op;
+>> > +	struct dpll_device *dpll;
+>> > };
+>> > 
+>> > #define OCP_REQ_TIMESTAMP	BIT(0)
+>> > @@ -836,6 +848,7 @@ static DEFINE_IDR(ptp_ocp_idr);
+>> > struct ocp_selector {
+>> > 	const char *name;
+>> > 	int value;
+>> > +	u64 frequency;
+>> > };
+>> > 
+>> > static const struct ocp_selector ptp_ocp_clock[] = {
+>> > @@ -856,31 +869,31 @@ static const struct ocp_selector ptp_ocp_clock[] = {
+>> > #define SMA_SELECT_MASK		GENMASK(14, 0)
+>> > 
+>> > static const struct ocp_selector ptp_ocp_sma_in[] = {
+>> > -	{ .name = "10Mhz",	.value = 0x0000 },
+>> > -	{ .name = "PPS1",	.value = 0x0001 },
+>> > -	{ .name = "PPS2",	.value = 0x0002 },
+>> > -	{ .name = "TS1",	.value = 0x0004 },
+>> > -	{ .name = "TS2",	.value = 0x0008 },
+>> > -	{ .name = "IRIG",	.value = 0x0010 },
+>> > -	{ .name = "DCF",	.value = 0x0020 },
+>> > -	{ .name = "TS3",	.value = 0x0040 },
+>> > -	{ .name = "TS4",	.value = 0x0080 },
+>> > -	{ .name = "FREQ1",	.value = 0x0100 },
+>> > -	{ .name = "FREQ2",	.value = 0x0200 },
+>> > -	{ .name = "FREQ3",	.value = 0x0400 },
+>> > -	{ .name = "FREQ4",	.value = 0x0800 },
+>> > -	{ .name = "None",	.value = SMA_DISABLE },
+>> > +	{ .name = "10Mhz",  .value = 0x0000,      .frequency = 10000000 },
+>> > +	{ .name = "PPS1",   .value = 0x0001,      .frequency = 1 },
+>> > +	{ .name = "PPS2",   .value = 0x0002,      .frequency = 1 },
+>> > +	{ .name = "TS1",    .value = 0x0004,      .frequency = 0 },
+>> > +	{ .name = "TS2",    .value = 0x0008,      .frequency = 0 },
+>> > +	{ .name = "IRIG",   .value = 0x0010,      .frequency = 10000 },
+>> > +	{ .name = "DCF",    .value = 0x0020,      .frequency = 77500 },
+>> > +	{ .name = "TS3",    .value = 0x0040,      .frequency = 0 },
+>> > +	{ .name = "TS4",    .value = 0x0080,      .frequency = 0 },
+>> > +	{ .name = "FREQ1",  .value = 0x0100,      .frequency = 0 },
+>> > +	{ .name = "FREQ2",  .value = 0x0200,      .frequency = 0 },
+>> > +	{ .name = "FREQ3",  .value = 0x0400,      .frequency = 0 },
+>> > +	{ .name = "FREQ4",  .value = 0x0800,      .frequency = 0 },
+>> > +	{ .name = "None",   .value = SMA_DISABLE, .frequency = 0 },
+>> > 	{ }
+>> > };
+>> > 
+>> > static const struct ocp_selector ptp_ocp_sma_out[] = {
+>> > -	{ .name = "10Mhz",	.value = 0x0000 },
+>> > -	{ .name = "PHC",	.value = 0x0001 },
+>> > -	{ .name = "MAC",	.value = 0x0002 },
+>> > -	{ .name = "GNSS1",	.value = 0x0004 },
+>> > -	{ .name = "GNSS2",	.value = 0x0008 },
+>> > -	{ .name = "IRIG",	.value = 0x0010 },
+>> > -	{ .name = "DCF",	.value = 0x0020 },
+>> > +	{ .name = "10Mhz",	.value = 0x0000,  .frequency = 10000000 },
+>> > +	{ .name = "PHC",	.value = 0x0001,  .frequency = 1 },
+>> > +	{ .name = "MAC",	.value = 0x0002,  .frequency = 1 },
+>> > +	{ .name = "GNSS1",	.value = 0x0004,  .frequency = 1 },
+>> > +	{ .name = "GNSS2",	.value = 0x0008,  .frequency = 1 },
+>> > +	{ .name = "IRIG",	.value = 0x0010,  .frequency = 10000 },
+>> > +	{ .name = "DCF",	.value = 0x0020,  .frequency = 77000 },
+>> > 	{ .name = "GEN1",	.value = 0x0040 },
+>> > 	{ .name = "GEN2",	.value = 0x0080 },
+>> > 	{ .name = "GEN3",	.value = 0x0100 },
+>> > @@ -891,15 +904,15 @@ static const struct ocp_selector ptp_ocp_sma_out[] = {
+>> > };
+>> > 
+>> > static const struct ocp_selector ptp_ocp_art_sma_in[] = {
+>> > -	{ .name = "PPS1",	.value = 0x0001 },
+>> > -	{ .name = "10Mhz",	.value = 0x0008 },
+>> > +	{ .name = "PPS1",	.value = 0x0001,  .frequency = 1 },
+>> > +	{ .name = "10Mhz",	.value = 0x0008,  .frequency = 1000000 },
+>> > 	{ }
+>> > };
+>> > 
+>> > static const struct ocp_selector ptp_ocp_art_sma_out[] = {
+>> > -	{ .name = "PHC",	.value = 0x0002 },
+>> > -	{ .name = "GNSS",	.value = 0x0004 },
+>> > -	{ .name = "10Mhz",	.value = 0x0010 },
+>> > +	{ .name = "PHC",	.value = 0x0002,  .frequency = 1 },
+>> > +	{ .name = "GNSS",	.value = 0x0004,  .frequency = 1 },
+>> > +	{ .name = "10Mhz",	.value = 0x0010,  .frequency = 10000000 },
+>> > 	{ }
+>> > };
+>> > 
+>> > @@ -2283,22 +2296,34 @@ ptp_ocp_sma_fb_set_inputs(struct ptp_ocp *bp, int sma_nr, u32 val)
+>> > static void
+>> > ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
+>> > {
+>> > +	struct dpll_pin_properties prop = {
+>> 
+>> Why don't you have this as static const outside the function?
+>> 
+>
+>Because I'm changing label string for every pin. I cannot change it in
+>the const object.
+
+No you don't. You just copy prop to bp->sma[i].dpll_prop. Prop does not
+change.
 
 
-On 2023-05-05 p.m.10:33, Xuan Zhuo wrote:
-> External email: Use caution opening links or attachments
-> 
-> 
-> On Tue, 2 May 2023 20:35:25 -0400, Feng Liu <feliu@nvidia.com> wrote:
->> When initializing XDP in virtnet_open(), some rq xdp initialization
->> may hit an error causing net device open failed. However, previous
->> rqs have already initialized XDP and enabled NAPI, which is not the
->> expected behavior. Need to roll back the previous rq initialization
->> to avoid leaks in error unwinding of init code.
->>
->> Also extract a helper function of disable queue pairs, and use newly
->> introduced helper function in error unwinding and virtnet_close;
->>
->> Issue: 3383038
->> Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
->> Signed-off-by: Feng Liu <feliu@nvidia.com>
->> Reviewed-by: William Tu <witu@nvidia.com>
->> Reviewed-by: Parav Pandit <parav@nvidia.com>
->> Reviewed-by: Simon Horman <simon.horman@corigine.com>
->> Acked-by: Michael S. Tsirkin <mst@redhat.com>
->> Change-Id: Ib4c6a97cb7b837cfa484c593dd43a435c47ea68f
->> ---
->>   drivers/net/virtio_net.c | 30 ++++++++++++++++++++----------
->>   1 file changed, 20 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->> index 8d8038538fc4..3737cf120cb7 100644
->> --- a/drivers/net/virtio_net.c
->> +++ b/drivers/net/virtio_net.c
->> @@ -1868,6 +1868,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
->>        return received;
->>   }
->>
->> +static void virtnet_disable_qp(struct virtnet_info *vi, int qp_index)
->> +{
->> +     virtnet_napi_tx_disable(&vi->sq[qp_index].napi);
->> +     napi_disable(&vi->rq[qp_index].napi);
->> +     xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
->> +}
->> +
->>   static int virtnet_open(struct net_device *dev)
->>   {
->>        struct virtnet_info *vi = netdev_priv(dev);
->> @@ -1883,20 +1890,26 @@ static int virtnet_open(struct net_device *dev)
->>
->>                err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, vi->rq[i].napi.napi_id);
->>                if (err < 0)
->> -                     return err;
->> +                     goto err_xdp_info_reg;
->>
->>                err = xdp_rxq_info_reg_mem_model(&vi->rq[i].xdp_rxq,
->>                                                 MEM_TYPE_PAGE_SHARED, NULL);
->> -             if (err < 0) {
->> -                     xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
->> -                     return err;
->> -             }
->> +             if (err < 0)
->> +                     goto err_xdp_reg_mem_model;
->>
->>                virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
->>                virtnet_napi_tx_enable(vi, vi->sq[i].vq, &vi->sq[i].napi);
->>        }
->>
->>        return 0;
->> +
->> +err_xdp_reg_mem_model:
->> +     xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
->> +err_xdp_info_reg:
->> +     for (i = i - 1; i >= 0; i--)
->> +             virtnet_disable_qp(vi, i);
-> 
-> 
-> I would to know should we handle for these:
-> 
->          disable_delayed_refill(vi);
->          cancel_delayed_work_sync(&vi->refill);
-> 
-> 
-> Maybe we should call virtnet_close() with "i" directly.
-> 
-> Thanks.
-> 
-> 
-Can’t use i directly here, because if xdp_rxq_info_reg fails, napi has 
-not been enabled for current qp yet, I should roll back from the queue 
-pairs where napi was enabled before(i--), otherwise it will hang at napi 
-disable api
+>
+>> 
+>> > +		.label = NULL,
+>> 
+>> Pointless init.
+>
+>Agree
+>
+>> > +		.type = DPLL_PIN_TYPE_EXT,
+>> > +		.capabilities = DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE,
+>> > +		.freq_supported_num = ARRAY_SIZE(ptp_ocp_sma_freq),
+>> > +		.freq_supported = ptp_ocp_sma_freq,
+>> > +
+>> > +	};
+>> > 	u32 reg;
+>> > 	int i;
+>> > 
+>> > 	/* defaults */
+>> > +	for (i = 0; i < OCP_SMA_NUM; i++) {
+>> > +		bp->sma[i].default_fcn = i & 1;
+>> > +		bp->sma[i].dpll_prop = prop;
+>> > +		bp->sma[i].dpll_prop.label = bp->ptp_info.pin_config[i].name;
+>> > +	}
+>> > 	bp->sma[0].mode = SMA_MODE_IN;
+>> > 	bp->sma[1].mode = SMA_MODE_IN;
+>> > 	bp->sma[2].mode = SMA_MODE_OUT;
+>> > 	bp->sma[3].mode = SMA_MODE_OUT;
+>> > -	for (i = 0; i < 4; i++)
+>> > -		bp->sma[i].default_fcn = i & 1;
+>> > -
+>> > 	/* If no SMA1 map, the pin functions and directions are fixed. */
+>> > 	if (!bp->sma_map1) {
+>> > -		for (i = 0; i < 4; i++) {
+>> > +		for (i = 0; i < OCP_SMA_NUM; i++) {
+>> > 			bp->sma[i].fixed_fcn = true;
+>> > 			bp->sma[i].fixed_dir = true;
+>> > +			bp->sma[1].dpll_prop.capabilities &=
+>> > +				~DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE;
+>> > 		}
+>> > 		return;
+>> > 	}
+>> > @@ -2308,7 +2333,7 @@ ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
+>> > 	 */
+>> > 	reg = ioread32(&bp->sma_map2->gpio2);
+>> > 	if (reg == 0xffffffff) {
+>> > -		for (i = 0; i < 4; i++)
+>> > +		for (i = 0; i < OCP_SMA_NUM; i++)
+>> > 			bp->sma[i].fixed_dir = true;
+>> > 	} else {
+>> > 		reg = ioread32(&bp->sma_map1->gpio1);
+>> > @@ -2330,7 +2355,7 @@ static const struct ocp_sma_op ocp_fb_sma_op = {
+>> > };
+>> > 
+>> > static int
+>> > -ptp_ocp_fb_set_pins(struct ptp_ocp *bp)
+>> > +ptp_ocp_set_pins(struct ptp_ocp *bp)
+>> > {
+>> > 	struct ptp_pin_desc *config;
+>> > 	int i;
+>> > @@ -2397,16 +2422,16 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
+>> > 
+>> > 	ptp_ocp_tod_init(bp);
+>> > 	ptp_ocp_nmea_out_init(bp);
+>> > -	ptp_ocp_sma_init(bp);
+>> > 	ptp_ocp_signal_init(bp);
+>> > 
+>> > 	err = ptp_ocp_attr_group_add(bp, fb_timecard_groups);
+>> > 	if (err)
+>> > 		return err;
+>> > 
+>> > -	err = ptp_ocp_fb_set_pins(bp);
+>> > +	err = ptp_ocp_set_pins(bp);
+>> > 	if (err)
+>> > 		return err;
+>> > +	ptp_ocp_sma_init(bp);
+>> > 
+>> > 	return ptp_ocp_init_clock(bp);
+>> > }
+>> > @@ -2446,6 +2471,14 @@ ptp_ocp_register_resources(struct ptp_ocp *bp, kernel_ulong_t driver_data)
+>> > static void
+>> > ptp_ocp_art_sma_init(struct ptp_ocp *bp)
+>> > {
+>> > +	struct dpll_pin_properties prop = {
+>> > +		.label = NULL,
+>> > +		.type = DPLL_PIN_TYPE_EXT,
+>> > +		.capabilities = 0,
+>> 
+>> Same comment as to the similar prop struct above. Plus another pointless
+>> init here.
+>> 
+>
+>Will remove pointless init.
+>
+>> 
+>> > +		.freq_supported_num = ARRAY_SIZE(ptp_ocp_sma_freq),
+>> > +		.freq_supported = ptp_ocp_sma_freq,
+>> > +
+>> > +	};
+>> > 	u32 reg;
+>> > 	int i;
+>> > 
+>> > @@ -2460,16 +2493,16 @@ ptp_ocp_art_sma_init(struct ptp_ocp *bp)
+>> > 	bp->sma[2].default_fcn = 0x10;	/* OUT: 10Mhz */
+>> > 	bp->sma[3].default_fcn = 0x02;	/* OUT: PHC */
+>> > 
+>> > -	/* If no SMA map, the pin functions and directions are fixed. */
+>> > -	if (!bp->art_sma) {
+>> > -		for (i = 0; i < 4; i++) {
+>> > +
+>> > +	for (i = 0; i < OCP_SMA_NUM; i++) {
+>> > +		/* If no SMA map, the pin functions and directions are fixed. */
+>> > +		bp->sma[i].dpll_prop = prop;
+>> > +		bp->sma[i].dpll_prop.label = bp->ptp_info.pin_config[i].name;
+>> > +		if (!bp->art_sma) {
+>> > 			bp->sma[i].fixed_fcn = true;
+>> > 			bp->sma[i].fixed_dir = true;
+>> > +			continue;
+>> > 		}
+>> > -		return;
+>> > -	}
+>> > -
+>> > -	for (i = 0; i < 4; i++) {
+>> > 		reg = ioread32(&bp->art_sma->map[i].gpio);
+>> > 
+>> > 		switch (reg & 0xff) {
+>> > @@ -2480,9 +2513,13 @@ ptp_ocp_art_sma_init(struct ptp_ocp *bp)
+>> > 		case 1:
+>> > 		case 8:
+>> > 			bp->sma[i].mode = SMA_MODE_IN;
+>> > +			bp->sma[i].dpll_prop.capabilities =
+>> > +				DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE;
+>> > 			break;
+>> > 		default:
+>> > 			bp->sma[i].mode = SMA_MODE_OUT;
+>> > +			bp->sma[i].dpll_prop.capabilities =
+>> > +				DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE;
+>> > 			break;
+>> > 		}
+>> > 	}
+>> > @@ -2549,6 +2586,9 @@ ptp_ocp_art_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
+>> > 	/* Enable MAC serial port during initialisation */
+>> > 	iowrite32(1, &bp->board_config->mro50_serial_activate);
+>> > 
+>> > +	err = ptp_ocp_set_pins(bp);
+>> > +	if (err)
+>> > +		return err;
+>> > 	ptp_ocp_sma_init(bp);
+>> > 
+>> > 	err = ptp_ocp_attr_group_add(bp, art_timecard_groups);
+>> > @@ -2690,16 +2730,9 @@ sma4_show(struct device *dev, struct device_attribute *attr, char *buf)
+>> > }
+>> > 
+>> > static int
+>> > -ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
+>> > +ptp_ocp_sma_store_val(struct ptp_ocp *bp, int val, enum ptp_ocp_sma_mode mode, int sma_nr)
+>> > {
+>> > 	struct ptp_ocp_sma_connector *sma = &bp->sma[sma_nr - 1];
+>> > -	enum ptp_ocp_sma_mode mode;
+>> > -	int val;
+>> > -
+>> > -	mode = sma->mode;
+>> > -	val = sma_parse_inputs(bp->sma_op->tbl, buf, &mode);
+>> > -	if (val < 0)
+>> > -		return val;
+>> > 
+>> > 	if (sma->fixed_dir && (mode != sma->mode || val & SMA_DISABLE))
+>> > 		return -EOPNOTSUPP;
+>> > @@ -2734,6 +2767,20 @@ ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
+>> > 	return val;
+>> > }
+>> > 
+>> > +static int
+>> > +ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
+>> > +{
+>> > +	struct ptp_ocp_sma_connector *sma = &bp->sma[sma_nr - 1];
+>> > +	enum ptp_ocp_sma_mode mode;
+>> > +	int val;
+>> > +
+>> > +	mode = sma->mode;
+>> > +	val = sma_parse_inputs(bp->sma_op->tbl, buf, &mode);
+>> > +	if (val < 0)
+>> > +		return val;
+>> > +	return ptp_ocp_sma_store_val(bp, val, mode, sma_nr);
+>> > +}
+>> > +
+>> > static ssize_t
+>> > sma1_store(struct device *dev, struct device_attribute *attr,
+>> > 	   const char *buf, size_t count)
+>> > @@ -4172,12 +4219,148 @@ ptp_ocp_detach(struct ptp_ocp *bp)
+>> > 	device_unregister(&bp->dev);
+>> > }
+>> > 
+>> > +static int ptp_ocp_dpll_lock_status_get(const struct dpll_device *dpll,
+>> > +					void *priv,
+>> > +					enum dpll_lock_status *status,
+>> > +					struct netlink_ext_ack *extack)
+>> > +{
+>> > +	struct ptp_ocp *bp = priv;
+>> > +	int sync;
+>> > +
+>> > +	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
+>> > +	*status = sync ? DPLL_LOCK_STATUS_LOCKED : DPLL_LOCK_STATUS_UNLOCKED;
+>> 
+>> Does your device support event delivery in case of the status change?
+>> ice and mlx5 drivers do poll for changes in this area anyway. It's a
+>> part of this patchset. You should do the same if your device does
+>> not support events.
+>> 
+>> Could you please implement notifications using
+>> dpll_device_notify() for status change and dpll_pin_notify() for pin
+>> state change?
+>> 
+>
+>We are working on implementation of interrupt-based notifications, that's why
+>I didn't implement polling code. Hopefully it will be ready before the
+>non-RFC patchset submission.
 
->> +
->> +     return err;
->>   }
->>
->>   static int virtnet_poll_tx(struct napi_struct *napi, int budget)
->> @@ -2305,11 +2318,8 @@ static int virtnet_close(struct net_device *dev)
->>        /* Make sure refill_work doesn't re-enable napi! */
->>        cancel_delayed_work_sync(&vi->refill);
->>
->> -     for (i = 0; i < vi->max_queue_pairs; i++) {
->> -             virtnet_napi_tx_disable(&vi->sq[i].napi);
->> -             napi_disable(&vi->rq[i].napi);
->> -             xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
->> -     }
->> +     for (i = 0; i < vi->max_queue_pairs; i++)
->> +             virtnet_disable_qp(vi, i);
->>
->>        return 0;
->>   }
->> --
->> 2.37.1 (Apple Git-137.1)
->>
+Do polling implementation if not and replace by interrupt driver later.
+Point is, there have to be notifications from day 1.
+
+
+>
+>> 
+>> > +
+>> > +	return 0;
+>> > +}
+>> > +
+>> > +static int ptp_ocp_dpll_source_idx_get(const struct dpll_device *dpll,
+>> > +				       void *priv, u32 *idx,
+>> > +				       struct netlink_ext_ack *extack)
+>> > +{
+>> > +	struct ptp_ocp *bp = priv;
+>> > +
+>> > +	if (bp->pps_select) {
+>> > +		*idx = ioread32(&bp->pps_select->gpio1);
+>> > +		return 0;
+>> > +	}
+>> > +	return -EINVAL;
+>> > +}
+>> > +
+>> > +static int ptp_ocp_dpll_mode_get(const struct dpll_device *dpll, void *priv,
+>> > +				 u32 *mode, struct netlink_ext_ack *extack)
+>> > +{
+>> > +	*mode = DPLL_MODE_AUTOMATIC;
+>> > +	return 0;
+>> > +}
+>> > +
+>> > +static bool ptp_ocp_dpll_mode_supported(const struct dpll_device *dpll,
+>> > +					void *priv, const enum dpll_mode mode,
+>> > +					struct netlink_ext_ack *extack)
+>> > +{
+>> > +	return mode == DPLL_MODE_AUTOMATIC;
+>> > +}
+>> > +
+>> > +static int ptp_ocp_dpll_direction_get(const struct dpll_pin *pin,
+>> > +				      void *pin_priv,
+>> > +				      const struct dpll_device *dpll,
+>> > +				      void *priv,
+>> > +				      enum dpll_pin_direction *direction,
+>> > +				      struct netlink_ext_ack *extack)
+>> > +{
+>> > +	struct ptp_ocp_sma_connector *sma = pin_priv;
+>> > +
+>> > +	*direction = sma->mode == SMA_MODE_IN ?
+>> > +				  DPLL_PIN_DIRECTION_SOURCE :
+>> > +				  DPLL_PIN_DIRECTION_OUTPUT;
+>> > +	return 0;
+>> > +}
+>> > +
+>> > +static int ptp_ocp_dpll_direction_set(const struct dpll_pin *pin,
+>> > +				      void *pin_priv,
+>> > +				      const struct dpll_device *dpll,
+>> > +				      void *dpll_priv,
+>> > +				      enum dpll_pin_direction direction,
+>> > +				      struct netlink_ext_ack *extack)
+>> > +{
+>> > +	struct ptp_ocp_sma_connector *sma = pin_priv;
+>> > +	struct ptp_ocp *bp = dpll_priv;
+>> > +	enum ptp_ocp_sma_mode mode;
+>> > +	int sma_nr = (sma - bp->sma);
+>> > +
+>> > +	if (sma->fixed_dir)
+>> 
+>> I believe that this is a pointless check as DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE
+>> is not set and therefore the check in dpll_pin_direction_set() will be
+>> true and -EOPNOTSUPP will be returned from there.
+>> Remove this.
+>
+>Yep, will do it.
+>
+>> 
+>> > +		return -EOPNOTSUPP;
+>> > +	mode = direction == DPLL_PIN_DIRECTION_SOURCE ?
+>> > +			    SMA_MODE_IN : SMA_MODE_OUT;
+>> > +	return ptp_ocp_sma_store_val(bp, 0, mode, sma_nr);
+>> 
+>> You need sma_nr just here. Why can't you change ptp_ocp_sma_store_val()
+>> to accept struct ptp_ocp_sma_connector * instead avoiding the need for
+>> tne sma_nr completely?
+>> 
+>
+>I wanted to add minimal changes to the driver, I will consider changing this
+>as a separate net-next patch.
+
+Hmm, you do change ptp_ocp_sma_store_val() here anyway. Could be an
+extra patch in this patchset before this one if you want to have it
+separate.
+
+
+>
+>> 
+>> > +}
+>> > +
+>> > +static int ptp_ocp_dpll_frequency_set(const struct dpll_pin *pin,
+>> > +				      void *pin_priv,
+>> > +				      const struct dpll_device *dpll,
+>> > +				      void *dpll_priv, u64 frequency,
+>> > +				      struct netlink_ext_ack *extack)
+>> > +{
+>> > +	struct ptp_ocp_sma_connector *sma = pin_priv;
+>> > +	struct ptp_ocp *bp = dpll_priv;
+>> > +	const struct ocp_selector *tbl;
+>> > +	int sma_nr = (sma - bp->sma);
+>> > +	int val, i;
+>> > +
+>> > +	if (sma->fixed_fcn)
+>> 
+>> In that case, just fill up a single frequency in the properties,
+>> avoid this check-fail and let the dpll core handle it.
+>> 
+>
+>Makes sense.
+>
+>> 
+>> > +		return -EOPNOTSUPP;
+>> > +
+>> > +	tbl = bp->sma_op->tbl[sma->mode];
+>> > +	for (i = 0; tbl[i].name; i++)
+>> > +		if (tbl[i].frequency == frequency)
+>> > +			return ptp_ocp_sma_store_val(bp, val, sma->mode, sma_nr);
+>> > +	return -EINVAL;
+>> > +}
+>> > +
+>> > +static int ptp_ocp_dpll_frequency_get(const struct dpll_pin *pin,
+>> > +				      void *pin_priv,
+>> > +				      const struct dpll_device *dpll,
+>> > +				      void *dpll_priv, u64 *frequency,
+>> > +				      struct netlink_ext_ack *extack)
+>> > +{
+>> > +	struct ptp_ocp_sma_connector *sma = pin_priv;
+>> > +	struct ptp_ocp *bp = dpll_priv;
+>> > +	const struct ocp_selector *tbl;
+>> > +	int sma_nr = (sma - bp->sma);
+>> 
+>> 1) void "()"s here.
+>> 2) why don't you fill the sma_nr in struct ptp_ocp_sma_connector to make
+>>     this easier to follow? IDK, just a suggestion, take or leave.
+>> 
+>> Same applies to the the rest of similar occurances above.
+>> 
+>
+>Will do it, yes.
+>
+>> 
+>> > +	u32 val;
+>> > +	int i;
+>> > +
+>> > +	val = bp->sma_op->get(bp, sma_nr);
+>> > +	tbl = bp->sma_op->tbl[sma->mode];
+>> > +	for (i = 0; tbl[i].name; i++)
+>> > +		if (val == tbl[i].value) {
+>> > +			*frequency = tbl[i].frequency;
+>> > +			return 0;
+>> > +		}
+>> > +
+>> > +	return -EINVAL;
+>> > +}
+>> > +
+>> > +static const struct dpll_device_ops dpll_ops = {
+>> > +	.lock_status_get = ptp_ocp_dpll_lock_status_get,
+>> > +	.source_pin_idx_get = ptp_ocp_dpll_source_idx_get,
+>> 
+>> This op is a leftover, in dpll core it is not called. This was removed
+>> and agreed that drivers should implement state_on_dpll_get() op for pins
+>> to see which one is connected.
+>> 
+>> Please fix here and remove the leftover from DPLL patch #2 as well.
+
+Did you miss this by any chance?
+
+
+>> 
+>> 
+>> > +	.mode_get = ptp_ocp_dpll_mode_get,
+>> > +	.mode_supported = ptp_ocp_dpll_mode_supported,
+>> > +};
+>> > +
+>> > +static const struct dpll_pin_ops dpll_pins_ops = {
+>> > +	.frequency_get = ptp_ocp_dpll_frequency_get,
+>> > +	.frequency_set = ptp_ocp_dpll_frequency_set,
+>> > +	.direction_get = ptp_ocp_dpll_direction_get,
+>> > +	.direction_set = ptp_ocp_dpll_direction_set,
+>> > +};
+>> > +
+>> > static int
+>> > ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>> > {
+>> > 	struct devlink *devlink;
+>> > 	struct ptp_ocp *bp;
+>> > -	int err;
+>> > +	int err, i;
+>> > +	u64 clkid;
+>> > 
+>> > 	devlink = devlink_alloc(&ptp_ocp_devlink_ops, sizeof(*bp), &pdev->dev);
+>> > 	if (!devlink) {
+>> > @@ -4227,8 +4410,39 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>> > 
+>> > 	ptp_ocp_info(bp);
+>> > 	devlink_register(devlink);
+>> > -	return 0;
+>> > 
+>> > +	clkid = pci_get_dsn(pdev);
+>> > +	bp->dpll = dpll_device_get(clkid, 0, THIS_MODULE);
+>> 
+>> I suggested this the last time, but again: Could you please:
+>> 1) rename dpll_device_get to __dpll_device_get
+>> 2) introduce dpll_device_get as a macro filling up THIS_MODULE
+>> 
+>> Then drivers will just call always:
+>> bp->dpll = dpll_device_get(clkid, 0);
+>> and the macro will fillup the module automatically.
+>> 
+>> Please do the same for dpll_pin_get()
+>> 
+>
+>Not sure why I have missed this part, but sure will do it.
+
+Awesome.
+
+
+>
+>> 
+>> > +	if (IS_ERR(bp->dpll)) {
+>> > +		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
+>> 
+>> You need to fix your error path to call devlink_unregister() in this
+>> case.
+>> 
+>> 
+>> > +		goto out;
+>> > +	}
+>> > +
+>> > +	err = dpll_device_register(bp->dpll, DPLL_TYPE_PPS, &dpll_ops, bp, &pdev->dev);
+>> > +	if (err)
+>> 
+>> You need to fix your error path to call dpll_device_put() in this
+>> case.
+>> 
+>
+>Ok, I'll re-check and update the error path for the next version.
+>
+>> 
+>> > +		goto out;
+>> > +
+>> > +	for (i = 0; i < OCP_SMA_NUM; i++) {
+>> > +		bp->sma[i].dpll_pin = dpll_pin_get(clkid, i, THIS_MODULE, &bp->sma[i].dpll_prop);
+>> > +		if (IS_ERR(bp->sma[i].dpll_pin))
+>> > +			goto out_dpll;
+>> > +
+>> > +		err = dpll_pin_register(bp->dpll, bp->sma[i].dpll_pin, &dpll_pins_ops,
+>> > +					&bp->sma[i], NULL);
+>> > +		if (err) {
+>> > +			dpll_pin_put(bp->sma[i].dpll_pin);
+>> > +			goto out_dpll;
+>> > +		}
+>> > +	}
+>> > +
+>> > +	return 0;
+>> > +out_dpll:
+>> > +	while (i) {
+>> > +		--i;
+>> 
+>> 	while (i--) {
+>> 	?
+>> 
+>> > +		dpll_pin_unregister(bp->dpll, bp->sma[i].dpll_pin, &dpll_pins_ops, &bp->sma[i]);
+>> > +		dpll_pin_put(bp->sma[i].dpll_pin);
+>> > +	}
+>> > +	dpll_device_put(bp->dpll);
+>> > out:
+>> > 	ptp_ocp_detach(bp);
+>> > out_disable:
+>> > @@ -4243,7 +4457,16 @@ ptp_ocp_remove(struct pci_dev *pdev)
+>> > {
+>> > 	struct ptp_ocp *bp = pci_get_drvdata(pdev);
+>> > 	struct devlink *devlink = priv_to_devlink(bp);
+>> > +	int i;
+>> > 
+>> > +	for (i = 0; i < OCP_SMA_NUM; i++) {
+>> > +		if (bp->sma[i].dpll_pin) {
+>> 
+>> Remove this pointless check. It is always true.
+>
+>Agree.
+>
+>> 
+>> 
+>> > +			dpll_pin_unregister(bp->dpll, bp->sma[i].dpll_pin, &dpll_pins_ops, bp);
+>> > +			dpll_pin_put(bp->sma[i].dpll_pin);
+>> > +		}
+>> > +	}
+>> > +	dpll_device_unregister(bp->dpll, &dpll_ops, bp);
+>> > +	dpll_device_put(bp->dpll);
+>> > 	devlink_unregister(devlink);
+>> > 	ptp_ocp_detach(bp);
+>> > 	pci_disable_device(pdev);
+>> > -- 
+>> > 2.34.1
+>> > 
+>
 
