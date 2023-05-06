@@ -1,80 +1,111 @@
-Return-Path: <netdev+bounces-705-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-706-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9D29F6F9241
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 15:35:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 61E8D6F9254
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 15:53:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 050BD281193
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 13:35:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 37C22281144
+	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 13:53:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A02B882B;
-	Sat,  6 May 2023 13:35:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EBC778836;
+	Sat,  6 May 2023 13:53:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 698301FAF
-	for <netdev@vger.kernel.org>; Sat,  6 May 2023 13:35:45 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C9722734
-	for <netdev@vger.kernel.org>; Sat,  6 May 2023 06:35:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=pmXhXkFYohPNeCWQuynNPFxN4xQZqTt6S8iWSJ62Jvc=; b=EDKTDyqEEWS+OpjNCZE805M/Z1
-	uvM2VZnWOsFgDonBEspqOlZ0DYHvsdJPZaijbNMIEoSPeAM134x/AuAXRYEbzSxREMoZGqkGEnCga
-	KfRDLUmDibXy+M9iInUcEqWZFkc10p155He56sU2+BP1gifaR1EpU+KEpxfKV5MoUS8M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1pvI4c-00C4FY-Fq; Sat, 06 May 2023 15:35:42 +0200
-Date: Sat, 6 May 2023 15:35:42 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Lorenz Brun <lorenz@brun.one>
-Cc: netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: Quirks for exotic SFP module
-Message-ID: <561dff8e-8a12-4f99-86e2-b5cdc8632d4a@lunn.ch>
-References: <C157UR.RELZCR5M9XI83@brun.one>
- <7ed07d2e-ef0e-4e27-9ac6-96d60ae0e630@lunn.ch>
- <CQF7UR.5191D6UPT6U8@brun.one>
- <d75c2138-76c6-49fe-96c3-39401f18b831@lunn.ch>
- <DVN7UR.QEVJPHB8FG6I1@brun.one>
- <8adbd20c-6de0-49ab-aabe-faf845d9a5d9@lunn.ch>
- <75Q7UR.PII4PI72J55K3@brun.one>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCDFC1FB0
+	for <netdev@vger.kernel.org>; Sat,  6 May 2023 13:53:24 +0000 (UTC)
+Received: from smtp.smtpout.orange.fr (smtp-13.smtpout.orange.fr [80.12.242.13])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C4023A10
+	for <netdev@vger.kernel.org>; Sat,  6 May 2023 06:53:22 -0700 (PDT)
+Received: from pop-os.home ([86.243.2.178])
+	by smtp.orange.fr with ESMTPA
+	id vILdpZJ7QLshbvILdpEMnX; Sat, 06 May 2023 15:53:20 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+	s=t20230301; t=1683381200;
+	bh=r2E/7o27DlnpjDgt/7U4i84YKnHKe8gQvEkHYS6ZEo4=;
+	h=From:To:Cc:Subject:Date;
+	b=lHlfvw7vCLJXsOvSEVtTEc2wvFWkD4EblArPxqrOu5YDJrRsXSR4s5ZSksWAVkdZv
+	 55glhtQuraGZycXpPsAWNDnlCpjsF7iI9pc+PHoXZr1Blt+WtwgTPjM8wwfGVImAz7
+	 DalbgVM/UlkBgGUuGOOYCcugmBKHHG+5wN1eeH7h6OQSkQ9On742MD7fG+MBCjwcAI
+	 gg3/DueVXVN9832W8oFD09ckXazRl0t5AbhLGWIw5oNU4D2ucn0BXTM1HO4dbW/K5O
+	 jO1e5fFIBx7HOAkq3GgASHeePGwU347WIkFlQAO1vbLTB43Cuhm4oJpTmcb34uzFLV
+	 zUwL97u8QjFUA==
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 06 May 2023 15:53:20 +0200
+X-ME-IP: 86.243.2.178
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: Amitkumar Karwar <amitkarwar@gmail.com>,
+	Ganapathi Bhat <ganapathi017@gmail.com>,
+	Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+	Xinming Hu <huxinming820@gmail.com>,
+	Kalle Valo <kvalo@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	chunfan chen <jeffc@marvell.com>
+Cc: linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	Xinming Hu <huxm@marvell.com>,
+	Amitkumar Karwar <akarwar@marvell.com>,
+	linux-wireless@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: [PATCH wireless] mwifiex: Fix the size of a memory allocation in mwifiex_ret_802_11_scan()
+Date: Sat,  6 May 2023 15:53:15 +0200
+Message-Id: <7a6074fb056d2181e058a3cc6048d8155c20aec7.1683371982.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <75Q7UR.PII4PI72J55K3@brun.one>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-> Oh, so you're talking about signalling on the AR8033 <-> Linux Host part of
-> the link. I actually wasn't aware that 1000Base-X did in-band signalling,
-> TIL. Since the I2C bus is connected to the modem SoC it would have to
-> forward any MDIO to the AR8033 transceiver, right? This would also be a bit
-> weird as the AR8033 is connected "backwards", i.e. with RGMII facing towards
-> the Modem SoC and 1000Base-X towards the Linux host.
+The type of "mwifiex_adapter->nd_info" is "struct cfg80211_wowlan_nd_info",
+not "struct cfg80211_wowlan_nd_match".
 
-I2C allows for there to be multiple devices on the bus. So a PHY which
-supports I2C could be placed on the bus along side the SoC
-implementing the modem.
+Use struct_size() to ease the computation of the needed size.
 
-However, Russell indicated that the Atheros PHY does not have native
-I2C. So it is unlikely to be on the bus. This is probably why the
-Marvell PHY is used a lot, not many PHYs do have I2C.
+The current code over-allocates some memory, so is safe.
+But it wastes 32 bytes.
 
-	Andrew
+Fixes: 7d7f07d8c5d3 ("mwifiex: add wowlan net-detect support")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/wireless/marvell/mwifiex/scan.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/scan.c b/drivers/net/wireless/marvell/mwifiex/scan.c
+index ac8001c84293..dd73ade4ddf1 100644
+--- a/drivers/net/wireless/marvell/mwifiex/scan.c
++++ b/drivers/net/wireless/marvell/mwifiex/scan.c
+@@ -2187,9 +2187,9 @@ int mwifiex_ret_802_11_scan(struct mwifiex_private *priv,
+ 
+ 	if (nd_config) {
+ 		adapter->nd_info =
+-			kzalloc(sizeof(struct cfg80211_wowlan_nd_match) +
+-				sizeof(struct cfg80211_wowlan_nd_match *) *
+-				scan_rsp->number_of_sets, GFP_ATOMIC);
++			kzalloc(struct_size(adapter->nd_info, matches,
++					    scan_rsp->number_of_sets),
++				GFP_ATOMIC);
+ 
+ 		if (adapter->nd_info)
+ 			adapter->nd_info->n_matches = scan_rsp->number_of_sets;
+-- 
+2.34.1
+
 
