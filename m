@@ -1,1540 +1,371 @@
-Return-Path: <netdev+bounces-756-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-757-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 379376F98CD
-	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 16:06:59 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1B77C6F9953
+	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 17:27:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1D1A5280E85
-	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 14:06:57 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 676311C214DF
+	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 15:27:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A2A15241;
-	Sun,  7 May 2023 14:06:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D78155244;
+	Sun,  7 May 2023 15:27:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B47C2564
-	for <netdev@vger.kernel.org>; Sun,  7 May 2023 14:06:54 +0000 (UTC)
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7658749F7
-	for <netdev@vger.kernel.org>; Sun,  7 May 2023 07:06:49 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d9443c01a7336-1aaed87d8bdso24338925ad.3
-        for <netdev@vger.kernel.org>; Sun, 07 May 2023 07:06:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDB123D67
+	for <netdev@vger.kernel.org>; Sun,  7 May 2023 15:27:10 +0000 (UTC)
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768F840E1;
+	Sun,  7 May 2023 08:27:08 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 347CAaB3012278;
+	Sun, 7 May 2023 15:26:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2023-03-30;
+ bh=DmLdFf5GbKuXALcyl6r8ua9yPdo6+ISCb8BlbyVddbE=;
+ b=JzTlNbaAUCjd/vODqTlpAYaIz755kSxKc5O/hE/OSis5JRa9/VN4I5BjrlFCS8NGcjJj
+ S8s2w7A2YXYIXlt8eALBZ/I2uzY33JHoZCvoP3XDr3KdD4sIzh+gbHEQZ+i39AL5+gvC
+ 1aRCVjGx5vhqzKKuIPYGoEnTSSm+1I2naArw+vaLG2qKT/GAmeqzSCoRobFQKq/RQWkZ
+ qexeCTGdr0TIXgoMqGa922Jy69+ltSBSubAuBu+b+LYJxrwygESj0C4zBb3MrL7v13W1
+ 4YvA8UyeNT7XcCCnWTjFocwiNIP4qM0sDqDozOvdkPg3ZqkTFfvMYkBLrv+LTzcjn3KS RQ== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qddg21v3d-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sun, 07 May 2023 15:26:53 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 347AOwN6024060;
+	Sun, 7 May 2023 15:26:52 GMT
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2042.outbound.protection.outlook.com [104.47.57.42])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qddb3tpx2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sun, 07 May 2023 15:26:52 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MJpJKgb9plD0Ypq3esOSKPQai1iY2TB6Yb4cYod1+7MOk4I/WW3TrzlPFBSJh9OIxsLcQrsEX7vEeFtqe5F3CrZxn4f2wyWDa5v4n/xXsyBXP9ntS32jZ5o5XzqXx8BYGMk2+BR1ZzHOAHQInN5acuRMgm+YkYklAHgatEmaE8vfGJAJzP4b8VL+FbPujMZ4a1Bt1S0xd/RkkUlfZqj17PRfuIjn451tyFi7rf0WX4Ze4hIyULitPXotDOT/NdFt3kGB70A69RXwMUcEPKE55L3dR/KGSGG57CLo687FBNWboycksWhrbC1u+AyeAsKR+ZNfO61cDOuDj685/hHW7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DmLdFf5GbKuXALcyl6r8ua9yPdo6+ISCb8BlbyVddbE=;
+ b=aCfhdbuLWE9O4DZ3Nla6zG1pW7rnPqn/kFILgGMcAiOMOAdhrhk7GYYqDqdoFijuNB1PMGqHWn4jv/hb9l0ko3v1G4dFAmzC7qAib3RNg/tkrpHCF67Q2B+0ZlAw33KDTcEV/sM2YlyrJ7RcW073wjakrFebobhCxN6pmz3W7DnBFr37VzhQrviI1CgoQTM4qlHxme9TPyZCwIPOVtVdB6nBFmPdC+X3w8nCC5aduyNShbPA94TvVAUQHIdI8+Oi1ViyfihYwsARYRSulamdIDXRurVcbfWjO9b0LRigdiUY+5gTrL9dhVuVI21HO+vYx2IWhw4dV9nNa3df5jRcig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683468408; x=1686060408;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=0YsxkVaOZgsnOFkiMUzj8QPo2p+K34jhTfIkWWh7X88=;
-        b=R+SibTZ5cPiz3sl/tz6uI/ikML7R2sDc8Kktb0e4oXjL0ODr+ArFzd1qEGJY2OXaJt
-         ZnKubyWrY37eLstMB/fkyl4HjRD19foNnEVjgJ+etsbCpPiQcpTjtNftt14tthLS1Bfc
-         I34a83kgHnGj69aBlSb0mAY6amJJmspYZepfMsFcY1MAOWCKNQ8yIkqn408ao8ou4nj2
-         UujvInRCLpjfySSAnzq4dI7xiHrEnGLgaHoJ7ohxgegxIO+7tHUY3ExS4mquVjcbKkFC
-         VcbnTsBMbsVmhWiBcTxIpTRSPzYHb2bzhSDsJm8gu5XS4xe58ZLj12XU+iGEtYBmTSNR
-         QWzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683468408; x=1686060408;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0YsxkVaOZgsnOFkiMUzj8QPo2p+K34jhTfIkWWh7X88=;
-        b=W3DEoL9d8v4WZvYETpGY27pl8+TXPnqkSyuhq14qERTMvgMYDQwjYQ6J6jWWbm5FJ5
-         qe2soXv/JBX8wUwTMCXWFCX6kQtHq1821bXHr6lKfm3wkCvPAosoV4uoUZBrSlf24P9o
-         WXQoC/CT6vDeWeylJZ/5XrqBn+5E0cvFKC4P0DL1tQoavFlowMjnovCS5/BxObvFOMmB
-         Io7hBX6qz5HnyxH8/TKqYepoEcFcBIb2zXSrTfRPsyXC+X6LdGuaL8aYDImMyu625QFU
-         Ytg4d0HoZujwiD2npn/nQ2tKqVpmImXN6mLnaTY5Q0Y/NndhrjHLRANXnlM1dbLS0YiX
-         oSaw==
-X-Gm-Message-State: AC+VfDzt80gcECDIwM0COvjc0GzR5hqNkHO7PMRas4swGGjCIvLYHLTR
-	0j1m3uwXz5leQFCJuO6sgR5gxClVfsvNJw==
-X-Google-Smtp-Source: ACHHUZ6mkmXFWS1c/OVEJPF/F3Rq9OAw2FBlWalMtFD/s5b3FotaHpUocg9tEUx5jSM71TtIwOWDoA==
-X-Received: by 2002:a17:902:bd44:b0:1a9:b8c7:bf9 with SMTP id b4-20020a170902bd4400b001a9b8c70bf9mr7155301plx.22.1683468407757;
-        Sun, 07 May 2023 07:06:47 -0700 (PDT)
-Received: from witu-mlt.nvidia.com ([209.37.218.67])
-        by smtp.gmail.com with ESMTPSA id d14-20020a170903230e00b001a95c7742bbsm5248811plh.9.2023.05.07.07.06.45
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 07 May 2023 07:06:47 -0700 (PDT)
-From: William Tu <u9012063@gmail.com>
-To: netdev@vger.kernel.org
-Cc: jsankararama@vmware.com,
-	gyang@vmware.com,
-	doshir@vmware.com,
-	alexander.duyck@gmail.com,
-	alexandr.lobakin@intel.com,
-	bang@vmware.com,
-	maciej.fijalkowski@intel.com,
-	witu@nvidia.com,
-	horatiu.vultur@microchip.com,
-	error27@gmail.com,
-	simon.horman@corigine.com,
-	Alexander Duyck <alexanderduyck@fb.com>
-Subject: [PATCH RFC v21 net-next] vmxnet3: Add XDP support.
-Date: Sun,  7 May 2023 07:06:43 -0700
-Message-Id: <20230507140643.1958-1-u9012063@gmail.com>
-X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DmLdFf5GbKuXALcyl6r8ua9yPdo6+ISCb8BlbyVddbE=;
+ b=EgsDl56xZ9VP7AQOTW83RcM5Bh9tV2F1HOUx0qi1ezlTe/g9hqCV23eAZOJ6IhSrKSebNTRVJTB5sezX0B3L/V0ZpCXwZnuznNNJJrmkqf3qHtD8gN+QnyE/XzvPRRqbA4uhJ2dzc72VZ3C9C77lFa6DZ55iB61b5enocbgYzGY=
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
+ by SJ0PR10MB4429.namprd10.prod.outlook.com (2603:10b6:a03:2d1::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.31; Sun, 7 May
+ 2023 15:26:50 +0000
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::ecbd:fc46:2528:36db]) by BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::ecbd:fc46:2528:36db%5]) with mapi id 15.20.6363.032; Sun, 7 May 2023
+ 15:26:49 +0000
+From: Chuck Lever III <chuck.lever@oracle.com>
+To: Ding Hui <dinghui@sangfor.com.cn>
+CC: "jlayton@kernel.org" <jlayton@kernel.org>,
+        "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
+        "anna@kernel.org" <anna@kernel.org>,
+        "davem@davemloft.net"
+	<davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        Bruce Fields <bfields@redhat.com>,
+        Linux NFS Mailing List
+	<linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH] SUNRPC: Fix UAF in svc_tcp_listen_data_ready()
+Thread-Topic: [RFC PATCH] SUNRPC: Fix UAF in svc_tcp_listen_data_ready()
+Thread-Index: AQHZgMQOKc4fcioBR0q2bzqWePFl4a9O7x4A
+Date: Sun, 7 May 2023 15:26:49 +0000
+Message-ID: <EED05302-8BC6-4593-B798-BFC476FA190E@oracle.com>
+References: <20230507091131.23540-1-dinghui@sangfor.com.cn>
+In-Reply-To: <20230507091131.23540-1-dinghui@sangfor.com.cn>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3731.500.231)
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN0PR10MB5128:EE_|SJ0PR10MB4429:EE_
+x-ms-office365-filtering-correlation-id: 4cb76d22-57e5-4c09-1660-08db4f0f7a48
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ zwu9eb8iv+ApcHE/0SSjmfXV6JTgvklaBinQU9kUiCQ26JyOLTNNpauuRdwSeFWu+3m2HbDIWEU5zjqj3cTSP1NRAbgq1kTj6TBMKGYIMP6722wdeEjrpOLaGyB8TNQy0kdALzIMTaUuyWFzXHiODk9vj5qzq9qSDMxWEhVqpAZ8bcJmj5It8o84ABxGLdvwO82AzksLYdw1KkF9M8gpOKfI9VBnla2IdDpvovgkHr5ZAmY3d4elJMXvl+q/zHHfsuDDbGm4ofxkhuC33a8XoccUkkMcnXm1f7pwPyIQnO8mbTaxIOlysNrdEIs3qsWyg9SOrYLKOYSj+gEhbuNiq06K0gqlrtIi+tgZa4riCmQ3bb9H1cAy6voOaXn1CBj9EwQjR3zrvf75w7h/yKvcQ4YBCd1YN5++wgoRlPJhcPZUkPl+NY655oqrYqSYmmulY1HrcGXdsXFk9DDxm/qUuGutN/CnqUc5vR06a1Wh7r8JnSMpvHtNgKe9KSzlgxYSizn2i4hpCjAioriCGqrhdgtN7r6017hCpp20IfgpTxGcNT3E4YnO/hGsFuRMXba1ozr162WA6+/EVx1VnMVHEw+nCeNC6shklzLeHOvV+2MQKhVF1bm4MT6QYaeIdJp/sJzlxR2QSK3l549qmOTZMA==
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(376002)(346002)(39860400002)(136003)(366004)(451199021)(36756003)(33656002)(38100700002)(7416002)(2906002)(38070700005)(5660300002)(8676002)(8936002)(316002)(86362001)(64756008)(66446008)(66476007)(66556008)(66946007)(76116006)(4326008)(6916009)(41300700001)(122000001)(91956017)(83380400001)(53546011)(186003)(6512007)(6506007)(478600001)(6486002)(2616005)(71200400001)(54906003)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ =?us-ascii?Q?1oHxjdNwoAKuhrFOZ34nkNWVSqCGPWRtUcTntDqIyEEvZLd2KhCr6laUDA6C?=
+ =?us-ascii?Q?/WkUrB0ToJTKkRQEXSG+u4mUiaUbEBq1rNWvz5/qGMZZHvYWXdOaaKvmhLEb?=
+ =?us-ascii?Q?m71YvOTuUpHhQnFpB5khWTTipvx5GF1VPxfED42AdLUOaygxLqdGyLtcRtdQ?=
+ =?us-ascii?Q?/Rd44IF3zhRzvDdS3h8PoqR7piyGh6Vy2aNu+gUn+MF9XfwdcyOWCZWxZw0q?=
+ =?us-ascii?Q?yQw3zzMjSLs/5aPBOL9vK2BYtwcIpRN6QaBwLSP6WS4GMXbBK7cxWEP1YLoz?=
+ =?us-ascii?Q?H6EyU+LFpseHqFvWLkepqb4FBfMlCkBWzCOjmXY/kHOWO7Zoz0VvoMJZyviT?=
+ =?us-ascii?Q?JVbk3YRrqaNr6jzX1CqwhldR++nT5Yulylmnr84gUZKoWg5oz7zNDfBS4Nv7?=
+ =?us-ascii?Q?IqkiKzorg93PJarybUvVHNa5Y5Uvg3gmKV1irYevGPGy/399e3hcGstNkJXl?=
+ =?us-ascii?Q?g2fce4FAf1Ibgvbz/5hCuaICaRU+F4O4ls6n4Mbt6x/2weJvJlge0zWjbESW?=
+ =?us-ascii?Q?q4CyazVVUDrqKDkuyKVzVTniBFANxLb67xwfIMGiGy8Qzk5TAVi1hlkQhL+V?=
+ =?us-ascii?Q?ylQz03XEeRaYTiL5NDtJQBrryqYt8UJDMxAUFtrUqePGm7CjD8TVJgd5lhFZ?=
+ =?us-ascii?Q?cN4IXreKbCVI5BZzB5h1IDuRVmLj6TOUX11cvrOY8GXko4MfWj8P8KqrBtH9?=
+ =?us-ascii?Q?pzyCTmQ8BH1ILLPwk3Ya4qMUdRaPB3w21CLoqrojUL/Uy8DZpUKfw1ZjVFQ0?=
+ =?us-ascii?Q?Wtwgn31wRSIAYBtagsK7AzMQ7qRZlE0xOne/2C5vztVffZ0HGA+nS72aw1zf?=
+ =?us-ascii?Q?njm2Q/nBEB12xE7YZ2IB1AOeV/CQH+aRlfa9AiVYA6a7ES5gJ74IRVznUQU9?=
+ =?us-ascii?Q?67Fp68vQtY4np579l18I7pToDUeC8bJBhtxUL/p+BVnCIWTKvvy193W9CeaZ?=
+ =?us-ascii?Q?VmJy8Ni8a7yH8UgmFprrI7U5CSSnjxyW37p8uU5na7DV0SfPnEg9PaGh8tpm?=
+ =?us-ascii?Q?98L9S516thKhIbGg4NE29r1asobQ+dDYGf7djF7DVZWAvnJ9deviLzEOvHxG?=
+ =?us-ascii?Q?u/+PP//TutPUP5yWJnBjw66cWX8nTdigAeQJJFjn+4oyrCARckJgDdouLDgN?=
+ =?us-ascii?Q?+99NU2fp+swMpEsBkYFVl6Tm+e85vNFz+xTDR4X1j5rB8mKa0z+V6OEAjkfn?=
+ =?us-ascii?Q?zdbnPS6RwG3Mq02xi7xWOTrkb807igcxHYjhkTxVSSD9DKStK3EHWcxpTPWw?=
+ =?us-ascii?Q?vZJJbeWBeFhGFnJlrg7qhHtFOeZRc0C0Bst4cU6Wr6BdPnzLBPjG31TbsNkO?=
+ =?us-ascii?Q?tvs7PS2zeEWfOY3Uz7570sGrnA5fuqD0tQ7dWo7W+an7o2AD4JMb8LF3x8XJ?=
+ =?us-ascii?Q?y5TpIbrP+oJUyPrY0HbswefwsXgAxpiGJ/xtctqhBOjEFqxFy69LROEPwRe5?=
+ =?us-ascii?Q?sc6vSVQxOW7dCjHKKJjG7xtM2wvlmIZ78XSLEL7Ec2254DrOFe1VMRjynDcD?=
+ =?us-ascii?Q?sAD2LUB1ZqZi2bpjTlLH1qyxEQ8jpESpmFZVMSq71h5ZE3Ly09Iy0Zl/PCV0?=
+ =?us-ascii?Q?QJhY8wutLYEg3H0UYyMMBzAF2vBKwYOIl5EKZcbg/lpko57KcxzXEb9BMz73?=
+ =?us-ascii?Q?+P/WCfUVRlVaBRuP8Z1ar0izu+GoO/eWHD7lcURXb6mBDu7fvCkraLCoTIBA?=
+ =?us-ascii?Q?s+W0Rw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1016E75C4BE0244DA283132BB030A1B9@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	=?us-ascii?Q?yzALB42qpbEVAXkNyhMZx4D1iiKjmBpt2XlfGRDfDLwOvsXqtAFYcCPDy71N?=
+ =?us-ascii?Q?Ej+Q7Q7CO15LArSnGsFhLOMtvjKPIvAWpTYlqxmiBDiq8jmI54qlqPwsfsyi?=
+ =?us-ascii?Q?LTVuwrlDEfxUTSSzP6g4w8gSr3lFuv67li5ltxX+w3Uh0oytMGXko6MPhdLi?=
+ =?us-ascii?Q?ej8dOiluTAsvGbKIgVuZ1DJHoVHNx1OinpYqxc2eV+fxYHZM6ly0UVuwb2mm?=
+ =?us-ascii?Q?jOvwO1ZJfL/hLeh8EILITovDjzi2vm5ixsfMipdWfZP25AAWNkyy3qQk8Euu?=
+ =?us-ascii?Q?fwcxH0zZ+b7O//aAdYyMzEDnNlNe0SZGjc8PV0cx+B4azK7CJteFVbvh5GNz?=
+ =?us-ascii?Q?fgxzYgXhPZoya4PH0URUzsrsUthKOKke4BxAJ8JJdZzC2YxO/uUpRpVEcNdi?=
+ =?us-ascii?Q?HlMt8hHndLMh3/EFQ5H2fr+ppzCYzQuPLl6UKmguH3U96+WT7IlO6h2Q1Ppl?=
+ =?us-ascii?Q?THEBSf/CChkTrFs9r7EdkI6T/q3nWQ/6DsUxdkDdaRxVAPMFV7iWZbMkDEDm?=
+ =?us-ascii?Q?cJfiAslGnRGTnEPTsnzVoh1r7wbDbc//sMwjJLaWTC8GQp89iriV0hAiMV+8?=
+ =?us-ascii?Q?O+YTR9z2IdJo8s5Z1Dp4HcalN1vUktEbs6FrcTiH2Aj0szBmUnheCWSFaaBh?=
+ =?us-ascii?Q?pxREWgCHe29hI0Cr7R8Awmy/DNDxeh+p2TpZFu9EiC46/KjOdQ7hz354FBXa?=
+ =?us-ascii?Q?FECGCOCFv9gv1TqYSxFL0vpb3pTUJnuNbI/p6XBHRTkVBj4SKVN8BXoM8EzO?=
+ =?us-ascii?Q?NmKupgTkWwmq6IUq6ziV3XlGZsy8HWUj4NpPRTd9vbA1adqhZpmtXhxMK456?=
+ =?us-ascii?Q?uL1SydrqC+Sl1tCPo6Cj8pmXXY62h4z+uln+IEDg1Ja72QIps79SxnH9S1U/?=
+ =?us-ascii?Q?8DdsavIBLhcMkQYbto1ij6cDWdWEHJxTwT8Z1bR0UysqdSR3nlEjCmUF90u/?=
+ =?us-ascii?Q?8jMIUWHvsDQBVSi4E5WIvw=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4cb76d22-57e5-4c09-1660-08db4f0f7a48
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 May 2023 15:26:49.7227
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9u2x783S9I7LGrMaiiyGPnmy15j9yuzjZFxnyDsu4Ed09kYycx0IEi01QNxI1JdNkaE3IbDIlheMiYoq3Efjbw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4429
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-07_06,2023-05-05_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
+ phishscore=0 suspectscore=0 mlxscore=0 spamscore=0 malwarescore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2305070120
+X-Proofpoint-ORIG-GUID: uLVi48UgqV8vb96oPddB-Jhco-AY-C6-
+X-Proofpoint-GUID: uLVi48UgqV8vb96oPddB-Jhco-AY-C6-
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The patch adds native-mode XDP support: XDP DROP, PASS, TX, and REDIRECT.
 
-Background:
-The vmxnet3 rx consists of three rings: ring0, ring1, and dataring.
-For r0 and r1, buffers at r0 are allocated using alloc_skb APIs and dma
-mapped to the ring's descriptor. If LRO is enabled and packet size larger
-than 3K, VMXNET3_MAX_SKB_BUF_SIZE, then r1 is used to mapped the rest of
-the buffer larger than VMXNET3_MAX_SKB_BUF_SIZE. Each buffer in r1 is
-allocated using alloc_page. So for LRO packets, the payload will be in one
-buffer from r0 and multiple from r1, for non-LRO packets, only one
-descriptor in r0 is used for packet size less than 3k.
 
-When receiving a packet, the first descriptor will have the sop (start of
-packet) bit set, and the last descriptor will have the eop (end of packet)
-bit set. Non-LRO packets will have only one descriptor with both sop and
-eop set.
+> On May 7, 2023, at 5:11 AM, Ding Hui <dinghui@sangfor.com.cn> wrote:
+>=20
+> After the listener svc_sock freed, and before invoking svc_tcp_accept()
+> for the established child sock, there is a window that the newsock
+> retaining a freed listener svc_sock in sk_user_data which cloning from
+> parent. In the race windows if data is received on the newsock, we will
+> observe use-after-free report in svc_tcp_listen_data_ready().
 
-Other than r0 and r1, vmxnet3 dataring is specifically designed for
-handling packets with small size, usually 128 bytes, defined in
-VMXNET3_DEF_RXDATA_DESC_SIZE, by simply copying the packet from the backend
-driver in ESXi to the ring's memory region at front-end vmxnet3 driver, in
-order to avoid memory mapping/unmapping overhead. In summary, packet size:
-    A. < 128B: use dataring
-    B. 128B - 3K: use ring0 (VMXNET3_RX_BUF_SKB)
-    C. > 3K: use ring0 and ring1 (VMXNET3_RX_BUF_SKB + VMXNET3_RX_BUF_PAGE)
-As a result, the patch adds XDP support for packets using dataring
-and r0 (case A and B), not the large packet size when LRO is enabled.
+My thought is that not calling sk_odata() for the newsock
+could potentially result in missing a data_ready event,
+resulting in a hung client on that socket.
 
-XDP Implementation:
-When user loads and XDP prog, vmxnet3 driver checks configurations, such
-as mtu, lro, and re-allocate the rx buffer size for reserving the extra
-headroom, XDP_PACKET_HEADROOM, for XDP frame. The XDP prog will then be
-associated with every rx queue of the device. Note that when using dataring
-for small packet size, vmxnet3 (front-end driver) doesn't control the
-buffer allocation, as a result we allocate a new page and copy packet
-from the dataring to XDP frame.
+IMO the preferred approach is to ensure that svsk is always
+safe to dereference in tcp_listen_data_ready. I haven't yet
+thought carefully about how to do that.
 
-The receive side of XDP is implemented for case A and B, by invoking the
-bpf program at vmxnet3_rq_rx_complete and handle its returned action.
-The vmxnet3_process_xdp(), vmxnet3_process_xdp_small() function handles
-the ring0 and dataring case separately, and decides the next journey of
-the packet afterward.
 
-For TX, vmxnet3 has split header design. Outgoing packets are parsed
-first and protocol headers (L2/L3/L4) are copied to the backend. The
-rest of the payload are dma mapped. Since XDP_TX does not parse the
-packet protocol, the entire XDP frame is dma mapped for transmission
-and transmitted in a batch. Later on, the frame is freed and recycled
-back to the memory pool.
+> Reproduce by two tasks:
+>=20
+> 1. while :; do rpc.nfsd 0 ; rpc.nfsd; done
+> 2. while :; do echo "" | ncat -4 127.0.0.1 2049 ; done
+>=20
+> KASAN report:
+>=20
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>  BUG: KASAN: slab-use-after-free in svc_tcp_listen_data_ready+0x1cf/0x1f0=
+ [sunrpc]
+>  Read of size 8 at addr ffff888139d96228 by task nc/102553
+>  CPU: 7 PID: 102553 Comm: nc Not tainted 6.3.0+ #18
+>  Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Refere=
+nce Platform, BIOS 6.00 11/12/2020
+>  Call Trace:
+>   <IRQ>
+>   dump_stack_lvl+0x33/0x50
+>   print_address_description.constprop.0+0x27/0x310
+>   print_report+0x3e/0x70
+>   kasan_report+0xae/0xe0
+>   svc_tcp_listen_data_ready+0x1cf/0x1f0 [sunrpc]
+>   tcp_data_queue+0x9f4/0x20e0
+>   tcp_rcv_established+0x666/0x1f60
+>   tcp_v4_do_rcv+0x51c/0x850
+>   tcp_v4_rcv+0x23fc/0x2e80
+>   ip_protocol_deliver_rcu+0x62/0x300
+>   ip_local_deliver_finish+0x267/0x350
+>   ip_local_deliver+0x18b/0x2d0
+>   ip_rcv+0x2fb/0x370
+>   __netif_receive_skb_one_core+0x166/0x1b0
+>   process_backlog+0x24c/0x5e0
+>   __napi_poll+0xa2/0x500
+>   net_rx_action+0x854/0xc90
+>   __do_softirq+0x1bb/0x5de
+>   do_softirq+0xcb/0x100
+>   </IRQ>
+>   <TASK>
+>   ...
+>   </TASK>
+>=20
+>  Allocated by task 102371:
+>   kasan_save_stack+0x1e/0x40
+>   kasan_set_track+0x21/0x30
+>   __kasan_kmalloc+0x7b/0x90
+>   svc_setup_socket+0x52/0x4f0 [sunrpc]
+>   svc_addsock+0x20d/0x400 [sunrpc]
+>   __write_ports_addfd+0x209/0x390 [nfsd]
+>   write_ports+0x239/0x2c0 [nfsd]
+>   nfsctl_transaction_write+0xac/0x110 [nfsd]
+>   vfs_write+0x1c3/0xae0
+>   ksys_write+0xed/0x1c0
+>   do_syscall_64+0x38/0x90
+>   entry_SYSCALL_64_after_hwframe+0x72/0xdc
+>=20
+>  Freed by task 102551:
+>   kasan_save_stack+0x1e/0x40
+>   kasan_set_track+0x21/0x30
+>   kasan_save_free_info+0x2a/0x50
+>   __kasan_slab_free+0x106/0x190
+>   __kmem_cache_free+0x133/0x270
+>   svc_xprt_free+0x1e2/0x350 [sunrpc]
+>   svc_xprt_destroy_all+0x25a/0x440 [sunrpc]
+>   nfsd_put+0x125/0x240 [nfsd]
+>   nfsd_svc+0x2cb/0x3c0 [nfsd]
+>   write_threads+0x1ac/0x2a0 [nfsd]
+>   nfsctl_transaction_write+0xac/0x110 [nfsd]
+>   vfs_write+0x1c3/0xae0
+>   ksys_write+0xed/0x1c0
+>   do_syscall_64+0x38/0x90
+>   entry_SYSCALL_64_after_hwframe+0x72/0xdc
+>=20
+> In this RFC patch, I try to fix the UAF by skipping dereferencing
+> svsk for all child socket in svc_tcp_listen_data_ready(), it is
+> easy to backport for stable.
+>=20
+> However I'm not sure if there are other potential risks in the race
+> window, so I thought another fix which depends on SK_USER_DATA_NOCOPY
+> introduced in commit f1ff5ce2cd5e ("net, sk_msg: Clear sk_user_data
+> pointer on clone if tagged").
+>=20
+> Saving svsk into sk_user_data with SK_USER_DATA_NOCOPY tag in
+> svc_setup_socket() like this:
+>=20
+>  __rcu_assign_sk_user_data_with_flags(inet, svsk, SK_USER_DATA_NOCOPY);
+>=20
+> Obtaining svsk in callbacks like this:
+>=20
+>  struct svc_sock *svsk =3D rcu_dereference_sk_user_data(sk);
+>=20
+> This will avoid copying sk_user_data for sunrpc svc_sock in
+> sk_clone_lock(), so the sk_user_data of child sock before accepted
+> will be NULL.
+>=20
+> Appreciate any comment and suggestion, thanks.
+>=20
+> Fixes: fa9251afc33c ("SUNRPC: Call the default socket callbacks instead o=
+f open coding")
+> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+> ---
+> net/sunrpc/svcsock.c | 23 +++++++++++------------
+> 1 file changed, 11 insertions(+), 12 deletions(-)
+>=20
+> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+> index a51c9b989d58..9aca6e1e78e4 100644
+> --- a/net/sunrpc/svcsock.c
+> +++ b/net/sunrpc/svcsock.c
+> @@ -825,12 +825,6 @@ static void svc_tcp_listen_data_ready(struct sock *s=
+k)
+>=20
+> trace_sk_data_ready(sk);
+>=20
+> - if (svsk) {
+> - /* Refer to svc_setup_socket() for details. */
+> - rmb();
+> - svsk->sk_odata(sk);
+> - }
+> -
+> /*
+> * This callback may called twice when a new connection
+> * is established as a child socket inherits everything
+> @@ -839,13 +833,18 @@ static void svc_tcp_listen_data_ready(struct sock *=
+sk)
+> *    when one of child sockets become ESTABLISHED.
+> * 2) data_ready method of the child socket may be called
+> *    when it receives data before the socket is accepted.
+> - * In case of 2, we should ignore it silently.
+> + * In case of 2, we should ignore it silently and DO NOT
+> + * dereference svsk.
+> */
+> - if (sk->sk_state =3D=3D TCP_LISTEN) {
+> - if (svsk) {
+> - set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
+> - svc_xprt_enqueue(&svsk->sk_xprt);
+> - }
+> + if (sk->sk_state !=3D TCP_LISTEN)
+> + return;
+> +
+> + if (svsk) {
+> + /* Refer to svc_setup_socket() for details. */
+> + rmb();
+> + svsk->sk_odata(sk);
+> + set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
+> + svc_xprt_enqueue(&svsk->sk_xprt);
+> }
+> }
+>=20
+> --=20
+> 2.17.1
+>=20
 
-Performance:
-Tested using two VMs inside one ESXi vSphere 7.0 machine, using single
-core on each vmxnet3 device, sender using DPDK testpmd tx-mode attached
-to vmxnet3 device, sending 64B or 512B UDP packet.
+--
+Chuck Lever
 
-VM1 txgen:
-$ dpdk-testpmd -l 0-3 -n 1 -- -i --nb-cores=3 \
---forward-mode=txonly --eth-peer=0,<mac addr of vm2>
-option: add "--txonly-multi-flow"
-option: use --txpkts=512 or 64 byte
-
-VM2 running XDP:
-$ ./samples/bpf/xdp_rxq_info -d ens160 -a <options> --skb-mode
-$ ./samples/bpf/xdp_rxq_info -d ens160 -a <options>
-options: XDP_DROP, XDP_PASS, XDP_TX
-
-To test REDIRECT to cpu 0, use
-$ ./samples/bpf/xdp_redirect_cpu -d ens160 -c 0 -e drop
-
-Single core performance comparison with skb-mode.
-64B:      skb-mode -> native-mode
-XDP_DROP: 1.6Mpps -> 2.4Mpps
-XDP_PASS: 338Kpps -> 367Kpps
-XDP_TX:   1.1Mpps -> 2.3Mpps
-REDIRECT-drop: 1.3Mpps -> 2.3Mpps
-
-512B:     skb-mode -> native-mode
-XDP_DROP: 863Kpps -> 1.3Mpps
-XDP_PASS: 275Kpps -> 376Kpps
-XDP_TX:   554Kpps -> 1.2Mpps
-REDIRECT-drop: 659Kpps -> 1.2Mpps
-
-Demo: https://youtu.be/4lm1CSCi78Q
-
-Future work:
-- XDP frag support
-- use napi_consume_skb() instead of dev_kfree_skb_any at unmap
-- stats using u64_stats_t
-- using bitfield macro BIT()
-- optimization for DMA synchronization using actual frame length,
-  instead of always max_len
-
-Signed-off-by: William Tu <u9012063@gmail.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
-v20 -> v21:
-- remove set but not used 'nq', found by Simon
-- fix duplicate include <linux/skbuff.h> found by kernel
-  test robot
-- run through some vmware internal testing done by Sankar
-https://github.com/williamtu/net-next/compare/v20..v21
-
-v19 -> v20:
-feedbacks from Alexander Lobakin
-- remove rcu_read_lock, fix error path in XDP_REDIRECT
-- code refactoring
-https://github.com/williamtu/net-next/compare/v19..v20
-
-v18 -> v19:
-feedbacks from
-Horatiu Vultur <horatiu.vultur@microchip.com> and
-Dan Carpenter <error27@gmail.com>
-- use DMA_TO_DEVICE in vmxnet3_xdp_xmit_frame
-- remove one-time used local variable
-- fix smatch warnings:
-  vmxnet3_process_xdp_small() warn: variable dereferenced before
-  check 'skb_xdp_pass' (see line 361)
-https://github.com/williamtu/net-next/compare/v18..v19
-
-v17 -> v18:
-- rebase df28e8690e71 ("Merge branch 'net-better-const'")
-feedbacks from Alexander Lobakin
-- use NL_SET_ERR_MSG_FMT_MOD for printing MTU in error msg
-- I decided to skip the optimization for DMA synchronization,
-  to keep this version simpler, leave it for future work.
-https://github.com/williamtu/net-next/compare/v17..v18
-
-v16 -> v17:
-feedbacks from Alexander Lobakin
-- code refectoring and cleanup and remove excessive braces around
-  condition
-- page pool creation: create 1-dir instead of bi-direction. Bidir sync is
-  slower than 1-dir on certain architectures without DMA coherence
-  engines, as you need to not only drop the page from the cache, but also
-  do a writeback.
-- add XDP feature advertisement
-- rebase to net-next 01bb11ad828b32074976
-
-v15 -> v16:
-feedbacks from Maciej Fijalkowski
-- fix unneeded code churn
-- destory pp resource at vmxnet3_rq_init error path
-- handle when LRO is set again when XDP is enabled in
-  vmxnet3_fix_features
-- add a helper, vmxnet3_xdp_get_tq
-- remove using rcu_read_lock,unlock around XDP invocation
-  https://lore.kernel.org/bpf/20210624160609.292325-1-toke@redhat.com/
-- fix a mistake in recycle page when !xdp_prog
-- pass the xdp_prog to vmxnet3_run_xdp to avoid another deref
-
-feedbacks from Alexander Lobakin
-- use virt_to_page instead of virt_to_head_page (due to always 0-order)
-- shrink indent level (two places)
-  ps. on the second thought I decide not to do it as it is easier
-  for vmware internal review of xdp specific code all inside the 'if'
-  statement block.
-https://github.com/williamtu/net-next/compare/v15..v16
-
-v14 -> v15:
-feedbacks from Alexander Lobakin
-- add rcu_read_lock unlock around xdp_frame_bulk_init
-- define correct VMXNET3_XDP_MAX_MTU
-- add comment explaining tx deferred and threshold in backend driver
-- minor code refactoring and style fixes
-- fix one bug in process_xdp when !xdp_prog
-
-v13 -> v14:
-feedbacks from Alexander Lobakin
-- fix several new lines, unrelated changes, unlikely, RCT style,
-  coding style, etc.
-- add NET_IP_ALIGN and create VMXNET3_XDP_HEADROOM, instead of
-  using XDP_PACKET_HEADROOM
-- remove %pp_page and use %page in rx_buf_int
-- fix the %VMXNET3_XDP_MAX_MTU, mtu doesn't include eth, vlan, and fcs
-- use NL_SET instead of netdev_err when detecting LRP
-- remove two global function, vmxnet3{_xdp_headroom, xdp_enabled}
-make the vmxnet3_xdp_enabled static inline function, and remove
-vmxnet3_xdp_headroom.
-- rename the VMXNET3_XDP_MAX_MTU to VMXNET3_XDP_MAX_FRSIZE
-
-- add Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-- add yifeng sun for testing on ESXi and XDP
-compare v13..v14
-https://github.com/williamtu/net-next/compare/v13..v14
-
-v12 -> v13:
-- feedbacks from Guolin:
-  Instead of return -ENOTSUPP, disable the LRO in
-  netdev->features, and print err msg
-
-v11 -> v12:
-work on feedbacks from Alexander Duyck
-- fix issues and refactor the vmxnet3_unmap_tx_buf and
-  unmap_pkt
-
-v10 -> v11:
-work on feedbacks from Alexander Duyck
-internal feedback from Guolin and Ronak
-- fix the issue of xdp_return_frame_bulk, move to up level
-  of vmxnet3_unmap_tx_buf and some refactoring
-- refactor and simplify vmxnet3_tq_cleanup
-- disable XDP when LRO is enabled, suggested by Ronak
-
-v9 -> v10:
-- Mark as RFC as we're waiting for internal review
-Feedback from Alexander Duyck
-- fix dma mapping leak of ndo_xdp_xmit case
-- remove unused MAP_INVALID and adjist bitfield
-
-v8 -> v9:
-new
-- add rxdataring support (need extra copy but still fast)
-- update performance number (much better than v8!)
-  https://youtu.be/4lm1CSCi78Q
-
-- work on feedbacks from Alexander Duyck and Alexander Lobakin
-Alexander Lobakin
-- use xdp_return_frame_bulk and see some performance improvement
-- use xdp_do_flush not xdp_do_flush_map
-- fix several alignment issues, formatting issues, minor code
-  restructure, remove 2 dead functions, unrelated add/del of
-  new lines, add braces when logical ops nearby, endianness
-  conversion
-- remove several oneliner goto label
-- anonymous union of skb and xdpf
-- remove xdp_enabled and use xdp prog directly to check
-- use bitsfields macro --> I decide to do it later as
-  there are many unrelated places needed to change.
-
-Alexander Duyck
-- use bitfield for tbi map type
-- anonymous union of skb and xdpf
-- remove use of modulus ops, cpu % tq_number
-
-others
-- fix issue reported from kernel test robot using sparse
-
-v7 -> v8:
-- work on feedbacks from Gerhard Engleder and Alexander
-- change memory model to use page pool API, rewrite some of the
-  XDP processing code
-- attach bpf xdp prog to adapter, not per rx queue
-- I reference some of the XDP implementation from
-  drivers/net/ethernet/mediatek and
-  drivers/net/ethernet/stmicro/stmmac/
-- drop support for rxdataring for this version
-- redo performance evaluation and demo here
-  https://youtu.be/T7_0yrCXCe0
-- check using /sys/kernel/debug/kmemleak
-
-v6 -> v7:
-work on feedbacks from Alexander Duyck on XDP_TX and XDP_REDIRECT
-- fix memleak of xdp frame when doing ndo_xdp_xmit (vmxnet3_xdp_xmit)
-- at vmxnet3_xdp_xmit_frame, fix return value, -NOSPC and ENOMEM,
-  and free skb when dma map fails
-- add xdp_buff_clean_frags_flag since we don't support frag
-- update experiements of XDP_TX and XDP_REDIRECT
-- for XDP_REDIRECT, I assume calling xdp_do_redirect will take
-the buffer and free it, so I need to allocate a new buffer to
-refill the rx ring. However, I hit some OOM when testing using
-./samples/bpf/xdp_redirect_cpu -d ens160 -c 0 -e <drop or pass>
-- I couldn't find the reason so mark this patch as RFC
-
-v5 -> v6:
-work on feedbacks from Alexander Duyck
-- remove unused skb parameter at vmxnet3_xdp_xmit
-- add trace point for XDP_ABORTED
-- avoid TX packet buffer being overwritten by allocatin
-  new skb and memcpy (TX performance drop from 2.3 to 1.8Mpps)
-- update some of the performance number and a demo video
-  https://youtu.be/I3nx5wQDTXw
-- pass VMware internal regression test using non-ENS: vmxnet3v2,
-  vmxnet3v3, vmxnet3v4, so remove RFC tag.
-
-v4 -> v5:
-- move XDP code to separate file: vmxnet3_xdp.{c, h},
-  suggested by Guolin
-- expose vmxnet3_rq_create_all and vmxnet3_adjust_rx_ring_size
-- more test using samples/bpf/{xdp1, xdp2, xdp_adjust_tail}
-- add debug print
-- rebase on commit 65e6af6cebe
-
-v3 -> v4:
-- code refactoring and improved commit message
-- make dataring and non-dataring case clear
-- in XDP_PASS, handle xdp.data and xdp.data_end change after
-  bpf program executed
-- now still working on internal testing
-- v4 applied on net-next commit 65e6af6cebef
-
-v2 -> v3:
-- code refactoring: move the XDP processing to the front
-  of the vmxnet3_rq_rx_complete, and minimize the places
-  of changes to existing code.
-- Performance improvement over BUF_SKB (512B) due to skipping
-  skb allocation when DROP and TX.
-
-v1 -> v2:
-- Avoid skb allocation for small packet size (when dataring is used)
-- Use rcu_read_lock unlock instead of READ_ONCE
-- Peroformance improvement over v1
-- Merge xdp drop, tx, pass, and redirect into 1 patch
----
- drivers/net/Kconfig                   |   1 +
- drivers/net/vmxnet3/Makefile          |   2 +-
- drivers/net/vmxnet3/vmxnet3_drv.c     | 236 +++++++++++++--
- drivers/net/vmxnet3/vmxnet3_ethtool.c |  23 ++
- drivers/net/vmxnet3/vmxnet3_int.h     |  42 ++-
- drivers/net/vmxnet3/vmxnet3_xdp.c     | 419 ++++++++++++++++++++++++++
- drivers/net/vmxnet3/vmxnet3_xdp.h     |  49 +++
- 7 files changed, 730 insertions(+), 42 deletions(-)
- create mode 100644 drivers/net/vmxnet3/vmxnet3_xdp.c
- create mode 100644 drivers/net/vmxnet3/vmxnet3_xdp.h
-
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index c34bd432da27..2deba5f8d497 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -570,6 +570,7 @@ config VMXNET3
- 	tristate "VMware VMXNET3 ethernet driver"
- 	depends on PCI && INET
- 	depends on PAGE_SIZE_LESS_THAN_64KB
-+	select PAGE_POOL
- 	help
- 	  This driver supports VMware's vmxnet3 virtual ethernet NIC.
- 	  To compile this driver as a module, choose M here: the
-diff --git a/drivers/net/vmxnet3/Makefile b/drivers/net/vmxnet3/Makefile
-index a666a88ac1ff..f82870c10205 100644
---- a/drivers/net/vmxnet3/Makefile
-+++ b/drivers/net/vmxnet3/Makefile
-@@ -32,4 +32,4 @@
- 
- obj-$(CONFIG_VMXNET3) += vmxnet3.o
- 
--vmxnet3-objs := vmxnet3_drv.o vmxnet3_ethtool.o
-+vmxnet3-objs := vmxnet3_drv.o vmxnet3_ethtool.o vmxnet3_xdp.o
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 682987040ea8..f8c79f17b8eb 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -28,6 +28,7 @@
- #include <net/ip6_checksum.h>
- 
- #include "vmxnet3_int.h"
-+#include "vmxnet3_xdp.h"
- 
- char vmxnet3_driver_name[] = "vmxnet3";
- #define VMXNET3_DRIVER_DESC "VMware vmxnet3 virtual NIC driver"
-@@ -338,14 +339,16 @@ static void
- vmxnet3_unmap_tx_buf(struct vmxnet3_tx_buf_info *tbi,
- 		     struct pci_dev *pdev)
- {
--	if (tbi->map_type == VMXNET3_MAP_SINGLE)
-+	u32 map_type = tbi->map_type;
-+
-+	if (map_type & VMXNET3_MAP_SINGLE)
- 		dma_unmap_single(&pdev->dev, tbi->dma_addr, tbi->len,
- 				 DMA_TO_DEVICE);
--	else if (tbi->map_type == VMXNET3_MAP_PAGE)
-+	else if (map_type & VMXNET3_MAP_PAGE)
- 		dma_unmap_page(&pdev->dev, tbi->dma_addr, tbi->len,
- 			       DMA_TO_DEVICE);
- 	else
--		BUG_ON(tbi->map_type != VMXNET3_MAP_NONE);
-+		BUG_ON(map_type & ~VMXNET3_MAP_XDP);
- 
- 	tbi->map_type = VMXNET3_MAP_NONE; /* to help debugging */
- }
-@@ -353,19 +356,20 @@ vmxnet3_unmap_tx_buf(struct vmxnet3_tx_buf_info *tbi,
- 
- static int
- vmxnet3_unmap_pkt(u32 eop_idx, struct vmxnet3_tx_queue *tq,
--		  struct pci_dev *pdev,	struct vmxnet3_adapter *adapter)
-+		  struct pci_dev *pdev,	struct vmxnet3_adapter *adapter,
-+		  struct xdp_frame_bulk *bq)
- {
--	struct sk_buff *skb;
-+	struct vmxnet3_tx_buf_info *tbi;
- 	int entries = 0;
-+	u32 map_type;
- 
- 	/* no out of order completion */
- 	BUG_ON(tq->buf_info[eop_idx].sop_idx != tq->tx_ring.next2comp);
- 	BUG_ON(VMXNET3_TXDESC_GET_EOP(&(tq->tx_ring.base[eop_idx].txd)) != 1);
- 
--	skb = tq->buf_info[eop_idx].skb;
--	BUG_ON(skb == NULL);
--	tq->buf_info[eop_idx].skb = NULL;
--
-+	tbi = &tq->buf_info[eop_idx];
-+	BUG_ON(!tbi->skb);
-+	map_type = tbi->map_type;
- 	VMXNET3_INC_RING_IDX_ONLY(eop_idx, tq->tx_ring.size);
- 
- 	while (tq->tx_ring.next2comp != eop_idx) {
-@@ -381,7 +385,14 @@ vmxnet3_unmap_pkt(u32 eop_idx, struct vmxnet3_tx_queue *tq,
- 		entries++;
- 	}
- 
--	dev_kfree_skb_any(skb);
-+	if (map_type & VMXNET3_MAP_XDP)
-+		xdp_return_frame_bulk(tbi->xdpf, bq);
-+	else
-+		dev_kfree_skb_any(tbi->skb);
-+
-+	/* xdpf and skb are in an anonymous union. */
-+	tbi->skb = NULL;
-+
- 	return entries;
- }
- 
-@@ -390,8 +401,12 @@ static int
- vmxnet3_tq_tx_complete(struct vmxnet3_tx_queue *tq,
- 			struct vmxnet3_adapter *adapter)
- {
--	int completed = 0;
- 	union Vmxnet3_GenericDesc *gdesc;
-+	struct xdp_frame_bulk bq;
-+	int completed = 0;
-+
-+	xdp_frame_bulk_init(&bq);
-+	rcu_read_lock();
- 
- 	gdesc = tq->comp_ring.base + tq->comp_ring.next2proc;
- 	while (VMXNET3_TCD_GET_GEN(&gdesc->tcd) == tq->comp_ring.gen) {
-@@ -402,11 +417,13 @@ vmxnet3_tq_tx_complete(struct vmxnet3_tx_queue *tq,
- 
- 		completed += vmxnet3_unmap_pkt(VMXNET3_TCD_GET_TXIDX(
- 					       &gdesc->tcd), tq, adapter->pdev,
--					       adapter);
-+					       adapter, &bq);
- 
- 		vmxnet3_comp_ring_adv_next2proc(&tq->comp_ring);
- 		gdesc = tq->comp_ring.base + tq->comp_ring.next2proc;
- 	}
-+	xdp_flush_frame_bulk(&bq);
-+	rcu_read_unlock();
- 
- 	if (completed) {
- 		spin_lock(&tq->tx_lock);
-@@ -426,26 +443,36 @@ static void
- vmxnet3_tq_cleanup(struct vmxnet3_tx_queue *tq,
- 		   struct vmxnet3_adapter *adapter)
- {
-+	struct xdp_frame_bulk bq;
-+	u32 map_type;
- 	int i;
- 
-+	xdp_frame_bulk_init(&bq);
-+	rcu_read_lock();
-+
- 	while (tq->tx_ring.next2comp != tq->tx_ring.next2fill) {
- 		struct vmxnet3_tx_buf_info *tbi;
- 
- 		tbi = tq->buf_info + tq->tx_ring.next2comp;
-+		map_type = tbi->map_type;
- 
- 		vmxnet3_unmap_tx_buf(tbi, adapter->pdev);
- 		if (tbi->skb) {
--			dev_kfree_skb_any(tbi->skb);
-+			if (map_type & VMXNET3_MAP_XDP)
-+				xdp_return_frame_bulk(tbi->xdpf, &bq);
-+			else
-+				dev_kfree_skb_any(tbi->skb);
- 			tbi->skb = NULL;
- 		}
- 		vmxnet3_cmd_ring_adv_next2comp(&tq->tx_ring);
- 	}
- 
--	/* sanity check, verify all buffers are indeed unmapped and freed */
--	for (i = 0; i < tq->tx_ring.size; i++) {
--		BUG_ON(tq->buf_info[i].skb != NULL ||
--		       tq->buf_info[i].map_type != VMXNET3_MAP_NONE);
--	}
-+	xdp_flush_frame_bulk(&bq);
-+	rcu_read_unlock();
-+
-+	/* sanity check, verify all buffers are indeed unmapped */
-+	for (i = 0; i < tq->tx_ring.size; i++)
-+		BUG_ON(tq->buf_info[i].map_type != VMXNET3_MAP_NONE);
- 
- 	tq->tx_ring.gen = VMXNET3_INIT_GEN;
- 	tq->tx_ring.next2fill = tq->tx_ring.next2comp = 0;
-@@ -599,7 +626,17 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 		gd = ring->base + ring->next2fill;
- 		rbi->comp_state = VMXNET3_RXD_COMP_PENDING;
- 
--		if (rbi->buf_type == VMXNET3_RX_BUF_SKB) {
-+		if (rbi->buf_type == VMXNET3_RX_BUF_XDP) {
-+			void *data = vmxnet3_pp_get_buff(rq->page_pool,
-+							 &rbi->dma_addr,
-+							 GFP_KERNEL);
-+			if (!data) {
-+				rq->stats.rx_buf_alloc_failure++;
-+				break;
-+			}
-+			rbi->page = virt_to_page(data);
-+			val = VMXNET3_RXD_BTYPE_HEAD << VMXNET3_RXD_BTYPE_SHIFT;
-+		} else if (rbi->buf_type == VMXNET3_RX_BUF_SKB) {
- 			if (rbi->skb == NULL) {
- 				rbi->skb = __netdev_alloc_skb_ip_align(adapter->netdev,
- 								       rbi->len,
-@@ -1265,6 +1302,63 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
- 	return NETDEV_TX_OK;
- }
- 
-+static int
-+vmxnet3_create_pp(struct vmxnet3_adapter *adapter,
-+		  struct vmxnet3_rx_queue *rq, int size)
-+{
-+	bool xdp_prog = vmxnet3_xdp_enabled(adapter);
-+	const struct page_pool_params pp_params = {
-+		.order = 0,
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
-+		.pool_size = size,
-+		.nid = NUMA_NO_NODE,
-+		.dev = &adapter->pdev->dev,
-+		.offset = VMXNET3_XDP_RX_OFFSET,
-+		.max_len = VMXNET3_XDP_MAX_FRSIZE,
-+		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
-+	};
-+	struct page_pool *pp;
-+	int err;
-+
-+	pp = page_pool_create(&pp_params);
-+	if (IS_ERR(pp))
-+		return PTR_ERR(pp);
-+
-+	err = xdp_rxq_info_reg(&rq->xdp_rxq, adapter->netdev, rq->qid,
-+			       rq->napi.napi_id);
-+	if (err < 0)
-+		goto err_free_pp;
-+
-+	err = xdp_rxq_info_reg_mem_model(&rq->xdp_rxq, MEM_TYPE_PAGE_POOL, pp);
-+	if (err)
-+		goto err_unregister_rxq;
-+
-+	rq->page_pool = pp;
-+
-+	return 0;
-+
-+err_unregister_rxq:
-+	xdp_rxq_info_unreg(&rq->xdp_rxq);
-+err_free_pp:
-+	page_pool_destroy(pp);
-+
-+	return err;
-+}
-+
-+void *
-+vmxnet3_pp_get_buff(struct page_pool *pp, dma_addr_t *dma_addr,
-+		    gfp_t gfp_mask)
-+{
-+	struct page *page;
-+
-+	page = page_pool_alloc_pages(pp, gfp_mask | __GFP_NOWARN);
-+	if (unlikely(!page))
-+		return NULL;
-+
-+	*dma_addr = page_pool_get_dma_addr(page) + pp->p.offset;
-+
-+	return page_address(page);
-+}
- 
- static netdev_tx_t
- vmxnet3_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
-@@ -1425,6 +1519,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 	struct Vmxnet3_RxDesc rxCmdDesc;
- 	struct Vmxnet3_RxCompDesc rxComp;
- #endif
-+	bool need_flush = false;
-+
- 	vmxnet3_getRxComp(rcd, &rq->comp_ring.base[rq->comp_ring.next2proc].rcd,
- 			  &rxComp);
- 	while (rcd->gen == rq->comp_ring.gen) {
-@@ -1465,6 +1561,31 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 			goto rcd_done;
- 		}
- 
-+		if (rcd->sop && rcd->eop && vmxnet3_xdp_enabled(adapter)) {
-+			struct sk_buff *skb_xdp_pass;
-+			int act;
-+
-+			if (VMXNET3_RX_DATA_RING(adapter, rcd->rqID)) {
-+				ctx->skb = NULL;
-+				goto skip_xdp; /* Handle it later. */
-+			}
-+
-+			if (rbi->buf_type != VMXNET3_RX_BUF_XDP)
-+				goto rcd_done;
-+
-+			act = vmxnet3_process_xdp(adapter, rq, rcd, rbi, rxd,
-+						  &skb_xdp_pass);
-+			if (act == XDP_PASS) {
-+				ctx->skb = skb_xdp_pass;
-+				goto sop_done;
-+			}
-+			ctx->skb = NULL;
-+			need_flush |= act == XDP_REDIRECT;
-+
-+			goto rcd_done;
-+		}
-+skip_xdp:
-+
- 		if (rcd->sop) { /* first buf of the pkt */
- 			bool rxDataRingUsed;
- 			u16 len;
-@@ -1473,7 +1594,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 			       (rcd->rqID != rq->qid &&
- 				rcd->rqID != rq->dataRingQid));
- 
--			BUG_ON(rbi->buf_type != VMXNET3_RX_BUF_SKB);
-+			BUG_ON(rbi->buf_type != VMXNET3_RX_BUF_SKB &&
-+			       rbi->buf_type != VMXNET3_RX_BUF_XDP);
- 			BUG_ON(ctx->skb != NULL || rbi->skb == NULL);
- 
- 			if (unlikely(rcd->len == 0)) {
-@@ -1491,6 +1613,25 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 			rxDataRingUsed =
- 				VMXNET3_RX_DATA_RING(adapter, rcd->rqID);
- 			len = rxDataRingUsed ? rcd->len : rbi->len;
-+
-+			if (rxDataRingUsed && vmxnet3_xdp_enabled(adapter)) {
-+				struct sk_buff *skb_xdp_pass;
-+				size_t sz;
-+				int act;
-+
-+				sz = rcd->rxdIdx * rq->data_ring.desc_size;
-+				act = vmxnet3_process_xdp_small(adapter, rq,
-+								&rq->data_ring.base[sz],
-+								rcd->len,
-+								&skb_xdp_pass);
-+				if (act == XDP_PASS) {
-+					ctx->skb = skb_xdp_pass;
-+					goto sop_done;
-+				}
-+				need_flush |= act == XDP_REDIRECT;
-+
-+				goto rcd_done;
-+			}
- 			new_skb = netdev_alloc_skb_ip_align(adapter->netdev,
- 							    len);
- 			if (new_skb == NULL) {
-@@ -1623,6 +1764,7 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 		}
- 
- 
-+sop_done:
- 		skb = ctx->skb;
- 		if (rcd->eop) {
- 			u32 mtu = adapter->netdev->mtu;
-@@ -1757,6 +1899,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 		vmxnet3_getRxComp(rcd,
- 				  &rq->comp_ring.base[rq->comp_ring.next2proc].rcd, &rxComp);
- 	}
-+	if (need_flush)
-+		xdp_do_flush();
- 
- 	return num_pkts;
- }
-@@ -1775,24 +1919,32 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
- 
- 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
- 		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
-+			struct vmxnet3_rx_buf_info *rbi;
- #ifdef __BIG_ENDIAN_BITFIELD
- 			struct Vmxnet3_RxDesc rxDesc;
- #endif
-+
-+			rbi = &rq->buf_info[ring_idx][i];
- 			vmxnet3_getRxDesc(rxd,
- 				&rq->rx_ring[ring_idx].base[i].rxd, &rxDesc);
- 
- 			if (rxd->btype == VMXNET3_RXD_BTYPE_HEAD &&
--					rq->buf_info[ring_idx][i].skb) {
-+			    rbi->page && rbi->buf_type == VMXNET3_RX_BUF_XDP) {
-+				page_pool_recycle_direct(rq->page_pool,
-+							 rbi->page);
-+				rbi->page = NULL;
-+			} else if (rxd->btype == VMXNET3_RXD_BTYPE_HEAD &&
-+				   rbi->skb) {
- 				dma_unmap_single(&adapter->pdev->dev, rxd->addr,
- 						 rxd->len, DMA_FROM_DEVICE);
--				dev_kfree_skb(rq->buf_info[ring_idx][i].skb);
--				rq->buf_info[ring_idx][i].skb = NULL;
-+				dev_kfree_skb(rbi->skb);
-+				rbi->skb = NULL;
- 			} else if (rxd->btype == VMXNET3_RXD_BTYPE_BODY &&
--					rq->buf_info[ring_idx][i].page) {
-+				   rbi->page) {
- 				dma_unmap_page(&adapter->pdev->dev, rxd->addr,
- 					       rxd->len, DMA_FROM_DEVICE);
--				put_page(rq->buf_info[ring_idx][i].page);
--				rq->buf_info[ring_idx][i].page = NULL;
-+				put_page(rbi->page);
-+				rbi->page = NULL;
- 			}
- 		}
- 
-@@ -1813,6 +1965,7 @@ vmxnet3_rq_cleanup_all(struct vmxnet3_adapter *adapter)
- 
- 	for (i = 0; i < adapter->num_rx_queues; i++)
- 		vmxnet3_rq_cleanup(&adapter->rx_queue[i], adapter);
-+	rcu_assign_pointer(adapter->xdp_bpf_prog, NULL);
- }
- 
- 
-@@ -1842,6 +1995,11 @@ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
- 		}
- 	}
- 
-+	if (xdp_rxq_info_is_reg(&rq->xdp_rxq))
-+		xdp_rxq_info_unreg(&rq->xdp_rxq);
-+	page_pool_destroy(rq->page_pool);
-+	rq->page_pool = NULL;
-+
- 	if (rq->data_ring.base) {
- 		dma_free_coherent(&adapter->pdev->dev,
- 				  rq->rx_ring[0].size * rq->data_ring.desc_size,
-@@ -1885,14 +2043,16 @@ static int
- vmxnet3_rq_init(struct vmxnet3_rx_queue *rq,
- 		struct vmxnet3_adapter  *adapter)
- {
--	int i;
-+	int i, err;
- 
- 	/* initialize buf_info */
- 	for (i = 0; i < rq->rx_ring[0].size; i++) {
- 
--		/* 1st buf for a pkt is skbuff */
-+		/* 1st buf for a pkt is skbuff or xdp page */
- 		if (i % adapter->rx_buf_per_pkt == 0) {
--			rq->buf_info[0][i].buf_type = VMXNET3_RX_BUF_SKB;
-+			rq->buf_info[0][i].buf_type = vmxnet3_xdp_enabled(adapter) ?
-+						      VMXNET3_RX_BUF_XDP :
-+						      VMXNET3_RX_BUF_SKB;
- 			rq->buf_info[0][i].len = adapter->skb_buf_size;
- 		} else { /* subsequent bufs for a pkt is frag */
- 			rq->buf_info[0][i].buf_type = VMXNET3_RX_BUF_PAGE;
-@@ -1913,8 +2073,18 @@ vmxnet3_rq_init(struct vmxnet3_rx_queue *rq,
- 		rq->rx_ring[i].gen = VMXNET3_INIT_GEN;
- 		rq->rx_ring[i].isOutOfOrder = 0;
- 	}
-+
-+	err = vmxnet3_create_pp(adapter, rq,
-+				rq->rx_ring[0].size + rq->rx_ring[1].size);
-+	if (err)
-+		return err;
-+
- 	if (vmxnet3_rq_alloc_rx_buf(rq, 0, rq->rx_ring[0].size - 1,
- 				    adapter) == 0) {
-+		xdp_rxq_info_unreg(&rq->xdp_rxq);
-+		page_pool_destroy(rq->page_pool);
-+		rq->page_pool = NULL;
-+
- 		/* at least has 1 rx buffer for the 1st ring */
- 		return -ENOMEM;
- 	}
-@@ -2016,7 +2186,7 @@ vmxnet3_rq_create(struct vmxnet3_rx_queue *rq, struct vmxnet3_adapter *adapter)
- }
- 
- 
--static int
-+int
- vmxnet3_rq_create_all(struct vmxnet3_adapter *adapter)
- {
- 	int i, err = 0;
-@@ -3053,7 +3223,7 @@ vmxnet3_free_pci_resources(struct vmxnet3_adapter *adapter)
- }
- 
- 
--static void
-+void
- vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
- {
- 	size_t sz, i, ring0_size, ring1_size, comp_size;
-@@ -3612,6 +3782,8 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- #ifdef CONFIG_NET_POLL_CONTROLLER
- 		.ndo_poll_controller = vmxnet3_netpoll,
- #endif
-+		.ndo_bpf = vmxnet3_xdp,
-+		.ndo_xdp_xmit = vmxnet3_xdp_xmit,
- 	};
- 	int err;
- 	u32 ver;
-@@ -3864,6 +4036,8 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- 
- 	SET_NETDEV_DEV(netdev, &pdev->dev);
- 	vmxnet3_declare_features(adapter);
-+	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-+			       NETDEV_XDP_ACT_NDO_XMIT;
- 
- 	adapter->rxdata_desc_size = VMXNET3_VERSION_GE_3(adapter) ?
- 		VMXNET3_DEF_RXDATA_DESC_SIZE : 0;
-diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-index 18cf7c723201..98c22d7d87a2 100644
---- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
-+++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-@@ -28,6 +28,7 @@
- #include "vmxnet3_int.h"
- #include <net/vxlan.h>
- #include <net/geneve.h>
-+#include "vmxnet3_xdp.h"
- 
- #define VXLAN_UDP_PORT 8472
- 
-@@ -76,6 +77,10 @@ vmxnet3_tq_driver_stats[] = {
- 					 copy_skb_header) },
- 	{ "  giant hdr",	offsetof(struct vmxnet3_tq_driver_stats,
- 					 oversized_hdr) },
-+	{ "  xdp xmit",		offsetof(struct vmxnet3_tq_driver_stats,
-+					 xdp_xmit) },
-+	{ "  xdp xmit err",	offsetof(struct vmxnet3_tq_driver_stats,
-+					 xdp_xmit_err) },
- };
- 
- /* per rq stats maintained by the device */
-@@ -106,6 +111,16 @@ vmxnet3_rq_driver_stats[] = {
- 					 drop_fcs) },
- 	{ "  rx buf alloc fail", offsetof(struct vmxnet3_rq_driver_stats,
- 					  rx_buf_alloc_failure) },
-+	{ "     xdp packets", offsetof(struct vmxnet3_rq_driver_stats,
-+				       xdp_packets) },
-+	{ "     xdp tx", offsetof(struct vmxnet3_rq_driver_stats,
-+				  xdp_tx) },
-+	{ "     xdp redirects", offsetof(struct vmxnet3_rq_driver_stats,
-+					 xdp_redirects) },
-+	{ "     xdp drops", offsetof(struct vmxnet3_rq_driver_stats,
-+				     xdp_drops) },
-+	{ "     xdp aborted", offsetof(struct vmxnet3_rq_driver_stats,
-+				       xdp_aborted) },
- };
- 
- /* global stats maintained by the driver */
-@@ -249,10 +264,18 @@ vmxnet3_get_strings(struct net_device *netdev, u32 stringset, u8 *buf)
- netdev_features_t vmxnet3_fix_features(struct net_device *netdev,
- 				       netdev_features_t features)
- {
-+	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-+
- 	/* If Rx checksum is disabled, then LRO should also be disabled */
- 	if (!(features & NETIF_F_RXCSUM))
- 		features &= ~NETIF_F_LRO;
- 
-+	/* If XDP is enabled, then LRO should not be enabled */
-+	if (vmxnet3_xdp_enabled(adapter) && (features & NETIF_F_LRO)) {
-+		netdev_err(netdev, "LRO is not supported with XDP");
-+		features &= ~NETIF_F_LRO;
-+	}
-+
- 	return features;
- }
- 
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index 3367db23aa13..7fe385b9b5e2 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -56,6 +56,8 @@
- #include <linux/if_arp.h>
- #include <linux/inetdevice.h>
- #include <linux/log2.h>
-+#include <linux/bpf.h>
-+#include <net/page_pool.h>
- 
- #include "vmxnet3_defs.h"
- 
-@@ -188,19 +190,20 @@ struct vmxnet3_tx_data_ring {
- 	dma_addr_t          basePA;
- };
- 
--enum vmxnet3_buf_map_type {
--	VMXNET3_MAP_INVALID = 0,
--	VMXNET3_MAP_NONE,
--	VMXNET3_MAP_SINGLE,
--	VMXNET3_MAP_PAGE,
--};
-+#define VMXNET3_MAP_NONE	0
-+#define VMXNET3_MAP_SINGLE	BIT(0)
-+#define VMXNET3_MAP_PAGE	BIT(1)
-+#define VMXNET3_MAP_XDP		BIT(2)
- 
- struct vmxnet3_tx_buf_info {
- 	u32      map_type;
- 	u16      len;
- 	u16      sop_idx;
- 	dma_addr_t  dma_addr;
--	struct sk_buff *skb;
-+	union {
-+		struct sk_buff *skb;
-+		struct xdp_frame *xdpf;
-+	};
- };
- 
- struct vmxnet3_tq_driver_stats {
-@@ -217,6 +220,9 @@ struct vmxnet3_tq_driver_stats {
- 	u64 linearized;         /* # of pkts linearized */
- 	u64 copy_skb_header;    /* # of times we have to copy skb header */
- 	u64 oversized_hdr;
-+
-+	u64 xdp_xmit;
-+	u64 xdp_xmit_err;
- };
- 
- struct vmxnet3_tx_ctx {
-@@ -253,12 +259,13 @@ struct vmxnet3_tx_queue {
- 						    * stopped */
- 	int				qid;
- 	u16				txdata_desc_size;
--} __attribute__((__aligned__(SMP_CACHE_BYTES)));
-+} ____cacheline_aligned;
- 
- enum vmxnet3_rx_buf_type {
- 	VMXNET3_RX_BUF_NONE = 0,
- 	VMXNET3_RX_BUF_SKB = 1,
--	VMXNET3_RX_BUF_PAGE = 2
-+	VMXNET3_RX_BUF_PAGE = 2,
-+	VMXNET3_RX_BUF_XDP = 3,
- };
- 
- #define VMXNET3_RXD_COMP_PENDING        0
-@@ -285,6 +292,12 @@ struct vmxnet3_rq_driver_stats {
- 	u64 drop_err;
- 	u64 drop_fcs;
- 	u64 rx_buf_alloc_failure;
-+
-+	u64 xdp_packets;	/* Total packets processed by XDP. */
-+	u64 xdp_tx;
-+	u64 xdp_redirects;
-+	u64 xdp_drops;
-+	u64 xdp_aborted;
- };
- 
- struct vmxnet3_rx_data_ring {
-@@ -307,7 +320,9 @@ struct vmxnet3_rx_queue {
- 	struct vmxnet3_rx_buf_info     *buf_info[2];
- 	struct Vmxnet3_RxQueueCtrl            *shared;
- 	struct vmxnet3_rq_driver_stats  stats;
--} __attribute__((__aligned__(SMP_CACHE_BYTES)));
-+	struct page_pool *page_pool;
-+	struct xdp_rxq_info xdp_rxq;
-+} ____cacheline_aligned;
- 
- #define VMXNET3_DEVICE_MAX_TX_QUEUES 32
- #define VMXNET3_DEVICE_MAX_RX_QUEUES 32   /* Keep this value as a power of 2 */
-@@ -415,6 +430,7 @@ struct vmxnet3_adapter {
- 	u16    tx_prod_offset;
- 	u16    rx_prod_offset;
- 	u16    rx_prod2_offset;
-+	struct bpf_prog __rcu *xdp_bpf_prog;
- };
- 
- #define VMXNET3_WRITE_BAR0_REG(adapter, reg, val)  \
-@@ -490,6 +506,12 @@ vmxnet3_tq_destroy_all(struct vmxnet3_adapter *adapter);
- void
- vmxnet3_rq_destroy_all(struct vmxnet3_adapter *adapter);
- 
-+int
-+vmxnet3_rq_create_all(struct vmxnet3_adapter *adapter);
-+
-+void
-+vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter);
-+
- netdev_features_t
- vmxnet3_fix_features(struct net_device *netdev, netdev_features_t features);
- 
-diff --git a/drivers/net/vmxnet3/vmxnet3_xdp.c b/drivers/net/vmxnet3/vmxnet3_xdp.c
-new file mode 100644
-index 000000000000..80ddaff759d4
---- /dev/null
-+++ b/drivers/net/vmxnet3/vmxnet3_xdp.c
-@@ -0,0 +1,419 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Linux driver for VMware's vmxnet3 ethernet NIC.
-+ * Copyright (C) 2008-2023, VMware, Inc. All Rights Reserved.
-+ * Maintained by: pv-drivers@vmware.com
-+ *
-+ */
-+
-+#include "vmxnet3_int.h"
-+#include "vmxnet3_xdp.h"
-+
-+static void
-+vmxnet3_xdp_exchange_program(struct vmxnet3_adapter *adapter,
-+			     struct bpf_prog *prog)
-+{
-+	rcu_assign_pointer(adapter->xdp_bpf_prog, prog);
-+}
-+
-+static inline struct vmxnet3_tx_queue *
-+vmxnet3_xdp_get_tq(struct vmxnet3_adapter *adapter)
-+{
-+	struct vmxnet3_tx_queue *tq;
-+	int tq_number;
-+	int cpu;
-+
-+	tq_number = adapter->num_tx_queues;
-+	cpu = smp_processor_id();
-+	if (likely(cpu < tq_number))
-+		tq = &adapter->tx_queue[cpu];
-+	else
-+		tq = &adapter->tx_queue[reciprocal_scale(cpu, tq_number)];
-+
-+	return tq;
-+}
-+
-+static int
-+vmxnet3_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf,
-+		struct netlink_ext_ack *extack)
-+{
-+	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-+	struct bpf_prog *new_bpf_prog = bpf->prog;
-+	struct bpf_prog *old_bpf_prog;
-+	bool need_update;
-+	bool running;
-+	int err;
-+
-+	if (new_bpf_prog && netdev->mtu > VMXNET3_XDP_MAX_MTU) {
-+		NL_SET_ERR_MSG_FMT_MOD(extack, "MTU %u too large for XDP",
-+				       netdev->mtu);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (adapter->netdev->features & NETIF_F_LRO) {
-+		NL_SET_ERR_MSG_MOD(extack, "LRO is not supported with XDP");
-+		adapter->netdev->features &= ~NETIF_F_LRO;
-+	}
-+
-+	old_bpf_prog = rcu_dereference(adapter->xdp_bpf_prog);
-+	if (!new_bpf_prog && !old_bpf_prog)
-+		return 0;
-+
-+	running = netif_running(netdev);
-+	need_update = !!old_bpf_prog != !!new_bpf_prog;
-+
-+	if (running && need_update)
-+		vmxnet3_quiesce_dev(adapter);
-+
-+	vmxnet3_xdp_exchange_program(adapter, new_bpf_prog);
-+	if (old_bpf_prog)
-+		bpf_prog_put(old_bpf_prog);
-+
-+	if (!running || !need_update)
-+		return 0;
-+
-+	if (new_bpf_prog)
-+		xdp_features_set_redirect_target(netdev, false);
-+	else
-+		xdp_features_clear_redirect_target(netdev);
-+
-+	vmxnet3_reset_dev(adapter);
-+	vmxnet3_rq_destroy_all(adapter);
-+	vmxnet3_adjust_rx_ring_size(adapter);
-+	err = vmxnet3_rq_create_all(adapter);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "failed to re-create rx queues for XDP.");
-+		return -EOPNOTSUPP;
-+	}
-+	err = vmxnet3_activate_dev(adapter);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "failed to activate device for XDP.");
-+		return -EOPNOTSUPP;
-+	}
-+	clear_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state);
-+
-+	return 0;
-+}
-+
-+/* This is the main xdp call used by kernel to set/unset eBPF program. */
-+int
-+vmxnet3_xdp(struct net_device *netdev, struct netdev_bpf *bpf)
-+{
-+	switch (bpf->command) {
-+	case XDP_SETUP_PROG:
-+		return vmxnet3_xdp_set(netdev, bpf, bpf->extack);
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
-+		       struct xdp_frame *xdpf,
-+		       struct vmxnet3_tx_queue *tq, bool dma_map)
-+{
-+	struct vmxnet3_tx_buf_info *tbi = NULL;
-+	union Vmxnet3_GenericDesc *gdesc;
-+	struct vmxnet3_tx_ctx ctx;
-+	int tx_num_deferred;
-+	struct page *page;
-+	u32 buf_size;
-+	u32 dw2;
-+
-+	dw2 = (tq->tx_ring.gen ^ 0x1) << VMXNET3_TXD_GEN_SHIFT;
-+	dw2 |= xdpf->len;
-+	ctx.sop_txd = tq->tx_ring.base + tq->tx_ring.next2fill;
-+	gdesc = ctx.sop_txd;
-+
-+	buf_size = xdpf->len;
-+	tbi = tq->buf_info + tq->tx_ring.next2fill;
-+
-+	if (vmxnet3_cmd_ring_desc_avail(&tq->tx_ring) == 0) {
-+		tq->stats.tx_ring_full++;
-+		return -ENOSPC;
-+	}
-+
-+	tbi->map_type = VMXNET3_MAP_XDP;
-+	if (dma_map) { /* ndo_xdp_xmit */
-+		tbi->dma_addr = dma_map_single(&adapter->pdev->dev,
-+					       xdpf->data, buf_size,
-+					       DMA_TO_DEVICE);
-+		if (dma_mapping_error(&adapter->pdev->dev, tbi->dma_addr))
-+			return -EFAULT;
-+		tbi->map_type |= VMXNET3_MAP_SINGLE;
-+	} else { /* XDP buffer from page pool */
-+		page = virt_to_page(xdpf->data);
-+		tbi->dma_addr = page_pool_get_dma_addr(page) +
-+				VMXNET3_XDP_HEADROOM;
-+		dma_sync_single_for_device(&adapter->pdev->dev,
-+					   tbi->dma_addr, buf_size,
-+					   DMA_TO_DEVICE);
-+	}
-+	tbi->xdpf = xdpf;
-+	tbi->len = buf_size;
-+
-+	gdesc = tq->tx_ring.base + tq->tx_ring.next2fill;
-+	WARN_ON_ONCE(gdesc->txd.gen == tq->tx_ring.gen);
-+
-+	gdesc->txd.addr = cpu_to_le64(tbi->dma_addr);
-+	gdesc->dword[2] = cpu_to_le32(dw2);
-+
-+	/* Setup the EOP desc */
-+	gdesc->dword[3] = cpu_to_le32(VMXNET3_TXD_CQ | VMXNET3_TXD_EOP);
-+
-+	gdesc->txd.om = 0;
-+	gdesc->txd.msscof = 0;
-+	gdesc->txd.hlen = 0;
-+	gdesc->txd.ti = 0;
-+
-+	tx_num_deferred = le32_to_cpu(tq->shared->txNumDeferred);
-+	le32_add_cpu(&tq->shared->txNumDeferred, 1);
-+	tx_num_deferred++;
-+
-+	vmxnet3_cmd_ring_adv_next2fill(&tq->tx_ring);
-+
-+	/* set the last buf_info for the pkt */
-+	tbi->sop_idx = ctx.sop_txd - tq->tx_ring.base;
-+
-+	dma_wmb();
-+	gdesc->dword[2] = cpu_to_le32(le32_to_cpu(gdesc->dword[2]) ^
-+						  VMXNET3_TXD_GEN);
-+
-+	/* No need to handle the case when tx_num_deferred doesn't reach
-+	 * threshold. Backend driver at hypervisor side will poll and reset
-+	 * tq->shared->txNumDeferred to 0.
-+	 */
-+	if (tx_num_deferred >= le32_to_cpu(tq->shared->txThreshold)) {
-+		tq->shared->txNumDeferred = 0;
-+		VMXNET3_WRITE_BAR0_REG(adapter,
-+				       VMXNET3_REG_TXPROD + tq->qid * 8,
-+				       tq->tx_ring.next2fill);
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+vmxnet3_xdp_xmit_back(struct vmxnet3_adapter *adapter,
-+		      struct xdp_frame *xdpf)
-+{
-+	struct vmxnet3_tx_queue *tq;
-+	struct netdev_queue *nq;
-+	int err;
-+
-+	tq = vmxnet3_xdp_get_tq(adapter);
-+	if (tq->stopped)
-+		return -ENETDOWN;
-+
-+	nq = netdev_get_tx_queue(adapter->netdev, tq->qid);
-+
-+	__netif_tx_lock(nq, smp_processor_id());
-+	err = vmxnet3_xdp_xmit_frame(adapter, xdpf, tq, false);
-+	__netif_tx_unlock(nq);
-+
-+	return err;
-+}
-+
-+/* ndo_xdp_xmit */
-+int
-+vmxnet3_xdp_xmit(struct net_device *dev,
-+		 int n, struct xdp_frame **frames, u32 flags)
-+{
-+	struct vmxnet3_adapter *adapter = netdev_priv(dev);
-+	struct vmxnet3_tx_queue *tq;
-+	int i;
-+
-+	if (unlikely(test_bit(VMXNET3_STATE_BIT_QUIESCED, &adapter->state)))
-+		return -ENETDOWN;
-+	if (unlikely(test_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state)))
-+		return -EINVAL;
-+
-+	tq = vmxnet3_xdp_get_tq(adapter);
-+	if (tq->stopped)
-+		return -ENETDOWN;
-+
-+	for (i = 0; i < n; i++) {
-+		if (vmxnet3_xdp_xmit_frame(adapter, frames[i], tq, true)) {
-+			tq->stats.xdp_xmit_err++;
-+			break;
-+		}
-+	}
-+	tq->stats.xdp_xmit += i;
-+
-+	return i;
-+}
-+
-+static int
-+vmxnet3_run_xdp(struct vmxnet3_rx_queue *rq, struct xdp_buff *xdp,
-+		struct bpf_prog *prog)
-+{
-+	struct xdp_frame *xdpf;
-+	struct page *page;
-+	int err;
-+	u32 act;
-+
-+	rq->stats.xdp_packets++;
-+	act = bpf_prog_run_xdp(prog, xdp);
-+	page = virt_to_page(xdp->data_hard_start);
-+
-+	switch (act) {
-+	case XDP_PASS:
-+		return act;
-+	case XDP_REDIRECT:
-+		err = xdp_do_redirect(rq->adapter->netdev, xdp, prog);
-+		if (!err) {
-+			rq->stats.xdp_redirects++;
-+		} else {
-+			rq->stats.xdp_drops++;
-+			page_pool_recycle_direct(rq->page_pool, page);
-+		}
-+		return act;
-+	case XDP_TX:
-+		xdpf = xdp_convert_buff_to_frame(xdp);
-+		if (unlikely(!xdpf ||
-+			     vmxnet3_xdp_xmit_back(rq->adapter, xdpf))) {
-+			rq->stats.xdp_drops++;
-+			page_pool_recycle_direct(rq->page_pool, page);
-+		} else {
-+			rq->stats.xdp_tx++;
-+		}
-+		return act;
-+	default:
-+		bpf_warn_invalid_xdp_action(rq->adapter->netdev, prog, act);
-+		fallthrough;
-+	case XDP_ABORTED:
-+		trace_xdp_exception(rq->adapter->netdev, prog, act);
-+		rq->stats.xdp_aborted++;
-+		break;
-+	case XDP_DROP:
-+		rq->stats.xdp_drops++;
-+		break;
-+	}
-+
-+	page_pool_recycle_direct(rq->page_pool, page);
-+
-+	return act;
-+}
-+
-+static struct sk_buff *
-+vmxnet3_build_skb(struct vmxnet3_rx_queue *rq, struct page *page,
-+		  const struct xdp_buff *xdp)
-+{
-+	struct sk_buff *skb;
-+
-+	skb = build_skb(page_address(page), PAGE_SIZE);
-+	if (unlikely(!skb)) {
-+		page_pool_recycle_direct(rq->page_pool, page);
-+		rq->stats.rx_buf_alloc_failure++;
-+		return NULL;
-+	}
-+
-+	/* bpf prog might change len and data position. */
-+	skb_reserve(skb, xdp->data - xdp->data_hard_start);
-+	skb_put(skb, xdp->data_end - xdp->data);
-+	skb_mark_for_recycle(skb);
-+
-+	return skb;
-+}
-+
-+/* Handle packets from DataRing. */
-+int
-+vmxnet3_process_xdp_small(struct vmxnet3_adapter *adapter,
-+			  struct vmxnet3_rx_queue *rq,
-+			  void *data, int len,
-+			  struct sk_buff **skb_xdp_pass)
-+{
-+	struct bpf_prog *xdp_prog;
-+	struct xdp_buff xdp;
-+	struct page *page;
-+	int act;
-+
-+	page = page_pool_alloc_pages(rq->page_pool, GFP_ATOMIC);
-+	if (unlikely(!page)) {
-+		rq->stats.rx_buf_alloc_failure++;
-+		return XDP_DROP;
-+	}
-+
-+	xdp_init_buff(&xdp, PAGE_SIZE, &rq->xdp_rxq);
-+	xdp_prepare_buff(&xdp, page_address(page), rq->page_pool->p.offset,
-+			 len, false);
-+	xdp_buff_clear_frags_flag(&xdp);
-+
-+	/* Must copy the data because it's at dataring. */
-+	memcpy(xdp.data, data, len);
-+
-+	xdp_prog = rcu_dereference(rq->adapter->xdp_bpf_prog);
-+	if (!xdp_prog) {
-+		act = XDP_PASS;
-+		goto out_skb;
-+	}
-+	act = vmxnet3_run_xdp(rq, &xdp, xdp_prog);
-+	if (act != XDP_PASS)
-+		return act;
-+
-+out_skb:
-+	*skb_xdp_pass = vmxnet3_build_skb(rq, page, &xdp);
-+	if (!*skb_xdp_pass)
-+		return XDP_DROP;
-+
-+	/* No need to refill. */
-+	return likely(*skb_xdp_pass) ? act : XDP_DROP;
-+}
-+
-+int
-+vmxnet3_process_xdp(struct vmxnet3_adapter *adapter,
-+		    struct vmxnet3_rx_queue *rq,
-+		    struct Vmxnet3_RxCompDesc *rcd,
-+		    struct vmxnet3_rx_buf_info *rbi,
-+		    struct Vmxnet3_RxDesc *rxd,
-+		    struct sk_buff **skb_xdp_pass)
-+{
-+	struct bpf_prog *xdp_prog;
-+	dma_addr_t new_dma_addr;
-+	struct xdp_buff xdp;
-+	struct page *page;
-+	void *new_data;
-+	int act;
-+
-+	page = rbi->page;
-+	dma_sync_single_for_cpu(&adapter->pdev->dev,
-+				page_pool_get_dma_addr(page) +
-+				rq->page_pool->p.offset, rcd->len,
-+				page_pool_get_dma_dir(rq->page_pool));
-+
-+	xdp_init_buff(&xdp, rbi->len, &rq->xdp_rxq);
-+	xdp_prepare_buff(&xdp, page_address(page), rq->page_pool->p.offset,
-+			 rcd->len, false);
-+	xdp_buff_clear_frags_flag(&xdp);
-+
-+	xdp_prog = rcu_dereference(rq->adapter->xdp_bpf_prog);
-+	if (!xdp_prog) {
-+		act = XDP_PASS;
-+		goto out_skb;
-+	}
-+	act = vmxnet3_run_xdp(rq, &xdp, xdp_prog);
-+
-+	if (act == XDP_PASS) {
-+out_skb:
-+		*skb_xdp_pass = vmxnet3_build_skb(rq, page, &xdp);
-+		if (!*skb_xdp_pass)
-+			act = XDP_DROP;
-+	}
-+
-+	new_data = vmxnet3_pp_get_buff(rq->page_pool, &new_dma_addr,
-+				       GFP_ATOMIC);
-+	if (!new_data) {
-+		rq->stats.rx_buf_alloc_failure++;
-+		return XDP_DROP;
-+	}
-+	rbi->page = virt_to_page(new_data);
-+	rbi->dma_addr = new_dma_addr;
-+	rxd->addr = cpu_to_le64(rbi->dma_addr);
-+	rxd->len = rbi->len;
-+
-+	return act;
-+}
-diff --git a/drivers/net/vmxnet3/vmxnet3_xdp.h b/drivers/net/vmxnet3/vmxnet3_xdp.h
-new file mode 100644
-index 000000000000..b847af941f5a
---- /dev/null
-+++ b/drivers/net/vmxnet3/vmxnet3_xdp.h
-@@ -0,0 +1,49 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later
-+ *
-+ * Linux driver for VMware's vmxnet3 ethernet NIC.
-+ * Copyright (C) 2008-2023, VMware, Inc. All Rights Reserved.
-+ * Maintained by: pv-drivers@vmware.com
-+ *
-+ */
-+
-+#ifndef _VMXNET3_XDP_H
-+#define _VMXNET3_XDP_H
-+
-+#include <linux/filter.h>
-+#include <linux/bpf_trace.h>
-+#include <linux/netlink.h>
-+#include <net/page_pool.h>
-+#include <net/xdp.h>
-+
-+#include "vmxnet3_int.h"
-+
-+#define VMXNET3_XDP_HEADROOM	(XDP_PACKET_HEADROOM + NET_IP_ALIGN)
-+#define VMXNET3_XDP_RX_TAILROOM	SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
-+#define VMXNET3_XDP_RX_OFFSET	VMXNET3_XDP_HEADROOM
-+#define VMXNET3_XDP_MAX_FRSIZE	(PAGE_SIZE - VMXNET3_XDP_HEADROOM - \
-+				 VMXNET3_XDP_RX_TAILROOM)
-+#define VMXNET3_XDP_MAX_MTU	(VMXNET3_XDP_MAX_FRSIZE - ETH_HLEN - \
-+				 2 * VLAN_HLEN - ETH_FCS_LEN)
-+
-+int vmxnet3_xdp(struct net_device *netdev, struct netdev_bpf *bpf);
-+int vmxnet3_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
-+		     u32 flags);
-+int vmxnet3_process_xdp(struct vmxnet3_adapter *adapter,
-+			struct vmxnet3_rx_queue *rq,
-+			struct Vmxnet3_RxCompDesc *rcd,
-+			struct vmxnet3_rx_buf_info *rbi,
-+			struct Vmxnet3_RxDesc *rxd,
-+			struct sk_buff **skb_xdp_pass);
-+int vmxnet3_process_xdp_small(struct vmxnet3_adapter *adapter,
-+			      struct vmxnet3_rx_queue *rq,
-+			      void *data, int len,
-+			      struct sk_buff **skb_xdp_pass);
-+void *vmxnet3_pp_get_buff(struct page_pool *pp, dma_addr_t *dma_addr,
-+			  gfp_t gfp_mask);
-+
-+static inline bool vmxnet3_xdp_enabled(struct vmxnet3_adapter *adapter)
-+{
-+	return !!rcu_access_pointer(adapter->xdp_bpf_prog);
-+}
-+
-+#endif
--- 
-2.37.1 (Apple Git-137.1)
 
 
