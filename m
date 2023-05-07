@@ -1,185 +1,190 @@
-Return-Path: <netdev+bounces-730-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-731-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 652496F951E
-	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 01:59:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8BC996F9672
+	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 03:30:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8E3B21C20F98
-	for <lists+netdev@lfdr.de>; Sat,  6 May 2023 23:59:14 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 02A211C21BEC
+	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 01:30:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB25710960;
-	Sat,  6 May 2023 23:59:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 807AE15B3;
+	Sun,  7 May 2023 01:30:32 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE2810F2
-	for <netdev@vger.kernel.org>; Sat,  6 May 2023 23:59:13 +0000 (UTC)
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D94E14355
-	for <netdev@vger.kernel.org>; Sat,  6 May 2023 16:59:10 -0700 (PDT)
-Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-	(No client certificate requested)
-	(Authenticated sender: marex@denx.de)
-	by phobos.denx.de (Postfix) with ESMTPSA id C7D6B846AB;
-	Sun,  7 May 2023 01:59:04 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-	s=phobos-20191101; t=1683417547;
-	bh=ZUhS1ZWLrGpvQnUbZA/62/O7dcd8ZbzQP4fKgZ8kAT0=;
-	h=From:To:Cc:Subject:Date:From;
-	b=ucU7siYSnzqN0W0WYGubOpR9qIOtKlfsdYOGyXQqWD0hOpAAACsVymjVSNfpuKWcy
-	 +qTHuJDyKOMVBFCyH59kr8SsZnMw+yzJMQQ/8VF7QUnNRERt7AXGBTm+y0dUnsTBRb
-	 TcADCYsPOYm4MNjh8f2kv+aW2b06d+Plqz+M3u/r6aQ50uJ+9avK0OFApzXsiE0dtX
-	 UaRqRZhzH3ucgoCiX0E29wNbIiN7jPqwc7LcRULnbonf3Q7TQIermthOSh1FJ0G3ys
-	 YLkrb2czuIUTa+XrD8ZXsaoWm6OJojHpLVrFBY8IhEDy0AlzquxoT+lK3IxTmSxm5i
-	 axdWLJddhZ9JQ==
-From: Marek Vasut <marex@denx.de>
-To: netdev@vger.kernel.org
-Cc: Marek Vasut <marex@denx.de>,
-	"David S. Miller" <davem@davemloft.net>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Eric Dumazet <edumazet@google.com>,
-	Francesco Dolcini <francesco.dolcini@toradex.com>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Harald Seiler <hws@denx.de>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Jose Abreu <joabreu@synopsys.com>,
-	Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH] net: stmmac: Initialize MAC_ONEUS_TIC_COUNTER register
-Date: Sun,  7 May 2023 01:58:45 +0200
-Message-Id: <20230506235845.246105-1-marex@denx.de>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CF457E
+	for <netdev@vger.kernel.org>; Sun,  7 May 2023 01:30:32 +0000 (UTC)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739C659DA;
+	Sat,  6 May 2023 18:30:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683423028; x=1714959028;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MtO0R0FCOQcpoNzvtKmnJchsNJz4oYhO7UXIY2uBX1Q=;
+  b=adDadfrhD5ZsBxJxHNLLlQEPx/K9HFjLGGBZ1eTK7xWF6LNYg+U5d5zM
+   qgeXmbSv9izzbIhzT7ytLiv40dFXNjD+ACyc1vXNyLXnu3/yO4HJROZ6w
+   t/tG+ql0a0J8D/vWK9GaKHbjUJybI7GI49yo6+WpBVQx6z6v9iYa/s8sB
+   3zK8TfUQ3PT0OOPiscVPr2+AvdvRuS+Xlk79Wrk0k70+cdTO0u6CxWiYE
+   VaAR12668XWVgLfKseLLghMKvT8HzEPkb1cPTYXICzvMbp32nhnJkOIbV
+   vMulX8J871Ha0lqChK0lh3koxRGpJHzOe8++cMtOejdlY2z9NF8Bx6/2x
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10702"; a="348259146"
+X-IronPort-AV: E=Sophos;i="5.99,256,1677571200"; 
+   d="scan'208";a="348259146"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2023 18:30:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10702"; a="728606711"
+X-IronPort-AV: E=Sophos;i="5.99,256,1677571200"; 
+   d="scan'208";a="728606711"
+Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 06 May 2023 18:30:25 -0700
+Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1pvTEH-0000YJ-09;
+	Sun, 07 May 2023 01:30:25 +0000
+Date: Sun, 7 May 2023 09:29:51 +0800
+From: kernel test robot <lkp@intel.com>
+To: Chris Leech <cleech@redhat.com>, Lee Duncan <lduncan@suse.com>,
+	linux-scsi@vger.kernel.org, open-iscsi@googlegroups.com,
+	netdev@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	Chris Leech <cleech@redhat.com>
+Subject: Re: [PATCH 06/11] iscsi: set netns for tcp and iser hosts
+Message-ID: <202305070938.QRjcW4tq-lkp@intel.com>
+References: <20230506232930.195451-7-cleech@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230506232930.195451-7-cleech@redhat.com>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Initialize MAC_ONEUS_TIC_COUNTER register with correct value derived
-from CSR clock, otherwise EEE is unstable on at least NXP i.MX8M Plus
-and Micrel KSZ9131RNX PHY, to the point where not even ARP request can
-be sent out.
+Hi Chris,
 
-i.MX 8M Plus Applications Processor Reference Manual, Rev. 1, 06/2021
-11.7.6.1.34 One-microsecond Reference Timer (MAC_ONEUS_TIC_COUNTER)
-defines this register as:
-"
-This register controls the generation of the Reference time (1 microsecond
-tic) for all the LPI timers. This timer has to be programmed by the software
-initially.
-...
-The application must program this counter so that the number of clock cycles
-of CSR clock is 1us. (Subtract 1 from the value before programming).
-For example if the CSR clock is 100MHz then this field needs to be programmed
-to value 100 - 1 = 99 (which is 0x63).
-This is required to generate the 1US events that are used to update some of
-the EEE related counters.
-"
+kernel test robot noticed the following build warnings:
 
-The reset value is 0x63 on i.MX8M Plus, which means expected CSR clock are
-100 MHz. However, the i.MX8M Plus "enet_qos_root_clk" are 266 MHz instead,
-which means the LPI timers reach their count much sooner on this platform.
+[auto build test WARNING on mkp-scsi/for-next]
+[also build test WARNING on jejb-scsi/for-next horms-ipvs/master linus/master v6.3 next-20230505]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-This is visible using a scope by monitoring e.g. exit from LPI mode on TX_CTL
-line from MAC to PHY. This should take 30us per STMMAC_DEFAULT_TWT_LS setting,
-during which the TX_CTL line transitions from tristate to low, and 30 us later
-from low to high. On i.MX8M Plus, this transition takes 11 us, which matches
-the 30us * 100/266 formula for misconfigured MAC_ONEUS_TIC_COUNTER register.
+url:    https://github.com/intel-lab-lkp/linux/commits/Chris-Leech/iscsi-create-per-net-iscsi-netlink-kernel-sockets/20230507-073308
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
+patch link:    https://lore.kernel.org/r/20230506232930.195451-7-cleech%40redhat.com
+patch subject: [PATCH 06/11] iscsi: set netns for tcp and iser hosts
+config: powerpc-randconfig-r016-20230507 (https://download.01.org/0day-ci/archive/20230507/202305070938.QRjcW4tq-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project b0fb98227c90adf2536c9ad644a74d5e92961111)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install powerpc cross compiling tool for clang build
+        # apt-get install binutils-powerpc-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/a287abe6fb8da0c4af44c1d83fad9ca4fcb7184f
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Chris-Leech/iscsi-create-per-net-iscsi-netlink-kernel-sockets/20230507-073308
+        git checkout a287abe6fb8da0c4af44c1d83fad9ca4fcb7184f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/scsi/
 
-Configure MAC_ONEUS_TIC_COUNTER based on CSR clock, so that the LPI timers
-have correct 1us reference. This then fixes EEE on i.MX8M Plus with Micrel
-KSZ9131RNX PHY.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202305070938.QRjcW4tq-lkp@intel.com/
 
-Signed-off-by: Marek Vasut <marex@denx.de>
----
-NOTE: The hint that this might be related to LPI timer misconfiguration
-      came from sending large fragmented ICMP request, i.e.
-      ping -4 -c 1 -s 4096 -I eth1 192.168.1.1
-      The received packets consistently missed the 1st fragment, because
-      the LPI exit time was too short and the first packet was likely
-      pushed out of the MAC while the PHY was still not ready for it.
-NOTE: I suspect this can help with Toradex ELB-3757, Marcel, can you please
-      test this patch on i.MX8M Plus Verdin ?
-      https://developer-archives.toradex.com/software/linux/release-details?module=Verdin+iMX8M+Plus&key=ELB-3757
-NOTE: STM32MP15xx sets 'ethmac' clock to 266.5 MHz, so this patch likely
-      helps there as well. The default value of MAC_ONEUS_TIC_COUNTER on
-      this platform is also 0x63, i.e. expected 100 MHz CSR clock. I can
-      not test this with KSZ9131RNX as I do not have any STM32MP15xx
-      board with this PHY. Harald, can you please test ?
----
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Francesco Dolcini <francesco.dolcini@toradex.com>
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Harald Seiler <hws@denx.de>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: netdev@vger.kernel.org
----
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h      | 1 +
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 5 +++++
- 2 files changed, 6 insertions(+)
+All warnings (new ones prefixed by >>):
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index 4538f334df576..d3c5306f1c41f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -181,6 +181,7 @@ enum power_event {
- #define GMAC4_LPI_CTRL_STATUS	0xd0
- #define GMAC4_LPI_TIMER_CTRL	0xd4
- #define GMAC4_LPI_ENTRY_TIMER	0xd8
-+#define GMAC4_MAC_ONEUS_TIC_COUNTER	0xdc
- 
- /* LPI control and status defines */
- #define GMAC4_LPI_CTRL_STATUS_LPITCSE	BIT(21)	/* LPI Tx Clock Stop Enable */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index afaec3fb9ab66..03b1c5a97826e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -25,6 +25,7 @@ static void dwmac4_core_init(struct mac_device_info *hw,
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	void __iomem *ioaddr = hw->pcsr;
- 	u32 value = readl(ioaddr + GMAC_CONFIG);
-+	u32 clk_rate;
- 
- 	value |= GMAC_CORE_INIT;
- 
-@@ -47,6 +48,10 @@ static void dwmac4_core_init(struct mac_device_info *hw,
- 
- 	writel(value, ioaddr + GMAC_CONFIG);
- 
-+	/* Configure LPI 1us counter to number of CSR clock ticks in 1us - 1 */
-+	clk_rate = clk_get_rate(priv->plat->stmmac_clk);
-+	writel((clk_rate / 1000000) - 1, ioaddr + GMAC4_MAC_ONEUS_TIC_COUNTER);
-+
- 	/* Enable GMAC interrupts */
- 	value = GMAC_INT_DEFAULT_ENABLE;
- 
+>> drivers/scsi/scsi_transport_iscsi.c:234:1: warning: no previous prototype for function '__iscsi_create_endpoint' [-Wmissing-prototypes]
+   __iscsi_create_endpoint(struct Scsi_Host *shost, int dd_size, struct net *net)
+   ^
+   drivers/scsi/scsi_transport_iscsi.c:233:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   struct iscsi_endpoint *
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/__iscsi_create_endpoint +234 drivers/scsi/scsi_transport_iscsi.c
+
+   232	
+   233	struct iscsi_endpoint *
+ > 234	__iscsi_create_endpoint(struct Scsi_Host *shost, int dd_size, struct net *net)
+   235	{
+   236		struct iscsi_endpoint *ep;
+   237		int err, id;
+   238	
+   239		ep = kzalloc(sizeof(*ep) + dd_size, GFP_KERNEL);
+   240		if (!ep)
+   241			return NULL;
+   242	
+   243		mutex_lock(&iscsi_ep_idr_mutex);
+   244	
+   245		/*
+   246		 * First endpoint id should be 1 to comply with user space
+   247		 * applications (iscsid).
+   248		 */
+   249		id = idr_alloc(&iscsi_ep_idr, ep, 1, -1, GFP_NOIO);
+   250		if (id < 0) {
+   251			mutex_unlock(&iscsi_ep_idr_mutex);
+   252			printk(KERN_ERR "Could not allocate endpoint ID. Error %d.\n",
+   253			       id);
+   254			goto free_ep;
+   255		}
+   256		mutex_unlock(&iscsi_ep_idr_mutex);
+   257	
+   258		ep->id = id;
+   259		ep->dev.class = &iscsi_endpoint_class;
+   260		if (shost)
+   261			ep->dev.parent = &shost->shost_gendev;
+   262		if (net)
+   263			ep->netns = net;
+   264		dev_set_name(&ep->dev, "ep-%d", id);
+   265		err = device_register(&ep->dev);
+   266	        if (err)
+   267			goto put_dev;
+   268	
+   269		err = sysfs_create_group(&ep->dev.kobj, &iscsi_endpoint_group);
+   270		if (err)
+   271			goto unregister_dev;
+   272	
+   273		if (dd_size)
+   274			ep->dd_data = &ep[1];
+   275		return ep;
+   276	
+   277	unregister_dev:
+   278		device_unregister(&ep->dev);
+   279		return NULL;
+   280	
+   281	put_dev:
+   282		mutex_lock(&iscsi_ep_idr_mutex);
+   283		idr_remove(&iscsi_ep_idr, id);
+   284		mutex_unlock(&iscsi_ep_idr_mutex);
+   285		put_device(&ep->dev);
+   286		return NULL;
+   287	free_ep:
+   288		kfree(ep);
+   289		return NULL;
+   290	}
+   291	
+
 -- 
-2.39.2
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
 
