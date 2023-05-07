@@ -1,110 +1,89 @@
-Return-Path: <netdev+bounces-760-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-759-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BD19F6F9AE6
-	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 20:33:44 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 43FD96F9AE2
+	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 20:33:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B5DC3280EBE
-	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 18:33:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 07EFD1C214CE
+	for <lists+netdev@lfdr.de>; Sun,  7 May 2023 18:33:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 713178460;
-	Sun,  7 May 2023 18:33:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B11DC8460;
+	Sun,  7 May 2023 18:33:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 656648825
-	for <netdev@vger.kernel.org>; Sun,  7 May 2023 18:33:29 +0000 (UTC)
-Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 450C7A5CC
-	for <netdev@vger.kernel.org>; Sun,  7 May 2023 11:33:25 -0700 (PDT)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
-	(authenticated bits=0)
-	by dilbert.mork.no (8.17.1.9/8.17.1.9) with ESMTPSA id 347IWUYP2239068
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-	Sun, 7 May 2023 19:32:32 +0100
-Received: from miraculix.mork.no ([IPv6:2a01:799:964:4b0a:9af7:269:d286:bcf0])
-	(authenticated bits=0)
-	by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 347IWmTd2063124
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-	Sun, 7 May 2023 20:32:48 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-	t=1683484372; bh=c3j3BZff3ZxiuGutkiPmpfibMn/fulCmnrh81cyL4m0=;
-	h=From:To:Cc:Subject:References:Date:Message-ID:From;
-	b=idFbGy4hFQPfcBad4p0J+3gR/ggohIqXC3O1lC4F1qLM5N4UxYvg/JARL9lyfr9HS
-	 wqUDush5Zd+oPOHqnZBy1iu3WadeVpV6PVYmJM3LjMJ0Gwe7GvfiyA107EiwF3DaW1
-	 gtmmJ34AxC8UqALVrTWgbuNJo5/5iStRK1xtnkgI=
-Received: (nullmailer pid 40964 invoked by uid 1000);
-	Sun, 07 May 2023 18:32:17 -0000
-From: =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: "Linux regression tracking (Thorsten Leemhuis)" <regressions@leemhuis.info>,
-        Hayes Wang <hayeswang@realtek.com>,
-        Linux regressions mailing list <regressions@lists.linux.dev>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Stanislav Fomichev <sdf@fomichev.me>
-Subject: Re: [regression] Kernel OOPS on boot with Kernel 6.3(.1) and
- RTL8153 Gigabit Ethernet Adapter
-Organization: m
-References: <ec4be122-e213-ca5b-f5d6-e8f9c3fd3bee@leemhuis.info>
-	<87lei36q27.fsf@miraculix.mork.no>
-	<20230505120436.6ff8cfca@kernel.org>
-Date: Sun, 07 May 2023 20:32:16 +0200
-In-Reply-To: <20230505120436.6ff8cfca@kernel.org> (Jakub Kicinski's message of
-	"Fri, 5 May 2023 12:04:36 -0700")
-Message-ID: <87fs88kn67.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.2 (gnu/linux)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5C2A523F
+	for <netdev@vger.kernel.org>; Sun,  7 May 2023 18:33:21 +0000 (UTC)
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4A306E82;
+	Sun,  7 May 2023 11:33:19 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id A527C92009C; Sun,  7 May 2023 20:33:16 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 96E4F92009B;
+	Sun,  7 May 2023 19:33:16 +0100 (BST)
+Date: Sun, 7 May 2023 19:33:16 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Bjorn Helgaas <helgaas@kernel.org>
+cc: Bjorn Helgaas <bhelgaas@google.com>, 
+    Mahesh J Salgaonkar <mahesh@linux.ibm.com>, 
+    Oliver O'Halloran <oohall@gmail.com>, 
+    Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+    Christophe Leroy <christophe.leroy@csgroup.eu>, 
+    Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, 
+    "David S. Miller" <davem@davemloft.net>, 
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+    Paolo Abeni <pabeni@redhat.com>, 
+    Alex Williamson <alex.williamson@redhat.com>, 
+    Lukas Wunner <lukas@wunner.de>, 
+    Mika Westerberg <mika.westerberg@linux.intel.com>, 
+    Stefan Roese <sr@denx.de>, Jim Wilson <wilson@tuliptree.org>, 
+    David Abdurachmanov <david.abdurachmanov@gmail.com>, 
+    =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>, linux-pci@vger.kernel.org, 
+    linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org, 
+    netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 7/7] PCI: Work around PCIe link training failures
+In-Reply-To: <20230504222048.GA887151@bhelgaas>
+Message-ID: <alpine.DEB.2.21.2305071922310.54316@angie.orcam.me.uk>
+References: <20230504222048.GA887151@bhelgaas>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.8 at canardo
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Jakub Kicinski <kuba@kernel.org> writes:
+On Thu, 4 May 2023, Bjorn Helgaas wrote:
 
-> It's just a hashtable init, I think that we can do:
->
-> diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
-> index d9c9f45e3529..8a26cd8814c1 100644
-> --- a/kernel/bpf/offload.c
-> +++ b/kernel/bpf/offload.c
-> @@ -859,4 +859,4 @@ static int __init bpf_offload_init(void)
->  	return rhashtable_init(&offdevs, &offdevs_params);
->  }
->=20=20
-> -late_initcall(bpf_offload_init);
-> +core_initcall(bpf_offload_init);
->
->
-> Thorsten, how is the communication supposed to work in this case?
-> Can you ask the reporter to test this? I don't see them on CC...
+> On Thu, Apr 06, 2023 at 01:21:31AM +0100, Maciej W. Rozycki wrote:
+> > Attempt to handle cases such as with a downstream port of the ASMedia 
+> > ASM2824 PCIe switch where link training never completes and the link 
+> > continues switching between speeds indefinitely with the data link layer 
+> > never reaching the active state.
+> 
+> We're going to land this series this cycle, come hell or high water.
 
-FWIW, I tried to reproduce the oops in the hope that I could confirm
-a fix.  But I failed. The netdev is successfully deregistered on my
-laptop no matter what I do. Tested v6.3 and current net/main, and
-tried different tricks to change probe timing.
+ Thank you for coming back to me and for your promise.  I'll strive to 
+address your concerns next weekend.
 
-Guess this is timing sensitive enough that it only shows up on certain
-systems.
+ Unfortunately a PDU in my remote lab has botched up and I've lost control
+over it (thankfully not one for the RISC-V machine affected by the patch 
+series, so I can still manage it for reboots, etc., but the botched PDU is 
+actually upstream), so depending on how situation develops I may have to 
+book air travel instead and spend the whole weekend getting things back to 
+normal operation at my lab.  That unit was not supposed to fail, not in 
+such a silly way anyway, sigh...
 
-So we will need the reporter to chime in.
-
-
-Bj=C3=B8rn
+  Maciej
 
