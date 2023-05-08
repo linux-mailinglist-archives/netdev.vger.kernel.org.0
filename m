@@ -1,146 +1,167 @@
-Return-Path: <netdev+bounces-964-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-965-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 42F256FB7C9
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 21:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7BFE16FB7DD
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 22:01:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5755F1C20A21
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 19:54:57 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AB9071C20A40
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 20:01:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E801111BA;
-	Mon,  8 May 2023 19:54:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7C6B4111BE;
+	Mon,  8 May 2023 20:01:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C3FC1119C
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 19:54:57 +0000 (UTC)
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on20719.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8d::719])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6469D65A5
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 12:54:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BV5raGXK0ArVKBBp3qPK1HX6ikLufS9N+rLIHNeAkcsjJeF6uC4VhnXbJHSEhQN8nJ44MOUMULiJ9ZwISeMIdA5bq+VTuBq6UipAhZ8weWNl3MSIoqtKCz3rI5x5ALWoHsQGhwnJuGz7aU8XAux9qsta3EDU4hODx2aVb29tkqAOfOOamwUtM2ROULnna1baJzpooaItDwizNr15HfS8xCmZip3O7A6HEg1e4d2+0axxaWbn5szEKYyKTXAckIURBhPohABsIYkyu3o2s9l3NtTQe+sF8Ll7Dox3pyc7IeA4w13t5gseyy8056IKicdGv8nXB3HyxNckSahkWzA+dw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=73aoLLEUhu9JM6RvIE70p9QEgByIDtE+KnE7V16jGto=;
- b=i4VyAhATF3Ro5Mk0jvkNtvpN8jXodzVFmN80zWu1k9CVsy3lFFuQdh/QsqVTuS8ElK6OdAKdnZnf31muO8V6yWCgpnct7y4F4F+Yp6B8g32vmuAaMiy/66H1jCRg2JcMDhaX/XW5K/gRGLAR5ipsCtrzBdcW4vgGXPhDACtQcCAMYMIFuX9lD/EHiPZiKIuKOLDG2aPNJ8sRiIAwDL+OdpBezXCGUaZQ9OAvScOLWUomPTRoh2rYHWuzWgkXYwu1KWMxBofecYz5Ky65seoZBVFd8pqolpB+O0c2G36pw7hMaDWEBciCB57j5ZuFa3RJRyfJD8rLYEU4bsUDh1ahJQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=73aoLLEUhu9JM6RvIE70p9QEgByIDtE+KnE7V16jGto=;
- b=QIRIeoFbfUBb09W5vhU+I046D6iU52yqt9hPrP518umKq0BQKrT6oQuJEdNoHHIGKIBeGIVggQYTj1DRxrpyY3eKDK1oQ9kSxwj9dO7wyaVZpC+WVC1p8/xH9lTvqKyx1OM5Mzs8TZuR1f2+1NqvJLJzkkAg52sYFVyFpAz0pIE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from BY3PR13MB4834.namprd13.prod.outlook.com (2603:10b6:a03:36b::10)
- by MW4PR13MB5837.namprd13.prod.outlook.com (2603:10b6:303:1a4::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Mon, 8 May
- 2023 19:53:39 +0000
-Received: from BY3PR13MB4834.namprd13.prod.outlook.com
- ([fe80::d98b:da1b:b1f0:d4d7]) by BY3PR13MB4834.namprd13.prod.outlook.com
- ([fe80::d98b:da1b:b1f0:d4d7%7]) with mapi id 15.20.6363.032; Mon, 8 May 2023
- 19:53:39 +0000
-Date: Mon, 8 May 2023 21:53:32 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Piotr Raczynski <piotr.raczynski@intel.com>
-Cc: intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
-	michal.swiatkowski@intel.com, shiraz.saleem@intel.com,
-	jacob.e.keller@intel.com, sridhar.samudrala@intel.com,
-	jesse.brandeburg@intel.com, aleksander.lobakin@intel.com,
-	lukasz.czapnik@intel.com,
-	Rafal Romanowski <rafal.romanowski@intel.com>
-Subject: Re: [PATCH net-next v4 4/8] ice: refactor VF control VSI interrupt
- handling
-Message-ID: <ZFlTPLoA9q0Kgkkk@corigine.com>
-References: <20230508124321.2927867-1-piotr.raczynski@intel.com>
- <20230508124321.2927867-5-piotr.raczynski@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230508124321.2927867-5-piotr.raczynski@intel.com>
-X-ClientProxiedBy: AM4P190CA0019.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:200:56::29) To BY3PR13MB4834.namprd13.prod.outlook.com
- (2603:10b6:a03:36b::10)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 699AF4411
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 20:01:21 +0000 (UTC)
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0FEDC
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 13:01:19 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+	by smtp-out1.suse.de (Postfix) with ESMTP id 250E721D89;
+	Mon,  8 May 2023 20:01:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1683576067; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jGjIIKPfOt1b0ws2xIIX0WvsNqaR6pSB4qec0K1JvzI=;
+	b=RO+J3YgLqPYgs12yvkr65ytU+4H/6+lc7DyumH873wP2e/Q/zosU1RvJqSTwLwFZamQyPA
+	jz9tWdYVZ0uJ6l+Ig6CgPQbuxejP38SudIybpTC0CmB7M4CfnU3xi0AniLMnPxDuT+1xT0
+	jFFSKEsFAoeAUWESj7ogfjYD4D/YPKM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1683576067;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jGjIIKPfOt1b0ws2xIIX0WvsNqaR6pSB4qec0K1JvzI=;
+	b=DCq5Fby96jLxuaVVLDKBr+Uy10WkMrVHz0+itd9jMym6nfcxdDxi6j17+kG6xvemWUOyBh
+	Sgq4dVMGXAmToTAw==
+Received: from lion.mk-sys.cz (unknown [10.163.44.94])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by relay2.suse.de (Postfix) with ESMTPS id 14E992C142;
+	Mon,  8 May 2023 20:01:07 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+	id 8186360926; Mon,  8 May 2023 22:01:04 +0200 (CEST)
+Date: Mon, 8 May 2023 22:01:04 +0200
+From: Michal Kubecek <mkubecek@suse.cz>
+To: Nicholas Vinson <nvinson234@gmail.com>
+Cc: netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool] Fix argc and argp handling issues
+Message-ID: <20230508200104.ktrzgazsn3t54n2a@lion.mk-sys.cz>
+References: <4b89caeddf355b07da0ba68ea058a94e5a55ff59.1683549750.git.nvinson234@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY3PR13MB4834:EE_|MW4PR13MB5837:EE_
-X-MS-Office365-Filtering-Correlation-Id: d498954a-535a-4d34-72e7-08db4ffdeaed
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	VPQPh9QU1VshtbbW8JrtO09qhiYGlF8j5fZTfhppff0S2c/qLYkkTHoWQ93XnhgqfgeDW7t3pqb6O99uo9J3l4Yw07kCotXtMO1fVnJ7X+I5H6NGkAjq7tD1O2Im8QDPJIOYKrXjGJ5z/M5GNjMfRqfWSi275lpzZGXsrwcbV7izONtlStbPoanjdj4T/pJz6xErr+JvVI/Ehh66n0NygX33ruwNix/Tq4k+9XADgGHbBuPdQRvbi5XzVDuCl0GHq60/FR+5+6MnI3DFAznqjVtRcRdTde7CnRZ8TY/AOH0opmwIRevWjOi/DoK/vQf3pvgJ7667viYNB68sXpL022pBzA6PL8QiuErQZTQZaOS6zkCOomFResY9+uOrtKYFbYjL52jJTe4QJ21KnpFo78KDyHpWmgQySjn3rReXap46sRh1+VdpIxAdmyVk6J2l7BCcX1HxdFZvGAk8jID2c0DXHXXi4AHcNor8wLPvIDbuzycF8h6B51Y0TAnNLicGQIm1FyPmy2K8zTdZ76FmcWdWhpojP1EO1SMyUnKSavZbc+3njKozIJtF1yD6U9hZjVHsj+zjLfJvcsd+VFx7/lq+Q3YIDMMi8tIrL3DXAQQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR13MB4834.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39840400004)(346002)(376002)(396003)(366004)(451199021)(2906002)(4744005)(478600001)(316002)(41300700001)(8936002)(8676002)(44832011)(6666004)(66476007)(4326008)(6916009)(66556008)(5660300002)(66946007)(7416002)(6486002)(6512007)(6506007)(186003)(2616005)(36756003)(38100700002)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?eZ8tnkwt0hGAALM+ETsLm3BzEq9ys0twKQ1nzXEFalkez7/jOM3uaoMS8pg2?=
- =?us-ascii?Q?hDVSCL5pv1Uy7JCqi/U7ufboGYT+/gPc9TSjNe1uaqhWIOGuAJ5dP63f36fr?=
- =?us-ascii?Q?jiepJKNnavi5uvwd36evIBDJtGpLtvcToGpnlsK4YcObUDSqYxCx8RvrsvyY?=
- =?us-ascii?Q?obzDOJxck8SuDXRdKZiYu1Hs7DenKCOOq5zR2GZHZ9BDuGdv0E168JCokVjx?=
- =?us-ascii?Q?+s7FdrEnnl1oe+q6KVFp4fIwZsn6QZvx60DinzmS7xEloHZNxZXI3qfXzREs?=
- =?us-ascii?Q?P6GrWArl4pEKvDYOh7KEs81Ib9ccgLWEpc71CE9eqMqJtI/43k2e4Hq9IztG?=
- =?us-ascii?Q?c+ICK8pzp8j0xFLV5Rqk9wZDm8xhF/w4DLXwf4tRlmZ+c5zVPsif4VZ8rPyl?=
- =?us-ascii?Q?ckhRfG9vuWU5WwvIFEYzKJ6XJnGgFkm+NERvFdQuybXwSlAzZTscC8eEZQ7e?=
- =?us-ascii?Q?K6qCdeE03iPPDS3HCCiZasEC98YSUbRX7hefspweRn8bXePnILfuCzcSR6Od?=
- =?us-ascii?Q?m+jw5L0Mi1K19G7XFIdbeggYfcttcbyZxdRD5MvgYFIV5WquPk+LYQQoyAVH?=
- =?us-ascii?Q?0M1PGDajf/F1a8AHKfHWXOr/AbTDKlhRdpKK19CYKGVJUw79ymVU/0K1SurB?=
- =?us-ascii?Q?LGRYXELbIFANGW1SNIqIY4YUaF8Soht3hHVlWyHPsXKCOWGxI5DXdrvOx0Nm?=
- =?us-ascii?Q?wxRpvC8hBHq+wLSvLEbJ3UlDhvp6t1yzdQ73f3PBfCw3U1J7V6wvHLQX8xLM?=
- =?us-ascii?Q?ie7bf27sBNrpuRuravClMhZdMRtLNP9QBxC9Rv9gaUw17xdODg+M+YScqPjK?=
- =?us-ascii?Q?oCGVseEIBuslf0j6DFNKkqjO8T7TYul9RwF2gqPIPZkqy6Dh6650rnwU5rWz?=
- =?us-ascii?Q?WQPblVcFN/iwSSz9hRjlRLZggH8TSyYBr7H4+L5w66C+RHYLflqU25GPVMlg?=
- =?us-ascii?Q?1ZT7nxgbsLsC43qpgY/gIiO0beZfDvTQ31L5OOiarrnuFSJgwRUkB8yoX5oP?=
- =?us-ascii?Q?2G+ZD3xdeJk+YwnE++hdrygJDLqkOVvcIoHR+KFO9Ezw2LGfAthjVbKA8bPY?=
- =?us-ascii?Q?sx7ekjIeWA5ENrhAVek5qMNZwgkb510JzNKODgThWU5yA8iiJebPHq+VZKSe?=
- =?us-ascii?Q?M9wQ89w9fJS/+gXi1nJjOleEi6m3eIgQ9iF/O+aMBudvYuKM08HuS+ZBuXWE?=
- =?us-ascii?Q?qRFV5vv+ou2tLrfuQXT6H5sFeK48BilgGsYJLoOzwMscMD91E1d+0fBjYHc0?=
- =?us-ascii?Q?BCY9YXFwsdQrt+Uc3FmvhQa30zss+PLgCD57QJyo1+TVjONRJoR2fhiL31BT?=
- =?us-ascii?Q?7ooaHqDflERXTC+z6/pzGr5e0r53sNuskYAh9QmxrCCpqhrAbPo+OAS0sKjU?=
- =?us-ascii?Q?9x/BmLSMqtGVY/28lU+hcuDq6+EOuzO4+UmEr+vbcQqfSPfXQNWdDB5a4d6o?=
- =?us-ascii?Q?Tf3uRjB5mUSaIpYd0HZeXBI4ldcRJ0uR7ZwtqpHlhKCjvFRQel1s0e0jFA1I?=
- =?us-ascii?Q?dRRX6bZS0kO+3RwnYwKn5JkYUmj42BYKkUxx0okfAtJ1JwH8qHOzbpVQojh0?=
- =?us-ascii?Q?e0ZheKdG2Y9mLxjDuzOVkaSwn7lwYn4YRVrDFL22AiB4ApKW9X94hgUgFOUN?=
- =?us-ascii?Q?6WdsiGlocKYAU31QurGJ6SQevMk4qBvgKzsITIlKh3vKgxeMTmRGP2lxQrn2?=
- =?us-ascii?Q?0ktXzA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d498954a-535a-4d34-72e7-08db4ffdeaed
-X-MS-Exchange-CrossTenant-AuthSource: BY3PR13MB4834.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2023 19:53:39.1217
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8yu4UkY39380pXaKBfE5NRvwihQP2kb7+BdVIHuB3L5L7UCtb7dRrnLT7K5EHOc6u/T+fkkVE17uvASb5MozBZfZZNx4oZirUfFykVHIDA0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR13MB5837
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="c72yie2rjxus55yr"
+Content-Disposition: inline
+In-Reply-To: <4b89caeddf355b07da0ba68ea058a94e5a55ff59.1683549750.git.nvinson234@gmail.com>
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 08, 2023 at 02:43:17PM +0200, Piotr Raczynski wrote:
-> All VF contrl VSIs share the same interrupt vector. Currently, a helper
-> function dedicated for that directly sets ice_vsi::base_vector.
 
-nit: s/contrl/control/
-> 
-> Use helper that returns pointer to first found VF control VSI instead.
-> 
-> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
-> Signed-off-by: Piotr Raczynski <piotr.raczynski@intel.com>
+--c72yie2rjxus55yr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, May 08, 2023 at 08:45:33AM -0400, Nicholas Vinson wrote:
+> Fixes issues that were originally found using gcc's static analyzer. The
+> flags used to invoke the analyzer are given below.
+>=20
+> Upon manual review of the results and discussion of the previous patch
+> '[PATCH ethtool 3/3] Fix potentinal null-pointer derference issues.', it
+> was determined that when using a kernel lacking the execve patch ( see
+> https://github.com/gregkh/linux/commit/dcd46d897adb70d63e025f175a00a89797=
+d31a43),
+> it is possible for argc to be 0 and argp to be an array with only a
+> single NULL entry. This scenario would cause ethtool to read beyond the
+> bounds of the argp array. However, this scenario should not be possible
+> for any Linux kernel released within the last two years should have the
+> execve patch applied.
+>=20
+>     CFLAGS=3D-march=3Dnative -O2 -pipe -fanalyzer       \
+>         -Werror=3Danalyzer-va-arg-type-mismatch       \
+>         -Werror=3Danalyzer-va-list-exhausted          \
+>         -Werror=3Danalyzer-va-list-leak               \
+>         -Werror=3Danalyzer-va-list-use-after-va-end
+>=20
+>     CXXCFLAGS=3D-march=3Dnative -O2                     \
+>         -pipe -fanalyzer                            \
+>         -Werror=3Danalyzer-va-arg-type-mismatch       \
+>         -Werror=3Danalyzer-va-list-exhausted          \
+>         -Werror=3Danalyzer-va-list-leak               \
+>         -Werror=3Danalyzer-va-list-use-after-va-end
+>=20
+>     LDFLAGS=3D"-Wl,-O1 -Wl,--as-needed"
+>=20
+>     GCC version is gcc (Gentoo 13.1.0-r1 p1) 13.1.0
+
+This looks good to me, except for the missing Signed-off-by (as
+mentioned by Jesse). IMHO it's not necessary to resubmit the patch,
+replying with the Signed-off-by line should suffice. If you can do that
+by tomorrow, I'll include the patch in 6.3 release.
+
+Michal
+
+> ---
+>  ethtool.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/ethtool.c b/ethtool.c
+> index 98690df..0752fe4 100644
+> --- a/ethtool.c
+> +++ b/ethtool.c
+> @@ -6405,6 +6405,9 @@ int main(int argc, char **argp)
+> =20
+>  	init_global_link_mode_masks();
+> =20
+> +	if (argc < 2)
+> +		exit_bad_args();
+> +
+>  	/* Skip command name */
+>  	argp++;
+>  	argc--;
+> @@ -6449,7 +6452,7 @@ int main(int argc, char **argp)
+>  	 * name to get settings for (which we don't expect to begin
+>  	 * with '-').
+>  	 */
+> -	if (argc =3D=3D 0)
+> +	if (!*argp)
+>  		exit_bad_args();
+> =20
+>  	k =3D find_option(*argp);
+> --=20
+> 2.40.1
+>=20
+>=20
+
+--c72yie2rjxus55yr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmRZVPwACgkQ538sG/LR
+dpULsAf/cYk6v6bm8m22VM6yR/qr/82i4imyHS52muezxKV637F9uQyOmLfKlVeg
+n+mUnqy0DIQHnaYqsdXplePzL26pNhqwT6Xb1HB7Wcx890wHAWvAPTJy4IN3F57U
+TGJyu5VHo3wEwm437q4RKfRuHuFrtlXSdMM7cW3Psa+6rWxtsGUIl+Jd23AaImug
+NaoZfWkB0OwGpnC1xb3C0owLKjushnSiWgZZILiR5ASiZg5Wq6Z9Z5K/ydWKgTJq
+3jwPF6dEyUDUT5xztWUakbASxihSK686Ja6jG+bPZh5Mr9hcH/5Ff3vnr7Yt7nP9
+/2TY5VqJt+JFc01LCPbPemh+16f2BA==
+=V1aY
+-----END PGP SIGNATURE-----
+
+--c72yie2rjxus55yr--
 
