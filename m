@@ -1,158 +1,110 @@
-Return-Path: <netdev+bounces-776-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-777-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6DEF66F9E1A
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 05:12:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AE5C76F9E44
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 05:33:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AE14C280EB4
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 03:12:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9FA821C2091C
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 03:33:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ACA19125BC;
-	Mon,  8 May 2023 03:12:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 25C0C125D8;
+	Mon,  8 May 2023 03:33:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0DA05248
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 03:12:15 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335EE7ED1
-	for <netdev@vger.kernel.org>; Sun,  7 May 2023 20:12:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683515533;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9nyAgUbuTjzD6fHJpqxIZiFQeyCjpbJk624bFTFNpfo=;
-	b=dqAL4kMtn1iPVye9ftLbseCCSTCjkzdJSEHmWjTl6S72iWjsgp3N2vv26LhkwWXAXioEUH
-	X3C+siAfl1JAm+J/w9JsmL1jK4uveIo2/adgi4TCAwvzim522IUnzI/CAgheEgGZ+t+WZ/
-	Us0YeHduY8an97DUjCrI7KEkmp8BqkY=
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
- [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-653-H09zp729M3G2hdA06ObeAA-1; Sun, 07 May 2023 23:12:12 -0400
-X-MC-Unique: H09zp729M3G2hdA06ObeAA-1
-Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-1ab032d91a1so22133235ad.1
-        for <netdev@vger.kernel.org>; Sun, 07 May 2023 20:12:11 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B40E3C22
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 03:33:30 +0000 (UTC)
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CB644B0
+	for <netdev@vger.kernel.org>; Sun,  7 May 2023 20:33:27 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id 38308e7fff4ca-2ac80da3443so45953141fa.0
+        for <netdev@vger.kernel.org>; Sun, 07 May 2023 20:33:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683516805; x=1686108805;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zHdBLTz6PLdezvt4jgD2hDhjAfq9nKK/lZcQIpglPrY=;
+        b=hU8+pHx6H0yDrlyyoL9IYf1cfaENHY3Hw5rmaw6VKdxdInKniTPvxP/r2pQYdmnjQI
+         u8rGB8Ab7ufhvycFeBDbFofbNiBkcGntG9jAO51tXWqvrHhqOPX8Ow96lF3u3O9YjOLu
+         W3VZKO93GLGr39lB0TBoolETPFPTrDoo2qqmZQLAYoJV003nkK/hFVkqle8ru3MQ+HN9
+         X5T5PqJTvtDOgiey/r4vB/bTsHNykO6UuR4ldcF3x6xEE9ipEyHeV/v/2TgT3Iz3sWL7
+         DxRbcD78FauyAUbBPqhQPBapYjk3T6tVvO/oUte+Q7BzYpwowZtYq3Nsbq8CKEEosEjO
+         7BLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683515531; x=1686107531;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9nyAgUbuTjzD6fHJpqxIZiFQeyCjpbJk624bFTFNpfo=;
-        b=iq4N9kQ8XBb2ovGe04dosic/PFOcB4XQLT7a4AFg5mbpZZCpd95U7u82d81hXaI5j/
-         CTA17NLPNAB1D44RoVj03IJAsQ6+/+UmIkBnHv8vet2YPsSkaVB05FxshfIs+OALDHH5
-         18S5S6llAbKDaPITBXPgte8LqbxOXGOTD4Zk1kqeqZd8K+lxQDi2Up37wAfi9RFG0s4i
-         hs2JgrpDghcH1qnpfWHUpdIjhAyKlr/gVfr5DLyrwwAfM+cnMBxClExThjAub4Y4VIwU
-         XCIN32HzINQlZm7dcEJ4cvxLjlqHQGOZ6D5sW7W19iq2axRA3johp6e/TI8sDgXvXVkS
-         oqtA==
-X-Gm-Message-State: AC+VfDy62HYDWJ1eIoOib+Rwi5Ip3Y4HOswko7Rf/4fMp1bmusuajZh/
-	TjdnDtLamBIbHfmy8NY1OLta5CteWq7fTrql5LIr2YnlMFgMTZQXs0ZFRJvDAS0o+o7v3Mye0zJ
-	MXbGXdtRkcCLzCbX/
-X-Received: by 2002:a17:902:a516:b0:1ab:1355:1a45 with SMTP id s22-20020a170902a51600b001ab13551a45mr8724901plq.30.1683515530941;
-        Sun, 07 May 2023 20:12:10 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4Dsr/5I/1xDjPCTgBELpkfYOze5JmdS9lW2LqmCICvddW3VQUgjgtMk5CSsiE4sTTKAkq0Yg==
-X-Received: by 2002:a17:902:a516:b0:1ab:1355:1a45 with SMTP id s22-20020a170902a51600b001ab13551a45mr8724890plq.30.1683515530640;
-        Sun, 07 May 2023 20:12:10 -0700 (PDT)
-Received: from [10.72.12.58] ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id o4-20020a170902d4c400b00199193e5ea1sm5857923plg.61.2023.05.07.20.12.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 May 2023 20:12:10 -0700 (PDT)
-Message-ID: <2b5cf90a-efa8-52a7-9277-77722622c128@redhat.com>
-Date: Mon, 8 May 2023 11:12:03 +0800
+        d=1e100.net; s=20221208; t=1683516805; x=1686108805;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zHdBLTz6PLdezvt4jgD2hDhjAfq9nKK/lZcQIpglPrY=;
+        b=JimDGmouq1nWYA0xyN/enCVaI45911mP6HtCzwKgDLVSOldqnMokTODc/EjkN7e+4J
+         u1QyXji4LWpCnMpJTs6miOsdEAH2PnLCGaMVxAUoUTXeLJAklpcRCKdid6n6UEIBpaHa
+         I7pt+ZvMC5ybrPFe19Pv64XewG+wNYq165Reop6GfNjTwCmLEcgGk1N2WriQfYk/LIr2
+         NWESGwh8Ix6yo0WaYyE4uKSCw9XaJ2U5PErxYWXveoLaKxWx9lhqHazlwB++XeiYZqXX
+         sYWoD6sBrlG2nNJU8VImYj8JyfNpcJ/FvNj5U2MmdpCMeXa0wEJuOz3b9cSTRmhqpwhS
+         O1tg==
+X-Gm-Message-State: AC+VfDwHezr9+XPNyIaBUDqWSJED271otvf1QIEdt2+43dNDqnPCp3qd
+	nnp99fjT/wE54fRn3PFLBWfla+H+1A==
+X-Google-Smtp-Source: ACHHUZ6/fmgh/MNfDjzbpRdvy/X2OF9O+aaqNhl0nyQ4/drPu4eCEggpQUc7s2ffudyD+8m0SnBnIQ==
+X-Received: by 2002:a2e:8752:0:b0:2a8:d1cd:a04 with SMTP id q18-20020a2e8752000000b002a8d1cd0a04mr2236894ljj.48.1683516805104;
+        Sun, 07 May 2023 20:33:25 -0700 (PDT)
+Received: from localhost.localdomain (77-254-67-144.adsl.inetia.pl. [77.254.67.144])
+        by smtp.gmail.com with ESMTPSA id r26-20020a2e80da000000b002a8d915f30asm1028571ljg.77.2023.05.07.20.33.24
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 07 May 2023 20:33:24 -0700 (PDT)
+From: Patryk Sondej <patryk.sondej@gmail.com>
+To: netdev@vger.kernel.org
+Cc: Patryk Sondej <patryk.sondej@gmail.com>
+Subject: [PATCH net] inet_diag: fix inet_diag_msg_attrs_fill() for net_cls cgroup
+Date: Mon,  8 May 2023 05:32:33 +0200
+Message-Id: <20230508033232.69793-1-patryk.sondej@gmail.com>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-Subject: Re: [PATCH v4] virtio_net: suppress cpu stall when free_unused_bufs
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Wenliang Wang <wangwenliang.1995@bytedance.com>, davem@davemloft.net,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- zhengqi.arch@bytedance.com, willemdebruijn.kernel@gmail.com,
- virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, xuanzhuo@linux.alibaba.com
-References: <1683167226-7012-1-git-send-email-wangwenliang.1995@bytedance.com>
- <CACGkMEs_4kUzc6iSBWvhZA1+U70Pp0o+WhE0aQnC-5pECW7QXA@mail.gmail.com>
- <20230507093328-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20230507093328-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+This commit fixes inet_diag_msg_attrs_fill() function in the ipv4/inet_diag.c file.
+The problem was that the function was using CONFIG_SOCK_CGROUP_DATA to check for the net_cls cgroup.
+However, the net_cls cgroup is defined by CONFIG_CGROUP_NET_CLASSID instead.
 
-在 2023/5/7 21:34, Michael S. Tsirkin 写道:
-> On Fri, May 05, 2023 at 11:28:25AM +0800, Jason Wang wrote:
->> On Thu, May 4, 2023 at 10:27 AM Wenliang Wang
->> <wangwenliang.1995@bytedance.com> wrote:
->>> For multi-queue and large ring-size use case, the following error
->>> occurred when free_unused_bufs:
->>> rcu: INFO: rcu_sched self-detected stall on CPU.
->>>
->>> Fixes: 986a4f4d452d ("virtio_net: multiqueue support")
->>> Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
->>> ---
->>> v2:
->>> -add need_resched check.
->>> -apply same logic to sq.
->>> v3:
->>> -use cond_resched instead.
->>> v4:
->>> -add fixes tag
->>> ---
->>>   drivers/net/virtio_net.c | 2 ++
->>>   1 file changed, 2 insertions(+)
->>>
->>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>> index 8d8038538fc4..a12ae26db0e2 100644
->>> --- a/drivers/net/virtio_net.c
->>> +++ b/drivers/net/virtio_net.c
->>> @@ -3560,12 +3560,14 @@ static void free_unused_bufs(struct virtnet_info *vi)
->>>                  struct virtqueue *vq = vi->sq[i].vq;
->>>                  while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
->>>                          virtnet_sq_free_unused_buf(vq, buf);
->>> +               cond_resched();
->> Does this really address the case when the virtqueue is very large?
->>
->> Thanks
->
-> it does in that a very large queue is still just 64k in size.
-> we might however have 64k of these queues.
+Therefore, this commit updates the #ifdef statement to CONFIG_CGROUP_NET_CLASSID,
+and uses the sock_cgroup_classid() function to retrieve the classid from the socket cgroup.
 
+This change ensures that the function correctly retrieves the classid for the net_cls cgroup
+and fixes any issues related to the use of the function in this context.
 
-Ok, but we have other similar loops especially the refill, I think we 
-may need cond_resched() there as well.
+Signed-off-by: Patryk Sondej <patryk.sondej@gmail.com>
+---
+ net/ipv4/inet_diag.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks
-
-
->
->>>          }
->>>
->>>          for (i = 0; i < vi->max_queue_pairs; i++) {
->>>                  struct virtqueue *vq = vi->rq[i].vq;
->>>                  while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
->>>                          virtnet_rq_free_unused_buf(vq, buf);
->>> +               cond_resched();
->>>          }
->>>   }
->>>
->>> --
->>> 2.20.1
->>>
+diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
+index b812eb36f0e3..7017f88911a6 100644
+--- a/net/ipv4/inet_diag.c
++++ b/net/ipv4/inet_diag.c
+@@ -157,7 +157,7 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
+ 	    ext & (1 << (INET_DIAG_TCLASS - 1))) {
+ 		u32 classid = 0;
+ 
+-#ifdef CONFIG_SOCK_CGROUP_DATA
++#ifdef CONFIG_CGROUP_NET_CLASSID
+ 		classid = sock_cgroup_classid(&sk->sk_cgrp_data);
+ #endif
+ 		/* Fallback to socket priority if class id isn't set.
+-- 
+2.37.1 (Apple Git-137.1)
 
 
