@@ -1,170 +1,189 @@
-Return-Path: <netdev+bounces-833-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-834-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 65E726FAA51
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:01:31 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C5BE26FAB0A
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:08:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 99FE71C2095D
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:01:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EF33F1C209A0
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:08:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 920EF13AE0;
-	Mon,  8 May 2023 11:01:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 031E2168DA;
+	Mon,  8 May 2023 11:08:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81068168C7
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:01:28 +0000 (UTC)
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE092E80E;
-	Mon,  8 May 2023 04:01:25 -0700 (PDT)
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3486Eqs2025662;
-	Mon, 8 May 2023 11:01:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=30YV3GSfUJH7uuAX8OaPEaPxhsD0B30A4xbCT71CEQo=;
- b=WGHVlF3BsyIuV/3SBrU26+mSJHJfuxCpxS0A4EPFCSIZPqVCmu2edkCUpANl261nQVDH
- IJKmmANwNZ2pWLDEwsGtr4OKjv/o5iPw/wWd56LwUGXjAhHaf5X5IY9GUfxY6ASRZ3m4
- S7VeeZMEx/2JaEV6u7tCLCLPL5fh10l2IXG1QMBk7b7gBL+rWaVfmeyX0jx029Uvhpo2
- oaV9CEdyxq5IbyNTvk1eM7ogRngQ2qIkQtKWrUafeBrHBRF/W8T80mvbJMvq9rFoKIuS
- +4wlbkvPEuvB6I/mHdNz7kKo1Oeaz+uzMy/4CCUpc/frjFVMKz7t+9SHL7Sxln39tOqz Lg== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3qdf4b3ce1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 08 May 2023 11:01:20 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 348B1J0P008879
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 8 May 2023 11:01:19 GMT
-Received: from [10.216.33.39] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.42; Mon, 8 May 2023
- 04:01:14 -0700
-Message-ID: <62a80dec-91ff-8a07-9818-7207a08a35b3@quicinc.com>
-Date: Mon, 8 May 2023 16:31:11 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4326168D6
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:08:43 +0000 (UTC)
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC912ABE3
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 04:08:40 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50bc37e1525so8530630a12.1
+        for <netdev@vger.kernel.org>; Mon, 08 May 2023 04:08:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google; t=1683544119; x=1686136119;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=Gag99lpqg8ZcnlcatCi6U8igQ9sGdmGp2/O8T8Oc0uk=;
+        b=kgO/RVvHJ9jRXW6Vwh1zylU3Ua/n/uUxKFNj/F200zsq4ANfQtrTbjb1AjJlLiahH1
+         9A9ZYku0JJq3VglKj9S9pSzXV4Dg2AplcqmTMoItMztSDPKV3cdZ7sCz9UkDb0aphbu8
+         Tu1Ly99mS33O87v9Y3MRNEzX7D+O5N4L+Spto=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683544119; x=1686136119;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Gag99lpqg8ZcnlcatCi6U8igQ9sGdmGp2/O8T8Oc0uk=;
+        b=KxvT6F1hYp1InjDS1fT79ijl3fM0cw1jsp6E0Rv7VrM3MajtbhCcRwAsCshklUOQya
+         MfCIxYiD2DamH99j0VxhcDS1IFsStHhcPaKkUdj7Z8kmfTve//lxjRRvK18dNVaSTLS+
+         sQOqmlhI6Y+dJWt6OgqWDQ9x6mfZXvAjjTqxTxfUzeDJwy3ZL2URbQZ/aPtBvuTQBx8M
+         6zr1bYTttQhg67/AegGE2ruPi9XU6PE6Fua0Z5tmMjc2kUW4gSbj5FSGt6GRW7yVQQfZ
+         AR3mSHJ6XlHSrmQkb6zHfcxQAhSDDaNC1aoPFh7QIjaxcfWpE+DdsfMWRWa0JEHi/VKi
+         0AXw==
+X-Gm-Message-State: AC+VfDyKqQgwGC8dMt96ArnB7tUQ0D45jhAmGT3KaemVI9sI8eUh7io0
+	HPsY02Em7qdJlFqDBfb8qnqHwA==
+X-Google-Smtp-Source: ACHHUZ7tJ3R5k3ObHbTqfPz0cKqzdO/aZHIkbQ+jtNXpwr15bnk+luQ9M1hWPZcXRqsyVPKki+Cn/A==
+X-Received: by 2002:aa7:c84c:0:b0:50b:fb49:39c9 with SMTP id g12-20020aa7c84c000000b0050bfb4939c9mr7007735edt.34.1683544119184;
+        Mon, 08 May 2023 04:08:39 -0700 (PDT)
+Received: from cloudflare.com (79.184.132.119.ipv4.supernova.orange.pl. [79.184.132.119])
+        by smtp.gmail.com with ESMTPSA id o7-20020a056402038700b0050bc41352d9sm5961093edv.46.2023.05.08.04.08.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 May 2023 04:08:38 -0700 (PDT)
+References: <20230502155159.305437-1-john.fastabend@gmail.com>
+ <20230502155159.305437-12-john.fastabend@gmail.com>
+User-agent: mu4e 1.6.10; emacs 28.2
+From: Jakub Sitnicki <jakub@cloudflare.com>
+To: John Fastabend <john.fastabend@gmail.com>
+Cc: daniel@iogearbox.net, lmb@isovalent.com, edumazet@google.com,
+ bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+ andrii@kernel.org, will@isovalent.com
+Subject: Re: [PATCH bpf v7 11/13] bpf: sockmap, test shutdown() correctly
+ exits epoll and recv()=0
+Date: Mon, 08 May 2023 13:04:58 +0200
+In-reply-to: <20230502155159.305437-12-john.fastabend@gmail.com>
+Message-ID: <87jzxj3wsq.fsf@cloudflare.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH 1/4] clk: qcom: branch: Extend the invert logic for
- branch2 clocks
-Content-Language: en-US
-To: Stephen Boyd <sboyd@kernel.org>, Andy Gross <agross@kernel.org>,
-        "Bjorn
- Andersson" <andersson@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette
-	<mturquette@baylibre.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "Rob
- Herring" <robh+dt@kernel.org>
-CC: <quic_skakitap@quicinc.com>, Imran Shaik <quic_imrashai@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohiagar@quicinc.com>, <netdev@vger.kernel.org>
-References: <20230419133013.2563-1-quic_tdas@quicinc.com>
- <20230419133013.2563-2-quic_tdas@quicinc.com>
- <0dc457cbd13ea76a3aa3c70b2a31a537.sboyd@kernel.org>
-From: Taniya Das <quic_tdas@quicinc.com>
-In-Reply-To: <0dc457cbd13ea76a3aa3c70b2a31a537.sboyd@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: kQ3XYs3uLOipgrKCKIHyYStYliBRUIOY
-X-Proofpoint-GUID: kQ3XYs3uLOipgrKCKIHyYStYliBRUIOY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-08_08,2023-05-05_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
- clxscore=1015 priorityscore=1501 adultscore=0 impostorscore=0 bulkscore=0
- mlxscore=0 lowpriorityscore=0 spamscore=0 malwarescore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
- definitions=main-2305080075
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello Stephen,
+On Tue, May 02, 2023 at 08:51 AM -07, John Fastabend wrote:
+> When session gracefully shutdowns epoll needs to wake up and any recv()
+> readers should return 0 not the -EAGAIN they previously returned.
+>
+> Note we use epoll instead of select to test the epoll wake on shutdown
+> event as well.
+>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  .../selftests/bpf/prog_tests/sockmap_basic.c  | 68 +++++++++++++++++++
+>  .../bpf/progs/test_sockmap_pass_prog.c        | 32 +++++++++
+>  2 files changed, 100 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> index 0ce25a967481..f9f611618e45 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> @@ -2,6 +2,7 @@
+>  // Copyright (c) 2020 Cloudflare
+>  #include <error.h>
+>  #include <netinet/tcp.h>
+> +#include <sys/epoll.h>
+>  
+>  #include "test_progs.h"
+>  #include "test_skmsg_load_helpers.skel.h"
+> @@ -9,8 +10,11 @@
+>  #include "test_sockmap_invalid_update.skel.h"
+>  #include "test_sockmap_skb_verdict_attach.skel.h"
+>  #include "test_sockmap_progs_query.skel.h"
+> +#include "test_sockmap_pass_prog.skel.h"
+>  #include "bpf_iter_sockmap.skel.h"
+>  
+> +#include "sockmap_helpers.h"
+> +
+>  #define TCP_REPAIR		19	/* TCP sock is under repair right now */
+>  
+>  #define TCP_REPAIR_ON		1
+> @@ -350,6 +354,68 @@ static void test_sockmap_progs_query(enum bpf_attach_type attach_type)
+>  	test_sockmap_progs_query__destroy(skel);
+>  }
+>  
+> +#define MAX_EVENTS 10
+> +static void test_sockmap_skb_verdict_shutdown(void)
+> +{
+> +	int n, err, map, verdict, s, c0, c1, p0, p1;
+> +	struct epoll_event ev, events[MAX_EVENTS];
+> +	struct test_sockmap_pass_prog *skel;
+> +	int epollfd;
+> +	int zero = 0;
+> +	char b;
+> +
+> +	skel = test_sockmap_pass_prog__open_and_load();
+> +	if (!ASSERT_OK_PTR(skel, "open_and_load"))
+> +		return;
+> +
+> +	verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
+> +	map = bpf_map__fd(skel->maps.sock_map_rx);
+> +
+> +	err = bpf_prog_attach(verdict, map, BPF_SK_SKB_STREAM_VERDICT, 0);
+> +	if (!ASSERT_OK(err, "bpf_prog_attach"))
+> +		goto out;
+> +
+> +	s = socket_loopback(AF_INET, SOCK_STREAM);
+> +	if (s < 0)
+> +		goto out;
+> +	err = create_socket_pairs(s, AF_INET, SOCK_STREAM, &c0, &c1, &p0, &p1);
+> +	if (err < 0)
+> +		goto out;
+> +
+> +	err = bpf_map_update_elem(map, &zero, &c1, BPF_NOEXIST);
+> +	if (err < 0)
+> +		goto out_close;
+> +
+> +	shutdown(c0, SHUT_RDWR);
+> +	shutdown(p1, SHUT_WR);
+> +
+> +	ev.events = EPOLLIN;
+> +	ev.data.fd = c1;
+> +
+> +	epollfd = epoll_create1(0);
+> +	if (!ASSERT_GT(epollfd, -1, "epoll_create(0)"))
+> +		goto out_close;
+> +	err = epoll_ctl(epollfd, EPOLL_CTL_ADD, c1, &ev);
+> +	if (!ASSERT_OK(err, "epoll_ctl(EPOLL_CTL_ADD)"))
+> +		goto out_close;
+> +	err = epoll_wait(epollfd, events, MAX_EVENTS, -1);
+> +	if (!ASSERT_EQ(err, 1, "epoll_wait(fd)"))
+> +		goto out_close;
+> +
+> +	n = recv(c1, &b, 1, SOCK_NONBLOCK);
+> +	ASSERT_EQ(n, 0, "recv_timeout(fin)");
+> +	n = recv(p0, &b, 1, SOCK_NONBLOCK);
+> +	ASSERT_EQ(n, 0, "recv_timeout(fin)");
+> +
+> +out_close:
+> +	close(c0);
+> +	close(p0);
+> +	close(c1);
+> +	close(p1);
+> +out:
+> +	test_sockmap_pass_prog__destroy(skel);
+> +}
+> +
 
-Thanks for your review.
-
-On 4/20/2023 3:07 AM, Stephen Boyd wrote:
-> Quoting Taniya Das (2023-04-19 06:30:10)
->> From: Imran Shaik <quic_imrashai@quicinc.com>
->>
->> Add support to handle the invert logic for branch2 clocks.
->> Invert branch halt would indicate the clock ON when CLK_OFF
->> bit is '1' and OFF when CLK_OFF bit is '0'.
->>
->> Signed-off-by: Imran Shaik <quic_imrashai@quicinc.com>
->> Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
->> ---
->>   drivers/clk/qcom/clk-branch.c | 8 ++++++++
->>   1 file changed, 8 insertions(+)
->>
->> diff --git a/drivers/clk/qcom/clk-branch.c b/drivers/clk/qcom/clk-branch.c
->> index f869fc6aaed6..4b24d45be771 100644
->> --- a/drivers/clk/qcom/clk-branch.c
->> +++ b/drivers/clk/qcom/clk-branch.c
->> @@ -48,6 +48,7 @@ static bool clk_branch2_check_halt(const struct clk_branch *br, bool enabling)
->>   {
->>          u32 val;
->>          u32 mask;
->> +       bool invert = (br->halt_check == BRANCH_HALT_ENABLE);
->>   
->>          mask = BRANCH_NOC_FSM_STATUS_MASK << BRANCH_NOC_FSM_STATUS_SHIFT;
->>          mask |= BRANCH_CLK_OFF;
->> @@ -56,9 +57,16 @@ static bool clk_branch2_check_halt(const struct clk_branch *br, bool enabling)
->>   
->>          if (enabling) {
->>                  val &= mask;
->> +
->> +               if (invert)
->> +                       return (val & BRANCH_CLK_OFF) == BRANCH_CLK_OFF;
->> +
->>                  return (val & BRANCH_CLK_OFF) == 0 ||
->>                          val == BRANCH_NOC_FSM_STATUS_ON;
-> 
-> Do these clks have a NOC_FSM_STATUS bit? I think it would be better to
-> make a local variable for the val we're looking for, and then test for
-> that. We may need a mask as well, but the idea is to not duplicate the
-> test and return from multiple places.
-> 
-
-Clocks which has invert status doesn't have NOC_FSM_STATUS bit.
-Will remove the multiple returns in next patch.
-
->>          } else {
->> +               if (invert)
->> +                       return (val & BRANCH_CLK_OFF) == 0;
->> +
->>                  return val & BRANCH_CLK_OFF;
->>          }
-> 
-> While at it, I'd get rid of this else and de-indent the code because if
-> we're 'enabling' we'll return from the function regardless.
-
-
-Yes, Stephen, will take care in the next patch.
-
--- 
-Thanks & Regards,
-Taniya Das.
+This test has me scratching my head. I don't grasp what we're testing
+with (c0, p0) socket pair, since c0 is not in any sockmap?
 
