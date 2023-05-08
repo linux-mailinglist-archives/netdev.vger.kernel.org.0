@@ -1,137 +1,156 @@
-Return-Path: <netdev+bounces-869-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-870-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B25446FB1DD
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 15:43:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4449A6FB1E0
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 15:43:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 30D79280D7E
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:43:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E6545280F81
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:43:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 11F3D15B7;
-	Mon,  8 May 2023 13:43:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 378C11361;
+	Mon,  8 May 2023 13:43:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0750515B5
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 13:43:08 +0000 (UTC)
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1298EE5F;
-	Mon,  8 May 2023 06:43:07 -0700 (PDT)
-Received: from kwepemi500026.china.huawei.com (unknown [172.30.72.56])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QFMrT3sfHzsRGW;
-	Mon,  8 May 2023 21:41:13 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- kwepemi500026.china.huawei.com (7.221.188.247) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 8 May 2023 21:43:03 +0800
-From: Dong Chenchen <dongchenchen2@huawei.com>
-To: <edumazet@google.com>, <kuba@kernel.org>, <davem@davemloft.net>,
-	<pabeni@redhat.com>
-CC: <jbenc@redhat.com>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <yuehaibing@huawei.com>,
-	<weiyongjun1@huawei.com>, Dong Chenchen <dongchenchen2@huawei.com>
-Subject: [PATCH -next] net: nsh: Use correct mac_offset to unwind gso skb in nsh_gso_segment()
-Date: Mon, 8 May 2023 21:42:58 +0800
-Message-ID: <20230508134258.496465-1-dongchenchen2@huawei.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C76915B5
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 13:43:31 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02426448C
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 06:43:26 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1pw18s-0001YG-LV; Mon, 08 May 2023 15:43:06 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1pw18n-0020ex-GE; Mon, 08 May 2023 15:43:01 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1pw18m-002RT6-Eg; Mon, 08 May 2023 15:43:00 +0200
+Date: Mon, 8 May 2023 15:43:00 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Leo Li <leoyang.li@nxp.com>
+Cc: Stuart Yoder <stuyoder@gmail.com>, Gaurav Jain <gaurav.jain@nxp.com>,
+	Roy Pledge <roy.pledge@nxp.com>,
+	"Diana Madalina Craciun (OSS)" <diana.craciun@oss.nxp.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Horia Geanta <horia.geanta@nxp.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	Richard Cochran <richardcochran@gmail.com>,
+	Pankaj Gupta <pankaj.gupta@nxp.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	"linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+	"kernel@pengutronix.de" <kernel@pengutronix.de>,
+	"Y.B. Lu" <yangbo.lu@nxp.com>,
+	"dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+	"David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 0/6] bus: fsl-mc: Make remove function return void
+Message-ID: <20230508134300.s36d6k4e25f6ubg4@pengutronix.de>
+References: <20230310224128.2638078-1-u.kleine-koenig@pengutronix.de>
+ <20230412171056.xcluewbuyytm77yp@pengutronix.de>
+ <AM0PR04MB6289BB9BA4BC0B398F2989108F9B9@AM0PR04MB6289.eurprd04.prod.outlook.com>
+ <20230413060004.t55sqmfxqtnejvkc@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500026.china.huawei.com (7.221.188.247)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="er5lj4tlfdoxmrvp"
+Content-Disposition: inline
+In-Reply-To: <20230413060004.t55sqmfxqtnejvkc@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-As the call trace shows, skb_panic was caused by wrong skb->mac_header
-in nsh_gso_segment():
 
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 3 PID: 2737 Comm: syz Not tainted 6.3.0-next-20230505 #1
-RIP: 0010:skb_panic+0xda/0xe0
-call Trace:
- skb_push+0x91/0xa0
- nsh_gso_segment+0x4f3/0x570
- skb_mac_gso_segment+0x19e/0x270
- __skb_gso_segment+0x1e8/0x3c0
- validate_xmit_skb+0x452/0x890
- validate_xmit_skb_list+0x99/0xd0
- sch_direct_xmit+0x294/0x7c0
- __dev_queue_xmit+0x16f0/0x1d70
- packet_xmit+0x185/0x210
- packet_snd+0xc15/0x1170
- packet_sendmsg+0x7b/0xa0
- sock_sendmsg+0x14f/0x160
+--er5lj4tlfdoxmrvp
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The root cause is:
-nsh_gso_segment() use skb->network_header - nhoff to reset mac_header
-in skb_gso_error_unwind() if inner-layer protocol gso fails.
-However, skb->network_header may be reset by inner-layer protocol
-gso function e.g. mpls_gso_segment. skb->mac_header reset by the
-inaccurate network_header will be larger than skb headroom.
+Hello Leo,
 
-nsh_gso_segment
-    nhoff = skb->network_header - skb->mac_header;
-    __skb_pull(skb,nsh_len)
-    skb_mac_gso_segment
-        mpls_gso_segment
-            skb_reset_network_header(skb);//skb->network_header+=nsh_len
-            return -EINVAL;
-    skb_gso_error_unwind
-        skb_push(skb, nsh_len);
-        skb->mac_header = skb->network_header - nhoff;
-        // skb->mac_header > skb->headroom, cause skb_push panic
+On Thu, Apr 13, 2023 at 08:00:04AM +0200, Uwe Kleine-K=F6nig wrote:
+> On Wed, Apr 12, 2023 at 09:30:05PM +0000, Leo Li wrote:
+> > > On Fri, Mar 10, 2023 at 11:41:22PM +0100, Uwe Kleine-K=F6nig wrote:
+> > > > Hello,
+> > > >
+> > > > many bus remove functions return an integer which is a historic
+> > > > misdesign that makes driver authors assume that there is some kind =
+of
+> > > > error handling in the upper layers. This is wrong however and
+> > > > returning and error code only yields an error message.
+> > > >
+> > > > This series improves the fsl-mc bus by changing the remove callback=
+ to
+> > > > return no value instead. As a preparation all drivers are changed to
+> > > > return zero before so that they don't trigger the error message.
+> > >=20
+> > > Who is supposed to pick up this patch series (or point out a good rea=
+son for
+> > > not taking it)?
+> >=20
+> > Previously Greg KH picked up MC bus patches.
+> >=20
+> > If no one is picking up them this time, I probably can take it through
+> > the fsl soc tree.
+>=20
+> I guess Greg won't pick up this series as he didn't get a copy of it :-)
+>=20
+> Browsing through the history of drivers/bus/fsl-mc there is no
+> consistent maintainer to see. So if you can take it, that's very
+> appreciated.
 
-Use correct mac_offset to restore mac_header to fix it.
+My mail was meant encouraging, maybe it was too subtile? I'll try again:
 
-Fixes: c411ed854584 ("nsh: add GSO support")
-Signed-off-by: Dong Chenchen <dongchenchen2@huawei.com>
----
- net/nsh/nsh.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Yes, please apply, that would be wonderful!
 
-diff --git a/net/nsh/nsh.c b/net/nsh/nsh.c
-index e9ca007718b7..17433b115058 100644
---- a/net/nsh/nsh.c
-+++ b/net/nsh/nsh.c
-@@ -78,6 +78,7 @@ static struct sk_buff *nsh_gso_segment(struct sk_buff *skb,
- {
- 	struct sk_buff *segs = ERR_PTR(-EINVAL);
- 	unsigned int nsh_len, mac_len;
-+	u16 mac_offset;
- 	__be16 proto;
- 	int nhoff;
- 
-@@ -103,13 +104,13 @@ static struct sk_buff *nsh_gso_segment(struct sk_buff *skb,
- 	skb_reset_mac_header(skb);
- 	skb->mac_len = proto == htons(ETH_P_TEB) ? ETH_HLEN : 0;
- 	skb->protocol = proto;
-+	mac_offset = skb->network_header - nhoff;
- 
- 	features &= NETIF_F_SG;
- 	segs = skb_mac_gso_segment(skb, features);
- 	if (IS_ERR_OR_NULL(segs)) {
- 		skb_gso_error_unwind(skb, htons(ETH_P_NSH), nsh_len,
--				     skb->network_header - nhoff,
--				     mac_len);
-+				     mac_offset, mac_len);
- 		goto out;
- 	}
- 
--- 
-2.25.1
+:-)
 
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--er5lj4tlfdoxmrvp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmRY/GMACgkQj4D7WH0S
+/k4cswf+N9Mgu+WF1jiKgllTl1eIxkYX2sJ67f9koV32iMjq4Cfyr/EeCWolZb/c
+5MfyrMdDe6UXeNzFn/HNTMJ+2Uc+zhRsowOFNHQKu9ysxWqNLnGnr+2Z1B9BSQY+
+mK3hhU0iLOWmLRZqQvK4iOKQmoy/jtBUWRIOfmff7fVrmHke3of31J7iZGaVLbEM
+uKgAqaUqbuhy/yKnWrtsjI032ANLw3SbE0KBgTIOLsWADSgYqHJVsxs7Ek5vLFy0
+yixu653kysPtTS5Jb20ytWk7BzQVMpYFdfq7QogzdL0qYqqrO+oJEGjXP5traHsl
+DX2GOiQ8R6tswdZcisDFe4wQC15hYQ==
+=19CE
+-----END PGP SIGNATURE-----
+
+--er5lj4tlfdoxmrvp--
 
