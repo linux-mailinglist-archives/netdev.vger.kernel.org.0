@@ -1,71 +1,70 @@
-Return-Path: <netdev+bounces-839-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-840-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 06A8E6FAC64
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:24:13 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 03D486FAC73
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:24:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7EF041C20942
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:24:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AE9BF280E4E
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:24:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BA19171A1;
-	Mon,  8 May 2023 11:24:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2924171A2;
+	Mon,  8 May 2023 11:24:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2D4168DE
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:24:09 +0000 (UTC)
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324833A5E7
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 04:24:06 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id 3f1490d57ef6-b9d881ad689so5830043276.2
-        for <netdev@vger.kernel.org>; Mon, 08 May 2023 04:24:06 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7590168DD
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:24:41 +0000 (UTC)
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD903A5E3
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 04:24:37 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id 3f1490d57ef6-b9246a5f3feso6910900276.1
+        for <netdev@vger.kernel.org>; Mon, 08 May 2023 04:24:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1683545045; x=1686137045;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1683545076; x=1686137076;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4ac1PyFGzSyD65jA/7/m9p7M+ymxiLTtNuhIFAnIl/Q=;
-        b=bFHVtn+8TSgWbaTqjdMEHaw/Cts+pAWZReNo6J9oJlZrDogaUC9uBnx/tWcop2CcZh
-         sciKWd8+cAZAMz6JHDqmL2RsO+cgfCW8lKFBtxOSb0s9Ssn107siHJgvuWweWo6V8xdD
-         KxBVxmi14mEWj+U9ncrYh0Dy6wLoplMdMVVF6Ad0Ap9gSoCBwdz2dg89aKS9o6wjpD9V
-         t7ar9Whk4tOS9XymljI3XRT+bqIAI1bh+MHddx30oKobQV0aJGOOP3LQHCs8gq/rFI6B
-         uxX9CgXtSBf+VslUlrHiI67GeRX9Z2fERLRk/O75uLnneHGv5XZqniQmq0CEFotCQNLo
-         g8kg==
+        bh=OIGhf3eRAjihUJXQEWIYc02wnTiI4XPwL0ihUb83Waw=;
+        b=OmtuiNHh/0mYopJ2E3ln7anz6SL7k7OlWoQ+Jjv4kFH7ceI9OnXCKkqFmmjd7G2vV+
+         PfvuJUD6KWGOgRRzAkYRgLP02ubjYdYebw1QIy7OXai0nGFtS/r+7PxB1x7cdlYbppNt
+         CSkebv+h1HWH2679CKhDW12tjbgP/7EysinpQUiDvrsPSWbeg1Qy5f2kr8Z62aeHkwi4
+         DXeQL8ZSTHhhuzKAXoYe94sIzYSDgEz1C0tCx00QH7ebBJJpd5HRs2Klfyzso3DZ21bh
+         IaOFGCJrcL66d85IwuVBasel48pJpWQ2YY92NRzKgvDJEqAemaA9AF0mZQ7LS31fNRia
+         MUKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683545045; x=1686137045;
+        d=1e100.net; s=20221208; t=1683545076; x=1686137076;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4ac1PyFGzSyD65jA/7/m9p7M+ymxiLTtNuhIFAnIl/Q=;
-        b=QhPppkIQ0uN4jBFHCXqzHKZiuDK6thkrRLn8Sueeiyq5SeOB9b+eAWIgXcG3I44GIN
-         QSPWRKm2tsmjd6P/ne0QjSMcur5EG5jr/7/HFiEIKknWcyaySHjE87yF2hj+dAhGx9MC
-         nDCp39viz7PcQPwYmRSipd05Bcstlpj3L8zchycS5E6iNEmwXA73GfuLHds06XdNdcf9
-         NGfLt3/+ueKP83vc5M2gYlRMn4vPBdUOkfo4dAHgBLeRyFwTfihp9t9GPb+bd/XJ/k32
-         Y4WVTl8HZYcIWKIr1GNxGBv1MdcUfpNz2p8TFS8RjpBybx4/0en2gLJJD8sU7ni9pH2z
-         1Q5A==
-X-Gm-Message-State: AC+VfDyW81YTSp4dZjpqYO1FKb1bnzBAP+H7oz3IfXSE3S1+pI+IQ2fC
-	xx2UF5opWLz6p+ADUK0RC0P2KPIWf/IWI+JQIqjEYw==
-X-Google-Smtp-Source: ACHHUZ6swGwpcIcljJbBeeQFb9wi9+9cgXqIi4GtHt4LIzfHLTWYoO8TSXechchwqMGqtMAhT0B9B9dHUJG2123dLaI=
-X-Received: by 2002:a25:2554:0:b0:b9e:6309:9412 with SMTP id
- l81-20020a252554000000b00b9e63099412mr11554200ybl.60.1683545045368; Mon, 08
- May 2023 04:24:05 -0700 (PDT)
+        bh=OIGhf3eRAjihUJXQEWIYc02wnTiI4XPwL0ihUb83Waw=;
+        b=D0e7PZDD7eWIUdxBP2YMUmacBL7lc0RiOtNLd6GuBINDVi6mvvAyA/xVeRLGl8OK/R
+         6vFmjvQu7zl4LvOKI2JhNvEbNvxBvO27GZN96wV2mph+pp4zVvt7t+nKyc7Y5uSUcMIG
+         g2v+fNc3X9el/0vlmQMvQeWXaz7UUHSOZNgMf9J0dLY+SIIRIr6n4ssxGOSexn8JCJWF
+         ch9AMVSPokPF7ACptwuxQRKGKY29ZhiIoBJ5YU3u34ZRXGFgr3wqCKV81ZFy9y5ISQde
+         jMoeGtGOiBqo39wkr41dfX0lHP4Z78GRPVgjD3uu9RylbcGrW91Uofx7YynEK+s9WdvT
+         /Q4A==
+X-Gm-Message-State: AC+VfDyjYGZMk9AHu7Cy6C/BA5Ml6iaY3/JAzH+PGfRintjihAihjGlp
+	jQCAuiLWB8PeRBMd8ZeITN2B00IqcNnUssiQKzo7gw==
+X-Google-Smtp-Source: ACHHUZ6Hs0l5aEi7EewTSFlNC+EkBAT54ACkp3N6Zc1EHO8wzU5wK1Z1ej8SuhfI1vY3FSFbF/9TFwF/7FYfGS1eqCc=
+X-Received: by 2002:a25:6fc6:0:b0:b9e:6894:289c with SMTP id
+ k189-20020a256fc6000000b00b9e6894289cmr9519837ybc.59.1683545076214; Mon, 08
+ May 2023 04:24:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1683326865.git.peilin.ye@bytedance.com> <9969180f9219ed18656d8f3c92e717f6eb398aa1.1683326865.git.peilin.ye@bytedance.com>
-In-Reply-To: <9969180f9219ed18656d8f3c92e717f6eb398aa1.1683326865.git.peilin.ye@bytedance.com>
+References: <cover.1683326865.git.peilin.ye@bytedance.com> <846336873bfba19914397a1656ba1eb42051ed87.1683326865.git.peilin.ye@bytedance.com>
+In-Reply-To: <846336873bfba19914397a1656ba1eb42051ed87.1683326865.git.peilin.ye@bytedance.com>
 From: Jamal Hadi Salim <jhs@mojatatu.com>
-Date: Mon, 8 May 2023 07:23:54 -0400
-Message-ID: <CAM0EoMnZGmRh87bwcRxgB3ZZChWmhHniA7M-ptXt7AKXtuY-Bg@mail.gmail.com>
-Subject: Re: [PATCH net 3/6] net/sched: Reserve TC_H_INGRESS (TC_H_CLSACT) for
- ingress (clsact) Qdiscs
+Date: Mon, 8 May 2023 07:24:25 -0400
+Message-ID: <CAM0EoMnPL_UcZmBYJk=nUAc9hG26EoKwyUd3gUGeCE_nBtTAFg@mail.gmail.com>
+Subject: Re: [PATCH net 4/6] net/sched: Prohibit regrafting ingress or clsact Qdiscs
 To: Peilin Ye <yepeilin.cs@gmail.com>
 Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
@@ -86,25 +85,25 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 On Fri, May 5, 2023 at 8:14=E2=80=AFPM Peilin Ye <yepeilin.cs@gmail.com> wr=
 ote:
 >
-> Currently it is possible to add e.g. an HTB Qdisc under ffff:fff1
-> (TC_H_INGRESS, TC_H_CLSACT):
+> Currently, after creating an ingress (or clsact) Qdisc and grafting it
+> under TC_H_INGRESS (TC_H_CLSACT), it is possible to graft it again under
+> e.g. a TBF Qdisc:
 >
->   $ ip link add name ifb0 type ifb
->   $ tc qdisc add dev ifb0 parent ffff:fff1 htb
+>   $ ip link add ifb0 type ifb
+>   $ tc qdisc add dev ifb0 handle 1: root tbf rate 20kbit buffer 1600 limi=
+t 3000
 >   $ tc qdisc add dev ifb0 clsact
->   Error: Exclusivity flag on, cannot modify.
->   $ drgn
->   ...
->   >>> ifb0 =3D netdev_get_by_name(prog, "ifb0")
->   >>> qdisc =3D ifb0.ingress_queue.qdisc_sleeping
->   >>> print(qdisc.ops.id.string_().decode())
->   htb
->   >>> qdisc.flags.value_() # TCQ_F_INGRESS
->   2
+>   $ tc qdisc link dev ifb0 handle ffff: parent 1:1
+>   $ tc qdisc show dev ifb0
+>   qdisc tbf 1: root refcnt 2 rate 20Kbit burst 1600b lat 560.0ms
+>   qdisc clsact ffff: parent ffff:fff1 refcnt 2
+>                                       ^^^^^^^^
 >
-> Only allow ingress and clsact Qdiscs under ffff:fff1.  Return -EINVAL
-> for everything else.  Make TCQ_F_INGRESS a static flag of ingress and
-> clsact Qdiscs.
+> clsact's refcount has increased: it is now grafted under both
+> TC_H_CLSACT and 1:1.
+>
+> ingress and clsact Qdiscs should only be used under TC_H_INGRESS
+> (TC_H_CLSACT).  Prohibit regrafting them.
 >
 > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 > Fixes: 1f211a1b929c ("net, sched: add clsact qdisc")
@@ -113,61 +112,33 @@ ote:
 Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-
 cheers,
 jamal
 
 > ---
->  net/sched/sch_api.c     | 7 ++++++-
->  net/sched/sch_ingress.c | 4 ++--
->  2 files changed, 8 insertions(+), 3 deletions(-)
+>  net/sched/sch_api.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 >
 > diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> index fdb8f429333d..383195955b7d 100644
+> index 383195955b7d..49b9c1bbfdd9 100644
 > --- a/net/sched/sch_api.c
 > +++ b/net/sched/sch_api.c
-> @@ -1252,7 +1252,12 @@ static struct Qdisc *qdisc_create(struct net_devic=
-e *dev,
->         sch->parent =3D parent;
->
->         if (handle =3D=3D TC_H_INGRESS) {
-> -               sch->flags |=3D TCQ_F_INGRESS;
-> +               if (!(sch->flags & TCQ_F_INGRESS)) {
-> +                       NL_SET_ERR_MSG(extack,
-> +                                      "Specified parent ID is reserved f=
-or ingress and clsact Qdiscs");
-> +                       err =3D -EINVAL;
-> +                       goto err_out3;
-> +               }
->                 handle =3D TC_H_MAKE(TC_H_INGRESS, 0);
->         } else {
->                 if (handle =3D=3D 0) {
-> diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
-> index 13218a1fe4a5..caea51e0d4e9 100644
-> --- a/net/sched/sch_ingress.c
-> +++ b/net/sched/sch_ingress.c
-> @@ -137,7 +137,7 @@ static struct Qdisc_ops ingress_qdisc_ops __read_most=
-ly =3D {
->         .cl_ops                 =3D       &ingress_class_ops,
->         .id                     =3D       "ingress",
->         .priv_size              =3D       sizeof(struct ingress_sched_dat=
-a),
-> -       .static_flags           =3D       TCQ_F_CPUSTATS,
-> +       .static_flags           =3D       TCQ_F_INGRESS | TCQ_F_CPUSTATS,
->         .init                   =3D       ingress_init,
->         .destroy                =3D       ingress_destroy,
->         .dump                   =3D       ingress_dump,
-> @@ -275,7 +275,7 @@ static struct Qdisc_ops clsact_qdisc_ops __read_mostl=
-y =3D {
->         .cl_ops                 =3D       &clsact_class_ops,
->         .id                     =3D       "clsact",
->         .priv_size              =3D       sizeof(struct clsact_sched_data=
-),
-> -       .static_flags           =3D       TCQ_F_CPUSTATS,
-> +       .static_flags           =3D       TCQ_F_INGRESS | TCQ_F_CPUSTATS,
->         .init                   =3D       clsact_init,
->         .destroy                =3D       clsact_destroy,
->         .dump                   =3D       ingress_dump,
+> @@ -1596,6 +1596,11 @@ static int tc_modify_qdisc(struct sk_buff *skb, st=
+ruct nlmsghdr *n,
+>                                         NL_SET_ERR_MSG(extack, "Invalid q=
+disc name");
+>                                         return -EINVAL;
+>                                 }
+> +                               if (q->flags & TCQ_F_INGRESS) {
+> +                                       NL_SET_ERR_MSG(extack,
+> +                                                      "Cannot regraft in=
+gress or clsact Qdiscs");
+> +                                       return -EINVAL;
+> +                               }
+>                                 if (q =3D=3D p ||
+>                                     (p && check_loop(q, p, 0))) {
+>                                         NL_SET_ERR_MSG(extack, "Qdisc par=
+ent/child loop detected");
 > --
 > 2.20.1
 >
