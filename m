@@ -1,143 +1,245 @@
-Return-Path: <netdev+bounces-978-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-979-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4DAC26FBAFD
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 00:24:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C29C16FBB09
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 00:28:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 217492810F5
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 22:24:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9581228112B
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 22:28:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66C25125D2;
-	Mon,  8 May 2023 22:24:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 79DC2125D9;
+	Mon,  8 May 2023 22:27:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56D72DDAA
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 22:24:29 +0000 (UTC)
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151BF5B92;
-	Mon,  8 May 2023 15:24:28 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id 5614622812f47-38e04d1b2b4so2648340b6e.3;
-        Mon, 08 May 2023 15:24:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683584667; x=1686176667;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=GqRriGRUbsesORv9FIQ/f84+f/Gs1+ORAutqa65QH14=;
-        b=E7+nTuciqBm47StC0rsNq9xDODx9s6mdK4NuOJ/+uuIxD//Be9a4lIbJnR7RQkdbZu
-         aQARlloe4sbIv0WX5Qw0sdIUOvp7mYMF7fkK49LCxW/0Xbs9NaEbFuz1NsceCos/yEmC
-         5sUQAG6pRmJ3vik+/gX6mQyECBzfc5FqVgR1ZAh/97pEfY1RKlVSo0KTxuMjRXiXYrRY
-         YZMxfBycAalaXenJ0YsenBUaiHN8MqcjzJgrOpdRx2DC0RleJm3mpFoz30RBcmShGNF/
-         7LOouncK3XsGdIUy0T9qQLdlCTC6dUOBGMq2q6tGKZxvGKNyYFHPqQnvMvCbBqo10+ny
-         mJlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683584667; x=1686176667;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GqRriGRUbsesORv9FIQ/f84+f/Gs1+ORAutqa65QH14=;
-        b=bIAYwHORojWWxqePtuQmaXGkI9hwcjf/OIL1Z5YXv17dLAC0xGLSZ4qsWMXxh7oCo4
-         GijHgmiGfub0YWchpmhJ+kVCL5KeufRc52Vdx/foZtaZhp0QB4Khn+3dbVFt7/oBEERu
-         +zkU9kno+YgnQtuDdTkE7pwBnaMemIsN3mcSrIch9sJlrqPhI7ueQHCyfxZrJnJnKPiu
-         yePu4L+Rsy9w1WeDn6UW5C2kbKZQTruSR2JRTCTewPA2OIcKh86/42RK3LwvXN4JCC7k
-         Y0qzy9WoDgXZg2bRyeymYkmMtsCHPbXkZQ3Jk7XwPXyJlMaojuhiUmP1kRfYxfcOPCC0
-         bEkA==
-X-Gm-Message-State: AC+VfDzMjZrAVafWS8jsXxpH8GzCEe7xr4GDkCPn2vu9iaQASak7IC+x
-	WEyplSa0A2k8D9RXZJy48g==
-X-Google-Smtp-Source: ACHHUZ5npzY/0UAHqyGJlzv2f0Br7mJ1G14p+7z9e/woQK/Nkn7sMQk5hflbkNdfWRrzmwgxxgxcYw==
-X-Received: by 2002:aca:220e:0:b0:384:3f55:ab96 with SMTP id b14-20020aca220e000000b003843f55ab96mr238988oic.25.1683584667276;
-        Mon, 08 May 2023 15:24:27 -0700 (PDT)
-Received: from C02FL77VMD6R ([208.184.112.130])
-        by smtp.gmail.com with ESMTPSA id bm13-20020a0568081a8d00b0038bffe1332dsm472529oib.57.2023.05.08.15.24.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 15:24:26 -0700 (PDT)
-Date: Mon, 8 May 2023 15:24:22 -0700
-From: Peilin Ye <yepeilin.cs@gmail.com>
-To: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
-	Peilin Ye <peilin.ye@bytedance.com>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Vlad Buslov <vladbu@mellanox.com>,
-	Pedro Tammela <pctammela@mojatatu.com>,
-	Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-	John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCH net 5/6] net/sched: Refactor qdisc_graft() for ingress
- and clsact Qdiscs
-Message-ID: <ZFl2ltqtVM5o8UpE@C02FL77VMD6R>
-References: <cover.1683326865.git.peilin.ye@bytedance.com>
- <1cd15c879d51e38f6b189d41553e67a8a1de0250.1683326865.git.peilin.ye@bytedance.com>
- <CAM0EoM=o862LdMEwmqpCSOFT=dMM8LhxgY3QUvpAow1rHSe7DA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 615EE1096B;
+	Mon,  8 May 2023 22:27:59 +0000 (UTC)
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2082.outbound.protection.outlook.com [40.107.243.82])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E4A65B6;
+	Mon,  8 May 2023 15:27:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SIwYvA27LJvXxOTWmfnrR6KR7tqZqK5Aqnm2z8gVAFECmIAyG4lKFQmHlq3ajyA3sPlbCuNWtb6qnsep+gf1sZNLF8F/yxEtIXEJrozFgkOU5wodFDsMIdcve4NHsmh18szlTY2EyVGdIbWSvPKtrjAJERVxKdToMJNELpgagcihOgr7VwdST65it5Lqbv39JuWZsdTGNAea9PUupVis8/d9911phRPNYRT3cb4YGUczMZhmIA1AS5cWaA51OAHscyTopnxLYhEYFGifIaeOGzBxJ2ouPUQSF6u34qWibOiHRAjDYN2QLv5shw0nRb0QrJj9b/feaubJUQOI4/H85w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2ennsg2hTxwS0jfu86YisJFXvSchiY6qPDX4BGx03KA=;
+ b=CdBjcJY/yRSawyCG+EXhyq3WBvnRfGHiHLXvhKmbBcjzvTPMqNEkYDUu3l3Gf/ySmvxpCpqPPcAcw7EtLgIK/SK/f0AvUMG4llnWGIRbaPZ9uh2pu0whujnHMcRO8a63H1dtInbWOv/XCzQ7JUSsAfaxwl01i64nn+4MMN4SV/47AzQeKcvKogQvpw0KoiHtJzWkvDehzSA+qXLb3JSKb0ZjRCVBxCjArmrJoN5w1+wUYBR+BqlQECs8DQdnKx+/asAaMVVS3o7T3g68bxR//ya7cPfkexC1wILPHHVxABMTOBluZonfTSvbLNPqTV2CSCXOe5KJwgyCIOj9ej+fDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=lists.linux-foundation.org
+ smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2ennsg2hTxwS0jfu86YisJFXvSchiY6qPDX4BGx03KA=;
+ b=bZTj5VOLk6wFuXF4UXj3uAZ+qwAABUkozECKIzzfCT59UHIAQ+aWVhVRhQGMZMS7ACabPzvwhr47yhINgs+Pv0YfSxw+sKhLqigozLGoSCOguJU3Xh5Zl5WOFB87tRWiYyvpKcahqNRagZYtD4tY1JwjGT+PWtIc+bjL97OxzXSWwA/4k+eIq25lqJbANSoCDi6Np5kzyjngqRegflMYI9XxkOoArtYDUbEMPre9dc85HqUpYQXPC0ZtHmSBTwuc+d+OtHmaEN4hKJvIeEagN5XavvPG2Kw8djOYfPTbSsk12DOMBwAansNEeFKCUt6E4tEF9QQHbY9Go64aB3bSEA==
+Received: from BYAPR06CA0057.namprd06.prod.outlook.com (2603:10b6:a03:14b::34)
+ by IA0PR12MB7724.namprd12.prod.outlook.com (2603:10b6:208:430::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Mon, 8 May
+ 2023 22:27:55 +0000
+Received: from CO1NAM11FT039.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:a03:14b:cafe::45) by BYAPR06CA0057.outlook.office365.com
+ (2603:10b6:a03:14b::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32 via Frontend
+ Transport; Mon, 8 May 2023 22:27:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT039.mail.protection.outlook.com (10.13.174.110) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6363.33 via Frontend Transport; Mon, 8 May 2023 22:27:53 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 8 May 2023
+ 15:27:38 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 8 May 2023
+ 15:27:38 -0700
+Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server id 15.2.986.37 via Frontend Transport; Mon, 8 May
+ 2023 15:27:36 -0700
+From: Feng Liu <feliu@nvidia.com>
+To: <virtualization@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
+CC: Jason Wang <jasowang@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Simon Horman
+	<simon.horman@corigine.com>, Bodong Wang <bodong@nvidia.com>, Feng Liu
+	<feliu@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH net v4] virtio_net: Fix error unwinding of XDP initialization
+Date: Mon, 8 May 2023 18:27:08 -0400
+Message-ID: <20230508222708.68281-1-feliu@nvidia.com>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAM0EoM=o862LdMEwmqpCSOFT=dMM8LhxgY3QUvpAow1rHSe7DA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT039:EE_|IA0PR12MB7724:EE_
+X-MS-Office365-Filtering-Correlation-Id: b3a7a9a5-a931-4c09-4a48-08db50137727
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	T93VVkd47M4xR6mxBNVfTMFogqGK210nbm2i6Qz+zyQPDQZT7MUexh/Po44zIvmfJBSh+Df9fasbmvlweM2xOC3AJfoTu0Ep0yKvFdXF8cxN4tuXByZqd8UU8nU3qow+uypVA4K81yTN4GNQB+7Ck/lRH8RtZGPceOXVPZNUHqZ9uhINRqcWQMqCBu2aLed93yfh/4El7HPIbDbCHGn06+k4zLmNxUssRIFSn4eWPK3FvxSzVvQv71C9+AePycZ8bf4yNgRlHSlF3vReO11n+BoZoVvf08nx+KC+oURWwx4kiYnV40M5TzbpWnD9V+EzW2MwoUmPDU363jpu7GmlBSMLYBO39BaDUDLxANLmSI/YU7A9IuooksMEYjBJ0upabc0wKXi2eAijCeALkAk97Drx4hBaaiR26dkPa9cwj2yHouYtVXyv6V46+blwBoDeAkwd2KssdiOsmrf/B8MR+lNEevG3D5hz6pQwEIjbjpZ5Bvl/ST7Ubi+m7FML/yRv8Q3pgAmVwVIsaEKKh+o3hs9R3l1NerKQGJnBrMbpHqOyEOCWRdP6Q2CdyzQ5hLvOVs45UOUKmuom9Obbc8HPFg3AD96h17oIttR9mKNBCIEeB8hxS668Zv8IpmxBii5hqxzSvvFPj0id/90YEhI4xa+4QpSIpPcJ4a6+3doM3B/v24FkphKr63BqDqw7EqZRdjtbbAQgiDrCcSDJNjgpNA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(136003)(346002)(376002)(451199021)(40470700004)(36840700001)(46966006)(36756003)(86362001)(316002)(4326008)(54906003)(7696005)(110136005)(70586007)(6666004)(70206006)(82310400005)(40480700001)(8676002)(5660300002)(478600001)(2906002)(82740400003)(8936002)(7636003)(356005)(41300700001)(36860700001)(186003)(2616005)(1076003)(26005)(107886003)(336012)(83380400001)(426003)(47076005)(40460700003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2023 22:27:53.5159
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3a7a9a5-a931-4c09-4a48-08db50137727
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT039.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7724
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 08, 2023 at 07:29:26AM -0400, Jamal Hadi Salim wrote:
-> On Fri, May 5, 2023 at 8:15 PM Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> >
-> > Grafting ingress and clsact Qdiscs does not need a for-loop in
-> > qdisc_graft().  Refactor it.  No functional changes intended.
-> 
-> This one i am not so sure;  num_q = 1 implies it will run on the for
-> loop only once. I am not sure it improves readability either. Anyways
-> for the effort you put into it i am tossing a coin and saying:
-> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+When initializing XDP in virtnet_open(), some rq xdp initialization
+may hit an error causing net device open failed. However, previous
+rqs have already initialized XDP and enabled NAPI, which is not the
+expected behavior. Need to roll back the previous rq initialization
+to avoid leaks in error unwinding of init code.
 
-Yeah, it doesn't make much difference itself.  I'm just afraid that,
-without [5/6], [6/6] would look like:
+Also extract helper functions of disable and enable queue pairs.
+Use newly introduced disable helper function in error unwinding and
+virtnet_close. Use enable helper function in virtnet_open.
 
-		for (i = 0; i < num_q; i++) {
-			if (!ingress) {
-				dev_queue = netdev_get_tx_queue(dev, i);
-				old = dev_graft_qdisc(dev_queue, new);
-			else {
-				old = dev_graft_qdisc(dev_queue, NULL);
-			}
+Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
+Signed-off-by: Feng Liu <feliu@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
 
-			if (new && i > 0)
-				qdisc_refcount_inc(new);
+v3 -> v4
+feedbacks from Jiri Pirko
+- Add symmetric helper function virtnet_enable_qp to enable queues.
+- Error handle:  cleanup current queue pair in virtnet_enable_qp,
+  and complete the reset queue pairs cleanup in virtnet_open.
+- Fix coding style.
+feedbacks from Parav Pandit
+- Remove redundant debug message and white space.
 
-			if (!ingress) {
-				qdisc_put(old);
-			} else {
-                                /* {ingress,clsact}_destroy() "old" before grafting "new" to avoid
-                                 * unprotected concurrent accesses to net_device::miniq_{in,e}gress
-                                 * pointer(s) in mini_qdisc_pair_swap().
-                                 */
-				qdisc_notify(net, skb, n, classid, old, new, extack);
-				qdisc_destroy(old);
-			}
+v2 -> v3
+feedbacks from Michael S. Tsirkin
+- Remove redundant comment.
 
-			if (ingress)
-				dev_graft_qdisc(dev_queue, new);
-		}
+v1 -> v2
+feedbacks from Michael S. Tsirkin
+- squash two patches together.
 
-The "!ingress" path doesn't share a single line with "ingress", which
-looks a bit weird to me.  Personally I'd like to keep [5/6].
+---
+ drivers/net/virtio_net.c | 58 ++++++++++++++++++++++++++++------------
+ 1 file changed, 41 insertions(+), 17 deletions(-)
 
-Thanks,
-Peilin Ye
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 8d8038538fc4..df7c08048fa7 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1868,6 +1868,38 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+ 	return received;
+ }
+ 
++static void virtnet_disable_qp(struct virtnet_info *vi, int qp_index)
++{
++	virtnet_napi_tx_disable(&vi->sq[qp_index].napi);
++	napi_disable(&vi->rq[qp_index].napi);
++	xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
++}
++
++static int virtnet_enable_qp(struct virtnet_info *vi, int qp_index)
++{
++	struct net_device *dev = vi->dev;
++	int err;
++
++	err = xdp_rxq_info_reg(&vi->rq[qp_index].xdp_rxq, dev, qp_index,
++			       vi->rq[qp_index].napi.napi_id);
++	if (err < 0)
++		return err;
++
++	err = xdp_rxq_info_reg_mem_model(&vi->rq[qp_index].xdp_rxq,
++					 MEM_TYPE_PAGE_SHARED, NULL);
++	if (err < 0)
++		goto err_xdp_reg_mem_model;
++
++	virtnet_napi_enable(vi->rq[qp_index].vq, &vi->rq[qp_index].napi);
++	virtnet_napi_tx_enable(vi, vi->sq[qp_index].vq, &vi->sq[qp_index].napi);
++
++	return 0;
++
++err_xdp_reg_mem_model:
++	xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
++	return err;
++}
++
+ static int virtnet_open(struct net_device *dev)
+ {
+ 	struct virtnet_info *vi = netdev_priv(dev);
+@@ -1881,22 +1913,17 @@ static int virtnet_open(struct net_device *dev)
+ 			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+ 				schedule_delayed_work(&vi->refill, 0);
+ 
+-		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, vi->rq[i].napi.napi_id);
++		err = virtnet_enable_qp(vi, i);
+ 		if (err < 0)
+-			return err;
+-
+-		err = xdp_rxq_info_reg_mem_model(&vi->rq[i].xdp_rxq,
+-						 MEM_TYPE_PAGE_SHARED, NULL);
+-		if (err < 0) {
+-			xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
+-			return err;
+-		}
+-
+-		virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
+-		virtnet_napi_tx_enable(vi, vi->sq[i].vq, &vi->sq[i].napi);
++			goto err_enable_qp;
+ 	}
+ 
+ 	return 0;
++
++err_enable_qp:
++	for (i--; i >= 0; i--)
++		virtnet_disable_qp(vi, i);
++	return err;
+ }
+ 
+ static int virtnet_poll_tx(struct napi_struct *napi, int budget)
+@@ -2305,11 +2332,8 @@ static int virtnet_close(struct net_device *dev)
+ 	/* Make sure refill_work doesn't re-enable napi! */
+ 	cancel_delayed_work_sync(&vi->refill);
+ 
+-	for (i = 0; i < vi->max_queue_pairs; i++) {
+-		virtnet_napi_tx_disable(&vi->sq[i].napi);
+-		napi_disable(&vi->rq[i].napi);
+-		xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
+-	}
++	for (i = 0; i < vi->max_queue_pairs; i++)
++		virtnet_disable_qp(vi, i);
+ 
+ 	return 0;
+ }
+-- 
+2.37.1 (Apple Git-137.1)
 
 
