@@ -1,103 +1,128 @@
-Return-Path: <netdev+bounces-845-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-846-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7A08F6FAD9B
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:36:11 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AE64C6FAFC2
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 14:17:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A773B1C2093C
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:36:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 87C81280EAD
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 12:17:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EEE1171B5;
-	Mon,  8 May 2023 11:35:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41A99171C0;
+	Mon,  8 May 2023 12:17:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44AD6171A8
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:35:59 +0000 (UTC)
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051353F559
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 04:35:40 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-965fc25f009so501051466b.3
-        for <netdev@vger.kernel.org>; Mon, 08 May 2023 04:35:39 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31453171AE
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 12:17:37 +0000 (UTC)
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7882E3D6
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 05:17:34 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-30796c0cbcaso892960f8f.1
+        for <netdev@vger.kernel.org>; Mon, 08 May 2023 05:17:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1683545698; x=1686137698;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=wi1WmwjZU1UDCM2ZKZeFH8D7vn1lt5dmnqHCt6P//eQ=;
-        b=LdJX/rsi2nKGEs1QqTI7dIviRwYApO3zup4qaPlc5iq1sfHtQTCAa2vaKAsjVCe7BK
-         T89MaWSlpfX1fsEshwxjJvocrTJORZalUQAOIc7444X1GExpNgyEr2YJC5rzWX3juwXd
-         wxdPd7jI8g7tsH+qNllynHypI26MeDVD6Ajus=
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1683548253; x=1686140253;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oPwugTUEtVq5Uj3H7DR5qqfTvvaV0QUu9h3q5nQeCX4=;
+        b=VVg+QTowSAgRtuHW8vb93EmhtYhqGVCX9BzBM6g61T94jqpBacMgF9b+tB7h+T8/lG
+         TfbShgF9dGpPk7qtZN9muE4EBalexkiiv3fXHkCQb2F8G50DECZlOHJVISvNt1jjOtIL
+         BCFhO48sGe9pP6W3rkDpEqLgV8wut+zPMsINaphirm+ieoTBmKEPJCcTbti+cuorrpUG
+         +pGdg4zeC/Rh9Iyx6/BGFDjlsLlgrzUdkoEUS1FtEWI352/Vdo7ltG8q/992ODusD7un
+         d5N49WjIbEEFo4RRL/zpeY4ef2m0m4oEu4Pgsa1N6Oi7wztMRx8p3NLzQxHXPfXnPYDs
+         UOBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683545698; x=1686137698;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20221208; t=1683548253; x=1686140253;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wi1WmwjZU1UDCM2ZKZeFH8D7vn1lt5dmnqHCt6P//eQ=;
-        b=CDoJ+WAEPQBnTJ4tStlazfbSDX3a11Nxso/7YeXH5ljJiAiUylMRHNiBsYdfpuTZ09
-         RRazRGA096QT/oEX3aG5RvKxS1INcp53paGDfvjbOddfPB48P9/RCQslZj3LdqmdUO0H
-         7dS7uIAnBbRr1VNXOhSeVFlDC8e4iZIa9rZWGZQ48UUTl6mvtOUkdGyC6iEHm4IlGx3p
-         KtkCxArlBxc20wjGMYBZt8R6P4GNo/3LK/bzWDnTcOrQxQoM5jmmC9zAYXs2ydsu7P6P
-         SL5fOxf5rqbHRQggzW5+fSDU5hBNAEwkXAPjYQn4X45ioA58jETPNBrU/JEqz4EgGh5E
-         dEjg==
-X-Gm-Message-State: AC+VfDyCq19zU5ZmA52MxvIOEF8+5ANIQSbE87Iz1B7UoynfYWlHRiXQ
-	5qPtEuZHUPkLeVifHRwa5km05Q==
-X-Google-Smtp-Source: ACHHUZ7iRk3h5jQ7vP75k8hsdLNZq7bI3KBsYDB9CygdAmVDAdEEtbMNc+LQqEWNbV2/56u+0332Ew==
-X-Received: by 2002:a17:907:2689:b0:961:272d:bda5 with SMTP id bn9-20020a170907268900b00961272dbda5mr8169437ejc.49.1683545698476;
-        Mon, 08 May 2023 04:34:58 -0700 (PDT)
-Received: from cloudflare.com (79.184.132.119.ipv4.supernova.orange.pl. [79.184.132.119])
-        by smtp.gmail.com with ESMTPSA id gz8-20020a170907a04800b009686a7dc71csm634403ejc.30.2023.05.08.04.34.57
+        bh=oPwugTUEtVq5Uj3H7DR5qqfTvvaV0QUu9h3q5nQeCX4=;
+        b=IBgFACXOnIj9vPtYncKuIrGn+fLE/gmUG/PmvZ6tq0AeJ0KBf/LGIl4BZWpSACgmL0
+         NRl9k/oncP1Xno90CambbGOYZeJdiW5X7visbx7Q09y0SXJp1bch9ue4Sz0DDH829IDZ
+         bXg0EMVyhUomyNZaMlPo7gLMKquUbUAaN0KJyMqODCjDvnuism56bANxJ2qOPY5W6e3P
+         sc6jCzRQjwRhIoHdUWd1MxD7zKgvX0kAQDYStecm/KaBZgamxHrh/jxmw+R+H39mHxkM
+         B2GwmK9CCV7EJurMSeH0IpmkEmtCCzGs2O2oi12vmCLsJ2dnm1F1CM6f6BuUR9Ll9Q2S
+         3fxg==
+X-Gm-Message-State: AC+VfDzjbxVVEwaUGOeYMLQ7xbVn25W+1aHleNEISwuOIhyeDBZYbKzN
+	lqJBXUbD2+hrJD0bKAr98VL9Fw==
+X-Google-Smtp-Source: ACHHUZ4E6ajP9+kyFa3qZr84KHy9kUfD8AcS49xwioZ0VY0cqr2mu/Czkz/SCfQdsmMB7lKFUi4czw==
+X-Received: by 2002:a5d:4749:0:b0:2f2:79ce:4836 with SMTP id o9-20020a5d4749000000b002f279ce4836mr7291868wrs.60.1683548252581;
+        Mon, 08 May 2023 05:17:32 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id z6-20020adff746000000b002f103ca90cdsm11181011wrp.101.2023.05.08.05.17.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 04:34:58 -0700 (PDT)
-References: <20230502155159.305437-1-john.fastabend@gmail.com>
- <20230502155159.305437-14-john.fastabend@gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From: Jakub Sitnicki <jakub@cloudflare.com>
-To: John Fastabend <john.fastabend@gmail.com>
-Cc: daniel@iogearbox.net, lmb@isovalent.com, edumazet@google.com,
- bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
- andrii@kernel.org, will@isovalent.com
-Subject: Re: [PATCH bpf v7 13/13] bpf: sockmap, test FIONREAD returns
- correct bytes in rx buffer with drops
-Date: Mon, 08 May 2023 13:34:27 +0200
-In-reply-to: <20230502155159.305437-14-john.fastabend@gmail.com>
-Message-ID: <87bkiv3vkv.fsf@cloudflare.com>
+        Mon, 08 May 2023 05:17:31 -0700 (PDT)
+Date: Mon, 8 May 2023 14:17:30 +0200
+From: Jiri Pirko <jiri@resnulli.us>
+To: Paolo Abeni <pabeni@redhat.com>
+Cc: Jakub Kicinski <kuba@kernel.org>,
+	"Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
+	Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+	Vadim Fedorenko <vadfed@meta.com>,
+	Jonathan Lemon <jonathan.lemon@gmail.com>, poros <poros@redhat.com>,
+	mschmidt <mschmidt@redhat.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+	"Olech, Milena" <milena.olech@intel.com>,
+	"Michalik, Michal" <michal.michalik@intel.com>
+Subject: Re: [PATCH RFC v6 2/6] dpll: Add DPLL framework base functions
+Message-ID: <ZFjoWn9+H932DdZ1@nanopsycho>
+References: <ZFITyWvVcqgRtN+Q@nanopsycho>
+ <20230503191643.12a6e559@kernel.org>
+ <ZFOQWmkBUtgVR06R@nanopsycho>
+ <20230504090401.597a7a61@kernel.org>
+ <ZFPwqu5W8NE6Luvk@nanopsycho>
+ <20230504114421.51415018@kernel.org>
+ <ZFTdR93aDa6FvY4w@nanopsycho>
+ <20230505083531.57966958@kernel.org>
+ <ZFdaDmPAKJHDoFvV@nanopsycho>
+ <d86ff1331a621bf3048123c24c22f49e9ecf0044.camel@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d86ff1331a621bf3048123c24c22f49e9ecf0044.camel@redhat.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 02, 2023 at 08:51 AM -07, John Fastabend wrote:
-> When BPF program drops pkts the sockmap logic 'eats' the packet and
-> updates copied_seq. In the PASS case where the sk_buff is accepted
-> we update copied_seq from recvmsg path so we need a new test to
-> handle the drop case.
+Mon, May 08, 2023 at 08:50:09AM CEST, pabeni@redhat.com wrote:
+>On Sun, 2023-05-07 at 09:58 +0200, Jiri Pirko wrote:
+>> Fri, May 05, 2023 at 05:35:31PM CEST, kuba@kernel.org wrote:
+>> > On Fri, 5 May 2023 12:41:11 +0200 Jiri Pirko wrote:
+>> > > 
+>> > Sound perfectly fine, if it's a front panel label, let's call 
+>> > the attribute DPLL_A_PIN_FRONT_PANEL_LABEL. If the pin is not
+>> > brought out to the front panel it will not have this attr.
+>> > For other type of labels we should have different attributes.
+>> 
+>> Hmm, that would kind of embed the pin type into attr which feels wrong.
 >
-> Original patch series broke this resulting in
->
-> test_sockmap_skb_verdict_fionread:PASS:ioctl(FIONREAD) error 0 nsec
-> test_sockmap_skb_verdict_fionread:FAIL:ioctl(FIONREAD) unexpected ioctl(FIONREAD): actual 1503041772 != expected 256
-> #176/17  sockmap_basic/sockmap skb_verdict fionread on drop:FAIL
->
-> After updated patch with fix.
->
-> #176/16  sockmap_basic/sockmap skb_verdict fionread:OK
-> #176/17  sockmap_basic/sockmap skb_verdict fionread on drop:OK
->
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
+>Looking at the above from a different angle, the
+>DPLL_A_PIN_FRONT_PANEL_LABEL attribute will be available only for
+>DPLL_PIN_TYPE_EXT type pins, which looks legit to me - possibly
+>renaming DPLL_A_PIN_FRONT_PANEL_LABEL as DPLL_A_PIN_EXT_LABEL.
 
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Well sure, in case there is no "label" attr for the rest of the types.
+Which I believe it is, for the ice implementation in this patchset.
+Otherwise, there is no way to distinguish between the pins.
+To have multiple attrs for label for multiple pin types does not make
+any sense to me, that was my point.
+
+
+>
+>Cheer,
+>
+>Paolo
+>
 
