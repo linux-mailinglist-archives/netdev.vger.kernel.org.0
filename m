@@ -1,163 +1,113 @@
-Return-Path: <netdev+bounces-841-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-842-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2A2306FACF4
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:29:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 65F386FAD0A
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:30:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 144871C2096A
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:29:55 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 984BC1C208F4
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:30:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 007BA168DC;
-	Mon,  8 May 2023 11:29:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F9FA168DF;
+	Mon,  8 May 2023 11:30:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3717171A5
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:29:54 +0000 (UTC)
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134B137868
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 04:29:39 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id 3f1490d57ef6-ba2362d4ea9so1574649276.3
-        for <netdev@vger.kernel.org>; Mon, 08 May 2023 04:29:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1683545377; x=1686137377;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Lf9xP+nKNZcWbJUD0fYGLuCSyrgF1CkVpqBfetT/SAU=;
-        b=E6dUadmg+Ly4O4sVQh47014bqUNwGP9dxF8kaL5813rMQVWgWpomZo7LK4lgo+hECb
-         X8bDFdqTn5yHRbBb3BDv7V/lZtaFQVFcPE2GNrwoKw3TA8VvoE9pZRsdn8QS0c6Ttl0K
-         +4gSUqnMiDEb+afvJ3UHrkcmOtGQcI9aXtUiVTH7o0vBDgkQfN2H0qT80TvcAUhrxyvo
-         z/AXJYe6goSRSsNoKCNqyyj8YaMBqfJCsGh7lWTOeI/nBUrbVGPKoVk5nw3bTiKnZYGk
-         ZDu5+YQZS1/IgGwZCxjZBXSsPb2jOipUVkQavGRMtGGNI0vpWgyeFmI8NgNpc4x+JxUT
-         Ry0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683545377; x=1686137377;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Lf9xP+nKNZcWbJUD0fYGLuCSyrgF1CkVpqBfetT/SAU=;
-        b=ZXFIYmFNxZpyyiVpCc0taAQPuT7tAtXMaKEW6/vNhwWSkIPV/czx0CltkVeKrMkzRg
-         unS1X7s8eIAECBr0NBcFofEkhLIz7QAfKfqWxazyJcob5ac7HURoNsyeTvgWD5NxzqBR
-         yZAwXFFPHLvp5yaiSfmpDRlJELT9h88TMTzMcQ5ZU7PYlKEFw1YRSxsIPNKiFI6Dp3xh
-         6G4s9IiAjk9aOnWIKeoWFBTNLv+NtG/JT4wCBVBtD3lPvU7o4lJfFm70Cf1O93vxLCIh
-         DA8nDzNhKJ7/9YDIK6jwO9q8rVLqljveRcOebw2YBabaJWmIDuz99pxZnZq8crAQ6BG5
-         RQhg==
-X-Gm-Message-State: AC+VfDyYiGBPfuwn33yTYPxgIYlWArAtXguKd0hoydwNIudWbJ05EiIj
-	yjl1qrNwL1NPKqFk65vWA6zuybIsztzR8N3A7L2kaQ==
-X-Google-Smtp-Source: ACHHUZ5xyZWRYekPbCi2C7w1p87Zm4tTv/KQ2mAxymaMTwuF8atX1+St0eMFDqFU5z3lqW7m1UNA77qNBooXreMpMA0=
-X-Received: by 2002:a25:ab62:0:b0:b94:bbf2:6d9d with SMTP id
- u89-20020a25ab62000000b00b94bbf26d9dmr11309852ybi.48.1683545377452; Mon, 08
- May 2023 04:29:37 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FA35171A7
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:30:22 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0EAC3E749
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 04:30:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683545420; x=1715081420;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kOFjoLDKLTPuBJQsFFuC9fwSNix/HAfdF2hTO22JBec=;
+  b=HZD3bhBlZkXJLYTd8CrGWQWLsDrT10vL8fAAvK5RzbfFvqYGQcolb6cs
+   HH3Sqbp9gZiJadqrMsckLeOrC+FCTdKo9kiNYaDUJUM3dvBDP70XZWB3M
+   qEuOtGxQkSitJcxXWyAm5wLcMnfbW5qKBj0vSiqwQvzOKuYhwyxzCIDQh
+   yGeWyKyN9V5zl6FpJAvEssOBDxv24QtYEP/0POr9RXSjgbnhMGj8+OAuB
+   IbMho7eh1bHpdgZRnnd4Kdcvv1l+DcxuT3m0eqBqeRCcQHMaoKs4fzco4
+   ZMFxcTgMw/kiOf8DBq8GRXoN5L8G5dOeFAeoAwHdXHgN+LxvRIDnjTkKY
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="329978424"
+X-IronPort-AV: E=Sophos;i="5.99,258,1677571200"; 
+   d="scan'208";a="329978424"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 04:30:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="1028380205"
+X-IronPort-AV: E=Sophos;i="5.99,258,1677571200"; 
+   d="scan'208";a="1028380205"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 04:30:14 -0700
+Date: Mon, 8 May 2023 13:30:04 +0200
+From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+	kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+	netdev@vger.kernel.org,
+	Sujai Buvaneswaran <Sujai.Buvaneswaran@intel.com>,
+	George Kuruvinakunnel <george.kuruvinakunnel@intel.com>,
+	Simon Horman <simon.horman@corigine.com>
+Subject: Re: [PATCH net] ice: block LAN in case of VF to VF offload
+Message-ID: <ZFjXiYdUR5hDwjEi@localhost.localdomain>
+References: <20230503153935.2372898-1-anthony.l.nguyen@intel.com>
+ <20230504074249.GQ525452@unreal>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1683326865.git.peilin.ye@bytedance.com> <1cd15c879d51e38f6b189d41553e67a8a1de0250.1683326865.git.peilin.ye@bytedance.com>
-In-Reply-To: <1cd15c879d51e38f6b189d41553e67a8a1de0250.1683326865.git.peilin.ye@bytedance.com>
-From: Jamal Hadi Salim <jhs@mojatatu.com>
-Date: Mon, 8 May 2023 07:29:26 -0400
-Message-ID: <CAM0EoM=o862LdMEwmqpCSOFT=dMM8LhxgY3QUvpAow1rHSe7DA@mail.gmail.com>
-Subject: Re: [PATCH net 5/6] net/sched: Refactor qdisc_graft() for ingress and
- clsact Qdiscs
-To: Peilin Ye <yepeilin.cs@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>, 
-	Peilin Ye <peilin.ye@bytedance.com>, Daniel Borkmann <daniel@iogearbox.net>, 
-	Vlad Buslov <vladbu@mellanox.com>, Pedro Tammela <pctammela@mojatatu.com>, 
-	Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Cong Wang <cong.wang@bytedance.com>, John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230504074249.GQ525452@unreal>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 5, 2023 at 8:15=E2=80=AFPM Peilin Ye <yepeilin.cs@gmail.com> wr=
-ote:
->
-> Grafting ingress and clsact Qdiscs does not need a for-loop in
-> qdisc_graft().  Refactor it.  No functional changes intended.
->
-> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+On Thu, May 04, 2023 at 10:42:49AM +0300, Leon Romanovsky wrote:
+> On Wed, May 03, 2023 at 08:39:35AM -0700, Tony Nguyen wrote:
+> > From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> > 
+> > VF to VF traffic shouldn't go outside. To enforce it, set only the loopback
+> > enable bit in case of all ingress type rules added via the tc tool.
+> > 
+> > Fixes: 0d08a441fb1a ("ice: ndo_setup_tc implementation for PF")
+> > Reported-by: Sujai Buvaneswaran <Sujai.Buvaneswaran@intel.com>
+> > Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> > Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> > ---
+> >  drivers/net/ethernet/intel/ice/ice_tc_lib.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+> > index 76f29a5bf8d7..d1a31f236d26 100644
+> > --- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+> > +++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+> > @@ -693,17 +693,18 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
+> >  	 * results into order of switch rule evaluation.
+> >  	 */
+> >  	rule_info.priority = 7;
+> > +	rule_info.flags_info.act_valid = true;
+> 
+> Do you still have path where rule_info.flags_info.act_valid = false?
+> 
 
-Fixed John's email address.
+Good point, I will check if it is still needed.
 
-This one i am not so sure;  num_q =3D 1 implies it will run on the for
-loop only once. I am not sure it improves readability either. Anyways
-for the effort you put into it i am tossing a coin and saying:
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Thanks
 
-cheers,
-jamal
-
-
->  net/sched/sch_api.c | 20 ++++++++++----------
->  1 file changed, 10 insertions(+), 10 deletions(-)
->
-> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> index 49b9c1bbfdd9..f72a581666a2 100644
-> --- a/net/sched/sch_api.c
-> +++ b/net/sched/sch_api.c
-> @@ -1073,12 +1073,12 @@ static int qdisc_graft(struct net_device *dev, st=
-ruct Qdisc *parent,
->
->         if (parent =3D=3D NULL) {
->                 unsigned int i, num_q, ingress;
-> +               struct netdev_queue *dev_queue;
->
->                 ingress =3D 0;
->                 num_q =3D dev->num_tx_queues;
->                 if ((q && q->flags & TCQ_F_INGRESS) ||
->                     (new && new->flags & TCQ_F_INGRESS)) {
-> -                       num_q =3D 1;
->                         ingress =3D 1;
->                         if (!dev_ingress_queue(dev)) {
->                                 NL_SET_ERR_MSG(extack, "Device does not h=
-ave an ingress queue");
-> @@ -1094,18 +1094,18 @@ static int qdisc_graft(struct net_device *dev, st=
-ruct Qdisc *parent,
->                 if (new && new->ops->attach && !ingress)
->                         goto skip;
->
-> -               for (i =3D 0; i < num_q; i++) {
-> -                       struct netdev_queue *dev_queue =3D dev_ingress_qu=
-eue(dev);
-> -
-> -                       if (!ingress)
-> +               if (!ingress) {
-> +                       for (i =3D 0; i < num_q; i++) {
->                                 dev_queue =3D netdev_get_tx_queue(dev, i)=
-;
-> +                               old =3D dev_graft_qdisc(dev_queue, new);
->
-> -                       old =3D dev_graft_qdisc(dev_queue, new);
-> -                       if (new && i > 0)
-> -                               qdisc_refcount_inc(new);
-> -
-> -                       if (!ingress)
-> +                               if (new && i > 0)
-> +                                       qdisc_refcount_inc(new);
->                                 qdisc_put(old);
-> +                       }
-> +               } else {
-> +                       dev_queue =3D dev_ingress_queue(dev);
-> +                       old =3D dev_graft_qdisc(dev_queue, new);
->                 }
->
->  skip:
-> --
-> 2.20.1
->
+> Thanks,
+> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 
