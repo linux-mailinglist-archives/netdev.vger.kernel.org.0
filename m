@@ -1,82 +1,60 @@
-Return-Path: <netdev+bounces-903-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-904-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4332B6FB4BE
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 18:08:59 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 346976FB4EE
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 18:21:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F3D8F280FE0
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 16:08:57 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 72971280FFB
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 16:21:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 059BE525D;
-	Mon,  8 May 2023 16:08:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 930CF5243;
+	Mon,  8 May 2023 16:21:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E57C153AF
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 16:08:19 +0000 (UTC)
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00384EE5;
-	Mon,  8 May 2023 09:08:18 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id 5614622812f47-38e12d973bfso2432763b6e.0;
-        Mon, 08 May 2023 09:08:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 837E44407
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 16:21:45 +0000 (UTC)
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7CCC7
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 09:21:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683562098; x=1686154098;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=69E6AsuuXwrvkEgAjEjrOIUSbBdHMkfJE23qGTOBaOk=;
-        b=hs4+MAQKI5VYFgAmWz5llsM2uWDPDVW6OUsybVZCf3Zi+7YciwPM2APztUHQYCf40U
-         j+1JhqRu8tCk5ba0XF4PHOgnGOeva9aUOu9J1W5hWYQ7wpG9JWhV+44y8L8UrTOO8lD3
-         RUIghfW+LpkbEmTudEwVxcowPUs7chAwf7V/EF4jY1fTd+7524n2R34v3Tbq56PaEbiu
-         1MhuJsH84mpDj9FkLouVNxyCfAqnOUIWTzSX0Ge8Tkt8uzeAkcUi+HTYiIE1vWskKSeO
-         FXme/X9TDATQ8Yh70UsFhUC2AtuRZgROrWTojMnHH8k85YHi3pyz3PjVsae3XJ3HoQe4
-         rvmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683562098; x=1686154098;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=69E6AsuuXwrvkEgAjEjrOIUSbBdHMkfJE23qGTOBaOk=;
-        b=PlhpPQJJme0GTkahAH90AVwG7mAxUW6/TMGcUH/A4ns1wUGQFXFbub4tSJ4qTGMNaM
-         cH/spLYzH3U+ivNwN3n860CyrcWQfRiDyWjNQE72uoazXZTIUAi+0KP7LIV2akvR5Ips
-         3OLhzeDYclB5dXvIetAaNtKnad3ymHcJrsmIKkQyCd8S/GBoQmL6K193HSGYo+H6exeR
-         k+CHVmpbX5lirQHvBtNQtmsxQGyMrVzh5awj2b/tVgX/rmGaI0hxEF5kMwfoNys+p4M4
-         XpKDb/vItbQiZk2E0ccg9hpF23tNSsnQaNF9JOTHINnddwfXmUnQ6D2xwrWCKPXuCugP
-         4A6Q==
-X-Gm-Message-State: AC+VfDxKcj7Mb6nD7iJhMujcquch+sGc9TSvAgyjlL4yZxlsrQil4JI/
-	oRkHAYrToFSiDnmtC8psupC10/orBwmeQA==
-X-Google-Smtp-Source: ACHHUZ5nWw1+Un0d1fFFclW/qIosdXnltPYdfkMiWgP+YdgC7q42WAolQMr83w62ebWBjF5I3yiq3Q==
-X-Received: by 2002:a54:488c:0:b0:38b:c4c3:b3ec with SMTP id r12-20020a54488c000000b0038bc4c3b3ecmr4882823oic.3.1683562098038;
-        Mon, 08 May 2023 09:08:18 -0700 (PDT)
-Received: from localhost.localdomain ([76.244.6.13])
-        by smtp.gmail.com with ESMTPSA id v206-20020aca61d7000000b0038c0a359e74sm136391oib.31.2023.05.08.09.08.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 09:08:17 -0700 (PDT)
-From: Chris Morgan <macroalpha82@gmail.com>
-To: devicetree@vger.kernel.org
-Cc: linux-rockchip@lists.infradead.org,
-	netdev@vger.kernel.org,
-	anarsoul@gmail.com,
-	alistair@alistair23.me,
-	heiko@sntech.de,
-	conor+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org,
-	robh+dt@kernel.org,
-	pabeni@redhat.com,
-	kuba@kernel.org,
-	edumazet@google.com,
-	davem@davemloft.net,
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: [PATCH 2/2] arm64: dts: rockchip: Fix compatible for Bluetooth
-Date: Mon,  8 May 2023 11:08:11 -0500
-Message-Id: <20230508160811.3568213-3-macroalpha82@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230508160811.3568213-1-macroalpha82@gmail.com>
-References: <20230508160811.3568213-1-macroalpha82@gmail.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1683562904; x=1715098904;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=k1z4OOx74l3aCJN8ArjLZbxEQspCM03d5mmKJsJBmM4=;
+  b=Dz3Xsakt2ErGvxyGQWUd0ufdC3po91DbywWBs5jv7sH0Kl2xxA/PqHjF
+   9JC6jt+B55plHvSN6DvLImjazBOwhaoaCZFYxkz5kdOEFWLrtg3e6woco
+   1escP36VfGsLjeG6PRYv3cq+meCkZb7+Nmt0WONfFxdwQb/k/ei19Jg6M
+   s=;
+X-IronPort-AV: E=Sophos;i="5.99,259,1677542400"; 
+   d="scan'208";a="329372252"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-b1c0e1d0.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 16:21:38 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+	by email-inbound-relay-pdx-2c-m6i4x-b1c0e1d0.us-west-2.amazon.com (Postfix) with ESMTPS id EE73680E12;
+	Mon,  8 May 2023 16:21:36 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 8 May 2023 16:21:36 +0000
+Received: from 88665a182662.ant.amazon.com (10.187.170.41) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 8 May 2023 16:21:34 +0000
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+To: <leon@kernel.org>
+CC: <netdev@vger.kernel.org>, <patryk.sondej@gmail.com>
+Subject: Re: [PATCH net] inet_diag: fix inet_diag_msg_attrs_fill() for net_cls cgroup
+Date: Mon, 8 May 2023 09:21:26 -0700
+Message-ID: <20230508162126.39146-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230508061749.GC6195@unreal>
+References: <20230508061749.GC6195@unreal>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -84,43 +62,79 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.187.170.41]
+X-ClientProxiedBy: EX19D040UWB001.ant.amazon.com (10.13.138.82) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+Precedence: Bulk
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+	T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Chris Morgan <macromorgan@hotmail.com>
+From: Leon Romanovsky <leon@kernel.org>
+Date: Mon, 8 May 2023 09:17:49 +0300
+> On Mon, May 08, 2023 at 05:32:33AM +0200, Patryk Sondej wrote:
+> > This commit fixes inet_diag_msg_attrs_fill() function in the ipv4/inet_diag.c file.
+> > The problem was that the function was using CONFIG_SOCK_CGROUP_DATA to check for the net_cls cgroup.
+> > However, the net_cls cgroup is defined by CONFIG_CGROUP_NET_CLASSID instead.
+> > 
+> > Therefore, this commit updates the #ifdef statement to CONFIG_CGROUP_NET_CLASSID,
+> > and uses the sock_cgroup_classid() function to retrieve the classid from the socket cgroup.
+> > 
+> > This change ensures that the function correctly retrieves the classid for the net_cls cgroup
+> > and fixes any issues related to the use of the function in this context.
+> > 
+> 
+> Please add Fixes line here.
+> 
+> > Signed-off-by: Patryk Sondej <patryk.sondej@gmail.com>
+> > ---
+> >  net/ipv4/inet_diag.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
+> > index b812eb36f0e3..7017f88911a6 100644
+> > --- a/net/ipv4/inet_diag.c
+> > +++ b/net/ipv4/inet_diag.c
+> > @@ -157,7 +157,7 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
+> >  	    ext & (1 << (INET_DIAG_TCLASS - 1))) {
+> >  		u32 classid = 0;
+> >  
+> > -#ifdef CONFIG_SOCK_CGROUP_DATA
+> > +#ifdef CONFIG_CGROUP_NET_CLASSID
+> 
+> This ifdef should be deleted as sock_cgroup_classid() already has right ifdef.
 
-The realtek Bluetooth module uses the same driver as the
-realtek,rtl8822cs-bt and the realtek,rtl8723bs-bt, however by selecting
-the 8723bs advanced power saving features are disabled that appear
-to interfere with normal operation of the bluetooth module. This
-change switches the compatible string to disable power saving. Without
-this patch evtest of a paired bluetooth controller fails, with this
-patch the controller operates as expected.
+sock_cgroup_classid() is defined under #ifdef CONFIG_SOCK_CGROUP_DATA,
+so removing this guard will cause an error at compile time if we
+disable CONFIG_SOCK_CGROUP_DATA.
 
-Fixes: b6986b7920bb ("arm64: dts: rockchip: Update compatible for bluetooth")
-Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I think we can keep the old #ifdef as is for consistensy with
+another CONFIG_SOCK_CGROUP_DATA use just below for sock_cgroup_ptr()
+in inet_diag_msg_attrs_fill().
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
-index 8fadd8afb190..ad43fa199ca5 100644
---- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
-@@ -716,7 +716,7 @@ &uart1 {
- 	status = "okay";
- 
- 	bluetooth {
--		compatible = "realtek,rtl8821cs-bt", "realtek,rtl8822cs-bt";
-+		compatible = "realtek,rtl8821cs-bt", "realtek,rtl8723bs-bt";
- 		device-wake-gpios = <&gpio4 4 GPIO_ACTIVE_HIGH>;
- 		enable-gpios = <&gpio4 3 GPIO_ACTIVE_HIGH>;
- 		host-wake-gpios = <&gpio4 5 GPIO_ACTIVE_HIGH>;
--- 
-2.34.1
+If we enable CONFIG_SOCK_CGROUP_DATA without CONFIG_CGROUP_NET_CLASSID,
+I guess gcc will optimize it and remove the zero assignment.
 
+
+> 
+>   809 static inline u32 sock_cgroup_classid(const struct sock_cgroup_data *skcd)
+>   810 {
+>   811 #ifdef CONFIG_CGROUP_NET_CLASSID
+>   812         return READ_ONCE(skcd->classid);
+>   813 #else
+>   814         return 0;
+>   815 #endif
+>   816 }
+>   817
+> 
+> 
+> >  		classid = sock_cgroup_classid(&sk->sk_cgrp_data);
+> >  #endif
+> >  		/* Fallback to socket priority if class id isn't set.
+> > -- 
+> > 2.37.1 (Apple Git-137.1)
 
