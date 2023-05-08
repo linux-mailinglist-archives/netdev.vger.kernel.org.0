@@ -1,154 +1,131 @@
-Return-Path: <netdev+bounces-781-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-782-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 698426F9E91
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 06:08:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3F7326F9F3A
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 07:51:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 221631C2091F
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 04:08:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6F7831C2094A
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 05:51:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B7DA13ACB;
-	Mon,  8 May 2023 04:08:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 08FC013AD9;
+	Mon,  8 May 2023 05:51:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79BED442B
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 04:08:44 +0000 (UTC)
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E501F6EB5;
-	Sun,  7 May 2023 21:08:42 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-50be0d835aaso7406430a12.3;
-        Sun, 07 May 2023 21:08:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683518921; x=1686110921;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=418lmDvsSwaR5hPOcnBAQZAbghEwqMzFRELtnuxfpVc=;
-        b=WM48MUrgQ8nDrO/xcJbziZYeEJIYKJ+lsqBG5g5X/M3QfyNsy8Zp0JnPxtCfngt9o4
-         mUXFB3keoT+bry4xcLN3YHZFV1qbfuK7R1SvymDYF6QNCR+ojbXKkQ1jq08YPmVpOkk9
-         7Nx5DtP3rWm1T0hpcw/e6M2A3squvqmwdDE51oDaXeXJWSZJCEMoFNIKU8Fkhw7uIUBk
-         3a+2cnpSTeuTw7HNLm3OEoYauDKYWea3CxCQecN9No7QPJgUnT51B2yO0RunQEAfnKlx
-         PDMAhI1h1pBIUYRStRuC99P7bfCzoeCspk6mZ0UZXl2/XPWadRpEThfj6GQs/83QMpIa
-         F4Xw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F21DB7E
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 05:51:46 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75623AD1F
+	for <netdev@vger.kernel.org>; Sun,  7 May 2023 22:51:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683525103;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=VLTbeT6jM0D3RVqr2zdpg7Y25T3gfeDdrcPX2lOqsbs=;
+	b=gYxcNL9kkn4qyu4RES3516HrgCUe0tPSpfE4mTrdMQGwNUxGr7sLChDVL2EZIOvyl/WXJ2
+	jhaiZS7t5DrDsK/2cuNN9FVH13kQkqN+7sF2Lq7qtey1+BKzH/rfLhNzPdDCDmobMDO2fz
+	KhsKsHQgRo6UVED15V72CRiVPlGF0ak=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-561-DyEVAQD0MxauoWItIS_TQw-1; Mon, 08 May 2023 01:51:40 -0400
+X-MC-Unique: DyEVAQD0MxauoWItIS_TQw-1
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-3f17352d605so3988185e9.0
+        for <netdev@vger.kernel.org>; Sun, 07 May 2023 22:51:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683518921; x=1686110921;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=418lmDvsSwaR5hPOcnBAQZAbghEwqMzFRELtnuxfpVc=;
-        b=Svw9l9fN9G25HkTmy70H45i5COdSuMG/pUTPfIUlUWE+zlxqKoJ/H20R33PvFCr2Ue
-         oQnfRKGrvQYJK8KnSzgJkkg9rJpBu7ueqYJi01ZvX8SulT2kDKVeYwQy1vOobYR0PajN
-         +XbILV4CbGCEnJkOhzHBRuMbUgOGNXkyVtM6MNXQ8aeQ0aebU1FF2af74ex+I8cNPp4x
-         dC2a0XkgvRvu5e1OZl0LEHVLpRXCUHAR4CYBiQUvuBIv7ZDZxdWQoY8Q7SoGqrBLBuHD
-         RYXtDGcKfZDqJfogUe15PfkAlxr3lEf1XVTA6BzRylkJ2axJ5UAUvMHGNbdc8yYqcF7P
-         1ivQ==
-X-Gm-Message-State: AC+VfDwKRTPtkCIAYGJ2eVoCku3YSrYSNJg9qHyXmPIv6+HUvNoe8qT8
-	MUrWVMCkt71CdhTkck4NQhv6tICaRSfKM7AblAE=
-X-Google-Smtp-Source: ACHHUZ4IPERXtNJef1vvKhMOH/D3B+M3LH79PgUudG1dBoi9d1doeo709yH83md5swCmQ/LygaVdGk3TZgPTcg9HZhk=
-X-Received: by 2002:aa7:ca57:0:b0:50c:1e2:4a42 with SMTP id
- j23-20020aa7ca57000000b0050c01e24a42mr7368607edt.15.1683518921019; Sun, 07
- May 2023 21:08:41 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683525099; x=1686117099;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VLTbeT6jM0D3RVqr2zdpg7Y25T3gfeDdrcPX2lOqsbs=;
+        b=SQqo3e3W5Gt7fdQybqMEKcxOqbhWFZPSIdTC7AC8Zb8PLrfe9lKsimtGfIQsVD4RUR
+         V7m+Ka86yocC2G+wtGryDJLkHKk/6CQMH/H5bpvltm4fDZ4g4mpzapapmN1nti6b0FYe
+         HZ8MycIxRvGiWSO1lc04cIc7MIA3sJQNw13kslIUaGkQL4pTqcjQej27RBBc8Ub2Kk1t
+         5lpRKdBiSdz6NBDVaKdETKO38j5SjXuga5n5YoyowKHySTzgwuc4+NVsaeN2XCIF0oyU
+         vIt/T2mesONUndIHJzVBj44Jc2JaQYUZp/TvNRIVoglK1pYhVvBPQ4m1gTVkMpUpeurk
+         2xvw==
+X-Gm-Message-State: AC+VfDzKZwStLC401+STFUTj1JGoBc7CRjZRO+CLVFbc9/XIX6qvO7eM
+	lSXQk615nDhzmrjZip6xKKqzo61wh727b6yHbMaDWUMua65te9CKssQaBCSw+uU8gpqvbRE1JH4
+	89dVJ8w6wHWoHDTdr
+X-Received: by 2002:a05:600c:6020:b0:3f4:2297:f263 with SMTP id az32-20020a05600c602000b003f42297f263mr2347840wmb.0.1683525099292;
+        Sun, 07 May 2023 22:51:39 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6EJJzFIVde559fQuvadWrh3eK1CRiflB/aYXJl0mZli70VE7/t+Atm1oTInJ/O0P9bIfEeIQ==
+X-Received: by 2002:a05:600c:6020:b0:3f4:2297:f263 with SMTP id az32-20020a05600c602000b003f42297f263mr2347831wmb.0.1683525098996;
+        Sun, 07 May 2023 22:51:38 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-244-175.dyn.eolo.it. [146.241.244.175])
+        by smtp.gmail.com with ESMTPSA id n22-20020a7bcbd6000000b003f41bb52834sm6097334wmi.38.2023.05.07.22.51.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 May 2023 22:51:38 -0700 (PDT)
+Message-ID: <1809df1d8507120dbca5c500ec00784478ec701f.camel@redhat.com>
+Subject: Re: [PATCH 0/5] Bug fixes for net/handshake
+From: Paolo Abeni <pabeni@redhat.com>
+To: Jakub Kicinski <kuba@kernel.org>, Chuck Lever <cel@kernel.org>
+Cc: kernel-tls-handshake@lists.linux.dev, netdev@vger.kernel.org, 
+	dan.carpenter@linaro.org
+Date: Mon, 08 May 2023 07:51:37 +0200
+In-Reply-To: <20230505164715.55a12c77@kernel.org>
+References: 
+	<168321371754.16695.4217960864733718685.stgit@oracle-102.nfsv4bat.org>
+	 <20230505133918.3c7257e8@kernel.org>
+	 <ZFWOWErJ6eR/RX/X@manet.1015granger.net>
+	 <20230505164715.55a12c77@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230505113315.3307723-1-liujian56@huawei.com> <20230505113315.3307723-3-liujian56@huawei.com>
-In-Reply-To: <20230505113315.3307723-3-liujian56@huawei.com>
-From: Jason Xing <kerneljasonxing@gmail.com>
-Date: Mon, 8 May 2023 12:08:04 +0800
-Message-ID: <CAL+tcoDY11sSO8_h1DKCWgAXOjQwM1JR5cx7cpmotWVj28m_fg@mail.gmail.com>
-Subject: Re: [PATCH 2/9] softirq: Use sched_clock() based timeout
-To: Liu Jian <liujian56@huawei.com>
-Cc: corbet@lwn.net, paulmck@kernel.org, frederic@kernel.org, 
-	quic_neeraju@quicinc.com, joel@joelfernandes.org, josh@joshtriplett.org, 
-	boqun.feng@gmail.com, rostedt@goodmis.org, mathieu.desnoyers@efficios.com, 
-	jiangshanlai@gmail.com, qiang1.zhang@intel.com, jstultz@google.com, 
-	tglx@linutronix.de, sboyd@kernel.org, davem@davemloft.net, 
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, peterz@infradead.org, 
-	frankwoo@google.com, Rhinewuwu@google.com, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, rcu@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 5, 2023 at 7:25=E2=80=AFPM Liu Jian <liujian56@huawei.com> wrot=
-e:
->
-> From: Peter Zijlstra <peterz@infradead.org>
->
-> Replace the jiffies based timeout with a sched_clock() based one.
->
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> Signed-off-by: Liu Jian <liujian56@huawei.com>
-> ---
->  kernel/softirq.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
->
-> diff --git a/kernel/softirq.c b/kernel/softirq.c
-> index bff5debf6ce6..59f16a9af5d1 100644
-> --- a/kernel/softirq.c
-> +++ b/kernel/softirq.c
-> @@ -27,6 +27,7 @@
->  #include <linux/tick.h>
->  #include <linux/irq.h>
->  #include <linux/wait_bit.h>
-> +#include <linux/sched/clock.h>
->
->  #include <asm/softirq_stack.h>
->
-> @@ -489,7 +490,7 @@ asmlinkage __visible void do_softirq(void)
->   * we want to handle softirqs as soon as possible, but they
->   * should not be able to lock up the box.
->   */
-> -#define MAX_SOFTIRQ_TIME  msecs_to_jiffies(2)
-> +#define MAX_SOFTIRQ_TIME       (2 * NSEC_PER_MSEC)
+On Fri, 2023-05-05 at 16:47 -0700, Jakub Kicinski wrote:
+> On Fri, 5 May 2023 19:16:40 -0400 Chuck Lever wrote:
+> > On Fri, May 05, 2023 at 01:39:18PM -0700, Jakub Kicinski wrote:
+> > > On Thu, 04 May 2023 11:24:12 -0400 Chuck Lever wrote: =20
+> > > > I plan to send these as part of a 6.4-rc PR. =20
+> > >=20
+> > > Can you elaborate?  You'll send us the same code as PR?
+> > > I'm about to send the first batch of fixes to Linus,
+> > > I was going to apply this series. =20
+> >=20
+> > Since I am listed as a maintainer/supporter of net/handshake, I
+> > assumed I can and should be sending changes through nfsd or some
+> > other repo I can commit to.
+> >=20
+> > netdev@ is also listed in MAINTAINERS, so I Cc'd you all on this
+> > series. I did not intend for you to be responsible for merging the
+> > series. We'll need to agree on a workflow going forward.
+>=20
+> Let me talk to DaveM and Paolo -- with NFS being the main user
+> taking it via your trees is likely fine. But if it's a generic TLS
+> handshake and other users will appear - netdev trees may be a more
+> natural central point :S DaveM and Paolo are more familiar with
+> existing cases of similar nature (rxrpc?)..
 
-I wonder if it affects those servers that set HZ to some different
-values rather than 1000 as default.
+Really, I' not ;)
 
-Thanks,
-Jason
+My guess is that net/handshake is going to be dependent more on core
+networking changes than anything else. If later developments will
+require/use/leverage a new core net helper, it would be quite straight-
+forward going trough the netdev trees. Otherwise such changes will
+require extra coordination and/or an additional RTT WRT kernel
+releases.
 
->  #define MAX_SOFTIRQ_RESTART 10
->
->  #ifdef CONFIG_TRACE_IRQFLAGS
-> @@ -527,9 +528,9 @@ static inline void lockdep_softirq_end(bool in_hardir=
-q) { }
->
->  asmlinkage __visible void __softirq_entry __do_softirq(void)
->  {
-> -       unsigned long end =3D jiffies + MAX_SOFTIRQ_TIME;
->         unsigned long old_flags =3D current->flags;
->         int max_restart =3D MAX_SOFTIRQ_RESTART;
-> +       u64 start =3D sched_clock();
->         struct softirq_action *h;
->         unsigned long pending;
->         unsigned int vec_nr;
-> @@ -584,7 +585,7 @@ asmlinkage __visible void __softirq_entry __do_softir=
-q(void)
->
->         pending =3D local_softirq_pending();
->         if (pending) {
-> -               if (time_before(jiffies, end) && !need_resched() &&
-> +               if (sched_clock() - start < MAX_SOFTIRQ_TIME && !need_res=
-ched() &&
->                     --max_restart)
->                         goto restart;
->
-> --
-> 2.34.1
->
->
+All the above very much IMHO ;)
+
+/P
+
 
