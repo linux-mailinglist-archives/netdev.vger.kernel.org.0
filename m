@@ -1,146 +1,115 @@
-Return-Path: <netdev+bounces-936-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-937-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BD0986FB6AE
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 21:18:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id ABBFA6FB6B0
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 21:19:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BC3EB1C209CA
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 19:18:40 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8370D281023
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 19:19:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B79B11190;
-	Mon,  8 May 2023 19:18:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A20011194;
+	Mon,  8 May 2023 19:19:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FCD3AD25
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 19:18:40 +0000 (UTC)
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A79749EB;
-	Mon,  8 May 2023 12:18:39 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-643846c006fso5255611b3a.0;
-        Mon, 08 May 2023 12:18:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683573518; x=1686165518;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WuCiNUgzLkxks+od5swaJeY0tSj1GrHtK2OX92t1PJI=;
-        b=qhm9A147IFWEKAtcVF8XCQrg6Mi+EaVdaVqLKWhmuhpW5DPLUzxEY+ZYDTmDDmKbSI
-         bwCR8EjcaIXaQ77zCv6S6qsPWQglt08XMC5TwKh+CGAmpt8uxhzitXH39OKPkbiwsSoS
-         XDJ+hDfj4VmnRRGK4V7oJPdGwjyVRQS4Uwiw/i+iOhxLBBqkPyeoopSR1Jh0Pgai2fGo
-         YPMbXuRe2c0vmpx54A9ER8UllgSHhq/Oa++a65kOcQrqJ6gdBH5MS0ZtM8VAsQPwvUoo
-         kiv7u5UyHcuCq6h2M2ftYHl+DXURGd4/nReVCzokJShhOHx/bP31QoFwGwB/4JJ3ej2C
-         RMNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683573518; x=1686165518;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WuCiNUgzLkxks+od5swaJeY0tSj1GrHtK2OX92t1PJI=;
-        b=DcSSavyrGsNrYfsFuXZVoMH0CO5WMP9MU39T2jaBuIKG3M5X9+v3+Qs0O3HAx6iJFS
-         zwoPl1j+wKlLDw1WnYNwSTFJnt2eDxAyWt5ys+/GqZgPEjoimakrkmRJkR0IfMpIU6L6
-         xIqE79moHMd2KmqY/LO7l6OhgABtsKDH9hyBHAvT27Ifm01r1p+AuN25CQFmYg5YNsY7
-         VhpXmyf3Gl/6b25SJoaCZa8hyzl4kHFTKfIPR7Lb4PXK0/Z0N2BuU6bzYcBe+jjLrYoM
-         2jmAUVW4fZR9lIYEhhifmAaOw6aA9xcRRlp6vgDyPS+cc+morQQkFH9B1u/bQcJfgPnC
-         gkbw==
-X-Gm-Message-State: AC+VfDwtIXh/GadgIHWpR4FnM1EaUtpcu/9vj8fsVV4FHLOmFEPRuvz8
-	3Bxt6PsCIAFqRi73YuRJmH8=
-X-Google-Smtp-Source: ACHHUZ5/Mjv7Qbc4Ov6aN4PgpeKsVyraOZcyncxpKcEStjS89OysYhOPpe3Ls4LIv9V873zLrduwRQ==
-X-Received: by 2002:a05:6a20:4312:b0:fd:e806:9c95 with SMTP id h18-20020a056a20431200b000fde8069c95mr14890280pzk.13.1683573518550;
-        Mon, 08 May 2023 12:18:38 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f13-20020aa782cd000000b0062e63cdfcb6sm319565pfn.94.2023.05.08.12.18.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 May 2023 12:18:37 -0700 (PDT)
-Message-ID: <7da02335-6c02-f9f8-5cdd-b9bf3734addb@gmail.com>
-Date: Mon, 8 May 2023 12:18:36 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEA5B2101
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 19:19:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A6A4C433EF;
+	Mon,  8 May 2023 19:19:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683573579;
+	bh=gXuIcArko6fN66zmSZm/MZ5axXHXd40gsdGwdOET9/w=;
+	h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+	b=sMAFIY3SkjmQsvMIVMxpKRbg3/UgByj6KNcyIXKipm9mFQ+IvJt3A1R362Njy/nCU
+	 vUUXV3dp63C9vLiik+3uoAelqnJkqgvdOFfpt7z1O/sORnk+fv5Vl0Ocl1h+c4Y0Qk
+	 1/yt7d0xw6AazZI5sgTX3H/G9T0nxncEgLz1qEcloPMo8XfAyYXtazJaOD0R6WW5Wm
+	 s9dH0/uGXWSurwAX/vgu5y4Fkxf5Qn/QNg8jqPAfDJh4ceEIwmpTRcXcy2HM3rtt+F
+	 7lzCLqDYoOoU3kC4vosSoGm7o1sF1BqGZhlb3+yo1WY1vpRVdaxnWIoquutsOE+uXA
+	 Mn/isP3rt3bjg==
+From: Kalle Valo <kvalo@kernel.org>
+To: "Arnd Bergmann" <arnd@arndb.de>
+Cc: "Arnd Bergmann" <arnd@kernel.org>,  Netdev <netdev@vger.kernel.org>,  linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wireless: ath: work around false-positive stringop-overread warning
+References: <20230417205447.1800912-1-arnd@kernel.org>
+	<87ttwnnrer.fsf@kernel.org>
+	<504c5a7d-0bfd-4b1e-a7f0-65d072657e0a@app.fastmail.com>
+	<87mt2eoopo.fsf@kernel.org>
+	<c7f88295-2e22-4100-b9c8-feb380b64359@app.fastmail.com>
+Date: Mon, 08 May 2023 22:19:35 +0300
+In-Reply-To: <c7f88295-2e22-4100-b9c8-feb380b64359@app.fastmail.com> (Arnd
+	Bergmann's message of "Mon, 08 May 2023 17:07:49 +0200")
+Message-ID: <87ild2ocl4.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next 1/3] net: phy: Let drivers check Wake-on-LAN
- status
-Content-Language: en-US
-To: Florian Fainelli <florian.fainelli@broadcom.com>,
- Andrew Lunn <andrew@lunn.ch>
-Cc: netdev@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Heiner Kallweit <hkallweit1@gmail.com>, Russell King
- <linux@armlinux.org.uk>, =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
- Peter Geis <pgwipeout@gmail.com>, Frank <Frank.Sae@motor-comm.com>,
- open list <linux-kernel@vger.kernel.org>
-References: <20230508184309.1628108-1-f.fainelli@gmail.com>
- <20230508184309.1628108-2-f.fainelli@gmail.com>
- <a4a76d54-c264-4ed8-8784-93ea392615e8@lunn.ch>
- <00ef2d9e-2c30-9f13-f702-f692ce0baee9@broadcom.com>
-From: Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <00ef2d9e-2c30-9f13-f702-f692ce0baee9@broadcom.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain
 
-On 5/8/23 12:17, Florian Fainelli wrote:
-> On 5/8/23 12:02, Andrew Lunn wrote:
->> On Mon, May 08, 2023 at 11:43:07AM -0700, Florian Fainelli wrote:
->>> A few PHY drivers are currently attempting to not suspend the PHY when
->>> Wake-on-LAN is enabled, however that code is not currently executing at
->>> all due to an early check in phy_suspend().
+"Arnd Bergmann" <arnd@arndb.de> writes:
+
+> On Mon, May 8, 2023, at 16:57, Kalle Valo wrote:
+>> "Arnd Bergmann" <arnd@arndb.de> writes:
 >>>
->>> This prevents PHY drivers from making an appropriate decisions and put
->>> the hardware into a low power state if desired.
->>>
->>> In order to allow the PHY framework to always call into the PHY driver's
->>> ->suspend routine whether Wake-on-LAN is enabled or not, provide a
->>> phydev::wol_enabled boolean that tracks whether the PHY or the attached
->>> MAC has Wake-on-LAN enabled.
->>>
->>> If phydev::wol_enabled then the PHY shall not prevent its own
->>> Wake-on-LAN detection logic from working and shall not prevent the
->>> Ethernet MAC from receiving packets for matching.
+>>> I uploaded gcc-13.1.0 binaries last week, but still need to
+>>> update the html page, so it's not yet linked. You can navigate
+>>> the directories from the gcc-12 builds.
 >>
->> Hi Florian
+>> Thanks! I was able to find the build[1] but having an issue:
 >>
->> Did you look at using late_suspend for this? Then there would not be
->> any need to change all these drivers which are happy as they are.
-> 
-> I did not know its existence until you mentioned it, this would require 
-> plumbing all the way from the MDIO bus driver down to the PHY driver 
-> level, which could be done, but for a single driver? The way Linux 
-> suspends devices currently, and the fact that the interrupt is driven 
-> level low, it does not give much room if at all for missing the 
-> interrupt AFAICT.
+>> $ ./x86_64-linux-gcc -v
+>> ./x86_64-linux-gcc: /lib/x86_64-linux-gnu/libc.so.6: version 
+>> `GLIBC_2.35' not found (required by ./x86_64-linux-gcc)
+>> ./x86_64-linux-gcc: /lib/x86_64-linux-gnu/libc.so.6: version 
+>> `GLIBC_2.32' not found (required by ./x86_64-linux-gcc)
+>> ./x86_64-linux-gcc: /lib/x86_64-linux-gnu/libc.so.6: version 
+>> `GLIBC_2.33' not found (required by ./x86_64-linux-gcc)
+>> ./x86_64-linux-gcc: /lib/x86_64-linux-gnu/libc.so.6: version 
+>> `GLIBC_2.36' not found (required by ./x86_64-linux-gcc)
+>> ./x86_64-linux-gcc: /lib/x86_64-linux-gnu/libc.so.6: version 
+>> `GLIBC_2.34' not found (required by ./x86_64-linux-gcc)
+>>
+>> With older GCC versions from your page I don't have this problem. I'm
+>> using Debian 10 still so so is my libc too old?
+>
+> (dropping most Cc)
+>
+> Indeed, thanks for the report, I forgot about that issue. I used
+> to build the cross toolchains in an old Ubuntu 16.04 chroot to avoid
+> that issue, and I linked all other dependencies statically.
+>
+> The gcc-13.1.0 builds are the first ones I did on an arm64 machine,
+> so I had to create a new build environment and started out with
+> just my normal Debian testing rootfs, which caused me enough issues
+> to figure out first.
+>
+> I had previously experimented with linking statically against
+> musl to avoid all other dependencies, but that ended up with
+> slower binaries because the default memory allocator in musl
+> doesn't work that well for gcc, and I never quite figured out
+> how to pick a different memory allocator, or which one to use.
+>
+> I should probably just pick an older Debian release that is new
+> enough to contain cross compilers for arm64 and x86 and then
+> set up the same kind of chroot I had in before.
 
-I suppose that a middle ground could be to introduce a specific callback 
-or flag that says: please call my suspend routine and I will do what's 
-necessary.
+Thanks! I really should update to Debian 11 but I have been lazy :) But
+I doubt that would have helped either as it looks like it has libc6
+v2.31:
 
-> 
-> phy_suspend() is called both from the system suspend path, but also 
-> whenever the PHY is unused, and this is a nice property because we do 
-> not really need to differentiate these paths usually, that includes 
-> Wake-on-LAN.
-> 
-> Besides there are drivers like drivers/net/phy/at803x.c that wish to 
-> isolate the PHY if WoL is enabled and which are currently not doing it 
-> because this never gets called.
+https://packages.debian.org/bullseye/libc6
+
+I'm disappointed glibc creates so uncompatible binaries, feels like they
+don't create about backwards compatibility :/
 
 -- 
-Florian
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
