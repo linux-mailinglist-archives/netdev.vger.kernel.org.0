@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-859-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-860-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 55AE56FB076
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 14:44:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 895CA6FB079
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 14:45:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 892341C20931
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 12:44:46 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BC7321C20959
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 12:45:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DACD91361;
-	Mon,  8 May 2023 12:43:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 099D264C;
+	Mon,  8 May 2023 12:43:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF27F64C
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 12:43:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F28E52101
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 12:43:42 +0000 (UTC)
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759C6CD
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 05:43:38 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D1F189
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 05:43:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683549818; x=1715085818;
+  t=1683549821; x=1715085821;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BYW5caIgZsAlLtAz8Ne9RMJJZcK7bPH4B33fbg5LZhI=;
-  b=nq2AvhAc/9GjKdkXRMZD0uiLig5HToCj4py/QJeixIy2tihE7J+g2jl1
-   84vTrGEgnEFH6+WEaSj/2xrQRqrINbdpoTC+CHc2yu32nbNUgXVkltpY+
-   prs68Cbo+yvGfTYmkQnYU9/bfMMbIW8+AnpObL+NjPXx34poSZp3sbx2B
-   Tfy2DcDn+hCFIOCR1aQqR2wEvrccvj4ULQ18ngRhkinyi17PEaICeCi71
-   v9Bn4cpQ+Af/K22cOQEW4E9Av3YqwVsX5ZnS4dJKyi8Q8yOgp5lc4HDGS
-   HpUnpJHzCuPz1X5KLmUJdC2c1Knu17X1NTriArxhxqZ1Va8QWO4inpGfV
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="349665117"
+  bh=VjvNPRUdD7+iSKh2NjhsTZyHwwdJ2EbA/+SnXQbem0M=;
+  b=DEYMobXQ7xyUJnOCJhhwvtB4BrcxDzvurCpPfYibTU62iuTatNYxjAfe
+   HSGeFsdnIZ0FQhYhTyfjRlPZQ2f0jysLNn8a+cnWoXt+amhWOPa307DWM
+   d7464SqfS2+7U6bCEZr8aHBETY/iXqZPhInVqYH7Y2aMgFCPsXq6ivWH/
+   WagGHwiiZZTYL4MyLCwf/0a5XrNx7hMe6mKYTaAJRHCFWXCzl5ORj6l7W
+   ai/k+gU02XHQfmQLCwNielDJmpSYjTTHmv+VuWst7Cw/77L763t0CUo63
+   yjlC0Z4XhzS6oh/3Eq7vrgRMICk1X+rDNddWLG6IHaJzdGZ680xdOTECt
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="349665135"
 X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
-   d="scan'208";a="349665117"
+   d="scan'208";a="349665135"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 05:43:38 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 05:43:41 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="676047954"
+X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="676047973"
 X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
-   d="scan'208";a="676047954"
+   d="scan'208";a="676047973"
 Received: from nimitz.igk.intel.com ([10.102.21.231])
-  by orsmga006.jf.intel.com with ESMTP; 08 May 2023 05:43:35 -0700
+  by orsmga006.jf.intel.com with ESMTP; 08 May 2023 05:43:38 -0700
 From: Piotr Raczynski <piotr.raczynski@intel.com>
 To: intel-wired-lan@osuosl.org
 Cc: netdev@vger.kernel.org,
@@ -57,10 +57,11 @@ Cc: netdev@vger.kernel.org,
 	lukasz.czapnik@intel.com,
 	simon.horman@corigine.com,
 	Piotr Raczynski <piotr.raczynski@intel.com>,
+	Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
 	Rafal Romanowski <rafal.romanowski@intel.com>
-Subject: [PATCH net-next v4 4/8] ice: refactor VF control VSI interrupt handling
-Date: Mon,  8 May 2023 14:43:17 +0200
-Message-Id: <20230508124321.2927867-5-piotr.raczynski@intel.com>
+Subject: [PATCH net-next v4 5/8] ice: remove redundant SRIOV code
+Date: Mon,  8 May 2023 14:43:18 +0200
+Message-Id: <20230508124321.2927867-6-piotr.raczynski@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230508124321.2927867-1-piotr.raczynski@intel.com>
 References: <20230508124321.2927867-1-piotr.raczynski@intel.com>
@@ -78,194 +79,94 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-All VF contrl VSIs share the same interrupt vector. Currently, a helper
-function dedicated for that directly sets ice_vsi::base_vector.
+Remove redundant code from ice_get_max_valid_res_idx that has no effect.
+ice_pf::irq_tracker is initialized during driver probe, there is no reason
+to check it again. Also it is not possible for pf::sriov_base_vector to be
+lower than the tracker length, remove WARN_ON that will never happen.
 
-Use helper that returns pointer to first found VF control VSI instead.
+Get rid of ice_get_max_valid_res_idx helper function completely since it
+can never return negative value.
 
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
 Signed-off-by: Piotr Raczynski <piotr.raczynski@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c    | 76 ++++-----------------
- drivers/net/ethernet/intel/ice/ice_vf_lib.c | 32 +++++++++
- drivers/net/ethernet/intel/ice/ice_vf_lib.h |  7 ++
- 3 files changed, 52 insertions(+), 63 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_sriov.c | 36 ----------------------
+ 1 file changed, 36 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 1d9f3aa06b10..779fb72d0557 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -1473,36 +1473,6 @@ ice_get_res(struct ice_pf *pf, struct ice_res_tracker *res, u16 needed, u16 id)
- 	return ice_search_res(res, needed, id);
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index bb123ca92b64..43f5aa0edaa7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -135,18 +135,9 @@ static void ice_dis_vf_mappings(struct ice_vf *vf)
+  */
+ static int ice_sriov_free_msix_res(struct ice_pf *pf)
+ {
+-	struct ice_res_tracker *res;
+-
+ 	if (!pf)
+ 		return -EINVAL;
+ 
+-	res = pf->irq_tracker;
+-	if (!res)
+-		return -EINVAL;
+-
+-	/* give back irq_tracker resources used */
+-	WARN_ON(pf->sriov_base_vector < res->num_entries);
+-
+ 	pf->sriov_base_vector = 0;
+ 
+ 	return 0;
+@@ -409,29 +400,6 @@ int ice_calc_vf_reg_idx(struct ice_vf *vf, struct ice_q_vector *q_vector)
+ 		q_vector->v_idx + 1;
  }
  
 -/**
-- * ice_get_vf_ctrl_res - Get VF control VSI resource
-- * @pf: pointer to the PF structure
-- * @vsi: the VSI to allocate a resource for
+- * ice_get_max_valid_res_idx - Get the max valid resource index
+- * @res: pointer to the resource to find the max valid index for
 - *
-- * Look up whether another VF has already allocated the control VSI resource.
-- * If so, re-use this resource so that we share it among all VFs.
-- *
-- * Otherwise, allocate the resource and return it.
+- * Start from the end of the ice_res_tracker and return right when we find the
+- * first res->list entry with the ICE_RES_VALID_BIT set. This function is only
+- * valid for SR-IOV because it is the only consumer that manipulates the
+- * res->end and this is always called when res->end is set to res->num_entries.
 - */
--static int ice_get_vf_ctrl_res(struct ice_pf *pf, struct ice_vsi *vsi)
+-static int ice_get_max_valid_res_idx(struct ice_res_tracker *res)
 -{
--	struct ice_vf *vf;
--	unsigned int bkt;
--	int base;
+-	int i;
 -
--	rcu_read_lock();
--	ice_for_each_vf_rcu(pf, bkt, vf) {
--		if (vf != vsi->vf && vf->ctrl_vsi_idx != ICE_NO_VSI) {
--			base = pf->vsi[vf->ctrl_vsi_idx]->base_vector;
--			rcu_read_unlock();
--			return base;
--		}
--	}
--	rcu_read_unlock();
+-	if (!res)
+-		return -EINVAL;
 -
--	return ice_get_res(pf, pf->irq_tracker, vsi->num_q_vectors,
--			   ICE_RES_VF_CTRL_VEC_ID);
+-	for (i = res->num_entries - 1; i >= 0; i--)
+-		if (res->list[i] & ICE_RES_VALID_BIT)
+-			return i;
+-
+-	return 0;
 -}
 -
  /**
-  * ice_vsi_setup_vector_base - Set up the base vector for the given VSI
-  * @vsi: ptr to the VSI
-@@ -1536,7 +1506,14 @@ static int ice_vsi_setup_vector_base(struct ice_vsi *vsi)
- 	num_q_vectors = vsi->num_q_vectors;
- 	/* reserve slots from OS requested IRQs */
- 	if (vsi->type == ICE_VSI_CTRL && vsi->vf) {
--		base = ice_get_vf_ctrl_res(pf, vsi);
-+		struct ice_vsi *ctrl_vsi = ice_get_vf_ctrl_vsi(pf, vsi);
-+
-+		if (ctrl_vsi)
-+			base = ctrl_vsi->base_vector;
-+		else
-+			base = ice_get_res(pf, pf->irq_tracker,
-+					   vsi->num_q_vectors,
-+					   ICE_RES_VF_CTRL_VEC_ID);
- 	} else {
- 		base = ice_get_res(pf, pf->irq_tracker, num_q_vectors,
- 				   vsi->idx);
-@@ -2611,37 +2588,6 @@ static void ice_set_agg_vsi(struct ice_vsi *vsi)
- 		vsi->agg_node->num_vsis);
- }
+  * ice_sriov_set_msix_res - Set any used MSIX resources
+  * @pf: pointer to PF structure
+@@ -490,7 +458,6 @@ static int ice_sriov_set_msix_res(struct ice_pf *pf, u16 num_msix_needed)
+  */
+ static int ice_set_per_vf_res(struct ice_pf *pf, u16 num_vfs)
+ {
+-	int max_valid_res_idx = ice_get_max_valid_res_idx(pf->irq_tracker);
+ 	u16 num_msix_per_vf, num_txq, num_rxq, avail_qs;
+ 	int msix_avail_per_vf, msix_avail_for_sriov;
+ 	struct device *dev = ice_pf_to_dev(pf);
+@@ -501,9 +468,6 @@ static int ice_set_per_vf_res(struct ice_pf *pf, u16 num_vfs)
+ 	if (!num_vfs)
+ 		return -EINVAL;
  
--/**
-- * ice_free_vf_ctrl_res - Free the VF control VSI resource
-- * @pf: pointer to PF structure
-- * @vsi: the VSI to free resources for
-- *
-- * Check if the VF control VSI resource is still in use. If no VF is using it
-- * any more, release the VSI resource. Otherwise, leave it to be cleaned up
-- * once no other VF uses it.
-- */
--static void ice_free_vf_ctrl_res(struct ice_pf *pf,  struct ice_vsi *vsi)
--{
--	struct ice_vf *vf;
--	unsigned int bkt;
+-	if (max_valid_res_idx < 0)
+-		return -ENOSPC;
 -
--	rcu_read_lock();
--	ice_for_each_vf_rcu(pf, bkt, vf) {
--		if (vf != vsi->vf && vf->ctrl_vsi_idx != ICE_NO_VSI) {
--			rcu_read_unlock();
--			return;
--		}
--	}
--	rcu_read_unlock();
--
--	/* No other VFs left that have control VSI. It is now safe to reclaim
--	 * SW interrupts back to the common pool.
--	 */
--	ice_free_res(pf->irq_tracker, vsi->base_vector,
--		     ICE_RES_VF_CTRL_VEC_ID);
--	pf->num_avail_sw_msix += vsi->num_q_vectors;
--}
--
- static int ice_vsi_cfg_tc_lan(struct ice_pf *pf, struct ice_vsi *vsi)
- {
- 	u16 max_txqs[ICE_MAX_TRAFFIC_CLASS] = { 0 };
-@@ -2921,7 +2867,11 @@ void ice_vsi_decfg(struct ice_vsi *vsi)
- 	 * cleared in the same manner.
- 	 */
- 	if (vsi->type == ICE_VSI_CTRL && vsi->vf) {
--		ice_free_vf_ctrl_res(pf, vsi);
-+		struct ice_vsi *ctrl_vsi = ice_get_vf_ctrl_vsi(pf, vsi);
-+
-+		if (!ctrl_vsi)
-+			ice_free_res(pf->irq_tracker, vsi->base_vector,
-+				     ICE_RES_VF_CTRL_VEC_ID);
- 	} else if (vsi->type != ICE_VSI_VF) {
- 		/* reclaim SW interrupts back to the common pool */
- 		ice_free_res(pf->irq_tracker, vsi->base_vector, vsi->idx);
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index 44fc3229c919..b26ce4425f45 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -1326,3 +1326,35 @@ void ice_vf_set_initialized(struct ice_vf *vf)
- 	set_bit(ICE_VF_STATE_INIT, vf->vf_states);
- 	memset(&vf->vlan_v2_caps, 0, sizeof(vf->vlan_v2_caps));
- }
-+
-+/**
-+ * ice_get_vf_ctrl_vsi - Get first VF control VSI pointer
-+ * @pf: the PF private structure
-+ * @vsi: pointer to the VSI
-+ *
-+ * Return first found VF control VSI other than the vsi
-+ * passed by parameter. This function is used to determine
-+ * whether new resources have to be allocated for control VSI
-+ * or they can be shared with existing one.
-+ *
-+ * Return found VF control VSI pointer other itself. Return
-+ * NULL Otherwise.
-+ *
-+ */
-+struct ice_vsi *ice_get_vf_ctrl_vsi(struct ice_pf *pf, struct ice_vsi *vsi)
-+{
-+	struct ice_vsi *ctrl_vsi = NULL;
-+	struct ice_vf *vf;
-+	unsigned int bkt;
-+
-+	rcu_read_lock();
-+	ice_for_each_vf_rcu(pf, bkt, vf) {
-+		if (vf != vsi->vf && vf->ctrl_vsi_idx != ICE_NO_VSI) {
-+			ctrl_vsi = pf->vsi[vf->ctrl_vsi_idx];
-+			break;
-+		}
-+	}
-+
-+	rcu_read_unlock();
-+	return ctrl_vsi;
-+}
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.h b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-index a38ef00a3679..67172fdd9bc2 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-@@ -227,6 +227,7 @@ int
- ice_vf_clear_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m);
- int ice_reset_vf(struct ice_vf *vf, u32 flags);
- void ice_reset_all_vfs(struct ice_pf *pf);
-+struct ice_vsi *ice_get_vf_ctrl_vsi(struct ice_pf *pf, struct ice_vsi *vsi);
- #else /* CONFIG_PCI_IOV */
- static inline struct ice_vf *ice_get_vf_by_id(struct ice_pf *pf, u16 vf_id)
- {
-@@ -291,6 +292,12 @@ static inline int ice_reset_vf(struct ice_vf *vf, u32 flags)
- static inline void ice_reset_all_vfs(struct ice_pf *pf)
- {
- }
-+
-+static inline struct ice_vsi *
-+ice_get_vf_ctrl_vsi(struct ice_pf *pf, struct ice_vsi *vsi)
-+{
-+	return NULL;
-+}
- #endif /* !CONFIG_PCI_IOV */
- 
- #endif /* _ICE_VF_LIB_H_ */
+ 	/* determine MSI-X resources per VF */
+ 	msix_avail_for_sriov = pf->hw.func_caps.common_cap.num_msix_vectors -
+ 		pf->irq_tracker->num_entries;
 -- 
 2.38.1
 
