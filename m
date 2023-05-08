@@ -1,156 +1,117 @@
-Return-Path: <netdev+bounces-770-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-771-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 830F66F9D96
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 04:04:02 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id CD1196F9D9D
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 04:08:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E4503280E95
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 02:04:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B69671C2093F
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 02:08:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 988BA125BB;
-	Mon,  8 May 2023 02:03:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2DE6F125BA;
+	Mon,  8 May 2023 02:08:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85F0423A4
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 02:03:58 +0000 (UTC)
-Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F2F14926;
-	Sun,  7 May 2023 19:03:55 -0700 (PDT)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Vhyt-XW_1683511431;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vhyt-XW_1683511431)
-          by smtp.aliyun-inc.com;
-          Mon, 08 May 2023 10:03:52 +0800
-Message-ID: <1683511319.099806-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH] virtio_net: set default mtu to 1500 when 'Device maximum MTU' bigger than 1500
-Date: Mon, 8 May 2023 10:01:59 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: huangml@yusur.tech,
- zy@yusur.tech,
- Jason Wang <jasowang@redhat.com>,
- "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>,
- "open list:VIRTIO CORE AND NET DRIVERS" <virtualization@lists.linux-foundation.org>,
- "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>,
- Hao Chen <chenh@yusur.tech>, <hengqi@linux.alibaba.com>
-References: <20230506021529.396812-1-chenh@yusur.tech>
- <1683341417.0965195-4-xuanzhuo@linux.alibaba.com>
- <07b6b325-9a15-222f-e618-d149b57cbac2@yusur.tech>
- <20230507045627-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230507045627-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
-	USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BD5E33FF
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 02:08:03 +0000 (UTC)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D3C1724
+	for <netdev@vger.kernel.org>; Sun,  7 May 2023 19:08:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683511681; x=1715047681;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/+cvxz6Nch2t/awpzL90DYmlQpD53kXD3rzf6rWXKls=;
+  b=aETshEJE0fNaEj9xtPaJhq+nSQBsLlYbF7Jmfsz+0VLwp/q425drX7ho
+   6iUv7IVoekJFchoLCqjmG5fJVxad+GP1MB450dDyvO9s3l9K1JFvXHqsy
+   ih66Jql2g7ZgJSZ48jHbcRzgN+6bEeyQ7rg0dWw+YNZDDt+bTra7V2HbM
+   Sg2SILpvjaoSgXZHeqa1HYfufgZdaq4B9t5Vog+0MjrRxIP3xWHPdUwx+
+   5XkflnyzooKwg3lcTAHZiWiz75iAMKHeTLpDvu2gflSwLhF2+j72nhl/h
+   blJA7DlwCN5YuSXSSVh0HLB8tnOZlK0/4Zn8tSTyzfQO21ltr3X+P8eix
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="348362358"
+X-IronPort-AV: E=Sophos;i="5.99,258,1677571200"; 
+   d="scan'208";a="348362358"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2023 19:08:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="728880984"
+X-IronPort-AV: E=Sophos;i="5.99,258,1677571200"; 
+   d="scan'208";a="728880984"
+Received: from b49691a74c54.jf.intel.com ([10.45.76.121])
+  by orsmga008.jf.intel.com with ESMTP; 07 May 2023 19:08:01 -0700
+From: Cathy Zhang <cathy.zhang@intel.com>
+To: edumazet@google.com,
+	davem@davemloft.net,
+	kuba@kernel.org,
+	pabeni@redhat.com
+Cc: jesse.brandeburg@intel.com,
+	suresh.srinivas@intel.com,
+	tim.c.chen@intel.com,
+	lizhen.you@intel.com,
+	cathy.zhang@intel.com,
+	eric.dumazet@gmail.com,
+	netdev@vger.kernel.org
+Subject: [PATCH net-next 0/2] net: fix memcg overhead caused by sk->sk_forward_alloc size
+Date: Sun,  7 May 2023 19:07:59 -0700
+Message-Id: <20230508020801.10702-1-cathy.zhang@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Sun, 7 May 2023 04:58:58 -0400, "Michael S. Tsirkin" <mst@redhat.com> wr=
-ote:
-> On Sat, May 06, 2023 at 04:56:35PM +0800, Hao Chen wrote:
-> >
-> >
-> > =E5=9C=A8 2023/5/6 10:50, Xuan Zhuo =E5=86=99=E9=81=93:
-> > > On Sat,  6 May 2023 10:15:29 +0800, Hao Chen <chenh@yusur.tech> wrote:
-> > > > When VIRTIO_NET_F_MTU(3) Device maximum MTU reporting is supported.
-> > > > If offered by the device, device advises driver about the value of =
-its
-> > > > maximum MTU. If negotiated, the driver uses mtu as the maximum
-> > > > MTU value. But there the driver also uses it as default mtu,
-> > > > some devices may have a maximum MTU greater than 1500, this may
-> > > > cause some large packages to be discarded,
-> > >
-> > > You mean tx packet?
-> > Yes.
-> > >
-> > > If yes, I do not think this is the problem of driver.
-> > >
-> > > Maybe you should give more details about the discard.
-> > >
-> > In the current code, if the maximum MTU supported by the virtio net har=
-dware
-> > is 9000, the default MTU of the virtio net driver will also be set to 9=
-000.
-> > When sending packets through "ping -s 5000", if the peer router does not
-> > support negotiating a path MTU through ICMP packets, the packets will be
-> > discarded. If the peer router supports negotiating path mtu through ICMP
-> > packets, the host side will perform packet sharding processing based on=
- the
-> > negotiated path mtu, which is generally within 1500.
-> > This is not a bugfix patch, I think setting the default mtu to within 1=
-500
-> > would be more suitable here.Thanks.
->
-> I don't think VIRTIO_NET_F_MTU is appropriate for support for jumbo packe=
-ts.
-> The spec says:
-> 	The device MUST forward transmitted packets of up to mtu (plus low level=
- ethernet header length) size with
-> 	gso_type NONE or ECN, and do so without fragmentation, after VIRTIO_NET_=
-F_MTU has been success-
-> 	fully negotiated.
-> VIRTIO_NET_F_MTU has been designed for all kind of tunneling devices,
-> and this is why we set mtu to max by default.
->
-> For things like jumbo frames where MTU might or might not be available,
-> a new feature would be more appropriate.
+Dear Reviewers,
+
+memcg charge overhead is observed while we benchmark memcached with
+memtier by running containers. It's caused by commit 4890b686f408 ("net:
+Keep sk->sk_forward_alloc as small as possible"), which aims to reduce
+system memory pressure, but makes the per-socket forward allocated
+memory too small. The impact of this change is to trigger more
+frequently memory allocation during TCP connection lifecycle and leads
+to memcg charge overhead finally.
+
+To avoid memcg charge overhead mentioned above, this series defines 64KB
+as reclaim threshold when uncharging per-socket memory. It reduces the
+frequency of memory allocation and charging during TCP connection, and
+it's much less than the original 2MB per-socket reserved memory before
+commit 4890b686f408 ("net: keep sk->sk_forward_alloc as small as
+possibile"). Run memcached/memtier test with the 64KB reclaim threshold,
+RPS gains around 2.07x.
+
+This series also provides a new ABI /proc/sys/net/core/reclaim_threshold
+with flexibility to tune the reclaim threshold according to system
+running status.
+
+This series is based on the latest net-next/main tree.
+
+Thanks for your time to help review and your feedback will be greatly!
+
+Cathy Zhang (2):
+  net: Keep sk->sk_forward_alloc as a proper size
+  net: Add sysctl_reclaim_threshold
+
+ Documentation/admin-guide/sysctl/net.rst | 12 +++++++++
+ include/net/sock.h                       | 32 +++++++++++++++++++++++-
+ net/core/sysctl_net_core.c               | 14 +++++++++++
+ 3 files changed, 57 insertions(+), 1 deletion(-)
 
 
-So for jumbo frame, what is the problem?
+base-commit: ed23734c23d2fc1e6a1ff80f8c2b82faeed0ed0c
+2.34.1
 
-We are trying to do this. @Heng
-
-Thanks.
-
-
->
-> > > > so I changed the MTU to a more
-> > > > general 1500 when 'Device maximum MTU' bigger than 1500.
-> > > >
-> > > > Signed-off-by: Hao Chen <chenh@yusur.tech>
-> > > > ---
-> > > >   drivers/net/virtio_net.c | 5 ++++-
-> > > >   1 file changed, 4 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index 8d8038538fc4..e71c7d1b5f29 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -4040,7 +4040,10 @@ static int virtnet_probe(struct virtio_devic=
-e *vdev)
-> > > >   			goto free;
-> > > >   		}
-> > > >
-> > > > -		dev->mtu =3D mtu;
-> > > > +		if (mtu > 1500)
-> > >
-> > > s/1500/ETH_DATA_LEN/
-> > >
-> > > Thanks.
-> > >
-> > > > +			dev->mtu =3D 1500;
-> > > > +		else
-> > > > +			dev->mtu =3D mtu;
-> > > >   		dev->max_mtu =3D mtu;
-> > > >   	}
-> > > >
-> > > > --
-> > > > 2.27.0
-> > > >
->
 
