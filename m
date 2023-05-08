@@ -1,32 +1,32 @@
-Return-Path: <netdev+bounces-827-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-829-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3C8EE6FA3C8
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:51:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 85CC96FA67D
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 12:20:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B876E280E2E
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 09:51:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B1A5D280EA5
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 10:20:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D3D91168C1;
-	Mon,  8 May 2023 09:51:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0BBE4168CB;
+	Mon,  8 May 2023 10:20:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A11B168B4;
-	Mon,  8 May 2023 09:51:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 592E5C433D2;
-	Mon,  8 May 2023 09:51:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA9913AF4;
+	Mon,  8 May 2023 10:19:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0762C433A4;
+	Mon,  8 May 2023 10:19:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1683539500;
-	bh=/dyHnap5ThVp6AJ2w5d29jVjTl5RYzetKIeb806g4Nw=;
+	s=korg; t=1683541198;
+	bh=KEYmPHkdF5d1KydR2orFpQyLJN/+EbxSGOXudCSrJCk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=LdXon21B5GqcAKMEKhVYw49XMnlpLTtqwxPRoEocLDQEc18S3f0uCOETA3VdG+ftS
-	 miDSJNzd6mTC3VvmChieDorv203aPbcXbG0PjBI72eqqG3CmT6fLte7vkfdPu6EIBn
-	 l8wMRNLGVmDWLXi+36YUypGXyAdDrkJBIOcSeieE=
+	b=w7oDuKWmXZfKMDPUn6a3ngrzyvmc1gvSnArQiGIOm/y8aEWjgP32Bkf60YMMH6bGK
+	 g4MeVQk5Un6f1uMY4pIkRsQygyjbcCBBQ0E2uoSnxxdgNQ9I8ith4fXxoeHDqU8R5X
+	 rxpWr4Uxcc7voecBKvR/l7Ev77+hX+Ih0NHY4vn0=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: stable@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -47,12 +47,12 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Paolo Abeni <pabeni@redhat.com>,
 	netdev@vger.kernel.org,
 	Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 6.1 009/611] net: wwan: t7xx: do not compile with -Werror
-Date: Mon,  8 May 2023 11:37:31 +0200
-Message-Id: <20230508094421.920043459@linuxfoundation.org>
+Subject: [PATCH 6.2 009/663] net: wwan: t7xx: do not compile with -Werror
+Date: Mon,  8 May 2023 11:37:15 +0200
+Message-Id: <20230508094428.700454686@linuxfoundation.org>
 X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230508094421.513073170@linuxfoundation.org>
-References: <20230508094421.513073170@linuxfoundation.org>
+In-Reply-To: <20230508094428.384831245@linuxfoundation.org>
+References: <20230508094428.384831245@linuxfoundation.org>
 User-Agent: quilt/0.67
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -105,7 +105,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 deletions(-)
 
 diff --git a/drivers/net/wwan/t7xx/Makefile b/drivers/net/wwan/t7xx/Makefile
-index dc6a7d682c159..5e6398b527e72 100644
+index 268ff9e87e5b3..2652cd00504e6 100644
 --- a/drivers/net/wwan/t7xx/Makefile
 +++ b/drivers/net/wwan/t7xx/Makefile
 @@ -1,7 +1,5 @@
