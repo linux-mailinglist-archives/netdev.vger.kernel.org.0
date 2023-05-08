@@ -1,255 +1,189 @@
-Return-Path: <netdev+bounces-768-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-769-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7C6776F9D6B
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 03:33:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E3CCE6F9D85
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 03:48:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 91F33280EB4
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 01:33:01 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4DCF8280EB2
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 01:48:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 382A5125B1;
-	Mon,  8 May 2023 01:32:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CD289125B9;
+	Mon,  8 May 2023 01:48:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FBC72584
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 01:32:58 +0000 (UTC)
-Received: from mail-m127104.qiye.163.com (mail-m127104.qiye.163.com [115.236.127.104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2E66A6B;
-	Sun,  7 May 2023 18:32:56 -0700 (PDT)
-Received: from [0.0.0.0] (unknown [172.96.223.238])
-	by mail-m127104.qiye.163.com (Hmail) with ESMTPA id 48260A401F6;
-	Mon,  8 May 2023 09:32:44 +0800 (CST)
-Message-ID: <19f9a9bb-7164-dca0-1aff-da4a46b0ee74@sangfor.com.cn>
-Date: Mon, 8 May 2023 09:32:40 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8CCF15D1;
+	Mon,  8 May 2023 01:48:18 +0000 (UTC)
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EDD26BD;
+	Sun,  7 May 2023 18:48:15 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vhymz9._1683510491;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vhymz9._1683510491)
+          by smtp.aliyun-inc.com;
+          Mon, 08 May 2023 09:48:12 +0800
+Message-ID: <1683510351.569717-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net v3] virtio_net: Fix error unwinding of XDP initialization
+Date: Mon, 8 May 2023 09:45:51 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To: Feng Liu <feliu@nvidia.com>
+Cc: Jason Wang <jasowang@redhat.com>,
+ "Michael S . Tsirkin" <mst@redhat.com>,
+ Simon Horman <simon.horman@corigine.com>,
+ Bodong Wang <bodong@nvidia.com>,
+ William Tu <witu@nvidia.com>,
+ Parav Pandit <parav@nvidia.com>,
+ virtualization@lists.linux-foundation.org,
+ netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ bpf@vger.kernel.org
+References: <20230503003525.48590-1-feliu@nvidia.com>
+ <1683340417.612963-3-xuanzhuo@linux.alibaba.com>
+ <559ad341-2278-5fad-6805-c7f632e9894e@nvidia.com>
+In-Reply-To: <559ad341-2278-5fad-6805-c7f632e9894e@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [RFC PATCH] SUNRPC: Fix UAF in svc_tcp_listen_data_ready()
-Content-Language: en-US
-To: Chuck Lever III <chuck.lever@oracle.com>
-Cc: "jlayton@kernel.org" <jlayton@kernel.org>,
- "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
- "anna@kernel.org" <anna@kernel.org>,
- "davem@davemloft.net" <davem@davemloft.net>,
- "edumazet@google.com" <edumazet@google.com>,
- "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
- <pabeni@redhat.com>, Bruce Fields <bfields@redhat.com>,
- Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20230507091131.23540-1-dinghui@sangfor.com.cn>
- <EED05302-8BC6-4593-B798-BFC476FA190E@oracle.com>
-From: Ding Hui <dinghui@sangfor.com.cn>
-In-Reply-To: <EED05302-8BC6-4593-B798-BFC476FA190E@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkaH0IZVksYHhhCTUxKTUkYHVUTARMWGhIXJBQOD1
-	lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkxVSktLVUtZBg++
-X-HM-Tid: 0a87f8fd6c23b282kuuu48260a401f6
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NFE6Lww5AT0RQjAwAU4ZPAoa
-	TDwaFCNVSlVKTUNITktCTkxKTUhPVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-	QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFDT0xPNwY+
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-On 2023/5/7 23:26, Chuck Lever III wrote:
-> 
-> 
->> On May 7, 2023, at 5:11 AM, Ding Hui <dinghui@sangfor.com.cn> wrote:
->>
->> After the listener svc_sock freed, and before invoking svc_tcp_accept()
->> for the established child sock, there is a window that the newsock
->> retaining a freed listener svc_sock in sk_user_data which cloning from
->> parent. In the race windows if data is received on the newsock, we will
->> observe use-after-free report in svc_tcp_listen_data_ready().
-> 
-> My thought is that not calling sk_odata() for the newsock
-> could potentially result in missing a data_ready event,
-> resulting in a hung client on that socket.
-> 
+On Sat, 6 May 2023 08:08:02 -0400, Feng Liu <feliu@nvidia.com> wrote:
+>
+>
+> On 2023-05-05 p.m.10:33, Xuan Zhuo wrote:
+> > External email: Use caution opening links or attachments
+> >
+> >
+> > On Tue, 2 May 2023 20:35:25 -0400, Feng Liu <feliu@nvidia.com> wrote:
+> >> When initializing XDP in virtnet_open(), some rq xdp initialization
+> >> may hit an error causing net device open failed. However, previous
+> >> rqs have already initialized XDP and enabled NAPI, which is not the
+> >> expected behavior. Need to roll back the previous rq initialization
+> >> to avoid leaks in error unwinding of init code.
+> >>
+> >> Also extract a helper function of disable queue pairs, and use newly
+> >> introduced helper function in error unwinding and virtnet_close;
+> >>
+> >> Issue: 3383038
+> >> Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
+> >> Signed-off-by: Feng Liu <feliu@nvidia.com>
+> >> Reviewed-by: William Tu <witu@nvidia.com>
+> >> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> >> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> >> Acked-by: Michael S. Tsirkin <mst@redhat.com>
+> >> Change-Id: Ib4c6a97cb7b837cfa484c593dd43a435c47ea68f
+> >> ---
+> >>   drivers/net/virtio_net.c | 30 ++++++++++++++++++++----------
+> >>   1 file changed, 20 insertions(+), 10 deletions(-)
+> >>
+> >> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> >> index 8d8038538fc4..3737cf120cb7 100644
+> >> --- a/drivers/net/virtio_net.c
+> >> +++ b/drivers/net/virtio_net.c
+> >> @@ -1868,6 +1868,13 @@ static int virtnet_poll(struct napi_struct *nap=
+i, int budget)
+> >>        return received;
+> >>   }
+> >>
+> >> +static void virtnet_disable_qp(struct virtnet_info *vi, int qp_index)
+> >> +{
+> >> +     virtnet_napi_tx_disable(&vi->sq[qp_index].napi);
+> >> +     napi_disable(&vi->rq[qp_index].napi);
+> >> +     xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
+> >> +}
+> >> +
+> >>   static int virtnet_open(struct net_device *dev)
+> >>   {
+> >>        struct virtnet_info *vi =3D netdev_priv(dev);
+> >> @@ -1883,20 +1890,26 @@ static int virtnet_open(struct net_device *dev)
+> >>
+> >>                err =3D xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, vi=
+->rq[i].napi.napi_id);
+> >>                if (err < 0)
+> >> -                     return err;
+> >> +                     goto err_xdp_info_reg;
+> >>
+> >>                err =3D xdp_rxq_info_reg_mem_model(&vi->rq[i].xdp_rxq,
+> >>                                                 MEM_TYPE_PAGE_SHARED, =
+NULL);
+> >> -             if (err < 0) {
+> >> -                     xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
+> >> -                     return err;
+> >> -             }
+> >> +             if (err < 0)
+> >> +                     goto err_xdp_reg_mem_model;
+> >>
+> >>                virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
+> >>                virtnet_napi_tx_enable(vi, vi->sq[i].vq, &vi->sq[i].nap=
+i);
+> >>        }
+> >>
+> >>        return 0;
+> >> +
+> >> +err_xdp_reg_mem_model:
+> >> +     xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
+> >> +err_xdp_info_reg:
+> >> +     for (i =3D i - 1; i >=3D 0; i--)
+> >> +             virtnet_disable_qp(vi, i);
+> >
+> >
+> > I would to know should we handle for these:
+> >
+> >          disable_delayed_refill(vi);
+> >          cancel_delayed_work_sync(&vi->refill);
+> >
+> >
+> > Maybe we should call virtnet_close() with "i" directly.
+> >
+> > Thanks.
+> >
+> >
+> Can=E2=80=99t use i directly here, because if xdp_rxq_info_reg fails, nap=
+i has
+> not been enabled for current qp yet, I should roll back from the queue
+> pairs where napi was enabled before(i--), otherwise it will hang at napi
+> disable api
 
-I checked the vmcore, found that sk_odata points to sock_def_readable(),
-and the sk_wq of newsock is NULL, which be assigned by sk_clone_lock()
-unconditionally.
+This is not the point, the key is whether we should handle with:
 
-Calling sk_odata() for the newsock maybe do not wake up any sleepers.
+          disable_delayed_refill(vi);
+          cancel_delayed_work_sync(&vi->refill);
 
-> IMO the preferred approach is to ensure that svsk is always
-> safe to dereference in tcp_listen_data_ready. I haven't yet
-> thought carefully about how to do that.
-> 
+Thanks.
 
-Agree, but I don't have a good way for now.
 
-> 
->> Reproduce by two tasks:
->>
->> 1. while :; do rpc.nfsd 0 ; rpc.nfsd; done
->> 2. while :; do echo "" | ncat -4 127.0.0.1 2049 ; done
->>
->> KASAN report:
->>
->>   ==================================================================
->>   BUG: KASAN: slab-use-after-free in svc_tcp_listen_data_ready+0x1cf/0x1f0 [sunrpc]
->>   Read of size 8 at addr ffff888139d96228 by task nc/102553
->>   CPU: 7 PID: 102553 Comm: nc Not tainted 6.3.0+ #18
->>   Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 11/12/2020
->>   Call Trace:
->>    <IRQ>
->>    dump_stack_lvl+0x33/0x50
->>    print_address_description.constprop.0+0x27/0x310
->>    print_report+0x3e/0x70
->>    kasan_report+0xae/0xe0
->>    svc_tcp_listen_data_ready+0x1cf/0x1f0 [sunrpc]
->>    tcp_data_queue+0x9f4/0x20e0
->>    tcp_rcv_established+0x666/0x1f60
->>    tcp_v4_do_rcv+0x51c/0x850
->>    tcp_v4_rcv+0x23fc/0x2e80
->>    ip_protocol_deliver_rcu+0x62/0x300
->>    ip_local_deliver_finish+0x267/0x350
->>    ip_local_deliver+0x18b/0x2d0
->>    ip_rcv+0x2fb/0x370
->>    __netif_receive_skb_one_core+0x166/0x1b0
->>    process_backlog+0x24c/0x5e0
->>    __napi_poll+0xa2/0x500
->>    net_rx_action+0x854/0xc90
->>    __do_softirq+0x1bb/0x5de
->>    do_softirq+0xcb/0x100
->>    </IRQ>
->>    <TASK>
->>    ...
->>    </TASK>
->>
->>   Allocated by task 102371:
->>    kasan_save_stack+0x1e/0x40
->>    kasan_set_track+0x21/0x30
->>    __kasan_kmalloc+0x7b/0x90
->>    svc_setup_socket+0x52/0x4f0 [sunrpc]
->>    svc_addsock+0x20d/0x400 [sunrpc]
->>    __write_ports_addfd+0x209/0x390 [nfsd]
->>    write_ports+0x239/0x2c0 [nfsd]
->>    nfsctl_transaction_write+0xac/0x110 [nfsd]
->>    vfs_write+0x1c3/0xae0
->>    ksys_write+0xed/0x1c0
->>    do_syscall_64+0x38/0x90
->>    entry_SYSCALL_64_after_hwframe+0x72/0xdc
->>
->>   Freed by task 102551:
->>    kasan_save_stack+0x1e/0x40
->>    kasan_set_track+0x21/0x30
->>    kasan_save_free_info+0x2a/0x50
->>    __kasan_slab_free+0x106/0x190
->>    __kmem_cache_free+0x133/0x270
->>    svc_xprt_free+0x1e2/0x350 [sunrpc]
->>    svc_xprt_destroy_all+0x25a/0x440 [sunrpc]
->>    nfsd_put+0x125/0x240 [nfsd]
->>    nfsd_svc+0x2cb/0x3c0 [nfsd]
->>    write_threads+0x1ac/0x2a0 [nfsd]
->>    nfsctl_transaction_write+0xac/0x110 [nfsd]
->>    vfs_write+0x1c3/0xae0
->>    ksys_write+0xed/0x1c0
->>    do_syscall_64+0x38/0x90
->>    entry_SYSCALL_64_after_hwframe+0x72/0xdc
->>
->> In this RFC patch, I try to fix the UAF by skipping dereferencing
->> svsk for all child socket in svc_tcp_listen_data_ready(), it is
->> easy to backport for stable.
->>
->> However I'm not sure if there are other potential risks in the race
->> window, so I thought another fix which depends on SK_USER_DATA_NOCOPY
->> introduced in commit f1ff5ce2cd5e ("net, sk_msg: Clear sk_user_data
->> pointer on clone if tagged").
->>
->> Saving svsk into sk_user_data with SK_USER_DATA_NOCOPY tag in
->> svc_setup_socket() like this:
->>
->>   __rcu_assign_sk_user_data_with_flags(inet, svsk, SK_USER_DATA_NOCOPY);
->>
->> Obtaining svsk in callbacks like this:
->>
->>   struct svc_sock *svsk = rcu_dereference_sk_user_data(sk);
->>
->> This will avoid copying sk_user_data for sunrpc svc_sock in
->> sk_clone_lock(), so the sk_user_data of child sock before accepted
->> will be NULL.
->>
->> Appreciate any comment and suggestion, thanks.
->>
->> Fixes: fa9251afc33c ("SUNRPC: Call the default socket callbacks instead of open coding")
->> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
->> ---
->> net/sunrpc/svcsock.c | 23 +++++++++++------------
->> 1 file changed, 11 insertions(+), 12 deletions(-)
->>
->> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
->> index a51c9b989d58..9aca6e1e78e4 100644
->> --- a/net/sunrpc/svcsock.c
->> +++ b/net/sunrpc/svcsock.c
->> @@ -825,12 +825,6 @@ static void svc_tcp_listen_data_ready(struct sock *sk)
->>
->> trace_sk_data_ready(sk);
->>
->> - if (svsk) {
->> - /* Refer to svc_setup_socket() for details. */
->> - rmb();
->> - svsk->sk_odata(sk);
->> - }
->> -
->> /*
->> * This callback may called twice when a new connection
->> * is established as a child socket inherits everything
->> @@ -839,13 +833,18 @@ static void svc_tcp_listen_data_ready(struct sock *sk)
->> *    when one of child sockets become ESTABLISHED.
->> * 2) data_ready method of the child socket may be called
->> *    when it receives data before the socket is accepted.
->> - * In case of 2, we should ignore it silently.
->> + * In case of 2, we should ignore it silently and DO NOT
->> + * dereference svsk.
->> */
->> - if (sk->sk_state == TCP_LISTEN) {
->> - if (svsk) {
->> - set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
->> - svc_xprt_enqueue(&svsk->sk_xprt);
->> - }
->> + if (sk->sk_state != TCP_LISTEN)
->> + return;
->> +
->> + if (svsk) {
->> + /* Refer to svc_setup_socket() for details. */
->> + rmb();
->> + svsk->sk_odata(sk);
->> + set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
->> + svc_xprt_enqueue(&svsk->sk_xprt);
->> }
->> }
->>
->> -- 
->> 2.17.1
->>
-> 
-> --
-> Chuck Lever
-> 
-> 
-> 
-
--- 
-Thanks,
-- Ding Hui
-
+>
+> >> +
+> >> +     return err;
+> >>   }
+> >>
+> >>   static int virtnet_poll_tx(struct napi_struct *napi, int budget)
+> >> @@ -2305,11 +2318,8 @@ static int virtnet_close(struct net_device *dev)
+> >>        /* Make sure refill_work doesn't re-enable napi! */
+> >>        cancel_delayed_work_sync(&vi->refill);
+> >>
+> >> -     for (i =3D 0; i < vi->max_queue_pairs; i++) {
+> >> -             virtnet_napi_tx_disable(&vi->sq[i].napi);
+> >> -             napi_disable(&vi->rq[i].napi);
+> >> -             xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
+> >> -     }
+> >> +     for (i =3D 0; i < vi->max_queue_pairs; i++)
+> >> +             virtnet_disable_qp(vi, i);
+> >>
+> >>        return 0;
+> >>   }
+> >> --
+> >> 2.37.1 (Apple Git-137.1)
+> >>
 
