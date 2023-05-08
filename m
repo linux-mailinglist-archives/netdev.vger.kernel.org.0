@@ -1,166 +1,217 @@
-Return-Path: <netdev+bounces-819-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-820-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id DB5986FA133
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 09:40:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id BC0D66FA14E
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 09:45:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0BB731C2096B
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 07:40:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D8692280F1D
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 07:45:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 897CE154A1;
-	Mon,  8 May 2023 07:40:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69B8F15496;
+	Mon,  8 May 2023 07:45:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7912B3C21
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 07:40:43 +0000 (UTC)
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CFB31A1C0
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 00:40:41 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-	by smtp-out1.suse.de (Postfix) with ESMTP id 1C31221F01;
-	Mon,  8 May 2023 07:40:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1683531640; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=svJr/QL7IvrM0dMZ9kDYqUkInRrxGGXDc4kn3BwGDzI=;
-	b=Js8trxgIeJ4Zeilp4ylgtgbF4SGG7gj5jkauRt+5e+YDL2/hw0cNpxqtTwzBi/n4aqedKd
-	vJziygUehpR+wz70IiBwCnxYdIfvM2uHOWHZVf6jmTqYbfBmXcgT3krpDdOEtzxbdBMm0c
-	fEzemiGYt9ceXB9mpm3YJavL3N+MiUw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1683531640;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=svJr/QL7IvrM0dMZ9kDYqUkInRrxGGXDc4kn3BwGDzI=;
-	b=VLUrM5VqwMjND0XxpNUV2pDB8J7/mF32ypFvRguHAB/wpdF/A2w6DouQfsOMsGYjnQmrz6
-	ZVgiJryknHvKTaBw==
-Received: from lion.mk-sys.cz (unknown [10.163.44.94])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by relay2.suse.de (Postfix) with ESMTPS id 0F71F2C141;
-	Mon,  8 May 2023 07:40:40 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-	id E7AC560414; Mon,  8 May 2023 09:40:39 +0200 (CEST)
-Date: Mon, 8 May 2023 09:40:39 +0200
-From: Michal Kubecek <mkubecek@suse.cz>
-To: Nicholas Vinson <nvinson234@gmail.com>
-Cc: netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool 3/3] Fix potentinal null-pointer derference
- issues.
-Message-ID: <20230508074039.n6ofud6dbkuhe64x@lion.mk-sys.cz>
-References: <cover.1682894692.git.nvinson234@gmail.com>
- <105e614b4c8ab46aa6b70c75111848d8e57aff0c.1682894692.git.nvinson234@gmail.com>
- <20230507225752.fhsf7hunv6kqsten@lion.mk-sys.cz>
- <8907c066-9ac9-8abc-eeff-078d0b0219de@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57C8B13AC1
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 07:45:13 +0000 (UTC)
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9E81A1DC;
+	Mon,  8 May 2023 00:45:10 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Vi0xjwt_1683531906;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vi0xjwt_1683531906)
+          by smtp.aliyun-inc.com;
+          Mon, 08 May 2023 15:45:07 +0800
+Message-ID: <1683531716.238961-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH] virtio_net: set default mtu to 1500 when 'Device maximum MTU' bigger than 1500
+Date: Mon, 8 May 2023 15:41:56 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: huangml@yusur.tech,
+ zy@yusur.tech,
+ Jason Wang <jasowang@redhat.com>,
+ "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>,
+ "open list:VIRTIO CORE AND NET DRIVERS" <virtualization@lists.linux-foundation.org>,
+ "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ Hao Chen <chenh@yusur.tech>,
+ hengqi@linux.alibaba.com
+References: <20230506021529.396812-1-chenh@yusur.tech>
+ <1683341417.0965195-4-xuanzhuo@linux.alibaba.com>
+ <07b6b325-9a15-222f-e618-d149b57cbac2@yusur.tech>
+ <20230507045627-mutt-send-email-mst@kernel.org>
+ <1683511319.099806-2-xuanzhuo@linux.alibaba.com>
+ <20230508020953-mutt-send-email-mst@kernel.org>
+ <1683526688.7492425-1-xuanzhuo@linux.alibaba.com>
+ <20230508024147-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230508024147-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="6ujo7n4f5vdixqin"
-Content-Disposition: inline
-In-Reply-To: <8907c066-9ac9-8abc-eeff-078d0b0219de@gmail.com>
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+
+On Mon, 8 May 2023 02:43:24 -0400, "Michael S. Tsirkin" <mst@redhat.com> wr=
+ote:
+> On Mon, May 08, 2023 at 02:18:08PM +0800, Xuan Zhuo wrote:
+> > On Mon, 8 May 2023 02:15:46 -0400, "Michael S. Tsirkin" <mst@redhat.com=
+> wrote:
+> > > On Mon, May 08, 2023 at 10:01:59AM +0800, Xuan Zhuo wrote:
+> > > > On Sun, 7 May 2023 04:58:58 -0400, "Michael S. Tsirkin" <mst@redhat=
+.com> wrote:
+> > > > > On Sat, May 06, 2023 at 04:56:35PM +0800, Hao Chen wrote:
+> > > > > >
+> > > > > >
+> > > > > > =E5=9C=A8 2023/5/6 10:50, Xuan Zhuo =E5=86=99=E9=81=93:
+> > > > > > > On Sat,  6 May 2023 10:15:29 +0800, Hao Chen <chenh@yusur.tec=
+h> wrote:
+> > > > > > > > When VIRTIO_NET_F_MTU(3) Device maximum MTU reporting is su=
+pported.
+> > > > > > > > If offered by the device, device advises driver about the v=
+alue of its
+> > > > > > > > maximum MTU. If negotiated, the driver uses mtu as the maxi=
+mum
+> > > > > > > > MTU value. But there the driver also uses it as default mtu,
+> > > > > > > > some devices may have a maximum MTU greater than 1500, this=
+ may
+> > > > > > > > cause some large packages to be discarded,
+> > > > > > >
+> > > > > > > You mean tx packet?
+> > > > > > Yes.
+> > > > > > >
+> > > > > > > If yes, I do not think this is the problem of driver.
+> > > > > > >
+> > > > > > > Maybe you should give more details about the discard.
+> > > > > > >
+> > > > > > In the current code, if the maximum MTU supported by the virtio=
+ net hardware
+> > > > > > is 9000, the default MTU of the virtio net driver will also be =
+set to 9000.
+> > > > > > When sending packets through "ping -s 5000", if the peer router=
+ does not
+> > > > > > support negotiating a path MTU through ICMP packets, the packet=
+s will be
+> > > > > > discarded. If the peer router supports negotiating path mtu thr=
+ough ICMP
+> > > > > > packets, the host side will perform packet sharding processing =
+based on the
+> > > > > > negotiated path mtu, which is generally within 1500.
+> > > > > > This is not a bugfix patch, I think setting the default mtu to =
+within 1500
+> > > > > > would be more suitable here.Thanks.
+> > > > >
+> > > > > I don't think VIRTIO_NET_F_MTU is appropriate for support for jum=
+bo packets.
+> > > > > The spec says:
+> > > > > 	The device MUST forward transmitted packets of up to mtu (plus l=
+ow level ethernet header length) size with
+> > > > > 	gso_type NONE or ECN, and do so without fragmentation, after VIR=
+TIO_NET_F_MTU has been success-
+> > > > > 	fully negotiated.
+> > > > > VIRTIO_NET_F_MTU has been designed for all kind of tunneling devi=
+ces,
+> > > > > and this is why we set mtu to max by default.
+> > > > >
+> > > > > For things like jumbo frames where MTU might or might not be avai=
+lable,
+> > > > > a new feature would be more appropriate.
+> > > >
+> > > >
+> > > > So for jumbo frame, what is the problem?
+> > > >
+> > > > We are trying to do this. @Heng
+> > > >
+> > > > Thanks.
+> > >
+> > > It is not a problem as such. But VIRTIO_NET_F_MTU will set the
+> > > default MTU not just the maximum one, because spec seems to
+> > > say it can.
+> >
+> > I see.
+> >
+> > In the case of Jumbo Frame, we also hope that the driver will set the d=
+efault
+> > directly to the max mtu. Just like what you said "Bigger packets =3D be=
+tter
+> > performance."
+> >
+> > I don't know, in any scenario, when the hardware supports a large mtu, =
+but we do
+> > not want the user to use it by default.
+>
+> When other devices on the same LAN have mtu set to 1500 and
+> won't accept bigger packets.
+
+So, that depends on pmtu/tcp-probe-mtu.
+
+If the os without pmtu/tcp-probe-mtu has a bigger mtu, then it's big packet
+will lost.
+
+Thanks.
 
 
---6ujo7n4f5vdixqin
-Content-Type: text/plain; charset=iso-8859-2
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sun, May 07, 2023 at 10:46:05PM -0400, Nicholas Vinson wrote:
->=20
-> On 5/7/23 18:57, Michal Kubecek wrote:
-> > On Sun, Apr 30, 2023 at 06:50:52PM -0400, Nicholas Vinson wrote:
-> > > Found via gcc -fanalyzer. Analyzer claims that it's possible certain
-> > > functions may receive a NULL pointer when handling CLI arguments. Add=
-ing
-> > > NULL pointer checks to correct the issues.
-> > >=20
-> > > Signed-off-by: Nicholas Vinson <nvinson234@gmail.com>
-> > A similar theoretical issue was discussed recently:
-> >=20
-> >    https://patchwork.kernel.org/project/netdevbpf/patch/20221208011122.=
-2343363-8-jesse.brandeburg@intel.com/
-> >=20
-> > My position is still the same: argv[] members cannot be actually null
-> > unless there is a serious kernel bug (see the link above for an
-> > explanation). I'm not opposed to doing a sanity check just in case but
-> > if we do, I believe we should check the whole argv[] array right at the
-> > beginning and be done with it rather than add specific checks to random
-> > places inside parser code.
->=20
-> By convention and POSIX standard, the last argv[] member is always set to
-> NULL and is accessed from main(int argc, char **argp) via argp[argc] (see
-> https://pubs.opengroup.org/onlinepubs/9699919799/functions/execve.html).
-> It's also possible for argc to be zero. In such a case, find_option(NULL)
-> would get called.
-
-Please note that ethtool is not a utility for a general POSIX system.
-It is a very specific utility which works and makes sense only on Linux.
-That's why it can and does take many assumptions which are only
-guaranteed on Linux but may not be true on other POSIX systems.
-
-> However, after reviewing main(), I recommend changing:
->=20
-> =A0=A0=A0=A0=A0=A0=A0 if (argc =3D=3D 0)
->=20
-> =A0=A0=A0=A0=A0=A0=A0 =A0=A0=A0=A0=A0=A0=A0 exit_bad_args();
->=20
-> to
->=20
-> =A0=A0=A0=A0=A0=A0=A0 if (argc <=3D 0 || !*argp)
->=20
-> =A0=A0=A0=A0=A0=A0=A0 =A0=A0=A0=A0=A0=A0=A0 exit_bad_args();
->=20
->=20
-> as this fixes the potential issue of main()'s argc being 0 (argc would be=
- -1
-> at this point in such cases), and "!*argp" silences gcc's built-in analyz=
-er
-> (and should silence all other SA with respect to the reported issue) as t=
-he
-> SA doesn't recognize that it would take a buggy execve implementation to
-> allow argp to be NULL at this point ).
->=20
-> If you don't have any objections to this change, I can draft an updated
-> patch to make this change.
-
-As I said before, I do not object to adding a sanity check of argc/argv,
-I only objected to adding random checks inside the parser code just to
-make static checkers happy. If you want to add (or strengthen) a sanity
-check right at the beginning of the program, before any parsing, I have
-no problem with that.
-
-Michal
-
---6ujo7n4f5vdixqin
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmRYp3QACgkQ538sG/LR
-dpWJzQgAnAC+voOf0/QKi5ZmNNHbj9JBDJjAFLPg8NsIdZpVSNEO5v5NzN1mCen5
-8JfDYbKBHKh5Gcaok+Lx679AjgapMVjulSD4XWowiqTrjS4IKDjn9+gSf7xY+uGG
-Lmy7xqatQ9Ut6xz2py4jUHgSL7a18vX19mLX8HoRXdk1I3CYb+NaMGWpqwhINP0l
-RD+xME6TKOGLKpXU9/O5EsdBecqn7sj9qtc58J/+aooo3teLpyPOWEAt6awYPSSC
-ZcESlrG75poZNP0ke8PKdzCf2bbhgGWrPE03wRtZm40t/gapmp5Kc9EBXVgGQ7S/
-u0rQtdmbKUD5aEVj5HYPGxcsNOzplA==
-=vxLo
------END PGP SIGNATURE-----
-
---6ujo7n4f5vdixqin--
+>
+> > Of course, the scene that this patch
+> > wants to handle does exist, but I have never thought that this is a pro=
+blem at
+> > the driver level.
+> >
+> > Thanks.
+> >
+> >
+> > >
+> > >
+> > > >
+> > > > >
+> > > > > > > > so I changed the MTU to a more
+> > > > > > > > general 1500 when 'Device maximum MTU' bigger than 1500.
+> > > > > > > >
+> > > > > > > > Signed-off-by: Hao Chen <chenh@yusur.tech>
+> > > > > > > > ---
+> > > > > > > >   drivers/net/virtio_net.c | 5 ++++-
+> > > > > > > >   1 file changed, 4 insertions(+), 1 deletion(-)
+> > > > > > > >
+> > > > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_=
+net.c
+> > > > > > > > index 8d8038538fc4..e71c7d1b5f29 100644
+> > > > > > > > --- a/drivers/net/virtio_net.c
+> > > > > > > > +++ b/drivers/net/virtio_net.c
+> > > > > > > > @@ -4040,7 +4040,10 @@ static int virtnet_probe(struct virt=
+io_device *vdev)
+> > > > > > > >   			goto free;
+> > > > > > > >   		}
+> > > > > > > >
+> > > > > > > > -		dev->mtu =3D mtu;
+> > > > > > > > +		if (mtu > 1500)
+> > > > > > >
+> > > > > > > s/1500/ETH_DATA_LEN/
+> > > > > > >
+> > > > > > > Thanks.
+> > > > > > >
+> > > > > > > > +			dev->mtu =3D 1500;
+> > > > > > > > +		else
+> > > > > > > > +			dev->mtu =3D mtu;
+> > > > > > > >   		dev->max_mtu =3D mtu;
+> > > > > > > >   	}
+> > > > > > > >
+> > > > > > > > --
+> > > > > > > > 2.27.0
+> > > > > > > >
+> > > > >
+> > >
+>
 
