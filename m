@@ -1,124 +1,124 @@
-Return-Path: <netdev+bounces-826-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-827-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4B3766FA333
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:26:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3C8EE6FA3C8
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:51:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0263D280E8E
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 09:26:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B876E280E2E
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 09:51:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 167781549F;
-	Mon,  8 May 2023 09:26:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D3D91168C1;
+	Mon,  8 May 2023 09:51:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04D98210C
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 09:26:26 +0000 (UTC)
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC7E18DE6
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 02:26:25 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-643a6f993a7so1968792b3a.1
-        for <netdev@vger.kernel.org>; Mon, 08 May 2023 02:26:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683537985; x=1686129985;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sUwxNjsJiPgi4peNA0+ZS6LsJUUvXvufdw5CPGol7Jk=;
-        b=TMSmMzyJzJoHo/yuE8Y+9M0GLekIX4K0SS1CDD2hGxLYhzncl+C6XmFRHlF3DrrY8+
-         kxKh5FKwrYu9O9WWUCJJytyvIBaEK7YDGwuvLf9jzkgzgV791Cpm8HspElUQACuesqtB
-         g4Kl7L2UDOsWLK2gjlYO6pKY/eMf6OnSBJvkLYFBq7nYTQQZUHZoZnLUaXi5G9qpIxX8
-         Uxd17MwGfa9qzNrrA3ZTesvw4Gi9/YEw8FbgsQGZScCZoJDiT2Nj6+WEElvohEzebcww
-         c4+EvrGNaQB6Ro2iA/UeFDJ5OIOnlGxT1lz0fJCh9qtGJVQLqApNB/a1PcpH2PiHp5kC
-         6ikw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683537985; x=1686129985;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sUwxNjsJiPgi4peNA0+ZS6LsJUUvXvufdw5CPGol7Jk=;
-        b=Yqmg6d1aIZZbo0ojYT5knaRbl2oWPcZV5TECELgPf8Y6CSYEW0hjTaEiNBOH+dEdus
-         As2h91XkB5ImkeS8V8LfgOwKc+FE8B6iTcWy6oksExIwWzggu3jXNO8dTzl+dVji1bjt
-         WC+zvtdZhSUmz9vb5aCkiMtaSy+6Y0mqcAxW6f8zMsSg4YC4HB3bbfNrOVoEVgYnX0/d
-         p1IDoU67jWRN5eHEgWH4Ffqe9CPcAktwNHXltqbaotZ0JltSyk+/gEI5CvLfmI/2jotQ
-         qqEuSpugnP2yZjzTrZIG1Hic4sPUDCFGAGvqkfgGiXzKvgl31nmsaXMV0QjzVvJVr/gh
-         04VA==
-X-Gm-Message-State: AC+VfDxH6p0PL37reE148wuwMxAIJWlYmfSra7gcmgW1Op0Txcic53g/
-	QZy8MRrA00MkthrzfNbVNI83zXh4/ngwiiiR
-X-Google-Smtp-Source: ACHHUZ7IjcW6v6H7bmnDbhQoxdRQFUQUXVS0ErxQ/mNjOD66TxFC5vDy4xhYlQhiWXII3mSHjgccBg==
-X-Received: by 2002:a05:6a00:1492:b0:63b:6149:7ad6 with SMTP id v18-20020a056a00149200b0063b61497ad6mr13070327pfu.34.1683537984967;
-        Mon, 08 May 2023 02:26:24 -0700 (PDT)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id v33-20020a631521000000b0051b70c8d446sm5829301pgl.73.2023.05.08.02.26.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 02:26:24 -0700 (PDT)
-Date: Mon, 8 May 2023 17:26:21 +0800
-From: Hangbin Liu <liuhangbin@gmail.com>
-To: Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc: netdev@vger.kernel.org
-Subject: Re: [Issue] Bonding can't show correct speed if lower interface is
- bond 802.3ad
-Message-ID: <ZFjAPRQNYRgYWsD+@Laptop-X1>
-References: <ZEt3hvyREPVdbesO@Laptop-X1>
- <15524.1682698000@famine>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A11B168B4;
+	Mon,  8 May 2023 09:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 592E5C433D2;
+	Mon,  8 May 2023 09:51:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1683539500;
+	bh=/dyHnap5ThVp6AJ2w5d29jVjTl5RYzetKIeb806g4Nw=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=LdXon21B5GqcAKMEKhVYw49XMnlpLTtqwxPRoEocLDQEc18S3f0uCOETA3VdG+ftS
+	 miDSJNzd6mTC3VvmChieDorv203aPbcXbG0PjBI72eqqG3CmT6fLte7vkfdPu6EIBn
+	 l8wMRNLGVmDWLXi+36YUypGXyAdDrkJBIOcSeieE=
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: stable@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	patches@lists.linux.dev,
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>,
+	Intel Corporation <linuxwwan@intel.com>,
+	Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>,
+	Liu Haijun <haijun.liu@mediatek.com>,
+	M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
+	Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+	Loic Poulain <loic.poulain@linaro.org>,
+	Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org,
+	Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 6.1 009/611] net: wwan: t7xx: do not compile with -Werror
+Date: Mon,  8 May 2023 11:37:31 +0200
+Message-Id: <20230508094421.920043459@linuxfoundation.org>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230508094421.513073170@linuxfoundation.org>
+References: <20230508094421.513073170@linuxfoundation.org>
+User-Agent: quilt/0.67
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <15524.1682698000@famine>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Apr 28, 2023 at 09:06:40AM -0700, Jay Vosburgh wrote:
-> Hangbin Liu <liuhangbin@gmail.com> wrote:
-> 
-> >A user reported a bonding issue that if we put an active-back bond on top of a
-> >802.3ad bond interface. When the 802.3ad bond's speed/duplex changed
-> >dynamically. The upper bonding interface's speed/duplex can't be changed at
-> >the same time.
-> >
-> >This seems not easy to fix since we update the speed/duplex only
-> >when there is a failover(except 802.3ad mode) or slave netdev change.
-> >But the lower bonding interface doesn't trigger netdev change when the speed
-> >changed as ethtool get bonding speed via bond_ethtool_get_link_ksettings(),
-> >which not affect bonding interface itself.
-> 
-> 	Well, this gets back into the intermittent discussion on whether
-> or not being able to nest bonds is useful or not, and thus whether it
-> should be allowed or not.  It's at best a niche use case (I don't recall
-> the example configurations ever being anything other than 802.3ad under
-> active-backup), and was broken for a number of years without much
-> uproar.
-> 
-> 	In this particular case, nesting two LACP (802.3ad) bonds inside
-> an active-backup bond provides no functional benefit as far as I'm aware
-> (maybe gratuitous ARP?), as 802.3ad mode will correctly handle switching
-> between multiple aggregators.  The "ad_select" option provides a few
-> choices on the criteria for choosing the active aggregator.
-> 
-> 	Is there a reason the user in your case doesn't use 802.3ad mode
-> directly?
+From: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 
-Hi Jay,
+[ Upstream commit 362f0b6678ad1377c322a7dd237ea6785efc7342 ]
 
-I just back from holiday and re-read you reply. The user doesn't add 2 LACP
-bonds inside an active-backup bond. He add 1 LACP bond and 1 normal NIC in to
-an active-backup bond. This seems reasonable. e.g. The LACP bond in a switch
-and the normal NIC in another switch.
+When playing with various compilers or their versions, some choke on
+the t7xx code. For example (with gcc 13):
+ In file included from ./arch/s390/include/generated/asm/rwonce.h:1,
+                  from ../include/linux/compiler.h:247,
+                  from ../include/linux/build_bug.h:5,
+                  from ../include/linux/bits.h:22,
+                  from ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:17:
+ In function 'preempt_count',
+     inlined from 't7xx_fsm_append_event' at ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:439:43:
+ ../include/asm-generic/rwonce.h:44:26: error: array subscript 0 is outside array bounds of 'const volatile int[0]' [-Werror=array-bounds=]
 
-What do you think?
+There is no reason for any code in the kernel to be built with -Werror
+by default. Note that we have generic CONFIG_WERROR. So if anyone wants
+-Werror, they can enable that.
 
-Thanks
-Hangbin
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Link: https://lore.kernel.org/all/20230330232717.1f8bf5ea@kernel.org/
+Cc: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+Cc: Intel Corporation <linuxwwan@intel.com>
+Cc: Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>
+Cc: Liu Haijun <haijun.liu@mediatek.com>
+Cc: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Cc: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+Cc: Loic Poulain <loic.poulain@linaro.org>
+Cc: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wwan/t7xx/Makefile | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/net/wwan/t7xx/Makefile b/drivers/net/wwan/t7xx/Makefile
+index dc6a7d682c159..5e6398b527e72 100644
+--- a/drivers/net/wwan/t7xx/Makefile
++++ b/drivers/net/wwan/t7xx/Makefile
+@@ -1,7 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ 
+-ccflags-y += -Werror
+-
+ obj-${CONFIG_MTK_T7XX} := mtk_t7xx.o
+ mtk_t7xx-y:=	t7xx_pci.o \
+ 		t7xx_pcie_mac.o \
+-- 
+2.39.2
+
+
+
 
