@@ -1,171 +1,144 @@
-Return-Path: <netdev+bounces-925-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-926-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7D5056FB652
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 20:32:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 815A06FB65E
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 20:43:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id ABB851C20A40
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 18:32:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 49547280C74
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 18:43:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8490A10975;
-	Mon,  8 May 2023 18:32:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 676EA10977;
+	Mon,  8 May 2023 18:43:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77C724411
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 18:32:24 +0000 (UTC)
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094CD59F3
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:32:21 -0700 (PDT)
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B78E33F118
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 18:32:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1683570739;
-	bh=RVA7E2idYZmfOuPsonNtASd8IEFH9f+eLBQs34z1u3Q=;
-	h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-	 Content-Type:Date:Message-ID;
-	b=fxyHpWLByCSLVm04xJOg6yDUm4Lz2PeBDknKYuzj+OM6t2PoloFxGSFk8mwkzeXud
-	 cbkUAsw+BZ0FzI1ax4xhJJv49pbr6K5UIqCXWSUwXkLFrHHn5hLLj2eGvtlxJnD9U4
-	 gb3+Z4uonDlIFdZR8x0onNtrX+CIkZ7tAPufGfRgQSLFfULfHWzDyNEOg5038/Vnxz
-	 OemwumR0Jq4Yr4la86FMKqnG+486yCiZbK3PMjjoLu7J1NlA5sLcyVNkoeEUIm/Syl
-	 vtbPXcD61Yczm+KT7N2Mu5wt9qT3s/GQDB3t3r9td8C0Xmm+sPUnIvicZCYI9dWKOJ
-	 4s7mbA51JestA==
-Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-24dfc3c668dso2531077a91.1
-        for <netdev@vger.kernel.org>; Mon, 08 May 2023 11:32:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BC81524E
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 18:43:38 +0000 (UTC)
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFE859E8;
+	Mon,  8 May 2023 11:43:34 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id d75a77b69052e-3ef35d44612so53994731cf.1;
+        Mon, 08 May 2023 11:43:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683571413; x=1686163413;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=2UzQiNfm6F693fNlkyZs8eRSlihgAocz7zYCdB/eyQg=;
+        b=OBRskowUlanHVwjbRBW3VChc6Q8gWvBc2Y34J3nXb3Kx03wXi0ylavATFS07jeUtbk
+         XDr85B+eRqs8dAptutJ7JzTa3veAfrGgN6G/0vlmBX02nLPCn8HeMToiZh+A6u1NW8Cf
+         ttA3hyl7vgZeXUux+86EVXohf4WK2cyyxJotaPyMkQk7ESdB/cqx0TZLSX6Vx2BewHzP
+         BPsZwtOQZRmvf6c0dtmEgszds3QXZcb5QL1pPEdT7He2gG0y1KeFclkPddjETvLQLzyU
+         0dpDWQFohFMJffdN+Kmi+TGMsP8IVuhscVxc4hPpLo69YbgcGouO8Z34b8isFGYYltif
+         GDwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683570738; x=1686162738;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RVA7E2idYZmfOuPsonNtASd8IEFH9f+eLBQs34z1u3Q=;
-        b=gnTm5QZYA2QUsKDZNuSDFXxqrJ6czz4gAW35T4jafSR+6mNzX23pS452w3Mz30G68O
-         Uz7IJ1nWo7pn5Zov9mvcvVnSYar/EdaSF2m3TjIk3yAVekliPyW+/r4CbzdSPuhsdVZ8
-         RKffhE6JUz2UZFVjewqZQ888+FuMBP+svOpbW0BYNJ7TFGKaP86ixELZoeXoDFp788Aa
-         Wp923Q+1YKUthEnqUSXF2HlcL+2jfySFnv6kzBdcyrzC2s/delFDCtZzx6lDeJAy6Sgh
-         Vg4VHv/yTCQ0VUz2GHEKPLodBhS3XjfDFqsef4d/pG7GFIiW1iJ4djkYPxewwycj9nYO
-         8Tzg==
-X-Gm-Message-State: AC+VfDxfQpBfXpI0RDm6Uy1pmr2JCvu9fzzBoUxCvoBOBgAMOuzY2ydk
-	AldjDaqIv6/ZqjlRf7xaO76rhJ0pkn5uTN1XvFkr6VOH1al3WNk+IjfDAOlFWGvBOkRRhGCY8cX
-	9Y0g/sAu9wikSLMcWb21M5cSlg58yjoLksrtyPLcH1g==
-X-Received: by 2002:a17:90b:1d02:b0:24d:fb2c:1ae0 with SMTP id on2-20020a17090b1d0200b0024dfb2c1ae0mr11351055pjb.17.1683570737985;
-        Mon, 08 May 2023 11:32:17 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4EemBUqdUZgIEsRu+9z42hw2VTBh+UwGwADhdmEqvRUDvjUnRaj83Xe4HmKeazQ8XCR4yzMw==
-X-Received: by 2002:a17:90b:1d02:b0:24d:fb2c:1ae0 with SMTP id on2-20020a17090b1d0200b0024dfb2c1ae0mr11351043pjb.17.1683570737647;
-        Mon, 08 May 2023 11:32:17 -0700 (PDT)
-Received: from vermin.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id t15-20020a17090ad14f00b0024b6a90741esm10074537pjw.49.2023.05.08.11.32.17
+        d=1e100.net; s=20221208; t=1683571413; x=1686163413;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2UzQiNfm6F693fNlkyZs8eRSlihgAocz7zYCdB/eyQg=;
+        b=k6KT42GPuIph77HUD4tIVIZWcojovB3ReF5hC6qtb6sdCkBYJZIC3MpZqa95F4XA+d
+         HDzmIOy51au4+TtD02h/Ed2rZZi11CL2XzAk/0mlZpNs0Bntf88Au7l98XAztKz8tkD0
+         poo3ZEs+F0vnccgtYO62vJ6hwXIsqsNgZjF5kEc8jVR/pBR7mrOBWPQoFjrixujM7+br
+         UkKmCi95GfJktkq93C92qCSGJWKyl3V+Xghei9a+BjQt7h1LIKQ9qg2HCBc0noqTJ4Bs
+         DqvPxjwZFEfcY2xYUBwzd6WMkCnP1E89Tk98mO67A5ASgPhhBkmMhm+4EdtjzmvqjuYS
+         cjeQ==
+X-Gm-Message-State: AC+VfDypTTCd/HnYdujzXxNHJLSMnLa1FkkUjy1LFlBMZFRuH4iS4hFy
+	MPMC6rCYrOp0PLWr4oyg8GyUgMIjqac=
+X-Google-Smtp-Source: ACHHUZ7Qsu3F0OpI4nsrU34NhHs1ifu6OoO1xuDeW7+1kbSpLXxVWbQL2iziPHA/PotC+tfskOrHAw==
+X-Received: by 2002:ac8:5786:0:b0:3ec:489c:defb with SMTP id v6-20020ac85786000000b003ec489cdefbmr16366217qta.9.1683571413285;
+        Mon, 08 May 2023 11:43:33 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id v26-20020ac83d9a000000b003d3a34d2eb2sm3193988qtf.41.2023.05.08.11.43.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 11:32:17 -0700 (PDT)
-Received: by vermin.localdomain (Postfix, from userid 1000)
-	id B178B1C038A; Mon,  8 May 2023 20:32:16 +0200 (CEST)
-Received: from vermin (localhost [127.0.0.1])
-	by vermin.localdomain (Postfix) with ESMTP id AF5271C0094;
-	Mon,  8 May 2023 11:32:16 -0700 (PDT)
-From: Jay Vosburgh <jay.vosburgh@canonical.com>
-To: Hangbin Liu <liuhangbin@gmail.com>
-cc: netdev@vger.kernel.org
-Subject: Re: [Issue] Bonding can't show correct speed if lower interface is bond 802.3ad
-In-reply-to: <ZFjAPRQNYRgYWsD+@Laptop-X1>
-References: <ZEt3hvyREPVdbesO@Laptop-X1> <15524.1682698000@famine> <ZFjAPRQNYRgYWsD+@Laptop-X1>
-Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
-   message dated "Mon, 08 May 2023 17:26:21 +0800."
-X-Mailer: MH-E 8.6+git; nmh 1.7+dev; Emacs 29.0.50
+        Mon, 08 May 2023 11:43:32 -0700 (PDT)
+From: Florian Fainelli <f.fainelli@gmail.com>
+To: netdev@vger.kernel.org
+Cc: Florian Fainelli <f.fainelli@gmail.com>,
+	Doug Berger <opendmb@gmail.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	=?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+	Peter Geis <pgwipeout@gmail.com>,
+	Frank <Frank.Sae@motor-comm.com>,
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next 0/3] Support for Wake-on-LAN for Broadcom PHYs
+Date: Mon,  8 May 2023 11:43:06 -0700
+Message-Id: <20230508184309.1628108-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <84547.1683570736.1@vermin>
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 08 May 2023 11:32:16 -0700
-Message-ID: <84548.1683570736@vermin>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hangbin Liu <liuhangbin@gmail.com> wrote:
+This patch series adds support for Wake-on-LAN to the Broadcom PHY
+driver. Specifically the BCM54210E/B50212E are capable of supporting
+Wake-on-LAN using an external pin typically wired up to a system's GPIO.
 
->On Fri, Apr 28, 2023 at 09:06:40AM -0700, Jay Vosburgh wrote:
->> Hangbin Liu <liuhangbin@gmail.com> wrote:
->> =
+These PHY operate a programmable Ethernet MAC destination address
+comparator which will fire up an interrupt whenever a match is received.
+Because of that, it was necessary to introduce patch #1 which allows the
+PHY driver's ->suspend() routine to be called unconditionally. This is
+necessary in our case because we need a hook point into the device
+suspend/resume flow to enable the wake-up interrupt as late as possible.
 
->> >A user reported a bonding issue that if we put an active-back bond on =
-top of a
->> >802.3ad bond interface. When the 802.3ad bond's speed/duplex changed
->> >dynamically. The upper bonding interface's speed/duplex can't be chang=
-ed at
->> >the same time.
->> >
->> >This seems not easy to fix since we update the speed/duplex only
->> >when there is a failover(except 802.3ad mode) or slave netdev change.
->> >But the lower bonding interface doesn't trigger netdev change when the=
- speed
->> >changed as ethtool get bonding speed via bond_ethtool_get_link_ksettin=
-gs(),
->> >which not affect bonding interface itself.
->> =
+Patch #2 adds support for the Broadcom PHY library and driver for
+Wake-on-LAN proper with the WAKE_UCAST, WAKE_MCAST, WAKE_BCAST,
+WAKE_MAGIC and WAKE_MAGICSECURE. Note that WAKE_FILTER is supportable,
+however this will require further discussions and be submitted as a RFC
+series later on.
 
->> 	Well, this gets back into the intermittent discussion on whether
->> or not being able to nest bonds is useful or not, and thus whether it
->> should be allowed or not.  It's at best a niche use case (I don't recal=
-l
->> the example configurations ever being anything other than 802.3ad under
->> active-backup), and was broken for a number of years without much
->> uproar.
->> =
+Patch #3 updates the GENET driver to defer to the PHY for Wake-on-LAN if
+the PHY supports it, thus allowing the MAC to be powered down to
+conserve power.
 
->> 	In this particular case, nesting two LACP (802.3ad) bonds inside
->> an active-backup bond provides no functional benefit as far as I'm awar=
-e
->> (maybe gratuitous ARP?), as 802.3ad mode will correctly handle switchin=
-g
->> between multiple aggregators.  The "ad_select" option provides a few
->> choices on the criteria for choosing the active aggregator.
->> =
+Florian Fainelli (3):
+  net: phy: Let drivers check Wake-on-LAN status
+  net: phy: broadcom: Add support for Wake-on-LAN
+  net: bcmgenet: Add support for PHY-based Wake-on-LAN
 
->> 	Is there a reason the user in your case doesn't use 802.3ad mode
->> directly?
->
->Hi Jay,
->
->I just back from holiday and re-read you reply. The user doesn't add 2 LA=
-CP
->bonds inside an active-backup bond. He add 1 LACP bond and 1 normal NIC i=
-n to
->an active-backup bond. This seems reasonable. e.g. The LACP bond in a swi=
-tch
->and the normal NIC in another switch.
->
->What do you think?
+ .../ethernet/broadcom/genet/bcmgenet_wol.c    |  14 ++
+ drivers/net/phy/aquantia_main.c               |   3 +
+ drivers/net/phy/at803x.c                      |  10 +
+ drivers/net/phy/bcm-phy-lib.c                 | 212 ++++++++++++++++++
+ drivers/net/phy/bcm-phy-lib.h                 |   5 +
+ drivers/net/phy/bcm7xxx.c                     |   3 +
+ drivers/net/phy/broadcom.c                    | 128 ++++++++++-
+ drivers/net/phy/dp83822.c                     |   2 +-
+ drivers/net/phy/dp83867.c                     |   3 +
+ drivers/net/phy/dp83tc811.c                   |   2 +-
+ drivers/net/phy/marvell-88x2222.c             |   3 +
+ drivers/net/phy/marvell.c                     |   3 +
+ drivers/net/phy/marvell10g.c                  |   3 +
+ drivers/net/phy/micrel.c                      |   3 +
+ drivers/net/phy/microchip.c                   |   4 +-
+ drivers/net/phy/motorcomm.c                   |   2 +-
+ drivers/net/phy/phy-c45.c                     |   3 +
+ drivers/net/phy/phy_device.c                  |   7 +-
+ drivers/net/phy/realtek.c                     |   3 +
+ include/linux/brcmphy.h                       |  55 +++++
+ include/linux/phy.h                           |   3 +
+ 21 files changed, 460 insertions(+), 11 deletions(-)
 
-	That case should work fine without the active-backup.  LACP has
-a concept of an "individual" port, which (in this context) would be the
-"normal NIC," presuming that that means its link peer isn't running
-LACP.
+-- 
+2.34.1
 
-	If all of the ports (N that are LACP to a single switch, plus 1
-that's the non-LACP "normal NIC") were attached to a single bond, it
-would create one aggregator with the LACP enabled ports, and then a
-separate aggregator for the indvidual port that's not.  The aggregator
-selection logic prefers the LACP enabled aggregator over the individual
-port aggregator.  The precise criteria is in the commentary within
-ad_agg_selection_test().
-
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
 
