@@ -1,70 +1,70 @@
-Return-Path: <netdev+bounces-834-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-836-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C5BE26FAB0A
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:08:48 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 17BED6FAC03
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 13:19:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EF33F1C209A0
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:08:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C1607280EFB
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 11:19:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 031E2168DA;
-	Mon,  8 May 2023 11:08:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C5F3168D8;
+	Mon,  8 May 2023 11:19:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4326168D6
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:08:43 +0000 (UTC)
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC912ABE3
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 04:08:40 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50bc37e1525so8530630a12.1
-        for <netdev@vger.kernel.org>; Mon, 08 May 2023 04:08:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FED8168D6
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:19:50 +0000 (UTC)
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E44B387F4
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 04:19:48 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-50bd2d7ba74so47609480a12.1
+        for <netdev@vger.kernel.org>; Mon, 08 May 2023 04:19:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1683544119; x=1686136119;
+        d=cloudflare.com; s=google; t=1683544787; x=1686136787;
         h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
          :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=Gag99lpqg8ZcnlcatCi6U8igQ9sGdmGp2/O8T8Oc0uk=;
-        b=kgO/RVvHJ9jRXW6Vwh1zylU3Ua/n/uUxKFNj/F200zsq4ANfQtrTbjb1AjJlLiahH1
-         9A9ZYku0JJq3VglKj9S9pSzXV4Dg2AplcqmTMoItMztSDPKV3cdZ7sCz9UkDb0aphbu8
-         Tu1Ly99mS33O87v9Y3MRNEzX7D+O5N4L+Spto=
+        bh=m10/D0H/SLA8VCEoVNm97f3TkXpR8ECBbUoL0FwCvhs=;
+        b=VcnVOmmrq+In3u11hbcdOxZ9eN2axTCwc21rN2dA4UD514zAcTbUEtwXucUNbJkYIT
+         W2oJb77neFgmYVGn8cm1ZOSHp00O5whDsQPay+RqirV7MUenhT8OxF5HQKEAAUpX/nMA
+         6e/u3IT5Q/Xa4FqJ53wZhfIyCwhXaQOqgqkMk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683544119; x=1686136119;
+        d=1e100.net; s=20221208; t=1683544787; x=1686136787;
         h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
          :user-agent:references:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Gag99lpqg8ZcnlcatCi6U8igQ9sGdmGp2/O8T8Oc0uk=;
-        b=KxvT6F1hYp1InjDS1fT79ijl3fM0cw1jsp6E0Rv7VrM3MajtbhCcRwAsCshklUOQya
-         MfCIxYiD2DamH99j0VxhcDS1IFsStHhcPaKkUdj7Z8kmfTve//lxjRRvK18dNVaSTLS+
-         sQOqmlhI6Y+dJWt6OgqWDQ9x6mfZXvAjjTqxTxfUzeDJwy3ZL2URbQZ/aPtBvuTQBx8M
-         6zr1bYTttQhg67/AegGE2ruPi9XU6PE6Fua0Z5tmMjc2kUW4gSbj5FSGt6GRW7yVQQfZ
-         AR3mSHJ6XlHSrmQkb6zHfcxQAhSDDaNC1aoPFh7QIjaxcfWpE+DdsfMWRWa0JEHi/VKi
-         0AXw==
-X-Gm-Message-State: AC+VfDyKqQgwGC8dMt96ArnB7tUQ0D45jhAmGT3KaemVI9sI8eUh7io0
-	HPsY02Em7qdJlFqDBfb8qnqHwA==
-X-Google-Smtp-Source: ACHHUZ7tJ3R5k3ObHbTqfPz0cKqzdO/aZHIkbQ+jtNXpwr15bnk+luQ9M1hWPZcXRqsyVPKki+Cn/A==
-X-Received: by 2002:aa7:c84c:0:b0:50b:fb49:39c9 with SMTP id g12-20020aa7c84c000000b0050bfb4939c9mr7007735edt.34.1683544119184;
-        Mon, 08 May 2023 04:08:39 -0700 (PDT)
+        bh=m10/D0H/SLA8VCEoVNm97f3TkXpR8ECBbUoL0FwCvhs=;
+        b=dqzF7kSqiknFOVWQR9FKyfHp/pKxMWYe2hMqXfH8BYVAI9q4yshYD6UjHOlMo7WFV+
+         emzLz7GmaTNHq2sjkXiq/997GH3kOrztemmpLrUSs6S5xhGTY/jQ5tLbfaxag52Qr55a
+         2eyT2411a/t+E9vagunLQPnuOrAoAwpp2ZrDHJlEN30p0IbxAB7jCCFi6fh08PBeZd4/
+         9vJUJzGlwTA63MEK/rk465S+BMMrtG5m0zjhG8aHohqVYa5t9DEF49/4gRVoCw64otN7
+         Zve2k3GaFDT1TaeKSInyKIDgIxVsk3dTghcC9xmeGecZ8N5536lZnOYBN+575jRlKpCP
+         rFOw==
+X-Gm-Message-State: AC+VfDzIN3qaVXXb8b2GYZlJO1sVTDl/T2IyckMxBL7hw6TXigY4rhP3
+	3rwfBEN5dO4XWY9ofmSbF6BM5w==
+X-Google-Smtp-Source: ACHHUZ4IX1goJxSbrLiBqcWdMf3XdyMY1OdQgjRRMvJU5uZB5qTiOKvqgmPwLLqF7qHdL9mu1hZ8Wg==
+X-Received: by 2002:a17:907:7f1a:b0:965:b0a7:5f47 with SMTP id qf26-20020a1709077f1a00b00965b0a75f47mr8474633ejc.29.1683544786777;
+        Mon, 08 May 2023 04:19:46 -0700 (PDT)
 Received: from cloudflare.com (79.184.132.119.ipv4.supernova.orange.pl. [79.184.132.119])
-        by smtp.gmail.com with ESMTPSA id o7-20020a056402038700b0050bc41352d9sm5961093edv.46.2023.05.08.04.08.38
+        by smtp.gmail.com with ESMTPSA id v1-20020a170906292100b00953381ea1b7sm4845643ejd.90.2023.05.08.04.19.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 04:08:38 -0700 (PDT)
+        Mon, 08 May 2023 04:19:46 -0700 (PDT)
 References: <20230502155159.305437-1-john.fastabend@gmail.com>
- <20230502155159.305437-12-john.fastabend@gmail.com>
+ <20230502155159.305437-13-john.fastabend@gmail.com>
 User-agent: mu4e 1.6.10; emacs 28.2
 From: Jakub Sitnicki <jakub@cloudflare.com>
 To: John Fastabend <john.fastabend@gmail.com>
 Cc: daniel@iogearbox.net, lmb@isovalent.com, edumazet@google.com,
  bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
  andrii@kernel.org, will@isovalent.com
-Subject: Re: [PATCH bpf v7 11/13] bpf: sockmap, test shutdown() correctly
- exits epoll and recv()=0
-Date: Mon, 08 May 2023 13:04:58 +0200
-In-reply-to: <20230502155159.305437-12-john.fastabend@gmail.com>
-Message-ID: <87jzxj3wsq.fsf@cloudflare.com>
+Subject: Re: [PATCH bpf v7 12/13] bpf: sockmap, test FIONREAD returns
+ correct bytes in rx buffer
+Date: Mon, 08 May 2023 13:19:32 +0200
+In-reply-to: <20230502155159.305437-13-john.fastabend@gmail.com>
+Message-ID: <87fs873wa7.fsf@cloudflare.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -80,110 +80,16 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 On Tue, May 02, 2023 at 08:51 AM -07, John Fastabend wrote:
-> When session gracefully shutdowns epoll needs to wake up and any recv()
-> readers should return 0 not the -EAGAIN they previously returned.
+> A bug was reported where ioctl(FIONREAD) returned zero even though the
+> socket with a SK_SKB verdict program attached had bytes in the msg
+> queue. The result is programs may hang or more likely try to recover,
+> but use suboptimal buffer sizes.
 >
-> Note we use epoll instead of select to test the epoll wake on shutdown
-> event as well.
+> Add a test to check that ioctl(FIONREAD) returns the correct number of
+> bytes.
 >
 > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 > ---
->  .../selftests/bpf/prog_tests/sockmap_basic.c  | 68 +++++++++++++++++++
->  .../bpf/progs/test_sockmap_pass_prog.c        | 32 +++++++++
->  2 files changed, 100 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-> index 0ce25a967481..f9f611618e45 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-> @@ -2,6 +2,7 @@
->  // Copyright (c) 2020 Cloudflare
->  #include <error.h>
->  #include <netinet/tcp.h>
-> +#include <sys/epoll.h>
->  
->  #include "test_progs.h"
->  #include "test_skmsg_load_helpers.skel.h"
-> @@ -9,8 +10,11 @@
->  #include "test_sockmap_invalid_update.skel.h"
->  #include "test_sockmap_skb_verdict_attach.skel.h"
->  #include "test_sockmap_progs_query.skel.h"
-> +#include "test_sockmap_pass_prog.skel.h"
->  #include "bpf_iter_sockmap.skel.h"
->  
-> +#include "sockmap_helpers.h"
-> +
->  #define TCP_REPAIR		19	/* TCP sock is under repair right now */
->  
->  #define TCP_REPAIR_ON		1
-> @@ -350,6 +354,68 @@ static void test_sockmap_progs_query(enum bpf_attach_type attach_type)
->  	test_sockmap_progs_query__destroy(skel);
->  }
->  
-> +#define MAX_EVENTS 10
-> +static void test_sockmap_skb_verdict_shutdown(void)
-> +{
-> +	int n, err, map, verdict, s, c0, c1, p0, p1;
-> +	struct epoll_event ev, events[MAX_EVENTS];
-> +	struct test_sockmap_pass_prog *skel;
-> +	int epollfd;
-> +	int zero = 0;
-> +	char b;
-> +
-> +	skel = test_sockmap_pass_prog__open_and_load();
-> +	if (!ASSERT_OK_PTR(skel, "open_and_load"))
-> +		return;
-> +
-> +	verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-> +	map = bpf_map__fd(skel->maps.sock_map_rx);
-> +
-> +	err = bpf_prog_attach(verdict, map, BPF_SK_SKB_STREAM_VERDICT, 0);
-> +	if (!ASSERT_OK(err, "bpf_prog_attach"))
-> +		goto out;
-> +
-> +	s = socket_loopback(AF_INET, SOCK_STREAM);
-> +	if (s < 0)
-> +		goto out;
-> +	err = create_socket_pairs(s, AF_INET, SOCK_STREAM, &c0, &c1, &p0, &p1);
-> +	if (err < 0)
-> +		goto out;
-> +
-> +	err = bpf_map_update_elem(map, &zero, &c1, BPF_NOEXIST);
-> +	if (err < 0)
-> +		goto out_close;
-> +
-> +	shutdown(c0, SHUT_RDWR);
-> +	shutdown(p1, SHUT_WR);
-> +
-> +	ev.events = EPOLLIN;
-> +	ev.data.fd = c1;
-> +
-> +	epollfd = epoll_create1(0);
-> +	if (!ASSERT_GT(epollfd, -1, "epoll_create(0)"))
-> +		goto out_close;
-> +	err = epoll_ctl(epollfd, EPOLL_CTL_ADD, c1, &ev);
-> +	if (!ASSERT_OK(err, "epoll_ctl(EPOLL_CTL_ADD)"))
-> +		goto out_close;
-> +	err = epoll_wait(epollfd, events, MAX_EVENTS, -1);
-> +	if (!ASSERT_EQ(err, 1, "epoll_wait(fd)"))
-> +		goto out_close;
-> +
-> +	n = recv(c1, &b, 1, SOCK_NONBLOCK);
-> +	ASSERT_EQ(n, 0, "recv_timeout(fin)");
-> +	n = recv(p0, &b, 1, SOCK_NONBLOCK);
-> +	ASSERT_EQ(n, 0, "recv_timeout(fin)");
-> +
-> +out_close:
-> +	close(c0);
-> +	close(p0);
-> +	close(c1);
-> +	close(p1);
-> +out:
-> +	test_sockmap_pass_prog__destroy(skel);
-> +}
-> +
 
-This test has me scratching my head. I don't grasp what we're testing
-with (c0, p0) socket pair, since c0 is not in any sockmap?
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
 
