@@ -1,76 +1,82 @@
-Return-Path: <netdev+bounces-985-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-986-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E368F6FBBB0
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 01:57:17 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 72A0A6FBBB8
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 01:59:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 28E0E1C20AA1
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 23:57:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 411EA280E61
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 23:59:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD67113AE4;
-	Mon,  8 May 2023 23:57:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E02413AE8;
+	Mon,  8 May 2023 23:59:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A258E2598
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 23:57:13 +0000 (UTC)
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D9D10FE;
-	Mon,  8 May 2023 16:57:09 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id d2e1a72fcca58-6436dfa15b3so3456566b3a.1;
-        Mon, 08 May 2023 16:57:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 305246107
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 23:59:33 +0000 (UTC)
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A676683E2;
+	Mon,  8 May 2023 16:59:28 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id d9443c01a7336-1ab0c697c84so39335395ad.3;
+        Mon, 08 May 2023 16:59:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683590229; x=1686182229;
+        d=gmail.com; s=20221208; t=1683590368; x=1686182368;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
          :reply-to;
         bh=2YJeCVahMakSFFIeHkE0L5vaAYWzeS9qst+vBo++bi0=;
-        b=V1A1tHPZwpfkkO0EgTxo4EIvjleqKQfJm7iftNOq9DPkTxJC1zznl9LY6JlAz8kIG0
-         IxNbt4813HygIEA/BEhBKZ971tG11UeQh3bPjP/lS73Tal+kl5PoGBYnmpvN3AK1pJeO
-         nFnUcYubh12K7eyG/5Zb903blCGhRkXKxxrLOFEWl//CWJYn4UVkwdvyhP9G5tg17USW
-         ZvYmxQR/7A9IUVqaRYAmZSrBbrdxgugRM17kNYKPEO4LHFdW1P9g+eG4UNFItgeP8YyF
-         ZSPQGlZL4IxZOrS13K7z2vgmrFFhNFf5lZ3e9h345djHjIiTCe6mSfcIqMJcIkYYxneh
-         VLzA==
+        b=slvl90ejJvhpDMuKfei9ERvwSDS95akB18grdXbOMaqtHTpIsgRO169MWKDhVO+u0N
+         MiyytkrGDe1BzBeJ7OsaGMrPjgyvApqwZl182E4cd7ToHBde/EN4EgPrWiqXwu+0HXEd
+         V8ZuB1s9z/CNkhLBkjQHAEhEnchbea3wasKUZexsOmyICez64PdUbBdmYzv6WppxNr0p
+         KksAAPhqGoJJ8zTwX+be11upEuqmmxAPjF3hqK2fWyMlAjivNzRFKWpSVRDClqdxOAzW
+         0RMq5s92qneOYGR8cSwy+fpRwEWtD7XB66ELfIRpZhNuzWL9q4dkg+aKOVhr2jH71IJa
+         Igxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683590229; x=1686182229;
+        d=1e100.net; s=20221208; t=1683590368; x=1686182368;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
         bh=2YJeCVahMakSFFIeHkE0L5vaAYWzeS9qst+vBo++bi0=;
-        b=jgbOWpcQeSKis7LGXyq74Xk2o2xammRv7UNod4dpH+lWEFulWJe/vR13ZQr+br2kB6
-         ot1tYco9a17DVXmgS7n4xNuSUs33uBCVs9jvOMnf/LoVh0kofI1+wUCByq36SPe8HYzt
-         IPitUW2DSrZfXxJsHLqurjH9jthrrqNPYtbvvagB2oXc7uvc44g7JfmBAomqaJ7j17bd
-         zad2KLqUJtXJQPBxmTvgliMa3YItGh5e7zEiQmgb3qf9Ya2WTqx2R9zXQLUnytHDnztg
-         utXwDr7RFNIcEV4nyOPj5upAk+7A4Ov3dZE4BS/9TdSor+kvuS8zav6IoyNlPmgTPgwC
-         YeFA==
-X-Gm-Message-State: AC+VfDz5QpuMVz8jwk3QS3KfPONXbfx7wT8ZHHZ82k1cq99btnTvbmsb
-	9xOjDhVgHPQqSNjc1l34PBc=
-X-Google-Smtp-Source: ACHHUZ4hcKgA049XWgxIVPn+ouqNEVZuuUZ+EgtjcGosmiCjT5f9SLcQLHHSZy6NypvHcd9e/tZX+w==
-X-Received: by 2002:a05:6a00:248d:b0:63a:8f4c:8be1 with SMTP id c13-20020a056a00248d00b0063a8f4c8be1mr17781632pfv.10.1683590228788;
-        Mon, 08 May 2023 16:57:08 -0700 (PDT)
+        b=DqkZL0JaenqKxHVMP3AsMgMwbk1lDLu8j3JVZk/dmZdt+AOCbI+C1Ea7PsWbdsEBE5
+         7srtfH/5dPbde9VLBJSmQtNcVYfWcHYbRwCIwlH7zjccd7ASCCdjWeW+eJ9PHJzWTbzp
+         wb63ggQ2mTBOierybVGKsthNO0DLwayNGjPTsbF3TWkq6/pODcOfiC50m5JkGuEGzTYy
+         7j1YU18wbgS9O8R91q7tG934s3wdzHN7mUXCMZeXKkuby5IUVySVwFod6HRMa19gp1Oc
+         iX71+AvNn5gnNVkUtwFiRYT0TDfu+qU6Y5v+jJnS/OAE4QF6ITB6VTYM06/MuLHIaaLE
+         wWuQ==
+X-Gm-Message-State: AC+VfDy/+QSzhWcvXk3KL+nLpBKgG42ezSVu1CCj6KWIR/O5CLH3FZX/
+	HkzY06eiYvMa8VsrTojEDiw=
+X-Google-Smtp-Source: ACHHUZ7fkJE1M47Pe1lvUaHuLXKJ6X2K8ZXhyVkwcgQruuVvN94s7C2qtyHrBGLLHUGGaS7OcT+A4A==
+X-Received: by 2002:a17:902:6b86:b0:1a6:9f85:9437 with SMTP id p6-20020a1709026b8600b001a69f859437mr10384836plk.67.1683590367846;
+        Mon, 08 May 2023 16:59:27 -0700 (PDT)
 Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id t23-20020a62ea17000000b0063d2dae6243sm490714pfh.115.2023.05.08.16.57.08
+        by smtp.gmail.com with ESMTPSA id x5-20020a170902b40500b001a922d43779sm72451plr.27.2023.05.08.16.59.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 16:57:08 -0700 (PDT)
+        Mon, 08 May 2023 16:59:27 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
-Date: Mon, 8 May 2023 13:57:07 -1000
+Date: Mon, 8 May 2023 13:59:26 -1000
 From: Tejun Heo <tj@kernel.org>
 To: jiangshanlai@gmail.com
 Cc: linux-kernel@vger.kernel.org, kernel-team@meta.com,
-	Sunil Goutham <sgoutham@marvell.com>,
+	Kalle Valo <kvalo@kernel.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 06/22] net: thunderx: Use alloc_ordered_workqueue() to
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Johannes Berg <johannes.berg@intel.com>,
+	Avraham Stern <avraham.stern@intel.com>,
+	Kees Cook <keescook@chromium.org>,
+	Mordechay Goodstein <mordechay.goodstein@intel.com>,
+	"Haim, Dreyfuss" <haim.dreyfuss@intel.com>,
+	linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 09/22] wifi: iwlwifi: Use alloc_ordered_workqueue() to
  create ordered workqueues
-Message-ID: <ZFmMU2jMRgi6tWZC@slm.duckdns.org>
+Message-ID: <ZFmM3taSTiq7Mv4L@slm.duckdns.org>
 References: <20230421025046.4008499-1-tj@kernel.org>
- <20230421025046.4008499-7-tj@kernel.org>
+ <20230421025046.4008499-10-tj@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -79,7 +85,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230421025046.4008499-7-tj@kernel.org>
+In-Reply-To: <20230421025046.4008499-10-tj@kernel.org>
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
