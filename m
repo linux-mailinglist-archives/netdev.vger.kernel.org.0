@@ -1,127 +1,89 @@
-Return-Path: <netdev+bounces-821-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-822-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 77B166FA1E6
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 10:05:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3A2B36FA289
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 10:44:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 07DEE280EE5
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 08:05:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 52624280EBC
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 08:44:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB642154BC;
-	Mon,  8 May 2023 08:05:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 93E6D7497;
+	Mon,  8 May 2023 08:44:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A85F413AE2
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 08:05:15 +0000 (UTC)
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7F5E61;
-	Mon,  8 May 2023 01:05:14 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id d75a77b69052e-3f386bcd858so7926771cf.0;
-        Mon, 08 May 2023 01:05:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683533113; x=1686125113;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=u4+AWsBdeTsapigTliZu2h5+/WieHsE6rUWtW6EHz9Q=;
-        b=Y/rMh2wXXDwIajoCBrc57NfDp52lyHmnb8ke88JA7fCaB6jEQEOV/WyodVO/Tu0CuI
-         R8FnS74zjarIUJQozu/XJPHXkBt6R7EwuW4BuYzZLpEqcbrFAXXY6nrvZvG0DnNHpfdH
-         /quJB74eUnSnMoptNzUeW3cPzcUg+/53YoYe2Cbzbo5WlwBfKgi7SkNgCBWaTyBAzy7z
-         U64wQsDmn7scMpbXfQBqhPe1/B6uV6ffQPg4a8LRLWZz5wJK2ysWlY6N2GPysAWDjEgd
-         uBHMlkOMoFCxuFA3JsLsZcwAChO86tuRN7V9rXvNSLbVrVh3IsqUShc2ARsNw7NeloGD
-         a0YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683533113; x=1686125113;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=u4+AWsBdeTsapigTliZu2h5+/WieHsE6rUWtW6EHz9Q=;
-        b=QyLvy30Tg5Ew6C5uNpQCZmOlLNaGKXz+iPAxNA00naLqKtAuXJZePA1MCtdr3nS5EE
-         lnwL/GBQhY2REw5/6a6cmEUFYJM/2uzXW5Ix0F8yPrZxOQ7Lpz28zo04au0fNI86mzyc
-         KviIJBa8LSBEAihhGwNPvfLpG7P883HtwEzZ35cLpAdh9TsQqSquMn/wKjquKmGhsJ3Y
-         +cSZjVZmqZUiIj7Jahspymw2poCv5niMk3bEc10QyO01lVwy16uT/w9YOvqxeW0A+0Yg
-         1ldyrWivTrFsAdG7dy/uyuHd+Ud6J2qne97OdRa5dR0tuwn+fAaHLW/jyaBHU+zTonnE
-         qXug==
-X-Gm-Message-State: AC+VfDyjxuf15DW9SVmpbr70/3dHJtwJGzu9qcXh3W83NadHRB31ktz1
-	iy/V+ZTvK0kBX/FlWDG6JI/yUz46IDL03OmKwpUT6wJJpYU=
-X-Google-Smtp-Source: ACHHUZ7Q8ixWQ4lZq0wi0sk0Ual+g0a6z6zWnsceEeOmSjvH24BKPRq00VCe4f2Huuaf+EPllrkIUowymDGqS7mkZ6U=
-X-Received: by 2002:a05:622a:10:b0:3e4:26de:162d with SMTP id
- x16-20020a05622a001000b003e426de162dmr14086321qtw.16.1683533113085; Mon, 08
- May 2023 01:05:13 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C276210C
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 08:44:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DC5FC433EF;
+	Mon,  8 May 2023 08:44:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683535492;
+	bh=4r3I/p321L24aAx0oFkvVjKBy4Ysck/E+5s0WPzJpB4=;
+	h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+	b=Idi0uxdhC0IAIqdFhRDaGnjKm6BtsAeoZxde4HBaCAGj0spmTGStkmr7e8SPNw8rp
+	 Nu3QMcgKRSvP1m4fTcff+oBGfiROJfCLvCF27uuKlSHDOjPB0A4pKZqhWCbmunFJMb
+	 eTmXv+aOLEvT0SLoNxKYjChy9TaxfsZXlIpTN1SeIDxO4OKSk3xASB0H1FeBzVxKLa
+	 Wuk7qx5qIQ8otkjmAUrArGp0Bhz71uBjmHEbG+SPtFR5g+YEyp5fbBgTfteLOxSg+e
+	 JwQYSksPZCHm3jVUueeJJeprPuDHMim7rJONUbR+kSr6rK7McAE1OfM4B0POrZ/xeW
+	 /QUr6qcr0r/WA==
+From: Kalle Valo <kvalo@kernel.org>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>,  Eric Dumazet <edumazet@google.com>,  Jakub Kicinski <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>,  Arnd Bergmann <arnd@arndb.de>,  Johannes Berg <johannes.berg@intel.com>,  Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,  Wen Gong <quic_wgong@quicinc.com>,  Baochen Qiang <quic_bqiang@quicinc.com>,  Sowmiya Sree Elavalagan <quic_ssreeela@quicinc.com>,  ath11k@lists.infradead.org,  linux-wireless@vger.kernel.org,  netdev@vger.kernel.org,  linux-kernel@vger.kernel.org,  ath12k@lists.infradead.org
+Subject: Re: [PATCH] wireless: ath: work around false-positive stringop-overread warning
+References: <20230417205447.1800912-1-arnd@kernel.org>
+Date: Mon, 08 May 2023 11:44:44 +0300
+In-Reply-To: <20230417205447.1800912-1-arnd@kernel.org> (Arnd Bergmann's
+	message of "Mon, 17 Apr 2023 22:54:20 +0200")
+Message-ID: <87ttwnnrer.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: Bilal Khan <bilalkhanrecovered@gmail.com>
-Date: Mon, 8 May 2023 13:05:02 +0500
-Message-ID: <CA++M5eLYdY=UO2QBz17YLLw8OyG6cDYHm1dvs=mc8zQ7nPvYVA@mail.gmail.com>
-Subject: [PATCH] Fix grammar in ip-rule(8) man page
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: majordomo@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: multipart/mixed; boundary="0000000000002c87f505fb2a19da"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain
 
---0000000000002c87f505fb2a19da
-Content-Type: text/plain; charset="UTF-8"
+Arnd Bergmann <arnd@kernel.org> writes:
 
-Hey there,
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> In a rare arm64 randconfig build, I got multiple warnings for ath11k
+> and ath12k:
+>
+> In function 'ath11k_peer_assoc_h_ht',
+>     inlined from 'ath11k_peer_assoc_prepare' at drivers/net/wireless/ath/ath11k/mac.c:2665:2:
+> drivers/net/wireless/ath/ath11k/mac.c:1709:13: error: 'ath11k_peer_assoc_h_ht_masked' reading 10 bytes from a region of size 0 [-Werror=stringop-overread]
+>  1709 |         if (ath11k_peer_assoc_h_ht_masked(ht_mcs_mask))
+>       |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> This happens whenever gcc-13 fails to inline one of the functions
+> that take a fixed-length array argument but gets passed a pointer.
+>
+> Change these functions to all take a regular pointer argument
+> instead.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-I have identified a small grammatical error in the ip-rule(8) man
-page, and have created a patch to fix it. The current first line of
-the DESCRIPTION section reads:
+s/wireless:/wifi:/ but I can fix that.
 
-> ip rule manipulates rules in the routing policy database control the route selection algorithm.
+In a awat it's a shame to lose the explicit length but I guess there's
+no other way to fix this?
 
-This sentence contains a grammatical error, as "control" should either
-be changed to "that controls" (to apply to "database") or "to control"
-(to apply to "manipulates"). I have updated the sentence to read:
+Also I hope you find the time to add GCC 13 to crosstool :) Related to
+this, last year we had a similar warning with GCC 11 for which I added this
+not-so-pretty workaround:
 
-> ip rule manipulates rules in the routing policy database that controls the route selection algorithm.
+abf93f369419 wifi: ath11k: mac: fix reading 16 bytes from a region of size 0 warning
 
-This change improves the readability and clarity of the ip-rule(8) man
-page and makes it easier for users to understand how to use the IP
-rule command.
+https://git.kernel.org/linus/abf93f369419
 
-I have attached the patch file by the name
-"0001-fixed-the-grammar-in-ip-rule-8-man-page.patch" to this email and
-would appreciate any feedback or suggestions for improvement.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Thank you!
-
---0000000000002c87f505fb2a19da
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="0001-fixed-the-grammar-in-ip-rule-8-man-page.patch"
-Content-Disposition: attachment; 
-	filename="0001-fixed-the-grammar-in-ip-rule-8-man-page.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_lhek3brz0>
-X-Attachment-Id: f_lhek3brz0
-
-RnJvbSAyNjIxM2I4MmI0ZDNjNWJiZTdiY2E1YWI1Mzc4YzU1ZjFlMWM5ZTc4IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBCaWxhbCBLaGFuIDxiaWxhbGtoYW5yZWNvdmVyZWRAZ21haWwu
-Y29tPgpEYXRlOiBUdWUsIDIgTWF5IDIwMjMgMTQ6NDQ6MzIgKzA1MDAKU3ViamVjdDogW1BBVENI
-XSBmaXhlZCB0aGUgZ3JhbW1hciBpbiBpcC1ydWxlKDgpIG1hbiBwYWdlCgphIHNtYWxsIGdyYW1t
-YXRpY2FsIGVycm9yIGhhcyBiZWVuIGlkZW5maWVkIGluIHRoZSBpcC1ydWxlKDgpIG1hbiBwYWdl
-CgpTaWduZWQtb2ZmLWJ5OiBCaWxhbCBLaGFuIDxiaWxhbGtoYW5yZWNvdmVyZWRAZ21haWwuY29t
-PgotLS0KIG1hbi9tYW44L2lwLXJ1bGUuOCB8IDIgKy0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2Vy
-dGlvbigrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL21hbi9tYW44L2lwLXJ1bGUuOCBi
-L21hbi9tYW44L2lwLXJ1bGUuOAppbmRleCA3NDNkODhjNi4uYzkwZDBlODcgMTAwNjQ0Ci0tLSBh
-L21hbi9tYW44L2lwLXJ1bGUuOAorKysgYi9tYW4vbWFuOC9pcC1ydWxlLjgKQEAgLTg4LDcgKzg4
-LDcgQEAgaXAtcnVsZSBcLSByb3V0aW5nIHBvbGljeSBkYXRhYmFzZSBtYW5hZ2VtZW50CiAuU0gg
-REVTQ1JJUFRJT04KIC5JIGlwIHJ1bGUKIG1hbmlwdWxhdGVzIHJ1bGVzCi1pbiB0aGUgcm91dGlu
-ZyBwb2xpY3kgZGF0YWJhc2UgY29udHJvbCB0aGUgcm91dGUgc2VsZWN0aW9uIGFsZ29yaXRobS4K
-K2luIHRoZSByb3V0aW5nIHBvbGljeSBkYXRhYmFzZSB0aGF0IGNvbnRyb2xzIHRoZSByb3V0ZSBz
-ZWxlY3Rpb24gYWxnb3JpdGhtLgogCiAuUAogQ2xhc3NpYyByb3V0aW5nIGFsZ29yaXRobXMgdXNl
-ZCBpbiB0aGUgSW50ZXJuZXQgbWFrZSByb3V0aW5nIGRlY2lzaW9ucwotLSAKMi4yNS4xCgo=
---0000000000002c87f505fb2a19da--
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
