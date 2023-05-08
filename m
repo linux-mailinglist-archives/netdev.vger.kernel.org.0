@@ -1,67 +1,71 @@
-Return-Path: <netdev+bounces-919-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-920-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E9FC66FB611
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 19:46:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 05D486FB612
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 19:46:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D855A1C20A3C
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 17:46:00 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 67BE428106C
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 17:46:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87205610B;
-	Mon,  8 May 2023 17:46:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4AE5610C;
+	Mon,  8 May 2023 17:46:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 775164424
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 17:46:00 +0000 (UTC)
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B3A35BD
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 10:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683567958; x=1715103958;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=U0tVdpDr1Rcq4oJUAykl8mhVuYZKbf/9+wVS4bXPpRE=;
-  b=RpXKuTyuyGgofGRV2tg1AHjIgRiw+WZsEyOkHMxFPXXsgKrS1J83OC9b
-   mOmYv5IFV29yl33VIen7mvtDM5rhDGdMZiaF+M7x6G5txRfYJuvSdb01R
-   SicEzbFJOACpF/Xe4V+Jrd9uOtBNtUBa0zNlMO+y5Qj4XkuHl0hcrP0VH
-   iWY/pJhB22d9GbBahiNNmDgnkokv5yU95tkZlf3QGLofQbLH/SJPg3DD8
-   gikrwy+K+rmdmbjZOb6b+lErUOXyhOXs42T0kS/bWHKr21y6kVh4b1SGJ
-   nSpS2Ufoge0SveQ1r2ybBv7d8yGfWKZpD0mF1Nh3vT15mSqWBGg4xn70e
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="329338869"
-X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
-   d="scan'208";a="329338869"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 10:45:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="788194091"
-X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
-   d="scan'208";a="788194091"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by FMSMGA003.fm.intel.com with ESMTP; 08 May 2023 10:45:58 -0700
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
-To: davem@davemloft.net,
-	kuba@kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9921217D1
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 17:46:36 +0000 (UTC)
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41013ABD
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 10:46:34 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-3f193ca059bso30849375e9.3
+        for <netdev@vger.kernel.org>; Mon, 08 May 2023 10:46:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=wetterwald-eu.20221208.gappssmtp.com; s=20221208; t=1683567993; x=1686159993;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=rLV84bHjE1EEB97rJAyI0QjNGBwYHzVjRowlOVBrcHY=;
+        b=MUR/UmbZLtPB/Sgv3NHevLSME1L5i0tWGbmVCCySY7YtpZgijdKcX/RHm+ilfl4rQm
+         AMpDgBMa4p/ShY2vBU5r1sH648F3UrPH7FyJtj6lJ0Hf6SrG2ve2Fx9zFEuZwyCrYkhH
+         g5NkqnXuXG/Qc7unCSGudnJyJ2zjeqBNu19X4xspFiILdrH2mmpl+rXAbZrkZWh9xlgS
+         rhsRblRTB6BXIFWEwhsA1ONTd687d3z5l+QzRlk6bn3npTd0XDBlrqTGTnHOMyqyS3OE
+         NyTX9RHW4JuwuRTBWIltAESsVehL2I5RZ2Of4GOYYsRLv/Go8BwAmHpJm/XJdUTDwjRi
+         1nfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683567993; x=1686159993;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rLV84bHjE1EEB97rJAyI0QjNGBwYHzVjRowlOVBrcHY=;
+        b=cDw7IOM3gOcARIm9noLdQYSr9JWylS1z1oJhgZLJsLBPMARd9jxoiPfgArfn8yEAb7
+         KL9wd/7jrkGIcM0yFNlqOQem/xSVlUIBDRqBvL0mbnbVntwRvxZgHd1+sepcpKjqj1Yn
+         BJbRJnZw5IauL7YqFL+clXt+3bUQ3C7oVIWQFLk0CuUyF48lAU+lSaYmLVMbL/G5uirX
+         5MxZbfaFJF2NXPrmmJG51ozWXeZ+y1VYZwBBDhFF3a8Kvqui6bAj5JHHJNER1J5PDUKt
+         uSaWTCRSEMDucEhblWwm/9fpv/rr5c2nC07fCnaT3GfqiYKJm7U6ZWkdhFNGS7GVZmfd
+         9ZQQ==
+X-Gm-Message-State: AC+VfDySeW/vUDeTPIvwpa8Yt7suFzKZYckG7fz8vNpKvyuMUnT9cnpR
+	YCpvzcRlUQHPFItCEbh+QixZMebzGtQLyab4h+zRgUnM
+X-Google-Smtp-Source: ACHHUZ6Nb7Pg2NC5mvZ88Gvn7+TgT7TbZOK/1vqCqGsPEYzf+yMMzpT1IL7AzCMw1pwNJHsLyqLiWA==
+X-Received: by 2002:a7b:c38e:0:b0:3f0:310c:e3cf with SMTP id s14-20020a7bc38e000000b003f0310ce3cfmr8056689wmj.37.1683567993192;
+        Mon, 08 May 2023 10:46:33 -0700 (PDT)
+Received: from Halley.. ([2a01:e0a:432:9c10:3e58:c2ff:fe72:d814])
+        by smtp.gmail.com with ESMTPSA id i6-20020a05600c290600b003f18992079dsm17410025wmd.42.2023.05.08.10.46.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 May 2023 10:46:32 -0700 (PDT)
+From: Martin Wetterwald <martin@wetterwald.eu>
+To: kuba@kernel.org,
 	pabeni@redhat.com,
-	edumazet@google.com,
-	netdev@vger.kernel.org
-Cc: Jan Sokolowski <jan.sokolowski@intel.com>,
-	anthony.l.nguyen@intel.com,
-	maciej.fijalkowski@intel.com,
-	daniel@iogearbox.net,
-	Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Michal Schmidt <mschmidt@redhat.com>,
-	Pucha Himasekhar Reddy <himasekharx.reddy.pucha@intel.com>
-Subject: [PATCH net] ice: Fix undersized tx_flags variable
-Date: Mon,  8 May 2023 10:42:25 -0700
-Message-Id: <20230508174225.1707403-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
+	davem@davemloft.net,
+	dsahern@kernel.org
+Cc: netdev@vger.kernel.org,
+	Martin Wetterwald <martin@wetterwald.eu>
+Subject: [PATCH net-next v3] net: ipconfig: Allow DNS to be overwritten by DHCPACK
+Date: Mon,  8 May 2023 19:44:47 +0200
+Message-Id: <20230508174446.55948-1-martin@wetterwald.eu>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -69,117 +73,103 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Jan Sokolowski <jan.sokolowski@intel.com>
+Some DHCP server implementations only send the important requested DHCP
+options in the final BOOTP reply (DHCPACK).
+One example is systemd-networkd.
+However, RFC2131, in section 4.3.1 states:
 
-As not all ICE_TX_FLAGS_* fit in current 16-bit limited
-tx_flags field, some VLAN-related flags would not properly apply.
+> The server MUST return to the client:
+> [...]
+> o Parameters requested by the client, according to the following
+>   rules:
+>
+>      -- IF the server has been explicitly configured with a default
+>         value for the parameter, the server MUST include that value
+>         in an appropriate option in the 'option' field, ELSE
 
-Fix that by refactoring tx_flags variable into flags only and
-a separate variable that holds VLAN ID. As there is some space left,
-type variable can fit between those two. Pahole reports no size
-change to ice_tx_buf struct.
+I've reported the issue here:
+https://github.com/systemd/systemd/issues/27471
 
-Fixes: aa1d3faf71a6 ("ice: Robustify cleaning/completing XDP Tx buffers")
-Signed-off-by: Jan Sokolowski <jan.sokolowski@intel.com>
-Reviewed-by: Alexander Lobakin <aleksander.lobakin@intel.com>
-Tested-by: Michal Schmidt <mschmidt@redhat.com>
-Tested-by: Pucha Himasekhar Reddy <himasekharx.reddy.pucha@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Linux PNP DHCP client implementation only takes into account the DNS
+servers received in the first BOOTP reply (DHCPOFFER).
+This usually isn't an issue as servers are required to put the same
+values in the DHCPOFFER and DHCPACK.
+However, RFC2131, in section 4.3.2 states:
+
+> Any configuration parameters in the DHCPACK message SHOULD NOT
+> conflict with those in the earlier DHCPOFFER message to which the
+> client is responding.  The client SHOULD use the parameters in the
+> DHCPACK message for configuration.
+
+When making Linux PNP DHCP client (cmdline ip=dhcp) interact with
+systemd-networkd DHCP server, an interesting "protocol misunderstanding"
+happens:
+Because DNS servers were only specified in the DHCPACK and not in the
+DHCPOFFER, Linux will not catch the correct DNS servers: in the first
+BOOTP reply (DHCPOFFER), it sees that there is no DNS, and sets as
+fallback the IP of the DHCP server itself. When the second BOOTP reply
+comes (DHCPACK), it's already too late: the kernel will not overwrite
+the fallback setting it has set previously.
+
+This patch makes the kernel overwrite its DNS fallback by DNS servers
+specified in the DHCPACK if any.
+
+Signed-off-by: Martin Wetterwald <martin@wetterwald.eu>
 ---
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c |  6 +++---
- drivers/net/ethernet/intel/ice/ice_txrx.c    |  8 +++-----
- drivers/net/ethernet/intel/ice/ice_txrx.h    | 12 ++++++------
- 3 files changed, 12 insertions(+), 14 deletions(-)
+v3:
+  - Submit patch to net-next instead of net
+  - Indicate target tree in subject
+  - Repair corrupted patch
+  - Move ic_nameservers_fallback outside of the #ifdef
+v2:
+  - Only overwrite DNS servers if it was the fallback DNS.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index c6d4926f0fcf..6c212d0dbef3 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -932,10 +932,10 @@ ice_tx_prepare_vlan_flags_dcb(struct ice_tx_ring *tx_ring,
- 	if ((first->tx_flags & ICE_TX_FLAGS_HW_VLAN ||
- 	     first->tx_flags & ICE_TX_FLAGS_HW_OUTER_SINGLE_VLAN) ||
- 	    skb->priority != TC_PRIO_CONTROL) {
--		first->tx_flags &= ~ICE_TX_FLAGS_VLAN_PR_M;
-+		first->vid &= ~ICE_TX_VLAN_PR_M;
- 		/* Mask the lower 3 bits to set the 802.1p priority */
--		first->tx_flags |= (skb->priority & 0x7) <<
--				   ICE_TX_FLAGS_VLAN_PR_S;
-+		first->vid |= (skb->priority << ICE_TX_VLAN_PR_S) &
-+			      ICE_TX_VLAN_PR_M;
- 		/* if this is not already set it means a VLAN 0 + priority needs
- 		 * to be offloaded
- 		 */
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 4fcf2d07eb85..059bd911c51d 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -1664,8 +1664,7 @@ ice_tx_map(struct ice_tx_ring *tx_ring, struct ice_tx_buf *first,
+ net/ipv4/ipconfig.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
+index e90bc0aa85c7..202fa1943ccd 100644
+--- a/net/ipv4/ipconfig.c
++++ b/net/ipv4/ipconfig.c
+@@ -173,6 +173,9 @@ static int ic_proto_have_if __initdata;
+ /* MTU for boot device */
+ static int ic_dev_mtu __initdata;
  
- 	if (first->tx_flags & ICE_TX_FLAGS_HW_VLAN) {
- 		td_cmd |= (u64)ICE_TX_DESC_CMD_IL2TAG1;
--		td_tag = (first->tx_flags & ICE_TX_FLAGS_VLAN_M) >>
--			  ICE_TX_FLAGS_VLAN_S;
-+		td_tag = first->vid;
- 	}
- 
- 	dma = dma_map_single(tx_ring->dev, skb->data, size, DMA_TO_DEVICE);
-@@ -1998,7 +1997,7 @@ ice_tx_prepare_vlan_flags(struct ice_tx_ring *tx_ring, struct ice_tx_buf *first)
- 	 * VLAN offloads exclusively so we only care about the VLAN ID here
- 	 */
- 	if (skb_vlan_tag_present(skb)) {
--		first->tx_flags |= skb_vlan_tag_get(skb) << ICE_TX_FLAGS_VLAN_S;
-+		first->vid = skb_vlan_tag_get(skb);
- 		if (tx_ring->flags & ICE_TX_FLAGS_RING_VLAN_L2TAG2)
- 			first->tx_flags |= ICE_TX_FLAGS_HW_OUTER_SINGLE_VLAN;
- 		else
-@@ -2388,8 +2387,7 @@ ice_xmit_frame_ring(struct sk_buff *skb, struct ice_tx_ring *tx_ring)
- 		offload.cd_qw1 |= (u64)(ICE_TX_DESC_DTYPE_CTX |
- 					(ICE_TX_CTX_DESC_IL2TAG2 <<
- 					ICE_TXD_CTX_QW1_CMD_S));
--		offload.cd_l2tag2 = (first->tx_flags & ICE_TX_FLAGS_VLAN_M) >>
--			ICE_TX_FLAGS_VLAN_S;
-+		offload.cd_l2tag2 = first->vid;
- 	}
- 
- 	/* set up TSO offload */
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-index fff0efe28373..76a34d435025 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-@@ -127,10 +127,9 @@ static inline int ice_skb_pad(void)
- #define ICE_TX_FLAGS_IPV6	BIT(6)
- #define ICE_TX_FLAGS_TUNNEL	BIT(7)
- #define ICE_TX_FLAGS_HW_OUTER_SINGLE_VLAN	BIT(8)
--#define ICE_TX_FLAGS_VLAN_M	0xffff0000
--#define ICE_TX_FLAGS_VLAN_PR_M	0xe0000000
--#define ICE_TX_FLAGS_VLAN_PR_S	29
--#define ICE_TX_FLAGS_VLAN_S	16
++/* DHCPACK can overwrite DNS if fallback was set upon first BOOTP reply */
++static int ic_nameservers_fallback __initdata;
 +
-+#define ICE_TX_VLAN_PR_M	0xe000
-+#define ICE_TX_VLAN_PR_S	13
+ #ifdef IPCONFIG_DYNAMIC
+ static DEFINE_SPINLOCK(ic_recv_lock);
+ static volatile int ic_got_reply __initdata;    /* Proto(s) that replied */
+@@ -938,7 +941,8 @@ static void __init ic_do_bootp_ext(u8 *ext)
+ 		if (servers > CONF_NAMESERVERS_MAX)
+ 			servers = CONF_NAMESERVERS_MAX;
+ 		for (i = 0; i < servers; i++) {
+-			if (ic_nameservers[i] == NONE)
++			if (ic_nameservers[i] == NONE ||
++			    ic_nameservers_fallback)
+ 				memcpy(&ic_nameservers[i], ext+1+4*i, 4);
+ 		}
+ 		break;
+@@ -1158,8 +1162,10 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
+ 	ic_addrservaddr = b->iph.saddr;
+ 	if (ic_gateway == NONE && b->relay_ip)
+ 		ic_gateway = b->relay_ip;
+-	if (ic_nameservers[0] == NONE)
++	if (ic_nameservers[0] == NONE) {
+ 		ic_nameservers[0] = ic_servaddr;
++		ic_nameservers_fallback = 1;
++	}
+ 	ic_got_reply = IC_BOOTP;
  
- #define ICE_XDP_PASS		0
- #define ICE_XDP_CONSUMED	BIT(0)
-@@ -182,8 +181,9 @@ struct ice_tx_buf {
- 		unsigned int gso_segs;
- 		unsigned int nr_frags;	/* used for mbuf XDP */
- 	};
--	u32 type:16;			/* &ice_tx_buf_type */
--	u32 tx_flags:16;
-+	u32 tx_flags:12;
-+	u32 type:4;			/* &ice_tx_buf_type */
-+	u32 vid:16;
- 	DEFINE_DMA_UNMAP_LEN(len);
- 	DEFINE_DMA_UNMAP_ADDR(dma);
- };
+ drop_unlock:
 -- 
-2.38.1
+2.40.1
 
 
