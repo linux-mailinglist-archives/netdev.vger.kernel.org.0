@@ -1,77 +1,99 @@
-Return-Path: <netdev+bounces-938-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-939-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B232C6FB6B6
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 21:23:29 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 36E806FB6BD
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 21:26:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 01D70280D99
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 19:23:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 865292810B4
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 19:26:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10E2D11195;
-	Mon,  8 May 2023 19:23:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7619611196;
+	Mon,  8 May 2023 19:26:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF4414411
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 19:23:25 +0000 (UTC)
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2119.outbound.protection.outlook.com [40.107.102.119])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05924E7;
-	Mon,  8 May 2023 12:23:24 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58B98AD43
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 19:26:50 +0000 (UTC)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C9A1FFB
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 12:26:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683574008; x=1715110008;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=l09YtlKUP7MVnvM3WuG99SiRPWkXToqAiynIE2fs1os=;
+  b=emudw9t2e2Eud1FZlrBtshO4LPBAcqTVPfGO3mEqlfPjW1VHyxRiHhrm
+   6mt/GFBU61cj6wnUz/hkO03+emAo6H14EOSlyNXmFD5SzHZS9ZRciM5Lp
+   52HAnz+TEFWPJmnefbskmglLfEol8Rg56zeZdD8T0Gpt92ZB06c2irQgR
+   KWcN7FXGSm79nf80fIJLWtGB38bLfHfvoo32QDbdcSd3NE27j6dSMzeE/
+   GGh8C02zgeicKRf6N/zecZSUUZDWqTUaY4V8eSx6HXJeT7O5dOXp0xI9W
+   d6pGlueE+VK7LPLzufYlfkYCaMxWtd7pJxQ8DtIVCpHzhiAsmfPjRMXbB
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="334184342"
+X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
+   d="scan'208";a="334184342"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 12:26:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="692698784"
+X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
+   d="scan'208";a="692698784"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga007.jf.intel.com with ESMTP; 08 May 2023 12:26:48 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 8 May 2023 12:26:47 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Mon, 8 May 2023 12:26:47 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Mon, 8 May 2023 12:26:47 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dik/wJecQnlmJY8bp3s+XgeR2Ir+37/fO5N5VQezo1bxgSg1W7NgphTdoe1N6Y+QgrmqnY1TCC9ABqddtjsXnp2N1WHU1T8KT6M3s5Fvnmy12lHEWNk0jO+zK1o4ODGLm/o7bTqyFuWryqkDp0jhyp1yC8dOx+LvDT1ECO5v4sKMUQsD1bmWinVw9Pw3rKw93V6OxwAjpiZwxoiD5RscFDpaktdPzii8p9qFAX0pzFfEt5IV7zCC18NCa1RUE05guXeZTE3FYWRz9I3zAQWVxm0oVhLLA24yFEoabVPNf8Ltd/v7wO/auMkDB+6mUm2FT/acrMPtot/wr7Bf4AD7wQ==
+ b=UzSVEu0elA5NZDGgXbJt9oKPN1578c8zFq+wxJwpEIxAzBErd7Nd4wz/bHtfUw/5E8sCOq2kmmrxdwPvm/hUJM1HMAbnWy7p2KGCs23To67M0XF1HtbZshTmZphlAG6L0UjSgxKiJCS+us8LnVAH4ZquU+eBjfm/8TdvaxjmMsGVU3gfyz4WR8j9ZWuzhH3nExJ41H9B6TwRqfBVHa10dZmXoCD0O0F/LPGDobUjvR4a87+GdQgKH4/j0Affo/EAmXuG3cBWN8Y6fdyaX3ZGeI9+k0B2d4IdiV1gRTnrGhSh3yC5YV+psLzgi09mgveI9I8bZxwX7H7TzLeXu+2Aww==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fPPbLfFta5OYEfnB5GoxmXUgLFITd081RyAnR8iZsf8=;
- b=ZZQ8t1JAbuarl7u4e8MsRhaNk8BNGubixa7RwiGNsLXFrTq5gXrHDoZAPx5mE5xQgRMsmxfLAcO+EGH3lkM1pvdlGGsDKcQBLOcusPYPaQONE1KscZpUc6f3rtBt+K8buqCrlSa4ZIVz7EHKdFwX/il9+vS1fSBtHl/ENpPifFJKEElQLW8oMcl/WG1pYjr0hScoyJn+Ql5z9S89jcDNE5xnYRmRbCCBxBtJgw8kPeLVXvlSFTo5M+t+kfsntfWuSWUbXEejAuW4C1hY3q9kjHPPaXibhZ5PU/Xv+UdrDD3fSIZ1W+hogF1yFjZ9PZ7yUpSNEr3EesooRyn4Wu7EpQ==
+ bh=fhJfBQrXIbD7czgqZuI3wRtQp1yh0Hs3LxQBDJswbN8=;
+ b=Dnei6eZoH0yJM+pwD11cTyfxLbV+mClaUr/pDr1R/NdrR5FIVoqGUL15gq8YE/RAUawaYHddpa9LU7Kd/1jd7MxsnhNa6Zd5xQF2F/vTWIO48yM+a52dfN54nlYGlyTa5bJ3V6nZhzDdKN+7L7GuZ7jwH4rDAN1oCawKqy/2NQBJDxGxXbxlin9aJIpFLUS3qHRl8Z8DIDZ6Zwx/4j1GHjhc0aZVHfaSUg9Lb7d3kMNK+kmVvvR0lyf9dJrQBOCEQHSuGSOlv14VuWwiwQCHeHKy+qAp+g8EN09O7YyZwC2oqpz+f6YgZYr/aEWPX5vpD0pACyl9rIHiBUCnSzPyvQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fPPbLfFta5OYEfnB5GoxmXUgLFITd081RyAnR8iZsf8=;
- b=LWBDNljVZPuYnAtet1RTWxpuKpKBvNR+F6QdgvI6faDZlBFPYcEvTBNqHArlRPQFZ/6I3c8Tn/UgWmleM/UxPRYPnzcdAAnTMe6GpXloFjKBNIuiyNRBbHiMBAhLgTC7VjjmgqFpy7OoaKTuLKH4Bpv8HQNsqj6NbMCki7kLg+g=
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from BY3PR13MB4834.namprd13.prod.outlook.com (2603:10b6:a03:36b::10)
- by BN0PR13MB4695.namprd13.prod.outlook.com (2603:10b6:408:125::24) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com (2603:10b6:303:90::24)
+ by CO1PR11MB4803.namprd11.prod.outlook.com (2603:10b6:303:95::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Mon, 8 May
- 2023 19:23:20 +0000
-Received: from BY3PR13MB4834.namprd13.prod.outlook.com
- ([fe80::d98b:da1b:b1f0:d4d7]) by BY3PR13MB4834.namprd13.prod.outlook.com
- ([fe80::d98b:da1b:b1f0:d4d7%7]) with mapi id 15.20.6363.032; Mon, 8 May 2023
- 19:23:20 +0000
-Date: Mon, 8 May 2023 21:23:13 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Florian Fainelli <f.fainelli@gmail.com>
-Cc: netdev@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-	Peter Geis <pgwipeout@gmail.com>, Frank <Frank.Sae@motor-comm.com>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/3] net: phy: broadcom: Add support for
- Wake-on-LAN
-Message-ID: <ZFlMIUB4rKQMQq9v@corigine.com>
-References: <20230508184309.1628108-1-f.fainelli@gmail.com>
- <20230508184309.1628108-3-f.fainelli@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230508184309.1628108-3-f.fainelli@gmail.com>
-X-ClientProxiedBy: AM0PR03CA0009.eurprd03.prod.outlook.com
- (2603:10a6:208:14::22) To BY3PR13MB4834.namprd13.prod.outlook.com
- (2603:10b6:a03:36b::10)
+ 2023 19:26:46 +0000
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::9c59:d19c:6c65:f4d6]) by CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::9c59:d19c:6c65:f4d6%6]) with mapi id 15.20.6363.032; Mon, 8 May 2023
+ 19:26:46 +0000
+Message-ID: <b245a442-bfba-aa7e-0437-928090ca1f26@intel.com>
+Date: Mon, 8 May 2023 12:26:37 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.10.1
+Subject: Re: [PATCH ethtool] Fix argc and argp handling issues
+To: Nicholas Vinson <nvinson234@gmail.com>, <mkubeck@suse.cz>
+CC: <netdev@vger.kernel.org>
+References: <4b89caeddf355b07da0ba68ea058a94e5a55ff59.1683549750.git.nvinson234@gmail.com>
+Content-Language: en-US
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+In-Reply-To: <4b89caeddf355b07da0ba68ea058a94e5a55ff59.1683549750.git.nvinson234@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR13CA0139.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c6::24) To CO1PR11MB4914.namprd11.prod.outlook.com
+ (2603:10b6:303:90::24)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -79,119 +101,141 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY3PR13MB4834:EE_|BN0PR13MB4695:EE_
-X-MS-Office365-Filtering-Correlation-Id: df8ee2d7-4df9-4647-5e65-08db4ff9aebd
+X-MS-TrafficTypeDiagnostic: CO1PR11MB4914:EE_|CO1PR11MB4803:EE_
+X-MS-Office365-Filtering-Correlation-Id: a7bfc7b8-104b-4bf8-4ec2-08db4ffa29ab
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	dGKK4sLKxWYDNdSPxYf++zyZkiIfdnp16zwlcoaLlz8+qWNToCZa1R4+dL4IrlhSQbOYy47kPc7aHNlpUna7aQWzOzReoYykDZ4MYySZvKGdVsUGyFInIQ45BvkOE2lS4khjV7SJqDwSADg3utEJYKIVG+mngOQKuakXtGrzOqLsb54+zjTCW6JiC82epQ3iPiuOPOBmCxlQfef3W4sVN3kFug/uwZBFPFurFTZFnFh4nkI/88gfbpA91af5YpKvujhSDl/xD++nQFATi1SgIv7SMIpOO3PFj2jaitlf13ijyN7iE43F4/xIeO1u+Q+vuNkcvOKPvqRW4CgKdt7r3/D2ptyLJYTUKIH7+++ZPZ1Eo7TDbiPmGVEOJbgBRiHfpwM1jINENU2xXrJ1a8DEig36xKpZLBuwcTXK/2QZWLb0xOOmTLW/IcGRfmCrlT8SlSaKf5XZEE73IY4LM4kiOJ8dNQK9vptcLndFuuGQASt/71uO+yRcuI9ZWf15yNF9PeMjRD8NkLt7AFCmQapQ2KspKv9AtM/9KD/MzcwyOIo8flcv/+/XI9p/HsSZL5v2h57mGAh7CauysybgHzVtHWBXFaWies/UijVRSOc69M8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR13MB4834.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(366004)(136003)(376002)(346002)(396003)(451199021)(54906003)(2906002)(4326008)(8936002)(316002)(478600001)(66476007)(6916009)(5660300002)(66556008)(8676002)(41300700001)(66899021)(6666004)(7416002)(44832011)(66946007)(6486002)(6512007)(6506007)(186003)(2616005)(36756003)(83380400001)(38100700002)(86362001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: VBgB5LSQcUO0KhB2b3YkgZQa+yx+F130sgces5GZFyHyeFUswmfXiuy4TZs2bjX/EmgR6Lbx8tetUrGN/D6wMjwUCBLYBjH3gqevbRte5uhZXAWKvycSRwUQRFfqSbKIYeDFCDbLgWwYR8pvHUIFpxgra4ZK2i8lmZ2qi5C3zVosvKBoZEYZgL+FAVMiRmiYqTAyzuyZ4it6V6jCzoNuB0/5DQwBuw1YLu8H6zpiA6HJEKb4cjwXkC3AAR0v2jxgvYGQLDvdrH6NAu2duMAWxqPgqEBkG9UUSn6uT7+7AI+kws1wifPL1L/MzQHiag5PFos8YaV/LepSRz8bY2/bbtHDX2wYPUw96rUVyHR5xUEVHt1FVmQxuZl/sk5LCd/0HnEOPCvhyq5a2cwhuCyIVotta4iIan/13Bciplbm3WSiSXc0acbgLNgoBekUMwY/wvYJ7nh7keJ0XkANqb7Bq8U8lBmj08XjbQqn3L8OniCbgxKYOSo712D5AMi80W+IfP0LANwaYnOdRFt2yCzmRmGhcby4rbzsTzQLhil5+4GbA5wKCLN7yje9sRNhv5XUe2yOy/KrYpLC67s2N6vdmkeJIi2TQtgMJedSJ93zhL8Z4S9BbTd2DoHh0WgwY5+lBTmx6gisNPtcmDuHqW0KkwhWBHblI3/qJuRIIcDwg9G3VHOx7ucEIfQ41vyKCBJJ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4914.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(136003)(376002)(346002)(396003)(39860400002)(451199021)(31686004)(2906002)(4326008)(8936002)(316002)(478600001)(66476007)(5660300002)(66556008)(8676002)(41300700001)(6666004)(44832011)(66946007)(6486002)(966005)(6512007)(53546011)(26005)(6506007)(186003)(82960400001)(2616005)(36756003)(83380400001)(38100700002)(31696002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?U6IpVjmF5UawO9zrRLS2s2/tOv1OVDE4PaTqGzwaE9vzzkpEQnMZL9od7f3R?=
- =?us-ascii?Q?qy1Krar/KCJpaSCner7AhiGbr9bmC651nU5YevO7D0OlndHlWNHSzvtoxGJj?=
- =?us-ascii?Q?FaBZQAnRwSdFAQwPqYB4UXLSrcyWEpIbPEjkvKKtk8B+3nfX/oVHBXkQqNx2?=
- =?us-ascii?Q?uIT86Z79bWypdpalSP3I0FDEp0mB+qfHxkt9PhNnqDfgcRV+BBbVq7M/8xD5?=
- =?us-ascii?Q?WzCvlmdsbXk/4DdmTyZ6FK5WMvn+7WrT7qtNqoI0QtR1+xGYif5Iv4AwuabM?=
- =?us-ascii?Q?VNaSXh874osTdTxMJIlzORFBD/A+Kdxw50gAs7Ce7yD6oBYH7DeUQ73VM4J8?=
- =?us-ascii?Q?GQV5NIY8LhZYxfDv9LYh1r8TummZiH9XzrzC71yR1q4kXS5fRoIORrf7sGB7?=
- =?us-ascii?Q?SZExjK+FL7+jvbr33zKs1spWRvag+D2T77hMZA2lItTlOmwZkmVDP1Wstccl?=
- =?us-ascii?Q?TdtUxnjbQU4ElSkPXvp4TqT3nh+9Qsp+NK5wSQIkHtw1+p5gYT2YCFLjCcDd?=
- =?us-ascii?Q?T+40EqYrnefG7uLHOe6ewHILEgY53FPoukIX7WGNNuPoOsb05hnZPn9d7O9b?=
- =?us-ascii?Q?TLaAG1CzvKnddbFanhOebvdi8vc3uGlR+m1EPg6kKy2UUidT7+6MUzAdZsgC?=
- =?us-ascii?Q?pw0xhJAqfsAK0ZAt/QiMSKDRNGvhAFZVr1Fn3mJwtYZBhokFfLXepBvZemw2?=
- =?us-ascii?Q?ljHsL2wG/8yyncRPyOG1WMJznAzBIXG7DV2bF+XQJ1KnWcMj6PuYj4fPy/FS?=
- =?us-ascii?Q?8SPqAM4M23RlLkAIdow6mZ6P8IDciABpMt6GFY9gJ3dXp20Rt0AKNF+4jULu?=
- =?us-ascii?Q?1Gd4v/pX7Uw04mtWONKRPueU8kN/FD93E6ufrwBlQcPpJGeruLSgyfa/iXv/?=
- =?us-ascii?Q?YIGPE+F7dvEVRUBGDLj4Z8KKhjgHgpEl9Y8+C+lvpXChzr6G0QrrbPIYDJuR?=
- =?us-ascii?Q?yEmjfoUOA5kLGdUxM6OV0zHn5kRDoSKgyu+x1vE/uOHFQspItpQeKjalTSP2?=
- =?us-ascii?Q?KHrNAop7lsCZLmTmnMrjSFPA2O77JX/+6YzW4xxoGO4eOEg9A13qWTPlo8w7?=
- =?us-ascii?Q?WNvUWfiLrEe0h8d1ch6wh58XPrOUop7U5l0PejXOxpBgPM559uNtXz87RiTQ?=
- =?us-ascii?Q?CcSupI4SOO8pJSdXa6//OOhNnJnd3GTMmOE41FA/sVWclciYobc4d+Wd1WXZ?=
- =?us-ascii?Q?CkarUB4aI0ODZgvLk/E5z+IoK2J1ToCead/pNIwlDx7Z09Y5CfWbTHP7xrRN?=
- =?us-ascii?Q?Oj+Z1Eww/u4rMbnLjDJ3p1sALdPtUwotZGZuxhUWczgcfp0jdgxtXVdimrRq?=
- =?us-ascii?Q?zA0Gemz+3RrrqRAzYI/xVJbUd1DvXSLsDnd4qVSO47eBYxaRmS/18j3aos/B?=
- =?us-ascii?Q?DhqJm+K15oqdom9eVP4x9h9IzQTZWH+ojwLL4tdZAVaHYNq7H+Ow1oKh9haJ?=
- =?us-ascii?Q?os9QgULDHP2hy7BqvKlvCYxt29wgUsFz0E1Axw2GDOK3XJH0WW33RDm+v2lB?=
- =?us-ascii?Q?SsdOt8Gqe0LJEsXbNtpctmWwQHDTIVyKkPftHe4HRSIKdSKz5FwGBdAccjfV?=
- =?us-ascii?Q?sYwYfj5YWxVIvq0DQGSr5xl6vNxdqMbR+Vla9FC2jNKB63h7QTOB4LuP9JUQ?=
- =?us-ascii?Q?rlJQ0BmQISt3te+qeG/p9b87dxujuQRa+/Xgp6Yad+Z+3cP8G6u/GePmACuB?=
- =?us-ascii?Q?jo/mnA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: df8ee2d7-4df9-4647-5e65-08db4ff9aebd
-X-MS-Exchange-CrossTenant-AuthSource: BY3PR13MB4834.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ejIwaFdScmdLWStYcHl1b1E1YTMwdjJ2bVJnTzZJVHp5L2QxWDlIZ01pV290?=
+ =?utf-8?B?dmVNcUFkblgzVnN4THVCWnFDaFk0TGZDZ203T3h3SzlwVW1mYmY5TzFINGdS?=
+ =?utf-8?B?dEswT2FmT3kvQS94SDBWc3lVRjV5dyt0VHRKSllwUkp2RWlPcDFncUtSaVlN?=
+ =?utf-8?B?aDZtbHU4RXRUbGRPeEZVd2VUTW92R1FkcXhjTDEvUm9QM2pMZTlrbXN4NUNQ?=
+ =?utf-8?B?S3dtQXNod1U2SUZ0VXcxR3JUcE15TllJbTBBRWJVcWlLRmxyT1kzeTJQSysx?=
+ =?utf-8?B?OW9MZE5iNzFQT3JMM2ROL1ZYTkIwK2JYMHY2eWk5YitsSFJGakJFR0trdll0?=
+ =?utf-8?B?R0QwMWZjZVRjYlBrZ1F2TnFuWHpGaUo2UW9SZ1ZySWVSdVZsU2dXeEQ3UDB1?=
+ =?utf-8?B?VTN0c3RnK1VmOEN0OXhpSHRGaEZqTldVa2VHT2VlTThTY0cxNzJxdmdOa1lL?=
+ =?utf-8?B?RDVWNmplTTczQkZLVlRNQldUdTE3MjYzSFljYVhSeHdISnd2V0pTZXVjWjRR?=
+ =?utf-8?B?MG5rZnVqU0xTdXFnSStCdkMwL0ttUWxCR1hocEVvSDVtWE55SjlCWk1OMngr?=
+ =?utf-8?B?b0ZBTng3eHliTTQ0OUxSMWJIL05lZFY2Y2syL1BZQ0VxTXRvK2drRGNXQWFY?=
+ =?utf-8?B?VUxvSnA3anFaWkYwNXpMWmtVd3VTNjR6VHE2a1BWUXBnYWFDVExXWTlENS9F?=
+ =?utf-8?B?OTl6RVlIRExRYzhoWFVVcDQxVFY5V2ZBTVVTMW1EZld6SVJ4ck93TEthS3dL?=
+ =?utf-8?B?Mk81dnpKTW51NDR6VFVoN1luRzNLTTAzU2ZlR2NtM0N3b0hFZ0pBSENwdWg0?=
+ =?utf-8?B?VzJJZjZGQUNCbW9iZUpOdXo0dUkrYzB0RkJXb3hIWlU3UGoxTVlqc0pLMWJs?=
+ =?utf-8?B?WTFseU1KNXMvMlpxbi9GTnRnOXhmNkYzSmNZRzd3ZjBpdUxmbE1oZG5JUUFR?=
+ =?utf-8?B?dGtCWjU4UkdONThLa0Zjb0VVREhEeWhGUitxdXFna0orRVBSWXZDZWhYWjUv?=
+ =?utf-8?B?MHpPbVAwYU1yMEkzTWhiand5RlZxalM0RlJBNk1qRWZEczB2ZmJLZWZtSmgv?=
+ =?utf-8?B?TXFsVHVjZXJnZjF2alY0TDVQVks5WDZlbEFSYkV6NUx4ZnZEdkJaWko1cEFm?=
+ =?utf-8?B?dXFpMWVaTEcrajlLUkZKbXkrOUx4VjhjaTZQazNDRUUzNlJIY2doYVA2N1kx?=
+ =?utf-8?B?RE8yR2NkdTlBdnA5RWkxM3RqTlYwb0JaSnF5QTdZMllXN2I3R3RvS09TZzdM?=
+ =?utf-8?B?UWxVcjRJVnZpR3VLMURIeTZ6Q0Q5bjd2Tm1NWTBaVk0rUjhETGQrVUxReUh0?=
+ =?utf-8?B?ZzdOSTZiWGJsRWdPVDBEaWlJUGFqUXBIRmNvTDIvOXZWTXlreWlOOU9mbjU2?=
+ =?utf-8?B?YURXcWh6WVZ3VnArWnBldjcxa2pwWUY5cVZGUDdvRmpnNGlQMk1PeVV5bDNP?=
+ =?utf-8?B?OHdCV0xQbE5yYWNFMGpOMHZSOVdHN25idk1nemROZHptZ1lLMVVXRndzV3Rk?=
+ =?utf-8?B?dVplRFpBNGpRdVl4Vyt4Qkd6T2Z5MU81bEFlT3RhYzluTTNnR0xkZEt6UDd0?=
+ =?utf-8?B?ZVhZaUNBUllTY2gxRk5MQUNuS3hpbTBESVo4SVlqMkIvNTlnUDhJMDBRTVRE?=
+ =?utf-8?B?WG5FWi9vNllUN0U0aDI1UzF1U0dUcXg3ZE5FcTg4R2d6OVpFWlVYbHo1Qmt3?=
+ =?utf-8?B?UmxiNHQ0dHNGbzRhaUpjTmpjcm8rWW9VSyt1SHhkUGIvYnpvYWhnZ3RuMUtB?=
+ =?utf-8?B?M1FvOTdnQnRyZTVsemZ2UlY4MzRpbEFQSS9QZWZ6Z3h1cHlaV0pGSFYzajNi?=
+ =?utf-8?B?Z3gvcXN4by9uQitrTE91dmZaV0ZNWUtZdmhZRGk1R3FGZnJ4NWZicEFBcWsx?=
+ =?utf-8?B?QXpzZ0puT01ZZXl1dW9NdmszcEN3Y2ZjUnBNUDY5ODJDMVRTeFlSZFNVbW5h?=
+ =?utf-8?B?Yktxekl3MU5Obk1PM2hONUxKa2tTNGljZFA2WFo5dUYyeFpBR3N5L1B5QStB?=
+ =?utf-8?B?RzJIUnRFakdaTFVVd00xSHV0TkE5UDVma0x6Vkd6NllJZXFEaFVvQmhyZm9J?=
+ =?utf-8?B?VlBISEtsM0I5UFc4NEdDUmZGL2txZG9SMVNtbXpWVFR0bHRWcU82b0dvMHNw?=
+ =?utf-8?B?NC9CUG9SOUVXRkRUY05KYnZNWm5tSkFRRGxuUVdHd0ovVEZNZFdubGwwRmtE?=
+ =?utf-8?B?eHc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a7bfc7b8-104b-4bf8-4ec2-08db4ffa29ab
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4914.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2023 19:23:20.7037
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2023 19:26:46.3828
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: z7vfEQq6u6NCkrpgkBVXFKb1T5mOZyWwwS8qriqsg8mijxG7oRyBjt+3bRnmkfU6hFG3i4tDwKe8wkWdv6F4AvA2xakyRVx/wOx5+fDT+vE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB4695
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: kW0JekgWqhgkX01U6o7YLg0SVQj2MrueVTYbfHbe5CPVSIOccdYp61drh9YM3KD+BMODHTgsfn/vDBYzfJMIyNUg3fZVsL5nOXr5dxI7tuE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4803
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 08, 2023 at 11:43:08AM -0700, Florian Fainelli wrote:
-> Add support for WAKE_UCAST, WAKE_MCAST, WAKE_BCAST, WAKE_MAGIC and
-> WAKE_MAGICSECURE. This is only supported with the BCM54210E and
-> compatible Ethernet PHYs. Using the in-band interrupt or an out of band
-> GPIO interrupts are supported.
+On 5/8/2023 5:45 AM, Nicholas Vinson wrote:
+> Fixes issues that were originally found using gcc's static analyzer. The
+> flags used to invoke the analyzer are given below.
 > 
-> Broadcom PHYs will generate a Wake-on-LAN level low interrupt on LED4 as
-> soon as one of the supported patterns is being matched. That includes
-> generating such an interrupt even if the PHY is operated during normal
-> modes. If WAKE_UCAST is selected, this could lead to the LED4 interrupt
-> firing up for every packet being received which is absolutely
-> undesirable from a performance point of view.
+> Upon manual review of the results and discussion of the previous patch
+> '[PATCH ethtool 3/3] Fix potentinal null-pointer derference issues.', it
+> was determined that when using a kernel lacking the execve patch ( see
+> https://github.com/gregkh/linux/commit/dcd46d897adb70d63e025f175a00a89797d31a43),
+> it is possible for argc to be 0 and argp to be an array with only a
+> single NULL entry. This scenario would cause ethtool to read beyond the
+> bounds of the argp array. However, this scenario should not be possible
+> for any Linux kernel released within the last two years should have the
+> execve patch applied.
 > 
-> Because the Wake-on-LAN configuration can be set long before the system
-> is actually put to sleep, we cannot have an interrupt service routine to
-> clear on read the interrupt status register and ensure that new packet
-> matches will be detected.
+>     CFLAGS=-march=native -O2 -pipe -fanalyzer       \
+>         -Werror=analyzer-va-arg-type-mismatch       \
+>         -Werror=analyzer-va-list-exhausted          \
+>         -Werror=analyzer-va-list-leak               \
+>         -Werror=analyzer-va-list-use-after-va-end
 > 
-> It is desirable to enable the Wake-on-LAN interrupt as late as possible
-> during the system suspend process such that we limit the number of
-> interrupts to be handled by the system, but also conversely feed into
-> the Linux's system suspend way of dealing with interrupts in and around
-> the points of no return.
+>     CXXCFLAGS=-march=native -O2                     \
+>         -pipe -fanalyzer                            \
+>         -Werror=analyzer-va-arg-type-mismatch       \
+>         -Werror=analyzer-va-list-exhausted          \
+>         -Werror=analyzer-va-list-leak               \
+>         -Werror=analyzer-va-list-use-after-va-end
 > 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>     LDFLAGS="-Wl,-O1 -Wl,--as-needed"
+> 
+>     GCC version is gcc (Gentoo 13.1.0-r1 p1) 13.1.0
 
-...
+I'm happy to see someone else looking at this stuff!
 
-> @@ -437,14 +460,38 @@ static int bcm54xx_iddq_set(struct phy_device *phydev, bool enable)
->  	return ret;
->  }
+So you're missign signed-off-by, please add it.
+
+However when you resend, feel free to add my
+
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+
+and possibly:
+
+Link:
+https://patchwork.kernel.org/project/netdevbpf/patch/20221208011122.2343363-8-jesse.brandeburg@intel.com/
+
+
+
+> ---
+>  ethtool.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/ethtool.c b/ethtool.c
+> index 98690df..0752fe4 100644
+> --- a/ethtool.c
+> +++ b/ethtool.c
+> @@ -6405,6 +6405,9 @@ int main(int argc, char **argp)
 >  
-> -static int bcm54xx_suspend(struct phy_device *phydev)
-> +static int bcm54xx_set_wakeup_irq(struct phy_device *phydev, bool state)
->  {
-> +	struct bcm54xx_phy_priv *priv = phydev->priv;
->  	int ret;
+>  	init_global_link_mode_masks();
 >  
-> +	if (!bcm54xx_phy_can_wakeup(phydev))
-> +		return 0;
+> +	if (argc < 2)
+> +		exit_bad_args();
 > +
-> +	if (priv->wake_irq_enabled != state) {
-> +		if (state)
-> +			ret = enable_irq_wake(priv->wake_irq);
-> +		else
-> +			ret = disable_irq_wake(priv->wake_irq);
-> +		priv->wake_irq_enabled = state;
-> +	}
+>  	/* Skip command name */
+>  	argp++;
+>  	argc--;
+> @@ -6449,7 +6452,7 @@ int main(int argc, char **argp)
+>  	 * name to get settings for (which we don't expect to begin
+>  	 * with '-').
+>  	 */
+> -	if (argc == 0)
+> +	if (!*argp)
+>  		exit_bad_args();
+>  
+>  	k = find_option(*argp);
 
-Hi Florian,
-
-If priv->wake_irq_enabled == state the ret is uninitialised here.
-
-> +
-> +	return ret;
-> +}
-
-...
 
