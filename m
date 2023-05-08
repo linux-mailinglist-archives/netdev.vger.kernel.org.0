@@ -1,156 +1,169 @@
-Return-Path: <netdev+bounces-922-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-923-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AC8406FB622
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 19:56:07 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D01F06FB630
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 20:06:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A54501C20A41
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 17:56:04 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 29B12281048
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 18:06:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 56DEE79DE;
-	Mon,  8 May 2023 17:56:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 618778486;
+	Mon,  8 May 2023 18:06:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 473A24424
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 17:56:04 +0000 (UTC)
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9692B3599
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 10:56:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1683568562; x=1715104562;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=siKAywfkJKMAwL8zoP+kP8YwQNkaeXZxuuzc1BPiB94=;
-  b=L25t2G6r7womeAG6e/Xexw9c2Fz0R18Bb8EHJzc52X57l/aL+d0pJ06X
-   qt14AEBosfbU6QE+mFLhNj70ZTXGJ/OTxUKehLoZRiih2Mz+HFEKBY0Nz
-   Y4QxaIlMsgWhJDFAMBBZlhcHYKRaBuD4H7CIaCSLXrLtu+qUB93p9tLaO
-   0=;
-X-IronPort-AV: E=Sophos;i="5.99,259,1677542400"; 
-   d="scan'208";a="327278906"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 17:55:56 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-	by email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com (Postfix) with ESMTPS id BEDD182156;
-	Mon,  8 May 2023 17:55:55 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Mon, 8 May 2023 17:55:55 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.187.170.41) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Mon, 8 May 2023 17:55:52 +0000
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>
-CC: Kuniyuki Iwashima <kuniyu@amazon.com>, Kuniyuki Iwashima
-	<kuni1840@gmail.com>, <netdev@vger.kernel.org>, syzbot
-	<syzkaller@googlegroups.com>
-Subject: [PATCH v3 net] net: Fix load-tearing on sk->sk_stamp in sock_recv_cmsgs().
-Date: Mon, 8 May 2023 10:55:43 -0700
-Message-ID: <20230508175543.55756-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52E873D68
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 18:06:41 +0000 (UTC)
+X-Greylist: delayed 8586 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 08 May 2023 11:06:39 PDT
+Received: from mailer.certarist.com (mailer.certarist.com [185.63.175.22])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3205E5A
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 11:06:39 -0700 (PDT)
+Received: from digital-mk.com (digital-mk.com [57.128.20.94])
+	by mailer.certarist.com (Postfix) with ESMTPSA id 75D721D3172
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 17:43:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=copponent.com;
+	s=mailer; t=1683560590;
+	bh=fwpkASNcWqWvrBReCEelA0sqrPUV8WYtSdYu+aB1JsQ=;
+	h=Date:Subject:From:Reply-To:To:List-Unsubscribe:List-Id:From;
+	b=nAFbb1VXBb2aNsQbZjMYDLHQW7nS1ePRNtwUAgczyTuwD2Wly/OmORLAzP0nJ9fF0
+	 y4dXmyc49Zs4ddR6NOxyVNgjStXpY8m1j9srK4+MGbde/rhWjWOtwPhNUseD7fY4S1
+	 HgPisWIsXW69St4f9Tm8GK4voH8Vwv+m32AqmGiZILYLV7B+lxkUaLmihJZF2OvUPB
+	 Yw+mcza3qJaNCWCeB1qzu/IQc0cPRlx2SPTbApXfa2qdqPEgOmvRoSQ1YKc3jOJjBr
+	 V2WtJaUOOUg9+xi/b6R0BBsLDgs1WgtxTfGul0RfJDow35lNSFx6QwGAcBDZ69YDrp
+	 rTaqMUigGFLMw==
+Message-ID: <fddfc6402001a644bf30991027f0ab0fd1e6de6d@copponent.com>
+Date: Mon, 08 May 2023 15:43:10 +0000
+Subject: Boostez votre =?utf-8?Q?visibilit=C3=A9?= en ligne et votre chiffre
+ d'affaires =?utf-8?Q?gr=C3=A2ce_=C3=A0?= nos offres de
+ =?utf-8?Q?r=C3=A9f=C3=A9rencement?= exclusives !
+From: MK Design <newsletter@copponent.com>
+Reply-To: MK Design <mkdesign@copponent.com>
+To: "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.187.170.41]
-X-ClientProxiedBy: EX19D044UWA001.ant.amazon.com (10.13.139.100) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-Precedence: Bulk
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-	T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: http://tracker.copponent.com/campaigns/qn94907enl188/report-abuse/ro602ogeq5798/qv247a0g8xa83
+X-EBS: http://tracker.copponent.com/lists/block-address
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+List-Unsubscribe: <http://tracker.copponent.com/lists/ro602ogeq5798/unsubscribe/qv247a0g8xa83/qn94907enl188?source=email-client-unsubscribe-button>,
+ <mailto:mkdesign@copponent.com?subject=Campaign-Uid%3Aqn94907enl188%20%2F%20Subscriber-Uid%3Aqv247a0g8xa83%20-%20Unsubscribe%20request&body=Please%20unsubscribe%20me%21>
+List-Id: ro602ogeq5798 <GLOBAL>
+Feedback-ID: qn94907enl188:qv247a0g8xa83:ro602ogeq5798:wg221zklm6e03
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_ABUSE_SURBL autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-KCSAN found a data race in sock_recv_cmsgs() where the read access
-to sk->sk_stamp needs READ_ONCE().
+Bonjour,
 
-BUG: KCSAN: data-race in packet_recvmsg / packet_recvmsg
+En tant que chef d'entreprise, vous comprenez l'IMPORTANCE D'=
+UNE
+VISIBILIT=C3=89 EN LIGNE OPTIMALE POUR ASSURER LA CROISSANCE ET LA
+=
+PROSP=C3=89RIT=C3=89 DE VOTRE ENTREPRISE.
+C'est pourquoi nous sommes ravi=
+s de vous pr=C3=A9senter nos offres de
+r=C3=A9f=C3=A9rencement exclusives=
+, disponibles sur notre site :
 
-write (marked) to 0xffff88803c81f258 of 8 bytes by task 19171 on cpu 0:
- sock_write_timestamp include/net/sock.h:2670 [inline]
- sock_recv_cmsgs include/net/sock.h:2722 [inline]
- packet_recvmsg+0xb97/0xd00 net/packet/af_packet.c:3489
- sock_recvmsg_nosec net/socket.c:1019 [inline]
- sock_recvmsg+0x11a/0x130 net/socket.c:1040
- sock_read_iter+0x176/0x220 net/socket.c:1118
- call_read_iter include/linux/fs.h:1845 [inline]
- new_sync_read fs/read_write.c:389 [inline]
- vfs_read+0x5e0/0x630 fs/read_write.c:470
- ksys_read+0x163/0x1a0 fs/read_write.c:613
- __do_sys_read fs/read_write.c:623 [inline]
- __se_sys_read fs/read_write.c:621 [inline]
- __x64_sys_read+0x41/0x50 fs/read_write.c:621
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3b/0x90 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x72/0xdc
+http://tracker.copponent.com/campaigns/=
+qn94907enl188/track-url/qv247a0g8xa83/9b5e195a340103c66da2b2516d1f307c69012=
+267
+=C2=A0
 
-read to 0xffff88803c81f258 of 8 bytes by task 19183 on cpu 1:
- sock_recv_cmsgs include/net/sock.h:2721 [inline]
- packet_recvmsg+0xb64/0xd00 net/packet/af_packet.c:3489
- sock_recvmsg_nosec net/socket.c:1019 [inline]
- sock_recvmsg+0x11a/0x130 net/socket.c:1040
- sock_read_iter+0x176/0x220 net/socket.c:1118
- call_read_iter include/linux/fs.h:1845 [inline]
- new_sync_read fs/read_write.c:389 [inline]
- vfs_read+0x5e0/0x630 fs/read_write.c:470
- ksys_read+0x163/0x1a0 fs/read_write.c:613
- __do_sys_read fs/read_write.c:623 [inline]
- __se_sys_read fs/read_write.c:621 [inline]
- __x64_sys_read+0x41/0x50 fs/read_write.c:621
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3b/0x90 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x72/0xdc
+Nos offres de r=C3=A9f=C3=A9rencement sont con=C3=A7ues s=
+p=C3=A9cifiquement pour les
+entreprises qui souhaitent accro=C3=AEtre leu=
+r pr=C3=A9sence en ligne et
+g=C3=A9n=C3=A9rer un chiffre d'affaires plus =
+=C3=A9lev=C3=A9.
+Voici quelques avantages majeurs que nos offres peuvent =
+apporter =C3=A0
+votre entreprise :
 
-value changed: 0xffffffffc4653600 -> 0x0000000000000000
+ =09*
+AM=C3=89LIORATION DE LA V=
+ISIBILIT=C3=89 : Nos strat=C3=A9gies de r=C3=A9f=C3=A9rencement
+permetten=
+t =C3=A0 votre site internet d'appara=C3=AEtre en premi=C3=A8re page des
+=
+r=C3=A9sultats de recherche sur des moteurs
+tels que Google, attirant ain=
+si davantage de clients potentiels.
 
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 19183 Comm: syz-executor.5 Not tainted 6.3.0-rc7-02330-gca6270c12e20 #2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+ =09*
+TRAFIC CIBL=C3=89 : En opt=
+imisant votre site pour des mots-cl=C3=A9s
+pertinents et en am=C3=A9liora=
+nt sa structure, nous vous aidons =C3=A0 attirer
+des visiteurs int=C3=
+=A9ress=C3=A9s par vos produits
+ou services, augmentant ainsi les chances=
+ de conversion.
 
-Fixes: 6c7c98bad488 ("sock: avoid dirtying sk_stamp, if possible")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
-v3:
-  * Use sock_read_timestamp() instead of cmpxchg().
+ =09*
+EXPERTISE ET ACCOMPAGNEMENT : Notre =C3=A9quip=
+e d'experts en
+r=C3=A9f=C3=A9rencement vous accompagne tout au long du pr=
+ocessus, en vous
+fournissant des analyses d=C3=A9taill=C3=A9es
+et des c=
+onseils personnalis=C3=A9s pour maximiser l'efficacit=C3=A9 de vos
+campag=
+nes marketing en ligne.
 
-v2: https://lore.kernel.org/netdev/20230508165815.45602-1-kuniyu@amazon.com/
-  * Add Fixes tag
+ =09*
+FLEXIBILIT=C3=89 ET ADAPTABILIT=C3=
+=89 : Nos offres sont modulables en fonction
+de vos besoins et de votre b=
+udget, vous permettant de choisir la
+solution la plus adapt=C3=A9e =C3=
+=A0 votre entreprise.
+=C2=A0
 
-v1: https://lore.kernel.org/netdev/20230506022325.99106-1-kuniyu@amazon.com/
----
- include/net/sock.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Ne laissez pas passer cette opportunit=
+=C3=A9 de propulser votre entreprise
+vers de nouveaux sommets en tirant p=
+arti de nos offres de
+r=C3=A9f=C3=A9rencement exclusives.
+Visitez notre=
+ site d=C3=A8s aujourd'hui pour en savoir plus et commencer
+=C3=A0 am=
+=C3=A9liorer votre visibilit=C3=A9 en ligne :
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 8b7ed7167243..656ea89f60ff 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2718,7 +2718,7 @@ static inline void sock_recv_cmsgs(struct msghdr *msg, struct sock *sk,
- 		__sock_recv_cmsgs(msg, sk, skb);
- 	else if (unlikely(sock_flag(sk, SOCK_TIMESTAMP)))
- 		sock_write_timestamp(sk, skb->tstamp);
--	else if (unlikely(sk->sk_stamp == SK_DEFAULT_STAMP))
-+	else if (unlikely(sock_read_timestamp(sk) == SK_DEFAULT_STAMP))
- 		sock_write_timestamp(sk, 0);
- }
- 
--- 
-2.30.2
+http://tracker.copponent=
+.com/campaigns/qn94907enl188/track-url/qv247a0g8xa83/9aa4fe0fe94c5921048748=
+2cefe4959c0b66cc5c
 
+N'h=C3=A9sitez pas =C3=A0 nous contacter pour toute=
+ question ou demande de
+renseignements compl=C3=A9mentaires. Nous serons =
+ravis de vous accompagner
+dans votre d=C3=A9marche vers une meilleure vis=
+ibilit=C3=A9 en ligne.
+
+Cordialement,
+
+Ja=C3=ABl Gandelin
+Respons=
+able r=C3=A9f=C3=A9rencement naturel MK Desitgn
+06 22 25 24 33
+
+Pour =
+ne plus recevoir de message de notre part : http://tracker.copponent.com/li=
+sts/ro602ogeq5798/unsubscribe/qv247a0g8xa83/qn94907enl188
+Voir la version=
+ en ligne :=C2=A0http://tracker.copponent.com/campaigns/qn94907enl188/web-v=
+ersion/qv247a0g8xa83
 
