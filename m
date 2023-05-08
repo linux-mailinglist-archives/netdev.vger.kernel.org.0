@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-878-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-876-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 772C86FB2C6
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 16:27:57 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A6BDE6FB2C3
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 16:27:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 333DA280F29
-	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 14:27:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E38B71C209B3
+	for <lists+netdev@lfdr.de>; Mon,  8 May 2023 14:27:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 889E020FE;
-	Mon,  8 May 2023 14:26:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F043EDDBB;
+	Mon,  8 May 2023 14:26:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 705C820FC
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 14:26:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E256817C8
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 14:26:57 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A876E9F
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 07:26:56 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9656E86
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 07:26:54 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1pw1p7-0008Nv-FY; Mon, 08 May 2023 16:26:45 +0200
+	id 1pw1p7-0008Nu-FZ; Mon, 08 May 2023 16:26:45 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1pw1p4-0021HD-Rx; Mon, 08 May 2023 16:26:42 +0200
+	id 1pw1p4-0021HA-QA; Mon, 08 May 2023 16:26:42 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1pw1p3-002SkW-Tl; Mon, 08 May 2023 16:26:41 +0200
+	id 1pw1p4-002Ska-6G; Mon, 08 May 2023 16:26:42 +0200
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Giuseppe Cavallaro <peppe.cavallaro@st.com>,
 	Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -47,9 +47,9 @@ Cc: netdev@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	kernel@pengutronix.de,
 	Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v2 08/11] net: stmmac: dwmac-sti: Convert to platform remove callback returning void
-Date: Mon,  8 May 2023 16:26:34 +0200
-Message-Id: <20230508142637.1449363-9-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH net-next v2 09/11] net: stmmac: dwmac-stm32: Convert to platform remove callback returning void
+Date: Mon,  8 May 2023 16:26:35 +0200
+Message-Id: <20230508142637.1449363-10-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230508142637.1449363-1-u.kleine-koenig@pengutronix.de>
 References: <20230508142637.1449363-1-u.kleine-koenig@pengutronix.de>
@@ -60,7 +60,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1790; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=vvW9RACgElBEGGSHwLzRmR6fBtfpgdwfH66Xci8Z+vg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkWQaW73y5JVQKY+U6ekSEbJxfA5Bt5ER9oD9ug mYZXqs3lqeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZFkGlgAKCRCPgPtYfRL+ TlR/CAC6DgP+iR6ECWIqxeoM7CYVDnohhr9E9fBJ4rWTj0cN5DH9GuM2jGlIrqHm6S8ZQtW5PwJ rcYD1i1AuJ546JcDZ3xHwSsfT+HcemFfCavNE6agF1aq6wTtB5DlG6UXPKENG7FQVAc86jFLW/M 6/uYfNG11+EGo9zuxbCecvM+1iVnC7FTtj2gb/tk3LG5ZhscVwikcCl/CoAyiHC3aBqbA4nb8Dy ZOPTNVHoG6Z98FFcxDL0OMcFAhed6y8QA2hvMHtuw2QTBfVJhV3UOAgt5pujrUunrrjvoPdbIyN kBnj9vfeNexsknbvPywPmmLFQWtgHxYqPOymcEVwkjHi8QKq
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1984; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=przpfAYO1NVKRdeD+EOh9tDmiFoKbiC/qaS09rEcQ98=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkWQaXnFjQ6noUETZoy8ISxqlYxfVM7vAZ5C6Jo s5ufjXrGqOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZFkGlwAKCRCPgPtYfRL+ TuVECACggB4PX6jvPPwlhD+UANkI7jyUPO/ioXqSQ4822BjEvqOqWqztO7HkkoBDfF01BgAcmXU JsaQdc5uDlsDrj1Q+QSbk5boOlexbPbz0ZlYKsXFHMBmydlmIMziJWhPdI0vn1/KZxHxQKv2XUh vMoNS84gymp4tjQnOBHyoUofxAeXQgVlemBr/0H5SbiEZ28I6I4VycPvNwi6ujulNMfrnXcAh/5 imBuonD9csGMEEqivsMGxR3k40AW4fFjWfJip1IfJg2C/AbjMERGZWT3lMWt5pxglPZxOVsWlCa LqR4tHXGpABUl0cVId6HHG/rEZvP70G3DvWSCYWR3ESNGHAg
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -87,39 +87,40 @@ callback to the void returning variant.
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c | 6 ++----
+ drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c
-index 465ce66ef9c1..dcbb17c4f07a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c
-@@ -317,15 +317,13 @@ static int sti_dwmac_probe(struct platform_device *pdev)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
+index 0616b3a04ff3..bdb4de59a672 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
+@@ -417,7 +417,7 @@ static int stm32_dwmac_probe(struct platform_device *pdev)
  	return ret;
  }
  
--static int sti_dwmac_remove(struct platform_device *pdev)
-+static void sti_dwmac_remove(struct platform_device *pdev)
+-static int stm32_dwmac_remove(struct platform_device *pdev)
++static void stm32_dwmac_remove(struct platform_device *pdev)
  {
- 	struct sti_dwmac *dwmac = get_stmmac_bsp_priv(&pdev->dev);
- 
- 	stmmac_dvr_remove(&pdev->dev);
- 
- 	clk_disable_unprepare(dwmac->clk);
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
+@@ -431,8 +431,6 @@ static int stm32_dwmac_remove(struct platform_device *pdev)
+ 		dev_pm_clear_wake_irq(&pdev->dev);
+ 		device_init_wakeup(&pdev->dev, false);
+ 	}
 -
 -	return 0;
  }
  
- #ifdef CONFIG_PM_SLEEP
-@@ -365,7 +363,7 @@ MODULE_DEVICE_TABLE(of, sti_dwmac_match);
+ static int stm32mp1_suspend(struct stm32_dwmac *dwmac)
+@@ -528,7 +526,7 @@ MODULE_DEVICE_TABLE(of, stm32_dwmac_match);
  
- static struct platform_driver sti_dwmac_driver = {
- 	.probe  = sti_dwmac_probe,
--	.remove = sti_dwmac_remove,
-+	.remove_new = sti_dwmac_remove,
+ static struct platform_driver stm32_dwmac_driver = {
+ 	.probe  = stm32_dwmac_probe,
+-	.remove = stm32_dwmac_remove,
++	.remove_new = stm32_dwmac_remove,
  	.driver = {
- 		.name           = "sti-dwmac",
- 		.pm		= &sti_dwmac_pm_ops,
+ 		.name           = "stm32-dwmac",
+ 		.pm		= &stm32_dwmac_pm_ops,
 -- 
 2.39.2
 
