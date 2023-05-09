@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-1107-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1109-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4E8166FC37E
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:09:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6F9E56FC38D
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:10:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 78E111C20B0D
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 10:09:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8E68B1C20A1C
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 10:10:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41840DDC0;
-	Tue,  9 May 2023 10:09:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EBB4B10960;
+	Tue,  9 May 2023 10:09:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 295BC8C06
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 10:09:46 +0000 (UTC)
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69304220
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 03:09:44 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-50bc070c557so10995605a12.0
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 03:09:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8E16C2D2
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 10:09:51 +0000 (UTC)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DEC10F
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 03:09:46 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-50bd37ca954so57273224a12.0
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 03:09:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1683626983; x=1686218983;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1683626985; x=1686218985;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=oVe674onQtEz3qbu2N4u6BX4TBUgejmmQjMq+AzzZ/k=;
-        b=M3f+mORhEM8p09rt4hFAxwpgOL4ByomsEryKSr6sxGJ+sf+1zySFaiW5LVCfHHWkab
-         XDkp0Sn2wUI/gr8ttKzF4/23T67uCD1eoabH7gsChDJLiDoMSlqu9NakdwpJFHsyPoSL
-         qELuCisdPh4RdX434ZA4XLflba70dAQ/bhX5/WK1dBPWtariJz3s+rNbK2Amr60DBOmG
-         Av4XihkuD+xLw+y/eeiO4COH8/Sj9+wGhHatLRg6L6XZ9zsdXxQkq9NkqqH1lZpHAAcj
-         ZOjDJnXLEpk73+4UdSW5c699XMvcPbirdyS9LPich28xBKycfn88iyI2RBtIRjguDgt9
-         D1FA==
+        bh=ODh5ZFuPRkJx7NiwWSS6sVIS1oA8JOEOyAhwG731hXU=;
+        b=FziZCZasL5oJz42dXG3diSodF2+A1zzmSumldgaVLgoX25qVp3cRWQb7bofb/usgH6
+         zbZtEElfYXYfpnFo/CvhuiUXIVZ6tKPMbMitcYCV4K8CC/PBtfBlZmr7n7ln27wh2Lbs
+         xTHJTOBYLOSScijVubMxVDtjvNlyVa5yq/FnxPQR6kDdEpwNYT3/X8ohwhsskDgRPqVX
+         SHOJTBsiaGvnyfeWeSJSIvlIaWk55ilxFYYyOitM707bGr9soD80kzH6G4cU2F35obrx
+         8B/olNzOBiDZGt4a+VCoifN4IDutlZsS5/jNC8UKXOWWI/NsAspxholsUgpx1J0sr9Ej
+         Sg/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683626983; x=1686218983;
+        d=1e100.net; s=20221208; t=1683626985; x=1686218985;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=oVe674onQtEz3qbu2N4u6BX4TBUgejmmQjMq+AzzZ/k=;
-        b=WOY10XEsiKYBq/6cQOTpWBItZE0+eIeE2uGsefUTq0BE0d4bRymEj5VWpuuIIMgQHH
-         hAb8p1IttPOy1n3B+g7zvjWls40CNIU+zqXAuz2hctsR5UXXU2h0cm5HY1eQeL1w4fGF
-         fVMsCx7AiqMzkMofIMMGptZmRjzV86AHT5cW1ynO5sUvFzSC5vsutHG6hAxbjMnd1YL4
-         a0wcrqzqGYdzhE+kqHdaFqhJNnvv7DwuAwfxQel4AK7c5jVFJcFkizqSlvJlR68Yi/qC
-         XtcGDHdgGtv+SEDsbe2CqX2f+D4zm9b/QO/PPUMxk8S4x8Wr1FJcxYo4ei38xREWmmPK
-         AIVA==
-X-Gm-Message-State: AC+VfDy3f58GLNpJTGIp4NDEAFteKdoL1mMFcP3EepuHK3pcYgudVT2Y
-	mg9tKD8XfDnrTmwLdTwnsP47YXZ865ozA+fgvDMyiw==
-X-Google-Smtp-Source: ACHHUZ7JiWw+L0HfasjzeJhukL9hJQfdq/ClDYKBZrGWwix0rQFCDZ51doPaW6qL2lHJVJQwF9F0KA==
-X-Received: by 2002:a17:907:7e8f:b0:969:e7da:fcb1 with SMTP id qb15-20020a1709077e8f00b00969e7dafcb1mr1940463ejc.13.1683626983065;
-        Tue, 09 May 2023 03:09:43 -0700 (PDT)
+        bh=ODh5ZFuPRkJx7NiwWSS6sVIS1oA8JOEOyAhwG731hXU=;
+        b=jNyv2qY0ZV9ZuyqKvycEOkMbnLBwcHehubW9jwTfCdOCNggfc55J7KvQyCZSXiWDSj
+         hIKbNf7Elu7mti+UANxqVg3bDgeu7htNE/O5SUJ1wcW5a0TOfOvhfYBmBDZyuDBwhQQD
+         qP4pSbjZbSUyUNhh11YA+gYuxXvt5oJGhbHsItBZFX4xWGaF/fJPrX7cxSFxp2gDgYtl
+         ND1YBmSGobaA6DCzg9OxCboQD0iIAnBiZp3CbdyegErDGEVZeyah+2qAcjRB0oB6Ezoz
+         ZFz8Hu0ciVUKE/+7lZFoA9dlY6ActdjVPW/BOnmYC2CV45xUTXzjB8NN3Tnl6/Q34CkS
+         FC9Q==
+X-Gm-Message-State: AC+VfDx2nJWTpyiz7CgJ6j0Jg6U/TTqIJiKYyXXJjKcFgLF3XiD4QVxU
+	lfzh0VMnRerK688sMr6sAgEwlL3LDaS7UnI/aXY61w==
+X-Google-Smtp-Source: ACHHUZ4wVp7JojKshJ61YCKy+KsDYR8KqHmVrou1nP0+ane8YQuUS/qAfqPkiE7LOR3XlgpOi/SRQA==
+X-Received: by 2002:a17:906:730d:b0:959:b757:e49 with SMTP id di13-20020a170906730d00b00959b7570e49mr12509260ejc.1.1683626985058;
+        Tue, 09 May 2023 03:09:45 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id jy11-20020a170907762b00b0094f3b18044bsm1111775ejc.218.2023.05.09.03.09.42
+        by smtp.gmail.com with ESMTPSA id w21-20020a170906131500b0096637a19dccsm1114451ejb.210.2023.05.09.03.09.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 03:09:42 -0700 (PDT)
+        Tue, 09 May 2023 03:09:44 -0700 (PDT)
 From: Jiri Pirko <jiri@resnulli.us>
 To: netdev@vger.kernel.org
 Cc: kuba@kernel.org,
@@ -65,9 +65,9 @@ Cc: kuba@kernel.org,
 	jacob.e.keller@intel.com,
 	saeedm@nvidia.com,
 	moshe@nvidia.com
-Subject: [patch net 1/3] net: allow to ask per-net netdevice notifier to follow netdev dynamically
-Date: Tue,  9 May 2023 12:09:37 +0200
-Message-Id: <20230509100939.760867-2-jiri@resnulli.us>
+Subject: [patch net 2/3] devlink: make netdev notifier per-port
+Date: Tue,  9 May 2023 12:09:38 +0200
+Message-Id: <20230509100939.760867-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230509100939.760867-1-jiri@resnulli.us>
 References: <20230509100939.760867-1-jiri@resnulli.us>
@@ -86,107 +86,174 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Currently, it is possible to register netdev notifier to get only
-events related to a selected namespace. This could be done by:
-register_netdevice_notifier_net()
-
-Another extension which currently exists is to register netdev notifier
-that receives events related to a namespace, where a netdev is. The
-notifier moves from namespace to namespace with the selected netdev.
-This could be done by:
-register_netdevice_notifier_dev_net()
-
-Devlink has a usecase to monitor a namespace and whenever certain netdev
-appears in this namespace, it needs to get notifications even in case
-netdev moves to a different namespace. It's basically a combination of
-the two described above.
-
-Introduce a pair of functions netdev_net_notifier_follow() and
-netdev_net_notifier_unfollow() to be called on previously registered
-per-net notifier asking to follow the given netdev.
+The netdev notifier is used to track changes of a netdev related to a
+certain devlink port. In preparation for the next patch,
+change the netdev notifier to register per devlink port instance.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- include/linux/netdevice.h |  6 ++++++
- net/core/dev.c            | 34 +++++++++++++++++++++++++++++-----
- 2 files changed, 35 insertions(+), 5 deletions(-)
+ include/net/devlink.h       |  1 +
+ net/devlink/core.c          |  9 ---------
+ net/devlink/devl_internal.h |  4 ----
+ net/devlink/leftover.c      | 31 ++++++++++++++++++++++---------
+ 4 files changed, 23 insertions(+), 22 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 08fbd4622ccf..63376dad8464 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2890,6 +2890,12 @@ int unregister_netdevice_notifier(struct notifier_block *nb);
- int register_netdevice_notifier_net(struct net *net, struct notifier_block *nb);
- int unregister_netdevice_notifier_net(struct net *net,
- 				      struct notifier_block *nb);
-+void netdev_net_notifier_follow(struct net_device *dev,
-+				struct notifier_block *nb,
-+				struct netdev_net_notifier *nn);
-+void netdev_net_notifier_unfollow(struct net_device *dev,
-+				  struct netdev_net_notifier *nn,
-+				  struct net *net);
- int register_netdevice_notifier_dev_net(struct net_device *dev,
- 					struct notifier_block *nb,
- 					struct netdev_net_notifier *nn);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 735096d42c1d..3458ed8f98f2 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1868,6 +1868,32 @@ static void __move_netdevice_notifier_net(struct net *src_net,
- 	__register_netdevice_notifier_net(dst_net, nb, true);
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 6a942e70e451..d0a0d1ce7db4 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -149,6 +149,7 @@ struct devlink_port {
+ 
+ 	struct devlink_rate *devlink_rate;
+ 	struct devlink_linecard *linecard;
++	struct notifier_block netdevice_nb;
+ };
+ 
+ struct devlink_port_new_attrs {
+diff --git a/net/devlink/core.c b/net/devlink/core.c
+index 777b091ef74d..018e547bdb98 100644
+--- a/net/devlink/core.c
++++ b/net/devlink/core.c
+@@ -204,11 +204,6 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+ 	if (ret < 0)
+ 		goto err_xa_alloc;
+ 
+-	devlink->netdevice_nb.notifier_call = devlink_port_netdevice_event;
+-	ret = register_netdevice_notifier(&devlink->netdevice_nb);
+-	if (ret)
+-		goto err_register_netdevice_notifier;
+-
+ 	devlink->dev = dev;
+ 	devlink->ops = ops;
+ 	xa_init_flags(&devlink->ports, XA_FLAGS_ALLOC);
+@@ -233,8 +228,6 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+ 
+ 	return devlink;
+ 
+-err_register_netdevice_notifier:
+-	xa_erase(&devlinks, devlink->index);
+ err_xa_alloc:
+ 	kfree(devlink);
+ 	return NULL;
+@@ -266,8 +259,6 @@ void devlink_free(struct devlink *devlink)
+ 	xa_destroy(&devlink->params);
+ 	xa_destroy(&devlink->ports);
+ 
+-	WARN_ON_ONCE(unregister_netdevice_notifier(&devlink->netdevice_nb));
+-
+ 	xa_erase(&devlinks, devlink->index);
+ 
+ 	devlink_put(devlink);
+diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+index e133f423294a..e595c5dcff45 100644
+--- a/net/devlink/devl_internal.h
++++ b/net/devlink/devl_internal.h
+@@ -50,7 +50,6 @@ struct devlink {
+ 	u8 reload_failed:1;
+ 	refcount_t refcount;
+ 	struct rcu_work rwork;
+-	struct notifier_block netdevice_nb;
+ 	char priv[] __aligned(NETDEV_ALIGN);
+ };
+ 
+@@ -171,9 +170,6 @@ extern const struct devlink_cmd devl_cmd_selftests_get;
+ void devlink_notify(struct devlink *devlink, enum devlink_command cmd);
+ 
+ /* Ports */
+-int devlink_port_netdevice_event(struct notifier_block *nb,
+-				 unsigned long event, void *ptr);
+-
+ struct devlink_port *
+ devlink_port_get_from_info(struct devlink *devlink, struct genl_info *info);
+ struct devlink_port *devlink_port_get_from_attrs(struct devlink *devlink,
+diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+index dffca2f9bfa7..4b1627cb2b83 100644
+--- a/net/devlink/leftover.c
++++ b/net/devlink/leftover.c
+@@ -6841,6 +6841,9 @@ void devlink_port_fini(struct devlink_port *devlink_port)
  }
+ EXPORT_SYMBOL_GPL(devlink_port_fini);
  
-+void netdev_net_notifier_follow(struct net_device *dev,
-+				struct notifier_block *nb,
-+				struct netdev_net_notifier *nn)
-+{
-+	ASSERT_RTNL();
-+	nn->nb = nb;
-+	list_add(&nn->list, &dev->net_notifier_list);
-+}
-+EXPORT_SYMBOL(netdev_net_notifier_follow);
++static int devlink_port_netdevice_event(struct notifier_block *nb,
++					unsigned long event, void *ptr);
 +
-+static void __netdev_net_notifier_unfollow(struct netdev_net_notifier *nn)
-+{
-+	list_del(&nn->list);
-+}
+ /**
+  * devl_port_register() - Register devlink port
+  *
+@@ -6869,14 +6872,24 @@ int devl_port_register(struct devlink *devlink,
+ 	devlink_port->index = port_index;
+ 	spin_lock_init(&devlink_port->type_lock);
+ 	INIT_LIST_HEAD(&devlink_port->reporter_list);
+-	err = xa_insert(&devlink->ports, port_index, devlink_port, GFP_KERNEL);
 +
-+void netdev_net_notifier_unfollow(struct net_device *dev,
-+				  struct netdev_net_notifier *nn,
-+				  struct net *net)
-+{
-+	ASSERT_RTNL();
-+	__netdev_net_notifier_unfollow(nn);
-+	if (!net_eq(dev_net(dev), net))
-+		__move_netdevice_notifier_net(dev_net(dev), net, nn->nb);
-+}
-+EXPORT_SYMBOL(netdev_net_notifier_unfollow);
-+
- int register_netdevice_notifier_dev_net(struct net_device *dev,
- 					struct notifier_block *nb,
- 					struct netdev_net_notifier *nn)
-@@ -1876,10 +1902,8 @@ int register_netdevice_notifier_dev_net(struct net_device *dev,
++	devlink_port->netdevice_nb.notifier_call = devlink_port_netdevice_event;
++	err = register_netdevice_notifier(&devlink_port->netdevice_nb);
+ 	if (err)
+ 		return err;
  
- 	rtnl_lock();
- 	err = __register_netdevice_notifier_net(dev_net(dev), nb, false);
--	if (!err) {
--		nn->nb = nb;
--		list_add(&nn->list, &dev->net_notifier_list);
--	}
-+	if (!err)
-+		netdev_net_notifier_follow(dev, nb, nn);
- 	rtnl_unlock();
- 	return err;
++	err = xa_insert(&devlink->ports, port_index, devlink_port, GFP_KERNEL);
++	if (err)
++		goto err_xa_insert;
++
+ 	INIT_DELAYED_WORK(&devlink_port->type_warn_dw, &devlink_port_type_warn);
+ 	devlink_port_type_warn_schedule(devlink_port);
+ 	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
+ 	return 0;
++
++err_xa_insert:
++	unregister_netdevice_notifier(&devlink_port->netdevice_nb);
++	return err;
  }
-@@ -1892,7 +1916,7 @@ int unregister_netdevice_notifier_dev_net(struct net_device *dev,
- 	int err;
+ EXPORT_SYMBOL_GPL(devl_port_register);
  
- 	rtnl_lock();
--	list_del(&nn->list);
-+	__netdev_net_notifier_unfollow(nn);
- 	err = __unregister_netdevice_notifier_net(dev_net(dev), nb);
- 	rtnl_unlock();
- 	return err;
+@@ -6921,6 +6934,7 @@ void devl_port_unregister(struct devlink_port *devlink_port)
+ 	devlink_port_type_warn_cancel(devlink_port);
+ 	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_DEL);
+ 	xa_erase(&devlink_port->devlink->ports, devlink_port->index);
++	WARN_ON_ONCE(unregister_netdevice_notifier(&devlink_port->netdevice_nb));
+ 	WARN_ON(!list_empty(&devlink_port->reporter_list));
+ 	devlink_port->registered = false;
+ }
+@@ -7066,16 +7080,15 @@ void devlink_port_type_clear(struct devlink_port *devlink_port)
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_type_clear);
+ 
+-int devlink_port_netdevice_event(struct notifier_block *nb,
+-				 unsigned long event, void *ptr)
++static int devlink_port_netdevice_event(struct notifier_block *nb,
++					unsigned long event, void *ptr)
+ {
+ 	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
+-	struct devlink_port *devlink_port = netdev->devlink_port;
+-	struct devlink *devlink;
++	struct devlink_port *devlink_port;
+ 
+-	devlink = container_of(nb, struct devlink, netdevice_nb);
++	devlink_port = container_of(nb, struct devlink_port, netdevice_nb);
+ 
+-	if (!devlink_port || devlink_port->devlink != devlink)
++	if (netdev->devlink_port != devlink_port)
+ 		return NOTIFY_OK;
+ 
+ 	switch (event) {
+@@ -7089,7 +7102,7 @@ int devlink_port_netdevice_event(struct notifier_block *nb,
+ 		break;
+ 	case NETDEV_REGISTER:
+ 	case NETDEV_CHANGENAME:
+-		if (devlink_net(devlink) != dev_net(netdev))
++		if (devlink_net(devlink_port->devlink) != dev_net(netdev))
+ 			return NOTIFY_OK;
+ 		/* Set the netdev on top of previously set type. Note this
+ 		 * event happens also during net namespace change so here
+@@ -7100,7 +7113,7 @@ int devlink_port_netdevice_event(struct notifier_block *nb,
+ 					netdev);
+ 		break;
+ 	case NETDEV_UNREGISTER:
+-		if (devlink_net(devlink) != dev_net(netdev))
++		if (devlink_net(devlink_port->devlink) != dev_net(netdev))
+ 			return NOTIFY_OK;
+ 		/* Clear netdev pointer, but not the type. This event happens
+ 		 * also during net namespace change so we need to clear
 -- 
 2.39.2
 
