@@ -1,77 +1,78 @@
-Return-Path: <netdev+bounces-999-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1000-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 33EFD6FBCBB
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 03:51:45 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C86686FBCBC
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 03:52:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 05DAC28116D
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 01:51:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 75C972810D6
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 01:52:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF381396;
-	Tue,  9 May 2023 01:51:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5AA6F383;
+	Tue,  9 May 2023 01:51:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E71383
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 01:51:22 +0000 (UTC)
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE9EA26E;
-	Mon,  8 May 2023 18:50:54 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id d9443c01a7336-1ab0c697c2bso49726325ad.1;
-        Mon, 08 May 2023 18:50:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4004517F0
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 01:51:28 +0000 (UTC)
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F54A5FA;
+	Mon,  8 May 2023 18:50:56 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1ab0c697c2bso49726565ad.1;
+        Mon, 08 May 2023 18:50:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683597053; x=1686189053;
+        d=gmail.com; s=20221208; t=1683597055; x=1686189055;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lP5IaIFdiCV3CLFQyofnNGbKobWaxQ8hETIzTLkOsHM=;
-        b=IuzHeRYk9bZCJjY+c51BTwSfwNB3YJPrwNIPsXNAYGwynBe5GubLNbMQUh3GkPIOx1
-         ABfJV/ZnmRKgJM6p5LnQWxKslcwTg9CUpSJjjkc+11iRUCyaGTcwxShndkiTqlidzp41
-         dVrrF2zYq0a86ifYSpcqfu8MOK6rWMIYJn9suM7zv/mgxVvwCqXCRTDGuaxQuY3FMYe8
-         QAD6dgtLiBySt4uA3CL/zd/ocT5WWm/G6xQ+gqrebAlZvFbAlIiAsWiG4G5bzBQ3BLMr
-         7GKmdD5ou02+spSYoQ7FJjl383SXdeENzKhNCYO/Wd7MbUIwC0BrvRLFZo5zYqo4w9zW
-         486w==
+        bh=4wzzVWCLT7CybQfeQQoKtalxgsWtn1vK9dyFV4Pj3x8=;
+        b=dCnxds2h5O2JmS2nsr5K6wfDnSJwjmLkmuWoZ1BKnNWPks1H/TMA9WWYDqkkNmOl2U
+         Il4En8UeeDp+SHRwIagQnWPiKjBYH0qxsuqGVbpBnoKZZPK9/YXQ4ublXUCHRlhryEOF
+         vDXkFY1yxE5CjldZNuAfvDsMb0UNXwBy2tCDkOGo0HUvB7pLF97rnLrT3RI5QH3o2WEF
+         RruJx2RPaet2NyvHcHki5HqrXuF7BPwka9wJSy+EVUhQvU6E1DaOszxDjirQVpEYUwLN
+         WVfgRENEINfJgaCOJorTn1blvsAfZKKWhdum4RUllaImWV+qIboofUJcKiIr+xIWt2Kp
+         QRcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683597053; x=1686189053;
+        d=1e100.net; s=20221208; t=1683597055; x=1686189055;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=lP5IaIFdiCV3CLFQyofnNGbKobWaxQ8hETIzTLkOsHM=;
-        b=UKu+3zAbhr0PmycHDId26v2RFBG1vUWYca/NwZg/wAqkOvp8j8+8h+ugBGWF9HNaVq
-         eTLg2up3q2dUGctEyNPVxIYjgzTTcEf9UvVsyR9Xd93ia++Lor3z4fJgYQcKxvM5doES
-         y1Fwc2KPeT9Z8ng+4xWngPMZRj6wzOLmFTrBJsbfaT9s1LZZV2tFiOQqe1EbF1bkHYAJ
-         pz8NhsOib37NWm9WEqRnHXHoXXCscQtTf9kdsoi5UUGnOKd2IGsBmLtBXPw2JMyLTQab
-         GdfoJEFg2cNOcpoygyffKqkD2jrrZsTHua1ZOsDZ3UonAhbdIPErnQsXWtmiUQ9dxUT6
-         iV9Q==
-X-Gm-Message-State: AC+VfDzhoYqSj3OlsPANQytFN7NvPLFF6VjYVbo7H896ia3vLDCw8YiP
-	6NELDi2ls7fK25k4P+JZudw=
-X-Google-Smtp-Source: ACHHUZ4ITCiXUXq8qffdksAkMo2gD+tX6SA8ac8w9NL+1hHgfMb58opbrOs2qVpb1OWg5QV+TvJyrg==
-X-Received: by 2002:a17:902:f816:b0:1a9:3916:c2d1 with SMTP id ix22-20020a170902f81600b001a93916c2d1mr13097348plb.54.1683597053120;
-        Mon, 08 May 2023 18:50:53 -0700 (PDT)
+        bh=4wzzVWCLT7CybQfeQQoKtalxgsWtn1vK9dyFV4Pj3x8=;
+        b=j1LDOKYBQCXRSbDjdv9gHEqrUlmec4zWEKaemXiWTCE4HyNbUJb90GNBGxqkLp//WQ
+         PznfIVEHPP9J58oRLCRTDTD5o+kdyqK5AxIHNNJnX/cKPKrFVlpKjB8vFDZ3r8uOmE19
+         JoqRQQxqqWB1qJb6gNjHuILzYqnjfaz3jLY3ZmpFaC1esEdM26fn4xOyagNYWxHN89dP
+         UiCvVj3/R7sXV691T8Ll71T4ZTTuZFKGRFaCmcUa9nKrZyCVauCDZo01U7fznLINEF9g
+         fVFpTtkwFAJmYqClHVfbjjloEcZiaeuIQ+u+bOK2RbsOJ1f50Ihe+bNs9HehaCFEXpS4
+         VSFw==
+X-Gm-Message-State: AC+VfDx7yr7JmYPhuy1I1DKbQE8IUlTlCw3+pz96zwFLEyRVmxVeQ+9l
+	DLWYc+FlUsPNcB0xW3cINiU=
+X-Google-Smtp-Source: ACHHUZ6YLDxJo1rwXIAisaqpgSMigXLyXSlmwBj7vvQFm+3mgPQ2CFRhLRwxkgopk/t9TqwjFbLJ7A==
+X-Received: by 2002:a17:903:2292:b0:1a1:bff4:49e9 with SMTP id b18-20020a170903229200b001a1bff449e9mr17671752plh.23.1683597055036;
+        Mon, 08 May 2023 18:50:55 -0700 (PDT)
 Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id bb5-20020a170902bc8500b001ab05aaae2fsm149237plb.107.2023.05.08.18.50.52
+        by smtp.gmail.com with ESMTPSA id jd12-20020a170903260c00b001ac937171e4sm133425plb.254.2023.05.08.18.50.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 18:50:52 -0700 (PDT)
+        Mon, 08 May 2023 18:50:54 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
 From: Tejun Heo <tj@kernel.org>
 To: jiangshanlai@gmail.com
 Cc: linux-kernel@vger.kernel.org,
 	kernel-team@meta.com,
 	Tejun Heo <tj@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
+	David Howells <dhowells@redhat.com>,
+	Marc Dionne <marc.dionne@auristor.com>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
-	linux-arm-msm@vger.kernel.org,
+	linux-afs@lists.infradead.org,
 	netdev@vger.kernel.org
-Subject: [PATCH 09/13] net: qrtr: Use alloc_ordered_workqueue() to create ordered workqueues
-Date: Mon,  8 May 2023 15:50:28 -1000
-Message-Id: <20230509015032.3768622-10-tj@kernel.org>
+Subject: [PATCH 10/13] rxrpc: Use alloc_ordered_workqueue() to create ordered workqueues
+Date: Mon,  8 May 2023 15:50:29 -1000
+Message-Id: <20230509015032.3768622-11-tj@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230509015032.3768622-1-tj@kernel.org>
 References: <20230509015032.3768622-1-tj@kernel.org>
@@ -143,30 +144,31 @@ As there are follow-up workqueue core changes, I'd really appreciate if the
 patch can be routed through the workqueue tree w/ your acks. Thanks.
 
 Signed-off-by: Tejun Heo <tj@kernel.org>
-Cc: Manivannan Sadhasivam <mani@kernel.org>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Marc Dionne <marc.dionne@auristor.com>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Eric Dumazet <edumazet@google.com>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-afs@lists.infradead.org
 Cc: netdev@vger.kernel.org
 ---
- net/qrtr/ns.c | 2 +-
+ net/rxrpc/af_rxrpc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
-index 0f25a386138c..0f7a729f1a1f 100644
---- a/net/qrtr/ns.c
-+++ b/net/qrtr/ns.c
-@@ -783,7 +783,7 @@ int qrtr_ns_init(void)
- 		goto err_sock;
+diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
+index 31f738d65f1c..7eb24c25c731 100644
+--- a/net/rxrpc/af_rxrpc.c
++++ b/net/rxrpc/af_rxrpc.c
+@@ -988,7 +988,7 @@ static int __init af_rxrpc_init(void)
+ 		goto error_call_jar;
  	}
  
--	qrtr_ns.workqueue = alloc_workqueue("qrtr_ns_handler", WQ_UNBOUND, 1);
-+	qrtr_ns.workqueue = alloc_ordered_workqueue("qrtr_ns_handler", 0);
- 	if (!qrtr_ns.workqueue) {
- 		ret = -ENOMEM;
- 		goto err_sock;
+-	rxrpc_workqueue = alloc_workqueue("krxrpcd", WQ_HIGHPRI | WQ_MEM_RECLAIM | WQ_UNBOUND, 1);
++	rxrpc_workqueue = alloc_ordered_workqueue("krxrpcd", WQ_HIGHPRI | WQ_MEM_RECLAIM);
+ 	if (!rxrpc_workqueue) {
+ 		pr_notice("Failed to allocate work queue\n");
+ 		goto error_work_queue;
 -- 
 2.40.1
 
