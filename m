@@ -1,75 +1,73 @@
-Return-Path: <netdev+bounces-1234-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1235-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3F6FA6FCC89
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 19:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0CF426FCCC3
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 19:31:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 631B71C20C21
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 17:19:15 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DE0D81C20BF8
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 17:31:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F26A13AE4;
-	Tue,  9 May 2023 17:19:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF90417ABB;
+	Tue,  9 May 2023 17:31:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62D6B17FE0
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 17:19:15 +0000 (UTC)
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041792697
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 10:19:14 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-ba6388fb324so40311276.0
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 10:19:13 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3530F9C9
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 17:31:35 +0000 (UTC)
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399301BE6
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 10:31:34 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-ba6388fb324so65038276.0
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 10:31:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683652753; x=1686244753;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=IBTSBftt1PJZ947KTT5HuLmK9Q4JRp1ckp/xOLvbM2Y=;
-        b=uKEfNpdw9WWrPRRTrj9h9foiBlNLT3WJq9pqOpE0YJHCEjNNaI4D5e5x8ELW8Q/bMI
-         Pj0vnF9eTPxfw/ebSZ11JjYWE6hK6804ytp1NBPJ/uTC1i/wNay4e6osrUIIo2Jb3Gfa
-         eMCArBpj9e7crAws57r8k4yEyjUKPMs9qC6D2/WBe6/cxlSlJhHjNmlhiPFyioeGPwDu
-         vSaJRd+eDJr87t1zT9uXO6tSHdm2cp/o5kVEohG9qH650W9DB23S11Tmw34ykZHcR1Se
-         8Mymhg2d5yjvkXuVPohyN752Sz1nP5nRx8keUCCYOe+WhCANlSO6+5t/svXtH2MdvlGE
-         a3wQ==
+        d=google.com; s=20221208; t=1683653493; x=1686245493;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=jeFrpC9dhguCPI9NCxMv7crlV52sCdyjI04uxtwvfYE=;
+        b=6hC1Rx5E9Cnrq8T5/1AyRDQouwqS3Lu++xwf0e7cj9veFnDlPFRa+h7K9xr1qhALfz
+         fJ06Modl0qoETvUimTqqE5TYcTdZ+zcBh5/DUVd1+VALO/apm3l1tF+B5+IFibJ87TsO
+         N/TTiEoR0fbjgl8KnX056f0rrFVNQQaYuhld6aU62ZOU70SxzR1Y4S0SS7ylMDs132ko
+         WWQgC7DsS7VsoSw1+8RNnRiqx/MQmyvZZ5AjS9U5hW2pb5V7pH8FDBszeurnDmk2cGn4
+         x80THaiI8T9FyHMkTstFNrOXGWgePYqiNEBj47aonU8p02LYHNDR3xy2y6Ogr0JuSK0t
+         ZKIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683652753; x=1686244753;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IBTSBftt1PJZ947KTT5HuLmK9Q4JRp1ckp/xOLvbM2Y=;
-        b=T1IbXLDwqWQ3rCy5OPhbGzW48pVik5GgweKFpW5yIw8FgZemg6xI64bi8345KPHWlr
-         HjX5QazUhgof5ao0FXbUHVHiXnU86vxFq9RICzUxDprC+6661/qbcVGUeSUn3obkQ28S
-         oKDcGZiKT2d3tRtt65JL/bwftNsLpqqswqdcQbmKZv2byhs6/ebQpLN7PeJVpBtLsyYf
-         B77nF3L858TwESHGOd2nruv+8AGfZ1qLyJnCfP6kG5X8Ob1p3uqUHPJcu3ok6bB5Qvd9
-         XWuFEX+NRiAMQg8g0hycb4Xc9qsGVlyjYdNA2M3J4V+Sc5mIh/z3zcoj9QcNBRCSNuU8
-         YGvw==
-X-Gm-Message-State: AC+VfDwskNY0BiwcFOh3Figu6jaKiJSZ+iQiS8+qkNWjYXrDnX6xZt++
-	J1z8rbk8XMGlYKdEemdMRmxIgTgi9918Iw==
-X-Google-Smtp-Source: ACHHUZ4qq+O4yGw2rL/VJ5eM47IH1JbWFnhn4TU5LOG2QI4Lwps+bE/wvyYGRSdzui38NPnxXQIfxPUPBQGkdA==
-X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:262e])
- (user=shakeelb job=sendgmr) by 2002:a25:8010:0:b0:b9e:7d81:4b91 with SMTP id
- m16-20020a258010000000b00b9e7d814b91mr6606417ybk.9.1683652753298; Tue, 09 May
- 2023 10:19:13 -0700 (PDT)
-Date: Tue, 9 May 2023 17:19:10 +0000
-In-Reply-To: <20230508020801.10702-2-cathy.zhang@intel.com>
+        d=1e100.net; s=20221208; t=1683653493; x=1686245493;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jeFrpC9dhguCPI9NCxMv7crlV52sCdyjI04uxtwvfYE=;
+        b=SseRr5iVAeFVWqiyGKDMqtZmo3dafVtCTFI+Gap1w4vFiSV8c9zWCS5e3cqo+RKd4J
+         7J/877kIgqKjTzH+6gxBi8owMLXIXtyDbogvpwqmn1q3wWwkKv7gHyuqQ1tnwwAueqe4
+         ivcwHDJFepB5VM5c4nlqVk0MmgSPMiU7Bs5xPc7tTzwS7PuLvMoKIZ1G6VFPk1qYGYuv
+         9j3xdXrQKelepbSA9cuV4GBLNEcTIwiueamNI1RlR+YrKTBf4wsOZDeXslp0ZJZpYrL8
+         pkgVbW84yRgOGWPwQUOdBAXzD3gNB+oAHJ/W0MnsS/5MuK25yg/Vxv+RPcMU6D3wwgYa
+         y3Bw==
+X-Gm-Message-State: AC+VfDxS04yx+LMLEB0nGFeaRKlSawrmRDUr4ksLjkvP6wsBduzRc4bz
+	VXO5CG6SEom536Txty0Dkj2JMTLdYjFeXQ==
+X-Google-Smtp-Source: ACHHUZ7Zk6nA7Po8LRbp73mGKXjDAaeJcRjWLXS9UaVFrUnT+kaKt9HqMxXcYsd91kU4D1VS2CgQHhum9P1fzA==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a25:9f02:0:b0:b8f:53e1:64b with SMTP id
+ n2-20020a259f02000000b00b8f53e1064bmr6679954ybq.13.1683653493542; Tue, 09 May
+ 2023 10:31:33 -0700 (PDT)
+Date: Tue,  9 May 2023 17:31:31 +0000
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
-References: <20230508020801.10702-1-cathy.zhang@intel.com> <20230508020801.10702-2-cathy.zhang@intel.com>
-Message-ID: <20230509171910.yka3hucbwfnnq5fq@google.com>
-Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper size
-From: Shakeel Butt <shakeelb@google.com>
-To: Cathy Zhang <cathy.zhang@intel.com>
-Cc: edumazet@google.com, davem@davemloft.net, kuba@kernel.org, 
-	pabeni@redhat.com, jesse.brandeburg@intel.com, suresh.srinivas@intel.com, 
-	tim.c.chen@intel.com, lizhen.you@intel.com, eric.dumazet@gmail.com, 
-	netdev@vger.kernel.org, linux-mm@kvack.org, cgroups@vger.kernel.org
-Content-Type: text/plain; charset="us-ascii"
+X-Mailer: git-send-email 2.40.1.521.gf1e218fcd8-goog
+Message-ID: <20230509173131.3263780-1-edumazet@google.com>
+Subject: [PATCH net] net: datagram: fix data-races in datagram_poll()
+From: Eric Dumazet <edumazet@google.com>
+To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
+	Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
@@ -77,61 +75,60 @@ X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sun, May 07, 2023 at 07:08:00PM -0700, Cathy Zhang wrote:
-> Before commit 4890b686f408 ("net: keep sk->sk_forward_alloc as small as
-> possible"), each TCP can forward allocate up to 2 MB of memory and
-> tcp_memory_allocated might hit tcp memory limitation quite soon.
+datagram_poll() runs locklessly, we should add READ_ONCE()
+annotations while reading sk->sk_err, sk->sk_shutdown and sk->sk_state.
 
-Not just the system level tcp memory limit but we have actually seen in
-production unneeded and unexpected memcg OOMs and the commit 4890b686f408
-fixes those OOMs as well.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/datagram.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-> To
-> reduce the memory pressure, that commit keeps sk->sk_forward_alloc as
-> small as possible, which will be less than 1 page size if SO_RESERVE_MEM
-> is not specified.
-> 
-> However, with commit 4890b686f408 ("net: keep sk->sk_forward_alloc as
-> small as possible"), memcg charge hot paths are observed while system is
-> stressed with a large amount of connections. That is because
-> sk->sk_forward_alloc is too small and it's always less than
-> sk->truesize, network handlers like tcp_rcv_established() should jump to
-> slow path more frequently to increase sk->sk_forward_alloc. Each memory
-> allocation will trigger memcg charge, then perf top shows the following
-> contention paths on the busy system.
-> 
->     16.77%  [kernel]            [k] page_counter_try_charge
->     16.56%  [kernel]            [k] page_counter_cancel
->     15.65%  [kernel]            [k] try_charge_memcg
-> 
-> In order to avoid the memcg overhead and performance penalty,
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 5662dff3d381a92b271d9cba38a28a6a8478c114..176eb58347461b160890ce2d6b2d3cbc7412e321 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -807,18 +807,21 @@ __poll_t datagram_poll(struct file *file, struct socket *sock,
+ {
+ 	struct sock *sk = sock->sk;
+ 	__poll_t mask;
++	u8 shutdown;
+ 
+ 	sock_poll_wait(file, sock, wait);
+ 	mask = 0;
+ 
+ 	/* exceptional events? */
+-	if (sk->sk_err || !skb_queue_empty_lockless(&sk->sk_error_queue))
++	if (READ_ONCE(sk->sk_err) ||
++	    !skb_queue_empty_lockless(&sk->sk_error_queue))
+ 		mask |= EPOLLERR |
+ 			(sock_flag(sk, SOCK_SELECT_ERR_QUEUE) ? EPOLLPRI : 0);
+ 
+-	if (sk->sk_shutdown & RCV_SHUTDOWN)
++	shutdown = READ_ONCE(sk->sk_shutdown);
++	if (shutdown & RCV_SHUTDOWN)
+ 		mask |= EPOLLRDHUP | EPOLLIN | EPOLLRDNORM;
+-	if (sk->sk_shutdown == SHUTDOWN_MASK)
++	if (shutdown == SHUTDOWN_MASK)
+ 		mask |= EPOLLHUP;
+ 
+ 	/* readable? */
+@@ -827,10 +830,12 @@ __poll_t datagram_poll(struct file *file, struct socket *sock,
+ 
+ 	/* Connection-based need to check for termination and startup */
+ 	if (connection_based(sk)) {
+-		if (sk->sk_state == TCP_CLOSE)
++		int state = READ_ONCE(sk->sk_state);
++
++		if (state == TCP_CLOSE)
+ 			mask |= EPOLLHUP;
+ 		/* connection hasn't started yet? */
+-		if (sk->sk_state == TCP_SYN_SENT)
++		if (state == TCP_SYN_SENT)
+ 			return mask;
+ 	}
+ 
+-- 
+2.40.1.521.gf1e218fcd8-goog
 
-IMO this is not the right place to fix memcg performance overhead,
-specifically because it will re-introduce the memcg OOMs issue. Please
-fix the memcg overhead in the memcg code.
-
-Please share the detail profile of the memcg code. I can help in
-brainstorming and reviewing the fix.
-
-> sk->sk_forward_alloc should be kept with a proper size instead of as
-> small as possible. Keep memory up to 64KB from reclaims when uncharging
-> sk_buff memory, which is closer to the maximum size of sk_buff. It will
-> help reduce the frequency of allocating memory during TCP connection.
-> The original reclaim threshold for reserved memory per-socket is 2MB, so
-> the extraneous memory reserved now is about 32 times less than before
-> commit 4890b686f408 ("net: keep sk->sk_forward_alloc as small as
-> possible").
-> 
-> Run memcached with memtier_benchamrk to verify the optimization fix. 8
-> server-client pairs are created with bridge network on localhost, server
-> and client of the same pair share 28 logical CPUs.
-> 
-> Results (Average for 5 run)
-> RPS (with/without patch)	+2.07x
-> 
-
-Do you have regression data from any production workload? Please keep in
-mind that many times we (MM subsystem) accepts the regressions of
-microbenchmarks over complicated optimizations. So, if there is a real
-production regression, please be very explicit about it.
 
