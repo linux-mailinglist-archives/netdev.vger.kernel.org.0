@@ -1,113 +1,119 @@
-Return-Path: <netdev+bounces-1029-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1030-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AA8846FBD95
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 05:16:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8EA296FBE2E
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 06:27:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 923981C20A96
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 03:16:55 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4648B1C20AB5
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 04:27:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23E42137A;
-	Tue,  9 May 2023 03:16:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 01B4C17F1;
+	Tue,  9 May 2023 04:27:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15D91392
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 03:16:55 +0000 (UTC)
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235C419B3
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 20:16:52 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id 98e67ed59e1d1-24e5d5782edso5106198a91.0
-        for <netdev@vger.kernel.org>; Mon, 08 May 2023 20:16:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683602211; x=1686194211;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7O5bVqTPmrWGonehudouzNCYJCGZ3XVJlk3/Q0pyzsg=;
-        b=Uk8lu45hWzVwePsBbOwQ09pBASB2ubvMpfbBRA5QZnjFl14wJfuFaflcy672+UJIj3
-         6Y6G1SneNLKT48kgQ+Ou9oFfr13sz1Fxo5cqzUHLKDt+vKRPuLKLhPMN65ljFcXut6I5
-         zppBCswry3bYAvBStlYIMVcLvUCgHbX0AnfbnTQ4C4/wOygknCoHYLfwprhxEYI+NPjy
-         OMgO3/RtIaAdvEzX64Lp9LAzyeBANa7kAoRx2pgObqnfwcg0QmXnPhsZ43x2mRw9yKXy
-         P7bHPZab/VycaKwBs/tbjaepyxquOFvXpo73qh7mUZJKVWRU17ObDNY2QehxsjyVB+Vf
-         haFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683602211; x=1686194211;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7O5bVqTPmrWGonehudouzNCYJCGZ3XVJlk3/Q0pyzsg=;
-        b=X3Ni0f76osT8XGpMcciLh6iiPi8RuMvKexRahdOsy1vZELvn+ho2AbMBvEcDNZxkRc
-         fZtiBwqosgZ2X4MzVHZ3JKOzSwxeAB8M8RKm3Eu6Jej+Mltov1/oOUNaOyTqj6TGmL2h
-         O+jzq4YtHobXkY3RT7MDIQXetMCPaLpbSkfXeJXxvMa0bkxIe9Yq/sJne6+zeqykMp/m
-         hB+Vf9GyRgmqiJW5VmemqUCgWry5icWY23kPpCiMZ4Rd69C8q7RXDbkSNyU0CsZzdpQS
-         +VYuNTFmbj5fKC8yfj+XsD0D4y9B6GHeXcBZtD/r+GG2XvmPENk+Ud3JZyFpITgsMVCM
-         mCQw==
-X-Gm-Message-State: AC+VfDwglzxBuP5A5dalNjgkvPY/sKFKoseT+kb64nzPvqXy6JMFSMlE
-	jLE1sOSXlCxqwImwCU4yMjmsYD2r1GNHgyFq
-X-Google-Smtp-Source: ACHHUZ7fvPKUZ1QDmhnP91IT5WZV/Ez9LjeghaM6rOw7Zz5lUQ+gAYLKk6DEClO5JsR7SLSTZGlqFQ==
-X-Received: by 2002:a17:90b:817:b0:24b:fd8d:536b with SMTP id bk23-20020a17090b081700b0024bfd8d536bmr12876262pjb.29.1683602211564;
-        Mon, 08 May 2023 20:16:51 -0700 (PDT)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id d18-20020a17090abf9200b002405d3bbe42sm10795413pjs.0.2023.05.08.20.16.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 20:16:50 -0700 (PDT)
-Date: Tue, 9 May 2023 11:16:47 +0800
-From: Hangbin Liu <liuhangbin@gmail.com>
-To: Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc: netdev@vger.kernel.org
-Subject: Re: [Issue] Bonding can't show correct speed if lower interface is
- bond 802.3ad
-Message-ID: <ZFm7Hwz6cqEkVB1g@Laptop-X1>
-References: <ZEt3hvyREPVdbesO@Laptop-X1>
- <15524.1682698000@famine>
- <ZFjAPRQNYRgYWsD+@Laptop-X1>
- <84548.1683570736@vermin>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEFD1137A
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 04:27:12 +0000 (UTC)
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C880D19B3
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 21:27:08 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by a.mx.secunet.com (Postfix) with ESMTP id D75672082B;
+	Tue,  9 May 2023 06:27:06 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+	by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ekW6IVoyRIP0; Tue,  9 May 2023 06:27:06 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by a.mx.secunet.com (Postfix) with ESMTPS id 5AC0D206E9;
+	Tue,  9 May 2023 06:27:06 +0200 (CEST)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+	by mailout2.secunet.com (Postfix) with ESMTP id 485D680004A;
+	Tue,  9 May 2023 06:27:06 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 9 May 2023 06:27:05 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Tue, 9 May
+ 2023 06:27:05 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+	id 5494E3182C4B; Tue,  9 May 2023 06:27:05 +0200 (CEST)
+Date: Tue, 9 May 2023 06:27:05 +0200
+From: Steffen Klassert <steffen.klassert@secunet.com>
+To: Tobias Brunner <tobias@strongswan.org>
+CC: Herbert Xu <herbert@gondor.apana.org.au>, <netdev@vger.kernel.org>, "David
+ S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH ipsec] xfrm: Reject optional tunnel/BEET mode templates
+ in outbound policies
+Message-ID: <ZFnLmakCaADGVGV3@gauss3.secunet.de>
+References: <6dcb6a58-2699-9cde-3e34-57c142dbcf14@strongswan.org>
+ <ZEdmdDAwnuslrdvA@gondor.apana.org.au>
+ <8b8dbbc4-f956-8cbf-3700-1da366357a6f@strongswan.org>
+ <ZEePE9LMA0pWxz9r@gondor.apana.org.au>
+ <5d5bf4d9-5b63-ae0d-2f65-770e911ea7d6@strongswan.org>
+ <ZFiPyZvW2PhPZHlv@gauss3.secunet.de>
+ <c29e3424-f6ef-4d38-e150-fcf82d364ad2@strongswan.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <84548.1683570736@vermin>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <c29e3424-f6ef-4d38-e150-fcf82d364ad2@strongswan.org>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 08, 2023 at 11:32:16AM -0700, Jay Vosburgh wrote:
-> >Hi Jay,
-> >
-> >I just back from holiday and re-read you reply. The user doesn't add 2 LACP
-> >bonds inside an active-backup bond. He add 1 LACP bond and 1 normal NIC in to
-> >an active-backup bond. This seems reasonable. e.g. The LACP bond in a switch
-> >and the normal NIC in another switch.
-> >
-> >What do you think?
+On Mon, May 08, 2023 at 11:03:36AM +0200, Tobias Brunner wrote:
+> On 08.05.23 07:59, Steffen Klassert wrote:
+> > On Fri, May 05, 2023 at 12:16:16PM +0200, Tobias Brunner wrote:
+> >> xfrm_state_find() uses `encap_family` of the current template with
+> >> the passed local and remote addresses to find a matching state.
+> >> If an optional tunnel or BEET mode template is skipped in a mixed-family
+> >> scenario, there could be a mismatch causing an out-of-bounds read as
+> >> the addresses were not replaced to match the family of the next template.
+> >>
+> >> While there are theoretical use cases for optional templates in outbound
+> >> policies, the only practical one is to skip IPComp states in inbound
+> >> policies if uncompressed packets are received that are handled by an
+> >> implicitly created IPIP state instead.
+> >>
+> >> Signed-off-by: Tobias Brunner <tobias@strongswan.org>
+> > 
+> > Your patch seems to be corrupt:
+> > 
+> > warning: Patch sent with format=flowed; space at the end of lines might be lost.
+> > Applying: af_key: Reject optional tunnel/BEET mode templates in outbound policies
+> > error: corrupt patch at line 18
 > 
-> 	That case should work fine without the active-backup.  LACP has
-> a concept of an "individual" port, which (in this context) would be the
-> "normal NIC," presuming that that means its link peer isn't running
-> LACP.
+> Sorry about that, I'll resend.
 > 
-> 	If all of the ports (N that are LACP to a single switch, plus 1
-> that's the non-LACP "normal NIC") were attached to a single bond, it
-> would create one aggregator with the LACP enabled ports, and then a
-> separate aggregator for the indvidual port that's not.  The aggregator
-> selection logic prefers the LACP enabled aggregator over the individual
-> port aggregator.  The precise criteria is in the commentary within
-> ad_agg_selection_test().
+> > Also, please add a 'Fixes' tag, so that it can be backported.
 > 
+> What should the target commit be?  I saw you used 1da177e4c3f4
+> ("Linux-2.6.12-rc2") in your fix, but maybe the more recent 8444cf712c5f
+> ("xfrm: Allow different selector family in temporary state") would fit
+> better as that changed `family` to `encap_family` in
+> `xfrm_state_find()`?  (I guess it doesn't matter in practice as 2.6.36
+> is way older than any LTS kernel this will get backported to.)
 
-Thanks for your explanation. I didn't know this before. Now I have learned.
-
-Regards
-Hangbin
+I think it was broken, even before 8444cf712c5f "xfrm: Allow different
+selector family in temporary state"), so I used 1da177e4c3f4.
+But as you said, it doesn't really matter. Both commits are
+much older than any currently active LTS kernel.
 
