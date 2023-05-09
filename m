@@ -1,62 +1,44 @@
-Return-Path: <netdev+bounces-1286-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1287-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 24E246FD2F2
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 01:07:16 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B2CD06FD2FA
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 01:13:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DF6962812EF
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:07:14 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DCB5E1C20C54
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:13:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B5D8154A5;
-	Tue,  9 May 2023 23:07:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1430154A9;
+	Tue,  9 May 2023 23:13:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08F2E14A88
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 23:07:12 +0000 (UTC)
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C792D42
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 16:07:11 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B03E019937
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 23:13:34 +0000 (UTC)
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50BE3C22
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 16:13:28 -0700 (PDT)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 00AB321BEC;
-	Tue,  9 May 2023 23:07:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1683673630; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=yVC/oDO35Mm9t5u8zdNjROMY0OSbK+vPTRsrVjO4cBQ=;
-	b=Vcj9EVcUUodtx10tDUVFAoziNeStynq1hSLAmgo2bUSGE5lLvbtrYpaUybi4dZTAd8uu/4
-	59Iq/bjfsCZtnevkst5zAsqmZBVMlfRPobBXPuwIQPEkgWjVmRyslSHItJke9O8gpvCeSu
-	Pn/xeSoh3EEwu77XzGZH+KyDbGKVVcU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1683673630;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=yVC/oDO35Mm9t5u8zdNjROMY0OSbK+vPTRsrVjO4cBQ=;
-	b=UDkwMb5msMERbyeYNHXwc4j/X7NmxzXL2c63q2LULIwu8qH0fCgtFwPw9C8zvs1vv3JrsY
-	wsqNVreeMdIk5hDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 664E4139B3;
-	Tue,  9 May 2023 23:07:08 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id WnW+DxzSWmQIAwAAMHmgww
-	(envelope-from <hare@suse.de>); Tue, 09 May 2023 23:07:08 +0000
-Message-ID: <0794d1e7-7402-d41b-3d0d-7ff159645bf7@suse.de>
-Date: Wed, 10 May 2023 01:07:06 +0200
+	(Authenticated sender: marex@denx.de)
+	by phobos.denx.de (Postfix) with ESMTPSA id 5DE8685BBE;
+	Wed, 10 May 2023 01:13:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+	s=phobos-20191101; t=1683674006;
+	bh=kUKynXHnB7hQz14g5QVtrKhIA4Q4nRMRFctlKonAY14=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Xd0GlAhRX/ZxrY1SIXIze2aQMNCXuQ9OTxiZTK2BTxYmU+9QM+B8UZUPzwqD80h0Q
+	 Vk7xMhzPt0xGKhfRgAFU4ZRd4qwrbCzXXdKTFKTbAuUT9fZm+MLIuXqxTxAg2vFhpm
+	 lrDZ5b9B6YLHPBaaDOxBumToO7XPbu6tyJiE8QjurksUyTamgWJTY5MybLdgC2/VY+
+	 2YDzFzpq7euGp1sG1lZWwmS41UfXr7oMZdDRQ6rOiFOydL9U+f7EoYFRovICGJqfoe
+	 EXeNByfRPLy4NE/AY2OW2gBWaig/nTF4680aIJzhqrDaXlZWSp+iz/7WDV85JvEepo
+	 9qEiyP7DvXrcw==
+Message-ID: <92210ade-85fd-e89e-615e-d81965bf6508@denx.de>
+Date: Wed, 10 May 2023 01:13:24 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -64,24 +46,28 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 07/17] net/tls: handle MSG_EOR for tls_sw TX flow
+ Thunderbird/102.10.0
+Subject: Re: [PATCH] net: stmmac: Initialize MAC_ONEUS_TIC_COUNTER register
+To: Francesco Dolcini <francesco@dolcini.it>
+Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Eric Dumazet <edumazet@google.com>,
+ Francesco Dolcini <francesco.dolcini@toradex.com>,
+ Giuseppe Cavallaro <peppe.cavallaro@st.com>, Harald Seiler <hws@denx.de>,
+ Jakub Kicinski <kuba@kernel.org>, Jose Abreu <joabreu@synopsys.com>,
+ Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, Paolo Abeni
+ <pabeni@redhat.com>, linux-arm-kernel@lists.infradead.org,
+ linux-stm32@st-md-mailman.stormreply.com
+References: <20230506235845.246105-1-marex@denx.de>
+ <ZFqKPyCvFA7BD3y7@francesco-nb.int.toradex.com>
 Content-Language: en-US
-To: Max Gurtovoy <mgurtovoy@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Cc: Sagi Grimberg <sagi@grimberg.me>, Christoph Hellwig <hch@lst.de>,
- Keith Busch <kbusch@kernel.org>, linux-nvme@lists.infradead.org,
- Chuck Lever <chuck.lever@oracle.com>, kernel-tls-handshake@lists.linux.dev,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20230419065714.52076-1-hare@suse.de>
- <20230419065714.52076-8-hare@suse.de>
- <fb934ee3-879f-f33f-efeb-945ccc9dc9a3@nvidia.com>
- <f3fe3fc4-b885-d981-9685-4b1a377db639@suse.de>
- <20230509081308.4a531d4e@kernel.org>
- <5e603985-6ef1-879d-cc52-a093a1366795@nvidia.com>
-From: Hannes Reinecke <hare@suse.de>
-In-Reply-To: <5e603985-6ef1-879d-cc52-a093a1366795@nvidia.com>
+From: Marek Vasut <marex@denx.de>
+In-Reply-To: <ZFqKPyCvFA7BD3y7@francesco-nb.int.toradex.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
 X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
@@ -89,35 +75,58 @@ X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 5/10/23 01:02, Max Gurtovoy wrote:
+On 5/9/23 20:00, Francesco Dolcini wrote:
+> On Sun, May 07, 2023 at 01:58:45AM +0200, Marek Vasut wrote:
+>> Initialize MAC_ONEUS_TIC_COUNTER register with correct value derived
+>> from CSR clock, otherwise EEE is unstable on at least NXP i.MX8M Plus
+>> and Micrel KSZ9131RNX PHY, to the point where not even ARP request can
+>> be sent out.
+>>
+>> i.MX 8M Plus Applications Processor Reference Manual, Rev. 1, 06/2021
+>> 11.7.6.1.34 One-microsecond Reference Timer (MAC_ONEUS_TIC_COUNTER)
+>> defines this register as:
+>> "
+>> This register controls the generation of the Reference time (1 microsecond
+>> tic) for all the LPI timers. This timer has to be programmed by the software
+>> initially.
+>> ...
+>> The application must program this counter so that the number of clock cycles
+>> of CSR clock is 1us. (Subtract 1 from the value before programming).
+>> For example if the CSR clock is 100MHz then this field needs to be programmed
+>> to value 100 - 1 = 99 (which is 0x63).
+>> This is required to generate the 1US events that are used to update some of
+>> the EEE related counters.
+>> "
+>>
+>> The reset value is 0x63 on i.MX8M Plus, which means expected CSR clock are
+>> 100 MHz. However, the i.MX8M Plus "enet_qos_root_clk" are 266 MHz instead,
+>> which means the LPI timers reach their count much sooner on this platform.
+>>
+>> This is visible using a scope by monitoring e.g. exit from LPI mode on TX_CTL
+>> line from MAC to PHY. This should take 30us per STMMAC_DEFAULT_TWT_LS setting,
+>> during which the TX_CTL line transitions from tristate to low, and 30 us later
+>> from low to high. On i.MX8M Plus, this transition takes 11 us, which matches
+>> the 30us * 100/266 formula for misconfigured MAC_ONEUS_TIC_COUNTER register.
+>>
+>> Configure MAC_ONEUS_TIC_COUNTER based on CSR clock, so that the LPI timers
+>> have correct 1us reference. This then fixes EEE on i.MX8M Plus with Micrel
+>> KSZ9131RNX PHY.
+>>
+>> Signed-off-by: Marek Vasut <marex@denx.de>
 > 
+> Reviewed-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+> Tested-by: Francesco Dolcini <francesco.dolcini@toradex.com> # Toradex Verdin iMX8MP
 > 
-> On 09/05/2023 18:13, Jakub Kicinski wrote:
->> On Tue, 9 May 2023 16:18:30 +0200 Hannes Reinecke wrote:
->>>> This seems like a nice optimization but seems not mandatory for the
->>>> acceptance of TLS support in nvme/tcp.
->>>>
->>>> I wonder if this can go to net/tls as a standalone patch ?
->>>
->>> Errm. Without this NVMe/TLS will not work as sendmsg/sendpage will
->>> bail out.
->>> So yes, surely it can be applied as a standalone patch, but that
->>> only makes sense if it will be applied _before_ the rest of the
->>> nvme/tls patches.
+> I think this commit should have a fixes tag, what about
 > 
-> how come it will bail out only for NVMe/TLS and not for Other_user/TLS ?
-> 
-Oh, it will bail for other TLS users as well.
-Point is it will not bail for _non_ TLS connections, causing the issue.
+> Fixes: 477286b53f55 ("stmmac: add GMAC4 core support")
 
-Cheers,
+Fine by me.
 
-Hannes
--- 
-Dr. Hannes Reinecke                Kernel Storage Architect
-hare@suse.de                              +49 911 74053 688
-SUSE Software Solutions GmbH, Maxfeldstr. 5, 90409 Nürnberg
-HRB 36809 (AG Nürnberg), Geschäftsführer: Ivo Totev, Andrew
-Myers, Andrew McDonald, Martje Boudien Moerman
+>> NOTE: I suspect this can help with Toradex ELB-3757, Marcel, can you please
+>>        test this patch on i.MX8M Plus Verdin ?
+>>        https://developer-archives.toradex.com/software/linux/release-details?module=Verdin+iMX8M+Plus&key=ELB-3757
+> I think you are right, your patch clearly makes a difference here.
 
+Thanks for testing !
 
