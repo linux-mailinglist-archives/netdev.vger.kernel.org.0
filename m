@@ -1,171 +1,160 @@
-Return-Path: <netdev+bounces-1086-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1087-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 40A656FC230
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 10:59:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id DD2316FC234
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 11:00:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6E9DA1C20B04
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 08:59:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0B4671C20B4B
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:00:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D0C3568F;
-	Tue,  9 May 2023 08:59:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D54996106;
+	Tue,  9 May 2023 09:00:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2961317C2
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 08:59:43 +0000 (UTC)
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C26D2D0;
-	Tue,  9 May 2023 01:59:41 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id 4fb4d7f45d1cf-50bc394919cso8449286a12.2;
-        Tue, 09 May 2023 01:59:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683622780; x=1686214780;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GDtBIUCKzCwJt/NTlGsGyPq+Rx4a8Y3iaj9pBTWWw7o=;
-        b=a8xa4SQp4odNm62rbpLy34SczopmBPGOxUG1gtj25aZMbW99jXOLvJJ+BvqntJMDBZ
-         VLBGwQOX2nZesPJF7QTXMTlmZaOf2FhzSXvHai3pqJ2LuQ3hnd18x+Awh6WcZD6l5+Vg
-         DCVBnn9HbWheRp7vCtcNajaQnPoGKpz9ZSKpYmi6W/ioEeU3BZznhlUnvBZjkr594Zqb
-         Shxf4xLdBhWueVQ5INqXxlVOfLctwFmrJrFYhCTPSX1fLi1NNmpAr9Sg9rtpFxmvYNry
-         hMHnVGfdgLUnQUkmpPpJgu3xg/+HxcWSmlFsfkmFgSiOwMv0xfeqPSt1aWTN3SAzZw2Z
-         iFSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683622780; x=1686214780;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GDtBIUCKzCwJt/NTlGsGyPq+Rx4a8Y3iaj9pBTWWw7o=;
-        b=VDRJCvFudfdyCSGdiZjQdEWZ9+r/rkaVBqWVofXB3AJBiirbdORzbQpDsAxN0tWreM
-         bdD7pzZIIppAwmedc+Jr8JjteJj0Xz/0WH0JD/NXo7CUYNhHRzPHAyufb3kz57uXO0Q3
-         vgPQVQgVmmIJT2G/1t+nKAP3ek5oCPraH2eg+S1ZjRlPmhs+P9ijFqrpYrCrMFc6FQwu
-         cp9AjA1GB+GndCwSn4U5Cy4+jbCWyEeb+9VnX01el7/w7uPsksAbR9AqHBF2OytHNalT
-         haAfZFk1EmVK8Og159e0RfvdT1v3LesJCEd1JO8jL56tnh6Olm5qDG3FfJaEpIbuXqXv
-         umpQ==
-X-Gm-Message-State: AC+VfDwIR7jzhBHToCNFCwiIp0bp27oVHP27KiVIihzhBqTs0bZPTw/A
-	UhmdKKm4CRJfZlzzE1jD5Y4=
-X-Google-Smtp-Source: ACHHUZ6XzeflNUEIzuP+TjFi6Xtht2J4Sf3OV4/BX2yxhucEqVcNC+RxwbgDRdPUyamWtBjTfmPEdA==
-X-Received: by 2002:a17:907:6d20:b0:969:e304:441d with SMTP id sa32-20020a1709076d2000b00969e304441dmr2041828ejc.4.1683622779535;
-        Tue, 09 May 2023 01:59:39 -0700 (PDT)
-Received: from ?IPV6:2a01:c22:7655:7200:7d37:a922:8b7f:288b? (dynamic-2a01-0c22-7655-7200-7d37-a922-8b7f-288b.c22.pool.telefonica.de. [2a01:c22:7655:7200:7d37:a922:8b7f:288b])
-        by smtp.googlemail.com with ESMTPSA id b16-20020a170906195000b0094e96e46cc0sm1055184eje.69.2023.05.09.01.59.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 May 2023 01:59:39 -0700 (PDT)
-Message-ID: <7a53f0d3-3e9a-4024-6b19-72ad9c19ab97@gmail.com>
-Date: Tue, 9 May 2023 10:59:38 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA3AD3D67
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 09:00:07 +0000 (UTC)
+Received: from mail.codelabs.ch (mail.codelabs.ch [109.202.192.35])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38745D87A
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 02:00:02 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by mail.codelabs.ch (Postfix) with ESMTP id 39A5E220003;
+	Tue,  9 May 2023 11:00:00 +0200 (CEST)
+Received: from mail.codelabs.ch ([127.0.0.1])
+	by localhost (fenrir.codelabs.ch [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6MLyhD-0bhDY; Tue,  9 May 2023 10:59:58 +0200 (CEST)
+Received: from [IPV6:2a01:8b81:5400:f500:53f:7cf4:a354:e051] (unknown [IPv6:2a01:8b81:5400:f500:53f:7cf4:a354:e051])
+	by mail.codelabs.ch (Postfix) with ESMTPSA id C93D3220001;
+	Tue,  9 May 2023 10:59:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=strongswan.org;
+	s=default; t=1683622798;
+	bh=G51HidZMLQnYAUuOpwXzXD3rqvEC99c3CjYRviSJZVU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=kz5AGaohkcvJS9IPyJnu+dnEk9bV1LazLB5u0jPlLSKfAxyGAnwVsGP2FJAme8/j1
+	 w4n8Zz7/7lb99GaRWQLTZ4x9E9HBYzrQsY0iQA+Fv/fqj0I7KGVhbrIvLrGlJsQKFT
+	 xy9zxoUZRobdyjxYDQHTtE/xOZvieWqux6JLPaKc745MTgCm5+XxcqjljtVzaxhA0n
+	 R9AEJww0HFnLHsPO/4qZU+2zCd3hwuYuFl1LtthbhtVgNbwBpfOxBgLyTrfDuEzKV3
+	 R9QgR7MjUcxa4TeAUp3DJVpiCoJL+bx93nXk0A+PHFhDVDuV7Y2b535z1SmbgxWnq9
+	 JB5Hmmk3+YEOg==
+Message-ID: <95604760-0ea0-859c-a898-c0a6b548cf8e@strongswan.org>
+Date: Tue, 9 May 2023 10:59:58 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH net v2] net: phy: dp83867: add w/a for packet errors seen
- with short cables
-Content-Language: en-US
-To: Siddharth Vadapalli <s-vadapalli@ti.com>, andrew@lunn.ch,
- linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, srk@ti.com
-References: <20230509052124.611875-1-s-vadapalli@ti.com>
-From: Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <20230509052124.611875-1-s-vadapalli@ti.com>
+Subject: [PATCH ipsec] xfrm: Reject optional tunnel/BEET mode templates in
+ outbound policies
+To: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>, netdev@vger.kernel.org,
+ "David S . Miller" <davem@davemloft.net>
+References: <6dcb6a58-2699-9cde-3e34-57c142dbcf14@strongswan.org>
+ <ZEdmdDAwnuslrdvA@gondor.apana.org.au>
+ <8b8dbbc4-f956-8cbf-3700-1da366357a6f@strongswan.org>
+ <ZEePE9LMA0pWxz9r@gondor.apana.org.au>
+ <5d5bf4d9-5b63-ae0d-2f65-770e911ea7d6@strongswan.org>
+ <ZFiPyZvW2PhPZHlv@gauss3.secunet.de>
+ <c29e3424-f6ef-4d38-e150-fcf82d364ad2@strongswan.org>
+ <ZFnLmakCaADGVGV3@gauss3.secunet.de>
+Content-Language: en-US, de-CH-frami
+From: Tobias Brunner <tobias@strongswan.org>
+In-Reply-To: <ZFnLmakCaADGVGV3@gauss3.secunet.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 09.05.2023 07:21, Siddharth Vadapalli wrote:
-> From: Grygorii Strashko <grygorii.strashko@ti.com>
-> 
-> Introduce the W/A for packet errors seen with short cables (<1m) between
-> two DP83867 PHYs.
-> 
-> The W/A recommended by DM requires FFE Equalizer Configuration tuning by
-> writing value 0x0E81 to DSP_FFE_CFG register (0x012C), surrounded by hard
-> and soft resets as follows:
-> 
-> write_reg(0x001F, 0x8000); //hard reset
-> write_reg(DSP_FFE_CFG, 0x0E81);
-> write_reg(0x001F, 0x4000); //soft reset
-> 
-> Since  DP83867 PHY DM says "Changing this register to 0x0E81, will not
-> affect Long Cable performance.", enable the W/A by default.
-> 
-> Fixes: 2a10154abcb7 ("net: phy: dp83867: Add TI dp83867 phy")
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-> ---
-> 
-> V1 patch at:
-> https://lore.kernel.org/r/20230508070019.356548-1-s-vadapalli@ti.com
-> 
-> Changes since v1 patch:
-> - Wrap the line invoking phy_write_mmd(), limiting it to 80 characters.
-> - Replace 0X0E81 with 0x0e81 in the call to phy_write_mmd().
-> - Replace 0X012C with 0x012c in the new define for DP83867_DSP_FFE_CFG.
-> 
-> RFC patch at:
-> https://lore.kernel.org/r/20230425054429.3956535-2-s-vadapalli@ti.com/
-> 
-> Changes since RFC patch:
-> - Change patch subject to PATCH net.
-> - Add Fixes tag.
-> - Check return value of phy_write_mmd().
-> 
->  drivers/net/phy/dp83867.c | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-> index d75f526a20a4..bbdcc595715d 100644
-> --- a/drivers/net/phy/dp83867.c
-> +++ b/drivers/net/phy/dp83867.c
-> @@ -44,6 +44,7 @@
->  #define DP83867_STRAP_STS1	0x006E
->  #define DP83867_STRAP_STS2	0x006f
->  #define DP83867_RGMIIDCTL	0x0086
-> +#define DP83867_DSP_FFE_CFG	0x012c
->  #define DP83867_RXFCFG		0x0134
->  #define DP83867_RXFPMD1	0x0136
->  #define DP83867_RXFPMD2	0x0137
-> @@ -941,8 +942,23 @@ static int dp83867_phy_reset(struct phy_device *phydev)
->  
->  	usleep_range(10, 20);
->  
-> -	return phy_modify(phydev, MII_DP83867_PHYCTRL,
-> +	err = phy_modify(phydev, MII_DP83867_PHYCTRL,
->  			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
-> +	if (err < 0)
-> +		return err;
-> +
+xfrm_state_find() uses `encap_family` of the current template with
+the passed local and remote addresses to find a matching state.
+If an optional tunnel or BEET mode template is skipped in a mixed-family
+scenario, there could be a mismatch causing an out-of-bounds read as
+the addresses were not replaced to match the family of the next template.
 
-Would be good to add a comment here explaining what this magic write does.
+While there are theoretical use cases for optional templates in outbound
+policies, the only practical one is to skip IPComp states in inbound
+policies if uncompressed packets are received that are handled by an
+implicitly created IPIP state instead.
 
-> +	err = phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_DSP_FFE_CFG,
-> +			    0x0e81);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESTART);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	usleep_range(10, 20);
-> +
-> +	return 0;
->  }
->  
->  static void dp83867_link_change_notify(struct phy_device *phydev)
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Tobias Brunner <tobias@strongswan.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+---
+ net/xfrm/xfrm_user.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index af8fbcbfbe69..6794b9dea27a 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -1768,7 +1768,7 @@ static void copy_templates(struct xfrm_policy *xp, struct xfrm_user_tmpl *ut,
+ }
+ 
+ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
+-			 struct netlink_ext_ack *extack)
++			 int dir, struct netlink_ext_ack *extack)
+ {
+ 	u16 prev_family;
+ 	int i;
+@@ -1794,6 +1794,10 @@ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
+ 		switch (ut[i].mode) {
+ 		case XFRM_MODE_TUNNEL:
+ 		case XFRM_MODE_BEET:
++			if (ut[i].optional && dir == XFRM_POLICY_OUT) {
++				NL_SET_ERR_MSG(extack, "Mode in optional template not allowed in outbound policy");
++				return -EINVAL;
++			}
+ 			break;
+ 		default:
+ 			if (ut[i].family != prev_family) {
+@@ -1831,7 +1835,7 @@ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
+ }
+ 
+ static int copy_from_user_tmpl(struct xfrm_policy *pol, struct nlattr **attrs,
+-			       struct netlink_ext_ack *extack)
++			       int dir, struct netlink_ext_ack *extack)
+ {
+ 	struct nlattr *rt = attrs[XFRMA_TMPL];
+ 
+@@ -1842,7 +1846,7 @@ static int copy_from_user_tmpl(struct xfrm_policy *pol, struct nlattr **attrs,
+ 		int nr = nla_len(rt) / sizeof(*utmpl);
+ 		int err;
+ 
+-		err = validate_tmpl(nr, utmpl, pol->family, extack);
++		err = validate_tmpl(nr, utmpl, pol->family, dir, extack);
+ 		if (err)
+ 			return err;
+ 
+@@ -1919,7 +1923,7 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net,
+ 	if (err)
+ 		goto error;
+ 
+-	if (!(err = copy_from_user_tmpl(xp, attrs, extack)))
++	if (!(err = copy_from_user_tmpl(xp, attrs, p->dir, extack)))
+ 		err = copy_from_user_sec_ctx(xp, attrs);
+ 	if (err)
+ 		goto error;
+@@ -3498,7 +3502,7 @@ static struct xfrm_policy *xfrm_compile_policy(struct sock *sk, int opt,
+ 		return NULL;
+ 
+ 	nr = ((len - sizeof(*p)) / sizeof(*ut));
+-	if (validate_tmpl(nr, ut, p->sel.family, NULL))
++	if (validate_tmpl(nr, ut, p->sel.family, p->dir, NULL))
+ 		return NULL;
+ 
+ 	if (p->dir > XFRM_POLICY_OUT)
+-- 
+2.34.1
+
 
 
