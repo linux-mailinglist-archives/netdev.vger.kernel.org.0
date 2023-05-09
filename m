@@ -1,107 +1,107 @@
-Return-Path: <netdev+bounces-1156-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1157-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8ABB06FC5C8
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 14:05:19 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8232E6FC5F9
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 14:11:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B774E1C20B35
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:05:16 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D476A281194
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:11:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 84F8117ACF;
-	Tue,  9 May 2023 12:05:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA34B182AE;
+	Tue,  9 May 2023 12:11:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7432D13AE4
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 12:05:16 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA6F1BC7;
-	Tue,  9 May 2023 05:05:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=3Qs2Qwd1unjmDZV7UVMVZ7LHI9e7CBXfk5Zsx17orGA=; b=3NPjVmIVUtQLaM0MeI52Hbq6QU
-	K2bmbPX4VYwb4PJRYkCM9qs/r2IZPH5hZI0P4gPf5/ny8qacy10WZnuITbF0vNlQHpDO1o8n3ShoF
-	vaRl2BnXvCv9lTjO7jkdkdjje+MZzbWCnWR3RN/h0MZrgMvJEHOlT87qKeHtxzzQs/9o=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1pwM5N-00CIRh-S5; Tue, 09 May 2023 14:04:53 +0200
-Date: Tue, 9 May 2023 14:04:53 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: wuych <yunchuan@nfschina.com>
-Cc: davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-	michael@walle.cc, zhaoxiao@uniontech.com, andrew@aj.id.au,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] freescale:Remove unnecessary (void*) conversions
-Message-ID: <b959308c-e8ea-46e3-9277-ed8b4a610e06@lunn.ch>
-References: <20230509102501.41685-1-yunchuan@nfschina.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1F9B17ACF
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 12:11:22 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61536272D
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 05:11:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683634279;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=t/RQaaUXnmzd+KSdlgEdbSgDn1n2vtnUGdBoVDTHHUc=;
+	b=bEfp9C4Q4klqfGVMGcgn/EtgiJBN1nYBqbXppyCfAlL78mhLGht/5w1vC4MNkbM8imiGSo
+	dq3NCl+KUSBNDwYx0CoOSIRR0jiB8O7aXMNrXKnvlmdpf3dlCH5EG2CmV5ZpzzcFi4H3aT
+	QKI/7tKXJa1x1k7dDs2TP1WrgtI8lmM=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-168-3xaVG3VJNpebgmri9JR7jg-1; Tue, 09 May 2023 08:10:43 -0400
+X-MC-Unique: 3xaVG3VJNpebgmri9JR7jg-1
+Received: by mail-ed1-f70.google.com with SMTP id 4fb4d7f45d1cf-50d88a986afso4531057a12.0
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 05:10:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683634242; x=1686226242;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=t/RQaaUXnmzd+KSdlgEdbSgDn1n2vtnUGdBoVDTHHUc=;
+        b=NNaLKNL1w0HRrgo4CaJdILmTtSLGAhjAp8gDSgBnaPK3i80H6zFCuCDzmKU14wtUNu
+         npGm2dInA1jB5QrnHfDOAYrfDgRdPn6eo0yx1Kd2j6+XlXqGMITFoOKulgBLLDxGLr1A
+         NBi1hEklsfExHw7K7qKPMnNSDcBY8tw6jCdGqVgYQZMJQvwuv8lbzTqApyJwTTcrx+6t
+         Xobxvo957gaDWogSUTQ7a02Sgz5wG+8hECiqO6j/qZpzLWAfCRUfYQ5qKOQjkqUP/Zok
+         4CVYnSxmDCMfbI6DB0pFtlXDPWUyCe7mrgdN2hVfcJPu5SZG9dEp9M+u3ztLqYUMwcla
+         8KVw==
+X-Gm-Message-State: AC+VfDwBALebvdb9VERFZSWFgOfRxFqx/UzK41SafCZ+Mo2DaaZJx7mi
+	MFiNZ/03dp+0memP1r+qQPqzneXegGWwbxLY0kbSfkKtIUi/0aHnmzmoStQSR2c4dMGmevtxksf
+	jHy8oL1TntDva18Co
+X-Received: by 2002:a17:907:d86:b0:953:42c0:86e7 with SMTP id go6-20020a1709070d8600b0095342c086e7mr11907182ejc.4.1683634242014;
+        Tue, 09 May 2023 05:10:42 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5ziyroNxxsqiekoVaCaWu4X37anv4qlBfms9GfaeLY386YagIOqmfJnY0OXDPjopSYgDpkQA==
+X-Received: by 2002:a17:907:d86:b0:953:42c0:86e7 with SMTP id go6-20020a1709070d8600b0095342c086e7mr11907155ejc.4.1683634241599;
+        Tue, 09 May 2023 05:10:41 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id my14-20020a1709065a4e00b0096643397aeesm1238647ejc.184.2023.05.09.05.10.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 May 2023 05:10:41 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+	id 783C7AFD2ED; Tue,  9 May 2023 14:10:40 +0200 (CEST)
+From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To: Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
+Cc: lorenzo.bianconi@redhat.com, bpf@vger.kernel.org, davem@davemloft.net,
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, hawk@kernel.org,
+ john.fastabend@gmail.com, linyunsheng@huawei.com, ast@kernel.org,
+ daniel@iogearbox.net, jbenc@redhat.com
+Subject: Re: [PATCH net-next] net: veth: make PAGE_POOL_STATS optional
+In-Reply-To: <c9e132c3f08c456ad0462342bb0a104f0f8c0b24.1683622992.git.lorenzo@kernel.org>
+References: <c9e132c3f08c456ad0462342bb0a104f0f8c0b24.1683622992.git.lorenzo@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date: Tue, 09 May 2023 14:10:40 +0200
+Message-ID: <87mt2daenz.fsf@toke.dk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230509102501.41685-1-yunchuan@nfschina.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 09, 2023 at 06:25:01PM +0800, wuych wrote:
-> Pointer variables of void * type do not require type cast.
-> 
-> Signed-off-by: wuych <yunchuan@nfschina.com>
+Lorenzo Bianconi <lorenzo@kernel.org> writes:
 
-Hi Wuych
+> Since veth is very likely to be enabled and there are some drivers
+> (e.g. mlx5) where CONFIG_PAGE_POOL_STATS is optional, make
+> CONFIG_PAGE_POOL_STATS optional for veth too in order to keep it
+> optional when required.
 
-Please be a bit more specific with your subject prefix.
+s/when/instead of/ ?
 
-To get an idea what others have used, you can do:
+Other than that:
 
-git log --oneline drivers/net/ethernet/freescale/
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
-c248b27cfc0a Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
-e2fdfd711912 net: dpaa: avoid one skb_reset_mac_header() in dpaa_enable_tx_csum()
-461bb5b97049 net: dpaa: Fix uninitialized variable in dpaa_stop()
-16a2c7634442 net: enetc: include MAC Merge / FP registers in register dump
-827145392a4a net: enetc: only commit preemptible TCs to hardware when MM TX is active
-153b5b1d030d net: enetc: report mm tx-active based on tx-enabled and verify-status
-59be75db5966 net: enetc: fix MAC Merge layer remaining enabled until a link down event
-01e23b2b3bad net: enetc: add support for preemptible traffic classes
-50764da37cbe net: enetc: rename "mqprio" to "qopt"
-800e68c44ffe Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
-5b7be2d4fd6e net: enetc: workaround for unresponsive pMAC after receiving express traffic
-37f9b2a6c086 net: ethernet: Add missing depends on MDIO_DEVRES
-d9c960675adc Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
-abc33494ddd5 net: fec: make use of MDIO C45 quirk
-dc0a7b520071 Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
-99d0f3a1095f net: dpaa2-mac: use Autoneg bit rather than an_enabled
-c79493c3ccf0 net: enetc: fix aggregate RMON counters not showing the ranges
-1a87e641d8a5 net: Use of_property_read_bool() for boolean properties
-8ff99ad04c2e Merge tag 'phy-for-6.3' of git://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy
-1c93e48cc391 net: dpaa2-eth: do not always set xsk support in xdp_features flag
-
-So at least add net. And since you only touch xgmac, you could use
-
-net: xgmac: 
-
-If you had touch multiple drivers within freescale then net:
-freescale: would be better.
-
-These prefixes are important. Reviewers tend to have interest in
-specific parts of the kernel. The prefix is what draws their
-attention, makes them look at a patch or not.
-
-	   Andrew
 
