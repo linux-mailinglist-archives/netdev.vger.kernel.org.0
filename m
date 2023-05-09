@@ -1,228 +1,442 @@
-Return-Path: <netdev+bounces-1033-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1034-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C52366FBE51
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 06:43:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 00AE16FBE67
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 06:46:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 84B0828125E
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 04:43:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C2FA91C20A7D
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 04:46:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0AF61191;
-	Tue,  9 May 2023 04:42:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7F3CF649;
+	Tue,  9 May 2023 04:46:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECD6F20EB
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 04:42:53 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9757688
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 21:42:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683607370;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=W7lkveXXMx28z2hQQkgi6XifNwekRx4w5U94EsCpzfo=;
-	b=TG2ZWeNKZFsGST2PvpfMl3tGc6OMDLD6MXZiIUINq+XwLKf2CSycbaJZ5qy3/kvZulo+Sq
-	4NpoCFGxxX4XoL9jOUHu22WHBDAXrC6rYOLB7F4TRXqhkPghVDsi28oP2NJS9R/Y7I3Bv4
-	d2UdI4ppyHrQWsb83KJKWsM4goBagf4=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-674-YHqJkPVrP66Nv0wxmSUIAQ-1; Tue, 09 May 2023 00:42:49 -0400
-X-MC-Unique: YHqJkPVrP66Nv0wxmSUIAQ-1
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-7577727a00eso744714085a.1
-        for <netdev@vger.kernel.org>; Mon, 08 May 2023 21:42:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B2CD191
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 04:46:49 +0000 (UTC)
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D028AD38;
+	Mon,  8 May 2023 21:46:17 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id d2e1a72fcca58-64115eef620so39619765b3a.1;
+        Mon, 08 May 2023 21:46:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683607575; x=1686199575;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FS+SrlPswE4eD+uqPBjYmKG/qWI7CqlW44O7ac6sfQw=;
+        b=jqCfQVQamQEid34WI5mvpzB6I59Gz5y00SZqQYzHgqwUgkW/HUo+i2Ja5H3vGeNkQx
+         4HjsHHLFEmkS7a0bdvev+JlCBnqWdfXvQNMuR5mN66SzG0rhC3u8f7XvDoEdL9MGwMWX
+         TnogcfHk4P/zNt89ZHn6NSSoM8Te8jnmyIFlguKpt8BjcfJutf9VlvhOc6oQL6JbCzoZ
+         Hb20Wnf2MS3suyE9m6YhC3N8AbC3AFH6nTdTh2Jp2HzbJ4V7jnyNHI/kMq0zoA/QjnfU
+         DKEJNcQL7NYuLUadf8tfAOh/h054J585T4SCmEGnXpFWDDZ6JLoVZk1O8Kxys152Yes4
+         WL/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683607368; x=1686199368;
+        d=1e100.net; s=20221208; t=1683607575; x=1686199575;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=W7lkveXXMx28z2hQQkgi6XifNwekRx4w5U94EsCpzfo=;
-        b=VoWyf0A/fgoc/mRCMBUiiSkZOHMUSbF3JRj4VfJJ3o2ZL+P9V+qnAPssqj2/dEOCDr
-         oKnWp+LtD8N4SWvCKBrjmiNRbrtonjitN3vD3LLcsIK0wgeqmRTHUW1npMZfJIKHB0cz
-         AxACrVyOanxbkBKXFgkwTIc3abSTZlIn0r3Oyr9HprUyGRv758fi6F9MZmyw7Xdycs9+
-         ZJSziGF1e4xtXTwUBGPa0LCw2OS88+oEZTxzs60syHy7cmqRblHujIp4H7dIDnSrTd/T
-         hiMg1x2pTcTjSxyiVFMB5IRgvyOYoIEFQOnpOyZGEjjfZt+3PgblHoNMw3R7JAcpPnQX
-         fU3A==
-X-Gm-Message-State: AC+VfDys5q7/EpukFv7NHyaKEW40jCUy8vOxo4ZP9ne7uc3UIKqkJFSE
-	i4afcwNZFXqOlaaXFjdrXiDAvH6N6UI8QFPfc38pQvTzbbAia4aBkUXiyUs4mxJArKUgGvK/Jj3
-	gZ5/U+HA0XS2fkZmra4A6/NGlCDg=
-X-Received: by 2002:a05:6214:408:b0:5dd:b986:b44 with SMTP id z8-20020a056214040800b005ddb9860b44mr22544262qvx.6.1683607368249;
-        Mon, 08 May 2023 21:42:48 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6j3iab8C9dTm3YoE+9qDG5jkVMfm91YDSkfYW2q1isW0mgFLBflIC9pEd53x+/Sn1pYDGxFw==
-X-Received: by 2002:a05:6214:408:b0:5dd:b986:b44 with SMTP id z8-20020a056214040800b005ddb9860b44mr22544245qvx.6.1683607367963;
-        Mon, 08 May 2023 21:42:47 -0700 (PDT)
-Received: from redhat.com ([185.187.243.118])
-        by smtp.gmail.com with ESMTPSA id r3-20020a0ce283000000b005dd8b9345aesm492559qvl.70.2023.05.08.21.42.43
+        bh=FS+SrlPswE4eD+uqPBjYmKG/qWI7CqlW44O7ac6sfQw=;
+        b=g+3VLhbF2B1pYVYM4WUmpwaCrYDbUNXX4jej1YyKSptrrepPwc3dZcoDZpISZz+xqt
+         yxULKrv+TvGso4Fqwu7pBCKDaoGrMcImG1jUaFXBgOlOd3/i6KmrMbzi5PMQxtRLgBhe
+         aJxk7uJUJ3JANIafRRWFAw8LrTGRRjX+sTVroC4u0ZhTvZGJjcUn3UN2nx1oXP5eXzoH
+         TZdKeBmkCdk0inOk7yWciojLXk39yEhUf0SR/cnpscFizeq8so1ai20FIJR5rNdQhykw
+         m+tmmS8OCrhCBjsJBSSbLkVqUyFWrACuEjMtkIOtY77MvZoXqnOB7s5IqNiN4uU/f2UC
+         24CA==
+X-Gm-Message-State: AC+VfDy4O1Y8ouHA0OnegXUc5dvEX+4Sc4W3pR/dzDINMOZ8U2sysWM3
+	avfU3Wx1o60VHLRT5wgyB+Y=
+X-Google-Smtp-Source: ACHHUZ4NIdDCu3bFcAsii8fJUKI9h0WIH0WIawuxsax4YXaZZNlptGilxn0XFUas/f325ghGRGa2Mw==
+X-Received: by 2002:a17:902:e751:b0:1a9:a408:a52f with SMTP id p17-20020a170902e75100b001a9a408a52fmr20321289plf.24.1683607574777;
+        Mon, 08 May 2023 21:46:14 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-91.three.co.id. [180.214.233.91])
+        by smtp.gmail.com with ESMTPSA id iy3-20020a170903130300b001ab1cdb4295sm384636plb.130.2023.05.08.21.46.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 21:42:47 -0700 (PDT)
-Date: Tue, 9 May 2023 00:42:39 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Feng Liu <feliu@nvidia.com>
-Cc: virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Simon Horman <simon.horman@corigine.com>,
-	Bodong Wang <bodong@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net v4] virtio_net: Fix error unwinding of XDP
- initialization
-Message-ID: <20230509004010-mutt-send-email-mst@kernel.org>
-References: <20230508222708.68281-1-feliu@nvidia.com>
+        Mon, 08 May 2023 21:46:14 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+	id C5C1D1068D5; Tue,  9 May 2023 11:46:09 +0700 (WIB)
+Date: Tue, 9 May 2023 11:46:09 +0700
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Emil Tantilov <emil.s.tantilov@intel.com>,
+	intel-wired-lan@lists.osuosl.org
+Cc: shannon.nelson@amd.com, simon.horman@corigine.com, leon@kernel.org,
+	decot@google.com, willemb@google.com,
+	Joshua Hay <joshua.a.hay@intel.com>, jesse.brandeburg@intel.com,
+	anthony.l.nguyen@intel.com, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	netdev@vger.kernel.org, corbet@lwn.net, linux-doc@vger.kernel.org,
+	Alan Brady <alan.brady@intel.com>,
+	Madhu Chittim <madhu.chittim@intel.com>,
+	Phani Burra <phani.r.burra@intel.com>,
+	Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+Subject: Re: [PATCH iwl-next v4 15/15] idpf: configure SRIOV and add other
+ ndo_ops
+Message-ID: <ZFnQEXCm0upQ1LSo@debian.me>
+References: <20230508194326.482-1-emil.s.tantilov@intel.com>
+ <20230508194326.482-16-emil.s.tantilov@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="XB1CMNuCitGT0anZ"
 Content-Disposition: inline
-In-Reply-To: <20230508222708.68281-1-feliu@nvidia.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230508194326.482-16-emil.s.tantilov@intel.com>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 08, 2023 at 06:27:08PM -0400, Feng Liu wrote:
-> When initializing XDP in virtnet_open(), some rq xdp initialization
-> may hit an error causing net device open failed. However, previous
-> rqs have already initialized XDP and enabled NAPI, which is not the
-> expected behavior. Need to roll back the previous rq initialization
-> to avoid leaks in error unwinding of init code.
-> 
-> Also extract helper functions of disable and enable queue pairs.
-> Use newly introduced disable helper function in error unwinding and
-> virtnet_close. Use enable helper function in virtnet_open.
-> 
-> Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
-> Signed-off-by: Feng Liu <feliu@nvidia.com>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+
+--XB1CMNuCitGT0anZ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, May 08, 2023 at 12:43:26PM -0700, Emil Tantilov wrote:
+> From: Joshua Hay <joshua.a.hay@intel.com>
+>=20
+> Add PCI callback to configure SRIOV and add the necessary support
+> to initialize the requested number of VFs by sending the virtchnl
+> message to the device Control Plane.
+>=20
+> Add other ndo ops supported by the driver such as features_check,
+> set_rx_mode, validate_addr, set_mac_address, change_mtu, get_stats64,
+> set_features, and tx_timeout. Initialize the statistics task which
+>  requests the queue related statistics to the CP. Add loopback
+> and promiscuous mode support and the respective virtchnl messages.
+>=20
+> Finally, add documentation and build support for the driver.
+>=20
+> Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
+> Co-developed-by: Alan Brady <alan.brady@intel.com>
+> Signed-off-by: Alan Brady <alan.brady@intel.com>
+> Co-developed-by: Madhu Chittim <madhu.chittim@intel.com>
+> Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
+> Co-developed-by: Phani Burra <phani.r.burra@intel.com>
+> Signed-off-by: Phani Burra <phani.r.burra@intel.com>
+> Co-developed-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+> Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+> Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+> Reviewed-by: Willem de Bruijn <willemb@google.com>
 > ---
-> 
-> v3 -> v4
-> feedbacks from Jiri Pirko
-> - Add symmetric helper function virtnet_enable_qp to enable queues.
-> - Error handle:  cleanup current queue pair in virtnet_enable_qp,
->   and complete the reset queue pairs cleanup in virtnet_open.
-> - Fix coding style.
-> feedbacks from Parav Pandit
-> - Remove redundant debug message and white space.
-> 
-> v2 -> v3
-> feedbacks from Michael S. Tsirkin
-> - Remove redundant comment.
-> 
-> v1 -> v2
-> feedbacks from Michael S. Tsirkin
-> - squash two patches together.
-> 
-> ---
->  drivers/net/virtio_net.c | 58 ++++++++++++++++++++++++++++------------
->  1 file changed, 41 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 8d8038538fc4..df7c08048fa7 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1868,6 +1868,38 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
->  	return received;
->  }
->  
-> +static void virtnet_disable_qp(struct virtnet_info *vi, int qp_index)
+>  .../device_drivers/ethernet/intel/idpf.rst    | 162 +++++
+>  drivers/net/ethernet/intel/Kconfig            |  10 +
+>  drivers/net/ethernet/intel/Makefile           |   1 +
+>  drivers/net/ethernet/intel/idpf/idpf.h        |  40 ++
+>  drivers/net/ethernet/intel/idpf/idpf_lib.c    | 642 +++++++++++++++++-
+>  drivers/net/ethernet/intel/idpf/idpf_main.c   |  17 +
+>  drivers/net/ethernet/intel/idpf/idpf_txrx.c   |  26 +
+>  drivers/net/ethernet/intel/idpf/idpf_txrx.h   |   2 +
+>  .../net/ethernet/intel/idpf/idpf_virtchnl.c   | 193 ++++++
+
+You forget to add toctree entry for the doc:
+
+---- >8 ----
+diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/D=
+ocumentation/networking/device_drivers/ethernet/index.rst
+index 417ca514a4d057..5a7e377ae2b7f5 100644
+--- a/Documentation/networking/device_drivers/ethernet/index.rst
++++ b/Documentation/networking/device_drivers/ethernet/index.rst
+@@ -30,6 +30,7 @@ Contents:
+    intel/e1000
+    intel/e1000e
+    intel/fm10k
++   intel/idpf
+    intel/igb
+    intel/igbvf
+    intel/ixgbe
+
+> +Contents
+> +=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +- Overview
+> +- Identifying Your Adapter
+> +- Additional Features & Configurations
+> +- Performance Optimization
+
+Automatically generate table of contents instead:
+
+---- >8 ----
+diff --git a/Documentation/networking/device_drivers/ethernet/intel/idpf.rs=
+t b/Documentation/networking/device_drivers/ethernet/intel/idpf.rst
+index ae5e6430d0e636..6f7c8e15fa20df 100644
+--- a/Documentation/networking/device_drivers/ethernet/intel/idpf.rst
++++ b/Documentation/networking/device_drivers/ethernet/intel/idpf.rst
+@@ -7,14 +7,7 @@ idpf Linux* Base Driver for the Intel(R) Infrastructure Da=
+ta Path Function
+ Intel idpf Linux driver.
+ Copyright(C) 2023 Intel Corporation.
+=20
+-Contents
+-=3D=3D=3D=3D=3D=3D=3D=3D
+-
+-- Overview
+-- Identifying Your Adapter
+-- Additional Features & Configurations
+-- Performance Optimization
+-
++.. contents::
+=20
+ The idpf driver serves as both the Physical Function (PF) and Virtual Func=
+tion
+ (VF) driver for the Intel(R) Infrastructure Data Path Function.
+
+> +Identifying Your Adapter
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +For information on how to identify your adapter, and for the latest Intel
+> +network drivers, refer to the Intel Support website:
+> +http://www.intel.com/support
+
+What support article(s) do you mean on identifying the adapter?
+
+> +
+> +
+> +Additional Features and Configurations
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +ethtool
+> +-------
+> +The driver utilizes the ethtool interface for driver configuration and
+> +diagnostics, as well as displaying statistical information. The latest e=
+thtool
+> +version is required for this functionality. Download it at:
+> +https://kernel.org/pub/software/network/ethtool/
+
+"... If you don't have one yet, you can obtain it at ..."
+
+> +
+> +
+> +Viewing Link Messages
+> +---------------------
+> +Link messages will not be displayed to the console if the distribution is
+> +restricting system messages. In order to see network driver link message=
+s on
+> +your console, set dmesg to eight by entering the following:
+> +
+> +# dmesg -n 8
+> +
+> +NOTE: This setting is not saved across reboots.
+
+How can I permanently save above dmesg setting?
+
+> +
+> +
+> +Jumbo Frames
+> +------------
+> +Jumbo Frames support is enabled by changing the Maximum Transmission Uni=
+t (MTU)
+> +to a value larger than the default value of 1500.
+> +
+> +Use the ip command to increase the MTU size. For example, enter the foll=
+owing
+> +where <ethX> is the interface number:
+> +
+> +# ip link set mtu 9000 dev <ethX>
+> +# ip link set up dev <ethX>
+
+For command line snippets, use literal code blocks:
+
+---- >8 ----
+diff --git a/Documentation/networking/device_drivers/ethernet/intel/idpf.rs=
+t b/Documentation/networking/device_drivers/ethernet/intel/idpf.rst
+index 0a2982fb6f0045..30148d8cf34b14 100644
+--- a/Documentation/networking/device_drivers/ethernet/intel/idpf.rst
++++ b/Documentation/networking/device_drivers/ethernet/intel/idpf.rst
+@@ -48,9 +48,9 @@ Viewing Link Messages
+ ---------------------
+ Link messages will not be displayed to the console if the distribution is
+ restricting system messages. In order to see network driver link messages =
+on
+-your console, set dmesg to eight by entering the following:
++your console, set dmesg to eight by entering the following::
+=20
+-# dmesg -n 8
++    # dmesg -n 8
+=20
+ NOTE: This setting is not saved across reboots.
+=20
+@@ -61,10 +61,10 @@ Jumbo Frames support is enabled by changing the Maximum=
+ Transmission Unit (MTU)
+ to a value larger than the default value of 1500.
+=20
+ Use the ip command to increase the MTU size. For example, enter the follow=
+ing
+-where <ethX> is the interface number:
++where <ethX> is the interface number::
+=20
+-# ip link set mtu 9000 dev <ethX>
+-# ip link set up dev <ethX>
++    # ip link set mtu 9000 dev <ethX>
++    # ip link set up dev <ethX>
+=20
+ NOTE: The maximum MTU setting for jumbo frames is 9706. This corresponds t=
+o the
+ maximum jumbo frame size of 9728 bytes.
+@@ -92,40 +92,40 @@ is tuned for general workloads. The user can customize =
+the interrupt rate
+ control for specific workloads, via ethtool, adjusting the number of
+ microseconds between interrupts.
+=20
+-To set the interrupt rate manually, you must disable adaptive mode:
++To set the interrupt rate manually, you must disable adaptive mode::
+=20
+-# ethtool -C <ethX> adaptive-rx off adaptive-tx off
++    # ethtool -C <ethX> adaptive-rx off adaptive-tx off
+=20
+ For lower CPU utilization:
+  - Disable adaptive ITR and lower Rx and Tx interrupts. The examples below
+    affect every queue of the specified interface.
+=20
+  - Setting rx-usecs and tx-usecs to 80 will limit interrupts to about
+-   12,500 interrupts per second per queue:
++   12,500 interrupts per second per queue::
+=20
+-   # ethtool -C <ethX> adaptive-rx off adaptive-tx off rx-usecs 80
+-   tx-usecs 80
++       # ethtool -C <ethX> adaptive-rx off adaptive-tx off rx-usecs 80
++       tx-usecs 80
+=20
+ For reduced latency:
+  - Disable adaptive ITR and ITR by setting rx-usecs and tx-usecs to 0
+-   using ethtool:
++   using ethtool::
+=20
+-   # ethtool -C <ethX> adaptive-rx off adaptive-tx off rx-usecs 0
+-   tx-usecs 0
++       # ethtool -C <ethX> adaptive-rx off adaptive-tx off rx-usecs 0
++       tx-usecs 0
+=20
+ Per-queue interrupt rate settings:
+  - The following examples are for queues 1 and 3, but you can adjust other
+    queues.
+=20
+  - To disable Rx adaptive ITR and set static Rx ITR to 10 microseconds or
+-   about 100,000 interrupts/second, for queues 1 and 3:
++   about 100,000 interrupts/second, for queues 1 and 3::
+=20
+-   # ethtool --per-queue <ethX> queue_mask 0xa --coalesce adaptive-rx off
+-   rx-usecs 10
++       # ethtool --per-queue <ethX> queue_mask 0xa --coalesce adaptive-rx =
+off
++       rx-usecs 10
+=20
+- - To show the current coalesce settings for queues 1 and 3:
++ - To show the current coalesce settings for queues 1 and 3::
+=20
+-   # ethtool --per-queue <ethX> queue_mask 0xa --show-coalesce
++       # ethtool --per-queue <ethX> queue_mask 0xa --show-coalesce
+=20
+=20
+=20
+@@ -139,9 +139,9 @@ helpful to optimize performance in VMs.
+    device's local_cpulist: /sys/class/net/<ethX>/device/local_cpulist.
+=20
+  - Configure as many Rx/Tx queues in the VM as available. (See the idpf dr=
+iver
+-   documentation for the number of queues supported.) For example:
++   documentation for the number of queues supported.) For example::
+=20
+-   # ethtool -L <virt_interface> rx <max> tx <max>
++       # ethtool -L <virt_interface> rx <max> tx <max>
+=20
+=20
+ Support
+
+> +
+> +NOTE: The maximum MTU setting for jumbo frames is 9706. This corresponds=
+ to the
+> +maximum jumbo frame size of 9728 bytes.
+> +
+> +NOTE: This driver will attempt to use multiple page sized buffers to rec=
+eive
+> +each jumbo packet. This should help to avoid buffer starvation issues wh=
+en
+> +allocating receive packets.
+> +
+> +NOTE: Packet loss may have a greater impact on throughput when you use j=
+umbo
+> +frames. If you observe a drop in performance after enabling jumbo frames,
+> +enabling flow control may mitigate the issue.
+
+Sphinx has admonition directive facility to style above notes:
+
+---- >8 ----
+diff --git a/Documentation/networking/device_drivers/ethernet/intel/idpf.rs=
+t b/Documentation/networking/device_drivers/ethernet/intel/idpf.rst
+index 30148d8cf34b14..ae5e6430d0e636 100644
+--- a/Documentation/networking/device_drivers/ethernet/intel/idpf.rst
++++ b/Documentation/networking/device_drivers/ethernet/intel/idpf.rst
+@@ -52,7 +52,8 @@ your console, set dmesg to eight by entering the followin=
+g::
+=20
+     # dmesg -n 8
+=20
+-NOTE: This setting is not saved across reboots.
++.. note::
++   This setting is not saved across reboots.
+=20
+=20
+ Jumbo Frames
+@@ -66,16 +67,19 @@ where <ethX> is the interface number::
+     # ip link set mtu 9000 dev <ethX>
+     # ip link set up dev <ethX>
+=20
+-NOTE: The maximum MTU setting for jumbo frames is 9706. This corresponds t=
+o the
+-maximum jumbo frame size of 9728 bytes.
++.. note::
++   The maximum MTU setting for jumbo frames is 9706. This corresponds to t=
+he
++   maximum jumbo frame size of 9728 bytes.
+=20
+-NOTE: This driver will attempt to use multiple page sized buffers to recei=
+ve
+-each jumbo packet. This should help to avoid buffer starvation issues when
+-allocating receive packets.
++.. note::
++   This driver will attempt to use multiple page sized buffers to receive
++   each jumbo packet. This should help to avoid buffer starvation issues w=
+hen
++   allocating receive packets.
+=20
+-NOTE: Packet loss may have a greater impact on throughput when you use jum=
+bo
+-frames. If you observe a drop in performance after enabling jumbo frames,
+-enabling flow control may mitigate the issue.
++.. note::
++   Packet loss may have a greater impact on throughput when you use jumbo
++   frames. If you observe a drop in performance after enabling jumbo frame=
+s,
++   enabling flow control may mitigate the issue.
+=20
+=20
+ Performance Optimization
 
 
-I am guessing _qp stands for queue pair? Let's call it
-virtnet_disable_queue_pair please, consistently with max_queue_pairs.
+Thanks.
 
-> +{
-> +	virtnet_napi_tx_disable(&vi->sq[qp_index].napi);
-> +	napi_disable(&vi->rq[qp_index].napi);
-> +	xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
-> +}
-> +
-> +static int virtnet_enable_qp(struct virtnet_info *vi, int qp_index)
+--=20
+An old man doll... just what I always wanted! - Clara
 
-Similarly, virtnet_enable_queue_pair
+--XB1CMNuCitGT0anZ
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> +{
-> +	struct net_device *dev = vi->dev;
-> +	int err;
-> +
-> +	err = xdp_rxq_info_reg(&vi->rq[qp_index].xdp_rxq, dev, qp_index,
-> +			       vi->rq[qp_index].napi.napi_id);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	err = xdp_rxq_info_reg_mem_model(&vi->rq[qp_index].xdp_rxq,
-> +					 MEM_TYPE_PAGE_SHARED, NULL);
-> +	if (err < 0)
-> +		goto err_xdp_reg_mem_model;
-> +
-> +	virtnet_napi_enable(vi->rq[qp_index].vq, &vi->rq[qp_index].napi);
-> +	virtnet_napi_tx_enable(vi, vi->sq[qp_index].vq, &vi->sq[qp_index].napi);
-> +
-> +	return 0;
-> +
-> +err_xdp_reg_mem_model:
-> +	xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
-> +	return err;
-> +}
-> +
->  static int virtnet_open(struct net_device *dev)
->  {
->  	struct virtnet_info *vi = netdev_priv(dev);
-> @@ -1881,22 +1913,17 @@ static int virtnet_open(struct net_device *dev)
->  			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
->  				schedule_delayed_work(&vi->refill, 0);
->  
-> -		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, vi->rq[i].napi.napi_id);
-> +		err = virtnet_enable_qp(vi, i);
->  		if (err < 0)
-> -			return err;
-> -
-> -		err = xdp_rxq_info_reg_mem_model(&vi->rq[i].xdp_rxq,
-> -						 MEM_TYPE_PAGE_SHARED, NULL);
-> -		if (err < 0) {
-> -			xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
-> -			return err;
-> -		}
-> -
-> -		virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
-> -		virtnet_napi_tx_enable(vi, vi->sq[i].vq, &vi->sq[i].napi);
-> +			goto err_enable_qp;
->  	}
->  
->  	return 0;
-> +
-> +err_enable_qp:
-> +	for (i--; i >= 0; i--)
-> +		virtnet_disable_qp(vi, i);
-> +	return err;
->  }
->  
->  static int virtnet_poll_tx(struct napi_struct *napi, int budget)
-> @@ -2305,11 +2332,8 @@ static int virtnet_close(struct net_device *dev)
->  	/* Make sure refill_work doesn't re-enable napi! */
->  	cancel_delayed_work_sync(&vi->refill);
->  
-> -	for (i = 0; i < vi->max_queue_pairs; i++) {
-> -		virtnet_napi_tx_disable(&vi->sq[i].napi);
-> -		napi_disable(&vi->rq[i].napi);
-> -		xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
-> -	}
-> +	for (i = 0; i < vi->max_queue_pairs; i++)
-> +		virtnet_disable_qp(vi, i);
->  
->  	return 0;
->  }
-> -- 
-> 2.37.1 (Apple Git-137.1)
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZFnQCgAKCRD2uYlJVVFO
+o0eoAQCwcoPTSGgmJhLW0P24FRnk4ErnBTTj0tID9AHLUb/NRgD/Y4yHw1UgO9xe
+TWkZ258kY2iGsCapKd9PuKqMj/asjwA=
+=PHLZ
+-----END PGP SIGNATURE-----
+
+--XB1CMNuCitGT0anZ--
 
