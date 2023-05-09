@@ -1,155 +1,169 @@
-Return-Path: <netdev+bounces-1065-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1066-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4E09D6FC0C3
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:52:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id C3A926FC0C4
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:52:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 15BD12811EA
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 07:52:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EACB71C20ADC
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 07:52:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1AC45171C6;
-	Tue,  9 May 2023 07:52:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E1CDF171CC;
+	Tue,  9 May 2023 07:52:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 060E66121
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 07:52:13 +0000 (UTC)
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BBDAAD09
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 00:52:10 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id ffacd0b85a97d-30771c68a9eso4764930f8f.2
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 00:52:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683618728; x=1686210728;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AiJ7j1UJ/LHlbk27yV5v4iaBxOzxNWaEAWpsBwu4K1A=;
-        b=vjnA/N0wYP3JqBq0LLnPmY5ySAhBGZ45WZz+1ago1Razib7wJoAVGwVCPdoVGISI/d
-         soAW/KkFE6Q9i14xhTWawPMvnao0Oj/c1rWhgExXYgo7VJdlo2BJiumnj03gzDL3DYHp
-         zxjp+zinNpZcebIEZCyWeDbaEMkaG8e6AbZFeYZ3+oYVv76YYPQoT0bG87E9muOV2Rvy
-         IB3Cr4V++wky/Mm/gY3lysEyssFSKAJ9kFu7mdYiuXc/MDO/M2IBB8tEet16Mc3azG2O
-         3+CjALJ2my6fdZR5EYCLJM9bNhU5YNBFyC4EWEGQikjdfIi1ydwpimRtuLDTmrcQD679
-         dhZw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D743C38C
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 07:52:41 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEF9E49
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 00:52:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683618759;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Hq9XOb+LYS7v46jM7SOsafcU6iQdpNEsWNBu53l8jpc=;
+	b=ANbjMV+W00s5xjXFg2z9iQh4c2oURVtZM6gigZtFC6Q1bqsONvcI2ypD6pX2YdKLsGA5hy
+	QkUfyae4CZbrULFxTJYb0q4t41KBq/H5N3xgrMWjcmAMGMXAW/DlAaWgIFBpfKtIZEr0/K
+	tNVRF/DcPewqV0U6crQIs1sademjAeU=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-319-oRaMMALyMRWO1msJ9qoFJQ-1; Tue, 09 May 2023 03:52:31 -0400
+X-MC-Unique: oRaMMALyMRWO1msJ9qoFJQ-1
+Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-306415cca9eso29408f8f.1
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 00:52:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683618728; x=1686210728;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AiJ7j1UJ/LHlbk27yV5v4iaBxOzxNWaEAWpsBwu4K1A=;
-        b=PnKyUSfvx1aRwVN7nHhfxSOdXoSPIm2k9YrYL/23oKr+v5XciBojkTWN7ThBCiZrL3
-         dg1AXUwQSxqHIK3QmYLolNoehm0dCFzIQPtGdefilIpFEjJ5LuzpWkTR+84ngcV1mkCK
-         MfcyFnsiPhCjyZku/Eq4zsiYdLjOQAiDn9o2mfnHOQVNEPfN+EvynC+pA2F4w6+SSW3v
-         iYrDE0f43dDE/JYrEGwgjUdjQp5KCO3pxAqfXjk0DoMqmVUv/NQL8YvFZsTYQoZtIZGj
-         LrGktGz9WvNcH+wEtoQHlQMu/AYLpyk2MxrRCMKpvc0uoajbtx8LcG54UH9brjO1OXFY
-         zzlQ==
-X-Gm-Message-State: AC+VfDxVsRk2n5BmHYimiwdfj8fCNOQ0dvb3RBlN71Zqbsxz+BGtMIGQ
-	hpJGVj/ZRw4ZZzbPpRW+kjkHoKw5om9j89yQ8JNv9g==
-X-Google-Smtp-Source: ACHHUZ77GpidyDYIXFEMgkHoj7nqJ/307eHJcLHJeO+DhUlVx5SZRURaeMCdJvEWfKUhMwqMENMCtgi6rH1kQyKcaXI=
-X-Received: by 2002:adf:e690:0:b0:2e8:b9bb:f969 with SMTP id
- r16-20020adfe690000000b002e8b9bbf969mr9090559wrm.0.1683618728362; Tue, 09 May
- 2023 00:52:08 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683618750; x=1686210750;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Hq9XOb+LYS7v46jM7SOsafcU6iQdpNEsWNBu53l8jpc=;
+        b=k58yOZ57X2aVapDdIwitFNPVGg/9LssrkUgEUeZg3g87WRMXIJ/5zG42CnPXPq/cag
+         j3W2TH/hjeJ8xhXhquoSZmc/KF94pJkWHpRTtEi4E8UObWA/ri6ohfFd8ASlBnWp/vay
+         e6JXteSFdZFgIQm5XGRFMs6uZSC5CHjP/4xVgNOujAZC/vBMGGunhgrc9vLjrslWgOuV
+         yy7Q3f2rDxej6eeNN/hjNdExUV6uY3MGkLW2/hf18BA9e8/sXkuwFIjWhuSWVxaqrAPz
+         6bOcGNXkDgZi8lC/zSaw6wTUoJtlg4zA3eR+pRmTZ7T1HzizioCcXhM/pZ8IG50dNz3m
+         vWAw==
+X-Gm-Message-State: AC+VfDz4drb4ukc87aM6Ab/zo8aX9/bSTu+C8ZMqfDmge14lLRiTSMzR
+	W/k1i5Oz26X7FbmTvAXhFgvil4GOyN93n78QoXwlePzP07tVPMphBROFH6PDuTQwuEMjC63EA+R
+	7Pow5Z6TnjGghdBZd
+X-Received: by 2002:a5d:67c6:0:b0:2e4:aa42:7872 with SMTP id n6-20020a5d67c6000000b002e4aa427872mr7692568wrw.4.1683618750386;
+        Tue, 09 May 2023 00:52:30 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4H4IfkEQuX9n/ueDeNBX8m3xSSf2wAl4ge9AgLHxQsyhBchYvRkFhX7uFEBEr7GhEbh5UJqQ==
+X-Received: by 2002:a5d:67c6:0:b0:2e4:aa42:7872 with SMTP id n6-20020a5d67c6000000b002e4aa427872mr7692557wrw.4.1683618749972;
+        Tue, 09 May 2023 00:52:29 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-255-65.dyn.eolo.it. [146.241.255.65])
+        by smtp.gmail.com with ESMTPSA id e7-20020a5d65c7000000b00307925ff35bsm6816071wrw.49.2023.05.09.00.52.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 May 2023 00:52:29 -0700 (PDT)
+Message-ID: <588689343dcd6c904e7fc142a001043015e5b14e.camel@redhat.com>
+Subject: Re: [PATCH] sock: Fix misuse of sk_under_memory_pressure()
+From: Paolo Abeni <pabeni@redhat.com>
+To: Abel Wu <wuyun.abel@bytedance.com>, "David S . Miller"
+ <davem@davemloft.net>,  Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+ <kuba@kernel.org>
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Tue, 09 May 2023 09:52:28 +0200
+In-Reply-To: <20230506085903.96133-1-wuyun.abel@bytedance.com>
+References: <20230506085903.96133-1-wuyun.abel@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230508142637.1449363-1-u.kleine-koenig@pengutronix.de> <20230508142637.1449363-7-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20230508142637.1449363-7-u.kleine-koenig@pengutronix.de>
-From: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Date: Tue, 9 May 2023 13:21:56 +0530
-Message-ID: <CAH=2Ntyc-Oi-FCNQJbLwgyWT8Tt7tVpHO7HOc=hM2RdNweOzjg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 06/11] net: stmmac: dwmac-qcom-ethqos: Convert
- to platform remove callback returning void
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Vinod Koul <vkoul@kernel.org>, Giuseppe Cavallaro <peppe.cavallaro@st.com>, 
-	Alexandre Torgue <alexandre.torgue@foss.st.com>, Jose Abreu <joabreu@synopsys.com>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>, netdev@vger.kernel.org, 
-	linux-stm32@st-md-mailman.stormreply.com, 
-	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, 
-	Simon Horman <simon.horman@corigine.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Uwe,
+On Sat, 2023-05-06 at 16:59 +0800, Abel Wu wrote:
+> The commit 180d8cd942ce ("foundations of per-cgroup memory pressure
+> controlling") wrapped proto::memory_pressure status into an accessor
+> named sk_under_memory_pressure(), and in the next commit e1aab161e013
+> ("socket: initial cgroup code") added the consideration of net-memcg
+> pressure into this accessor.
+>=20
+> But with the former patch applied, not all of the call sites of
+> sk_under_memory_pressure() are interested in net-memcg's pressure.
+> The __sk_mem_{raise,reduce}_allocated() only focus on proto/netns
+> pressure rather than net-memcg's.=C2=A0
 
-On Mon, 8 May 2023 at 19:56, Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> The .remove() callback for a platform driver returns an int which makes
-> many driver authors wrongly assume it's possible to do error handling by
-> returning an error code. However the value returned is (mostly) ignored
+Why do you state the above? The current behavior is established since
+~12y, arguably we can state quite the opposite.
 
-^^^ mostly, here seems confusing. Only if the return value is ignored
-marking the function
-as 'void' makes sense IMO.
+I think this patch should at least target net-next, and I think we need
+a more detailed reasoning to introduce such behavior change.
 
-> and this typically results in resource leaks. To improve here there is a
-> quest to make the remove callback return void. In the first step of this
-> quest all drivers are converted to .remove_new() which already returns
-> void.
->
-> Trivially convert this driver from always returning zero in the remove
-> callback to the void returning variant.
->
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> IOW this accessor are generally
+> used for deciding whether should reclaim or not.
+>=20
+> Fixes: e1aab161e013 ("socket: initial cgroup code")
+> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
 > ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/dr=
-ivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-> index bf17c6c8f2eb..1db97a5209c4 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-> @@ -665,14 +665,12 @@ static int qcom_ethqos_probe(struct platform_device=
- *pdev)
->         return ret;
+>  include/net/sock.h |  5 -----
+>  net/core/sock.c    | 17 +++++++++--------
+>  2 files changed, 9 insertions(+), 13 deletions(-)
+>=20
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 8b7ed7167243..752d51030c5a 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -1404,11 +1404,6 @@ static inline int sk_under_cgroup_hierarchy(struct=
+ sock *sk,
+>  #endif
 >  }
->
-> -static int qcom_ethqos_remove(struct platform_device *pdev)
-> +static void qcom_ethqos_remove(struct platform_device *pdev)
->  {
->         struct qcom_ethqos *ethqos =3D get_stmmac_bsp_priv(&pdev->dev);
->
->         stmmac_pltfr_remove(pdev);
->         ethqos_clks_config(ethqos, false);
+> =20
+> -static inline bool sk_has_memory_pressure(const struct sock *sk)
+> -{
+> -	return sk->sk_prot->memory_pressure !=3D NULL;
+> -}
 > -
-> -       return 0;
->  }
->
->  static const struct of_device_id qcom_ethqos_match[] =3D {
-> @@ -685,7 +683,7 @@ MODULE_DEVICE_TABLE(of, qcom_ethqos_match);
->
->  static struct platform_driver qcom_ethqos_driver =3D {
->         .probe  =3D qcom_ethqos_probe,
-> -       .remove =3D qcom_ethqos_remove,
-> +       .remove_new =3D qcom_ethqos_remove,
->         .driver =3D {
->                 .name           =3D "qcom-ethqos",
->                 .pm             =3D &stmmac_pltfr_pm_ops,
-> --
-> 2.39.2
+>  static inline bool sk_under_memory_pressure(const struct sock *sk)
+>  {
+>  	if (!sk->sk_prot->memory_pressure)
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 5440e67bcfe3..8d215f821ea6 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -3017,13 +3017,14 @@ int __sk_mem_raise_allocated(struct sock *sk, int=
+ size, int amt, int kind)
+>  		}
+>  	}
+> =20
+> -	if (sk_has_memory_pressure(sk)) {
+> -		u64 alloc;
+> -
+> -		if (!sk_under_memory_pressure(sk))
+> -			return 1;
+> -		alloc =3D sk_sockets_allocated_read_positive(sk);
+> -		if (sk_prot_mem_limits(sk, 2) > alloc *
+> +	if (prot->memory_pressure) {
+> +		/*
+> +		 * If under global pressure, allow the sockets that are below
+> +		 * average memory usage to raise, trying to be fair between all
+> +		 * the sockets under global constrains.
+> +		 */
+> +		if (!*prot->memory_pressure ||
+> +		    sk_prot_mem_limits(sk, 2) > sk_sockets_allocated_read_positive(sk)=
+ *
 
-Also a small note (maybe a TBD) indicating that 'remove_new' will be
-eventually replaced with 'remove' would make reading this easier. Rest
-seems fine, so:
+The above introduces unrelated changes that makes the code IMHO less
+readable - I don't see a good reason to drop the 'alloc' variable.
 
-Reviewed-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cheers,
 
-Thanks.
+Paolo
+
 
