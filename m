@@ -1,145 +1,171 @@
-Return-Path: <netdev+bounces-1085-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1086-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 124076FC221
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 10:55:23 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 40A656FC230
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 10:59:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 726AD2811EF
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 08:55:21 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6E9DA1C20B04
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 08:59:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 733695663;
-	Tue,  9 May 2023 08:55:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D0C3568F;
+	Tue,  9 May 2023 08:59:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A9D220F7
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 08:55:19 +0000 (UTC)
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD34E1BC6
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 01:55:17 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id d75a77b69052e-3f38a9918d1so84021cf.1
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 01:55:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2961317C2
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 08:59:43 +0000 (UTC)
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C26D2D0;
+	Tue,  9 May 2023 01:59:41 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id 4fb4d7f45d1cf-50bc394919cso8449286a12.2;
+        Tue, 09 May 2023 01:59:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683622517; x=1686214517;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6vuyu6kE4VP+GmN/RFWs7fKPD4dCEoMLF4EREkOIT10=;
-        b=bKSuoqPWNJKysVKLjrKWrb03pH4C9ONPgwu5dTyD5iNEYO8LsXHWkg5+2rTQ5Uxiro
-         xayXEOxa2GDacF+8ZrDNLCUt99xSj/fc8BcDS3wLxnkCiK29y+gEO8CHoWgdQXCAc3Lo
-         +cP0ni4d1ObMHX58DJJ4/YKtkpdkHaWS7n/+7OlVbAXM0SubGOIiGN5Mf4y999gKTxb3
-         wphr5r1QQP5zototr1qDvICpW59Rqn9mHeFpZtJIW9cxY+PCBBO70KsUZdD355t5K+AX
-         KHtbkljFtbX6EoL4HkQK0NjkY6HekajWUCFDp1/4GXHzSk3BVdrAqGttDMYyTPLPzHrp
-         hIAQ==
+        d=gmail.com; s=20221208; t=1683622780; x=1686214780;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GDtBIUCKzCwJt/NTlGsGyPq+Rx4a8Y3iaj9pBTWWw7o=;
+        b=a8xa4SQp4odNm62rbpLy34SczopmBPGOxUG1gtj25aZMbW99jXOLvJJ+BvqntJMDBZ
+         VLBGwQOX2nZesPJF7QTXMTlmZaOf2FhzSXvHai3pqJ2LuQ3hnd18x+Awh6WcZD6l5+Vg
+         DCVBnn9HbWheRp7vCtcNajaQnPoGKpz9ZSKpYmi6W/ioEeU3BZznhlUnvBZjkr594Zqb
+         Shxf4xLdBhWueVQ5INqXxlVOfLctwFmrJrFYhCTPSX1fLi1NNmpAr9Sg9rtpFxmvYNry
+         hMHnVGfdgLUnQUkmpPpJgu3xg/+HxcWSmlFsfkmFgSiOwMv0xfeqPSt1aWTN3SAzZw2Z
+         iFSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683622517; x=1686214517;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6vuyu6kE4VP+GmN/RFWs7fKPD4dCEoMLF4EREkOIT10=;
-        b=jxpMf2/IW4qE4ic/cf3DLjPv6FPtY/A+yUTGGxEYdl6L6YKbXIwxpb2A5hxO4QQenZ
-         bmcHkA23m3sRdOKbP6or2M44uAL+Eb/KUj2s8zQ4PfbGjS+j3V1iAtWRYlxaXv0LY2bJ
-         YByvD3vmeFu70rE95KbWYTzzuo9Ffm8MdAvXwqNhhz+5SYXk0ZttCmola89sl8OCdTg/
-         SvEBp17n+Br6MxNO3dw7/Xugy0Tqn7MNarN/lrfwEboQpKLwuOywzqokObIj+qZ14+uo
-         UGdbf8CiPOc2OIsZ0isy5V8HovCfxBHcYN5U8st6Sq1uaOt2ojmLOc0rnOV2zgt8j/53
-         NcUw==
-X-Gm-Message-State: AC+VfDzfZ57vZRWq7oXhJKY/Jq4A9tcm1QKmgUDW9uOkRRKP0X2zbQzu
-	42K9e//Qt+3adLYd996+rOcLV1maoAf4ii8J3Ww2dK8cnO0cH0LiBi3srg==
-X-Google-Smtp-Source: ACHHUZ4HZRTeSZ9MQv2Drxl1T+SrAZVjktaDT8isCG6PeQmGHcyT7JAjTr8dnNqE5ORML/IYxQSk4aPuA4aO9NR8J2A=
-X-Received: by 2002:a05:622a:178e:b0:3ef:2f55:2204 with SMTP id
- s14-20020a05622a178e00b003ef2f552204mr354044qtk.6.1683622516809; Tue, 09 May
- 2023 01:55:16 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683622780; x=1686214780;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GDtBIUCKzCwJt/NTlGsGyPq+Rx4a8Y3iaj9pBTWWw7o=;
+        b=VDRJCvFudfdyCSGdiZjQdEWZ9+r/rkaVBqWVofXB3AJBiirbdORzbQpDsAxN0tWreM
+         bdD7pzZIIppAwmedc+Jr8JjteJj0Xz/0WH0JD/NXo7CUYNhHRzPHAyufb3kz57uXO0Q3
+         vgPQVQgVmmIJT2G/1t+nKAP3ek5oCPraH2eg+S1ZjRlPmhs+P9ijFqrpYrCrMFc6FQwu
+         cp9AjA1GB+GndCwSn4U5Cy4+jbCWyEeb+9VnX01el7/w7uPsksAbR9AqHBF2OytHNalT
+         haAfZFk1EmVK8Og159e0RfvdT1v3LesJCEd1JO8jL56tnh6Olm5qDG3FfJaEpIbuXqXv
+         umpQ==
+X-Gm-Message-State: AC+VfDwIR7jzhBHToCNFCwiIp0bp27oVHP27KiVIihzhBqTs0bZPTw/A
+	UhmdKKm4CRJfZlzzE1jD5Y4=
+X-Google-Smtp-Source: ACHHUZ6XzeflNUEIzuP+TjFi6Xtht2J4Sf3OV4/BX2yxhucEqVcNC+RxwbgDRdPUyamWtBjTfmPEdA==
+X-Received: by 2002:a17:907:6d20:b0:969:e304:441d with SMTP id sa32-20020a1709076d2000b00969e304441dmr2041828ejc.4.1683622779535;
+        Tue, 09 May 2023 01:59:39 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:7655:7200:7d37:a922:8b7f:288b? (dynamic-2a01-0c22-7655-7200-7d37-a922-8b7f-288b.c22.pool.telefonica.de. [2a01:c22:7655:7200:7d37:a922:8b7f:288b])
+        by smtp.googlemail.com with ESMTPSA id b16-20020a170906195000b0094e96e46cc0sm1055184eje.69.2023.05.09.01.59.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 May 2023 01:59:39 -0700 (PDT)
+Message-ID: <7a53f0d3-3e9a-4024-6b19-72ad9c19ab97@gmail.com>
+Date: Tue, 9 May 2023 10:59:38 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230506085903.96133-1-wuyun.abel@bytedance.com>
-In-Reply-To: <20230506085903.96133-1-wuyun.abel@bytedance.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Tue, 9 May 2023 10:55:05 +0200
-Message-ID: <CANn89iK154B-NzRFymx_ggO9ZuVW-0YyHEKi6C46zjHpdRfokQ@mail.gmail.com>
-Subject: Re: [PATCH] sock: Fix misuse of sk_under_memory_pressure()
-To: Abel Wu <wuyun.abel@bytedance.com>
-Cc: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net v2] net: phy: dp83867: add w/a for packet errors seen
+ with short cables
+Content-Language: en-US
+To: Siddharth Vadapalli <s-vadapalli@ti.com>, andrew@lunn.ch,
+ linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, srk@ti.com
+References: <20230509052124.611875-1-s-vadapalli@ti.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
+In-Reply-To: <20230509052124.611875-1-s-vadapalli@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sat, May 6, 2023 at 10:59=E2=80=AFAM Abel Wu <wuyun.abel@bytedance.com> =
-wrote:
->
-> The commit 180d8cd942ce ("foundations of per-cgroup memory pressure
-> controlling") wrapped proto::memory_pressure status into an accessor
-> named sk_under_memory_pressure(), and in the next commit e1aab161e013
-> ("socket: initial cgroup code") added the consideration of net-memcg
-> pressure into this accessor.
->
-> But with the former patch applied, not all of the call sites of
-> sk_under_memory_pressure() are interested in net-memcg's pressure.
-> The __sk_mem_{raise,reduce}_allocated() only focus on proto/netns
-> pressure rather than net-memcg's. IOW this accessor are generally
-> used for deciding whether should reclaim or not.
->
-> Fixes: e1aab161e013 ("socket: initial cgroup code")
-> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
+On 09.05.2023 07:21, Siddharth Vadapalli wrote:
+> From: Grygorii Strashko <grygorii.strashko@ti.com>
+> 
+> Introduce the W/A for packet errors seen with short cables (<1m) between
+> two DP83867 PHYs.
+> 
+> The W/A recommended by DM requires FFE Equalizer Configuration tuning by
+> writing value 0x0E81 to DSP_FFE_CFG register (0x012C), surrounded by hard
+> and soft resets as follows:
+> 
+> write_reg(0x001F, 0x8000); //hard reset
+> write_reg(DSP_FFE_CFG, 0x0E81);
+> write_reg(0x001F, 0x4000); //soft reset
+> 
+> Since  DP83867 PHY DM says "Changing this register to 0x0E81, will not
+> affect Long Cable performance.", enable the W/A by default.
+> 
+> Fixes: 2a10154abcb7 ("net: phy: dp83867: Add TI dp83867 phy")
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
 > ---
->  include/net/sock.h |  5 -----
->  net/core/sock.c    | 17 +++++++++--------
->  2 files changed, 9 insertions(+), 13 deletions(-)
->
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 8b7ed7167243..752d51030c5a 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -1404,11 +1404,6 @@ static inline int sk_under_cgroup_hierarchy(struct=
- sock *sk,
->  #endif
+> 
+> V1 patch at:
+> https://lore.kernel.org/r/20230508070019.356548-1-s-vadapalli@ti.com
+> 
+> Changes since v1 patch:
+> - Wrap the line invoking phy_write_mmd(), limiting it to 80 characters.
+> - Replace 0X0E81 with 0x0e81 in the call to phy_write_mmd().
+> - Replace 0X012C with 0x012c in the new define for DP83867_DSP_FFE_CFG.
+> 
+> RFC patch at:
+> https://lore.kernel.org/r/20230425054429.3956535-2-s-vadapalli@ti.com/
+> 
+> Changes since RFC patch:
+> - Change patch subject to PATCH net.
+> - Add Fixes tag.
+> - Check return value of phy_write_mmd().
+> 
+>  drivers/net/phy/dp83867.c | 18 +++++++++++++++++-
+>  1 file changed, 17 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+> index d75f526a20a4..bbdcc595715d 100644
+> --- a/drivers/net/phy/dp83867.c
+> +++ b/drivers/net/phy/dp83867.c
+> @@ -44,6 +44,7 @@
+>  #define DP83867_STRAP_STS1	0x006E
+>  #define DP83867_STRAP_STS2	0x006f
+>  #define DP83867_RGMIIDCTL	0x0086
+> +#define DP83867_DSP_FFE_CFG	0x012c
+>  #define DP83867_RXFCFG		0x0134
+>  #define DP83867_RXFPMD1	0x0136
+>  #define DP83867_RXFPMD2	0x0137
+> @@ -941,8 +942,23 @@ static int dp83867_phy_reset(struct phy_device *phydev)
+>  
+>  	usleep_range(10, 20);
+>  
+> -	return phy_modify(phydev, MII_DP83867_PHYCTRL,
+> +	err = phy_modify(phydev, MII_DP83867_PHYCTRL,
+>  			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
+> +	if (err < 0)
+> +		return err;
+> +
+
+Would be good to add a comment here explaining what this magic write does.
+
+> +	err = phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_DSP_FFE_CFG,
+> +			    0x0e81);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESTART);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	usleep_range(10, 20);
+> +
+> +	return 0;
 >  }
->
-> -static inline bool sk_has_memory_pressure(const struct sock *sk)
-> -{
-> -       return sk->sk_prot->memory_pressure !=3D NULL;
-> -}
-> -
->  static inline bool sk_under_memory_pressure(const struct sock *sk)
->  {
->         if (!sk->sk_prot->memory_pressure)
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 5440e67bcfe3..8d215f821ea6 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -3017,13 +3017,14 @@ int __sk_mem_raise_allocated(struct sock *sk, int=
- size, int amt, int kind)
->                 }
->         }
->
-> -       if (sk_has_memory_pressure(sk)) {
-> -               u64 alloc;
-> -
-> -               if (!sk_under_memory_pressure(sk))
-> -                       return 1;
-> -               alloc =3D sk_sockets_allocated_read_positive(sk);
-> -               if (sk_prot_mem_limits(sk, 2) > alloc *
-> +       if (prot->memory_pressure) {
+>  
+>  static void dp83867_link_change_notify(struct phy_device *phydev)
 
-I do not understand this patch.
-
-Changelog is evasive, I do not see what practical problem you want to solve=
-.
-
-sk_has_memory_pressure() is not about memcg, simply the fact that a
-proto has a non NULL memory_pressure pointer.
 
