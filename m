@@ -1,67 +1,67 @@
-Return-Path: <netdev+bounces-1266-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1261-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 60B6D6FD16F
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:30:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id F0C546FD13F
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:24:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 23288281228
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:30:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B16DE280F09
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:24:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BF1B19934;
-	Tue,  9 May 2023 21:30:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0089C182C8;
+	Tue,  9 May 2023 21:23:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20BF419909
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:30:15 +0000 (UTC)
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57234D85C
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 14:29:42 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id ca18e2360f4ac-76c60c88d0cso65963239f.2
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 14:29:42 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA44D18C05
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:23:07 +0000 (UTC)
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD4B3C0C
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 14:22:49 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-6434e65d808so6780533b3a.3
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 14:22:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683667718; x=1686259718;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683667297; x=1686259297;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KZVejeAnxoqLBX7omICtCCw3k65BATms4dJx0VY3K70=;
-        b=vokvyQ0nLmHudReBje6R+fBfXv+97LwPhdEWYgaRAvrf7ryb6hxhrfVsVCJr4yHdqh
-         1KGi6tLmhBmJtlBLmiHdvo2SkmG3tJMrumxjZmwIzsWD+C/xp+7jiEUGfbKvssHC1rDX
-         mIY4wIizaD8xk9dVdTn8Yg/YYGjvn7d0sCzvQJOhEZWUj2GzV5CiAV8REER3LUmsrCG5
-         YPesnY7MO8EuWN2Yv5ax+WkaU1nFKcs3pcDZyLSHc4PIAKd4yXxHk3+Qd5TheouJbOP4
-         QrlERFvjUaXsIxkJTSZcq8oPYzfLyQDr72koVbZYVMlbIIMcHsyqDTtWDykDmjGGPHhz
-         ZUVQ==
+        bh=SyABgZ6kkWDM9JoBrAo/EnkL9KnbMq4g/Z4xY3yM2ZQ=;
+        b=pX/z4o+5XnX25k5I3bZ18pMe1sMGxVUDHGW8CxilPyjK9AjGxC6VPV/hm/HxbveS+S
+         4SPJUXvcfhP6B7Fr5Ona+gFg2HhMk16Y/D+nQrnrolEvTveFoJQujdfsFtlGKG5NrDXc
+         jqLnc2UJ/rBXDudX0Zv8tHQ9ztcavd9Y/4f25KYjKZi2eI450sleJX/FbVzzUdsnmDCF
+         R2tUBgHPcWOr+gCEENdrFvreWgxURe84rIxlK9KAImvu2s/PQoQuIkpXjdmJQPThNrol
+         tPvu6NX3Pj8i1y+Nsc3Pb5kSZOpeuq2Qx4Qk3Ub9tdlLRMx4ilS6IRpU1/FrvmiS3iM6
+         QIJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683667718; x=1686259718;
+        d=1e100.net; s=20221208; t=1683667297; x=1686259297;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=KZVejeAnxoqLBX7omICtCCw3k65BATms4dJx0VY3K70=;
-        b=euIoZuYnlQZGdQcpSL8RdJ5mPxgp4ixR0X/mbHbbJ+FpItwTPnxwrsO1cM/aH4cpsd
-         4367hAK4FJYOkZSphoeMtxGE53OeOSvfLc4EcDxR57hWKbA+uQKlK+PyFUGUFOkB054k
-         cmJmpfhFgIwN8bhc3+WbS02d6OMU8PRCg3XX+E0RjQlIiGGQQNRD4uKAijmJeSBgng88
-         q4ppNmcSzciQETKMM2twvCimMHDxaOoUoXtYImc8GTvQ0fvDyEH6Nm8w12pJpvdQfmoJ
-         0OS9G5wPTMmsoHj+zbNlxz64rKcJYIMqrlbao2NXNA8A7kTpt/w/48M8+4dzl49y/XXw
-         k8HA==
-X-Gm-Message-State: AC+VfDwf+VuV0+tPBMjgB3h3ChngrWQ2rqd47Wl6Mr+btDwjGypWmkSk
-	0ljaZHU1/e4wq+HKkQO9fS9sOgDsPy/80Nnh81tiPA==
-X-Google-Smtp-Source: ACHHUZ62qFk1so0jtsqQNfzuXZHuv4rBgcgqfFDT+bkhnRv/hFjL/7zDENZiutP3XEONeAHiA0YhVA==
-X-Received: by 2002:a05:6a00:1954:b0:645:4a3d:a14f with SMTP id s20-20020a056a00195400b006454a3da14fmr13759073pfk.29.1683667296246;
-        Tue, 09 May 2023 14:21:36 -0700 (PDT)
+        bh=SyABgZ6kkWDM9JoBrAo/EnkL9KnbMq4g/Z4xY3yM2ZQ=;
+        b=aVIBMp3y+hITvC8vqKLAqriEYaf9sml7SJ+TkPdmZFr8c600+5Qx98L2NSrfkqd/ks
+         x1ukAryf2B06JWOzqAmCyYq1qcGVk8j6h4OVs1RrnqgveHgFg6ROTZZQAX+xbvEmaEOR
+         RVQii99sRMVOsjkZfc1Ps6AZXFJgw9a8LFmYXJ7eISA5V7/ey811gb+Sn4sWZmTlrJvW
+         Pf0nwzgq0S4GAK7czG8Y8vMMDI1SLLXip/xvt2UddeOU3wM2rQGhwrY0x5aoEjuPiR8J
+         5E833+X0svR0wjrJOv6k3c+2BjjQ1C8Dao2C6lmrUJq2qa68PmXVB8jkrwtox9Oafy46
+         sITw==
+X-Gm-Message-State: AC+VfDzZChY90C1ByZ2CN1CyonWnoz7J5MA7sf+BxCCGVVckJqkr9kYI
+	okQxfSVyG2gsP5Uqb3kxTobjXYLnZcgz/bMZL54t8Q==
+X-Google-Smtp-Source: ACHHUZ7ROC4EefvRI/FBEYFu8VTeasgV7dBendfU2De5jrRvP7wmS0afsJPQttlIKNcwkMGfQgx5dQ==
+X-Received: by 2002:a05:6a00:2189:b0:63d:4446:18ab with SMTP id h9-20020a056a00218900b0063d444618abmr18803912pfi.23.1683667297161;
+        Tue, 09 May 2023 14:21:37 -0700 (PDT)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id d22-20020aa78e56000000b00646e7d2b5a7sm1932565pfr.112.2023.05.09.14.21.35
+        by smtp.gmail.com with ESMTPSA id d22-20020aa78e56000000b00646e7d2b5a7sm1932565pfr.112.2023.05.09.14.21.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 14:21:35 -0700 (PDT)
+        Tue, 09 May 2023 14:21:36 -0700 (PDT)
 From: Stephen Hemminger <stephen@networkplumber.org>
 To: netdev@vger.kernel.org
 Cc: Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 06/11] tc_exec: don't dereference NULL on calloc failure
-Date: Tue,  9 May 2023 14:21:20 -0700
-Message-Id: <20230509212125.15880-7-stephen@networkplumber.org>
+Subject: [PATCH iproute2 07/11] m_action: fix warning of overwrite of const string
+Date: Tue,  9 May 2023 14:21:21 -0700
+Message-Id: <20230509212125.15880-8-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230509212125.15880-1-stephen@networkplumber.org>
 References: <20230509212125.15880-1-stephen@networkplumber.org>
@@ -79,101 +79,157 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Reported as:
-tc_exec.c: In function ‘do_exec’:
-tc_exec.c:103:18: warning: dereference of NULL ‘eu’ [CWE-476] [-Wanalyzer-null-dereference]
-  103 |         return eu->parse_eopt(eu, argc, argv);
-      |                ~~^~~~~~~~~~~~
-  ‘do_exec’: events 1-6
-    |
-    |   81 | int do_exec(int argc, char **argv)
-    |      |     ^~~~~~~
-    |      |     |
-    |      |     (1) entry to ‘do_exec’
-    |......
-    |   86 |         if (argc < 1) {
-    |      |            ~
-    |      |            |
-    |      |            (2) following ‘false’ branch (when ‘argc > 0’)...
-    |......
-    |   91 |         if (matches(*argv, "help") == 0) {
-    |      |            ~~~~~~~~~~~~~~~~~~~~~~~
-    |      |            ||
-    |      |            |(3) ...to here
-    |      |            (4) following ‘true’ branch...
-    |......
-    |   96 |         strncpy(kind, *argv, sizeof(kind) - 1);
-    |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    |      |         |
-    |      |         (5) ...to here
-    |   97 |
-    |   98 |         eu = get_exec_kind(kind);
-    |      |              ~~~~~~~~~~~~~~~~~~~
-    |      |              |
-    |      |              (6) calling ‘get_exec_kind’ from ‘do_exec’
-    |
-    +--> ‘get_exec_kind’: events 7-10
-           |
-           |   40 | static struct exec_util *get_exec_kind(const char *name)
-           |      |                          ^~~~~~~~~~~~~
-           |      |                          |
-           |      |                          (7) entry to ‘get_exec_kind’
-           |......
-           |   63 |         if (eu == NULL)
-           |      |            ~
-           |      |            |
-           |      |            (8) following ‘true’ branch (when ‘eu’ is NULL)...
-           |   64 |                 goto noexist;
-           |      |                 ~~~~
-           |      |                 |
-           |      |                 (9) ...to here
-           |......
-           |   72 |         if (eu) {
-           |      |            ~
-           |      |            |
-           |      |            (10) following ‘false’ branch (when ‘eu’ is NULL)...
-           |
-         ‘get_exec_kind’: event 11
-           |
-           |cc1:
-           | (11): ...to here
-           |
-    <------+
-    |
-  ‘do_exec’: events 12-13
-    |
-    |   98 |         eu = get_exec_kind(kind);
-    |      |              ^~~~~~~~~~~~~~~~~~~
-    |      |              |
-    |      |              (12) return of NULL to ‘do_exec’ from ‘get_exec_kind’
-    |......
-    |  103 |         return eu->parse_eopt(eu, argc, argv);
-    |      |                ~~~~~~~~~~~~~~
-    |      |                  |
-    |      |                  (13) dereference of NULL ‘eu’
-    |
+The function get_action_kind() searches first for the given
+action, then rescans on failure for "gact". In the process,
+it would overwrite the argument.  Avoid the warning
+by using a const argument and not copying.
 
-Fixes: 4bd624467bc6 ("tc: built-in eBPF exec proxy")
+The problem dates back to pre-git history.
+
+m_action.c: In function ‘get_action_kind’:
+m_action.c:126:17: warning: write to string literal [-Wanalyzer-write-to-string-literal]
+  126 |                 strcpy(str, "gact");
+      |                 ^~~~~~~~~~~~~~~~~~~
+  ‘do_action’: events 1-6
+    |
+    |  853 | int do_action(int argc, char **argv)
+    |      |     ^~~~~~~~~
+    |      |     |
+    |      |     (1) entry to ‘do_action’
+    |......
+    |  858 |         while (argc > 0) {
+    |      |                ~~~~~~~~
+    |      |                     |
+    |      |                     (2) following ‘true’ branch...
+    |  859 |
+    |  860 |                 if (matches(*argv, "add") == 0) {
+    |      |                    ~~~~~~~~~~~~~~~~~~~~~~
+    |      |                    ||
+    |      |                    |(3) ...to here
+    |      |                    (4) following ‘false’ branch...
+    |  861 |                         ret =  tc_action_modify(RTM_NEWACTION,
+    |      |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |      |                                |
+    |      |                                (5) ...to here
+    |      |                                (6) calling ‘tc_action_modify’ from ‘do_action’
+    |  862 |                                                 NLM_F_EXCL | NLM_F_CREATE,
+    |      |                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |  863 |                                                 &argc, &argv);
+    |      |                                                 ~~~~~~~~~~~~~
+    |
+    +--> ‘tc_action_modify’: events 7-8
+           |
+           |  715 | static int tc_action_modify(int cmd, unsigned int flags,
+           |      |            ^~~~~~~~~~~~~~~~
+           |      |            |
+           |      |            (7) entry to ‘tc_action_modify’
+           |......
+           |  735 |         if (parse_action(&argc, &argv, TCA_ACT_TAB, &req.n)) {
+           |      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           |      |             |
+           |      |             (8) calling ‘parse_action’ from ‘tc_action_modify’
+           |
+           +--> ‘parse_action’: events 9-18
+                  |
+                  |  203 | int parse_action(int *argc_p, char ***argv_p, int tca_id, struct nlmsghdr *n)
+                  |      |     ^~~~~~~~~~~~
+                  |      |     |
+                  |      |     (9) entry to ‘parse_action’
+                  |......
+                  |  217 |         if (argc <= 0)
+                  |      |            ~
+                  |      |            |
+                  |      |            (10) following ‘false’ branch...
+                  |......
+                  |  220 |         tail2 = addattr_nest(n, MAX_MSG, tca_id);
+                  |      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  |      |                 |
+                  |      |                 (11) ...to here
+                  |  221 |
+                  |  222 |         while (argc > 0) {
+                  |      |                ~~~~~~~~
+                  |      |                     |
+                  |      |                     (12) following ‘true’ branch...
+                  |  223 |
+                  |  224 |                 memset(k, 0, sizeof(k));
+                  |      |                 ~~~~~~~~~~~~~~~~~~~~~~~
+                  |      |                 |
+                  |      |                 (13) ...to here
+                  |  225 |
+                  |  226 |                 if (strcmp(*argv, "action") == 0) {
+                  |      |                    ~
+                  |      |                    |
+                  |      |                    (14) following ‘true’ branch (when the strings are equal)...
+                  |  227 |                         argc--;
+                  |      |                         ~~~~~~
+                  |      |                             |
+                  |      |                             (15) ...to here
+                  |......
+                  |  231 |                         if (!gact_ld)
+                  |      |                            ~
+                  |      |                            |
+                  |      |                            (16) following ‘true’ branch...
+                  |  232 |                                 get_action_kind("gact");
+                  |      |                                 ~~~~~~~~~~~~~~~~~~~~~~~
+                  |      |                                 |
+                  |      |                                 (17) ...to here
+                  |      |                                 (18) calling ‘get_action_kind’ from ‘parse_action’
+                  |
+                  +--> ‘get_action_kind’: events 19-24
+                         |
+                         |   86 | static struct action_util *get_action_kind(char *str)
+                         |      |                            ^~~~~~~~~~~~~~~
+                         |      |                            |
+                         |      |                            (19) entry to ‘get_action_kind’
+                         |......
+                         |  114 |         if (a == NULL)
+                         |      |            ~
+                         |      |            |
+                         |      |            (20) following ‘true’ branch (when ‘a’ is NULL)...
+                         |  115 |                 goto noexist;
+                         |      |                 ~~~~
+                         |      |                 |
+                         |      |                 (21) ...to here
+                         |......
+                         |  124 |         if (!looked4gact) {
+                         |      |            ~
+                         |      |            |
+                         |      |            (22) following ‘true’ branch (when ‘looked4gact == 0’)...
+                         |  125 |                 looked4gact = 1;
+                         |  126 |                 strcpy(str, "gact");
+                         |      |                 ~~~~~~~~~~~~~~~~~~~
+                         |      |                 |
+                         |      |                 (23) ...to here
+                         |      |                 (24) write to string literal here
+                         |
+
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- tc/tc_exec.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ tc/m_action.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tc/tc_exec.c b/tc/tc_exec.c
-index 5d8834029a0b..182fbb4c35c9 100644
---- a/tc/tc_exec.c
-+++ b/tc/tc_exec.c
-@@ -96,6 +96,10 @@ int do_exec(int argc, char **argv)
- 	strncpy(kind, *argv, sizeof(kind) - 1);
+diff --git a/tc/m_action.c b/tc/m_action.c
+index a446cabdb98c..16474c56118c 100644
+--- a/tc/m_action.c
++++ b/tc/m_action.c
+@@ -83,7 +83,7 @@ static int parse_noaopt(struct action_util *au, int *argc_p,
+ 	return -1;
+ }
  
- 	eu = get_exec_kind(kind);
-+	if (eu == NULL) {
-+		fprintf(stderr, "Allocation failed finding exec\n");
-+		return -1;
-+	}
- 
- 	argc--;
- 	argv++;
+-static struct action_util *get_action_kind(char *str)
++static struct action_util *get_action_kind(const char *str)
+ {
+ 	static void *aBODY;
+ 	void *dlh;
+@@ -123,7 +123,7 @@ noexist:
+ #ifdef CONFIG_GACT
+ 	if (!looked4gact) {
+ 		looked4gact = 1;
+-		strcpy(str, "gact");
++		str = "gact";
+ 		goto restart_s;
+ 	}
+ #endif
 -- 
 2.39.2
 
