@@ -1,139 +1,132 @@
-Return-Path: <netdev+bounces-1088-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1089-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 78E986FC239
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 11:00:29 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6E29A6FC241
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 11:02:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AD6781C20B43
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:00:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C12CF281276
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:02:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 005256106;
-	Tue,  9 May 2023 09:00:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BE1908486;
+	Tue,  9 May 2023 09:02:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C038BE5
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 09:00:12 +0000 (UTC)
-Received: from mail.codelabs.ch (mail.codelabs.ch [IPv6:2a02:168:860f:1::35])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A905DDC4B
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 02:00:09 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-	by mail.codelabs.ch (Postfix) with ESMTP id 22347220002;
-	Tue,  9 May 2023 11:00:08 +0200 (CEST)
-Received: from mail.codelabs.ch ([127.0.0.1])
-	by localhost (fenrir.codelabs.ch [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0MCvEHGN1B8c; Tue,  9 May 2023 11:00:06 +0200 (CEST)
-Received: from [IPV6:2a01:8b81:5400:f500:53f:7cf4:a354:e051] (unknown [IPv6:2a01:8b81:5400:f500:53f:7cf4:a354:e051])
-	by mail.codelabs.ch (Postfix) with ESMTPSA id A797A220001;
-	Tue,  9 May 2023 11:00:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=strongswan.org;
-	s=default; t=1683622806;
-	bh=jZ9ohAkp4jRLrLpPBLu0vgIZxfdR+aJ8IUq6HdrKSts=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Scoc4C5Zg4Tq3bktxTuKLpdzBuCZp08n4jCYwXGlLyNBLwCwa+au2yaUtMV8iTR3W
-	 bMxTKMPAFy9mpm2hloLpFkIlqeWBN0dBpT+bTW6RcU+9MQWIn59OrbhRdLqo++q6hf
-	 ghrx96kfm+3J6nOCckkFGrYoZSI0pPT8cbpjtprKTIkVv/1ge9V8yWnRwrNjn4gJkv
-	 5B7qDXDAX7w0UVqIriE8ZJXg2YkcfKqQok1gAf2VBzjv7bFcP+uwfDqDwlIH3Eun1v
-	 aNHt5gWJyZQvLLyX4N8MRhWbkEWARWZaquHbKjLlr+97Fgdoc/9su3RjeHgDzeQrRZ
-	 tkbm2O/y/aT9g==
-Message-ID: <636514c1-3d97-46eb-48e2-6f8b7c02464a@strongswan.org>
-Date: Tue, 9 May 2023 11:00:06 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC20417C2
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 09:02:52 +0000 (UTC)
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B268DC58
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 02:02:46 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id d75a77b69052e-3ef34c49cb9so88501cf.1
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 02:02:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1683622965; x=1686214965;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cQMbOwK6UYUwP4h+X9ffrgGRqDFyDl3hTELKhL2KLRY=;
+        b=ddHO5YVlQ1k4ASnusUqx9tc+JVzlf+tQbh4Gdn+HbeY+pKzC/a+VgLV0AgN0LagWz/
+         ArL3VnF/Pj2P7rinLP5b7MF/8kziKaG7TvoAs77uCq5FcyN+CR4SUU4RX5VlLVPD7zZL
+         U/e8Obxe5plDiMpKDbVsYsFtiNV7qXyPUYvJDrRGzKCdrovK7N1lloFDk3lYESTlSml3
+         lDD8ubJopiXPiJTmqf5aMWEPdl2oDrI55jnokpxjATrszf3NbWADNDSc/NbKRimorDBD
+         VLwctjYRZvd5+3mtqEHnrSL1cXmn2jhSRrH+K4pAc3t9ef39l7rJ+BKu4mfZ3I0AfBv5
+         +RXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683622965; x=1686214965;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cQMbOwK6UYUwP4h+X9ffrgGRqDFyDl3hTELKhL2KLRY=;
+        b=dnaWh1mlVD9xlrojMOcdzLMg7+JYwluqZLMmsg6ja30GAcSzgatcnQquGAaC+l/R3L
+         XntCg0q2fWdQkBB9/Z3Z6Mgz2ELBJKAus1Hap81F/t1Ie6T+lvW2KPHxL8JCu68QIeve
+         TsChEmyZXlT7wIiLZoDQbj9TMoq8ajsvZFW7N1F9SCsT4nzB7pJycXqcXIpvfm1mxALI
+         O0OSIrH9ls9dSO1YUJZ3gVH+aGh7N1wnvM8uzusU2sUqYhGbmFay5t5i+4bXKHgtyHlH
+         T/TcX5iOL1wVGNP0DAk7TFFOSM6MYd2rIi39njZ2kX0xCIytH7ahBldJZ0wFuV+DH5aD
+         yuNQ==
+X-Gm-Message-State: AC+VfDzt1fnK/IkvEakeh7k4wvxIjzrECTN/aiA74DB7gg/Ci3HOxoL6
+	lhOfUtz4p2OJe0s0t0FJhUsJrrGrVf6GIE1RjgTrXg==
+X-Google-Smtp-Source: ACHHUZ5aQwhgwj/qWG83MeZFJnYduMtgU13qiDC9ksdyPsMzKkTIqz9lHLF930e5/pXsqRmHy7+SS648OohflQdddNA=
+X-Received: by 2002:a05:622a:1308:b0:3ef:4319:c6c5 with SMTP id
+ v8-20020a05622a130800b003ef4319c6c5mr158583qtk.19.1683622965469; Tue, 09 May
+ 2023 02:02:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: [PATCH ipsec] af_key: Reject optional tunnel/BEET mode templates in
- outbound policies
-Content-Language: en-US, de-CH-frami
-To: Steffen Klassert <steffen.klassert@secunet.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>, netdev@vger.kernel.org,
- "David S . Miller" <davem@davemloft.net>
-References: <6dcb6a58-2699-9cde-3e34-57c142dbcf14@strongswan.org>
- <ZEdmdDAwnuslrdvA@gondor.apana.org.au>
- <8b8dbbc4-f956-8cbf-3700-1da366357a6f@strongswan.org>
- <ZEePE9LMA0pWxz9r@gondor.apana.org.au>
- <5d5bf4d9-5b63-ae0d-2f65-770e911ea7d6@strongswan.org>
- <ZFTd459F8fi+KfxM@gondor.apana.org.au>
- <46fcb205-989e-4ea7-463d-e72b85db9e71@strongswan.org>
- <ZFiQMlvlQ05IybVb@gauss3.secunet.de>
-From: Tobias Brunner <tobias@strongswan.org>
-In-Reply-To: <ZFiQMlvlQ05IybVb@gauss3.secunet.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+References: <57e66b364f1b6f09c9bc0316742c3b14f4ce83bd.1683526542.git.pabeni@redhat.com>
+ <20230508184219.4049952c@kernel.org>
+In-Reply-To: <20230508184219.4049952c@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 9 May 2023 11:02:34 +0200
+Message-ID: <CANn89iKLuSq8aGhVpB7CkT2Q7aWBPWMWcUek+U7kgfHU5tEyTA@mail.gmail.com>
+Subject: Re: [PATCH] revert: "softirq: Let ksoftirqd do its job"
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org, 
+	"Paul E. McKenney" <paulmck@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, peterz@infradead.org, 
+	netdev@vger.kernel.org, Jason Xing <kerneljasonxing@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-xfrm_state_find() uses `encap_family` of the current template with
-the passed local and remote addresses to find a matching state.
-If an optional tunnel or BEET mode template is skipped in a mixed-family
-scenario, there could be a mismatch causing an out-of-bounds read as
-the addresses were not replaced to match the family of the next template.
+On Tue, May 9, 2023 at 3:42=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wro=
+te:
+>
+> On Mon,  8 May 2023 08:17:44 +0200 Paolo Abeni wrote:
+> > Due to the mentioned commit, when the ksoftirqd processes take charge
+> > of softirq processing, the system can experience high latencies.
+> >
+> > In the past a few workarounds have been implemented for specific
+> > side-effects of the above:
+> >
+> > commit 1ff688209e2e ("watchdog: core: make sure the watchdog_worker is =
+not deferred")
+> > commit 8d5755b3f77b ("watchdog: softdog: fire watchdog even if softirqs=
+ do not get to run")
+> > commit 217f69743681 ("net: busy-poll: allow preemption in sk_busy_loop(=
+)")
+> > commit 3c53776e29f8 ("Mark HI and TASKLET softirq synchronous")
+> >
+> > but the latency problem still exists in real-life workloads, see the
+> > link below.
+> >
+> > The reverted commit intended to solve a live-lock scenario that can now
+> > be addressed with the NAPI threaded mode, introduced with commit
+> > 29863d41bb6e ("net: implement threaded-able napi poll loop support"),
+> > and nowadays in a pretty stable status.
+> >
+> > While a complete solution to put softirq processing under nice resource
+> > control would be preferable, that has proven to be a very hard task. In
+> > the short term, remove the main pain point, and also simplify a bit the
+> > current softirq implementation.
+> >
+> > Note that this change also reverts commit 3c53776e29f8 ("Mark HI and
+> > TASKLET softirq synchronous") and commit 1342d8080f61 ("softirq: Don't
+> > skip softirq execution when softirq thread is parking"), which are
+> > direct follow-ups of the feature commit. A single change is preferred t=
+o
+> > avoid known bad intermediate states introduced by a patch series
+> > reverting them individually.
+> >
+> > Link: https://lore.kernel.org/netdev/305d7742212cbe98621b16be782b0562f1=
+012cb6.camel@redhat.com/
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > Tested-by: Jason Xing <kerneljasonxing@gmail.com>
+>
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-While there are theoretical use cases for optional templates in outbound
-policies, the only practical one is to skip IPComp states in inbound
-policies if uncompressed packets are received that are handled by an
-implicitly created IPIP state instead.
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Tobias Brunner <tobias@strongswan.org>
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
----
- net/key/af_key.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index a815f5ab4c49..31ab12fd720a 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1940,7 +1940,8 @@ static u32 gen_reqid(struct net *net)
- }
- 
- static int
--parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_ipsecrequest *rq)
-+parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_policy *pol,
-+		   struct sadb_x_ipsecrequest *rq)
- {
- 	struct net *net = xp_net(xp);
- 	struct xfrm_tmpl *t = xp->xfrm_vec + xp->xfrm_nr;
-@@ -1958,9 +1959,12 @@ parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_ipsecrequest *rq)
- 	if ((mode = pfkey_mode_to_xfrm(rq->sadb_x_ipsecrequest_mode)) < 0)
- 		return -EINVAL;
- 	t->mode = mode;
--	if (rq->sadb_x_ipsecrequest_level == IPSEC_LEVEL_USE)
-+	if (rq->sadb_x_ipsecrequest_level == IPSEC_LEVEL_USE) {
-+		if ((mode == XFRM_MODE_TUNNEL || mode == XFRM_MODE_BEET) &&
-+		    pol->sadb_x_policy_dir == IPSEC_DIR_OUTBOUND)
-+			return -EINVAL;
- 		t->optional = 1;
--	else if (rq->sadb_x_ipsecrequest_level == IPSEC_LEVEL_UNIQUE) {
-+	} else if (rq->sadb_x_ipsecrequest_level == IPSEC_LEVEL_UNIQUE) {
- 		t->reqid = rq->sadb_x_ipsecrequest_reqid;
- 		if (t->reqid > IPSEC_MANUAL_REQID_MAX)
- 			t->reqid = 0;
-@@ -2002,7 +2006,7 @@ parse_ipsecrequests(struct xfrm_policy *xp, struct sadb_x_policy *pol)
- 		    rq->sadb_x_ipsecrequest_len < sizeof(*rq))
- 			return -EINVAL;
- 
--		if ((err = parse_ipsecrequest(xp, rq)) < 0)
-+		if ((err = parse_ipsecrequest(xp, pol, rq)) < 0)
- 			return err;
- 		len -= rq->sadb_x_ipsecrequest_len;
- 		rq = (void*)((u8*)rq + rq->sadb_x_ipsecrequest_len);
--- 
-2.34.1
-
-
-
+Thanks.
 
