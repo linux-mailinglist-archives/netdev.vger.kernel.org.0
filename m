@@ -1,62 +1,74 @@
-Return-Path: <netdev+bounces-1283-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1284-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5AEE16FD2D3
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 00:54:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 97AA36FD2E3
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 01:00:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 83B371C20C54
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 22:54:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 68C60281251
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:00:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 050EB12B63;
-	Tue,  9 May 2023 22:54:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 43B1F13AEE;
+	Tue,  9 May 2023 22:59:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E38961990C
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 22:54:11 +0000 (UTC)
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EFF468F
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 15:54:10 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3429F11CAB
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 22:59:58 +0000 (UTC)
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB4240E4;
+	Tue,  9 May 2023 15:59:56 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id d75a77b69052e-3f39fd9eea1so5589221cf.1;
+        Tue, 09 May 2023 15:59:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1683672851; x=1715208851;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=axSqk++nwLeQ0D/XwLY69BPQ/tJXwcda6RGfv3H2UIc=;
-  b=HjVw7HANBM/BG3cG5qKD7hovpq7kP5Sg0LXn5uk8PCKmdr+06OvBt93L
-   Lld3/yrnRuSAsKBJcyAYwo9r4YK1vTm81YDboJmfudaYvunENg+0CyEVq
-   BN6ZpPYmcPZXrGCqlNw/YUeQKErZluBxcKSyKL1ZjG63mLFF2wSovfj9e
-   M=;
-X-IronPort-AV: E=Sophos;i="5.99,263,1677542400"; 
-   d="scan'208";a="212484731"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 22:54:07 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-	by email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com (Postfix) with ESMTPS id 9DDA08630F;
-	Tue,  9 May 2023 22:54:04 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 9 May 2023 22:53:50 +0000
-Received: from 88665a182662.ant.amazon.com (10.187.171.39) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 9 May 2023 22:53:47 +0000
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-To: <edumazet@google.com>
-CC: <davem@davemloft.net>, <eric.dumazet@gmail.com>, <kuba@kernel.org>,
-	<netdev@vger.kernel.org>, <pabeni@redhat.com>, <syzkaller@googlegroups.com>,
-	<kuniyu@amazon.com>
-Subject: Re: [PATCH net] net: annotate sk->sk_err write from do_recvmmsg()
-Date: Tue, 9 May 2023 15:53:37 -0700
-Message-ID: <20230509225337.20900-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230509163553.3081476-1-edumazet@google.com>
-References: <20230509163553.3081476-1-edumazet@google.com>
+        d=gmail.com; s=20221208; t=1683673195; x=1686265195;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=aafVG4yBLLVm1k+fGPzulDd3yEFIbxpX+l1XJ3/shzs=;
+        b=oVmrOwIjxYoLU3+sHGB33z4lZMV4ElZcb2yYTQTeN+HY4dsr1GDI/Tj/PiZ4vn7AVb
+         EmXFrPn33xMbfOEyhxuUl/TEocCwndHalFWAxiK+KQ4SDMnxyGZrBLlf3TmucLEjOWQD
+         xiiXfEvV4fZ+qwY+zVLWhSrLOtgAnWzTQmHNhstRKS9OuPlv+aJfUyRp/u5nWKbNwJPW
+         /Wg+D2AEh+9fWP4opnXWYunsmrspUydu0idmw7Mk522uzWCaJuKEukERwvSifhudaNLG
+         4P5scNDR2LmLxESXjG/zrRag0PubRODZHm9JYMMqFeJp31dyP1MYxie2ip6CFs+rV+SX
+         jzZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683673195; x=1686265195;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=aafVG4yBLLVm1k+fGPzulDd3yEFIbxpX+l1XJ3/shzs=;
+        b=YHjuc6Atc9oCFEa0urOR21sOgKOsIcvJLktJT6jQz+qQ/vVrBKnjDTc8MVE/hqbiKQ
+         L/cKtwCfvPV+NipUT78sI+bQTDMTzuGg6d9Mrsa4V5jC7vfD39oN3X48C6+PqCRGJ3t4
+         gkHzsQtXF03DFnovujPKHJ1r/pbHQZC5oRjC0U9CMjF0k9IHfKXAb46U2Pp2bkzObwX7
+         cMS8lf005XLsDMFM0bkn62YSSyF3Dsq6kRXM1d1iYa4Szfai7Ga3VXJ1hEKvlwlYadsS
+         NaxrsaLA3oOwS2X97/S+2Bz45u4aQJ9phg3wrUjIfDAYCmCLH7d8b307fH1/qyfmqHI3
+         Wnzg==
+X-Gm-Message-State: AC+VfDyBI102PX+iMtxwx/6W9jHJ/Chj9iB0iVNybVHet7JH6ksQRNo0
+	xcP9/iFPdc6LjmOyQZEBKE0Uh4+Wxxo=
+X-Google-Smtp-Source: ACHHUZ76OGUw9xqvTd1h19J5JlowwqRRYBsyCmOU087wWKwgRFT+NmyHTec8TZG0U+udotnh6Ig5kA==
+X-Received: by 2002:a05:622a:1a27:b0:3f0:b57b:3714 with SMTP id f39-20020a05622a1a2700b003f0b57b3714mr24470951qtb.56.1683673195348;
+        Tue, 09 May 2023 15:59:55 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id c23-20020ac81e97000000b003f38b4167e5sm900857qtm.2.2023.05.09.15.59.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 May 2023 15:59:54 -0700 (PDT)
+From: Florian Fainelli <f.fainelli@gmail.com>
+To: netdev@vger.kernel.org
+Cc: Florian Fainelli <f.fainelli@gmail.com>,
+	Doug Berger <opendmb@gmail.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: bcmgenet: Restore phy_stop() depending upon suspend/close
+Date: Tue,  9 May 2023 15:59:49 -0700
+Message-Id: <20230509225949.1909013-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -64,49 +76,67 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.187.171.39]
-X-ClientProxiedBy: EX19D042UWB003.ant.amazon.com (10.13.139.135) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-Precedence: Bulk
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-	T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Tue,  9 May 2023 16:35:53 +0000
-> do_recvmmsg() can write to sk->sk_err from multiple threads.
-> 
-> As said before, many other points reading or writing sk_err
-> need annotations.
-> 
-> Fixes: 34b88a68f26a ("net: Fix use after free in the recvmmsg exit path")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
+Removing the phy_stop() from bcmgenet_netif_stop() ended up causing
+warnings from the PHY library that phy_start() is called from the
+RUNNING state since we are no longer stopping the PHY state machine.
 
-Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Restore the call to phy_stop() but make it conditional on being called
+fro the close or suspend path.
 
+Fixes: 93e0401e0fc0 ("net: bcmgenet: Remove phy_stop() from bcmgenet_netif_stop()")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-> ---
->  net/socket.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/socket.c b/net/socket.c
-> index a7b4b37d86df7a9232d582a14863c05b5fd34b68..b7e01d0fe0824d1f277c1fe70f68f09a10319832 100644
-> --- a/net/socket.c
-> +++ b/net/socket.c
-> @@ -2911,7 +2911,7 @@ static int do_recvmmsg(int fd, struct mmsghdr __user *mmsg,
->  		 * error to return on the next call or if the
->  		 * app asks about it using getsockopt(SO_ERROR).
->  		 */
-> -		sock->sk->sk_err = -err;
-> +		WRITE_ONCE(sock->sk->sk_err, -err);
->  	}
->  out_put:
->  	fput_light(sock->file, fput_needed);
-> -- 
-> 2.40.1.521.gf1e218fcd8-goog
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index bbd9d4b73402..a6fb913fa32e 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -3462,7 +3462,7 @@ static int bcmgenet_open(struct net_device *dev)
+ 	return ret;
+ }
+ 
+-static void bcmgenet_netif_stop(struct net_device *dev)
++static void bcmgenet_netif_stop(struct net_device *dev, bool stop_phy)
+ {
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+ 
+@@ -3477,6 +3477,8 @@ static void bcmgenet_netif_stop(struct net_device *dev)
+ 	/* Disable MAC transmit. TX DMA disabled must be done before this */
+ 	umac_enable_set(priv, CMD_TX_EN, false);
+ 
++	if (stop_phy)
++		phy_stop(dev->phydev);
+ 	bcmgenet_disable_rx_napi(priv);
+ 	bcmgenet_intr_disable(priv);
+ 
+@@ -3497,7 +3499,7 @@ static int bcmgenet_close(struct net_device *dev)
+ 
+ 	netif_dbg(priv, ifdown, dev, "bcmgenet_close\n");
+ 
+-	bcmgenet_netif_stop(dev);
++	bcmgenet_netif_stop(dev, false);
+ 
+ 	/* Really kill the PHY state machine and disconnect from it */
+ 	phy_disconnect(dev->phydev);
+@@ -4315,7 +4317,7 @@ static int bcmgenet_suspend(struct device *d)
+ 
+ 	netif_device_detach(dev);
+ 
+-	bcmgenet_netif_stop(dev);
++	bcmgenet_netif_stop(dev, true);
+ 
+ 	if (!device_may_wakeup(d))
+ 		phy_suspend(dev->phydev);
+-- 
+2.34.1
+
 
