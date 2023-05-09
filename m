@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-1255-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1256-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id C83C76FD0C1
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id CA4926FD0D0
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:20:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 835B028123D
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:19:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9B0392812AF
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:20:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA32119924;
-	Tue,  9 May 2023 21:19:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C448619927;
+	Tue,  9 May 2023 21:20:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 046D119922
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:19:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C4BAC433EF;
-	Tue,  9 May 2023 21:19:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC8C319924
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23501C4339C;
+	Tue,  9 May 2023 21:20:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683667194;
-	bh=nzkn9exyJRt/FbFrP6FZTZwelwkUHu8d/wJ+9bG7uOE=;
+	s=k20201202; t=1683667219;
+	bh=q2LTFwgKTWP+0shwsSHRrltK0hob6a/X7kEhfefcrlw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=cY1n61FtEO/15aHs+NEZ4Pve4ailt2ue0IdUo8W1rFj4VcOb2WdlLqW3URwMNr360
-	 ccR46MVnCYMbLExDatIqxHkhd6bN5okYBw24VgHpNdKsW3PhLX7Fj+RKTITidJuwPW
-	 Xw19Ips8SlSFF4ujMxnjIzKG9QmxZ+63FtnRfK0mljYBmEKS81XWVllcHxybt19so5
-	 yS9zfeInMuTu1+uHoLX26HdoReep92PMB2jpE8D6R4eHAYa13fKUpGrmmXHt0JwJF6
-	 MAR6w9dmZJ9EVkKuU/KGVcRgwubDwdV43A1Th5v95fP359ulQ083Drg8gCXLL8/Guz
-	 w0vMTeZbwgjlw==
+	b=Hd9EZgc+Od8DtKXiPzqNMUtalzOxk4kxmwDDNKvWlcWcjsR3dLp9rtClg6JNvhf7T
+	 R45HvJko6k2ARK5xZ6dy2jiHdLq2TbNRXPv7KdY6ntUpwvuqpVfIVidBAT+zSbML7K
+	 qGJ06Tcq62fRIvKD/TYeWM6cjGv4Hix1gPPsy3LARz9d06kHbDZl+2mktkvIM9G3rx
+	 EG9HZkUw0ITUsxJ9mltnP6u/fOaydlqKhmUUgaj6GSbopWlY8cii+Q+c3LS07Ia30e
+	 aNlQk75JhFKBPZaawx3osnceDuJxT1Wj9qH7ol1TGj/czOOQQkkPp7VcCepH8DQ40n
+	 3+mI81iCudqYg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -50,12 +50,12 @@ Cc: Avihai Horon <avihaih@nvidia.com>,
 	dtatulea@nvidia.com,
 	linux-rdma@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.3 16/18] RDMA/mlx5: Remove pcie_relaxed_ordering_enabled() check for RO write
-Date: Tue,  9 May 2023 17:19:24 -0400
-Message-Id: <20230509211928.21010-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.2 16/18] RDMA/mlx5: Remove pcie_relaxed_ordering_enabled() check for RO write
+Date: Tue,  9 May 2023 17:19:54 -0400
+Message-Id: <20230509211958.21596-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230509211928.21010-1-sashal@kernel.org>
-References: <20230509211928.21010-1-sashal@kernel.org>
+In-Reply-To: <20230509211958.21596-1-sashal@kernel.org>
+References: <20230509211958.21596-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -97,7 +97,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  3 files changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index 67356f5152616..bd0a818ba1cd8 100644
+index 053fe946e45ae..8c4df71379bf3 100644
 --- a/drivers/infiniband/hw/mlx5/mr.c
 +++ b/drivers/infiniband/hw/mlx5/mr.c
 @@ -67,11 +67,11 @@ static void set_mkc_access_pd_addr_fields(void *mkc, int acc, u64 start_addr,
@@ -116,10 +116,10 @@ index 67356f5152616..bd0a818ba1cd8 100644
  	}
  
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index a21bd1179477b..d840a59aec88a 100644
+index 4ad19c9812944..8dbcffccee400 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -867,8 +867,7 @@ static void mlx5e_build_rx_cq_param(struct mlx5_core_dev *mdev,
+@@ -857,8 +857,7 @@ static void mlx5e_build_rx_cq_param(struct mlx5_core_dev *mdev,
  static u8 rq_end_pad_mode(struct mlx5_core_dev *mdev, struct mlx5e_params *params)
  {
  	bool lro_en = params->packet_merge.type == MLX5E_PACKET_MERGE_LRO;
@@ -130,10 +130,10 @@ index a21bd1179477b..d840a59aec88a 100644
  	return ro && lro_en ?
  		MLX5_WQ_END_PAD_MODE_NONE : MLX5_WQ_END_PAD_MODE_ALIGN;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_common.c b/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
-index 4c9a3210600c2..993af4c12d909 100644
+index 68f19324db93c..c7271f614fb30 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
-@@ -44,7 +44,7 @@ void mlx5e_mkey_set_relaxed_ordering(struct mlx5_core_dev *mdev, void *mkc)
+@@ -43,7 +43,7 @@ void mlx5e_mkey_set_relaxed_ordering(struct mlx5_core_dev *mdev, void *mkc)
  	bool ro_read = MLX5_CAP_GEN(mdev, relaxed_ordering_read);
  
  	MLX5_SET(mkc, mkc, relaxed_ordering_read, ro_pci_enable && ro_read);
