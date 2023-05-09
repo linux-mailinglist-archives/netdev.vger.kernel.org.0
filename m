@@ -1,147 +1,111 @@
-Return-Path: <netdev+bounces-1256-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1268-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CA4926FD0D0
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D60EC6FD171
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:30:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9B0392812AF
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:20:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A988B2811EC
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:30:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C448619927;
-	Tue,  9 May 2023 21:20:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 55FD219939;
+	Tue,  9 May 2023 21:30:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC8C319924
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23501C4339C;
-	Tue,  9 May 2023 21:20:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683667219;
-	bh=q2LTFwgKTWP+0shwsSHRrltK0hob6a/X7kEhfefcrlw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Hd9EZgc+Od8DtKXiPzqNMUtalzOxk4kxmwDDNKvWlcWcjsR3dLp9rtClg6JNvhf7T
-	 R45HvJko6k2ARK5xZ6dy2jiHdLq2TbNRXPv7KdY6ntUpwvuqpVfIVidBAT+zSbML7K
-	 qGJ06Tcq62fRIvKD/TYeWM6cjGv4Hix1gPPsy3LARz9d06kHbDZl+2mktkvIM9G3rx
-	 EG9HZkUw0ITUsxJ9mltnP6u/fOaydlqKhmUUgaj6GSbopWlY8cii+Q+c3LS07Ia30e
-	 aNlQk75JhFKBPZaawx3osnceDuJxT1Wj9qH7ol1TGj/czOOQQkkPp7VcCepH8DQ40n
-	 3+mI81iCudqYg==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Avihai Horon <avihaih@nvidia.com>,
-	Shay Drory <shayd@nvidia.com>,
-	Jacob Keller <jacob.e.keller@intel.com>,
-	Leon Romanovsky <leon@kernel.org>,
-	Sasha Levin <sashal@kernel.org>,
-	saeedm@nvidia.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	tariqt@nvidia.com,
-	maxtram95@gmail.com,
-	gal@nvidia.com,
-	afaris@nvidia.com,
-	dtatulea@nvidia.com,
-	linux-rdma@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.2 16/18] RDMA/mlx5: Remove pcie_relaxed_ordering_enabled() check for RO write
-Date: Tue,  9 May 2023 17:19:54 -0400
-Message-Id: <20230509211958.21596-16-sashal@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 488821990D
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:30:43 +0000 (UTC)
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1BD7EF7
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 14:30:14 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-55af4277904so98941057b3.1
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 14:30:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683667724; x=1686259724;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=WIZ4sUcXRVUtvrinFS4f+gOFripHVIhMPbqIDwh9EAY=;
+        b=H+/KBo2dcN5yLJi0vA0uAhS30bF20x4qvXTACF2j//D6gmgz7ZTkooe0OumWX9yIFU
+         QkbC87C/0yVpfiYmJKfHtNQz4eXY6GBlrGIjtZbC3lrv+QNbv32s3I1BJG4Dj2IjkvSX
+         pUIsZBokxXxnDruxDAyjnCSAd0jYgzIUVwbhzY3+Kov4t+pUSYKnVVYT1I3WFnwzAmpl
+         Zju6gGZHyE9e5P04W26d8YwsTZKknqULnm0Eal22BX2BkOFZtKDOSEq9EAN2whfiBEwp
+         sEd7nvwAleMSpJdvN6eJ47T7/1ZdNOL0+HcxeKfn9NfKkth0dqNi66A70y1Y6AP6gGkr
+         uG8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683667724; x=1686259724;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WIZ4sUcXRVUtvrinFS4f+gOFripHVIhMPbqIDwh9EAY=;
+        b=RqNTbB6eL71Nm7E0cq8pONclbrt892W5u7PDD8SdL5CcgiuxZsryfM6DWKFXTfNe9Q
+         5sjt0eZw4Spl8WdQV0L9wtMo/TJmwtzntsqBMPQMccOvIrHczESwOCiDhqk82Sl5kJ6M
+         7bLIFuGHCsHPRCc5n55lFXv4c9C0sVEyvVlXIwLsX72OCvaQVpBvtnWNoehsedDlLObv
+         hSoSdZIG9xil/BytO8Wn2YP/IhKjN0Q2vI0fK5rRCNyK0NcGhIRnBVBkq9iY505zsNRL
+         ia5Nr4DVkocUPYlU8DLbVl7jcGNkzt42tIy97REXzeXENz05bVFBD13u2l3rdAQhESAZ
+         T7WQ==
+X-Gm-Message-State: AC+VfDyksZ8uJUh/D2GDKzlvMo6YXj9yKTbJM8HAPOe5jzTxNVAXSVic
+	L0YV+cz39vQBoujBNEAu97CC0ZlePvF80gQ8IddGBA==
+X-Google-Smtp-Source: ACHHUZ61jE5ikjecXBduPMXfT1Jw6jsiunMWI6HNkNNXrt1gTq3RoixxMGjm/dSek1cUN+LdcOgFkA==
+X-Received: by 2002:a05:6a21:6d9a:b0:100:607:b997 with SMTP id wl26-20020a056a216d9a00b001000607b997mr12779642pzb.49.1683667288320;
+        Tue, 09 May 2023 14:21:28 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id d22-20020aa78e56000000b00646e7d2b5a7sm1932565pfr.112.2023.05.09.14.21.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 May 2023 14:21:27 -0700 (PDT)
+From: Stephen Hemminger <stephen@networkplumber.org>
+To: netdev@vger.kernel.org
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH iproute2 00/11] fix analyzer warnings
+Date: Tue,  9 May 2023 14:21:14 -0700
+Message-Id: <20230509212125.15880-1-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230509211958.21596-1-sashal@kernel.org>
-References: <20230509211958.21596-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-From: Avihai Horon <avihaih@nvidia.com>
+Address some (but not all) of the issues reported by gcc 13
+new analyzer.  These are mostly just issues like not checking
+for malloc() failure.
 
-[ Upstream commit ed4b0661cce119870edb1994fd06c9cbc1dc05c3 ]
+Stephen Hemminger (11):
+  lib/fs: fix file leak in task_get_name
+  ipmaddr: fix dereference of NULL on malloc() failure
+  iproute_lwtunnel: fix possible use of NULL when malloc() fails
+  tc_filter: fix unitialized warning
+  tc_util fix unitialized warning
+  tc_exec: don't dereference NULL on calloc failure
+  m_action: fix warning of overwrite of const string
+  netem: fix NULL deref on allocation failure
+  nstat: fix potential NULL deref
+  rdma/utils: fix some analyzer warnings
+  tc/prio: handle possible truncated kernel response
 
-pcie_relaxed_ordering_enabled() check was added to avoid a syndrome when
-creating a MKey with relaxed ordering (RO) enabled when the driver's
-relaxed_ordering_{read,write} HCA capabilities are out of sync with FW.
+ ip/ipmaddr.c          |  9 ++++++++-
+ ip/iproute_lwtunnel.c | 18 +++++++++++++-----
+ lib/fs.c              |  4 +++-
+ misc/nstat.c          |  6 ++++++
+ rdma/utils.c          | 10 ++++++++++
+ tc/m_action.c         |  4 ++--
+ tc/q_netem.c          |  3 +++
+ tc/q_prio.c           |  2 ++
+ tc/tc_exec.c          |  4 ++++
+ tc/tc_filter.c        |  7 ++++---
+ tc/tc_util.c          |  2 +-
+ 11 files changed, 56 insertions(+), 13 deletions(-)
 
-While this can happen with relaxed_ordering_read, it can't happen with
-relaxed_ordering_write as it's set if the device supports RO write,
-regardless of RO in PCI config space, and thus can't change during
-runtime.
-
-Therefore, drop the pcie_relaxed_ordering_enabled() check for
-relaxed_ordering_write while keeping it for relaxed_ordering_read.
-Doing so will also allow the usage of RO write in VFs and VMs (where RO
-in PCI config space is not reported/emulated properly).
-
-Signed-off-by: Avihai Horon <avihaih@nvidia.com>
-Reviewed-by: Shay Drory <shayd@nvidia.com>
-Link: https://lore.kernel.org/r/7e8f55e31572c1702d69cae015a395d3a824a38a.1681131553.git.leon@kernel.org
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/infiniband/hw/mlx5/mr.c                     | 6 +++---
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 3 +--
- drivers/net/ethernet/mellanox/mlx5/core/en_common.c | 2 +-
- 3 files changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index 053fe946e45ae..8c4df71379bf3 100644
---- a/drivers/infiniband/hw/mlx5/mr.c
-+++ b/drivers/infiniband/hw/mlx5/mr.c
-@@ -67,11 +67,11 @@ static void set_mkc_access_pd_addr_fields(void *mkc, int acc, u64 start_addr,
- 	MLX5_SET(mkc, mkc, lw, !!(acc & IB_ACCESS_LOCAL_WRITE));
- 	MLX5_SET(mkc, mkc, lr, 1);
- 
--	if ((acc & IB_ACCESS_RELAXED_ORDERING) &&
--	    pcie_relaxed_ordering_enabled(dev->mdev->pdev)) {
-+	if (acc & IB_ACCESS_RELAXED_ORDERING) {
- 		if (MLX5_CAP_GEN(dev->mdev, relaxed_ordering_write))
- 			MLX5_SET(mkc, mkc, relaxed_ordering_write, 1);
--		if (MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read))
-+		if (MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read) &&
-+		    pcie_relaxed_ordering_enabled(dev->mdev->pdev))
- 			MLX5_SET(mkc, mkc, relaxed_ordering_read, 1);
- 	}
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 4ad19c9812944..8dbcffccee400 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -857,8 +857,7 @@ static void mlx5e_build_rx_cq_param(struct mlx5_core_dev *mdev,
- static u8 rq_end_pad_mode(struct mlx5_core_dev *mdev, struct mlx5e_params *params)
- {
- 	bool lro_en = params->packet_merge.type == MLX5E_PACKET_MERGE_LRO;
--	bool ro = pcie_relaxed_ordering_enabled(mdev->pdev) &&
--		MLX5_CAP_GEN(mdev, relaxed_ordering_write);
-+	bool ro = MLX5_CAP_GEN(mdev, relaxed_ordering_write);
- 
- 	return ro && lro_en ?
- 		MLX5_WQ_END_PAD_MODE_NONE : MLX5_WQ_END_PAD_MODE_ALIGN;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_common.c b/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
-index 68f19324db93c..c7271f614fb30 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
-@@ -43,7 +43,7 @@ void mlx5e_mkey_set_relaxed_ordering(struct mlx5_core_dev *mdev, void *mkc)
- 	bool ro_read = MLX5_CAP_GEN(mdev, relaxed_ordering_read);
- 
- 	MLX5_SET(mkc, mkc, relaxed_ordering_read, ro_pci_enable && ro_read);
--	MLX5_SET(mkc, mkc, relaxed_ordering_write, ro_pci_enable && ro_write);
-+	MLX5_SET(mkc, mkc, relaxed_ordering_write, ro_write);
- }
- 
- int mlx5e_create_mkey(struct mlx5_core_dev *mdev, u32 pdn, u32 *mkey)
 -- 
 2.39.2
 
