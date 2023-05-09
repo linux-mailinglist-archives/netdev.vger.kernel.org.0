@@ -1,135 +1,139 @@
-Return-Path: <netdev+bounces-1280-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1281-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E19926FD2C4
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 00:36:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BC68A6FD2CC
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 00:51:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2D1D5281422
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 22:36:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DFE401C20C78
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 22:50:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 93548F9DE;
-	Tue,  9 May 2023 22:36:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7868F125D2;
+	Tue,  9 May 2023 22:50:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 866A519937
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 22:36:37 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6982D4A
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 15:36:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683671782;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IaxjeQx1aQ5zZuJTHWwe4xdYYPSpt73Wq+wBrfpBzqE=;
-	b=LPhpzFM+0csajoeKBPS6Sk+SCfRynjlVQ8iH2fqhAWuf+TrxSGnhm00WxI+8gAYnQL8/gH
-	HPoGDj+QgEi5PUhcQuOBphq/D+fpmPG/cUgzHnpKhwsJIDrsvw6iZiQk1+YjrrP8F5jTWG
-	eEc77m3Hut4x1JyVbA48b6FJri2RPOs=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-138-7ldO92FJNFS7uc0LBJ2yoQ-1; Tue, 09 May 2023 18:36:21 -0400
-X-MC-Unique: 7ldO92FJNFS7uc0LBJ2yoQ-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-3f433a2308bso10107625e9.0
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 15:36:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683671779; x=1686263779;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IaxjeQx1aQ5zZuJTHWwe4xdYYPSpt73Wq+wBrfpBzqE=;
-        b=E4DbM6ut0TChsIHSP9+q3xHX4XakIPmwpO1UW/cSzGZ/NEQFxpRj/VvMOmHbqFwMg6
-         /o8eA5IlhXCBQB0a0lWbfWmJAsTaY6k6qu2WGx8bU+WCEbd4Scj+95BWVjYcIbTwwE2F
-         NfaKFU1adRmPozNNtSl+pDQwkDh8fu2I9ljHk9azj92UpeP2yAVleAO5yFIaxpsu5C01
-         Cl+rsyDmuHuRZni9qhQFkqLj1C1C1SPIH33UvbrKaA05yDslL0lUh40qj1VkGTIiWpuk
-         44K8lmmSIl/LmvN8mUOZ/xuQE0Oy+mh0ptplWvP1JJeMW8YYMuR6qjRP93qBpsYzWlf1
-         bRWQ==
-X-Gm-Message-State: AC+VfDw3KQ9tePxDTZMivFM0iw2UtYB7oeDHC8pvnqjNIqlZL4WA3ci3
-	jBGm8av1hG+jpKffJagiEglDZf/A1TQY4466i+Rzd1uVTa10G93pInUBlZoBWApzxGAocCt38XL
-	wjTr1KOrOGq5rdo54
-X-Received: by 2002:adf:f189:0:b0:306:45ef:9935 with SMTP id h9-20020adff189000000b0030645ef9935mr14192568wro.13.1683671779116;
-        Tue, 09 May 2023 15:36:19 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4Xa3r1RcngcBkN+BdHuaQldghW3gS3LoddvmmaotQFAKrjrHhfivqwnwd6x40NFCFXC9Cg2g==
-X-Received: by 2002:adf:f189:0:b0:306:45ef:9935 with SMTP id h9-20020adff189000000b0030645ef9935mr14192554wro.13.1683671778773;
-        Tue, 09 May 2023 15:36:18 -0700 (PDT)
-Received: from debian (2a01cb058918ce005a3b5dcb9dbff7d2.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:5a3b:5dcb:9dbf:f7d2])
-        by smtp.gmail.com with ESMTPSA id a11-20020a5d508b000000b00307a86a4bcesm2211757wrt.35.2023.05.09.15.36.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 15:36:18 -0700 (PDT)
-Date: Wed, 10 May 2023 00:36:16 +0200
-From: Guillaume Nault <gnault@redhat.com>
-To: David Ahern <dsahern@kernel.org>
-Cc: David Miller <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/4] selftests: fcnal: Test SO_DONTROUTE on TCP
- sockets.
-Message-ID: <ZFrK4CXsCrfmBG7T@debian>
-References: <cover.1683626501.git.gnault@redhat.com>
- <ac92940c6d2c17c7c8d476428cfa94c4ffa6bd8b.1683626501.git.gnault@redhat.com>
- <20230509153246.GA26485@u2004-local>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69E1A1990C
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 22:50:57 +0000 (UTC)
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F27F59E7
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 15:50:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1683672656; x=1715208656;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=J6ZIkHPBoIcJJY37qVqyF2jj6r9q+FxrIswaOiGh2XU=;
+  b=oo5ZCIva2YwlMraNbF3GU3HImdxUHauozszuhSubdzy5UjYIb6J+dDY4
+   JvdsoOFG3WsSypQCW+Pj4RZnFCxGcTbNEDrWz3h99bPzafv3Yt1taFEOR
+   D/2CKGuEzSbrKqtCmD2SzcElpE4gSZMvU/VdKdXPQR/CGf+4VTmzVrLN/
+   A=;
+X-IronPort-AV: E=Sophos;i="5.99,263,1677542400"; 
+   d="scan'208";a="330009610"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-1cca8d67.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 22:50:53 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+	by email-inbound-relay-pdx-2a-m6i4x-1cca8d67.us-west-2.amazon.com (Postfix) with ESMTPS id D6F2E81365;
+	Tue,  9 May 2023 22:50:51 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Tue, 9 May 2023 22:50:45 +0000
+Received: from 88665a182662.ant.amazon.com (10.187.171.39) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Tue, 9 May 2023 22:50:41 +0000
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+To: <edumazet@google.com>
+CC: <davem@davemloft.net>, <eric.dumazet@gmail.com>, <kuba@kernel.org>,
+	<netdev@vger.kernel.org>, <pabeni@redhat.com>, <kuniyu@amazon.com>
+Subject: Re: [PATCH net] net: datagram: fix data-races in datagram_poll()
+Date: Tue, 9 May 2023 15:50:31 -0700
+Message-ID: <20230509225031.19553-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230509173131.3263780-1-edumazet@google.com>
+References: <20230509173131.3263780-1-edumazet@google.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230509153246.GA26485@u2004-local>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.187.171.39]
+X-ClientProxiedBy: EX19D032UWB002.ant.amazon.com (10.13.139.190) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+Precedence: Bulk
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+	T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 09, 2023 at 09:32:46AM -0600, David Ahern wrote:
-> On Tue, May 09, 2023 at 02:02:37PM +0200, Guillaume Nault wrote:
-> > diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-> > index 21ca91473c09..1f8939fbb021 100755
-> > --- a/tools/testing/selftests/net/fcnal-test.sh
-> > +++ b/tools/testing/selftests/net/fcnal-test.sh
-> > @@ -1098,6 +1098,73 @@ test_ipv4_md5_vrf__global_server__bind_ifindex0()
-> >  	set_sysctl net.ipv4.tcp_l3mdev_accept="$old_tcp_l3mdev_accept"
-> >  }
-> >  
-> > +ipv4_tcp_dontroute()
-> > +{
-> > +	local syncookies=$1
-> > +	local nsa_syncookies
-> > +	local nsb_syncookies
-> > +	local a
-> > +
-> > +	#
-> > +	# Link local connection tests (SO_DONTROUTE).
-> > +	# Connections should succeed only when the remote IP address is
-> > +	# on link (doesn't need to be routed through a gateway).
-> > +	#
-> > +
-> > +	nsa_syncookies=$(ip netns exec "${NSA}" sysctl -n net.ipv4.tcp_syncookies)
-> > +	nsb_syncookies=$(ip netns exec "${NSB}" sysctl -n net.ipv4.tcp_syncookies)
-> > +	ip netns exec "${NSA}" sysctl -wq net.ipv4.tcp_syncookies=${syncookies}
-> > +	ip netns exec "${NSB}" sysctl -wq net.ipv4.tcp_syncookies=${syncookies}
-> > +
-> > +	# Test with eth1 address (on link).
-> > +
-> > +	a=${NSB_IP}
-> > +	log_start
-> > +	run_cmd_nsb nettest -s &
-> > +	sleep 1
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue,  9 May 2023 17:31:31 +0000
+> datagram_poll() runs locklessly, we should add READ_ONCE()
+> annotations while reading sk->sk_err, sk->sk_shutdown and sk->sk_state.
 > 
-> rather than propagate the sleep for new tests, you try adding these
-> tests using a single nettest instance that takes both server and client
-> arguments and does the netns switch internally.
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Okay. That also means adding more options to nettest, to independently
-set SO_DONTROUTE on the server or on the client. We're getting short of
-one letter options, so I'll probably use long ones.
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
+
+> ---
+>  net/core/datagram.c | 15 ++++++++++-----
+>  1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/core/datagram.c b/net/core/datagram.c
+> index 5662dff3d381a92b271d9cba38a28a6a8478c114..176eb58347461b160890ce2d6b2d3cbc7412e321 100644
+> --- a/net/core/datagram.c
+> +++ b/net/core/datagram.c
+> @@ -807,18 +807,21 @@ __poll_t datagram_poll(struct file *file, struct socket *sock,
+>  {
+>  	struct sock *sk = sock->sk;
+>  	__poll_t mask;
+> +	u8 shutdown;
+>  
+>  	sock_poll_wait(file, sock, wait);
+>  	mask = 0;
+>  
+>  	/* exceptional events? */
+> -	if (sk->sk_err || !skb_queue_empty_lockless(&sk->sk_error_queue))
+> +	if (READ_ONCE(sk->sk_err) ||
+> +	    !skb_queue_empty_lockless(&sk->sk_error_queue))
+>  		mask |= EPOLLERR |
+>  			(sock_flag(sk, SOCK_SELECT_ERR_QUEUE) ? EPOLLPRI : 0);
+>  
+> -	if (sk->sk_shutdown & RCV_SHUTDOWN)
+> +	shutdown = READ_ONCE(sk->sk_shutdown);
+> +	if (shutdown & RCV_SHUTDOWN)
+>  		mask |= EPOLLRDHUP | EPOLLIN | EPOLLRDNORM;
+> -	if (sk->sk_shutdown == SHUTDOWN_MASK)
+> +	if (shutdown == SHUTDOWN_MASK)
+>  		mask |= EPOLLHUP;
+>  
+>  	/* readable? */
+> @@ -827,10 +830,12 @@ __poll_t datagram_poll(struct file *file, struct socket *sock,
+>  
+>  	/* Connection-based need to check for termination and startup */
+>  	if (connection_based(sk)) {
+> -		if (sk->sk_state == TCP_CLOSE)
+> +		int state = READ_ONCE(sk->sk_state);
+> +
+> +		if (state == TCP_CLOSE)
+>  			mask |= EPOLLHUP;
+>  		/* connection hasn't started yet? */
+> -		if (sk->sk_state == TCP_SYN_SENT)
+> +		if (state == TCP_SYN_SENT)
+>  			return mask;
+>  	}
+>  
+> -- 
+> 2.40.1.521.gf1e218fcd8-goog
 
