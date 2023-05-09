@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-1276-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1277-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3D7DD6FD2B9
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 00:34:39 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8BC0B6FD2BD
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 00:34:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D0DA22812BD
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 22:34:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BA2611C20C54
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 22:34:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DEE9D631;
-	Tue,  9 May 2023 22:34:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE56711CA7;
+	Tue,  9 May 2023 22:34:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCD83389
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 22:34:35 +0000 (UTC)
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F9B49CD;
-	Tue,  9 May 2023 15:34:33 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id d2e1a72fcca58-64388cf3263so4642426b3a.3;
-        Tue, 09 May 2023 15:34:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2E8111CA2
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 22:34:37 +0000 (UTC)
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DC444AB;
+	Tue,  9 May 2023 15:34:34 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-6438d95f447so4525279b3a.3;
+        Tue, 09 May 2023 15:34:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683671672; x=1686263672;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nm/iB1zX0wTmh39nnUNXbCnFgHABdZ3zLA40vJ95ofk=;
-        b=hyYJdXFW4QC3b9HxVlK89KHgNVcYjlbqzLZtwZpwWs2ktV0Rk9oq7wGAwBxCEMbnHz
-         TPqEG6gc7hzUF59xTJo6X6yVHaPWM0y1BIvUOKGqd1RBwlMSBz+KZew0pAodu0D1myfg
-         HiAS3ERNZtfgnKDrmATnVnYgVihDlIgkSzcNxw4EJf+mSPAU/ekbaGY+ZwzGGD0VsBuz
-         b8uiVL3I16RC3A0409Sb19B6RDXZ0zEX3/91wnrbINgtkE+oCqcyKelnaLfXe3XrnqZr
-         x5Asf9j2VKtHNawj5SnCfoMe3AklD7kHfaiS4pgEjG6i0lhp6TpUFVFYkqUqC5/e0LuG
-         f3bA==
+        d=gmail.com; s=20221208; t=1683671673; x=1686263673;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AzNBgngNpXj0wbXwRY/xf3HuUbNLwyU+aM5xfz4oMR8=;
+        b=rSMmU4vmlHSAEnKN/8a9GLIElgeVrZwc6fUmse218q1b4bkrPXoOQ3Unw9Z+7KAagX
+         ANrlFnPb2f0W01H7SuZ6PpO+fFpdPkUAvQgBBOrbfdf++oeCj70jc0ovc2ZUzyzudYqq
+         GmDSZK2OUMW5/kpyYM4ZfeYu8cA/GDGGdnxUxFOl7JcKIegYD0aQrRnD4cWyiJSqplUw
+         ekjcJAHWRuNmU/TtS1Fc7dbL/GJ/jOFBq+ZEBGtN9FVVcOPO6LqVG/VQXMopCQ+M5MWs
+         0GKzWC+XbUXYjMyhNCzcIHOjVScaLJrQAUAiLUuMrEyj+eYrhuI0uRVcgFokq4N5uVLz
+         U+wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683671672; x=1686263672;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nm/iB1zX0wTmh39nnUNXbCnFgHABdZ3zLA40vJ95ofk=;
-        b=bnTlYebS+uMFBXC7g0+NL2yMgEp9EH4PQ0+UD7ItPxyiY41u6Je3HjpSH+ctNVb7oG
-         RWIfXH7LP/hHlNC5VEK3RgT3QSicwa0ZZoKif05EtwMw/NXF74IVC802HG/Vcj7FPaOk
-         oYO0ZO4BCrzMNg/9x3+bmpomkA20BWNig6M779v753sVAbs6BpTGGqZIh7nxLd5+WhML
-         wULpfWJ50niVgsUWKsqzLDDzfX6LLByUMsLSX7o0HtAGZLkWOIcHCFAk5z7EzPe2K4vu
-         b6OYuo906qqhPtziD9/MsCCfnT7ijGeKkDPr+JGyrl8rUJRzBd9U10D0tRjdNkoIMavD
-         eorg==
-X-Gm-Message-State: AC+VfDxd202MbLCWF71c+5MJkMy+q3HJsG9zim6u9R2K+4eZO4DIeG2s
-	0XIxqN587B/fa3wpiehXUkr7NEJROIU=
-X-Google-Smtp-Source: ACHHUZ5M0q2kgcwCyV5g0FRAI+Wsgqo+WR18DX2sQYSBuRUV3LPYZBi9zDZQmmfBps5eZbiN8c2MYw==
-X-Received: by 2002:a05:6a00:2da8:b0:647:776c:d19c with SMTP id fb40-20020a056a002da800b00647776cd19cmr3112845pfb.13.1683671671813;
-        Tue, 09 May 2023 15:34:31 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683671673; x=1686263673;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AzNBgngNpXj0wbXwRY/xf3HuUbNLwyU+aM5xfz4oMR8=;
+        b=Y5jyWM+uhpD4j/C7cyv1E9b1EVQKl+5Yj7MFgt4anbNrp122nIbhz64NAS34DvVWAE
+         02ZG5i4HdNDTLaQl/S8DfK13rDnnNFf/3ID7zBmFlIkFWGkXXw2YmJiWMLllhCsBnOkk
+         8ROj98aoibzWWTcPUt8I/y1AQkGIp9f5bkg84dqUQ1PoplQrEKdEskX6K/UHE06UcyOc
+         shbD+GWaKn5a543LYsLTADDijziFuzGwYR7ezuxuNFOtMejzkHvshoUEC2BorDIAXuhD
+         ijXG1PnElyb113KMFq6Eagx2x7jzOLfbmQht/0kPP30N+gEKnsxp9yH/rO598u6+rsF+
+         q7wg==
+X-Gm-Message-State: AC+VfDwt8daO/j1UjdoQCWt1D3rF9VWruodermj3etH418xoXjyFnMJs
+	LeLpw+NiZD11ubN3VeBQMIjwCLAziEQ=
+X-Google-Smtp-Source: ACHHUZ6Kzds0js6vEO0RYckMGm6A6hSKgLgi4J/dQl+vB3ceP3Na7+6vzHEfydlxK3xNd1TPgYnjUw==
+X-Received: by 2002:a05:6a00:240a:b0:63d:3a18:4a08 with SMTP id z10-20020a056a00240a00b0063d3a184a08mr18856654pfh.24.1683671673565;
+        Tue, 09 May 2023 15:34:33 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p5-20020aa78605000000b006438898ce82sm2317274pfn.140.2023.05.09.15.34.30
+        by smtp.gmail.com with ESMTPSA id p5-20020aa78605000000b006438898ce82sm2317274pfn.140.2023.05.09.15.34.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 15:34:31 -0700 (PDT)
+        Tue, 09 May 2023 15:34:33 -0700 (PDT)
 From: Florian Fainelli <f.fainelli@gmail.com>
 To: netdev@vger.kernel.org
 Cc: Florian Fainelli <f.fainelli@gmail.com>,
@@ -71,10 +72,12 @@ Cc: Florian Fainelli <f.fainelli@gmail.com>,
 	Peter Geis <pgwipeout@gmail.com>,
 	Frank <Frank.Sae@motor-comm.com>,
 	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v2 0/3] Support for Wake-on-LAN for Broadcom
-Date: Tue,  9 May 2023 15:34:00 -0700
-Message-Id: <20230509223403.1852603-1-f.fainelli@gmail.com>
+Subject: [PATCH net-next v2 1/3] net: phy: Allow drivers to always call into ->suspend()
+Date: Tue,  9 May 2023 15:34:01 -0700
+Message-Id: <20230509223403.1852603-2-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230509223403.1852603-1-f.fainelli@gmail.com>
+References: <20230509223403.1852603-1-f.fainelli@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -89,50 +92,74 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This patch series adds support for Wake-on-LAN to the Broadcom PHY
-driver. Specifically the BCM54210E/B50212E are capable of supporting
-Wake-on-LAN using an external pin typically wired up to a system's GPIO.
+A few PHY drivers are currently attempting to not suspend the PHY when
+Wake-on-LAN is enabled, however that code is not currently executing at
+all due to an early check in phy_suspend().
 
-These PHY operate a programmable Ethernet MAC destination address
-comparator which will fire up an interrupt whenever a match is received.
-Because of that, it was necessary to introduce patch #1 which allows the
-PHY driver's ->suspend() routine to be called unconditionally. This is
-necessary in our case because we need a hook point into the device
-suspend/resume flow to enable the wake-up interrupt as late as possible.
+This prevents PHY drivers from making an appropriate decisions and put
+the hardware into a low power state if desired.
 
-Patch #2 adds support for the Broadcom PHY library and driver for
-Wake-on-LAN proper with the WAKE_UCAST, WAKE_MCAST, WAKE_BCAST,
-WAKE_MAGIC and WAKE_MAGICSECURE. Note that WAKE_FILTER is supportable,
-however this will require further discussions and be submitted as a RFC
-series later on.
+In order to allow the PHY drivers to opt into getting their ->suspend
+routine to be called, add a PHY_ALWAYS_CALL_SUSPEND bit which can be
+set. A boolean that tracks whether the PHY or the attached MAC has
+Wake-on-LAN enabled is also provided for convenience.
 
-Patch #3 updates the GENET driver to defer to the PHY for Wake-on-LAN if
-the PHY supports it, thus allowing the MAC to be powered down to
-conserve power.
+If phydev::wol_enabled then the PHY shall not prevent its own
+Wake-on-LAN detection logic from working and shall not prevent the
+Ethernet MAC from receiving packets for matching.
 
-Changes in v2:
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/phy/phy_device.c | 5 +++--
+ include/linux/phy.h          | 4 ++++
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-- introduce PHY_ALWAYS_CALL_SUSPEND and only have the Broadcom PHY
-  driver set this flag to minimize changes to the suspend flow to only
-  drivers that need it
-
-- corrected possibly uninitialized variable in bcm54xx_set_wakeup_irq
-  (Simon)
-
-Florian Fainelli (3):
-  net: phy: Allow drivers to always call into ->suspend()
-  net: phy: broadcom: Add support for Wake-on-LAN
-  net: bcmgenet: Add support for PHY-based Wake-on-LAN
-
- .../ethernet/broadcom/genet/bcmgenet_wol.c    |  14 ++
- drivers/net/phy/bcm-phy-lib.c                 | 212 ++++++++++++++++++
- drivers/net/phy/bcm-phy-lib.h                 |   5 +
- drivers/net/phy/broadcom.c                    | 126 ++++++++++-
- drivers/net/phy/phy_device.c                  |   5 +-
- include/linux/brcmphy.h                       |  55 +++++
- include/linux/phy.h                           |   4 +
- 7 files changed, 416 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 17d0d0555a79..8852b0c53114 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1860,9 +1860,10 @@ int phy_suspend(struct phy_device *phydev)
+ 	if (phydev->suspended)
+ 		return 0;
+ 
+-	/* If the device has WOL enabled, we cannot suspend the PHY */
+ 	phy_ethtool_get_wol(phydev, &wol);
+-	if (wol.wolopts || (netdev && netdev->wol_enabled))
++	phydev->wol_enabled = wol.wolopts || (netdev && netdev->wol_enabled);
++	/* If the device has WOL enabled, we cannot suspend the PHY */
++	if (phydev->wol_enabled && !(phydrv->flags & PHY_ALWAYS_CALL_SUSPEND))
+ 		return -EBUSY;
+ 
+ 	if (!phydrv || !phydrv->suspend)
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index c5a0dc829714..e0df8b3c2bdb 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -86,6 +86,7 @@ extern const int phy_10gbit_features_array[1];
+ #define PHY_IS_INTERNAL		0x00000001
+ #define PHY_RST_AFTER_CLK_EN	0x00000002
+ #define PHY_POLL_CABLE_TEST	0x00000004
++#define PHY_ALWAYS_CALL_SUSPEND	0x00000008
+ #define MDIO_DEVICE_IS_PHY	0x80000000
+ 
+ /**
+@@ -548,6 +549,8 @@ struct macsec_ops;
+  * @downshifted_rate: Set true if link speed has been downshifted.
+  * @is_on_sfp_module: Set true if PHY is located on an SFP module.
+  * @mac_managed_pm: Set true if MAC driver takes of suspending/resuming PHY
++ * @wol_enabled: Set to true if the PHY or the attached MAC have Wake-on-LAN
++ * 		 enabled.
+  * @state: State of the PHY for management purposes
+  * @dev_flags: Device-specific flags used by the PHY driver.
+  *
+@@ -644,6 +647,7 @@ struct phy_device {
+ 	unsigned downshifted_rate:1;
+ 	unsigned is_on_sfp_module:1;
+ 	unsigned mac_managed_pm:1;
++	unsigned wol_enabled:1;
+ 
+ 	unsigned autoneg:1;
+ 	/* The most recently read link state */
 -- 
 2.34.1
 
