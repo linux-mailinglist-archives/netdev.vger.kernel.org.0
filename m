@@ -1,221 +1,224 @@
-Return-Path: <netdev+bounces-1247-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1248-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 51C986FCE87
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:28:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 93D6F6FCEA9
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:39:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1FC592813C2
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 19:28:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 410E628137C
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 19:39:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 39223174EC;
-	Tue,  9 May 2023 19:28:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 79C1A14A92;
+	Tue,  9 May 2023 19:39:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21902174E9
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 19:28:05 +0000 (UTC)
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356104483
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 12:28:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1683660483; x=1715196483;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=LIT8yZmDpTrXQIluw3Ho6Vx61zZ4xW/MakVU9pdPjyY=;
-  b=aFedpOoieKPrmwGMj/cyuIWUpvb6p0wviFWD1IhkTCQPtFDF0ebf92sx
-   bpsakEw/KLRqhzU6JDW0ReWSjWyi6O8mvh1s2tjopImb3G6F/r41YolUi
-   ZW/9sAKl+bMP7s6EPRphJIVxZsoAnRFhw7aa/F9ZhU5BrB41F5rAiH8aD
-   g=;
-X-IronPort-AV: E=Sophos;i="5.99,262,1677542400"; 
-   d="scan'208";a="212438427"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-96feee09.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 19:28:00 +0000
-Received: from EX19MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-	by email-inbound-relay-iad-1a-m6i4x-96feee09.us-east-1.amazon.com (Postfix) with ESMTPS id 47E4E43758;
-	Tue,  9 May 2023 19:27:57 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 9 May 2023 19:27:45 +0000
-Received: from 88665a182662.ant.amazon.com (10.187.171.38) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 9 May 2023 19:27:42 +0000
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-To: <edumazet@google.com>
-CC: <davem@davemloft.net>, <dsahern@kernel.org>, <kuba@kernel.org>,
-	<kuni1840@gmail.com>, <kuniyu@amazon.com>, <mubashirq@google.com>,
-	<ncardwell@google.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-	<zob@amazon.com>, <nyoshif@amazon.com>
-Subject: Re: [PATCH v1 net-next] tcp: Add net.ipv4.tcp_reset_challenge.
-Date: Tue, 9 May 2023 12:27:34 -0700
-Message-ID: <20230509192734.41099-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANn89i+ZK6+bPQds2fbff=-ojJ=W=czUvrWPyOCTno=qO6yzDQ@mail.gmail.com>
-References: <CANn89i+ZK6+bPQds2fbff=-ojJ=W=czUvrWPyOCTno=qO6yzDQ@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66C62174E8
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 19:39:27 +0000 (UTC)
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2081.outbound.protection.outlook.com [40.107.8.81])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC394EE4;
+	Tue,  9 May 2023 12:39:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UebSHqaibrODI4hLl4K+8FII8JYVe1WQZcSRReBbyff0JCJvKV1c/Rfcp4Cn0hEGHSINA/aLZojmVOCH1fKvl7WDrvxd7z6q1P5MnxaIBhQcJZ6bKA+Jq6Q8eVRdha+/nHBaSvdg9bBDhqr9Irh0DnHpa340yyO+ItFwJJN7OmVtoFGuXq3MBh5RVJdicE6AHnl+LUMIxO3edZxKmCjXz1H7pkz9WUq8KVI2MnuWkS814hkUoKDySnxd5attZM3K/2kCaRq5+N2Za6QbV7v7/uwGTdgTEu9v4YXgwRZRQ1cDhvDKWCW+SCJCJ1nwiHLnc9rGQFqKcGUp9au3zGbBiQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9EGPd5u6hNOZNDVhEzExkqKCgikBQi9KIyjSLctNLVo=;
+ b=fkD+SjK3OinAxVzFPhZukuj4igTWJj+ImrhnaAFOtbxPdLUyCimv9HdLvp25Xstd/pTltV1lgRcfd4dddmSnaNneRsEpq7FsgwMuFTCiBTT7VpVSDI+bsI2KwNxcPMWvgdL2wqWS18tqAlkDVWr2GSNxga3/7ZE/lqftot8YSFy89NQVBnWkNUPeUNE0EdHD1cVnYNaQevzBmQ8pR8URfxFERT4drWWoPmwmyv2+TEFzw+Jmoe5wd6l4ukctYsbcnD93Lu39a7B98D8VgZUjbnqdP3qz6ChuxD0P39PWOR83Y65Qq/DMf0tA83rTCU5JCwUw9f61AVoC8locb3Ipeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9EGPd5u6hNOZNDVhEzExkqKCgikBQi9KIyjSLctNLVo=;
+ b=deThfI8ZIu5P4xqKKZPLEGko0T2HgXNi8EwYvhX3AWcwKt8zGAu1zZAZ0w/wwEZpe6KBh2mNsqw423QrsdgJ6MILKi2USseudeJA17R4061d2QjKsuACnSdZdfZZl7pT4UcINLy3CuDGb6H8UpfnUKToDcrbXrHzN4tAudXsW+o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
+ by AM0PR04MB7041.eurprd04.prod.outlook.com (2603:10a6:208:19a::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.33; Tue, 9 May
+ 2023 19:39:20 +0000
+Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
+ ([fe80::28fb:82ec:7a6:62f3]) by PAXPR04MB9185.eurprd04.prod.outlook.com
+ ([fe80::28fb:82ec:7a6:62f3%5]) with mapi id 15.20.6363.032; Tue, 9 May 2023
+ 19:39:19 +0000
+From: Shenwei Wang <shenwei.wang@nxp.com>
+To: Wei Fang <wei.fang@nxp.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>
+Cc: Shenwei Wang <shenwei.wang@nxp.com>,
+	Clark Wang <xiaoning.wang@nxp.com>,
+	NXP Linux Team <linux-imx@nxp.com>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>,
+	Alexander Lobakin <alexandr.lobakin@intel.com>,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	imx@lists.linux.dev
+Subject: [PATCH net 1/1] net: fec: using the standard return codes when xdp xmit errors
+Date: Tue,  9 May 2023 14:38:45 -0500
+Message-Id: <20230509193845.1090040-1-shenwei.wang@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR04CA0010.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::20) To PAXPR04MB9185.eurprd04.prod.outlook.com
+ (2603:10a6:102:231::11)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.187.171.38]
-X-ClientProxiedBy: EX19D033UWA004.ant.amazon.com (10.13.139.85) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-Precedence: Bulk
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-	T_SPF_PERMERROR,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PAXPR04MB9185:EE_|AM0PR04MB7041:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7b65eca2-f90d-4b28-a059-08db50c514df
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	G6UoftVEYAmW9oiET3d+0Dm58P1D5UoRDMATSB9DXGUpEG/Kuecf+TDsRfnEuDtnmjB93p5u2uqoYYtPl4LruPswNtdLvbrMs/YoK8aggr30CdyQ4nyebD1LVVoXmTLzn5T5RCFN+GRqD2FE1MNxPW7sKu2hyoynoWoE+zdmJqIzLHtE2QYk8cpSiWzeWZkcqKnGLFMKYMCMPHpd0Yl2/Bjf9ZwmNhvfrRza7qS4P0QKVACOKAsOJ0qeAT5kuVJa+0u3NyeVx2ysCrMQur9Y/ReJL8Yn1akmTDzs4r1mWUYLxhj38mU4tYL3q0xnXBmG9bG+DlFtjQ8Ootn01RTrW2wKaJbD5dskP03ou7w2kfJgvxxwZh4zF5l75l/r1WlTL/CX/s6p8Ydce0QCcXomYY//6irnwOybIO0wvymBsbKsh/TXuJbA3GXIgHqg4dLJT9x53PkHqj4ARbWeyAlWKMvFsfpH0508J3C/sjk3BhgXEmsCvGdZD5/OAe+n6o2vgoYuxOwPfp5trKF0k7YTk5tDMAMOm+P6MIpk2vll8Bh9Z4LjmrJEpwF1OJ9+jPfyqUYetuamz2dBjal/6c4W3ySyr50CNqYJWosTccKPbHw=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(346002)(366004)(376002)(136003)(451199021)(52116002)(54906003)(110136005)(86362001)(316002)(6486002)(66476007)(6666004)(66946007)(41300700001)(4326008)(66556008)(5660300002)(44832011)(8936002)(7416002)(8676002)(478600001)(6512007)(186003)(1076003)(38100700002)(6506007)(26005)(2906002)(55236004)(2616005)(83380400001)(38350700002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?6a7W9JppOyRdtQzHlaTGvZw94g4BgCpIAkGxXasK2Zlime7DGAvzJ1TNtKh2?=
+ =?us-ascii?Q?BcPkzOTEAxq7vmT7cxf9Qy6oLRIB6skRLcQrlgIAr33H/mqXPSggY8wZi3ku?=
+ =?us-ascii?Q?n8AE+PRiaPTTrVWaNkrdFdPCnJyRs8L+NLXzHk7XtkAVMTqZVG57HoiIzTr9?=
+ =?us-ascii?Q?pCPh2TRusYSE/9CCxOxJ/YmKbJey59+Papdnxj0BKJKc2ZGZbAT21uQ+IypR?=
+ =?us-ascii?Q?+fatOgGGwCPWT+14+reo6Cu4hDD/UZ4vW2CcUINe2CQPqKP4ivPIwuTHmkIk?=
+ =?us-ascii?Q?c1t/WvPBTEZ9xcmCWDRud0J6PyWPj2X/owWLP5TDyoWPaceNDnXlYxI2x6tn?=
+ =?us-ascii?Q?kFLOaXyScuHaKF8FAJ/ky/s/yPJrFRIr6jzOq6labrJOF7Hh5jUhJO0QBnvo?=
+ =?us-ascii?Q?CAumuvAFVbhGMk1W9/iknKXmLUcADmtk1aVmiK6d+tgvwnutkKIxPItGu7cM?=
+ =?us-ascii?Q?vRr9GVakRHD7969doTEX8P+6d8b7ynl5JcEY2P1ar98WX5bIS0w/c9G6jL3E?=
+ =?us-ascii?Q?IdEI9ni1APW00PoNKEPJCBYJEsETcm7ihgtnJzybNYVEw+0Xogqk3PmOID7L?=
+ =?us-ascii?Q?Tsj4zdNpI/cEI18UVpw0hndj39szZiDKIS6j155CxSGkvOMuPlAiiBzshHpE?=
+ =?us-ascii?Q?InozaAh7FVuYNKaYjoE3vOKzaAsnpn3K7L7MTmjIOtfs2Flp2XrBstZBF7n6?=
+ =?us-ascii?Q?IN0Xu7l6IOKl4EChFxUDRlaIWaZ2glmDYhe/g9BwggTn9/fzPVBEkdH1QcIQ?=
+ =?us-ascii?Q?c0VKyalOGuE/8cB02G1IX9aJ5nZ6rnum1G1g5KB8PKXimc1XomIJUFu0AQqn?=
+ =?us-ascii?Q?W6hoZff6ninbaocdjJkkAIjUpCrOrjY1ucsqxjfOK01kYud+yYLg6SOhBko0?=
+ =?us-ascii?Q?hlGkOjxT3BVr/eBSobwybxN67v0XmdDtPErkR77MmAT3CPnIQE8lq1Uhyfmw?=
+ =?us-ascii?Q?lUa84lnCYeNp2NlM5AROieg6wcYvnPVzwO5qPD6Prk5AjaA2BVwqRbm01mNe?=
+ =?us-ascii?Q?GZmlfjSq15n7x//38JDyxEMx/nUgBmcXXvCtjK2Y2ZF85K0eGje0LlK6/DcP?=
+ =?us-ascii?Q?v3XwSjB2RO8AkkHQm4UCQN/ZKnmQvfRtipUGjNK4StTS28v3m9tkbYpxPqh4?=
+ =?us-ascii?Q?WMl9UbCKVMVu89nywNYJBkMqjdg3eJVMo1FxcNxT7IkYSP0D8r+Ujbfyoiy9?=
+ =?us-ascii?Q?EORQHaflC4obgzSyy9UNFv1/9NBdJJlw/Ina31MhWGy5Zm+Yf0rZf+vd8nQJ?=
+ =?us-ascii?Q?twNPkZdwJqY/+HlFlum1IbDvVnua23awl0/Vc/yE9RHJBdkqoO0/mbr3b8i1?=
+ =?us-ascii?Q?h31bLAQJYqxFVDIAV0X8LYRfSU+uPmjYntvnppXxR9PCNdx561JrEh2nTMCd?=
+ =?us-ascii?Q?D73CLPud8RWYvCqCqZYLBG83KZ1lwOtdU0JNQN4Z8M8hV4VQkYAD53qBFNj1?=
+ =?us-ascii?Q?PENjpdnyROJ0fg80IdvWKkLMZbusOGhMRZlMlQ0xpBRpePB7kzuZT8p0n9zE?=
+ =?us-ascii?Q?2teLE+o3+t1x1osRzvjCi88yozodH50YJ4pmehka18VOxv4lSI1oAX7vrKJo?=
+ =?us-ascii?Q?u++ETwPiFTdpZCiI65IZYEwUPpDgb65ogvs10eFW?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b65eca2-f90d-4b28-a059-08db50c514df
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2023 19:39:19.5516
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cO+AjZjsZmhtj5SCwN/quCgVoexdQeFUEVRXVxsUmM/3mBdvZKLedtiBDNi9k5kJWFcTl6FsjHLMP2w7YbD3rw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB7041
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Tue, 9 May 2023 15:42:45 +0200
-> On Tue, May 9, 2023 at 3:34 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> >
-> > On Mon, 2023-05-08 at 15:27 -0700, Kuniyuki Iwashima wrote:
-> > > Our Network Load Balancer (NLB) [0] consists of multiple nodes with unique
-> > > IP addresses.  These nodes forward TCP flows from clients to backend
-> > > targets by modifying the destination IP address.  NLB offers an option [1]
-> > > to preserve the client's source IP address and port when routing packets
-> > > to backend targets.
-> > >
-> > > When a client connects to two different NLB nodes, they may select the same
-> > > backend target.  If the client uses the same source IP and port, the two
-> > > flows at the backend side will have the same 4-tuple.
-> > >
-> > >                          +---------------+
-> > >             1st flow     |  NLB Node #1  |   src: 10.0.0.215:60000
-> > >          +------------>  |   10.0.3.4    |  +------------+
-> > >          |               |    :10000     |               |
-> > >          +               +---------------+               v
-> > >   +------------+                                   +------------+
-> > >   |   Client   |                                   |   Target   |
-> > >   | 10.0.0.215 |                                   | 10.0.3.249 |
-> > >   |   :60000   |                                   |   :10000   |
-> > >   +------------+                                   +------------+
-> > >          +               +---------------+               ^
-> > >          |               |  NLB Node #2  |               |
-> > >          +------------>  |   10.0.4.62   |  +------------+
-> > >             2nd flow     |    :10000     |   src: 10.0.0.215:60000
-> > >                          +---------------+
-> > >
-> > > The kernel responds to the SYN of the 2nd flow with Challenge ACK.  In this
-> > > situation, there are multiple valid reply paths, but the flows behind NLB
-> > > are tracked to ensure symmetric routing [2].  So, the Challenge ACK is
-> > > routed back to the 2nd NLB node.
-> > >
-> > > The 2nd NLB node forwards the Challenge ACK to the client, but the client
-> > > sees it as an invalid response to SYN in tcp_rcv_synsent_state_process()
-> > > and finally sends RST in tcp_v[46]_do_rcv() based on the sequence number
-> > > by tcp_v[46]_send_reset().  The RST effectively closes the first connection
-> > > on the target, and a retransmitted SYN successfully establishes the 2nd
-> > > connection.
-> > >
-> > >   On client:
-> > >   10.0.0.215.60000 > 10.0.3.4.10000: Flags [S], seq 772948343  ... via NLB Node #1
-> > >   10.0.3.4.10000 > 10.0.0.215.60000: Flags [S.], seq 3739044674, ack 772948344
-> > >   10.0.0.215.60000 > 10.0.3.4.10000: Flags [.], ack 3739044675
-> > >
-> > >   10.0.0.215.60000 > 10.0.4.62.10000: Flags [S], seq 248180743 ... via NLB Node #2
-> > >   10.0.4.62.10000 > 10.0.0.215.60000: Flags [.], ack 772948344 ... Invalid Challenge ACK
-> > >   10.0.0.215.60000 > 10.0.4.62.10000: Flags [R], seq 772948344 ... RST w/ correct seq #
-> > >   10.0.0.215.60000 > 10.0.4.62.10000: Flags [S], seq 248180743
-> > >   10.0.4.62.10000 > 10.0.0.215.60000: Flags [S.], seq 4160908213, ack 248180744
-> > >   10.0.0.215.60000 > 10.0.4.62.10000: Flags [.], ack 4160908214
-> > >
-> > >   On target:
-> > >   10.0.0.215.60000 > 10.0.3.249.10000: Flags [S], seq 772948343 ... via NLB Node #1
-> > >   10.0.3.249.10000 > 10.0.0.215.60000: Flags [S.], seq 3739044674, ack 772948344
-> > >   10.0.0.215.60000 > 10.0.3.249.10000: Flags [.], ack 3739044675
-> > >
-> > >   10.0.0.215.60000 > 10.0.3.249.10000: Flags [S], seq 248180743 ... via NLB Node #2
-> > >   10.0.3.249.10000 > 10.0.0.215.60000: Flags [.], ack 772948344 ... Forwarded to 2nd flow
-> > >   10.0.0.215.60000 > 10.0.3.249.10000: Flags [R], seq 772948344 ... Close the 1st connection
-> > >   10.0.0.215.60000 > 10.0.3.249.10000: Flags [S], seq 248180743
-> > >   10.0.3.249.10000 > 10.0.0.215.60000: Flags [S.], seq 4160908213, ack 248180744
-> > >   10.0.0.215.60000 > 10.0.3.249.10000: Flags [.], ack 4160908214
-> > >
-> > > The first connection is still alive from the client's point of view.  When
-> > > the client sends data over the first connection, the target responds with
-> > > Challenge ACK.  The Challenge ACK is routed back to the 1st connection, and
-> > > the client responds with Dup ACK, and the target responds to the Dup ACK
-> > > with Challenge ACK, and this continues.
-> > >
-> > >   On client:
-> > >   10.0.0.215.60000 > 10.0.3.4.10000: Flags [P.], seq 772948344:772948349, ack 3739044675, length 5
-> > >   10.0.3.4.10000 > 10.0.0.215.60000: Flags [.], ack 248180744, length 0  ... Challenge ACK
-> > >   10.0.0.215.60000 > 10.0.3.4.10000: Flags [.], ack 3739044675, length 0 ... Dup ACK
-> > >   10.0.3.4.10000 > 10.0.0.215.60000: Flags [.], ack 248180744, length 0  ... Challenge ACK
-> > >   ...
-> > >
-> > > In RFC 5961, Challenge ACK assumes that it will be routed back via an
-> > > asymmetric path to the peer of the established connection.  However, in
-> > > a situation where multiple valid reply paths are tracked, Challenge ACK
-> > > gives a hint to snipe another connection and also triggers the Challenge
-> > > ACK Dup ACK war on the connection.
-> > >
-> > > A new sysctl knob, net.ipv4.tcp_reset_challenge, allows us to respond to
-> > > invalid packets described in RFC 5961 with RST and keep the established
-> > > socket open.
-> >
-> > I did not double check with the RFC, but the above looks like a knob to
-> > enable a protocol violation.
-> >
-> > I'm wondering if the same results could be obtained with a BPF program
-> > instead?
+The existing logic did not properly handle unsuccessful xdp xmit frames,
+this patch revises the logic to return standard error codes (-EBUSY or
+-ENOMEM) on unsuccessful transmit.
 
-XDP could.  But implementing TCP stack like prog could be hard, and more
-than anything, this is actually a corner case (we quite often observe
-this though), so applying such prog for every packet will cause a large
-performance drop.
+Start the xmit of the frame immediately right after configuring the
+tx descriptors.
 
+Fixes: e8a17397180f ("net: fec: correct the counting of XDP sent frames")
+Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 25 ++++++++++++++---------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
 
-> >
-> > IMHO we should avoid adding system wide knobs for such specific use-
-> > case, especially when the controlled behaviour is against the spec.
-> >
-> 
-> Agreed, this patch looks quite suspect to me.
-> 
-> We will then add many more knobs for other similar situations.
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 42ec6ca3bf03..438fc1c3aea2 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3798,8 +3798,7 @@ static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
+ 	entries_free = fec_enet_get_free_txdesc_num(txq);
+ 	if (entries_free < MAX_SKB_FRAGS + 1) {
+ 		netdev_err(fep->netdev, "NOT enough BD for SG!\n");
+-		xdp_return_frame(frame);
+-		return NETDEV_TX_BUSY;
++		return -EBUSY;
+ 	}
+ 
+ 	/* Fill in a Tx ring entry */
+@@ -3813,7 +3812,7 @@ static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
+ 	dma_addr = dma_map_single(&fep->pdev->dev, frame->data,
+ 				  frame->len, DMA_TO_DEVICE);
+ 	if (dma_mapping_error(&fep->pdev->dev, dma_addr))
+-		return FEC_ENET_XDP_CONSUMED;
++		return -ENOMEM;
+ 
+ 	status |= (BD_ENET_TX_INTR | BD_ENET_TX_LAST);
+ 	if (fep->bufdesc_ex)
+@@ -3835,6 +3834,11 @@ static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
+ 	index = fec_enet_get_bd_index(last_bdp, &txq->bd);
+ 	txq->tx_skbuff[index] = NULL;
+ 
++	/* Make sure the updates to rest of the descriptor are performed before
++	 * transferring ownership.
++	 */
++	wmb();
++
+ 	/* Send it on its way.  Tell FEC it's ready, interrupt when done,
+ 	 * it's the last BD of the frame, and to put the CRC on the end.
+ 	 */
+@@ -3844,8 +3848,15 @@ static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
+ 	/* If this was the last BD in the ring, start at the beginning again. */
+ 	bdp = fec_enet_get_nextdesc(last_bdp, &txq->bd);
+ 
++	/* Make sure the update to bdp and tx_skbuff are performed before
++	 * txq->bd.cur.
++	 */
++	wmb();
+ 	txq->bd.cur = bdp;
+ 
++	/* Trigger transmission start */
++	writel(0, txq->bd.reg_desc_active);
++
+ 	return 0;
+ }
+ 
+@@ -3869,17 +3880,11 @@ static int fec_enet_xdp_xmit(struct net_device *dev,
+ 	__netif_tx_lock(nq, cpu);
+ 
+ 	for (i = 0; i < num_frames; i++) {
+-		if (fec_enet_txq_xmit_frame(fep, txq, frames[i]) != 0)
++		if (fec_enet_txq_xmit_frame(fep, txq, frames[i]) < 0)
+ 			break;
+ 		sent_frames++;
+ 	}
+ 
+-	/* Make sure the update to bdp and tx_skbuff are performed. */
+-	wmb();
+-
+-	/* Trigger transmission start */
+-	writel(0, txq->bd.reg_desc_active);
+-
+ 	__netif_tx_unlock(nq);
+ 
+ 	return sent_frames;
+-- 
+2.34.1
 
-I think there is a tacit understanding in RFC that can be applied to
-most situations.  Challenge ACK assumes a asymmetric routing between
-peer vs attacker, but the assumption is not always true, and we have
-a situation where RFC 5961 is rather harmful.
-
-There is some knobs to switch on/off RFC behaviour.  We just want to
-disable RFC 5961 here.
-
-
-> Network Load Balancers can be tricky to implement right.
-> 
-> We should not have to tweak many TCP stacks just because of one implementation.
-> 
-> Maglev (one of the load balancers used at Google) never asked for a
-> modification of a TCP stack.
-
-I'm reading this Maglev paper ( https://research.google/pubs/pub44824/ )
-and the notable difference is that our Network Load Balancer does not
-support DSR and ensure symmetric routing so that the response can be
-filtered based on customer's configuration (of Security Group).
-
-This issue can be caused generally, but I'll leave the explanation to
-Jon.
-
-
-> 
-> I think such a change would need IETF discussion and approval first.
-
-CCing Yoshi from TCPM WG, I'm discussing this topic with him.
 
