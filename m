@@ -1,74 +1,74 @@
-Return-Path: <netdev+bounces-1154-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1155-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4775A6FC5C3
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 14:03:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 99CD06FC5C4
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 14:04:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 10DF828111B
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:03:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6010E280E0B
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:04:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6E90182B5;
-	Tue,  9 May 2023 12:02:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A68B182AA;
+	Tue,  9 May 2023 12:03:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA724182A1
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 12:02:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D41F171C7
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 12:03:05 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E25D1A4
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 05:02:47 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548CFDC
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 05:03:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683633766;
+	s=mimecast20190719; t=1683633783;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=aU43Qs7UjsRBZNgfEytJf+FfsXtk10SwHaLmkca1aWQ=;
-	b=N3OmVEV7P7/ryxlX8+vfnilhOu/wlvuiFFtSQKBOyvKYi6LBlh72t89A9av69Q7SwcNu1y
-	/DZusufYhAiInQGPnyQZTFGUQFjxQxA5GCQChkhXhYweeDCqtcOiraV4EgYvf2Pv51f+Ui
-	+OlxTACEjmyabNS0idASH3qaNIW9ngY=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=phVfwRZ8/EVKTr1sC/M7k87pKle89PDg77IQ7sjzskY=;
+	b=QBjGJLzUvi2LcvoyCinOYrYQq3lqnjiQ4gatngznf+0vpTq2w7azy5u4L0kcIhasA0NN+P
+	OK43/N+A6pvXRESvlyFd2pY0JSf3iKpy5tvFCEmNldcdEBwCywKJ1tHa62hY+CIJjvVhEe
+	gnMeQVKJHouhSnpfyaziSLcZFcFLfxI=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-195-17hI4DOLOqC6fMGGUXj3Og-1; Tue, 09 May 2023 08:02:44 -0400
-X-MC-Unique: 17hI4DOLOqC6fMGGUXj3Og-1
-Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-3062e5d0cd3so2299263f8f.3
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 05:02:44 -0700 (PDT)
+ us-mta-623-xR33W2e0OxWOpLFANZplUg-1; Tue, 09 May 2023 08:03:00 -0400
+X-MC-Unique: xR33W2e0OxWOpLFANZplUg-1
+Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-3064d0b726fso1987332f8f.0
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 05:03:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683633762; x=1686225762;
+        d=1e100.net; s=20221208; t=1683633779; x=1686225779;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=aU43Qs7UjsRBZNgfEytJf+FfsXtk10SwHaLmkca1aWQ=;
-        b=HDO98Cb4pwhraOYRw3908rwqL74sdXT6ikM8IiSeHQQbdoc8aUbnj84tYPyK5enHdy
-         Srop0gfH/vfObf9FUgxvrhmyKoVrc16rtr/RKhNSmP7apRwLR70av5BTWOooEgB0JoG+
-         9ZzujmPumuWwzaG1tgrj2UiOcFCUad6+bQzdGjnQQzkvNsiTKMbUQcSIaO5nsglfHToc
-         yc9h8AKtfRL/xgNZI47e5q80YrBM362qr2YIRPV9SkPBtwz5xUuF7GARVjsU7KivWSYI
-         xs5GqBRJJumQlBc94lI07twiE2032Iem41+b/fWtENuIWkOt0KAXppGdOQa2BHZBM5mK
-         Uc5Q==
-X-Gm-Message-State: AC+VfDwfMXCR7k5Avq0+PNSsWlVT1upUpHmwnhU1PttuSp1ERnuJx949
-	bWtmpDMbD/b5VlM/MuEWi75t/skLdJdiAW2lEuDGYGT+6eAEjQ2vGT98rXV13O9Hmnfp7KNoUyL
-	qJMjhQvdSEaEk3A4X
-X-Received: by 2002:a5d:6e81:0:b0:306:2f8e:d25f with SMTP id k1-20020a5d6e81000000b003062f8ed25fmr9368916wrz.16.1683633762411;
-        Tue, 09 May 2023 05:02:42 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4PTc5BY7ay8+iZ6sF3vJzLijurw+woZq5XJFqrWHJ0I/mcBHLjJ/doZcQ7mRNxv97vU1IXBw==
-X-Received: by 2002:a5d:6e81:0:b0:306:2f8e:d25f with SMTP id k1-20020a5d6e81000000b003062f8ed25fmr9368901wrz.16.1683633762148;
-        Tue, 09 May 2023 05:02:42 -0700 (PDT)
+        bh=phVfwRZ8/EVKTr1sC/M7k87pKle89PDg77IQ7sjzskY=;
+        b=HGUtO1qOUlLH88Dlf4yE2Ku/aPECsXGYthJbC05KKuMkcpQ51/vqjsgwM0O9QP+o/v
+         RRXE5YXL/W3wG9EOIr1ymw8q7RC6vVKAQQLyfjY86goyffK1H2wWHo/GGAkczJ5xlGy9
+         eJKCay7wGQWy+g7v826E58/pKc4Vo95+p45+qqRil8nEJJo5CvuVefPC8ZEmjNaXXFwL
+         eecfjdE+eAri/kC4hR+UCjcRQSEJROP+FktdZuRkCM4EDb79box83SSJQubhI0cDjkiU
+         6oJR7bflZlgPtjHHLPeVpktjPVSca+viWY0qrG4tCUSkJClsUjdL3BfYZguU4epAvGFP
+         gGEw==
+X-Gm-Message-State: AC+VfDxzxg0KpKhs2JDdMIHmytgujxwR4kBcO6PhQ0yL7jI8yQpMVKoI
+	Pdqkju72/t7hoCfs148tGR0lOIAQ6XybIcPAtANJCbXX48aV290b3oCZr2A6zSrMA+Dgrhyp1wK
+	URgDBPq9Jk20C916B
+X-Received: by 2002:a05:6000:510:b0:306:2fab:1f81 with SMTP id a16-20020a056000051000b003062fab1f81mr10427048wrf.21.1683633779285;
+        Tue, 09 May 2023 05:02:59 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7l2PPRovFyrt17RCorDlvUnSgEiqO1L1oY1hom87xiwkqJs7ByDI52VSRYOR9daUh8l86WIA==
+X-Received: by 2002:a05:6000:510:b0:306:2fab:1f81 with SMTP id a16-20020a056000051000b003062fab1f81mr10427006wrf.21.1683633778545;
+        Tue, 09 May 2023 05:02:58 -0700 (PDT)
 Received: from debian (2a01cb058918ce005a3b5dcb9dbff7d2.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:5a3b:5dcb:9dbf:f7d2])
-        by smtp.gmail.com with ESMTPSA id h1-20020a5d5481000000b0030647d1f34bsm14351106wrv.1.2023.05.09.05.02.41
+        by smtp.gmail.com with ESMTPSA id x14-20020adfec0e000000b002ca864b807csm14360308wrn.0.2023.05.09.05.02.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 05:02:41 -0700 (PDT)
-Date: Tue, 9 May 2023 14:02:39 +0200
+        Tue, 09 May 2023 05:02:58 -0700 (PDT)
+Date: Tue, 9 May 2023 14:02:56 +0200
 From: Guillaume Nault <gnault@redhat.com>
 To: David Miller <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>
 Cc: netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>
-Subject: [PATCH net-next 4/4] selftests: fcnal: Test SO_DONTROUTE on raw and
- ping sockets.
-Message-ID: <b2c3102805fafa2bd935ab8119af9229cb81f25c.1683626501.git.gnault@redhat.com>
+Subject: [PATCH net-next 3/4] selftests: fcnal: Test SO_DONTROUTE on UDP
+ sockets.
+Message-ID: <a98b35c89bcf78535986a1a122542bc008b92c6b.1683626501.git.gnault@redhat.com>
 References: <cover.1683626501.git.gnault@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -86,47 +86,47 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use ping -r to test the kernel behaviour with raw and ping sockets
-having the SO_DONTROUTE option.
-
-Since ipv4_ping_novrf() is called with different values of
-net.ipv4.ping_group_range, then it tests both raw and ping sockets
-(ping uses ping sockets if its user ID belongs to ping_group_range
-and raw sockets otherwise).
-
-With both socket types, sending packets to a neighbour (on link) host,
+Use nettest -G to test the kernel behaviour with UDP sockets having the
+SO_DONTROUTE option. Sending packets to a neighbour (on link) host,
 should work. When the host is behind a router, sending should fail.
 
 Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ tools/testing/selftests/net/fcnal-test.sh | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
 diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 23672cba8781..3321d1971bd8 100755
+index 1f8939fbb021..23672cba8781 100755
 --- a/tools/testing/selftests/net/fcnal-test.sh
 +++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -584,6 +584,20 @@ ipv4_ping_novrf()
- 		log_test_addr ${a} $? 0 "ping out, address bind"
- 	done
- 
+@@ -1655,6 +1655,27 @@ ipv4_udp_novrf()
+ 	log_start
+ 	run_cmd nettest -D -d ${NSA_DEV} -r ${a}
+ 	log_test_addr ${a} $? 2 "No server, device client, local conn"
++
 +	#
-+	# out, but don't use gateway if peer is not on link
++	# Link local connection tests (SO_DONTROUTE).
++	# Connections should succeed only when the remote IP address is
++	# on link (doesn't need to be routed through a gateway).
 +	#
++
 +	a=${NSB_IP}
 +	log_start
-+	run_cmd ping -c 1 -w 1 -r ${a}
-+	log_test_addr ${a} $? 0 "ping out (don't route), peer on link"
++	run_cmd_nsb nettest -D -s &
++	sleep 1
++	run_cmd nettest -D -r ${a} -G
++	log_test_addr ${a} $? 0 "SO_DONTROUTE client"
 +
 +	a=${NSB_LO_IP}
 +	log_start
-+	show_hint "Fails since peer is not on link"
-+	run_cmd ping -c 1 -w 1 -r ${a}
-+	log_test_addr ${a} $? 1 "ping out (don't route), peer not on link"
-+
- 	#
- 	# in
- 	#
++	show_hint "Should fail 'Network is unreachable' since server is not on link"
++	run_cmd_nsb nettest -D -s &
++	sleep 1
++	run_cmd nettest -D -r ${a} -G
++	log_test_addr ${a} $? 1 "SO_DONTROUTE client"
+ }
+ 
+ ipv4_udp_vrf()
 -- 
 2.30.2
 
