@@ -1,33 +1,33 @@
-Return-Path: <netdev+bounces-1044-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1045-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 09F126FC003
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:06:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D70BE6FC00A
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:06:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BD0AF281222
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 07:06:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2ECD4281260
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 07:06:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1157B5660;
-	Tue,  9 May 2023 07:06:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6D2B5673;
+	Tue,  9 May 2023 07:06:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0520B37F
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 07:06:15 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2067.outbound.protection.outlook.com [40.107.223.67])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6B5D06B
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 00:06:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 958305672
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 07:06:17 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2060.outbound.protection.outlook.com [40.107.223.60])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922714ECB
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 00:06:13 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BhNiEKpgEfhy4dM4ewdhGmyAvFXgEM7ochEpJK0LnAjX6FnntAdYWhb0WHljv+rrX0hnmvF06xbZAtWy96csE5aPl9UKGC2b/7eNoB6K+LYOku4AdbRcsnnQ6Nw3/ApcsDwsJr9R/WRNNJfT7FiF1OftQxsdgeZqNOUEWZNuO01+pu+2nHmvGpRWMVmj4isrmSxly+hAZuuKIXNZzXInjIkHSMl+I0KhT1NpqDf6Almitiarl2ZSUwUySt12yQRR5mHPEhfZr6E5o6nu8YrhLj+A6xbnGfnmD2GeMNhbvfddP5RCpHBwKv2KVqt9PzuCdeMJIAwCsfDNlEUe+24Ibg==
+ b=aFs8/rFZwxYqVM+Afb6o/Z6cKPgT13xa5M7zfBuNe2W1khiZD9CmMOYXQpujKzpMFmICHjYUGPhaskTDmPh84PSwQ7joG0KrV0GxrPoz21kIrRlKx5nJ7MZy7+DsWJ9mkKVK9e8CtIVLvQW4qGNS8F5UF6pPl3B7Ala/HdxRrSZ9jKro1t2I/WHR+g1OjmuYcPglzoBfsYaqzcDVb9h0vwwqzbqG/Cstqp3urPpsA+200XO7QBJuPFj9lNclDBcw79hgeAbsYieNqHLqdvA+u2iZultO8v8MWe6P6Lcq9BA2Ok6z7Evd0HxC1+FTH5Z+I1rujvWTPNdHxY6frTKyOQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6TIjxJR5nEgrLBIjqCwCmj9E2f2IuflkzKuyuQwFg0g=;
- b=Vm1dcmy7Zze3RY1PbIXRDlP1i7UtRM/y/137kAw4inV3dX9y4ildOb6W/QXfWTpADmM9BD98ytFmBM6uFy8u8twDbO5EfDGk5Db49x6itK3PCrTS9m3oVScpgddwIS4l/PRYCpJUc7Sox91sHzYk0PUSORwEPK4tkUNz6hYatxLYvq5LB9t6dEjb2WyZUd9eHUbAsT3pjbvFFp/cIqU8WnZePtoyLMtU3GMtlKWlE8NM7KdeMfQP0YgJHFYP58Bj30DIoVfEeH3eWkCiq6DEjN/XjznqZckeFpnNY4MThOkn+vXj8kwQWLKZqXQYBuvB4Q7trLVaX6/8O8AYYZ8ELQ==
+ bh=+JC35ro7zE3aai5AM0voSy7JdBNhtLPukhKGob/b1U8=;
+ b=KnV7e99/SEYbtD9mqVxxjHM0RyhCvPn6xkmE22poNgjeAc5wUgDkyib+rCWC2gOcQ/TlLRz1x2+a9litV+3a2lhiuR7OzxGgjURoXMeLrInyvesBQEm0nX0Nt3SFXdz2/HI6UXZo5IsomeQLmiKbFoz5QrFumP0b5R/E1NyrI/yVg0pEF15yyJLmFc41pOYIf0pWz6PG4fTj4JZStGBfKp43i4vU+YxeSA3sFvjc6wGdlz5Y733ml52mG28+VbV3o4BU2NvlBaPOczU3IYszHMvIo/rrT5u11NRFl2r6NOdMyr+WL3xt56toIcY4/JNYIiFWwHtJM6BzrzvSR7E3xg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -35,18 +35,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6TIjxJR5nEgrLBIjqCwCmj9E2f2IuflkzKuyuQwFg0g=;
- b=kMhsp4EB3ieEsu60uNmJVnNNkBQz/p1L4vGQmennogTAO/PN0MYTfuA80sGnrWRSOBuy+1NcbjgjdkZGI8adnscY+agV6f+GMZrgZJTOPfJ1M2uFzW46AIqbIvQSea+4wJeuLHgUyh6rmRGAeEiQIrcmjKPkamfYkGSqE2dwoVCkOReEwyQEBnAyYLoBUFTrWLLjt0xs++dixJrtHp6xPkcf6DngeW8ZD+yt8Cmxi+0XgQN3ySlPyT2FbF1LDpPd4nf2ZqDq0g/ymULnouuRYuYvejL2Qdn9JO+csz5ZNvgVWxL8HdK6nQygft9+URv+Z5e7zGILD2Cld07zSOmaXg==
-Received: from DM6PR13CA0020.namprd13.prod.outlook.com (2603:10b6:5:bc::33) by
- IA0PR12MB8932.namprd12.prod.outlook.com (2603:10b6:208:492::18) with
+ bh=+JC35ro7zE3aai5AM0voSy7JdBNhtLPukhKGob/b1U8=;
+ b=Xzz6k4KpR3vTW8H6Kezt8Zk6zNTiFJwH42z5yo4GUk3pbs4pLcDvwCsSi5eUp/WuQgz+kIDe+PhgA1h532JKPWK5Md9kcZoTgf3vjITjawNWOewP6EUWxiBk3UV9rRqpAuWaFFYw7zXbN5Tmhe8T7dXijqzryDbELs1HuV2PID7tDje0+KSYbFpTI72vmgmXzK5MV9FFXCdQBGph1b6ITtbCn+xS/+zt/NlA3q0e9XbyRUkkczJNx31LfX53RkMZbmdtlUzA3L1HDQP51a8pNe9TXRq/aZdNLTMVlbmih8o8iBjNhmcbycfLnv55tWk2hYl66ILh94diR/hurgUdCw==
+Received: from DM6PR11CA0023.namprd11.prod.outlook.com (2603:10b6:5:190::36)
+ by SJ2PR12MB7989.namprd12.prod.outlook.com (2603:10b6:a03:4c3::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Tue, 9 May
- 2023 07:06:07 +0000
-Received: from DM6NAM11FT009.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:bc:cafe::e9) by DM6PR13CA0020.outlook.office365.com
- (2603:10b6:5:bc::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.18 via Frontend
- Transport; Tue, 9 May 2023 07:06:07 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.33; Tue, 9 May
+ 2023 07:06:09 +0000
+Received: from DM6NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:190:cafe::f0) by DM6PR11CA0023.outlook.office365.com
+ (2603:10b6:5:190::36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.33 via Frontend
+ Transport; Tue, 9 May 2023 07:06:09 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -54,26 +54,26 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT009.mail.protection.outlook.com (10.13.173.20) with Microsoft SMTP
+ DM6NAM11FT017.mail.protection.outlook.com (10.13.172.145) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6363.32 via Frontend Transport; Tue, 9 May 2023 07:06:07 +0000
+ 15.20.6363.33 via Frontend Transport; Tue, 9 May 2023 07:06:09 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 9 May 2023
- 00:05:50 -0700
+ 00:05:53 -0700
 Received: from dev-r-vrt-155.mtr.labs.mlnx (10.126.230.37) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Tue, 9 May 2023 00:05:45 -0700
+ 15.2.986.37; Tue, 9 May 2023 00:05:50 -0700
 From: Ido Schimmel <idosch@nvidia.com>
 To: <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>
 CC: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
 	<edumazet@google.com>, <razor@blackwall.org>, <roopa@nvidia.com>,
 	<jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
 	<petrm@nvidia.com>, <taspelund@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 1/5] skbuff: bridge: Add layer 2 miss indication
-Date: Tue, 9 May 2023 10:04:42 +0300
-Message-ID: <20230509070446.246088-2-idosch@nvidia.com>
+Subject: [RFC PATCH net-next 2/5] net/sched: flower: Allow matching on layer 2 miss
+Date: Tue, 9 May 2023 10:04:43 +0300
+Message-ID: <20230509070446.246088-3-idosch@nvidia.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230509070446.246088-1-idosch@nvidia.com>
 References: <20230509070446.246088-1-idosch@nvidia.com>
@@ -90,26 +90,26 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT009:EE_|IA0PR12MB8932:EE_
-X-MS-Office365-Filtering-Correlation-Id: 77772b1d-3c55-47fe-b6f1-08db505bdc9d
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT017:EE_|SJ2PR12MB7989:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4af5a835-ed2f-4c38-c303-08db505bdd92
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	z5OSBq5KyrP5OoQKwjIngpI0kFeNKzz7LNVmB0MlwiCi+j1bMgg9lv951SYr5JfZ3AWQ8gOGIo/ftPSONbkf1GWK8v+bddblrKfMNNVI6s+PUKkcrdOkHBfmceXDP62B1z1+JYvrRmhl/2WSg51VKBEHGXSsBlYfpOMv8fpydIZ4bgg3x+I03eJD2ZO28VNt16hx9VQ59gpOXaDQxSc4hszPgMqPWHcoGbVH67tKg/RzNiAZj5uoDFgXIA0USn+Q+0YdHY2xKT/gM9DvDMNJ98dtkZtOukZE3vmSNBkUst3rcHw2GS7AsAQG5iSuEBqQa9cdee6CXG26llc83JFeAdpFpeoI2QOzVM/3L55FELMg1AzQ2Rq26lg8cUtI9mjLM1g+ipFFUpTg+PZpjE65pr9lakNgNMyKcXV3xKpYb0YshxriA54l0EfpnP3tlbOSHyr3/hJfgfZqTk0NqtU3m1+Oeyaf28froFJgG4B3eOPzdCmkNOmfaccFNI/ssQI9NkTTgrY+LZUF7bdS86FX24CGx1axbPfDjK9bKBvWEiimabV5ba+rQ2z/EHvLNom8B8tF13SYygcJBlNXKryIuerch9ds53XMYkiSHhj/I35WCjkcVLLbV+anrS4li8fxQ7V9wDShEDSd+tsgPF73e+R5B95axfd222jc8TI7cK0ZWmzTltdKsN1jNXO+ZwzyQHBoBptMj/F/i+3xkyMS4QlaadpA//aZ5D+ZFpeqESM=
+	PybAgxlKQH0VjUZUMA3vOqEHBuNeJZBIJuvgJhkpxgOAiaTD/WqK4JrYiHOIael5Gz4dz7kQOKk/ovtN2WKzNT3UTH39CxKTdxNcT7Bg6UDnpRrNOvFCU1rPZbBL+S36Utj23B12obJwX278QVtajhyG65QG+9gp+eFw6dUcw/BdYSax8ctuU71JnutnpcFiUggOu2ddhc0HsnKdVIc+svSoZ8+srI6NTmujxQzXGWSRgGZqHaFXbI3tgpglDX0rhgV/TKxq+wXazEX5gqIMzxE7GL/Q85HBFWU1h1YUfiOgDN8V+w+STse35xUUyzd4ecUiZPK+tg2kWty6eqf03WHv2rGU5//KKn7dDZtdzRUP5PnFBqVUyNEd0ThSSqNjrGv5a7zOVOz4Ni7pvQ+Z5eRDYsdgiO4oZyKW+WhmQJQyURES+bk9Cqzj4LUCobSEehhSDt1K3cMOxXkrwDS8ZDS3vUKYMDUnioivWvooBdGKxVQeGIw3NrbcjWyQ+ezZjFV9Ngn4AQQDhI7gfBRNQn2ZBG7aMQwTSB44hUjrEyudowOsp1uduzButiyXeZSRFcsj+SpgZaZbGakNz3TaKauj+noYVTEyW8hGzqyx5x7zCR0Dgu8JgmtkFlq6FU5/zTBnkGoDtyzACUmIMvxZ9M+qzb5RctppLuOfHS7cjPfjYkphigJh4Uv8767zPpayMr5xYaSONfLC77z5MMoaRw==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(376002)(136003)(396003)(451199021)(46966006)(36840700001)(40470700004)(2616005)(478600001)(83380400001)(426003)(110136005)(7416002)(36860700001)(336012)(40480700001)(41300700001)(4326008)(107886003)(5660300002)(8676002)(6666004)(2906002)(8936002)(47076005)(54906003)(82310400005)(36756003)(40460700003)(186003)(316002)(82740400003)(1076003)(70586007)(70206006)(86362001)(26005)(7636003)(16526019)(356005)(21314003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(136003)(346002)(396003)(451199021)(40470700004)(46966006)(36840700001)(54906003)(86362001)(478600001)(110136005)(82310400005)(41300700001)(70586007)(316002)(70206006)(40460700003)(83380400001)(6666004)(36756003)(4326008)(8936002)(8676002)(7416002)(5660300002)(7636003)(82740400003)(356005)(107886003)(1076003)(26005)(186003)(16526019)(36860700001)(2906002)(336012)(426003)(47076005)(2616005)(40480700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2023 07:06:07.5064
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2023 07:06:09.1279
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77772b1d-3c55-47fe-b6f1-08db505bdc9d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4af5a835-ed2f-4c38-c303-08db505bdd92
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT009.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT017.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8932
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7989
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
 	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -118,112 +118,109 @@ X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Allow the bridge driver to mark packets that did not match a layer 2
-entry during forwarding by adding a 'l2_miss' bit to the skb.
-
-Clear the bit whenever a packet enters the bridge (received from a
-bridge port or transmitted via the bridge) and set it if the packet did
-not match an FDB/MDB entry.
-
-Subsequent patches will allow the flower classifier to match on this
-bit. The motivating use case in non-DF (Designated Forwarder) filtering
-where we would like to prevent decapsulated packets from being flooded
-to a multi-homed host.
-
-Do not allocate the bit if the kernel was not compiled with bridge
-support and place it after the two bit fields in accordance with commit
-4c60d04c2888 ("net: skbuff: push nf_trace down the bitfield"). The bit
-does not increase the size of the structure as it is placed at an
-existing hole. Layout with allmodconfig:
-
-struct sk_buff {
-[...]
-			__u8       csum_not_inet:1;      /*   132: 3  1 */
-			__u8       l2_miss:1;            /*   132: 4  1 */
-
-			/* XXX 3 bits hole, try to pack */
-			/* XXX 1 byte hole, try to pack */
-
-			__u16      tc_index;             /*   134     2 */
-			u16        alloc_cpu;            /*   136     2 */
-[...]
-} __attribute__((__aligned__(8)));
+Add the 'TCA_FLOWER_L2_MISS' netlink attribute that allows user space to
+match on packets that encountered a layer 2 miss. The miss indication is
+set as metadata in the skb by the bridge driver upon FDB/MDB lookup
+miss.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- include/linux/skbuff.h  | 4 ++++
- net/bridge/br_device.c  | 1 +
- net/bridge/br_forward.c | 3 +++
- net/bridge/br_input.c   | 1 +
- 4 files changed, 9 insertions(+)
+ include/net/flow_dissector.h |  2 ++
+ include/uapi/linux/pkt_cls.h |  2 ++
+ net/core/flow_dissector.c    |  3 +++
+ net/sched/cls_flower.c       | 14 ++++++++++++--
+ 4 files changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 738776ab8838..c7a84767ed48 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -801,6 +801,7 @@ typedef unsigned char *sk_buff_data_t;
-  *	@encap_hdr_csum: software checksum is needed
-  *	@csum_valid: checksum is already valid
-  *	@csum_not_inet: use CRC32c to resolve CHECKSUM_PARTIAL
-+ *	@l2_miss: Packet did not match an L2 entry during forwarding
-  *	@csum_complete_sw: checksum was completed by software
-  *	@csum_level: indicates the number of consecutive checksums found in
-  *		the packet minus one that have been verified as
-@@ -991,6 +992,9 @@ struct sk_buff {
- #if IS_ENABLED(CONFIG_IP_SCTP)
- 	__u8			csum_not_inet:1;
- #endif
-+#if IS_ENABLED(CONFIG_BRIDGE)
-+	__u8			l2_miss:1;
-+#endif
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index 85b2281576ed..8b41668c77fc 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -243,10 +243,12 @@ struct flow_dissector_key_ip {
+  * struct flow_dissector_key_meta:
+  * @ingress_ifindex: ingress ifindex
+  * @ingress_iftype: ingress interface type
++ * @l2_miss: packet did not match an L2 entry during forwarding
+  */
+ struct flow_dissector_key_meta {
+ 	int ingress_ifindex;
+ 	u16 ingress_iftype;
++	u8 l2_miss;
+ };
  
- #ifdef CONFIG_NET_SCHED
- 	__u16			tc_index;	/* traffic control index */
-diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index 8eca8a5c80c6..91dbdae4afd4 100644
---- a/net/bridge/br_device.c
-+++ b/net/bridge/br_device.c
-@@ -39,6 +39,7 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 	u16 vid = 0;
+ /**
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index 648a82f32666..00933dda7b10 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -594,6 +594,8 @@ enum {
  
- 	memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
-+	skb->l2_miss = 0;
+ 	TCA_FLOWER_KEY_L2TPV3_SID,	/* be32 */
  
- 	rcu_read_lock();
- 	nf_ops = rcu_dereference(nf_br_ops);
-diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
-index 57744704ff69..5893648c4da2 100644
---- a/net/bridge/br_forward.c
-+++ b/net/bridge/br_forward.c
-@@ -203,6 +203,8 @@ void br_flood(struct net_bridge *br, struct sk_buff *skb,
- 	struct net_bridge_port *prev = NULL;
- 	struct net_bridge_port *p;
- 
-+	skb->l2_miss = 1;
++	TCA_FLOWER_L2_MISS,		/* u8 */
 +
- 	list_for_each_entry_rcu(p, &br->port_list, list) {
- 		/* Do not flood unicast traffic to ports that turn it off, nor
- 		 * other traffic if flood off, except for traffic we originate
-@@ -295,6 +297,7 @@ void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
- 			allow_mode_include = false;
- 	} else {
- 		p = NULL;
-+		skb->l2_miss = 1;
+ 	__TCA_FLOWER_MAX,
+ };
+ 
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 25fb0bbc310f..3776c7bdd228 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -241,6 +241,9 @@ void skb_flow_dissect_meta(const struct sk_buff *skb,
+ 					 FLOW_DISSECTOR_KEY_META,
+ 					 target_container);
+ 	meta->ingress_ifindex = skb->skb_iif;
++#if IS_ENABLED(CONFIG_BRIDGE)
++	meta->l2_miss = skb->l2_miss;
++#endif
+ }
+ EXPORT_SYMBOL(skb_flow_dissect_meta);
+ 
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 9dbc43388e57..4eb06c6367fc 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -615,7 +615,8 @@ static void *fl_get(struct tcf_proto *tp, u32 handle)
+ }
+ 
+ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
+-	[TCA_FLOWER_UNSPEC]		= { .type = NLA_UNSPEC },
++	[TCA_FLOWER_UNSPEC]		= { .strict_start_type =
++						TCA_FLOWER_L2_MISS },
+ 	[TCA_FLOWER_CLASSID]		= { .type = NLA_U32 },
+ 	[TCA_FLOWER_INDEV]		= { .type = NLA_STRING,
+ 					    .len = IFNAMSIZ },
+@@ -720,7 +721,7 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
+ 	[TCA_FLOWER_KEY_PPPOE_SID]	= { .type = NLA_U16 },
+ 	[TCA_FLOWER_KEY_PPP_PROTO]	= { .type = NLA_U16 },
+ 	[TCA_FLOWER_KEY_L2TPV3_SID]	= { .type = NLA_U32 },
+-
++	[TCA_FLOWER_L2_MISS]		= NLA_POLICY_MAX(NLA_U8, 1),
+ };
+ 
+ static const struct nla_policy
+@@ -1668,6 +1669,10 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
+ 		mask->meta.ingress_ifindex = 0xffffffff;
  	}
  
- 	while (p || rp) {
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index fc17b9fd93e6..d8ab5890cbe6 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -334,6 +334,7 @@ static rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
- 		return RX_HANDLER_CONSUMED;
++	fl_set_key_val(tb, &key->meta.l2_miss, TCA_FLOWER_L2_MISS,
++		       &mask->meta.l2_miss, TCA_FLOWER_UNSPEC,
++		       sizeof(key->meta.l2_miss));
++
+ 	fl_set_key_val(tb, key->eth.dst, TCA_FLOWER_KEY_ETH_DST,
+ 		       mask->eth.dst, TCA_FLOWER_KEY_ETH_DST_MASK,
+ 		       sizeof(key->eth.dst));
+@@ -3074,6 +3079,11 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
+ 			goto nla_put_failure;
+ 	}
  
- 	memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
-+	skb->l2_miss = 0;
- 
- 	p = br_port_get_rcu(skb->dev);
- 	if (p->flags & BR_VLAN_TUNNEL)
++	if (fl_dump_key_val(skb, &key->meta.l2_miss,
++			    TCA_FLOWER_L2_MISS, &mask->meta.l2_miss,
++			    TCA_FLOWER_UNSPEC, sizeof(key->meta.l2_miss)))
++		goto nla_put_failure;
++
+ 	if (fl_dump_key_val(skb, key->eth.dst, TCA_FLOWER_KEY_ETH_DST,
+ 			    mask->eth.dst, TCA_FLOWER_KEY_ETH_DST_MASK,
+ 			    sizeof(key->eth.dst)) ||
 -- 
 2.40.1
 
