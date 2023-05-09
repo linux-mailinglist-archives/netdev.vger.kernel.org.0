@@ -1,262 +1,240 @@
-Return-Path: <netdev+bounces-1097-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1098-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5B7DD6FC2B4
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 11:23:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 175116FC2B7
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 11:26:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7AB171C20AD8
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:23:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 403A11C20919
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:25:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5648E8C07;
-	Tue,  9 May 2023 09:23:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EFEDEAD35;
+	Tue,  9 May 2023 09:25:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D8FF3FFE
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 09:23:40 +0000 (UTC)
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2AC10E50
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 02:23:16 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA8CE8839
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 09:25:57 +0000 (UTC)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCC7199F;
+	Tue,  9 May 2023 02:25:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683624196; x=1715160196;
+  t=1683624355; x=1715160355;
   h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=b/pMi7eVKjNk7D+EXIiQrSnx9NrGfJklwUfX2OqfpPA=;
-  b=U4Sjhf6q3X9Bv+aSl8U4L0fepTU1ExCom+9ZWyVLoiJgO7DdypF6mOoP
-   MV+eaYnOEp4ic8qDCCYElARK8lzKjCdd/smIPUSQmHh4TiluMgTDnl607
-   gANLFRJsxvv8c0MnTl0GHQv/Z2RRXdgF2AUAAoQSYZIj2ITTPKIs4jCxI
-   g1F4ia6HKhf7B+ru8suCLqTI30ADJgA3ir9IdMysopW6DFf6QG6bvrYl2
-   dCQjtc+WT9DUTiHniiGlPy0qb9vBFDtaG6dbqBpaEJ7DuhJHJIx+LQk0a
-   49ATtDL4R/cQgsFiB175eKFoY3GuNWg1qsZielXCLiKobs4Yn8+gX6exX
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="329486431"
+   mime-version:in-reply-to;
+  bh=ZUjtGLtCp5bmDtgxpBnRsLLbwrRUEv9l+1hvqKxDfhM=;
+  b=jiakkmrm8p3f5JO/BwMlC+DbsugIGTigoTy9/J5COLQ4bUBVWwxGATxq
+   3jmvWItY249Dcw7AMSemyKKZ7OqI3z2XfntwOOpWHK+7Pr6T2vINVERF3
+   TtTg4dATHIJ/q7UiFlefehblLjDw1gVBTu/FQdsiGt6pKXbiYyqWikkBc
+   ffBBh9THl68oKEXbw6oZpb7d4OOoj7zRb1ZB+wIJH9Y85eSQcGvtXQtV4
+   ioBJHcWjNqWTnFHdteje1wt325sWFekQjtwAStyDslj5cp5lyoG1LG5J8
+   NnJNqdr1C18Gq+xCeltSk6dRyKJOote1g4cydeAH9nw4U5X13Yq4Sfiyt
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="352035491"
 X-IronPort-AV: E=Sophos;i="5.99,261,1677571200"; 
-   d="scan'208";a="329486431"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 02:23:00 -0700
+   d="scan'208";a="352035491"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 02:25:54 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="768407425"
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="729425778"
 X-IronPort-AV: E=Sophos;i="5.99,261,1677571200"; 
-   d="scan'208";a="768407425"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga004.fm.intel.com with ESMTP; 09 May 2023 02:22:56 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 9 May 2023 02:22:55 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Tue, 9 May 2023 02:22:55 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Tue, 9 May 2023 02:22:55 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DR3es6dg1T4yIUtCKzUJDx+3/VYFAeaXunjAqEcq+L8/f5MfRQNNz0tRVWkqooi76OmuWzgo7czpc1UYux56VF6HV86LwfqkckuWEMkycSsaNHfWLe4+UDG+Nk6WZHDzSvidA+zalHCxI7PKyONOsQZTjEm56n3CUkICTwOEJ77cnCliJZpPVuCe+XVmodhEBMM8labKnykhadXpUMfI6LjnpZuYC2X3eSiehWBHk+vk8NJiM+K0Jy+6DGenhg9UbRzd30boMOPQO1Tdw+6vE/Hxbi8HuH2qceqtbi6O/631L80J2FIJp+iq28GsmHNGmBclPYoG3ewp/ykAyGYDmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=05n3fvOc0GsNC+NVynZtWUwLopFI+rI4wv6mrKoR04w=;
- b=VjuFRproNf3qTQM0yflFs+A6ySgQTqCrLBtW5hnma/IQly3NEzRL9PKpnvBPOmplwwfxT1jqateQJlM6gjqnT8tjdWiCkG/ivD1puFcqfOVqThzrrW7AikpnJc4m8M3da75JxAjmV6ZMsQkTe8qaCtlX02vIg62CHT1vrkWsPLvIkgm81Aifbi6dFBAuTPlSfrWJhzu1RBox0PpC0LyFPxahvOSGIcChNu8Oti1fxLujo3uVmXslrJzNt+IvC2zuZJKUKLNaEZcNqioOjlaDXXJ/ajegHJC7Zm06KK3jOAfukWxcjunuHZDxDk1xw2acrxK6xK3ThWj6N3Zvyzz8QA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB7471.namprd11.prod.outlook.com (2603:10b6:510:28a::13)
- by DS0PR11MB7288.namprd11.prod.outlook.com (2603:10b6:8:13b::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Tue, 9 May
- 2023 09:22:53 +0000
-Received: from PH0PR11MB7471.namprd11.prod.outlook.com
- ([fe80::ee76:10c6:9f42:9ed9]) by PH0PR11MB7471.namprd11.prod.outlook.com
- ([fe80::ee76:10c6:9f42:9ed9%4]) with mapi id 15.20.6363.033; Tue, 9 May 2023
- 09:22:53 +0000
-Date: Tue, 9 May 2023 11:22:44 +0200
-From: Piotr Raczynski <piotr.raczynski@intel.com>
-To: Lukas Wunner <lukas@wunner.de>
-CC: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, <netdev@vger.kernel.org>, Philipp Rosenberger
-	<p.rosenberger@kunbus.com>, Zhi Han <hanzhi09@gmail.com>
-Subject: Re: [PATCH net-next] net: enc28j60: Use threaded interrupt instead
- of workqueue
-Message-ID: <ZFoQ5EN+XPXjzQ2e@nimitz>
-References: <342380d989ce26bc49f0e5d45fbb0416a5f7809f.1683606193.git.lukas@wunner.de>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <342380d989ce26bc49f0e5d45fbb0416a5f7809f.1683606193.git.lukas@wunner.de>
-X-ClientProxiedBy: LO6P265CA0003.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:339::10) To PH0PR11MB7471.namprd11.prod.outlook.com
- (2603:10b6:510:28a::13)
+   d="scan'208";a="729425778"
+Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 09 May 2023 02:25:51 -0700
+Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1pwJbS-00020s-1V;
+	Tue, 09 May 2023 09:25:50 +0000
+Date: Tue, 9 May 2023 17:25:21 +0800
+From: kernel test robot <lkp@intel.com>
+To: Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Doug Berger <opendmb@gmail.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+	Peter Geis <pgwipeout@gmail.com>, Frank <Frank.Sae@motor-comm.com>,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] net: phy: broadcom: Add support for
+ Wake-on-LAN
+Message-ID: <202305091725.uiFVrVZR-lkp@intel.com>
+References: <20230508184309.1628108-3-f.fainelli@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB7471:EE_|DS0PR11MB7288:EE_
-X-MS-Office365-Filtering-Correlation-Id: a25a789e-da68-4e22-7166-08db506ef71f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mnq/ALUbiJTmKlxLQUoPuHxHMEC0qtEeoJUhqE8fecpc0rmJvx4GLTI5tqSmW/gz4yO4FkGOC+ruW0q0+yzRthAXI56yh9UlF0AjcCxznCRBQ2ciTkZEGfD28QU/ybYMgMGUkZrwkVAzvIXDS+WehSrk3ei0cUNFy1WbC3fH1Rh1/1foInM8EJYA1pkKUBzineUNDXI+so2+spPcRqqr9l9ZBLaMZuwnGkrA4ScVIcysHySbse0UgoCvy6T+MJxcQ/forTDOSjMei6V98fnCdlAtkIJYnP1wdZ5rKk/GCg8h4iautfkXiuBDr7QGFd1k5PlhMCKUsVo5avDQITJTUPFldP/lq1p24yvqFRLXKV2A1pVymW8vtZuCX7+9sTvX5lB4nB+KBNcGGs6SKfXWB8nYYrMZg8U4Ub9jDzhVMJQYHJjgpKlCovMjyH+ptVQprD2XQt8RImijmjc2dWxX7v6OXp8D6Ltk0FyfJDyDx8mqeBIwAGBvJy8xTA+Umck8KDt1bg0Ouz1cEtI7mL3i537RGjr9WBTJlvyT9gjYKeUUQFnXU0ZstzJ9459Jb0Vzl1LNyOx7c3dcq8asEqB+9GVxU2KlOuke3sJhlZBrvBY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB7471.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(39860400002)(376002)(396003)(136003)(366004)(346002)(451199021)(316002)(6666004)(6486002)(54906003)(478600001)(86362001)(41300700001)(66556008)(66476007)(4326008)(6916009)(66946007)(83380400001)(26005)(6512007)(9686003)(186003)(6506007)(38100700002)(2906002)(33716001)(44832011)(8936002)(8676002)(5660300002)(82960400001)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lpPCtMRzrUgAnX138yMz3TMDDn7tipX8uTwrA0u4NzMlSlq8TXoTI5SsfTTs?=
- =?us-ascii?Q?/n2hanHebkkt7vZJJ6mwVKVsOysEHMUhuXjjsulZ1uA2gvEGjRzkjAE6An2m?=
- =?us-ascii?Q?O55DW01ckUGRn5lu1UT3EZRFfMIjGgOQOezI7zahkk2N1R0p0fmP4O7bM5cR?=
- =?us-ascii?Q?VStmABGVTZDyDVM8GY7HtTqMzPUVlcvfOGbxzAf+15ZyoBYQFNdRpQHZluaj?=
- =?us-ascii?Q?+EKj9FGkPcvTBuGu/AjHo0tWpDjsWDPrIA1IjLqK2exCPUZK1Sgq6Y26MFI/?=
- =?us-ascii?Q?VKoy5BP8MUYMlTvT5r0UCBD5rM2VHlgqcFPRhevzQ7+LU/J9es53Z1LIJP67?=
- =?us-ascii?Q?Aeiv6YexADyl7/dz7u8sm6fl13vikn9ahSruz6y9lCYxogtY3loZ7AKAVtxZ?=
- =?us-ascii?Q?YXWRkXgaOZRGmN7M9jZjVIlWdmmj5xtEG7HaWlYxbZFZwyviW8no0C+57DbY?=
- =?us-ascii?Q?M3VkQvpX8lH+0EEZBm1sw2CQ2tJlR2ShgappnIpnagkAvUHC6mSr6g+RemTJ?=
- =?us-ascii?Q?5SKR3YR0ZP0sBGPyr3iaJPZPH5+QZWPqkzUVLlZbc/tVPrWBr2Kx64NAEQr+?=
- =?us-ascii?Q?jjgNCiVK/mib6i3azILZZrlpKWCjFz/npetNyumd8mww95/1C231tU+N1UG4?=
- =?us-ascii?Q?yr65t0qf5xmxoj/8yqfxJGuorqiHWqqMz6fQQa2Jg6P1MKl7/0EDoBCTdE9H?=
- =?us-ascii?Q?6456jHmWb6e5lG8pYf8BKFHu3ueGRmAXtk76SWVA3zCdf22FXP81vCws/fXw?=
- =?us-ascii?Q?p6E++N3TR2kTn57YHC87CC1IaAYlBZg7TQmAzc6lksEk1jF8B4z9gp+ZIvL/?=
- =?us-ascii?Q?2iNQQ00MGZsm+dgbWkK25BGZrPDRJZgSMA8r3/O6fA7Y2gZN8GXs2ESI7bfu?=
- =?us-ascii?Q?AyNyho9Cq+WTm8RMOBI4a5G9ywR/yuOwMmctEimSqwBhvdHIQmtmwPQOvsDj?=
- =?us-ascii?Q?es6f1z2Vgc191urbbB6UosgJupABxvMC+01E0+OhJp/Te02iEt2DAgLuBrHa?=
- =?us-ascii?Q?D1fFKAYsT5xd0rvs5rxBFzAgPr8sXeFWMbBm+dtSP0YThNA/OqjSn7gnlID7?=
- =?us-ascii?Q?akxTasp75butq4qyLGVT97THca3SfVGI2nfQO38ZPMDQyygYKJ6FY3GhINlz?=
- =?us-ascii?Q?PHMbwyIQMTvOMX+WtpLbzQWrz/w/wYxeisvTo8WM/rVF31PLcm0voZwQC4k6?=
- =?us-ascii?Q?M43QVSsIaDnXF4gt+i35ZOiyC/VqA9HwujeuxqUrRE/RB81Dwo/NcyDWKlUk?=
- =?us-ascii?Q?27KdiqhuJyU1qm+4k3hCSN6sHY6geMrtit9rOkpvOcfeTuA4XD+ggnZ0mDVa?=
- =?us-ascii?Q?9cJHYqWSNeKY1x+OFHtqd6yFbxInkH00wvkWm/REizTsvMyz+pbNwi6ZAKyX?=
- =?us-ascii?Q?sv3MFCbgWzfADgDoHU1mfVw1IyEymfA2GYCSqDKa7r5d83WCHBkwkMtjSKB/?=
- =?us-ascii?Q?B26vMvYLC9uk4o6eHfMjfydPyuVLe2b69vFBeJQEbDvE9Vzdg5/EsTfPjcE6?=
- =?us-ascii?Q?xMFfLhfp8dTuV6EeFG3RHb/pPKvzOKyno7D22oL9qwdM5tnasQO/tYxI25W+?=
- =?us-ascii?Q?uaZeHmYBQcXQiqqSIMjix8BQ5fSB8L61xz/entGRQfaFdgsMcMb81qdfDEyT?=
- =?us-ascii?Q?EA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a25a789e-da68-4e22-7166-08db506ef71f
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB7471.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2023 09:22:53.0216
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KrYhzwadRiJ+J/rz0mhnoOBFyDPmu/qxtKHue5pTuNtY/7cW1P6AJvy4NECJo49n/d4MFDdB+FIj6kfYZt3ti2C6vHe06hOU3OuomwZnYF8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7288
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230508184309.1628108-3-f.fainelli@gmail.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 09, 2023 at 06:28:56AM +0200, Lukas Wunner wrote:
-> From: Philipp Rosenberger <p.rosenberger@kunbus.com>
-> 
-> The Microchip ENC28J60 SPI Ethernet driver schedules a work item from
-> the interrupt handler because accesses to the SPI bus may sleep.
-> 
-> On PREEMPT_RT (which forces interrupt handling into threads) this
-> old-fashioned approach unnecessarily increases latency because an
-> interrupt results in first waking the interrupt thread, then scheduling
-> the work item.  So, a double indirection to handle an interrupt.
-> 
-> Avoid by converting the driver to modern threaded interrupt handling.
-> 
-> Signed-off-by: Philipp Rosenberger <p.rosenberger@kunbus.com>
-> Signed-off-by: Zhi Han <hanzhi09@gmail.com>
-> [lukas: rewrite commit message, linewrap request_threaded_irq() call]
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Hi Florian,
 
-Other than commit message commented by Leon, LGTM.
-Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
-> ---
->  drivers/net/ethernet/microchip/enc28j60.c | 28 +++++------------------
->  1 file changed, 6 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/microchip/enc28j60.c b/drivers/net/ethernet/microchip/enc28j60.c
-> index 176efbeae127..d6c9491537e4 100644
-> --- a/drivers/net/ethernet/microchip/enc28j60.c
-> +++ b/drivers/net/ethernet/microchip/enc28j60.c
-> @@ -58,7 +58,6 @@ struct enc28j60_net {
->  	struct mutex lock;
->  	struct sk_buff *tx_skb;
->  	struct work_struct tx_work;
-> -	struct work_struct irq_work;
->  	struct work_struct setrx_work;
->  	struct work_struct restart_work;
->  	u8 bank;		/* current register bank selected */
-> @@ -1118,10 +1117,9 @@ static int enc28j60_rx_interrupt(struct net_device *ndev)
->  	return ret;
->  }
->  
-> -static void enc28j60_irq_work_handler(struct work_struct *work)
-> +static irqreturn_t enc28j60_irq(int irq, void *dev_id)
->  {
-> -	struct enc28j60_net *priv =
-> -		container_of(work, struct enc28j60_net, irq_work);
-> +	struct enc28j60_net *priv = dev_id;
->  	struct net_device *ndev = priv->netdev;
->  	int intflags, loop;
->  
-> @@ -1225,6 +1223,8 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
->  
->  	/* re-enable interrupts */
->  	locked_reg_bfset(priv, EIE, EIE_INTIE);
-> +
-> +	return IRQ_HANDLED;
->  }
->  
->  /*
-> @@ -1309,22 +1309,6 @@ static void enc28j60_tx_work_handler(struct work_struct *work)
->  	enc28j60_hw_tx(priv);
->  }
->  
-> -static irqreturn_t enc28j60_irq(int irq, void *dev_id)
-> -{
-> -	struct enc28j60_net *priv = dev_id;
-> -
-> -	/*
-> -	 * Can't do anything in interrupt context because we need to
-> -	 * block (spi_sync() is blocking) so fire of the interrupt
-> -	 * handling workqueue.
-> -	 * Remember that we access enc28j60 registers through SPI bus
-> -	 * via spi_sync() call.
-> -	 */
-> -	schedule_work(&priv->irq_work);
-> -
-> -	return IRQ_HANDLED;
-> -}
-> -
->  static void enc28j60_tx_timeout(struct net_device *ndev, unsigned int txqueue)
->  {
->  	struct enc28j60_net *priv = netdev_priv(ndev);
-> @@ -1559,7 +1543,6 @@ static int enc28j60_probe(struct spi_device *spi)
->  	mutex_init(&priv->lock);
->  	INIT_WORK(&priv->tx_work, enc28j60_tx_work_handler);
->  	INIT_WORK(&priv->setrx_work, enc28j60_setrx_work_handler);
-> -	INIT_WORK(&priv->irq_work, enc28j60_irq_work_handler);
->  	INIT_WORK(&priv->restart_work, enc28j60_restart_work_handler);
->  	spi_set_drvdata(spi, priv);	/* spi to priv reference */
->  	SET_NETDEV_DEV(dev, &spi->dev);
-> @@ -1578,7 +1561,8 @@ static int enc28j60_probe(struct spi_device *spi)
->  	/* Board setup must set the relevant edge trigger type;
->  	 * level triggers won't currently work.
->  	 */
-> -	ret = request_irq(spi->irq, enc28j60_irq, 0, DRV_NAME, priv);
-> +	ret = request_threaded_irq(spi->irq, NULL, enc28j60_irq, IRQF_ONESHOT,
-> +				   DRV_NAME, priv);
->  	if (ret < 0) {
->  		if (netif_msg_probe(priv))
->  			dev_err(&spi->dev, "request irq %d failed (ret = %d)\n",
-> -- 
-> 2.39.2
-> 
-> 
+kernel test robot noticed the following build warnings:
+
+[auto build test WARNING on net-next/main]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Florian-Fainelli/net-phy-Let-drivers-check-Wake-on-LAN-status/20230509-024405
+base:   net-next/main
+patch link:    https://lore.kernel.org/r/20230508184309.1628108-3-f.fainelli%40gmail.com
+patch subject: [PATCH net-next 2/3] net: phy: broadcom: Add support for Wake-on-LAN
+config: s390-randconfig-r036-20230508 (https://download.01.org/0day-ci/archive/20230509/202305091725.uiFVrVZR-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project b0fb98227c90adf2536c9ad644a74d5e92961111)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/9bc5e73961748471e3dae79cb94f329382a6d490
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Florian-Fainelli/net-phy-Let-drivers-check-Wake-on-LAN-status/20230509-024405
+        git checkout 9bc5e73961748471e3dae79cb94f329382a6d490
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/net/phy/ kernel/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202305091725.uiFVrVZR-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/net/phy/broadcom.c:13:
+   In file included from drivers/net/phy/bcm-phy-lib.h:9:
+   In file included from include/linux/brcmphy.h:5:
+   In file included from include/linux/phy.h:16:
+   In file included from include/linux/ethtool.h:18:
+   In file included from include/linux/if_ether.h:19:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/net/phy/broadcom.c:13:
+   In file included from drivers/net/phy/bcm-phy-lib.h:9:
+   In file included from include/linux/brcmphy.h:5:
+   In file included from include/linux/phy.h:16:
+   In file included from include/linux/ethtool.h:18:
+   In file included from include/linux/if_ether.h:19:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/net/phy/broadcom.c:13:
+   In file included from drivers/net/phy/bcm-phy-lib.h:9:
+   In file included from include/linux/brcmphy.h:5:
+   In file included from include/linux/phy.h:16:
+   In file included from include/linux/ethtool.h:18:
+   In file included from include/linux/if_ether.h:19:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:692:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:700:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:708:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:717:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:726:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:735:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/net/phy/broadcom.c:471:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+           if (priv->wake_irq_enabled != state) {
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/phy/broadcom.c:479:9: note: uninitialized use occurs here
+           return ret;
+                  ^~~
+   drivers/net/phy/broadcom.c:471:2: note: remove the 'if' if its condition is always true
+           if (priv->wake_irq_enabled != state) {
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/phy/broadcom.c:466:9: note: initialize the variable 'ret' to silence this warning
+           int ret;
+                  ^
+                   = 0
+   13 warnings generated.
+
+
+vim +471 drivers/net/phy/broadcom.c
+
+   462	
+   463	static int bcm54xx_set_wakeup_irq(struct phy_device *phydev, bool state)
+   464	{
+   465		struct bcm54xx_phy_priv *priv = phydev->priv;
+   466		int ret;
+   467	
+   468		if (!bcm54xx_phy_can_wakeup(phydev))
+   469			return 0;
+   470	
+ > 471		if (priv->wake_irq_enabled != state) {
+   472			if (state)
+   473				ret = enable_irq_wake(priv->wake_irq);
+   474			else
+   475				ret = disable_irq_wake(priv->wake_irq);
+   476			priv->wake_irq_enabled = state;
+   477		}
+   478	
+   479		return ret;
+   480	}
+   481	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
 
