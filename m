@@ -1,67 +1,67 @@
-Return-Path: <netdev+bounces-1265-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1257-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 762546FD161
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:25:50 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1DE356FD11A
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:23:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 27345280EC9
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:25:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DA6342812CA
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:23:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13AE319934;
-	Tue,  9 May 2023 21:24:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 534F519939;
+	Tue,  9 May 2023 21:23:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02A5A16427
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:24:08 +0000 (UTC)
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7114310A1D
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 14:23:48 -0700 (PDT)
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-64115eef620so45606222b3a.1
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 14:23:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 422E219900
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:23:04 +0000 (UTC)
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748F3D048
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 14:22:44 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id d2e1a72fcca58-6435bbedb4fso6939572b3a.3
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 14:22:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683667291; x=1686259291;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683667292; x=1686259292;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0qyY9vSMxUyGRonOCTI8WhaWai7ZHTiWjUcLExZFkG0=;
-        b=H1hastndYW8J9JI09S6LwY8EKAx2GSoJCl29yBNEOnGVCoRGWxYTN2RFFtKwTF7OSN
-         cVnLfVyqUbYUrcYGuPSsJXZqO87EV3jlosDwJrb9m+bZGm1ANS36fbeAgFJD36/NF0ZR
-         RPZ/U66aWye9KIGDywUGVJ4xaWTjwHtiCs/ztiUwYecxHsRtrEijpCVfiazWqzrWGH0r
-         3U8mI3NTvMnuGFeAAH0X/ZeTYf3xrZBHoXF2MynCbjTkMoTnrQC5c+hV8TKdtQ24up/a
-         GScXrhMdAnpTNfF1JFCGp6DN2q+UX5XrUhdtsaMyVABEZfyRg8/ZwjyJD8301dK7S094
-         e8rg==
+        bh=gm92ViUAYLKqPDDAyrxZT4UsjSYgVO31cUzdYID+F4o=;
+        b=EXLEOW9mkZM4JgLxBx3tMZa8J7ZM5R9cJakWjJkDz1WfyKoZLOg/UIBYdax68ej5QN
+         gxCwGO60eK0zTFQ43Bjmux6DJiJT4s5goMIUK9RMPP2/iZN/WVfB6jcMF6kSwK7WzxDd
+         RDoCpoJqRCLWoQmJ9dxSLyFU243qnkquSTof+0grJWD6P23aL/1Do5yVtZx+oOV36svn
+         ysdmRYf6YW+DAzL6oBS2KYRiq3bSROL0vq+cLIYj52Ln45SHLXRNV7zzN88UnimO7Xns
+         rCeAsJtAq4F6DxfkC9A2fhkpc+n2qCatLrIaANI35DUE8Ti62twNn0L3V6AYi1yxbgap
+         jDWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683667291; x=1686259291;
+        d=1e100.net; s=20221208; t=1683667292; x=1686259292;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=0qyY9vSMxUyGRonOCTI8WhaWai7ZHTiWjUcLExZFkG0=;
-        b=QKn5Z6Q9m2PT3ucJi0U0IgIzZDzcZcK9qQafKi5CuHuvNkzRbF3igOW4BiRtOBqOhQ
-         5BBG20micV1tYxFi2ApSr7XCDYRLsmMukirQ37YoE471UO8IHUGdDlf2HHipJPd8oXCD
-         3rsA2CILrB6jx5UbAF36KS+LF10zF5D61/tzrvzyPqPjaD+8YwB16gWiiappW2K834tx
-         qNKR9a+EpYg139SfOorNaGcrNpkxUktrb6nMNa3wXrQDhgaRn03x8da2YpbPI2oEZ5qd
-         iqOnPooy3VKvM9q7P0iAQcQYIvxhKq2lCYBjW0YTy8tiZDig740bZzcBiyqNrGwXFq5s
-         2kwQ==
-X-Gm-Message-State: AC+VfDyJgvXJVSy+Wz38nin40rQv1XWspbDySz0jfD5foCG8c8yx68LA
-	fusMWaA5xTrnYhBQpnJQbK8Zz5KRxssF6mPhLjidQQ==
-X-Google-Smtp-Source: ACHHUZ4wBdbrcLdzfxcdnB8CwRf931S+Nt3COFqYDJ3MRNvQ+AjM/Be18jrU1wkEoISDJhbhe0K/3w==
-X-Received: by 2002:a05:6a00:298e:b0:63c:b3be:9784 with SMTP id cj14-20020a056a00298e00b0063cb3be9784mr22294384pfb.3.1683667291174;
-        Tue, 09 May 2023 14:21:31 -0700 (PDT)
+        bh=gm92ViUAYLKqPDDAyrxZT4UsjSYgVO31cUzdYID+F4o=;
+        b=AVrjcTvrnDvnHgo9Uw/JeI6H/OGVqT1KHBb2lNjdcxMe8iu9BKtdft2FucoVYFGfFT
+         IxdxADN8mxQ0y5Sus2cr22Pp4sn/I5VE44bEczWWu5DzqddHNRnP07dAteyVoU3+8nHo
+         9/sFkvbsYq8Znfzj401/MYR92cqCuVIgzW0PibiibhcaIWjNUpVuN/1THSyJMR8Qy8xT
+         7HrDxhX+1pq8+a+7FzvRhplvL4W5sr/98YrDOHejBhRf2sTjOGkFXcPYuSWJUkk/fv9q
+         SuJ0NsulEqURvp/+BKwRYg5KxHQnoLoVs+1mfixGGz1/YYI9HfqMbYP4DbNRDMF+ov9W
+         SJLQ==
+X-Gm-Message-State: AC+VfDw5Kg0XSNklKyw7HOWqZeBqAlAvRbgfHkg5lo/4gUjIc7eUUeOU
+	BlUn4rjdUXSUB8wW2i9uqJmutPdqGJ88gSSVlC3y1A==
+X-Google-Smtp-Source: ACHHUZ6Vq6w2pyIf1EtvrUk6fpzdjm5I8r3RQB2GKpyWrvwehjKEr8rcgq8aNz1XYLUC1Ek+raqY1Q==
+X-Received: by 2002:a05:6a00:2d25:b0:643:6b94:374b with SMTP id fa37-20020a056a002d2500b006436b94374bmr23530981pfb.1.1683667292358;
+        Tue, 09 May 2023 14:21:32 -0700 (PDT)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id d22-20020aa78e56000000b00646e7d2b5a7sm1932565pfr.112.2023.05.09.14.21.29
+        by smtp.gmail.com with ESMTPSA id d22-20020aa78e56000000b00646e7d2b5a7sm1932565pfr.112.2023.05.09.14.21.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 14:21:30 -0700 (PDT)
+        Tue, 09 May 2023 14:21:31 -0700 (PDT)
 From: Stephen Hemminger <stephen@networkplumber.org>
 To: netdev@vger.kernel.org
 Cc: Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 02/11] ipmaddr: fix dereference of NULL on malloc() failure
-Date: Tue,  9 May 2023 14:21:16 -0700
-Message-Id: <20230509212125.15880-3-stephen@networkplumber.org>
+Subject: [PATCH iproute2 03/11] iproute_lwtunnel: fix possible use of NULL when malloc() fails
+Date: Tue,  9 May 2023 14:21:17 -0700
+Message-Id: <20230509212125.15880-4-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230509212125.15880-1-stephen@networkplumber.org>
 References: <20230509212125.15880-1-stephen@networkplumber.org>
@@ -74,318 +74,177 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Found by -fanalyzer. This is a bug since beginning of initial
-versions of ip multicast support (pre git).
-
-ipmaddr.c: In function ‘read_dev_mcast’:
-ipmaddr.c:105:25: warning: dereference of possibly-NULL ‘ma’ [CWE-690] [-Wanalyzer-possible-null-dereference]
-  105 |                         memcpy(ma, &m, sizeof(m));
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
-  ‘do_multiaddr’: events 1-4
+iproute_lwtunnel.c: In function ‘parse_srh’:
+iproute_lwtunnel.c:903:9: warning: use of possibly-NULL ‘srh’ where non-null expected [CWE-690] [-Wanalyzer-possible-null-argument]
+  903 |         memset(srh, 0, srhlen);
+      |         ^~~~~~~~~~~~~~~~~~~~~~
+  ‘parse_srh’: events 1-2
     |
-    |  354 | int do_multiaddr(int argc, char **argv)
-    |      |     ^~~~~~~~~~~~
-    |      |     |
-    |      |     (1) entry to ‘do_multiaddr’
-    |  355 | {
-    |  356 |         if (argc < 1)
-    |      |            ~
+    |  902 |         srh = malloc(srhlen);
+    |      |               ^~~~~~~~~~~~~~
+    |      |               |
+    |      |               (1) this call could return NULL
+    |  903 |         memset(srh, 0, srhlen);
+    |      |         ~~~~~~~~~~~~~~~~~~~~~~
+    |      |         |
+    |      |         (2) argument 1 (‘srh’) from (1) could be NULL where non-null expected
+    |
+In file included from iproute_lwtunnel.c:13:
+/usr/include/string.h:61:14: note: argument 1 of ‘memset’ must be non-null
+   61 | extern void *memset (void *__s, int __c, size_t __n) __THROW __nonnull ((1));
+      |              ^~~~~~
+iproute_lwtunnel.c: In function ‘parse_encap_seg6’:
+iproute_lwtunnel.c:980:9: warning: use of possibly-NULL ‘tuninfo’ where non-null expected [CWE-690] [-Wanalyzer-possible-null-argument]
+  980 |         memset(tuninfo, 0, sizeof(*tuninfo) + srhlen);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ‘parse_encap_seg6’: events 1-2
+    |
+    |  934 | static int parse_encap_seg6(struct rtattr *rta, size_t len, int *argcp,
+    |      |            ^~~~~~~~~~~~~~~~
     |      |            |
-    |      |            (2) following ‘true’ branch (when ‘argc <= 0’)...
-    |  357 |                 return multiaddr_list(0, NULL);
-    |      |                        ~~~~~~~~~~~~~~~~~~~~~~~
-    |      |                        |
-    |      |                        (3) ...to here
-    |      |                        (4) calling ‘multiaddr_list’ from ‘do_multiaddr’
+    |      |            (1) entry to ‘parse_encap_seg6’
+    |......
+    |  976 |         srh = parse_srh(segbuf, hmac, encap);
+    |      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |      |               |
+    |      |               (2) calling ‘parse_srh’ from ‘parse_encap_seg6’
     |
-    +--> ‘multiaddr_list’: events 5-10
+    +--> ‘parse_srh’: events 3-5
            |
-           |  255 | static int multiaddr_list(int argc, char **argv)
-           |      |            ^~~~~~~~~~~~~~
-           |      |            |
-           |      |            (5) entry to ‘multiaddr_list’
+           |  882 | static struct ipv6_sr_hdr *parse_srh(char *segbuf, int hmac, bool encap)
+           |      |                            ^~~~~~~~~
+           |      |                            |
+           |      |                            (3) entry to ‘parse_srh’
            |......
-           |  262 |         while (argc > 0) {
-           |      |                ~~~~~~~~
-           |      |                     |
-           |      |                     (6) following ‘false’ branch (when ‘argc <= 0’)...
-           |......
-           |  275 |         if (!filter.family || filter.family == AF_PACKET)
-           |      |            ~ ~~~~~~~~~~~~~
-           |      |            |       |
-           |      |            |       (7) ...to here
-           |      |            (8) following ‘true’ branch...
-           |  276 |                 read_dev_mcast(&list);
-           |      |                 ~~~~~~~~~~~~~~~~~~~~~
-           |      |                 |
-           |      |                 (9) ...to here
-           |      |                 (10) calling ‘read_dev_mcast’ from ‘multiaddr_list’
-           |
-           +--> ‘read_dev_mcast’: events 11-12
-                  |
-                  |   82 | static void read_dev_mcast(struct ma_info **result_p)
-                  |      |             ^~~~~~~~~~~~~~
-                  |      |             |
-                  |      |             (11) entry to ‘read_dev_mcast’
-                  |......
-                  |   87 |         if (!fp)
-                  |      |            ~
-                  |      |            |
-                  |      |            (12) following ‘false’ branch (when ‘fp’ is non-NULL)...
-                  |
-                ‘read_dev_mcast’: event 13
-                  |
-                  |cc1:
-                  | (13): ...to here
-                  |
-                ‘read_dev_mcast’: events 14-17
-                  |
-                  |   90 |         while (fgets(buf, sizeof(buf), fp)) {
-                  |      |                ^~~~~
-                  |      |                |
-                  |      |                (14) following ‘true’ branch...
-                  |   91 |                 char hexa[256];
-                  |   92 |                 struct ma_info m = { .addr.family = AF_PACKET };
-                  |      |                                ~
-                  |      |                                |
-                  |      |                                (15) ...to here
-                  |......
-                  |  103 |                         struct ma_info *ma = malloc(sizeof(m));
-                  |      |                                              ~~~~~~~~~~~~~~~~~
-                  |      |                                              |
-                  |      |                                              (16) this call could return NULL
-                  |  104 |
-                  |  105 |                         memcpy(ma, &m, sizeof(m));
-                  |      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~
-                  |      |                         |
-                  |      |                         (17) ‘ma’ could be NULL: unchecked value from (16)
-                  |
-ipmaddr.c: In function ‘read_igmp’:
-ipmaddr.c:152:17: warning: dereference of possibly-NULL ‘ma’ [CWE-690] [-Wanalyzer-possible-null-dereference]
-  152 |                 memcpy(ma, &m, sizeof(m));
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~
-  ‘do_multiaddr’: events 1-4
-    |
-    |  354 | int do_multiaddr(int argc, char **argv)
-    |      |     ^~~~~~~~~~~~
-    |      |     |
-    |      |     (1) entry to ‘do_multiaddr’
-    |  355 | {
-    |  356 |         if (argc < 1)
-    |      |            ~
-    |      |            |
-    |      |            (2) following ‘true’ branch (when ‘argc <= 0’)...
-    |  357 |                 return multiaddr_list(0, NULL);
-    |      |                        ~~~~~~~~~~~~~~~~~~~~~~~
-    |      |                        |
-    |      |                        (3) ...to here
-    |      |                        (4) calling ‘multiaddr_list’ from ‘do_multiaddr’
-    |
-    +--> ‘multiaddr_list’: events 5-10
-           |
-           |  255 | static int multiaddr_list(int argc, char **argv)
-           |      |            ^~~~~~~~~~~~~~
-           |      |            |
-           |      |            (5) entry to ‘multiaddr_list’
-           |......
-           |  262 |         while (argc > 0) {
-           |      |                ~~~~~~~~
-           |      |                     |
-           |      |                     (6) following ‘false’ branch (when ‘argc <= 0’)...
-           |......
-           |  275 |         if (!filter.family || filter.family == AF_PACKET)
-           |      |              ~~~~~~~~~~~~~
-           |      |                    |
-           |      |                    (7) ...to here
-           |  276 |                 read_dev_mcast(&list);
-           |  277 |         if (!filter.family || filter.family == AF_INET)
+           |  922 |         if (hmac) {
            |      |            ~
            |      |            |
-           |      |            (8) following ‘true’ branch...
-           |  278 |                 read_igmp(&list);
-           |      |                 ~~~~~~~~~~~~~~~~
-           |      |                 |
-           |      |                 (9) ...to here
-           |      |                 (10) calling ‘read_igmp’ from ‘multiaddr_list’
+           |      |            (4) following ‘false’ branch (when ‘hmac == 0’)...
+           |......
+           |  931 |         return srh;
+           |      |                ~~~
+           |      |                |
+           |      |                (5) ...to here
            |
-           +--> ‘read_igmp’: events 11-14
-                  |
-                  |  116 | static void read_igmp(struct ma_info **result_p)
-                  |      |             ^~~~~~~~~
-                  |      |             |
-                  |      |             (11) entry to ‘read_igmp’
-                  |......
-                  |  126 |         if (!fp)
-                  |      |            ~
-                  |      |            |
-                  |      |            (12) following ‘false’ branch (when ‘fp’ is non-NULL)...
-                  |  127 |                 return;
-                  |  128 |         if (!fgets(buf, sizeof(buf), fp)) {
-                  |      |            ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  |      |            | |
-                  |      |            | (13) ...to here
-                  |      |            (14) following ‘false’ branch...
-                  |
-                ‘read_igmp’: event 15
-                  |
-                  |cc1:
-                  | (15): ...to here
-                  |
-                ‘read_igmp’: events 16-19
-                  |
-                  |  133 |         while (fgets(buf, sizeof(buf), fp)) {
-                  |      |                ^~~~~
-                  |      |                |
-                  |      |                (16) following ‘true’ branch...
-                  |......
-                  |  136 |                 if (buf[0] != '\t') {
-                  |      |                     ~~~~~~
-                  |      |                        |
-                  |      |                        (17) ...to here
-                  |......
-                  |  151 |                 ma = malloc(sizeof(m));
-                  |      |                      ~~~~~~~~~~~~~~~~~
-                  |      |                      |
-                  |      |                      (18) this call could return NULL
-                  |  152 |                 memcpy(ma, &m, sizeof(m));
-                  |      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~
-                  |      |                 |
-                  |      |                 (19) ‘ma’ could be NULL: unchecked value from (18)
-                  |
-ipmaddr.c: In function ‘read_igmp6’:
-ipmaddr.c:181:25: warning: dereference of possibly-NULL ‘ma’ [CWE-690] [-Wanalyzer-possible-null-dereference]
-  181 |                         memcpy(ma, &m, sizeof(m));
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
-  ‘do_multiaddr’: events 1-4
+    <------+
     |
-    |  354 | int do_multiaddr(int argc, char **argv)
-    |      |     ^~~~~~~~~~~~
-    |      |     |
-    |      |     (1) entry to ‘do_multiaddr’
-    |  355 | {
-    |  356 |         if (argc < 1)
-    |      |            ~
-    |      |            |
-    |      |            (2) following ‘true’ branch (when ‘argc <= 0’)...
-    |  357 |                 return multiaddr_list(0, NULL);
-    |      |                        ~~~~~~~~~~~~~~~~~~~~~~~
-    |      |                        |
-    |      |                        (3) ...to here
-    |      |                        (4) calling ‘multiaddr_list’ from ‘do_multiaddr’
+  ‘parse_encap_seg6’: events 6-8
     |
-    +--> ‘multiaddr_list’: events 5-10
-           |
-           |  255 | static int multiaddr_list(int argc, char **argv)
-           |      |            ^~~~~~~~~~~~~~
-           |      |            |
-           |      |            (5) entry to ‘multiaddr_list’
-           |......
-           |  262 |         while (argc > 0) {
-           |      |                ~~~~~~~~
-           |      |                     |
-           |      |                     (6) following ‘false’ branch (when ‘argc <= 0’)...
-           |......
-           |  275 |         if (!filter.family || filter.family == AF_PACKET)
-           |      |              ~~~~~~~~~~~~~
-           |      |                    |
-           |      |                    (7) ...to here
-           |......
-           |  279 |         if (!filter.family || filter.family == AF_INET6)
-           |      |            ~
-           |      |            |
-           |      |            (8) following ‘true’ branch...
-           |  280 |                 read_igmp6(&list);
-           |      |                 ~~~~~~~~~~~~~~~~~
-           |      |                 |
-           |      |                 (9) ...to here
-           |      |                 (10) calling ‘read_igmp6’ from ‘multiaddr_list’
-           |
-           +--> ‘read_igmp6’: events 11-12
-                  |
-                  |  159 | static void read_igmp6(struct ma_info **result_p)
-                  |      |             ^~~~~~~~~~
-                  |      |             |
-                  |      |             (11) entry to ‘read_igmp6’
-                  |......
-                  |  164 |         if (!fp)
-                  |      |            ~
-                  |      |            |
-                  |      |            (12) following ‘false’ branch (when ‘fp’ is non-NULL)...
-                  |
-                ‘read_igmp6’: event 13
-                  |
-                  |cc1:
-                  | (13): ...to here
-                  |
-                ‘read_igmp6’: events 14-17
-                  |
-                  |  167 |         while (fgets(buf, sizeof(buf), fp)) {
-                  |      |                ^~~~~
-                  |      |                |
-                  |      |                (14) following ‘true’ branch...
-                  |  168 |                 char hexa[256];
-                  |  169 |                 struct ma_info m = { .addr.family = AF_INET6 };
-                  |      |                                ~
-                  |      |                                |
-                  |      |                                (15) ...to here
-                  |......
-                  |  179 |                         struct ma_info *ma = malloc(sizeof(m));
-                  |      |                                              ~~~~~~~~~~~~~~~~~
-                  |      |                                              |
-                  |      |                                              (16) this call could return NULL
-                  |  180 |
-                  |  181 |                         memcpy(ma, &m, sizeof(m));
-                  |      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~
-                  |      |                         |
-                  |      |                         (17) ‘ma’ could be NULL: unchecked value from (16)
-                  |
+    |  976 |         srh = parse_srh(segbuf, hmac, encap);
+    |      |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |      |               |
+    |      |               (6) returning to ‘parse_encap_seg6’ from ‘parse_srh’
+    |......
+    |  979 |         tuninfo = malloc(sizeof(*tuninfo) + srhlen);
+    |      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |      |                   |
+    |      |                   (7) this call could return NULL
+    |  980 |         memset(tuninfo, 0, sizeof(*tuninfo) + srhlen);
+    |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |      |         |
+    |      |         (8) argument 1 (‘tuninfo’) from (7) could be NULL where non-null expected
+    |
+/usr/include/string.h:61:14: note: argument 1 of ‘memset’ must be non-null
+   61 | extern void *memset (void *__s, int __c, size_t __n) __THROW __nonnull ((1));
+      |              ^~~~~~
+iproute_lwtunnel.c: In function ‘parse_rpl_srh’:
+iproute_lwtunnel.c:1018:21: warning: dereference of possibly-NULL ‘srh’ [CWE-690] [-Wanalyzer-possible-null-dereference]
+ 1018 |         srh->hdrlen = (srhlen >> 3) - 1;
+      |         ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+  ‘parse_rpl_srh’: events 1-2
+    |
+    | 1016 |         srh = calloc(1, srhlen);
+    |      |               ^~~~~~~~~~~~~~~~~
+    |      |               |
+    |      |               (1) this call could return NULL
+    | 1017 |
+    | 1018 |         srh->hdrlen = (srhlen >> 3) - 1;
+    |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |      |                     |
+    |      |                     (2) ‘srh’ could be NULL: unchecked value from (1)
+    |
 
+Fixes: 00e76d4da37f ("iproute: add helper functions for SRH processing")
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- ip/ipmaddr.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ ip/iproute_lwtunnel.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/ip/ipmaddr.c b/ip/ipmaddr.c
-index f8d6b992d254..a8ef20ec624a 100644
---- a/ip/ipmaddr.c
-+++ b/ip/ipmaddr.c
-@@ -102,6 +102,8 @@ static void read_dev_mcast(struct ma_info **result_p)
- 		if (len >= 0) {
- 			struct ma_info *ma = malloc(sizeof(m));
+diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
+index 308178efe054..96de3b207ef4 100644
+--- a/ip/iproute_lwtunnel.c
++++ b/ip/iproute_lwtunnel.c
+@@ -900,6 +900,9 @@ static struct ipv6_sr_hdr *parse_srh(char *segbuf, int hmac, bool encap)
+ 		srhlen += 40;
  
-+			if (ma == NULL)
-+				break;
- 			memcpy(ma, &m, sizeof(m));
- 			ma->addr.bytelen = len;
- 			ma->addr.bitlen = len<<3;
-@@ -149,6 +151,9 @@ static void read_igmp(struct ma_info **result_p)
- 		sscanf(buf, "%08x%d", (__u32 *)&m.addr.data, &m.users);
+ 	srh = malloc(srhlen);
++	if (srh == NULL)
++		return NULL;
++
+ 	memset(srh, 0, srhlen);
  
- 		ma = malloc(sizeof(m));
-+		if (ma == NULL)
-+			break;
-+			
- 		memcpy(ma, &m, sizeof(m));
- 		maddr_ins(result_p, ma);
+ 	srh->hdrlen = (srhlen >> 3) - 1;
+@@ -935,14 +938,14 @@ static int parse_encap_seg6(struct rtattr *rta, size_t len, int *argcp,
+ 			    char ***argvp)
+ {
+ 	int mode_ok = 0, segs_ok = 0, hmac_ok = 0;
+-	struct seg6_iptunnel_encap *tuninfo;
++	struct seg6_iptunnel_encap *tuninfo = NULL;
+ 	struct ipv6_sr_hdr *srh;
+ 	char **argv = *argvp;
+ 	char segbuf[1024] = "";
+ 	int argc = *argcp;
+ 	int encap = -1;
+ 	__u32 hmac = 0;
+-	int ret = 0;
++	int ret = -1;
+ 	int srhlen;
+ 
+ 	while (argc > 0) {
+@@ -974,9 +977,13 @@ static int parse_encap_seg6(struct rtattr *rta, size_t len, int *argcp,
  	}
-@@ -178,8 +183,10 @@ static void read_igmp6(struct ma_info **result_p)
- 		if (len >= 0) {
- 			struct ma_info *ma = malloc(sizeof(m));
  
--			memcpy(ma, &m, sizeof(m));
-+			if (ma == NULL)
-+				break;
+ 	srh = parse_srh(segbuf, hmac, encap);
++	if (srh == NULL)
++		goto out;
+ 	srhlen = (srh->hdrlen + 1) << 3;
  
-+			memcpy(ma, &m, sizeof(m));
- 			ma->addr.bytelen = len;
- 			ma->addr.bitlen = len<<3;
- 			maddr_ins(result_p, ma);
+ 	tuninfo = malloc(sizeof(*tuninfo) + srhlen);
++	if (tuninfo == NULL)
++		goto out;
+ 	memset(tuninfo, 0, sizeof(*tuninfo) + srhlen);
+ 
+ 	tuninfo->mode = encap;
+@@ -984,13 +991,12 @@ static int parse_encap_seg6(struct rtattr *rta, size_t len, int *argcp,
+ 	memcpy(tuninfo->srh, srh, srhlen);
+ 
+ 	if (rta_addattr_l(rta, len, SEG6_IPTUNNEL_SRH, tuninfo,
+-			  sizeof(*tuninfo) + srhlen)) {
+-		ret = -1;
++			  sizeof(*tuninfo) + srhlen))
+ 		goto out;
+-	}
+ 
+ 	*argcp = argc + 1;
+ 	*argvp = argv - 1;
++	ret = 0;
+ 
+ out:
+ 	free(tuninfo);
+@@ -1014,6 +1020,8 @@ static struct ipv6_rpl_sr_hdr *parse_rpl_srh(char *segbuf)
+ 	srhlen = 8 + 16 * nsegs;
+ 
+ 	srh = calloc(1, srhlen);
++	if (srh == NULL)
++		return NULL;
+ 
+ 	srh->hdrlen = (srhlen >> 3) - 1;
+ 	srh->type = 3;
 -- 
 2.39.2
 
