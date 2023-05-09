@@ -1,67 +1,67 @@
-Return-Path: <netdev+bounces-1264-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1265-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3DCD96FD15D
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:25:31 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 762546FD161
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:25:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F56E1C20CAB
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:25:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 27345280EC9
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 21:25:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DC721993E;
-	Tue,  9 May 2023 21:23:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13AE319934;
+	Tue,  9 May 2023 21:24:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D1D1993C
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:23:41 +0000 (UTC)
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EAA106D6
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 14:23:24 -0700 (PDT)
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-64395e741fcso6509631b3a.2
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 14:23:24 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02A5A16427
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 21:24:08 +0000 (UTC)
+Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7114310A1D
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 14:23:48 -0700 (PDT)
+Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-64115eef620so45606222b3a.1
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 14:23:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683667290; x=1686259290;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683667291; x=1686259291;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/a1H5Uw7vjzJuOoJpULAG1rAFq0YE7GyjI2Q6kkpZiY=;
-        b=WPMiEaRqTAWLmrn9/MHDHozgoWnJq3QeN0RuzFpcELM7oP+2AmJgYKkrNucsbT0BHt
-         6WHk0wenPlHtPX/RzaSsasJm812yBudcW+YxKQ458ld8LGkvqkrRff+xEp5o/pPYqxul
-         +ydOuCPcvNPK+svBDSewW6EChDuArOxPfOSXBZ4P3JUT26Ma1GXrqqWffCMGAMrj1UkJ
-         EV2+u6JtJLlk7xR7Ygn630I4TMoiyRHUNMYivr01ta/VbiC9Ob418c32RpDmFyicWiVj
-         9eDFxfwQuSR6TnQr4zUGXaGysxcK2LgZzyE37IwPmTjvAxDlbfiXDT5MXsW/WBOw3wtS
-         uztg==
+        bh=0qyY9vSMxUyGRonOCTI8WhaWai7ZHTiWjUcLExZFkG0=;
+        b=H1hastndYW8J9JI09S6LwY8EKAx2GSoJCl29yBNEOnGVCoRGWxYTN2RFFtKwTF7OSN
+         cVnLfVyqUbYUrcYGuPSsJXZqO87EV3jlosDwJrb9m+bZGm1ANS36fbeAgFJD36/NF0ZR
+         RPZ/U66aWye9KIGDywUGVJ4xaWTjwHtiCs/ztiUwYecxHsRtrEijpCVfiazWqzrWGH0r
+         3U8mI3NTvMnuGFeAAH0X/ZeTYf3xrZBHoXF2MynCbjTkMoTnrQC5c+hV8TKdtQ24up/a
+         GScXrhMdAnpTNfF1JFCGp6DN2q+UX5XrUhdtsaMyVABEZfyRg8/ZwjyJD8301dK7S094
+         e8rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683667290; x=1686259290;
+        d=1e100.net; s=20221208; t=1683667291; x=1686259291;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=/a1H5Uw7vjzJuOoJpULAG1rAFq0YE7GyjI2Q6kkpZiY=;
-        b=Q94uEvh39jcj1wm6AlwQB4fCZADibms0HfZWjxBHfGiSAFjd6e8Iu7oUFL0/4Lfi19
-         O9O1FD/cCdtJ8oC9efLIBK7u5ZXY74xCR0yUhhNRGom1b/eS17RS7KkGAyWq7n+m5LcF
-         kpEiC6F0o/WsU10ADjBg+6jlr0qjP3wXZf2dfnQxI0C+6ge+FOQUmxIiutTDdJRoAl8R
-         3ngGbzPW9IaEGkrEJnKZBKvI6BvN+z9anrXwkXuUu6tv6LAwcfZeyyFhB25mX6PJ2a78
-         L0tQt86d97y4Q8HBmDHHyp1e4m0DeU07dWlS5w44ZbiesaLJlgRv/2T5HEeXGGGAdfSX
-         0mzw==
-X-Gm-Message-State: AC+VfDxsEGpGzckto3Tc2F+YOPtk5PKN4ad+7iCXzElTpBmqOXg9EN46
-	LXZ4YafTsnj8MejKk2PkvBOk5wlnp9oID0IyYKHcvA==
-X-Google-Smtp-Source: ACHHUZ4K9ptLq49KvxM8/ijqM6fmIdsCbfJCm7eDShE7jYdpWAPQMMuR/OvxjcSUlAjmiH2hieoWAQ==
-X-Received: by 2002:a05:6a00:1406:b0:62a:c1fa:b253 with SMTP id l6-20020a056a00140600b0062ac1fab253mr19105494pfu.31.1683667289805;
-        Tue, 09 May 2023 14:21:29 -0700 (PDT)
+        bh=0qyY9vSMxUyGRonOCTI8WhaWai7ZHTiWjUcLExZFkG0=;
+        b=QKn5Z6Q9m2PT3ucJi0U0IgIzZDzcZcK9qQafKi5CuHuvNkzRbF3igOW4BiRtOBqOhQ
+         5BBG20micV1tYxFi2ApSr7XCDYRLsmMukirQ37YoE471UO8IHUGdDlf2HHipJPd8oXCD
+         3rsA2CILrB6jx5UbAF36KS+LF10zF5D61/tzrvzyPqPjaD+8YwB16gWiiappW2K834tx
+         qNKR9a+EpYg139SfOorNaGcrNpkxUktrb6nMNa3wXrQDhgaRn03x8da2YpbPI2oEZ5qd
+         iqOnPooy3VKvM9q7P0iAQcQYIvxhKq2lCYBjW0YTy8tiZDig740bZzcBiyqNrGwXFq5s
+         2kwQ==
+X-Gm-Message-State: AC+VfDyJgvXJVSy+Wz38nin40rQv1XWspbDySz0jfD5foCG8c8yx68LA
+	fusMWaA5xTrnYhBQpnJQbK8Zz5KRxssF6mPhLjidQQ==
+X-Google-Smtp-Source: ACHHUZ4wBdbrcLdzfxcdnB8CwRf931S+Nt3COFqYDJ3MRNvQ+AjM/Be18jrU1wkEoISDJhbhe0K/3w==
+X-Received: by 2002:a05:6a00:298e:b0:63c:b3be:9784 with SMTP id cj14-20020a056a00298e00b0063cb3be9784mr22294384pfb.3.1683667291174;
+        Tue, 09 May 2023 14:21:31 -0700 (PDT)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id d22-20020aa78e56000000b00646e7d2b5a7sm1932565pfr.112.2023.05.09.14.21.28
+        by smtp.gmail.com with ESMTPSA id d22-20020aa78e56000000b00646e7d2b5a7sm1932565pfr.112.2023.05.09.14.21.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 14:21:29 -0700 (PDT)
+        Tue, 09 May 2023 14:21:30 -0700 (PDT)
 From: Stephen Hemminger <stephen@networkplumber.org>
 To: netdev@vger.kernel.org
 Cc: Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 01/11] lib/fs: fix file leak in task_get_name
-Date: Tue,  9 May 2023 14:21:15 -0700
-Message-Id: <20230509212125.15880-2-stephen@networkplumber.org>
+Subject: [PATCH iproute2 02/11] ipmaddr: fix dereference of NULL on malloc() failure
+Date: Tue,  9 May 2023 14:21:16 -0700
+Message-Id: <20230509212125.15880-3-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230509212125.15880-1-stephen@networkplumber.org>
 References: <20230509212125.15880-1-stephen@networkplumber.org>
@@ -75,126 +75,317 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Fixes the problem identified -fanalyzer.
-Why did rdma choose to reimplement the same function as
-exiting glibc pthread_getname().
+Found by -fanalyzer. This is a bug since beginning of initial
+versions of ip multicast support (pre git).
 
-fs.c: In function ‘get_task_name’:
-fs.c:355:12: warning: leak of FILE ‘f’ [CWE-775] [-Wanalyzer-file-leak]
-  355 |         if (!fgets(name, len, f))
-      |            ^
-  ‘get_task_name’: events 1-9
+ipmaddr.c: In function ‘read_dev_mcast’:
+ipmaddr.c:105:25: warning: dereference of possibly-NULL ‘ma’ [CWE-690] [-Wanalyzer-possible-null-dereference]
+  105 |                         memcpy(ma, &m, sizeof(m));
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
+  ‘do_multiaddr’: events 1-4
     |
-    |  345 |         if (!pid)
-    |      |            ^
-    |      |            |
-    |      |            (1) following ‘false’ branch (when ‘pid != 0’)...
-    |......
-    |  348 |         if (snprintf(path, sizeof(path), "/proc/%d/comm", pid) >= sizeof(path))
-    |      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    |      |            ||
-    |      |            |(2) ...to here
-    |      |            (3) following ‘false’ branch...
-    |......
-    |  351 |         f = fopen(path, "r");
-    |      |             ~~~~~~~~~~~~~~~~
-    |      |             |
-    |      |             (4) ...to here
-    |      |             (5) opened here
-    |  352 |         if (!f)
+    |  354 | int do_multiaddr(int argc, char **argv)
+    |      |     ^~~~~~~~~~~~
+    |      |     |
+    |      |     (1) entry to ‘do_multiaddr’
+    |  355 | {
+    |  356 |         if (argc < 1)
     |      |            ~
     |      |            |
-    |      |            (6) assuming ‘f’ is non-NULL
-    |      |            (7) following ‘false’ branch (when ‘f’ is non-NULL)...
-    |......
-    |  355 |         if (!fgets(name, len, f))
-    |      |            ~ ~~~~~~~~~~~~~~~~~~~
-    |      |            | |
-    |      |            | (8) ...to here
-    |      |            (9) following ‘true’ branch...
+    |      |            (2) following ‘true’ branch (when ‘argc <= 0’)...
+    |  357 |                 return multiaddr_list(0, NULL);
+    |      |                        ~~~~~~~~~~~~~~~~~~~~~~~
+    |      |                        |
+    |      |                        (3) ...to here
+    |      |                        (4) calling ‘multiaddr_list’ from ‘do_multiaddr’
     |
-  ‘get_task_name’: event 10
+    +--> ‘multiaddr_list’: events 5-10
+           |
+           |  255 | static int multiaddr_list(int argc, char **argv)
+           |      |            ^~~~~~~~~~~~~~
+           |      |            |
+           |      |            (5) entry to ‘multiaddr_list’
+           |......
+           |  262 |         while (argc > 0) {
+           |      |                ~~~~~~~~
+           |      |                     |
+           |      |                     (6) following ‘false’ branch (when ‘argc <= 0’)...
+           |......
+           |  275 |         if (!filter.family || filter.family == AF_PACKET)
+           |      |            ~ ~~~~~~~~~~~~~
+           |      |            |       |
+           |      |            |       (7) ...to here
+           |      |            (8) following ‘true’ branch...
+           |  276 |                 read_dev_mcast(&list);
+           |      |                 ~~~~~~~~~~~~~~~~~~~~~
+           |      |                 |
+           |      |                 (9) ...to here
+           |      |                 (10) calling ‘read_dev_mcast’ from ‘multiaddr_list’
+           |
+           +--> ‘read_dev_mcast’: events 11-12
+                  |
+                  |   82 | static void read_dev_mcast(struct ma_info **result_p)
+                  |      |             ^~~~~~~~~~~~~~
+                  |      |             |
+                  |      |             (11) entry to ‘read_dev_mcast’
+                  |......
+                  |   87 |         if (!fp)
+                  |      |            ~
+                  |      |            |
+                  |      |            (12) following ‘false’ branch (when ‘fp’ is non-NULL)...
+                  |
+                ‘read_dev_mcast’: event 13
+                  |
+                  |cc1:
+                  | (13): ...to here
+                  |
+                ‘read_dev_mcast’: events 14-17
+                  |
+                  |   90 |         while (fgets(buf, sizeof(buf), fp)) {
+                  |      |                ^~~~~
+                  |      |                |
+                  |      |                (14) following ‘true’ branch...
+                  |   91 |                 char hexa[256];
+                  |   92 |                 struct ma_info m = { .addr.family = AF_PACKET };
+                  |      |                                ~
+                  |      |                                |
+                  |      |                                (15) ...to here
+                  |......
+                  |  103 |                         struct ma_info *ma = malloc(sizeof(m));
+                  |      |                                              ~~~~~~~~~~~~~~~~~
+                  |      |                                              |
+                  |      |                                              (16) this call could return NULL
+                  |  104 |
+                  |  105 |                         memcpy(ma, &m, sizeof(m));
+                  |      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~
+                  |      |                         |
+                  |      |                         (17) ‘ma’ could be NULL: unchecked value from (16)
+                  |
+ipmaddr.c: In function ‘read_igmp’:
+ipmaddr.c:152:17: warning: dereference of possibly-NULL ‘ma’ [CWE-690] [-Wanalyzer-possible-null-dereference]
+  152 |                 memcpy(ma, &m, sizeof(m));
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~
+  ‘do_multiaddr’: events 1-4
     |
-    |cc1:
-    | (10): ...to here
-    |
-  ‘get_task_name’: event 11
-    |
-    |  355 |         if (!fgets(name, len, f))
-    |      |            ^
-    |      |            |
-    |      |            (11) ‘f’ leaks here; was opened at (5)
-    |
-fs.c:355:12: warning: leak of ‘f’ [CWE-401] [-Wanalyzer-malloc-leak]
-  ‘get_task_name’: events 1-9
-    |
-    |  345 |         if (!pid)
-    |      |            ^
-    |      |            |
-    |      |            (1) following ‘false’ branch (when ‘pid != 0’)...
-    |......
-    |  348 |         if (snprintf(path, sizeof(path), "/proc/%d/comm", pid) >= sizeof(path))
-    |      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    |      |            ||
-    |      |            |(2) ...to here
-    |      |            (3) following ‘false’ branch...
-    |......
-    |  351 |         f = fopen(path, "r");
-    |      |             ~~~~~~~~~~~~~~~~
-    |      |             |
-    |      |             (4) ...to here
-    |      |             (5) allocated here
-    |  352 |         if (!f)
+    |  354 | int do_multiaddr(int argc, char **argv)
+    |      |     ^~~~~~~~~~~~
+    |      |     |
+    |      |     (1) entry to ‘do_multiaddr’
+    |  355 | {
+    |  356 |         if (argc < 1)
     |      |            ~
     |      |            |
-    |      |            (6) assuming ‘f’ is non-NULL
-    |      |            (7) following ‘false’ branch (when ‘f’ is non-NULL)...
-    |......
-    |  355 |         if (!fgets(name, len, f))
-    |      |            ~ ~~~~~~~~~~~~~~~~~~~
-    |      |            | |
-    |      |            | (8) ...to here
-    |      |            (9) following ‘true’ branch...
+    |      |            (2) following ‘true’ branch (when ‘argc <= 0’)...
+    |  357 |                 return multiaddr_list(0, NULL);
+    |      |                        ~~~~~~~~~~~~~~~~~~~~~~~
+    |      |                        |
+    |      |                        (3) ...to here
+    |      |                        (4) calling ‘multiaddr_list’ from ‘do_multiaddr’
     |
-  ‘get_task_name’: event 10
+    +--> ‘multiaddr_list’: events 5-10
+           |
+           |  255 | static int multiaddr_list(int argc, char **argv)
+           |      |            ^~~~~~~~~~~~~~
+           |      |            |
+           |      |            (5) entry to ‘multiaddr_list’
+           |......
+           |  262 |         while (argc > 0) {
+           |      |                ~~~~~~~~
+           |      |                     |
+           |      |                     (6) following ‘false’ branch (when ‘argc <= 0’)...
+           |......
+           |  275 |         if (!filter.family || filter.family == AF_PACKET)
+           |      |              ~~~~~~~~~~~~~
+           |      |                    |
+           |      |                    (7) ...to here
+           |  276 |                 read_dev_mcast(&list);
+           |  277 |         if (!filter.family || filter.family == AF_INET)
+           |      |            ~
+           |      |            |
+           |      |            (8) following ‘true’ branch...
+           |  278 |                 read_igmp(&list);
+           |      |                 ~~~~~~~~~~~~~~~~
+           |      |                 |
+           |      |                 (9) ...to here
+           |      |                 (10) calling ‘read_igmp’ from ‘multiaddr_list’
+           |
+           +--> ‘read_igmp’: events 11-14
+                  |
+                  |  116 | static void read_igmp(struct ma_info **result_p)
+                  |      |             ^~~~~~~~~
+                  |      |             |
+                  |      |             (11) entry to ‘read_igmp’
+                  |......
+                  |  126 |         if (!fp)
+                  |      |            ~
+                  |      |            |
+                  |      |            (12) following ‘false’ branch (when ‘fp’ is non-NULL)...
+                  |  127 |                 return;
+                  |  128 |         if (!fgets(buf, sizeof(buf), fp)) {
+                  |      |            ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  |      |            | |
+                  |      |            | (13) ...to here
+                  |      |            (14) following ‘false’ branch...
+                  |
+                ‘read_igmp’: event 15
+                  |
+                  |cc1:
+                  | (15): ...to here
+                  |
+                ‘read_igmp’: events 16-19
+                  |
+                  |  133 |         while (fgets(buf, sizeof(buf), fp)) {
+                  |      |                ^~~~~
+                  |      |                |
+                  |      |                (16) following ‘true’ branch...
+                  |......
+                  |  136 |                 if (buf[0] != '\t') {
+                  |      |                     ~~~~~~
+                  |      |                        |
+                  |      |                        (17) ...to here
+                  |......
+                  |  151 |                 ma = malloc(sizeof(m));
+                  |      |                      ~~~~~~~~~~~~~~~~~
+                  |      |                      |
+                  |      |                      (18) this call could return NULL
+                  |  152 |                 memcpy(ma, &m, sizeof(m));
+                  |      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+                  |      |                 |
+                  |      |                 (19) ‘ma’ could be NULL: unchecked value from (18)
+                  |
+ipmaddr.c: In function ‘read_igmp6’:
+ipmaddr.c:181:25: warning: dereference of possibly-NULL ‘ma’ [CWE-690] [-Wanalyzer-possible-null-dereference]
+  181 |                         memcpy(ma, &m, sizeof(m));
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
+  ‘do_multiaddr’: events 1-4
     |
-    |cc1:
-    | (10): ...to here
-    |
-  ‘get_task_name’: event 11
-    |
-    |  355 |         if (!fgets(name, len, f))
-    |      |            ^
+    |  354 | int do_multiaddr(int argc, char **argv)
+    |      |     ^~~~~~~~~~~~
+    |      |     |
+    |      |     (1) entry to ‘do_multiaddr’
+    |  355 | {
+    |  356 |         if (argc < 1)
+    |      |            ~
     |      |            |
-    |      |            (11) ‘f’ leaks here; was allocated at (5)
+    |      |            (2) following ‘true’ branch (when ‘argc <= 0’)...
+    |  357 |                 return multiaddr_list(0, NULL);
+    |      |                        ~~~~~~~~~~~~~~~~~~~~~~~
+    |      |                        |
+    |      |                        (3) ...to here
+    |      |                        (4) calling ‘multiaddr_list’ from ‘do_multiaddr’
+    |
+    +--> ‘multiaddr_list’: events 5-10
+           |
+           |  255 | static int multiaddr_list(int argc, char **argv)
+           |      |            ^~~~~~~~~~~~~~
+           |      |            |
+           |      |            (5) entry to ‘multiaddr_list’
+           |......
+           |  262 |         while (argc > 0) {
+           |      |                ~~~~~~~~
+           |      |                     |
+           |      |                     (6) following ‘false’ branch (when ‘argc <= 0’)...
+           |......
+           |  275 |         if (!filter.family || filter.family == AF_PACKET)
+           |      |              ~~~~~~~~~~~~~
+           |      |                    |
+           |      |                    (7) ...to here
+           |......
+           |  279 |         if (!filter.family || filter.family == AF_INET6)
+           |      |            ~
+           |      |            |
+           |      |            (8) following ‘true’ branch...
+           |  280 |                 read_igmp6(&list);
+           |      |                 ~~~~~~~~~~~~~~~~~
+           |      |                 |
+           |      |                 (9) ...to here
+           |      |                 (10) calling ‘read_igmp6’ from ‘multiaddr_list’
+           |
+           +--> ‘read_igmp6’: events 11-12
+                  |
+                  |  159 | static void read_igmp6(struct ma_info **result_p)
+                  |      |             ^~~~~~~~~~
+                  |      |             |
+                  |      |             (11) entry to ‘read_igmp6’
+                  |......
+                  |  164 |         if (!fp)
+                  |      |            ~
+                  |      |            |
+                  |      |            (12) following ‘false’ branch (when ‘fp’ is non-NULL)...
+                  |
+                ‘read_igmp6’: event 13
+                  |
+                  |cc1:
+                  | (13): ...to here
+                  |
+                ‘read_igmp6’: events 14-17
+                  |
+                  |  167 |         while (fgets(buf, sizeof(buf), fp)) {
+                  |      |                ^~~~~
+                  |      |                |
+                  |      |                (14) following ‘true’ branch...
+                  |  168 |                 char hexa[256];
+                  |  169 |                 struct ma_info m = { .addr.family = AF_INET6 };
+                  |      |                                ~
+                  |      |                                |
+                  |      |                                (15) ...to here
+                  |......
+                  |  179 |                         struct ma_info *ma = malloc(sizeof(m));
+                  |      |                                              ~~~~~~~~~~~~~~~~~
+                  |      |                                              |
+                  |      |                                              (16) this call could return NULL
+                  |  180 |
+                  |  181 |                         memcpy(ma, &m, sizeof(m));
+                  |      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~
+                  |      |                         |
+                  |      |                         (17) ‘ma’ could be NULL: unchecked value from (16)
+                  |
 
-Fixes: 81bfd01a4c9e ("lib: move get_task_name() from rdma")
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- lib/fs.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ ip/ipmaddr.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/lib/fs.c b/lib/fs.c
-index 22d4af7583dd..7f4b159ccb65 100644
---- a/lib/fs.c
-+++ b/lib/fs.c
-@@ -352,8 +352,10 @@ int get_task_name(pid_t pid, char *name, size_t len)
- 	if (!f)
- 		return -1;
+diff --git a/ip/ipmaddr.c b/ip/ipmaddr.c
+index f8d6b992d254..a8ef20ec624a 100644
+--- a/ip/ipmaddr.c
++++ b/ip/ipmaddr.c
+@@ -102,6 +102,8 @@ static void read_dev_mcast(struct ma_info **result_p)
+ 		if (len >= 0) {
+ 			struct ma_info *ma = malloc(sizeof(m));
  
--	if (!fgets(name, len, f))
-+	if (!fgets(name, len, f)) {
-+		fclose(f);
- 		return -1;
-+	}
++			if (ma == NULL)
++				break;
+ 			memcpy(ma, &m, sizeof(m));
+ 			ma->addr.bytelen = len;
+ 			ma->addr.bitlen = len<<3;
+@@ -149,6 +151,9 @@ static void read_igmp(struct ma_info **result_p)
+ 		sscanf(buf, "%08x%d", (__u32 *)&m.addr.data, &m.users);
  
- 	/* comm ends in \n, get rid of it */
- 	name[strcspn(name, "\n")] = '\0';
+ 		ma = malloc(sizeof(m));
++		if (ma == NULL)
++			break;
++			
+ 		memcpy(ma, &m, sizeof(m));
+ 		maddr_ins(result_p, ma);
+ 	}
+@@ -178,8 +183,10 @@ static void read_igmp6(struct ma_info **result_p)
+ 		if (len >= 0) {
+ 			struct ma_info *ma = malloc(sizeof(m));
+ 
+-			memcpy(ma, &m, sizeof(m));
++			if (ma == NULL)
++				break;
+ 
++			memcpy(ma, &m, sizeof(m));
+ 			ma->addr.bytelen = len;
+ 			ma->addr.bitlen = len<<3;
+ 			maddr_ins(result_p, ma);
 -- 
 2.39.2
 
