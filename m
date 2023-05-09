@@ -1,567 +1,218 @@
-Return-Path: <netdev+bounces-1288-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1289-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E8B456FD2FB
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 01:14:00 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2F5066FD31C
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 01:46:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0F2FE1C20C78
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:13:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0242B281262
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 23:46:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9DB5154AF;
-	Tue,  9 May 2023 23:13:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4779B168A2;
+	Tue,  9 May 2023 23:46:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B608C1990C
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 23:13:57 +0000 (UTC)
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E974201
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 16:13:40 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id e9e14a558f8ab-32f4e0f42a7so199525ab.1
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 16:13:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683674020; x=1686266020;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kanIN5OoppOMOPBY6b0gUsqKscsAhNWTRUO23u47Zb0=;
-        b=tVQA/B5/9YUAz4XXNBY5fGaPkyNPPDwBxxdsNLAgeyzIMaRHugDaC7aHp8RNh92hFh
-         g7U9g2prEKDH/NZHr9oJbXdkCrVdee/eeWTM8N0iXB6FoCiVVRuaiyEEFKYOzLJUETR7
-         yVwHZLnkUAN+F1gVh+1whd8L1NpocC2AlT/I2uAG90teB7OZyL9amxft5PoQhS8rl1MR
-         KMUR9vB3yEouvwQO6gPyZ5yoi76axAbLL4ljycuJJVKbi9BMYxcSRY0+FG19q3bmiXng
-         84KqV3JK4WuEgpWQUqVb7jq9Cf6uKNUHHtc+Wfe4Kbsrx5ELhmO+pWBc8/wVCmG1Fh8p
-         uPrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683674020; x=1686266020;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kanIN5OoppOMOPBY6b0gUsqKscsAhNWTRUO23u47Zb0=;
-        b=d6iX4oqB8iiR+K/zVWhYcwcOrcGytHuDOeg9QdBLQk6fOOoK08ZqD0tKjs1PtodJQl
-         fOraDjKK51a2ibHWsMRh8GH8OLKUgUk83l7Aic8AN0p6ppAWCi7+BWbZ5TFrZHPLmzGp
-         NkVsf4zAolzwz407NlCdDn4nhxh7KCgoAk9gqit21CPKZlVQbNhPVHeSA1gpreDPP9FJ
-         CHf3DJdmWK9lhjNA6xL4jVHXUHkzykNhLCzRdVPKMkKDsiZDTa+dG8xyfPBYB/5I/4Z6
-         MvF/R+3AFXolqYu9N03SUf/cabWb8Vpt2IXcSm2Xrseu1AcfPEX6i3e7SlRvNwZMYVXf
-         Qbag==
-X-Gm-Message-State: AC+VfDyGBC0/5Y9DU0yyAuBoQA67iaWM6mAiXHYQmceWrgZs/Kx2xRsB
-	X67C5XDBoA+g7BA6SxXzsTwifoaSykJ0qTmF9a4ljg==
-X-Google-Smtp-Source: ACHHUZ4TF2/Kz819R20ITRdDe80JHvEUvhZavHq27uV0KlqsjhfFcRph+OSbnm7ZIpX/3ogeNJJa4MqSvq1no/g8X6c=
-X-Received: by 2002:a92:c56b:0:b0:32f:7715:4482 with SMTP id
- b11-20020a92c56b000000b0032f77154482mr130326ilj.4.1683674019556; Tue, 09 May
- 2023 16:13:39 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 354811990C
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 23:46:18 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F3A2720
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 16:46:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683675976; x=1715211976;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=QOFTHuVyhuocrmkfizxWjkjY+DFxxclYoQtkF/SYJXE=;
+  b=mDAV0qaOubYL92amVR1tgxBsxtOZfrnIY6o77QJMbKIoRbXcPozIzR0k
+   Of0mXy1HtKv2zWvTTJESDrGZWk4yecKtSXOyrxEWX6ndSg58EWO4me/wg
+   CA/V9BI21I8TXbQ7APQy/4UFIWKJeK5VKivn2eWP7hod7d8IxQPfKDfor
+   V0hysesNadX683MfkyJOQG5u8dOh08BNHmUEX1/zo7OSqu825qSCOFVP2
+   l91Es8MzMMnCDVE06PSUJ1tnNuYekF/02MFnFyrhQBhE3dSe4cpasdBRd
+   uTWSBemB2PbXp8n4pj4/XRLHNsteEtHHdlTpsVlXirf7JThRTGC1CLjvV
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10705"; a="350118573"
+X-IronPort-AV: E=Sophos;i="5.99,263,1677571200"; 
+   d="scan'208";a="350118573"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 16:46:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10705"; a="945473296"
+X-IronPort-AV: E=Sophos;i="5.99,263,1677571200"; 
+   d="scan'208";a="945473296"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga006.fm.intel.com with ESMTP; 09 May 2023 16:46:07 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 9 May 2023 16:46:07 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Tue, 9 May 2023 16:46:07 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.174)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Tue, 9 May 2023 16:46:06 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jrEWzsqL19bDUnnq4TWcUyFPNnwFbaaPDx3RRa1NW5l4azq+VZO+zLBoNqlGwnrg+qcf3LhGJiuo94eBzzeNnE81bJILSuD/MnIUuNKCaznb5TvTOy0sX7SgIPs8dAgg6tXhWSAEbcV8yyYCg+QzQYJHXGDfbZimEMAiTOqpMwpyfmD0HXsjNWMy+ESf7cU++WWGsjSuFqfmW8R0VvkD95m7XCGHrLldC+SsVMwhNhicDb30gzR29lfVioBMi3zybJbnjaTMbjaBuwSGOUPeGnytQqTFN290jqildVPJ0Bf5JcKvkPmRRvQGE9G+fUdjSBV15FqFfMXT3wnq/4TfKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DoElZ7dFmziKAyKKpWvotJlbD/yCTownNJ88UaAPTZ0=;
+ b=kFOaJQtudDuEpEA/PWvgQ+tjGTyDkvo1B1k8BqWDP3ixEKJ4siA4jEetFbF3oWUTqaqkAzqwVokwbLB48x0U46+BPy0KEhXt1LMZssgOb2CptXdWOP6UbUG0RuS+W9m9bhK02RSg7mCbLVFAQB93gvbgzem7zwmT1fFvNOqIrJE/HS7OcpedazF8IpVAqJGdNwbYmK4EApoLxWyucr+h83Pl7rXioAyxMHz2Dtz13jMo+pY0go8vhxCp/J55VlIFub6rYxrqdocjxB4AM81yp3KmLq7CDoKUvE7JAhFUJNamn2EIFlJE2VB1wmSO3bcY16p5FNaYD4WEUoKhGAK2og==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com (2603:10b6:303:90::24)
+ by CH3PR11MB7867.namprd11.prod.outlook.com (2603:10b6:610:12a::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.33; Tue, 9 May
+ 2023 23:46:04 +0000
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::57f1:e14c:754d:bb00]) by CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::57f1:e14c:754d:bb00%4]) with mapi id 15.20.6387.018; Tue, 9 May 2023
+ 23:46:04 +0000
+Message-ID: <5ec678c0-9f4b-3d38-a0d8-700b5668e9c4@intel.com>
+Date: Tue, 9 May 2023 16:46:01 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.10.1
+Subject: Re: [PATCH] net: stmmac: Initialize MAC_ONEUS_TIC_COUNTER register
+Content-Language: en-US
+To: Marek Vasut <marex@denx.de>, <netdev@vger.kernel.org>
+CC: "David S. Miller" <davem@davemloft.net>, Alexandre Torgue
+	<alexandre.torgue@foss.st.com>, Eric Dumazet <edumazet@google.com>,
+	"Francesco Dolcini" <francesco.dolcini@toradex.com>, Giuseppe Cavallaro
+	<peppe.cavallaro@st.com>, Harald Seiler <hws@denx.de>, Jakub Kicinski
+	<kuba@kernel.org>, Jose Abreu <joabreu@synopsys.com>, Marcel Ziswiler
+	<marcel.ziswiler@toradex.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Paolo Abeni <pabeni@redhat.com>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-stm32@st-md-mailman.stormreply.com>
+References: <20230506235845.246105-1-marex@denx.de>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+In-Reply-To: <20230506235845.246105-1-marex@denx.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR13CA0100.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c5::15) To CO1PR11MB4914.namprd11.prod.outlook.com
+ (2603:10b6:303:90::24)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230224195313.1877313-1-jiangzp@google.com> <20230224115310.kernel.v2.1.If0578b001c1f12567f2ebcac5856507f1adee745@changeid>
- <CABBYNZ+yVWssa09NB+ahp-N87sLXRqYF58-GJK-Vx8jn-Sa5Uw@mail.gmail.com>
- <CAB4PzUrO32Z1AF-3UJviYqTr3YvachGgJ7NiqkNW46ioWigtfw@mail.gmail.com>
- <CAB4PzUoErDkUzyj6sFQc_CSa7hibucX42yY+oVGw7C4DcJdQFA@mail.gmail.com>
- <CABBYNZL=u88Ro1dR8fYWpiS6E1sZ4E8TXg8BVU7nEGBodYhTrA@mail.gmail.com>
- <CAB4PzUr9vE2m-uWVvcTa0SaeryLxhj8sZbvRqSkqLKDFwMoeyQ@mail.gmail.com>
- <CABBYNZKVc3F_GdSfYTtXcQm9jGXkZJGBh3xV8eSxGkA4iKooGQ@mail.gmail.com>
- <CAB4PzUpw7dqguZNuk45pk1sGvAtBabRqm1vuGNW_kPvHpgc=FA@mail.gmail.com>
- <CABBYNZLvdCA3Nn7CduBxb0y5FcmnuUxgthtuWjrR89VkGn97ZQ@mail.gmail.com> <CAB4PzUpDMvdc8j2MdeSAy1KkAE-D3woprCwAdYWeOc-3v3c9Sw@mail.gmail.com>
-In-Reply-To: <CAB4PzUpDMvdc8j2MdeSAy1KkAE-D3woprCwAdYWeOc-3v3c9Sw@mail.gmail.com>
-From: Zhengping Jiang <jiangzp@google.com>
-Date: Tue, 9 May 2023 16:13:28 -0700
-Message-ID: <CAB4PzUpDGXkSdaZwDF1XX3mptJuus2W5UGR+_b0N+Vw0O0++Ug@mail.gmail.com>
-Subject: Re: [kernel PATCH v2 1/1] Bluetooth: hci_sync: clear workqueue before
- clear mgmt cmd
-To: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc: linux-bluetooth@vger.kernel.org, marcel@holtmann.org, mmandlik@google.com, 
-	chromeos-bluetooth-upstreaming@chromium.org, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Johan Hedberg <johan.hedberg@gmail.com>, 
-	Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB4914:EE_|CH3PR11MB7867:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3b7b0206-5715-4bf0-690f-08db50e78d2d
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7h6f83vvxcXEDqR47znQf6+9usGsArZAH08bMnM7okkyfZ6XfDE9UdFsjms9siRQpcfmDt83p44VB1YhDPHinCOwxs9rArZNi7kGhlDDnhOcWHhjCdDKsguPlq2VQ7w3ISvLiZxQqPBr/Jyg1sFfknFy5fH00eq5sPfIBWpo4wWKqZf0zoxzs+VigB9pAcZOC//clJsckuw4bSVzXST+voDevBAPZ4CriuwcjxV+2A/7DbgVn9Do0eWJCnL1RFL6lVdRoV3FOXA9tH4Kk3Vmgt6M5K1O1Y1TzD2r1A7XjQ6yC8UK9kLFFn38nAe42eN3YUtI+J67rK0OOLGILy8Sgn8YzoQLDpg0vMk+XtEtQAjskUbDaBLvjyvh44By+5EzRocWZIDwnWQbjNgCglBavi7WY/vFi38zXWYd8QqhR1CgHzM9/jJtjsgH7LK1gSCUGlqbLh3Z8BSx5JcI8+eA8uB846MQFQBG9F1Y8blesWYA4/8znqub5Xu+7cYSjBHWekS23w+6N3qyiVI6EAI3kKZL11KO0uSTF/7vBfLPWeTTN8xFNdtLWuIbtaijyo+7psob7honMHG6jBlsxGa6vXxMmZis/exBV2D+eEMvOHDVAdHPu2dpsseczPjHQUfd3TFZrkksyYMv5dJdaDOQDA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4914.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(366004)(376002)(396003)(346002)(136003)(451199021)(31686004)(82960400001)(36756003)(41300700001)(2906002)(86362001)(31696002)(44832011)(7416002)(38100700002)(5660300002)(8676002)(8936002)(66476007)(4326008)(478600001)(83380400001)(66946007)(316002)(53546011)(186003)(26005)(6506007)(6512007)(54906003)(66556008)(6486002)(6666004)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?THV3cUptdTBicGFOMm5lekxXY0Z3Y1Z4bWhFN0RjYXBrWlZGSzBTQ2Y4OGNW?=
+ =?utf-8?B?aXNMLzUzaUU0ejcrZmU1WmRUY3l5eFNEUnpCdXFnUk1DUjZzSXdCRkJ1a0hk?=
+ =?utf-8?B?bWtBQ0NGV044WlZUcTJTd3E3dlNWclI0S0ZTUkJSVUUweFFDSytlQ0xmenRJ?=
+ =?utf-8?B?SnAzR2lkNGRoTjRrZER4eFovcURHb29sSllTNUY5OXBuUEx6aXo2MDNhLzRp?=
+ =?utf-8?B?NXgxeTRPVmZoWG1SamRSYlZTR21MMldZTkliZXplM0huVnF4N1ZFK29NNm84?=
+ =?utf-8?B?MFlaNCthbTA5d0dpSmhBUFc4R0hiTDErZFFmcjdLazdZNDZJeFE1Z1BUbitz?=
+ =?utf-8?B?TzB2MHMzNGtaOWc4TGcrNnBCQ1dNVHBYa1FoQUE2dTN4bGJMblhuSjJBOG1i?=
+ =?utf-8?B?NUUvazdWc0EwWi84cFQxOUZ3TjBmT3c0Sm4yUHBhVzYwOGZrMHIraEQvT2py?=
+ =?utf-8?B?OTdZOUxCVTdDK2t5dXNLRmIwN0ZvUHZHb3l6T1h4aWpKRUkzb3Y3VWRVamFH?=
+ =?utf-8?B?bVdNY0lPM2UwcEJQejlwZ3AyVExLRXU5Z2kwRmlkbHBFYWhPMkJ1Q2YyeW16?=
+ =?utf-8?B?QjhicVc5K3ZIQ2VZakQwM0cvU2RoK0ZTenFaVldoVi9adXlBTndyc2tXVTBm?=
+ =?utf-8?B?VjhheGl3N0FBdjZsSSthWnZqeWg5bWdQZUkrL2tKbitaR3dQNjZDOXlOemVR?=
+ =?utf-8?B?clJkRGpRZjNGWWgzVnhyOWhHQUxPM0dJbVhYeTBWekxzV3puRlhIbkc5VldW?=
+ =?utf-8?B?NWZNT1hWMmxpQ1JHWDA4eitTbWFTd01YUjY1Z0xxV2oyV01vSHZ2YjQ5ZjdW?=
+ =?utf-8?B?dFdUblM5VzdwQ0kzMVFDQkNyTTVqcENvSXBuR3F1OExtYjJ3aHBuKy9ZbFJF?=
+ =?utf-8?B?Zks2Z1lMcUtoVzlrcXluVGJPOURuS20zUWZWbVM0OGRHcjRDUE16NGRLTzJN?=
+ =?utf-8?B?Tk01YlhBUmZqVnBSUm84a1l0dVJ2Y3c2ZEtWaDhPbHVRTnUzeW9VZW1aWlR6?=
+ =?utf-8?B?QW91Y0lNMWpYRll2K3c5VEsyZGdSY2JlMDZpUzNtdWpycndQaE5XSXd6eDFS?=
+ =?utf-8?B?ZjhwVXYyU21LRW0zRUlpT0p3SFVwNnA5QVFpekJvOWl6U1FxeXBzMFdlQXNU?=
+ =?utf-8?B?NWhqdzNDbENGWE1IV0JUb0diUGxPcUpaTjRwU2xOSDVHU2YwQ3pjUFpVVTAy?=
+ =?utf-8?B?aWFWWnRlVkR0cDRCSDhDamIwcHN2UTBvNHE4MUdZRWpjVVFaczM0TXJUck9o?=
+ =?utf-8?B?ZWRkZmtJY25iVm51U0h2akNpR05lbjVBWkRJMVY0Mllua2dmcnF0aVg3K2Nu?=
+ =?utf-8?B?Mm5nbFhkSHhTQnhtZXFvS3QzcnVVQzFwMUszOWl6Z2RUemtOa00ydUVPL2F3?=
+ =?utf-8?B?dURHWXVoSjNiRStqaW1UVHhWNi80RUNyaWVmUmhmRU5lY3FLZWVUSGJBNU5j?=
+ =?utf-8?B?WjNmUlJ1RTRLUzhQYmo2ZXZrNGRISGMrR3RKSGxSK3gvK1ZPNHczaUhtazN2?=
+ =?utf-8?B?MWYxQTExZVFuY294Qmg2S0QrVzRIeWNXUmtZcjYvSElBMkh1VTQ3K2xpRG13?=
+ =?utf-8?B?aDhTRjFtSFpEUVl3WGlzSnlZUkZVdFUwZFlKRTJBUlF1RVZKUUJQYmxlNnBv?=
+ =?utf-8?B?RnVMVUY2Ym5relAxVm9Id1l1WDZOQTFIdXhTc3gzcy9BODY4T1FnTUdjNU5U?=
+ =?utf-8?B?TGFtaGRMUWJyK1ZOb2dGMWlhN1RyY3QrdW02K0d3MGFwd3EwTkJLWHlvTmFM?=
+ =?utf-8?B?RklWcUxqdzhtZVl2VENyYjlGWEg3K3d3VkhwMGFra0duTEQrSUQwSEFNall5?=
+ =?utf-8?B?TWVTU2hzNDdkdmhNZTJIY2pJbTFxSkRMc242OUJFdUxVTWM3ekVFaUZySkdZ?=
+ =?utf-8?B?aEZrL3VrL2JYZk9XTWdxL2tqZTZ1YjZ6MmhYdVNOUXAvL0ZBcEZ4M1gzUjBZ?=
+ =?utf-8?B?VkVkZ1VGbiszVHA3MG15a2hFcStOL2Q1UnlGSm1oM1RFMjR6Q1Z4bjNBaENF?=
+ =?utf-8?B?aW9BQldJTWdkUmRtRDcyTy9JZ2ZXWklxYXFEbHFZNEl6WUc4OG4xWDM2MmpF?=
+ =?utf-8?B?V0ptSDZoYVFGTWgwRFRZVTlicG9FRHk5cEJIaWpHTzcxc2ZNTkpWaUNRcnE2?=
+ =?utf-8?B?SE5JTGY1MTRVWTFaS01Rb1drdkVCc01WbHpZMWt3ODN5UXJhK0daV0UrM3B6?=
+ =?utf-8?B?NWc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b7b0206-5715-4bf0-690f-08db50e78d2d
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4914.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2023 23:46:04.2241
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /ZbilgUS2ciKty6UGyPP9EwWOBF/KVoC/gdRF4ahGlFQ9AjXxiD51/XBZMpbQyBaw0hniRNfdB0AGUnSXkpGq24225UPPMFubyW7etYTN6w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7867
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Luiz,
+On 5/6/2023 4:58 PM, Marek Vasut wrote:
+> Initialize MAC_ONEUS_TIC_COUNTER register with correct value derived
+> from CSR clock, otherwise EEE is unstable on at least NXP i.MX8M Plus
+> and Micrel KSZ9131RNX PHY, to the point where not even ARP request can
+> be sent out.
+> 
+> i.MX 8M Plus Applications Processor Reference Manual, Rev. 1, 06/2021
+> 11.7.6.1.34 One-microsecond Reference Timer (MAC_ONEUS_TIC_COUNTER)
+> defines this register as:
+> "
+> This register controls the generation of the Reference time (1 microsecond
+> tic) for all the LPI timers. This timer has to be programmed by the software
+> initially.
+> ...
+> The application must program this counter so that the number of clock cycles
+> of CSR clock is 1us. (Subtract 1 from the value before programming).
+> For example if the CSR clock is 100MHz then this field needs to be programmed
+> to value 100 - 1 = 99 (which is 0x63).
+> This is required to generate the 1US events that are used to update some of
+> the EEE related counters.
+> "
+> 
+> The reset value is 0x63 on i.MX8M Plus, which means expected CSR clock are
+> 100 MHz. However, the i.MX8M Plus "enet_qos_root_clk" are 266 MHz instead,
+> which means the LPI timers reach their count much sooner on this platform.
+> 
+> This is visible using a scope by monitoring e.g. exit from LPI mode on TX_CTL
+> line from MAC to PHY. This should take 30us per STMMAC_DEFAULT_TWT_LS setting,
+> during which the TX_CTL line transitions from tristate to low, and 30 us later
+> from low to high. On i.MX8M Plus, this transition takes 11 us, which matches
+> the 30us * 100/266 formula for misconfigured MAC_ONEUS_TIC_COUNTER register.
+> 
+> Configure MAC_ONEUS_TIC_COUNTER based on CSR clock, so that the LPI timers
+> have correct 1us reference. This then fixes EEE on i.MX8M Plus with Micrel
+> KSZ9131RNX PHY.
+> 
+> Signed-off-by: Marek Vasut <marex@denx.de>
 
-I have revisited this issue and asked our partner to do some more
-tests. I think the root cause is the use of hdev->mgmt_pending. There
-are some mgmt_pending_cmd, which would be released at callbacks. For
-example:
+Patch and commit message look good to me.
 
-> err =3D hci_cmd_sync_queue(hdev, mgmt_remove_adv_monitor_sync, cmd, mgmt_=
-remove_adv_monitor_complete);
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-mgmt_remove_adv_monitor_complete will release the cmd memory by
-calling mgmt_pending_remove(cmd).
 
-In this case, the call to  mgmt_pending_foreach(0, hdev,
-cmd_complete_rsp, &status) at __mgmt_power_off will double free the
-memory at a race condition.
-
-A quick solution is to detect and skip some opcode at cmd_complete_rsp
-if a command is consistently released by callback.
-
-> static void cmd_complete_rsp(struct mgmt_pending_cmd *cmd, void *data)
-> {
-> if (cmd->opcode =3D=3D MGMT_OP_REMOVE_ADV_MONITOR ||
->     cmd->opcode =3D=3D MGMT_OP_SET_SSP)
-> return;
-
-To fully remove the race condition, maybe using two lists is
-necessary. What do you think about this proposal?
-
-Thanks,
-Zhengping
-
-Thanks,
-Zhengping
-
-On Tue, Feb 28, 2023 at 6:11=E2=80=AFPM Zhengping Jiang <jiangzp@google.com=
-> wrote:
->
-> Hi Luiz,
->
-> Thanks for testing these options!
->
-> > perhaps we need a dedicated flag to ensure cmd_sync cannot be schedule =
-after a certain point
-> This actually sounds promising to me. I would think about this.
->
-> This does not happen in regular use, but one of our customers has a
-> script to run a stress test by turning on/off the adapter and
-> rebooting for a few cycles. Then the crash can be reproduced. If you
-> have any new ideas, I can schedule a test.
->
-> Just to confirm if you will submit the current patch or you would hold
-> it for a solid solution? The current patch to clear the cmd_sync list
-> indeed reduces the crash frequency.
->
-> Best,
-> Zhengping
->
-> On Tue, Feb 28, 2023 at 5:53=E2=80=AFPM Luiz Augusto von Dentz
-> <luiz.dentz@gmail.com> wrote:
-> >
-> > Hi Zhengping,
-> >
-> > On Tue, Feb 28, 2023 at 4:18=E2=80=AFPM Zhengping Jiang <jiangzp@google=
-.com> wrote:
-> > >
-> > > Hi Luiz,
-> > >
-> > > This looks good to me. I still have a question. Does this prevent a
-> > > job scheduled between "hci_cmd_sync_work_list_clear(hdev);" and
-> > > "__mgmt_power_off(hdev);"? Otherwise, the chance for a race condition
-> > > is still there. Maybe using cancel_work_sync and re-init the workqueu=
-e
-> > > timer is the right thing to do?
-> >
-> > I tried the cancel_work_sync but it doesn't work since to
-> > cmd_sync_work itself can call hci_dev_close_sync so it deadlocks, Ive
-> > also tried stopping new scheduling of new work based on HCI_UP flag
-> > but that causes some tests not to run, perhaps we need a dedicated
-> > flag to ensure cmd_sync cannot be schedule after a certain point but I
-> > could found the exact point it is, anyway I fine leaving this to when
-> > we actually have a more clear understanding or a reproducer.
-> >
-> > > Thanks,
-> > > Zhengping
-> > >
-> > > On Tue, Feb 28, 2023 at 1:11=E2=80=AFPM Luiz Augusto von Dentz
-> > > <luiz.dentz@gmail.com> wrote:
-> > > >
-> > > > Hi Zhengping,
-> > > >
-> > > > On Mon, Feb 27, 2023 at 3:58=E2=80=AFPM Zhengping Jiang <jiangzp@go=
-ogle.com> wrote:
-> > > > >
-> > > > > Hi Luiz,
-> > > > >
-> > > > > Sure. Hope this helps.
-> > > > > Here is one log from the user.
-> > > > >
-> > > > > [   53.368740] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > > [   53.376167] BUG: KASAN: use-after-free in set_ssp_sync+0x44/0x=
-154 [bluetooth]
-> > > > > [   53.384303] Read of size 8 at addr ffffff80b7ee0318 by task kw=
-orker/u17:0/190
-> > > > > [   53.396342] CPU: 7 PID: 190 Comm: kworker/u17:0 Tainted: G    =
-    W
-> > > > >         5.15.59-lockdep #1 29eed131ef0afd42bc369a6a0ca1c69d365369=
-9b
-> > > > > [   53.408868] Hardware name: Qualcomm Technologies, Inc. sc7280 =
-CRD
-> > > > > platform (rev5+) (DT)
-> > > > > [   53.417095] Workqueue: hci0 hci_cmd_sync_work [bluetooth]
-> > > > > [   53.422780] Call trace:
-> > > > > [   53.425310]  dump_backtrace+0x0/0x424
-> > > > > [   53.429108]  show_stack+0x20/0x2c
-> > > > >
-> > > > > [   53.432534]  dump_stack_lvl+0x84/0xb4
-> > > > > [   53.436514]  print_address_description+0x30/0x2fc
-> > > > > [   53.441369]  kasan_report+0x15c/0x19c
-> > > > > [   53.445975]  __asan_report_load8_noabort+0x44/0x50
-> > > > > [   53.450910]  set_ssp_sync+0x44/0x154 [bluetooth
-> > > > > 34f6fa2bbf49f3d7faf6ea04e8755ae16590a6b3]
-> > > > > [   53.460136]  hci_cmd_sync_work+0x1c8/0x2c8 [bluetooth
-> > > > > 34f6fa2bbf49f3d7faf6ea04e8755ae16590a6b3]
-> > > > > [   53.472214]  process_one_work+0x59c/0xa88
-> > > > > [   53.476990]  worker_thread+0x81c/0xd18
-> > > > > [   53.480854]  kthread+0x2d4/0x3d8
-> > > > > [   53.484272]  ret_from_fork+0x10/0x20
-> > > > >
-> > > > > [   53.489733] Allocated by task 1162:
-> > > > > [   53.493336]  kasan_save_stack+0x38/0x68
-> > > > > [   53.498115]  __kasan_kmalloc+0xb4/0xd0
-> > > > > [   53.501993]  kmem_cache_alloc_trace+0x29c/0x374
-> > > > > [   53.506661]  mgmt_pending_new+0x74/0x200 [bluetooth]
-> > > > > [   53.511905]  mgmt_pending_add+0x28/0xec [bluetooth]
-> > > > > [   53.517059]  set_ssp+0x2d8/0x5b0 [bluetooth]
-> > > > > [   53.521575]  hci_mgmt_cmd+0x5c4/0x8b0 [bluetooth]
-> > > > > [   53.526538]  hci_sock_sendmsg+0x28c/0x95c [bluetooth]
-> > > > > [   53.531850]  sock_sendmsg+0xb4/0xd8
-> > > > > [   53.535454]  sock_write_iter+0x1c0/0x2d0
-> > > > > [   53.539494]  do_iter_readv_writev+0x350/0x4e0
-> > > > > [   53.543980]  do_iter_write+0xf0/0x2e4
-> > > > > [   53.547747]  vfs_writev+0xd0/0x13c
-> > > > > [   53.551254]  do_writev+0xe8/0x1fc
-> > > > > [   53.554672]  __arm64_sys_writev+0x84/0x98
-> > > > > [   53.558805]  invoke_syscall+0x78/0x20c
-> > > > > [   53.562665]  el0_svc_common+0x12c/0x2f0
-> > > > > [   53.566618]  do_el0_svc+0x94/0x13c
-> > > > > [   53.570125]  el0_svc+0x5c/0x108
-> > > > > [   53.573374]  el0t_64_sync_handler+0x78/0x108
-> > > > > [   53.577773]  el0t_64_sync+0x1a4/0x1a8
-> > > > >
-> > > > > [   53.583089] Freed by task 3207:
-> > > > > [   53.586325]  kasan_save_stack+0x38/0x68
-> > > > > [   53.590282]  kasan_set_track+0x28/0x3c
-> > > > > [   53.594153]  kasan_set_free_info+0x28/0x4c
-> > > > > [   53.598369]  ____kasan_slab_free+0x138/0x17c
-> > > > > [   53.602767]  __kasan_slab_free+0x18/0x28
-> > > > > [   53.606803]  slab_free_freelist_hook+0x188/0x260
-> > > > > [   53.611559]  kfree+0x138/0x29c
-> > > > > [   53.614708]  mgmt_pending_free+0xac/0xdc [bluetooth]
-> > > > > [   53.619948]  mgmt_pending_remove+0xd8/0xf0 [bluetooth]
-> > > > > [   53.625357]  cmd_complete_rsp+0xc8/0x178 [bluetooth]
-> > > > > [   53.630586]  mgmt_pending_foreach+0xa8/0xf8 [bluetooth]
-> > > > > [   53.636076]  __mgmt_power_off+0x114/0x26c [bluetooth]
-> > > > > [   53.641390]  hci_dev_close_sync+0x314/0x814 [bluetooth]
-> > > > > [   53.646882]  hci_dev_do_close+0x3c/0x7c [bluetooth]
-> > > > > [   53.652017]  hci_dev_close+0xa4/0x15c [bluetooth]
-> > > > > [   53.656980]  hci_sock_ioctl+0x298/0x444 [bluetooth]
-> > > > > [   53.662117]  sock_do_ioctl+0xd0/0x1e8
-> > > > > [   53.665900]  sock_ioctl+0x4fc/0x72c
-> > > > > [   53.669500]  __arm64_sys_ioctl+0x118/0x154
-> > > > > [   53.673726]  invoke_syscall+0x78/0x20c
-> > > > > [   53.677587]  el0_svc_common+0x12c/0x2f0
-> > > > > [   53.681533]  do_el0_svc+0x94/0x13c
-> > > > > [   53.685043]  el0_svc+0x5c/0x108
-> > > > > [   53.688278]  el0t_64_sync_handler+0x78/0x108
-> > > > > [   53.692677]  el0t_64_sync+0x1a4/0x1a8
-> > > > >
-> > > > > [   53.697988] Last potentially related work creation:
-> > > > > [   53.703009]  kasan_save_stack+0x38/0x68
-> > > > > [   53.706962]  kasan_record_aux_stack+0x104/0x130
-> > > > > [   53.711622]  __call_rcu+0x14c/0x860
-> > > > > [   53.715212]  call_rcu+0x18/0x24
-> > > > > [   53.718448]  sk_filter_uncharge+0xc0/0x120
-> > > > > [   53.722667]  __sk_destruct+0xb4/0x4a8
-> > > > > [   53.726435]  sk_destruct+0x78/0xa0
-> > > > > [   53.729941]  __sk_free+0x190/0x270
-> > > > > [   53.733453]  sk_free+0x54/0x8c
-> > > > > [   53.736603]  deferred_put_nlk_sk+0x1d4/0x20c
-> > > > > [   53.741000]  rcu_do_batch+0x3e8/0xd08
-> > > > > [   53.744772]  nocb_cb_wait+0xc8/0xa3c
-> > > > > [   53.748453]  rcu_nocb_cb_kthread+0x48/0x134
-> > > > > [   53.752768]  kthread+0x2d4/0x3d8
-> > > > > [   53.756098]  ret_from_fork+0x10/0x20
-> > > > >
-> > > > > This is another one at a different function but with the same sig=
-nature.
-> > > > >
-> > > > > [   43.363512] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > > [   43.370966] BUG: KASAN: use-after-free in
-> > > > > mgmt_remove_adv_monitor_sync+0x40/0xcc [bluetooth]
-> > > > > [   43.379813] Read of size 8 at addr ffffff8096c28d18 by task kw=
-orker/u17:0/192
-> > > > > [   43.387158]
-> > > > > [   43.388705] CPU: 6 PID: 192 Comm: kworker/u17:0 Tainted: G    =
-    W
-> > > > >         5.15.59-lockdep #1 59f35e3dfc07f6688b084869895c7a39892c89=
-1a
-> > > > > localhost ~ # [   43.410184] Workqueue: hci0 hci_cmd_sync_work [b=
-luetooth]
-> > > > >
-> > > > > [   43.418887] Call trace:
-> > > > > [   43.422407]  dump_backtrace+0x0/0x424
-> > > > > [   43.426191]  show_stack+0x20/0x2c
-> > > > > [   43.429608]  dump_stack_lvl+0x84/0xb4
-> > > > > [   43.433395]  print_address_description+0x30/0x2fc
-> > > > > [   43.438243]  kasan_report+0x15c/0x19c
-> > > > > [   43.442070]  __asan_report_load8_noabort+0x44/0x50
-> > > > > hciconfig hci0 up
-> > > > > [   43.447009]  mgmt_remove_adv_monitor_sync+0x40/0xcc [bluetooth
-> > > > > 8dae3a82177133cfa9626e7322b3b0c8f665102d]
-> > > > > [   43.458568]  hci_cmd_sync_work+0x1bc/0x2bc [bluetooth
-> > > > > 8dae3a82177133cfa9626e7322b3b0c8f665102d]
-> > > > > [   43.467656]  process_one_work+0x59c/0xa88
-> > > > > [   43.472530]  worker_thread+0x81c/0xd18
-> > > > > [   43.476410]  kthread+0x2d4/0x3d8
-> > > > > localhost ~ # [   43.479753]  ret_from_fork+0x10/0x20
-> > > > > [   43.486588]
-> > > > > [   43.488156] Allocated by task 1118:
-> > > > > [   43.491751]  kasan_save_stack+0x38/0x68
-> > > > > [   43.495709]  __kasan_kmalloc+0xb4/0xd0
-> > > > > [   43.499577]  kmem_cache_alloc_trace+0x29c/0x374
-> > > > > [   43.504238]  mgmt_pending_new+0x74/0x200 [bluetooth]
-> > > > > sleep 2[   43.509509]  mgmt_pending_add+0x28/0xec [bluetooth]
-> > > > >
-> > > > > [   43.515244]  remove_adv_monitor+0xf8/0x174 [bluetooth]
-> > > > > [   43.521533]  hci_mgmt_cmd+0x5c4/0x8b0 [bluetooth]
-> > > > > [   43.526527]  hci_sock_sendmsg+0x28c/0x95c [bluetooth]
-> > > > > [   43.531873]  sock_sendmsg+0xb4/0xd8
-> > > > > [   43.535472]  sock_write_iter+0x1c0/0x2d0
-> > > > > [   43.539519]  do_iter_readv_writev+0x350/0x4e0
-> > > > > [   43.544012]  do_iter_write+0xf0/0x2e4
-> > > > > [   43.547788]  vfs_writev+0xd0/0x13c
-> > > > > [   43.551295]  do_writev+0xe8/0x1fc
-> > > > > [   43.554710]  __arm64_sys_writev+0x84/0x98
-> > > > > [   43.558838]  invoke_syscall+0x78/0x20c
-> > > > > [   43.562709]  el0_svc_common+0x12c/0x2f0
-> > > > > [   43.566654]  do_el0_svc+0x94/0x13c
-> > > > > [   43.570155]  el0_svc+0x5c/0x108
-> > > > > [   43.573391]  el0t_64_sync_handler+0x78/0x108
-> > > > > [   43.577785]  el0t_64_sync+0x1a4/0x1a8
-> > > > > [   43.581564]
-> > > > > [   43.583115] Freed by task 3217:
-> > > > > [   43.586356]  kasan_save_stack+0x38/0x68
-> > > > > [   43.590314]  kasan_set_track+0x28/0x3c
-> > > > > [   43.594180]  kasan_set_free_info+0x28/0x4c
-> > > > > [   43.598396]  ____kasan_slab_free+0x138/0x17c
-> > > > > [   43.602794]  __kasan_slab_free+0x18/0x28
-> > > > > [   43.606838]  slab_free_freelist_hook+0x188/0x260
-> > > > > [   43.611591]  kfree+0x138/0x29c
-> > > > > [   43.614741]  mgmt_pending_free+0xac/0xdc [bluetooth]
-> > > > > [   43.620003]  mgmt_pending_remove+0xd8/0xf0 [bluetooth]
-> > > > > [   43.625434]  cmd_complete_rsp+0xc8/0x178 [bluetooth]
-> > > > > [   43.630686]  mgmt_pending_foreach+0xa8/0xf8 [bluetooth]
-> > > > > [   43.636198]  __mgmt_power_off+0x114/0x26c [bluetooth]
-> > > > > [   43.641532]  hci_dev_close_sync+0x2ec/0x7ec [bluetooth]
-> > > > > [   43.647049]  hci_dev_do_close+0x3c/0x7c [bluetooth]
-> > > > > [   43.652209]  hci_dev_close+0xac/0x164 [bluetooth]
-> > > > > [   43.657190]  hci_sock_ioctl+0x298/0x444 [bluetooth]
-> > > > > [   43.662353]  sock_do_ioctl+0xd0/0x1e8
-> > > > > [   43.666134]  sock_ioctl+0x4fc/0x72c
-> > > > > [   43.669736]  __arm64_sys_ioctl+0x118/0x154
-> > > > > [   43.673961]  invoke_syscall+0x78/0x20c
-> > > > > [   43.677820]  el0_svc_common+0x12c/0x2f0
-> > > > > [   43.681770]  do_el0_svc+0x94/0x13c
-> > > > > [   43.685278]  el0_svc+0x5c/0x108
-> > > > > [   43.688514]  el0t_64_sync_handler+0x78/0x108
-> > > > > [   43.692913]  el0t_64_sync+0x1a4/0x1a8
-> > > > >
-> > > > > Thanks,
-> > > > > Zhengping
-> > > >
-> > > > Ok, how about we do something like the following:
-> > > >
-> > > > https://gist.github.com/Vudentz/365d664275e4d2e2af157e47f0502f50
-> > > >
-> > > > The actual real culprit seem to be __mgmt_power_off does cleanup
-> > > > mgmt_pending but that is still accessible via cmd_sync_work_list, t=
-his
-> > > > is probably how hci_request was designed but in case of cmd_sync we
-> > > > normally have the data as part of cmd_sync_work_list.
-> > > >
-> > > > > On Mon, Feb 27, 2023 at 3:41=E2=80=AFPM Luiz Augusto von Dentz
-> > > > > <luiz.dentz@gmail.com> wrote:
-> > > > > >
-> > > > > > Hi Zhengping,
-> > > > > >
-> > > > > > On Sun, Feb 26, 2023 at 11:18=E2=80=AFPM Zhengping Jiang <jiang=
-zp@google.com> wrote:
-> > > > > > >
-> > > > > > > Hi Luiz,
-> > > > > > >
-> > > > > > > I have a question. Given that each command in the cmd_sync qu=
-eue
-> > > > > > > should clean up the memory in a callback function. I was wond=
-ering if
-> > > > > > > the call to cmd_complete_rsp in __mgmt_power_off function is =
-still
-> > > > > > > necessary? Will this always risk a race condition that cmd ha=
-s been
-> > > > > > > released when the complete callback or _sync function is run?
-> > > > > >
-> > > > > > Not sure I follow you here, do you have a stack trace when the =
-user
-> > > > > > after free occurs?
-> > > > > >
-> > > > > > > Thanks,
-> > > > > > > Zhengping
-> > > > > > >
-> > > > > > > On Fri, Feb 24, 2023 at 2:37=E2=80=AFPM Zhengping Jiang <jian=
-gzp@google.com> wrote:
-> > > > > > > >
-> > > > > > > > Hi Luiz,
-> > > > > > > >
-> > > > > > > > > Any particular reason why you are not using hci_cmd_sync_=
-clear
-> > > > > > > > > instead?
-> > > > > > > >
-> > > > > > > > That is a good question and we used hci_cmd_sync_clear in t=
-he first
-> > > > > > > > version, but it will clear the queue and also close the tim=
-er. As a
-> > > > > > > > result, when the adapter is turned on again, the timer will=
- not
-> > > > > > > > schedule any new jobs. So the option is to use hci_cmd_sync=
-_clear and
-> > > > > > > > re-initiate the queue or to write a new function which only=
- clears the
-> > > > > > > > queue.
-> > > > > > > >
-> > > > > > > > > We also may want to move the clearing logic to
-> > > > > > > > > hci_dev_close_sync since it should be equivalent to
-> > > > > > > > > hci_request_cancel_all.
-> > > > > > > >
-> > > > > > > > I actually have a question here. I saw
-> > > > > > > > "drain_workqueue(hdev->workqueue)" in hci_dev_close_sync an=
-d thought
-> > > > > > > > it should force clearing the cmd_sync queue. But it seems c=
-annot
-> > > > > > > > prevent the use-after-free situation.
-> > > > > > > >
-> > > > > > > > Any suggestions to improve the solution?
-> > > > > > > >
-> > > > > > > > Thanks,
-> > > > > > > > Zhengping
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > On Fri, Feb 24, 2023 at 1:02 PM Luiz Augusto von Dentz
-> > > > > > > > <luiz.dentz@gmail.com> wrote:
-> > > > > > > > >
-> > > > > > > > > Hi Zhengping,
-> > > > > > > > >
-> > > > > > > > > On Fri, Feb 24, 2023 at 11:53 AM Zhengping Jiang <jiangzp=
-@google.com> wrote:
-> > > > > > > > > >
-> > > > > > > > > > Clear cmd_sync_work queue before clearing the mgmt cmd =
-list to avoid
-> > > > > > > > > > racing conditions which cause use-after-free.
-> > > > > > > > > >
-> > > > > > > > > > When powering off the adapter, the mgmt cmd list will b=
-e cleared. If a
-> > > > > > > > > > work is queued in the cmd_sync_work queue at the same t=
-ime, it will
-> > > > > > > > > > cause the risk of use-after-free, as the cmd pointer is=
- not checked
-> > > > > > > > > > before use.
-> > > > > > > > > >
-> > > > > > > > > > Signed-off-by: Zhengping Jiang <jiangzp@google.com>
-> > > > > > > > > > ---
-> > > > > > > > > >
-> > > > > > > > > > Changes in v2:
-> > > > > > > > > > - Add function to clear the queue without stop the time=
-r
-> > > > > > > > > >
-> > > > > > > > > > Changes in v1:
-> > > > > > > > > > - Clear cmd_sync_work queue before clearing the mgmt cm=
-d list
-> > > > > > > > > >
-> > > > > > > > > >  net/bluetooth/hci_sync.c | 21 ++++++++++++++++++++-
-> > > > > > > > > >  1 file changed, 20 insertions(+), 1 deletion(-)
-> > > > > > > > > >
-> > > > > > > > > > diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/h=
-ci_sync.c
-> > > > > > > > > > index 117eedb6f709..b70365dfff0c 100644
-> > > > > > > > > > --- a/net/bluetooth/hci_sync.c
-> > > > > > > > > > +++ b/net/bluetooth/hci_sync.c
-> > > > > > > > > > @@ -636,6 +636,23 @@ void hci_cmd_sync_init(struct hci_=
-dev *hdev)
-> > > > > > > > > >         INIT_DELAYED_WORK(&hdev->adv_instance_expire, a=
-dv_timeout_expire);
-> > > > > > > > > >  }
-> > > > > > > > > >
-> > > > > > > > > > +static void hci_pend_cmd_sync_clear(struct hci_dev *hd=
-ev)
-> > > > > > > > > > +{
-> > > > > > > > > > +       struct hci_cmd_sync_work_entry *entry, *tmp;
-> > > > > > > > > > +
-> > > > > > > > > > +       mutex_lock(&hdev->cmd_sync_work_lock);
-> > > > > > > > > > +       list_for_each_entry_safe(entry, tmp, &hdev->cmd=
-_sync_work_list, list) {
-> > > > > > > > > > +               if (entry->destroy) {
-> > > > > > > > > > +                       hci_req_sync_lock(hdev);
-> > > > > > > > > > +                       entry->destroy(hdev, entry->dat=
-a, -ECANCELED);
-> > > > > > > > > > +                       hci_req_sync_unlock(hdev);
-> > > > > > > > > > +               }
-> > > > > > > > > > +               list_del(&entry->list);
-> > > > > > > > > > +               kfree(entry);
-> > > > > > > > > > +       }
-> > > > > > > > > > +       mutex_unlock(&hdev->cmd_sync_work_lock);
-> > > > > > > > > > +}
-> > > > > > > > > > +
-> > > > > > > > > >  void hci_cmd_sync_clear(struct hci_dev *hdev)
-> > > > > > > > > >  {
-> > > > > > > > > >         struct hci_cmd_sync_work_entry *entry, *tmp;
-> > > > > > > > > > @@ -4842,8 +4859,10 @@ int hci_dev_close_sync(struct hc=
-i_dev *hdev)
-> > > > > > > > > >
-> > > > > > > > > >         if (!auto_off && hdev->dev_type =3D=3D HCI_PRIM=
-ARY &&
-> > > > > > > > > >             !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) =
-&&
-> > > > > > > > > > -           hci_dev_test_flag(hdev, HCI_MGMT))
-> > > > > > > > > > +           hci_dev_test_flag(hdev, HCI_MGMT)) {
-> > > > > > > > > > +               hci_pend_cmd_sync_clear(hdev);
-> > > > > > > > >
-> > > > > > > > > Any particular reason why you are not using hci_cmd_sync_=
-clear
-> > > > > > > > > instead? We also may want to move the clearing logic to
-> > > > > > > > > hci_dev_close_sync since it should be equivalent to
-> > > > > > > > > hci_request_cancel_all.
-> > > > > > > > >
-> > > > > > > > > >                 __mgmt_power_off(hdev);
-> > > > > > > > > > +       }
-> > > > > > > > > >
-> > > > > > > > > >         hci_inquiry_cache_flush(hdev);
-> > > > > > > > > >         hci_pend_le_actions_clear(hdev);
-> > > > > > > > > > --
-> > > > > > > > > > 2.39.2.722.g9855ee24e9-goog
-> > > > > > > > > >
-> > > > > > > > >
-> > > > > > > > >
-> > > > > > > > > --
-> > > > > > > > > Luiz Augusto von Dentz
-> > > > > >
-> > > > > >
-> > > > > >
-> > > > > > --
-> > > > > > Luiz Augusto von Dentz
-> > > >
-> > > >
-> > > >
-> > > > --
-> > > > Luiz Augusto von Dentz
-> >
-> >
-> >
-> > --
-> > Luiz Augusto von Dentz
 
