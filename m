@@ -1,203 +1,191 @@
-Return-Path: <netdev+bounces-1042-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1043-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0F2306FBFBE
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 08:57:58 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 49C8E6FBFE3
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 09:04:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D40552811DD
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 06:57:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 233181C20B06
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 07:04:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E98020FA;
-	Tue,  9 May 2023 06:57:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6E7323FF9;
+	Tue,  9 May 2023 07:04:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26CEF37F
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 06:57:55 +0000 (UTC)
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58A772AA
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 23:57:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683615472; x=1715151472;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=prbwHw0kFcSRAPb1Cje0Tk0dW6CCNIaRnDsf/xQmJug=;
-  b=LanmZNptkqbFt2jGhNsd4mpsj1JsAaHK+SWtxlfmzOfTJYazGjpcG2kB
-   dkZUo8IvIAfHqH9wtVdlPYowIAPVX0fD/OSKp01Z6bQQ/TAsAoCkJ2fq5
-   CwS1txfWZffjTsvuOr7oZ/vwvZv2Uhg2M8JPC73J7X8MAJuEfPWAEJj47
-   jsOXk0BtwCYL/sFHu/L/kHbqE+IurVGB0JoJQWUvkr75PY03jGJBa6W7F
-   0VzFfsc8EWCfz8Rsx9knVi5Xrm/qQRO1pIsGELihLCN7OlD9vwWkEi+A0
-   eT10nWTQUtsNiVYxpwzbRNOXWq9EKxYvPOszJ1/B2TDfqHfZfoSu4l7Jg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="334271812"
-X-IronPort-AV: E=Sophos;i="5.99,261,1677571200"; 
-   d="scan'208";a="334271812"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 23:57:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="873054164"
-X-IronPort-AV: E=Sophos;i="5.99,261,1677571200"; 
-   d="scan'208";a="873054164"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga005.jf.intel.com with ESMTP; 08 May 2023 23:57:51 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 8 May 2023 23:57:51 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 8 May 2023 23:57:51 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Mon, 8 May 2023 23:57:51 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Mon, 8 May 2023 23:57:51 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kd9HuN1IyEmym1GKxyuw4p5zG5gX8UfDDctH2Q/QP7LoJZD7njbsR0U57MhLsaFgX1GlqZpzGnwgpcTLCyksrGH5VwKXftpTEsbkgl3J7GiQSD+ZlnWH2ZVY/6ENHrJt4Z+1Avw8WovxOGkoR6WIo+x+bS7d+gxAXzZsNsYi95O7RYZe2NwVBgsnuLtH/rD/8y9a3Ox23PpyAzQ3hX2zXVEnT11eZLZIRbFA0iTv1ZPOoBzUGc1zcU3nhUvCXQpQ/pw3nkQn1p/a2y6ycffvZGJyAR4J1TG1mKvpd2lDYrEMRzx6XPDRYJwboZ3hQqqz5ia4Fb4xkZzrkKedzvn16w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bryb4JdSVg+4Tce6GFp5Ayh6uzfOf+VeECX4Y9wPii0=;
- b=ft7rDuoHfclCePc3hy5cdzd1x5pR7FonNRPlYk54JYBAJR58DfhmBFRQVqflKU5MPbzrHTtN6iYmp/QPZ5pOG6SWx01W6O1QcoGRU2t+3boeJ2iqQoDi23nTct2aSouHQQKkAusGLUHNRFIaRyBTj0Av21F8noAtwuw8PyNSbkv67OVnP8tQJRnnG7icJVqpD+Ld+FncSdtHJ1gidVbBMUltaEdMg8ZpuRKk/xKsz2+HUX/XOCNI3Z6LsKBVKrUEtM4QX85B3zkRAOxmpW6HL5TTCV/8sbY0wgdgayLLA+ebG56oOjcz9vUmkHKxUIYevT8KwG3/rAqs01KKuphQTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CH3PR11MB7345.namprd11.prod.outlook.com (2603:10b6:610:14a::9)
- by MN2PR11MB4565.namprd11.prod.outlook.com (2603:10b6:208:26a::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.33; Tue, 9 May
- 2023 06:57:44 +0000
-Received: from CH3PR11MB7345.namprd11.prod.outlook.com
- ([fe80::242e:f580:7242:f039]) by CH3PR11MB7345.namprd11.prod.outlook.com
- ([fe80::242e:f580:7242:f039%5]) with mapi id 15.20.6363.033; Tue, 9 May 2023
- 06:57:44 +0000
-From: "Zhang, Cathy" <cathy.zhang@intel.com>
-To: Jakub Kicinski <kuba@kernel.org>
-CC: "edumazet@google.com" <edumazet@google.com>, "davem@davemloft.net"
-	<davem@davemloft.net>, "pabeni@redhat.com" <pabeni@redhat.com>, "Brandeburg,
- Jesse" <jesse.brandeburg@intel.com>, "Srinivas, Suresh"
-	<suresh.srinivas@intel.com>, "Chen, Tim C" <tim.c.chen@intel.com>, "You,
- Lizhen" <lizhen.you@intel.com>, "eric.dumazet@gmail.com"
-	<eric.dumazet@gmail.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper
- size
-Thread-Topic: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper
- size
-Thread-Index: AQHZgVHu7/SNtT9IvkyNelU1xcwWA69RMvuAgABRCkA=
-Date: Tue, 9 May 2023 06:57:44 +0000
-Message-ID: <CH3PR11MB7345C6C523BDA425215538D8FC769@CH3PR11MB7345.namprd11.prod.outlook.com>
-References: <20230508020801.10702-1-cathy.zhang@intel.com>
-	<20230508020801.10702-2-cathy.zhang@intel.com>
- <20230508190605.11346b2f@kernel.org>
-In-Reply-To: <20230508190605.11346b2f@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CH3PR11MB7345:EE_|MN2PR11MB4565:EE_
-x-ms-office365-filtering-correlation-id: 3a830676-9ef9-4aa9-29bb-08db505ab0ae
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Hz0HtN8m5+zOQFO52kgzTZjLIp4FsdFXo33rzsru5lJauEIQXgVRe3pDTfQZH/NNsmEsiOvVQaFEr1ktyhI59XRjV/ha28g6XAf+WLuypTCjU1YaIpP5COS8Nsjjj/DIZiKd0RYtevoZDH2sUJLHQVM4PRXAyDAluXCZeFHbJ0rPu2ooibvY1yDdGleKCRknuniFw/moMkSm/bZNZC8ADNh7BxGqt8tmrjlEY3Ssj4sx1SLyohXHuY0M7h3uXdlErR1S81YScNZbMZJpCQnuotvLGXdBQnrTUI8n5Z1V28D35T253p8+cL6HbxJZ3vQVzzX3Efh8tK2LNr8r04xLlIvhlHw42djwATGVB42L4u0kn1En9HgiCof9YlyOFXA/dvnmJyhs6hg/rzMi4tF04dtHb6N1vsbIqZzWQkEHooldl5qG2IFgJZ9T2Cy+IkHd2s1HZjDm/9naDBfw7Eo5BZ4j3DnYc7EUOmi33h3Qv3+wlfDd4imDizqSm8LSL7bKDR9eg80nHvPprNTZpDSSaNNQfFtlDRSNqndTSnnQSRTasmT30VJqsZaw8ZCZr/n5WwIIQqw3e9GAwl5QmHE4zyn3m14WxFQ1DqErU5FoPcf7x8jBStyohIDnZP7+Caqc
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR11MB7345.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(346002)(366004)(396003)(39860400002)(136003)(451199021)(38100700002)(122000001)(86362001)(5660300002)(83380400001)(82960400001)(9686003)(38070700005)(6506007)(53546011)(186003)(26005)(54906003)(478600001)(7696005)(71200400001)(76116006)(64756008)(4326008)(66476007)(66556008)(66946007)(66446008)(316002)(6916009)(52536014)(55016003)(41300700001)(8936002)(8676002)(2906002)(4744005)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3HLYROcueRL3eMhcx7UgTuOHkmGsXYAMllrBzvoRh3dFsu0JK+w7LAp16pP8?=
- =?us-ascii?Q?RO+6V1m5CN9actEaxOGd9zF+5e5ulS88J79DV+lHiVCocQIFZOTY1OcvUpOg?=
- =?us-ascii?Q?mAi0pKWIsnwTGDqNbFAIUl6qGJgtkXd1uYMOX9DjdnuliDUYLWBcPPDJiB6q?=
- =?us-ascii?Q?ZFUwPSQx6Ubs9pMv3T84UsVa4kipMavbkuLEBItf325WZvTLDDEY2sU5VN7b?=
- =?us-ascii?Q?uAp6yaCUWlLL5E9skLSgCDLjXs8grCF+yXWb8wjlHwvlm2/vsw7ZmITYVvVi?=
- =?us-ascii?Q?EzBXhPiKIXJbNJltKsVqyioxzjPDiyXxRPnOdMbv9M/h0bx2OiXdKHjMjzF+?=
- =?us-ascii?Q?F7AsBsmvJsLgdPr/xRjWEwn0AbenH6zQFu/+wriNrAiDey1lnGOdk1/kZ9rJ?=
- =?us-ascii?Q?aovwDQ8Ld6xHpEai3XO3IjYhvSdQppoP91eqxmFkrqOqEnzftERBUs+YtpJu?=
- =?us-ascii?Q?LY8UMYAyBVIgsLq3G81LNiEZActIum32Xon051RCuh1GU6WxcrQNlargOROq?=
- =?us-ascii?Q?U+G1CV1YX9Dk9iv/MmKBrviv2UIgPJjS0XW1ueMPc/fXIRlXljAu1u9i/OSw?=
- =?us-ascii?Q?kZqELZHDVkBnPfH3vz/vW3pfUwA/rpFPleR1ooiBc6+Ri/PLiF/62v2XYE1B?=
- =?us-ascii?Q?H450dl21AGMcgKOGVDaQRHwh7UOKk82m3olTpd3+JAW54Poqn35Yg3RYMzl6?=
- =?us-ascii?Q?C7L1H7VSU1pkuhG5Qzsas/0Z8dsXdHqsEnZ63bYUZKtcaDyC0wFmgRP6c5R1?=
- =?us-ascii?Q?Z/WCW7d/asKpDnIYj2onRVIW004QhJcO6xO1Brfl9FQHEDOGYWDKk3M6XJyQ?=
- =?us-ascii?Q?zdXzq0OpkVOP+WCGVii5YMvt4yUxFAxK/RFquj+UBZJKaqMm2+8jIodYVE/Z?=
- =?us-ascii?Q?WyWibylfZmcDit0+YbmlpEXxEZMzMc6oIxSWtv4JgNt1BiqWgOeF+GFSVbY9?=
- =?us-ascii?Q?kIIOhUwRgG570bpC6ftqQa9wpHsO46X3lXlKEeUtQcWRwrW/xmOE04qWk5IF?=
- =?us-ascii?Q?HfcBZ68y8xzTMge4pvkcsZzMv+65fHGZ8m/PXPN67+Aff7qlSLULUFaZ/DMe?=
- =?us-ascii?Q?KpLFaHZEEeZuFDD4G2zmmKRnNiNeY6FLVCJWoYhioDgiaPa0h0419obTDNl2?=
- =?us-ascii?Q?TULMNY7IP3LNK/cdj6heFuudFRxOw6d0CqEHbwlWhOkkxOSuZjHxHA7kWKyc?=
- =?us-ascii?Q?9Aszcvjw+VHhTyAMzrjHRI8v7S6dryLoGZRXMpHRubbM0FR7wQBZAv5vksPy?=
- =?us-ascii?Q?4bTpy4H2Yx27uDBv0PHAsdoHGKYdYVHl/h9rFQVdlsAv/SfIS0pFeWGrk+wf?=
- =?us-ascii?Q?LScrFdtgJBy8S5cnKNB9rWTz4egGVT0qq6+6pfzG4yaWnzRiByeg1er6VOGX?=
- =?us-ascii?Q?XKmiYJ0MGdgvyLBdgXEtCjf+tiaXMymaX5zE87HxUFh36dzotZWXB/97FEAU?=
- =?us-ascii?Q?ztkfBGS6XGxJXrGPIqwhESSyAUyLKGP9xcJXUGe65KKQL+UXFGE/FvSVtWKL?=
- =?us-ascii?Q?RVmz0WLzPGK4zjF1R0YaCDJ8bojL8ZlpTDd7T2KS6tkiA56/5oIEx3M44TxO?=
- =?us-ascii?Q?aGMWdafvznGJFe8j73zBrbvvXtDfZZ3kS3saE5YG?=
-Content-Type: text/plain; charset="us-ascii"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 567C43D61
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 07:04:52 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75826E81
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 00:04:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683615890;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=g+PavQnsDrQ3Ziaclav5kottbUNlilAfnc2SUG1Hbbs=;
+	b=MAPsTjP7C/rOYpusV+qKjLomJaZgBWhPMPFbdn+yG46ly5xqHgb/hH52dDLktYlO5ZfZGh
+	3vyOrBJ14EpouDcUyLGoTh5FSEwqW9rBfZNWDMCja3qWEUo6Jp7PqPMS+YDupbszeW2e16
+	4BT4zV1eCdQ8yk7ZP6aNrCTEzybMJ4A=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-398-dyoiA7cdMYGJvXugIF4d5A-1; Tue, 09 May 2023 03:04:48 -0400
+X-MC-Unique: dyoiA7cdMYGJvXugIF4d5A-1
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-5ef4d54d84cso10170426d6.0
+        for <netdev@vger.kernel.org>; Tue, 09 May 2023 00:04:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683615888; x=1686207888;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=g+PavQnsDrQ3Ziaclav5kottbUNlilAfnc2SUG1Hbbs=;
+        b=eKjZeXlcjKAMhQaKU0zuZh0Qs19+Balz8sw9tIEJQgJQb3hbed5tR9ycAk0mqzlkdJ
+         xVgxDV8hxm1KiYFAhi7SSoUCTl2C/7PGZhPyiqqR4syqTj2G3rujF2CvbHDvh4BA6bGf
+         ydksW60ITvnDi1p/VSQYybwp/zbzi1bGezcQ8QWHPj4TUAwdvyCjdmcqdxjmbFWJ4cUc
+         EeLjhuvVpggEIJiviu7MZFMeKjR/e4gkoJeL4oUviGvjle9yp++0f/RIzjTTxMGFbaEe
+         IKvBljO3otJ5306hwXLe0aNa0jfYovCjSGvVJKM6CNjf+LuAbTDZCITtEwhmveZwVglc
+         Cd5w==
+X-Gm-Message-State: AC+VfDwF0jzqsPZfOUnbQV8HqiJuA6xIt7HcF8J8pci1uNWcXhMHiDdH
+	nj6aYkNBGEwm2TBaE6OjS/dzO1oz6ntDyIy1QFWIfuEdWIDOUYBI9eAhRsetE5H25j16y9HMj40
+	oZ87LrpGBDUGCPrvvIiZkg0Pl
+X-Received: by 2002:a05:6214:5290:b0:61b:7115:55a9 with SMTP id kj16-20020a056214529000b0061b711555a9mr17505923qvb.0.1683615888270;
+        Tue, 09 May 2023 00:04:48 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7xcooT/xK5gavWdwem56NjI42j7fRg+aB9WVumPKuESVRQojNiPJ/4T05I173D0VVw7nSfzA==
+X-Received: by 2002:a05:6214:5290:b0:61b:7115:55a9 with SMTP id kj16-20020a056214529000b0061b711555a9mr17505911qvb.0.1683615887961;
+        Tue, 09 May 2023 00:04:47 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-255-65.dyn.eolo.it. [146.241.255.65])
+        by smtp.gmail.com with ESMTPSA id g14-20020a0ce4ce000000b005ef608dc422sm572876qvm.41.2023.05.09.00.04.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 May 2023 00:04:47 -0700 (PDT)
+Message-ID: <80ebc863cd77158a964698f7a887b15dc88e4631.camel@redhat.com>
+Subject: Re: [PATCH v2 2/6] net/handshake: Fix handshake_dup() ref counting
+From: Paolo Abeni <pabeni@redhat.com>
+To: Leon Romanovsky <leon@kernel.org>, Chuck Lever <cel@kernel.org>
+Cc: kernel-tls-handshake@lists.linux.dev, netdev@vger.kernel.org, 
+	dan.carpenter@linaro.org
+Date: Tue, 09 May 2023 09:04:39 +0200
+In-Reply-To: <20230507082556.GG525452@unreal>
+References: 
+	<168333373851.7813.11884763481187785511.stgit@oracle-102.nfsv4bat.org>
+	 <168333395123.7813.7077088598355438510.stgit@oracle-102.nfsv4bat.org>
+	 <20230507082556.GG525452@unreal>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR11MB7345.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a830676-9ef9-4aa9-29bb-08db505ab0ae
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 May 2023 06:57:44.4162
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: h0NHIn5HWu1w3bzQSBXsar/coxvI92tKFrh+ZGnMHTF6hCGGWPEQzPQlt0v7fi+TOZkskozpUd4bqjkba3uieg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4565
-X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
-
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Tuesday, May 9, 2023 10:06 AM
-> To: Zhang, Cathy <cathy.zhang@intel.com>
-> Cc: edumazet@google.com; davem@davemloft.net; pabeni@redhat.com;
-> Brandeburg, Jesse <jesse.brandeburg@intel.com>; Srinivas, Suresh
-> <suresh.srinivas@intel.com>; Chen, Tim C <tim.c.chen@intel.com>; You,
-> Lizhen <lizhen.you@intel.com>; eric.dumazet@gmail.com;
-> netdev@vger.kernel.org
-> Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a pro=
-per
-> size
+On Sun, 2023-05-07 at 11:25 +0300, Leon Romanovsky wrote:
+> On Fri, May 05, 2023 at 08:46:01PM -0400, Chuck Lever wrote:
+> > From: Chuck Lever <chuck.lever@oracle.com>
+> >=20
+> > If get_unused_fd_flags() fails, we ended up calling fput(sock->file)
+> > twice.
+> >=20
+> > Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+> > Fixes: 3b3009ea8abb ("net/handshake: Create a NETLINK service for handl=
+ing handshake requests")
+> > Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+> > ---
+> >  net/handshake/netlink.c |    4 +---
+> >  1 file changed, 1 insertion(+), 3 deletions(-)
+> >=20
+> > diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
+> > index 7ec8a76c3c8a..032d96152e2f 100644
+> > --- a/net/handshake/netlink.c
+> > +++ b/net/handshake/netlink.c
+> > @@ -101,10 +101,8 @@ static int handshake_dup(struct socket *sock)
+> > =20
+> >  	file =3D get_file(sock->file);
+> >  	newfd =3D get_unused_fd_flags(O_CLOEXEC);
+> > -	if (newfd < 0) {
+> > -		fput(file);
+> > +	if (newfd < 0)
+> >  		return newfd;
 >=20
-> On Sun,  7 May 2023 19:08:00 -0700 Cathy Zhang wrote:
-> > Fixes: 4890b686f408 ("net: keep sk->sk_forward_alloc as small as
-> > possible")
-> >
->=20
-> Ah, and for your future patches - no empty lines between trailers / tags,
-> please.
+> IMHO, the better way to fix it is to change handshake_nl_accept_doit()
+> do not call to fput(sock->file) in error case. It is not right thing
+> to have a call to handshake_dup() and rely on elevated get_file()
+> for failure too as it will be problematic for future extension of
+> handshake_dup().
 
-Sorry, I do not quite get your point here. Do you mean there should be no b=
-lanks between 'Fixes' line and 'Signed-off-by' line?
+I agree with the above: I think a failing helper should leave the
+larger scope status unmodified. In this case a failing handshake_dup()
+should not touch file refcount, and handshake_nl_accept_doit() should
+be modified accordingly, something alike:
 
->=20
-> > Signed-off-by: Cathy Zhang <cathy.zhang@intel.com>
-> > Signed-off-by: Lizhen You <lizhen.you@intel.com>
-> > Tested-by: Long Tao <tao.long@intel.com>
-> > Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> > Reviewed-by: Tim Chen <tim.c.chen@linux.intel.com>
-> > Reviewed-by: Suresh Srinivas <suresh.srinivas@intel.com>
+---
+diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
+index e865fcf68433..8897a17189ad 100644
+--- a/net/handshake/netlink.c
++++ b/net/handshake/netlink.c
+@@ -138,14 +138,15 @@ int handshake_nl_accept_doit(struct sk_buff *skb, str=
+uct genl_info *info)
+ 	}
+ 	err =3D req->hr_proto->hp_accept(req, info, fd);
+ 	if (err)
+-		goto out_complete;
++		goto out_put;
+=20
+ 	trace_handshake_cmd_accept(net, req, req->hr_sk, fd);
+ 	return 0;
+=20
++out_put:
++	fput(sock->file);
+ out_complete:
+ 	handshake_complete(req, -EIO, NULL);
+-	fput(sock->file);
+ out_status:
+ 	trace_handshake_cmd_accept_err(net, req, NULL, err);
+ 	return err;
+---
+
+Somewhat related: handshake_nl_done_doit() releases the file refcount
+even if the req lookup fails. If that is caused by a concurrent
+req_cancel - not sure if possible at all, possibly syzkaller could
+guess if instructed about the API - such refcount will underflow, as it
+is rightfully decremented by req_cancel, too.
+
+I think it should be safer adding a chunk like:
+
+---
+diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
+index e865fcf68433..3e3e849f302a 100644
+--- a/net/handshake/netlink.c
++++ b/net/handshake/netlink.c
+@@ -172,7 +173,6 @@ int handshake_nl_done_doit(struct sk_buff *skb, struct =
+genl_info *info)
+ 	req =3D handshake_req_hash_lookup(sock->sk);
+ 	if (!req) {
+ 		err =3D -EBUSY;
+-		fput(sock->file);
+ 		goto out_status;
+ 	}
+---
+
+Possibly explicitly documenting the used ownership rules for the file
+refcount in the relevant functions could help with future maintenance.
+
+Finally it's not clear to me if we agreed to a target tree or not ;) I
+see no replies so my suggestion.
+
+Thanks!
+
+Paolo
+
 
