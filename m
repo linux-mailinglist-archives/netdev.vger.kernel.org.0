@@ -1,239 +1,143 @@
-Return-Path: <netdev+bounces-1192-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1193-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 09DB36FC8F7
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 16:27:48 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 987E26FC900
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 16:29:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AB5F92812F3
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 14:27:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 926731C20A60
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 14:29:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 803AA19525;
-	Tue,  9 May 2023 14:27:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 476AD19526;
+	Tue,  9 May 2023 14:29:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E7A8182D9
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 14:27:42 +0000 (UTC)
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01olkn2037.outbound.protection.outlook.com [40.92.107.37])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8922709;
-	Tue,  9 May 2023 07:27:34 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 338F38BE3
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 14:29:46 +0000 (UTC)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2103.outbound.protection.outlook.com [40.107.237.103])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E423AC3;
+	Tue,  9 May 2023 07:29:44 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j6bABV7ZKeUoP5uIcBPgIiJh1St4fzilOzOnnaYgwwOmyuvahUVLezzrlzLPD0Ly6SnW5zDxi3ZXRFB+KVuB1yU+iUpSj3poaSRJrmVFztE04MKqBMWSstjuIFOqDl+M7RPhIUZ2nqlaA5+Wr/kIlCmIDFVXhMeqQMu7Ba2eSh0dWo4gIwZF6VHqnzuMvMxgNhUfzyQd1bvG85GoLP6QFicyUyEe6ZiO+Qmj0VG6wi9eUnJlVt70JqKCKPnZk/nnWXaumXW4qUghCREkeP/ol7oikbTFRaUr1lX8sREcARj31DjlxF54pGEE9EILtA2r6OOEnUqaBimD3lZ4iLgqrA==
+ b=ENisjn6SKVqCtMu8+2ujO557SgMC88fGQoVw9MAumhHQDJzyzxbtSiy+nKE7UIr1GfnMCnvQxKsVvYDIXDY4ZAO6l5lIdMYu4hv4AWqf3k7Q23NGX7SLsRAZ2iQlG4W5ct6+AVYicCxQ9ye1BBDohQwEFZI8lJoLO6EwIxbhM9oJoq/0JhVp1QdrsZgT+OvbPZ5o4GMdwKrAkUV2bHVOLuVIDzTEHL00FtfLFAuDiJEictXyNlJ9tz8qvSsl+93vcZHHL9o8BYXrq1wiA7eNzhKRD2Dm4me9lgc0tE+xUBSCS2uCJL7alCvU/kUgzhXMGRg42WH73chcR4i0djCHKw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P2oEnxiLwbgB2bAr3Kvzct2z8lRg1fw7dDXJ8ENEM+c=;
- b=J580F/fb22kntsYR+02Xr3KHTdsJf8RftiHX/GUK54voNA3SoN38aLKnHau782TnPWfW0FO0q+lKvDVx1Vu6kyqGw6Jepc+t0kBNHejYU/Ch1PjnCW/EjA3ZNoVXXvzXHPOqeWDsllWNiNkbU/YLnX6piYYXAhKKFZl/83t0T0puxzIw6rm++Mi9wAeJeKuprzrcdprGIELN+ynLwM5+HTCbE/+38LWhBjsWcblpnbDquMAwNrvbqxGKnr/CscagdU22eE1k7MqB/SxuABRDWlOLjOtOlWJq11OoJlV1VZ4kIoDCSI3aknd/DR9g8Mz3Dc/C28Ca0zDJ+a7tf0IJkg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
+ bh=ZWDqeP60lPbyUZnW/pK8/8J5izKCSAHN6Qo8T5BlzoU=;
+ b=oKqI8Nf5Vuhh3SRNuPECQRYkekQLYB09hc2C8anafzBQd5HbatdbzXzbbJVHdBver0KD55jieBlSKP+3IAc7MJ6L1S4WCE1+zfAedhmAXP3GJa8UAhWhMukV5ac4jWsm88Wqgy7vjvkkCextbMb5R+KQR4Yktakzy4XKtpDsfM+JjkKh6UYzWQ0gsTpDzqLx5DsqgNvZ78pnKTgB/LuidO/MQU6ndZHFFHZHDoBRmlK2X4odqfOPtoJKwzOKTkF7mj3d5ikKgRJhJdhWCTZNbzen7Dqa5RwWO8uJuBk4YM54UVbP66mlEhF4xROEhMYMhojoHUI30xmZN7KPevmmuA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P2oEnxiLwbgB2bAr3Kvzct2z8lRg1fw7dDXJ8ENEM+c=;
- b=hzTwr2HxsDKnXNiSdlq3M1c1sRAMaby7LxWdi+5lyGmlmIlo8oMb1XNJHJj9TjBe6ruWY7HcUMAvZUiuFfu5tT9eqV0FIFj6+ExkkE/3o/aI7qZEDyOfA9hr2MkwrPmznt023/CogiHo8JABqB3pPd/luzyjerbNnWWRDG++tFOlEFqZVMX3jAxzriOiBU1ElOYCHMoTllTMQQqw7jZND+yPSa7VZVP5fGx8t/FJEmpTIZZmR9Ktiw3JsWEkq8YFLIZm6Vv9fvcrXh2SsB9UsHfNgWdPS6FMRpWrUtr3McW4b2wlrB5ezCJemOzEypBP4mvFs1R8wYv7v1Y29GNwnQ==
-Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
- (2603:1096:820:9a::12) by SG2PR01MB3707.apcprd01.prod.exchangelabs.com
- (2603:1096:0:6::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.33; Tue, 9 May
- 2023 14:27:30 +0000
-Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
- ([fe80::1ff1:2f4e:bc0:1ba9]) by KL1PR01MB5448.apcprd01.prod.exchangelabs.com
- ([fe80::1ff1:2f4e:bc0:1ba9%3]) with mapi id 15.20.6363.033; Tue, 9 May 2023
- 14:27:29 +0000
-Content-Type: text/plain;
-	charset=us-ascii
-Subject: Re: [PATCH v1] net: mdiobus: Add a function to deassert reset
-From: Yan Wang <rk.code@outlook.com>
-In-Reply-To: <96a1b95e-d05e-40f0-ada9-1956f43010e0@lunn.ch>
-Date: Tue, 9 May 2023 22:27:23 +0800
-Cc: hkallweit1@gmail.com,
- davem@davemloft.net,
- edumazet@google.com,
- kuba@kernel.org,
- pabeni@redhat.com,
- netdev@vger.kernel.org,
- open list <linux-kernel@vger.kernel.org>,
- linux@armlinux.org.uk
-Content-Transfer-Encoding: quoted-printable
-Message-ID:
- <KL1PR01MB5448457F0E0DE81BC01BC8CAE6769@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
-References: <KL1PR01MB5448631F2D6F71021602117FE6769@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
- <96a1b95e-d05e-40f0-ada9-1956f43010e0@lunn.ch>
-To: Andrew Lunn <andrew@lunn.ch>
-X-Mailer: Apple Mail (2.3696.120.41.1.2)
-X-TMN: [shHV7fi7nAOEswwcnmTy9m5hu/O7o1KT]
-X-ClientProxiedBy: TYCP286CA0064.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:31a::11) To KL1PR01MB5448.apcprd01.prod.exchangelabs.com
- (2603:1096:820:9a::12)
-X-Microsoft-Original-Message-ID:
- <0562CD4B-0BA5-4223-8FB0-9A074E2AF2D1@outlook.com>
+ bh=ZWDqeP60lPbyUZnW/pK8/8J5izKCSAHN6Qo8T5BlzoU=;
+ b=UuYu/CUVgd1AHNyUrGEBNCFKOVsOfvOmuQRkQ1tQhyBgCjtHY96aJ9f3JKCQ/bfqcWdbBSBXVHYn3buaDF9QFQ1ntvzLohNKZlv7opLwyB5Ll0Ze+mjKJOZ4vP3Mo8WylBH4QH9tHjiMI3j5I5DVoM/IStDaT6/J+BRu2Z1feQI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB5897.namprd13.prod.outlook.com (2603:10b6:510:164::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Tue, 9 May
+ 2023 14:29:38 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6363.032; Tue, 9 May 2023
+ 14:29:38 +0000
+Date: Tue, 9 May 2023 16:29:18 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Ivan Mikhaylov <fr0st61te@gmail.com>
+Cc: Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	netdev@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
+Subject: Re: [PATCH v2 1/5] net/ncsi: make one oem_gma function for all mfr id
+Message-ID: <ZFpYvohj5WKqqkis@corigine.com>
+References: <20230509143504.30382-1-fr0st61te@gmail.com>
+ <20230509143504.30382-2-fr0st61te@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230509143504.30382-2-fr0st61te@gmail.com>
+X-ClientProxiedBy: AM0PR03CA0004.eurprd03.prod.outlook.com
+ (2603:10a6:208:14::17) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: KL1PR01MB5448:EE_|SG2PR01MB3707:EE_
-X-MS-Office365-Filtering-Correlation-Id: 843ecea4-38a4-4f81-40a7-08db50998520
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5897:EE_
+X-MS-Office365-Filtering-Correlation-Id: 00e95cd4-b53a-4d27-c3b2-08db5099d16f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	9v4vSFqfO1f/ZPNiYLKohgXo6XCrDduKKJx6R9k5vMlVTO0zdnsaCEXxWq+nDGeYeTPntfVU8g+7/3wObeuaiYQOBt0BOB8T0vp5PYK7K9Wp0HnkMQ+eP1Ycl27vZ6waW60gKSZMn4hP41iE2DSnRhX2krVi42YA4rpK5jh3wHvDlajdejak1V6vDMg7iMBtogkk+rbvmqGuaojoEkEQBFJeMa/OXo+vb8pm+vk9uDxT6uSESwa6QOTyrcqzoPl4fej4OZ6e+AFGPtOeTpEDIRrcLo9DMs8VDFN/7Vny/7XNqHbeSczFNKAI0B9bA/KI0QmISb6JKcio19eLKpPRgr/nskhp3MbR5sn/3sXOKk4es7Qfpj7xIBLOx9hotaSQa2z5uamY4FTlmo+sDZ4Jm2gK4/TqxVr+yWbO0gFXxCvDsji7lg7dPHBudooaEDhPvl2DnLQU+ffHiS5ar8fO+eQD5M4hkNvoUXJ0n/J0yCzOLWI6wXCRaUdWeD+3V5h8BFJrf+LJ/eCGVCX8KTZEYuhPLbey8WGwgBMOolYeQX+aTRL86ZCiY5m2lTpyyGU/M0TLb9NQjtqDgKsx+5mIN6QuAYqc+ha2QC7+Jc4E+EBqPACy339KbvFrIRT2+g15
+	A9mF1aHRC6d5TkeikdOoC3e7wSuOtwQkX7Lf7g9rgDWxoHFzrCQsmh6xMsm9yC0yRJ/nIpCysPgv6eWwBb89cC7QAcxL9kgHq8CfQYTuODPOn7bCxiOOa0GJrLLi6iNL+IA0kftUfbHK1gJNFL/OmXwOHrJLDboHjI0PWV2ue5UsyeZ4Tknm/+t914M3S33Fcjk+bhCmXlejF3NEIIOcHYkVBcHG1mWCeCMIJIRbJ+0TTo41YR2BsE70MKn3dOFTh+OvJvsGjO6kdd7KU2JxcnVCEsk9XYzisL1TkoD3zemwVB50HK146Rsx4mBZuKBAJSqU7TAjiqfmZRI2AkuVTtxwA3HMvEa178Mah+EqvLz129NVlr74q1QTmqnPdxH19DxCGIrkBgs5vcdqsiw9VjPg9POz1L5eCvMJQBP2AS7Ql+mGQLVqluUDIXmXJSty+KYUh1vuwmFgS/bClDTSSWRYsLCE1gPFEULCfoMVUhRZmaACY2jBVhZEZ8tUogDo6zjgsx3e4ewsWOQqUQ3KXZYLdFCRHUk+XXWLpb7lenADJqOmE7dKa611VoNsdKqscafVHckLfjhUPHaRfcnLS0haKsIHfFxkfAlBVEpY57U=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39830400003)(396003)(366004)(376002)(136003)(346002)(451199021)(86362001)(36756003)(558084003)(6666004)(316002)(54906003)(4326008)(6916009)(478600001)(66556008)(66946007)(66476007)(6486002)(5660300002)(7416002)(8936002)(8676002)(2906002)(41300700001)(44832011)(186003)(38100700002)(6506007)(6512007)(2616005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ya84Njsp8rWFEjT6sPou2fz9COYbitOqgpFJCZ1IVdTGL0A6yYzBPd5Y3clk?=
- =?us-ascii?Q?+1gjhX/Dnboes4lmnfvoI/0Lw6qRwF92SgwcqANds34BVW2WGACzPB+ZMtdf?=
- =?us-ascii?Q?HxbVfacXOToo0Ex1mKiwMiW8wgRVGCHOOl3ojuGxz1+X6cUiCCXbY7a/WZFd?=
- =?us-ascii?Q?JQqjNBEWOiTXJkPs8/9Anp4CBYoQDK5Vijm7R5riupw1U7+4XWp7PWf+QU3G?=
- =?us-ascii?Q?swC3EMvEEuCNWuVB4V+3FZVWVaFhOEdz0ZG9x992S5ljK7hQxSkIL1dHI8bR?=
- =?us-ascii?Q?em5xzmfuNOSlYwxdAFM+l9XPVdeB77+DHuzA0syu9PwL02Nd3RiqK7esIFeK?=
- =?us-ascii?Q?3kKI1x+DO6RH7AoiEdhFDIZLnasa883h3DzhG3J8VQ75QQb3pMkv5x4aS7BQ?=
- =?us-ascii?Q?5+65FF220V6bwby/Xp5E6YBodJ7ZfAcCiq3bUnuzEoaj9Kb4u8o0T6vpLVCO?=
- =?us-ascii?Q?5VHJfqjrgjthGjyjpyQRUZ/MK8njmNAxiGLRf2pajSRfdHzUqWL0peAbz0vk?=
- =?us-ascii?Q?GXlzsLWA8LQiloaxJuemKQQswqzsQkvI/KKSquqhowu7ef7U3SJNbwWQ+M7K?=
- =?us-ascii?Q?lbLE32IB6fwwczuWWGamSvPn2RKvuvrDuFVM5N7vchN9X/V7U7qK2RhmAn4F?=
- =?us-ascii?Q?V4C6+NhDII/lfTJzTDL3WUXvqYbvRyBJTNxitJVLaqNH504MdiZFDTIwjh8j?=
- =?us-ascii?Q?FgdrfJcIAT71eX+KUCAkYnfnF104oRhv/KEtoVRdM79uLnlaRuwc4uTc+RNc?=
- =?us-ascii?Q?40kkSKpTxkP4So/kmFqBUpxw2sg5hW0dqEqQJrEn5ya4SVOOBOE7gjAcHTTr?=
- =?us-ascii?Q?SK6bFnjeMhMft0apn9inJXLvY7PAvr1HusX4Ijzpmgh404VDHrXSAbPF+4gz?=
- =?us-ascii?Q?Zzkk3s/11aHBK6vofEIHXrl1WkYIpiaLgz5GMxeyphPwsf6Tg7ToaLMHW9Rt?=
- =?us-ascii?Q?jr015BLqyOf63YQMf8nWhPoHExJc4gaaXmtdeYi1d4+iB6V0pIu3lWjOuMdL?=
- =?us-ascii?Q?q4vRy9igWRHsCSEEh2G0jyzvoLl5tnU4LXQFFGq/uUcgQkx5TPz1YJbqC9hP?=
- =?us-ascii?Q?VNsHCfx0GwUsZI5qBtfHOIgOdPAIf9pOAFJ00UHH3pq1q+QhZbJQA/rH2kZI?=
- =?us-ascii?Q?iK4FoUhip01YhcNnKU8X9pwmIJwT+CnA05UaG5NFI8pyrjfkrbgJS3Q19Igc?=
- =?us-ascii?Q?8rEWcSp6aWHrqEcpdjAWOio+yiseK2UffaRDkg=3D=3D?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 843ecea4-38a4-4f81-40a7-08db50998520
-X-MS-Exchange-CrossTenant-AuthSource: KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+	=?us-ascii?Q?dJ+916NoWXJJKosIQuW9kI9TQUan+L70tL17bjfhVepOGcRcWcbZ132v0Tat?=
+ =?us-ascii?Q?4/1REsa82fzgIvYgzzORzwvKpE9frXOUG9Qol1L/cFMvx8zS0t2/TQ1c4WRs?=
+ =?us-ascii?Q?G6cGsOpKU9qWIjq8CL3fLszU40/IocLAfPHYJKLksnfVWX8v8sQ5qfq6s92H?=
+ =?us-ascii?Q?iXw6URg8aWp6fTzs0OUb4+PX8NuNV8e1mIeWn9WBeoTWhpFk7qZEs6z6YRWD?=
+ =?us-ascii?Q?jtqByfGYeDnkFnT2ZSc9r7C7+g1JoaOhZ5kqoQmd3GSv50V+JoWOweewegL1?=
+ =?us-ascii?Q?eFzdddXdTg0zr5ZT97uPExsw2dnnkDTRf23XxmpKbEmgTwO2pE9A42tElmIo?=
+ =?us-ascii?Q?/2UAKXZT7mRNxVZgQfB+kZx5c23g2LD6Wg6qGpYFZrRqhzyeU9ZiXQD3kRz3?=
+ =?us-ascii?Q?FZnp7I/0t9TRUMflF03uTw55dqKzLUG3bEXTIlgm5GcNgUP1HFks21ycCmNU?=
+ =?us-ascii?Q?hQpRdWH6j2WOiBykxQ9T7ew43A84D0J6yhtfuCNe4R8LrfyD2NznuH6ATGfp?=
+ =?us-ascii?Q?RBj85oLl2/wzHTKmJVV7pMleiXPNj6E+1zPbNUTUrB+KAhoJJqsAizFXlKYF?=
+ =?us-ascii?Q?t3j3bp//RFTEk3wO3SvbZ/cnm3YWYA3La3OJWGqiAUGqo/R6/64exaAPJdfs?=
+ =?us-ascii?Q?XLrRe6jXvlGbsETu77vM6vnDpQlZt9MBm4lcgGMNZqVbGHf8DGcLb0uTLjsY?=
+ =?us-ascii?Q?dJUBhUim5v29D0AQr4ysblI9/jFLcZRVSVVdXPxcOHyUSvCPBn5Nu6ParcD8?=
+ =?us-ascii?Q?xYNEIp5F2kfAMzlSE508BD91e7cvYx/LXT0HMXTBGhR4sifZjD31J7qNFStb?=
+ =?us-ascii?Q?5LLHyUx9J5EeXQf958RCj/DNQXxLEr0iQVajcWA1jKJ6byuAc4n9UgBqC6e6?=
+ =?us-ascii?Q?nTQMV7DZszfrrEO7T+HNz7UYACx2QQfAZQBAScQ4Ep2dsCc+pRNbydBneCgQ?=
+ =?us-ascii?Q?k5W7dd3//ZtCp4JZ4JG4053pQ9ZGfqmuZQNxMPKBj87YVg2ZsdQ+LBwB6Y6n?=
+ =?us-ascii?Q?SiMU6ERZ1rBTIun2NcTUh1QwTEe/LaZhG0MTN6m7D66895h515OaEcq135a/?=
+ =?us-ascii?Q?rjoLI396ivdnVZvIfTXj/WP9RntugTbPvOjj5p4PZVh8f5+e7EhyQHRfvKse?=
+ =?us-ascii?Q?a0YbK3+4kLhDU5QkpTNmIbgHnQDY7lkHInllmTHOt0jtoAAdQB/0xeLqz0rA?=
+ =?us-ascii?Q?bMfUYN7kUxo4W69eaR4Qan4kDXzkGgtNwIuem8wRoO/5s5x4P9teJ2DUiTC9?=
+ =?us-ascii?Q?3cs6hxYxjqFwZTdOF2B+AEsrklpMFisPJ8LygxNCMFuIKWvnDoudFOcsn27B?=
+ =?us-ascii?Q?174ZQw+Fr5giFwj3wVgm69GTwS1QhtBDSjJPD7b8vGw7nYQdMYbvI4/2eY6C?=
+ =?us-ascii?Q?YB3CRasOtT87G9QW4T9JpALlC9I9VKVlEJFotXDm5X37bhtWPT/Wso4JVR3q?=
+ =?us-ascii?Q?D+1ZXovte2JMp9Fk2MP8v6qhjjPo8Q3If/Iia63JLpdudupIK8s1yrCqypeX?=
+ =?us-ascii?Q?o8fjZncYviV5tw2JOUSacAaBO0re2XNI+KhOkyi8m3K27/Aw8ZkEtznr5tEt?=
+ =?us-ascii?Q?pyvbL5nMN7Os6IptTFzmgIESX/mk5fQJMk48roHBAW1gn4kUeudITJv3GeTy?=
+ =?us-ascii?Q?fjxQUH4YStsxWEFuYB2cMH+3/2A0+B0NLTSHwrBkvBgVC+a6cUQWCm/xKfSj?=
+ =?us-ascii?Q?5xciug=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 00e95cd4-b53a-4d27-c3b2-08db5099d16f
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2023 14:27:29.8509
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2023 14:29:38.1390
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR01MB3707
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lEdB1IckgVLwkJS8MGIpwjBpoFHXe0hT55OEc2NPxaz20cZ+sTMI211TSNt5zawoeIw2CcnpM7E8L363wfmpf8uW5uxp3sWtSf+Gwt5i8ZU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5897
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Tue, May 09, 2023 at 02:35:00PM +0000, Ivan Mikhaylov wrote:
+> Make the one Get Mac Address function for all manufacturers and change
+> this call in handlers accordingly.
+> 
+> Signed-off-by: Ivan Mikhaylov <fr0st61te@gmail.com>
 
-
-> On May 9, 2023, at 20:22, Andrew Lunn <andrew@lunn.ch> wrote:
->=20
-> On Tue, May 09, 2023 at 06:44:02PM +0800, Yan Wang wrote:
->> Every PHY chip has a reset pin.
->=20
-> Hi Yan
->=20
-> Experience has shown that very few PHYs have controllable resets. So i
-> would not say every.
->=20
-
-> the state isn't
->> sure of the PHY before scanning.
->>=20
->> It is resetting, Scanning phy ID will fail, so
->> deassert reset for the chip ,normal operation.
->=20
-> Please look at your white space in both the commit message and the
-> patch. No space before , but after. Spaces between words etc. More
-> blank lines are common in code to break up logical sections etc.
->=20
-> "While in resetting, scanning of the PHY ID will fail. So deassert the
-> reset for the chip to ensure normal operation."
->=20
-> What you are missing is a delay afterwards. Look at the DT binding, it
-> lists optional properties to control the delay. And if there is no
-> delay specified, the code which will later take the GPIO inserts a
-> delay.
->=20
-Incorrect description caused your misunderstanding.
-
-On my customized board, multiple phy devices are mounted on the mido bus,=20
-and there are multiple pins on the hardware that control these phy devices.=
-=20
-These pins default to low level, so these phy devices are in a reset state,=
-=20
-so they cannot scan IDs.Therefore, I need to raise these control reset pins
-to make the phy device work properly.
-
-Can I resend a v2 patch?
-
-Think you.
->>=20
->> Release the reset pin, because it needs to be
->> registered to the created phy device.
->>=20
->> Signed-off-by: Yan Wang <rk.code@outlook.com>
->>=20
->> diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_md=
-io.c
->> index 1183ef5e203e..8fdf1293f447 100644
->> --- a/drivers/net/mdio/fwnode_mdio.c
->> +++ b/drivers/net/mdio/fwnode_mdio.c
->> @@ -11,6 +11,7 @@
->> #include <linux/of.h>
->> #include <linux/phy.h>
->> #include <linux/pse-pd/pse.h>
->> +#include <linux/of_gpio.h>
->=20
-> These includes appear to be sorted.
-OK, I will modify it.
->=20
->>=20
->> MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
->> MODULE_LICENSE("GPL");
->> @@ -57,6 +58,32 @@ fwnode_find_mii_timestamper(struct fwnode_handle *fwn=
-ode)
->> 	return register_mii_timestamper(arg.np, arg.args[0]);
->> }
->>=20
->> +static void fwnode_mdiobus_deassert_reset_phy(struct fwnode_handle *fwn=
-ode)
->> +{
->> +	struct device_node *np;
->> +	int reset;
->> +	int rc;
->> +
->> +	np =3D to_of_node(fwnode);
->> +	if (!np)
->> +		return;
->> +	reset =3D of_get_named_gpio(np, "reset-gpios", 0);
->> +	if (gpio_is_valid(reset)) {
->> +		rc =3D gpio_request(reset, NULL);
->> +		if (rc < 0) {
->> +			pr_err("The currunt state of the reset pin is %s ",
->> +				rc =3D=3D -EBUSY ? "busy" : "error");
->=20
-> Please correctly handle -EPROBE_DEFFER. The GPIO driver might not of
-> probed yet. The gpio maintainers are also trying to remove the gpio_
-> API and replace it with gpiod_.
-Ok,I will modify it.
->=20
->> +		} else {
->> +			gpio_direction_output(reset, 0);
->> +			usleep_range(1000, 2000);
->> +			gpio_direction_output(reset, 1);
->=20
-> This is actually putting it into reset first, and then taking it out
-> of reset. We want to avoid that. it forces a new auto-neg cycles which
-> takes a little over 1 second. Phylib will try to avoid forcing an
-> auto-neg so you get link faster. If the PHY does not need to be
-> reconfigured it won't be and the result of the auto neg can be used.
-Is the delay too long?=20
-
-The phy reset pin is got  and pulled up in mdiobus_register_device().
-Auto-neg is meaningless! Phy does not have a matching driver.
-
-> 	Andrew
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
 
