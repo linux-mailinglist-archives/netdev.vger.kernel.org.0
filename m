@@ -1,417 +1,169 @@
-Return-Path: <netdev+bounces-1021-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1012-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 77D606FBD51
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 04:34:08 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 114346FBD2A
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 04:29:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 45622280C0B
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 02:34:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 184411C20A98
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 02:29:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 52D8F11CAD;
-	Tue,  9 May 2023 02:31:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C57A9395;
+	Tue,  9 May 2023 02:29:32 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F8B519526
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 02:31:25 +0000 (UTC)
-Received: from smtpbgeu2.qq.com (smtpbgeu2.qq.com [18.194.254.142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC9B9ECD
-	for <netdev@vger.kernel.org>; Mon,  8 May 2023 19:31:16 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1683599370tns8qfgk
-Received: from wxdbg.localdomain.com ( [125.119.253.217])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Tue, 09 May 2023 10:29:29 +0800 (CST)
-X-QQ-SSF: 01400000000000I0Z000000A0000000
-X-QQ-FEAT: eTp2eCgHrZl3YnRfsGfPMpzHtMjIVZwpJo0/0Wbpx+ARJ9hjmntKuN4nia8nP
-	wQNB06REXVAloo8wootUpxkt3t0h26/ro3aAIviIZdzh1ELyTQQIQugEqsQa3M4nqY41l7+
-	5ttcxVh93v+zRYCcraoAOXJ6gzSxLJ6CZLStgUxNQyOJpvL8gzQrYUWji8vpLAUD9RDkxvf
-	Tr35asRb4xALav6C16fp7g6duZVE/cg5CuVEzGmFlCrFP5rmaZ5qEAyipPigN9tkPzdM+ly
-	5uSgMLCq9USkZk5VqhTuJydtCZE1KXVsLxVhyfYszEHpTvQjgrjr3oKtP1GqVacDGzNAxNJ
-	3HE71tellzhxraN1vo9Ip53+Q+Cg6E/A7A3zL/2qmvkh+1wmoDU4DB0EhSe2HTtJpGUwgio
-	LBkKj1M6lhB/esiuqZTdpnHbFdcMiine
-X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 2865250660286101631
-From: Jiawen Wu <jiawenwu@trustnetic.com>
-To: netdev@vger.kernel.org,
-	jarkko.nikula@linux.intel.com,
-	andriy.shevchenko@linux.intel.com,
-	mika.westerberg@linux.intel.com,
-	jsd@semihalf.com,
-	Jose.Abreu@synopsys.com,
-	andrew@lunn.ch,
-	hkallweit1@gmail.com,
-	linux@armlinux.org.uk
-Cc: linux-i2c@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	mengyuanlou@net-swift.com,
-	Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next v7 9/9] net: txgbe: Support phylink MAC layer
-Date: Tue,  9 May 2023 10:27:34 +0800
-Message-Id: <20230509022734.148970-10-jiawenwu@trustnetic.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20230509022734.148970-1-jiawenwu@trustnetic.com>
-References: <20230509022734.148970-1-jiawenwu@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B18F77C
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 02:29:32 +0000 (UTC)
+Received: from mo-csw.securemx.jp (mo-csw1515.securemx.jp [210.130.202.154])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077819EF9
+	for <netdev@vger.kernel.org>; Mon,  8 May 2023 19:29:29 -0700 (PDT)
+Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 3492SScD004435; Tue, 9 May 2023 11:28:28 +0900
+X-Iguazu-Qid: 34trpHMSmOLGSJo0I6
+X-Iguazu-QSIG: v=2; s=0; t=1683599308; q=34trpHMSmOLGSJo0I6; m=LC+Yrf9jpYB02kGeIs+oPdW0Q6fe6qNOdjU1qXnRyJ4=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+	by relay.securemx.jp (mx-mr1511) id 3492SPEY014645
+	(version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+	Tue, 9 May 2023 11:28:26 +0900
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=borTgn4KgKdRYB1Yn02bgLS0Smo4/3wzGHpkxfEu1h0EBOa77VqYCI7DHEXZY9TMrsv7Tb6dsro0+fqz3l5oBkOiQXOYrTtrr4wxc4S3Bv0iaB+qqMyiKV/qUzQePql6Cd/zaBaHCPNI5vtb5HcikSs7oUIQeubi9E5g4QMUUr3xcITFQL5v9nBCq32MRnwRWMmHySGLQm7Aw2S5eQAewxgWjfsklu7Y9KbiEJtDFEzbvbacqX9d/BGih+9IK1sBqsXSZO2/IeiUbs23X7nniVY3pOX3G9qmmEOPgdp4fDQkiTcOF9PlikU2vu9PUkLXVAR/IvWVOGcRCuSRya9syg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C15R2As9J7RcdX2+2UbdplZLOFN8lddcY2w2oR1XpWg=;
+ b=bek1iKxIu/WOZPYNKKdMFYpmMRdp9Ir/ZMEwTO/AicEJxZhgnGjCbHv81A2KgLLdz/0c8/fKtLcLCL5T3Bzri3QCKEeksJneS1IJMEoyC4X+oKT5aUANHobIQsXgoMlCvZz9tIoc7Z4DCiDXcxemLOk8vRd4segNstMi08eYpRc9JGlbR+i4+ujiGhVvqPVNVLlhHZQpcWIOSNjD/giIqxKWHwBrR69UaxYDe3L9pMokCLiznvo7Z1h3nC9IK5xpqiKMb0oBcFzQWJ+V48ZpbcQqCJx4z2/a35V9jGPCISUGmkcTUe+F/Pd6/mkNNzfBKLxWkwW85zZZUBq1wbUn/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toshiba.co.jp; dmarc=pass action=none
+ header.from=toshiba.co.jp; dkim=pass header.d=toshiba.co.jp; arc=none
+From: <nobuhiro1.iwamatsu@toshiba.co.jp>
+To: <u.kleine-koenig@pengutronix.de>, <peppe.cavallaro@st.com>,
+        <alexandre.torgue@foss.st.com>, <joabreu@synopsys.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>
+CC: <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>, <kernel@pengutronix.de>,
+        <simon.horman@corigine.com>
+Subject: RE: [PATCH net-next v2 04/11] net: stmmac: dwmac-visconti: Convert to
+ platform remove callback returning void
+Thread-Topic: [PATCH net-next v2 04/11] net: stmmac: dwmac-visconti: Convert
+ to platform remove callback returning void
+Thread-Index: AQHZgbk2whUeE449vEaeZpzTkJrOqK9ROBZQ
+Date: Tue, 9 May 2023 02:28:11 +0000
+X-TSB-HOP2: ON
+Message-ID: <TYWPR01MB94204DF359A14DDEB5C7748092769@TYWPR01MB9420.jpnprd01.prod.outlook.com>
+References: <20230508142637.1449363-1-u.kleine-koenig@pengutronix.de>
+ <20230508142637.1449363-5-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20230508142637.1449363-5-u.kleine-koenig@pengutronix.de>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toshiba.co.jp;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYWPR01MB9420:EE_|TYCPR01MB9432:EE_
+x-ms-office365-filtering-correlation-id: 19f4d681-7f3d-498b-ae92-08db503508f6
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5fEp1TI6qPn8vhZVorwrMaV4KqTRf+IKZgfAXkrzPL3GE/XakWYJLNuk8/GPbjtKO0Df9RzwTDRtNMH1/m4krVGEzl53oFblIG4fPXl9bTgphZyrgNPtFCIO6zD2YOtsHLrTO6igxyx6XRumWuV3MCYWows3uPouVEa6uIOcadQ/EEkqOKvjE72gc8I6BtiTrAld2pTB6qXnwO7g2dXtkOYUtVvISw+NTvqtBgCveftD7HcxtfhvQL4cTVRT240tIWW026DOBu1uJ35FKeBg2c9Gxh1yZZFAndKnidACV2SVL/vhqg/ndxnNUok6h3I0/p+pEc7H+XRRrK5qOim9QGx8kPPKDy/i3Be7XsDL/y64DLbS0SolicxLIhMgXEQeg4R7yOKpe7TO5tm1MsrHzDM5ft8g+PxT42ucHVvOEQf60f0OEsTdOJECNJ05kBbfk44+XdO4Ie0nyeTu+bUw/1eFxqerERY/IoMQSnyfFFsEyEto8AEdO3FTo784C2W1DBKmdx04huqYChmYx1a8mEKp10HuFCjFnaf4NBlKCJGIYBA6JL4NoVSD204TpZXAdArgW2GQk2hE7t7mtwFjwQhY1wOu76D6kfYcpKXorlYxEeK7UADGbwkVmE+8ujNB
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWPR01MB9420.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(346002)(39860400002)(376002)(136003)(451199021)(9686003)(186003)(2906002)(26005)(6506007)(53546011)(33656002)(38100700002)(55016003)(83380400001)(122000001)(71200400001)(316002)(41300700001)(4326008)(66556008)(64756008)(76116006)(66476007)(66946007)(7696005)(66446008)(54906003)(86362001)(110136005)(38070700005)(478600001)(7416002)(8676002)(5660300002)(8936002)(52536014);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bTE5UFR0T2R5eDlaVC95dm1ZcDUreUttSmY4eHZFbjVxRTgyT05XZXlwbCtw?=
+ =?utf-8?B?dmU1dDB4ckxWNEF0L0o1a3dObnFDbmwzT21yOCtKdjk2cGh3d2o3RVpsS0pr?=
+ =?utf-8?B?dTJJaXM1d0xUblg3U2Y0WHQ5d3doWDhGQ1dxcFV4bEY4VlgrWjBJSWF0S3U3?=
+ =?utf-8?B?bjJ4eG1hQmJQeEpoQlhSazR0dVE1ZXp6ZVc5azhONGtPU0xWOEdlZHQ0TTlz?=
+ =?utf-8?B?MnNOS0xCVnBPYjV4dklYcVFDKzRveUdUeGd5QStiS1VMTWpEektVczgrNWtl?=
+ =?utf-8?B?cENPQlpzUHZpUVBBR0NyNWk1UVBJek1UTW9PTG5aQk1Oc2hqQk9rQjlQUHFJ?=
+ =?utf-8?B?VDcwaE9tR20yT2dTQ0RpbHF2ZnVmQ0hiazF4TlBQOUVFQ0NMV1FzYXZENG1X?=
+ =?utf-8?B?dWRGempSWEQ1SWFtT0FFVUhFaGxvYjFzTGYyNThtQXdPbXROVkZyQUM3STA3?=
+ =?utf-8?B?L05IdXBCQkNVeEFmVTgyOS9Ha3dwSlQ3STNZYjRCbWJtbUtWSTE4ekNTMy94?=
+ =?utf-8?B?OWJCYmtzM0ZNS1hMMW9GYytnbW1XY0NVNkFmWU1SVk9EZkZNcm9XdHNqR0RV?=
+ =?utf-8?B?KzZwNkdRR2FVMU9WUm02bmx0Ym0xSG5kZnRUZzFYTWg0dE9NaGFNOXlnR0xE?=
+ =?utf-8?B?c2NtTlkxS3lpRUs5MWVyMml0U0RJV0I4bk9FZ01XVFY5ZTlpZnRiNmpzdktj?=
+ =?utf-8?B?NW5OWXNMWlN1a2RKb1l6UVkvakZmM0k0eGc3Wk1MVWtUa3FidHRDNGw2Tk5y?=
+ =?utf-8?B?MXpmaERORGZHcUNaUUdSb0FhbXREMXZyL0dwYlhiZFQ5bXdkZHphbU9jeGRK?=
+ =?utf-8?B?VnZiUklmdlJMaEdpVUorbmxOc01iSW9YbGFRTDdYZlIyUEtOSEYxQzcwU1Ev?=
+ =?utf-8?B?WlE3M0JVMU1aRE1taFFRbDRJODJNck5jYXFFOXdOUXJTSzRRNW5aUGJRVmgx?=
+ =?utf-8?B?cjBaR2hScFdXZThyL3praUpFZmVXRk5Fa2dRWkdzblU1KzJMckdacCsxSjZr?=
+ =?utf-8?B?elYwWlVZSWVtcXN4ZjVEVElrQkF1VzQwRFZFTmx6V0hiczRzb1M1MkE1ZTNp?=
+ =?utf-8?B?N0poVnE2OVRJNkE5VlBQbTFiQTg2amVhc2UrQktuNWJXeTAvQmJtWnNQSkNE?=
+ =?utf-8?B?ZjNvZUpXS2h1RDFyNWFRWks5WnVvSmtsajREY3ZOWTNncVFHd04wWmRsTjFt?=
+ =?utf-8?B?d0JpQUtDMTF6cUgrMjR1OGFHUm1FTFVaanhRcCtoL2pSUS9rWUpYRnQ5dHhG?=
+ =?utf-8?B?OGE1emdmL0tET3QraWxmZXNETTZNQmRxK1VJbzdsUU5NZ3ZHR3F5aFJYR1Ir?=
+ =?utf-8?B?OWhUZjF4bkFMMmVaQ1pWeDE2eWJEMmlhVU1IWFJ5TXBwbEsvbW8vL1lTVkpu?=
+ =?utf-8?B?ckZrTk5xaHdGd3BiUkI3Q3o0ZUNKMGFXays3Q3pBOE82VG1sNXM5cktVNG5F?=
+ =?utf-8?B?ZzdvSU1XeFpvYUtPTHpJMG1xMVZwYkZEbTNWMXVLUnY4UFFVSkhybWJUWTBG?=
+ =?utf-8?B?Tm1PQ2MzTHlhVFd6OFdGWnN6d2x5Nkx3czRkc3N6aHgyUU9pSHc2RnlnSWtO?=
+ =?utf-8?B?Z0lFdDNWZVhPbXp1NGFvTVJmTy9IaU8xZGNYWnJoYjdsOWZLZnRnVHdDbkd2?=
+ =?utf-8?B?U2FkVVdIRkxZSVpjNHJMeGtMbHFyMEdCUVBlM1QrM0ZrRFJwZ1dzRFZMUjJ3?=
+ =?utf-8?B?UXNhTFVPOFE1SURpdllJZzYyVTkyVHNVb2xqWnF6MlN5eWwwUU04T25OeGQ3?=
+ =?utf-8?B?a2pvRmFEdVdtUzJmN1M3ckd4NFk4WVgrbkdvZjVXT0JxdjJ4alJsb09ydHZK?=
+ =?utf-8?B?N292OXBBTTd1WGVTcHVpSmxoL2kxM3I3ZzkvdFVFOWhsdmcrTjZ1a3RsM29z?=
+ =?utf-8?B?emF0Mm1DVS9QaDBFZFlxdlJFSnEyaDhtNFJUMmUvKzlNZ1ZqUzlmZEk4Um8y?=
+ =?utf-8?B?OGhITk5mOThiQUVzOFM2T0xNZmRWTkFXd24rZWMzM3FOdHhmZHdsc2lmNFE4?=
+ =?utf-8?B?Unhsb1RuN0trWmhtVWdBZzRIT01UYzJkZTA0bE1aYkw0TkxlVnFjZ2ZOT0tu?=
+ =?utf-8?B?bmpOYnZsL3ZsMjkyRS9sUG1icWRXTU04OXV5ZkJPZFlxZHIrVERmaWdKbTlj?=
+ =?utf-8?B?THZiSUlNTTlmS2tabldiT0F4ZWIrZWRVWVdXRVBScnlhN3VydkJ1K0trcXdU?=
+ =?utf-8?B?OWc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYWPR01MB9420.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19f4d681-7f3d-498b-ae92-08db503508f6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 May 2023 02:28:11.6349
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: f109924e-fb71-4ba0-b2cc-65dcdf6fbe4f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rCW/giPrfcJgjQIc+ZstzSlqdzxJJHtFmkYFsoYtNIGJ1zNLw843Y1EsAztlGNQpKDo2IHUj1CnNZjL2/m615qvC5zemxt6h9DTlG/cDbKbMOTGsmqaHeWH53FxfrUyh
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB9432
+X-OriginatorOrg: toshiba.co.jp
+MSSCP.TransferMailToMossAgent: 103
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add phylink support to Wangxun 10Gb Ethernet controller for the 10GBASE-R
-interface.
-
-Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
----
- drivers/net/ethernet/wangxun/Kconfig          |   1 +
- .../ethernet/wangxun/txgbe/txgbe_ethtool.c    |  28 +++++
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  23 ++--
- .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 113 +++++++++++++++++-
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |   5 +
- 5 files changed, 154 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
-index f3fb273e6fd0..2ca163f07359 100644
---- a/drivers/net/ethernet/wangxun/Kconfig
-+++ b/drivers/net/ethernet/wangxun/Kconfig
-@@ -46,6 +46,7 @@ config TXGBE
- 	select REGMAP
- 	select COMMON_CLK
- 	select PCS_XPCS
-+	select PHYLINK
- 	select LIBWX
- 	select SFP
- 	help
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
-index d914e9a05404..859da112586a 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
-@@ -6,11 +6,39 @@
- #include <linux/netdevice.h>
- 
- #include "../libwx/wx_ethtool.h"
-+#include "../libwx/wx_type.h"
-+#include "txgbe_type.h"
- #include "txgbe_ethtool.h"
- 
-+static int txgbe_nway_reset(struct net_device *netdev)
-+{
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
-+
-+	return phylink_ethtool_nway_reset(txgbe->phylink);
-+}
-+
-+static int txgbe_get_link_ksettings(struct net_device *netdev,
-+				    struct ethtool_link_ksettings *cmd)
-+{
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
-+
-+	return phylink_ethtool_ksettings_get(txgbe->phylink, cmd);
-+}
-+
-+static int txgbe_set_link_ksettings(struct net_device *netdev,
-+				    const struct ethtool_link_ksettings *cmd)
-+{
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
-+
-+	return phylink_ethtool_ksettings_set(txgbe->phylink, cmd);
-+}
-+
- static const struct ethtool_ops txgbe_ethtool_ops = {
- 	.get_drvinfo		= wx_get_drvinfo,
-+	.nway_reset		= txgbe_nway_reset,
- 	.get_link		= ethtool_op_get_link,
-+	.get_link_ksettings	= txgbe_get_link_ksettings,
-+	.set_link_ksettings	= txgbe_set_link_ksettings,
- };
- 
- void txgbe_set_ethtool_ops(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index ded04e9e136f..bdf735e863eb 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -7,6 +7,7 @@
- #include <linux/netdevice.h>
- #include <linux/string.h>
- #include <linux/etherdevice.h>
-+#include <linux/phylink.h>
- #include <net/ip.h>
- #include <linux/if_vlan.h>
- 
-@@ -204,7 +205,8 @@ static int txgbe_request_irq(struct wx *wx)
- 
- static void txgbe_up_complete(struct wx *wx)
- {
--	u32 reg;
-+	struct net_device *netdev = wx->netdev;
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
- 
- 	wx_control_hw(wx, true);
- 	wx_configure_vectors(wx);
-@@ -213,24 +215,16 @@ static void txgbe_up_complete(struct wx *wx)
- 	smp_mb__before_atomic();
- 	wx_napi_enable_all(wx);
- 
-+	phylink_start(txgbe->phylink);
-+
- 	/* clear any pending interrupts, may auto mask */
- 	rd32(wx, WX_PX_IC(0));
- 	rd32(wx, WX_PX_IC(1));
- 	rd32(wx, WX_PX_MISC_IC);
- 	txgbe_irq_enable(wx, true);
- 
--	/* Configure MAC Rx and Tx when link is up */
--	reg = rd32(wx, WX_MAC_RX_CFG);
--	wr32(wx, WX_MAC_RX_CFG, reg);
--	wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
--	reg = rd32(wx, WX_MAC_WDG_TIMEOUT);
--	wr32(wx, WX_MAC_WDG_TIMEOUT, reg);
--	reg = rd32(wx, WX_MAC_TX_CFG);
--	wr32(wx, WX_MAC_TX_CFG, (reg & ~WX_MAC_TX_CFG_SPEED_MASK) | WX_MAC_TX_CFG_SPEED_10G);
--
- 	/* enable transmits */
--	netif_tx_start_all_queues(wx->netdev);
--	netif_carrier_on(wx->netdev);
-+	netif_tx_start_all_queues(netdev);
- }
- 
- static void txgbe_reset(struct wx *wx)
-@@ -264,7 +258,6 @@ static void txgbe_disable_device(struct wx *wx)
- 		wx_disable_rx_queue(wx, wx->rx_ring[i]);
- 
- 	netif_tx_stop_all_queues(netdev);
--	netif_carrier_off(netdev);
- 	netif_tx_disable(netdev);
- 
- 	wx_irq_disable(wx);
-@@ -295,8 +288,12 @@ static void txgbe_disable_device(struct wx *wx)
- 
- static void txgbe_down(struct wx *wx)
- {
-+	struct net_device *netdev = wx->netdev;
-+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
-+
- 	txgbe_disable_device(wx);
- 	txgbe_reset(wx);
-+	phylink_stop(txgbe->phylink);
- 
- 	wx_clean_all_tx_rings(wx);
- 	wx_clean_all_rx_rings(wx);
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-index 0ab2898e764a..4eedb60e93af 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-@@ -10,11 +10,13 @@
- #include <linux/clkdev.h>
- #include <linux/clk-provider.h>
- #include <linux/pcs/pcs-xpcs.h>
-+#include <linux/phylink.h>
- #include <linux/mdio.h>
- #include <linux/i2c.h>
- #include <linux/pci.h>
- 
- #include "../libwx/wx_type.h"
-+#include "../libwx/wx_lib.h"
- #include "../libwx/wx_hw.h"
- #include "txgbe_type.h"
- #include "txgbe_phy.h"
-@@ -156,6 +158,95 @@ static int txgbe_mdio_pcs_init(struct txgbe *txgbe)
- 	return 0;
- }
- 
-+static struct phylink_pcs *txgbe_phylink_mac_select(struct phylink_config *config,
-+						    phy_interface_t interface)
-+{
-+	struct txgbe *txgbe = netdev_to_txgbe(to_net_dev(config->dev));
-+
-+	return &txgbe->xpcs->pcs;
-+}
-+
-+static void txgbe_mac_config(struct phylink_config *config, unsigned int mode,
-+			     const struct phylink_link_state *state)
-+{
-+}
-+
-+static void txgbe_mac_link_down(struct phylink_config *config,
-+				unsigned int mode, phy_interface_t interface)
-+{
-+	struct wx *wx = netdev_priv(to_net_dev(config->dev));
-+
-+	wr32m(wx, WX_MAC_TX_CFG, WX_MAC_TX_CFG_TE, 0);
-+}
-+
-+static void txgbe_mac_link_up(struct phylink_config *config,
-+			      struct phy_device *phy,
-+			      unsigned int mode, phy_interface_t interface,
-+			      int speed, int duplex,
-+			      bool tx_pause, bool rx_pause)
-+{
-+	struct wx *wx = netdev_priv(to_net_dev(config->dev));
-+	u32 txcfg, wdg;
-+
-+	txcfg = rd32(wx, WX_MAC_TX_CFG);
-+	txcfg &= ~WX_MAC_TX_CFG_SPEED_MASK;
-+
-+	switch (speed) {
-+	case SPEED_10000:
-+		txcfg |= WX_MAC_TX_CFG_SPEED_10G;
-+		break;
-+	case SPEED_1000:
-+	case SPEED_100:
-+	case SPEED_10:
-+		txcfg |= WX_MAC_TX_CFG_SPEED_1G;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	wr32(wx, WX_MAC_TX_CFG, txcfg | WX_MAC_TX_CFG_TE);
-+
-+	/* Re configure MAC Rx */
-+	wr32m(wx, WX_MAC_RX_CFG, WX_MAC_RX_CFG_RE, WX_MAC_RX_CFG_RE);
-+	wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
-+	wdg = rd32(wx, WX_MAC_WDG_TIMEOUT);
-+	wr32(wx, WX_MAC_WDG_TIMEOUT, wdg);
-+}
-+
-+static const struct phylink_mac_ops txgbe_mac_ops = {
-+	.mac_select_pcs = txgbe_phylink_mac_select,
-+	.mac_config = txgbe_mac_config,
-+	.mac_link_down = txgbe_mac_link_down,
-+	.mac_link_up = txgbe_mac_link_up,
-+};
-+
-+static int txgbe_phylink_init(struct txgbe *txgbe)
-+{
-+	struct phylink_config *config;
-+	struct fwnode_handle *fwnode;
-+	struct wx *wx = txgbe->wx;
-+	phy_interface_t phy_mode;
-+	struct phylink *phylink;
-+
-+	config = devm_kzalloc(&wx->pdev->dev, sizeof(*config), GFP_KERNEL);
-+	if (!config)
-+		return -ENOMEM;
-+
-+	config->dev = &wx->netdev->dev;
-+	config->type = PHYLINK_NETDEV;
-+	config->mac_capabilities = MAC_10000FD | MAC_1000FD | MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
-+	phy_mode = PHY_INTERFACE_MODE_10GBASER;
-+	__set_bit(PHY_INTERFACE_MODE_10GBASER, config->supported_interfaces);
-+	fwnode = software_node_fwnode(txgbe->nodes.group[SWNODE_PHYLINK]);
-+	phylink = phylink_create(config, fwnode, phy_mode, &txgbe_mac_ops);
-+	if (IS_ERR(phylink))
-+		return PTR_ERR(phylink);
-+
-+	txgbe->phylink = phylink;
-+
-+	return 0;
-+}
-+
- static int txgbe_gpio_get(struct gpio_chip *chip, unsigned int offset)
- {
- 	struct wx *wx = gpiochip_get_data(chip);
-@@ -302,7 +393,9 @@ static void txgbe_irq_handler(struct irq_desc *desc)
- 	irq_hw_number_t hwirq;
- 	unsigned long gpioirq;
- 	struct gpio_chip *gc;
--	u32 gpio;
-+	u32 gpio, eicr, reg;
-+
-+	eicr = wx_misc_isb(wx, WX_ISB_MISC);
- 
- 	chained_irq_enter(chip, desc);
- 
-@@ -319,6 +412,11 @@ static void txgbe_irq_handler(struct irq_desc *desc)
- 
- 	chained_irq_exit(chip, desc);
- 
-+	if (eicr & (TXGBE_PX_MISC_ETH_LK | TXGBE_PX_MISC_ETH_LKDN)) {
-+		reg = rd32(wx, TXGBE_CFG_PORT_ST);
-+		phylink_mac_change(txgbe->phylink, !!(reg & TXGBE_CFG_PORT_ST_LINK_UP));
-+	}
-+
- 	/* unmask interrupt */
- 	if (netif_running(wx->netdev))
- 		wx_intr_enable(wx, TXGBE_INTR_MISC(wx));
-@@ -494,16 +592,22 @@ int txgbe_init_phy(struct txgbe *txgbe)
- 		goto err_unregister_swnode;
- 	}
- 
-+	ret = txgbe_phylink_init(txgbe);
-+	if (ret) {
-+		wx_err(txgbe->wx, "failed to init phylink\n");
-+		goto err_destroy_xpcs;
-+	}
-+
- 	ret = txgbe_gpio_init(txgbe);
- 	if (ret) {
- 		wx_err(txgbe->wx, "failed to init gpio\n");
--		goto err_destroy_xpcs;
-+		goto err_destroy_phylink;
- 	}
- 
- 	ret = txgbe_clock_register(txgbe);
- 	if (ret) {
- 		wx_err(txgbe->wx, "failed to register clock: %d\n", ret);
--		goto err_destroy_xpcs;
-+		goto err_destroy_phylink;
- 	}
- 
- 	ret = txgbe_i2c_register(txgbe);
-@@ -525,6 +629,8 @@ int txgbe_init_phy(struct txgbe *txgbe)
- err_unregister_clk:
- 	clkdev_drop(txgbe->clock);
- 	clk_unregister(txgbe->clk);
-+err_destroy_phylink:
-+	phylink_destroy(txgbe->phylink);
- err_destroy_xpcs:
- 	xpcs_destroy(txgbe->xpcs);
- err_unregister_swnode:
-@@ -539,6 +645,7 @@ void txgbe_remove_phy(struct txgbe *txgbe)
- 	platform_device_unregister(txgbe->i2c_dev);
- 	clkdev_drop(txgbe->clock);
- 	clk_unregister(txgbe->clk);
-+	phylink_destroy(txgbe->phylink);
- 	xpcs_destroy(txgbe->xpcs);
- 	software_node_unregister_node_group(txgbe->nodes.group);
- }
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index 75b9c7ae3c21..a889f340b14d 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -80,6 +80,10 @@
- 				TXGBE_PX_MISC_INT_ERR | \
- 				TXGBE_PX_MISC_GPIO)
- 
-+/* Port cfg registers */
-+#define TXGBE_CFG_PORT_ST                       0x14404
-+#define TXGBE_CFG_PORT_ST_LINK_UP               BIT(0)
-+
- /* I2C registers */
- #define TXGBE_I2C_BASE                          0x14900
- 
-@@ -180,6 +184,7 @@ struct txgbe {
- 	struct txgbe_nodes nodes;
- 	struct mdio_device *mdiodev;
- 	struct dw_xpcs *xpcs;
-+	struct phylink *phylink;
- 	struct platform_device *sfp_dev;
- 	struct platform_device *i2c_dev;
- 	struct clk_lookup *clock;
--- 
-2.27.0
+SGkgVXdlLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFV3ZSBLbGVp
+bmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IE1vbmRh
+eSwgTWF5IDgsIDIwMjMgMTE6MjcgUE0NCj4gVG86IEdpdXNlcHBlIENhdmFsbGFybyA8cGVwcGUu
+Y2F2YWxsYXJvQHN0LmNvbT47IEFsZXhhbmRyZSBUb3JndWUNCj4gPGFsZXhhbmRyZS50b3JndWVA
+Zm9zcy5zdC5jb20+OyBKb3NlIEFicmV1IDxqb2FicmV1QHN5bm9wc3lzLmNvbT47DQo+IERhdmlk
+IFMuIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEVyaWMgRHVtYXpldA0KPiA8ZWR1bWF6
+ZXRAZ29vZ2xlLmNvbT47IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBQYW9sbyBB
+YmVuaQ0KPiA8cGFiZW5pQHJlZGhhdC5jb20+OyBpd2FtYXRzdSBub2J1aGlybyjlsqnmnb4g5L+h
+5rSLIOKXi++8pO+8qe+8tO+8o+KWoe+8pO+8qe+8tOKXiw0KPiDvvK/vvLPvvLQpIDxub2J1aGly
+bzEuaXdhbWF0c3VAdG9zaGliYS5jby5qcD47IE1heGltZSBDb3F1ZWxpbg0KPiA8bWNvcXVlbGlu
+LnN0bTMyQGdtYWlsLmNvbT4NCj4gQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWFy
+bS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gbGludXgtc3RtMzJAc3QtbWQtbWFpbG1h
+bi5zdG9ybXJlcGx5LmNvbTsga2VybmVsQHBlbmd1dHJvbml4LmRlOyBTaW1vbg0KPiBIb3JtYW4g
+PHNpbW9uLmhvcm1hbkBjb3JpZ2luZS5jb20+DQo+IFN1YmplY3Q6IFtQQVRDSCBuZXQtbmV4dCB2
+MiAwNC8xMV0gbmV0OiBzdG1tYWM6IGR3bWFjLXZpc2NvbnRpOiBDb252ZXJ0IHRvDQo+IHBsYXRm
+b3JtIHJlbW92ZSBjYWxsYmFjayByZXR1cm5pbmcgdm9pZA0KPiANCj4gVGhlIC5yZW1vdmUoKSBj
+YWxsYmFjayBmb3IgYSBwbGF0Zm9ybSBkcml2ZXIgcmV0dXJucyBhbiBpbnQgd2hpY2ggbWFrZXMg
+bWFueQ0KPiBkcml2ZXIgYXV0aG9ycyB3cm9uZ2x5IGFzc3VtZSBpdCdzIHBvc3NpYmxlIHRvIGRv
+IGVycm9yIGhhbmRsaW5nIGJ5IHJldHVybmluZyBhbg0KPiBlcnJvciBjb2RlLiBIb3dldmVyIHRo
+ZSB2YWx1ZSByZXR1cm5lZCBpcyAobW9zdGx5KSBpZ25vcmVkIGFuZCB0aGlzIHR5cGljYWxseQ0K
+PiByZXN1bHRzIGluIHJlc291cmNlIGxlYWtzLiBUbyBpbXByb3ZlIGhlcmUgdGhlcmUgaXMgYSBx
+dWVzdCB0byBtYWtlIHRoZSByZW1vdmUNCj4gY2FsbGJhY2sgcmV0dXJuIHZvaWQuIEluIHRoZSBm
+aXJzdCBzdGVwIG9mIHRoaXMgcXVlc3QgYWxsIGRyaXZlcnMgYXJlIGNvbnZlcnRlZA0KPiB0byAu
+cmVtb3ZlX25ldygpIHdoaWNoIGFscmVhZHkgcmV0dXJucyB2b2lkLg0KPiANCj4gVHJpdmlhbGx5
+IGNvbnZlcnQgdGhpcyBkcml2ZXIgZnJvbSBhbHdheXMgcmV0dXJuaW5nIHplcm8gaW4gdGhlIHJl
+bW92ZSBjYWxsYmFjayB0bw0KPiB0aGUgdm9pZCByZXR1cm5pbmcgdmFyaWFudC4NCj4gDQo+IFJl
+dmlld2VkLWJ5OiBTaW1vbiBIb3JtYW4gPHNpbW9uLmhvcm1hbkBjb3JpZ2luZS5jb20+DQo+IFNp
+Z25lZC1vZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9u
+aXguZGU+DQo+IC0tLQ0KDQpBY2tlZC1ieTogTm9idWhpcm8gSXdhbWF0c3UgPG5vYnVoaXJvMS5p
+d2FtYXRzdUB0b3NoaWJhLmNvLmpwPg0KDQpCZXN0IHJlZ2FyZHMsDQogIE5vYnVoaXJvDQo=
 
 
