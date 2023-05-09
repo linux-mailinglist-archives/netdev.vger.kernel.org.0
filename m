@@ -1,60 +1,58 @@
-Return-Path: <netdev+bounces-1163-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1164-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B6D196FC650
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 14:27:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D25676FC675
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 14:34:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 77580281292
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:27:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9E4C428136A
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:34:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 952F8182BE;
-	Tue,  9 May 2023 12:27:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCFCC8BE3;
+	Tue,  9 May 2023 12:34:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88BCA1096E
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 12:27:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1432196
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 12:34:02 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AA040F7
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 05:27:41 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0AA40D9
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 05:34:00 -0700 (PDT)
 Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <mkl@pengutronix.de>)
-	id 1pwMQu-0005KF-Kj; Tue, 09 May 2023 14:27:08 +0200
+	id 1pwMXF-0007bU-NH; Tue, 09 May 2023 14:33:41 +0200
 Received: from pengutronix.de (unknown [172.20.34.65])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
 	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id 7F6961C0DEB;
-	Tue,  9 May 2023 12:27:05 +0000 (UTC)
-Date: Tue, 9 May 2023 14:27:04 +0200
+	by smtp.blackshift.org (Postfix) with ESMTPSA id 123EA1C0ED2;
+	Tue,  9 May 2023 12:33:39 +0000 (UTC)
+Date: Tue, 9 May 2023 14:33:38 +0200
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Rob Herring <robh@kernel.org>
-Cc: Judith Mendez <jm@ti.com>,
-	Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-	Wolfgang Grandegger <wg@grandegger.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	"David S . Miller" <davem@davemloft.net>,
+To: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc: linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
+	Amarula patchwork <linux-amarula@amarulasolutions.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	linux-can@vger.kernel.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Schuyler Patton <spatton@ti.com>,
-	Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-	Tero Kristo <kristo@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	Oliver Hartkopp <socketcan@hartkopp.net>,
-	Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH v4 1/4] dt-bindings: net: can: Add poll-interval for MCAN
-Message-ID: <20230509-strike-available-6b2378172a59-mkl@pengutronix.de>
-References: <20230501224624.13866-1-jm@ti.com>
- <20230501224624.13866-2-jm@ti.com>
- <20230505212948.GA3590042-robh@kernel.org>
+	Jakub Kicinski <kuba@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>,
+	Wolfgang Grandegger <wg@grandegger.com>, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 0/5] can: bxcan: add support for single peripheral
+ configuration
+Message-ID: <20230509-catering-haphazard-069d7e07dd1f-mkl@pengutronix.de>
+References: <20230427204540.3126234-1-dario.binacchi@amarulasolutions.com>
+ <20230427-retaining-deeply-fcff70098e7e-mkl@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -62,9 +60,9 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ruyafeokmkujpvvo"
+	protocol="application/pgp-signature"; boundary="z2tkty3mos6fytzk"
 Content-Disposition: inline
-In-Reply-To: <20230505212948.GA3590042-robh@kernel.org>
+In-Reply-To: <20230427-retaining-deeply-fcff70098e7e-mkl@pengutronix.de>
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -76,73 +74,38 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
---ruyafeokmkujpvvo
+--z2tkty3mos6fytzk
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 05.05.2023 16:29:48, Rob Herring wrote:
-> On Mon, May 01, 2023 at 05:46:21PM -0500, Judith Mendez wrote:
-> > On AM62x SoC, MCANs on MCU domain do not have hardware interrupt
-> > routed to A53 Linux, instead they will use software interrupt by
-> > hrtimer. To enable timer method, interrupts should be optional so
-> > remove interrupts property from required section and introduce
-> > poll-interval property.
+On 27.04.2023 23:08:57, Marc Kleine-Budde wrote:
+> On 27.04.2023 22:45:35, Dario Binacchi wrote:
 > >=20
-> > Signed-off-by: Judith Mendez <jm@ti.com>
-> > ---
-> > Changelog:
-> > v3:
-> >  1. Move binding patch to first in series
-> >  2. Update description for poll-interval
-> >  3. Add oneOf to specify using interrupts/interrupt-names or poll-inter=
-val
-> >  4. Fix example property: add comment below 'example'
-> >=20
-> > v2:
-> >   1. Add poll-interval property to enable timer polling method
-> >   2. Add example using poll-interval property
-> >  =20
-> >  .../bindings/net/can/bosch,m_can.yaml         | 36 +++++++++++++++++--
-> >  1 file changed, 34 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml=
- b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-> > index 67879aab623b..c024ee49962c 100644
-> > --- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-> > +++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-> > @@ -14,6 +14,13 @@ maintainers:
-> >  allOf:
-> >    - $ref: can-controller.yaml#
-> > =20
-> > +oneOf:
-> > +  - required:
-> > +      - interrupts
-> > +      - interrupt-names
-> > +  - required:
-> > +      - poll-interval
+> > The series adds support for managing bxCAN controllers in single periph=
+eral
+> > configuration.
+> > Unlike stm32f4 SOCs, where bxCAN controllers are only in dual peripheral
+> > configuration, stm32f7 SOCs contain three CAN peripherals, CAN1 and CAN2
+> > in dual peripheral configuration and CAN3 in single peripheral
+> > configuration:
+> > - Dual CAN peripheral configuration:
+> >  * CAN1: Primary bxCAN for managing the communication between a seconda=
+ry
+> >    bxCAN and the 512-byte SRAM memory.
+> >  * CAN2: Secondary bxCAN with no direct access to the SRAM memory.
+> >    This means that the two bxCAN cells share the 512-byte SRAM memory a=
+nd
+> >    CAN2 can't be used without enabling CAN1.
+> > - Single CAN peripheral configuration:
+> >  * CAN3: Primary bxCAN with dedicated Memory Access Controller unit and
+> >    512-byte SRAM memory.
 >=20
-> Move this next to 'required'.
->=20
-> > +
-> >  properties:
-> >    compatible:
-> >      const: bosch,m_can
-> > @@ -40,6 +47,14 @@ properties:
-> >        - const: int1
-> >      minItems: 1
-> > =20
-> > +  poll-interval:
-> > +    $ref: /schemas/types.yaml#/definitions/flag
->=20
-> This is a common property already defined as a uint32. You shouldn't=20
-> define a new type.
->=20
-> A flag doesn't even make sense. If that's all you need, then just enable=
-=20
-> polling if no interrupt is present.
+> This really looks good! Great work! Who takes the DT changes? I can take
+> the whole series.
 
-Ok, then it's implicit. No IRQs -> polling.
+I've upstreamed the DT changes for the first bxCAN driver, so I'll take
+them this time, too.
 
 Marc
 
@@ -152,20 +115,20 @@ Embedded Linux                   | https://www.pengutronix.de |
 Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
 
---ruyafeokmkujpvvo
+--z2tkty3mos6fytzk
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRaPBYACgkQvlAcSiqK
-BOjU0Af+Ksj/LqHQdcZruoOFgMEePW+7vKeglTP2i2NgKhr1bAPQseZHWsrdZ/2w
-L2heATaiciw3M9roMdccpxRHix2NFMaYoE+yODdLUkEDcDWS+rQ+NKcJ7/MusnaJ
-K65j0alWcKxu2W934e7eP+3/xrf4dwJucPIxsydEbL2+JXBOadhcJTHRjUcuHz8k
-Jig4Xql76vsuccFjZZ1T6anurjbnxVg2lTcw8CBFdjMspC33RJd6QEw9QELrapem
-0s1iBupm+b0uo0X37y31rW6+4OM2sntEKWkhrb2FUzvLMAuJqnr5HOktnbZuiqwr
-Gb2/9REAlzjAgJefVzGeI/eSZtX48w==
-=yn5E
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRaPaAACgkQvlAcSiqK
+BOhJDggAiHTwavVOD9cujYG2SgwoOLLgpy8Ylvw9/eeUQEH1Qg6N2ilNwzkHyEAE
+Q6L0lhNcBy3VO0LyM12q68h/bIu4XmAQT2QxL402O/59g24vXkR2kdsZv1teTTgB
+sRGMukvTADU+KOLNu2VtfYoLVraeGDk+Z6OfYznFlpilwK0QDNjVtItDP/vFUEjF
+ejc0RZ4SoWPH43twlO6t5ggNZkKuQYEj4kUe9JP6QgxElkvsaaipOOnAkcXlN64g
+O9WXHOfZuDiMwRJRwQ/OxVyN8Ra5ZkuLdAM7r1vzjYSQISh7tvpCjH/byB0pQMBW
+8cZztkEv3Kzx69WmUDssu7VvwXTUqA==
+=nqSC
 -----END PGP SIGNATURE-----
 
---ruyafeokmkujpvvo--
+--z2tkty3mos6fytzk--
 
