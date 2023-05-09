@@ -1,225 +1,180 @@
-Return-Path: <netdev+bounces-1108-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1110-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1BA136FC37F
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:10:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3E7CE6FC3B1
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 12:18:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E0FAB2812C1
-	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 10:10:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1463328127A
+	for <lists+netdev@lfdr.de>; Tue,  9 May 2023 10:18:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D9CC98C08;
-	Tue,  9 May 2023 10:09:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 32FB2DDCD;
+	Tue,  9 May 2023 10:18:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5919DDDD
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 10:09:49 +0000 (UTC)
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314D31BC6
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 03:09:48 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id 4fb4d7f45d1cf-50bc2feb320so8977256a12.3
-        for <netdev@vger.kernel.org>; Tue, 09 May 2023 03:09:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1683626986; x=1686218986;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cT/FKrwRQy+Rs588uBU2UJ99lzJn6qsm6vS3DQ6eeBM=;
-        b=yQLn8koZi6Ge3a77Tyc487zRth77koenYpTsiwJtpp9GQAHgF51eUuPAwJcvnwVO8t
-         8Yb7bbUG5a61BzGf6oNWFmeQMP0HOvRiHbUzXNfXxUERidl6fM7L4/GaTi1UsTrjhLni
-         aGCeQR1bYJvG3rs6dtN9j4ijyZunywH+ORiB5EzamK641HDfjnvm1WNoZGO2kRjLT9xp
-         ZgTEuRncejVE6Ls88VB1YZSlwZiz0BaIDvm7f4AnOkHNqrByCerjjUOVMKBIw9rae7yb
-         3BFkLlG0Bt25XXi9MfsiYtCg/Q33TtFPBuLXrB7CukyFKpH0NqMywfUShXAoqKemjgZf
-         9sGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683626986; x=1686218986;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cT/FKrwRQy+Rs588uBU2UJ99lzJn6qsm6vS3DQ6eeBM=;
-        b=ZQ9cCfi8O8ZjL9svo9MVkUYo47uzW618vOPLW2Tegxhiv8VRbTs4vgcrPMP0rrf/KB
-         1CzxJM5mq0gsOFMlSUm1jjZguYdRgz20KK1axfurMtUJSFZ97YmiHSdb3BhY7GIosVLG
-         Z3GFLMDI8DfMI3ZSNHP/c8ULOnQhfKjom+8bKCBQBe12WPhcbF3nW0v0jB2vGW6CUVPZ
-         a1/lVnT9TrJM8Hex7xW1oI7kh7eyluRpb+X6+1LjMjJf0HxWKWCmN+i/awy/Cy+Js5uT
-         V7CBx0FWb1D04t3WDWDpIrvKHrltMl2heF0O6KB5BMNozZdfa4gHpY3UpQOFr4to4/0t
-         d8zA==
-X-Gm-Message-State: AC+VfDwmaSL4hkBRTYDdVN5y5IDF91fluw1jLdEnBicjwE5gjlJCEAJx
-	hyBJttZL+ejwmH2hhVLtzq5h1ve3r00MiISUETSL6A==
-X-Google-Smtp-Source: ACHHUZ7NUoqFY2jq5aIcjJt1kw1C7cejKrooqxTtiZ8QjghdMl1rmNukp5Laruu5wMgq5cwJU0gBeA==
-X-Received: by 2002:a05:6402:12d5:b0:50c:9582:e968 with SMTP id k21-20020a05640212d500b0050c9582e968mr9849789edx.36.1683626986540;
-        Tue, 09 May 2023 03:09:46 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id w5-20020a056402128500b0050c03520f68sm581007edv.71.2023.05.09.03.09.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 03:09:46 -0700 (PDT)
-From: Jiri Pirko <jiri@resnulli.us>
-To: netdev@vger.kernel.org
-Cc: kuba@kernel.org,
-	pabeni@redhat.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	jacob.e.keller@intel.com,
-	saeedm@nvidia.com,
-	moshe@nvidia.com
-Subject: [patch net 3/3] devlink: change port event netdev notifier to be per-net and following netdev
-Date: Tue,  9 May 2023 12:09:39 +0200
-Message-Id: <20230509100939.760867-4-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230509100939.760867-1-jiri@resnulli.us>
-References: <20230509100939.760867-1-jiri@resnulli.us>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27D958BE8
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 10:18:07 +0000 (UTC)
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB3A30FA;
+	Tue,  9 May 2023 03:18:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683627479; x=1715163479;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lFaYZaHglXHehMJ3FYW16hTblnm28QwUMGPBW9xCS3A=;
+  b=bLCgozb+3t+8MBp6RzVVCqWQ65ebWQp8fPdqdolMY2zDRgR5atvy7WYw
+   6Mqca8ahdsuxypLr90rhAutLF2fLw82emLOmjwb2JoMBbHvv/dTN5b4jo
+   n86FeJd8CKcDzI2cMNvKHGpIL12E08xOpfMJVRDYqnUjdvOAVIY/CC0X1
+   HnT61LRin0RgdaSDmED3hFpHjKOgXhQCvTOfll2FNjX1gQyIC1CTIFg8f
+   TJzl5aM97ie1EpOfqpTfK3fats/8/s/1QCKNLS+fFcPm57Fm+gVC/OCpJ
+   JsaavMDjV8m2j1YO3T9LZn8FA10lMDGe72FMhIqttBH93IYFHMQvxmW9s
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="413158406"
+X-IronPort-AV: E=Sophos;i="5.99,261,1677571200"; 
+   d="scan'208";a="413158406"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 03:17:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="873156762"
+X-IronPort-AV: E=Sophos;i="5.99,261,1677571200"; 
+   d="scan'208";a="873156762"
+Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 09 May 2023 03:17:55 -0700
+Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1pwKPq-000244-37;
+	Tue, 09 May 2023 10:17:54 +0000
+Date: Tue, 9 May 2023 18:17:43 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Ji-Ze Hong (Peter Hong)" <peter_hong@fintek.com.tw>, wg@grandegger.com,
+	mkl@pengutronix.de, michal.swiatkowski@linux.intel.com,
+	Steen.Hegelund@microchip.com, mailhol.vincent@wanadoo.fr
+Cc: oe-kbuild-all@lists.linux.dev, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, frank.jungclaus@esd.eu,
+	linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+	netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com,
+	"Ji-Ze Hong (Peter Hong)" <peter_hong@fintek.com.tw>
+Subject: Re: [PATCH V7] can: usb: f81604: add Fintek F81604 support
+Message-ID: <202305091802.pRFS6n2j-lkp@intel.com>
+References: <20230509073821.25289-1-peter_hong@fintek.com.tw>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230509073821.25289-1-peter_hong@fintek.com.tw>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Jiri Pirko <jiri@nvidia.com>
+Hi Ji-Ze,
 
-The commit 565b4824c39f ("devlink: change port event netdev notifier
-from per-net to global") changed original per-net notifier to be global
-which fixed the issue of non-receiving events of netdev uninit if that
-moved to a different namespace. That worked fine in -net tree.
+kernel test robot noticed the following build warnings:
 
-However, later on when commit ee75f1fc44dd ("net/mlx5e: Create
-separate devlink instance for ethernet auxiliary device") and
-commit 72ed5d5624af ("net/mlx5: Suspend auxiliary devices only in
-case of PCI device suspend") were merged, a deadlock was introduced
-when removing a namespace with devlink instance with another nested
-instance.
+[auto build test WARNING on mkl-can-next/testing]
+[also build test WARNING on linus/master v6.4-rc1 next-20230509]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Here there is the bad flow example resulting in deadlock with mlx5:
-net_cleanup_work -> cleanup_net (takes down_read(&pernet_ops_rwsem) ->
-devlink_pernet_pre_exit() -> devlink_reload() ->
-mlx5_devlink_reload_down() -> mlx5_unload_one_devl_locked() ->
-mlx5_detach_device() -> del_adev() -> mlx5e_remove() ->
-mlx5e_destroy_devlink() -> devlink_free() ->
-unregister_netdevice_notifier() (takes down_write(&pernet_ops_rwsem)
+url:    https://github.com/intel-lab-lkp/linux/commits/Ji-Ze-Hong-Peter-Hong/can-usb-f81604-add-Fintek-F81604-support/20230509-154045
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git testing
+patch link:    https://lore.kernel.org/r/20230509073821.25289-1-peter_hong%40fintek.com.tw
+patch subject: [PATCH V7] can: usb: f81604: add Fintek F81604 support
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20230509/202305091802.pRFS6n2j-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/9549380f8d5eea359f8c83f48e10a0becfd13541
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Ji-Ze-Hong-Peter-Hong/can-usb-f81604-add-Fintek-F81604-support/20230509-154045
+        git checkout 9549380f8d5eea359f8c83f48e10a0becfd13541
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash drivers/net/
 
-Steps to reproduce:
-$ modprobe mlx5_core
-$ ip netns add ns1
-$ devlink dev reload pci/0000:08:00.0 netns ns1
-$ ip netns del ns1
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202305091802.pRFS6n2j-lkp@intel.com/
 
-Resolve this by converting the notifier to per per-net again.
-But this time also per-devlink_port and setting to follow the netdev
-to different namespace when spotted, ensured by
-netdev_net_notifier_follow().
+All warnings (new ones prefixed by >>):
 
-Note what a tree needs this fix only in case all of the cited fixes
-commits are present.
+   drivers/net/can/usb/f81604.c: In function 'f81604_read_bulk_callback':
+>> drivers/net/can/usb/f81604.c:440:67: warning: format '%lu' expects argument of type 'long unsigned int', but argument 4 has type 'unsigned int' [-Wformat=]
+     440 |                 netdev_warn(netdev, "URB length %u not equal to %lu\n",
+         |                                                                 ~~^
+         |                                                                   |
+         |                                                                   long unsigned int
+         |                                                                 %u
+     441 |                             urb->actual_length, sizeof(*frame));
+         |                                                 ~~~~~~~~~~~~~~     
+         |                                                 |
+         |                                                 unsigned int
 
-Reported-by: Moshe Shemesh <moshe@nvidia.com>
-Fixes: 565b4824c39f ("devlink: change port event netdev notifier from per-net to global")
-Fixes: ee75f1fc44dd ("net/mlx5e: Create separate devlink instance for ethernet auxiliary device")
-Fixes: 72ed5d5624af ("net/mlx5: Suspend auxiliary devices only in case of PCI device suspend")
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- include/net/devlink.h  |  1 +
- net/devlink/leftover.c | 24 +++++++++++++++---------
- 2 files changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index d0a0d1ce7db4..f252da446264 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -150,6 +150,7 @@ struct devlink_port {
- 	struct devlink_rate *devlink_rate;
- 	struct devlink_linecard *linecard;
- 	struct notifier_block netdevice_nb;
-+	struct netdev_net_notifier netdevice_nn;
- };
- 
- struct devlink_port_new_attrs {
-diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index 4b1627cb2b83..9e11db6528ce 100644
---- a/net/devlink/leftover.c
-+++ b/net/devlink/leftover.c
-@@ -6874,7 +6874,8 @@ int devl_port_register(struct devlink *devlink,
- 	INIT_LIST_HEAD(&devlink_port->reporter_list);
- 
- 	devlink_port->netdevice_nb.notifier_call = devlink_port_netdevice_event;
--	err = register_netdevice_notifier(&devlink_port->netdevice_nb);
-+	err = register_netdevice_notifier_net(devlink_net(devlink),
-+					      &devlink_port->netdevice_nb);
- 	if (err)
- 		return err;
- 
-@@ -6888,7 +6889,8 @@ int devl_port_register(struct devlink *devlink,
- 	return 0;
- 
- err_xa_insert:
--	unregister_netdevice_notifier(&devlink_port->netdevice_nb);
-+	unregister_netdevice_notifier_net(devlink_net(devlink),
-+					  &devlink_port->netdevice_nb);
- 	return err;
- }
- EXPORT_SYMBOL_GPL(devl_port_register);
-@@ -6928,13 +6930,16 @@ EXPORT_SYMBOL_GPL(devlink_port_register);
-  */
- void devl_port_unregister(struct devlink_port *devlink_port)
- {
--	lockdep_assert_held(&devlink_port->devlink->lock);
-+	struct devlink *devlink = devlink_port->devlink;
-+
-+	lockdep_assert_held(&devlink->lock);
- 	WARN_ON(devlink_port->type != DEVLINK_PORT_TYPE_NOTSET);
- 
- 	devlink_port_type_warn_cancel(devlink_port);
- 	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_DEL);
--	xa_erase(&devlink_port->devlink->ports, devlink_port->index);
--	WARN_ON_ONCE(unregister_netdevice_notifier(&devlink_port->netdevice_nb));
-+	xa_erase(&devlink->ports, devlink_port->index);
-+	WARN_ON_ONCE(unregister_netdevice_notifier_net(devlink_net(devlink),
-+						       &devlink_port->netdevice_nb));
- 	WARN_ON(!list_empty(&devlink_port->reporter_list));
- 	devlink_port->registered = false;
- }
-@@ -7099,11 +7104,11 @@ static int devlink_port_netdevice_event(struct notifier_block *nb,
- 		 */
- 		__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_ETH,
- 					NULL);
-+		netdev_net_notifier_follow(netdev, nb,
-+					   &devlink_port->netdevice_nn);
- 		break;
- 	case NETDEV_REGISTER:
- 	case NETDEV_CHANGENAME:
--		if (devlink_net(devlink_port->devlink) != dev_net(netdev))
--			return NOTIFY_OK;
- 		/* Set the netdev on top of previously set type. Note this
- 		 * event happens also during net namespace change so here
- 		 * we take into account netdev pointer appearing in this
-@@ -7113,8 +7118,6 @@ static int devlink_port_netdevice_event(struct notifier_block *nb,
- 					netdev);
- 		break;
- 	case NETDEV_UNREGISTER:
--		if (devlink_net(devlink_port->devlink) != dev_net(netdev))
--			return NOTIFY_OK;
- 		/* Clear netdev pointer, but not the type. This event happens
- 		 * also during net namespace change so we need to clear
- 		 * pointer to netdev that is going to another net namespace.
-@@ -7128,6 +7131,9 @@ static int devlink_port_netdevice_event(struct notifier_block *nb,
- 		 */
- 		__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_NOTSET,
- 					NULL);
-+		netdev_net_notifier_unfollow(netdev,
-+					     &devlink_port->netdevice_nn,
-+					     devlink_net(devlink_port->devlink));
- 		break;
- 	}
- 
+vim +440 drivers/net/can/usb/f81604.c
+
+   411	
+   412	static void f81604_read_bulk_callback(struct urb *urb)
+   413	{
+   414		struct f81604_can_frame *frame = urb->transfer_buffer;
+   415		struct net_device *netdev = urb->context;
+   416		int ret;
+   417	
+   418		if (!netif_device_present(netdev))
+   419			return;
+   420	
+   421		if (urb->status)
+   422			netdev_info(netdev, "%s: URB aborted %pe\n", __func__,
+   423				    ERR_PTR(urb->status));
+   424	
+   425		switch (urb->status) {
+   426		case 0: /* success */
+   427			break;
+   428	
+   429		case -ENOENT:
+   430		case -EPIPE:
+   431		case -EPROTO:
+   432		case -ESHUTDOWN:
+   433			return;
+   434	
+   435		default:
+   436			goto resubmit_urb;
+   437		}
+   438	
+   439		if (urb->actual_length != sizeof(*frame)) {
+ > 440			netdev_warn(netdev, "URB length %u not equal to %lu\n",
+   441				    urb->actual_length, sizeof(*frame));
+   442			goto resubmit_urb;
+   443		}
+   444	
+   445		f81604_process_rx_packet(netdev, frame);
+   446	
+   447	resubmit_urb:
+   448		ret = usb_submit_urb(urb, GFP_ATOMIC);
+   449		if (ret == -ENODEV)
+   450			netif_device_detach(netdev);
+   451		else if (ret)
+   452			netdev_err(netdev,
+   453				   "%s: failed to resubmit read bulk urb: %pe\n",
+   454				   __func__, ERR_PTR(ret));
+   455	}
+   456	
+
 -- 
-2.39.2
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
 
