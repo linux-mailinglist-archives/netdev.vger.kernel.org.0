@@ -1,25 +1,25 @@
-Return-Path: <netdev+bounces-1362-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1364-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5A3596FD9BC
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:41:47 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1AEF46FD9C2
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:41:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 352E41C20D0A
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:41:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 402AE1C20CC8
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:41:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A55A364;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81B2A20B30;
 	Wed, 10 May 2023 08:41:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54EBF1840
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BD6D20F8
 	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:41:27 +0000 (UTC)
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id A357D1BCB;
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id A3BFF30E6;
 	Wed, 10 May 2023 01:41:21 -0700 (PDT)
 From: Pablo Neira Ayuso <pablo@netfilter.org>
 To: netfilter-devel@vger.kernel.org
@@ -28,9 +28,9 @@ Cc: davem@davemloft.net,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	edumazet@google.com
-Subject: [PATCH net 2/7] netfilter: conntrack: fix possible bug_on with enable_hooks=1
-Date: Wed, 10 May 2023 10:33:08 +0200
-Message-Id: <20230510083313.152961-3-pablo@netfilter.org>
+Subject: [PATCH net 3/7] selftests: nft_flowtable.sh: use /proc for pid checking
+Date: Wed, 10 May 2023 10:33:09 +0200
+Message-Id: <20230510083313.152961-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230510083313.152961-1-pablo@netfilter.org>
 References: <20230510083313.152961-1-pablo@netfilter.org>
@@ -47,72 +47,35 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Florian Westphal <fw@strlen.de>
+From: Boris Sukholitko <boris.sukholitko@broadcom.com>
 
-I received a bug report (no reproducer so far) where we trip over
+Some ps commands (e.g. busybox derived) have no -p option. Use /proc for
+pid existence check.
 
-712         rcu_read_lock();
-713         ct_hook = rcu_dereference(nf_ct_hook);
-714         BUG_ON(ct_hook == NULL);  // here
-
-In nf_conntrack_destroy().
-
-First turn this BUG_ON into a WARN.  I think it was triggered
-via enable_hooks=1 flag.
-
-When this flag is turned on, the conntrack hooks are registered
-before nf_ct_hook pointer gets assigned.
-This opens a short window where packets enter the conntrack machinery,
-can have skb->_nfct set up and a subsequent kfree_skb might occur
-before nf_ct_hook is set.
-
-Call nf_conntrack_init_end() to set nf_ct_hook before we register the
-pernet ops.
-
-Fixes: ba3fbe663635 ("netfilter: nf_conntrack: provide modparam to always register conntrack hooks")
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Boris Sukholitko <boris.sukholitko@broadcom.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/core.c                    | 6 ++++--
- net/netfilter/nf_conntrack_standalone.c | 3 ++-
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ tools/testing/selftests/netfilter/nft_flowtable.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/core.c b/net/netfilter/core.c
-index f0783e42108b..5f76ae86a656 100644
---- a/net/netfilter/core.c
-+++ b/net/netfilter/core.c
-@@ -711,9 +711,11 @@ void nf_conntrack_destroy(struct nf_conntrack *nfct)
+diff --git a/tools/testing/selftests/netfilter/nft_flowtable.sh b/tools/testing/selftests/netfilter/nft_flowtable.sh
+index 7060bae04ec8..4d8bc51b7a7b 100755
+--- a/tools/testing/selftests/netfilter/nft_flowtable.sh
++++ b/tools/testing/selftests/netfilter/nft_flowtable.sh
+@@ -288,11 +288,11 @@ test_tcp_forwarding_ip()
  
- 	rcu_read_lock();
- 	ct_hook = rcu_dereference(nf_ct_hook);
--	BUG_ON(ct_hook == NULL);
--	ct_hook->destroy(nfct);
-+	if (ct_hook)
-+		ct_hook->destroy(nfct);
- 	rcu_read_unlock();
-+
-+	WARN_ON(!ct_hook);
- }
- EXPORT_SYMBOL(nf_conntrack_destroy);
+ 	sleep 3
  
-diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-index 57f6724c99a7..169e16fc2bce 100644
---- a/net/netfilter/nf_conntrack_standalone.c
-+++ b/net/netfilter/nf_conntrack_standalone.c
-@@ -1218,11 +1218,12 @@ static int __init nf_conntrack_standalone_init(void)
- 	nf_conntrack_htable_size_user = nf_conntrack_htable_size;
- #endif
+-	if ps -p $lpid > /dev/null;then
++	if test -d /proc/"$lpid"/; then
+ 		kill $lpid
+ 	fi
  
-+	nf_conntrack_init_end();
-+
- 	ret = register_pernet_subsys(&nf_conntrack_net_ops);
- 	if (ret < 0)
- 		goto out_pernet;
+-	if ps -p $cpid > /dev/null;then
++	if test -d /proc/"$cpid"/; then
+ 		kill $cpid
+ 	fi
  
--	nf_conntrack_init_end();
- 	return 0;
- 
- out_pernet:
 -- 
 2.30.2
 
