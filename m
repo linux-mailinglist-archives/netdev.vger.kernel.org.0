@@ -1,148 +1,251 @@
-Return-Path: <netdev+bounces-1518-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1519-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 48BC86FE11E
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 17:06:45 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B4EBF6FE126
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 17:07:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 657661C20DFC
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 15:06:42 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81417281555
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 15:07:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 051651640E;
-	Wed, 10 May 2023 15:06:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8EE321640B;
+	Wed, 10 May 2023 15:07:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA6321640C
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 15:06:41 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF0E10F3;
-	Wed, 10 May 2023 08:06:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683731199; x=1715267199;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=E+aW0djLRInoHsjUDke1WuUyioV6E3sOdss1KQvqgwM=;
-  b=BM6MYafpRPbp0IUH7D1uIAJlHs++FqR4rzWvmcKspQe3TrzeCtK2HaOM
-   7lklBGzI92Kxjhg5oZ6jYE1Z/edyTeLVL6ZxjEyyIHgT4JOMFLHPj42hD
-   aknl8A9IupMbaIHy5WoWQhe6Ck3r7JsUz5teIHwmpwj3skua6rtnHGjZi
-   uzNtzG9sWd6Pcw9uBaXo8+weM/CNNL9hKcvF2/MqJMjpSqIZnNAYwys2l
-   3Kk66lu2sRZEb17i6Bej2VoTHu2xsx1WOmTcUMIaq1jy6YSlsnQqenGLV
-   eeI1lE0Ml2bD1zOQmTU+iGJV8HDqp3Za5sEUvGG0TREdLIt38dPjnHtlq
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="413538804"
-X-IronPort-AV: E=Sophos;i="5.99,265,1677571200"; 
-   d="scan'208";a="413538804"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2023 08:06:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="699340269"
-X-IronPort-AV: E=Sophos;i="5.99,265,1677571200"; 
-   d="scan'208";a="699340269"
-Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 10 May 2023 08:06:35 -0700
-Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pwlOl-0003N8-00;
-	Wed, 10 May 2023 15:06:35 +0000
-Date: Wed, 10 May 2023 23:06:07 +0800
-From: kernel test robot <lkp@intel.com>
-To: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
-	nhorman@tuxdriver.com
-Cc: oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
-	Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Christian Brauner <brauner@kernel.org>,
-	Stanislav Fomichev <sdf@google.com>,
-	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-	Xin Long <lucien.xin@gmail.com>, linux-sctp@vger.kernel.org,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] sctp: add bpf_bypass_getsockopt proto callback
-Message-ID: <202305102234.u4T0ut0T-lkp@intel.com>
-References: <20230510131527.1244929-1-aleksandr.mikhalitsyn@canonical.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 837A412B6F
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 15:07:38 +0000 (UTC)
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE0110E6
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:07:36 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-3f2548256d0so117035e9.1
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:07:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1683731255; x=1686323255;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+TNYqcSs6PC6BWjv/cKNCEBTiGNlpvDG9qZWo/NwWgk=;
+        b=VHa+zJPx3Vz6wytMa3SIhZzYfgU2/Niwh71tnoKAYIeWA2H5epFTFhHSQvFN43kk6B
+         cFDZen9tkH7p0WZnnrOzwIENa38J8Y14PbDUEwOakn8Oj0yZBW9fs6jWD/rDzE/vB43V
+         Qz1d1XAKURN9MomiGhS9L4fJncNHQsNIPFngC2R0ThLp3yRrL/r6pOGWoH0IgAa/XqMm
+         CVNitkcf2R+0SqHeNhSZUmYJ8hLSdPSSfbH8jGOIcZpl6IWOPynuR1hReNmhPg5z0teg
+         5Ktw1dOsG4oFDuFWcd42P5fNifriJTDIeKvlkgfQQq0BmKMypIUJTRWWVWw1yJyVBdFh
+         vP7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683731255; x=1686323255;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+TNYqcSs6PC6BWjv/cKNCEBTiGNlpvDG9qZWo/NwWgk=;
+        b=SnUtfBFkwBfIxqUNwHpC2sh7iclNdh5SjL+ySxxesTzWLdBy+b9qd64spHcAZougTS
+         w+EtuqEOsHJq3Sr7qvhAAfr9OsxUfRhL65lAKNnGNwqt9Mi+GNEcm0DTsetDNz6Ulw/v
+         HgaTytOC7Ucw7xmkR8zpinV7XrTL1wAR1PPIvoH+YbLfCeVf2OZa+tvBqDn6X9bz92AC
+         K8DlzBAmJE/Rt55+kX3Po9ZyVX3JxhwnuUAFhUwVxV6kdUHGmOtrJpa3X8Xo7p8HrRJv
+         XgE0HdKQkKPr1cYKJY58yS9zgNYmd5CCINdn+oVu89MkfiR387kUOF/y1U7TN0rt0iYh
+         lEBg==
+X-Gm-Message-State: AC+VfDxYFHfNTA699H6AlkpAUvf4gtlL34yIeSCnP3qn/40IyXxr7r9/
+	01tzIiuSbmxgcNon+YIF8luQXfinwA9/N9qIjY2hQw==
+X-Google-Smtp-Source: ACHHUZ7ReeeiFKcAq8guOqqbvtXHzsH9pveN7COQFJ9sbuKpLeN4UdPfY8kTUiKY5rf8VminXW7vGdnkqTnUKbnBebE=
+X-Received: by 2002:a05:600c:4f42:b0:3f4:2594:118a with SMTP id
+ m2-20020a05600c4f4200b003f42594118amr226785wmq.2.1683731254627; Wed, 10 May
+ 2023 08:07:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230510131527.1244929-1-aleksandr.mikhalitsyn@canonical.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <20230508020801.10702-1-cathy.zhang@intel.com> <20230508020801.10702-2-cathy.zhang@intel.com>
+ <3887b08ac0e55e27a24d2f66afcfff1961ed9b13.camel@redhat.com>
+ <CH3PR11MB73459006FCE3887E1EA3B82FFC769@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CH3PR11MB73456D792EC6E7614E2EF14DFC769@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CANn89iL6Ckuu9vOEvc7A9CBLGuh-EpbwFRxRAchV-6VFyhTUpg@mail.gmail.com>
+ <CH3PR11MB73458BB403D537CFA96FD8DDFC769@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CANn89iJvpgXTwGEiXAkFwY3j3RqVhNzJ_6_zmuRb4w7rUA_8Ug@mail.gmail.com>
+ <CALvZod6JRuWHftDcH0uw00v=yi_6BKspGCkDA4AbmzLHaLi2Fg@mail.gmail.com>
+ <CH3PR11MB7345ABB947E183AFB7C18322FC779@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CANn89i+9rQcGey+AJyhR02pTTBNhWN+P78e4a8knfC9F5sx0hQ@mail.gmail.com> <CH3PR11MB73455A98A232920B322C3976FC779@CH3PR11MB7345.namprd11.prod.outlook.com>
+In-Reply-To: <CH3PR11MB73455A98A232920B322C3976FC779@CH3PR11MB7345.namprd11.prod.outlook.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 10 May 2023 17:07:22 +0200
+Message-ID: <CANn89i+J+ciJGPkWAFKDwhzJERFJr9_2Or=ehpwSTYO14qzHmA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper size
+To: "Zhang, Cathy" <cathy.zhang@intel.com>
+Cc: Shakeel Butt <shakeelb@google.com>, Linux MM <linux-mm@kvack.org>, 
+	Cgroups <cgroups@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	"davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>, 
+	"Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Srinivas, Suresh" <suresh.srinivas@intel.com>, 
+	"Chen, Tim C" <tim.c.chen@intel.com>, "You, Lizhen" <lizhen.you@intel.com>, 
+	"eric.dumazet@gmail.com" <eric.dumazet@gmail.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Alexander,
+On Wed, May 10, 2023 at 3:54=E2=80=AFPM Zhang, Cathy <cathy.zhang@intel.com=
+> wrote:
+>
+>
+>
+> > -----Original Message-----
+> > From: Eric Dumazet <edumazet@google.com>
+> > Sent: Wednesday, May 10, 2023 7:25 PM
+> > To: Zhang, Cathy <cathy.zhang@intel.com>
+> > Cc: Shakeel Butt <shakeelb@google.com>; Linux MM <linux-mm@kvack.org>;
+> > Cgroups <cgroups@vger.kernel.org>; Paolo Abeni <pabeni@redhat.com>;
+> > davem@davemloft.net; kuba@kernel.org; Brandeburg, Jesse
+> > <jesse.brandeburg@intel.com>; Srinivas, Suresh
+> > <suresh.srinivas@intel.com>; Chen, Tim C <tim.c.chen@intel.com>; You,
+> > Lizhen <lizhen.you@intel.com>; eric.dumazet@gmail.com;
+> > netdev@vger.kernel.org
+> > Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a p=
+roper
+> > size
+> >
+> > On Wed, May 10, 2023 at 1:11=E2=80=AFPM Zhang, Cathy <cathy.zhang@intel=
+.com>
+> > wrote:
+> > >
+> > > Hi Shakeel, Eric and all,
+> > >
+> > > How about adding memory pressure checking in sk_mem_uncharge() to
+> > > decide if keep part of memory or not, which can help avoid the issue
+> > > you fixed and the problem we find on the system with more CPUs.
+> > >
+> > > The code draft is like this:
+> > >
+> > > static inline void sk_mem_uncharge(struct sock *sk, int size) {
+> > >         int reclaimable;
+> > >         int reclaim_threshold =3D SK_RECLAIM_THRESHOLD;
+> > >
+> > >         if (!sk_has_account(sk))
+> > >                 return;
+> > >         sk->sk_forward_alloc +=3D size;
+> > >
+> > >         if (mem_cgroup_sockets_enabled && sk->sk_memcg &&
+> > >             mem_cgroup_under_socket_pressure(sk->sk_memcg)) {
+> > >                 sk_mem_reclaim(sk);
+> > >                 return;
+> > >         }
+> > >
+> > >         reclaimable =3D sk->sk_forward_alloc -
+> > > sk_unused_reserved_mem(sk);
+> > >
+> > >         if (reclaimable > reclaim_threshold) {
+> > >                 reclaimable -=3D reclaim_threshold;
+> > >                 __sk_mem_reclaim(sk, reclaimable);
+> > >         }
+> > > }
+> > >
+> > > I've run a test with the new code, the result looks good, it does not
+> > > introduce latency, RPS is the same.
+> > >
+> >
+> > It will not work for sockets that are idle, after a burst.
+> > If we restore per socket caches, we will need a shrinker.
+> > Trust me, we do not want that kind of big hammer, crushing latencies.
+> >
+> > Have you tried to increase batch sizes ?
+>
+> I jus picked up 256 and 1024 for a try, but no help, the overhead still e=
+xists.
 
-kernel test robot noticed the following build warnings:
+This makes no sense at all.
 
-[auto build test WARNING on net-next/main]
+I suspect a plain bug in mm/memcontrol.c
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Alexander-Mikhalitsyn/sctp-add-bpf_bypass_getsockopt-proto-callback/20230510-211646
-base:   net-next/main
-patch link:    https://lore.kernel.org/r/20230510131527.1244929-1-aleksandr.mikhalitsyn%40canonical.com
-patch subject: [PATCH net-next] sctp: add bpf_bypass_getsockopt proto callback
-config: m68k-defconfig (https://download.01.org/0day-ci/archive/20230510/202305102234.u4T0ut0T-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/8ad9818b4b74026fe549b2aa34ea800ab6c8e66d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Alexander-Mikhalitsyn/sctp-add-bpf_bypass_getsockopt-proto-callback/20230510-211646
-        git checkout 8ad9818b4b74026fe549b2aa34ea800ab6c8e66d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash net/sctp/
+I will let mm experts work on this.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202305102234.u4T0ut0T-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> net/sctp/socket.c:8284:6: warning: no previous prototype for 'sctp_bpf_bypass_getsockopt' [-Wmissing-prototypes]
-    8284 | bool sctp_bpf_bypass_getsockopt(int level, int optname)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/sctp_bpf_bypass_getsockopt +8284 net/sctp/socket.c
-
-  8283	
-> 8284	bool sctp_bpf_bypass_getsockopt(int level, int optname)
-  8285	{
-  8286		/*
-  8287		 * These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOPT
-  8288		 * hook returns an error after success of the original handler
-  8289		 * sctp_getsockopt(...), userspace will receive an error from getsockopt
-  8290		 * syscall and will be not aware that fd was successfully installed into fdtable.
-  8291		 *
-  8292		 * Let's prevent bpf cgroup hook from running on them.
-  8293		 */
-  8294		if (level == SOL_SCTP) {
-  8295			switch (optname) {
-  8296			case SCTP_SOCKOPT_PEELOFF:
-  8297			case SCTP_SOCKOPT_PEELOFF_FLAGS:
-  8298				return true;
-  8299			default:
-  8300				return false;
-  8301			}
-  8302		}
-  8303	
-  8304		return false;
-  8305	}
-  8306	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+>
+> >
+> > Any kind of cache (even per-cpu) might need some adjustment when core
+> > count or expected traffic is increasing.
+> > This was somehow hinted in
+> > commit 1813e51eece0ad6f4aacaeb738e7cced46feb470
+> > Author: Shakeel Butt <shakeelb@google.com>
+> > Date:   Thu Aug 25 00:05:06 2022 +0000
+> >
+> >     memcg: increase MEMCG_CHARGE_BATCH to 64
+> >
+> >
+> >
+> > diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h in=
+dex
+> > 222d7370134c73e59fdbdf598ed8d66897dbbf1d..0418229d30c25d114132a1e
+> > d46ac01358cf21424
+> > 100644
+> > --- a/include/linux/memcontrol.h
+> > +++ b/include/linux/memcontrol.h
+> > @@ -334,7 +334,7 @@ struct mem_cgroup {
+> >   * TODO: maybe necessary to use big numbers in big irons or dynamic ba=
+sed
+> > of the
+> >   * workload.
+> >   */
+> > -#define MEMCG_CHARGE_BATCH 64U
+> > +#define MEMCG_CHARGE_BATCH 128U
+> >
+> >  extern struct mem_cgroup *root_mem_cgroup;
+> >
+> > diff --git a/include/net/sock.h b/include/net/sock.h index
+> > 656ea89f60ff90d600d16f40302000db64057c64..82f6a288be650f886b207e6a
+> > 5e62a1d5dda808b0
+> > 100644
+> > --- a/include/net/sock.h
+> > +++ b/include/net/sock.h
+> > @@ -1433,8 +1433,8 @@ sk_memory_allocated(const struct sock *sk)
+> >         return proto_memory_allocated(sk->sk_prot);
+> >  }
+> >
+> > -/* 1 MB per cpu, in page units */
+> > -#define SK_MEMORY_PCPU_RESERVE (1 << (20 - PAGE_SHIFT))
+> > +/* 2 MB per cpu, in page units */
+> > +#define SK_MEMORY_PCPU_RESERVE (1 << (21 - PAGE_SHIFT))
+> >
+> >  static inline void
+> >  sk_memory_allocated_add(struct sock *sk, int amt)
+> >
+> >
+> >
+> >
+> >
+> >
+> > > > -----Original Message-----
+> > > > From: Shakeel Butt <shakeelb@google.com>
+> > > > Sent: Wednesday, May 10, 2023 12:10 AM
+> > > > To: Eric Dumazet <edumazet@google.com>; Linux MM <linux-
+> > > > mm@kvack.org>; Cgroups <cgroups@vger.kernel.org>
+> > > > Cc: Zhang, Cathy <cathy.zhang@intel.com>; Paolo Abeni
+> > > > <pabeni@redhat.com>; davem@davemloft.net; kuba@kernel.org;
+> > > > Brandeburg, Jesse <jesse.brandeburg@intel.com>; Srinivas, Suresh
+> > > > <suresh.srinivas@intel.com>; Chen, Tim C <tim.c.chen@intel.com>;
+> > > > You, Lizhen <lizhen.you@intel.com>; eric.dumazet@gmail.com;
+> > > > netdev@vger.kernel.org
+> > > > Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as
+> > > > a proper size
+> > > >
+> > > > +linux-mm & cgroup
+> > > >
+> > > > Thread: https://lore.kernel.org/all/20230508020801.10702-1-
+> > > > cathy.zhang@intel.com/
+> > > >
+> > > > On Tue, May 9, 2023 at 8:43=E2=80=AFAM Eric Dumazet <edumazet@googl=
+e.com>
+> > > > wrote:
+> > > > >
+> > > > [...]
+> > > > > Some mm experts should chime in, this is not a networking issue.
+> > > >
+> > > > Most of the MM folks are busy in LSFMM this week. I will take a loo=
+k
+> > > > at this soon.
 
