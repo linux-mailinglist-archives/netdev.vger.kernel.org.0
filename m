@@ -1,88 +1,128 @@
-Return-Path: <netdev+bounces-1611-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1612-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3F8E06FE7F2
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:08:20 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DAD496FE802
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:16:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B7B4428161A
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:08:18 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B34B51C20E6A
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:16:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A49941E528;
-	Wed, 10 May 2023 23:08:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 56E6C1E52B;
+	Wed, 10 May 2023 23:16:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 993371E50D
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 23:08:16 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFAA1B1;
-	Wed, 10 May 2023 16:08:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=ZiW05wKPLD7YCuYetjd69zZZPcMJTzbLVXYOQGMznZs=; b=pqftOVm0RQw6AHZbB4QudUbxlg
-	8PgU+yebmovbsSnp8RZBjrUQFJhVdeMBQQwMcCduSxr7WDEHL5YCc5RlH8vc6bgkYamcRIt5ZXpjp
-	1HP6XP9yECMPv8vBm73DFd9t1kboP4PHvRdJ23mq4OjW4njtl4GM/3+WsxO1hu1wAzjA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1pwsue-00CUfW-GC; Thu, 11 May 2023 01:08:00 +0200
-Date: Thu, 11 May 2023 01:08:00 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Daniel Golle <daniel@makrotopia.org>
-Cc: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Qingfang Deng <dqfext@gmail.com>,
-	SkyLake Huang <SkyLake.Huang@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH net-next v3] net: phy: add driver for MediaTek SoC
- built-in GE PHYs
-Message-ID: <e7671e05-3a42-4c73-b1f5-05ed83a60c18@lunn.ch>
-References: <ZFwVwlN0eHjo_xB4@pidgin.makrotopia.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 161DB21CDC
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 23:16:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C3BAC433EF;
+	Wed, 10 May 2023 23:16:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683760560;
+	bh=rBmx1yXHlgjq29yI8RX3oTegeXm2Dm3PwYKq6C9UhEg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=aC5k1PPm01evQ+iK2HeIF9cSXIKcxbEuUoyZCyR2X9VeCgMB2UgdJlegPSPTlDM0F
+	 cfImJwTp0zC1idPWGAMx8O2kL9CFFgxjiHNpFk6ySlazf+34mwRNFfk97WGsXQM/+w
+	 YMcAp7SqpzgUNMnjPNeIfi4PSm4MJ4Y8PFjtaAVlJIjoy1uzXupklJvDphyPIyY4KE
+	 EDoCkvhOSTSDEnuXi7H8achdOURjdtuNnzFJrJZhGgZq/q6/NRAtkV64envQw+3CK8
+	 6n39TVzTsKl/xb0IML5aOAsyqzJYNdh9YcL5FBrGsi9+I4EaXJic0+m1v2f50W06Ni
+	 gqzEhLRwJHUXQ==
+Date: Wed, 10 May 2023 16:15:59 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Peilin Ye <yepeilin.cs@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Jamal Hadi Salim
+ <jhs@mojatatu.com>, Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko
+ <jiri@resnulli.us>, Peilin Ye <peilin.ye@bytedance.com>, Daniel Borkmann
+ <daniel@iogearbox.net>, John Fastabend <john.fastabend@gmail.com>, Vlad
+ Buslov <vladbu@mellanox.com>, Pedro Tammela <pctammela@mojatatu.com>, Hillf
+ Danton <hdanton@sina.com>, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Subject: Re: [PATCH net 6/6] net/sched: qdisc_destroy() old ingress and
+ clsact Qdiscs before grafting
+Message-ID: <20230510161559.2767b27a@kernel.org>
+In-Reply-To: <ZFv6Z7hssZ9snNAw@C02FL77VMD6R.googleapis.com>
+References: <cover.1683326865.git.peilin.ye@bytedance.com>
+	<e6c4681dd9205d702ae2e6124e20c6210520e76e.1683326865.git.peilin.ye@bytedance.com>
+	<20230508183324.020f3ec7@kernel.org>
+	<ZFv6Z7hssZ9snNAw@C02FL77VMD6R.googleapis.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZFwVwlN0eHjo_xB4@pidgin.makrotopia.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-> +static int mt7988_phy_probe_shared(struct phy_device *phydev)
-> +{
-> +	struct mtk_socphy_shared_priv *priv = phydev->shared->priv;
-> +	void __iomem *boottrap;
-> +	struct device_node *np;
-> +	u32 reg;
-> +
-> +	np = of_find_compatible_node(NULL, NULL, "mediatek,boottrap");
-> +	if (!np)
-> +		return -ENOENT;
+On Wed, 10 May 2023 13:11:19 -0700 Peilin Ye wrote:
+> On Fri,  5 May 2023 17:16:10 -0700 Peilin Ye wrote:
+> >   Thread 1 creates ingress Qdisc A (containing mini Qdisc a1 and a2), then
+> >   adds a flower filter X to A.
+> > 
+> >   Thread 2 creates another ingress Qdisc B (containing mini Qdisc b1 and
+> >   b2) to replace A, then adds a flower filter Y to B.
+> > 
+> >  Thread 1               A's refcnt   Thread 2
+> >   RTM_NEWQDISC (A, RTNL-locked)
+> >    qdisc_create(A)               1
+> >    qdisc_graft(A)                9
+> > 
+> >   RTM_NEWTFILTER (X, RTNL-lockless)
+> >    __tcf_qdisc_find(A)          10
+> >    tcf_chain0_head_change(A)
+> >    mini_qdisc_pair_swap(A) (1st)
+> >             |
+> >             |                         RTM_NEWQDISC (B, RTNL-locked)
+> >            RCU                   2     qdisc_graft(B)
+> >             |                    1     notify_and_destroy(A)
+> >             |
+> >    tcf_block_release(A)          0    RTM_NEWTFILTER (Y, RTNL-lockless)
+> >    qdisc_destroy(A)                    tcf_chain0_head_change(B)
+> >    tcf_chain0_head_change_cb_del(A)    mini_qdisc_pair_swap(B) (2nd)
+> >    mini_qdisc_pair_swap(A) (3rd)                |
+> >            ...                                 ...  
+> 
+> Looking at the code, I think there is no guarantee that (1st) cannot
+> happen after (2nd), although unlikely?  Can RTNL-lockless RTM_NEWTFILTER
+> handlers get preempted?
 
-Is this documented somewhere in the DT binding document?
+Right, we need qdisc_graft(B) to update the appropriate dev pointer 
+to point to b1. With that the ordering should not matter. Probably
+using the ->attach() callback?
 
-The rest of the driver just seems to be undocumented magic which
-nobody except the vendor would understand.
+> If (1st) happens later than (2nd), we will need to make (1st) no-op, by
+> detecting that we are the "old" Qdisc.  I am not sure there is any
+> (clean) way to do it.  I even thought about:
+> 
+>   (1) Get the containing Qdisc of "miniqp" we are working on, "qdisc";
+>   (2) Test if "qdisc == qdisc->dev_queue->qdisc_sleeping".  If false, it
+>       means we are the "old" Qdisc (have been replaced), and should do
+>       nothing.
+> 
+> However, for clsact Qdiscs I don't know if "miniqp" is the ingress or
+> egress one, so I can't container_of() during step (1) ...
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+And we can't be using multiple pieces of information to make 
+the decision since AFAIU mini_qdisc_pair_swap() can race with
+qdisc_graft().
 
-    Andrew
+My thinking was to make sure that dev->miniq_* pointers always point
+to one of the miniqs of the currently attached qdisc. Right now, on 
+a quick look, those pointers are not initialized during initial graft,
+only when first filter is added, and may be cleared when filters are
+removed. But I don't think that's strictly required, miniq with no
+filters should be fine.
+
+> Eventually I created [5,6/6].  It is a workaround indeed, in the sense
+> that it changes sch_api.c to avoid a mini Qdisc issue.  However I think it
+> makes the code correct in a relatively understandable way,
+
+What's your benchmark for being understandable?
+
+> without slowing down mini_qdisc_pair_swap() or sch_handle_*gress().
+
 
