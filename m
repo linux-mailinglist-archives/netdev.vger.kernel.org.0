@@ -1,195 +1,361 @@
-Return-Path: <netdev+bounces-1510-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1511-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 723CC6FE0CE
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:51:08 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 642586FE0D1
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:51:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 44670281505
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:51:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 45A881C20DCC
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:51:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4AB06154AF;
-	Wed, 10 May 2023 14:51:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 577C416404;
+	Wed, 10 May 2023 14:51:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 328498C1B
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:51:05 +0000 (UTC)
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3D2A276
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:51:03 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id a640c23a62f3a-965a68abfd4so1379144166b.2
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:51:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683730261; x=1686322261;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=634QqYCO4e6YYkg9HogXcpMtMk+Nqei671dupMxD3uU=;
-        b=CpQE9gcU+nOsxso1W8WnW0sBuBszcV5bm98RKhg3mQCCf8eXyc1+M76/bUNrX25MV1
-         mjGgjoZTxLCRLZpAcfxGDlG09OjkVFfMol0RuQDpQ+Vp8xfepP78up43AQf0dcSclvlh
-         GZUIiB7z6nN2khwM7CX99SSDulayzIfoJrg9KuwnykbzZhjxMUnu8bvlzlZLAGM5Jgv4
-         AOK1Hy4hWfgUg0gl8PivfB1Ppx6naSp3dR00UIoNLHptCJVF2MrDvRMf8KPC9bq+aeiT
-         pbqaw7h5G4bWYzyuVSyXhGe6yJQZ7LVucbo0VWwcOM/ftnJfg59X7pgDQvaFhQD20kuJ
-         Huaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683730261; x=1686322261;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=634QqYCO4e6YYkg9HogXcpMtMk+Nqei671dupMxD3uU=;
-        b=FLnyv0HlD6u95IOn6kU5MlxFAZns55gkkUp9FCgsx6cAy5S2KxJPVOQTRej9RvUFw8
-         IMYX0HvwSmNKvQnY1dJECiWx08ecYMjEBHPHwZhyuwh2f8Qo1I/dYC5WvjCfuL/xJYoI
-         TEI3hzSr7mEpizg0ay0RSgLzlA/NMSYDqqCGOQxfxGkTcbusfelUJFN9LvNLetfXe05I
-         +o4bg7udJMjyJWog0xKi7ddZEl+ecI2ibmS1kaPb0cDWc4F5W24KqPXePXvYWPARhMir
-         JRgs8xjfXTfqTnDxZLsz0gCjvMDj9mGcv1ch20RH5S4B6KGs/bLBuwtT48sStOMITnlr
-         ZzPw==
-X-Gm-Message-State: AC+VfDyCLp8sA007upS/aJEMQ/EsvzD3D6pk5ogiwwrmmWjzBwR3BGaY
-	/1xuH+7tTnIzl0vgF1gJWG258Q==
-X-Google-Smtp-Source: ACHHUZ57l5b3kNlo9y2XGG6tHhsx/v2ViJ/oCrgPAj474IZCIVQl7t5hfSOajPXOPXUzUmyQERnmkA==
-X-Received: by 2002:a17:907:3686:b0:94a:56ec:7f12 with SMTP id bi6-20020a170907368600b0094a56ec7f12mr16731180ejc.30.1683730261473;
-        Wed, 10 May 2023 07:51:01 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:c175:a0f9:6928:8c9d? ([2a02:810d:15c0:828:c175:a0f9:6928:8c9d])
-        by smtp.gmail.com with ESMTPSA id l19-20020a170906939300b0094e7d196aa4sm2709662ejx.160.2023.05.10.07.51.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 May 2023 07:51:00 -0700 (PDT)
-Message-ID: <ec0a3553-2c11-301e-d838-f0bc70353b17@linaro.org>
-Date: Wed, 10 May 2023 16:50:59 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46F1C14A93
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:51:40 +0000 (UTC)
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582831BD6
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:51:38 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34AEJS7Q010199;
+	Wed, 10 May 2023 07:51:31 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=zZyYX7X/PbAKUIbUmzlqoMdpFJPRiwF2xrgcpTzNdxI=;
+ b=E2Y4fUKF8NUerbsEBkBwYAyM6n376SWyZFtcEpcpSwwKf0BhB6UPYq8vlnl/6jggksC6
+ f7H6Yj8PAnccFlbN7cd+hcGjDJ0HhdGRQr8piYRhjS//eAsnXPSx07uM8EuG3BM6euk1
+ v+yvJRLSsH4gW+Z/OXv9L/OllEpWY5CKG8P58o/IRbTYftSwLbcNfaD5rz89p2k4okY0
+ cYBanTAjpfNpElFmU4tgFD+a6t0leWB5Buyz9luJT5dZlXyOe4wTI2d+04+X42SYFM9O
+ ByJbpqvifJrzmqqjDHUJWHoBxgce6b13qLGNpUXBaFb2B7/LssHVkB16IvsFsHRmTJyu eA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3qf77s6pb0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+	Wed, 10 May 2023 07:51:31 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 10 May
+ 2023 07:51:28 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Wed, 10 May 2023 07:51:28 -0700
+Received: from hyd1358.marvell.com (unknown [10.29.37.11])
+	by maili.marvell.com (Postfix) with ESMTP id 6D84E3F7067;
+	Wed, 10 May 2023 07:51:25 -0700 (PDT)
+From: Subbaraya Sundeep <sbhatta@marvell.com>
+To: <netdev@vger.kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>, <pabeni@redhat.com>
+CC: <gakula@marvell.com>, <naveenm@marvell.com>, <hkelam@marvell.com>,
+        <lcherian@marvell.com>, Subbaraya Sundeep <sbhatta@marvell.com>,
+        "Sunil
+ Kovvuri Goutham" <sgoutham@marvell.com>
+Subject: [net-next PATCH] octeontx2-pf: mcs: Offload extended packet number(XPN) feature
+Date: Wed, 10 May 2023 20:21:23 +0530
+Message-ID: <1683730283-9353-1-git-send-email-sbhatta@marvell.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v2 5/5] dt-bindings: net: ftgmac100: convert to yaml
- version from txt
-Content-Language: en-US
-To: Ivan Mikhaylov <fr0st61te@gmail.com>,
- Samuel Mendoza-Jonas <sam@mendozajonas.com>,
- "David S . Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
-References: <20230509143504.30382-1-fr0st61te@gmail.com>
- <20230509143504.30382-6-fr0st61te@gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230509143504.30382-6-fr0st61te@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: Hrewnoy5araSoa_5eb_w03bczZQP8R4r
+X-Proofpoint-GUID: Hrewnoy5araSoa_5eb_w03bczZQP8R4r
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-10_04,2023-05-05_01,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 09/05/2023 16:35, Ivan Mikhaylov wrote:
-> Signed-off-by: Ivan Mikhaylov <fr0st61te@gmail.com>
+The macsec hardware block supports XPN cipher suites also.
+Hence added changes to offload XPN feature. Changes include
+configuring SecY policy to XPN cipher suite, Salt and SSCI values.
+64 bit packet number is passed instead of 32 bit packet number.
 
-Need some commit msg.
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+---
+ .../ethernet/marvell/octeontx2/nic/cn10k_macsec.c  | 89 +++++++++++++++++-----
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  5 ++
+ 2 files changed, 75 insertions(+), 19 deletions(-)
 
-
-> ---
->  .../bindings/net/faraday,ftgmac100.yaml       | 110 ++++++++++++++++++
-
-Missing actual conversion (removal).
-
->  1 file changed, 110 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/faraday,ftgmac100.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/faraday,ftgmac100.yaml b/Documentation/devicetree/bindings/net/faraday,ftgmac100.yaml
-> new file mode 100644
-> index 000000000000..98cd142f74bb
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/faraday,ftgmac100.yaml
-> @@ -0,0 +1,110 @@
-> +# SPDX-License-Identifier: GPL-2.0
-
-Dual-license, unless you copied some chunks of old binding... but was
-there old binding?
-
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/faraday,ftgmac100.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Faraday Technology FTGMAC100 gigabit ethernet controller
-> +
-> +allOf:
-> +  - $ref: "ethernet-controller.yaml#"
-
-Drop quotes.
-
-
-> +
-> +maintainers:
-> +  - Po-Yu Chuang <ratbert@faraday-tech.com>
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: faraday,ftgmac100
-> +      - items:
-> +          - enum:
-> +              - aspeed,ast2400-mac
-> +              - aspeed,ast2500-mac
-> +              - aspeed,ast2600-mac
-> +          - const: faraday,ftgmac100
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    description: |
-> +      In accordance with the generic clock bindings.
-
-Drop this part. Obvious.
-
->  Must describe the MAC
-> +      IP clock, and optionally an RMII RCLK gate for the AST2500/AST2600. The
-> +      required MAC clock must be the first cell.
-
-The cells depend on clock provider. Do you mean something else?
-
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  clock-names:
-> +    items:
-> +      - enum:
-> +          - MACCLK
-> +          - RCLK
-
-This does not allow two clocks... List all the items and add minItems: 1.
-
-
-> +
-> +  phy-mode:
-> +    enum:
-> +      - rgmii
-> +      - rmii
-> +
-> +  phy-handle: true
-> +
-> +  use-ncsi:
-> +    description: |
-
-Do not need '|' unless you need to preserve formatting.
-
-I will stop review, because it depends whether this is true conversion
-or new binding.
-
-Best regards,
-Krzysztof
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
+index aea4c80..37420f9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
+@@ -6,7 +6,6 @@
+ 
+ #include <linux/rtnetlink.h>
+ #include <linux/bitfield.h>
+-#include <net/macsec.h>
+ #include "otx2_common.h"
+ 
+ #define MCS_TCAM0_MAC_DA_MASK		GENMASK_ULL(47, 0)
+@@ -212,6 +211,7 @@ static int cn10k_mcs_write_rx_secy(struct otx2_nic *pfvf,
+ 	struct mcs_secy_plcy_write_req *req;
+ 	struct mbox *mbox = &pfvf->mbox;
+ 	u64 policy;
++	u8 cipher;
+ 	int ret;
+ 
+ 	mutex_lock(&mbox->lock);
+@@ -227,7 +227,21 @@ static int cn10k_mcs_write_rx_secy(struct otx2_nic *pfvf,
+ 		policy |= MCS_RX_SECY_PLCY_RP;
+ 
+ 	policy |= MCS_RX_SECY_PLCY_AUTH_ENA;
+-	policy |= FIELD_PREP(MCS_RX_SECY_PLCY_CIP, MCS_GCM_AES_128);
++
++	switch (secy->key_len) {
++	case 16:
++		cipher = secy->xpn ? MCS_GCM_AES_XPN_128 : MCS_GCM_AES_128;
++		break;
++	case 32:
++		cipher = secy->xpn ? MCS_GCM_AES_XPN_256 : MCS_GCM_AES_256;
++		break;
++	default:
++		cipher = MCS_GCM_AES_128;
++		dev_warn(pfvf->dev, "Unsupported key length\n");
++		break;
++	};
++
++	policy |= FIELD_PREP(MCS_RX_SECY_PLCY_CIP, cipher);
+ 	policy |= FIELD_PREP(MCS_RX_SECY_PLCY_VAL, secy->validate_frames);
+ 
+ 	policy |= MCS_RX_SECY_PLCY_ENA;
+@@ -323,9 +337,12 @@ static int cn10k_mcs_write_rx_sa_plcy(struct otx2_nic *pfvf,
+ {
+ 	unsigned char *src = rxsc->sa_key[assoc_num];
+ 	struct mcs_sa_plcy_write_req *plcy_req;
++	u8 *salt_p = rxsc->salt[assoc_num];
+ 	struct mcs_rx_sc_sa_map *map_req;
+ 	struct mbox *mbox = &pfvf->mbox;
++	u64 ssci_salt_95_64 = 0;
+ 	u8 reg, key_len;
++	u64 salt_63_0;
+ 	int ret;
+ 
+ 	mutex_lock(&mbox->lock);
+@@ -349,6 +366,15 @@ static int cn10k_mcs_write_rx_sa_plcy(struct otx2_nic *pfvf,
+ 		reg++;
+ 	}
+ 
++	if (secy->xpn) {
++		memcpy((u8 *)&salt_63_0, salt_p, 8);
++		memcpy((u8 *)&ssci_salt_95_64, salt_p + 8, 4);
++		ssci_salt_95_64 |= (u64)rxsc->ssci[assoc_num] << 32;
++
++		plcy_req->plcy[0][6] = salt_63_0;
++		plcy_req->plcy[0][7] = ssci_salt_95_64;
++	}
++
+ 	plcy_req->sa_index[0] = rxsc->hw_sa_id[assoc_num];
+ 	plcy_req->sa_cnt = 1;
+ 	plcy_req->dir = MCS_RX;
+@@ -404,6 +430,7 @@ static int cn10k_mcs_write_tx_secy(struct otx2_nic *pfvf,
+ 	u8 tag_offset = 12;
+ 	u8 sectag_tci = 0;
+ 	u64 policy;
++	u8 cipher;
+ 	int ret;
+ 
+ 	sw_tx_sc = &secy->tx_sc;
+@@ -434,7 +461,21 @@ static int cn10k_mcs_write_tx_secy(struct otx2_nic *pfvf,
+ 	policy |= FIELD_PREP(MCS_TX_SECY_PLCY_ST_OFFSET, tag_offset);
+ 	policy |= MCS_TX_SECY_PLCY_INS_MODE;
+ 	policy |= MCS_TX_SECY_PLCY_AUTH_ENA;
+-	policy |= FIELD_PREP(MCS_TX_SECY_PLCY_CIP, MCS_GCM_AES_128);
++
++	switch (secy->key_len) {
++	case 16:
++		cipher = secy->xpn ? MCS_GCM_AES_XPN_128 : MCS_GCM_AES_128;
++		break;
++	case 32:
++		cipher = secy->xpn ? MCS_GCM_AES_XPN_256 : MCS_GCM_AES_256;
++		break;
++	default:
++		cipher = MCS_GCM_AES_128;
++		dev_warn(pfvf->dev, "Unsupported key length\n");
++		break;
++	};
++
++	policy |= FIELD_PREP(MCS_TX_SECY_PLCY_CIP, cipher);
+ 
+ 	if (secy->protect_frames)
+ 		policy |= MCS_TX_SECY_PLCY_PROTECT;
+@@ -544,8 +585,11 @@ static int cn10k_mcs_write_tx_sa_plcy(struct otx2_nic *pfvf,
+ {
+ 	unsigned char *src = txsc->sa_key[assoc_num];
+ 	struct mcs_sa_plcy_write_req *plcy_req;
++	u8 *salt_p = txsc->salt[assoc_num];
+ 	struct mbox *mbox = &pfvf->mbox;
++	u64 ssci_salt_95_64 = 0;
+ 	u8 reg, key_len;
++	u64 salt_63_0;
+ 	int ret;
+ 
+ 	mutex_lock(&mbox->lock);
+@@ -561,6 +605,15 @@ static int cn10k_mcs_write_tx_sa_plcy(struct otx2_nic *pfvf,
+ 		reg++;
+ 	}
+ 
++	if (secy->xpn) {
++		memcpy((u8 *)&salt_63_0, salt_p, 8);
++		memcpy((u8 *)&ssci_salt_95_64, salt_p + 8, 4);
++		ssci_salt_95_64 |= (u64)txsc->ssci[assoc_num] << 32;
++
++		plcy_req->plcy[0][6] = salt_63_0;
++		plcy_req->plcy[0][7] = ssci_salt_95_64;
++	}
++
+ 	plcy_req->plcy[0][8] = assoc_num;
+ 	plcy_req->sa_index[0] = txsc->hw_sa_id[assoc_num];
+ 	plcy_req->sa_cnt = 1;
+@@ -922,8 +975,7 @@ static int cn10k_mcs_secy_tx_cfg(struct otx2_nic *pfvf, struct macsec_secy *secy
+ {
+ 	if (sw_tx_sa) {
+ 		cn10k_mcs_write_tx_sa_plcy(pfvf, secy, txsc, sa_num);
+-		cn10k_write_tx_sa_pn(pfvf, txsc, sa_num,
+-				     sw_tx_sa->next_pn_halves.lower);
++		cn10k_write_tx_sa_pn(pfvf, txsc, sa_num, sw_tx_sa->next_pn);
+ 		cn10k_mcs_link_tx_sa2sc(pfvf, secy, txsc, sa_num,
+ 					sw_tx_sa->active);
+ 	}
+@@ -959,7 +1011,7 @@ static int cn10k_mcs_secy_rx_cfg(struct otx2_nic *pfvf,
+ 			cn10k_mcs_write_rx_sa_plcy(pfvf, secy, mcs_rx_sc,
+ 						   sa_num, sw_rx_sa->active);
+ 			cn10k_mcs_write_rx_sa_pn(pfvf, mcs_rx_sc, sa_num,
+-						 sw_rx_sa->next_pn_halves.lower);
++						 sw_rx_sa->next_pn);
+ 		}
+ 
+ 		cn10k_mcs_write_rx_flowid(pfvf, mcs_rx_sc, hw_secy_id);
+@@ -1103,13 +1155,6 @@ static int cn10k_mdo_add_secy(struct macsec_context *ctx)
+ 	if (secy->icv_len != MACSEC_DEFAULT_ICV_LEN)
+ 		return -EOPNOTSUPP;
+ 
+-	/* Stick to 16 bytes key len until XPN support is added */
+-	if (secy->key_len != 16)
+-		return -EOPNOTSUPP;
+-
+-	if (secy->xpn)
+-		return -EOPNOTSUPP;
+-
+ 	txsc = cn10k_mcs_create_txsc(pfvf);
+ 	if (IS_ERR(txsc))
+ 		return -ENOSPC;
+@@ -1202,6 +1247,9 @@ static int cn10k_mdo_add_txsa(struct macsec_context *ctx)
+ 		return -ENOSPC;
+ 
+ 	memcpy(&txsc->sa_key[sa_num], ctx->sa.key, secy->key_len);
++	memcpy(&txsc->salt[sa_num], sw_tx_sa->key.salt.bytes, MACSEC_SALT_LEN);
++	txsc->ssci[sa_num] = sw_tx_sa->ssci;
++
+ 	txsc->sa_bmap |= 1 << sa_num;
+ 
+ 	if (netif_running(secy->netdev)) {
+@@ -1210,7 +1258,7 @@ static int cn10k_mdo_add_txsa(struct macsec_context *ctx)
+ 			return err;
+ 
+ 		err = cn10k_write_tx_sa_pn(pfvf, txsc, sa_num,
+-					   sw_tx_sa->next_pn_halves.lower);
++					   sw_tx_sa->next_pn);
+ 		if (err)
+ 			return err;
+ 
+@@ -1243,7 +1291,7 @@ static int cn10k_mdo_upd_txsa(struct macsec_context *ctx)
+ 	if (netif_running(secy->netdev)) {
+ 		/* Keys cannot be changed after creation */
+ 		err = cn10k_write_tx_sa_pn(pfvf, txsc, sa_num,
+-					   sw_tx_sa->next_pn_halves.lower);
++					   sw_tx_sa->next_pn);
+ 		if (err)
+ 			return err;
+ 
+@@ -1353,7 +1401,6 @@ static int cn10k_mdo_add_rxsa(struct macsec_context *ctx)
+ 	struct macsec_rx_sc *sw_rx_sc = ctx->sa.rx_sa->sc;
+ 	struct cn10k_mcs_cfg *cfg = pfvf->macsec_cfg;
+ 	struct macsec_rx_sa *rx_sa = ctx->sa.rx_sa;
+-	u64 next_pn = rx_sa->next_pn_halves.lower;
+ 	struct macsec_secy *secy = ctx->secy;
+ 	bool sa_in_use = rx_sa->active;
+ 	u8 sa_num = ctx->sa.assoc_num;
+@@ -1371,6 +1418,9 @@ static int cn10k_mdo_add_rxsa(struct macsec_context *ctx)
+ 		return -ENOSPC;
+ 
+ 	memcpy(&rxsc->sa_key[sa_num], ctx->sa.key, ctx->secy->key_len);
++	memcpy(&rxsc->salt[sa_num], rx_sa->key.salt.bytes, MACSEC_SALT_LEN);
++	rxsc->ssci[sa_num] = rx_sa->ssci;
++
+ 	rxsc->sa_bmap |= 1 << sa_num;
+ 
+ 	if (netif_running(secy->netdev)) {
+@@ -1379,7 +1429,8 @@ static int cn10k_mdo_add_rxsa(struct macsec_context *ctx)
+ 		if (err)
+ 			return err;
+ 
+-		err = cn10k_mcs_write_rx_sa_pn(pfvf, rxsc, sa_num, next_pn);
++		err = cn10k_mcs_write_rx_sa_pn(pfvf, rxsc, sa_num,
++					       rx_sa->next_pn);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -1393,7 +1444,6 @@ static int cn10k_mdo_upd_rxsa(struct macsec_context *ctx)
+ 	struct macsec_rx_sc *sw_rx_sc = ctx->sa.rx_sa->sc;
+ 	struct cn10k_mcs_cfg *cfg = pfvf->macsec_cfg;
+ 	struct macsec_rx_sa *rx_sa = ctx->sa.rx_sa;
+-	u64 next_pn = rx_sa->next_pn_halves.lower;
+ 	struct macsec_secy *secy = ctx->secy;
+ 	bool sa_in_use = rx_sa->active;
+ 	u8 sa_num = ctx->sa.assoc_num;
+@@ -1412,7 +1462,8 @@ static int cn10k_mdo_upd_rxsa(struct macsec_context *ctx)
+ 		if (err)
+ 			return err;
+ 
+-		err = cn10k_mcs_write_rx_sa_pn(pfvf, rxsc, sa_num, next_pn);
++		err = cn10k_mcs_write_rx_sa_pn(pfvf, rxsc, sa_num,
++					       rx_sa->next_pn);
+ 		if (err)
+ 			return err;
+ 	}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 0c8fc66..d17274a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -15,6 +15,7 @@
+ #include <linux/ptp_clock_kernel.h>
+ #include <linux/timecounter.h>
+ #include <linux/soc/marvell/octeontx2/asm.h>
++#include <net/macsec.h>
+ #include <net/pkt_cls.h>
+ #include <net/devlink.h>
+ #include <linux/time64.h>
+@@ -398,6 +399,8 @@ struct cn10k_mcs_txsc {
+ 	u8 sa_bmap;
+ 	u8 sa_key[CN10K_MCS_SA_PER_SC][MACSEC_MAX_KEY_LEN];
+ 	u8 encoding_sa;
++	u8 salt[CN10K_MCS_SA_PER_SC][MACSEC_SALT_LEN];
++	ssci_t ssci[CN10K_MCS_SA_PER_SC];
+ };
+ 
+ struct cn10k_mcs_rxsc {
+@@ -410,6 +413,8 @@ struct cn10k_mcs_rxsc {
+ 	u16 hw_sa_id[CN10K_MCS_SA_PER_SC];
+ 	u8 sa_bmap;
+ 	u8 sa_key[CN10K_MCS_SA_PER_SC][MACSEC_MAX_KEY_LEN];
++	u8 salt[CN10K_MCS_SA_PER_SC][MACSEC_SALT_LEN];
++	ssci_t ssci[CN10K_MCS_SA_PER_SC];
+ };
+ 
+ struct cn10k_mcs_cfg {
+-- 
+2.7.4
 
 
