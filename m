@@ -1,52 +1,74 @@
-Return-Path: <netdev+bounces-1539-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1540-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E24AD6FE32C
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 19:23:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 727886FE39F
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 20:10:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 115831C20DE6
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 17:23:13 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 20B2828151A
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 18:10:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 271DE174C3;
-	Wed, 10 May 2023 17:23:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D740174D0;
+	Wed, 10 May 2023 18:10:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CA8B14A81
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 17:23:12 +0000 (UTC)
-X-Greylist: delayed 499 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 May 2023 10:23:09 PDT
-Received: from sv3.telemetry-investments.com (gw3a.telemetry-investments.com [38.76.0.51])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 874D1526A
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 10:23:09 -0700 (PDT)
-Received: from ti139.telemetry-investments.com (ti139 [192.168.53.139])
-	by sv3.telemetry-investments.com (Postfix) with ESMTP id 4CF5D232;
-	Wed, 10 May 2023 13:14:36 -0400 (EDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 512253D60
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 18:10:02 +0000 (UTC)
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF935B96
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:10:00 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id 98e67ed59e1d1-24e14a24c9dso5474033a91.0
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:10:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=telemetry-investments.com; s=tele1409; t=1683738876;
-	bh=rLJ4nRNfhLZ4riTAGObiAYB+AUBDD6Qf4iKgn+q/Qww=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=6tpaWEpAFJ107gB4d+iis75c4JpbJI0fD8nH+mkHPbJq0AfPk9XZas+M0uC0KgGW7
-	 jt0hBEs7ky06haIzLQ80LoDNIoXy5L8JsyRCGFaIvurKokj+yXk3CvxPFrnVKTAdm1
-	 XX3QDgeAuGaMrNv6OpX7iZUBto/pWCkOn4fR/I4I=
-Received: by ti139.telemetry-investments.com (Postfix, from userid 300)
-	id 44C68885; Wed, 10 May 2023 13:14:36 -0400 (EDT)
-Date: Wed, 10 May 2023 13:14:36 -0400
-From: "Andrew J. Schorr" <aschorr@telemetry-investments.com>
-To: Hangbin Liu <liuhangbin@gmail.com>
-Cc: Jay Vosburgh <jay.vosburgh@canonical.com>, netdev@vger.kernel.org
-Subject: Re: [Issue] Bonding can't show correct speed if lower interface is
- bond 802.3ad
-Message-ID: <20230510171436.GA27945@ti139.telemetry-investments.com>
-References: <ZEt3hvyREPVdbesO@Laptop-X1>
- <15524.1682698000@famine>
- <ZFjAPRQNYRgYWsD+@Laptop-X1>
- <84548.1683570736@vermin>
- <ZFtMyi9wssslDuD0@Laptop-X1>
- <20230510165738.GA23309@ti139.telemetry-investments.com>
+        d=chromium.org; s=google; t=1683742199; x=1686334199;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tiygZOTM/QauPyCMixB8V7aM36/db24ouJqobVB/VFw=;
+        b=YxgWqyd+r+99dFYRRgD00VWEy1qOcxTAuAHqi3IHHkiXCGqMTNVXNDe3PLHp5+B0xY
+         /AbjGykFWXc4vvD72bmluzjmewD2tJyMcp6bP7Pwxrbi+Ql4rE/pTyHebWfu+hjXDrjj
+         eNTV5uGAgwvC/P/nMVz1q1n4T8jWN2QLdSaMA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683742199; x=1686334199;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tiygZOTM/QauPyCMixB8V7aM36/db24ouJqobVB/VFw=;
+        b=V5VvshLn/sVCU1orzmtlLd0tBZSv5Muxla3AWbL2MjEhyK6K3kIbnhEhM33GxD1mb+
+         MN8yA1GwM173PGZ23k0g8vmbwxQpwRgaNj3mPvojtcM7LaM1a+pETtOdSNie7XcCN7Nt
+         HJbJORDKqh6HkaB8Z50BEnvJ3Be+HiBQx1VhrcmH3V1Vy++l5orldPXoVoqAi3//F8pa
+         tb37tACUyXFCiz5fa7ktbH3/aBruXzJ2RI8JjzkOP8AUEuhgHFBpCrC0Ihe9vYyEOTKu
+         kvQ62suTEDSylPMgA7jXRwLMBnEwfTnAW9M1mKdYioW97uKnuoKldZx/nGvLa4TPtBlm
+         umPA==
+X-Gm-Message-State: AC+VfDzg9vDDnuAHlauhLeaAHtJ4XyVYiM7kxGeIlV84pmSj++bzVf2/
+	oLANrjMjWhGk1jqgBEWCn4+yNw==
+X-Google-Smtp-Source: ACHHUZ6+BjWagvevIinrLLujuzL7p6CVC5DXvppVsd1qgMDZjorehB2nrce6URDfl8DHzwf3JbZUtg==
+X-Received: by 2002:a17:90b:1296:b0:246:af1f:62ef with SMTP id fw22-20020a17090b129600b00246af1f62efmr17995931pjb.5.1683742198966;
+        Wed, 10 May 2023 11:09:58 -0700 (PDT)
+Received: from google.com ([2620:15c:9d:2:17a2:4d38:332d:67a0])
+        by smtp.gmail.com with ESMTPSA id o3-20020a17090ad24300b00246be20e216sm13725577pjw.34.2023.05.10.11.09.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 May 2023 11:09:58 -0700 (PDT)
+Date: Wed, 10 May 2023 11:09:55 -0700
+From: Brian Norris <briannorris@chromium.org>
+To: Tejun Heo <tj@kernel.org>
+Cc: jiangshanlai@gmail.com, linux-kernel@vger.kernel.org,
+	kernel-team@meta.com, Amitkumar Karwar <amitkarwar@gmail.com>,
+	Ganapathi Bhat <ganapathi017@gmail.com>,
+	Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+	Xinming Hu <huxinming820@gmail.com>, Kalle Valo <kvalo@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 02/13] wifi: mwifiex: Use default @max_active for
+ workqueues
+Message-ID: <ZFvd8zcPq4ijSszM@google.com>
+References: <20230509015032.3768622-1-tj@kernel.org>
+ <20230509015032.3768622-3-tj@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -55,65 +77,46 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230510165738.GA23309@ti139.telemetry-investments.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+In-Reply-To: <20230509015032.3768622-3-tj@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Sorry -- resending from a different email address to fix a problem
-with gmail rejecting it.
+On Mon, May 08, 2023 at 03:50:21PM -1000, Tejun Heo wrote:
+> These workqueues only host a single work item and thus doen't need explicit
+> concurrency limit. Let's use the default @max_active. This doesn't cost
+> anything and clearly expresses that @max_active doesn't matter.
+> 
+> Signed-off-by: Tejun Heo <tj@kernel.org>
+> Cc: Amitkumar Karwar <amitkarwar@gmail.com>
+> Cc: Ganapathi Bhat <ganapathi017@gmail.com>
+> Cc: Sharvari Harisangam <sharvari.harisangam@nxp.com>
+> Cc: Xinming Hu <huxinming820@gmail.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
 
-On Wed, May 10, 2023 at 12:57:38PM -0400, Andrew J. Schorr wrote:
-> Hi Hangbin & Jay,
-> 
-> On Wed, May 10, 2023 at 03:50:34PM +0800, Hangbin Liu wrote:
-> > On Mon, May 08, 2023 at 11:32:16AM -0700, Jay Vosburgh wrote:
-> > > 	That case should work fine without the active-backup.  LACP has
-> > > a concept of an "individual" port, which (in this context) would be the
-> > > "normal NIC," presuming that that means its link peer isn't running
-> > > LACP.
-> > > 
-> > > 	If all of the ports (N that are LACP to a single switch, plus 1
-> > > that's the non-LACP "normal NIC") were attached to a single bond, it
-> > > would create one aggregator with the LACP enabled ports, and then a
-> > > separate aggregator for the indvidual port that's not.  The aggregator
-> > > selection logic prefers the LACP enabled aggregator over the individual
-> > > port aggregator.  The precise criteria is in the commentary within
-> > > ad_agg_selection_test().
-> > > 
-> > 
-> > cc Andrew, He add active-backup bond over LACP bond because he want to
-> > use arp_ip_target to ensure that the target network is reachable...
-> 
-> That's correct. I prefer the ARP monitoring to ensure that the needed
-> connectivity is actually there instead of relying on MII monitoring.
-> 
-> I also confess that I was unaware of the possibility of using an individual
-> port inside an 802.3ad bond without having to stick that individual port into a
-> port-channel group with LACP enabled. I want to avoid enabling LACP on that
-> link because I'd like to be able to PXE boot over it, not to mention the switch
-> configuration hassle.  Is that individual port configuration without LACP
-> detected automatically by the kernel, or do I need to configure something to do
-> that? I see the logic in drivers/net/bonding/bond_3ad.c to set is_individual,
-> but it appears to depend on whether duplex is enabled. At that point, I got
-> lost, since I see duplex mentioned only in ad_user_port_key, and that seems to
-> be a property of the bond master, not the slaves. Is there any documentation of
-> how this configuration works?
-> 
-> But in any case, I still prefer active-backup on top of 802.3ad so that I can
-> have the ARP monitoring.
-> 
-> If it's too much trouble to get the top-level bond to report duplex/speed
-> correctly when the underlying bond speed changes, then I think it would
-> be an improvement to set duplex/speed to N/A (or -1) for a bond of
-> bonds configuration instead of potentially having incorrect information.
-> I imagine such a fix might be much easier than updating dynamically
-> when the lower-level 802.3ad bond changes speed.
-> 
-> Best regards,
-> Andy
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+
+I'll admit, the workqueue documentation sounds a bit like "max_active ==
+1 + WQ_UNBOUND" is what we want ("one work item [...] active at any
+given time"), but that's more of my misunderstanding than anything --
+each work item can only be active in a single context at any given time,
+so that note is talking about distinct (i.e., more than 1) work items.
+
+While I'm here: we're still debugging what's affecting WiFi performance
+on some of our WiFi systems, but it's possible I'll be turning some of
+these into struct kthread_worker instead. We can cross that bridge
+(including potential conflicts) if/when we come to it though.
+
+Thanks,
+Brian
 
