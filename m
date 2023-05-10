@@ -1,39 +1,37 @@
-Return-Path: <netdev+bounces-1359-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1360-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 30B236FD95F
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:31:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 419176FD983
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:34:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F0C152813F0
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:31:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6244B281419
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:34:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4B60112B90;
-	Wed, 10 May 2023 08:30:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A540366;
+	Wed, 10 May 2023 08:34:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FE795668
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:30:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 22D93C4339C;
-	Wed, 10 May 2023 08:30:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683707423;
-	bh=AN+Eo+qzhyw47/MyXdApQCMAYN3iMem6tBDKDVm5ntE=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=b8T6Nh8ELnyMMcbsAIKZbbujBuDPDMFknIFXWChTjwVxuS0RKXujkLgSeDxjMU6ty
-	 PxcJ3hwdhG7odmGe7GH0SQ9w94dK8rLzFSR7WtLAsACrEcLlE/28y82NdQLtB1I+Of
-	 LaJ7Za4bsQqd5u0z+sKOudyFD8NwJfBMsmBX3/qc1PLvElfL+bYUMsQAWuf3pOY7Gv
-	 ISQvP7r45zA1pVvBP63ntWISnPJ8hkCIG0lfjFY0aqQaxnrKpBApCxyd99ZDvyBN5i
-	 Kh5O4/NfgBlGznsyFyFsNv1BJKRLivINOERR4bHjYFD2vj0x5Z2F2QX0G/Kp0vfGOh
-	 6avUcX/C1/rBQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 053A1E270C4;
-	Wed, 10 May 2023 08:30:23 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FB07364
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:34:51 +0000 (UTC)
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC25E30DA;
+	Wed, 10 May 2023 01:34:20 -0700 (PDT)
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+To: netfilter-devel@vger.kernel.org
+Cc: davem@davemloft.net,
+	netdev@vger.kernel.org,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	edumazet@google.com
+Subject: [PATCH net 0/7] Netfilter updates for net
+Date: Wed, 10 May 2023 10:33:06 +0200
+Message-Id: <20230510083313.152961-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -41,44 +39,64 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ethernet: mtk_eth_soc: fix NULL pointer dereference
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168370742301.8895.5605086676316626500.git-patchwork-notify@kernel.org>
-Date: Wed, 10 May 2023 08:30:23 +0000
-References: <ZFmfxpsd8Fiqc7K_@pidgin.makrotopia.org>
-In-Reply-To: <ZFmfxpsd8Fiqc7K_@pidgin.makrotopia.org>
-To: Daniel Golle <daniel@makrotopia.org>
-Cc: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
- Mark-MC.Lee@mediatek.com, lorenzo@kernel.org, davem@davemloft.net,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+Hi,
 
-This patch was applied to netdev/net.git (main)
-by David S. Miller <davem@davemloft.net>:
+The following patchset contains Netfilter fixes for net:
 
-On Tue, 9 May 2023 03:20:06 +0200 you wrote:
-> Check for NULL pointer to avoid kernel crashing in case of missing WO
-> firmware in case only a single WEDv2 device has been initialized, e.g. on
-> MT7981 which can connect just one wireless frontend.
-> 
-> Fixes: 86ce0d09e424 ("net: ethernet: mtk_eth_soc: use WO firmware for MT7981")
-> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> 
-> [...]
+1) Fix UAF when releasing netnamespace, from Florian Westphal.
 
-Here is the summary with links:
-  - [net] net: ethernet: mtk_eth_soc: fix NULL pointer dereference
-    https://git.kernel.org/netdev/net/c/7c83e28f1083
+2) Fix possible BUG_ON when nf_conntrack is enabled with enable_hooks,
+   from Florian Westphal.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+3) Fixes for nft_flowtable.sh selftest, from Boris Sukholitko.
 
+4) Extend nft_flowtable.sh selftest to cover integration with
+   ingress/egress hooks, from Florian Westphal.
 
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git nf-23-05-10
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 582dbb2cc1a0a7427840f5b1e3c65608e511b061:
+
+  net: phy: bcm7xx: Correct read from expansion register (2023-05-09 20:25:52 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git tags/nf-23-05-10
+
+for you to fetch changes up to 3acf8f6c14d0e42b889738d63b6d9cb63348fc94:
+
+  selftests: nft_flowtable.sh: check ingress/egress chain too (2023-05-10 09:31:07 +0200)
+
+----------------------------------------------------------------
+netfilter pull request 23-05-10
+
+----------------------------------------------------------------
+Boris Sukholitko (4):
+      selftests: nft_flowtable.sh: use /proc for pid checking
+      selftests: nft_flowtable.sh: no need for ps -x option
+      selftests: nft_flowtable.sh: wait for specific nc pids
+      selftests: nft_flowtable.sh: monitor result file sizes
+
+Florian Westphal (3):
+      netfilter: nf_tables: always release netdev hooks from notifier
+      netfilter: conntrack: fix possible bug_on with enable_hooks=1
+      selftests: nft_flowtable.sh: check ingress/egress chain too
+
+ net/netfilter/core.c                               |   6 +-
+ net/netfilter/nf_conntrack_standalone.c            |   3 +-
+ net/netfilter/nft_chain_filter.c                   |   9 +-
+ tools/testing/selftests/netfilter/nft_flowtable.sh | 145 ++++++++++++++++++++-
+ 4 files changed, 151 insertions(+), 12 deletions(-)
 
