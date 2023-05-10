@@ -1,33 +1,33 @@
-Return-Path: <netdev+bounces-1607-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1608-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 37EA26FE7D1
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:00:50 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3C93B6FE7D5
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:01:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E681828162E
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:00:48 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5E7E71C20E7F
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:01:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5449B1E51E;
-	Wed, 10 May 2023 23:00:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 585611E520;
+	Wed, 10 May 2023 23:01:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AA9921CED
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 23:00:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D24F21CED
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 23:01:19 +0000 (UTC)
 Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A6610F5;
-	Wed, 10 May 2023 16:00:39 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200DB40EB;
+	Wed, 10 May 2023 16:01:07 -0700 (PDT)
 Received: from local
 	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
 	 (Exim 4.96)
 	(envelope-from <daniel@makrotopia.org>)
-	id 1pwsnU-0004Uo-0h;
-	Wed, 10 May 2023 23:00:36 +0000
-Date: Thu, 11 May 2023 00:58:42 +0200
+	id 1pwsny-0004VH-0l;
+	Wed, 10 May 2023 23:01:06 +0000
+Date: Thu, 11 May 2023 00:59:12 +0200
 From: Daniel Golle <daniel@makrotopia.org>
 To: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -38,9 +38,9 @@ To: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH net-next 5/8] net: phy: realtek: make sure paged read is
- protected by mutex
-Message-ID: <d56ee0a8fce63beb3916caff3ebc38f8fc562c52.1683756691.git.daniel@makrotopia.org>
+Subject: [PATCH net-next 6/8] net: phy: realtek: use inline functions for
+ 10GbE advertisement
+Message-ID: <fdce4e1cfb7c975bf72257baf393b3af53266c3d.1683756691.git.daniel@makrotopia.org>
 References: <cover.1683756691.git.daniel@makrotopia.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -57,38 +57,62 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-As we cannot rely on phy_read_paged function before the PHY is
-identified, the paged read in rtlgen_supports_2_5gbps needs to be open
-coded as it is being called by the match_phy_device function, ie. before
-.read_page and .write_page have been populated.
-
-Make sure it is also protected by the MDIO bus mutex and use
-rtl821x_write_page instead of 3 individually locked MDIO bus operations.
+Use existing generic inline functions to encode local advertisement
+of 10GbE link modes as well as to decode link-partner advertisement.
 
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/phy/realtek.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/phy/realtek.c | 22 +++++-----------------
+ 1 file changed, 5 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index acadb6f0057b..e6a46c4d97b1 100644
+index e6a46c4d97b1..cde61a30ac4c 100644
 --- a/drivers/net/phy/realtek.c
 +++ b/drivers/net/phy/realtek.c
-@@ -744,9 +744,11 @@ static bool rtlgen_supports_2_5gbps(struct phy_device *phydev)
- {
- 	int val;
+@@ -68,10 +68,6 @@
+ #define RTL_SUPPORTS_5000FULL			BIT(14)
+ #define RTL_SUPPORTS_2500FULL			BIT(13)
+ #define RTL_SUPPORTS_10000FULL			BIT(0)
+-#define RTL_ADV_2500FULL			BIT(7)
+-#define RTL_LPADV_10000FULL			BIT(11)
+-#define RTL_LPADV_5000FULL			BIT(6)
+-#define RTL_LPADV_2500FULL			BIT(5)
  
--	phy_write(phydev, RTL821x_PAGE_SELECT, 0xa61);
--	val = phy_read(phydev, 0x13);
--	phy_write(phydev, RTL821x_PAGE_SELECT, 0);
-+	phy_lock_mdio_bus(phydev);
-+	rtl821x_write_page(phydev, 0xa61);
-+	val = __phy_read(phydev, 0x13);
-+	rtl821x_write_page(phydev, 0);
-+	phy_unlock_mdio_bus(phydev);
+ #define RTL9000A_GINMR				0x14
+ #define RTL9000A_GINMR_LINK_STATUS		BIT(4)
+@@ -669,14 +665,11 @@ static int rtl822x_config_aneg(struct phy_device *phydev)
+ 	int val, ret = 0;
  
- 	return val >= 0 && val & RTL_SUPPORTS_2500FULL;
- }
+ 	if (phydev->autoneg == AUTONEG_ENABLE) {
+-		u16 adv2500 = 0;
+-
+-		if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
+-				      phydev->advertising))
+-			adv2500 = RTL_ADV_2500FULL;
+-
+ 		ret = phy_modify_paged_changed(phydev, 0xa5d, 0x12,
+-					       RTL_ADV_2500FULL, adv2500);
++					       MDIO_AN_10GBT_CTRL_ADV10G |
++					       MDIO_AN_10GBT_CTRL_ADV5G |
++					       MDIO_AN_10GBT_CTRL_ADV2_5G,
++			linkmode_adv_to_mii_10gbt_adv_t(phydev->advertising));
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+@@ -722,12 +715,7 @@ static int rtl822x_read_status(struct phy_device *phydev)
+ 		if (lpadv < 0)
+ 			return lpadv;
+ 
+-		linkmode_mod_bit(ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
+-			phydev->lp_advertising, lpadv & RTL_LPADV_10000FULL);
+-		linkmode_mod_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT,
+-			phydev->lp_advertising, lpadv & RTL_LPADV_5000FULL);
+-		linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
+-			phydev->lp_advertising, lpadv & RTL_LPADV_2500FULL);
++		mii_10gbt_stat_mod_linkmode_lpa_t(phydev->lp_advertising, lpadv);
+ 	}
+ 
+ 	ret = rtlgen_read_status(phydev);
 -- 
 2.40.0
 
