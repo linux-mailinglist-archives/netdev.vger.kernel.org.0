@@ -1,121 +1,83 @@
-Return-Path: <netdev+bounces-1295-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1296-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 59AD56FD353
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 02:39:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CF8466FD368
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 03:01:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1E77428131E
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 00:39:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4B3A61C20C9C
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 01:01:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FFA5374;
-	Wed, 10 May 2023 00:39:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CDEB837B;
+	Wed, 10 May 2023 01:01:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E03B362
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 00:39:39 +0000 (UTC)
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B799840D9
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 17:39:35 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QGGLL3b1yzLpjD;
-	Wed, 10 May 2023 08:36:42 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 10 May
- 2023 08:39:32 +0800
-Subject: Re: [PATCH net-next v1 1/2] net: introduce and use
- skb_frag_fill_page_desc()
-To: Paolo Abeni <pabeni@redhat.com>, Igor Russkikh <irusskikh@marvell.com>,
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Michael Chan <michael.chan@broadcom.com>,
-	Raju Rangoju <rajur@chelsio.com>, Ajit Khaparde <ajit.khaparde@broadcom.com>,
-	Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>, Somnath Kotur
-	<somnath.kotur@broadcom.com>, Claudiu Manoil <claudiu.manoil@nxp.com>,
-	Dimitris Michailidis <dmichail@fungible.com>, Thomas Petazzoni
-	<thomas.petazzoni@bootlin.com>, Saeed Mahameed <saeedm@nvidia.com>, Leon
- Romanovsky <leon@kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Jason
- Wang <jasowang@redhat.com>, Ronak Doshi <doshir@vmware.com>, VMware
- PV-Drivers Reviewers <pv-drivers@vmware.com>, Wei Liu <wei.liu@kernel.org>,
-	Paul Durrant <paul@xen.org>, Alexei Starovoitov <ast@kernel.org>, Daniel
- Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, Martin
- KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, Yonghong Song
-	<yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>, KP Singh
-	<kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>, Hao Luo
-	<haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>, Boris Pismenny
-	<borisp@nvidia.com>, Steffen Klassert <steffen.klassert@secunet.com>, Herbert
- Xu <herbert@gondor.apana.org.au>
-CC: <simon.horman@corigine.com>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>
-References: <20230509092656.20308-1-linyunsheng@huawei.com>
- <20230509092656.20308-2-linyunsheng@huawei.com>
- <d0fdd0bb9a1855910217e6b658506cd21ac6edfa.camel@redhat.com>
-From: Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <198376b3-e515-28db-97a1-20e8905ac935@huawei.com>
-Date: Wed, 10 May 2023 08:39:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6305362
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 01:00:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D20C433EF;
+	Wed, 10 May 2023 01:00:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683680458;
+	bh=UrItQrnIMs0ms+sPI5j1Hu3+52mp5ohTLkaAWkiKzsk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=czAzhJz1NBrHhvesrdhXOCzsPF9NJZpM9KBiimBJlbeaxSioAxPsw+6MiK98vLaIs
+	 XdTCRCA86ZY++2JbcBUu3ufVxu+Lzbed6dWiINr+54ORspK4L3MyKg+ihC19tebi/W
+	 Uq+0Ld0ShNXVeEJgzjwH3LV/5VzXqQT23pbAd2XMK/whPMnaNH/2ZNuj3wACoRaQOh
+	 zuSp+a0x/1uQwTnjOhXQPdz1YC7sHLmFfEo45Io6eJvYKEzKnKWCgtp/CvllHKBJuJ
+	 n1BsugIZieX0ezP4aa8h9AN7u773S8wvcu9vikdnCjKjY02f8O1bgteL/WPRNK13dW
+	 GMx0ojJFX9J6g==
+Date: Tue, 9 May 2023 18:00:57 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: <davem@davemloft.net>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v1 0/2] introduce skb_frag_fill_page_desc()
+Message-ID: <20230509180057.1fc252c7@kernel.org>
+In-Reply-To: <20230509114337.21005-1-linyunsheng@huawei.com>
+References: <20230509114337.21005-1-linyunsheng@huawei.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <d0fdd0bb9a1855910217e6b658506cd21ac6edfa.camel@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-On 2023/5/9 18:07, Paolo Abeni wrote:
-> On Tue, 2023-05-09 at 17:26 +0800, Yunsheng Lin wrote:
->> Most users use __skb_frag_set_page()/skb_frag_off_set()/
->> skb_frag_size_set() to fill the page desc for a skb frag.
->>
->> Introduce skb_frag_fill_page_desc() to do that.
->>
->> net/bpf/test_run.c does not call skb_frag_off_set() to
->> set the offset, "copy_from_user(page_address(page), ...)"
->> suggest that it is assuming offset to be initialized as
->> zero, so call skb_frag_fill_page_desc() with offset being
->> zero for this case.
->>
->> Also, skb_frag_set_page() is not used anymore, so remove
->> it.
->>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+On Tue, 9 May 2023 19:43:35 +0800 Yunsheng Lin wrote:
+> Most users use __skb_frag_set_page()/skb_frag_off_set()/
+> skb_frag_size_set() to fill the page desc for a skb frag.
+> It does not make much sense to calling __skb_frag_set_page()
+> without calling skb_frag_off_set(), as the offset may depend
+> on whether the page is head page or tail page, so add
+> skb_frag_fill_page_desc() to fill the page desc for a skb
+> frag.
 > 
-> The recipients list is very long, but you forgot to include the most
-> relevant one: the netdev ML.
-
-Thanks for the remainding.
-
+> In the future, we can make sure the page in the frag is
+> head page of compound page or a base page, if not, we
+> may warn about that and convert the tail page to head
+> page and update the offset accordingly, if we see a warning
+> about that, we also fix the caller to fill the head page
+> in the frag. when the fixing is done, we may remove the
+> warning and converting.
 > 
-> Probably it's worth splitting this patch in a series with individual
-> patches touching the net core and the specific device drivers, to that
-> you could CC only the relevant recipients on each patch.
+> In this way, we can remove the compound_head() or use
+> page_ref_*() like the below case:
+> https://elixir.bootlin.com/linux/latest/source/net/core/page_pool.c#L881
+> https://elixir.bootlin.com/linux/latest/source/include/linux/skbuff.h#L3383
+> 
+> It may also convert net stack to use the folio easier.
+> 
+> RFC: remove a local variable as pointed out by Simon.
 
-I was debugging the send_mail stript to see why the netdev ML was not
-included, and ended up sending a few copy of this patchset forgeting
-to use '--dry-run' option.
+Looks like you posted this 3 times and different people replied with
+their acks to different versions :(
 
-As there is a few Reviewed-by tags from community now, splitting this patch
-might need to drop some Reviewed-by tags, which means some patch might
-need re-reviewing, I am not sure it is worth splitting considering the
-confusion caused by the above mistake.
-
-Please let me know what do you think.
-Thanks.
+Wait awhile, read:
+https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
+and repost with all the ack/review tags included.
 
