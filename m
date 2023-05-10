@@ -1,33 +1,33 @@
-Return-Path: <netdev+bounces-1606-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1607-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 45DBA6FE7CD
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:00:10 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 37EA26FE7D1
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:00:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2FEF81C20E86
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:00:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E681828162E
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:00:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3617F1E51D;
-	Wed, 10 May 2023 23:00:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5449B1E51E;
+	Wed, 10 May 2023 23:00:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29C46182AC
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 23:00:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AA9921CED
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 23:00:47 +0000 (UTC)
 Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64F9E64;
-	Wed, 10 May 2023 16:00:05 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A6610F5;
+	Wed, 10 May 2023 16:00:39 -0700 (PDT)
 Received: from local
 	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
 	 (Exim 4.96)
 	(envelope-from <daniel@makrotopia.org>)
-	id 1pwsmy-0004U1-1A;
-	Wed, 10 May 2023 23:00:04 +0000
-Date: Thu, 11 May 2023 00:58:10 +0200
+	id 1pwsnU-0004Uo-0h;
+	Wed, 10 May 2023 23:00:36 +0000
+Date: Thu, 11 May 2023 00:58:42 +0200
 From: Daniel Golle <daniel@makrotopia.org>
 To: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -38,9 +38,9 @@ To: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH net-next 4/8] net: phy: realtek: disable SGMII in-band AN for
- 2.5G PHYs
-Message-ID: <574c9703523af5643af0623144db3aa385635e84.1683756691.git.daniel@makrotopia.org>
+Subject: [PATCH net-next 5/8] net: phy: realtek: make sure paged read is
+ protected by mutex
+Message-ID: <d56ee0a8fce63beb3916caff3ebc38f8fc562c52.1683756691.git.daniel@makrotopia.org>
 References: <cover.1683756691.git.daniel@makrotopia.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -57,53 +57,38 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-MAC drivers don't use SGMII in-band autonegotiation unless told to do so
-in device tree using 'managed = "in-band-status"'. When using MDIO to
-access a PHY, in-band-status is unneeded as we have link-status via
-MDIO. Switch off SGMII in-band autonegotiation using magic values.
+As we cannot rely on phy_read_paged function before the PHY is
+identified, the paged read in rtlgen_supports_2_5gbps needs to be open
+coded as it is being called by the match_phy_device function, ie. before
+.read_page and .write_page have been populated.
 
-Reported-by: Chen Minqiang <ptpt52@gmail.com>
-Reported-by: Chukun Pan <amadeus@jmu.edu.cn>
-Reported-by: Yevhen Kolomeiko <jarvis2709@gmail.com>
-Tested-by: Yevhen Kolomeiko <jarvis2709@gmail.com>
+Make sure it is also protected by the MDIO bus mutex and use
+rtl821x_write_page instead of 3 individually locked MDIO bus operations.
+
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/phy/realtek.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/phy/realtek.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 0cf7846c9812..acadb6f0057b 100644
+index acadb6f0057b..e6a46c4d97b1 100644
 --- a/drivers/net/phy/realtek.c
 +++ b/drivers/net/phy/realtek.c
-@@ -666,7 +666,7 @@ static int rtl822x_get_features(struct phy_device *phydev)
- 
- static int rtl822x_config_aneg(struct phy_device *phydev)
+@@ -744,9 +744,11 @@ static bool rtlgen_supports_2_5gbps(struct phy_device *phydev)
  {
--	int ret = 0;
-+	int val, ret = 0;
+ 	int val;
  
- 	if (phydev->autoneg == AUTONEG_ENABLE) {
- 		u16 adv2500 = 0;
-@@ -681,6 +681,19 @@ static int rtl822x_config_aneg(struct phy_device *phydev)
- 			return ret;
- 	}
+-	phy_write(phydev, RTL821x_PAGE_SELECT, 0xa61);
+-	val = phy_read(phydev, 0x13);
+-	phy_write(phydev, RTL821x_PAGE_SELECT, 0);
++	phy_lock_mdio_bus(phydev);
++	rtl821x_write_page(phydev, 0xa61);
++	val = __phy_read(phydev, 0x13);
++	rtl821x_write_page(phydev, 0);
++	phy_unlock_mdio_bus(phydev);
  
-+	/* MACs using phylink assume SGMII in-band status is not used.
-+	 * Keep things as they are for MACs not using phylink such as
-+	 * RealTek PCIe chips which come with built-in PHYs
-+	 */
-+	if (phydev->phylink) {
-+		/* Disable SGMII AN */
-+		phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x7588, 0x2);
-+		phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x7589, 0x71d0);
-+		phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x7587, 0x3);
-+		phy_read_mmd_poll_timeout(phydev, RTL8221B_MMD_SERDES_CTRL, 0x7587,
-+					  val, !(val & BIT(0)), 500, 100000, false);
-+	}
-+
- 	return __genphy_config_aneg(phydev, ret);
+ 	return val >= 0 && val & RTL_SUPPORTS_2500FULL;
  }
- 
 -- 
 2.40.0
 
