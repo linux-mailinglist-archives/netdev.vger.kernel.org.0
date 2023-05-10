@@ -1,160 +1,376 @@
-Return-Path: <netdev+bounces-1522-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1524-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0E0856FE17C
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 17:23:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id ED9046FE185
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 17:24:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C0DA028152C
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 15:23:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B9B00280E27
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 15:24:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C03441641E;
-	Wed, 10 May 2023 15:23:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8CE7716423;
+	Wed, 10 May 2023 15:24:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B191D125B8
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 15:23:23 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E0C2D4A
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:23:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683732200;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iQz0FmqJ0fhhQVp092YrUUlwTUhSHWlf9UDAQ/T7kzA=;
-	b=ik8ESORAgyBVZDpyLxhJY3PK7uCOvT0siu1pWv7LUwXSO0jgfSexOWLkENCvkWMl4NFUFg
-	pu3YVAERnJnsSjvt02odRlUvUcCE9ChhZd+Fd6cxqZ9LS+SGpmVaq2FlgEddwg/PxiyJ3N
-	RE+tA7IzKn/dcwNYsJ+PAvHf2UroflE=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-172-MyhEWhsvPqey0BjEqUwO_Q-1; Wed, 10 May 2023 11:23:19 -0400
-X-MC-Unique: MyhEWhsvPqey0BjEqUwO_Q-1
-Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-30640be4fd0so2632457f8f.1
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:23:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683732198; x=1686324198;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iQz0FmqJ0fhhQVp092YrUUlwTUhSHWlf9UDAQ/T7kzA=;
-        b=IafMa8lUKbtkLCxlggP3rm71p7qKGmHAcVC6tZiWJkb4wbK7HKNEHm079R+knaxgME
-         i3sQPzm4h0BiALCFASqP9BSrU4mhpAgyA3njuVvujzF9OXeUyMgHrtFCkUHAIBD445ma
-         fAo6P6FUgj9MV5h/2UHUMIUhkABO+ye1hvJJGwXo7SdfczVjifJjj69ecOBaUaWKAEt+
-         cUSwdZDBlL6keycE5ZIfyre6zBMd4frIukR80L0ZCExIxZ3fWl4+LWCryY3DV9b5N/PH
-         rwBcTQTaLVAioEmI7LkyF8lD4NQ9BFw8BexOYso5jNPhWyW4c1KT6Vn4MB/CFMvgm/pd
-         ye3w==
-X-Gm-Message-State: AC+VfDw98JF5w9gvodJnsRhBXvqLFsBCero5eeZuR7utRQuaNY6qwsim
-	ulA6cVDzumBHMLYq55dW6wW0Na5ql1VwJoCBhulpJb2JjXHW3+ysprbQOARZRe0JMg4mZX2Yh/f
-	xgNfAS/xozJylIFlU
-X-Received: by 2002:a5d:668c:0:b0:2fe:2775:6067 with SMTP id l12-20020a5d668c000000b002fe27756067mr13070915wru.28.1683732198397;
-        Wed, 10 May 2023 08:23:18 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5OVnaJRiAA0cQBb92KuhDH69k4SVMEoaKebUn/GNPF4wmy0jKK0SNfVankDjgdH6JTuuX5bw==
-X-Received: by 2002:a5d:668c:0:b0:2fe:2775:6067 with SMTP id l12-20020a5d668c000000b002fe27756067mr13070898wru.28.1683732198056;
-        Wed, 10 May 2023 08:23:18 -0700 (PDT)
-Received: from sgarzare-redhat ([217.171.72.110])
-        by smtp.gmail.com with ESMTPSA id c17-20020adffb11000000b003075428aad5sm17481409wrr.29.2023.05.10.08.23.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 May 2023 08:23:17 -0700 (PDT)
-Date: Wed, 10 May 2023 17:23:14 +0200
-From: Stefano Garzarella <sgarzare@redhat.com>
-To: Zhuang Shengen <zhuangshengen@huawei.com>
-Cc: virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, arei.gonglei@huawei.com, 
-	longpeng2@huawei.com, jianjay.zhou@huawei.com
-Subject: Re: [PATCH] vsock: bugfix port residue in server
-Message-ID: <ftuh7vhoxdxbymg6u3wlkfhlfoufupeqampqxc2ktqrpxndow3@dkpufdnuwlln>
-References: <20230510142502.2293109-1-zhuangshengen@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BCF36AA8
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 15:24:42 +0000 (UTC)
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.198])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 242D12703
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:24:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=2yzgQ
+	4p7hv35QWMBOwaEEOs6ds9jnhTyzfXBp3Q6lNc=; b=ek1G7QREdWJW2kb6HLA2b
+	2UPHmhr9DcJLs51e+CvgIIPxUVLnf+W1qhJfzDkdVDilzm93471s27aKk1mQgsUu
+	6AjfUYy0XgHiNnXxLX56gnkch7W7E9F9uUcvreuU3i1y2UXh6TkbiinpB8j6KqGJ
+	c1W3IIo0vwh8RJX2GhtTDc=
+Received: from localhost.localdomain (unknown [113.200.76.118])
+	by zwqz-smtp-mta-g3-1 (Coremail) with SMTP id _____wDHLpcst1tky6ABBg--.9673S2;
+	Wed, 10 May 2023 23:24:29 +0800 (CST)
+From: zhaoshuang <izhaoshuang@163.com>
+To: netdev@vger.kernel.org
+Subject: [PATCH] iproute2: optimize code and fix some mem-leak risk
+Date: Wed, 10 May 2023 23:24:26 +0800
+Message-Id: <20230510152426.23612-1-izhaoshuang@163.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20230510133616.7717-1-izhaoshuang@163.com>
+References: <20230510133616.7717-1-izhaoshuang@163.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230510142502.2293109-1-zhuangshengen@huawei.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+X-CM-TRANSID:_____wDHLpcst1tky6ABBg--.9673S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW3XF4kWw4DurW7XryrCry3Arb_yoWfWF1rpw
+	sIgas8Xrs7trWUAF1fZa18uFn8XwsIq3W7urZrC3y8Ar47Xr1kZw1Ika4IgF98CFWrG3yF
+	vF4qy3W5CrWDCrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07U24iUUUUUU=
+X-Originating-IP: [113.200.76.118]
+X-CM-SenderInfo: 5l2kt0pvkxt0rj6rljoofrz/1tbiRRJruGDuzwNk0wAAsx
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi,
-thanks for the patch, the change LGTM, but I have the following
-suggestions:
+From: zhaoshuang <zhaoshuang@uniontech.com>
 
-Please avoid "bugfix" in the subject, "fix" should be enough:
-https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html#describe-your-changes
+Signed-off-by: zhaoshuang <zhaoshuang@uniontech.com>
+Signed-off-by: zhaoshuang <izhaoshuang@163.com>
+---
+ bridge/mdb.c      |  4 ++++
+ devlink/devlink.c | 21 +++++++++------------
+ ip/ipaddrlabel.c  |  1 +
+ ip/ipfou.c        |  1 +
+ ip/ipila.c        |  1 +
+ ip/ipnetconf.c    |  1 +
+ ip/ipnexthop.c    |  4 ++++
+ ip/iproute.c      |  6 ++++++
+ ip/iprule.c       |  1 +
+ ip/iptuntap.c     |  1 +
+ ip/tunnel.c       |  2 ++
+ tc/tc_class.c     |  1 +
+ tc/tc_filter.c    |  1 +
+ tc/tc_qdisc.c     |  1 +
+ 14 files changed, 34 insertions(+), 12 deletions(-)
 
-Anyway, I suggest to change the subject in
-"vsock: avoid to close connected socket after the timeout"
-
-On Wed, May 10, 2023 at 10:25:02PM +0800, Zhuang Shengen wrote:
->When client and server establish a connection through vsock,
->the client send a request to the server to initiate the connection,
->then start a timer to wait for the server's response. When the server's
->RESPONSE message arrives, the timer also times out and exits. The
->server's RESPONSE message is processed first, and the connection is
->established. However, the client's timer also times out, the original
->processing logic of the client is to directly set the state of this vsock
->to CLOSE and return ETIMEDOUT, User will release the port. It will not
-
-What to you mean with "User" here?
-
->notify the server when the port is released, causing the server port remain
->
-
-Can we remove this blank line?
-
->when client's vsock_connect timeout，it should check sk state is
-
-The remote peer can't trust the other peer, indeed it will receive an
-error after sending the first message and it will remove the connection,
-right?
-
->ESTABLISHED or not. if sk state is ESTABLISHED, it means the connection
->is established, the client should not set the sk state to CLOSE
->
->Note: I encountered this issue on kernel-4.18, which can be fixed by
->this patch. Then I checked the latest code in the community
->and found similar issue.
->
-
-In order to backport it to the stable kernels, we should add a Fixes tag:
-https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html#describe-your-changes
-
-Thanks,
-Stefano
-
->Signed-off-by: Zhuang Shengen <zhuangshengen@huawei.com>
->---
-> net/vmw_vsock/af_vsock.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index 413407bb646c..efb8a0937a13 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -1462,7 +1462,7 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
-> 			vsock_transport_cancel_pkt(vsk);
-> 			vsock_remove_connected(vsk);
-> 			goto out_wait;
->-		} else if (timeout == 0) {
->+		} else if ((sk->sk_state != TCP_ESTABLISHED) && (timeout == 0)) {
-> 			err = -ETIMEDOUT;
-> 			sk->sk_state = TCP_CLOSE;
-> 			sock->state = SS_UNCONNECTED;
->-- 
->2.27.0
->
+diff --git a/bridge/mdb.c b/bridge/mdb.c
+index dcc08235..fbb4f704 100644
+--- a/bridge/mdb.c
++++ b/bridge/mdb.c
+@@ -466,12 +466,14 @@ static int mdb_show(int argc, char **argv)
+ 	/* get mdb entries */
+ 	if (rtnl_mdbdump_req(&rth, PF_BRIDGE) < 0) {
+ 		perror("Cannot send dump request");
++		delete_json_obj();
+ 		return -1;
+ 	}
+ 
+ 	open_json_array(PRINT_JSON, "mdb");
+ 	if (rtnl_dump_filter(&rth, print_mdbs, stdout) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return -1;
+ 	}
+ 	close_json_array(PRINT_JSON, NULL);
+@@ -479,12 +481,14 @@ static int mdb_show(int argc, char **argv)
+ 	/* get router ports */
+ 	if (rtnl_mdbdump_req(&rth, PF_BRIDGE) < 0) {
+ 		perror("Cannot send dump request");
++		delete_json_obj();
+ 		return -1;
+ 	}
+ 
+ 	open_json_object("router");
+ 	if (rtnl_dump_filter(&rth, print_rtrs, stdout) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return -1;
+ 	}
+ 	close_json_object();
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 019ffc23..26513142 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -205,6 +205,14 @@ struct ifname_map {
+ 	char *ifname;
+ };
+ 
++static void ifname_map_free(struct ifname_map *ifname_map)
++{
++	free(ifname_map->ifname);
++	free(ifname_map->dev_name);
++	free(ifname_map->bus_name);
++	free(ifname_map);
++}
++
+ static struct ifname_map *ifname_map_alloc(const char *bus_name,
+ 					   const char *dev_name,
+ 					   uint32_t port_index,
+@@ -221,23 +229,12 @@ static struct ifname_map *ifname_map_alloc(const char *bus_name,
+ 	ifname_map->ifname = strdup(ifname);
+ 	if (!ifname_map->bus_name || !ifname_map->dev_name ||
+ 	    !ifname_map->ifname) {
+-		free(ifname_map->ifname);
+-		free(ifname_map->dev_name);
+-		free(ifname_map->bus_name);
+-		free(ifname_map);
++		ifname_map_free(ifname_map);
+ 		return NULL;
+ 	}
+ 	return ifname_map;
+ }
+ 
+-static void ifname_map_free(struct ifname_map *ifname_map)
+-{
+-	free(ifname_map->ifname);
+-	free(ifname_map->dev_name);
+-	free(ifname_map->bus_name);
+-	free(ifname_map);
+-}
+-
+ static int ifname_map_update(struct ifname_map *ifname_map, const char *ifname)
+ {
+ 	char *new_ifname;
+diff --git a/ip/ipaddrlabel.c b/ip/ipaddrlabel.c
+index 46f68c41..b045827a 100644
+--- a/ip/ipaddrlabel.c
++++ b/ip/ipaddrlabel.c
+@@ -113,6 +113,7 @@ static int ipaddrlabel_list(int argc, char **argv)
+ 	new_json_obj(json);
+ 	if (rtnl_dump_filter(&rth, print_addrlabel, stdout) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return 1;
+ 	}
+ 	delete_json_obj();
+diff --git a/ip/ipfou.c b/ip/ipfou.c
+index ed99a548..760cfee2 100644
+--- a/ip/ipfou.c
++++ b/ip/ipfou.c
+@@ -318,6 +318,7 @@ static int do_show(int argc, char **argv)
+ 	new_json_obj(json);
+ 	if (rtnl_dump_filter(&genl_rth, print_fou_mapping, stdout) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return 1;
+ 	}
+ 	delete_json_obj();
+diff --git a/ip/ipila.c b/ip/ipila.c
+index 335d15f6..4f6d578f 100644
+--- a/ip/ipila.c
++++ b/ip/ipila.c
+@@ -150,6 +150,7 @@ static int do_list(int argc, char **argv)
+ 	new_json_obj(json);
+ 	if (rtnl_dump_filter(&genl_rth, print_ila_mapping, stdout) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return 1;
+ 	}
+ 	delete_json_obj();
+diff --git a/ip/ipnetconf.c b/ip/ipnetconf.c
+index 7ddaefb4..9ae6c45e 100644
+--- a/ip/ipnetconf.c
++++ b/ip/ipnetconf.c
+@@ -209,6 +209,7 @@ dump:
+ 			 */
+ 			if (errno == EOPNOTSUPP &&
+ 			    filter.family == AF_UNSPEC) {
++				delete_json_obj();
+ 				filter.family = AF_INET;
+ 				goto dump;
+ 			}
+diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
+index 9f16b809..abbf4d45 100644
+--- a/ip/ipnexthop.c
++++ b/ip/ipnexthop.c
+@@ -1021,6 +1021,7 @@ static int ipnh_get_id(__u32 id)
+ 	new_json_obj(json);
+ 
+ 	if (print_nexthop_nocache(answer, (void *)stdout) < 0) {
++		delete_json_obj();
+ 		free(answer);
+ 		return -1;
+ 	}
+@@ -1106,6 +1107,7 @@ static int ipnh_list_flush(int argc, char **argv, int action)
+ 	new_json_obj(json);
+ 
+ 	if (rtnl_dump_filter(&rth, print_nexthop_nocache, stdout) < 0) {
++		delete_json_obj();
+ 		fprintf(stderr, "Dump terminated\n");
+ 		return -2;
+ 	}
+@@ -1181,6 +1183,7 @@ static int ipnh_bucket_list(int argc, char **argv)
+ 	new_json_obj(json);
+ 
+ 	if (rtnl_dump_filter(&rth, print_nexthop_bucket, stdout) < 0) {
++		delete_json_obj();
+ 		fprintf(stderr, "Dump terminated\n");
+ 		return -2;
+ 	}
+@@ -1221,6 +1224,7 @@ static int ipnh_bucket_get_id(__u32 id, __u16 bucket_index)
+ 	new_json_obj(json);
+ 
+ 	if (print_nexthop_bucket(answer, (void *)stdout) < 0) {
++		delete_json_obj();
+ 		free(answer);
+ 		return -1;
+ 	}
+diff --git a/ip/iproute.c b/ip/iproute.c
+index a7cd9543..7909c4a2 100644
+--- a/ip/iproute.c
++++ b/ip/iproute.c
+@@ -1977,6 +1977,7 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
+ 	if (rtnl_dump_filter_errhndlr(&rth, filter_fn, stdout,
+ 				      save_route_errhndlr, NULL) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return -2;
+ 	}
+ 
+@@ -2172,18 +2173,21 @@ static int iproute_get(int argc, char **argv)
+ 
+ 		if (print_route(answer, (void *)stdout) < 0) {
+ 			fprintf(stderr, "An error :-)\n");
++			delete_json_obj();
+ 			free(answer);
+ 			return -1;
+ 		}
+ 
+ 		if (answer->nlmsg_type != RTM_NEWROUTE) {
+ 			fprintf(stderr, "Not a route?\n");
++			delete_json_obj();
+ 			free(answer);
+ 			return -1;
+ 		}
+ 		len -= NLMSG_LENGTH(sizeof(*r));
+ 		if (len < 0) {
+ 			fprintf(stderr, "Wrong len %d\n", len);
++			delete_json_obj();
+ 			free(answer);
+ 			return -1;
+ 		}
+@@ -2195,6 +2199,7 @@ static int iproute_get(int argc, char **argv)
+ 			r->rtm_src_len = 8*RTA_PAYLOAD(tb[RTA_PREFSRC]);
+ 		} else if (!tb[RTA_SRC]) {
+ 			fprintf(stderr, "Failed to connect the route\n");
++			delete_json_obj();
+ 			free(answer);
+ 			return -1;
+ 		}
+@@ -2217,6 +2222,7 @@ static int iproute_get(int argc, char **argv)
+ 
+ 	if (print_route(answer, (void *)stdout) < 0) {
+ 		fprintf(stderr, "An error :-)\n");
++		delete_json_obj();
+ 		free(answer);
+ 		return -1;
+ 	}
+diff --git a/ip/iprule.c b/ip/iprule.c
+index 458607ef..e503e5c6 100644
+--- a/ip/iprule.c
++++ b/ip/iprule.c
+@@ -714,6 +714,7 @@ static int iprule_list_flush_or_save(int argc, char **argv, int action)
+ 	new_json_obj(json);
+ 	if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return 1;
+ 	}
+ 	delete_json_obj();
+diff --git a/ip/iptuntap.c b/ip/iptuntap.c
+index ab7d5d87..552599e9 100644
+--- a/ip/iptuntap.c
++++ b/ip/iptuntap.c
+@@ -441,6 +441,7 @@ static int do_show(int argc, char **argv)
+ 
+ 	if (rtnl_dump_filter(&rth, print_tuntap, NULL) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return -1;
+ 	}
+ 
+diff --git a/ip/tunnel.c b/ip/tunnel.c
+index 75cb0b51..c5c7a31f 100644
+--- a/ip/tunnel.c
++++ b/ip/tunnel.c
+@@ -419,11 +419,13 @@ int do_tunnels_list(struct tnl_print_nlmsg_info *info)
+ 	new_json_obj(json);
+ 	if (rtnl_linkdump_req(&rth, preferred_family) < 0) {
+ 		perror("Cannot send dump request\n");
++		delete_json_obj();
+ 		return -1;
+ 	}
+ 
+ 	if (rtnl_dump_filter(&rth, print_nlmsg_tunnel, info) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return -1;
+ 	}
+ 	delete_json_obj();
+diff --git a/tc/tc_class.c b/tc/tc_class.c
+index 096fa2ec..65776180 100644
+--- a/tc/tc_class.c
++++ b/tc/tc_class.c
+@@ -453,6 +453,7 @@ static int tc_class_list(int argc, char **argv)
+ 	new_json_obj(json);
+ 	if (rtnl_dump_filter(&rth, print_class, stdout) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return 1;
+ 	}
+ 	delete_json_obj();
+diff --git a/tc/tc_filter.c b/tc/tc_filter.c
+index 700a09f6..12a21433 100644
+--- a/tc/tc_filter.c
++++ b/tc/tc_filter.c
+@@ -734,6 +734,7 @@ static int tc_filter_list(int cmd, int argc, char **argv)
+ 	new_json_obj(json);
+ 	if (rtnl_dump_filter(&rth, print_filter, stdout) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return 1;
+ 	}
+ 	delete_json_obj();
+diff --git a/tc/tc_qdisc.c b/tc/tc_qdisc.c
+index 92ceb4c2..b137517b 100644
+--- a/tc/tc_qdisc.c
++++ b/tc/tc_qdisc.c
+@@ -433,6 +433,7 @@ static int tc_qdisc_list(int argc, char **argv)
+ 	new_json_obj(json);
+ 	if (rtnl_dump_filter(&rth, print_qdisc, stdout) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
++		delete_json_obj();
+ 		return 1;
+ 	}
+ 	delete_json_obj();
+-- 
+2.20.1
 
 
