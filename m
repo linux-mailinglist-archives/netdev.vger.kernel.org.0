@@ -1,88 +1,117 @@
-Return-Path: <netdev+bounces-1304-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1305-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9C28C6FD3D3
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 04:27:06 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id F07FB6FD3DB
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 04:29:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CAB0A281316
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 02:27:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B25841C20C8C
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 02:29:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7E9C398;
-	Wed, 10 May 2023 02:27:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8AA3D398;
+	Wed, 10 May 2023 02:29:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC14D362
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 02:27:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5CDFC433D2;
-	Wed, 10 May 2023 02:26:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683685620;
-	bh=cN0Zpp3nHcYA73LBWkAJJmQrp5R/ZueRrOEoHH93crM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=AH4HBOXQ4c+QTwsy5Y4zsYIv19Q+xSPT0PKhTBTMtf3h3PPP9aq17NdyydL0rWU26
-	 HF/BFdbhbayZ3XUNDZWfYAwCVDBgYRP2tc+6UUUz0VRs1C15TSRIK6d9D/7eA9qEU8
-	 6rR0NdvH9z49wQa315z/xKDYkctlC1bP0kPdTUcnMF7arKdknTsrnfID+sx/JxlAwT
-	 cnIB+8puquAWZTRerX//0yJuI8yji27y3DfyiMoA8alAER76soB4PqUVs/lZdt/dDd
-	 uoyFwQyO/UqZaESqXRJaF1e9TJEhzdoT+OGnj1H3FuX30Bhp3kohpxQjuvFCrrpJsa
-	 72KQaPjUp0VGA==
-Date: Tue, 9 May 2023 19:26:58 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Abel Vesa <abel.vesa@linaro.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux Next
- Mailing List <linux-next@vger.kernel.org>, David Miller
- <davem@davemloft.net>, Networking <netdev@vger.kernel.org>, Anirudh
- Venkataramanan <anirudh.venkataramanan@intel.com>, Jeff Kirsher
- <jeffrey.t.kirsher@intel.com>, Bjorn Andersson <andersson@kernel.org>
-Subject: Re: linux-next: build failure after merge of the mmc tree
-Message-ID: <20230509192658.56cfb27b@kernel.org>
-In-Reply-To: <20230510111833.17810885@canb.auug.org.au>
-References: <20230510111833.17810885@canb.auug.org.au>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E92C362
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 02:29:21 +0000 (UTC)
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783CCE72;
+	Tue,  9 May 2023 19:29:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=T8FKbCPqrrTsC9F/hyGOUQ1c7+51ALcmnXApedywojQ=; b=2PjAr0P87iCl1VEqIl1RGRON2B
+	3msuumEG2YiMub93rkzKVrCqsTxIUJhg/DUuvxNYvaqsdY7x/Uah9uT8OecfDHeQ8Wd9swcIg4JqW
+	tWrMpG3QS1PwSw+Cqc05rUpwxdXYMeUCRvTHLH5FwQ65nh56HKsutbJBq7F3ISIpSMj80FZN7xNC5
+	M1PlyPACWkJb8iKP3+R4IxqNXojJ1/I1vy2umF8mAu8h3uBRp7Yl2lUlUp+0j/HNOeNouIcI1B+G6
+	hx7MLdPKWYUPzS955mxzlFfcfAGtc/V/OPZeLZ0p7pFdr/Z82nf3+5a6+bz5etxsrUhV6m5CeAiqb
+	Yibqc0LQ==;
+Received: from [2601:1c2:980:9ec0::2764] (helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1pwZZr-004m54-2Y;
+	Wed, 10 May 2023 02:29:15 +0000
+From: Randy Dunlap <rdunlap@infradead.org>
+To: netdev@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	linux-doc@vger.kernel.org,
+	Martin Schiller <ms@dev.tdt.de>,
+	linux-x25@vger.kernel.org
+Subject: [PATCH] docs: networking: fix x25-iface.rst heading & index order
+Date: Tue,  9 May 2023 19:29:14 -0700
+Message-Id: <20230510022914.2230-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, 10 May 2023 11:18:33 +1000 Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the mmc tree, today's linux-next build (x86_64 allmodconfig)
-> failed like this:
-> 
-> error: the following would cause module name conflict:
->   drivers/soc/qcom/ice.ko
->   drivers/net/ethernet/intel/ice/ice.ko
-> 
-> Exposed by commit
-> 
->   31dd43d5032a ("mmc: sdhci-msm: Switch to the new ICE API")
-> 
-> I have used the mmc tree from next-20230509 for today.
+Fix the chapter heading for "X.25 Device Driver Interface" so that it
+does not contain a trailing '-' character, which makes Sphinx
+omit this heading from the contents.
 
-Looks like the driver itself came from:
+Reverse the order of the x25.rst and x25-iface.rst files in the index
+so that the project introduction (x25.rst) comes first.
 
-commit 2afbf43a4aec6e31dac7835e65d52c867f2be400
-Author: Abel Vesa <abel.vesa@linaro.org>
-Date:   Fri Apr 7 13:50:26 2023 +0300
+Fixes: 883780af7209 ("docs: networking: convert x25-iface.txt to ReST")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: linux-doc@vger.kernel.org
+Cc: Martin Schiller <ms@dev.tdt.de>
+Cc: linux-x25@vger.kernel.org
+---
+ Documentation/networking/index.rst     |    2 +-
+ Documentation/networking/x25-iface.rst |    3 +--
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
-    soc: qcom: Make the Qualcomm UFS/SDCC ICE a dedicated driver
-
-? The Intel Ethernet driver is 5 years old:
-
-commit 837f08fdecbe4b2ffc7725624342e73b886665a8
-Author: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Date:   Tue Mar 20 07:58:05 2018 -0700
-
-    ice: Add basic driver framework for Intel(R) E800 Series
-
-so AFAIU the MMC driver needs a new name?
+diff -- a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+--- a/Documentation/networking/index.rst
++++ b/Documentation/networking/index.rst
+@@ -116,8 +116,8 @@ Contents:
+    udplite
+    vrf
+    vxlan
+-   x25-iface
+    x25
++   x25-iface
+    xfrm_device
+    xfrm_proc
+    xfrm_sync
+diff -- a/Documentation/networking/x25-iface.rst b/Documentation/networking/x25-iface.rst
+--- a/Documentation/networking/x25-iface.rst
++++ b/Documentation/networking/x25-iface.rst
+@@ -1,8 +1,7 @@
+ .. SPDX-License-Identifier: GPL-2.0
+ 
+-============================-
+ X.25 Device Driver Interface
+-============================-
++============================
+ 
+ Version 1.1
+ 
 
