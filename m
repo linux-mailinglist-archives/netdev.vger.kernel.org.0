@@ -1,104 +1,290 @@
-Return-Path: <netdev+bounces-1485-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1496-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id C45616FDF78
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:02:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C2CEA6FE03E
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:30:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C320C2814BF
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:02:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 96F6F280FCB
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:29:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A605B12B9D;
-	Wed, 10 May 2023 14:02:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D20A14AB2;
+	Wed, 10 May 2023 14:29:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 993FA20B42
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:02:45 +0000 (UTC)
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E931737;
-	Wed, 10 May 2023 07:02:44 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id af79cd13be357-7575ff76964so232992285a.2;
-        Wed, 10 May 2023 07:02:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683727363; x=1686319363;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8KK7toW0GxrS+3AbBvB0r3JQASW0mB3w9AKkm07q+qQ=;
-        b=ExvNcGTXoImNu79RTZOLFIK1ZM6xm75ugFk+pwpV9CLtQuymEdjH6yv0PU1DEREBkw
-         1ENY6CqIi86McUVdqzLbiymFVHePdNsKPlW6FTROl+eILgfA3crTqQVWYX+nvWzrQXO6
-         Y+HO9Gjp8tdvDgqPh2ZYVKEOGt07oE2zP5jhriFiSuJRDki5QkRj2HF30FeS9ivK8yPu
-         px6Ylgzmj4YGzt6/FGqC/BHUbmJE0dS/UziZHXAnlvrZCeggmy1a6M1XKMdj/HB096K5
-         wzxxGWDR007MIeXCTAYmF+8TfvwhJ2dG+ejaL1XPY5Z+ec5gu1JB99KuI/cJQ/qrvBHQ
-         6pjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683727363; x=1686319363;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8KK7toW0GxrS+3AbBvB0r3JQASW0mB3w9AKkm07q+qQ=;
-        b=JpJCA0VXsfVJjZ1WDiL0N5sO0Xz3GzjLpXU225Rs3GkhrXnBoK99M9sGQ4X4nnc8Vk
-         eqcN+Y7OA5nVBKeT1tcYlyhPUeozDKregf0luRhx9rwX0+1rZiXBkN0AeQZHy/UtJmDX
-         cyyyp2nYB/N4a9wCsDt0soQuo9O1LJvfGb51HLaKq8GwAESLqorfEkvrTrvoq3KjPKYH
-         5yPEHSveAQraT3dfrUC2WewJcJKykfDUUQQpPL6vrua5GLf36gNp8jugXG0qNwNojm+A
-         QyN6+bjtFhbp83URiy/paVM1j8aGP49tsqRpSqJlSFH/eVJBnVzYgHmFbYubOe9h11yg
-         IKrA==
-X-Gm-Message-State: AC+VfDzse7VmLKUON/fmOK9UH/AsqK1iZOMi2ow/eYUJ21zR3iRybRQq
-	PXA2B4jeXYReF7NGJz7PmOKFr00OedR61WWro8IhNjCYRJjQ9w==
-X-Google-Smtp-Source: ACHHUZ4UWmVM2eDvl5HZzRywh18VPeYpaacqbJLeNtVFxF90Kph9at1vsO+iHul9QXWhtnzVBXUjKz+zPp9ZkbSKzVY=
-X-Received: by 2002:a05:6214:c6a:b0:619:a7e3:99e2 with SMTP id
- t10-20020a0562140c6a00b00619a7e399e2mr20125446qvj.17.1683727363525; Wed, 10
- May 2023 07:02:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EF7912B74
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:29:57 +0000 (UTC)
+X-Greylist: delayed 1862 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 May 2023 07:29:55 PDT
+Received: from bosmailout06.eigbox.net (bosmailout06.eigbox.net [66.96.188.6])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87461A7
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:29:55 -0700 (PDT)
+Received: from bosmailscan05.eigbox.net ([10.20.15.5])
+	by bosmailout06.eigbox.net with esmtp (Exim)
+	id 1pwkLD-0005gp-9b
+	for netdev@vger.kernel.org; Wed, 10 May 2023 09:58:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=boscustweb2406.eigbox.net; s=dkim; h=Sender:Date:Content-type:MIME-Version:
+	From:Subject:To:Message-Id:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=cQWOKmoZIdiShhyWYmoys77xDaX7An/CU+vXO8mJaW0=; b=R6ZqSSDQY+sdMcOOgqmoQJMDNa
+	7Dso4ziAMQfiwnpUKfS5dUtfPdJEGTRqA9opUJZZN3KsGDKYp4MnyK5s2CWhFbuyOhjzzaNIpJPJG
+	nyzHoRMvRJVAu9TpU4pnloIdot+URhs8dtfF/Sjwo9TBhoCpjuk3v0C4piJNT8SU9BPU74Xmh/Spw
+	S2hKTpmpPMAQA8UimgTggS5gCpZd5wc5TW2M9c6viM/kg4SQ2GToMEwdUDUJeFIzRSkkWBF+IAVIm
+	Uu9r6LKnUDauhTsthEHsSlkXbUmnM/42QXNprLri3CQsdLQ/9UlLP5RPL9tcIJqIi+c2zaRS7oPgI
+	fyPPB4bA==;
+Received: from [10.115.3.32] (helo=bosimpout12)
+	by bosmailscan05.eigbox.net with esmtp (Exim)
+	id 1pwkLC-0001K6-LP
+	for netdev@vger.kernel.org; Wed, 10 May 2023 09:58:50 -0400
+Received: from boscustweb2405.eigbox.net ([10.20.112.174])
+	by bosimpout12 with 
+	id v1yn290173loz5m011yqpp; Wed, 10 May 2023 09:58:50 -0400
+X-EN-SP-DIR: OUT
+X-EN-SP-SQ: 1
+Received: from dom.dowanilamalicom by boscustweb2405.eigbox.net with local (Exim)
+	id 1pwkBI-0000ZJ-Ol
+	for netdev@vger.kernel.org; Wed, 10 May 2023 09:48:36 -0400
+X-EN-Info: U=dom.dowanilamalicom P=/ap.php
+X-EN-CGIUser: dom.dowanilamalicom
+X-EN-CGIPath: /ap.php
+X-EN-OrigIP: 105.154.227.95
+Message-Id: <1683726516-182-dom.dowanilamalicom@boscustweb2405.eigbox.net>
+To: netdev@vger.kernel.org
+Subject: =?UTF-8?B?2KfZhNit2LLZhdipINin2YTYrtin2LXYqSDYqNmDINiq2YbYqti42LEg2KfZhNiq2LPZhNmK2YUu?=
+X-PHP-Originating-Script: 10812606:ap.php
+From: =?UTF-8?B?QXJhbWV4IFN1cHBvcnQ=?= <no-reply@boscustweb2406.eigbox.net>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <1683718725-14869-1-git-send-email-quic_rohiagar@quicinc.com> <c0c3db1d-e83c-3610-ed61-db84cd88b569@quicinc.com>
-In-Reply-To: <c0c3db1d-e83c-3610-ed61-db84cd88b569@quicinc.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 10 May 2023 17:02:07 +0300
-Message-ID: <CAHp75Ved53idRgpCDb2c=Bq9HXaE+sOWpY256rSRz-6bfRYnqA@mail.gmail.com>
-Subject: Re: [PATCH v6 0/4] Add pinctrl support for SDX75
-To: Rohit Agarwal <quic_rohiagar@quicinc.com>
-Cc: agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org, 
-	linus.walleij@linaro.org, robh+dt@kernel.org, 
-	krzysztof.kozlowski+dt@linaro.org, richardcochran@gmail.com, 
-	manivannan.sadhasivam@linaro.org, Mukesh Ojha <quic_mojha@quicinc.com>, 
-	linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0;
+Content-type: multipart/mixed; boundary="--CHKzulsY9F"
+X-EN-Timestamp: Wed, 10 May 2023 09:48:36 -0400
+Date: Wed, 10 May 2023 09:48:36 -0400
+Sender:  Aramex Support <no-reply@boscustweb2406.eigbox.net>
+X-Spam-Status: No, score=3.4 required=5.0 tests=BAYES_50,BOGUS_MIME_VERSION,
+	DKIM_INVALID,DKIM_SIGNED,FROM_EXCESS_BASE64,HTML_FONT_LOW_CONTRAST,
+	HTML_MESSAGE,RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 10, 2023 at 3:16=E2=80=AFPM Rohit Agarwal <quic_rohiagar@quicin=
-c.com> wrote:
-> On 5/10/2023 5:08 PM, Rohit Agarwal wrote:
+----CHKzulsY9F
+Content-type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-> Patch 2/4 didnt go through in the mailing list linux-arm-msm because of
-> char length.
-> BOUNCE linux-arm-msm@vger.kernel.org: Message too long (>100000 chars)
->
-> Here is the link for it.
-> https://lore.kernel.org/all/1683718725-14869-3-git-send-email-quic_rohiag=
-ar@quicinc.com/
-> Please suggest if this patch needs to be broken down.
 
-Since lore.kernel.org has it, I think nothing additional needs to be done.
-`b4` tool will take it from the archive.
+<table valign="top" width="600" cellspacing="0" cellpadding="0" border="0" align="center">
+    <tbody><tr>
+        <td width="600">
+            <div><div><div></div>
+</div><div><div><div>
 
---=20
-With Best Regards,
-Andy Shevchenko
+
+<table style="background-color:#f1f1f1" width="100%" cellspacing="0" cellpadding="0" border="0">
+    <tbody><tr>
+        <td style="text-align:center;font-size:11px;color:#189aca;font-family:sans-serif;padding:10px 0">
+              </td>
+    </tr>
+</tbody></table>
+
+<table style="background-color:#dc291e" width="100%" cellspacing="0" cellpadding="0" border="0">
+    <tbody><tr>
+        <td style="padding:30px 15px">
+            <table style="background-color:#dc291e" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tbody><tr>
+                  <td width="180">
+
+                    <a href="#m_5271972809205713416_">
+                        <img style="display:block;border:0;width: 180px;" src="https://i.ibb.co/qgnw3SP/aram.png" alt="Logo Alt text">
+                    </a>
+                  </td>
+                    <td style="text-align: left;" width="200">
+                      <a href="" style="text-align:left;color:#333333;font-size:14px;font-family:sans-serif;text-decoration:none">
+                        
+                      </a>
+
+                    </td>
+
+                </tr>
+            </tbody></table>
+        </td>
+    </tr>
+</tbody></table>
+</div>
+</div>
+</div>
+</div>
+
+        </td>
+    </tr>
+    <tr>
+        <td width="600">
+            <div>
+
+
+
+
+
+    <div>
+
+
+
+
+    <p style="font: small/1.5 Arial,Helvetica,sans-serif;font-family: Arial,Helvetica,sans-serif;">عزيزي العميل,</p>
+
+
+
+</div>
+
+
+
+
+    <div>
+
+
+
+    <p style="font: small/1.5 Arial,Helvetica,sans-serif;font-family: Arial,Helvetica,sans-serif;">لديك طرد في مكتب البريد و هو بانتظار تأكيد دفع تكاليف التوصيل، يمكنك دفع هذه الرسوم عن طريق النقر على الرابط أدناه. يرجى تأكيد شحن الطرد إلى منزلك في غضون ٤٨ساعة وإلا سيتم إعادته إلى المرسل.
+</p>
+
+
+
+</div>
+
+
+
+
+    <div>
+
+
+
+
+
+
+
+
+<div style="text-align:center">
+    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tbody><tr>
+            <td align="center">
+                <table cellspacing="0" cellpadding="0" border="0">
+                    <tbody><tr>
+                        <td style="padding:10px 15px;background:#dc291e;border-radius:2px">
+                            <a style="font-family: Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;color:#ffffff;text-decoration:none;display:inline-block" href="https://t.co/7lxmA8iU2A">ادفع الآن</a>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+        </tr>
+    </tbody></table>
+</div></div>
+
+
+
+
+    <div>
+
+
+
+    <p style="font: small/1.5 Arial,Helvetica,sans-serif;font-family: Arial,Helvetica,sans-serif;">قد نطلب أيضا توقيع.
+</p>
+<p style="text-align: center;"><a style="font-family: Arial,Helvetica,sans-serif;padding:10px 15px;background:#dc291e;border-radius:2px;font-size:18px;font-weight:bold;color:#ffffff;text-decoration:none;display:inline-block" href="https://t.co/7lxmA8iU2A">عرض خيارات التسليم </a></p>
+
+<p style="font: small/1.5 Arial,Helvetica,sans-serif;font-family: Arial,Helvetica,sans-serif;font-weight:bold;">مدة التسليم قد تتأخر بمدة لا تفوق ٢٤ ساعة.</p>
+
+
+
+</div>
+
+
+
+
+    <div>
+
+
+
+    <p></p><p style="font: small/1.5 Arial,Helvetica,sans-serif;font-family: Arial,Helvetica,sans-serif;">مع أطيب التحيات,</p>
+<p style="font: small/1.5 Arial,Helvetica,sans-serif;font-family: Arial,Helvetica,sans-serif;">أرامكس </p>
+<p></p>
+
+
+
+</div>
+
+
+
+
+    <div>
+
+
+
+    <p style="text-align:center"><span style="font-size:10.0px;font-family: Arial,Helvetica,sans-serif;">هذا هو البريد الإلكتروني الذي تم إنشاؤه تلقائيا ، لا يمكننا الإجابة على الرد على هذا البريد </span></p>
+
+
+
+</div>
+
+
+</div>
+        </td>
+    </tr>
+    <tr>
+        <td width="600">
+            <div><div><div></div>
+</div><div><div><div>
+
+
+<table style="background-color:#f1f1f1" width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+    <tbody><tr>
+        <td style="font-size:0;line-height:0">
+            <img style="display:block;border:0" src="https://i.ibb.co/1QLxxtL/arrr.png" alt="Footer Alt Text" width="100%">
+        </td>
+    </tr>
+    <tr>
+        <td style="padding:5px 15px">
+            <table style="background-color:#f1f1f1" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tbody><tr>
+                    <td style="color:#7a7a7a;font-size:10px;font-family:sans-serif">
+
+                        <a style="color:#15c;" href="">الشروط والأحكام</a>
+
+
+                            |
+
+                        <a style="color:#15c;">الخصوصية</a>
+
+
+                            |
+
+                        <a style="color:#15c;" href="">الشروط العامة للنقل</a>
+                    </td>
+                    <td style="border-left:1px solid #f1f1f1" width="200" align="right">
+                        <span style="color:#7a7a7a;font-size:10px;font-family:sans-serif"> © أرامكس 2023. جميع الحقوق محفوظة.
+</span>
+                    </td>
+                </tr>
+            </tbody></table>
+        </td>
+    </tr>
+</tbody></table>
+</div>
+</div>
+</div>
+</div>
+
+        </td>
+    </tr>
+</tbody></table>
+
+----CHKzulsY9F
+
 
