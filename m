@@ -1,103 +1,92 @@
-Return-Path: <netdev+bounces-1356-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1357-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C89D16FD951
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:29:41 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0DC0E6FD957
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:30:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9814C280EFC
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:29:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 276B61C20CF2
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:30:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63E1212B90;
-	Wed, 10 May 2023 08:29:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A6985692;
+	Wed, 10 May 2023 08:30:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56D2B12B83
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:29:32 +0000 (UTC)
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F517AA7;
-	Wed, 10 May 2023 01:29:08 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id d2e1a72fcca58-64115e652eeso48554818b3a.0;
-        Wed, 10 May 2023 01:29:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683707347; x=1686299347;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=z8RwRIsfRADOKmrmxPkNV2fLHwpgOdBlB311q+5skVQ=;
-        b=jEOcMdkwiWfkDoBrNqA4na8Gdr2MZN3tgMBfXMcXf010KyfCNmgKjfaOebiEpVClxJ
-         ujbM3w3bQhCMdH6HnyPlpireLhs+egi5d1aPTyne0LPbHzbhAIziblvsuCdBpHq7B/j3
-         BOK3w+nFqnN4tQXBJbDR6VvFpCRf+wEECIkI0OnkkDBOpzacpqfZA8qkIMawg3nOl+1/
-         1txIGxtAxFPKqUOWQSH+GVdTSQRC49wUczjaKcjQHrIcoBJDjrMEFDCtlIj8lhyNSQ1o
-         iXh5LBk7b7nvIh5kZICoHkjHIFAY9ApCJhj8yNBkewT/zREhY2lIrSTXeXezTce48sIi
-         VJ/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683707347; x=1686299347;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=z8RwRIsfRADOKmrmxPkNV2fLHwpgOdBlB311q+5skVQ=;
-        b=FzQiUCHr7uNozxP3X1DN6g8s0x3oA+VBkEGKHMT07Tm9YnXL6bberzR1l6qwBO8VNz
-         XM1g1bmI6EDSeeqcIDx8th8VSNVDfY6fv8zBb8x2DzxRMoj1H5JVULWGl8xB7n7kq5Yj
-         EKbIAOLBS8TLbv6jn51btq047NJ/6dMGejgCPNnxF5YzQAddazmkw+MGqvcBC0odVkEt
-         XOLfQKcxt17G9vjM1VmNTRIpjztO9RmL5mCsJG2sRcG4K++4CqkiHMA06MC1ea2DKG9N
-         1ZQnvfnK2k6P45ZQCEQG3cDI0g0wI8vzzNG+yXCU1Um9JaU2yjMVj4hp5bYbpyrzENrq
-         aEnQ==
-X-Gm-Message-State: AC+VfDyge5kwaM8FItCZMVbtcImOsPT6WWE3Fa9YPw/BiF1eAyKcrtMP
-	sAv5KPgi/Y28FRLmsniL0lk=
-X-Google-Smtp-Source: ACHHUZ7OM6Sh+tRD+ZbCT6Ey8cEjtr57bo8TKktmhcIpJrEfJdtW9peJDIQ795tG2Ehlh4lyOtZZhQ==
-X-Received: by 2002:a05:6a00:1a49:b0:646:24c6:5f9e with SMTP id h9-20020a056a001a4900b0064624c65f9emr10532448pfv.16.1683707347594;
-        Wed, 10 May 2023 01:29:07 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-68.three.co.id. [180.214.233.68])
-        by smtp.gmail.com with ESMTPSA id r19-20020a62e413000000b0063799398eb9sm3054243pfh.58.2023.05.10.01.29.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 May 2023 01:29:07 -0700 (PDT)
-Message-ID: <334e9041-5121-3dc7-9ddd-4ce33585fec6@gmail.com>
-Date: Wed, 10 May 2023 15:29:03 +0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FF8C14AA8
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:30:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0D490C4339B;
+	Wed, 10 May 2023 08:30:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683707423;
+	bh=UXWoljZxonZO2CWvaC5I6AsRcsIat3/ngnYrGjXlEEA=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=WcPf3dPQ3gFeR9L0tigtDix2dCSetZ3NMSKdbsJKyzUoXM+vUwt8FcSmtYSpOyOBW
+	 MEC7YsFWpBmNB8f6n/EXpfESD5gQEhmT2ZGaFvssBulBU/wlIznitDF7d0PcDRMh+S
+	 e6TO0X3d0rzo2p4vm/Zpg2+sEk9ssCTUJzvnxZ0NP5ErER+nuaXxhWWhHUT/qn3Cm3
+	 UA8RMWhAe0S74Yz/b/+7o77mJNw5dk4jrcC0lM3mMKwl/NdjNQnEPySOwK5G+w1Sqz
+	 /BRemONXfOgYtJQL16TpyNMQTKQdfJzQZWAzzKBlC9o31/1taXw8HvH+RRPrIL/jKn
+	 KBQ6W6Gsv4/uQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E45E6E26D2A;
+	Wed, 10 May 2023 08:30:22 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH] docs: networking: fix x25-iface.rst heading & index order
-Content-Language: en-US
-To: Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
- Martin Schiller <ms@dev.tdt.de>, linux-x25@vger.kernel.org
-References: <20230510022914.2230-1-rdunlap@infradead.org>
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20230510022914.2230-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv3 net 0/4] bonding: fix send_peer_notif overflow
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168370742292.8895.15776503512763284416.git-patchwork-notify@kernel.org>
+Date: Wed, 10 May 2023 08:30:22 +0000
+References: <20230509031200.2152236-1-liuhangbin@gmail.com>
+In-Reply-To: <20230509031200.2152236-1-liuhangbin@gmail.com>
+To: Hangbin Liu <liuhangbin@gmail.com>
+Cc: netdev@vger.kernel.org, j.vosburgh@gmail.com, davem@davemloft.net,
+ kuba@kernel.org, pabeni@redhat.com, edumazet@google.com, liali@redhat.com,
+ vincent@bernat.ch, simon.horman@corigine.com
 
-On 5/10/23 09:29, Randy Dunlap wrote:
-> -============================-
->  X.25 Device Driver Interface
-> -============================-
-> +============================
->  
+Hello:
 
-LGTM, thanks!
+This series was applied to netdev/net.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+On Tue,  9 May 2023 11:11:56 +0800 you wrote:
+> Bonding send_peer_notif was defined as u8. But the value is
+> num_peer_notif multiplied by peer_notif_delay, which is u8 * u32.
+> This would cause the send_peer_notif overflow.
+> 
+> Before the fix:
+> TEST: num_grat_arp (active-backup miimon num_grat_arp 10)           [ OK ]
+> TEST: num_grat_arp (active-backup miimon num_grat_arp 20)           [ OK ]
+> 4 garp packets sent on active slave eth1
+> TEST: num_grat_arp (active-backup miimon num_grat_arp 30)           [FAIL]
+> 24 garp packets sent on active slave eth1
+> TEST: num_grat_arp (active-backup miimon num_grat_arp 50)           [FAIL]
+> 
+> [...]
 
+Here is the summary with links:
+  - [PATCHv3,net,1/4] bonding: fix send_peer_notif overflow
+    https://git.kernel.org/netdev/net/c/9949e2efb54e
+  - [PATCHv3,net,2/4] Documentation: bonding: fix the doc of peer_notif_delay
+    https://git.kernel.org/netdev/net/c/84df83e0ecd3
+  - [PATCHv3,net,3/4] selftests: forwarding: lib: add netns support for tc rule handle stats get
+    https://git.kernel.org/netdev/net/c/b6d1599f8c28
+  - [PATCHv3,net,4/4] kselftest: bonding: add num_grat_arp test
+    https://git.kernel.org/netdev/net/c/6cbe791c0f4e
+
+You are awesome, thank you!
 -- 
-An old man doll... just what I always wanted! - Clara
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
 
