@@ -1,132 +1,216 @@
-Return-Path: <netdev+bounces-1588-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1589-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2F4F86FE65A
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:34:59 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id CF4026FE65E
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:41:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4655B1C20E29
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 21:34:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7AE2D28137E
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 21:41:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D08581D2D8;
-	Wed, 10 May 2023 21:34:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 76B481D2DA;
+	Wed, 10 May 2023 21:41:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C055521CC1
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 21:34:55 +0000 (UTC)
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E25171E
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:34:53 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id 2adb3069b0e04-4f13d8f74abso8767996e87.0
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:34:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20221208.gappssmtp.com; s=20221208; t=1683754491; x=1686346491;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4rW3QimZ81wVbkQjNuUdZDDjEpRn2AG4LuA/Nl1pMGs=;
-        b=zu+JrSYtLvi+Mwz8sm/tNOSTa4sVuFI8B3DRh3ooQ6El2xocAIeTy8UGhdBIyknwpu
-         V6rKK18rbVhx+sAvOz+0MmkSZUUyu51Onw97BLZOKvaIYIiyMncYhmitalMIub/6dzvs
-         o7MBAgzF8q8BzHQu0S3/y/KmzJQMnF2nK94BerkQd3NdbR10bJWSOiA8+mDpIWzZ2Bvd
-         DTG7TXcZOXY7MoNcIh7vhrtEaP37zs5yd9xpQov6yhIDPqb66pxA23imMghbxCdOYej0
-         wHuPYJjCo2ez/LP+ZOrKypCxZAnG188rIt/cDHG/JLiiQKR3pb2pF79+hpwbRJF4Tsk5
-         Q15w==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 688DE21CCA
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 21:41:04 +0000 (UTC)
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CC63C01
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:41:01 -0700 (PDT)
+Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com [209.85.219.197])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E87DB3F229
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 21:40:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1683754857;
+	bh=m6wgVd9NGqSXcldf6QvSjr1yIoYB5cxk8Q6ivPxNQdY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type;
+	b=GpWzHDCbRZeGMvaTA9C51w62z71GTubTvzZWo3Lc/7xmNebUQvP2YI3TD+3T8DKSL
+	 yx+onOMnKfIA4ZxUIOdluIRaBnQu/jub6Td14Fx7vcCY77w184qHuv+IAQEQovASSI
+	 kAl69j4csi2KbHq9HDG1PRAe9trwKYnWcK6nbLmCspFLbwRqKUWYj0BYGOZlgS20Rh
+	 F3xpgGUw1J8ipiVYxtUVlF3otSYpOJW+4gmynXU7UrbJUrNbpaT1ADTq73kYdKeRds
+	 FqWk/JHUgeiCqy7gPwjIIe79tU9gBx+I+UkeeEqABmxYI8Yyb+7zy8kBIPcOWmKN0j
+	 SXBKLCbNT1c4w==
+Received: by mail-yb1-f197.google.com with SMTP id 3f1490d57ef6-b9a7766d220so9721923276.2
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:40:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683754491; x=1686346491;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1683754857; x=1686346857;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4rW3QimZ81wVbkQjNuUdZDDjEpRn2AG4LuA/Nl1pMGs=;
-        b=j4X03vpFD8SkkrdqD8Wbd1nUvLdheP7Dyf5Cy3DZSTKyK2c+1wsr3SOptWEiVaAUxu
-         b1CZppCT7GFuVgrPZKgJSFFBZHYTtvJAYGqiV5e8r6HOYoxI8HKD1vhay+TBHYPlrx2u
-         pVIb7qFPC++QP43I5rbTOLqF7GpNMsTtWZF4+cwtTsTBzn/FQn4srdDDiUfUKlo1wOn4
-         xmH6+2svO29nmjyCsBAfLYz6hkWCjrdME3L3+y+1SAwT1HMs4djhN7nb9Frsvbj4WPhL
-         UBUIGUT3Y7E3GesOMU5FvOwHC9aOTwX6WWVHV2KRRhTC9sOznvFMs4w+243ousiuv/Mu
-         PjwQ==
-X-Gm-Message-State: AC+VfDwLF+iFek6vy1ePew6Hxw0adOTpFzvF9SN8XqkF9ZiUh3Jkn8Vp
-	vuNh95wofNPvdwE8E3eF4Q6NViHHBKgejSoRVjA=
-X-Google-Smtp-Source: ACHHUZ4pTblppGTXNFhs4vyvYVeDydVDN6gkd1FFJGTHkxLH3fp8GMYk3LqB2wb4wujBeR4Inrq5Uw==
-X-Received: by 2002:ac2:42d1:0:b0:4e8:c5d:42a5 with SMTP id n17-20020ac242d1000000b004e80c5d42a5mr2108550lfl.24.1683754491427;
-        Wed, 10 May 2023 14:34:51 -0700 (PDT)
-Received: from wkz-x13 (h-176-10-137-178.NA.cust.bahnhof.se. [176.10.137.178])
-        by smtp.gmail.com with ESMTPSA id r10-20020ac252aa000000b004b6f00832cesm855835lfm.166.2023.05.10.14.34.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 May 2023 14:34:50 -0700 (PDT)
-From: Tobias Waldekranz <tobias@waldekranz.com>
-To: Fabio Estevam <festevam@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
- Vladimir Oltean <olteanv@gmail.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>, Steffen =?utf-8?Q?B=C3=A4tz?=
- <steffen@innosonix.de>, netdev <netdev@vger.kernel.org>
-Subject: Re: mv88e6320: Failed to forward PTP multicast
-In-Reply-To: <CAOMZO5DSSQY5fa5vTmDbCxu1x2ZRdyB2kTqrkw5bRg94_-34zg@mail.gmail.com>
-References: <CAOMZO5AMOVAZe+w3FiRO-9U98Foba5Oy4f_C0K7bGNxHA1qz_w@mail.gmail.com>
- <7b8243a3-9976-484c-a0d0-d4f3debbe979@lunn.ch>
- <CAOMZO5DXH1wS9YYPWXYr-TvM+9Tj8F0bY0_kd_EAjrcCpEJJ7A@mail.gmail.com>
- <CAOMZO5Dk44QSTg2rh_HPHXg=H7BJ+x1h95M+t8nr2CLW+8pABw@mail.gmail.com>
- <5e21a8da-b31f-4ec8-8b46-099af5a8b8af@lunn.ch>
- <CAOMZO5DSSQY5fa5vTmDbCxu1x2ZRdyB2kTqrkw5bRg94_-34zg@mail.gmail.com>
-Date: Wed, 10 May 2023 23:34:49 +0200
-Message-ID: <87pm77dg5i.fsf@waldekranz.com>
+        bh=m6wgVd9NGqSXcldf6QvSjr1yIoYB5cxk8Q6ivPxNQdY=;
+        b=YWyen7Hv03x9GMll9E/tkEw4YVqzp86xKhCUhUerRbm2RB5658T2PJa0q/bYwOq9DE
+         vQrSOtKzl8GqwvhKOniCJ/V9dcGNes35l9hPfF4TYsVn+RUhO3yb6Djbvn1aU5ErGlvm
+         QP6mcS5jls2yo9X54JydERetV8f2bHcTevJat202RiXEzLXT/zUlxSFmd11tbtPriFAq
+         V9YbTzqDC9jKFNy4AeED/sHiz8qnQzE1kcMWhvLv/bPQWVjWGbWTdqmD31gN78efeaZs
+         cNREQm9PhcF29F9S0clgx4PoGJRipe7awQScbbq40g+D9r4n1tjtDRBdO0xEy11fbfbX
+         9/BA==
+X-Gm-Message-State: AC+VfDwuiAqhv8/dnmLzA+EBfzM1UgH+TryVIvXBeb6g+3ityQlhANWh
+	fDHlS/5qWHbjfKZH6l+6G+xFihhVAKiTtFTzGLuwqylLuFWv5l0bsz/sgAdUuvEJrmtpHxau0MW
+	GJhxbjISuvDqo1AONKIGyFojGXPPiFTydEvssKypPPBGrO0Xgpg==
+X-Received: by 2002:a05:6902:727:b0:b9e:6d19:8dcc with SMTP id l7-20020a056902072700b00b9e6d198dccmr21751057ybt.59.1683754857056;
+        Wed, 10 May 2023 14:40:57 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6HxJ/1TQ3NAW43qRmB0YIfRnnDmDVwytpoKPgforTBE0sLyzrGcvHKku5yUsSLyJO4L6tbCM74I0m2bKdOnRM=
+X-Received: by 2002:a05:6902:727:b0:b9e:6d19:8dcc with SMTP id
+ l7-20020a056902072700b00b9e6d198dccmr21751038ybt.59.1683754856770; Wed, 10
+ May 2023 14:40:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <20230510152216.1392682-1-aleksandr.mikhalitsyn@canonical.com> <CAKH8qBuAoobsVP2Q5KN06fZ2NM3_aMwT7Y2OoKwS4Cf=cv3ZGg@mail.gmail.com>
+In-Reply-To: <CAKH8qBuAoobsVP2Q5KN06fZ2NM3_aMwT7Y2OoKwS4Cf=cv3ZGg@mail.gmail.com>
+From: Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Date: Wed, 10 May 2023 23:40:45 +0200
+Message-ID: <CAEivzxc3hzqMROfCgshD6qW3=NErpF6LWXFGjoBhPNNzEZ3kDg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: core: add SOL_SOCKET filter for bpf
+ getsockopt hook
+To: Stanislav Fomichev <sdf@google.com>
+Cc: davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>, 
+	Daniel Borkmann <daniel@iogearbox.net>, Christian Brauner <brauner@kernel.org>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Kuniyuki Iwashima <kuniyu@amazon.com>, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
-Hi Fabio,
-
-On ons, maj 10, 2023 at 11:05, Fabio Estevam <festevam@gmail.com> wrote:
-> On Fri, May 5, 2023 at 10:02=E2=80=AFAM Andrew Lunn <andrew@lunn.ch> wrot=
-e:
+On Wed, May 10, 2023 at 11:31=E2=80=AFPM Stanislav Fomichev <sdf@google.com=
+> wrote:
 >
->> I'm not too familiar with all this VLAN stuff. So i could be telling
->> your wrong information.... 'self' is also importing in way's i don't
->> really understand. Vladimir and Tobias are the experts here.
+> On Wed, May 10, 2023 at 8:23=E2=80=AFAM Alexander Mikhalitsyn
+> <aleksandr.mikhalitsyn@canonical.com> wrote:
+> >
+> > We have per struct proto ->bpf_bypass_getsockopt callback
+> > to filter out bpf socket cgroup getsockopt hook from being called.
+> >
+> > It seems worthwhile to add analogical helper for SOL_SOCKET
+> > level socket options. First user will be SO_PEERPIDFD.
+> >
+> > This patch was born as a result of discussion around a new SCM_PIDFD in=
+terface:
+> > https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikhalits=
+yn@canonical.com/
+> >
+> > Cc: Alexei Starovoitov <ast@kernel.org>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: Christian Brauner <brauner@kernel.org>
+> > Cc: Stanislav Fomichev <sdf@google.com>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Paolo Abeni <pabeni@redhat.com>
+> > Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > Cc: linux-kernel@vger.kernel.org
+> > Cc: netdev@vger.kernel.org
+> > Cc: bpf@vger.kernel.org
+> > Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.c=
+om>
+> > ---
+> >  include/linux/bpf-cgroup.h | 8 +++++---
+> >  include/net/sock.h         | 1 +
+> >  net/core/sock.c            | 5 +++++
+> >  3 files changed, 11 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
+> > index 57e9e109257e..97d8a49b35bf 100644
+> > --- a/include/linux/bpf-cgroup.h
+> > +++ b/include/linux/bpf-cgroup.h
+> > @@ -387,10 +387,12 @@ static inline bool cgroup_bpf_sock_enabled(struct=
+ sock *sk,
+> >         int __ret =3D retval;                                          =
+          \
+> >         if (cgroup_bpf_enabled(CGROUP_GETSOCKOPT) &&                   =
+        \
+> >             cgroup_bpf_sock_enabled(sock, CGROUP_GETSOCKOPT))          =
+        \
+> > -               if (!(sock)->sk_prot->bpf_bypass_getsockopt ||         =
+        \
+> > -                   !INDIRECT_CALL_INET_1((sock)->sk_prot->bpf_bypass_g=
+etsockopt, \
+> > +               if (((level !=3D SOL_SOCKET) ||                        =
+          \
+> > +                    !sock_bpf_bypass_getsockopt(level, optname)) &&   =
+        \
+> > +                   (!(sock)->sk_prot->bpf_bypass_getsockopt ||        =
+        \
 >
-> Vladimir and Tobias,
+> Any reason we are not putting this into bpf_bypass_getsockopt for
+> af_unix struct proto? SO_PEERPIDFD seems relevant only for af_unix?
+
+Yes, that should work perfectly well. The reason why I'm going this
+way is that we are
+declaring all SOL_SOCKET-level options in the net/core/sock.c which is
+not specific to any address family.
+It seems reasonable to have a way to filter out getsockopt for these
+options too.
+
+But I'm not insisting on that way.
+
+Kind regards,
+Alex
+
 >
-> Would you have any suggestions as to how to allow PTP multicast to be
-> forwarded when
-> vlan_filtering is active?
-
-If possible, could you install mdio-tools and paste the output of `mvls`
-on your board from the two configurations above?
-
-Unfortunately, you will have to patch it to support your device. Based
-on a quick view of the datasheet, this should probably work:
-
-diff --git a/src/mvls/mvls.c b/src/mvls/mvls.c
-index 3ced04a..d4442c9 100644
---- a/src/mvls/mvls.c
-+++ b/src/mvls/mvls.c
-@@ -195,6 +195,16 @@ const struct chip chips[] =3D {
-                .family =3D &opal_family,
-                .n_ports =3D 11,
-        },
-+       {
-+               .id =3D "Marvell 88E6320",
-+               .family =3D &opal_family,
-+               .n_ports =3D 7,
-+       },
-+       {
-+               .id =3D "Marvell 88E6321",
-+               .family =3D &opal_family,
-+               .n_ports =3D 7,
-+       },
-        {
-                .id =3D "Marvell 88E6352",
-                .family =3D &opal_family,
+> > +                    !INDIRECT_CALL_INET_1((sock)->sk_prot->bpf_bypass_=
+getsockopt, \
+> >                                         tcp_bpf_bypass_getsockopt,     =
+        \
+> > -                                       level, optname))               =
+        \
+> > +                                       level, optname)))              =
+        \
+> >                         __ret =3D __cgroup_bpf_run_filter_getsockopt(  =
+          \
+> >                                 sock, level, optname, optval, optlen,  =
+        \
+> >                                 max_optlen, retval);                   =
+        \
+> > diff --git a/include/net/sock.h b/include/net/sock.h
+> > index 8b7ed7167243..530d6d22f42d 100644
+> > --- a/include/net/sock.h
+> > +++ b/include/net/sock.h
+> > @@ -1847,6 +1847,7 @@ int sk_getsockopt(struct sock *sk, int level, int=
+ optname,
+> >                   sockptr_t optval, sockptr_t optlen);
+> >  int sock_getsockopt(struct socket *sock, int level, int op,
+> >                     char __user *optval, int __user *optlen);
+> > +bool sock_bpf_bypass_getsockopt(int level, int optname);
+> >  int sock_gettstamp(struct socket *sock, void __user *userstamp,
+> >                    bool timeval, bool time32);
+> >  struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long he=
+ader_len,
+> > diff --git a/net/core/sock.c b/net/core/sock.c
+> > index 5440e67bcfe3..194a423eb6e5 100644
+> > --- a/net/core/sock.c
+> > +++ b/net/core/sock.c
+> > @@ -1963,6 +1963,11 @@ int sock_getsockopt(struct socket *sock, int lev=
+el, int optname,
+> >                              USER_SOCKPTR(optlen));
+> >  }
+> >
+> > +bool sock_bpf_bypass_getsockopt(int level, int optname)
+> > +{
+> > +       return false;
+> > +}
+> > +
+> >  /*
+> >   * Initialize an sk_lock.
+> >   *
+> > --
+> > 2.34.1
+> >
 
