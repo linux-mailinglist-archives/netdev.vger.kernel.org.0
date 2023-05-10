@@ -1,151 +1,83 @@
-Return-Path: <netdev+bounces-1386-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1388-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 13A996FDAAC
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:24:01 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B15146FDAC5
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:30:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E8EAC281118
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 09:23:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8918E2811D5
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 09:30:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B6DA65D;
-	Wed, 10 May 2023 09:23:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 34CF520F5;
+	Wed, 10 May 2023 09:30:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FA9A63E
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 09:23:57 +0000 (UTC)
-Received: from mx0.infotecs.ru (mx0.infotecs.ru [91.244.183.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D79E3AA5;
-	Wed, 10 May 2023 02:23:45 -0700 (PDT)
-Received: from mx0.infotecs-nt (localhost [127.0.0.1])
-	by mx0.infotecs.ru (Postfix) with ESMTP id 0A511113DE19;
-	Wed, 10 May 2023 12:23:41 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx0.infotecs.ru 0A511113DE19
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infotecs.ru; s=mx;
-	t=1683710622; bh=w4x/xmVNbv4I0guPaGI8ZGyOwgpS23MMbSf6Bjs7mFA=;
-	h=From:To:CC:Subject:Date:From;
-	b=ujNUL3fyv98mny2pW30/ksfLn+JcwssPN+u/sAMWAVZhWM078i8VvE7gAgEOF0Dhr
-	 2/W5AdUj1SVHfJ5fISz+Q4JCSMDsl+u4JLZYVZKIiyrQ2vRoopQzQksWF8j0zRgyLI
-	 PIvQfGF5bRKY8tbuFiHqSBKtDJNxfFGQm3B82404=
-Received: from msk-exch-01.infotecs-nt (msk-exch-01.infotecs-nt [10.0.7.191])
-	by mx0.infotecs-nt (Postfix) with ESMTP id 030E63032D49;
-	Wed, 10 May 2023 12:23:41 +0300 (MSK)
-From: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
-To: Neil Horman <nhorman@tuxdriver.com>
-CC: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>, Simon Horman
-	<simon.horman@corigine.com>, Marcelo Ricardo Leitner
-	<marcelo.leitner@gmail.com>, Xin Long <lucien.xin@gmail.com>, "David S.
- Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, "Jakub
- Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
-Subject: [PATCH net-next v4] sctp: fix a potential OOB access in
- sctp_sched_set_sched()
-Thread-Topic: [PATCH net-next v4] sctp: fix a potential OOB access in
- sctp_sched_set_sched()
-Thread-Index: AQHZgyEbpS0tA1Fa+Uyl1ufVP9SybQ==
-Date: Wed, 10 May 2023 09:23:40 +0000
-Message-ID: <20230510092344.1390444-1-Ilia.Gavrilov@infotecs.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.17.0.10]
-x-exclaimer-md-config: 208ac3cd-1ed4-4982-a353-bdefac89ac0a
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16FC965D
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 09:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id ADC0AC4339B;
+	Wed, 10 May 2023 09:30:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683711021;
+	bh=C2vN4xgXkKzAMKsRA4JnQy/lheXKBqvE60NeNviwLcs=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=NXpd825tcodjnz09HezNTwYK5GsEA67Rgt/YgEs5DFV83uGXy0pa778zTl27mMt5/
+	 3rY0eM32HkcsqNdlOI/REkBaAo0w09AcqWNt7yRkTyKP/UfT/BJSHIHG2cnrdsMvnz
+	 mqxaLfPYFvrsMb9oqN8GTY+InmhGzV6SEbAdY2Gffi+aMIyUe/hZICcHhJqkcqXKQw
+	 eac/TgGljN6GaNhGEgB35K2F7ieaZYdJjs+SpLWKeSUR0iw0ZTQNnFJHUHcnDPy3E7
+	 aEiscjLxNk3PjAe2E5vPM/Xmf8rvV8yQUBr+Bb+GQFPraripKpEvvkP0mhyoy+SHu4
+	 dat+eSOuB5oeg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 908D1E26D21;
+	Wed, 10 May 2023 09:30:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 177219 [May 10 2023]
-X-KLMS-AntiSpam-Version: 5.9.59.0
-X-KLMS-AntiSpam-Envelope-From: Ilia.Gavrilov@infotecs.ru
-X-KLMS-AntiSpam-Rate: 0
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 510 510 bc345371020d3ce827abc4c710f5f0ecf15eaf2e, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;infotecs.ru:7.1.1;lore.kernel.org:7.1.1;127.0.0.199:7.1.2
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2023/05/10 08:03:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/05/10 03:39:00 #21251912
-X-KLMS-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: pcs: xpcs: fix incorrect number of interfaces
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168371102158.23581.7528890850821211883.git-patchwork-notify@kernel.org>
+Date: Wed, 10 May 2023 09:30:21 +0000
+References: <E1pwLr2-001Ms2-3d@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1pwLr2-001Ms2-3d@rmk-PC.armlinux.org.uk>
+To: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc: andrew@lunn.ch, hkallweit1@gmail.com, Jose.Abreu@synopsys.com,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ michael.wei.hong.sit@intel.com, weifeng.voon@intel.com,
+ netdev@vger.kernel.org
 
-From: "Ilia.Gavrilov" <Ilia.Gavrilov@infotecs.ru>
+Hello:
 
-The 'sched' index value must be checked before accessing an element
-of the 'sctp_sched_ops' array. Otherwise, it can lead to OOB access.
+This patch was applied to netdev/net.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-Note that it's harmless since the 'sched' parameter is checked before
-calling 'sctp_sched_set_sched'.
+On Tue, 09 May 2023 12:50:04 +0100 you wrote:
+> In synopsys_xpcs_compat[], the DW_XPCS_2500BASEX entry was setting
+> the number of interfaces using the xpcs_2500basex_features array
+> rather than xpcs_2500basex_interfaces. This causes us to overflow
+> the array of interfaces. Fix this.
+> 
+> Fixes: f27abde3042a ("net: pcs: add 2500BASEX support for Intel mGbE controller")
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> 
+> [...]
 
-Found by InfoTeCS on behalf of Linux Verification Center
-(linuxtesting.org) with SVACE.
+Here is the summary with links:
+  - [net] net: pcs: xpcs: fix incorrect number of interfaces
+    https://git.kernel.org/netdev/net/c/43fb622d91a9
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
----
-V4:
- - revert to V2
- - repost according to
-   https://lore.kernel.org/all/20230503184928.458eb0da@kernel.org/
-V3:
- - Change description
- - Remove 'fixes'
-V2:
- - Change the order of local variables=20
- - Specify the target tree in the subject
- net/sctp/stream_sched.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-diff --git a/net/sctp/stream_sched.c b/net/sctp/stream_sched.c
-index 330067002deb..4d076a9b8592 100644
---- a/net/sctp/stream_sched.c
-+++ b/net/sctp/stream_sched.c
-@@ -146,18 +146,19 @@ static void sctp_sched_free_sched(struct sctp_stream =
-*stream)
- int sctp_sched_set_sched(struct sctp_association *asoc,
- 			 enum sctp_sched_type sched)
- {
--	struct sctp_sched_ops *n =3D sctp_sched_ops[sched];
- 	struct sctp_sched_ops *old =3D asoc->outqueue.sched;
- 	struct sctp_datamsg *msg =3D NULL;
-+	struct sctp_sched_ops *n;
- 	struct sctp_chunk *ch;
- 	int i, ret =3D 0;
-=20
--	if (old =3D=3D n)
--		return ret;
--
- 	if (sched > SCTP_SS_MAX)
- 		return -EINVAL;
-=20
-+	n =3D sctp_sched_ops[sched];
-+	if (old =3D=3D n)
-+		return ret;
-+
- 	if (old)
- 		sctp_sched_free_sched(&asoc->stream);
-=20
---=20
-2.30.2
+
 
