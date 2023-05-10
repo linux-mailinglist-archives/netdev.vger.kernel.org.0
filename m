@@ -1,149 +1,105 @@
-Return-Path: <netdev+bounces-1450-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1451-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7B7696FDCD4
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:36:57 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4F6C56FDCE7
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:38:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 518CE1C20D30
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:36:54 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 443281C20D47
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:38:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66D49DDB7;
-	Wed, 10 May 2023 11:36:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 37367F9D9;
+	Wed, 10 May 2023 11:38:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57F013D60
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:36:54 +0000 (UTC)
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834A67DBD;
-	Wed, 10 May 2023 04:36:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683718594; x=1715254594;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OIHMQRBUSAAIKqFfKJ0b5Sjxv6B77OgJnTeBhK6P5aQ=;
-  b=dXBGBh5R/o3DNHsgtLR5PAgJEaS6vokq+bbHJWyges3p7jCX5REzbD++
-   5iC3umMYUQQQX1JpcGRAV8OXdApiNEjSfKVUskqMOq56ubax45wvRBTtO
-   bafcS7BNPwbJYqwWmv9DeoBlXM19KAW77dRnoS80B2YxZs922UEVYv9Mq
-   drqtoSMwXYpeG1ZGXAo7C0eMSIWZA3+bQ51sA/LZeZX6km2U1rY5469Mo
-   Z89tMXjyg56LnV8AlqVUphxc5y7V/oXnH4e7Ca5av7OrM4CCIS2NC1dfJ
-   prZ49O77EoN4kv6soGDQ9QGdsnxUG8xj4tiW7S+uzbuDHwYIBqCEbl2EP
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10705"; a="347651912"
-X-IronPort-AV: E=Sophos;i="5.99,264,1677571200"; 
-   d="scan'208";a="347651912"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2023 04:36:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10705"; a="764253680"
-X-IronPort-AV: E=Sophos;i="5.99,264,1677571200"; 
-   d="scan'208";a="764253680"
-Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 10 May 2023 04:36:29 -0700
-Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pwi7Q-0003EC-2a;
-	Wed, 10 May 2023 11:36:28 +0000
-Date: Wed, 10 May 2023 19:36:19 +0800
-From: kernel test robot <lkp@intel.com>
-To: Yan Wang <rk.code@outlook.com>, andrew@lunn.ch, hkallweit1@gmail.com,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@armlinux.org.uk
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Yan Wang <rk.code@outlook.com>
-Subject: Re: [PATCH v3] net: mdiobus: Add a function to deassert reset
-Message-ID: <202305101922.dXHLqoSw-lkp@intel.com>
-References: <KL1PR01MB5448A33A549CDAD7D68945B9E6779@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B520612B
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:38:43 +0000 (UTC)
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A64F30FE
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:38:31 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-3f423c17bafso110955e9.0
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:38:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1683718710; x=1686310710;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uo1yKORMYSO1OUKpuL8y50tHhI1Yxp7i2VNwQyY/Tg4=;
+        b=lJ0oHEz0aNAmCXMLl1SLoPLJT/sASTXHTbfoF4mYr7qFftFBXC7upQ1dpOQ2Qr34it
+         PkWnOgBTdiEHXWpkMr5s7ndvdQ+vgohuhTGReRBJEfjoK3pPU8hHPzzomWu5H/F+qHOr
+         vVhEB/WJA+kpnTKTbcTLtzNQsKn6FKbqzY4ClhB+hOU6+tSbOD51OKKTw6BTjNgqKCYn
+         Kwj3ogigHOai8gVJJowjJ+XoR0VzBIB0oQWfJfG9rcvA+Qzc1LAFu/ncHxRnv07EypQx
+         jRFMXeEB61A0pxlaMpxVe3SuWat4nl6Mh+IE2BpXPl5/I93rgZm1OF0yJG/c0A2tyMwL
+         Ai1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683718710; x=1686310710;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uo1yKORMYSO1OUKpuL8y50tHhI1Yxp7i2VNwQyY/Tg4=;
+        b=A7qXdgQRjGl8xyvRmTHBh0eSoJZPURNL3BkQ9Ma+1Ksahg8p/oD/VSEziT1WddFcZn
+         WxUgN8OL6SfpaL9B3OI5zXjHLtosyisY66yBvv9wkUJHXHX2fe0V4HYtMoZI8Ok1GKWQ
+         e4XAnL+ZEn4xTXLV5PHWdpxTUbD7YD4ZaZj8qBTKG98XrafSEEfQpBYI/CItVAukX4Os
+         rw7wXGHy8iKtMWyR+m6EXPF4FvrJOI5AMSAbHyH8LtMhhQZ+AMXpbvQWBgwvNLaBxHRN
+         VqSbmzrsJ3u7VeiICKg4+lADA4B9eOf5OtILsiSxj/N15jk7bHILxiQLQuKjhj4RGsgb
+         OG8w==
+X-Gm-Message-State: AC+VfDwakJ9I0bGKl+3zvvY2L8LOq5jaFkWQ1SLzo8mKg1sOmMFPpgJ3
+	+0VkBZtBx0HhpmewJ64Xl1i9vusqou77A5JjM4QnWg==
+X-Google-Smtp-Source: ACHHUZ6lXCn0ZxxsLzAPzdBDl/9Ppa9vPTUSW9LdX20Uc+3NhNoDnfa8QhZoT56BBUCvLOvlMuHtv/ZCk1S/LLxj7cc=
+X-Received: by 2002:a05:600c:500f:b0:3f4:2736:b5eb with SMTP id
+ n15-20020a05600c500f00b003f42736b5ebmr128643wmr.1.1683718709590; Wed, 10 May
+ 2023 04:38:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <KL1PR01MB5448A33A549CDAD7D68945B9E6779@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <ZFtuhJOC03qpASt2@shell.armlinux.org.uk> <E1pwgrb-001XEA-HB@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1pwgrb-001XEA-HB@rmk-PC.armlinux.org.uk>
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 10 May 2023 13:38:17 +0200
+Message-ID: <CANn89iKrhFWgbqxDU2RY62PmCrhfV+OpvGUAy9uDCJ8KGw9qZw@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/5] net: mvneta: allocate TSO header DMA memory
+ in chunks
+To: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc: =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>, 
+	"David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org, 
+	Paolo Abeni <pabeni@redhat.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Yan,
+On Wed, May 10, 2023 at 12:16=E2=80=AFPM Russell King (Oracle)
+<rmk+kernel@armlinux.org.uk> wrote:
+>
+> Now that we no longer need to check whether the DMA address is within
+> the TSO header DMA memory range for the queue, we can allocate the TSO
+> header DMA memory in chunks rather than one contiguous order-6 chunk,
+> which can stress the kernel's memory subsystems to allocate.
+>
+> Instead, use order-1 (8k) allocations, which will result in 32 order-1
+> pages containing 32 TSO headers.
 
-kernel test robot noticed the following build errors:
+I guess there is no IOMMU/SMMU/IOTLB involved on platforms using this drive=
+r.
 
-[auto build test ERROR on net-next/main]
-[also build test ERROR on net/main linus/master v6.4-rc1 next-20230510]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+(Otherwise, attempting high-order allocations, then fallback to
+low-order allocations
+would provide better performance if the high-order allocation at init
+time succeeded)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yan-Wang/net-mdiobus-Add-a-function-to-deassert-reset/20230510-161736
-base:   net-next/main
-patch link:    https://lore.kernel.org/r/KL1PR01MB5448A33A549CDAD7D68945B9E6779%40KL1PR01MB5448.apcprd01.prod.exchangelabs.com
-patch subject: [PATCH v3] net: mdiobus: Add a function to deassert reset
-config: x86_64-randconfig-a003 (https://download.01.org/0day-ci/archive/20230510/202305101922.dXHLqoSw-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f7ded94d887d1020adb4813c2b1025142288e882
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Yan-Wang/net-mdiobus-Add-a-function-to-deassert-reset/20230510-161736
-        git checkout f7ded94d887d1020adb4813c2b1025142288e882
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/mdio/
+Reviewed-by: Eric Dumazet<edumazet@google.com>
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202305101922.dXHLqoSw-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/net/mdio/fwnode_mdio.c:64:10: error: implicit declaration of function 'fwnode_gpiod_get_index' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           reset = fwnode_gpiod_get_index(fwnode, "reset", 0, GPIOD_OUT_HIGH, NULL);
-                   ^
->> drivers/net/mdio/fwnode_mdio.c:64:53: error: use of undeclared identifier 'GPIOD_OUT_HIGH'
-           reset = fwnode_gpiod_get_index(fwnode, "reset", 0, GPIOD_OUT_HIGH, NULL);
-                                                              ^
->> drivers/net/mdio/fwnode_mdio.c:69:2: error: implicit declaration of function 'gpiod_set_value_cansleep' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           gpiod_set_value_cansleep(reset, 0);
-           ^
->> drivers/net/mdio/fwnode_mdio.c:71:2: error: implicit declaration of function 'gpiod_put' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           gpiod_put(reset);
-           ^
-   4 errors generated.
-
-
-vim +/fwnode_gpiod_get_index +64 drivers/net/mdio/fwnode_mdio.c
-
-    59	
-    60	static void fwnode_mdiobus_pre_enable_phy(struct fwnode_handle *fwnode)
-    61	{
-    62		struct gpio_desc *reset;
-    63	
-  > 64		reset = fwnode_gpiod_get_index(fwnode, "reset", 0, GPIOD_OUT_HIGH, NULL);
-    65		if (IS_ERR(reset) && PTR_ERR(reset) != -EPROBE_DEFER)
-    66			return;
-    67	
-    68		usleep_range(100, 200);
-  > 69		gpiod_set_value_cansleep(reset, 0);
-    70		/*Release the reset pin,it needs to be registered with the PHY.*/
-  > 71		gpiod_put(reset);
-    72	}
-    73	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Thanks
 
