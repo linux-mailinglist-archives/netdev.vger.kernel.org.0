@@ -1,32 +1,32 @@
-Return-Path: <netdev+bounces-1337-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1338-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CFB6D6FD758
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:46:04 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C696D6FD765
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:50:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9B8842813D3
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 06:46:03 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BAA901C20CF1
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 06:50:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A56B7657;
-	Wed, 10 May 2023 06:46:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6B2D65691;
+	Wed, 10 May 2023 06:50:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 984117F
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 06:46:01 +0000 (UTC)
-Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D22749F8
-	for <netdev@vger.kernel.org>; Tue,  9 May 2023 23:45:56 -0700 (PDT)
-X-QQ-mid:Yeas43t1683701031t773t15393
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D0137F
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 06:50:02 +0000 (UTC)
+Received: from smtpbg153.qq.com (smtpbg153.qq.com [13.245.218.24])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B99F270B
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 23:49:59 -0700 (PDT)
+X-QQ-mid:Yeas54t1683701271t870t28039
 Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [125.119.253.217])
 X-QQ-SSF:00400000000000F0FNF000000000000
 From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
-X-BIZMAIL-ID: 998830972937722514
-To: "'Piotr Raczynski'" <piotr.raczynski@intel.com>
+X-BIZMAIL-ID: 306390345786609964
+To: "'Simon Horman'" <simon.horman@corigine.com>
 Cc: <netdev@vger.kernel.org>,
 	<jarkko.nikula@linux.intel.com>,
 	<andriy.shevchenko@linux.intel.com>,
@@ -39,11 +39,11 @@ Cc: <netdev@vger.kernel.org>,
 	<linux-i2c@vger.kernel.org>,
 	<linux-gpio@vger.kernel.org>,
 	<mengyuanlou@net-swift.com>
-References: <20230509022734.148970-1-jiawenwu@trustnetic.com> <20230509022734.148970-3-jiawenwu@trustnetic.com> <ZFpQF4hi0FciwQsj@nimitz>
-In-Reply-To: <ZFpQF4hi0FciwQsj@nimitz>
-Subject: RE: [PATCH net-next v7 2/9] i2c: designware: Add driver support for Wangxun 10Gb NIC
-Date: Wed, 10 May 2023 14:43:50 +0800
-Message-ID: <009d01d9830a$c7c6dab0$57549010$@trustnetic.com>
+References: <20230509022734.148970-1-jiawenwu@trustnetic.com> <20230509022734.148970-4-jiawenwu@trustnetic.com> <ZFpnfNy2NSYNwUyI@corigine.com>
+In-Reply-To: <ZFpnfNy2NSYNwUyI@corigine.com>
+Subject: RE: [PATCH net-next v7 3/9] net: txgbe: Register fixed rate clock
+Date: Wed, 10 May 2023 14:47:50 +0800
+Message-ID: <009e01d9830b$56f1daf0$04d590d0$@trustnetic.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -54,101 +54,85 @@ Content-Type: text/plain;
 	charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
 X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQJdw4zS3rpHMobUlf9gBLGLbLpYXQJZ55l3AhfCTYOuJr3zgA==
+Thread-Index: AQJdw4zS3rpHMobUlf9gBLGLbLpYXQIKQeubAeFNPY+uKzJMoA==
 Content-Language: zh-cn
 X-QQ-SENDSIZE: 520
 Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
 	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tuesday, May 9, 2023 9:52 PM, Piotr Raczynski wrote:
-> On Tue, May 09, 2023 at 10:27:27AM +0800, Jiawen Wu wrote:
-> > Wangxun 10Gb ethernet chip is connected to Designware I2C, to
-> > communicate with SFP.
-> >
-> > Introduce the property "snps,i2c-platform" to match device data for
-> > Wangxun in software node case. Since IO resource was mapped on the
-> > ethernet driver, add a model quirk to get regmap from parent device.
-> >
-> > The exists IP limitations are dealt as workarounds:
-> > - IP does not support interrupt mode, it works on polling mode.
-> > - Additionally set FIFO depth address the chip issue.
+On Tuesday, May 9, 2023 11:32 PM, Simon Horman wrote:
+> On Tue, May 09, 2023 at 10:27:28AM +0800, Jiawen Wu wrote:
+> > In order for I2C to be able to work in standard mode, register a fixed
+> > rate clock for each I2C device.
 > >
 > > Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
 > 
-> I'm definitely not an i2c expert, a couple of nit picks below, thanks.
-> Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
+> ...
 > 
-> > ---
-> >  drivers/i2c/busses/i2c-designware-common.c  |  8 ++
-> >  drivers/i2c/busses/i2c-designware-core.h    |  1 +
-> >  drivers/i2c/busses/i2c-designware-master.c  | 89
-> > +++++++++++++++++++--  drivers/i2c/busses/i2c-designware-platdrv.c |
-> > 15 ++++
-> >  4 files changed, 108 insertions(+), 5 deletions(-)
+> > @@ -70,6 +72,32 @@ static int txgbe_swnodes_register(struct txgbe *txgbe)
+> >  	return software_node_register_node_group(nodes->group);
+> >  }
 > >
-> > diff --git a/drivers/i2c/busses/i2c-designware-common.c
-> > b/drivers/i2c/busses/i2c-designware-common.c
-> > index 0dc6b1ce663f..a7c2e67ccbf6 100644
-> > --- a/drivers/i2c/busses/i2c-designware-common.c
-> > +++ b/drivers/i2c/busses/i2c-designware-common.c
-> > @@ -575,6 +575,14 @@ int i2c_dw_set_fifo_size(struct dw_i2c_dev *dev)
-> >  	unsigned int param;
+> > +static int txgbe_clock_register(struct txgbe *txgbe) {
+> > +	struct pci_dev *pdev = txgbe->wx->pdev;
+> > +	struct clk_lookup *clock;
+> > +	char clk_name[32];
+> > +	struct clk *clk;
+> > +
+> > +	snprintf(clk_name, sizeof(clk_name), "i2c_designware.%d",
+> > +		 (pdev->bus->number << 8) | pdev->devfn);
+> > +
+> > +	clk = clk_register_fixed_rate(NULL, clk_name, NULL, 0, 156250000);
+> > +	if (IS_ERR(clk))
+> > +		return PTR_ERR(clk);
+> > +
+> > +	clock = clkdev_create(clk, NULL, clk_name);
+> > +	if (!clock) {
+> > +		clk_unregister(clk);
+> > +		return PTR_ERR(clock);
+> 
+> Hi Jiawen,
+> 
+> Sorry for missing this earlier, but the above error handling doesn't seem right.
+> 
+>    * This error condition is met if clock == NULL
+>    * So the above is returning PTR_ERR(NULL), which is a yellow flag to me.
+>      In any case, PTR_ERR(NULL) => 0 is returned on error.
+>    * The caller treats a 0 return value as success.
+> 
+>    Perhaps this should be: return -ENOMEM?
+
+No problem, I will fix it in patch v8.
+
+> 
+> > +	}
+> > +
+> > +	txgbe->clk = clk;
+> > +	txgbe->clock = clock;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  int txgbe_init_phy(struct txgbe *txgbe)  {
 > >  	int ret;
-> >
-> > +	/* DW_IC_COMP_PARAM_1 not implement for IP issue */
-> > +	if ((dev->flags & MODEL_MASK) == MODEL_WANGXUN_SP) {
-> > +		dev->tx_fifo_depth = 4;
-> I understand this is some kind of workaround but is the number chosen
-> empirically? Maybe a defined value would be clearer instead of magic
-> number.
-
-Yes, this value setting worked and passed test.
-
-> > @@ -559,13 +621,19 @@ i2c_dw_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
-> >  	pm_runtime_get_sync(dev->dev);
-> >
-> >  	/*
-> > -	 * Initiate I2C message transfer when AMD NAVI GPU card is enabled,
-> > +	 * Initiate I2C message transfer when polling mode is enabled,
-> >  	 * As it is polling based transfer mechanism, which does not support
-> >  	 * interrupt based functionalities of existing DesignWare driver.
-> >  	 */
-> > -	if ((dev->flags & MODEL_MASK) == MODEL_AMD_NAVI_GPU) {
-> > +	switch (dev->flags & MODEL_MASK) {
-> > +	case MODEL_AMD_NAVI_GPU:
-> >  		ret = amd_i2c_dw_xfer_quirk(adap, msgs, num);
-> >  		goto done_nolock;
-> > +	case MODEL_WANGXUN_SP:
-> > +		ret = txgbe_i2c_dw_xfer_quirk(adap, msgs, num);
-> > +		goto done_nolock;
-> > +	default:
-> > +		break;
+> > @@ -80,10 +108,23 @@ int txgbe_init_phy(struct txgbe *txgbe)
+> >  		return ret;
 > >  	}
-> Nit pick, when I first saw above code it looked a little weird,
-> maybe it would be a little clearer with:
+> >
+> > +	ret = txgbe_clock_register(txgbe);
+> > +	if (ret) {
+> > +		wx_err(txgbe->wx, "failed to register clock: %d\n", ret);
+> > +		goto err_unregister_swnode;
+> > +	}
+> > +
+> >  	return 0;
 > 
-> 	if (i2c_dw_is_model_poll(dev)) {
-> 		switch (dev->flags & MODEL_MASK) {
-> 		case MODEL_AMD_NAVI_GPU:
-> 			ret = amd_i2c_dw_xfer_quirk(adap, msgs, num);
-> 			break;
-> 		case MODEL_WANGXUN_SP:
-> 			ret = txgbe_i2c_dw_xfer_quirk(adap, msgs, num);
-> 			break;
-> 		default:
-> 			break;
-> 		}
-> 		goto done_nolock;
-> 	}
+> ...
 > 
-> I do not insist though.
-
-Sure, it looks more obvious as polling mode quirk.
- 
 
 
