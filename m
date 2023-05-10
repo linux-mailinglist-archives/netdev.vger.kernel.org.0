@@ -1,159 +1,113 @@
-Return-Path: <netdev+bounces-1318-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1322-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A90DA6FD4AB
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 05:54:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E83916FD4BF
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 05:56:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D04C31C2091D
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 03:54:43 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BFB752812CE
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 03:56:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E466A7F9;
-	Wed, 10 May 2023 03:54:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 062B065D;
+	Wed, 10 May 2023 03:56:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C090B65D
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 03:54:36 +0000 (UTC)
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4CD449E;
-	Tue,  9 May 2023 20:54:35 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-643990c5319so4739981b3a.2;
-        Tue, 09 May 2023 20:54:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683690875; x=1686282875;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=R13pX/DGcCdpBhTHhkY/bwvkemgqqVgL5MNqBdrIkZg=;
-        b=N8pYwznN3q0/cFkfWSKza0gMaDhy49xdZcF4lJMjg7rhksfRPSi2RogyCuQ5AiszzL
-         aXs0fdwIR1AgDPlA1pKhrSKC4CpeyjxvhGWOU9WSvgEciHjSrleoxDdpgkW/8eiPmZrT
-         sbGO92hYspswPL7S0cQwhgy1+TBUWhq9++Mer52I9GdvG+Sq4Pl5bE4NMwrqNmk9hGow
-         c4IaFtLN3DNPpe70tRVh35OXinZlmr1dEeDMYw6+nghqsjCyPYiLaAz/3w6z+wisn/Ih
-         dbeoUxYZu7PVi8o0Sg0qc1vx9k1UNo3SgqY4qDak2+LgmnSTYNow7NwwYuXBItRXvFqG
-         bsJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683690875; x=1686282875;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=R13pX/DGcCdpBhTHhkY/bwvkemgqqVgL5MNqBdrIkZg=;
-        b=c/2DB683SOWwmeuTko80jL3FRPO75R69p9sEujscVSI3o5TaHX7z5F9imc0R9ezrie
-         fi8SuBw3271rno3OiXR/Nrie9dO4kKQ5YbUiMDFCt0pb7Ge7A11/FChwV5VAdZ8jfSde
-         1gkpTePFelUgwayxEB1xTiUYk69Cw43flIf3rMF1LqWz0/9yfygWfapCSeLIO0wmo6Q3
-         +l+vWituFzAmOn1eOrl5rwcVqYFgMctwSrhuishCpk/xbrZQy3AxZDY7jUU5FzqSntqn
-         vjYeo6xFB5IN3RKWGoaqXNavTuXcOInoAZv/O/Fgp0bDGLUEku03KLVCvSwcBAhN/Ysw
-         BfrA==
-X-Gm-Message-State: AC+VfDwxYWgoNAO4izk9knClwFQeesUUVhCQlTMLIG7tz5n84TSa9Wkt
-	fJvu+waKtazkZ4X2FjZmm1A8Vh5VGQY=
-X-Google-Smtp-Source: ACHHUZ5W9wYsjCCZhsT/xp9lkRTManF2E6Q7o4gbGzsRoYrMq1jpzmmds9ChpKMC4gw4PwXdwR1hrg==
-X-Received: by 2002:a05:6a21:6d9d:b0:102:31fc:918c with SMTP id wl29-20020a056a216d9d00b0010231fc918cmr1805754pzb.45.1683690874840;
-        Tue, 09 May 2023 20:54:34 -0700 (PDT)
-Received: from debian.me (subs32-116-206-28-21.three.co.id. [116.206.28.21])
-        by smtp.gmail.com with ESMTPSA id f5-20020a655505000000b0052c9998ec2asm2021286pgr.68.2023.05.09.20.54.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 20:54:34 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-	id 7FDD3106AA1; Wed, 10 May 2023 10:54:29 +0700 (WIB)
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Linux Networking <netdev@vger.kernel.org>,
-	Remote Direct Memory Access Kernel Subsystem <linux-rdma@vger.kernel.org>,
-	Linux Documentation <linux-doc@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc: Saeed Mahameed <saeedm@nvidia.com>,
-	Leon Romanovsky <leon@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Bagas Sanjaya <bagasdotme@gmail.com>,
-	Gal Pressman <gal@nvidia.com>,
-	Rahul Rameshbabu <rrameshbabu@nvidia.com>,
-	Maher Sanalla <msanalla@nvidia.com>,
-	Moshe Shemesh <moshe@nvidia.com>,
-	Tariq Toukan <tariqt@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH net v2 4/4] Documentation: net/mlx5: Wrap notes in admonition blocks
-Date: Wed, 10 May 2023 10:54:15 +0700
-Message-Id: <20230510035415.16956-5-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230510035415.16956-1-bagasdotme@gmail.com>
-References: <20230510035415.16956-1-bagasdotme@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF57363E
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 03:56:32 +0000 (UTC)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A326B6A72;
+	Tue,  9 May 2023 20:56:10 -0700 (PDT)
+Received: from dggpeml500018.china.huawei.com (unknown [172.30.72.55])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QGLkB0yhjzsRHG;
+	Wed, 10 May 2023 11:54:10 +0800 (CST)
+Received: from dggpeml500019.china.huawei.com (7.185.36.137) by
+ dggpeml500018.china.huawei.com (7.185.36.186) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Wed, 10 May 2023 11:56:02 +0800
+Received: from dggpeml500019.china.huawei.com ([7.185.36.137]) by
+ dggpeml500019.china.huawei.com ([7.185.36.137]) with mapi id 15.01.2507.023;
+ Wed, 10 May 2023 11:56:02 +0800
+From: michenyuan <michenyuan@huawei.com>
+To: Simon Horman <simon.horman@corigine.com>
+CC: "isdn@linux-pingi.de" <isdn@linux-pingi.de>, "marcel@holtmann.org"
+	<marcel@holtmann.org>, "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-bluetooth@vger.kernel.org"
+	<linux-bluetooth@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next] bluetooth: unregister correct BTPROTO for
+ CMTP
+Thread-Topic: [PATCH v2 net-next] bluetooth: unregister correct BTPROTO for
+ CMTP
+Thread-Index: AdmC8p97tjZZmALXQZ+5PWW9GDAupA==
+Date: Wed, 10 May 2023 03:56:02 +0000
+Message-ID: <57262f4de08d4940bd47c2b28a5418e7@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.174.184.199]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2454; i=bagasdotme@gmail.com; h=from:subject; bh=amgu7llNkvOpANFlqUZo94YkdrbPN8Lwojtmp8pNSjY=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDCnRomkpYt8bNs16aM+88Tlf87e2tA7ZTfYrOd+kXTgcf Nz29o+yjlIWBjEuBlkxRZZJiXxNp3cZiVxoX+sIM4eVCWQIAxenAEzEZz0jw9NZ0U8Ezz1vFlho mfhRz73oiPfuV0kWpbMn7VOyuW+o5MbwP/b/qfSbL+d7TV2YtvQnu/Mho+lThLh9Jffu2bzOmG2 VIxcA
-X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Wrap note paragraphs in note:: directive as it better fit for the
-purpose of noting devlink commands.
-
-Fixes: f2d51e579359b7 ("net/mlx5: Separate mlx5 driver documentation into multiple pages")
-Fixes: cf14af140a5ad0 ("net/mlx5e: Add vnic devlink health reporter to representors")
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- .../ethernet/mellanox/mlx5/devlink.rst             | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst
-index f962c0975d8428..3354ca3608ee67 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst
-@@ -182,7 +182,8 @@ User commands examples:
- 
-     $ devlink health diagnose pci/0000:82:00.0 reporter tx
- 
--NOTE: This command has valid output only when interface is up, otherwise the command has empty output.
-+.. note::
-+   This command has valid output only when interface is up, otherwise the command has empty output.
- 
- - Show number of tx errors indicated, number of recover flows ended successfully,
-   is autorecover enabled and graceful period from last recover::
-@@ -234,8 +235,9 @@ User commands examples:
- 
-     $ devlink health dump show pci/0000:82:00.0 reporter fw
- 
--NOTE: This command can run only on the PF which has fw tracer ownership,
--running it on other PF or any VF will return "Operation not permitted".
-+.. note::
-+   This command can run only on the PF which has fw tracer ownership,
-+   running it on other PF or any VF will return "Operation not permitted".
- 
- fw fatal reporter
- -----------------
-@@ -258,7 +260,8 @@ User commands examples:
- 
-     $ devlink health dump show pci/0000:82:00.1 reporter fw_fatal
- 
--NOTE: This command can run only on PF.
-+.. note::
-+   This command can run only on PF.
- 
- vnic reporter
- -------------
-@@ -299,4 +302,5 @@ User commands examples:
- 
-         $ devlink health diagnose pci/0000:82:00.1/65537 reporter vnic
- 
--NOTE: This command can run over all interfaces such as PF/VF and representor ports.
-+.. note::
-+   This command can run over all interfaces such as PF/VF and representor ports.
--- 
-An old man doll... just what I always wanted! - Clara
-
+SGksIHRoaXMgYnVnIHNlZW1zIHRvIGhhdmUgbm90IGJlZW4gZml4ZWQsIGl0IHN0aWxsIGV4aXN0
+cyBpbiB0aGUgY3VycmVudCBtYWluIGJyYW5jaCBpbiBsaW51eCBrZXJuZWwuDQpJcyB0aGVyZSBh
+bnl0aGluZyBibG9ja2luZyB0aGUgYnVnIGZpeGluZz8NCg0KLS0tLS0tLS0NCk9uIFR1ZSwgQXBy
+IDA0LCAyMDIzIGF0IDExOjI0OjIwQU0gLTA3MDAsIEx1aXogQXVndXN0byB2b24gRGVudHogd3Jv
+dGU6DQo+IEhpLA0KPiANCj4gT24gVHVlLCBBcHIgNCwgMjAyMyBhdCA4OjQw4oCvQU0gU2ltb24g
+SG9ybWFuIDxzaW1vbi5ob3JtYW5AY29yaWdpbmUuY29tPiB3cm90ZToNCj4gPg0KPiA+IE9uIFR1
+ZSwgQXByIDA0LCAyMDIzIGF0IDA5OjUyOjU4QU0gKzA4MDAsIENoZW55dWFuIE1pIHdyb3RlOg0K
+PiA+ID4gT24gZXJyb3IgdW5yZWdpc3RlciBCVFBST1RPX0NNVFAgdG8gbWF0Y2ggdGhlIHJlZ2lz
+dHJhdGlvbiBlYXJsaWVyIA0KPiA+ID4gaW4gdGhlIHNhbWUgY29kZS1wYXRoLiBXaXRob3V0IHRo
+aXMgY2hhbmdlIEJUUFJPVE9fSElEUCBpcyANCj4gPiA+IGluY29ycmVjdGx5IHVucmVnaXN0ZXJl
+ZC4NCj4gPiA+DQo+ID4gPiBUaGlzIGJ1ZyBkb2VzIG5vdCBhcHBlYXIgdG8gY2F1c2Ugc2VyaW91
+cyBzZWN1cml0eSBwcm9ibGVtLg0KPiA+ID4NCj4gPiA+IFRoZSBmdW5jdGlvbiAnYnRfc29ja191
+bnJlZ2lzdGVyJyB0YWtlcyBpdHMgcGFyYW1ldGVyIGFzIGFuIGluZGV4IA0KPiA+ID4gYW5kIE5V
+TExzIHRoZSBjb3JyZXNwb25kaW5nIGVsZW1lbnQgb2YgJ2J0X3Byb3RvJyB3aGljaCBpcyBhbiAN
+Cj4gPiA+IGFycmF5IG9mIHBvaW50ZXJzLiBXaGVuICdidF9wcm90bycgZGVyZWZlcmVuY2VzIGVh
+Y2ggZWxlbWVudCwgaXQgDQo+ID4gPiB3b3VsZCBjaGVjayB3aGV0aGVyIHRoZSBlbGVtZW50IGlz
+IGVtcHR5IG9yIG5vdC4gVGhlcmVmb3JlLCB0aGUgDQo+ID4gPiBwcm9ibGVtIG9mIG51bGwgcG9p
+bnRlciBkZWZlcmVuY2UgZG9lcyBub3Qgb2NjdXIuDQo+ID4gPg0KPiA+ID4gRm91bmQgYnkgaW5z
+cGVjdGlvbi4NCj4gPiA+DQo+ID4gPiBGaXhlczogOGM4ZGU1ODljZWRkICgiQmx1ZXRvb3RoOiBB
+ZGRlZCAvcHJvYy9uZXQvY210cCB2aWEgDQo+ID4gPiBidF9wcm9jZnNfaW5pdCgpIikNCj4gPiA+
+IFNpZ25lZC1vZmYtYnk6IENoZW55dWFuIE1pIDxtaWNoZW55dWFuQGh1YXdlaS5jb20+DQo+ID4N
+Cj4gPiBSZXZpZXdlZC1ieTogU2ltb24gSG9ybWFuIDxzaW1vbi5ob3JtYW5AY29yaWdpbmUuY29t
+Pg0KPiA+DQo+ID4gPiAtLS0NCj4gPiA+ICBuZXQvYmx1ZXRvb3RoL2NtdHAvc29jay5jIHwgMiAr
+LQ0KPiA+ID4gIDEgZmlsZXMgY2hhbmdlZCwgMSBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0p
+DQo+ID4gPg0KPiA+ID4gZGlmZiAtLWdpdCBhL25ldC9ibHVldG9vdGgvY210cC9zb2NrLmMgYi9u
+ZXQvYmx1ZXRvb3RoL2NtdHAvc29jay5jIA0KPiA+ID4gaW5kZXggOTZkNDlkOWZhZTk2Li5jZjQz
+NzAwNTVjZTIgMTAwNjQ0DQo+ID4gPiAtLS0gYS9uZXQvYmx1ZXRvb3RoL2NtdHAvc29jay5jDQo+
+ID4gPiArKysgYi9uZXQvYmx1ZXRvb3RoL2NtdHAvc29jay5jDQo+ID4gPiBAQCAtMjUwLDcgKzI1
+MCw3IEBAIGludCBjbXRwX2luaXRfc29ja2V0cyh2b2lkKQ0KPiA+ID4gICAgICAgZXJyID0gYnRf
+cHJvY2ZzX2luaXQoJmluaXRfbmV0LCAiY210cCIsICZjbXRwX3NrX2xpc3QsIE5VTEwpOw0KPiA+
+ID4gICAgICAgaWYgKGVyciA8IDApIHsNCj4gPiA+ICAgICAgICAgICAgICAgQlRfRVJSKCJGYWls
+ZWQgdG8gY3JlYXRlIENNVFAgcHJvYyBmaWxlIik7DQo+ID4gPiAtICAgICAgICAgICAgIGJ0X3Nv
+Y2tfdW5yZWdpc3RlcihCVFBST1RPX0hJRFApOw0KPiA+ID4gKyAgICAgICAgICAgICBidF9zb2Nr
+X3VucmVnaXN0ZXIoQlRQUk9UT19DTVRQKTsNCj4gPiA+ICAgICAgICAgICAgICAgZ290byBlcnJv
+cjsNCj4gPiA+ICAgICAgIH0NCj4gPiA+DQo+ID4gPiAtLQ0KPiA+ID4gMi4yNS4xDQo+ID4gPg0K
+PiANCj4gVGhpcyBvbmUgZG9lcyBub3QgYXBwZWFyIG9uIHB3IGZvciBzb21lIHJlYXNvbiwgbm90
+IHN1cmUgaWYgdGhhdCB3YXMgDQo+IGJlY2F1c2Ugb2Ygc3ViamVjdCBvciB3aGF0LCBzbyBwbGVh
+c2UgcmVzdWJtaXQgaXQsIGRvbid0IGZvcmdldCB0byBhZGQgDQo+IFJldmlld2VkLWJ5IHlvdSBn
+b3QgaW4gdGhpcyB0aHJlYWQuDQoNClllcywgY3VyaW91cy4NCg0KUGVyaGFwcyBpdCBpcyBkdWUg
+dG8gdGhlICduZXQtbmV4dCcgaW4gdGhlIHN1YmplY3QgcHJlZml4Lg0KSSBwcmV2aW91c2x5IGFk
+dmlzZWQgYWRkaW5nIHRoYXQsIHdoaWNoIEkgbm93IHNlZSB3YXMgaW4gY29ycmVjdCBhcyB0aGlz
+IGlzIGEgQmx1ZXRvb3RoIHBhdGNoLiBTb3JyeSBhYm91dCB0aGF0Lg0K
 
