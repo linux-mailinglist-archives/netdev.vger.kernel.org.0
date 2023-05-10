@@ -1,157 +1,178 @@
-Return-Path: <netdev+bounces-1504-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1505-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9276E6FE092
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:40:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 349796FE0AC
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:43:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BFB1D1C20D82
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:40:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F252B280FD1
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:43:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ABFB214AB0;
-	Wed, 10 May 2023 14:40:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B16214AA7;
+	Wed, 10 May 2023 14:43:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FB5F12B6F
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:40:50 +0000 (UTC)
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C8A8A69
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:40:37 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d9443c01a7336-1aaf21bb427so52724825ad.1
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:40:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1683729636; x=1686321636;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Kd6kEcT77nI1oDBKsN5ir2ctAlFdCVvTy+59Li4MlkA=;
-        b=CE3+Agwjke0KFC5RDWHPvTC9VtvHOBDKBuzYVqUCWwMfiDFTLSyZnUC4oGIHr3aArL
-         kKBW5Jg/PLV+HPH+N0w6M5LZHjYlBfnyBjoT8DKX1eBZC8jfVXqft8mSnug2yNDgG/gi
-         Ogm2f7jpogLoELJ6w56pe4KdUfP67zufwCV3FRC7iRpevH0nl/Km4EMzz+nyvuDCVQ8v
-         Ssbe55a/jEkaIZbYScbGOgqKBwoppBT1mxePAlqeETypHiAsvQYkrjJ4+RnuX9qTUaHR
-         nZL1uNUu8xqM6fCXmMbb47pRfsIYq/zZiUROQEvfaC/v3R9Crcge2SyKA//JDeDIgTKm
-         XR3Q==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E5B46AA8
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:43:35 +0000 (UTC)
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760FB5BAC
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:43:31 -0700 (PDT)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 258B23F4D7
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:43:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1683729808;
+	bh=VsRr4UycG64Ad7Wwitdyuus/KJ2GRNbGK68qU7i6U64=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+	b=U+JZqyV9QFYLkjndtBq79le2uXPK5NZXf1y3uurPJex5UlHlYJ7T4giZqYPqWTlte
+	 PYBPCJkM1DUNhFKpcluQCUSLiaXIIJNTBAe1qXSTv71DEDyvfFMhjOv5Hd8qveR9BL
+	 DtVp+4US5qeaPA2x1lEmI47wCXFflonKlVTjHzC6mrgiQRWViDcdM3bxwZlvoOi7nB
+	 1npkDKU94FiU1HCnXNReAdUYRScdCIZfXrPggn6WG03XR8G9Slux4lOS+TuyvFQZVL
+	 07oXH5UdiNy+g5Ha7/RPnZRqh6TmiChwXeEO5z7XPAqrBJA9y9LzYu4TCLUcSOJm0d
+	 b0u9X+BTaas8Q==
+Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-9662ead7bf8so453302666b.0
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:43:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683729636; x=1686321636;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kd6kEcT77nI1oDBKsN5ir2ctAlFdCVvTy+59Li4MlkA=;
-        b=i9EoLraFeriv2SqdCKOGycbYzQ6ctY06CYn42nonq43uQVNRywjp8V+7jHI0Rq6UgL
-         5K7WX6UQmsP/WBwZhxatN+hWwo7Ly7xze3C7dz08nXlT6wAyp8PAP0hfsioPiMj8NvBX
-         o1kLzLCvhcvv6pBRqxXLhPIVFW0H8LI1avpTsXqQPy9TIJhzfPJ2h7SchIvqoX9PQVIP
-         BNkQLAVEs53e/nWHjEYzS23jZm7cut/XsF8ED6mvUx6sQflrY90gz4GjduZWmETbSXLS
-         sOcnrK06WhJ0YbMS+JAxM3LLDUMHYSL12HFkARbBm/BJkJ6T29XVACa02ouenuVBRJIW
-         2YtQ==
-X-Gm-Message-State: AC+VfDzV8K9NC0jU+73Ew+OA6829J35Bu1yWdHryErqyPjeArY6N0zfl
-	JQsMllSB16RHLdZEgplvx4HhUg==
-X-Google-Smtp-Source: ACHHUZ6z2UxO0eeY8HV8Q2CeKxSF45ZQOWb49Ug6Th5Ek1dllZx0R2P+OXXDD8I/ZPqL2phVe+PCAg==
-X-Received: by 2002:a17:903:228c:b0:19e:6e00:4676 with SMTP id b12-20020a170903228c00b0019e6e004676mr24468658plh.61.1683729636018;
-        Wed, 10 May 2023 07:40:36 -0700 (PDT)
-Received: from [10.255.19.214] ([139.177.225.243])
-        by smtp.gmail.com with ESMTPSA id r1-20020a170902be0100b001a24cded097sm3856815pls.236.2023.05.10.07.40.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 May 2023 07:40:35 -0700 (PDT)
-Message-ID: <c4453efb-34a7-7a09-b179-e3e17b8074cc@bytedance.com>
-Date: Wed, 10 May 2023 22:40:31 +0800
+        d=1e100.net; s=20221208; t=1683729804; x=1686321804;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VsRr4UycG64Ad7Wwitdyuus/KJ2GRNbGK68qU7i6U64=;
+        b=TYc2ACllucCkEcVrVRPYBImrcIFbgVNwwYSN/WyzCFlY/DDVY/+aFGw8KM2qS1NPa8
+         o7RFWaqCpG6m6sWD7wtH4jM4G0mVj9D+MQod45sgB02DouBb5U1UtaU6QD17n+2vv9rG
+         eQyqjx3CZ8uzmtuJruuTcHxusHWwajBkr7KiQShwTFyGsPCCINMJon8galTr5PDNeQjp
+         9LKegfstbxiYb8j6rfaIWwhvSfflaiVkFnB4RM/Xuu1V+yCOemwcHQp7z3+tIsYkn6s/
+         grxllcKjV+qtd4/guINxruiFWhCR2v+tnemYiWyN86M2ctn7+ZlxjxDeDau+tkrs9ifs
+         Jc5g==
+X-Gm-Message-State: AC+VfDxo51QlTH78TpSJn9BlGG+eS4HishAgspkDSTavPOS8FC2b6kcl
+	imNYyB4IE6hL+XONUhlTiAZbn4RUTm9aFMBkmRKAa3a8KBY+j5xVdb34MXrRNSq5xH2g+c2fdwI
+	mv6vVxpkwfPeiFzH17vKBhYAqSqoqFt5E1w==
+X-Received: by 2002:a17:907:94cf:b0:8b8:c06e:52d8 with SMTP id dn15-20020a17090794cf00b008b8c06e52d8mr18552874ejc.36.1683729804688;
+        Wed, 10 May 2023 07:43:24 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4p3WcCR9YYlvqH5FEUdsaxVk8iHhVqAwORD/x5tdhZuSVIvkPty0YtMpelRGfmwuLtWDzKFw==
+X-Received: by 2002:a17:907:94cf:b0:8b8:c06e:52d8 with SMTP id dn15-20020a17090794cf00b008b8c06e52d8mr18552853ejc.36.1683729804415;
+        Wed, 10 May 2023 07:43:24 -0700 (PDT)
+Received: from amikhalitsyn.. (ip5f5bf3d5.dynamic.kabel-deutschland.de. [95.91.243.213])
+        by smtp.gmail.com with ESMTPSA id ci18-20020a170907267200b009659ecdf29fsm2753044ejc.1.2023.05.10.07.43.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 May 2023 07:43:23 -0700 (PDT)
+From: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+To: nhorman@tuxdriver.com
+Cc: davem@davemloft.net,
+	Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Christian Brauner <brauner@kernel.org>,
+	Stanislav Fomichev <sdf@google.com>,
+	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+	Xin Long <lucien.xin@gmail.com>,
+	linux-sctp@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: [PATCH net-next v2] sctp: add bpf_bypass_getsockopt proto callback
+Date: Wed, 10 May 2023 16:42:58 +0200
+Message-Id: <20230510144258.1343471-1-aleksandr.mikhalitsyn@canonical.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.1
-Subject: Re: Re: [PATCH] sock: Fix misuse of sk_under_memory_pressure()
-Content-Language: en-US
-To: Eric Dumazet <edumazet@google.com>
-Cc: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski
- <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20230506085903.96133-1-wuyun.abel@bytedance.com>
- <CANn89iK154B-NzRFymx_ggO9ZuVW-0YyHEKi6C46zjHpdRfokQ@mail.gmail.com>
-From: Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <CANn89iK154B-NzRFymx_ggO9ZuVW-0YyHEKi6C46zjHpdRfokQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Eric, thanks very much for comments!
+Add bpf_bypass_getsockopt proto callback and filter out
+SCTP_SOCKOPT_PEELOFF and SCTP_SOCKOPT_PEELOFF_FLAGS socket options
+from running eBPF hook on them.
 
-On 5/9/23 4:55 PM, Eric Dumazet wrote:
-> On Sat, May 6, 2023 at 10:59 AM Abel Wu <wuyun.abel@bytedance.com> wrote:
->>
->> The commit 180d8cd942ce ("foundations of per-cgroup memory pressure
->> controlling") wrapped proto::memory_pressure status into an accessor
->> named sk_under_memory_pressure(), and in the next commit e1aab161e013
->> ("socket: initial cgroup code") added the consideration of net-memcg
->> pressure into this accessor.
->>
->> But with the former patch applied, not all of the call sites of
->> sk_under_memory_pressure() are interested in net-memcg's pressure.
->> The __sk_mem_{raise,reduce}_allocated() only focus on proto/netns
->> pressure rather than net-memcg's. IOW this accessor are generally
->> used for deciding whether should reclaim or not.
->>
->> Fixes: e1aab161e013 ("socket: initial cgroup code")
->> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
->> ---
->>   include/net/sock.h |  5 -----
->>   net/core/sock.c    | 17 +++++++++--------
->>   2 files changed, 9 insertions(+), 13 deletions(-)
->>
->> diff --git a/include/net/sock.h b/include/net/sock.h
->> index 8b7ed7167243..752d51030c5a 100644
->> --- a/include/net/sock.h
->> +++ b/include/net/sock.h
->> @@ -1404,11 +1404,6 @@ static inline int sk_under_cgroup_hierarchy(struct sock *sk,
->>   #endif
->>   }
->>
->> -static inline bool sk_has_memory_pressure(const struct sock *sk)
->> -{
->> -       return sk->sk_prot->memory_pressure != NULL;
->> -}
->> -
->>   static inline bool sk_under_memory_pressure(const struct sock *sk)
->>   {
->>          if (!sk->sk_prot->memory_pressure)
->> diff --git a/net/core/sock.c b/net/core/sock.c
->> index 5440e67bcfe3..8d215f821ea6 100644
->> --- a/net/core/sock.c
->> +++ b/net/core/sock.c
->> @@ -3017,13 +3017,14 @@ int __sk_mem_raise_allocated(struct sock *sk, int size, int amt, int kind)
->>                  }
->>          }
->>
->> -       if (sk_has_memory_pressure(sk)) {
->> -               u64 alloc;
->> -
->> -               if (!sk_under_memory_pressure(sk))
->> -                       return 1;
->> -               alloc = sk_sockets_allocated_read_positive(sk);
->> -               if (sk_prot_mem_limits(sk, 2) > alloc *
->> +       if (prot->memory_pressure) {
-> 
-> I do not understand this patch.
-> 
-> Changelog is evasive, I do not see what practical problem you want to solve.
-> 
-> sk_has_memory_pressure() is not about memcg, simply the fact that a
-> proto has a non NULL memory_pressure pointer.
+These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOPT
+hook returns an error after success of the original handler
+sctp_getsockopt(...), userspace will receive an error from getsockopt
+syscall and will be not aware that fd was successfully installed into fdtable.
 
-Sorry for failed to provide a reasonable explanation... Would you please
-check my reply to Paolo?
+This patch was born as a result of discussion around a new SCM_PIDFD interface:
+https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com/
 
-Thanks,
-	Abel
+Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Christian Brauner <brauner@kernel.org>
+Cc: Stanislav Fomichev <sdf@google.com>
+Cc: Neil Horman <nhorman@tuxdriver.com>
+Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc: Xin Long <lucien.xin@gmail.com>
+Cc: linux-sctp@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Suggested-by: Stanislav Fomichev <sdf@google.com>
+Acked-by: Stanislav Fomichev <sdf@google.com>
+Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+---
+ net/sctp/socket.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index cda8c2874691..fed6057beb60 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -8281,6 +8281,29 @@ static int sctp_getsockopt(struct sock *sk, int level, int optname,
+ 	return retval;
+ }
+ 
++static bool sctp_bpf_bypass_getsockopt(int level, int optname)
++{
++	/*
++	 * These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOPT
++	 * hook returns an error after success of the original handler
++	 * sctp_getsockopt(...), userspace will receive an error from getsockopt
++	 * syscall and will be not aware that fd was successfully installed into fdtable.
++	 *
++	 * Let's prevent bpf cgroup hook from running on them.
++	 */
++	if (level == SOL_SCTP) {
++		switch (optname) {
++		case SCTP_SOCKOPT_PEELOFF:
++		case SCTP_SOCKOPT_PEELOFF_FLAGS:
++			return true;
++		default:
++			return false;
++		}
++	}
++
++	return false;
++}
++
+ static int sctp_hash(struct sock *sk)
+ {
+ 	/* STUB */
+@@ -9650,6 +9673,7 @@ struct proto sctp_prot = {
+ 	.shutdown    =	sctp_shutdown,
+ 	.setsockopt  =	sctp_setsockopt,
+ 	.getsockopt  =	sctp_getsockopt,
++	.bpf_bypass_getsockopt	= sctp_bpf_bypass_getsockopt,
+ 	.sendmsg     =	sctp_sendmsg,
+ 	.recvmsg     =	sctp_recvmsg,
+ 	.bind        =	sctp_bind,
+@@ -9705,6 +9729,7 @@ struct proto sctpv6_prot = {
+ 	.shutdown	= sctp_shutdown,
+ 	.setsockopt	= sctp_setsockopt,
+ 	.getsockopt	= sctp_getsockopt,
++	.bpf_bypass_getsockopt	= sctp_bpf_bypass_getsockopt,
+ 	.sendmsg	= sctp_sendmsg,
+ 	.recvmsg	= sctp_recvmsg,
+ 	.bind		= sctp_bind,
+-- 
+2.34.1
+
 
