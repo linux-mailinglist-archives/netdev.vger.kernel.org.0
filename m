@@ -1,119 +1,187 @@
-Return-Path: <netdev+bounces-1497-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1498-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CB7546FE04A
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7FC786FE057
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:32:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A15DD28152F
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:31:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 515652814F2
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:32:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3643111B9;
-	Wed, 10 May 2023 14:31:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E6198BE7;
+	Wed, 10 May 2023 14:32:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D80DF14AAD
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:31:09 +0000 (UTC)
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF6F3C3A;
-	Wed, 10 May 2023 07:31:07 -0700 (PDT)
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34AEDOC5025734;
-	Wed, 10 May 2023 14:31:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=qvkap/Y4TOHNL07iP0yA+DU+o2en3bsNw5khWwqRep4=;
- b=JuT76hqv1dTTTGM76rlFed3VtXYMk2irmt6VJdHtnvsN5wZcF8hR+OwIPFhyALcA2Ieo
- Ybp0EgABwL+5A9PBhmmsXjvxIqdLZIJ5mLSIleJfUF4CekpqsCazCt9EaHGwrYA9R1EH
- cxKaJXE9g13Q6ho50ktGu4kPm4w8+F9M2OcZUCzN8xJ/TfyNm6y8kebxcQhldOPjycdL
- NEHvTGzO1ngIYaBQ7lZdToIDdvPtgzPk3i4gjSXRN1RUktpb5pnowZMBXq+0Vfm5xjin
- UgjhVwYnoVwnsX6OUa+4rHUqaG6h6m1g8Kx4NVOg3dFObLiNY9iUkmQbIymobUmmCp+t zQ== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3qg6u0gs6r-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 10 May 2023 14:31:00 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 34AEV0nH016864
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 10 May 2023 14:31:00 GMT
-Received: from [10.216.41.111] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.42; Wed, 10 May
- 2023 07:30:54 -0700
-Message-ID: <1ffc9474-0a05-44d8-0cc0-24a065443b18@quicinc.com>
-Date: Wed, 10 May 2023 20:00:50 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CAA620B34
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:32:08 +0000 (UTC)
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3C819AD
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:32:06 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id d9443c01a7336-1aaea3909d1so68583405ad.2
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:32:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1683729126; x=1686321126;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NDPoO9iS4YMdxTYw/7S57ZbKNNVUGyiS2mNuYLdO99Q=;
+        b=WVOQZQj/jIEeoLxcpBmdx2rS3teY4rZ5OcD/qBDLQdUd/szQ3BOq2Qmx+FMS0GjWFu
+         b5w5sES/fpll4EmbKNsz9KEY6JFIf9cTz4IH9vjBJp5LMwYK93Bnvw1oFDsCeBLWSFtx
+         vaC8yJkbMthAbDhM0JuQDFGbDqjduMx/rBUPRODtb8DFdrYky8S3w6Pk26QErLGiPn2E
+         YMwAEIFW67muE+9mNAOCHcoax/0DaGTEYFul9mNEq0J/9OFPyLgkfirLlqx+Gmsbka+G
+         x+ir9BM4j8Jm4FqAZWPNnonNiTc54pKMtcIsjqwu/T8q653CsCOZd5JcTGxFiFDb2LvB
+         cnrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683729126; x=1686321126;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NDPoO9iS4YMdxTYw/7S57ZbKNNVUGyiS2mNuYLdO99Q=;
+        b=dzJk6NYGorPmajT42QABqxHc/Zl1VAftmtZl+vICbxFVpDdmaNTDFH2M9PV106ASVW
+         eT6f125QaYr4PiTC9ZvD6Hw9oKiQ5MES25Vz3peex/MelylbVDKyO8TFVAKhnj/AMu6h
+         6331pM8oqNC6/xvrk1L65qSiTpFRm03ZZSOKgjTggpKkHjYrY2/DsN6qF4kTPOn5/L0/
+         9UyWdHTWojegBjUfx8Pv7HBQ9KT5HaGsCGYNAiQ6kAuHAU55JVQlrV4uwNG7StAWaMLX
+         r5BldF93Or7s+1O7QHjwP+P71p8+nAEyRRrcBd4sDCjSUQ5qWy2lEFGgMGPm+Ih5DRfE
+         UR/Q==
+X-Gm-Message-State: AC+VfDwCZCtdt0Shm33G4iGMiqDc7QuQfMdfDP3OebrwOT0duObQ7DQL
+	VZcTlS3A1sZ+VEJMbFNryQG8P44H9PWwa6IMIqa1lA==
+X-Google-Smtp-Source: ACHHUZ6bpmGB1LJLUBKPjVe2AFdOvxthT3r8P2+tSxk4Sig/VgtKri4YqrLDhzXGEweblHOTvaxSctXPtlAIFgBJx5Q=
+X-Received: by 2002:a17:90b:1d87:b0:24d:fb82:71ab with SMTP id
+ pf7-20020a17090b1d8700b0024dfb8271abmr18213899pjb.26.1683729126170; Wed, 10
+ May 2023 07:32:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v6 4/4] pinctrl: qcom: Add SDX75 pincontrol driver
-Content-Language: en-US
-To: <andy.shevchenko@gmail.com>
-CC: <agross@kernel.org>, <andersson@kernel.org>, <konrad.dybcio@linaro.org>,
-        <linus.walleij@linaro.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <richardcochran@gmail.com>,
-        <manivannan.sadhasivam@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <1683718725-14869-1-git-send-email-quic_rohiagar@quicinc.com>
- <1683718725-14869-5-git-send-email-quic_rohiagar@quicinc.com>
- <ZFun8m5y-r0yUHhq@surfacebook>
-From: Rohit Agarwal <quic_rohiagar@quicinc.com>
-In-Reply-To: <ZFun8m5y-r0yUHhq@surfacebook>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: J_TKjw0X-VTOUwa6NEhUNkLYpk-zGXbJ
-X-Proofpoint-ORIG-GUID: J_TKjw0X-VTOUwa6NEhUNkLYpk-zGXbJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-10_04,2023-05-05_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- malwarescore=0 mlxlogscore=844 clxscore=1015 priorityscore=1501 mlxscore=0
- lowpriorityscore=0 adultscore=0 spamscore=0 phishscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
- definitions=main-2305100117
-X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <20230510131527.1244929-1-aleksandr.mikhalitsyn@canonical.com>
+In-Reply-To: <20230510131527.1244929-1-aleksandr.mikhalitsyn@canonical.com>
+From: Stanislav Fomichev <sdf@google.com>
+Date: Wed, 10 May 2023 07:31:55 -0700
+Message-ID: <CAKH8qBuzWHoEiABvTgM2qnx5Av127VMHnncGtU5EZq+ffT9eGg@mail.gmail.com>
+Subject: Re: [PATCH net-next] sctp: add bpf_bypass_getsockopt proto callback
+To: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Cc: nhorman@tuxdriver.com, davem@davemloft.net, 
+	Daniel Borkmann <daniel@iogearbox.net>, Christian Brauner <brauner@kernel.org>, 
+	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>, Xin Long <lucien.xin@gmail.com>, 
+	linux-sctp@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
-On 5/10/2023 7:49 PM, andy.shevchenko@gmail.com wrote:
-> Wed, May 10, 2023 at 05:08:45PM +0530, Rohit Agarwal kirjoitti:
->> Add initial Qualcomm SDX75 pinctrl driver to support pin configuration
->> with pinctrl framework for SDX75 SoC.
->> While at it, reordering the SDX65 entry.
-> ...
+On Wed, May 10, 2023 at 6:15=E2=80=AFAM Alexander Mikhalitsyn
+<aleksandr.mikhalitsyn@canonical.com> wrote:
 >
->> +#define FUNCTION(n)							\
->> +	[msm_mux_##n] = {						\
->> +			.func = PINCTRL_PINFUNCTION(#n,			\
->> +					n##_groups,			\
->> +					ARRAY_SIZE(n##_groups))		\
->> +			}
-> But don't you now have MSM_PIN_FUNCTION() macro?
+> Add bpf_bypass_getsockopt proto callback and filter out
+> SCTP_SOCKOPT_PEELOFF and SCTP_SOCKOPT_PEELOFF_FLAGS socket options
+> from running eBPF hook on them.
+>
+> These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOPT
+> hook returns an error after success of the original handler
+> sctp_getsockopt(...), userspace will receive an error from getsockopt
+> syscall and will be not aware that fd was successfully installed into fdt=
+able.
+>
+> This patch was born as a result of discussion around a new SCM_PIDFD inte=
+rface:
+> https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikhalitsyn=
+@canonical.com/
+>
+> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Christian Brauner <brauner@kernel.org>
+> Cc: Stanislav Fomichev <sdf@google.com>
+> Cc: Neil Horman <nhorman@tuxdriver.com>
+> Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> Cc: Xin Long <lucien.xin@gmail.com>
+> Cc: linux-sctp@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com=
+>
 
-So Sorry, a mistake from my end. Will immediately update.
+Acked-by: Stanislav Fomichev <sdf@google.com>
 
-Thanks for reviewing.
-Rohit.
+with a small nit below
 
+> ---
+>  net/sctp/socket.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+>
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index cda8c2874691..a9a0ababea90 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -8281,6 +8281,29 @@ static int sctp_getsockopt(struct sock *sk, int le=
+vel, int optname,
+>         return retval;
+>  }
+>
 
+[...]
+
+> +bool sctp_bpf_bypass_getsockopt(int level, int optname)
+
+static bool ... ? You're not making it indirect-callable, so seems
+fine to keep private to this compilation unit?
+
+> +{
+> +       /*
+> +        * These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETS=
+OCKOPT
+> +        * hook returns an error after success of the original handler
+> +        * sctp_getsockopt(...), userspace will receive an error from get=
+sockopt
+> +        * syscall and will be not aware that fd was successfully install=
+ed into fdtable.
+> +        *
+> +        * Let's prevent bpf cgroup hook from running on them.
+> +        */
+> +       if (level =3D=3D SOL_SCTP) {
+> +               switch (optname) {
+> +               case SCTP_SOCKOPT_PEELOFF:
+> +               case SCTP_SOCKOPT_PEELOFF_FLAGS:
+> +                       return true;
+> +               default:
+> +                       return false;
+> +               }
+> +       }
+> +
+> +       return false;
+> +}
+> +
+>  static int sctp_hash(struct sock *sk)
+>  {
+>         /* STUB */
+> @@ -9650,6 +9673,7 @@ struct proto sctp_prot =3D {
+>         .shutdown    =3D  sctp_shutdown,
+>         .setsockopt  =3D  sctp_setsockopt,
+>         .getsockopt  =3D  sctp_getsockopt,
+> +       .bpf_bypass_getsockopt  =3D sctp_bpf_bypass_getsockopt,
+>         .sendmsg     =3D  sctp_sendmsg,
+>         .recvmsg     =3D  sctp_recvmsg,
+>         .bind        =3D  sctp_bind,
+> @@ -9705,6 +9729,7 @@ struct proto sctpv6_prot =3D {
+>         .shutdown       =3D sctp_shutdown,
+>         .setsockopt     =3D sctp_setsockopt,
+>         .getsockopt     =3D sctp_getsockopt,
+> +       .bpf_bypass_getsockopt  =3D sctp_bpf_bypass_getsockopt,
+>         .sendmsg        =3D sctp_sendmsg,
+>         .recvmsg        =3D sctp_recvmsg,
+>         .bind           =3D sctp_bind,
+> --
+> 2.34.1
 >
 
