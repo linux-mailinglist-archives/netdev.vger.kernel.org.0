@@ -1,361 +1,141 @@
-Return-Path: <netdev+bounces-1511-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1512-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 642586FE0D1
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:51:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0EA936FE0D7
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:55:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 45A881C20DCC
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:51:40 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C7009281528
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:55:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 577C416404;
-	Wed, 10 May 2023 14:51:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 971D516406;
+	Wed, 10 May 2023 14:55:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46F1C14A93
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:51:40 +0000 (UTC)
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582831BD6
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:51:38 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34AEJS7Q010199;
-	Wed, 10 May 2023 07:51:31 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=zZyYX7X/PbAKUIbUmzlqoMdpFJPRiwF2xrgcpTzNdxI=;
- b=E2Y4fUKF8NUerbsEBkBwYAyM6n376SWyZFtcEpcpSwwKf0BhB6UPYq8vlnl/6jggksC6
- f7H6Yj8PAnccFlbN7cd+hcGjDJ0HhdGRQr8piYRhjS//eAsnXPSx07uM8EuG3BM6euk1
- v+yvJRLSsH4gW+Z/OXv9L/OllEpWY5CKG8P58o/IRbTYftSwLbcNfaD5rz89p2k4okY0
- cYBanTAjpfNpElFmU4tgFD+a6t0leWB5Buyz9luJT5dZlXyOe4wTI2d+04+X42SYFM9O
- ByJbpqvifJrzmqqjDHUJWHoBxgce6b13qLGNpUXBaFb2B7/LssHVkB16IvsFsHRmTJyu eA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3qf77s6pb0-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Wed, 10 May 2023 07:51:31 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 10 May
- 2023 07:51:28 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Wed, 10 May 2023 07:51:28 -0700
-Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-	by maili.marvell.com (Postfix) with ESMTP id 6D84E3F7067;
-	Wed, 10 May 2023 07:51:25 -0700 (PDT)
-From: Subbaraya Sundeep <sbhatta@marvell.com>
-To: <netdev@vger.kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>
-CC: <gakula@marvell.com>, <naveenm@marvell.com>, <hkelam@marvell.com>,
-        <lcherian@marvell.com>, Subbaraya Sundeep <sbhatta@marvell.com>,
-        "Sunil
- Kovvuri Goutham" <sgoutham@marvell.com>
-Subject: [net-next PATCH] octeontx2-pf: mcs: Offload extended packet number(XPN) feature
-Date: Wed, 10 May 2023 20:21:23 +0530
-Message-ID: <1683730283-9353-1-git-send-email-sbhatta@marvell.com>
-X-Mailer: git-send-email 2.7.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86E5014A93
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:55:54 +0000 (UTC)
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEB22108
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:55:51 -0700 (PDT)
+Received: from mail-yw1-f197.google.com (mail-yw1-f197.google.com [209.85.128.197])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id F233F3F32E
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:55:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1683730549;
+	bh=REcjCSTFLW6DxVGPSke0wQC0F9pbu2fUgTklQWt5AuI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type;
+	b=fmZ2wIuGSHsU7PDNHnHnmKrmLcbM6T+MeUK+3KcttiBcAzDs5l+HIGD3g8y4y6Uv8
+	 MBhgdVWG5HVd7I6OKs2pjTURFG5IIgye/TRtjRO7JCbyV26Olpjr6jlDSMeDRKAc8Q
+	 HJXPcHkZ4VbpyimBEXUBsf7Eyr+r+rUK9pf9ljQ5aSpTVN0EwBUaKWQQjOHXti0uSX
+	 so9j+v1o5TduuysxpuAOaMbZajY8QflHAoAnVDO5e4R3C9qgRwRpBl5zDvqpIzEEKS
+	 1grOw5Oh+LWVqukfwb6LY9n4Z0vlymg3UOTT2TENUFF389cgrnS0LHe3j6uPeo6HQc
+	 i1RCjputSPwpw==
+Received: by mail-yw1-f197.google.com with SMTP id 00721157ae682-560ee0df572so8579537b3.0
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:55:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683730549; x=1686322549;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=REcjCSTFLW6DxVGPSke0wQC0F9pbu2fUgTklQWt5AuI=;
+        b=BVZZeYqvVAE3RRimZ2rE7pmHg6f8WLwN5T5KGfcKYWfhYfwMuYABhuAj/pnQJPYOLK
+         X81Z5u7RByxgF9RpyrsuAABANGSkccvmBP856jfrHt7F8wQN+I/vOFwyp8n8P9ppq+Ie
+         CB7ZwaxvYMxsDlX79qkt1itJGbdhzuFDwIENO9dgSkMgK1Qipk8GZQefrhm37+N+0d/y
+         DZpkpeqt1qs/w/tS3c7EW0dotUe+wQ9oTag3iIxxKAA83i8LYArjXdeLjDXhXdTWgQo4
+         lHgc+0TTWhj91wPzWvuhKNE8lxOg8mzcszjmHIkeyZs29wO4XBXkHMOK6JbyOZ4gHpGS
+         10hQ==
+X-Gm-Message-State: AC+VfDwyAJSDfBiXW+DWsB46nJnYaO43K/J7R8rRYMj9POSkfqLJZ4rI
+	lWsbVTZOCDrOfckxYuWet+n3kiqQXXu7d34TFtvsJYbY4cTZMKkdLTvXDxX+EGvBZFzS2M7bDFG
+	mNMHOIXpk/dytXguQCWYVqAS1xdYvEnLyyhYGnmriBz15EmdEgA==
+X-Received: by 2002:a81:83c7:0:b0:559:f029:992d with SMTP id t190-20020a8183c7000000b00559f029992dmr19067710ywf.24.1683730548828;
+        Wed, 10 May 2023 07:55:48 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4Hnxj29587wz4D/QOv5wYbNoK5zIRdPowtRAgz0Cdi165hPAX1WVSJsBubNrvNcm9fx26AIHNjd27vMKw8uio=
+X-Received: by 2002:a81:83c7:0:b0:559:f029:992d with SMTP id
+ t190-20020a8183c7000000b00559f029992dmr19067692ywf.24.1683730548592; Wed, 10
+ May 2023 07:55:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Hrewnoy5araSoa_5eb_w03bczZQP8R4r
-X-Proofpoint-GUID: Hrewnoy5araSoa_5eb_w03bczZQP8R4r
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-10_04,2023-05-05_01,2023-02-09_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230510131527.1244929-1-aleksandr.mikhalitsyn@canonical.com> <ZFusunmfAaQVmBE2@t14s.localdomain>
+In-Reply-To: <ZFusunmfAaQVmBE2@t14s.localdomain>
+From: Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Date: Wed, 10 May 2023 16:55:37 +0200
+Message-ID: <CAEivzxdfZaLD40cBKo7aqiwspwBeqeULR+RAv6jJ_wo-zV6UpQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] sctp: add bpf_bypass_getsockopt proto callback
+To: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc: nhorman@tuxdriver.com, davem@davemloft.net, 
+	Daniel Borkmann <daniel@iogearbox.net>, Christian Brauner <brauner@kernel.org>, 
+	Stanislav Fomichev <sdf@google.com>, Xin Long <lucien.xin@gmail.com>, linux-sctp@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The macsec hardware block supports XPN cipher suites also.
-Hence added changes to offload XPN feature. Changes include
-configuring SecY policy to XPN cipher suite, Salt and SSCI values.
-64 bit packet number is passed instead of 32 bit packet number.
+On Wed, May 10, 2023 at 4:39=E2=80=AFPM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Wed, May 10, 2023 at 03:15:27PM +0200, Alexander Mikhalitsyn wrote:
+> > Add bpf_bypass_getsockopt proto callback and filter out
+> > SCTP_SOCKOPT_PEELOFF and SCTP_SOCKOPT_PEELOFF_FLAGS socket options
+> > from running eBPF hook on them.
+> >
+> > These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOPT
+> > hook returns an error after success of the original handler
+> > sctp_getsockopt(...), userspace will receive an error from getsockopt
+> > syscall and will be not aware that fd was successfully installed into f=
+dtable.
+> >
+> > This patch was born as a result of discussion around a new SCM_PIDFD in=
+terface:
+> > https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikhalits=
+yn@canonical.com/
+>
+> I read some of the emails in there but I don't get why the fd leak is
+> special here. I mean, I get that it leaks, but masking the error
+> return like this can lead to several other problems in the application
+> as well.
+>
+> For example, SCTP_SOCKOPT_CONNECTX3 will trigger a connect(). If it
+> failed, and the hook returns success, the user app will at least log a
+> wrong "connection successful".
+>
+> If the hook can't be responsible for cleaning up before returning a
+> different value, then maybe we want to extend the list of sockopts in
+> here. AFAICT these would be the 3 most critical sockopts.
+>
 
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
- .../ethernet/marvell/octeontx2/nic/cn10k_macsec.c  | 89 +++++++++++++++++-----
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  5 ++
- 2 files changed, 75 insertions(+), 19 deletions(-)
+Dear Marcelo,
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
-index aea4c80..37420f9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
-@@ -6,7 +6,6 @@
- 
- #include <linux/rtnetlink.h>
- #include <linux/bitfield.h>
--#include <net/macsec.h>
- #include "otx2_common.h"
- 
- #define MCS_TCAM0_MAC_DA_MASK		GENMASK_ULL(47, 0)
-@@ -212,6 +211,7 @@ static int cn10k_mcs_write_rx_secy(struct otx2_nic *pfvf,
- 	struct mcs_secy_plcy_write_req *req;
- 	struct mbox *mbox = &pfvf->mbox;
- 	u64 policy;
-+	u8 cipher;
- 	int ret;
- 
- 	mutex_lock(&mbox->lock);
-@@ -227,7 +227,21 @@ static int cn10k_mcs_write_rx_secy(struct otx2_nic *pfvf,
- 		policy |= MCS_RX_SECY_PLCY_RP;
- 
- 	policy |= MCS_RX_SECY_PLCY_AUTH_ENA;
--	policy |= FIELD_PREP(MCS_RX_SECY_PLCY_CIP, MCS_GCM_AES_128);
-+
-+	switch (secy->key_len) {
-+	case 16:
-+		cipher = secy->xpn ? MCS_GCM_AES_XPN_128 : MCS_GCM_AES_128;
-+		break;
-+	case 32:
-+		cipher = secy->xpn ? MCS_GCM_AES_XPN_256 : MCS_GCM_AES_256;
-+		break;
-+	default:
-+		cipher = MCS_GCM_AES_128;
-+		dev_warn(pfvf->dev, "Unsupported key length\n");
-+		break;
-+	};
-+
-+	policy |= FIELD_PREP(MCS_RX_SECY_PLCY_CIP, cipher);
- 	policy |= FIELD_PREP(MCS_RX_SECY_PLCY_VAL, secy->validate_frames);
- 
- 	policy |= MCS_RX_SECY_PLCY_ENA;
-@@ -323,9 +337,12 @@ static int cn10k_mcs_write_rx_sa_plcy(struct otx2_nic *pfvf,
- {
- 	unsigned char *src = rxsc->sa_key[assoc_num];
- 	struct mcs_sa_plcy_write_req *plcy_req;
-+	u8 *salt_p = rxsc->salt[assoc_num];
- 	struct mcs_rx_sc_sa_map *map_req;
- 	struct mbox *mbox = &pfvf->mbox;
-+	u64 ssci_salt_95_64 = 0;
- 	u8 reg, key_len;
-+	u64 salt_63_0;
- 	int ret;
- 
- 	mutex_lock(&mbox->lock);
-@@ -349,6 +366,15 @@ static int cn10k_mcs_write_rx_sa_plcy(struct otx2_nic *pfvf,
- 		reg++;
- 	}
- 
-+	if (secy->xpn) {
-+		memcpy((u8 *)&salt_63_0, salt_p, 8);
-+		memcpy((u8 *)&ssci_salt_95_64, salt_p + 8, 4);
-+		ssci_salt_95_64 |= (u64)rxsc->ssci[assoc_num] << 32;
-+
-+		plcy_req->plcy[0][6] = salt_63_0;
-+		plcy_req->plcy[0][7] = ssci_salt_95_64;
-+	}
-+
- 	plcy_req->sa_index[0] = rxsc->hw_sa_id[assoc_num];
- 	plcy_req->sa_cnt = 1;
- 	plcy_req->dir = MCS_RX;
-@@ -404,6 +430,7 @@ static int cn10k_mcs_write_tx_secy(struct otx2_nic *pfvf,
- 	u8 tag_offset = 12;
- 	u8 sectag_tci = 0;
- 	u64 policy;
-+	u8 cipher;
- 	int ret;
- 
- 	sw_tx_sc = &secy->tx_sc;
-@@ -434,7 +461,21 @@ static int cn10k_mcs_write_tx_secy(struct otx2_nic *pfvf,
- 	policy |= FIELD_PREP(MCS_TX_SECY_PLCY_ST_OFFSET, tag_offset);
- 	policy |= MCS_TX_SECY_PLCY_INS_MODE;
- 	policy |= MCS_TX_SECY_PLCY_AUTH_ENA;
--	policy |= FIELD_PREP(MCS_TX_SECY_PLCY_CIP, MCS_GCM_AES_128);
-+
-+	switch (secy->key_len) {
-+	case 16:
-+		cipher = secy->xpn ? MCS_GCM_AES_XPN_128 : MCS_GCM_AES_128;
-+		break;
-+	case 32:
-+		cipher = secy->xpn ? MCS_GCM_AES_XPN_256 : MCS_GCM_AES_256;
-+		break;
-+	default:
-+		cipher = MCS_GCM_AES_128;
-+		dev_warn(pfvf->dev, "Unsupported key length\n");
-+		break;
-+	};
-+
-+	policy |= FIELD_PREP(MCS_TX_SECY_PLCY_CIP, cipher);
- 
- 	if (secy->protect_frames)
- 		policy |= MCS_TX_SECY_PLCY_PROTECT;
-@@ -544,8 +585,11 @@ static int cn10k_mcs_write_tx_sa_plcy(struct otx2_nic *pfvf,
- {
- 	unsigned char *src = txsc->sa_key[assoc_num];
- 	struct mcs_sa_plcy_write_req *plcy_req;
-+	u8 *salt_p = txsc->salt[assoc_num];
- 	struct mbox *mbox = &pfvf->mbox;
-+	u64 ssci_salt_95_64 = 0;
- 	u8 reg, key_len;
-+	u64 salt_63_0;
- 	int ret;
- 
- 	mutex_lock(&mbox->lock);
-@@ -561,6 +605,15 @@ static int cn10k_mcs_write_tx_sa_plcy(struct otx2_nic *pfvf,
- 		reg++;
- 	}
- 
-+	if (secy->xpn) {
-+		memcpy((u8 *)&salt_63_0, salt_p, 8);
-+		memcpy((u8 *)&ssci_salt_95_64, salt_p + 8, 4);
-+		ssci_salt_95_64 |= (u64)txsc->ssci[assoc_num] << 32;
-+
-+		plcy_req->plcy[0][6] = salt_63_0;
-+		plcy_req->plcy[0][7] = ssci_salt_95_64;
-+	}
-+
- 	plcy_req->plcy[0][8] = assoc_num;
- 	plcy_req->sa_index[0] = txsc->hw_sa_id[assoc_num];
- 	plcy_req->sa_cnt = 1;
-@@ -922,8 +975,7 @@ static int cn10k_mcs_secy_tx_cfg(struct otx2_nic *pfvf, struct macsec_secy *secy
- {
- 	if (sw_tx_sa) {
- 		cn10k_mcs_write_tx_sa_plcy(pfvf, secy, txsc, sa_num);
--		cn10k_write_tx_sa_pn(pfvf, txsc, sa_num,
--				     sw_tx_sa->next_pn_halves.lower);
-+		cn10k_write_tx_sa_pn(pfvf, txsc, sa_num, sw_tx_sa->next_pn);
- 		cn10k_mcs_link_tx_sa2sc(pfvf, secy, txsc, sa_num,
- 					sw_tx_sa->active);
- 	}
-@@ -959,7 +1011,7 @@ static int cn10k_mcs_secy_rx_cfg(struct otx2_nic *pfvf,
- 			cn10k_mcs_write_rx_sa_plcy(pfvf, secy, mcs_rx_sc,
- 						   sa_num, sw_rx_sa->active);
- 			cn10k_mcs_write_rx_sa_pn(pfvf, mcs_rx_sc, sa_num,
--						 sw_rx_sa->next_pn_halves.lower);
-+						 sw_rx_sa->next_pn);
- 		}
- 
- 		cn10k_mcs_write_rx_flowid(pfvf, mcs_rx_sc, hw_secy_id);
-@@ -1103,13 +1155,6 @@ static int cn10k_mdo_add_secy(struct macsec_context *ctx)
- 	if (secy->icv_len != MACSEC_DEFAULT_ICV_LEN)
- 		return -EOPNOTSUPP;
- 
--	/* Stick to 16 bytes key len until XPN support is added */
--	if (secy->key_len != 16)
--		return -EOPNOTSUPP;
--
--	if (secy->xpn)
--		return -EOPNOTSUPP;
--
- 	txsc = cn10k_mcs_create_txsc(pfvf);
- 	if (IS_ERR(txsc))
- 		return -ENOSPC;
-@@ -1202,6 +1247,9 @@ static int cn10k_mdo_add_txsa(struct macsec_context *ctx)
- 		return -ENOSPC;
- 
- 	memcpy(&txsc->sa_key[sa_num], ctx->sa.key, secy->key_len);
-+	memcpy(&txsc->salt[sa_num], sw_tx_sa->key.salt.bytes, MACSEC_SALT_LEN);
-+	txsc->ssci[sa_num] = sw_tx_sa->ssci;
-+
- 	txsc->sa_bmap |= 1 << sa_num;
- 
- 	if (netif_running(secy->netdev)) {
-@@ -1210,7 +1258,7 @@ static int cn10k_mdo_add_txsa(struct macsec_context *ctx)
- 			return err;
- 
- 		err = cn10k_write_tx_sa_pn(pfvf, txsc, sa_num,
--					   sw_tx_sa->next_pn_halves.lower);
-+					   sw_tx_sa->next_pn);
- 		if (err)
- 			return err;
- 
-@@ -1243,7 +1291,7 @@ static int cn10k_mdo_upd_txsa(struct macsec_context *ctx)
- 	if (netif_running(secy->netdev)) {
- 		/* Keys cannot be changed after creation */
- 		err = cn10k_write_tx_sa_pn(pfvf, txsc, sa_num,
--					   sw_tx_sa->next_pn_halves.lower);
-+					   sw_tx_sa->next_pn);
- 		if (err)
- 			return err;
- 
-@@ -1353,7 +1401,6 @@ static int cn10k_mdo_add_rxsa(struct macsec_context *ctx)
- 	struct macsec_rx_sc *sw_rx_sc = ctx->sa.rx_sa->sc;
- 	struct cn10k_mcs_cfg *cfg = pfvf->macsec_cfg;
- 	struct macsec_rx_sa *rx_sa = ctx->sa.rx_sa;
--	u64 next_pn = rx_sa->next_pn_halves.lower;
- 	struct macsec_secy *secy = ctx->secy;
- 	bool sa_in_use = rx_sa->active;
- 	u8 sa_num = ctx->sa.assoc_num;
-@@ -1371,6 +1418,9 @@ static int cn10k_mdo_add_rxsa(struct macsec_context *ctx)
- 		return -ENOSPC;
- 
- 	memcpy(&rxsc->sa_key[sa_num], ctx->sa.key, ctx->secy->key_len);
-+	memcpy(&rxsc->salt[sa_num], rx_sa->key.salt.bytes, MACSEC_SALT_LEN);
-+	rxsc->ssci[sa_num] = rx_sa->ssci;
-+
- 	rxsc->sa_bmap |= 1 << sa_num;
- 
- 	if (netif_running(secy->netdev)) {
-@@ -1379,7 +1429,8 @@ static int cn10k_mdo_add_rxsa(struct macsec_context *ctx)
- 		if (err)
- 			return err;
- 
--		err = cn10k_mcs_write_rx_sa_pn(pfvf, rxsc, sa_num, next_pn);
-+		err = cn10k_mcs_write_rx_sa_pn(pfvf, rxsc, sa_num,
-+					       rx_sa->next_pn);
- 		if (err)
- 			return err;
- 	}
-@@ -1393,7 +1444,6 @@ static int cn10k_mdo_upd_rxsa(struct macsec_context *ctx)
- 	struct macsec_rx_sc *sw_rx_sc = ctx->sa.rx_sa->sc;
- 	struct cn10k_mcs_cfg *cfg = pfvf->macsec_cfg;
- 	struct macsec_rx_sa *rx_sa = ctx->sa.rx_sa;
--	u64 next_pn = rx_sa->next_pn_halves.lower;
- 	struct macsec_secy *secy = ctx->secy;
- 	bool sa_in_use = rx_sa->active;
- 	u8 sa_num = ctx->sa.assoc_num;
-@@ -1412,7 +1462,8 @@ static int cn10k_mdo_upd_rxsa(struct macsec_context *ctx)
- 		if (err)
- 			return err;
- 
--		err = cn10k_mcs_write_rx_sa_pn(pfvf, rxsc, sa_num, next_pn);
-+		err = cn10k_mcs_write_rx_sa_pn(pfvf, rxsc, sa_num,
-+					       rx_sa->next_pn);
- 		if (err)
- 			return err;
- 	}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 0c8fc66..d17274a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -15,6 +15,7 @@
- #include <linux/ptp_clock_kernel.h>
- #include <linux/timecounter.h>
- #include <linux/soc/marvell/octeontx2/asm.h>
-+#include <net/macsec.h>
- #include <net/pkt_cls.h>
- #include <net/devlink.h>
- #include <linux/time64.h>
-@@ -398,6 +399,8 @@ struct cn10k_mcs_txsc {
- 	u8 sa_bmap;
- 	u8 sa_key[CN10K_MCS_SA_PER_SC][MACSEC_MAX_KEY_LEN];
- 	u8 encoding_sa;
-+	u8 salt[CN10K_MCS_SA_PER_SC][MACSEC_SALT_LEN];
-+	ssci_t ssci[CN10K_MCS_SA_PER_SC];
- };
- 
- struct cn10k_mcs_rxsc {
-@@ -410,6 +413,8 @@ struct cn10k_mcs_rxsc {
- 	u16 hw_sa_id[CN10K_MCS_SA_PER_SC];
- 	u8 sa_bmap;
- 	u8 sa_key[CN10K_MCS_SA_PER_SC][MACSEC_MAX_KEY_LEN];
-+	u8 salt[CN10K_MCS_SA_PER_SC][MACSEC_SALT_LEN];
-+	ssci_t ssci[CN10K_MCS_SA_PER_SC];
- };
- 
- struct cn10k_mcs_cfg {
--- 
-2.7.4
+Thanks for pointing this out. Initially this problem was discovered by
+Christian Brauner and for SO_PEERPIDFD (a new SOL_SOCKET option that
+we want to add),
+after this I decided to check if we do fd_install in any other socket
+options in the kernel and found that we have 2 cases in SCTP. It was
+an accidental finding. :)
 
+So, this patch isn't specific to fd_install things and probably we
+should filter out bpf hook from being called for other socket options
+as well.
+
+So, I need to filter out SCTP_SOCKOPT_CONNECTX3 and
+SCTP_SOCKOPT_PEELOFF* for SCTP, right?
+
+Kind regards,
+Alex
 
