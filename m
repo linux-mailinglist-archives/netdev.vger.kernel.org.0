@@ -1,282 +1,153 @@
-Return-Path: <netdev+bounces-1401-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1402-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 784786FDAF8
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:42:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 80C406FDAF9
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:43:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3EB8F28125C
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 09:42:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CBBF22812BD
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 09:43:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEFC66FD5;
-	Wed, 10 May 2023 09:40:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E79366AB1;
+	Wed, 10 May 2023 09:42:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD2D020B41
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 09:40:58 +0000 (UTC)
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2B2359D2
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 02:40:53 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-3f42397f41fso100555e9.1
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 02:40:53 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B3820B41
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 09:42:27 +0000 (UTC)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2104.outbound.protection.outlook.com [40.107.92.104])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9295D469B;
+	Wed, 10 May 2023 02:42:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=boyi01OTOBb1UuVfSd7rjba3EKhJtFBk60NocdsWENOA96JEGYjDqf/F/WY1ZJwYukfTWQlmIa+v+kiB7DOLIdjtWch4UvHlmvy59H9ppRl0G53vviAt2ftUYfeiJKvsf8t2e1J95DvlFDIDOvZGn3ZR1Cq9ILv9STuh34DFXEgEzDWIb4XV6Qm/MF13DjNFMnoXY2PEmgYuc++ohx6F35ZsT1GnrIh5GnMJp0HIUqy/HV4aGyBFj4A+nQPccSa5NXuPjpk/AC9wEgP/jbzfKPvmHJ2qrrdPZ86FkBgg9xEIHQyjv1vMyox+NS32pjuwwlqME+N2KmcXB6Ljp/RzPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9SnRtIk25akYcBD4ABFC5gCWdL+GrMUFhogG4KpVu7g=;
+ b=SdC25PzEdvdMRfa8LKlnw8ZMzG0EsnoGYjVv4cQn46R1XHuVxpzNR3QPlAv1k0m5V1WmV+XEDxGS7Xr6eMEXSHFFR+TV9bGYvLHFinnUaOY8LeuaQeWQE8mL0ii/rTvpaPSgbUrVUakW9m04U4NblneCvyX66nibcZJ6+mN364AeUFMHMx7BleDvYRHXbwcBHI9cDqrgbzAeONe1Hvzt93kzPT8FoDsezZmB6umawMQ9G9M0aBAKYrWYjQJ+9pj32BBcz4UV8d7vGowtwGKVlkiUYGtGqQEOxnIYLzynbQ79kHcZ+YwStonwUTBhWKz8jjTEQMR1ndQX2w2dfRlBnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683711652; x=1686303652;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TX5alCvzrkJuD2LWGn4chNBGuFcNwA/6OWtCWQMv8Rw=;
-        b=6dQcQvDlrMYmOpX7GosMBsrslivunRB2alvZl1PZGWA7SyAgSkEI8/021k41KHIfJR
-         ZVJpfZXlCg+dV+N/5/lzCez1QUWUUUKCl9i9lLl3wm1+zcy4fuHEO42KYs4u6S9tF3Sm
-         xxfUCE+9TRPSNiDXUsxV+9F7v9TtybQUn5fesjIXJ0YCBu2s0Xk+NuCMFsNaHGm+n452
-         18qKaonLb+eWd3inkEQhjxMxCxvS/udf3eHb4grjfcAnYJUIwSgp7aEBH1RGq7S4kBNz
-         8qfJldeFnH4QZHbq7FWgLxeW94WTqirQSUFc+a4Vl/T32EsvxBNxcJzA14E+ZLlbhbEK
-         8VJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683711652; x=1686303652;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TX5alCvzrkJuD2LWGn4chNBGuFcNwA/6OWtCWQMv8Rw=;
-        b=cIDU9ODtsh3XVzc5V4pakDW1t4lcZeZj7hlvUtet0voErYsZbjMT26mbf6NazVRc7V
-         2JOdijj4N5qOUGh6YkzKFeqcsA6HGVoJm5qLqTiyMYi+9G45rciwBhCJybO+jGVTbDOq
-         tbr5CP7FUdpVfeVKw9jyVuXu4Rblb6tZnaWjSt8B94n5Xf4JhPeCniIJ1TNnQ2c//VPE
-         Fch7tjprTA+Vj5kj1MTJ2rQp2w8agiFVB7QXbPvi/un+G3Eaok1D50ihoc5SiZ09/8BU
-         WQbRxZmdQpDbrvaHXnDlq/Rbk/sakvLZj9bSgif13t8OAWg+hC9k+s8sLo5A/HKxohlJ
-         mDRQ==
-X-Gm-Message-State: AC+VfDx1jgwde/ffFuV41fqVKUQK3LI9s8e9b0bciUdc8S7ZntT1gOnP
-	qsmyUTJY0VYUzoC5u8GESOrwt0dzuR6k+67hphtWBg==
-X-Google-Smtp-Source: ACHHUZ6Uakn9Cf59uEmujytn1J93CaOQU2dLJTgqx6GgeCO9u4vxnx0mfAkfi311JH4daEAjHlLn+WgI5MDHHfTEs3M=
-X-Received: by 2002:a05:600c:3b97:b0:3f2:4fd2:e961 with SMTP id
- n23-20020a05600c3b9700b003f24fd2e961mr169328wms.0.1683711651501; Wed, 10 May
- 2023 02:40:51 -0700 (PDT)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9SnRtIk25akYcBD4ABFC5gCWdL+GrMUFhogG4KpVu7g=;
+ b=p9oPpyTJOEzpdk84UHzx2RIuvq41urruxMRpA8WHcU88KV542M6Ygvx2Wju/aqHrvEl7STZmwGWXWcrNYGBAna3zWT9kr0/c1PVLSnUC8WoiKOUQV+G4YQlYcDMQTGckyoqfpoIueziTnDZR2phKhFqUpjvM1oLin7sMv3hZfUg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB5417.namprd13.prod.outlook.com (2603:10b6:806:230::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Wed, 10 May
+ 2023 09:42:24 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.020; Wed, 10 May 2023
+ 09:42:23 +0000
+Date: Wed, 10 May 2023 11:42:15 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Colin Foster <colin.foster@in-advantage.com>
+Cc: linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+	Eric Dumazet <edumazet@google.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	UNGLinuxDriver@microchip.com,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Manoil <claudiu.manoil@nxp.com>,
+	Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net v1] net: mscc: ocelot: fix stat counter register
+ values
+Message-ID: <ZFtm91360rfOtBR1@corigine.com>
+References: <20230510044851.2015263-1-colin.foster@in-advantage.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230510044851.2015263-1-colin.foster@in-advantage.com>
+X-ClientProxiedBy: AM0PR08CA0010.eurprd08.prod.outlook.com
+ (2603:10a6:208:d2::23) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <371A6638-8D92-4891-8DF5-C0EA4FBC1977@gmail.com>
- <ZFoeZLOZbNZPUfcg@shredder> <CANn89i+=gWwebCHk2qwu12qC+yXTFUqOxWTfnqbJOAFjidcYeg@mail.gmail.com>
- <A4F00E57-AB0E-4211-B9E4-225093EB101F@gmail.com> <CANn89iKOm2WPoemiqCsWaMXMyGf9C5xXH=NaSidPSNCpKxf_jQ@mail.gmail.com>
- <FE7CE62C-DBEB-4FE1-8ACB-C8B7DAF15710@gmail.com> <ZFqoNJqwLjaVFGaa@shredder> <F6300D47-506F-495B-AFAB-9077DD6D4DC8@gmail.com>
-In-Reply-To: <F6300D47-506F-495B-AFAB-9077DD6D4DC8@gmail.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 10 May 2023 11:40:39 +0200
-Message-ID: <CANn89iKLSBwCnzS8TPSbkH+v_gMobFotOdCbdSMxAkhtx54xQA@mail.gmail.com>
-Subject: Re: Very slow remove interface from kernel
-To: Martin Zaharinov <micron10@gmail.com>
-Cc: Ido Schimmel <idosch@idosch.org>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
-	USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB5417:EE_
+X-MS-Office365-Filtering-Correlation-Id: b11e4abf-c1e5-49f9-453b-08db513adb8e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	iOinf2O58ihQHdUeSkfCeGlYuf9rqcd4/DSxBEsUxtUmiTMtEowWnuU7f1nwJhdYLVdsssOdzmemP4d0KqNXbCtePkOvGCZJvZdU8fprJXxcmu99DZ/z4vVrTz4XZdQ/E+xU45jrD04W8V07fhMm8Trysgib7a/vtIfk5kyU873mVMsS3EztI25A032kMYHW9nmEuKQjoIBpyFQj3SH4UBdqRyhSKLf7uspPFh8SKtR86gHQtEYIxYJc3sKsvQPnaaTmAyKP6mcDyHZmTS/g+txyfprvW0x5p2Bgr4oy1Qx+n5uuATvS8l6x9L9lQsb6/PhC570DdiGvCwO8obgfcGOWsiUlVizxOs6FsKcFUOqrTsFP24CqrNEVG+7gj8uM9c5PjPRLD2/zICss6vetOZazsVkSMRlljN5gHUwbXN7uSRYCwU6y9+W2sH3sEA78Dji8m2ydojjEFUYqViHdD00eGdUzq/ruZk6MBaekRg4+fP42uoqI+rHYVVPGCZB3eB95+3IAc9Ku6laH0bLhcLM85kUAMWQr20qJmA4nrf66vz59Xh4925UsPLyno+Nx
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(39840400004)(136003)(366004)(376002)(451199021)(6916009)(83380400001)(66476007)(54906003)(41300700001)(4326008)(8676002)(36756003)(38100700002)(8936002)(6512007)(6506007)(6486002)(478600001)(66946007)(2616005)(66556008)(5660300002)(7416002)(86362001)(44832011)(2906002)(186003)(316002)(4744005)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?HL+YpOn7gmY4IGtd7onk+MyiGwnrh0Oe9SnSVp0DQyts/vwXoU2M5f3Mv/Lu?=
+ =?us-ascii?Q?p6WXJpMKTUVl01+il13dUfeNJAMFHoNNUdOSlYqu6CPJvzZzH7YyGbNTyWwz?=
+ =?us-ascii?Q?6JHKYRwfa2T8KdC+s1PiiYzdVTiJ5KHf7yGp+9HIQY2J7h3363sTQ1zBDOF2?=
+ =?us-ascii?Q?XJGPqloHNa6aWZJwB667lf8UxFJYJls6THgq/j24Z4lNm5TrUbQH7onl7IVj?=
+ =?us-ascii?Q?9t6z8nXvjIl55FTQV7P2YtIeJz+/d7oszQKkPJfkIk17TJ0ofFjI8FpUUiPP?=
+ =?us-ascii?Q?ndv1QdcaKwsMMkpvPar2ZmtH7DGYqN3DWt0HnGLXpw4oLfWY89y/xs8gR0sv?=
+ =?us-ascii?Q?8mVP9mpv55VMPEk6YM+ir9Qn9abWdUAWoBmLe6bWJ9tRsgFV1anAzUV1jQHt?=
+ =?us-ascii?Q?2ZeOv/HiRfzl3W8DlK5fhQj6tU+feB9V1rZLiNSSDmFY5gAloqnvOmNPfXAD?=
+ =?us-ascii?Q?gBssmFqg02vuUh7Wh7EEoMuefbvWqNF0cf8fTSaeS6Fob5BWBBo9/z54muH4?=
+ =?us-ascii?Q?z/epALpLW+1zYFXOtcJ3TSiOzbSdMjrDmESOxltZjVzU7O1Mn29tZLkqRYEL?=
+ =?us-ascii?Q?Os+pDdZTlXN+eTRuWBULP8aZBNrpbXvSxH9DI4zdK7pCGZO40o3gM0BWcnEg?=
+ =?us-ascii?Q?gZLLkr5I3p55QFO9WOjoyeCeCBy9KmmIiUsLPjdq5USqIomzoSltHNl16KcR?=
+ =?us-ascii?Q?OQ2dAnkbf6sHt8I7bMXcxojCxPx+6u0AF5d1tEZFV1aIeCX1HzmtJG07o3tE?=
+ =?us-ascii?Q?JxO6lf32yxGAh1r1MnDOLspwhz0p6QSlYw3kZIjzaj2IAetVv4qHob+ZzUY5?=
+ =?us-ascii?Q?NSO3bpqcnURtT0+e+XO3OoNF88cOydFkr1o9ejI8CrZHuVb3QU4CXXrt3Z99?=
+ =?us-ascii?Q?pLX8Z2Sn3EXj9YcU7HJqL5lgF0qZQzcYupYK4dg99UCdu05jriQBvZH4k+Vs?=
+ =?us-ascii?Q?CNzEZPS1he2ErD8EUy/VyopADkJVD9Qmu5ba9wtj7ePABca0t/LuM+wexmZ8?=
+ =?us-ascii?Q?XPosTkCqZTlPy4k/t0H+egxJlSFhzlcZ3x/gqI4uEf0oBjlVzHeb7p5pyTv3?=
+ =?us-ascii?Q?fvlBgb+nUuSqQR93LroqMoSk0FGXitxtMTTavDHMpKSPmNH2O2V13PRqzqzT?=
+ =?us-ascii?Q?pCGSoKwougfsTXS5mDcLIqOx7+lY3gXWI1dMnNPSWyliAqWjtI1ZnMzaG5Xc?=
+ =?us-ascii?Q?VETEEtuX6jPQ460+J07LY29eb2xbjEcBlS+k2JKr+iS0IwqxXGFBZCstxuB2?=
+ =?us-ascii?Q?P7B9tLrDt1XD78r0nDT6/LVcHGnXz5DEePm5ki9QjLbQ3tzMvr69PbzOLf0s?=
+ =?us-ascii?Q?rJH5k1diI+4w4Db/Bmjo3g7WipdJMSBTtug6ZJtSqgQsJD5U5fkkQL5E+zAi?=
+ =?us-ascii?Q?CNFXPVn842x9BzUwnG1zQbsAHB02sZ86YUAwRbpN/G5Qmx9ne+o6W5ivaheB?=
+ =?us-ascii?Q?8OS2ua+ZVnI0xLcAbEWSg6xfGafbhxJlFpQRHnvUcBg+tiGOqZ3rTR9snjON?=
+ =?us-ascii?Q?9LHd+oFDRDUanSK2W6fKO1ecFPXiKC2RQSgZ0Kyi3lq1AP47k5e8NceoRMyi?=
+ =?us-ascii?Q?lq1IGVa7HivQsxGOlMWPbXuRLalvnJ2fn2RREakuJ/4lwF81TPFt3BoQBb2y?=
+ =?us-ascii?Q?5zmsw9v+qDyv8H1Se5tqVhtiJ71OyMc2noouEd2mV4NcklEzj20DhyKNPu7W?=
+ =?us-ascii?Q?fng5nA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b11e4abf-c1e5-49f9-453b-08db513adb8e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 09:42:23.8544
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4oqCmsbP+g19yLcNOlJ8k7jiMEOf/Bh10wHhYFHU0u0hDuTaSoR/zfZdNLPAujMrWqOoiUBI+TGhF1k5WUZIZyIiNuZpn9liY0SL1c7Elos=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5417
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 10, 2023 at 8:06=E2=80=AFAM Martin Zaharinov <micron10@gmail.co=
-m> wrote:
->
-> I think problem is in this part of code in net/core/dev.c
+On Tue, May 09, 2023 at 09:48:51PM -0700, Colin Foster wrote:
+> Commit d4c367650704 ("net: mscc: ocelot: keep ocelot_stat_layout by reg
+> address, not offset") organized the stats counters for Ocelot chips, namely
+> the VSC7512 and VSC7514. A few of the counter offsets were incorrect, and
+> were caught by this warning:
+> 
+> WARNING: CPU: 0 PID: 24 at drivers/net/ethernet/mscc/ocelot_stats.c:909
+> ocelot_stats_init+0x1fc/0x2d8
+> reg 0x5000078 had address 0x220 but reg 0x5000079 has address 0x214,
+> bulking broken!
+> 
+> Fix these register offsets.
+> 
+> Fixes: d4c367650704 ("net: mscc: ocelot: keep ocelot_stat_layout by reg address, not offset")
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 
-What makes you think this ?
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-msleep()  is not called a single time on my test bed.
-
-# perf probe -a msleep
-# cat bench.sh
-modprobe dummy 2>/dev/null
-ip link set dev dummy0 up 2>/dev/null
-for i in $(seq 2 4094); do ip link add link dummy0 name vlan$i type
-vlan id $i; done
-for i in $(seq 2 4094); do ip link set dev vlan$i up; done
-time for i in $(seq 2 4094); do ip link del link dummy0 name vlan$i
-type vlan id $i; done
-
-#  perf record -e probe:msleep -a -g ./bench.sh
-
-real 0m59.877s
-user 0m0.588s
-sys 0m7.023s
-[ perf record: Woken up 6 times to write data ]
-[ perf record: Captured and wrote 8.561 MB perf.data ]
-# perf script
-#   << empty, nothing >>
-
-
-
-
-> #define WAIT_REFS_MIN_MSECS 1
-> #define WAIT_REFS_MAX_MSECS 250
-> /**
->  * netdev_wait_allrefs_any - wait until all references are gone.
->  * @list: list of net_devices to wait on
->  *
->  * This is called when unregistering network devices.
->  *
->  * Any protocol or device that holds a reference should register
->  * for netdevice notification, and cleanup and put back the
->  * reference if they receive an UNREGISTER event.
->  * We can get stuck here if buggy protocols don't correctly
->  * call dev_put.
->  */
-> static struct net_device *netdev_wait_allrefs_any(struct list_head *list)
-> {
->         unsigned long rebroadcast_time, warning_time;
->         struct net_device *dev;
->         int wait =3D 0;
->
->         rebroadcast_time =3D warning_time =3D jiffies;
->
->         list_for_each_entry(dev, list, todo_list)
->                 if (netdev_refcnt_read(dev) =3D=3D 1)
->                         return dev;
->
->         while (true) {
->                 if (time_after(jiffies, rebroadcast_time + 1 * HZ)) {
->                         rtnl_lock();
->
->                         /* Rebroadcast unregister notification */
->                         list_for_each_entry(dev, list, todo_list)
->                                 call_netdevice_notifiers(NETDEV_UNREGISTE=
-R, dev);
->
->                         __rtnl_unlock();
->                         rcu_barrier();
->                         rtnl_lock();
->
->                         list_for_each_entry(dev, list, todo_list)
->                                 if (test_bit(__LINK_STATE_LINKWATCH_PENDI=
-NG,
->                                              &dev->state)) {
->                                         /* We must not have linkwatch eve=
-nts
->                                          * pending on unregister. If this
->                                          * happens, we simply run the que=
-ue
->                                          * unscheduled, resulting in a no=
-op
->                                          * for this device.
->                                          */
->                                         linkwatch_run_queue();
->                                         break;
->                                 }
->
->                         __rtnl_unlock();
->
->                         rebroadcast_time =3D jiffies;
->                 }
->
->                 if (!wait) {
->                         rcu_barrier();
->                         wait =3D WAIT_REFS_MIN_MSECS;
->                 } else {
->                         msleep(wait);
->                         wait =3D min(wait << 1, WAIT_REFS_MAX_MSECS);
->                 }
->
->                 list_for_each_entry(dev, list, todo_list)
->                         if (netdev_refcnt_read(dev) =3D=3D 1)
->                                 return dev;
->
->                 if (time_after(jiffies, warning_time +
->                                READ_ONCE(netdev_unregister_timeout_secs) =
-* HZ)) {
->                         list_for_each_entry(dev, list, todo_list) {
->                                 pr_emerg("unregister_netdevice: waiting f=
-or %s to become free. Usage count =3D %d\n",
->                                          dev->name, netdev_refcnt_read(de=
-v));
->                                 ref_tracker_dir_print(&dev->refcnt_tracke=
-r, 10);
->                         }
->
->                         warning_time =3D jiffies;
->                 }
->         }
-> }
->
->
->
-> m.
->
->
-> > On 9 May 2023, at 23:08, Ido Schimmel <idosch@idosch.org> wrote:
-> >
-> > On Tue, May 09, 2023 at 09:50:18PM +0300, Martin Zaharinov wrote:
-> >> i try on kernel 6.3.1
-> >>
-> >>
-> >> time for i in $(seq 2 4094); do ip link del link eth1 name vlan$i type=
- vlan id $i; done
-> >>
-> >> real 4m51.633s  =E2=80=94=E2=80=94 here i stop with Ctrl + C  -  and r=
-erun  and second part finish after 3 min
-> >> user 0m7.479s
-> >> sys 0m0.367s
-> >
-> > You are off-CPU most of the time, the question is what is blocking. I'm
-> > getting the following results with net-next:
-> >
-> > # time -p for i in $(seq 2 4094); do ip link del dev eth0.$i; done
-> > real 177.09
-> > user 3.85
-> > sys 31.26
-> >
-> > When using a batch file to perform the deletion:
-> >
-> > # time -p ip -b vlan_del.batch
-> > real 35.25
-> > user 0.02
-> > sys 3.61
-> >
-> > And to check where we are blocked most of the time while using the batc=
-h
-> > file:
-> >
-> > # ../bcc/libbpf-tools/offcputime -p `pgrep -nx ip`
-> > [...]
-> >    __schedule
-> >    schedule
-> >    schedule_timeout
-> >    wait_for_completion
-> >    rcu_barrier
-> >    netdev_run_todo
-> >    rtnetlink_rcv_msg
-> >    netlink_rcv_skb
-> >    netlink_unicast
-> >    netlink_sendmsg
-> >    ____sys_sendmsg
-> >    ___sys_sendmsg
-> >    __sys_sendmsg
-> >    do_syscall_64
-> >    entry_SYSCALL_64_after_hwframe
-> >    -                ip (3660)
-> >        25089479
-> > [...]
-> >
-> > We are blocked for around 70% of the time on the rcu_barrier() in
-> > netdev_run_todo().
-> >
-> > Note that one big difference between my setup and yours is that in my
-> > case eth0 is a dummy device and in your case it's probably a physical
-> > device that actually implements netdev_ops::ndo_vlan_rx_kill_vid(). If
-> > so, it's possible that a non-negligible amount of time is spent talking
-> > to hardware/firmware to delete the 4K VIDs from the device's VLAN
-> > filter.
-> >
-> >>
-> >>
-> >> Config is very clean i remove big part of CONFIG options .
-> >>
-> >> is there options to debug what is happen.
-> >>
-> >> m
->
 
