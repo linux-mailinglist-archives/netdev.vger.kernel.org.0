@@ -1,180 +1,307 @@
-Return-Path: <netdev+bounces-1476-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1477-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 636566FDE3F
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 15:11:04 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 212886FDE48
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 15:15:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 859691C20D84
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:11:01 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 845BA281443
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:15:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3A5B312B70;
-	Wed, 10 May 2023 13:11:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9425B12B7F;
+	Wed, 10 May 2023 13:15:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2529920B42
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 13:11:01 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7616D3AA6
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 06:10:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683724259; x=1715260259;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=a85UjBwN1b9/K9dI+/h0yiH0vgx42LnIKueYcWQcRPE=;
-  b=kzg6pywCOatoQpuL0Rh3faE4hMpJZx94ijYiPWJqkhyHlroB9+pA+Pzm
-   aMLaOQ81KdU+ewXdVwJHBxC1U9aTTEVZl7b8w5NOBVEoxj80NGqce7//d
-   ktKpf4AvUfAEB/zeUi+pd6tWz0TrcEPpw/A8xsNNPY1iHThu9Wy0R38kQ
-   cirHtujIbD2PQU0E3jDhZvPmWKwDKN2+AbjVxKOF20AtKSQXByNVFlL3s
-   jLBaa/9/lnf9VCM+TQrO4DUWYuq5GQDo+HISth1+CPkhJ7BnHc1NpT/WQ
-   LmTmm6qMGoWdNn5inxSkA2AFiZ8rg/KMT3zqSZNTcRh9SYQvEWVz3j2CI
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="413508555"
-X-IronPort-AV: E=Sophos;i="5.99,264,1677571200"; 
-   d="scan'208";a="413508555"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2023 06:10:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="823534608"
-X-IronPort-AV: E=Sophos;i="5.99,264,1677571200"; 
-   d="scan'208";a="823534608"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga004.jf.intel.com with ESMTP; 10 May 2023 06:10:58 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 10 May 2023 06:10:58 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 10 May 2023 06:10:58 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 10 May 2023 06:10:58 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 10 May 2023 06:10:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UnaKPKGWTsAQhaEBGDDDaQ6YV+QcfwsLcZkOI45V3YtURBjO+PF3tqitmw6/QOpFdwFxRYFQ1Jox9AcU69dp1dehvOVv2r0tuRyX/TIvbYqZd6YUZnIyhgSv1+vjqaoY/7mBlf+rMxROlat1TXr1wnblm5DPjk79XemCMr9y2St/7ju0m047/psVR/Su6I0q9aTtTxH4GAoO6PgFtHc6f0xMk5xCkc06yyt3R42hmpAvZHQi2Q2xSvhWK6R4R+3dWUsduhmeBeGOnj/UqBRZv4iG8uuXo/YqG9OR2fgskL4XIy6AvoFiLmpIBffEbCCDvt89rjkPW5vA+yH6mFb+9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PPvnSCi+bjPEfAOnZTvWxpqoUESzAYbsbrkbpIjHHlE=;
- b=Ts3FrsG7jjnJSw6PAP99hH8z7K15OskcmEY2Z6wthagVpYTttBiwXKT7nEH9BX/doOyuz81NkggV6WCNFKLggqTS9Ttqqziunl5Doo2rPhGdKphPZCWZiAlvrI8XaJ6oN7/w0aK9uFL+TTZ+nqRiKbUY3ezwCVe5qowORsEV+7lbY32cCuwMwL+gxbuHu7ou3MX91N07Nj1c+YZyjIii78AnuvhuYc6kqgXkTA16jEZ/q3aPeN50RJC29l007WxvuKwsBI7YdqR0gGaP1QF8puIx97DncUEf+W4vGhIPQz2JvfOBneOQpvtdWbNofENQSnzhNlqSj1ADVZD2Xyb9rg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com (2603:10b6:5:62::13) by
- DS0PR11MB7189.namprd11.prod.outlook.com (2603:10b6:8:137::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6387.20; Wed, 10 May 2023 13:10:56 +0000
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::66f6:544e:665a:9bec]) by DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::66f6:544e:665a:9bec%6]) with mapi id 15.20.6363.032; Wed, 10 May 2023
- 13:10:56 +0000
-Date: Wed, 10 May 2023 15:10:44 +0200
-From: Michal Kubiak <michal.kubiak@intel.com>
-To: Kuniyuki Iwashima <kuniyu@amazon.com>
-CC: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, Kuniyuki Iwashima <kuni1840@gmail.com>,
-	<netdev@vger.kernel.org>
-Subject: Re: [PATCH v1 net 0/2] af_unix: Fix two data races reported by KCSAN.
-Message-ID: <ZFuX1GtbvzsI97aZ@localhost.localdomain>
-References: <20230510003456.42357-1-kuniyu@amazon.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230510003456.42357-1-kuniyu@amazon.com>
-X-ClientProxiedBy: FR0P281CA0122.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:97::12) To DM6PR11MB2937.namprd11.prod.outlook.com
- (2603:10b6:5:62::13)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82442101EE
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 13:15:23 +0000 (UTC)
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DDA0195
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 06:15:21 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-965ac4dd11bso1432239766b.2
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 06:15:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683724519; x=1686316519;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=riXFz6o+ydIsaTrp1wRkLR8eE5JIRMYKoCxpJXJgmgw=;
+        b=Ms7EGo72WAvwjkX67J8f6dcY+sjaCndi2rhRnWLqGCv7LC31Mufm1DwTXk/8U0K4iI
+         C0LtYcb4IUMtV3m8Rq7RrZQpLrADXACLuiCsjyRSmMBeB/RX7J3tkwnIvlZrRAJnzT6F
+         2YyFGoUqK68SqAyEJcqACqXnsMEmgTthIZ1WXxFaUfAMwGcjgrbTw7kivtAhKyXXUSdU
+         9dPbvxV27vWT/aOacPoL/O7Fy4mBOgj0Ut3CHg+InL42SG3AZMr1YeNFQWwp+A7nhIT4
+         9YNe+zX8x2EjHVvTGKX4WJLwurH8MBaOomTff9UE1bL9WAfVQ6IVJ3d3mCZhpe4gD8E1
+         DJpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683724519; x=1686316519;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=riXFz6o+ydIsaTrp1wRkLR8eE5JIRMYKoCxpJXJgmgw=;
+        b=enL0jl4RGS7zphBW/XjYcPJCDO6T6vbjO5De3Y+1vfmjPF3P5QIcmRExGgQrINMLT0
+         WJMc3I3J6oiaTZDDeOyqIi+T2jcNdgPqg74xzoEPTNH2p+MOatNNeIftzffGQ9CYeFzX
+         S60a3j4+Zef0Pa/xNcVqRIUhTs7SbbjyGOM8BH7UnHWD90tVncCCV4NlRxsQA8QarT1f
+         ykj7vXjKyx9xd6JF1aoK2eIUQuS5QhlJBEQOr7C7WGgEEVoLPso6PFhkpsdX9xI3SaGU
+         45kbxx0GTuWBKBndmxa+5bFoOdhKEi8cZANnj+vdB/fnZT/NarfEsunYLNCwpFjiLDXz
+         67vg==
+X-Gm-Message-State: AC+VfDwr4pbftlYt/Jp/iJS5c8kGRUMlKPrwk9ea8MBdy8BlQ+Ur242O
+	R5VIhrWcN0zdka+Zb6YF4wInBAbzfwo=
+X-Google-Smtp-Source: ACHHUZ5EIXAH0H3QZF/5m9AZNX59H1UdyaCeaSLNDBASF9i3DvCflKkzOBwiZhH+EIDK3jkGAhUL/A==
+X-Received: by 2002:a17:907:806:b0:953:47fc:3f0b with SMTP id wv6-20020a170907080600b0095347fc3f0bmr13764935ejb.53.1683724519207;
+        Wed, 10 May 2023 06:15:19 -0700 (PDT)
+Received: from smtpclient.apple ([178.254.237.20])
+        by smtp.gmail.com with ESMTPSA id z11-20020a1709067e4b00b00965f6ad266bsm2656773ejr.119.2023.05.10.06.15.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 10 May 2023 06:15:18 -0700 (PDT)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB2937:EE_|DS0PR11MB7189:EE_
-X-MS-Office365-Filtering-Correlation-Id: 54588fdb-9aee-44b7-fbf5-08db5157fda8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1VKx3bWu5Hw+P8GyDthlvXZSpMLBSNs8Z44e0se8IvbZ3vN+J1QFGBXhec9lkjAIaoXnrVKp2itekQ0A75czUtgFYLiYju639ursrlC98rgVED7tc9Wdcln2NlJoagoam/Iv3mi0D6x0W1LE4bgMeneiMQ5Y7vZDObP7ST/Guy3Yc4p6ntfWKT2WuZvij5SHUVpW5U9hBSSj5/2KOQ8eYxTSyxfQCEQsS/uyFRssWVIr5vdfR2UYlrFEx/hzu/tlchLPCTPnFHs9HMbVl8LEPpud2XmKAmOBlPWh4U2+I0ISH86UUi6u3l3nH14bpEE1ZxcqH/UNOtjMtCw2M7OEfXs8gavKLhloDeGh24XiIEhz9REL+xAw8+dluOo63t6CY3Wp96xGNBM6DMIXwQEcDuWz2yZ4kjuAwtQNTTD10ZofRhxTqgn8aYMA0zNExSfIDvYt+a1kdWViQGw2Ig0aXpgWd+CyQdcD96SM4bZF4ENQ2TRzDH86q1AwOSgUE0EQm2uBcvSR+oWwEoAvDjjq+TkiUfLYJ4w5hvSuAcVLIMyNzbkqYOQS9J/aRhiWc4YU
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2937.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(39860400002)(396003)(346002)(136003)(366004)(451199021)(6486002)(6666004)(66946007)(66476007)(66556008)(54906003)(82960400001)(4326008)(4744005)(2906002)(6916009)(44832011)(86362001)(41300700001)(38100700002)(316002)(8676002)(8936002)(5660300002)(478600001)(6512007)(9686003)(6506007)(186003)(26005)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LaOkKzYkS2BgOZqIFKO2dJwAmbU6mFyZgwFNojOjOE6J6oE3myMihOtCxjWT?=
- =?us-ascii?Q?srk8knspfW7Pu8oVOYQXK7iNcDhQ2iwU+oUSw184/HWMMpaKys9/l4w1hcKS?=
- =?us-ascii?Q?5tZ5j/M/vGIP5T9x1IS4DdUjKAszBR8BHPiLu1cw7wI4AgIvGHGT/1SL9jLZ?=
- =?us-ascii?Q?iGvvyz2yiL34RUJtaiHVNm1Q/aep/ZVy3dTmIYBr+2xVYgfJ6s+jlT+cNkCT?=
- =?us-ascii?Q?pTwyw2ccVAqIGBFm37X/H44N7hDdRe3zFmvt9ruJvn/58bsQIGCTQMLI0c+l?=
- =?us-ascii?Q?AwW4F8gSjimx777UC7ATs5bDhXi7ainU68UzTqzBWyPJxpBgeF4DUVVoV2Si?=
- =?us-ascii?Q?S0HpeseeWL8n1d5stAjfknZ2Ng/VhLM1hrtaD6BwyJbvzeco5ZioZ4hwjOjk?=
- =?us-ascii?Q?lj9lHkTLJUrEYZooKoQ+z1DTAVuuXEqPLXcwv3Ebs1lLEe3HxIZFF4te/Ggy?=
- =?us-ascii?Q?utWtP1M2FIMCwb5WAIBR+rR5f/bwoySP4N/tRVq3a1LF2lsrrbzl9OoBfIS+?=
- =?us-ascii?Q?/8x2s4lYFzVs0FPA3lVIeo7IwS4k+vmZobk3IOo+Xw4GcEXOSOGz2mLLoMVi?=
- =?us-ascii?Q?rAm9134FasE+rFuEiWsugN8G0J2Nu/DMcdxmqLjsjHhZ3s/8KdMo55gyWIQB?=
- =?us-ascii?Q?BuEhNByVi4NBRD8wXO7MPs/6RZzcoh81Rxqn6R0gTieKz3f4VfNS/RW96Tyh?=
- =?us-ascii?Q?K5cnIT32MeKTr5w5QvTyXHh8p0vCDWwQQ97pfMjOnZUoiSMjI+SG2hbtN6Zw?=
- =?us-ascii?Q?KJCYUcEMbqy+G4+U4bSCsrZHcK8LI7Dgsnd3567YhHI0OKbqvN/Vt+HwD+Qc?=
- =?us-ascii?Q?dpvMEWH49LwFmFU8zvA1MNoeKdHWAdVULwIP7tZioiks9MdAL792TkP/o6UA?=
- =?us-ascii?Q?e3Ov+HkCimktYfya2mkGHe3gYK1LDgWNB1c7wGG7wKZo8Zimz4RbD91TxE0U?=
- =?us-ascii?Q?AN8kPDjmOLVWARDG9ylj8Ozw+uwj+PkodEmzqJxlJPMi+Jm4rn+o+oo5hLFM?=
- =?us-ascii?Q?C0JfJU/g1xKhoz6K4aHaPgQoZ7GUrXrZmsBBbv/zTjN2TAIDQPEQa5fO7NGu?=
- =?us-ascii?Q?0xGMqQIsRuZuev3OorDGmGjDr+mthvd69sopDi22ePAK2KWn7HFzuQOGO2PF?=
- =?us-ascii?Q?Q+/uZIuVf+8roNeTKrOp5YAn99pcdFelcZeuh0o4DUx12X0MEuHJCVXoafm0?=
- =?us-ascii?Q?CROsC7SED5s4TrKi+slLqQWEm9jwOvjLX+SWvrUwOrG8weGZYp4WoCG9Ifxe?=
- =?us-ascii?Q?mTgb6DE0nskYzmGMV7ntLI6M+W4lOsUns3GRXjELdth18sM3gVQjsies78Xl?=
- =?us-ascii?Q?Dk3Im8rEWMs25jC2rvvBJGqgj8TAqNj3znewG8PlpOgYW1Sj09rC9oBbPekk?=
- =?us-ascii?Q?OhIwJiaSV+WLBsG58VimB8VvXvOGzSBO7YaOq8vLmJlwyojzR5ThAZgo6CMp?=
- =?us-ascii?Q?tUEh+CpdvjpW0JQJZpO4aEluCuBqgEkhRRqvmmfUjBBYFFmtbp9aIAYJXTW2?=
- =?us-ascii?Q?JZM5ksMq8pMbAoNH5vr1o57p21Hkj8vulDfVPelKSomiy9L1iGzqzqmImQwt?=
- =?us-ascii?Q?CzNoX5Dl+M6WJdaKv6muWdaoz+Fh4ZuYODDNH2DwAzhJUE3h87mifoU8qIav?=
- =?us-ascii?Q?xQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54588fdb-9aee-44b7-fbf5-08db5157fda8
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2937.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 13:10:56.4477
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Sm5oe9iEb7p6wYdatEeoh/LzAok4aJhqhRqYRBS9K8YLEc8BcQbcPGebNasuJRRGNA93sUHKVXN1ltCjNnhYlA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7189
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.500.231\))
+Subject: Re: Very slow remove interface from kernel
+From: Martin Zaharinov <micron10@gmail.com>
+In-Reply-To: <CANn89iKLSBwCnzS8TPSbkH+v_gMobFotOdCbdSMxAkhtx54xQA@mail.gmail.com>
+Date: Wed, 10 May 2023 16:15:07 +0300
+Cc: Ido Schimmel <idosch@idosch.org>,
+ netdev <netdev@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <32CBE6C0-DAA7-4470-96FC-628FE69BDD14@gmail.com>
+References: <371A6638-8D92-4891-8DF5-C0EA4FBC1977@gmail.com>
+ <ZFoeZLOZbNZPUfcg@shredder>
+ <CANn89i+=gWwebCHk2qwu12qC+yXTFUqOxWTfnqbJOAFjidcYeg@mail.gmail.com>
+ <A4F00E57-AB0E-4211-B9E4-225093EB101F@gmail.com>
+ <CANn89iKOm2WPoemiqCsWaMXMyGf9C5xXH=NaSidPSNCpKxf_jQ@mail.gmail.com>
+ <FE7CE62C-DBEB-4FE1-8ACB-C8B7DAF15710@gmail.com> <ZFqoNJqwLjaVFGaa@shredder>
+ <F6300D47-506F-495B-AFAB-9077DD6D4DC8@gmail.com>
+ <CANn89iKLSBwCnzS8TPSbkH+v_gMobFotOdCbdSMxAkhtx54xQA@mail.gmail.com>
+To: Eric Dumazet <edumazet@google.com>
+X-Mailer: Apple Mail (2.3731.500.231)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 09, 2023 at 05:34:54PM -0700, Kuniyuki Iwashima wrote:
-> KCSAN reported data races around these two fields for AF_UNIX sockets.
-> 
->   * sk->sk_receive_queue->qlen
->   * sk->sk_shutdown
-> 
-> Let's annotate them properly.
-> 
-> 
-> Kuniyuki Iwashima (2):
->   af_unix: Fix a data race of sk->sk_receive_queue->qlen.
->   af_unix: Fix data races around sk->sk_shutdown.
-> 
->  net/unix/af_unix.c | 22 +++++++++++++---------
->  1 file changed, 13 insertions(+), 9 deletions(-)
-> 
+Ok i will try to set CONFIG_HZ to 1000 and will make tests
 
-For the series.
-Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
+
+Thanks Eric
+
+> On 10 May 2023, at 12:40, Eric Dumazet <edumazet@google.com> wrote:
+>=20
+> On Wed, May 10, 2023 at 8:06=E2=80=AFAM Martin Zaharinov =
+<micron10@gmail.com> wrote:
+>>=20
+>> I think problem is in this part of code in net/core/dev.c
+>=20
+> What makes you think this ?
+>=20
+> msleep()  is not called a single time on my test bed.
+>=20
+> # perf probe -a msleep
+> # cat bench.sh
+> modprobe dummy 2>/dev/null
+> ip link set dev dummy0 up 2>/dev/null
+> for i in $(seq 2 4094); do ip link add link dummy0 name vlan$i type
+> vlan id $i; done
+> for i in $(seq 2 4094); do ip link set dev vlan$i up; done
+> time for i in $(seq 2 4094); do ip link del link dummy0 name vlan$i
+> type vlan id $i; done
+>=20
+> #  perf record -e probe:msleep -a -g ./bench.sh
+>=20
+> real 0m59.877s
+> user 0m0.588s
+> sys 0m7.023s
+> [ perf record: Woken up 6 times to write data ]
+> [ perf record: Captured and wrote 8.561 MB perf.data ]
+> # perf script
+> #   << empty, nothing >>
+>=20
+>=20
+>=20
+>=20
+>> #define WAIT_REFS_MIN_MSECS 1
+>> #define WAIT_REFS_MAX_MSECS 250
+>> /**
+>> * netdev_wait_allrefs_any - wait until all references are gone.
+>> * @list: list of net_devices to wait on
+>> *
+>> * This is called when unregistering network devices.
+>> *
+>> * Any protocol or device that holds a reference should register
+>> * for netdevice notification, and cleanup and put back the
+>> * reference if they receive an UNREGISTER event.
+>> * We can get stuck here if buggy protocols don't correctly
+>> * call dev_put.
+>> */
+>> static struct net_device *netdev_wait_allrefs_any(struct list_head =
+*list)
+>> {
+>>        unsigned long rebroadcast_time, warning_time;
+>>        struct net_device *dev;
+>>        int wait =3D 0;
+>>=20
+>>        rebroadcast_time =3D warning_time =3D jiffies;
+>>=20
+>>        list_for_each_entry(dev, list, todo_list)
+>>                if (netdev_refcnt_read(dev) =3D=3D 1)
+>>                        return dev;
+>>=20
+>>        while (true) {
+>>                if (time_after(jiffies, rebroadcast_time + 1 * HZ)) {
+>>                        rtnl_lock();
+>>=20
+>>                        /* Rebroadcast unregister notification */
+>>                        list_for_each_entry(dev, list, todo_list)
+>>                                =
+call_netdevice_notifiers(NETDEV_UNREGISTER, dev);
+>>=20
+>>                        __rtnl_unlock();
+>>                        rcu_barrier();
+>>                        rtnl_lock();
+>>=20
+>>                        list_for_each_entry(dev, list, todo_list)
+>>                                if =
+(test_bit(__LINK_STATE_LINKWATCH_PENDING,
+>>                                             &dev->state)) {
+>>                                        /* We must not have linkwatch =
+events
+>>                                         * pending on unregister. If =
+this
+>>                                         * happens, we simply run the =
+queue
+>>                                         * unscheduled, resulting in a =
+noop
+>>                                         * for this device.
+>>                                         */
+>>                                        linkwatch_run_queue();
+>>                                        break;
+>>                                }
+>>=20
+>>                        __rtnl_unlock();
+>>=20
+>>                        rebroadcast_time =3D jiffies;
+>>                }
+>>=20
+>>                if (!wait) {
+>>                        rcu_barrier();
+>>                        wait =3D WAIT_REFS_MIN_MSECS;
+>>                } else {
+>>                        msleep(wait);
+>>                        wait =3D min(wait << 1, WAIT_REFS_MAX_MSECS);
+>>                }
+>>=20
+>>                list_for_each_entry(dev, list, todo_list)
+>>                        if (netdev_refcnt_read(dev) =3D=3D 1)
+>>                                return dev;
+>>=20
+>>                if (time_after(jiffies, warning_time +
+>>                               =
+READ_ONCE(netdev_unregister_timeout_secs) * HZ)) {
+>>                        list_for_each_entry(dev, list, todo_list) {
+>>                                pr_emerg("unregister_netdevice: =
+waiting for %s to become free. Usage count =3D %d\n",
+>>                                         dev->name, =
+netdev_refcnt_read(dev));
+>>                                =
+ref_tracker_dir_print(&dev->refcnt_tracker, 10);
+>>                        }
+>>=20
+>>                        warning_time =3D jiffies;
+>>                }
+>>        }
+>> }
+>>=20
+>>=20
+>>=20
+>> m.
+>>=20
+>>=20
+>>> On 9 May 2023, at 23:08, Ido Schimmel <idosch@idosch.org> wrote:
+>>>=20
+>>> On Tue, May 09, 2023 at 09:50:18PM +0300, Martin Zaharinov wrote:
+>>>> i try on kernel 6.3.1
+>>>>=20
+>>>>=20
+>>>> time for i in $(seq 2 4094); do ip link del link eth1 name vlan$i =
+type vlan id $i; done
+>>>>=20
+>>>> real 4m51.633s  =E2=80=94=E2=80=94 here i stop with Ctrl + C  -  =
+and rerun  and second part finish after 3 min
+>>>> user 0m7.479s
+>>>> sys 0m0.367s
+>>>=20
+>>> You are off-CPU most of the time, the question is what is blocking. =
+I'm
+>>> getting the following results with net-next:
+>>>=20
+>>> # time -p for i in $(seq 2 4094); do ip link del dev eth0.$i; done
+>>> real 177.09
+>>> user 3.85
+>>> sys 31.26
+>>>=20
+>>> When using a batch file to perform the deletion:
+>>>=20
+>>> # time -p ip -b vlan_del.batch
+>>> real 35.25
+>>> user 0.02
+>>> sys 3.61
+>>>=20
+>>> And to check where we are blocked most of the time while using the =
+batch
+>>> file:
+>>>=20
+>>> # ../bcc/libbpf-tools/offcputime -p `pgrep -nx ip`
+>>> [...]
+>>>   __schedule
+>>>   schedule
+>>>   schedule_timeout
+>>>   wait_for_completion
+>>>   rcu_barrier
+>>>   netdev_run_todo
+>>>   rtnetlink_rcv_msg
+>>>   netlink_rcv_skb
+>>>   netlink_unicast
+>>>   netlink_sendmsg
+>>>   ____sys_sendmsg
+>>>   ___sys_sendmsg
+>>>   __sys_sendmsg
+>>>   do_syscall_64
+>>>   entry_SYSCALL_64_after_hwframe
+>>>   -                ip (3660)
+>>>       25089479
+>>> [...]
+>>>=20
+>>> We are blocked for around 70% of the time on the rcu_barrier() in
+>>> netdev_run_todo().
+>>>=20
+>>> Note that one big difference between my setup and yours is that in =
+my
+>>> case eth0 is a dummy device and in your case it's probably a =
+physical
+>>> device that actually implements netdev_ops::ndo_vlan_rx_kill_vid(). =
+If
+>>> so, it's possible that a non-negligible amount of time is spent =
+talking
+>>> to hardware/firmware to delete the 4K VIDs from the device's VLAN
+>>> filter.
+>>>=20
+>>>>=20
+>>>>=20
+>>>> Config is very clean i remove big part of CONFIG options .
+>>>>=20
+>>>> is there options to debug what is happen.
+>>>>=20
+>>>> m
+>>=20
+
 
