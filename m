@@ -1,104 +1,120 @@
-Return-Path: <netdev+bounces-1542-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1543-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 558FB6FE3B0
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 20:14:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B1F076FE3B6
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 20:16:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2C83F28152A
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 18:14:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0CF24281568
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 18:16:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 852B4174D6;
-	Wed, 10 May 2023 18:14:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 43F3C174E0;
+	Wed, 10 May 2023 18:16:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A9703D60
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 18:14:12 +0000 (UTC)
-Received: from mx.dolansoft.org (s2.dolansoft.org [212.51.146.245])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870F75FCB;
-	Wed, 10 May 2023 11:14:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=brun.one;
-	s=s1; h=MIME-Version:Message-Id:Date:Subject:Cc:To:From:In-Reply-To:
-	References:From:To:Subject:Date:Message-ID:Reply-To;
-	bh=/LAmKF4DLtcx5felrrpNMnAfkFOO/8RdGO8zQwg8+es=; b=T1Yq4crw8JW3+geXEFxaOBybrw
-	eo0UatDttiInVbKyCe0sPqB4kg6n5jZ6N5MVpywpG8roXOqRcuoDtc82gYa1beSxoaKgRz9V+egRm
-	4o6VF33Zf9wtC3o/q5/laqNEvMtyErKiC0HxMoo4Tp2wobdwGY8qUmNJNzBarKUhrngcQ+zRDeqTc
-	IuKMhCtLp0hSaGDzcldSXVgyBE1QtK6SrAVpbKo14VhOBo147Vfra+RlENffr+k3Ki/QN7H1+lZqs
-	qAW01qg0rxLuEPAUZgWfh55dfQHPrMWQ3706c+Y4T5rcCu4OyACjSUxqgxtr9ESG9M96yAujEQVXK
-	9q12+9TA==;
-Received: from [212.51.153.89] (helo=blacklava.cluster.local)
-	by mx.dolansoft.org with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <lorenz@dolansoft.org>)
-	id 1pwoK2-000oTu-1n;
-	Wed, 10 May 2023 18:13:54 +0000
-From: Lorenz Brun <lorenz@brun.one>
-To: Felix Fietkau <nbd@nbd.name>,
-	John Crispin <john@phrozen.org>,
-	Sean Wang <sean.wang@mediatek.com>,
-	Mark Lee <Mark-MC.Lee@mediatek.com>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3127014A81
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 18:16:09 +0000 (UTC)
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1562B61B0;
+	Wed, 10 May 2023 11:16:03 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id d9443c01a7336-1aad5245632so54648195ad.3;
+        Wed, 10 May 2023 11:16:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683742562; x=1686334562;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=MV9KKbnlL+o+b9x6xmrTpuZGcH+89cbdDhrFO47jPDI=;
+        b=o5Y7xv20o5mb5unhzSkkqEMFLfZemZ3Fq7tIeDgj5NY1msy0Go/2xY/wrMzxSfT9D9
+         JwJMcse7ELe/2fUUuGgymqY0hXejB61olNuRHmUKr0Z8boiMUjl7njBt3h9xf/bNKwFd
+         xVkjozoLCJQOL0/KCaHABwNZ0vbBae2mjSS+/jhRJl3/V91GXz7iWNNn4AVYNHoZSaYZ
+         dmQvMPiRSQbmR9YgMom1IYy94DESmAzhyBARwsmm9FsMMHhdiJyPZwdij2iXvsuYkf93
+         miMGoKNSWCwprwfIgGEMuVLBCAWWkFDY5uJmxg4nDETy0lz5FHKo1Okb+ouDQemKHr15
+         o9Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683742562; x=1686334562;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MV9KKbnlL+o+b9x6xmrTpuZGcH+89cbdDhrFO47jPDI=;
+        b=kzFRYuA0zfGGYB8TmhLvGuge5JkqplhH/PW8feAIumZXCORS1I/AQkRJwFCM3X2jzJ
+         rl45HrjyXUQxNcMeyaZNJWwcKKirub4uSo8hVaMUjTworBVK2s0P1qDRrufEuKW/Qg4J
+         U78vYdRYGn+Ntc2rSFcircIUAsPVYBLI2S2FP9WQotC0sdg0qSxh9DJcjtEJoA6ypLrn
+         AbYbSB9eBRS4zX9pMjsCipf/nXROSuxtHTyRsPquj4RaconI2Y3H1ardRFUqHSVRH8d1
+         RPUqQPz1lNxLNUEN+iPVP1bemrc/7l8Jo9fKMuvo4BvNTS/NiepDBiWAHewnW+5fK2Qt
+         5ivQ==
+X-Gm-Message-State: AC+VfDxU4lXZEhmZ0yRzvjD+iBh78RzOgxOvlbDDA6tIZXldqq8GtH+A
+	URUe24yybYPBTxGyuYEE5CY=
+X-Google-Smtp-Source: ACHHUZ5zdzxE/nxzHwipE7aLMexdW6UuNkId05cX7KuDNO37PTIHoYGXQ2ZzwwAuGUkqY/Bm0hpOJg==
+X-Received: by 2002:a17:902:eb4b:b0:1a6:7632:2b20 with SMTP id i11-20020a170902eb4b00b001a676322b20mr19942490pli.40.1683742562313;
+        Wed, 10 May 2023 11:16:02 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
+        by smtp.gmail.com with ESMTPSA id j12-20020a170902690c00b001a04d27ee92sm4082703plk.241.2023.05.10.11.16.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 May 2023 11:16:01 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date: Wed, 10 May 2023 08:16:00 -1000
+From: Tejun Heo <tj@kernel.org>
+To: Brian Norris <briannorris@chromium.org>
+Cc: jiangshanlai@gmail.com, linux-kernel@vger.kernel.org,
+	kernel-team@meta.com, Amitkumar Karwar <amitkarwar@gmail.com>,
+	Ganapathi Bhat <ganapathi017@gmail.com>,
+	Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+	Xinming Hu <huxinming820@gmail.com>, Kalle Valo <kvalo@kernel.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: [PATCH v2 net-next] net: ethernet: mtk_eth_soc: log clock enable errors
-Date: Wed, 10 May 2023 20:13:50 +0200
-Message-Id: <20230510181350.3743141-1-lorenz@brun.one>
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 02/13] wifi: mwifiex: Use default @max_active for
+ workqueues
+Message-ID: <ZFvfYK-u8suHjPFw@slm.duckdns.org>
+References: <20230509015032.3768622-1-tj@kernel.org>
+ <20230509015032.3768622-3-tj@kernel.org>
+ <ZFvd8zcPq4ijSszM@google.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Sender: lorenz@dolansoft.org
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZFvd8zcPq4ijSszM@google.com>
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Currently errors in clk_prepare_enable are silently swallowed.
-Add a log stating which clock failed to be enabled and what the error
-code was.
+Hello,
 
-Signed-off-by: Lorenz Brun <lorenz@brun.one>
----
-v2: reflowed long line
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+On Wed, May 10, 2023 at 11:09:55AM -0700, Brian Norris wrote:
+> I'll admit, the workqueue documentation sounds a bit like "max_active ==
+> 1 + WQ_UNBOUND" is what we want ("one work item [...] active at any
+> given time"), but that's more of my misunderstanding than anything --
+> each work item can only be active in a single context at any given time,
+> so that note is talking about distinct (i.e., more than 1) work items.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index e14050e17862..ced12e5b7b32 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -3445,8 +3445,11 @@ static int mtk_clk_enable(struct mtk_eth *eth)
- 
- 	for (clk = 0; clk < MTK_CLK_MAX ; clk++) {
- 		ret = clk_prepare_enable(eth->clks[clk]);
--		if (ret)
-+		if (ret) {
-+			dev_err(eth->dev, "enabling clock %s failed with error %d\n",
-+				mtk_clks_source_name[clk], ret);
- 			goto err_disable_clks;
-+		}
- 	}
- 
- 	return 0;
+Yeah, a future patch is gonna change the semantics a bit and I'll update the
+doc to be clearer.
+
+> While I'm here: we're still debugging what's affecting WiFi performance
+> on some of our WiFi systems, but it's possible I'll be turning some of
+> these into struct kthread_worker instead. We can cross that bridge
+> (including potential conflicts) if/when we come to it though.
+
+Can you elaborate the performance problem you're seeing? I'm working on a
+major update for workqueue to improve its locality behavior, so if you're
+experiencing issues on CPUs w/ multiple L3 caches, it'd be a good test case.
+
+Thanks.
+
 -- 
-2.39.2
-
+tejun
 
