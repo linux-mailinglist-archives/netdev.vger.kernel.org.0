@@ -1,212 +1,126 @@
-Return-Path: <netdev+bounces-1507-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1509-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E0CD16FE0BC
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:47:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 322186FE0C3
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 16:48:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A740E1C20DA3
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:47:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 556FD1C20D8D
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 14:48:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F45414AA6;
-	Wed, 10 May 2023 14:47:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63333154A9;
+	Wed, 10 May 2023 14:48:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 643033D60
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:47:38 +0000 (UTC)
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3391BD6
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:47:35 -0700 (PDT)
-Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com [209.85.219.197])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 2A6393F17A
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:47:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1683730054;
-	bh=JjIUi7jBNspmRga1n5cvGl2/nqkm6+K5dZzGhpmb1Bo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type;
-	b=rn1hoDknTtm4pd/7y7lo6ZLsllSBkEcd8GZdXuPTRuUOQfLXtk0EBXoU2BBgxyeM9
-	 YdNvIdDXyKwtnpD1Ay7FruaokDVT5LRZ9gVXKGr0zG3pZMZ1LORBbDgD0jl6eMkZ8/
-	 HQf7XcikrDz53Uf2IlR6rSBQ2hUjBQ95lzIU52of8wQCNbF4yk80zaR68ylWjplDym
-	 4krBKHAp+fnCUKqWZQT3W0VdnRdKEHlACcUiloKA8rBb2gEOCFKljscgtrF/LKxgZT
-	 FfhFwUa347O62Xipt/AlyL1ILuW08b21pwLQO85SFBsGeOmxV1So1/jFVvwyKWGENh
-	 vtg7VZDQSrihQ==
-Received: by mail-yb1-f197.google.com with SMTP id 3f1490d57ef6-b9e2b65f2eeso13260169276.2
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:47:34 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57BD63D60
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:48:24 +0000 (UTC)
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE089006
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:48:15 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-9659443fb56so1138530466b.2
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 07:48:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1683730094; x=1686322094;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=f6J1at/UfOBYlhKmXRcHodshRJDkjuRkHYlvCekUlaQ=;
+        b=iNDBMZ3Qo/Ta40vyO3EF+rrpA6RSS0EQpoiRnrl+XngL9Vmh01gFgTLSCxICapeEsh
+         daMH8kT6BzRJ7tOiLg9BOIyFxoYPKy1UTtBs+KRujHFwX6/TpTkx5ATMWgamCvbFYylZ
+         aeKI2KTncm+HdQIKHtE4wZylBYjc0wfZ8+rZiWy5W5HFuiwZg+SjV0/mWe76xGCfpDX7
+         LneNP04ablGNXFUmnjKXKFWdF5NJ3h57KcmCvVto2kKeI4ELTHFaKoXNu3/oeJZR+8tb
+         Rtb0J4RTHI4GRLVs7ApJvwEjff15qO/3eFmjvYFxR3bdpKaQMpB3bfWDkk0KQJGVmntA
+         VaFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683730053; x=1686322053;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JjIUi7jBNspmRga1n5cvGl2/nqkm6+K5dZzGhpmb1Bo=;
-        b=OURpZH4XEzl+hmXYyt8vnq1VowyLdYG+QcWdP8ZzGVR9MQK+seooQ1gHF1pvHYsftJ
-         6ZqGFypFeTAyj9Tu/ISdguBb4ZkEJ9mU1NKS0ivq9G1+8ouwxDqygdRzB6XRsfFpCVD+
-         gJGfLdQQxn5H/yD9wkOVLX9Y/bACnOfR3O2ewWZY/AQEnM/UI3vLo5b9p696yM2jFr6B
-         JOTzI45C7wfTyEk1bvG3Ia3FBCRbjb7uNE4PSQPgcn9BMjmq/c2AFt40tEQgnA2hG002
-         pBu4fOkAZFOxBcd9acDiJYetN8Au5UbeXGbOYSj/cDAU4cNGfd8ebYEFx6VdPYUWwxbw
-         nglQ==
-X-Gm-Message-State: AC+VfDwixQLlzJZz9TvxVJtpxCRDApnPzOHzyLmSQzj6ijjBnyG784/X
-	xn42I2QjnbELOSvOB35yoULMvNlqxvgS3YFSVuntMTzqQ+SjWnyt8BORno46uZ0f8NxPX566UZF
-	GypG6jTNEe7ZKveHesN79V+3MjaSludGyhLyLi0owj+Jjefw8cA==
-X-Received: by 2002:a25:50c1:0:b0:ba1:b7e4:e0dd with SMTP id e184-20020a2550c1000000b00ba1b7e4e0ddmr18740723ybb.56.1683730053268;
-        Wed, 10 May 2023 07:47:33 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5BvjS8N0bb9sG5W4XddT53p706jOzztHM9E/9C8JuNAkUBBSRRA3HmYJNVEaL9ADLicLIha3aVU6xa+N0EDKQ=
-X-Received: by 2002:a25:50c1:0:b0:ba1:b7e4:e0dd with SMTP id
- e184-20020a2550c1000000b00ba1b7e4e0ddmr18740710ybb.56.1683730053000; Wed, 10
- May 2023 07:47:33 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1683730094; x=1686322094;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=f6J1at/UfOBYlhKmXRcHodshRJDkjuRkHYlvCekUlaQ=;
+        b=OSEnfz9yO3YHHeqJ3PZ1XMlpWW8NvGtL9cH+Lh1al98o8igTMrn6jsK+lyUzk6Y4+A
+         4K7OrDbxMxO598g18/lutS14sk+KlWqZMkOrPeVnObJBsZzru/lHuoTDYj1m1/cfGQTH
+         HHDfQ3laW+jJF+yOw3LVTD21nsa+LCE7QblNCsS9WIqkr3A+Gb5virK4ZDGB1XOds59U
+         sskHPh0/kEGE4tH83X78Dnc3FjQ7T1aIstC7Qi0QNFdtg2riwhNHlkZnHGPUKM29/QF7
+         zqtvIq7Ph6rE6sWbGTl6vP2a4NG7SWKG10nCoL8ynxlgMVSrZn0zK29cXtYj5WCPUTJ4
+         cY8w==
+X-Gm-Message-State: AC+VfDyC+xnzt1zg8rQ5HR152+QaziUzPZx/QZMdvC7c+rSUMVGj0YK7
+	8s4vOnlN5e2y4Wpvy7EVdaxvKA==
+X-Google-Smtp-Source: ACHHUZ6nlFU/rkd4wiS8p9XQtJiSjSA/y7NII5AZrzIETV3go8PONFgO0szicvwQF++ebH0pnpxuGg==
+X-Received: by 2002:a17:907:8a02:b0:967:d161:61c6 with SMTP id sc2-20020a1709078a0200b00967d16161c6mr9898351ejc.3.1683730094012;
+        Wed, 10 May 2023 07:48:14 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:c175:a0f9:6928:8c9d? ([2a02:810d:15c0:828:c175:a0f9:6928:8c9d])
+        by smtp.gmail.com with ESMTPSA id va8-20020a17090711c800b0094f282fc29asm2693778ejb.207.2023.05.10.07.48.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 May 2023 07:48:13 -0700 (PDT)
+Message-ID: <6b5be71e-141e-c02a-8cba-a528264b26c2@linaro.org>
+Date: Wed, 10 May 2023 16:48:12 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230510131527.1244929-1-aleksandr.mikhalitsyn@canonical.com> <CAKH8qBuzWHoEiABvTgM2qnx5Av127VMHnncGtU5EZq+ffT9eGg@mail.gmail.com>
-In-Reply-To: <CAKH8qBuzWHoEiABvTgM2qnx5Av127VMHnncGtU5EZq+ffT9eGg@mail.gmail.com>
-From: Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Date: Wed, 10 May 2023 16:47:21 +0200
-Message-ID: <CAEivzxd5a8qykjbi03dyPD4hfBMsbKNTr=b0MEd2gamjC-stZA@mail.gmail.com>
-Subject: Re: [PATCH net-next] sctp: add bpf_bypass_getsockopt proto callback
-To: Stanislav Fomichev <sdf@google.com>
-Cc: nhorman@tuxdriver.com, davem@davemloft.net, 
-	Daniel Borkmann <daniel@iogearbox.net>, Christian Brauner <brauner@kernel.org>, 
-	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>, Xin Long <lucien.xin@gmail.com>, 
-	linux-sctp@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v2 3/5] dt-bindings: net: add mac-address-increment option
+Content-Language: en-US
+To: Ivan Mikhaylov <fr0st61te@gmail.com>,
+ Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
+ Paul Fertser <fercerpav@gmail.com>
+References: <20230509143504.30382-1-fr0st61te@gmail.com>
+ <20230509143504.30382-4-fr0st61te@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230509143504.30382-4-fr0st61te@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 10, 2023 at 4:32=E2=80=AFPM Stanislav Fomichev <sdf@google.com>=
- wrote:
->
-> On Wed, May 10, 2023 at 6:15=E2=80=AFAM Alexander Mikhalitsyn
-> <aleksandr.mikhalitsyn@canonical.com> wrote:
-> >
-> > Add bpf_bypass_getsockopt proto callback and filter out
-> > SCTP_SOCKOPT_PEELOFF and SCTP_SOCKOPT_PEELOFF_FLAGS socket options
-> > from running eBPF hook on them.
-> >
-> > These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOPT
-> > hook returns an error after success of the original handler
-> > sctp_getsockopt(...), userspace will receive an error from getsockopt
-> > syscall and will be not aware that fd was successfully installed into f=
-dtable.
-> >
-> > This patch was born as a result of discussion around a new SCM_PIDFD in=
-terface:
-> > https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikhalits=
-yn@canonical.com/
-> >
-> > Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Christian Brauner <brauner@kernel.org>
-> > Cc: Stanislav Fomichev <sdf@google.com>
-> > Cc: Neil Horman <nhorman@tuxdriver.com>
-> > Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> > Cc: Xin Long <lucien.xin@gmail.com>
-> > Cc: linux-sctp@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.c=
-om>
->
-> Acked-by: Stanislav Fomichev <sdf@google.com>
->
-> with a small nit below
+On 09/05/2023 16:35, Ivan Mikhaylov wrote:
+> Add the mac-address-increment option for specify MAC address taken by
+> any other sources.
+> 
+> Signed-off-by: Paul Fertser <fercerpav@gmail.com>
+> Signed-off-by: Ivan Mikhaylov <fr0st61te@gmail.com>
+> ---
+>  .../devicetree/bindings/net/ethernet-controller.yaml      | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> index 00be387984ac..6900098c5105 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> @@ -34,6 +34,14 @@ properties:
+>      minItems: 6
+>      maxItems: 6
+>  
+> +  mac-address-increment:
+> +    $ref: /schemas/types.yaml#/definitions/int32
+> +    description:
+> +      Specifies the MAC address increment to be added to the MAC address.
+> +      Should be used in cases when there is a need to use MAC address
+> +      different from one obtained by any other level, like u-boot or the
+> +      NC-SI stack.
 
-Hi Stanislav!
+We don't store MAC addresses in DT, but provide simple placeholder for
+firmware or bootloader. Why shall we store static "increment" part of
+MAC address? Can't the firmware give you proper MAC address?
 
-Thanks for your review.
+Best regards,
+Krzysztof
 
-I've also added a Suggested-by tag with your name in -v2, because
-you've given me this idea to use bpf_bypass_getsockopt.
-Hope that you are comfortable with it.
-
->
-> > ---
-> >  net/sctp/socket.c | 25 +++++++++++++++++++++++++
-> >  1 file changed, 25 insertions(+)
-> >
-> > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> > index cda8c2874691..a9a0ababea90 100644
-> > --- a/net/sctp/socket.c
-> > +++ b/net/sctp/socket.c
-> > @@ -8281,6 +8281,29 @@ static int sctp_getsockopt(struct sock *sk, int =
-level, int optname,
-> >         return retval;
-> >  }
-> >
->
-> [...]
->
-> > +bool sctp_bpf_bypass_getsockopt(int level, int optname)
->
-> static bool ... ? You're not making it indirect-callable, so seems
-> fine to keep private to this compilation unit?
-
-Sure, my bad. Fixed in v2.
-
-Kind regards,
-Alex
-
->
-> > +{
-> > +       /*
-> > +        * These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GE=
-TSOCKOPT
-> > +        * hook returns an error after success of the original handler
-> > +        * sctp_getsockopt(...), userspace will receive an error from g=
-etsockopt
-> > +        * syscall and will be not aware that fd was successfully insta=
-lled into fdtable.
-> > +        *
-> > +        * Let's prevent bpf cgroup hook from running on them.
-> > +        */
-> > +       if (level =3D=3D SOL_SCTP) {
-> > +               switch (optname) {
-> > +               case SCTP_SOCKOPT_PEELOFF:
-> > +               case SCTP_SOCKOPT_PEELOFF_FLAGS:
-> > +                       return true;
-> > +               default:
-> > +                       return false;
-> > +               }
-> > +       }
-> > +
-> > +       return false;
-> > +}
-> > +
-> >  static int sctp_hash(struct sock *sk)
-> >  {
-> >         /* STUB */
-> > @@ -9650,6 +9673,7 @@ struct proto sctp_prot =3D {
-> >         .shutdown    =3D  sctp_shutdown,
-> >         .setsockopt  =3D  sctp_setsockopt,
-> >         .getsockopt  =3D  sctp_getsockopt,
-> > +       .bpf_bypass_getsockopt  =3D sctp_bpf_bypass_getsockopt,
-> >         .sendmsg     =3D  sctp_sendmsg,
-> >         .recvmsg     =3D  sctp_recvmsg,
-> >         .bind        =3D  sctp_bind,
-> > @@ -9705,6 +9729,7 @@ struct proto sctpv6_prot =3D {
-> >         .shutdown       =3D sctp_shutdown,
-> >         .setsockopt     =3D sctp_setsockopt,
-> >         .getsockopt     =3D sctp_getsockopt,
-> > +       .bpf_bypass_getsockopt  =3D sctp_bpf_bypass_getsockopt,
-> >         .sendmsg        =3D sctp_sendmsg,
-> >         .recvmsg        =3D sctp_recvmsg,
-> >         .bind           =3D sctp_bind,
-> > --
-> > 2.34.1
-> >
 
