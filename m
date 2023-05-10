@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-1307-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1310-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AFCF16FD3E6
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 04:50:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id F058D6FD3EE
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 04:51:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DCBC528105A
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 02:50:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CAF211C20C8C
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 02:51:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DED7F373;
-	Wed, 10 May 2023 02:50:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F33F814;
+	Wed, 10 May 2023 02:50:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44963361
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 02:50:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D3A43C433D2;
-	Wed, 10 May 2023 02:50:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1BF9648
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 02:50:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 58910C433AA;
+	Wed, 10 May 2023 02:50:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683687020;
-	bh=uYGUc2iemDUAZix/3j2XeIERBHlEpfWv5ACO+Ofk21I=;
+	s=k20201202; t=1683687026;
+	bh=V/s57uoRYEm3pt8pyrooJhQRvtvYvdzEJkOWGFvknYA=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=RdJEjA12dj4F0THfzvCLgpra7SlZYVF+g9Ir2ZbBYbG/XP2Y38KPlnt5ahBVPBLaF
-	 CDcpN/4wfGFX8iYkh5gxGQo4JJlU+7+NY+QS/lvnsUShqwUo2ZiTnOoXknq6uGv4Sc
-	 jRexMbAPkWn3DoiCxIyI5bA9H+diGdO3sURPsERlWWVOOBr7IZM3EnvF1tDz6axlg8
-	 qpo/cukK6uI7oOCDgck/wXKeKELjp/46GZCPEPUeUvZu9NdUYiv+j/HYQXuPAuYIPT
-	 qRJ92f7uH7g/UOhnuueRtE+HnnWfFQLo4wJRWrG88DbZ3WYiQODnWUmaVglJUkx6eI
-	 BtAYDjqPenspA==
+	b=jJ8DYJTM7t85KbCetZz9MeOS7h5OZrVbjms6jCiXUsnqU7pQZ0QkFfbFYCJad/oJX
+	 I+MmejcG9Ls09bnlclIqZx86Sg0/+PzGkBwsuUXVD8mp1umEDtOKHEh0wMvfPs0iEQ
+	 g2u5wsE56LPVd72UzACZY3QnYr9i02W/dw4Ywz+GnlsnuaYQnEITkdABWW4UdHmG3N
+	 TH/kdtXPis5wOBKrSzYelKI2fZ6CHI4p0Cmjv+jC4T5RgRyXvIH46BD+m7WcvY/gB2
+	 kuLrmJ1uMkr9B8SRoRJYtb3U3c/JYIgOEIwoiRzJ3yBfZsxpy9b1USfj8q5+KlAl8a
+	 JAXkOv0uTSQyg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AA571C39562;
-	Wed, 10 May 2023 02:50:20 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 42745E26D23;
+	Wed, 10 May 2023 02:50:26 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -41,53 +41,37 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: stmmac: Initialize MAC_ONEUS_TIC_COUNTER register
+Subject: Re: [PATCH] net: skbuff: remove special handling for SLOB
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168368702069.23144.12939098876302994192.git-patchwork-notify@kernel.org>
-Date: Wed, 10 May 2023 02:50:20 +0000
-References: <20230506235845.246105-1-marex@denx.de>
-In-Reply-To: <20230506235845.246105-1-marex@denx.de>
-To: Marek Vasut <marex@denx.de>
-Cc: netdev@vger.kernel.org, davem@davemloft.net, alexandre.torgue@foss.st.com,
- edumazet@google.com, francesco.dolcini@toradex.com, peppe.cavallaro@st.com,
- hws@denx.de, kuba@kernel.org, joabreu@synopsys.com,
- marcel.ziswiler@toradex.com, mcoquelin.stm32@gmail.com, pabeni@redhat.com,
- linux-arm-kernel@lists.infradead.org,
- linux-stm32@st-md-mailman.stormreply.com
+ <168368702626.23144.11127488053640074262.git-patchwork-notify@kernel.org>
+Date: Wed, 10 May 2023 02:50:26 +0000
+References: <20230509071207.28942-1-lukas.bulwahn@gmail.com>
+In-Reply-To: <20230509071207.28942-1-lukas.bulwahn@gmail.com>
+To: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, vbabka@suse.cz, netdev@vger.kernel.org,
+ kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (main)
+This patch was applied to netdev/net-next.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sun,  7 May 2023 01:58:45 +0200 you wrote:
-> Initialize MAC_ONEUS_TIC_COUNTER register with correct value derived
-> from CSR clock, otherwise EEE is unstable on at least NXP i.MX8M Plus
-> and Micrel KSZ9131RNX PHY, to the point where not even ARP request can
-> be sent out.
+On Tue,  9 May 2023 09:12:07 +0200 you wrote:
+> Commit c9929f0e344a ("mm/slob: remove CONFIG_SLOB") removes CONFIG_SLOB.
+> Now, we can also remove special handling for socket buffers with the SLOB
+> allocator. The code with HAVE_SKB_SMALL_HEAD_CACHE=1 is now the default
+> behavior for all allocators.
 > 
-> i.MX 8M Plus Applications Processor Reference Manual, Rev. 1, 06/2021
-> 11.7.6.1.34 One-microsecond Reference Timer (MAC_ONEUS_TIC_COUNTER)
-> defines this register as:
-> "
-> This register controls the generation of the Reference time (1 microsecond
-> tic) for all the LPI timers. This timer has to be programmed by the software
-> initially.
-> ...
-> The application must program this counter so that the number of clock cycles
-> of CSR clock is 1us. (Subtract 1 from the value before programming).
-> For example if the CSR clock is 100MHz then this field needs to be programmed
-> to value 100 - 1 = 99 (which is 0x63).
-> This is required to generate the 1US events that are used to update some of
-> the EEE related counters.
-> "
+> Remove an unnecessary distinction between SLOB and SLAB/SLUB allocator
+> after the SLOB allocator is gone.
 > 
 > [...]
 
 Here is the summary with links:
-  - net: stmmac: Initialize MAC_ONEUS_TIC_COUNTER register
-    https://git.kernel.org/netdev/net/c/8efbdbfa9938
+  - net: skbuff: remove special handling for SLOB
+    https://git.kernel.org/netdev/net-next/c/559ae55cfc33
 
 You are awesome, thank you!
 -- 
