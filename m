@@ -1,153 +1,172 @@
-Return-Path: <netdev+bounces-1583-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1586-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AD6E06FE5E8
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:01:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6F0866FE617
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:22:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C0E931C20E39
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 21:01:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C2B38281546
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 21:22:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4DFA21CEE;
-	Wed, 10 May 2023 21:01:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF49921CFA;
+	Wed, 10 May 2023 21:22:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9874A21CC3
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 21:01:12 +0000 (UTC)
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800CBCA
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:00:53 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id d2e1a72fcca58-643990c5319so5537124b3a.2
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:00:53 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DC0821CC1
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 21:22:46 +0000 (UTC)
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F270526AF
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:22:43 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-644d9bf05b7so3695794b3a.3
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:22:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683752442; x=1686344442;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=c6CstLFy4vW5ZUbG5PU++myYvkHeSQCfnFEUOsN8lzk=;
-        b=s8bkr9DhLmER2xNhaHjJmwxPaHTXwWN/kQ2xETdZkGqKdpZec8zhxslqhRVoENpyBS
-         y88QX0zhvNAt976B2am97gqN6FebXOdzbaqT2bhj1opOqnP4Dm/QeEEjITkaJBHKo1OQ
-         5hocNF/StYAja5ZqneVE9CEbbHOnCtUk7StfMnksS/3Ok9qbwbN+ndSqeMzVmxZC5Vib
-         NlNgteQDuo/fNo3B6gniXN/ilfOITh/ZeftJRv5S8BcqERvgml685/JmkUoFXMORbhiQ
-         +yAhgwXLYuGuHwYzbYcv+90aJ9GGXeSo3LsGU3Emi5AD1cNG2cdZXsf0GBH7YprYsHE6
-         W1Sg==
+        d=google.com; s=20221208; t=1683753763; x=1686345763;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Fh63bNXirjYlRC/jjf1XoYxHkBysYc037BusnA4bKgc=;
+        b=qpFq5DN35+iZ3b0ZEsilIjueJskUlMqkFjMdlpH5/bEyxcnD8iSjOShjB4RwIYMmDA
+         U0qcftPEhKVYcefqB6iYXK0jc9GwWazTC+dF+niR9z4xJ8SqKuWhEUDg9MYh0yjfZf4P
+         suO1EjZdNi1pTBkecVsut9ZRb8gv/BDyJNkR8glJC2zWC7xlygGf8om6OVeipxO2T/+h
+         rpf7sgoMSFKSWFGMYV7KdOkWMg+AMmQ3jb41XT+2tyBBj5j39bVbIMWAdPrMZOXcgG8c
+         P2tzR1xJk/YPsfPucN49M9FgQvlJE1NhIzmvkbQh5jfs4eS7EodT3opF+uSjA8qL4TeM
+         HpQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683752442; x=1686344442;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=c6CstLFy4vW5ZUbG5PU++myYvkHeSQCfnFEUOsN8lzk=;
-        b=Dy7IIjl+y8b8iiShHl1pNWkG/k67LLNI7zgv4yw4n9qcH0onmZNnAx+8yFJB/MZKzR
-         BBjxlnEqjQObKyt+v6on4LTRO6Puto8P/OqTuZZaMLNDXta7YL2HzavlLUEMo6akaS6Z
-         OQKhWfenUlacbrZclFFaZuMXb/pwya219oLT/DPZb+fbV1EQmQ9tS86jLBLy8/9Ya+8+
-         TpAev9jUc8YKYE4RtDumjhqwRbjS/9DljG3Oj5s4aDTnAqMyzNQZ6WNEa+ZXP/hufcf1
-         8qS/7GrbnrJGVWsk63x6E/nleEYU1ZyxQvLYtKRXz3hTyHoF1dyD3oaw84qB0YyGAauu
-         QHmA==
-X-Gm-Message-State: AC+VfDxFALypqXuajzB/Q/JpQdmZX+6TcV9C1emXcygodkQcRF2cvfAM
-	qJBp+qtqiq00yJ1cs6ZM1dANxZdxr6Wn12s/401iRg==
-X-Google-Smtp-Source: ACHHUZ7bELp2cUoJR+gjP2axO0tX568tLNcqDAQ0EmNKgns31JGftGJZnQDIQRTxwYRnXLmgre8hAQ==
-X-Received: by 2002:a05:6a00:1a4f:b0:644:2718:dd40 with SMTP id h15-20020a056a001a4f00b006442718dd40mr18327338pfv.30.1683752442282;
-        Wed, 10 May 2023 14:00:42 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id j23-20020aa78dd7000000b00640f895fde9sm3895442pfr.214.2023.05.10.14.00.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 May 2023 14:00:41 -0700 (PDT)
-From: Stephen Hemminger <stephen@networkplumber.org>
-To: netdev@vger.kernel.org
-Cc: me@pmachata.org,
-	jiri@resnulli.us,
-	jmaloy@redhat.com,
-	parav@nvidia.com,
-	elic@nvidia.com,
-	Stephen Hemminger <stephen@networkplumber.org>,
-	Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH iproute2] Add MAINTAINERS file
-Date: Wed, 10 May 2023 14:00:40 -0700
-Message-Id: <20230510210040.42325-1-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.39.2
+        d=1e100.net; s=20221208; t=1683753763; x=1686345763;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Fh63bNXirjYlRC/jjf1XoYxHkBysYc037BusnA4bKgc=;
+        b=S/TCGfLPTQMfmHQOEpZU0Xo5t30MoBOhbNicTF8Fu23RANks/EPII4i3QbCaEBjbII
+         NCqXBfMM1EdhvVvRxmvkeztxAh2m7JTrMNLYt0K3I4dAzkUI5cHBj3MQv5At4BCl2SHj
+         9ke3wQx9i7kHn3oytaK5KV9ezfwxhs/3J211hPVPX8jmGiwA3rg3VwJNgtALywsLntAJ
+         fROkB0cnkehS2ZwGKKjasGbhVcNyAvEC4u3qndlmXoPhXPAKXI8LuyrlCIU9F2rnrsvo
+         svESJrobNMXG6WeCqZ7tyREZlQc71PHVAwF0Sm4BqWEUzsfk2dmsw81/xC6ZrjVs4kk/
+         BnNA==
+X-Gm-Message-State: AC+VfDxjE3oG0h9JWuevT+MLtRTxO/iCbz/c7NURgKSxfTu2bLY6659L
+	bZ4mjE4R5zuFKH2QSuFsgna/D1cBAVuPYsG13Rdtow==
+X-Google-Smtp-Source: ACHHUZ4F60zdJfIGVeCFZMEiO2jO/sYbxXLpD1rC/KOF0HnGT2QEgARPFh8eZpBazOC9fVSVJsCADrLcXeMsvuVsUcg=
+X-Received: by 2002:a17:903:1d0:b0:1ac:7624:51d7 with SMTP id
+ e16-20020a17090301d000b001ac762451d7mr12148111plh.69.1683753763223; Wed, 10
+ May 2023 14:22:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230510131527.1244929-1-aleksandr.mikhalitsyn@canonical.com>
+ <ZFusunmfAaQVmBE2@t14s.localdomain> <CAEivzxdfZaLD40cBKo7aqiwspwBeqeULR+RAv6jJ_wo-zV6UpQ@mail.gmail.com>
+ <ZFu1qNUfV73dLUuo@t14s.localdomain>
+In-Reply-To: <ZFu1qNUfV73dLUuo@t14s.localdomain>
+From: Stanislav Fomichev <sdf@google.com>
+Date: Wed, 10 May 2023 14:22:32 -0700
+Message-ID: <CAKH8qBttFS0-82tNFxnVaJfA489WoA=THuc7YzWtYNfatzaaZg@mail.gmail.com>
+Subject: Re: [PATCH net-next] sctp: add bpf_bypass_getsockopt proto callback
+To: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc: Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>, nhorman@tuxdriver.com, 
+	davem@davemloft.net, Daniel Borkmann <daniel@iogearbox.net>, 
+	Christian Brauner <brauner@kernel.org>, Xin Long <lucien.xin@gmail.com>, linux-sctp@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Record the maintainers of subsections of iproute2.
-The subtree maintainers are based off of most recent current
-patches and maintainer of kernel portion of that subsystem.
+On Wed, May 10, 2023 at 8:18=E2=80=AFAM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Wed, May 10, 2023 at 04:55:37PM +0200, Aleksandr Mikhalitsyn wrote:
+> > On Wed, May 10, 2023 at 4:39=E2=80=AFPM Marcelo Ricardo Leitner
+> > <marcelo.leitner@gmail.com> wrote:
+> > >
+> > > On Wed, May 10, 2023 at 03:15:27PM +0200, Alexander Mikhalitsyn wrote=
+:
+> > > > Add bpf_bypass_getsockopt proto callback and filter out
+> > > > SCTP_SOCKOPT_PEELOFF and SCTP_SOCKOPT_PEELOFF_FLAGS socket options
+> > > > from running eBPF hook on them.
+> > > >
+> > > > These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOP=
+T
+> > > > hook returns an error after success of the original handler
+> > > > sctp_getsockopt(...), userspace will receive an error from getsocko=
+pt
+> > > > syscall and will be not aware that fd was successfully installed in=
+to fdtable.
+> > > >
+> > > > This patch was born as a result of discussion around a new SCM_PIDF=
+D interface:
+> > > > https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikha=
+litsyn@canonical.com/
+> > >
+> > > I read some of the emails in there but I don't get why the fd leak is
+> > > special here. I mean, I get that it leaks, but masking the error
+> > > return like this can lead to several other problems in the applicatio=
+n
+> > > as well.
+> > >
+> > > For example, SCTP_SOCKOPT_CONNECTX3 will trigger a connect(). If it
+> > > failed, and the hook returns success, the user app will at least log =
+a
+> > > wrong "connection successful".
+> > >
+> > > If the hook can't be responsible for cleaning up before returning a
+> > > different value, then maybe we want to extend the list of sockopts in
+> > > here. AFAICT these would be the 3 most critical sockopts.
+> > >
+> >
+> > Dear Marcelo,
+>
+> Hello!
+>
+> >
+> > Thanks for pointing this out. Initially this problem was discovered by
+> > Christian Brauner and for SO_PEERPIDFD (a new SOL_SOCKET option that
+> > we want to add),
+> > after this I decided to check if we do fd_install in any other socket
+> > options in the kernel and found that we have 2 cases in SCTP. It was
+> > an accidental finding. :)
+> >
+> > So, this patch isn't specific to fd_install things and probably we
+> > should filter out bpf hook from being called for other socket options
+> > as well.
+>
+> Understood.
+>
+> >
+> > So, I need to filter out SCTP_SOCKOPT_CONNECTX3 and
+> > SCTP_SOCKOPT_PEELOFF* for SCTP, right?
+>
+> Gotta say, it seems weird that it will filter out some of the most
+> important sockopts. But I'm not acquainted to bpf hooks so I won't
+> question (much? :) ) that.
 
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
- MAINTAINERS | 49 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
- create mode 100644 MAINTAINERS
+Thanks for raising this. Alexander, maybe you can respin your v2 to
+include these as well?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-new file mode 100644
-index 000000000000..fa720f686ba8
---- /dev/null
-+++ b/MAINTAINERS
-@@ -0,0 +1,49 @@
-+Iproute2 Maintainers
-+====================
-+
-+The file provides a set of names that are are able to help
-+review patches and answer questions. This is in addition to
-+the netdev@vger.kernel.org mailing list used for all iproute2
-+and kernel networking.
-+
-+Descriptions of section entries:
-+
-+	M: Maintainer's Full Name <address@domain>
-+	T: Git tree location.
-+	F: Files and directories with wildcard patterns.
-+	   A trailing slash includes all files and subdirectory files.
-+	   A wildcard includes all files but not subdirectories.
-+	   One pattern per line. Multiple F: lines acceptable.
-+
-+Main Branch
-+M: Stephen Hemminger <stephen@networkplumber.org>
-+T: git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
-+L: netdev@vger.kernel.org
-+
-+Next Tree
-+M: David Ahern <dsahern@gmail.com>
-+T: git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
-+L: netdev@vger.kernel.org
-+
-+Ethernet Bridging - bridge
-+M: Roopa Prabhu <roopa@nvidia.com>
-+M: Nikolay Aleksandrov <razor@blackwall.org>
-+L: bridge@lists.linux-foundation.org (moderated for non-subscribers)
-+F: bridge/*
-+
-+Data Center Bridging - dcb
-+M: Petr Machata <me@pmachata.org>
-+F: dcb/*
-+
-+Device Link - devlink
-+M: Jiri Pirko <jiri@resnulli.us>
-+F: devlink/*
-+
-+Transparent Inter-Process Communication - Tipc
-+M: Jon Maloy <jmaloy@redhat.com>
-+F: tipc/*
-+
-+Virtual Datapath Accelration - Vdpa
-+M: Parav Pandit <parav@nvidia.com>
-+M: Eli Cohen <elic@nvidia.com>
-+F: vdpa/*
--- 
-2.39.2
+> Considering that filtering is needed, then yes, on getsock those are
+> ones I'm seeing that needs filtering. Otherwise they will either
+> trigger leakage or will confuse the application.
 
+[..]
+
+> Should we care about setsock as well? We have SCTP_SOCKOPT_CONNECTX
+> and SCTP_SOCKOPT_CONNECTX_OLD in there, and well, I guess any of those
+> would misbehave if they failed and yet the hook returns success.
+
+For setsockopt, the bpf program runs before the kernel, so setsockopt
+shouldn't have those issues we're observing with getsockopt (which
+runs after the kernel and has an option to ignore kernel value).
+
+> Thanks,
+> Marcelo
 
