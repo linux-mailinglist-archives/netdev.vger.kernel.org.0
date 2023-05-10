@@ -1,68 +1,71 @@
-Return-Path: <netdev+bounces-1373-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1372-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B94D76FD9F8
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:51:30 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 82FEE6FD9F7
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:51:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D291D28130C
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:51:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9BA601C20A72
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:51:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E8929648;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D64CB63E;
 	Wed, 10 May 2023 08:50:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC8E236E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA35E364
 	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:50:59 +0000 (UTC)
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2086.outbound.protection.outlook.com [40.107.94.86])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291CB6189;
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2068.outbound.protection.outlook.com [40.107.244.68])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591EF7285;
 	Wed, 10 May 2023 01:50:56 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eyXn6PWvew6WbOwCQ3J+hsSa9qlGrjYPMWPfyotDm1Dhfa3gnFOgLvWhLjuqKS8k0a3B6LnYfksgpkkDoPj3wPadNCoc/ZFHJeYaDxepxwhsu/Of60/WOThQbriE/IAutvkVeiKouJieapoqQ7MNFQ5ItMWd24mrQ8JL8oAEDBWfbTUN+tIE+seh6ImI9ACOcv4eHyY6aqsuP1E35FQVKnDN+ocjIKsurWpF/eMqaNoQ2wNQ2NgCS3fq9C02gQ8KoaIaGfLDLmG4w4Qu+Qp743m+Nohv7SShJ31FHHGdDDW4arcBE47Thhwu5/r6KtjY2LqxAySRTSLJExAdMpiicQ==
+ b=fNfu4EiaWAdqWDJ9T6l705KS8gVkUhUPWP8pMBAwdtkrq+B9pkPsn1lJQYOh3xtGTNWkHc/EGr8Eu9dwe7u3T5R395BcIM8BxkhAlm7+rJzCkZmdYwvam+TzRCoqapHm/5xz5yz2mAVGXxh706pvS31+onnucRLiUkPTtydmHQJ84TkytTfkUMsElF+STWp0JbebkCVC7XCnFIQ4x8XnsixF9xIyUVCY6oo8O29EZ8+pMJNkYHAYNaqDu5joX1pkK+ARHFwadBfYvbVo0C6mgrAPDKBjCDP16/ZF1fTbALKcAL8fBcWxFw4Ey9PUedY0c/f0JN+3Ah0z7WbDLe91BA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mFyujdkTp+yiZjqCwuRb0XBgZZSOBgeLBZoElSIaXkc=;
- b=WMoKLhjnDLWEqlyG6WvNZVUWTlFEYBmP0Noguto5fZEqDKDYkX89wAWkxmRxUg+uRqrp90d5JIGW/Fd4XL3pFMwuawmcKA0ZDT2ssHXWnZcW0P2zJAuNRcGwYA9B50ZV68L9879cXRSa+2vbGCyzFp1qzvkRYwQXbrBwRxl6P+gh7DSrVAXz+3xxFxYKw3vcilK3KaKIRIR+VWQAYGnbewPPV/SdJBmcXyzKdtaLKyyoP8bS82fqyb9zPAf0stJcSxSAQJT4HXxIeRR1kCV5Pe+6B9jIxecNDRaLbYTNsuVMCEqTDg4ergUIWHJDmA3XFBGdsHEouMoJWZPKHsKT6g==
+ bh=75qGzBJDopren3E9v8/uUr/QdXlgcI7j6U9QBD1iPIQ=;
+ b=XpcKgDXg1llzlNAnkQLUsxHtBgeBEl5rMN8GKIlr0GJnXzrhgOZoeLVnfhF7c4Rl1kQWb84SHGqYI9pYmZOG7zOc1aZsuHWxFt5lChl75wfEQFRiBpTdjLBPibipyHiKusdx+nmSEHdLtwqMXHzea2hi7l2uW1lgmi1s1Uw290RQOGEsGdLDYfFyWm0OxV+BeuRtO0bbBh3AsxgAzRkSLzZcBqRLcLRbXsVktiQNbTbGUgygrcEkHtkrZIUVOjRNGLBJsm1UMNrqv8Whq5VcvEsPUcrTHj6R2OZ9LZSUfZDrao65G3rbyE0EawsZt2VSJkFmNF6syH1U7vfz6PYyNA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mFyujdkTp+yiZjqCwuRb0XBgZZSOBgeLBZoElSIaXkc=;
- b=RD/wThJq1PARbH6tiq9DCZySwXn5ICgWls6HpF901wzjl2XWMX3xgpHad/nhTmdQh+zikDDU6oyENW3Dv7aXmeF1r12H8I6QknUsCpsWTY4eTihKgf3VT3DdMfb9FO3V2STF3jRY6dyYjzMJFgW0JcUKi8M4vG31ElBB0fo3UW0=
-Received: from DM6PR13CA0057.namprd13.prod.outlook.com (2603:10b6:5:134::34)
- by PH7PR12MB6587.namprd12.prod.outlook.com (2603:10b6:510:211::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Wed, 10 May
- 2023 08:50:47 +0000
-Received: from DM6NAM11FT104.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:134:cafe::1a) by DM6PR13CA0057.outlook.office365.com
- (2603:10b6:5:134::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.19 via Frontend
- Transport; Wed, 10 May 2023 08:50:47 +0000
+ bh=75qGzBJDopren3E9v8/uUr/QdXlgcI7j6U9QBD1iPIQ=;
+ b=470QUWarpJW6GRuMDTbYjyfDcQD8O5gHqiOoqO+0U8Q1PzkJj0VRu5/DznjeyJpT0N0LzpCr+c5AWBnGWh4gjjbdd863n6uc8/DnGJbWgvQ3z0I2wyK2JBasQrMLRQLJSCAn8P+8eOPfLfnb59VqwUcFPFi4YNZ8v3AU0v3m8dk=
+Received: from DM6PR03CA0022.namprd03.prod.outlook.com (2603:10b6:5:40::35) by
+ BL3PR12MB6380.namprd12.prod.outlook.com (2603:10b6:208:3b3::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6363.29; Wed, 10 May 2023 08:50:52 +0000
+Received: from DM6NAM11FT025.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:40:cafe::3a) by DM6PR03CA0022.outlook.office365.com
+ (2603:10b6:5:40::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.18 via Frontend
+ Transport; Wed, 10 May 2023 08:50:52 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT104.mail.protection.outlook.com (10.13.173.232) with Microsoft SMTP
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ DM6NAM11FT025.mail.protection.outlook.com (10.13.172.197) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6387.20 via Frontend Transport; Wed, 10 May 2023 08:50:46 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6387.20 via Frontend Transport; Wed, 10 May 2023 08:50:52 +0000
+Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 10 May
- 2023 03:50:45 -0500
+ 2023 03:50:51 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
+ (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 10 May
+ 2023 01:50:51 -0700
 Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Wed, 10 May 2023 03:50:41 -0500
+ Transport; Wed, 10 May 2023 03:50:46 -0500
 From: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
 To: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
 	<pabeni@redhat.com>, <robh+dt@kernel.org>,
@@ -72,9 +75,9 @@ CC: <linux@armlinux.org.uk>, <michal.simek@amd.com>,
 	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
 	<linux-kernel@vger.kernel.org>, <anirudha.sarangi@amd.com>,
 	<harini.katakam@amd.com>, <sarath.babu.naidu.gaddam@amd.com>, <git@amd.com>
-Subject: [PATCH net-next V3 2/3] net: axienet: Preparatory changes for dmaengine support
-Date: Wed, 10 May 2023 14:20:30 +0530
-Message-ID: <20230510085031.1116327-3-sarath.babu.naidu.gaddam@amd.com>
+Subject: [PATCH net-next V3 3/3] net: axienet: Introduce dmaengine support
+Date: Wed, 10 May 2023 14:20:31 +0530
+Message-ID: <20230510085031.1116327-4-sarath.babu.naidu.gaddam@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230510085031.1116327-1-sarath.babu.naidu.gaddam@amd.com>
 References: <20230510085031.1116327-1-sarath.babu.naidu.gaddam@amd.com>
@@ -88,26 +91,26 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT104:EE_|PH7PR12MB6587:EE_
-X-MS-Office365-Filtering-Correlation-Id: 53ee1834-9b7d-492c-5bff-08db5133a5ae
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT025:EE_|BL3PR12MB6380:EE_
+X-MS-Office365-Filtering-Correlation-Id: ed7b6cff-8394-4c4e-5aa9-08db5133a8ed
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	kPAS9Irgq/QHwaK8XSf0V8A0grX+iL1Y+/VX4s2XEX8vL9P4ScAjQDAyq8QX9JGWijeyxD/T67KbbIpJbLZbOnK+2m6qtBCrQ+kAeeBxmf1oZJouCp8+/Keo+YHDBZw6rn44kU/gz2sX4COK12v4rY0AB7jQKkLDks3FwSXNqnVSAmwBN3P6Z90g5XEI6eWfijzh8ZBuHhConybJYDWpZDiXV2MwGu1d+msrGqjEDUi800B8E8qFOVZncVIHLr9gKPaEYfmJqBp1q1YWrpCbHRrj9bwYdOKuMe2X9J+eMe1XGmbpzkL0kkTQKZj4lH5d3qzZ2RDvAhbOHAMtSiQYmOri5Of1kZOESkXR8NFn7KT4jGnZ8sZrXXai88hjH+KnBBba9XYY/+M+D9GYfmc3jilYUD169XkPBj1VxGlI9K6b9R/lxwHi+P3ddymm4/kIgh2p7+ec10oBoqdo1X45wWSmcIgd+EpVwzWZelUyyfYYowGL2ObPyrOFf3bKei4bEOFUSr8s/mZxGpSBVnjHN5qc8yUQKFdvio/hGMKXuJ6oslPXWJijL/9ael9gPn+LsLk8Boi+3eE9Wa1jSX9M6a6nn6EUn+BHHxIVLeT5RIZ5RyQSUwPo4/cguH74JD/LlR3hOLgRJAAr1mrQ8+pIFLnripj5FXAYGIEHetg2JywCsr15wV4ulOZkx+jauep8CidiD9oHSoRt4FM7Gy5MK3kC31So/JVMMWaMTb4qV9g=
+	E+uZG/s/8JmEFehLBBdf68AKLk4bw/nfgOzKkk3tLGlSm9pKSdHLG0qwA9wGbD+PSst80pqASPRYRck71mvqreaFFlfIQNJvn3G/qwSZhmggUe6/Q42jh/Gb8pKTwg/asvVYOIfZzGGHlK+M9HFG5a4ox0drW2BqAvLJmQNXPnqJbLC/RG12OsiUpxSO8GMi1UGdglv/i3x3ljrJLtwNp0088ok/KnCZs/NKuphmULpDS/t7AhUfJUzXBwP91F5SrPM4R02Oigvll0mubPaSQwPgkmkzNJekPWbfKCNcrz+7z6ulX8UTZc2MjMIp1OLYeBpfSVJm/GKFht/P/KkXPo5Z8c+tWNHfFCLikFBn5lBlBXfNYR2jWV+5ZJD9RHFJQFH4fvb+cujMSMeuJ1+De+i6RD3hUm0wQQ559CAuQ1D2eqOak+gkoSm0E87n7ENXV2k0p2DYb302asJt3pWCy4hmcSgQy0NlVqniOaXC2G3z8SCKUbGxnrAw/X/d1Ze3Ck6mgP/TFRcchkPM5uUw5hea8Ko70y4E1E4qeTjR8uJlHQFK10K2Rf3pyDHmYCzSEa349yCOzwhT6FBGF4P+jhDABFqrEtImvI0ZfMJmz35gcwYaN0QoQQoNr1R6gXPUUjgvX4Az1a5yEAOymcriDIiImZWasAflnh/IGKNNoJzaun+35gjPCgTIMmnf4o2VfBxWNDie69YM+9geaMoDJk3DoJcM/exQlEwqC3GKgto=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(136003)(376002)(451199021)(40470700004)(36840700001)(46966006)(103116003)(36756003)(336012)(4326008)(110136005)(54906003)(70206006)(316002)(86362001)(478600001)(70586007)(82310400005)(40480700001)(5660300002)(30864003)(8936002)(41300700001)(7416002)(8676002)(356005)(186003)(81166007)(2906002)(82740400003)(1076003)(36860700001)(83380400001)(2616005)(426003)(26005)(6666004)(47076005)(40460700003)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(346002)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(81166007)(356005)(186003)(1076003)(26005)(86362001)(2616005)(103116003)(36756003)(82740400003)(47076005)(36860700001)(426003)(336012)(83380400001)(6666004)(110136005)(316002)(40460700003)(70586007)(70206006)(478600001)(8936002)(4326008)(54906003)(7416002)(966005)(8676002)(5660300002)(41300700001)(82310400005)(40480700001)(30864003)(2906002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 08:50:46.7125
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 08:50:52.1114
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 53ee1834-9b7d-492c-5bff-08db5133a5ae
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed7b6cff-8394-4c4e-5aa9-08db5133a8ed
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT104.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT025.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6587
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6380
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
 	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -116,496 +119,464 @@ X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The axiethernet driver has in-built dma programming. The aim is to remove
-axiethernet axidma programming  after some time and instead use the
-dmaengine framework to communicate with existing xilinx DMAengine
-controller(xilinx_dma) driver.
+Add dmaengine framework to communicate with the xilinx DMAengine
+driver(AXIDMA).
 
-Keep the axidma programming code under AXIENET_USE_DMA check so that
-dmaengine changes can be added later.
+Axi ethernet driver uses separate channels for transmit and receive.
+Add support for these channels to handle TX and RX with skb and
+appropriate callbacks. Also add axi ethernet core interrupt for
+dmaengine framework support.
 
-Perform minor code reordering to minimize conditional
-AXIENET_USE_DMA checks and there is no functional change.
+The dmaengine framework was extended for metadata API support during the
+axidma RFC[1] discussion. However it still needs further enhancements to
+make it well suited for ethernet usecases. The ethernet features i.e
+ethtool set/get of DMA IP properties, ndo_poll_controller, trigger
+reset of DMA IP from ethernet are not supported (mentioned in TODO)
+and it requires follow-up discussion and dma framework enhancement.
 
-It uses "dmas" property to identify whether it should use a dmaengine
-framework or axiethernet axidma programming.
+[1]: https://lore.kernel.org/lkml/1522665546-10035-1-git-send-email-
+radheys@xilinx.com
 
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
 ---
+Performance numbers(Mbps):
+
+              | TCP | UDP |
+         -----------------
+         | Tx | 920 | 800 |
+         -----------------
+         | Rx | 620 | 910 |
+
 Changes in V3:
-1) New Patch.
+1) New patch for dmaengine framework support.
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet.h  |   2 +
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 317 +++++++++++-------
- 2 files changed, 192 insertions(+), 127 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  |   6 +
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 331 +++++++++++++++++-
+ 2 files changed, 335 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index 575ff9de8985..10917d997d27 100644
+index 10917d997d27..fbe00c5390d5 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -435,6 +435,7 @@ struct axidma_bd {
-  * @coalesce_usec_rx:	IRQ coalesce delay for RX
+@@ -436,6 +436,9 @@ struct axidma_bd {
   * @coalesce_count_tx:	Store the irq coalesce on TX side.
   * @coalesce_usec_tx:	IRQ coalesce delay for TX
-+ * @has_dmas:	flag to check dmaengine framework usage.
+  * @has_dmas:	flag to check dmaengine framework usage.
++ * @tx_chan:	TX DMA channel.
++ * @rx_chan:	RX DMA channel.
++ * @skb_cache:	Custom skb slab allocator
   */
  struct axienet_local {
  	struct net_device *ndev;
-@@ -499,6 +500,7 @@ struct axienet_local {
- 	u32 coalesce_usec_rx;
+@@ -501,6 +504,9 @@ struct axienet_local {
  	u32 coalesce_count_tx;
  	u32 coalesce_usec_tx;
-+	u8  has_dmas;
+ 	u8  has_dmas;
++	struct dma_chan *tx_chan;
++	struct dma_chan *rx_chan;
++	struct kmem_cache *skb_cache;
  };
  
  /**
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 3e310b55bce2..8678fc09245a 100644
+index 8678fc09245a..662c77ff0e99 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -54,6 +54,8 @@
+@@ -37,6 +37,9 @@
+ #include <linux/phy.h>
+ #include <linux/mii.h>
+ #include <linux/ethtool.h>
++#include <linux/dmaengine.h>
++#include <linux/dma-mapping.h>
++#include <linux/dma/xilinx_dma.h>
  
- #define AXIENET_REGS_N		40
+ #include "xilinx_axienet.h"
  
-+#define AXIENET_USE_DMA(lp) ((lp)->has_dmas)
+@@ -46,6 +49,9 @@
+ #define TX_BD_NUM_MIN			(MAX_SKB_FRAGS + 1)
+ #define TX_BD_NUM_MAX			4096
+ #define RX_BD_NUM_MAX			4096
++#define DMA_NUM_APP_WORDS		5
++#define LEN_APP				4
++#define RX_BUF_NUM_DEFAULT		128
+ 
+ /* Must be shorter than length of ethtool_drvinfo.driver field to fit */
+ #define DRIVER_NAME		"xaxienet"
+@@ -56,6 +62,16 @@
+ 
+ #define AXIENET_USE_DMA(lp) ((lp)->has_dmas)
+ 
++struct axi_skbuff {
++	struct scatterlist sgl[MAX_SKB_FRAGS + 1];
++	struct dma_async_tx_descriptor *desc;
++	dma_addr_t dma_address;
++	struct sk_buff *skb;
++	int sg_len;
++} __packed;
++
++static int axienet_rx_submit_desc(struct net_device *ndev);
 +
  /* Match table for of_platform binding */
  static const struct of_device_id axienet_of_match[] = {
  	{ .compatible = "xlnx,axi-ethernet-1.00.a", },
-@@ -588,10 +590,6 @@ static int axienet_device_reset(struct net_device *ndev)
- 	struct axienet_local *lp = netdev_priv(ndev);
- 	int ret;
- 
--	ret = __axienet_device_reset(lp);
--	if (ret)
--		return ret;
--
- 	lp->max_frm_size = XAE_MAX_VLAN_FRAME_SIZE;
- 	lp->options |= XAE_OPTION_VLAN;
- 	lp->options &= (~XAE_OPTION_JUMBO);
-@@ -605,11 +603,17 @@ static int axienet_device_reset(struct net_device *ndev)
- 			lp->options |= XAE_OPTION_JUMBO;
- 	}
- 
--	ret = axienet_dma_bd_init(ndev);
--	if (ret) {
--		netdev_err(ndev, "%s: descriptor allocation failed\n",
--			   __func__);
--		return ret;
-+	if (!AXIENET_USE_DMA(lp)) {
-+		ret = __axienet_device_reset(lp);
-+		if (ret)
-+			return ret;
-+
-+		ret = axienet_dma_bd_init(ndev);
-+		if (ret) {
-+			netdev_err(ndev, "%s: descriptor allocation failed\n",
-+				   __func__);
-+			return ret;
-+		}
- 	}
- 
- 	axienet_status = axienet_ior(lp, XAE_RCW1_OFFSET);
-@@ -775,7 +779,7 @@ static int axienet_tx_poll(struct napi_struct *napi, int budget)
- }
- 
- /**
-- * axienet_start_xmit - Starts the transmission.
-+ * axienet_start_xmit_legacy - Starts the transmission.
-  * @skb:	sk_buff pointer that contains data to be Txed.
-  * @ndev:	Pointer to net_device structure.
-  *
-@@ -788,7 +792,7 @@ static int axienet_tx_poll(struct napi_struct *napi, int budget)
-  * it populates AXI Stream Control fields with appropriate values.
-  */
- static netdev_tx_t
--axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-+axienet_start_xmit_legacy(struct sk_buff *skb, struct net_device *ndev)
- {
- 	u32 ii;
- 	u32 num_frag;
-@@ -890,6 +894,27 @@ axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 	return NETDEV_TX_OK;
+@@ -728,6 +744,108 @@ static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
+ 	return 0;
  }
  
 +/**
-+ * axienet_start_xmit - Starts the transmission.
++ * axienet_dma_tx_cb - DMA engine callback for TX channel.
++ * @data:       Pointer to the axi_skbuff structure
++ * @result:     error reporting through dmaengine_result.
++ * This function is called by dmaengine driver for TX channel to notify
++ * that the transmit is done.
++ */
++static void axienet_dma_tx_cb(void *data, const struct dmaengine_result *result)
++{
++	struct axi_skbuff *axi_skb = data;
++
++	struct net_device *netdev = axi_skb->skb->dev;
++	struct axienet_local *lp = netdev_priv(netdev);
++
++	u64_stats_update_begin(&lp->tx_stat_sync);
++	u64_stats_add(&lp->tx_bytes, axi_skb->skb->len);
++	u64_stats_add(&lp->tx_packets, 1);
++	u64_stats_update_end(&lp->tx_stat_sync);
++
++	dma_unmap_sg(lp->dev, axi_skb->sgl, axi_skb->sg_len, DMA_MEM_TO_DEV);
++	dev_kfree_skb_any(axi_skb->skb);
++	kmem_cache_free(lp->skb_cache, axi_skb);
++}
++
++/**
++ * axienet_start_xmit_dmaengine - Starts the transmission.
 + * @skb:        sk_buff pointer that contains data to be Txed.
 + * @ndev:       Pointer to net_device structure.
 + *
 + * Return: NETDEV_TX_OK, on success
-+ *          NETDEV_TX_BUSY, if any of the descriptors are not free
++ *          NETDEV_TX_BUSY, if any memory failure or SG error.
 + *
-+ * This function is invoked from upper layers to initiate transmission
++ * This function is invoked from xmit to initiate transmission. The
++ * function sets the skbs , call back API, SG etc.
++ * Additionally if checksum offloading is supported,
++ * it populates AXI Stream Control fields with appropriate values.
 + */
 +static netdev_tx_t
-+axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
++axienet_start_xmit_dmaengine(struct sk_buff *skb, struct net_device *ndev)
 +{
++	struct dma_async_tx_descriptor *dma_tx_desc = NULL;
 +	struct axienet_local *lp = netdev_priv(ndev);
++	u32 app[DMA_NUM_APP_WORDS] = {0};
++	struct axi_skbuff *axi_skb;
++	u32 csum_start_off;
++	u32 csum_index_off;
++	int sg_len;
++	int ret;
 +
-+	if (!AXIENET_USE_DMA(lp))
-+		return axienet_start_xmit_legacy(skb, ndev);
-+	else
++	sg_len = skb_shinfo(skb)->nr_frags + 1;
++	axi_skb = kmem_cache_zalloc(lp->skb_cache, GFP_KERNEL);
++	if (!axi_skb)
 +		return NETDEV_TX_BUSY;
++
++	sg_init_table(axi_skb->sgl, sg_len);
++	ret = skb_to_sgvec(skb, axi_skb->sgl, 0, skb->len);
++	if (unlikely(ret < 0))
++		goto xmit_error_skb_sgvec;
++
++	ret = dma_map_sg(lp->dev, axi_skb->sgl, sg_len, DMA_TO_DEVICE);
++	if (ret == 0)
++		goto xmit_error_skb_sgvec;
++
++	/*Fill up app fields for checksum */
++	if (skb->ip_summed == CHECKSUM_PARTIAL) {
++		if (lp->features & XAE_FEATURE_FULL_TX_CSUM) {
++			/* Tx Full Checksum Offload Enabled */
++			app[0] |= 2;
++		} else if (lp->features & XAE_FEATURE_PARTIAL_RX_CSUM) {
++			csum_start_off = skb_transport_offset(skb);
++			csum_index_off = csum_start_off + skb->csum_offset;
++			/* Tx Partial Checksum Offload Enabled */
++			app[0] |= 1;
++			app[1] = (csum_start_off << 16) | csum_index_off;
++		}
++	} else if (skb->ip_summed == CHECKSUM_UNNECESSARY) {
++		app[0] |= 2; /* Tx Full Checksum Offload Enabled */
++	}
++
++	dma_tx_desc = lp->tx_chan->device->device_prep_slave_sg(lp->tx_chan, axi_skb->sgl,
++			sg_len, DMA_MEM_TO_DEV,
++			DMA_PREP_INTERRUPT, (void *)app);
++
++	if (!dma_tx_desc)
++		goto xmit_error_prep;
++
++	axi_skb->skb = skb;
++	axi_skb->sg_len = sg_len;
++	dma_tx_desc->callback_param =  axi_skb;
++	dma_tx_desc->callback_result = axienet_dma_tx_cb;
++	dmaengine_submit(dma_tx_desc);
++	dma_async_issue_pending(lp->tx_chan);
++
++	return NETDEV_TX_OK;
++
++xmit_error_prep:
++	dma_unmap_sg(lp->dev, axi_skb->sgl, sg_len, DMA_TO_DEVICE);
++xmit_error_skb_sgvec:
++	kmem_cache_free(lp->skb_cache, axi_skb);
++	return NETDEV_TX_BUSY;
 +}
 +
  /**
-  * axienet_rx_poll - Triggered by RX ISR to complete the BD processing.
-  * @napi:	Pointer to NAPI structure.
-@@ -1124,41 +1149,22 @@ static irqreturn_t axienet_eth_irq(int irq, void *_ndev)
- static void axienet_dma_err_handler(struct work_struct *work);
- 
- /**
-- * axienet_open - Driver open routine.
-- * @ndev:	Pointer to net_device structure
-+ * axienet_init_legacy_dma - init the dma legacy code.
-+ * @ndev:       Pointer to net_device structure
-  *
-  * Return: 0, on success.
-- *	    non-zero error value on failure
-+ *          non-zero error value on failure
-+ *
-+ * This is the dma  initialization code. It also allocates interrupt
-+ * service routines, enables the interrupt lines and ISR handling.
-  *
-- * This is the driver open routine. It calls phylink_start to start the
-- * PHY device.
-- * It also allocates interrupt service routines, enables the interrupt lines
-- * and ISR handling. Axi Ethernet core is reset through Axi DMA core. Buffer
-- * descriptors are initialized.
-  */
--static int axienet_open(struct net_device *ndev)
+  * axienet_tx_poll - Invoked once a transmit is completed by the
+  * Axi DMA Tx channel.
+@@ -912,7 +1030,42 @@ axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	if (!AXIENET_USE_DMA(lp))
+ 		return axienet_start_xmit_legacy(skb, ndev);
+ 	else
+-		return NETDEV_TX_BUSY;
++		return axienet_start_xmit_dmaengine(skb, ndev);
++}
 +
-+static inline int axienet_init_legacy_dma(struct net_device *ndev)
- {
- 	int ret;
- 	struct axienet_local *lp = netdev_priv(ndev);
- 
--	dev_dbg(&ndev->dev, "axienet_open()\n");
--
--	/* When we do an Axi Ethernet reset, it resets the complete core
--	 * including the MDIO. MDIO must be disabled before resetting.
--	 * Hold MDIO bus lock to avoid MDIO accesses during the reset.
--	 */
--	axienet_lock_mii(lp);
--	ret = axienet_device_reset(ndev);
--	axienet_unlock_mii(lp);
--
--	ret = phylink_of_phy_connect(lp->phylink, lp->dev->of_node, 0);
--	if (ret) {
--		dev_err(lp->dev, "phylink_of_phy_connect() failed: %d\n", ret);
--		return ret;
--	}
--
--	phylink_start(lp->phylink);
--
- 	/* Enable worker thread for Axi DMA error handling */
- 	INIT_WORK(&lp->dma_err_task, axienet_dma_err_handler);
- 
-@@ -1192,13 +1198,62 @@ static int axienet_open(struct net_device *ndev)
- err_tx_irq:
- 	napi_disable(&lp->napi_tx);
- 	napi_disable(&lp->napi_rx);
--	phylink_stop(lp->phylink);
--	phylink_disconnect_phy(lp->phylink);
- 	cancel_work_sync(&lp->dma_err_task);
- 	dev_err(lp->dev, "request_irq() failed\n");
- 	return ret;
++/**
++ * axienet_dma_rx_cb - DMA engine callback for RX channel.
++ * @data:       Pointer to the axi_skbuff structure
++ * @result:     error reporting through dmaengine_result.
++ * This function is called by dmaengine driver for RX channel to notify
++ * that the packet is received.
++ */
++static void axienet_dma_rx_cb(void *data, const struct dmaengine_result *result)
++{
++	struct axi_skbuff *axi_skb = data;
++	struct sk_buff *skb = axi_skb->skb;
++	struct net_device *netdev = skb->dev;
++	struct axienet_local *lp = netdev_priv(netdev);
++	size_t meta_len, meta_max_len, rx_len;
++	u32 *app;
++
++	app  = dmaengine_desc_get_metadata_ptr(axi_skb->desc, &meta_len, &meta_max_len);
++	dma_unmap_single(lp->dev, axi_skb->dma_address, lp->max_frm_size,
++			 DMA_FROM_DEVICE);
++	/* TODO: Derive app word index programmatically */
++	rx_len = (app[LEN_APP] & 0xFFFF);
++	skb_put(skb, rx_len);
++	skb->protocol = eth_type_trans(skb, netdev);
++	skb->ip_summed = CHECKSUM_NONE;
++
++	netif_rx(skb);
++	kmem_cache_free(lp->skb_cache, axi_skb);
++	u64_stats_update_begin(&lp->rx_stat_sync);
++	u64_stats_add(&lp->rx_packets, 1);
++	u64_stats_add(&lp->rx_bytes, rx_len);
++	u64_stats_update_end(&lp->rx_stat_sync);
++	axienet_rx_submit_desc(netdev);
++	dma_async_issue_pending(lp->rx_chan);
  }
  
+ /**
+@@ -1148,6 +1301,134 @@ static irqreturn_t axienet_eth_irq(int irq, void *_ndev)
+ 
+ static void axienet_dma_err_handler(struct work_struct *work);
+ 
 +/**
-+ * axienet_open - Driver open routine.
-+ * @ndev:	Pointer to net_device structure
++ * axienet_rx_submit_desc - Submit the descriptors with required data
++ * like call backup API, skb buffer.. etc to dmaengine.
 + *
-+ * Return: 0, on success.
-+ *	    non-zero error value on failure
++ * @ndev:	net_device pointer
 + *
-+ * This is the driver open routine. It calls phylink_start to start the
-+ * PHY device.
-+ * It also allocates interrupt service routines, enables the interrupt lines
-+ * and ISR handling. Axi Ethernet core is reset through Axi DMA core. Buffer
-+ * descriptors are initialized.
++ *Return: 0, on success.
++ *          non-zero error value on failure
 + */
-+static int axienet_open(struct net_device *ndev)
++static int axienet_rx_submit_desc(struct net_device *ndev)
 +{
-+	int ret;
++	struct dma_async_tx_descriptor *dma_rx_desc = NULL;
 +	struct axienet_local *lp = netdev_priv(ndev);
++	struct axi_skbuff *axi_skb;
++	struct sk_buff *skb;
++	dma_addr_t addr;
++	int ret;
 +
-+	dev_dbg(&ndev->dev, "%s\n", __func__);
++	axi_skb = kmem_cache_alloc(lp->skb_cache, GFP_KERNEL);
 +
-+	/* When we do an Axi Ethernet reset, it resets the complete core
-+	 * including the MDIO. MDIO must be disabled before resetting.
-+	 * Hold MDIO bus lock to avoid MDIO accesses during the reset.
-+	 */
-+	axienet_lock_mii(lp);
-+	ret = axienet_device_reset(ndev);
-+	axienet_unlock_mii(lp);
-+
-+	ret = phylink_of_phy_connect(lp->phylink, lp->dev->of_node, 0);
-+	if (ret) {
-+		dev_err(lp->dev, "phylink_of_phy_connect() failed: %d\n", ret);
-+		return ret;
++	if (!axi_skb)
++		return -ENOMEM;
++	skb = netdev_alloc_skb(ndev, lp->max_frm_size);
++	if (!skb) {
++		ret = -ENOMEM;
++		goto rx_bd_init_skb;
 +	}
 +
-+	phylink_start(lp->phylink);
-+
-+	if (!AXIENET_USE_DMA(lp)) {
-+		ret = axienet_init_legacy_dma(ndev);
-+		if (ret)
-+			goto error_code;
++	sg_init_table(axi_skb->sgl, 1);
++	addr = dma_map_single(lp->dev, skb->data, lp->max_frm_size, DMA_FROM_DEVICE);
++	sg_dma_address(axi_skb->sgl) = addr;
++	sg_dma_len(axi_skb->sgl) = lp->max_frm_size;
++	dma_rx_desc = dmaengine_prep_slave_sg(lp->rx_chan, axi_skb->sgl,
++					      1, DMA_DEV_TO_MEM,
++					      DMA_PREP_INTERRUPT);
++	if (!dma_rx_desc) {
++		ret = -EINVAL;
++		goto rx_bd_init_prep_sg;
 +	}
++
++	axi_skb->skb = skb;
++	axi_skb->dma_address = sg_dma_address(axi_skb->sgl);
++	axi_skb->desc = dma_rx_desc;
++	dma_rx_desc->callback_param =  axi_skb;
++	dma_rx_desc->callback_result = axienet_dma_rx_cb;
++	dmaengine_submit(dma_rx_desc);
 +
 +	return 0;
 +
-+error_code:
-+	phylink_stop(lp->phylink);
-+	phylink_disconnect_phy(lp->phylink);
-+
++rx_bd_init_prep_sg:
++	dma_unmap_single(lp->dev, addr, lp->max_frm_size, DMA_FROM_DEVICE);
++	dev_kfree_skb(skb);
++rx_bd_init_skb:
++	kmem_cache_free(lp->skb_cache, axi_skb);
 +	return ret;
 +}
 +
++/**
++ * axienet_setup_dma_chan - request the dma channels.
++ * @ndev:       Pointer to net_device structure
++ *
++ * Return: 0, on success.
++ *          non-zero error value on failure
++ *
++ * This function requests the TX and RX channels. It also submits the
++ * allocated skb buffers and call back APIs to dmaengine.
++ *
++ */
++static int axienet_setup_dma_chan(struct net_device *ndev)
++{
++	struct axienet_local *lp = netdev_priv(ndev);
++	int i, ret;
++
++	lp->tx_chan = dma_request_chan(lp->dev, "tx_chan0");
++	if (IS_ERR(lp->tx_chan)) {
++		ret = PTR_ERR(lp->tx_chan);
++		if (ret != -EPROBE_DEFER)
++			netdev_err(ndev, "No Ethernet DMA (TX) channel found\n");
++		return ret;
++	}
++
++	lp->rx_chan = dma_request_chan(lp->dev, "rx_chan0");
++	if (IS_ERR(lp->rx_chan)) {
++		ret = PTR_ERR(lp->rx_chan);
++		if (ret != -EPROBE_DEFER)
++			netdev_err(ndev, "No Ethernet DMA (RX) channel found\n");
++		goto err_dma_request_rx;
++	}
++	lp->skb_cache = kmem_cache_create("ethernet", sizeof(struct axi_skbuff),
++					  0, 0, NULL);
++	if (!lp->skb_cache) {
++		ret =  -ENOMEM;
++		goto err_kmem;
++	}
++	/* TODO: Instead of BD_NUM_DEFAULT use runtime support*/
++	for (i = 0; i < RX_BUF_NUM_DEFAULT; i++)
++		axienet_rx_submit_desc(ndev);
++	dma_async_issue_pending(lp->rx_chan);
++
++	return 0;
++err_kmem:
++	dma_release_channel(lp->rx_chan);
++err_dma_request_rx:
++	dma_release_channel(lp->tx_chan);
++	return ret;
++}
++
++/**
++ * axienet_init_dmaengine - init the dmaengine code.
++ * @ndev:       Pointer to net_device structure
++ *
++ * Return: 0, on success.
++ *          non-zero error value on failure
++ *
++ * This is the dmaengine initialization code.
++ */
++static inline int axienet_init_dmaengine(struct net_device *ndev)
++{
++	int ret;
++
++	ret = axienet_setup_dma_chan(ndev);
++
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
  /**
-  * axienet_stop - Driver stop routine.
-  * @ndev:	Pointer to net_device structure
-@@ -1215,8 +1270,10 @@ static int axienet_stop(struct net_device *ndev)
+  * axienet_init_legacy_dma - init the dma legacy code.
+  * @ndev:       Pointer to net_device structure
+@@ -1239,7 +1520,20 @@ static int axienet_open(struct net_device *ndev)
  
- 	dev_dbg(&ndev->dev, "axienet_close()\n");
+ 	phylink_start(lp->phylink);
  
--	napi_disable(&lp->napi_tx);
--	napi_disable(&lp->napi_rx);
-+	if (!AXIENET_USE_DMA(lp)) {
-+		napi_disable(&lp->napi_tx);
-+		napi_disable(&lp->napi_rx);
-+	}
- 
- 	phylink_stop(lp->phylink);
- 	phylink_disconnect_phy(lp->phylink);
-@@ -1224,18 +1281,18 @@ static int axienet_stop(struct net_device *ndev)
- 	axienet_setoptions(ndev, lp->options &
- 			   ~(XAE_OPTION_TXEN | XAE_OPTION_RXEN));
- 
--	axienet_dma_stop(lp);
-+	if (!AXIENET_USE_DMA(lp)) {
-+		axienet_dma_stop(lp);
-+		cancel_work_sync(&lp->dma_err_task);
-+		free_irq(lp->tx_irq, ndev);
-+		free_irq(lp->rx_irq, ndev);
-+		axienet_dma_bd_release(ndev);
-+	}
- 
- 	axienet_iow(lp, XAE_IE_OFFSET, 0);
- 
--	cancel_work_sync(&lp->dma_err_task);
--
- 	if (lp->eth_irq > 0)
- 		free_irq(lp->eth_irq, ndev);
--	free_irq(lp->tx_irq, ndev);
--	free_irq(lp->rx_irq, ndev);
--
--	axienet_dma_bd_release(ndev);
- 	return 0;
- }
- 
-@@ -1411,14 +1468,16 @@ static void axienet_ethtools_get_regs(struct net_device *ndev,
- 	data[29] = axienet_ior(lp, XAE_FMI_OFFSET);
- 	data[30] = axienet_ior(lp, XAE_AF0_OFFSET);
- 	data[31] = axienet_ior(lp, XAE_AF1_OFFSET);
--	data[32] = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
--	data[33] = axienet_dma_in32(lp, XAXIDMA_TX_SR_OFFSET);
--	data[34] = axienet_dma_in32(lp, XAXIDMA_TX_CDESC_OFFSET);
--	data[35] = axienet_dma_in32(lp, XAXIDMA_TX_TDESC_OFFSET);
--	data[36] = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
--	data[37] = axienet_dma_in32(lp, XAXIDMA_RX_SR_OFFSET);
--	data[38] = axienet_dma_in32(lp, XAXIDMA_RX_CDESC_OFFSET);
--	data[39] = axienet_dma_in32(lp, XAXIDMA_RX_TDESC_OFFSET);
-+	if (!AXIENET_USE_DMA(lp)) {
-+		data[32] = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
-+		data[33] = axienet_dma_in32(lp, XAXIDMA_TX_SR_OFFSET);
-+		data[34] = axienet_dma_in32(lp, XAXIDMA_TX_CDESC_OFFSET);
-+		data[35] = axienet_dma_in32(lp, XAXIDMA_TX_TDESC_OFFSET);
-+		data[36] = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
-+		data[37] = axienet_dma_in32(lp, XAXIDMA_RX_SR_OFFSET);
-+		data[38] = axienet_dma_in32(lp, XAXIDMA_RX_CDESC_OFFSET);
-+		data[39] = axienet_dma_in32(lp, XAXIDMA_RX_TDESC_OFFSET);
-+	}
- }
- 
- static void
-@@ -1878,9 +1937,6 @@ static int axienet_probe(struct platform_device *pdev)
- 	u64_stats_init(&lp->rx_stat_sync);
- 	u64_stats_init(&lp->tx_stat_sync);
- 
--	netif_napi_add(ndev, &lp->napi_rx, axienet_rx_poll);
--	netif_napi_add(ndev, &lp->napi_tx, axienet_tx_poll);
--
- 	lp->axi_clk = devm_clk_get_optional(&pdev->dev, "s_axi_lite_clk");
- 	if (!lp->axi_clk) {
- 		/* For backward compatibility, if named AXI clock is not present,
-@@ -2006,75 +2062,80 @@ static int axienet_probe(struct platform_device *pdev)
- 		goto cleanup_clk;
+-	if (!AXIENET_USE_DMA(lp)) {
++	if (AXIENET_USE_DMA(lp)) {
++		ret = axienet_init_dmaengine(ndev);
++		if (ret < 0)
++			goto error_code;
++
++		/* Enable interrupts for Axi Ethernet core (if defined) */
++		if (lp->eth_irq > 0) {
++			ret = request_irq(lp->eth_irq, axienet_eth_irq, IRQF_SHARED,
++					  ndev->name, ndev);
++			if (ret)
++				goto error_code;
++		}
++
++	} else {
+ 		ret = axienet_init_legacy_dma(ndev);
+ 		if (ret)
+ 			goto error_code;
+@@ -1287,6 +1581,12 @@ static int axienet_stop(struct net_device *ndev)
+ 		free_irq(lp->tx_irq, ndev);
+ 		free_irq(lp->rx_irq, ndev);
+ 		axienet_dma_bd_release(ndev);
++	} else {
++		dmaengine_terminate_all(lp->tx_chan);
++		dmaengine_terminate_all(lp->rx_chan);
++
++		dma_release_channel(lp->rx_chan);
++		dma_release_channel(lp->tx_chan);
  	}
  
--	/* Find the DMA node, map the DMA registers, and decode the DMA IRQs */
--	np = of_parse_phandle(pdev->dev.of_node, "axistream-connected", 0);
--	if (np) {
--		struct resource dmares;
-+	if (!of_find_property(pdev->dev.of_node, "dmas", NULL)) {
-+		/* Find the DMA node, map the DMA registers, and decode the DMA IRQs */
-+		np = of_parse_phandle(pdev->dev.of_node, "axistream-connected", 0);
- 
--		ret = of_address_to_resource(np, 0, &dmares);
--		if (ret) {
--			dev_err(&pdev->dev,
--				"unable to get DMA resource\n");
-+		if (np) {
-+			struct resource dmares;
+ 	axienet_iow(lp, XAE_IE_OFFSET, 0);
+@@ -2136,6 +2436,33 @@ static int axienet_probe(struct platform_device *pdev)
+ 		}
+ 		netif_napi_add(ndev, &lp->napi_rx, axienet_rx_poll);
+ 		netif_napi_add(ndev, &lp->napi_tx, axienet_tx_poll);
++	} else {
++		struct xilinx_vdma_config cfg;
++		struct dma_chan *tx_chan;
 +
-+			ret = of_address_to_resource(np, 0, &dmares);
-+			if (ret) {
-+				dev_err(&pdev->dev,
-+					"unable to get DMA resource\n");
-+				of_node_put(np);
-+				goto cleanup_clk;
-+			}
-+			lp->dma_regs = devm_ioremap_resource(&pdev->dev,
-+							     &dmares);
-+			lp->rx_irq = irq_of_parse_and_map(np, 1);
-+			lp->tx_irq = irq_of_parse_and_map(np, 0);
- 			of_node_put(np);
-+			lp->eth_irq = platform_get_irq_optional(pdev, 0);
++		lp->eth_irq = platform_get_irq_optional(pdev, 0);
++		tx_chan = dma_request_chan(lp->dev, "tx_chan0");
++
++		if (IS_ERR(tx_chan)) {
++			ret = PTR_ERR(tx_chan);
++			if (ret != -EPROBE_DEFER)
++				dev_err(&pdev->dev, "No Ethernet DMA (TX) channel found\n");
++			goto cleanup_clk;
++		}
++
++		cfg.reset = 1;
++		/* As name says VDMA but it has support for DMA channel reset*/
++		ret = xilinx_vdma_channel_set_config(tx_chan, &cfg);
++
++		if (ret < 0) {
++			dev_err(&pdev->dev, "Reset channel failed\n");
++			dma_release_channel(tx_chan);
++			goto cleanup_clk;
 +		} else {
-+			/* Check for these resources directly on the Ethernet node. */
-+			lp->dma_regs = devm_platform_get_and_ioremap_resource(pdev, 1, NULL);
-+			lp->rx_irq = platform_get_irq(pdev, 1);
-+			lp->tx_irq = platform_get_irq(pdev, 0);
-+			lp->eth_irq = platform_get_irq_optional(pdev, 2);
++			lp->has_dmas = 1;
 +		}
-+		if (IS_ERR(lp->dma_regs)) {
-+			dev_err(&pdev->dev, "could not map DMA regs\n");
-+			ret = PTR_ERR(lp->dma_regs);
-+			goto cleanup_clk;
-+		}
-+		if (lp->rx_irq <= 0 || lp->tx_irq <= 0) {
-+			dev_err(&pdev->dev, "could not determine irqs\n");
-+			ret = -ENOMEM;
- 			goto cleanup_clk;
- 		}
--		lp->dma_regs = devm_ioremap_resource(&pdev->dev,
--						     &dmares);
--		lp->rx_irq = irq_of_parse_and_map(np, 1);
--		lp->tx_irq = irq_of_parse_and_map(np, 0);
--		of_node_put(np);
--		lp->eth_irq = platform_get_irq_optional(pdev, 0);
--	} else {
--		/* Check for these resources directly on the Ethernet node. */
--		lp->dma_regs = devm_platform_get_and_ioremap_resource(pdev, 1, NULL);
--		lp->rx_irq = platform_get_irq(pdev, 1);
--		lp->tx_irq = platform_get_irq(pdev, 0);
--		lp->eth_irq = platform_get_irq_optional(pdev, 2);
--	}
--	if (IS_ERR(lp->dma_regs)) {
--		dev_err(&pdev->dev, "could not map DMA regs\n");
--		ret = PTR_ERR(lp->dma_regs);
--		goto cleanup_clk;
--	}
--	if ((lp->rx_irq <= 0) || (lp->tx_irq <= 0)) {
--		dev_err(&pdev->dev, "could not determine irqs\n");
--		ret = -ENOMEM;
--		goto cleanup_clk;
--	}
- 
--	/* Autodetect the need for 64-bit DMA pointers.
--	 * When the IP is configured for a bus width bigger than 32 bits,
--	 * writing the MSB registers is mandatory, even if they are all 0.
--	 * We can detect this case by writing all 1's to one such register
--	 * and see if that sticks: when the IP is configured for 32 bits
--	 * only, those registers are RES0.
--	 * Those MSB registers were introduced in IP v7.1, which we check first.
--	 */
--	if ((axienet_ior(lp, XAE_ID_OFFSET) >> 24) >= 0x9) {
--		void __iomem *desc = lp->dma_regs + XAXIDMA_TX_CDESC_OFFSET + 4;
--
--		iowrite32(0x0, desc);
--		if (ioread32(desc) == 0) {	/* sanity check */
--			iowrite32(0xffffffff, desc);
--			if (ioread32(desc) > 0) {
--				lp->features |= XAE_FEATURE_DMA_64BIT;
--				addr_width = 64;
--				dev_info(&pdev->dev,
--					 "autodetected 64-bit DMA range\n");
--			}
-+		/* Autodetect the need for 64-bit DMA pointers.
-+		 * When the IP is configured for a bus width bigger than 32 bits,
-+		 * writing the MSB registers is mandatory, even if they are all 0.
-+		 * We can detect this case by writing all 1's to one such register
-+		 * and see if that sticks: when the IP is configured for 32 bits
-+		 * only, those registers are RES0.
-+		 * Those MSB registers were introduced in IP v7.1, which we check first.
-+		 */
-+		if ((axienet_ior(lp, XAE_ID_OFFSET) >> 24) >= 0x9) {
-+			void __iomem *desc = lp->dma_regs + XAXIDMA_TX_CDESC_OFFSET + 4;
 +
- 			iowrite32(0x0, desc);
-+			if (ioread32(desc) == 0) {	/* sanity check */
-+				iowrite32(0xffffffff, desc);
-+				if (ioread32(desc) > 0) {
-+					lp->features |= XAE_FEATURE_DMA_64BIT;
-+					addr_width = 64;
-+					dev_info(&pdev->dev,
-+						 "autodetected 64-bit DMA range\n");
-+				}
-+				iowrite32(0x0, desc);
-+			}
-+		}
-+		if (!IS_ENABLED(CONFIG_64BIT) && lp->features & XAE_FEATURE_DMA_64BIT) {
-+			dev_err(&pdev->dev, "64-bit addressable DMA is not compatible with 32-bit archecture\n");
-+			ret = -EINVAL;
-+			goto cleanup_clk;
- 		}
--	}
--	if (!IS_ENABLED(CONFIG_64BIT) && lp->features & XAE_FEATURE_DMA_64BIT) {
--		dev_err(&pdev->dev, "64-bit addressable DMA is not compatible with 32-bit archecture\n");
--		ret = -EINVAL;
--		goto cleanup_clk;
--	}
- 
--	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(addr_width));
--	if (ret) {
--		dev_err(&pdev->dev, "No suitable DMA available\n");
--		goto cleanup_clk;
-+		ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(addr_width));
-+		if (ret) {
-+			dev_err(&pdev->dev, "No suitable DMA available\n");
-+			goto cleanup_clk;
-+		}
-+		netif_napi_add(ndev, &lp->napi_rx, axienet_rx_poll);
-+		netif_napi_add(ndev, &lp->napi_tx, axienet_tx_poll);
++		dma_release_channel(tx_chan);
  	}
  
  	/* Check for Ethernet core IRQ (optional) */
-@@ -2092,14 +2153,16 @@ static int axienet_probe(struct platform_device *pdev)
- 	}
- 
- 	lp->coalesce_count_rx = XAXIDMA_DFT_RX_THRESHOLD;
--	lp->coalesce_usec_rx = XAXIDMA_DFT_RX_USEC;
- 	lp->coalesce_count_tx = XAXIDMA_DFT_TX_THRESHOLD;
--	lp->coalesce_usec_tx = XAXIDMA_DFT_TX_USEC;
- 
--	/* Reset core now that clocks are enabled, prior to accessing MDIO */
--	ret = __axienet_device_reset(lp);
--	if (ret)
--		goto cleanup_clk;
-+	if (!AXIENET_USE_DMA(lp)) {
-+		lp->coalesce_usec_rx = XAXIDMA_DFT_RX_USEC;
-+		lp->coalesce_usec_tx = XAXIDMA_DFT_TX_USEC;
-+		/* Reset core now that clocks are enabled, prior to accessing MDIO */
-+		ret = __axienet_device_reset(lp);
-+		if (ret)
-+			goto cleanup_clk;
-+	}
- 
- 	ret = axienet_mdio_setup(lp);
- 	if (ret)
 -- 
 2.25.1
 
