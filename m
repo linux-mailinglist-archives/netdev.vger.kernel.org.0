@@ -1,74 +1,75 @@
-Return-Path: <netdev+bounces-1445-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1446-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 10A9B6FDCBD
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:33:09 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C97146FDCBE
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:34:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0DA661C20D10
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:33:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 91DE52810C9
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:34:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B3108F40;
-	Wed, 10 May 2023 11:33:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F3508C1B;
+	Wed, 10 May 2023 11:33:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3F113D60
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:33:05 +0000 (UTC)
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295DC26A2
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:33:04 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-3f423c17bafso110495e9.0
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:33:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 945D46AB3
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:33:59 +0000 (UTC)
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61689E7E
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:33:58 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id 5b1f17b1804b1-3f2548256d0so102045e9.1
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:33:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683718382; x=1686310382;
+        d=google.com; s=20221208; t=1683718437; x=1686310437;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tMK9Ywpg+Yx4DwpGIi5P2YgT7c8iih/hw8lKDYx9Cxk=;
-        b=p/OXx0pK2/ir0a7Qee14dbbawtUMvMszKaiP+IQDYsrcKLeFRcZz/4/h3am/y81Qdf
-         iuxasQpZMAI2WTC/O2Myrj0C5xFGDwoypd9jCdjaY6SBLoetf3+OoPNtOBwKInIt6KJw
-         qsT2vsOqekqW4yFW3kp/Y2kFV34wd7VSK9FMYTlneSzm1cp9ig9UZnLE+1dl4W1giJS5
-         WhERJdjUNdQELIb2W5ZsUpOUMVWO4yt9KoQnVwSGW2QFI6Ffn0hdtl2wK2tkCu//izhY
-         3rWcR/LrbQC5GCM2AQYDBch1R/5fw5O0SebD+qkCQNcGJPK9zutMumM7pduKusC+a15s
-         BNVg==
+        bh=W8TqPijoG+MxohAqkzIioM/CR4vn+XT8c956xT8vIV8=;
+        b=z3X65/BCK6jObOZd2f9RgPL34mRbF6vEzvB4ucUFUXDGGiSrZ0EFl54DMRFKhEy5Lo
+         zstiZ9PvGLyXm895IOZpK43f+v7RbMDhe7dQBHXP2MdBC9O7kwfTwkypRzNcO42kby84
+         fcml3wvbdvWqCvm/raQ+Da/H2qmEbpCA2YOcR+ow7zd3xVNEgpw7K3amtKEhGHf0CjaF
+         VmUomiedARBCDaRzhAZ6ZiWLL0BIdUE6ZvHCNJGz/2p2GeMJ/1lM3ZQqGmaLQCvpQphx
+         WrUDI7ewMcPFITwv5QLM6K8nWw9R/eTh5AZ9+cpvs1zC7516p3TndjVctqDsiKbTiuou
+         +t3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683718382; x=1686310382;
+        d=1e100.net; s=20221208; t=1683718437; x=1686310437;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=tMK9Ywpg+Yx4DwpGIi5P2YgT7c8iih/hw8lKDYx9Cxk=;
-        b=UoSvpkw/InH7uJnCPdqGrCxLYk1gwumyYP4Rx4vpMyjf214XWjs7OfiHJv670/4Nwg
-         9v37cMIrfgejyAnd3bkrabVGZAV39tmHP1Gcmfp9ABvA3p0edjyLawA2u/7Ug0hgjgFt
-         oNrBaBaxPEWeu7o6iThOuuYj+3GoXADp5JZgWugHSiF+FAYJUu7W245YIQgz70rj0/mQ
-         HYaOpuaBkDLwhLDOKpK4YNbxRqQXeZTjf414YCyCLD3Mqoc89AbcJ5U3GFOk5jVndNNM
-         wgbBN9bVcmaVxSLJGHIS7VbaPP299GGXsCsvZd1tijuSUreTp2C8yR/yKCspdOQuNsIY
-         O/Mg==
-X-Gm-Message-State: AC+VfDznTLK8cCLIkWoB3q4ZS7hUpuYDo1P7PGKglVoqYdfWQiyR6cmx
-	W3twoVQbCeDWG2CksTmoDOZS2iwJHZLnjwi3uodf1Q==
-X-Google-Smtp-Source: ACHHUZ7kLlFapRLNstOD1zP+mgkLBka7OXcVbOdjwCohJPLagP0OfqrhaSTh4YeQN7dlllzRMUBz4cbuBDksvM0I06s=
-X-Received: by 2002:a05:600c:500f:b0:3f4:2736:b5eb with SMTP id
- n15-20020a05600c500f00b003f42736b5ebmr127708wmr.1.1683718382532; Wed, 10 May
- 2023 04:33:02 -0700 (PDT)
+        bh=W8TqPijoG+MxohAqkzIioM/CR4vn+XT8c956xT8vIV8=;
+        b=EP6p50GyNL3s6OcilKp8jkdNtbgebBmvKVixXzy+/UZu2cx7hcWXQiGlwQ8UumD6jJ
+         eFf342TPaLH7MBIly8qEi1lsDuEI/ZI/DG7BFH7Lu+IJJbqozyCtvcDcS0SgvBnLBpDd
+         4S5fpXOt8kNra9GIYfQXjf9IeAOrpIRdHyCjjnMHz/dX+QyRkRRBBkZrG0U8D7EHp0wv
+         jaYBnMyYIyhHzC8yPph0UdAGfABekBA/CpO8zSqCJQv7acNkVnxwJZhurcJgQxb3W+jg
+         Lue+W3w/Xms/hWswg0yJIQD6dEF79TG0/QnOFViZqmlFCEisSzd+A4bQ7UX+MyhmIHBS
+         k+3Q==
+X-Gm-Message-State: AC+VfDyUTRLse4GrSOPydUKEXgbOxeV/u5TzZkGu/PZBavnqmN2EirzW
+	FW/uKgc83/VsB419RYmbZ0nJVovJtkpq1VLmal1hqw==
+X-Google-Smtp-Source: ACHHUZ7e6FuFayljQRBjhJpZhtPDfHra0YWReDbnMngwiVh2zLIKUYI23Qbmcmi+yF5KsA+qkWSNyR9kixqc10xe+H4=
+X-Received: by 2002:a05:600c:3d98:b0:3f1:9396:6fbf with SMTP id
+ bi24-20020a05600c3d9800b003f193966fbfmr178740wmb.4.1683718436749; Wed, 10 May
+ 2023 04:33:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230510003456.42357-1-kuniyu@amazon.com> <20230510003456.42357-3-kuniyu@amazon.com>
-In-Reply-To: <20230510003456.42357-3-kuniyu@amazon.com>
+References: <ZFtuhJOC03qpASt2@shell.armlinux.org.uk> <E1pwgrG-001XDm-VF@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1pwgrG-001XDm-VF@rmk-PC.armlinux.org.uk>
 From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 10 May 2023 13:32:50 +0200
-Message-ID: <CANn89iJCcQp89Z_JxDevCh7RwtTCZFop85O1Tv3mFJKBK0TxXw@mail.gmail.com>
-Subject: Re: [PATCH v1 net 2/2] af_unix: Fix data races around sk->sk_shutdown.
-To: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org, 
-	syzbot <syzkaller@googlegroups.com>, Rainer Weikusat <rweikusat@mssgmbh.com>
+Date: Wed, 10 May 2023 13:33:45 +0200
+Message-ID: <CANn89iLn4Q_Uw69zDPVCgQtcpUQH0Obaw1BQ9xFvRc60J=rmsQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/5] net: mvneta: fix transmit path dma-unmapping
+ on error
+To: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc: =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>, 
+	"David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org, 
+	Paolo Abeni <pabeni@redhat.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
@@ -79,21 +80,16 @@ X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 10, 2023 at 2:36=E2=80=AFAM Kuniyuki Iwashima <kuniyu@amazon.co=
-m> wrote:
+On Wed, May 10, 2023 at 12:15=E2=80=AFPM Russell King (Oracle)
+<rmk+kernel@armlinux.org.uk> wrote:
 >
-> KCSAN found a data race around sk->sk_shutdown where unix_release_sock()
-> and unix_shutdown() update it under unix_state_lock(), OTOH unix_poll()
-> and unix_dgram_poll() read it locklessly.
+> The transmit code assumes that the transmit descriptors that are used
+> begin with the first descriptor in the ring, but this may not be the
+> case. Fix this by providing a new function that dma-unmaps a range of
+> numbered descriptor entries, and use that to do the unmapping.
 >
-> We need to annotate the writes and reads with WRITE_ONCE() and READ_ONCE(=
-).
->
-> Fixes: 3c73419c09a5 ("af_unix: fix 'poll for write'/ connected DGRAM sock=
-ets")
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> ---
 
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 
