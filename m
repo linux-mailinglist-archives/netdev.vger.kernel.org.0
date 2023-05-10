@@ -1,67 +1,86 @@
-Return-Path: <netdev+bounces-1521-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1523-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6E42A6FE176
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 17:20:51 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8359E6FE180
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 17:23:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C79D12814D9
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 15:20:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A73E61C20DAD
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 15:23:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 378361641C;
-	Wed, 10 May 2023 15:20:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AA6811642C;
+	Wed, 10 May 2023 15:23:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B2A512B6F
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 15:20:47 +0000 (UTC)
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5415026A2
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:20:46 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-6439b410679so4724964b3a.0
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:20:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1683732045; x=1686324045;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=lgBgzOTPv9o7HyXcIQBoVEv7kUv/2WR4ggHsA/YTbXQ=;
-        b=ju8nBd1M+wry7goQd4vnMl2bz8e3MjbL85UUlCTbJ0ShDpAdabAdWJlLJledss1+KM
-         FtXeWs84fbaLDsW9qmX3bJeSnsDZdB/nvkIg8Jd4tUjpZMMQIXYHaXIArlpFkZobjLlz
-         N71D2bXDUNSAMnK4HvpQTwCuxcWFwDVhTDkcBOyh3+OZ0Ngjb/e0NH331nWA234/H6hs
-         yEBpVmHCBXNxOvZTpY4/iJEuds5C+GeE2jJpncNxIJjERN+B/ZkubhWFomDkfVKokVhz
-         zfG9AzKFySaq91kyzTkVcoXsnOaQI2guY+yLyJqePXq4Sefh3qAQcoc/Pyc96nuXto1L
-         ncTg==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 967A514A83
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 15:23:39 +0000 (UTC)
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977172D66
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:23:37 -0700 (PDT)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 202953F32E
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 15:23:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1683732214;
+	bh=nxt1AjdlyoqIrH6J1U3hreWGYLSAQKMD95fnrL6guHQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+	b=Wwpzi5ltnPGzZCeZv8CUgPo4l7Xkbz5K2HP80PDBYNRBc8mqbjrPx8+gZi6+NIg62
+	 tX+xQ940WGIMYJWVb0OG2CFN5Qo+xTO4S+BiyYAOvM20QhYf8F099tRUMYBnREC07f
+	 Ue/hoM2IGd8PUHr9cnL51a1YaoGBJJ94mc2+IG7haUnxXaGRUlXmunzL7ApjgTyhik
+	 hcSe6J+YqPDeb+ItnI7n8Ue5rB4fDIBM26BQ5Ff5i8lc3MaHcyKsAramzIZUp58OGP
+	 91FO/dT9ekJ9JJ4OwNHRlpQWLTC9nir1dL4L2O6U8P0nYCfE4UTNObLO/E3wEl5iLu
+	 qqWkbvvTER9Cw==
+Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-94a34a0b75eso682407266b.1
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:23:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683732045; x=1686324045;
+        d=1e100.net; s=20221208; t=1683732213; x=1686324213;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=lgBgzOTPv9o7HyXcIQBoVEv7kUv/2WR4ggHsA/YTbXQ=;
-        b=Lk6SS167wkHzaMe9pf8msc7GXCygxQJTKc4Gy+m9SJb5/9e2I3Np+AN+0NmffghzRs
-         VlP5z3WfT77OPnj38PvKRP+4KYUHtS6rBGDRMfjmJHsNQg4tcShTi1mWoqlYmV98mOff
-         +kOJB4JxrTZ5/4WefgjH/bKGQSbgGftr/dCihaE6i3P6pJNmd7yYSD0gztZT8aZOdWau
-         33ey8sbf1hMSE7Ngr+4LPda6S/jS23kECenlaqsKZBeFThGLqXa5G1hhmoukIHSDrlR7
-         Zxg8E4gljVA0vF0Ip7cQMuZ9S6M3nfKBB3Ms+GvPnKtc90rQ8idBsIAkTd2aghJObpKY
-         gMhw==
-X-Gm-Message-State: AC+VfDxi7/d1Gml8Px2lfS4nU8TRI0C3mTzH2e5RAlVF7xcQvwHISN0i
-	JyZDjWRNYL3HER1FzbYd/wJge5k+vutcvkH6QwctmA==
-X-Google-Smtp-Source: ACHHUZ4ru6QNUCLqkUoZvD4gZHtXaol/jDOf8/o1PQc2/Mjx2K0K7NaiQ3Yei6NIfb6xdWtbbmfvbA==
-X-Received: by 2002:a05:6a00:ace:b0:63b:89a2:d624 with SMTP id c14-20020a056a000ace00b0063b89a2d624mr23810519pfl.12.1683732045485;
-        Wed, 10 May 2023 08:20:45 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id p38-20020a631e66000000b0052c766b2f52sm3368663pgm.4.2023.05.10.08.20.44
+        bh=nxt1AjdlyoqIrH6J1U3hreWGYLSAQKMD95fnrL6guHQ=;
+        b=F2K8cV+TiK+hSy8bcl2PLGG8IAhp9RdUqnTchP7N5ifGsZpwA1CkZvuOrJJutku6DV
+         5urybFwbqpC68z0rUTZHefrYLJiB8uz2SC09zXYWpVzyoEikDSrBmSdwdpmcdRSWoDsZ
+         0kwlJEJoHa/sj3HRDfkk7Cpz+M0Sv5hXZomqFpJT7q2JGgG/gUfpNMF4J5gZS8ZwlHDw
+         RvycEeNjyAx2YnbH6pCHBW1G8ydgh61/zWXf+sqa1OctTc5LjWnGwMTXCRqAL8+YLnPf
+         H4ZjKafLJGzigPDIeJsZUv2TeyKToZFB5rfFEj72OumiVtcFe5dsV8qe9GGPTMCuOjsO
+         SEKA==
+X-Gm-Message-State: AC+VfDxVvkTUwODliWcro0EmgMQ4+6mRTXfND+02p65cJ1qMxWWDLBAe
+	j04ho8dFzxpc0DexJO+3FjrsfwDDfoC4mabAQimPerUbPX/MCtrSx1hlB7Tgenl0i/ti5GzHt+g
+	BuNYk5qDQ6NaIEEVRkxilArZeLhQsy9ueKA==
+X-Received: by 2002:a17:907:6295:b0:94e:cbfb:5fab with SMTP id nd21-20020a170907629500b0094ecbfb5fabmr16778388ejc.75.1683732213533;
+        Wed, 10 May 2023 08:23:33 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7wVCdAKwUlJ8V9lcgbWEAiwFeSNH6AK2FonknQiPTYHWcs8YvzVYyw9uHkDEkxON4bz52OSg==
+X-Received: by 2002:a17:907:6295:b0:94e:cbfb:5fab with SMTP id nd21-20020a170907629500b0094ecbfb5fabmr16778362ejc.75.1683732213215;
+        Wed, 10 May 2023 08:23:33 -0700 (PDT)
+Received: from amikhalitsyn.. (ip5f5bf3d5.dynamic.kabel-deutschland.de. [95.91.243.213])
+        by smtp.gmail.com with ESMTPSA id kn3-20020a1709079b0300b0096a27dbb5b2sm902755ejc.209.2023.05.10.08.23.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 May 2023 08:20:44 -0700 (PDT)
-From: Stephen Hemminger <stephen@networkplumber.org>
-To: netdev@vger.kernel.org
-Cc: Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2] remove unnecessary checks for NULL before calling free()
-Date: Wed, 10 May 2023 08:20:42 -0700
-Message-Id: <20230510152042.36586-1-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.39.2
+        Wed, 10 May 2023 08:23:32 -0700 (PDT)
+From: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+To: davem@davemloft.net
+Cc: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Christian Brauner <brauner@kernel.org>,
+	Stanislav Fomichev <sdf@google.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Kuniyuki Iwashima <kuniyu@amazon.com>,
+	linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org,
+	bpf@vger.kernel.org
+Subject: [PATCH net-next] net: core: add SOL_SOCKET filter for bpf getsockopt hook
+Date: Wed, 10 May 2023 17:22:16 +0200
+Message-Id: <20230510152216.1392682-1-aleksandr.mikhalitsyn@canonical.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -69,125 +88,90 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The function free() handles the case wher argument is NULL
-by doing nothing. So the extra checks are not needed.
+We have per struct proto ->bpf_bypass_getsockopt callback
+to filter out bpf socket cgroup getsockopt hook from being called.
 
-Found by modified version of kernel coccinelle script.
+It seems worthwhile to add analogical helper for SOL_SOCKET
+level socket options. First user will be SO_PEERPIDFD.
 
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+This patch was born as a result of discussion around a new SCM_PIDFD interface:
+https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com/
+
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Christian Brauner <brauner@kernel.org>
+Cc: Stanislav Fomichev <sdf@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: bpf@vger.kernel.org
+Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
 ---
- ip/ipnexthop.c | 9 +++------
- lib/utils.c    | 3 +--
- tc/m_ipt.c     | 3 +--
- tc/m_xt.c      | 3 +--
- tc/m_xt_old.c  | 3 +--
- tc/tc_qdisc.c  | 3 +--
- 6 files changed, 8 insertions(+), 16 deletions(-)
+ include/linux/bpf-cgroup.h | 8 +++++---
+ include/net/sock.h         | 1 +
+ net/core/sock.c            | 5 +++++
+ 3 files changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-index 9f16b8097b40..894f2a126f40 100644
---- a/ip/ipnexthop.c
-+++ b/ip/ipnexthop.c
-@@ -345,10 +345,8 @@ static void print_nh_res_bucket(FILE *fp, const struct rtattr *res_bucket_attr)
- 
- static void ipnh_destroy_entry(struct nh_entry *nhe)
- {
--	if (nhe->nh_encap)
--		free(nhe->nh_encap);
--	if (nhe->nh_groups)
--		free(nhe->nh_groups);
-+	free(nhe->nh_encap);
-+	free(nhe->nh_groups);
+diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
+index 57e9e109257e..97d8a49b35bf 100644
+--- a/include/linux/bpf-cgroup.h
++++ b/include/linux/bpf-cgroup.h
+@@ -387,10 +387,12 @@ static inline bool cgroup_bpf_sock_enabled(struct sock *sk,
+ 	int __ret = retval;						       \
+ 	if (cgroup_bpf_enabled(CGROUP_GETSOCKOPT) &&			       \
+ 	    cgroup_bpf_sock_enabled(sock, CGROUP_GETSOCKOPT))		       \
+-		if (!(sock)->sk_prot->bpf_bypass_getsockopt ||		       \
+-		    !INDIRECT_CALL_INET_1((sock)->sk_prot->bpf_bypass_getsockopt, \
++		if (((level != SOL_SOCKET) ||				       \
++		     !sock_bpf_bypass_getsockopt(level, optname)) &&	       \
++		    (!(sock)->sk_prot->bpf_bypass_getsockopt ||		       \
++		     !INDIRECT_CALL_INET_1((sock)->sk_prot->bpf_bypass_getsockopt, \
+ 					tcp_bpf_bypass_getsockopt,	       \
+-					level, optname))		       \
++					level, optname)))		       \
+ 			__ret = __cgroup_bpf_run_filter_getsockopt(	       \
+ 				sock, level, optname, optval, optlen,	       \
+ 				max_optlen, retval);			       \
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 8b7ed7167243..530d6d22f42d 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1847,6 +1847,7 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
+ 		  sockptr_t optval, sockptr_t optlen);
+ int sock_getsockopt(struct socket *sock, int level, int op,
+ 		    char __user *optval, int __user *optlen);
++bool sock_bpf_bypass_getsockopt(int level, int optname);
+ int sock_gettstamp(struct socket *sock, void __user *userstamp,
+ 		   bool timeval, bool time32);
+ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 5440e67bcfe3..194a423eb6e5 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1963,6 +1963,11 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+ 			     USER_SOCKPTR(optlen));
  }
  
- /* parse nhmsg into nexthop entry struct which must be destroyed by
-@@ -586,8 +584,7 @@ static struct nh_entry *ipnh_cache_add(__u32 nh_id)
- 	ipnh_cache_link_entry(nhe);
- 
- out:
--	if (answer)
--		free(answer);
-+	free(answer);
- 
- 	return nhe;
- 
-diff --git a/lib/utils.c b/lib/utils.c
-index b740531ab6c9..8dc302bdfe02 100644
---- a/lib/utils.c
-+++ b/lib/utils.c
-@@ -1707,8 +1707,7 @@ int do_batch(const char *name, bool force,
- 		}
- 	}
- 
--	if (line)
--		free(line);
-+	free(line);
- 
- 	return ret;
- }
-diff --git a/tc/m_ipt.c b/tc/m_ipt.c
-index 465d1b8073d0..3fe70faf2ec6 100644
---- a/tc/m_ipt.c
-+++ b/tc/m_ipt.c
-@@ -412,8 +412,7 @@ static int parse_ipt(struct action_util *a, int *argc_p,
-         m->tflags = 0;
-         m->used = 0;
- 	/* Free allocated memory */
--	if (m->t)
--	    free(m->t);
-+	free(m->t);
- 
- 
- 	return 0;
-diff --git a/tc/m_xt.c b/tc/m_xt.c
-index 8a6fd3ce0ffc..658084378124 100644
---- a/tc/m_xt.c
-+++ b/tc/m_xt.c
-@@ -299,8 +299,7 @@ static int parse_ipt(struct action_util *a, int *argc_p,
- 		m->tflags = 0;
- 		m->used = 0;
- 		/* Free allocated memory */
--		if (m->t)
--			free(m->t);
-+		free(m->t);
- 	}
- 
- 	return 0;
-diff --git a/tc/m_xt_old.c b/tc/m_xt_old.c
-index efa084c5441b..7c6b79b99af5 100644
---- a/tc/m_xt_old.c
-+++ b/tc/m_xt_old.c
-@@ -337,8 +337,7 @@ static int parse_ipt(struct action_util *a, int *argc_p,
-         m->tflags = 0;
-         m->used = 0;
- 	/* Free allocated memory */
--	if (m->t)
--	    free(m->t);
-+	free(m->t);
- 
- 
- 	return 0;
-diff --git a/tc/tc_qdisc.c b/tc/tc_qdisc.c
-index 92ceb4c2f980..129ad9d96f8d 100644
---- a/tc/tc_qdisc.c
-+++ b/tc/tc_qdisc.c
-@@ -187,8 +187,7 @@ static int tc_qdisc_modify(int cmd, unsigned int flags, int argc, char **argv)
- 			addattr_l(&req.n, sizeof(req), TCA_STAB_DATA, stab.data,
- 				  stab.szopts.tsize * sizeof(__u16));
- 		addattr_nest_end(&req.n, tail);
--		if (stab.data)
--			free(stab.data);
-+		free(stab.data);
- 	}
- 
- 	if (d[0])  {
++bool sock_bpf_bypass_getsockopt(int level, int optname)
++{
++	return false;
++}
++
+ /*
+  * Initialize an sk_lock.
+  *
 -- 
-2.39.2
+2.34.1
 
 
