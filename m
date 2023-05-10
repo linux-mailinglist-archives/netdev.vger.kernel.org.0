@@ -1,227 +1,220 @@
-Return-Path: <netdev+bounces-1592-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1593-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0652E6FE67D
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:55:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D744C6FE682
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:58:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DE9D81C20E35
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 21:55:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C77831C20DF8
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 21:58:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63E411E504;
-	Wed, 10 May 2023 21:55:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 650461E505;
+	Wed, 10 May 2023 21:58:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ED3E21CC1
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 21:55:04 +0000 (UTC)
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7705746A5
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:55:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 549AD21CDF
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 21:58:18 +0000 (UTC)
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8725910FF
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:58:16 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id 41be03b00d2f7-517ab9a4a13so7035279a12.1
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:58:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1683755702; x=1715291702;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Dquc9u+G7iHnozNVqmkbwRoZh984uh9oqEfHPSTx6cU=;
-  b=WYtNECnM5n3zbeItNe+xxpjRfjNWtu5Hn5gWLlDmKLartQBhtZGzW8bb
-   sEcFts1JP38KRJeAUZKq6JqrYPp1CatSMvU8fO5asaz9jdxTlF6csWieb
-   3aovLOwncfJdxnB38q3NnGPHFy9T1HsAegwqI0v+ZXEb9GLTTWQ4fVAPP
-   U=;
-X-IronPort-AV: E=Sophos;i="5.99,265,1677542400"; 
-   d="scan'208";a="330441500"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-fa5fe5fb.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2023 21:54:59 +0000
-Received: from EX19MTAUWC002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-	by email-inbound-relay-pdx-2c-m6i4x-fa5fe5fb.us-west-2.amazon.com (Postfix) with ESMTPS id 5222041578;
-	Wed, 10 May 2023 21:54:58 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Wed, 10 May 2023 21:54:56 +0000
-Received: from 88665a182662.ant.amazon.com (10.106.101.26) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Wed, 10 May 2023 21:54:54 +0000
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>
-CC: Kuniyuki Iwashima <kuniyu@amazon.com>, Kuniyuki Iwashima
-	<kuni1840@gmail.com>, <netdev@vger.kernel.org>
-Subject: [PATCH v1 net-next] ping: Convert hlist_nulls to plain hlist.
-Date: Wed, 10 May 2023 14:54:43 -0700
-Message-ID: <20230510215443.67017-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+        d=google.com; s=20221208; t=1683755896; x=1686347896;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3wULuI7vE90rEZGHqkXAEPCnr2L7cEtAQhbPdWNS9Q4=;
+        b=w10BsZzNmpOZcByEOTWbcUf2Aks20U0Hwts/18pOJ/l3rUl5DLetI32fHjJuvE5Kz0
+         bLbzzj7LzBwAVlYyXOjARD+KlA7mS9YQ75tv2DL3udb/yBdNrKtsm/zzQkKqXoj3UEAy
+         oZYaI3GFcReaP09yRocM5sa5qOyfvw//XHyugOkEajzScXXuENYwsZsdPpctw5stAIPI
+         G40UT7FLiTvMPjBkJkncb51qorp7/tpHhR6C0mwxvTb7WMuy+3uzV1ZTHOauI55HIvFt
+         dJPe/+49q0TiLv//78njFyiO3ksKWHmSGNDs+WOOSTy2lLiDv+8YNB48Xbfj9Vh32A7b
+         AB8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683755896; x=1686347896;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3wULuI7vE90rEZGHqkXAEPCnr2L7cEtAQhbPdWNS9Q4=;
+        b=GzzcC0QoMMFf+kOlkNQKQ/Q5fYAN0yoOGSEvaZqs89kHuqFjJS+wrPMZ9XRCmmP5CR
+         yQ5mF1xkDxTxUAwThLKlBrq1CwOkOMePdUH2d9WlkpO1uDq2aR0pBAgFpVFmaNrMf3Of
+         wWQCS00pI7uSgRvw0Jrpst9TQzfOiD4GxpcTuVrl/n+mjrf6xYhNczFUyojpveRCMpLZ
+         9iegSoaHDk1CZmrFGbjeIT6fr3X+BBlIQN+tJdOxtofFq01c9SLrG/hQKsC5i9pEqK1b
+         XTr16SrGMVHYiWY/L+wnl0ubU+R//oMh18Ybkh2GX2bd0YoKNhr+6UBMhyXdG0I2AMSG
+         ECnQ==
+X-Gm-Message-State: AC+VfDzK8TUhiWTc5/BZzZf3Tt05lH3hMYZwZlMZ+UlOupn80nEYVWSY
+	o2QVXV0uwvPMzZaHBSFWE+mF2JxshfbL+rlNtMlzEQ==
+X-Google-Smtp-Source: ACHHUZ6HKvxannQHa1uGj6p3nB11KdAuhdA0umN1tSOxdif9EQqPJy+EMDVNufLFBYZg0F/5EZzs2fnp/mlJYaF0H+s=
+X-Received: by 2002:a17:90b:3142:b0:246:f8d7:3083 with SMTP id
+ ip2-20020a17090b314200b00246f8d73083mr18757743pjb.16.1683755895931; Wed, 10
+ May 2023 14:58:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.101.26]
-X-ClientProxiedBy: EX19D031UWC001.ant.amazon.com (10.13.139.241) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-Precedence: Bulk
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-	T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+References: <20230510152216.1392682-1-aleksandr.mikhalitsyn@canonical.com>
+ <CAKH8qBuAoobsVP2Q5KN06fZ2NM3_aMwT7Y2OoKwS4Cf=cv3ZGg@mail.gmail.com> <CAEivzxc3hzqMROfCgshD6qW3=NErpF6LWXFGjoBhPNNzEZ3kDg@mail.gmail.com>
+In-Reply-To: <CAEivzxc3hzqMROfCgshD6qW3=NErpF6LWXFGjoBhPNNzEZ3kDg@mail.gmail.com>
+From: Stanislav Fomichev <sdf@google.com>
+Date: Wed, 10 May 2023 14:58:04 -0700
+Message-ID: <CAKH8qBvp3iNPHrus3NpgwN1JCkSxzTTi3G3WoAR2LKwX1-QzhQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: core: add SOL_SOCKET filter for bpf
+ getsockopt hook
+To: Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Cc: davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>, 
+	Daniel Borkmann <daniel@iogearbox.net>, Christian Brauner <brauner@kernel.org>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Kuniyuki Iwashima <kuniyu@amazon.com>, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Since introduced in commit c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP
-socket kind"), ping socket does not use SLAB_TYPESAFE_BY_RCU nor check
-nulls marker in loops.
+On Wed, May 10, 2023 at 2:41=E2=80=AFPM Aleksandr Mikhalitsyn
+<aleksandr.mikhalitsyn@canonical.com> wrote:
+>
+> On Wed, May 10, 2023 at 11:31=E2=80=AFPM Stanislav Fomichev <sdf@google.c=
+om> wrote:
+> >
+> > On Wed, May 10, 2023 at 8:23=E2=80=AFAM Alexander Mikhalitsyn
+> > <aleksandr.mikhalitsyn@canonical.com> wrote:
+> > >
+> > > We have per struct proto ->bpf_bypass_getsockopt callback
+> > > to filter out bpf socket cgroup getsockopt hook from being called.
+> > >
+> > > It seems worthwhile to add analogical helper for SOL_SOCKET
+> > > level socket options. First user will be SO_PEERPIDFD.
+> > >
+> > > This patch was born as a result of discussion around a new SCM_PIDFD =
+interface:
+> > > https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikhali=
+tsyn@canonical.com/
+> > >
+> > > Cc: Alexei Starovoitov <ast@kernel.org>
+> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > > Cc: Christian Brauner <brauner@kernel.org>
+> > > Cc: Stanislav Fomichev <sdf@google.com>
+> > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > Cc: Eric Dumazet <edumazet@google.com>
+> > > Cc: Jakub Kicinski <kuba@kernel.org>
+> > > Cc: Paolo Abeni <pabeni@redhat.com>
+> > > Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > Cc: linux-kernel@vger.kernel.org
+> > > Cc: netdev@vger.kernel.org
+> > > Cc: bpf@vger.kernel.org
+> > > Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical=
+.com>
+> > > ---
+> > >  include/linux/bpf-cgroup.h | 8 +++++---
+> > >  include/net/sock.h         | 1 +
+> > >  net/core/sock.c            | 5 +++++
+> > >  3 files changed, 11 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
+> > > index 57e9e109257e..97d8a49b35bf 100644
+> > > --- a/include/linux/bpf-cgroup.h
+> > > +++ b/include/linux/bpf-cgroup.h
+> > > @@ -387,10 +387,12 @@ static inline bool cgroup_bpf_sock_enabled(stru=
+ct sock *sk,
+> > >         int __ret =3D retval;                                        =
+            \
+> > >         if (cgroup_bpf_enabled(CGROUP_GETSOCKOPT) &&                 =
+          \
+> > >             cgroup_bpf_sock_enabled(sock, CGROUP_GETSOCKOPT))        =
+          \
+> > > -               if (!(sock)->sk_prot->bpf_bypass_getsockopt ||       =
+          \
+> > > -                   !INDIRECT_CALL_INET_1((sock)->sk_prot->bpf_bypass=
+_getsockopt, \
+> > > +               if (((level !=3D SOL_SOCKET) ||                      =
+            \
+> > > +                    !sock_bpf_bypass_getsockopt(level, optname)) && =
+          \
+> > > +                   (!(sock)->sk_prot->bpf_bypass_getsockopt ||      =
+          \
+> >
+> > Any reason we are not putting this into bpf_bypass_getsockopt for
+> > af_unix struct proto? SO_PEERPIDFD seems relevant only for af_unix?
+>
+> Yes, that should work perfectly well. The reason why I'm going this
+> way is that we are
+> declaring all SOL_SOCKET-level options in the net/core/sock.c which is
+> not specific to any address family.
+> It seems reasonable to have a way to filter out getsockopt for these
+> options too.
+>
+> But I'm not insisting on that way.
 
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- net/ipv4/ping.c | 41 +++++++++++++++--------------------------
- 1 file changed, 15 insertions(+), 26 deletions(-)
+Yeah, let's move it into af_unix struct proto for now. That should
+avoid adding extra conditionals for a few places that care about
+performance (tcp zerocopy fastpath).
+If we'd ever need to filter out generic SOL_SOCKET level options that
+apply for all sockets, we might put (and copy-paste) them in the
+respective {tcp,udp,unix,etc}_bpf_bypass_getsockopt.
 
-diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-index 5178a3f3cb53..3793c81bda8a 100644
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -49,13 +49,8 @@
- #include <net/transp_v6.h>
- #endif
- 
--#define ping_portaddr_for_each_entry(__sk, node, list) \
--	hlist_nulls_for_each_entry(__sk, node, list, sk_nulls_node)
--#define ping_portaddr_for_each_entry_rcu(__sk, node, list) \
--	hlist_nulls_for_each_entry_rcu(__sk, node, list, sk_nulls_node)
--
- struct ping_table {
--	struct hlist_nulls_head	hash[PING_HTABLE_SIZE];
-+	struct hlist_head	hash[PING_HTABLE_SIZE];
- 	spinlock_t		lock;
- };
- 
-@@ -74,17 +69,16 @@ static inline u32 ping_hashfn(const struct net *net, u32 num, u32 mask)
- }
- EXPORT_SYMBOL_GPL(ping_hash);
- 
--static inline struct hlist_nulls_head *ping_hashslot(struct ping_table *table,
--					     struct net *net, unsigned int num)
-+static inline struct hlist_head *ping_hashslot(struct ping_table *table,
-+					       struct net *net, unsigned int num)
- {
- 	return &table->hash[ping_hashfn(net, num, PING_HTABLE_MASK)];
- }
- 
- int ping_get_port(struct sock *sk, unsigned short ident)
- {
--	struct hlist_nulls_node *node;
--	struct hlist_nulls_head *hlist;
- 	struct inet_sock *isk, *isk2;
-+	struct hlist_head *hlist;
- 	struct sock *sk2 = NULL;
- 
- 	isk = inet_sk(sk);
-@@ -98,7 +92,7 @@ int ping_get_port(struct sock *sk, unsigned short ident)
- 				result++; /* avoid zero */
- 			hlist = ping_hashslot(&ping_table, sock_net(sk),
- 					    result);
--			ping_portaddr_for_each_entry(sk2, node, hlist) {
-+			sk_for_each(sk2, hlist) {
- 				isk2 = inet_sk(sk2);
- 
- 				if (isk2->inet_num == result)
-@@ -115,7 +109,7 @@ int ping_get_port(struct sock *sk, unsigned short ident)
- 			goto fail;
- 	} else {
- 		hlist = ping_hashslot(&ping_table, sock_net(sk), ident);
--		ping_portaddr_for_each_entry(sk2, node, hlist) {
-+		sk_for_each(sk2, hlist) {
- 			isk2 = inet_sk(sk2);
- 
- 			/* BUG? Why is this reuse and not reuseaddr? ping.c
-@@ -133,9 +127,8 @@ int ping_get_port(struct sock *sk, unsigned short ident)
- 	isk->inet_num = ident;
- 	if (sk_unhashed(sk)) {
- 		pr_debug("was not hashed\n");
--		sock_hold(sk);
-+		sk_add_node_rcu(sk, hlist);
- 		sock_set_flag(sk, SOCK_RCU_FREE);
--		hlist_nulls_add_head_rcu(&sk->sk_nulls_node, hlist);
- 		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
- 	}
- 	spin_unlock(&ping_table.lock);
-@@ -161,9 +154,7 @@ void ping_unhash(struct sock *sk)
- 
- 	pr_debug("ping_unhash(isk=%p,isk->num=%u)\n", isk, isk->inet_num);
- 	spin_lock(&ping_table.lock);
--	if (sk_hashed(sk)) {
--		hlist_nulls_del_init_rcu(&sk->sk_nulls_node);
--		sock_put(sk);
-+	if (sk_del_node_init_rcu(sk)) {
- 		isk->inet_num = 0;
- 		isk->inet_sport = 0;
- 		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
-@@ -175,10 +166,9 @@ EXPORT_SYMBOL_GPL(ping_unhash);
- /* Called under rcu_read_lock() */
- static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
- {
--	struct hlist_nulls_head *hslot = ping_hashslot(&ping_table, net, ident);
-+	struct hlist_head *hslot = ping_hashslot(&ping_table, net, ident);
- 	struct sock *sk = NULL;
- 	struct inet_sock *isk;
--	struct hlist_nulls_node *hnode;
- 	int dif, sdif;
- 
- 	if (skb->protocol == htons(ETH_P_IP)) {
-@@ -197,7 +187,7 @@ static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
- 		return NULL;
- 	}
- 
--	ping_portaddr_for_each_entry_rcu(sk, hnode, hslot) {
-+	sk_for_each_rcu(sk, hslot) {
- 		isk = inet_sk(sk);
- 
- 		pr_debug("iterate\n");
-@@ -1045,15 +1035,14 @@ static struct sock *ping_get_first(struct seq_file *seq, int start)
- 
- 	for (state->bucket = start; state->bucket < PING_HTABLE_SIZE;
- 	     ++state->bucket) {
--		struct hlist_nulls_node *node;
--		struct hlist_nulls_head *hslot;
-+		struct hlist_head *hslot;
- 
- 		hslot = &ping_table.hash[state->bucket];
- 
--		if (hlist_nulls_empty(hslot))
-+		if (hlist_empty(hslot))
- 			continue;
- 
--		sk_nulls_for_each(sk, node, hslot) {
-+		sk_for_each(sk, hslot) {
- 			if (net_eq(sock_net(sk), net) &&
- 			    sk->sk_family == state->family)
- 				goto found;
-@@ -1070,7 +1059,7 @@ static struct sock *ping_get_next(struct seq_file *seq, struct sock *sk)
- 	struct net *net = seq_file_net(seq);
- 
- 	do {
--		sk = sk_nulls_next(sk);
-+		sk = sk_next(sk);
- 	} while (sk && (!net_eq(sock_net(sk), net)));
- 
- 	if (!sk)
-@@ -1206,6 +1195,6 @@ void __init ping_init(void)
- 	int i;
- 
- 	for (i = 0; i < PING_HTABLE_SIZE; i++)
--		INIT_HLIST_NULLS_HEAD(&ping_table.hash[i], i);
-+		INIT_HLIST_HEAD(&ping_table.hash[i]);
- 	spin_lock_init(&ping_table.lock);
- }
--- 
-2.30.2
-
+> Kind regards,
+> Alex
+>
+> >
+> > > +                    !INDIRECT_CALL_INET_1((sock)->sk_prot->bpf_bypas=
+s_getsockopt, \
+> > >                                         tcp_bpf_bypass_getsockopt,   =
+          \
+> > > -                                       level, optname))             =
+          \
+> > > +                                       level, optname)))            =
+          \
+> > >                         __ret =3D __cgroup_bpf_run_filter_getsockopt(=
+            \
+> > >                                 sock, level, optname, optval, optlen,=
+          \
+> > >                                 max_optlen, retval);                 =
+          \
+> > > diff --git a/include/net/sock.h b/include/net/sock.h
+> > > index 8b7ed7167243..530d6d22f42d 100644
+> > > --- a/include/net/sock.h
+> > > +++ b/include/net/sock.h
+> > > @@ -1847,6 +1847,7 @@ int sk_getsockopt(struct sock *sk, int level, i=
+nt optname,
+> > >                   sockptr_t optval, sockptr_t optlen);
+> > >  int sock_getsockopt(struct socket *sock, int level, int op,
+> > >                     char __user *optval, int __user *optlen);
+> > > +bool sock_bpf_bypass_getsockopt(int level, int optname);
+> > >  int sock_gettstamp(struct socket *sock, void __user *userstamp,
+> > >                    bool timeval, bool time32);
+> > >  struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long =
+header_len,
+> > > diff --git a/net/core/sock.c b/net/core/sock.c
+> > > index 5440e67bcfe3..194a423eb6e5 100644
+> > > --- a/net/core/sock.c
+> > > +++ b/net/core/sock.c
+> > > @@ -1963,6 +1963,11 @@ int sock_getsockopt(struct socket *sock, int l=
+evel, int optname,
+> > >                              USER_SOCKPTR(optlen));
+> > >  }
+> > >
+> > > +bool sock_bpf_bypass_getsockopt(int level, int optname)
+> > > +{
+> > > +       return false;
+> > > +}
+> > > +
+> > >  /*
+> > >   * Initialize an sk_lock.
+> > >   *
+> > > --
+> > > 2.34.1
+> > >
 
