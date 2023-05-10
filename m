@@ -1,26 +1,26 @@
-Return-Path: <netdev+bounces-1360-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1369-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 419176FD983
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:34:55 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8994C6FD9D9
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 10:46:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6244B281419
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:34:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4FBCF281417
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 08:46:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A540366;
-	Wed, 10 May 2023 08:34:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9538436E;
+	Wed, 10 May 2023 08:46:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FB07364
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:34:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AFBC364
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 08:46:22 +0000 (UTC)
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC25E30DA;
-	Wed, 10 May 2023 01:34:20 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87AF06EA7;
+	Wed, 10 May 2023 01:46:19 -0700 (PDT)
 From: Pablo Neira Ayuso <pablo@netfilter.org>
 To: netfilter-devel@vger.kernel.org
 Cc: davem@davemloft.net,
@@ -28,10 +28,12 @@ Cc: davem@davemloft.net,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	edumazet@google.com
-Subject: [PATCH net 0/7] Netfilter updates for net
-Date: Wed, 10 May 2023 10:33:06 +0200
-Message-Id: <20230510083313.152961-1-pablo@netfilter.org>
+Subject: [PATCH net 1/7] netfilter: nf_tables: always release netdev hooks from notifier
+Date: Wed, 10 May 2023 10:33:07 +0200
+Message-Id: <20230510083313.152961-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230510083313.152961-1-pablo@netfilter.org>
+References: <20230510083313.152961-1-pablo@netfilter.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -40,63 +42,77 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi,
+From: Florian Westphal <fw@strlen.de>
 
-The following patchset contains Netfilter fixes for net:
+This reverts "netfilter: nf_tables: skip netdev events generated on netns removal".
 
-1) Fix UAF when releasing netnamespace, from Florian Westphal.
+The problem is that when a veth device is released, the veth release
+callback will also queue the peer netns device for removal.
 
-2) Fix possible BUG_ON when nf_conntrack is enabled with enable_hooks,
-   from Florian Westphal.
+Its possible that the peer netns is also slated for removal.  In this
+case, the device memory is already released before the pre_exit hook of
+the peer netns runs:
 
-3) Fixes for nft_flowtable.sh selftest, from Boris Sukholitko.
+BUG: KASAN: slab-use-after-free in nf_hook_entry_head+0x1b8/0x1d0
+Read of size 8 at addr ffff88812c0124f0 by task kworker/u8:1/45
+Workqueue: netns cleanup_net
+Call Trace:
+ nf_hook_entry_head+0x1b8/0x1d0
+ __nf_unregister_net_hook+0x76/0x510
+ nft_netdev_unregister_hooks+0xa0/0x220
+ __nft_release_hook+0x184/0x490
+ nf_tables_pre_exit_net+0x12f/0x1b0
+ ..
 
-4) Extend nft_flowtable.sh selftest to cover integration with
-   ingress/egress hooks, from Florian Westphal.
+Order is:
+1. First netns is released, veth_dellink() queues peer netns device
+   for removal
+2. peer netns is queued for removal
+3. peer netns device is released, unreg event is triggered
+4. unreg event is ignored because netns is going down
+5. pre_exit hook calls nft_netdev_unregister_hooks but device memory
+   might be free'd already.
 
-Please, pull these changes from:
+Fixes: 68a3765c659f ("netfilter: nf_tables: skip netdev events generated on netns removal")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nft_chain_filter.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git nf-23-05-10
+diff --git a/net/netfilter/nft_chain_filter.c b/net/netfilter/nft_chain_filter.c
+index c3563f0be269..680fe557686e 100644
+--- a/net/netfilter/nft_chain_filter.c
++++ b/net/netfilter/nft_chain_filter.c
+@@ -344,6 +344,12 @@ static void nft_netdev_event(unsigned long event, struct net_device *dev,
+ 		return;
+ 	}
+ 
++	/* UNREGISTER events are also happening on netns exit.
++	 *
++	 * Although nf_tables core releases all tables/chains, only this event
++	 * handler provides guarantee that hook->ops.dev is still accessible,
++	 * so we cannot skip exiting net namespaces.
++	 */
+ 	__nft_release_basechain(ctx);
+ }
+ 
+@@ -362,9 +368,6 @@ static int nf_tables_netdev_event(struct notifier_block *this,
+ 	    event != NETDEV_CHANGENAME)
+ 		return NOTIFY_DONE;
+ 
+-	if (!check_net(ctx.net))
+-		return NOTIFY_DONE;
+-
+ 	nft_net = nft_pernet(ctx.net);
+ 	mutex_lock(&nft_net->commit_mutex);
+ 	list_for_each_entry(table, &nft_net->tables, list) {
+-- 
+2.30.2
 
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit 582dbb2cc1a0a7427840f5b1e3c65608e511b061:
-
-  net: phy: bcm7xx: Correct read from expansion register (2023-05-09 20:25:52 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git tags/nf-23-05-10
-
-for you to fetch changes up to 3acf8f6c14d0e42b889738d63b6d9cb63348fc94:
-
-  selftests: nft_flowtable.sh: check ingress/egress chain too (2023-05-10 09:31:07 +0200)
-
-----------------------------------------------------------------
-netfilter pull request 23-05-10
-
-----------------------------------------------------------------
-Boris Sukholitko (4):
-      selftests: nft_flowtable.sh: use /proc for pid checking
-      selftests: nft_flowtable.sh: no need for ps -x option
-      selftests: nft_flowtable.sh: wait for specific nc pids
-      selftests: nft_flowtable.sh: monitor result file sizes
-
-Florian Westphal (3):
-      netfilter: nf_tables: always release netdev hooks from notifier
-      netfilter: conntrack: fix possible bug_on with enable_hooks=1
-      selftests: nft_flowtable.sh: check ingress/egress chain too
-
- net/netfilter/core.c                               |   6 +-
- net/netfilter/nf_conntrack_standalone.c            |   3 +-
- net/netfilter/nft_chain_filter.c                   |   9 +-
- tools/testing/selftests/netfilter/nft_flowtable.sh | 145 ++++++++++++++++++++-
- 4 files changed, 151 insertions(+), 12 deletions(-)
 
