@@ -1,39 +1,42 @@
-Return-Path: <netdev+bounces-1315-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1316-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id F124F6FD448
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 05:30:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2AEBD6FD497
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 05:50:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 009D92812E6
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 03:30:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 99C4B1C20CAE
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 03:49:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1AD7663E;
-	Wed, 10 May 2023 03:30:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69968655;
+	Wed, 10 May 2023 03:49:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4324F63C
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 03:30:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E530FC433D2;
-	Wed, 10 May 2023 03:30:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683689422;
-	bh=tbiIuyZVLvKrbtjltTZWP7LIBTq/eQE5bTjhZuivMcs=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=P09Y8EIRu+hl20oXPJiiRctNfvpBWlescw+2lAfHidhGhRLtmkUSqBXzqN0xNt6fo
-	 2ANAycA7JtBJkVO5I5M0U7gLmgczD25F6fw3uZXmMOhgC6byoPNUzrCIUUGRRrTmAW
-	 TYGnUonkUYheHkAFfhOD7BX5jgks0aL9OCYryBhNnekeEiaFWst44r4Yp5Yn70sG1e
-	 xGXNCZolFL22W349zCYTArsZJ8lAGz+twRSlBEftnEl8xVCD7zmcKYOatHC4IiZUIK
-	 aV1iy/PJHLTS0YsjRbv9x8/KfNxcrkvFL/fy+5CarOt2TH8Co7vt1g78d0YlN3A7BG
-	 O9U78DhDCeDXg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BFD7AE26D23;
-	Wed, 10 May 2023 03:30:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58B0D651
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 03:49:57 +0000 (UTC)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D122106
+	for <netdev@vger.kernel.org>; Tue,  9 May 2023 20:49:52 -0700 (PDT)
+Received: from kwepemm600019.china.huawei.com (unknown [172.30.72.54])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QGLWr4MGtzTk4j;
+	Wed, 10 May 2023 11:45:12 +0800 (CST)
+Received: from huawei.com (10.44.134.232) by kwepemm600019.china.huawei.com
+ (7.193.23.64) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 10 May
+ 2023 11:49:49 +0800
+From: t.feng <fengtao40@huawei.com>
+To: <netdev@vger.kernel.org>, <lucien.xin@gmail.com>, <luwei32@huawei.com>,
+	<pabeni@redhat.com>, <kuba@kernel.org>, <edumazet@google.com>,
+	<davem@davemloft.net>
+CC: <yanan@huawei.com>, <fw@strlen.de>, <fengtao40@huawei.com>
+Subject: [PATCH V2] ipvlan:Fix out-of-bounds caused by unclear skb->cb
+Date: Wed, 10 May 2023 11:50:44 +0800
+Message-ID: <20230510035044.3082562-1-fengtao40@huawei.com>
+X-Mailer: git-send-email 2.27.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -41,58 +44,176 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net] net: Fix load-tearing on sk->sk_stamp in
- sock_recv_cmsgs().
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168368942178.11333.808708812633442353.git-patchwork-notify@kernel.org>
-Date: Wed, 10 May 2023 03:30:21 +0000
-References: <20230508175543.55756-1-kuniyu@amazon.com>
-In-Reply-To: <20230508175543.55756-1-kuniyu@amazon.com>
-To: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, kuni1840@gmail.com, netdev@vger.kernel.org,
- syzkaller@googlegroups.com
+Content-Type: text/plain
+X-Originating-IP: [10.44.134.232]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600019.china.huawei.com (7.193.23.64)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+If skb enqueue the qdisc, fq_skb_cb(skb)->time_to_send is changed which
+is actually skb->cb, and IPCB(skb_in)->opt will be used in
+__ip_options_echo. It is possible that memcpy is out of bounds and lead
+to stack overflow.
+We should clear skb->cb before ip_local_out or ip6_local_out.
 
-This patch was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+v2:
+1. clean the stack info
+2. use IPCB/IP6CB instead of skb->cb
 
-On Mon, 8 May 2023 10:55:43 -0700 you wrote:
-> KCSAN found a data race in sock_recv_cmsgs() where the read access
-> to sk->sk_stamp needs READ_ONCE().
-> 
-> BUG: KCSAN: data-race in packet_recvmsg / packet_recvmsg
-> 
-> write (marked) to 0xffff88803c81f258 of 8 bytes by task 19171 on cpu 0:
->  sock_write_timestamp include/net/sock.h:2670 [inline]
->  sock_recv_cmsgs include/net/sock.h:2722 [inline]
->  packet_recvmsg+0xb97/0xd00 net/packet/af_packet.c:3489
->  sock_recvmsg_nosec net/socket.c:1019 [inline]
->  sock_recvmsg+0x11a/0x130 net/socket.c:1040
->  sock_read_iter+0x176/0x220 net/socket.c:1118
->  call_read_iter include/linux/fs.h:1845 [inline]
->  new_sync_read fs/read_write.c:389 [inline]
->  vfs_read+0x5e0/0x630 fs/read_write.c:470
->  ksys_read+0x163/0x1a0 fs/read_write.c:613
->  __do_sys_read fs/read_write.c:623 [inline]
->  __se_sys_read fs/read_write.c:621 [inline]
->  __x64_sys_read+0x41/0x50 fs/read_write.c:621
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x3b/0x90 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x72/0xdc
-> 
-> [...]
+crash on stable-5.10(reproduce in kasan kernel).
+Stack info:
+[ 2203.651571] BUG: KASAN: stack-out-of-bounds in
+__ip_options_echo+0x589/0x800
+[ 2203.653327] Write of size 4 at addr ffff88811a388f27 by task
+swapper/3/0
+[ 2203.655460] CPU: 3 PID: 0 Comm: swapper/3 Kdump: loaded Not tainted
+5.10.0-60.18.0.50.h856.kasan.eulerosv2r11.x86_64 #1
+[ 2203.655466] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS rel-1.10.2-0-g5f4c7b1-20181220_000000-szxrtosci10000 04/01/2014
+[ 2203.655475] Call Trace:
+[ 2203.655481]  <IRQ>
+[ 2203.655501]  dump_stack+0x9c/0xd3
+[ 2203.655514]  print_address_description.constprop.0+0x19/0x170
+[ 2203.655530]  __kasan_report.cold+0x6c/0x84
+[ 2203.655586]  kasan_report+0x3a/0x50
+[ 2203.655594]  check_memory_region+0xfd/0x1f0
+[ 2203.655601]  memcpy+0x39/0x60
+[ 2203.655608]  __ip_options_echo+0x589/0x800
+[ 2203.655654]  __icmp_send+0x59a/0x960
+[ 2203.655755]  nf_send_unreach+0x129/0x3d0 [nf_reject_ipv4]
+[ 2203.655763]  reject_tg+0x77/0x1bf [ipt_REJECT]
+[ 2203.655772]  ipt_do_table+0x691/0xa40 [ip_tables]
+[ 2203.655821]  nf_hook_slow+0x69/0x100
+[ 2203.655828]  __ip_local_out+0x21e/0x2b0
+[ 2203.655857]  ip_local_out+0x28/0x90
+[ 2203.655868]  ipvlan_process_v4_outbound+0x21e/0x260 [ipvlan]
+[ 2203.655931]  ipvlan_xmit_mode_l3+0x3bd/0x400 [ipvlan]
+[ 2203.655967]  ipvlan_queue_xmit+0xb3/0x190 [ipvlan]
+[ 2203.655977]  ipvlan_start_xmit+0x2e/0xb0 [ipvlan]
+[ 2203.655984]  xmit_one.constprop.0+0xe1/0x280
+[ 2203.655992]  dev_hard_start_xmit+0x62/0x100
+[ 2203.656000]  sch_direct_xmit+0x215/0x640
+[ 2203.656028]  __qdisc_run+0x153/0x1f0
+[ 2203.656069]  __dev_queue_xmit+0x77f/0x1030
+[ 2203.656173]  ip_finish_output2+0x59b/0xc20
+[ 2203.656244]  __ip_finish_output.part.0+0x318/0x3d0
+[ 2203.656312]  ip_finish_output+0x168/0x190
+[ 2203.656320]  ip_output+0x12d/0x220
+[ 2203.656357]  __ip_queue_xmit+0x392/0x880
+[ 2203.656380]  __tcp_transmit_skb+0x1088/0x11c0
+[ 2203.656436]  __tcp_retransmit_skb+0x475/0xa30
+[ 2203.656505]  tcp_retransmit_skb+0x2d/0x190
+[ 2203.656512]  tcp_retransmit_timer+0x3af/0x9a0
+[ 2203.656519]  tcp_write_timer_handler+0x3ba/0x510
+[ 2203.656529]  tcp_write_timer+0x55/0x180
+[ 2203.656542]  call_timer_fn+0x3f/0x1d0
+[ 2203.656555]  expire_timers+0x160/0x200
+[ 2203.656562]  run_timer_softirq+0x1f4/0x480
+[ 2203.656606]  __do_softirq+0xfd/0x402
+[ 2203.656613]  asm_call_irq_on_stack+0x12/0x20
+[ 2203.656617]  </IRQ>
+[ 2203.656623]  do_softirq_own_stack+0x37/0x50
+[ 2203.656631]  irq_exit_rcu+0x134/0x1a0
+[ 2203.656639]  sysvec_apic_timer_interrupt+0x36/0x80
+[ 2203.656646]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+[ 2203.656654] RIP: 0010:default_idle+0x13/0x20
+[ 2203.656663] Code: 89 f0 5d 41 5c 41 5d 41 5e c3 cc cc cc cc cc cc cc
+cc cc cc cc cc cc 0f 1f 44 00 00 0f 1f 44 00 00 0f 00 2d 9f 32 57 00 fb
+f4 <c3> cc cc cc cc 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 41 54 be 08
+[ 2203.656668] RSP: 0018:ffff88810036fe78 EFLAGS: 00000256
+[ 2203.656676] RAX: ffffffffaf2a87f0 RBX: ffff888100360000 RCX:
+ffffffffaf290191
+[ 2203.656681] RDX: 0000000000098b5e RSI: 0000000000000004 RDI:
+ffff88811a3c4f60
+[ 2203.656686] RBP: 0000000000000000 R08: 0000000000000001 R09:
+ffff88811a3c4f63
+[ 2203.656690] R10: ffffed10234789ec R11: 0000000000000001 R12:
+0000000000000003
+[ 2203.656695] R13: ffff888100360000 R14: 0000000000000000 R15:
+0000000000000000
+[ 2203.656729]  default_idle_call+0x5a/0x150
+[ 2203.656735]  cpuidle_idle_call+0x1c6/0x220
+[ 2203.656780]  do_idle+0xab/0x100
+[ 2203.656786]  cpu_startup_entry+0x19/0x20
+[ 2203.656793]  secondary_startup_64_no_verify+0xc2/0xcb
 
-Here is the summary with links:
-  - [v3,net] net: Fix load-tearing on sk->sk_stamp in sock_recv_cmsgs().
-    https://git.kernel.org/netdev/net/c/dfd9248c071a
+[ 2203.657409] The buggy address belongs to the page:
+[ 2203.658648] page:0000000027a9842f refcount:1 mapcount:0
+mapping:0000000000000000 index:0x0 pfn:0x11a388
+[ 2203.658665] flags:
+0x17ffffc0001000(reserved|node=0|zone=2|lastcpupid=0x1fffff)
+[ 2203.658675] raw: 0017ffffc0001000 ffffea000468e208 ffffea000468e208
+0000000000000000
+[ 2203.658682] raw: 0000000000000000 0000000000000000 00000001ffffffff
+0000000000000000
+[ 2203.658686] page dumped because: kasan: bad access detected
 
-You are awesome, thank you!
+To reproduce(ipvlan with IPVLAN_MODE_L3):
+Env setting:
+=======================================================
+modprobe ipvlan ipvlan_default_mode=1
+sysctl net.ipv4.conf.eth0.forwarding=1
+iptables -t nat -A POSTROUTING -s 20.0.0.0/255.255.255.0 -o eth0 -j
+MASQUERADE
+ip link add gw link eth0 type ipvlan
+ip -4 addr add 20.0.0.254/24 dev gw
+ip netns add net1
+ip link add ipv1 link eth0 type ipvlan
+ip link set ipv1 netns net1
+ip netns exec net1 ip link set ipv1 up
+ip netns exec net1 ip -4 addr add 20.0.0.4/24 dev ipv1
+ip netns exec net1 route add default gw 20.0.0.254
+ip netns exec net1 tc qdisc add dev ipv1 root netem loss 10%
+ifconfig gw up
+iptables -t filter -A OUTPUT -p tcp --dport 8888 -j REJECT --reject-with
+icmp-port-unreachable
+=======================================================
+And then excute the shell(curl any address of eth0 can reach):
+
+for((i=1;i<=100000;i++))
+do
+        ip netns exec net1 curl x.x.x.x:8888
+done
+=======================================================
+
+Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
+Signed-off-by: "t.feng" <fengtao40@huawei.com>
+Suggested-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Paolo Abeni <pabeni@redhat.com>
+---
+ drivers/net/ipvlan/ipvlan_core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
+index 460b3d4f2245..ab5133eb1d51 100644
+--- a/drivers/net/ipvlan/ipvlan_core.c
++++ b/drivers/net/ipvlan/ipvlan_core.c
+@@ -436,6 +436,9 @@ static int ipvlan_process_v4_outbound(struct sk_buff *skb)
+ 		goto err;
+ 	}
+ 	skb_dst_set(skb, &rt->dst);
++
++	memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
++
+ 	err = ip_local_out(net, skb->sk, skb);
+ 	if (unlikely(net_xmit_eval(err)))
+ 		dev->stats.tx_errors++;
+@@ -474,6 +477,9 @@ static int ipvlan_process_v6_outbound(struct sk_buff *skb)
+ 		goto err;
+ 	}
+ 	skb_dst_set(skb, dst);
++
++	memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
++
+ 	err = ip6_local_out(net, skb->sk, skb);
+ 	if (unlikely(net_xmit_eval(err)))
+ 		dev->stats.tx_errors++;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.27.0
 
 
