@@ -1,46 +1,55 @@
-Return-Path: <netdev+bounces-1610-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1611-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EAF706FE7D9
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:02:31 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3F8E06FE7F2
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:08:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 17B5D1C20EA2
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:02:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B7B4428161A
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:08:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0730C1E522;
-	Wed, 10 May 2023 23:02:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A49941E528;
+	Wed, 10 May 2023 23:08:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0A0121CED
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 23:02:28 +0000 (UTC)
-Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06305249;
-	Wed, 10 May 2023 16:02:26 -0700 (PDT)
-Received: from local
-	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-	 (Exim 4.96)
-	(envelope-from <daniel@makrotopia.org>)
-	id 1pwspE-0004Wg-2T;
-	Wed, 10 May 2023 23:02:25 +0000
-Date: Thu, 11 May 2023 01:00:21 +0200
-From: Daniel Golle <daniel@makrotopia.org>
-To: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 993371E50D
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 23:08:16 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFAA1B1;
+	Wed, 10 May 2023 16:08:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=ZiW05wKPLD7YCuYetjd69zZZPcMJTzbLVXYOQGMznZs=; b=pqftOVm0RQw6AHZbB4QudUbxlg
+	8PgU+yebmovbsSnp8RZBjrUQFJhVdeMBQQwMcCduSxr7WDEHL5YCc5RlH8vc6bgkYamcRIt5ZXpjp
+	1HP6XP9yECMPv8vBm73DFd9t1kboP4PHvRdJ23mq4OjW4njtl4GM/3+WsxO1hu1wAzjA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1pwsue-00CUfW-GC; Thu, 11 May 2023 01:08:00 +0200
+Date: Thu, 11 May 2023 01:08:00 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Daniel Golle <daniel@makrotopia.org>
+Cc: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Andrew Lunn <andrew@lunn.ch>,
 	Heiner Kallweit <hkallweit1@gmail.com>,
 	Russell King <linux@armlinux.org.uk>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Qingfang Deng <dqfext@gmail.com>,
+	SkyLake Huang <SkyLake.Huang@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH net-next 8/8] net: phy: realtek: setup ALDPS on RTL8221B
-Message-ID: <701034ea45c08db557af926a5a44113e4e45c634.1683756691.git.daniel@makrotopia.org>
-References: <cover.1683756691.git.daniel@makrotopia.org>
+Subject: Re: [PATCH net-next v3] net: phy: add driver for MediaTek SoC
+ built-in GE PHYs
+Message-ID: <e7671e05-3a42-4c73-b1f5-05ed83a60c18@lunn.ch>
+References: <ZFwVwlN0eHjo_xB4@pidgin.makrotopia.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -49,111 +58,31 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1683756691.git.daniel@makrotopia.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+In-Reply-To: <ZFwVwlN0eHjo_xB4@pidgin.makrotopia.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Setup Link Down Power Saving Mode according the DTS property
-just like for RTL821x 1GE PHYs.
+> +static int mt7988_phy_probe_shared(struct phy_device *phydev)
+> +{
+> +	struct mtk_socphy_shared_priv *priv = phydev->shared->priv;
+> +	void __iomem *boottrap;
+> +	struct device_node *np;
+> +	u32 reg;
+> +
+> +	np = of_find_compatible_node(NULL, NULL, "mediatek,boottrap");
+> +	if (!np)
+> +		return -ENOENT;
 
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
- drivers/net/phy/realtek.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+Is this documented somewhere in the DT binding document?
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 29168f98f451..b5d7208004d8 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -62,6 +62,10 @@
- #define RTL8221B_SERDES_OPTION_MODE_2500BASEX		2
- #define RTL8221B_SERDES_OPTION_MODE_HISGMII		3
- 
-+#define RTL8221B_PHYCR1				0xa430
-+#define RTL8221B_PHYCR1_ALDPS_EN		BIT(2)
-+#define RTL8221B_PHYCR1_ALDPS_XTAL_OFF_EN	BIT(12)
-+
- #define RTL8366RB_POWER_SAVE			0x15
- #define RTL8366RB_POWER_SAVE_ON			BIT(12)
- 
-@@ -757,6 +761,25 @@ static int rtl8226_match_phy_device(struct phy_device *phydev)
- 	       rtlgen_supports_2_5gbps(phydev);
- }
- 
-+static int rtl822x_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	int val;
-+
-+	val = phy_read_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, RTL8221B_PHYCR1);
-+	if (val < 0)
-+		return val;
-+
-+	if (of_property_read_bool(dev->of_node, "realtek,aldps-enable"))
-+		val |= RTL8221B_PHYCR1_ALDPS_EN | RTL8221B_PHYCR1_ALDPS_XTAL_OFF_EN;
-+	else
-+		val &= ~(RTL8221B_PHYCR1_ALDPS_EN | RTL8221B_PHYCR1_ALDPS_XTAL_OFF_EN);
-+
-+	phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, RTL8221B_PHYCR1, val);
-+
-+	return 0;
-+}
-+
- static int rtlgen_resume(struct phy_device *phydev)
- {
- 	int ret = genphy_resume(phydev);
-@@ -1034,6 +1057,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.match_phy_device = rtl8226_match_phy_device,
- 		.get_features	= rtl822x_get_features,
- 		.config_aneg	= rtl822x_config_aneg,
-+		.probe          = rtl822x_probe,
- 		.read_status	= rtl822x_read_status,
- 		.suspend	= genphy_suspend,
- 		.resume		= rtlgen_resume,
-@@ -1048,6 +1072,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.get_features	= rtl822x_get_features,
- 		.config_aneg	= rtl822x_config_aneg,
- 		.config_init	= rtl8221b_config_init,
-+		.probe          = rtl822x_probe,
- 		.read_status	= rtl822x_read_status,
- 		.suspend	= genphy_suspend,
- 		.resume		= rtlgen_resume,
-@@ -1061,6 +1086,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.name           = "RTL8226-CG 2.5Gbps PHY",
- 		.get_features   = rtl822x_get_features,
- 		.config_aneg    = rtl822x_config_aneg,
-+		.probe          = rtl822x_probe,
- 		.read_status    = rtl822x_read_status,
- 		.suspend        = genphy_suspend,
- 		.resume         = rtlgen_resume,
-@@ -1073,6 +1099,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.get_features   = rtl822x_get_features,
- 		.config_aneg    = rtl822x_config_aneg,
- 		.config_init    = rtl8221b_config_init,
-+		.probe          = rtl822x_probe,
- 		.read_status    = rtl822x_read_status,
- 		.suspend        = genphy_suspend,
- 		.resume         = rtlgen_resume,
-@@ -1085,6 +1112,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.get_features   = rtl822x_get_features,
- 		.config_aneg    = rtl822x_config_aneg,
- 		.config_init    = rtl8221b_config_init,
-+		.probe          = rtl822x_probe,
- 		.read_status    = rtl822x_read_status,
- 		.suspend        = genphy_suspend,
- 		.resume         = rtlgen_resume,
-@@ -1097,6 +1125,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.get_features   = rtl822x_get_features,
- 		.config_aneg    = rtl822x_config_aneg,
- 		.config_init    = rtl8221b_config_init,
-+		.probe          = rtl822x_probe,
- 		.read_status    = rtl822x_read_status,
- 		.suspend        = genphy_suspend,
- 		.resume         = rtlgen_resume,
--- 
-2.40.0
+The rest of the driver just seems to be undocumented magic which
+nobody except the vendor would understand.
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
 
