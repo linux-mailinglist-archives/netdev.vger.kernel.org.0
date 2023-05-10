@@ -1,193 +1,132 @@
-Return-Path: <netdev+bounces-1587-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1588-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7A9266FE654
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:31:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2F4F86FE65A
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 23:34:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9C2211C20DE7
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 21:31:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4655B1C20E29
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 21:34:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 669A31D2D4;
-	Wed, 10 May 2023 21:31:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D08581D2D8;
+	Wed, 10 May 2023 21:34:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57D1F21CF5
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 21:31:37 +0000 (UTC)
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09ABC2716
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:31:36 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id d2e1a72fcca58-643846c006fso8271313b3a.0
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:31:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C055521CC1
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 21:34:55 +0000 (UTC)
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E25171E
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:34:53 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id 2adb3069b0e04-4f13d8f74abso8767996e87.0
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 14:34:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683754295; x=1686346295;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dilDKvLCh912/JBRw2vO/HiVmrKv/M0bEgV3+XRucAc=;
-        b=5paPeWa1KE85/hTV+xiWJPPMEd2oAAUUgfJ8zT8Ax2ITNV7UNcwRQJtuw6ZrRMDoyj
-         F3iVlnrLqDcJNKS4fM1yFtMVmQ5kW/MPX7G6AXTtCC7MQNgYQ6j6WkpQgfYqHYQHemNJ
-         VZeMtOHkDzP5HTheFAj9Oy64HoASBYkyUwn2/ohObRZ4Ynv33NIP/m3H6vW38Zk1OvpB
-         JSxazUSaM9FVz1aaLpcEHDIp/y1kg8VV22E7Madn26eFby5Y/jbmzBdFAKGsfoC4LI2G
-         T4Lt7VbWRsSeNqphY/EcT2DTmRNSQDCdlS2cOC93RFKl0WsEiVdj2OWBJUsI9HKa4W0m
-         h0+g==
+        d=waldekranz-com.20221208.gappssmtp.com; s=20221208; t=1683754491; x=1686346491;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4rW3QimZ81wVbkQjNuUdZDDjEpRn2AG4LuA/Nl1pMGs=;
+        b=zu+JrSYtLvi+Mwz8sm/tNOSTa4sVuFI8B3DRh3ooQ6El2xocAIeTy8UGhdBIyknwpu
+         V6rKK18rbVhx+sAvOz+0MmkSZUUyu51Onw97BLZOKvaIYIiyMncYhmitalMIub/6dzvs
+         o7MBAgzF8q8BzHQu0S3/y/KmzJQMnF2nK94BerkQd3NdbR10bJWSOiA8+mDpIWzZ2Bvd
+         DTG7TXcZOXY7MoNcIh7vhrtEaP37zs5yd9xpQov6yhIDPqb66pxA23imMghbxCdOYej0
+         wHuPYJjCo2ez/LP+ZOrKypCxZAnG188rIt/cDHG/JLiiQKR3pb2pF79+hpwbRJF4Tsk5
+         Q15w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683754295; x=1686346295;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1683754491; x=1686346491;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=dilDKvLCh912/JBRw2vO/HiVmrKv/M0bEgV3+XRucAc=;
-        b=aP3i38qxKWAv8HQ9+RlFoYUiKYW8sn48ItlzZZ9CZBri6W5E3vVeVv1qICVR4wVlMs
-         dxwSLvp4zqpICEWgf5x2FUSqq/2WUexEABY8EkCw/erdzQSFJXa9l17uTItqxco9Zbrs
-         bA99BI0OnTS1kgHnbiElZMfjRXla0wFk3v/ZSOaA9YbwvOhQyfPpkuo7oVcvBw2ldl7F
-         YfWObMjCAp2Ub7jDAupglxFfFZh1prrtNRQ15KdcWdHhkB2Z2JvOICz1aYjHOnEwxNMY
-         3yA31F/d6D8UY0Ya08NbR6PgsH6auWBbJnO91tPzlBf4UvNBbRGOh4OFW6DLXL3hHWed
-         /uNA==
-X-Gm-Message-State: AC+VfDwuZ5d1TKpqNLTaeOHQo6dLL/9gzuhADzN4DxP5R8C4wuZ5khVV
-	kVYMNEn7cMd/dIbWtBu1GfB7oDRpZL5XksiRX9ly3w==
-X-Google-Smtp-Source: ACHHUZ74oA92M2oyte9ZwQqFQMLwi4FAmCL45SgTYqyIDZnMMcH93WNEj5//wMcp0Tf/bB3sl4rmpo4z3TUompF7XqU=
-X-Received: by 2002:a17:902:ba84:b0:1ab:1c09:2df8 with SMTP id
- k4-20020a170902ba8400b001ab1c092df8mr19326387pls.50.1683754295424; Wed, 10
- May 2023 14:31:35 -0700 (PDT)
+        bh=4rW3QimZ81wVbkQjNuUdZDDjEpRn2AG4LuA/Nl1pMGs=;
+        b=j4X03vpFD8SkkrdqD8Wbd1nUvLdheP7Dyf5Cy3DZSTKyK2c+1wsr3SOptWEiVaAUxu
+         b1CZppCT7GFuVgrPZKgJSFFBZHYTtvJAYGqiV5e8r6HOYoxI8HKD1vhay+TBHYPlrx2u
+         pVIb7qFPC++QP43I5rbTOLqF7GpNMsTtWZF4+cwtTsTBzn/FQn4srdDDiUfUKlo1wOn4
+         xmH6+2svO29nmjyCsBAfLYz6hkWCjrdME3L3+y+1SAwT1HMs4djhN7nb9Frsvbj4WPhL
+         UBUIGUT3Y7E3GesOMU5FvOwHC9aOTwX6WWVHV2KRRhTC9sOznvFMs4w+243ousiuv/Mu
+         PjwQ==
+X-Gm-Message-State: AC+VfDwLF+iFek6vy1ePew6Hxw0adOTpFzvF9SN8XqkF9ZiUh3Jkn8Vp
+	vuNh95wofNPvdwE8E3eF4Q6NViHHBKgejSoRVjA=
+X-Google-Smtp-Source: ACHHUZ4pTblppGTXNFhs4vyvYVeDydVDN6gkd1FFJGTHkxLH3fp8GMYk3LqB2wb4wujBeR4Inrq5Uw==
+X-Received: by 2002:ac2:42d1:0:b0:4e8:c5d:42a5 with SMTP id n17-20020ac242d1000000b004e80c5d42a5mr2108550lfl.24.1683754491427;
+        Wed, 10 May 2023 14:34:51 -0700 (PDT)
+Received: from wkz-x13 (h-176-10-137-178.NA.cust.bahnhof.se. [176.10.137.178])
+        by smtp.gmail.com with ESMTPSA id r10-20020ac252aa000000b004b6f00832cesm855835lfm.166.2023.05.10.14.34.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 May 2023 14:34:50 -0700 (PDT)
+From: Tobias Waldekranz <tobias@waldekranz.com>
+To: Fabio Estevam <festevam@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+ Vladimir Oltean <olteanv@gmail.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>, Steffen =?utf-8?Q?B=C3=A4tz?=
+ <steffen@innosonix.de>, netdev <netdev@vger.kernel.org>
+Subject: Re: mv88e6320: Failed to forward PTP multicast
+In-Reply-To: <CAOMZO5DSSQY5fa5vTmDbCxu1x2ZRdyB2kTqrkw5bRg94_-34zg@mail.gmail.com>
+References: <CAOMZO5AMOVAZe+w3FiRO-9U98Foba5Oy4f_C0K7bGNxHA1qz_w@mail.gmail.com>
+ <7b8243a3-9976-484c-a0d0-d4f3debbe979@lunn.ch>
+ <CAOMZO5DXH1wS9YYPWXYr-TvM+9Tj8F0bY0_kd_EAjrcCpEJJ7A@mail.gmail.com>
+ <CAOMZO5Dk44QSTg2rh_HPHXg=H7BJ+x1h95M+t8nr2CLW+8pABw@mail.gmail.com>
+ <5e21a8da-b31f-4ec8-8b46-099af5a8b8af@lunn.ch>
+ <CAOMZO5DSSQY5fa5vTmDbCxu1x2ZRdyB2kTqrkw5bRg94_-34zg@mail.gmail.com>
+Date: Wed, 10 May 2023 23:34:49 +0200
+Message-ID: <87pm77dg5i.fsf@waldekranz.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230510152216.1392682-1-aleksandr.mikhalitsyn@canonical.com>
-In-Reply-To: <20230510152216.1392682-1-aleksandr.mikhalitsyn@canonical.com>
-From: Stanislav Fomichev <sdf@google.com>
-Date: Wed, 10 May 2023 14:31:24 -0700
-Message-ID: <CAKH8qBuAoobsVP2Q5KN06fZ2NM3_aMwT7Y2OoKwS4Cf=cv3ZGg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: core: add SOL_SOCKET filter for bpf
- getsockopt hook
-To: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Cc: davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, Christian Brauner <brauner@kernel.org>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Kuniyuki Iwashima <kuniyu@amazon.com>, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 10, 2023 at 8:23=E2=80=AFAM Alexander Mikhalitsyn
-<aleksandr.mikhalitsyn@canonical.com> wrote:
->
-> We have per struct proto ->bpf_bypass_getsockopt callback
-> to filter out bpf socket cgroup getsockopt hook from being called.
->
-> It seems worthwhile to add analogical helper for SOL_SOCKET
-> level socket options. First user will be SO_PEERPIDFD.
->
-> This patch was born as a result of discussion around a new SCM_PIDFD inte=
-rface:
-> https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikhalitsyn=
-@canonical.com/
->
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Christian Brauner <brauner@kernel.org>
-> Cc: Stanislav Fomichev <sdf@google.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: bpf@vger.kernel.org
-> Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com=
->
-> ---
->  include/linux/bpf-cgroup.h | 8 +++++---
->  include/net/sock.h         | 1 +
->  net/core/sock.c            | 5 +++++
->  3 files changed, 11 insertions(+), 3 deletions(-)
->
-> diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-> index 57e9e109257e..97d8a49b35bf 100644
-> --- a/include/linux/bpf-cgroup.h
-> +++ b/include/linux/bpf-cgroup.h
-> @@ -387,10 +387,12 @@ static inline bool cgroup_bpf_sock_enabled(struct s=
-ock *sk,
->         int __ret =3D retval;                                            =
-        \
->         if (cgroup_bpf_enabled(CGROUP_GETSOCKOPT) &&                     =
-      \
->             cgroup_bpf_sock_enabled(sock, CGROUP_GETSOCKOPT))            =
-      \
-> -               if (!(sock)->sk_prot->bpf_bypass_getsockopt ||           =
-      \
-> -                   !INDIRECT_CALL_INET_1((sock)->sk_prot->bpf_bypass_get=
-sockopt, \
-> +               if (((level !=3D SOL_SOCKET) ||                          =
-        \
-> +                    !sock_bpf_bypass_getsockopt(level, optname)) &&     =
-      \
-> +                   (!(sock)->sk_prot->bpf_bypass_getsockopt ||          =
-      \
 
-Any reason we are not putting this into bpf_bypass_getsockopt for
-af_unix struct proto? SO_PEERPIDFD seems relevant only for af_unix?
+Hi Fabio,
 
-> +                    !INDIRECT_CALL_INET_1((sock)->sk_prot->bpf_bypass_ge=
-tsockopt, \
->                                         tcp_bpf_bypass_getsockopt,       =
-      \
-> -                                       level, optname))                 =
-      \
-> +                                       level, optname)))                =
-      \
->                         __ret =3D __cgroup_bpf_run_filter_getsockopt(    =
-        \
->                                 sock, level, optname, optval, optlen,    =
-      \
->                                 max_optlen, retval);                     =
-      \
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 8b7ed7167243..530d6d22f42d 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -1847,6 +1847,7 @@ int sk_getsockopt(struct sock *sk, int level, int o=
-ptname,
->                   sockptr_t optval, sockptr_t optlen);
->  int sock_getsockopt(struct socket *sock, int level, int op,
->                     char __user *optval, int __user *optlen);
-> +bool sock_bpf_bypass_getsockopt(int level, int optname);
->  int sock_gettstamp(struct socket *sock, void __user *userstamp,
->                    bool timeval, bool time32);
->  struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long head=
-er_len,
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 5440e67bcfe3..194a423eb6e5 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -1963,6 +1963,11 @@ int sock_getsockopt(struct socket *sock, int level=
-, int optname,
->                              USER_SOCKPTR(optlen));
->  }
+On ons, maj 10, 2023 at 11:05, Fabio Estevam <festevam@gmail.com> wrote:
+> On Fri, May 5, 2023 at 10:02=E2=80=AFAM Andrew Lunn <andrew@lunn.ch> wrot=
+e:
 >
-> +bool sock_bpf_bypass_getsockopt(int level, int optname)
-> +{
-> +       return false;
-> +}
-> +
->  /*
->   * Initialize an sk_lock.
->   *
-> --
-> 2.34.1
+>> I'm not too familiar with all this VLAN stuff. So i could be telling
+>> your wrong information.... 'self' is also importing in way's i don't
+>> really understand. Vladimir and Tobias are the experts here.
 >
+> Vladimir and Tobias,
+>
+> Would you have any suggestions as to how to allow PTP multicast to be
+> forwarded when
+> vlan_filtering is active?
+
+If possible, could you install mdio-tools and paste the output of `mvls`
+on your board from the two configurations above?
+
+Unfortunately, you will have to patch it to support your device. Based
+on a quick view of the datasheet, this should probably work:
+
+diff --git a/src/mvls/mvls.c b/src/mvls/mvls.c
+index 3ced04a..d4442c9 100644
+--- a/src/mvls/mvls.c
++++ b/src/mvls/mvls.c
+@@ -195,6 +195,16 @@ const struct chip chips[] =3D {
+                .family =3D &opal_family,
+                .n_ports =3D 11,
+        },
++       {
++               .id =3D "Marvell 88E6320",
++               .family =3D &opal_family,
++               .n_ports =3D 7,
++       },
++       {
++               .id =3D "Marvell 88E6321",
++               .family =3D &opal_family,
++               .n_ports =3D 7,
++       },
+        {
+                .id =3D "Marvell 88E6352",
+                .family =3D &opal_family,
 
