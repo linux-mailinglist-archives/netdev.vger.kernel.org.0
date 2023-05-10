@@ -1,500 +1,218 @@
-Return-Path: <netdev+bounces-1442-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1443-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 17CB06FDCAB
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:25:20 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9AAE36FDCB0
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:25:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2EC9B1C20D8A
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:25:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 61D6E2803FF
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:25:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F1918F46;
-	Wed, 10 May 2023 11:23:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7F7148C1B;
+	Wed, 10 May 2023 11:25:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F13753D60
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:23:54 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21A3192
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:23:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=BxkVHeyq9jYe2k/e2gw+mb0M8D4r3+HwWvCsIV2M9y4=; b=Vo7hBpT15Hu2WcJIrDhcGebGFb
-	hEwlel488FcUSC76kx+cYAqiGV/dX1T7WoDGdAaYw1ko/MpL8POEdH7SahZX1m1TqX2KYy8VJvuUo
-	u6ndZMIlnHHV0RkEMPdj7+rLU/vb/bwDaMmZ85QAEJIBBwh3wnCaB4WAdSckQUwizDINl3l0OTNSH
-	0oPvUrZc8ZXDM8pi9G29gRCznNHBV9FeewdOPFFLhhue1GrS70VoOaLVkNpzNH3P9G+XpERyR59Sv
-	uR9aQQsMg6QfSV9yKM9IMYr9ywgf0J4nNAR496CxRvekOS7KnTIOgJqUE7bJfDAXh46x6C1KCj1q8
-	EEn5g5ew==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:36132 helo=rmk-PC.armlinux.org.uk)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <rmk@armlinux.org.uk>)
-	id 1pwhvA-0004r9-66; Wed, 10 May 2023 12:23:48 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1pwhv9-001Xog-G2; Wed, 10 May 2023 12:23:47 +0100
-In-Reply-To: <ZFt+i+E8aUmUx4zd@shell.armlinux.org.uk>
-References: <ZFt+i+E8aUmUx4zd@shell.armlinux.org.uk>
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Daniel Golle <daniel@makrotopia.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org
-Subject: [PATCH RFC net-next 7/7] net: sfp: add support for rate selection
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EB553D60
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:25:44 +0000 (UTC)
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3E07296
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:25:11 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-3f2548256d0so101555e9.1
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:25:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1683717905; x=1686309905;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yCUB8//jyn0v6VuC0Mv1gAetwatciCjYaByO0V5N8x4=;
+        b=glDScdM+b+Eq4bPgyBFONs+ujCqj0fUTzb2C1b7YC9k0bX00m378sp+jClAFSCEYIj
+         7GQmW5yCYlh8ljWEw+78HDoWFDW3woBXw6OWf3sutdWuRau9RpJTBeFzr5rniNgwu8B1
+         RXeBFJvwdpWuXrQNRVHHeJxrfM+4flHaskwNjG8OzWaUKrYT8zOnmkjN6UEowshjdkVX
+         PiEWdYsuLY3ObbHKdPzefSLUPMZzXEQ/uJ8/dDTSaTJaCz/lXYPUOCVsKTIZMN5k1a3O
+         fhKq0sDR4DzxKg5KKy/y8r4CgHK0FDtbgeUmotkf4M6TOF0GI1bPRq/wwfAJEGhj4ODp
+         eilA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683717905; x=1686309905;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yCUB8//jyn0v6VuC0Mv1gAetwatciCjYaByO0V5N8x4=;
+        b=ATLjMEGVq7tp9gRnY713JJojTSDa6RZSYb2KreIIeWcojPFH1tdJKmXzBsiK1bfy2n
+         RzFUeoAvgHWdL65hu+b/QPEqJuatKeCPl2x1ZsLnwo6+E6J6b9YUIx4QqZhUklAM9h3N
+         qftf65/5LzyXK7rp026I5Z7SpKIY99wNW74gSRgwEfeOnz4pqAA+XYbigObhVbv5eKVO
+         kk9CHT3lsexDx+yzG09UsOuDjqmeo0wHWu2CcimQqWfZB1+IIQkdJkGVkdFvP/MItnA/
+         HWrX5W9NTG+/StXs7AoVDceiICr/eNe2bY/5wFtp/H6UpaZrXP1fLceJI8r37DLNSvE3
+         QYEA==
+X-Gm-Message-State: AC+VfDysUt2NHNfFflt4EgmllyR7r4+RJvkimUvneoshzqQOOsBJP9bQ
+	Wa7prmVMTqowap7KmlbyfzhUJHVFnjaOUPx3J+AaCQ==
+X-Google-Smtp-Source: ACHHUZ69T1gYDKpF4OjPKZJnBUCAEzKCno/ZJPDxW3EBm1g/1xeKp6EIRTP5+AunUAnDep3VHzalXh6IrmgpZ6uKBGI=
+X-Received: by 2002:a05:600c:3d98:b0:3f1:9396:6fbf with SMTP id
+ bi24-20020a05600c3d9800b003f193966fbfmr177026wmb.4.1683717905062; Wed, 10 May
+ 2023 04:25:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1pwhv9-001Xog-G2@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date: Wed, 10 May 2023 12:23:47 +0100
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230508020801.10702-1-cathy.zhang@intel.com> <20230508020801.10702-2-cathy.zhang@intel.com>
+ <3887b08ac0e55e27a24d2f66afcfff1961ed9b13.camel@redhat.com>
+ <CH3PR11MB73459006FCE3887E1EA3B82FFC769@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CH3PR11MB73456D792EC6E7614E2EF14DFC769@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CANn89iL6Ckuu9vOEvc7A9CBLGuh-EpbwFRxRAchV-6VFyhTUpg@mail.gmail.com>
+ <CH3PR11MB73458BB403D537CFA96FD8DDFC769@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CANn89iJvpgXTwGEiXAkFwY3j3RqVhNzJ_6_zmuRb4w7rUA_8Ug@mail.gmail.com>
+ <CALvZod6JRuWHftDcH0uw00v=yi_6BKspGCkDA4AbmzLHaLi2Fg@mail.gmail.com> <CH3PR11MB7345ABB947E183AFB7C18322FC779@CH3PR11MB7345.namprd11.prod.outlook.com>
+In-Reply-To: <CH3PR11MB7345ABB947E183AFB7C18322FC779@CH3PR11MB7345.namprd11.prod.outlook.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 10 May 2023 13:24:53 +0200
+Message-ID: <CANn89i+9rQcGey+AJyhR02pTTBNhWN+P78e4a8knfC9F5sx0hQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper size
+To: "Zhang, Cathy" <cathy.zhang@intel.com>
+Cc: Shakeel Butt <shakeelb@google.com>, Linux MM <linux-mm@kvack.org>, 
+	Cgroups <cgroups@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	"davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>, 
+	"Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Srinivas, Suresh" <suresh.srinivas@intel.com>, 
+	"Chen, Tim C" <tim.c.chen@intel.com>, "You, Lizhen" <lizhen.you@intel.com>, 
+	"eric.dumazet@gmail.com" <eric.dumazet@gmail.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add support for parsing the rate select thresholds and switching of the
-RS0 and RS1 signals to the transceiver. This is complicated by various
-revisions of SFF-8472 and interaction of SFF-8431, SFF-8079 and
-INF-8074.
+On Wed, May 10, 2023 at 1:11=E2=80=AFPM Zhang, Cathy <cathy.zhang@intel.com=
+> wrote:
+>
+> Hi Shakeel, Eric and all,
+>
+> How about adding memory pressure checking in sk_mem_uncharge()
+> to decide if keep part of memory or not, which can help avoid the issue
+> you fixed and the problem we find on the system with more CPUs.
+>
+> The code draft is like this:
+>
+> static inline void sk_mem_uncharge(struct sock *sk, int size)
+> {
+>         int reclaimable;
+>         int reclaim_threshold =3D SK_RECLAIM_THRESHOLD;
+>
+>         if (!sk_has_account(sk))
+>                 return;
+>         sk->sk_forward_alloc +=3D size;
+>
+>         if (mem_cgroup_sockets_enabled && sk->sk_memcg &&
+>             mem_cgroup_under_socket_pressure(sk->sk_memcg)) {
+>                 sk_mem_reclaim(sk);
+>                 return;
+>         }
+>
+>         reclaimable =3D sk->sk_forward_alloc - sk_unused_reserved_mem(sk)=
+;
+>
+>         if (reclaimable > reclaim_threshold) {
+>                 reclaimable -=3D reclaim_threshold;
+>                 __sk_mem_reclaim(sk, reclaimable);
+>         }
+> }
+>
+> I've run a test with the new code, the result looks good, it does not int=
+roduce
+> latency, RPS is the same.
+>
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp.c | 212 +++++++++++++++++++++++++++++++++++++-----
- include/linux/sfp.h   |   8 ++
- 2 files changed, 196 insertions(+), 24 deletions(-)
+It will not work for sockets that are idle, after a burst.
+If we restore per socket caches, we will need a shrinker.
+Trust me, we do not want that kind of big hammer, crushing latencies.
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 34bf724c00c7..4799976a1609 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -24,14 +24,18 @@ enum {
- 	GPIO_LOS,
- 	GPIO_TX_FAULT,
- 	GPIO_TX_DISABLE,
--	GPIO_RATE_SELECT,
-+	GPIO_RS0,
-+	GPIO_RS1,
- 	GPIO_MAX,
- 
- 	SFP_F_PRESENT = BIT(GPIO_MODDEF0),
- 	SFP_F_LOS = BIT(GPIO_LOS),
- 	SFP_F_TX_FAULT = BIT(GPIO_TX_FAULT),
- 	SFP_F_TX_DISABLE = BIT(GPIO_TX_DISABLE),
--	SFP_F_RATE_SELECT = BIT(GPIO_RATE_SELECT),
-+	SFP_F_RS0 = BIT(GPIO_RS0),
-+	SFP_F_RS1 = BIT(GPIO_RS1),
-+
-+	SFP_F_OUTPUTS = SFP_F_TX_DISABLE | SFP_F_RS0 | SFP_F_RS1,
- 
- 	SFP_E_INSERT = 0,
- 	SFP_E_REMOVE,
-@@ -148,6 +152,7 @@ static const char *gpio_names[] = {
- 	"tx-fault",
- 	"tx-disable",
- 	"rate-select0",
-+	"rate-select1",
- };
- 
- static const enum gpiod_flags gpio_flags[] = {
-@@ -156,6 +161,7 @@ static const enum gpiod_flags gpio_flags[] = {
- 	GPIOD_IN,
- 	GPIOD_ASIS,
- 	GPIOD_ASIS,
-+	GPIOD_ASIS,
- };
- 
- /* t_start_up (SFF-8431) or t_init (SFF-8472) is the time required for a
-@@ -249,6 +255,7 @@ struct sfp {
- 	 * state: st_mutex held unless reading input bits
- 	 */
- 	struct mutex st_mutex;			/* Protects state */
-+	unsigned int state_hw_drive;
- 	unsigned int state_hw_mask;
- 	unsigned int state_soft_mask;
- 	unsigned int state;
-@@ -269,6 +276,10 @@ struct sfp {
- 	unsigned int module_t_start_up;
- 	unsigned int module_t_wait;
- 
-+	unsigned int rate_kbd;
-+	unsigned int rs_threshold_kbd;
-+	unsigned int rs_state_mask;
-+
- 	bool have_a2;
- 	bool tx_fault_ignore;
- 
-@@ -319,7 +330,7 @@ static bool sfp_module_supported(const struct sfp_eeprom_id *id)
- 
- static const struct sff_data sfp_data = {
- 	.gpios = SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT |
--		 SFP_F_TX_DISABLE | SFP_F_RATE_SELECT,
-+		 SFP_F_TX_DISABLE | SFP_F_RS0 | SFP_F_RS1,
- 	.module_supported = sfp_module_supported,
- };
- 
-@@ -507,20 +518,37 @@ static unsigned int sff_gpio_get_state(struct sfp *sfp)
- 
- static void sfp_gpio_set_state(struct sfp *sfp, unsigned int state)
- {
--	if (state & SFP_F_PRESENT) {
--		/* If the module is present, drive the signals */
--		if (sfp->gpio[GPIO_TX_DISABLE])
-+	unsigned int drive;
-+
-+	if (state & SFP_F_PRESENT)
-+		/* If the module is present, drive the requested signals */
-+		drive = sfp->state_hw_drive;
-+	else
-+		/* Otherwise, let them float to the pull-ups */
-+		drive = 0;
-+
-+	if (sfp->gpio[GPIO_TX_DISABLE]) {
-+		if (drive & SFP_F_TX_DISABLE)
- 			gpiod_direction_output(sfp->gpio[GPIO_TX_DISABLE],
- 					       state & SFP_F_TX_DISABLE);
--		if (state & SFP_F_RATE_SELECT)
--			gpiod_direction_output(sfp->gpio[GPIO_RATE_SELECT],
--					       state & SFP_F_RATE_SELECT);
--	} else {
--		/* Otherwise, let them float to the pull-ups */
--		if (sfp->gpio[GPIO_TX_DISABLE])
-+		else
- 			gpiod_direction_input(sfp->gpio[GPIO_TX_DISABLE]);
--		if (state & SFP_F_RATE_SELECT)
--			gpiod_direction_input(sfp->gpio[GPIO_RATE_SELECT]);
-+	}
-+
-+	if (sfp->gpio[GPIO_RS0]) {
-+		if (drive & SFP_F_RS0)
-+			gpiod_direction_output(sfp->gpio[GPIO_RS0],
-+					       state & SFP_F_RS0);
-+		else
-+			gpiod_direction_input(sfp->gpio[GPIO_RS0]);
-+	}
-+
-+	if (sfp->gpio[GPIO_RS1]) {
-+		if (drive & SFP_F_RS1)
-+			gpiod_direction_output(sfp->gpio[GPIO_RS1],
-+					       state & SFP_F_RS1);
-+		else
-+			gpiod_direction_input(sfp->gpio[GPIO_RS1]);
- 	}
- }
- 
-@@ -682,16 +710,33 @@ static unsigned int sfp_soft_get_state(struct sfp *sfp)
- 	return state & sfp->state_soft_mask;
- }
- 
--static void sfp_soft_set_state(struct sfp *sfp, unsigned int state)
-+static void sfp_soft_set_state(struct sfp *sfp, unsigned int state,
-+			       unsigned int soft)
- {
--	u8 mask = SFP_STATUS_TX_DISABLE_FORCE;
-+	u8 mask = 0;
- 	u8 val = 0;
- 
-+	if (soft & SFP_F_TX_DISABLE)
-+		mask |= SFP_STATUS_TX_DISABLE_FORCE;
- 	if (state & SFP_F_TX_DISABLE)
- 		val |= SFP_STATUS_TX_DISABLE_FORCE;
- 
-+	if (soft & SFP_F_RS0)
-+		mask |= SFP_STATUS_RS0_SELECT;
-+	if (state & SFP_F_RS0)
-+		val |= SFP_STATUS_RS0_SELECT;
-+
-+	if (mask)
-+		sfp_modify_u8(sfp, true, SFP_STATUS, mask, val);
- 
--	sfp_modify_u8(sfp, true, SFP_STATUS, mask, val);
-+	val = mask = 0;
-+	if (soft & SFP_F_RS1)
-+		mask |= SFP_EXT_STATUS_RS1_SELECT;
-+	if (state & SFP_F_RS1)
-+		val |= SFP_EXT_STATUS_RS1_SELECT;
-+
-+	if (mask)
-+		sfp_modify_u8(sfp, true, SFP_EXT_STATUS, mask, val);
- }
- 
- static void sfp_soft_start_poll(struct sfp *sfp)
-@@ -705,6 +750,8 @@ static void sfp_soft_start_poll(struct sfp *sfp)
- 		mask |= SFP_F_TX_FAULT;
- 	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_RX_LOS)
- 		mask |= SFP_F_LOS;
-+	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_RATE_SELECT)
-+		mask |= sfp->rs_state_mask;
- 
- 	mutex_lock(&sfp->st_mutex);
- 	// Poll the soft state for hardware pins we want to ignore
-@@ -743,11 +790,13 @@ static unsigned int sfp_get_state(struct sfp *sfp)
+Have you tried to increase batch sizes ?
+
+Any kind of cache (even per-cpu) might need some adjustment when core
+count or expected traffic is increasing.
+This was somehow hinted in
+commit 1813e51eece0ad6f4aacaeb738e7cced46feb470
+Author: Shakeel Butt <shakeelb@google.com>
+Date:   Thu Aug 25 00:05:06 2022 +0000
+
+    memcg: increase MEMCG_CHARGE_BATCH to 64
+
+
+
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 222d7370134c73e59fdbdf598ed8d66897dbbf1d..0418229d30c25d114132a1ed46a=
+c01358cf21424
+100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -334,7 +334,7 @@ struct mem_cgroup {
+  * TODO: maybe necessary to use big numbers in big irons or dynamic
+based of the
+  * workload.
   */
- static void sfp_set_state(struct sfp *sfp, unsigned int state)
- {
-+	unsigned int soft;
-+
- 	sfp->set_state(sfp, state);
- 
--	if (state & SFP_F_PRESENT &&
--	    sfp->state_soft_mask & SFP_F_TX_DISABLE)
--		sfp_soft_set_state(sfp, state);
-+	soft = sfp->state_soft_mask & SFP_F_OUTPUTS;
-+	if (state & SFP_F_PRESENT && soft)
-+		sfp_soft_set_state(sfp, state, soft);
- }
- 
- static void sfp_mod_state(struct sfp *sfp, unsigned int mask, unsigned int set)
-@@ -1589,10 +1638,15 @@ static int sfp_debug_state_show(struct seq_file *s, void *data)
- 		   sfp->sm_fault_retries);
- 	seq_printf(s, "PHY probe remaining retries: %d\n",
- 		   sfp->sm_phy_retries);
-+	seq_printf(s, "Signalling rate: %u kBd\n", sfp->rate_kbd);
-+	seq_printf(s, "Rate select threshold: %u kBd\n",
-+		   sfp->rs_threshold_kbd);
- 	seq_printf(s, "moddef0: %d\n", !!(sfp->state & SFP_F_PRESENT));
- 	seq_printf(s, "rx_los: %d\n", !!(sfp->state & SFP_F_LOS));
- 	seq_printf(s, "tx_fault: %d\n", !!(sfp->state & SFP_F_TX_FAULT));
- 	seq_printf(s, "tx_disable: %d\n", !!(sfp->state & SFP_F_TX_DISABLE));
-+	seq_printf(s, "rs0: %d\n", !!(sfp->state & SFP_F_RS0));
-+	seq_printf(s, "rs1: %d\n", !!(sfp->state & SFP_F_RS1));
- 	return 0;
- }
- DEFINE_SHOW_ATTRIBUTE(sfp_debug_state);
-@@ -1898,6 +1952,95 @@ static int sfp_sm_mod_hpower(struct sfp *sfp, bool enable)
- 	return 0;
- }
- 
-+static void sfp_module_parse_rate_select(struct sfp *sfp)
-+{
-+	u8 rate_id;
-+
-+	sfp->rs_threshold_kbd = 0;
-+	sfp->rs_state_mask = 0;
-+
-+	if (!(sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_RATE_SELECT)))
-+		/* No support for RateSelect */
-+		return;
-+
-+	/* Default to INF-8074 RateSelect operation. The signalling threshold
-+	 * rate is not well specified, so always select "Full Bandwidth", but
-+	 * SFF-8079 reveals that it is understood that RS0 will be low for
-+	 * 1.0625Gb/s and high for 2.125Gb/s. Choose a value half-way between.
-+	 * This method exists prior to SFF-8472.
-+	 */
-+	sfp->rs_state_mask = SFP_F_RS0;
-+	sfp->rs_threshold_kbd = 1594;
-+
-+	/* Parse the rate identifier, which is complicated due to history:
-+	 * SFF-8472 rev 9.5 marks this field as reserved.
-+	 * SFF-8079 references SFF-8472 rev 9.5 and defines bit 0. SFF-8472
-+	 *  compliance is not required.
-+	 * SFF-8472 rev 10.2 defines this field using values 0..4
-+	 * SFF-8472 rev 11.0 redefines this field with bit 0 for SFF-8079
-+	 * and even values.
-+	 */
-+	rate_id = sfp->id.base.rate_id;
-+	if (rate_id == 0)
-+		/* Unspecified */
-+		return;
-+
-+	/* SFF-8472 rev 10.0..10.4 did not account for SFF-8079 using bit 0,
-+	 * and allocated value 3 to SFF-8431 independent tx/rx rate select.
-+	 * Convert this to a SFF-8472 rev 11.0 rate identifier.
-+	 */
-+	if (sfp->id.ext.sff8472_compliance >= SFP_SFF8472_COMPLIANCE_REV10_2 &&
-+	    sfp->id.ext.sff8472_compliance < SFP_SFF8472_COMPLIANCE_REV11_0 &&
-+	    rate_id == 3)
-+		rate_id = SFF_RID_8431;
-+
-+	if (rate_id & SFF_RID_8079) {
-+		/* SFF-8079 RateSelect / Application Select in conjunction with
-+		 * SFF-8472 rev 9.5. SFF-8079 defines rate_id as a bitfield
-+		 * with only bit 0 used, which takes precedence over SFF-8472.
-+		 */
-+		if (!(sfp->id.ext.enhopts & SFP_ENHOPTS_APP_SELECT_SFF8079)) {
-+			/* SFF-8079 Part 1 - rate selection between Fibre
-+			 * Channel 1.0625/2.125/4.25 Gbd modes. Note that RS0
-+			 * is high for 2125, so we have to subtract 1 to
-+			 * include it.
-+			 */
-+			sfp->rs_threshold_kbd = 2125 - 1;
-+			sfp->rs_state_mask = SFP_F_RS0;
-+		}
-+		return;
-+	}
-+
-+	/* SFF-8472 rev 9.5 does not define the rate identifier */
-+	if (sfp->id.ext.sff8472_compliance <= SFP_SFF8472_COMPLIANCE_REV9_5)
-+		return;
-+
-+	/* SFF-8472 rev 11.0 defines rate_id as a numerical value which will
-+	 * always have bit 0 clear due to SFF-8079's bitfield usage of rate_id.
-+	 */
-+	switch (rate_id) {
-+	case SFF_RID_8431_RX_ONLY:
-+		sfp->rs_threshold_kbd = 4250;
-+		sfp->rs_state_mask = SFP_F_RS0;
-+		break;
-+
-+	case SFF_RID_8431_TX_ONLY:
-+		sfp->rs_threshold_kbd = 4250;
-+		sfp->rs_state_mask = SFP_F_RS1;
-+		break;
-+
-+	case SFF_RID_8431:
-+		sfp->rs_threshold_kbd = 4250;
-+		sfp->rs_state_mask = SFP_F_RS0 | SFP_F_RS1;
-+		break;
-+
-+	case SFF_RID_10G8G:
-+		sfp->rs_threshold_kbd = 9000;
-+		sfp->rs_state_mask = SFP_F_RS0 | SFP_F_RS1;
-+		break;
-+	}
-+}
-+
- /* GPON modules based on Realtek RTL8672 and RTL9601C chips (e.g. V-SOL
-  * V2801F, CarlitoxxPro CPGOS03-0490, Ubiquiti U-Fiber Instant, ...) do
-  * not support multibyte reads from the EEPROM. Each multi-byte read
-@@ -2117,6 +2260,8 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	if (ret < 0)
- 		return ret;
- 
-+	sfp_module_parse_rate_select(sfp);
-+
- 	mask = SFP_F_PRESENT;
- 	if (sfp->gpio[GPIO_TX_DISABLE])
- 		mask |= SFP_F_TX_DISABLE;
-@@ -2124,6 +2269,10 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 		mask |= SFP_F_TX_FAULT;
- 	if (sfp->gpio[GPIO_LOS])
- 		mask |= SFP_F_LOS;
-+	if (sfp->gpio[GPIO_RS0])
-+		mask |= SFP_F_RS0;
-+	if (sfp->gpio[GPIO_RS1])
-+		mask |= SFP_F_RS1;
- 
- 	sfp->module_t_start_up = T_START_UP;
- 	sfp->module_t_wait = T_WAIT;
-@@ -2146,6 +2295,9 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	/* Initialise state bits to use from hardware */
- 	sfp->state_hw_mask = mask;
- 
-+	/* We want to drive the rate select pins that the module is using */
-+	sfp->state_hw_drive |= sfp->rs_state_mask;
-+
- 	if (sfp->quirk && sfp->quirk->fixup)
- 		sfp->quirk->fixup(sfp);
- 	mutex_unlock(&sfp->st_mutex);
-@@ -2162,6 +2314,7 @@ static void sfp_sm_mod_remove(struct sfp *sfp)
- 
- 	memset(&sfp->id, 0, sizeof(sfp->id));
- 	sfp->module_power_mW = 0;
-+	sfp->state_hw_drive = SFP_F_TX_DISABLE;
- 	sfp->have_a2 = false;
- 
- 	dev_info(sfp->dev, "module removed\n");
-@@ -2529,6 +2682,16 @@ static void sfp_stop(struct sfp *sfp)
- 
- static void sfp_set_signal_rate(struct sfp *sfp, unsigned int rate_kbd)
- {
-+	unsigned int set;
-+
-+	sfp->rate_kbd = rate_kbd;
-+
-+	if (rate_kbd > sfp->rs_threshold_kbd)
-+		set = sfp->rs_state_mask;
-+	else
-+		set = 0;
-+
-+	sfp_mod_state(sfp, SFP_F_RS0 | SFP_F_RS1, set);
- }
- 
- static int sfp_module_info(struct sfp *sfp, struct ethtool_modinfo *modinfo)
-@@ -2648,7 +2811,7 @@ static void sfp_check_state(struct sfp *sfp)
- 			dev_dbg(sfp->dev, "%s %u -> %u\n", gpio_names[i],
- 				!!(sfp->state & BIT(i)), !!(state & BIT(i)));
- 
--	state |= sfp->state & (SFP_F_TX_DISABLE | SFP_F_RATE_SELECT);
-+	state |= sfp->state & SFP_F_OUTPUTS;
- 	sfp->state = state;
- 	mutex_unlock(&sfp->st_mutex);
- 
-@@ -2790,6 +2953,7 @@ static int sfp_probe(struct platform_device *pdev)
- 		}
- 
- 	sfp->state_hw_mask = SFP_F_PRESENT;
-+	sfp->state_hw_drive = SFP_F_TX_DISABLE;
- 
- 	sfp->get_state = sfp_gpio_get_state;
- 	sfp->set_state = sfp_gpio_set_state;
-@@ -2815,9 +2979,9 @@ static int sfp_probe(struct platform_device *pdev)
- 	 */
- 	sfp->state = sfp_get_state(sfp) | SFP_F_TX_DISABLE;
- 
--	if (sfp->gpio[GPIO_RATE_SELECT] &&
--	    gpiod_get_value_cansleep(sfp->gpio[GPIO_RATE_SELECT]))
--		sfp->state |= SFP_F_RATE_SELECT;
-+	if (sfp->gpio[GPIO_RS0] &&
-+	    gpiod_get_value_cansleep(sfp->gpio[GPIO_RS0]))
-+		sfp->state |= SFP_F_RS0;
- 	sfp_set_state(sfp, sfp->state);
- 	sfp_module_tx_disable(sfp);
- 	if (sfp->state & SFP_F_PRESENT) {
-diff --git a/include/linux/sfp.h b/include/linux/sfp.h
-index 2f66e03e9dbd..9346cd44814d 100644
---- a/include/linux/sfp.h
-+++ b/include/linux/sfp.h
-@@ -342,6 +342,12 @@ enum {
- 	SFP_ENCODING			= 11,
- 	SFP_BR_NOMINAL			= 12,
- 	SFP_RATE_ID			= 13,
-+	SFF_RID_8079			= 0x01,
-+	SFF_RID_8431_RX_ONLY		= 0x02,
-+	SFF_RID_8431_TX_ONLY		= 0x04,
-+	SFF_RID_8431			= 0x06,
-+	SFF_RID_10G8G			= 0x0e,
-+
- 	SFP_LINK_LEN_SM_KM		= 14,
- 	SFP_LINK_LEN_SM_100M		= 15,
- 	SFP_LINK_LEN_50UM_OM2_10M	= 16,
-@@ -465,6 +471,7 @@ enum {
- 	SFP_STATUS			= 110,
- 	SFP_STATUS_TX_DISABLE		= BIT(7),
- 	SFP_STATUS_TX_DISABLE_FORCE	= BIT(6),
-+	SFP_STATUS_RS0_SELECT		= BIT(3),
- 	SFP_STATUS_TX_FAULT		= BIT(2),
- 	SFP_STATUS_RX_LOS		= BIT(1),
- 	SFP_ALARM0			= 112,
-@@ -496,6 +503,7 @@ enum {
- 	SFP_WARN1_RXPWR_LOW		= BIT(6),
- 
- 	SFP_EXT_STATUS			= 118,
-+	SFP_EXT_STATUS_RS1_SELECT	= BIT(3),
- 	SFP_EXT_STATUS_PWRLVL_SELECT	= BIT(0),
- 
- 	SFP_VSL				= 120,
--- 
-2.30.2
+-#define MEMCG_CHARGE_BATCH 64U
++#define MEMCG_CHARGE_BATCH 128U
 
+ extern struct mem_cgroup *root_mem_cgroup;
+
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 656ea89f60ff90d600d16f40302000db64057c64..82f6a288be650f886b207e6a5e6=
+2a1d5dda808b0
+100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1433,8 +1433,8 @@ sk_memory_allocated(const struct sock *sk)
+        return proto_memory_allocated(sk->sk_prot);
+ }
+
+-/* 1 MB per cpu, in page units */
+-#define SK_MEMORY_PCPU_RESERVE (1 << (20 - PAGE_SHIFT))
++/* 2 MB per cpu, in page units */
++#define SK_MEMORY_PCPU_RESERVE (1 << (21 - PAGE_SHIFT))
+
+ static inline void
+ sk_memory_allocated_add(struct sock *sk, int amt)
+
+
+
+
+
+
+> > -----Original Message-----
+> > From: Shakeel Butt <shakeelb@google.com>
+> > Sent: Wednesday, May 10, 2023 12:10 AM
+> > To: Eric Dumazet <edumazet@google.com>; Linux MM <linux-
+> > mm@kvack.org>; Cgroups <cgroups@vger.kernel.org>
+> > Cc: Zhang, Cathy <cathy.zhang@intel.com>; Paolo Abeni
+> > <pabeni@redhat.com>; davem@davemloft.net; kuba@kernel.org;
+> > Brandeburg, Jesse <jesse.brandeburg@intel.com>; Srinivas, Suresh
+> > <suresh.srinivas@intel.com>; Chen, Tim C <tim.c.chen@intel.com>; You,
+> > Lizhen <lizhen.you@intel.com>; eric.dumazet@gmail.com;
+> > netdev@vger.kernel.org
+> > Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a p=
+roper
+> > size
+> >
+> > +linux-mm & cgroup
+> >
+> > Thread: https://lore.kernel.org/all/20230508020801.10702-1-
+> > cathy.zhang@intel.com/
+> >
+> > On Tue, May 9, 2023 at 8:43=E2=80=AFAM Eric Dumazet <edumazet@google.co=
+m>
+> > wrote:
+> > >
+> > [...]
+> > > Some mm experts should chime in, this is not a networking issue.
+> >
+> > Most of the MM folks are busy in LSFMM this week. I will take a look at=
+ this
+> > soon.
 
