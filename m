@@ -1,47 +1,39 @@
-Return-Path: <netdev+bounces-1430-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1434-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0DBA46FDC74
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:17:58 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C6B006FDC89
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:20:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 26C241C20D33
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:17:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9E18E281430
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:20:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED8D2882D;
-	Wed, 10 May 2023 11:17:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7F068C1A;
+	Wed, 10 May 2023 11:20:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDD6220B26
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:17:54 +0000 (UTC)
-Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.22])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1490DAB;
-	Wed, 10 May 2023 04:17:52 -0700 (PDT)
-Received: from localhost.localdomain ([160.80.103.126])
-	by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 34ABHOin003525
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-	Wed, 10 May 2023 13:17:25 +0200
-From: Andrea Mayer <andrea.mayer@uniroma2.it>
-To: "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc: Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net 2/2] selftets: seg6: disable rp_filter by default in srv6_end_dt4_l3vpn_test
-Date: Wed, 10 May 2023 13:16:38 +0200
-Message-Id: <20230510111638.12408-3-andrea.mayer@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20230510111638.12408-1-andrea.mayer@uniroma2.it>
-References: <20230510111638.12408-1-andrea.mayer@uniroma2.it>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3AB66AB3
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7B650C433A1;
+	Wed, 10 May 2023 11:20:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683717620;
+	bh=R683OO2WtAMNBmdAOUEpOQQrWtiQtyN6X0UBBAnfdis=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=rye+/od6uS5Z5e3XNYZSQGsGhB1XCQ/6A1GwVMQ7BbLpWXJp4K/wfy1xX1w8jhULp
+	 mT1SobUnJJdsAbE6a4ew/ex3D33bfAWr+okDKd+/TTNAtyXn1FIp3WyrlPBAyaPQNI
+	 /WMyyVLAggXI3AB1CYwPSoJteVVI/Ox2zLLVohR0wRCIj5mU6vh9B2btlNA85Uunk/
+	 731fl78cBTYbzL9Hf9KNqhk7bnjRRQupksVQzOWzfS5bsmOarx8PeRqaglTumT0Kv8
+	 9IIG1u/3MCY3RTHpesB3yevx/yOX2QpXfOglQmfyKiko5bkUSVUamSJpG3uJKCPYn/
+	 rs6ccKOhaaBsA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 669BBE270C4;
+	Wed, 10 May 2023 11:20:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -49,62 +41,45 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Subject: Re: [PATCH net-next v4] sctp: fix a potential OOB access in
+ sctp_sched_set_sched()
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168371762041.15306.11198437734133990121.git-patchwork-notify@kernel.org>
+Date: Wed, 10 May 2023 11:20:20 +0000
+References: <20230510092344.1390444-1-Ilia.Gavrilov@infotecs.ru>
+In-Reply-To: <20230510092344.1390444-1-Ilia.Gavrilov@infotecs.ru>
+To: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
+Cc: nhorman@tuxdriver.com, simon.horman@corigine.com,
+ marcelo.leitner@gmail.com, lucien.xin@gmail.com, davem@davemloft.net,
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
 
-On some distributions, the rp_filter is automatically set (=1) by
-default on a netdev basis (also on VRFs).
-In an SRv6 End.DT4 behavior, decapsulated IPv4 packets are routed using
-the table associated with the VRF bound to that tunnel. During lookup
-operations, the rp_filter can lead to packet loss when activated on the
-VRF.
-Therefore, we chose to make this selftest more robust by explicitly
-disabling the rp_filter during tests (as it is automatically set by some
-Linux distributions).
+Hello:
 
-Fixes: 2195444e09b4 ("selftests: add selftest for the SRv6 End.DT4 behavior")
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-Tested-by: Hangbin Liu <liuhangbin@gmail.com>
----
- .../testing/selftests/net/srv6_end_dt4_l3vpn_test.sh  | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+This patch was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh b/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
-index 37f08d582d2f..f96282362811 100755
---- a/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
-+++ b/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
-@@ -258,6 +258,12 @@ setup_hs()
- 
- 	# set the networking for the host
- 	ip netns add ${hsname}
-+
-+	# disable the rp_filter otherwise the kernel gets confused about how
-+	# to route decap ipv4 packets.
-+	ip netns exec ${rtname} sysctl -wq net.ipv4.conf.all.rp_filter=0
-+	ip netns exec ${rtname} sysctl -wq net.ipv4.conf.default.rp_filter=0
-+
- 	ip -netns ${hsname} link add veth0 type veth peer name ${rtveth}
- 	ip -netns ${hsname} link set ${rtveth} netns ${rtname}
- 	ip -netns ${hsname} addr add ${IPv4_HS_NETWORK}.${hs}/24 dev veth0
-@@ -276,11 +282,6 @@ setup_hs()
- 
- 	ip netns exec ${rtname} sysctl -wq net.ipv4.conf.${rtveth}.proxy_arp=1
- 
--	# disable the rp_filter otherwise the kernel gets confused about how
--	# to route decap ipv4 packets.
--	ip netns exec ${rtname} sysctl -wq net.ipv4.conf.all.rp_filter=0
--	ip netns exec ${rtname} sysctl -wq net.ipv4.conf.${rtveth}.rp_filter=0
--
- 	ip netns exec ${rtname} sh -c "echo 1 > /proc/sys/net/vrf/strict_mode"
- }
- 
+On Wed, 10 May 2023 09:23:40 +0000 you wrote:
+> From: "Ilia.Gavrilov" <Ilia.Gavrilov@infotecs.ru>
+> 
+> The 'sched' index value must be checked before accessing an element
+> of the 'sctp_sched_ops' array. Otherwise, it can lead to OOB access.
+> 
+> Note that it's harmless since the 'sched' parameter is checked before
+> calling 'sctp_sched_set_sched'.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v4] sctp: fix a potential OOB access in sctp_sched_set_sched()
+    https://git.kernel.org/netdev/net-next/c/059fa492027e
+
+You are awesome, thank you!
 -- 
-2.20.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
 
