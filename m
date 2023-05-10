@@ -1,50 +1,45 @@
-Return-Path: <netdev+bounces-1597-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1599-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C22996FE797
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 00:53:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B1A1E6FE7AD
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 00:55:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D13532815F2
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 22:53:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 943101C20E6A
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 22:55:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD23D1E506;
-	Wed, 10 May 2023 22:53:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1E051E50D;
+	Wed, 10 May 2023 22:55:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69C0721CED
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 22:53:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACEF6C433EF;
-	Wed, 10 May 2023 22:53:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1683759196;
-	bh=0SZCsJwaN3AewUnoK7ahUFPcOXKKisj7UKcNsbIMmPI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=XQc6WYHRDg0MBsZEyfCJ+vnkMjJlaVGOEx3mwuGtVdl5YOeoVKISE+iU91Kis8YeS
-	 oiuGG6EB+L8X4l2LTlLW4tSagbRG6Euq8Qsedz3o1mAtfEDf1SBV4tgBd5gSPpMDG5
-	 vIrRC4772kxNLYeCzjZ9oQoZU2ydqNJS6DFET+TE=
-Date: Thu, 11 May 2023 07:53:09 +0900
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Pavel Machek <pavel@ucw.cz>,
-	Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-	Lee Jones <lee@kernel.org>, Sebastian Reichel <sre@kernel.org>,
-	Michael Grzeschik <m.grzeschik@pengutronix.de>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Pablo Neira Ayuso <pablo@netfilter.org>,
-	Jozsef Kadlecsik <kadlec@netfilter.org>, linux-leds@vger.kernel.org,
-	linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-	netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-	coreteam@netfilter.org, Yauhen Kharuzhy <jekhor@gmail.com>
-Subject: Re: [PATCH RESEND 1/4] leds: Change led_trigger_blink[_oneshot]()
- delay parameters to pass-by-value
-Message-ID: <2023051102-reseller-oat-3566@gregkh>
-References: <20230510162234.291439-1-hdegoede@redhat.com>
- <20230510162234.291439-2-hdegoede@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6F7D21CED
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 22:55:19 +0000 (UTC)
+Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4C140DC;
+	Wed, 10 May 2023 15:55:18 -0700 (PDT)
+Received: from local
+	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+	 (Exim 4.96)
+	(envelope-from <daniel@makrotopia.org>)
+	id 1pwsiJ-0004P1-27;
+	Wed, 10 May 2023 22:55:15 +0000
+Date: Thu, 11 May 2023 00:53:22 +0200
+From: Daniel Golle <daniel@makrotopia.org>
+To: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH net-next 0/8] Improvements for RealTek 2.5G Ethernet PHYs
+Message-ID: <cover.1683756691.git.daniel@makrotopia.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -53,32 +48,59 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230510162234.291439-2-hdegoede@redhat.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, May 10, 2023 at 06:22:31PM +0200, Hans de Goede wrote:
-> led_blink_set[_oneshot]()'s delay_on and delay_off function parameters
-> are pass by reference, so that hw-blink implementations can report
-> back the actual achieved delays when the values have been rounded
-> to something the hw supports.
-> 
-> This is really only interesting for the sysfs API / the timer trigger.
-> Other triggers don't really care about this and none of the callers of
-> led_trigger_blink[_oneshot]() do anything with the returned delay values.
-> 
-> Change the led_trigger_blink[_oneshot]() delay parameters to pass-by-value,
-> there are 2 reasons for this:
-> 
-> 1. led_cdev->blink_set() may sleep, while led_trigger_blink() may not.
-> So on hw where led_cdev->blink_set() sleeps the call needs to be deferred
-> to a workqueue, in which case the actual achieved delays are unknown
-> (this is a preparation patch for the deferring).
-> 
-> 2. Since the callers don't care about the actual achieved delays, allowing
-> callers to directly pass a value leads to simpler code for most callers.
-> 
-> Reviewed-by: Jacek Anaszewski <jacek.anaszewski@gmail.com>
-> Tested-by: Yauhen Kharuzhy <jekhor@gmail.com>
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Improve support for RealTek 2.5G Ethernet PHYs (RTL822x series).
+The PHYs can operate with Clause-22 and Clause-45 MDIO.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+When using Clause-45 it is desireable to avoid rate-adapter mode and
+rather have the MAC interface mode follow the PHY speed. The PHYs
+support 2500Base-X for 2500M, and Cisco SGMII for 1000M/100M/10M.
+
+Also prepare support for proprietary RealTek HiSGMII mode which will
+be needed for situations when used with RealTek switch or router SoCs
+such as RTL839x or RTL93xx.
+
+Add support for Link Down Power Saving Mode (ALDPS) which is already
+supported for older RTL821x series 1GbE PHYs.
+
+Make sure that link-partner advertised modes are only used if the
+advertisement can be considered valid. Otherwise we are seeing
+false-positives warning about downscaling eventhough higher speeds
+are not actually advertised by the link partner.
+
+While at it, use helper function for paged operation and make sure
+to use use locking for that as well.
+
+Changes since RFC:
+ * Turns out paged read used to identify the PHY needs to be hardcoded
+   for the simple reason that the function pointers for paged operations
+   have not yet been populated at this point. Hence keep open-coding it,
+   but use helper function and make sure it happening while the MDIO bus
+   mutex is locked.
+
+Alexander Couzens (1):
+  net: phy: realtek: rtl8221: allow to configure SERDES mode
+
+Chukun Pan (1):
+  net: phy: realtek: switch interface mode for RTL822x series
+
+Daniel Golle (6):
+  net: phy: realtek: use genphy_soft_reset for 2.5G PHYs
+  net: phy: realtek: disable SGMII in-band AN for 2.5G PHYs
+  net: phy: realtek: make sure paged read is protected by mutex
+  net: phy: realtek: use inline functions for 10GbE advertisement
+  net: phy: realtek: check validity of 10GbE link-partner advertisement
+  net: phy: realtek: setup ALDPS on RTL8221B
+
+ drivers/net/phy/realtek.c | 161 ++++++++++++++++++++++++++++++++------
+ 1 file changed, 138 insertions(+), 23 deletions(-)
+
+-- 
+2.40.0
+
 
