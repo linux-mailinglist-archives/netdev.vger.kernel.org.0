@@ -1,70 +1,71 @@
-Return-Path: <netdev+bounces-1447-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1448-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 42B9A6FDCBF
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 22E296FDCC5
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 13:34:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 67D081C20CFB
-	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:34:18 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 472C11C20D47
+	for <lists+netdev@lfdr.de>; Wed, 10 May 2023 11:34:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1CF1C8C1C;
-	Wed, 10 May 2023 11:34:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4DDD68F47;
+	Wed, 10 May 2023 11:34:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 115BB6FDE
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:34:16 +0000 (UTC)
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B936269A
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:34:14 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-3f4234f67feso114495e9.0
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:34:14 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41EF03D60
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 11:34:39 +0000 (UTC)
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D275173D
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:34:36 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id 5b1f17b1804b1-3f2548256d0so102115e9.1
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 04:34:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683718453; x=1686310453;
+        d=google.com; s=20221208; t=1683718475; x=1686310475;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gJ0B1g+f8cgGMeUyswCfosVhqOwS2k6tY+t32CjBcKI=;
-        b=iobBuStksNwwSttvAhFcxNh5zuoslRjBkvkqavlyUEUqvw9sbWuos8u9o/BPRbwSXs
-         MI3zgYsz3iZVL0No6WE35hOVXlFH9cyaBQBrokQ5OsngsthuB7DL1wwYt64dJTDwigJQ
-         e1tY3WKVDhu3UL/xsQNH6zGipnBXTPXl5xsATOHlvHgFBNtya6F2ECWgPi7qtathe1T3
-         TXLof2zD+4/AOeZdrNuRndq3Ze1X4S2DzrmHSCBxriSPxdwPeZV6mBDiFg1tdCwWwRKc
-         UYxixhZ6dy/qXzv8sk1KYqN6gkPCrGcxtSwGSbQ1tDMwTytnVqTZNYW0YS/exGbjzp2D
-         rRMg==
+        bh=KiirlAVwrwMzGSV72BHzl7bx0D8ntoB74WT/RnsQRlE=;
+        b=G5TJlkIe4u4AFij/hPDKHW3PHSjfLQPWJfExndo3eJxDdVUs4EyzpWQGa2zWLsS/xA
+         NHRgBIbFCV/7l1xRlftMZKNlia8yE14fALhNfz8Bi/9IePxz9T1q4dnXKD7w0YpE80PE
+         0vI4Axg//+5sPX2jHc++ubSVt8t7LBgTdUl50Giau5PMbcQZJ79qGRI6ow38BPi1anNt
+         7xpfXw1YhOz95seWhtM/ZM9XNOsQKd+KXO6IQc8zHZWkCX3jIDCgUWvX3NK5X4bX921W
+         5Q9vgAQky1pz1RIvDhoXaFz5RsTGjPKbxM5Ou4eUsS1sv/F+nkpLSW+8wrT2d9AdUuLr
+         G5BA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683718453; x=1686310453;
+        d=1e100.net; s=20221208; t=1683718475; x=1686310475;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=gJ0B1g+f8cgGMeUyswCfosVhqOwS2k6tY+t32CjBcKI=;
-        b=MOE9uvDhFztgrWZMJ5+Z0bspsyoqVDTm5PLX3a0Uxbad4+KngjHLzzRtSiLjE75VY/
-         lf+amrSO4fRCa1Di0ZfNPlVekZMOt9Kqur25P76TDYCssveO9nu5scahtYIGIob6QpCW
-         BgX2hbypIAtcPTmQGMvlgAvnoYw0c+HVVao1XrmBXbA2KHk2QOwbsV7SwrIdP/Tv73bi
-         uc30DsDoeyJM4EJ6vFUnPKLJCcCQ4WkHIkeeprGhiQpvXhG3tE5bGkbnupaQ35KD169o
-         Pz4X/Q6ghcFMJb5/M0ytwSE47ShviwhSb+K4tKXsQgFK0zIKBgwimWKIcL2UEC0ZC1Ls
-         gvDQ==
-X-Gm-Message-State: AC+VfDwhhPPX4XOQUl0kW5okgWkyYy0z9DjQgfeEYEcpKc5yxK52H7rz
-	l9Rkx31gqF/sK+aQSrmzyebVuoTaUZjASaOFah0rCw==
-X-Google-Smtp-Source: ACHHUZ6FD/5vb/Ig8+D3c6okJvoSv28/EETKkeizpEz03vSYr12RLoFd7SpdjCZUNIGn1leOPsaYUPLqxVRsbQwLT88=
-X-Received: by 2002:a05:600c:82cb:b0:3f3:3855:c5d8 with SMTP id
- eo11-20020a05600c82cb00b003f33855c5d8mr185930wmb.6.1683718452754; Wed, 10 May
- 2023 04:34:12 -0700 (PDT)
+        bh=KiirlAVwrwMzGSV72BHzl7bx0D8ntoB74WT/RnsQRlE=;
+        b=D4+SgyzLqWUqoXAjHEWngyIwUOjLP1DYba2zg8u19MHoDf+dy8WEs0FSB+MH/3w8LI
+         03fu40/joOFy4gx3FEL+8a7ydoD9og3dF4JlUTpouahMWPuplqHPQJbq3rRAx2+fZyX/
+         S92/LK3HbSKtAf5UrNg9ufvifxZivj/uPkxjhYuVwZHkxSbAEcdlTCdZP6oqFIJePNla
+         HbiHdGltKQcxK9CA4DdWJQbtRYq5BjNDEwQga/3e5VNKv55vQ+CpxBSDfIUTCA5edH/J
+         A0ma08Rlklbh1eVqAwxFu/D9LD2anEpoMbBV2LgV+QKwWvbvCHzp3wWgsFzst5Mglm4V
+         NPMA==
+X-Gm-Message-State: AC+VfDzyhNppkIInmuYCblD2HUZhPtbFHCL4AVli7rN/521cEFCok/wp
+	nDh+wxECEl0qy+kfmAYDyQhRLF8gR4VgGVwJtpsH7w==
+X-Google-Smtp-Source: ACHHUZ5unIH9hrHNOIWV0MGnbJf4hMplWluJvdwFuHGNSRbeXA0KNBt3WHdL/p8zUdsREC0yuLwe2gAmTkJeRw2kMg0=
+X-Received: by 2002:a05:600c:600f:b0:3f1:6fe9:4a98 with SMTP id
+ az15-20020a05600c600f00b003f16fe94a98mr127034wmb.5.1683718475019; Wed, 10 May
+ 2023 04:34:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <ZFtuhJOC03qpASt2@shell.armlinux.org.uk> <E1pwgrM-001XDs-3b@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1pwgrM-001XDs-3b@rmk-PC.armlinux.org.uk>
+References: <ZFtuhJOC03qpASt2@shell.armlinux.org.uk> <E1pwgrR-001XDy-8S@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1pwgrR-001XDy-8S@rmk-PC.armlinux.org.uk>
 From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 10 May 2023 13:34:00 +0200
-Message-ID: <CANn89iK9chzd_xDiVFDQB2OV8-cQ0Ep1kbvdedBOftovc3m0kg@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/5] net: mvneta: mark mapped and tso buffers separately
+Date: Wed, 10 May 2023 13:34:23 +0200
+Message-ID: <CANn89iKWwFLv3jCVzOVDVy0eT35koZ_iPyAJM-ofiExVVV5cKQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/5] net: mvneta: use buf->type to determine
+ whether to dma-unmap
 To: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 Cc: =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>, 
 	"David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org, 
@@ -82,11 +83,10 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 On Wed, May 10, 2023 at 12:15=E2=80=AFPM Russell King (Oracle)
 <rmk+kernel@armlinux.org.uk> wrote:
 >
-> Mark dma-mapped skbs and TSO buffers separately, so we can use
-> buf->type to identify their differences.
+> Now that we use a different buffer type for TSO headers, we can use
+> buf->type to determine whether the original buffer was DMA-mapped or
+> not. The rules are:
 >
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
 
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 
