@@ -1,196 +1,121 @@
-Return-Path: <netdev+bounces-1784-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1785-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id F31AE6FF23F
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:12:17 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 314D46FF257
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:15:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1D5A21C20F93
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:12:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E283B28175A
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:15:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2437B1F956;
-	Thu, 11 May 2023 13:12:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 351F11F953;
+	Thu, 11 May 2023 13:15:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 130B51F931
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:12:15 +0000 (UTC)
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A4665B9;
-	Thu, 11 May 2023 06:12:13 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id 46e09a7af769-6ab1a0985eeso2231135a34.1;
-        Thu, 11 May 2023 06:12:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683810732; x=1686402732;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UsHw8MmpWhGTKPANkioLZenQtgHbgTZPvM2AI2tSR54=;
-        b=StiKqPvEVK5g/eOL+9md4q8J2mKaij4oilBRW92uw+aG9WEFVO3yQsITQvWtBQvOic
-         AAuW4Aw+31aNEeIqgUlOn9igvpKodykrWCSk5KY39iW9aaTk8+Jzzb40PxG7OGO4hun9
-         VksXQPtDExaenqxrPYLxYOInIf0OF+N0spKSBpUH1bUlZarnzIOLc17rIP9d9Jc5QDkR
-         CjMDxNrw544Kn7kEeEzpQGaVgYnaDdrF4FNvdsxu6DEMwTa3dzf/vtNKof0TVj+e5Dr1
-         XSuCV0Ic5Nwl+hoi6RVy3cX75+dEz9N/FFLlG11K3mTbr2loqWsB9ZKySEL4M8IvjObt
-         5MTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683810732; x=1686402732;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UsHw8MmpWhGTKPANkioLZenQtgHbgTZPvM2AI2tSR54=;
-        b=M5zAXi+XLrsWqPUuOP0JOKrcSKvosIxhdCS8mg+I5K1tRW/OTw7vZ+YWgFRXtRqTAE
-         rHdMdfB4XsvvF6Oh2pQjS0IGzRhJAgs7/6ihtDJMjxBMYiLoYtN7VigKP3z1uGlmcG4d
-         B+f+5+CYRGeAQnfnF82ExzBRhHaGArL4PovsMowhwdkrD8rYzZZLzSXIBRFfTtFIRu/r
-         hsN1GI7RD6y34/f8d8CVD45x0Or3iAxLBQ7R6VQPNMc/+oekDp+mY1iz3GXur394SGYT
-         I6Hd9m7kR68zbdZTqrcf+/82x3905gMJVCOptqoPXryQ8+pAmurqjs4Fas8YX9M4istG
-         bHVg==
-X-Gm-Message-State: AC+VfDxNKRP7Envz7DlSuSmx4UKiPXsO5x4oADmisjxfVOUKrEQ0tscX
-	46k6qpRewQbQDBxPqjzFGJk=
-X-Google-Smtp-Source: ACHHUZ5SpLR73m5bbG4rgCGh6QROQEk1Iv0KftS87eDX62/a6xQ2jFuFE5dNGE5w++q0X8NW3/EeNQ==
-X-Received: by 2002:a9d:6b05:0:b0:6ab:1ede:f859 with SMTP id g5-20020a9d6b05000000b006ab1edef859mr3985675otp.23.1683810732393;
-        Thu, 11 May 2023 06:12:12 -0700 (PDT)
-Received: from t14s.localdomain ([2001:1284:f013:8be1:a329:8f7b:38d:7b0a])
-        by smtp.gmail.com with ESMTPSA id n17-20020a9d7411000000b006ab0981ef17sm3789336otk.64.2023.05.11.06.12.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 May 2023 06:12:11 -0700 (PDT)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-	id C4DE861707B; Thu, 11 May 2023 10:12:09 -0300 (-03)
-Date: Thu, 11 May 2023 10:12:09 -0300
-From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Cc: nhorman@tuxdriver.com, davem@davemloft.net,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Christian Brauner <brauner@kernel.org>,
-	Stanislav Fomichev <sdf@google.com>,
-	Xin Long <lucien.xin@gmail.com>, linux-sctp@vger.kernel.org,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] sctp: add bpf_bypass_getsockopt proto
- callback
-Message-ID: <ZFzpqZCV6V+hwKjI@t14s.localdomain>
-References: <20230511123148.332043-1-aleksandr.mikhalitsyn@canonical.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2755415482
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:15:36 +0000 (UTC)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B552659D;
+	Thu, 11 May 2023 06:15:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683810920; x=1715346920;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=W5cLSAaV+r+1ItVRXAcJDtR+e/em1mtYJ7N6Iy6IoQc=;
+  b=ePJobaBID6ILaQVr5Io5+Iu+GVB12lTrgz4rukTjEhIxsIerpfyDPsPp
+   M/e+QGn1AhWHh47t8MooBVvcB++0ecU+hkp3qxWhn0ZYq9oPioz3cgSyl
+   oUUK84dVhZZ/DRCoSzNG/iT6tow5mKJcEPwphHsDZd8K9ATBFd+kx9iwQ
+   cij3str8fF+we798MRVVtzVrTz29zagqG2X1eRExLBPdh2RdHEvra0qeT
+   qeFJ2nk92D92Cq3Pea1B+4bXHynZcjXT1gwfvUpZJ5O/2OEryzzaLo9CK
+   lHKaqzxRmAHHHlYlWZ3ZZBEwa7p6ZWGBwhMVdUbTa2hn8JrK4NIN2+1QN
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="378619458"
+X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
+   d="scan'208";a="378619458"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 06:15:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="650169748"
+X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
+   d="scan'208";a="650169748"
+Received: from jsanche3-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.39.112])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 06:15:15 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: linux-pci@vger.kernel.org,
+	Bjorn Helgaas <helgaas@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Jesse Brandeburg <jesse.brandeburg@intel.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	intel-wired-lan@lists.osuosl.org,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 07/17] e1000e: Use pcie_lnkctl_clear_and_set() for changing LNKCTL
+Date: Thu, 11 May 2023 16:14:31 +0300
+Message-Id: <20230511131441.45704-8-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230511131441.45704-1-ilpo.jarvinen@linux.intel.com>
+References: <20230511131441.45704-1-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230511123148.332043-1-aleksandr.mikhalitsyn@canonical.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi,
+Don't assume that only the driver would be accessing LNKCTL. ASPM
+policy changes can trigger write to LNKCTL outside of driver's control.
+And in the case of upstream (parent), the driver does not even own the
+device it's changing LNKCTL for.
 
-Two things:
+Use pcie_lnkctl_clear_and_set() which does proper locking to avoid
+losing concurrent updates to the register value.
 
-On Thu, May 11, 2023 at 02:31:48PM +0200, Alexander Mikhalitsyn wrote:
-> Add bpf_bypass_getsockopt proto callback and filter out
-> SCTP_SOCKOPT_PEELOFF and SCTP_SOCKOPT_PEELOFF_FLAGS socket options
-> from running eBPF hook on them.
-> 
-> These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOPT
-> hook returns an error after success of the original handler
-> sctp_getsockopt(...), userspace will receive an error from getsockopt
-> syscall and will be not aware that fd was successfully installed into fdtable.
-> 
-> This patch was born as a result of discussion around a new SCM_PIDFD interface:
-> https://lore.kernel.org/all/20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com/
+Suggested-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/net/ethernet/intel/e1000e/netdev.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Cool, but the description is mentioning the CONNECTX3 sockopt.
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index bd7ef59b1f2e..29d50aeb2c3e 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -6829,11 +6829,9 @@ static void __e1000e_disable_aspm(struct pci_dev *pdev, u16 state, int locked)
+ 	/* Both device and parent should have the same ASPM setting.
+ 	 * Disable ASPM in downstream component first and then upstream.
+ 	 */
+-	pcie_capability_clear_word(pdev, PCI_EXP_LNKCTL, aspm_dis_mask);
+-
++	pcie_lnkctl_clear_and_set(pdev, aspm_dis_mask, 0);
+ 	if (parent)
+-		pcie_capability_clear_word(parent, PCI_EXP_LNKCTL,
+-					   aspm_dis_mask);
++		pcie_lnkctl_clear_and_set(parent, aspm_dis_mask, 0);
+ }
+ 
+ /**
+-- 
+2.30.2
 
-> 
-> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Christian Brauner <brauner@kernel.org>
-> Cc: Stanislav Fomichev <sdf@google.com>
-> Cc: Neil Horman <nhorman@tuxdriver.com>
-> Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> Cc: Xin Long <lucien.xin@gmail.com>
-> Cc: linux-sctp@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Suggested-by: Stanislav Fomichev <sdf@google.com>
-> Acked-by: Stanislav Fomichev <sdf@google.com>
-> Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-> ---
->  net/sctp/socket.c | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
-> 
-> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> index cda8c2874691..a211a203003c 100644
-> --- a/net/sctp/socket.c
-> +++ b/net/sctp/socket.c
-> @@ -8281,6 +8281,35 @@ static int sctp_getsockopt(struct sock *sk, int level, int optname,
->  	return retval;
->  }
->  
-> +static bool sctp_bpf_bypass_getsockopt(int level, int optname)
-> +{
-> +	if (level == SOL_SCTP) {
-> +		switch (optname) {
-> +		/*
-> +		 * These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOPT
-> +		 * hook returns an error after success of the original handler
-> +		 * sctp_getsockopt(...), userspace will receive an error from getsockopt
-> +		 * syscall and will be not aware that fd was successfully installed into fdtable.
-> +		 *
-> +		 * Let's prevent bpf cgroup hook from running on them.
-> +		 */
-
-This and..
-
-> +		case SCTP_SOCKOPT_PEELOFF:
-> +		case SCTP_SOCKOPT_PEELOFF_FLAGS:
-> +		/*
-> +		 * As pointed by Marcelo Ricardo Leitner it seems reasonable to skip
-> +		 * bpf getsockopt hook for this sockopt too. Because internaly, it
-> +		 * triggers connect() and if error will be masked userspace can be confused.
-> +		 */
-
-..this comments can be removed, as they are easily visible on the
-description later on for who is interested on why such lines were
-added.
-
-Thanks,
-Marcelo
-
-> +		case SCTP_SOCKOPT_CONNECTX3:
-> +			return true;
-> +		default:
-> +			return false;
-> +		}
-> +	}
-> +
-> +	return false;
-> +}
-> +
->  static int sctp_hash(struct sock *sk)
->  {
->  	/* STUB */
-> @@ -9650,6 +9679,7 @@ struct proto sctp_prot = {
->  	.shutdown    =	sctp_shutdown,
->  	.setsockopt  =	sctp_setsockopt,
->  	.getsockopt  =	sctp_getsockopt,
-> +	.bpf_bypass_getsockopt	= sctp_bpf_bypass_getsockopt,
->  	.sendmsg     =	sctp_sendmsg,
->  	.recvmsg     =	sctp_recvmsg,
->  	.bind        =	sctp_bind,
-> @@ -9705,6 +9735,7 @@ struct proto sctpv6_prot = {
->  	.shutdown	= sctp_shutdown,
->  	.setsockopt	= sctp_setsockopt,
->  	.getsockopt	= sctp_getsockopt,
-> +	.bpf_bypass_getsockopt	= sctp_bpf_bypass_getsockopt,
->  	.sendmsg	= sctp_sendmsg,
->  	.recvmsg	= sctp_recvmsg,
->  	.bind		= sctp_bind,
-> -- 
-> 2.34.1
-> 
 
