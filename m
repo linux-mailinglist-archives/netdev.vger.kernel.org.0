@@ -1,291 +1,275 @@
-Return-Path: <netdev+bounces-1956-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1957-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1FA266FFB7F
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 22:53:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C4B1C6FFB80
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 22:54:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2BF211C20FE7
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 20:53:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 01772280AAD
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 20:54:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1ACF2BA25;
-	Thu, 11 May 2023 20:53:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0823B12B74;
+	Thu, 11 May 2023 20:54:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05F942918
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 20:53:52 +0000 (UTC)
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC3A4C12;
-	Thu, 11 May 2023 13:53:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683838431; x=1715374431;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=xMR5BBjZpxebrE79pgDF2k4qSTkJlXsuSvPGzVWHjY0=;
-  b=R7VeX5gSL5iAo9pEwTki3owaMHkgBUInad7CnZJnaHL80LmgLOfhdKoT
-   uBVrtiJYvCx6E48TXz87nu9ZnTa6m1UjnJz547d/EInCa6m2LGU0Z+jeh
-   lRAhK+iXhvboybdjRlWtHCUA0DIYwffHM/1jO8vzxczEl5i5AmqpYb3IB
-   YX/3ieiAYfpY/qe4sysMRkKz9XtxpreMOLuXm6tprQs8zyn/6le3tjEYc
-   bOtPRlHW2O4EtYY3DpFvyPcMfT8X7dDRwbi2pQmkjl1cU2JAGtHCXVnYv
-   lY5eprnVRcn+dhUzAUlm7T4v8uli5QPo94zBi4f21bnEUtZA0rAOuIblv
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="330249243"
-X-IronPort-AV: E=Sophos;i="5.99,268,1677571200"; 
-   d="scan'208";a="330249243"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 13:53:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="650375127"
-X-IronPort-AV: E=Sophos;i="5.99,268,1677571200"; 
-   d="scan'208";a="650375127"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga003.jf.intel.com with ESMTP; 11 May 2023 13:53:48 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 11 May 2023 13:53:48 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Thu, 11 May 2023 13:53:48 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Thu, 11 May 2023 13:53:47 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAB386FD3
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 20:54:43 +0000 (UTC)
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2069.outbound.protection.outlook.com [40.107.6.69])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E884C12
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:54:42 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gOAocadssS0eQU+KGLtfAKETaIGxIebvrNyW6pRu0g0KvK1kkEUmDVusiH81umuEtz2uN/ynyisAJHKArR/uBmR8sR/HVxze3EqUlytDAacDcEypieMQUDvuGM0Hi15P1/xa+08qYo8TKJOl0ccQgjozSTb4C+MMhVLpEaDire2K6EuLkHAFpDfx8sOM90qQCOaIp+p1hRGiVWiDW6BCJLr2GA3APve5PADg1RgEOLc2gC/0SRy5oSqc2cWaWuDcBsG2gcxFC/tbSVYuCgQ4zVBw4wdWFlXGO/aCIJY0L7J9JcmEnXXMrdPSocYYnaMDhJCkMnvcwze0ImeHFOwv5w==
+ b=MqOAANIUdctgIBJiOBJQP43Sx0EG4vzEDvhyNv5tqYiYoBgQwOgOirmz8DYuoQJWZFm+ganujZeIegNQmz8UrYw7e6FC7QDGIPKEAvXS3R8rnEKu3ySA3IBKt6DGyd4+eLEwOP/OXUMke2qUWM7yHtM2zcEmR2jAKb3Pzy2wq2t6yhX2N5m3ABSvwY6S9kcleqgK6N/2hdUuKNqWxxsV1kV6JFSTtw7IKsv07sHtp26YuIaqzQ94pSndIL8Mvl5w39Ng293Mlxp6D4QCsaMjWo5asTrd3ZuR97Q+KQ3GSI8wINaXYQAgGucJLWtB1D+0g/CqvfmzGjyGk8Ye3f4/Pg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sIU1FpWApjhCjjKl98lJnHnzL2yln2BntLKFqtTjVBo=;
- b=IdeueXRfB6TbwJdkFG9bz4X0APhmEAAh0A0+7CmC6/92uZIgsYtbqYT8K2firZB/G5TeJ9UenpDNLoDkswzScL7TFRk1udN7TslN42KWyzFRlsuBBqYJISvDwnNi8+xIkTbyisoSYvJaDNSsLpLjQbOqXxbfzJekdEPRlYopuzPKs3KB50lLQbJMmRAS6l6Vby9t9aAFcAnveJEPaH/rvTAwds64hgz+XueHBWfgrk7SSbGKDN+WxdWApV57QqAOq8dHLjBxiW8mq8JpIEBhDExUGYwCXNyAC0ufZEcdGIiUCLRqwg2Jg/tUrgX675Bh04WtkHxIgtA/DwQ3yQv++A==
+ bh=YhPvLRLfDwkRoQtOfAodfEGEWmp9lT+SPBRW0jhHt/c=;
+ b=IdexnYfo4GbVk71uAeCWn4viqhQlxa2HajlTyLh8HI+rrjMb0pM9IhyGbE70rfWMdxwzsZtr7dPhZdR4zKkj3orxsRW5/yqYbnCxXQC2bU4ibVCu1tL5WRNNkHRYiTUazMS9K+zzoSwKXPeORzQsWKEOnb0tRdfPCB8wAx35+lreLb/erLxZ8pVZkdHWeHK7XMmgQBI8HGTmaUJbUYA2pPiss1EG1SX0vnzYY3LLdiM+1e7FaaY3nDgVirAFfHpM5oIqsQ9Q4jlXK8lDswKOzpIeGxPIrNUX4Ic4lSfhvvkMs5GWJM1JM5KKN/2ADhVLZdz7eB5sub0JHXW4Q7a4tg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- PH7PR11MB6932.namprd11.prod.outlook.com (2603:10b6:510:207::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6387.21; Thu, 11 May 2023 20:53:40 +0000
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::7887:a196:2b04:c96e]) by DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::7887:a196:2b04:c96e%5]) with mapi id 15.20.6387.022; Thu, 11 May 2023
- 20:53:40 +0000
-From: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YhPvLRLfDwkRoQtOfAodfEGEWmp9lT+SPBRW0jhHt/c=;
+ b=O9JGqNAa46yjMnVs4JOeGGpWtK/yWJCaUBpMZlodU/CC7fKeGhxxm/YgTPmnjiDnGJTjDFZ5RAzP+nklXwoPpm7ZR5TTTMSYV+yqvPrvtgDQfzbWyxdNgaHMKpZXEvYW8pyhCjNzN6viGly2YN0Oans9ILvFREPV+4OIFHkvJIw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by PA4PR04MB9461.eurprd04.prod.outlook.com (2603:10a6:102:2a9::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.20; Thu, 11 May
+ 2023 20:54:38 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::245a:9272:b30a:a21c]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::245a:9272:b30a:a21c%3]) with mapi id 15.20.6363.033; Thu, 11 May 2023
+ 20:54:38 +0000
+Date: Thu, 11 May 2023 23:54:35 +0300
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 To: Jakub Kicinski <kuba@kernel.org>
-CC: Vadim Fedorenko <vadfed@meta.com>, Jiri Pirko <jiri@resnulli.us>, Jonathan
- Lemon <jonathan.lemon@gmail.com>, Paolo Abeni <pabeni@redhat.com>, "Olech,
- Milena" <milena.olech@intel.com>, "Michalik, Michal"
-	<michal.michalik@intel.com>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, poros <poros@redhat.com>, mschmidt
-	<mschmidt@redhat.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>, Vadim Fedorenko
-	<vadim.fedorenko@linux.dev>
-Subject: RE: [RFC PATCH v7 1/8] dpll: spec: Add Netlink spec in YAML
-Thread-Topic: [RFC PATCH v7 1/8] dpll: spec: Add Netlink spec in YAML
-Thread-Index: AQHZeWdNus9yie+T1ke/i4FdVA4f5K9KDcsAgACdH4CAChnlwIAAgLyAgAA0FNA=
-Date: Thu, 11 May 2023 20:53:40 +0000
-Message-ID: <DM6PR11MB4657EF0A57977C56264BC7A99B749@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20230428002009.2948020-1-vadfed@meta.com>
-	<20230428002009.2948020-2-vadfed@meta.com>	<ZFOe1sMFtAOwSXuO@nanopsycho>
-	<20230504142451.4828bbb5@kernel.org>
-	<MN2PR11MB46645511A6C93F5C98A8A66F9B749@MN2PR11MB4664.namprd11.prod.outlook.com>
- <20230511082053.7d2e57e3@kernel.org>
-In-Reply-To: <20230511082053.7d2e57e3@kernel.org>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|PH7PR11MB6932:EE_
-x-ms-office365-filtering-correlation-id: 9ce3987a-3da4-402e-e345-08db5261cca5
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: BkhVvFym+rB3xeZNPO0v9J8waYABi8ULP2V4oYOE/xgzcRHpSu+9liu9tro1Qn3jDGtjzxqo1SzWlt/P0ad2y2TacFuN4/WJuMVhcD2+5oBo0Ue0kRwlFy+W7vRkB5vb47ntX/u8cd0A8vgqAk/rub5jpnaHHsu3LicaMK6djDrhY+G5oJeAiDBK/KEjRguBLG4aX9gMymjCUNHkUtMCvGD++yXM+8rEnrHnJ99a2f69m2mK6Ck2NL+cLJcvfvGCQ3/IIfwvvG0rY63Uki8VsW9+M9RzK86uvOXSus1ExwjkaQ1Xatj3xQ3rSDauTS+NEq7vU5Ichu5rM60TBxrEd01QBAh9CF31nUjgWxuFjsWEbhsCXg/8LEOyCSOq2B9bJv+HOS3E0EoJBDdCvAbkWS+voECeccxrWi6gLMNX9gipe9UPuBZSfIeQR9DVVbY0b2b9XLidxSYXjaW4S8MDgG5/qNua+JH3/XNZCY6X+X5U35lR/p4ozxeJFuDWAEygDjwj57B92n4wT8I3XZHXqQT9iVqmM3cc0ot2h1e1PBGizQiUtIS6CqjPxTPM/lCtlqDeWrs+JnybusmX0QKbKcjuXqpKbG8qW1GisAg3elIGm8rzuH/64vAEQ3GxQuKr
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(346002)(376002)(396003)(136003)(39860400002)(451199021)(6916009)(5660300002)(41300700001)(52536014)(66946007)(76116006)(4326008)(316002)(66446008)(64756008)(66556008)(66476007)(8676002)(7416002)(8936002)(478600001)(54906003)(86362001)(2906002)(55016003)(38100700002)(83380400001)(7696005)(6506007)(9686003)(71200400001)(38070700005)(82960400001)(186003)(33656002)(122000001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?8Inu4qkB56ZvTIAre0IMe650DgTm5/NeCRByyjM5ccirTe/Kk2DJpZnM54c6?=
- =?us-ascii?Q?lLGj+qraGPU0WIzw8Xco08M2MGPg53z4B8lUxmmFpHg/Fuh/R89dpmMUTlZP?=
- =?us-ascii?Q?43a5tgW0H+iE5tKNlz4V8o/whtui8ebisUhl7jUERChbbtCo/R92nfLxcgFt?=
- =?us-ascii?Q?HjRxzCHs9z4TTH46CxztcFY4YzAFs88p6H2+zlmu3I/jvP3f5lZFsAk2AZdH?=
- =?us-ascii?Q?RZg2jyxcx7o6gT7zmJ4aq8L1Oc4YTUMX0+pQgDqIMW+thVtwjkoP2iQ6UxU9?=
- =?us-ascii?Q?AD5VI9SmR3JmYauihJVRiVDqt8zgQ4+HPPxA7GpK+N2NIZVrhqP++wVxqUQR?=
- =?us-ascii?Q?Qvl8FZ9lVhlWi267x1H+y7p+4A3x6B3+nB9aSY+dMR3FXyVVIyKQErFsotKl?=
- =?us-ascii?Q?OXhXK16W6/XIHEKRxiq/FiO5jeyYBrTg3wBGF38yhwvnOuWF//E2JlZyDQpp?=
- =?us-ascii?Q?xGNlbmpphw7f7DkV8i4/0hrLIl9jASExFexjUn0T76dKsB22ouz17bQBnm2r?=
- =?us-ascii?Q?+Yb+q3HR2PMPIRLcJ63WnWwMRPofkVZ3lUErbFq5T3hLn9PuG5MKuzvglfDM?=
- =?us-ascii?Q?JsDpyb7LqTSMvOaJBeXbFUzYiaCtcGzDR2lB0JDqmB8Qqof2llgwLgA5hJBX?=
- =?us-ascii?Q?0HO4HRjGKPZAvAoX+VDSjiK840Lc90r8db6G8gmbw0WdhnIdFqIjod4G6y6E?=
- =?us-ascii?Q?LTkSaHm8uxplePkRyXGhCOGbKpAQydptDoUT1kE5YELGetcngi6q12SbDwC4?=
- =?us-ascii?Q?JwyZ7ypukwii+Yv6cCED8IujYtGHfwa+f+iGDyxCW/qmU7av7RMf+v0nezz6?=
- =?us-ascii?Q?x+DYtAVdb1im+HmMRjSLYBpj9mTVw3Mm8DpTzZsNYGHOAx/8K3IVyVrAv8Fg?=
- =?us-ascii?Q?0iycwJYlVkTxmroauAZaw1eUIs5sHm0G/El2PRkVwKrCZeOg2qFzZR3VUEpc?=
- =?us-ascii?Q?nuPQpaD+Rn1YGhJ/UUM8pZU8fozK1n5Es7NkDp1WCM4nEAKMG7f0SLCWNauw?=
- =?us-ascii?Q?7P71hu4YzXB4TnEpohZ4s4hwZ4ZjvuZn9U7W1mm/4SSVbe35j29khJlhNkN4?=
- =?us-ascii?Q?uPFlLGkKudi3Y7JLDl+o7VaGfRwuKjxolZxIrJO3wLIXyFV1k5aXrYyG57se?=
- =?us-ascii?Q?Qcam8A9y0PCP4tH4UtueiL1oRFEqNwd9eVYpLhb79zrmf4XB6CfLqtE0wVEB?=
- =?us-ascii?Q?ybaF1mKqqJ2lbQK5NYTDA2EqjNoT5DzgQ8pa68shJLvO5UCx13K2G2/JGnS0?=
- =?us-ascii?Q?QZ1kUiZ9GZbYjtVHYERgnf0Vn2DPegijInegtffoRqZ0arSLSCeSa/c+Zgp3?=
- =?us-ascii?Q?VD7UmsIK6A/qcqxZ38tITzaUyKxg3SXjN93R9/w4kINf0mlyXg5ENhkw6rmW?=
- =?us-ascii?Q?DjkV8zmprJSTio6rbuyihMB81pNK2KYGiFgDMl15HZq64bYGGoxJ7EDljL/0?=
- =?us-ascii?Q?QZIHzmfejHoa5iwoi8z4k1rzfhZtlQE1py67ZvGtPOR4z8rTlEzloJjwOafL?=
- =?us-ascii?Q?LUIC1zApo1OuWf3Q4aOw2ZSso4/jboAyOdXEQcsGJycoeHaWwtnv3WxVzKaw?=
- =?us-ascii?Q?FF0Z5Of1YxMKb2tgut+fSlxvAvI6LADTRsH7Y93t?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Cc: =?utf-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>,
+	netdev@vger.kernel.org, glipus@gmail.com,
+	maxime.chevallier@bootlin.com, vadim.fedorenko@linux.dev,
+	richardcochran@gmail.com, gerhard@engleder-embedded.com,
+	thomas.petazzoni@bootlin.com, krzysztof.kozlowski+dt@linaro.org,
+	robh+dt@kernel.org, linux@armlinux.org.uk
+Subject: Re: [PATCH net-next RFC v4 4/5] net: Let the active time stamping
+ layer be selectable.
+Message-ID: <20230511205435.pu6dwhkdnpcdu3v2@skbuf>
+References: <20230406173308.401924-1-kory.maincent@bootlin.com>
+ <20230406173308.401924-1-kory.maincent@bootlin.com>
+ <20230406173308.401924-5-kory.maincent@bootlin.com>
+ <20230406173308.401924-5-kory.maincent@bootlin.com>
+ <20230429175807.wf3zhjbpa4swupzc@skbuf>
+ <20230502130525.02ade4a8@kmaincent-XPS-13-7390>
+ <20230511134807.v4u3ofn6jvgphqco@skbuf>
+ <20230511083620.15203ebe@kernel.org>
+ <20230511155640.3nqanqpczz5xwxae@skbuf>
+ <20230511092539.5bbc7c6a@kernel.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230511092539.5bbc7c6a@kernel.org>
+X-ClientProxiedBy: BE1P281CA0263.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:86::12) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|PA4PR04MB9461:EE_
+X-MS-Office365-Filtering-Correlation-Id: 28f2a1f8-4bdf-4cb9-790d-08db5261ef33
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	xZD5RSPPU//goNo4HCVwQJBrh0rJ4Uax3MqalNh+7xSRgjRn2SsHpu7YcYmwLDOJw7lcE4vB93a414nTBDhY3ZQO6DdZKVyi097IovknAQ5WpPNxvdmISp1oT9+GHJ/9pr94z4wmZ74RmApaCOs1xall7ZgSyzdXUGPvMIKkSeddilVs6ZuCSOgNOtrxkGI2sOC+icNGzdIHkb3vRixhn3fU39KTGOVJdveuHlP+o37VeIMlyyFvXK/NwezMjycCRJoVr3NNG1WRt7PJYp9ollAVNoaRSf7NHzD4xYu3L0+489w6wEAmB1dgJoGhOVW18Nj6cnPLRCE/dPztwktZzlYlYMtJ+xaRKFMzh9zTeuu3FyaCsUfBj4nq/6pIU6eyCb2deFpmRDE0JeNa4ZTzLYW6kNEehTDAXkjiQP6X+h/k1deq5+P7tiifkOHwZCBkeOtU2q+BRmrTGSNTeab+0RHEJLEZDqb9QaPlvDNgjF5RvF95leYRqQoNZoPrCORLJVK9mXVGaHoA3dCGvt7+E5lEpZHe04Ro3IFW0WnV+vA=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(376002)(136003)(396003)(39860400002)(346002)(366004)(451199021)(6666004)(6486002)(8676002)(966005)(66556008)(66476007)(6916009)(33716001)(2906002)(4326008)(7416002)(44832011)(66946007)(8936002)(41300700001)(86362001)(38100700002)(316002)(5660300002)(478600001)(186003)(6506007)(1076003)(6512007)(9686003)(66574015)(83380400001)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?Uavl3WCJACwze0uTiL01xUkoe471skJhhe2uFOoZUrxlkVHjxW+iAsBoXp?=
+ =?iso-8859-1?Q?pfOjE6tFmk95jcUcnXikm7Oj/KyD8mGG+Ll+f9DibCGOIPJGMot471UO38?=
+ =?iso-8859-1?Q?V5oVTDFmabKzC8N40KXp6w98i4xUSRmgHxp83qHGCfwnx6aePmyUDuCoFu?=
+ =?iso-8859-1?Q?ABZkSLPJXWXx4QYe/jpL/Otbk6aBbRw7FNtVKWiNqOTGZYJQAaWtllqytF?=
+ =?iso-8859-1?Q?MHe3HE1l/pN+IHgL1OT8NPwzu1PHPnx3kqRw0uHXVYxwWtrNRvLiA4rfzm?=
+ =?iso-8859-1?Q?/ithfmYE1cZjTOTQJ1EhOjJyQjSL3KCjj7uchkOWzVd8mED6VL4tngq2ws?=
+ =?iso-8859-1?Q?qol13IWeNOQQ4J3lQEQrnr+n01U0OwITYEIr6uGzx+2iktSbzEBrG97LAg?=
+ =?iso-8859-1?Q?MMQLI3vV8ULaQVxEdUye3Mnb26SqiHOJJYwB4Llah3ve57T+yKo4qoNAj+?=
+ =?iso-8859-1?Q?m/ROnash/BLc4DZsvxjIvJ+hVaVFA11ONh7MwY6QyGmM9j2cAzXlpyZVqm?=
+ =?iso-8859-1?Q?R3sMi11ShSVXKCBtlBnc80d9qdSvEnsUW4V/QEw55rz7M/TspBvSn/QY/s?=
+ =?iso-8859-1?Q?3rA4gQloDO/rUJaMAriRX5cw+45H2fXz1amHrIpAhgCrdmq3ojPmpLe4yQ?=
+ =?iso-8859-1?Q?yfTwZnOpZ4g4geey2inY5xaEGwGUOo9H8xwWRR5yyyk3UQycnsvBoxyvOt?=
+ =?iso-8859-1?Q?mFrKAxt4A516022tfHfGcl4Y1sKxiy4Mo7m7iA4Ib+ovwQ61BRTAUSrCSN?=
+ =?iso-8859-1?Q?fESQ4uNTuVVPFk3uVr2TXyZSnAHNy8LhsHQB4AA46UsLXKYP2PeSwczVYu?=
+ =?iso-8859-1?Q?OXZRdzv8aZHuaEMVSa6QOdoGedaIjdFwGV0txSaU2aEZV5NvR6G0SENSpS?=
+ =?iso-8859-1?Q?B82Yx3IRDo0CQ9eaEhdyoee97VABbE3QWJMPd0C6gYBSotKEICPrxLiGy/?=
+ =?iso-8859-1?Q?hah1TywpWra8gWrrGmTDqYc8OSpm46wTSLexj7Jgry4vqGE0rrBagmjv3Q?=
+ =?iso-8859-1?Q?k712II0TAIJxC4qGqHlyjcuwvULoqCAEj7NC5SorMmEyh2WegEL2KkGe0M?=
+ =?iso-8859-1?Q?ZTELUkN2cpBik9i6VYrOg6fHqfDWJbjsU6XBiQoV4RhoYUb+C3wvkw720B?=
+ =?iso-8859-1?Q?ADXBIW/PMyDp9TVNf8MB2xDrW0TTUueUUWiOp2LisDG1kDMFKmv+NItJQJ?=
+ =?iso-8859-1?Q?JVn+S4/uiaAY3KEbdJGruTJjmKey0tzDexSoL5/oufIu8Kygsk3SB8L3UC?=
+ =?iso-8859-1?Q?m3H1jm+/xdBYGiqZ4rqmYIGBkv+XS86+IGCSQ3e8k1b355eJundEpSorCZ?=
+ =?iso-8859-1?Q?7TwQeyFFr91lHMM6rhJUu6xOYa1j4Ulo3kJIZ1qWwqPKKrVC7jArRKQkEt?=
+ =?iso-8859-1?Q?/U5snTherY1X9tFMmTX9dGQxYq3WfiKnrvgzBfejVTBnLKhDx5js3+yopK?=
+ =?iso-8859-1?Q?8HQmdKQfE1KyffjDew1MutijAGk9zKwBsQsXNqUOFMm7Og8jIZ80m3xRl5?=
+ =?iso-8859-1?Q?5cKccjx72BPoBm1EAzif2XcmnAE8bZEbl7vc1oH+CiqSNWXKPnLQXQ+onU?=
+ =?iso-8859-1?Q?1KDF1s39Sx7oboTtUAKU+4R56v2lW9qvQedflymidiWqJwnFzFGwe60u5G?=
+ =?iso-8859-1?Q?QzAF+t+L2WVjnybdsypo66ITgx2xBlJBiLdvX1N3AkM9nTN+zN7CZB/Q?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28f2a1f8-4bdf-4cb9-790d-08db5261ef33
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ce3987a-3da4-402e-e345-08db5261cca5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 May 2023 20:53:40.1781
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2023 20:54:38.2884
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EbQIPT9d5tEY8/Noa4ABOYzm+B0zIoTZCVMm1+BtY7U3scfPJjLv1ctA0fB0RZKMgAw16nEwKiINWo4UO+bFkypzpoNNCXYIP+eZJdlFg9E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6932
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kx/4u8VBIyUoOAhW18Ppmx2kbzBl4KNScq+Sp2AttaczJaMLYAg9xMqXPuM14Cgc++I/5Q1e1cryEu7eeK0yDg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9461
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
->From: Jakub Kicinski <kuba@kernel.org>
->Sent: Thursday, May 11, 2023 5:21 PM
->
->On Thu, 11 May 2023 07:40:26 +0000 Kubalewski, Arkadiusz wrote:
->> >> Remove "no holdover available". This is not a state, this is a mode
->> >> configuration. If holdover is or isn't available, is a runtime info.
->> >
->> >Agreed, seems a little confusing now. Should we expose the system clk
->> >as a pin to be able to force lock to it? Or there's some extra magic
->> >at play here?
->>
->> In freerun you cannot lock to anything it, it just uses system clock fro=
-m
->> one of designated chip wires (which is not a part of source pins pool) t=
-o
->> feed
->> the dpll. Dpll would only stabilize that signal and pass it further.
->> Locking itself is some kind of magic, as it usually takes at least ~15
->> seconds
->> before it locks to a signal once it is selected.
->
->Okay, I guess that makes sense.
->
->I was wondering if there may be a DPLLs which allow other input clocks
->to bypass the PLL logic, and output purely a stabilized signal. In
->which case we should model this as a generic PLL bypass, FREERUN being
->just one special case where we're bypassing with the system clock.
->
->But that may well be a case of "software guy thinking", so if nobody
->thinks this can happen in practice we can keep FREERUN.
->
+On Thu, May 11, 2023 at 09:25:39AM -0700, Jakub Kicinski wrote:
+> On Thu, 11 May 2023 18:56:40 +0300 Vladimir Oltean wrote:
+> > > More importantly "monolithic" drivers have DMA/MAC/PHY all under 
+> > > the NDO so assuming that SOF_PHY_TIMESTAMPING implies a phylib PHY
+> > > is not going to work.
+> > > 
+> > > We need a more complex calling convention for the NDO.  
+> > 
+> > It's the first time I become aware of the issue of PHY timestamping in
+> > monolithic drivers that don't use phylib, and it's actually a very good
+> > point. I guess that input gives a clearer set of constraints for Köry to
+> > design an API where the selected timestamping layer is maybe passed to
+> > ndo_hwtstamp_set() and MAC drivers are obliged to look at it.
+> > 
+> > OTOH, a complaint about the current ndo_eth_ioctl() -> phy_mii_ioctl()
+> > code path was that phylib PHY drivers need to have the explicit blessing
+> > from the MAC driver in order to enable timestamping. This patch set
+> > attempts to circumvent that, and you're basically saying that it shouldn't.
+> 
+> Yes, we don't want to lose the simplification benefit for the common
+> cases.
 
-Well I am not saying such use-case doesn't exist, but haven't heard about i=
-t.
+While I'm all for simplification in general, let's not take that for
+granted and see what it implies, first.
 
->> >Noob question, what is NCO in terms of implementation?
->> >We source the signal from an arbitrary pin and FW / driver does
->> >the control? Or we always use system refclk and then tune?
->> >
->>
->> Documentation of chip we are using, stated NCO as similar to FREERUN, an=
-d it
->> runs on a SYSTEM CLOCK provided to the chip (plus some stabilization and
->> dividers before it reaches the output).
->> It doesn't count as an source pin, it uses signal form dedicated wire fo=
-r
->> SYSTEM CLOCK.
->> In this case control over output frequency is done by synchronizer chip
->> firmware, but still it will not lock to any source pin signal.
->
->Reading wikipedia it sounds like NCO is just a way of generating
->a waveform from synchronous logic.
->
->Does the DPLL not allow changing clock frequency when locked?
->I.e. feeding it one frequency and outputting another?
+If the new default behavior for the common case is going to be to bypass
+the MAC's ndo_hwtstamp_set(), then MAC drivers which didn't explicitly
+allow phylib PHY timestamping will now do.
 
-Well our dpll (actually synchronizer chip) does that in AUTOMATIC/MANUAL mo=
-des,
-i.e. you feed 1 PPS from gnss and output feed for PHY's ~156 MHZ, so I gues=
-s
-this is pretty common for complex synchronizer chips, although AFAIK this i=
-s
-achieved with additional signal synthesizers after the PLL logic.
+Let's group them into:
 
->Because I think that'd be done by an NCO, no?
+(A) MAC drivers where that is perfectly fine
 
-From docs I can also see that chip has additional designated dpll for NCO m=
-ode,
-and this statement:
-"Numerically controlled oscillator (NCO) behavior allows system software to=
- steer
-DPLL frequency or synthesizer frequency with resolution better than 0.005 p=
-pt."
+(B) MAC drivers with forwarding offload, which would forward/flood PTP
+    frames carrying PHY timestamps
 
-I am certainly not an expert on this, but seems like the NCO mode for this =
-chip
-is better than FREERUN, since signal produced on output is somehow higher q=
-uality.
+(C) "solipsistic" MAC drivers which assume that any skb with
+    SKBTX_HW_TSTAMP is a skb for *me* to timestamp
 
->
->> >> Is it needed to mention the holdover mode. It's slightly confusing,
->> >> because user might understand that the lock-status is always "holdove=
-r"
->> >> in case of "holdover" mode. But it could be "unlocked", can't it?
->> >> Perhaps I don't understand the flows there correctly :/
->> >
->> >Hm, if we want to make sure that holdover mode must result in holdover
->> >state then we need some extra atomicity requirements on the SET
->> >operation. To me it seems logical enough that after setting holdover
->> >mode we'll end up either in holdover or unlocked status, depending on
->> >lock status when request reached the HW.
->> >
->>
->> Improved the docs:
->>         name: holdover
->>         doc: |
->>           dpll is in holdover state - lost a valid lock or was forced
->>           by selecting DPLL_MODE_HOLDOVER mode (latter possible only
->>           when dpll lock-state was already DPLL_LOCK_STATUS_LOCKED,
->> 	  if it was not, the dpll's lock-status will remain
->>           DPLL_LOCK_STATUS_UNLOCKED even if user requests
->>           DPLL_MODE_HOLDOVER)
->> Is that better?
->
->Yes, modulo breaking it up into sentences, as Jiri says.
->
+Going for the simplification would mean making sure that cases (B)
+and (C) are well handled, and have a reasonable chance of not getting
+reintroduced in the future.
 
-Sure, will do.
+For case (B) it would mean patching all existing switch drivers which
+don't allow PHY timestamping to still not allow PHY timestamping, and
+fixing those switch drivers which allow PHY timestamping but don't set
+up traps (probably those weren't tested in a bridging configuration).
 
->> What extra atomicity you have on your mind?
->> Do you suggest to validate and allow (in dpll_netlink.c) only for 'unloc=
-ked'
->> or 'holdover' states of dpll, once DPLL_MODE_HOLDOVER was successfully
->> requested by the user?
->
->No, I was saying that making sure that we end up in holdover (rather
->than unlocked) when user requested holdover is hard, and we shouldn't
->even try to implement that.
+For case (C) it would mean scanning all MAC drivers for bugs akin to the
+one fixed in commit c26a2c2ddc01 ("gianfar: Fix TX timestamping with a
+stacked DSA driver"). I did that once, but it was years ago and I can't
+guarantee what is the current state or that I didn't miss anything.
+For example, I missed the minor fact that igc would count skbs
+timestamped by a non-igc entity in its TX path as 'tx_hwtstamp_skipped'
+packets, visible in ethtool -S:
+https://lore.kernel.org/intel-wired-lan/20230504235233.1850428-2-vinicius.gomes@intel.com/
 
-Okay.
+It has to be said that nowadays, Documentation/networking/timestamping.rst
+does warn about stacked PHCs, and those who read will find it. Also,
+ptp4l nowadays warns if there are multiple TX timestamps received for
+the same skb, and that's a major user of this functionality. So I don't
+mean to point this case out as a form of discouragement, but it is going
+to be a bit of a roll of dice.
 
-Thank you!
-Arkadiusz
+
+The alternative (ditching the simplification) is that someone still
+has to code up the glue logic from ndo_hwtstamp_set() -> phy_mii_ioctl(),
+and that presumes some minimal level of testing, which we are now
+"simplifying" away.
+
+The counter-argument against ditching the simplification is that DSA
+is also vulnerable to the bugs from case (C), but as opposed to PHY
+timestamping where currently MACs need to voluntarily pass the
+phy_mii_ioctl() call themselves, MACs don't get to choose if they want
+to act as DSA masters or not. That gives some more confidence that bugs
+in this area might not be so common, and leaves just (B) a concern.
+
+To analyze how common is the common case is a simple matter of counting
+how many drivers among those with SIOCSHWTSTAMP implementations also
+have some form of forwarding offload, OR, as you point out, how many
+don't use phylib.
+
+> I think we should make the "please call me for PHY requests" an opt in.
+> 
+> Annoyingly the "please call me for PHY/all requests" needs to be
+> separate from "this MAC driver supports PHY timestamps". Because in
+> your example the switch driver may not in fact implement PHY stamping,
+> it just wants to know about the configuration.
+> 
+> So we need a bit somewhere (in ops? in some other struct? in output 
+> of get_ts?) to let the driver declare that it wants to see all TS
+> requests. (I've been using bits in ops, IDK if people find that
+> repulsive or neat :))
+
+It's either repulsive or neat, depending on the context.
+
+Last time you suggested something like this in an ops structure was IIRC
+something like whether "MAC Merge is supported". My objection was that
+DSA has a common set of ops structures (dsa_slave_ethtool_ops,
+dsa_slave_netdev_ops) behind which lie different switch families from
+at least 13 vendors. A shared const ops structure is not an appropriate
+means to communicate whether 13 switch vendors support a TSN MAC Merge
+layer or not.
+
+With declaring interest in all hardware timestamping requests in the
+data path of a MAC, be they MAC-level requests or otherwise, it's a bit
+different, because all DSA switches have one thing in common, which is
+that they're switches, and that is relevant here. So I'm not opposed to
+setting a bit in the ethtool ops structure, at least for DSA that could
+work just fine.
+
+> Then if bit is not set or NDO returns -EOPNOTSUPP for PHY requests we
+> still try to call the PHY in the core?
+
+Well, if there is no interest for special behavior from the MAC driver,
+then I guess the memo is "yolo"...
+
+But OTOH, if a macro-driver like DSA declares its interest in receiving
+all timestamping requests, but then that particular DSA switch returns
+-EOPNOTSUPP in the ndo_hwtstamp_set() handler, it would be silly for the
+core to still "force the entry" and call phy_mii_ioctl() anyway - because
+we know that's going to be broken.
+
+So with "NDO returns -EOPNOTSUPP", I hope you don't mean *that* NDO
+(ndo_hwtstamp_set()) but a previously unnamed one that serves the same
+purpose as the capability bit - ndo_hey_are_you_interested_in_this_hwtstamp_request().
+In that case, yes - with -EOPNOTSUPP we're back to "yolo".
+
+> Separately the MAC driver needs to be able to report what stamping 
+> it supports (DMA, MAC, PHY, as mentioned in reply to patch 2).
+
+I'm a bit unclear on that - responded there.
 
