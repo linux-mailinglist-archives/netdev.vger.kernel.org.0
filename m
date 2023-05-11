@@ -1,105 +1,85 @@
-Return-Path: <netdev+bounces-1970-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1971-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F01036FFCA1
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 00:29:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 395A16FFCDB
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 00:54:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B2D5D1C21090
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 22:29:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 092C41C210C1
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 22:54:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A77317730;
-	Thu, 11 May 2023 22:29:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EB86BAD50;
+	Thu, 11 May 2023 22:54:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B071A174F0
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 22:29:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E92B0C433EF;
-	Thu, 11 May 2023 22:29:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A36C3FDF
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 22:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A301C433EF;
+	Thu, 11 May 2023 22:54:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683844166;
-	bh=JTzpkxSr+WUr9mtwXRAATmDWd54k8NYw09DpF3q2F8E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H7xHg04127AaUCeXJEtiVTjf+c2HWlvGS2BaNojXk9aqOgK9I4+rTaXlC3dBOg5Wx
-	 yquhLWhV0pIh3nJ2gBQ02OwcpUueebcI9okxB7dxkaY1t55EzqHvlvC82CrtLBfR3m
-	 Te45ZfCRrUb9mFZ2X9h3ZaeWE1mZy+R6LOjQcbDMAw3MeBF2cOLvoBW2+kR+I9cwPL
-	 /nXqfT0JnCdd+wrwzi3jPnMx/KI15bZl/7lvZ5s0XzOmOuMFy/QmnuKczuDHnbnpSS
-	 nFNMWQFdYEfsU1zWZM2KBKHJQrPS94n0iAVjExjGLNnF5CaEAGwbUQK+Y3Shrm0w2w
-	 GK8LIZVQjPgfw==
-Date: Thu, 11 May 2023 23:29:20 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Conor Dooley <conor.dooley@microchip.com>
-Cc: Pranavi Somisetty <pranavi.somisetty@amd.com>,
-	nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, richardcochran@gmail.com, linux@armlinux.org.uk,
-	palmer@dabbelt.com, git@amd.com, michal.simek@amd.com,
-	harini.katakam@amd.com, radhey.shyam.pandey@amd.com,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org
-Subject: Re: [PATCH net-next v2 1/2] dt-bindings: net: cdns,macb: Add
- rx-watermark property
-Message-ID: <20230511-unhidden-mummify-800fe847e25d@spud>
-References: <20230511071214.18611-1-pranavi.somisetty@amd.com>
- <20230511071214.18611-2-pranavi.somisetty@amd.com>
- <20230511-canned-gray-005130594368@wendy>
+	s=k20201202; t=1683845681;
+	bh=QVVCkIxc3xtTASmFP+aV8ALm10wM0ZQ5lCoP2mGPlVQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=eQjFNbJrfqzJcjoKMu0HjRT066wbeDEN2Z4+O8ZDMZ10SVneaubF51m9dmjnPwu7C
+	 Ow80Zrmo6m5aqYHm6xSrEeAIERzfDKUTdgmXwZVUwMt/c3OYvALfmwzpqrbYPHAT5v
+	 mAV5/pL55D4x9gIHgw5h80XQJqYU9BcfdkAhGlhMkUt/HT+ODyGiQUVVLtEbo2oBKc
+	 tbnqwairZFTv2+xtrPW4qQ86EFNHagY23MyUbjgrl9YxiKXLPGSUfGdL3up8OXt6ld
+	 IfPCn0A3XYkvqlHi7OknHBb9Bp2Gxv8QBIi9sVWG2LrgRiFek08lJ5db9thhJTYGQa
+	 L1awzlWEFTTdQ==
+Date: Thu, 11 May 2023 15:54:39 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>, =?UTF-8?B?S8O2cnk=?= Maincent
+ <kory.maincent@bootlin.com>, netdev@vger.kernel.org, glipus@gmail.com,
+ maxime.chevallier@bootlin.com, vadim.fedorenko@linux.dev,
+ richardcochran@gmail.com, gerhard@engleder-embedded.com,
+ thomas.petazzoni@bootlin.com, krzysztof.kozlowski+dt@linaro.org,
+ robh+dt@kernel.org
+Subject: Re: [PATCH net-next RFC v4 4/5] net: Let the active time stamping
+ layer be selectable.
+Message-ID: <20230511155439.7652757c@kernel.org>
+In-Reply-To: <ZF1Y3OurlvukFBs1@shell.armlinux.org.uk>
+References: <20230406173308.401924-1-kory.maincent@bootlin.com>
+	<20230406173308.401924-1-kory.maincent@bootlin.com>
+	<20230406173308.401924-5-kory.maincent@bootlin.com>
+	<20230406173308.401924-5-kory.maincent@bootlin.com>
+	<20230429175807.wf3zhjbpa4swupzc@skbuf>
+	<20230502130525.02ade4a8@kmaincent-XPS-13-7390>
+	<20230511134807.v4u3ofn6jvgphqco@skbuf>
+	<20230511083620.15203ebe@kernel.org>
+	<20230511155640.3nqanqpczz5xwxae@skbuf>
+	<20230511092539.5bbc7c6a@kernel.org>
+	<ZF1Y3OurlvukFBs1@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cp1Gsw0Yd1cfGjfb"
-Content-Disposition: inline
-In-Reply-To: <20230511-canned-gray-005130594368@wendy>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+On Thu, 11 May 2023 22:06:36 +0100 Russell King (Oracle) wrote:
+> I haven't thought this through fully, but just putting this out there
+> as a potential suggestion...
+> 
+> Would it help at all if we distilled the entire timestamping interface
+> into a separate set of ops which are registered independently from the
+> NDO, and NDO has a call to get the ops for the layer being configured?
+> 
+> That would allow a netdev driver to return the ops appropriate for the
+> MAC layer or its own PHY layer, or maybe phylib.
+> 
+> In the case of phylib, as there is a raft of drivers that only bind to
+> their phylib PHY in the NDO open method, we'd need to figure out how
+> to get the ops for the current mode at that time.
+> 
+> There's probably lots I've missed though...
 
---cp1Gsw0Yd1cfGjfb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, May 11, 2023 at 08:25:15AM +0100, Conor Dooley wrote:
-> On Thu, May 11, 2023 at 01:12:13AM -0600, Pranavi Somisetty wrote:
-> > watermark value is the minimum amount of packet data
-> > required to activate the forwarding process. The watermark
-> > implementation and maximum size is dependent on the device
-> > where Cadence MACB/GEM is used.
-> >=20
-> > Signed-off-by: Pranavi Somisetty <pranavi.somisetty@amd.com>
->=20
-> Please send dt-binding patches to the dt-binding maintainers and list.
-> get_maintainer.pl should have told you to do so & without having done
-> so, the bindings will not get tested :/
-
-The automation we run for the linux-riscv did actually run against
-this though, and even dtbs_check complains about this binding:
-
-Documentation/devicetree/bindings/net/cdns,macb.yaml: properties:rx-waterma=
-rk:maxItems: False schema does not allow 1
-	hint: Scalar properties should not have array keywords
-	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
-
-Please test your bindings :/
-
-Cheers,
-Conor.
-
---cp1Gsw0Yd1cfGjfb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZF1sQAAKCRB4tDGHoIJi
-0mx8AQDvCXrHHAJUliEbLe3FqTXIyyuFRBHjHbmN16sg23MaCwEAwYNs6Dk9vDu4
-ES17DcW0ax+qchBDdyxacGBtlx2oswU=
-=lc3I
------END PGP SIGNATURE-----
-
---cp1Gsw0Yd1cfGjfb--
+Sounds reasonable, only question is what to pass as the object (first
+argument) of these ops. Some new struct?
 
