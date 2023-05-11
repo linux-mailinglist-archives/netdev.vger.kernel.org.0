@@ -1,63 +1,63 @@
-Return-Path: <netdev+bounces-1803-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1801-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 037566FF300
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:35:31 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D2CEC6FF2FC
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:34:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 210971C20F7B
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:35:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AA7E91C208F2
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:34:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F309F19E7A;
-	Thu, 11 May 2023 13:34:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C8C2017739;
+	Thu, 11 May 2023 13:34:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E13C519E6F
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:34:32 +0000 (UTC)
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1EA100D6;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6F681F92C
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:34:30 +0000 (UTC)
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DA110E6C;
 	Thu, 11 May 2023 06:34:16 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id d2e1a72fcca58-6439bbc93b6so5926202b3a.1;
+Received: by mail-pj1-x1030.google.com with SMTP id 98e67ed59e1d1-24ded4b33d7so5964086a91.3;
         Thu, 11 May 2023 06:34:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683812056; x=1686404056;
+        d=gmail.com; s=20221208; t=1683812055; x=1686404055;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HoKyuHLfT/Y/QsL6VxzM/0MIfBb45C0FJHVlIVZz104=;
-        b=kkVZKiYfEcCdoefsHaMhY1LIJItNpc1tc2IkQ/P+y072+Ftr3ATNGwAODW9yC5oabG
-         lEVaDH26i2znzLMUxRJPlsSCkYKqfolieTzP6Op/omkT7lGqQNPID45STOHP88j40PHE
-         puk1llPOZExeQrW5GiXQmUvCU68ptpxpzfambpAih93AlGWzJXCamE4pEMGY6qBxi0/N
-         zX5gKuRwM5LL7wVXU6dm8aK+rKng53ZDCsV6QLz9opk7Gl8I2gx3cad5YOuCQ1OBYycl
-         y1ZR0SEmToaFBNROxpc8cIoUbIQfEQ5lbLJZbtSRWlIpPfcakFPxkySVAmqnm2WFEtJD
-         hP1A==
+        bh=jZJgd1J/yhpIEPxETlLE5U9uKTj61DHL8mLsf2B7J04=;
+        b=Q38OyEzdg7CS9Wc8ZD+5BjNcaWS8Kgar4wv+xF8w2kPAsi+UnKgNrxIPWyFqu+pygN
+         fqUCBrp1eBV6DtqXgW0Xrj4jd+zRIeDvYV0EawaP9XMEyATr4wgrGme4cJFUNf64Q6eW
+         r1zY7p/scMzGLYZ2wGk50v9xUheiQXvt2GOA0FcVkJvGV4Xk69hSTQk+JGIZrucEcUVb
+         nolWl/a1D1x8tFuYyjtotwArb2yPA3B/U1LcPkQWBw7P2YQu2hoCg4zq0nY2XXrC+pmg
+         KHcWpE8OkXXhV3Q3TBUCMa0JO71tRnfrjM4Mfvt6GzLGfLQ+BMuD/fWVFfaajnhMgVPf
+         W5Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683812056; x=1686404056;
+        d=1e100.net; s=20221208; t=1683812055; x=1686404055;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=HoKyuHLfT/Y/QsL6VxzM/0MIfBb45C0FJHVlIVZz104=;
-        b=hbTkkP0IiRgqJtXGZwgzEyRd1v0xI0WHJnkBTMbeDgm2v11sirL/2WIERMZCX942cV
-         R+xJDvd54pq1q3H9XkTamRPEmrHLRD4OUNwtTl0w9Mu/pnCtkuwHvA9I2OuKZ3KjmeEV
-         PTIGPQcRh8lTLUtaFyxGuOk3Pq75C5nywg93M69HwsJez9OxLezkFyOrakwMlj1Rs/Yc
-         7IX5ZCM3teR6XnWg9AHv4/gZ9CV7aBrOUOfkovog1OjUZvWoz+arRP3zs0SeexeVlWJS
-         v6IZaXovlnm+Mf4hpQ7R/TfI2+0nvSRMhQ5Ljo3py2sEikStQraV3ApW8a7z7Sx61NWq
-         DSTA==
-X-Gm-Message-State: AC+VfDxMEtHuvaVrABhmzo0VqYLexGcXxmCq+UbqAdSpK0Jf5zY0pWC9
-	Zim61AzfjGG8lufSVjvqjxI=
-X-Google-Smtp-Source: ACHHUZ4262YHOoAdK0Uxg1/cglS/7wigxDC7J/l5c10IuMlaf9GDBAHt/NGAsZh1zd2FtAkAw0wtWA==
-X-Received: by 2002:a05:6a00:14c8:b0:63b:4e99:807d with SMTP id w8-20020a056a0014c800b0063b4e99807dmr30877582pfu.8.1683812055845;
+        bh=jZJgd1J/yhpIEPxETlLE5U9uKTj61DHL8mLsf2B7J04=;
+        b=begEJt0zLw7yiqzW/E3mJppMUk+X2zgOhLALjlnN3Z3cWHFUyFkl9AoPCkQAjsImKP
+         Ig/owBDx7xrKfvCAUYVwJ0hyPo3qQAUwW9U1olSC6mpz2ZKyr5Z62kUIltVM+irWGocz
+         GOCTqlFRxo2bPqhHcAjW4z/ei0xzntnM1m+AmquZarWOvy9owHOcMukKshHON8ViPbdS
+         CfKOi4Xs10HvdmzfzDkhPOpG85yFYiMpPC5QOlk9ZUSRMj4F10ULfFKmoBHdoCQCNJM9
+         829JiqtIci/ejrwJAJ8jWh4XrIgY7aBGJUwpVEVYSYkTmqx94fOFDoOHGxxmGgwgWzlL
+         XEmQ==
+X-Gm-Message-State: AC+VfDyQp16vM23TqEtzdORIRr7yCn4HIPFFxv8fiFZ885dsc6tiJjQa
+	BSWh1Wdpm8SjqEhRJ49sTq8=
+X-Google-Smtp-Source: ACHHUZ5jN/0ts75KhdoLwqc2irXOTUrehxCBlN6tUqbiPb++pl8Az5O3mDzXUIR5ZNe60Nm8ernISA==
+X-Received: by 2002:a17:90b:1103:b0:250:6c76:fd9b with SMTP id gi3-20020a17090b110300b002506c76fd9bmr15464060pjb.38.1683812055308;
         Thu, 11 May 2023 06:34:15 -0700 (PDT)
 Received: from debian.me (subs02-180-214-232-92.three.co.id. [180.214.232.92])
-        by smtp.gmail.com with ESMTPSA id t23-20020a62ea17000000b0062cf75a9e6bsm5304247pfh.131.2023.05.11.06.34.14
+        by smtp.gmail.com with ESMTPSA id jb4-20020a170903258400b001aaf6353736sm5896810plb.80.2023.05.11.06.34.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 11 May 2023 06:34:15 -0700 (PDT)
 Received: by debian.me (Postfix, from userid 1000)
-	id 1E783106796; Thu, 11 May 2023 20:34:09 +0700 (WIB)
+	id A66971037B5; Thu, 11 May 2023 20:34:10 +0700 (WIB)
 From: Bagas Sanjaya <bagasdotme@gmail.com>
 To: Linux DRI Development <dri-devel@lists.freedesktop.org>,
 	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -105,12 +105,13 @@ Cc: Diederik de Haas <didi.debian@cknow.org>,
 	Gaosheng Cui <cuigaosheng1@huawei.com>,
 	Dan Carpenter <error27@gmail.com>,
 	Archana <craechal@gmail.com>,
-	Thomas Davis <tadavis@lbl.gov>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH 03/10] net: bonding: Add SPDX identifier to remaining files
-Date: Thu, 11 May 2023 20:33:59 +0700
-Message-Id: <20230511133406.78155-4-bagasdotme@gmail.com>
+	"David A . Hinds" <dahinds@users.sourceforge.net>,
+	Donald Becker <becker@scyld.com>,
+	Peter De Schrijver <p2@mind.be>,
+	Greg Ungerer <gerg@linux-m68k.org>
+Subject: [PATCH 04/10] net: ethernet: 8390: Replace GPL boilerplate with SPDX identifier
+Date: Thu, 11 May 2023 20:34:00 +0700
+Message-Id: <20230511133406.78155-5-bagasdotme@gmail.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230511133406.78155-1-bagasdotme@gmail.com>
 References: <20230511133406.78155-1-bagasdotme@gmail.com>
@@ -120,7 +121,7 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2266; i=bagasdotme@gmail.com; h=from:subject; bh=AbejYIDoCHeefbQ32iun0DrWErMv9kzK4SAlm6OQaX4=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDCkx747PkA9/cfxz2Ifqa3XbZI53SLo7dFo4Oppqt3OfP Ggdve1YRykLgxgXg6yYIsukRL6m07uMRC60r3WEmcPKBDKEgYtTACbi/4CRoe3mvdbgL1GSWv5G P7/8TQrJdrn+UtAjeFv6ncg1f632X2Vk2Cwokqki0NzUGPFRxdqA694fs0/OHL+elKf5NGY18m9 kAwA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=12216; i=bagasdotme@gmail.com; h=from:subject; bh=Qt/i4eQgMuIgsiTGQ80teX3SuDZ7RNq5Fn4UY3gpc7Y=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDCkx745vV5y/9MIL7u/LGNt8FT1ffft1Nv5E7vXolzbbB b8K1l3e21HKwiDGxSArpsgyKZGv6fQuI5EL7WsdYeawMoEMYeDiFICJbOBg+MMVwa8SLHJm3tvd V03W3uNbF1Y/YVWLyJWW/ybV7Tv1WDQZGfYdm79lD+/OhTX2rHf7/l8ziJAJNRb7fo3nyox+U72 1s3gA
 X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -130,67 +131,295 @@ X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Previous batches of SPDX conversion missed bond_main.c and bonding_priv.h
-because these files doesn't mention intended GPL version. Add SPDX identifier
-to these files, assuming GPL 1.0+.
+Replace GPL boilerplate notice on remaining files with appropriate SPDX
+tag. For files mentioning COPYING, use GPL 2.0; otherwise GPL 1.0+.
 
-Cc: Thomas Davis <tadavis@lbl.gov>
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Stephen Hemminger <stephen@networkplumber.org>
+Cc: David A. Hinds <dahinds@users.sourceforge.net>
+Cc: Donald Becker <becker@scyld.com>
+Cc: Peter De Schrijver <p2@mind.be>
+Cc: Greg Ungerer <gerg@linux-m68k.org>
+Cc: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
- drivers/net/bonding/bond_main.c    | 1 +
- drivers/net/bonding/bonding_priv.h | 4 +---
- include/net/bonding.h              | 4 +---
- 3 files changed, 3 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/8390/8390.h      | 2 ++
+ drivers/net/ethernet/8390/apne.c      | 7 +------
+ drivers/net/ethernet/8390/axnet_cs.c  | 6 +++---
+ drivers/net/ethernet/8390/hydra.c     | 6 ++----
+ drivers/net/ethernet/8390/lib8390.c   | 5 ++---
+ drivers/net/ethernet/8390/mac8390.c   | 6 ++----
+ drivers/net/ethernet/8390/mcf8390.c   | 4 +---
+ drivers/net/ethernet/8390/ne.c        | 4 +---
+ drivers/net/ethernet/8390/ne2k-pci.c  | 8 +-------
+ drivers/net/ethernet/8390/pcnet_cs.c  | 5 ++---
+ drivers/net/ethernet/8390/smc-ultra.c | 4 +---
+ drivers/net/ethernet/8390/stnic.c     | 5 +----
+ drivers/net/ethernet/8390/wd.c        | 4 +---
+ drivers/net/ethernet/8390/zorro8390.c | 7 +------
+ 14 files changed, 21 insertions(+), 52 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 3fed888629f7b5..93fc7b38835c07 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
+diff --git a/drivers/net/ethernet/8390/8390.h b/drivers/net/ethernet/8390/8390.h
+index e5226446599884..b0e3df9779ddbb 100644
+--- a/drivers/net/ethernet/8390/8390.h
++++ b/drivers/net/ethernet/8390/8390.h
+@@ -1,3 +1,5 @@
++/* SPDX-License-Identifier: GPL-1.0-or-later */
++
+ /* Generic NS8390 register definitions. */
+ 
+ /* This file is part of Donald Becker's 8390 drivers, and is distributed
+diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
+index 991ad953aa7906..ef1f40e8801ccc 100644
+--- a/drivers/net/ethernet/8390/apne.c
++++ b/drivers/net/ethernet/8390/apne.c
 @@ -1,3 +1,4 @@
 +/* SPDX-License-Identifier: GPL-1.0-or-later */
  /*
-  * originally based on the dummy device.
+  * Amiga Linux/68k 8390 based PCMCIA Ethernet Driver for the Amiga 1200
   *
-diff --git a/drivers/net/bonding/bonding_priv.h b/drivers/net/bonding/bonding_priv.h
-index 48cdf3a49a7d74..9570ceb0830327 100644
---- a/drivers/net/bonding/bonding_priv.h
-+++ b/drivers/net/bonding/bonding_priv.h
-@@ -1,3 +1,4 @@
-+/* SPDX-License-Identifier: GPL-1.0-or-later */
- /*
-  * Bond several ethernet interfaces into a Cisco, running 'Etherchannel'.
+@@ -19,12 +20,6 @@
   *
-@@ -7,9 +8,6 @@
-  * BUT, I'm the one who modified it for ethernet, so:
-  * (c) Copyright 1999, Thomas Davis, tadavis@lbl.gov
+  * ----------------------------------------------------------------------------
   *
-- *	This software may be used and distributed according to the terms
-- *	of the GNU Public License, incorporated herein by reference.
+- * This file is subject to the terms and conditions of the GNU General Public
+- * License.  See the file COPYING in the main directory of the Linux
+- * distribution for more details.
+- *
+- * ----------------------------------------------------------------------------
 - *
   */
  
- #ifndef _BONDING_PRIV_H
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index a60a24923b5599..09053e1107d095 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -1,3 +1,4 @@
+ 
+diff --git a/drivers/net/ethernet/8390/axnet_cs.c b/drivers/net/ethernet/8390/axnet_cs.c
+index 78f985885547ea..937485fa87825a 100644
+--- a/drivers/net/ethernet/8390/axnet_cs.c
++++ b/drivers/net/ethernet/8390/axnet_cs.c
+@@ -1,3 +1,5 @@
 +/* SPDX-License-Identifier: GPL-1.0-or-later */
++
+ /*======================================================================
+ 
+     A PCMCIA ethernet driver for Asix AX88190-based cards
+@@ -17,9 +19,7 @@
+ 
+     Written 1992,1993 by Donald Becker.
+     Copyright 1993 United States Government as represented by the
+-    Director, National Security Agency.  This software may be used and
+-    distributed according to the terms of the GNU General Public License,
+-    incorporated herein by reference.
++    Director, National Security Agency.
+     Donald Becker may be reached at becker@scyld.com
+ 
+ ======================================================================*/
+diff --git a/drivers/net/ethernet/8390/hydra.c b/drivers/net/ethernet/8390/hydra.c
+index 1df7601af86a40..9fae05dd12a3e3 100644
+--- a/drivers/net/ethernet/8390/hydra.c
++++ b/drivers/net/ethernet/8390/hydra.c
+@@ -1,10 +1,8 @@
++/* SPDX-License-Identifier: GPL-1.0-only */
++
+ /* New Hydra driver using generic 8390 core */
+ /* Based on old hydra driver by Topi Kanerva (topi@susanna.oulu.fi) */
+ 
+-/* This file is subject to the terms and conditions of the GNU General      */
+-/* Public License.  See the file COPYING in the main directory of the       */
+-/* Linux distribution for more details.                                     */
+-
+ /* Peter De Schrijver (p2@mind.be) */
+ /* Oldenburg 2000 */
+ 
+diff --git a/drivers/net/ethernet/8390/lib8390.c b/drivers/net/ethernet/8390/lib8390.c
+index e84021282edf30..14ab1e4d9a5c36 100644
+--- a/drivers/net/ethernet/8390/lib8390.c
++++ b/drivers/net/ethernet/8390/lib8390.c
+@@ -1,3 +1,5 @@
++/* SPDX-License-Identifier: GPL-1.0-or-later */
++
+ /* 8390.c: A general NS8390 ethernet driver core for linux. */
  /*
-  * Bond several ethernet interfaces into a Cisco, running 'Etherchannel'.
+ 	Written 1992-94 by Donald Becker.
+@@ -5,9 +7,6 @@
+ 	Copyright 1993 United States Government as represented by the
+ 	Director, National Security Agency.
+ 
+-	This software may be used and distributed according to the terms
+-	of the GNU General Public License, incorporated herein by reference.
+-
+ 	The author may be reached as becker@scyld.com, or C/O
+ 	Scyld Computing Corporation
+ 	410 Severn Ave., Suite 210
+diff --git a/drivers/net/ethernet/8390/mac8390.c b/drivers/net/ethernet/8390/mac8390.c
+index 7fb819b9b89a5b..e09f0f20516593 100644
+--- a/drivers/net/ethernet/8390/mac8390.c
++++ b/drivers/net/ethernet/8390/mac8390.c
+@@ -1,11 +1,9 @@
++/* SPDX-License-Identifier: GPL-1.0-or-later */
+ /* mac8390.c: New driver for 8390-based Nubus (or Nubus-alike)
+    Ethernet cards on Linux */
+ /* Based on the former daynaport.c driver, by Alan Cox.  Some code
+    taken from or inspired by skeleton.c by Donald Becker, acenic.c by
+-   Jes Sorensen, and ne2k-pci.c by Donald Becker and Paul Gortmaker.
+-
+-   This software may be used and distributed according to the terms of
+-   the GNU Public License, incorporated herein by reference.  */
++   Jes Sorensen, and ne2k-pci.c by Donald Becker and Paul Gortmaker. */
+ 
+ /* 2000-02-28: support added for Dayna and Kinetics cards by
+    A.G.deWijn@phys.uu.nl */
+diff --git a/drivers/net/ethernet/8390/mcf8390.c b/drivers/net/ethernet/8390/mcf8390.c
+index 8a7918d3341965..e2dbc4b858c658 100644
+--- a/drivers/net/ethernet/8390/mcf8390.c
++++ b/drivers/net/ethernet/8390/mcf8390.c
+@@ -1,3 +1,4 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  *  Support for ColdFire CPU based boards using a NS8390 Ethernet device.
   *
-@@ -7,9 +8,6 @@
-  * BUT, I'm the one who modified it for ethernet, so:
-  * (c) Copyright 1999, Thomas Davis, tadavis@lbl.gov
+@@ -5,9 +6,6 @@
   *
-- *	This software may be used and distributed according to the terms
-- *	of the GNU Public License, incorporated herein by reference.
-- *
+  *  (C) Copyright 2012,  Greg Ungerer <gerg@uclinux.org>
+  *
+- *  This file is subject to the terms and conditions of the GNU General Public
+- *  License.  See the file COPYING in the main directory of the Linux
+- *  distribution for more details.
   */
  
- #ifndef _NET_BONDING_H
+ #include <linux/module.h>
+diff --git a/drivers/net/ethernet/8390/ne.c b/drivers/net/ethernet/8390/ne.c
+index 0a9118b8be0c64..053c7cf201b27f 100644
+--- a/drivers/net/ethernet/8390/ne.c
++++ b/drivers/net/ethernet/8390/ne.c
+@@ -1,3 +1,4 @@
++/* SPDX-License-Identifier: GPL-1.0-or-later */
+ /* ne.c: A general non-shared-memory NS8390 ethernet driver for linux. */
+ /*
+     Written 1992-94 by Donald Becker.
+@@ -5,9 +6,6 @@
+     Copyright 1993 United States Government as represented by the
+     Director, National Security Agency.
+ 
+-    This software may be used and distributed according to the terms
+-    of the GNU General Public License, incorporated herein by reference.
+-
+     The author may be reached as becker@scyld.com, or C/O
+     Scyld Computing Corporation, 410 Severn Ave., Suite 210, Annapolis MD 21403
+ 
+diff --git a/drivers/net/ethernet/8390/ne2k-pci.c b/drivers/net/ethernet/8390/ne2k-pci.c
+index 6a0a2039600a0a..01348d6ff47820 100644
+--- a/drivers/net/ethernet/8390/ne2k-pci.c
++++ b/drivers/net/ethernet/8390/ne2k-pci.c
+@@ -1,3 +1,4 @@
++/* SPDX-License-Identifier: GPL-1.0-or-later */
+ /* A Linux device driver for PCI NE2000 clones.
+  *
+  * Authors and other copyright holders:
+@@ -6,13 +7,6 @@
+  * Copyright 1993 assigned to the United States Government as represented
+  * by the Director, National Security Agency.
+  *
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- *
+  * The author may be reached as becker@scyld.com, or C/O
+  * Scyld Computing Corporation
+  * 410 Severn Ave., Suite 210
+diff --git a/drivers/net/ethernet/8390/pcnet_cs.c b/drivers/net/ethernet/8390/pcnet_cs.c
+index 0f07fe03da98c8..0512472cf7800c 100644
+--- a/drivers/net/ethernet/8390/pcnet_cs.c
++++ b/drivers/net/ethernet/8390/pcnet_cs.c
+@@ -1,3 +1,4 @@
++/* SPDX-License-Identifier: GPL-1.0-or-later */
+ /*======================================================================
+ 
+     A PCMCIA ethernet driver for NS8390-based cards
+@@ -17,9 +18,7 @@
+ 
+     Written 1992,1993 by Donald Becker.
+     Copyright 1993 United States Government as represented by the
+-    Director, National Security Agency.  This software may be used and
+-    distributed according to the terms of the GNU General Public License,
+-    incorporated herein by reference.
++    Director, National Security Agency.
+     Donald Becker may be reached at becker@scyld.com
+ 
+     Based also on Keith Moore's changes to Don Becker's code, for IBM
+diff --git a/drivers/net/ethernet/8390/smc-ultra.c b/drivers/net/ethernet/8390/smc-ultra.c
+index 6e62c37c940056..deb869995eabf6 100644
+--- a/drivers/net/ethernet/8390/smc-ultra.c
++++ b/drivers/net/ethernet/8390/smc-ultra.c
+@@ -1,3 +1,4 @@
++/* SPDX-License-Identifier: GPL-1.0-or-later */
+ /* smc-ultra.c: A SMC Ultra ethernet driver for linux. */
+ /*
+ 	This is a driver for the SMC Ultra and SMC EtherEZ ISA ethercards.
+@@ -7,9 +8,6 @@
+ 	Copyright 1993 United States Government as represented by the
+ 	Director, National Security Agency.
+ 
+-	This software may be used and distributed according to the terms
+-	of the GNU General Public License, incorporated herein by reference.
+-
+ 	The author may be reached as becker@scyld.com, or C/O
+ 	Scyld Computing Corporation
+ 	410 Severn Ave., Suite 210
+diff --git a/drivers/net/ethernet/8390/stnic.c b/drivers/net/ethernet/8390/stnic.c
+index bd89ca8a92dfbc..31945bae451989 100644
+--- a/drivers/net/ethernet/8390/stnic.c
++++ b/drivers/net/ethernet/8390/stnic.c
+@@ -1,8 +1,5 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /* stnic.c : A SH7750 specific part of driver for NS DP83902A ST-NIC.
+- *
+- * This file is subject to the terms and conditions of the GNU General Public
+- * License.  See the file "COPYING" in the main directory of this archive
+- * for more details.
+  *
+  * Copyright (C) 1999 kaz Kojima
+  */
+diff --git a/drivers/net/ethernet/8390/wd.c b/drivers/net/ethernet/8390/wd.c
+index 5b00c452bede64..6ecd63b8f8976e 100644
+--- a/drivers/net/ethernet/8390/wd.c
++++ b/drivers/net/ethernet/8390/wd.c
+@@ -1,3 +1,4 @@
++/* SPDX-License-Identifier: GPL-1.0-or-later */
+ /* wd.c: A WD80x3 ethernet driver for linux. */
+ /*
+ 	Written 1993-94 by Donald Becker.
+@@ -5,9 +6,6 @@
+ 	Copyright 1993 United States Government as represented by the
+ 	Director, National Security Agency.
+ 
+-	This software may be used and distributed according to the terms
+-	of the GNU General Public License, incorporated herein by reference.
+-
+ 	The author may be reached as becker@scyld.com, or C/O
+ 	Scyld Computing Corporation
+ 	410 Severn Ave., Suite 210
+diff --git a/drivers/net/ethernet/8390/zorro8390.c b/drivers/net/ethernet/8390/zorro8390.c
+index e8b4fe813a0828..e6abb22c82b514 100644
+--- a/drivers/net/ethernet/8390/zorro8390.c
++++ b/drivers/net/ethernet/8390/zorro8390.c
+@@ -1,3 +1,4 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  *  Amiga Linux/m68k and Linux/PPC Zorro NS8390 Ethernet Driver
+  *
+@@ -9,12 +10,6 @@
+  *
+  *  ---------------------------------------------------------------------------
+  *
+- *  This file is subject to the terms and conditions of the GNU General Public
+- *  License.  See the file COPYING in the main directory of the Linux
+- *  distribution for more details.
+- *
+- *  ---------------------------------------------------------------------------
+- *
+  *  The Ariadne II and X-Surf are Zorro-II boards containing Realtek RTL8019AS
+  *  Ethernet Controllers.
+  */
 -- 
 An old man doll... just what I always wanted! - Clara
 
