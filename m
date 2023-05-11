@@ -1,141 +1,158 @@
-Return-Path: <netdev+bounces-1777-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1778-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 089346FF1F4
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 14:56:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5E0246FF201
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:01:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 93642281746
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 12:56:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 195B7281752
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:01:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C51801F940;
-	Thu, 11 May 2023 12:56:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 04B341F946;
+	Thu, 11 May 2023 13:01:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B84D41F920
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 12:56:23 +0000 (UTC)
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on20700.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8a::700])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C656106;
-	Thu, 11 May 2023 05:56:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VjCuiqpLyJOsolfhM53nGGvYiRUHzvam/+cdrcohKpgy0zIF8JRuMZWLKkra5aMvmMOYjBNVgXio4PBBqyjXAze/p/SVUEFIqg1i93ayp2JRChv9Xr1pPdaj5J5WypwROgeeSja2J2Uf6Lg3omtkwuDHz86TK9VmE3bghiE7flKt3XTw4V86fs6CUllgPk3kMIZGQ1OsM0Uhl2MQtuOJqchUx+18zXTTVjk8LT+ksalOje7Q9xXZtmXxqxWBV1EUEVSF/DQ1B9qMzp7LU26IMmRMxnIVCL4eG0U5DkNApacyTZ3qKgGSYcwTEwTeAXSg+Vet2ktgIj0JV7cW5rMIFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+XL8Scde6O9KFLXlNUQHyPsvm5I7veouXmH0GYyaXWk=;
- b=EwzE4HAiuvNqNYVgqQTPZfEZnNGKV4BFPy4lP+oubYhvc7z5E0mi2x+ECps3eb1a3VcRVOUeWeH2mhGScX6cB8mdwhQ8NtNXQtTeyl3W1efP2XyynXV+Q6+nmepeszz11m0BazF020MMRVcxzmBvQzx/YISJmiGuooCK3T/zKAuxhv5jnGDTYRIIuRU+K7BLvkxHY+RnhihlzE9ci2MaasWDXouFGmMofeQe0pk7BdHpKIKaxvKX4YJ4wzSA/dyuBj4SNbHFE40+sZCjLCty+AEJTSdFyvz9sBVesA3ZKhzM6XcpYI2RNq5/LXVbfYRM1MJMpzkil0qJlW2eBPc7Qg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+XL8Scde6O9KFLXlNUQHyPsvm5I7veouXmH0GYyaXWk=;
- b=ZeSKH8OITkwTL7MtiO10RSQ+Sa1nxf5xBA9bnUBQwp88VwxTDn7mz4smzeWjIDtaRxXGCCROdPNU/ti4MLK1RDGFrhHvArg8hIXTlHp/7IiN/xmRkMoHTQtRdxymMo8oLDw5NytCVr5+l3p0aFNd+wlw6Qy6cFNCsn/IC+z/i0s=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BN0PR13MB5136.namprd13.prod.outlook.com (2603:10b6:408:166::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.20; Thu, 11 May
- 2023 12:56:16 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.020; Thu, 11 May 2023
- 12:56:16 +0000
-Date: Thu, 11 May 2023 14:56:08 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Yang Li <yang.lee@linux.alibaba.com>
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] ipvlan: Remove NULL check before dev_{put, hold}
-Message-ID: <ZFzl6J4wwyr5QyLw@corigine.com>
-References: <20230511072119.72536-1-yang.lee@linux.alibaba.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230511072119.72536-1-yang.lee@linux.alibaba.com>
-X-ClientProxiedBy: AM3PR03CA0062.eurprd03.prod.outlook.com
- (2603:10a6:207:5::20) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E165C17720
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:01:11 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E969765AD
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 06:00:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683810030;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1YNgJu9g4hsRAs0h9Bi/9rkG5y7jrDdpJUfTR0KD1Tg=;
+	b=h+ocTEHIk46djJM57ql5FcFO44aYZslL2z/cEKWe4IQKIVKRLjYFYPCcP7n55w3pkGjjMw
+	aGjAaUuz2WJ+/fb6vDeT2VsisiZxu7vurq6/LzZUE5760lmJ90GBfe8LnfgVi5Jx8BNkdQ
+	DJJvygZ4rBgt3HCbq9ZyYir0+mIkLXE=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-558-gbKofT37N72IqQiTKEBiwA-1; Thu, 11 May 2023 09:00:28 -0400
+X-MC-Unique: gbKofT37N72IqQiTKEBiwA-1
+Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-3076fc5c278so5058080f8f.3
+        for <netdev@vger.kernel.org>; Thu, 11 May 2023 06:00:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683810027; x=1686402027;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1YNgJu9g4hsRAs0h9Bi/9rkG5y7jrDdpJUfTR0KD1Tg=;
+        b=QpEpLEPQ1bCR0EymbFOKK82hU7RMkhNiSSQorVQnIPHNj7AkhtDCRX1BvcbuD7WmKu
+         FhwNeMxr/jKFZwwB2XrOZmFEWKNinBCbpBNZFywfptHRJyretlvVb2gP2Np80UWt5ffj
+         ZuiVT2uK6fTjRqKiIiS7+crRm/z09jl0ju/709ztDmfNyVu01NqsqW8EeJMcg2rKROX+
+         igYQl/ztiacVp/Bsvk6uKaaFjAjZObDt6Ks//2QB1W/YVyzPM9WzHE4eXyz/9+AvBZHW
+         hyXeY7j5GFA2UbRz+qE5qG8TSySjPMQCI5YnNpG+AuiTMDDnUc4pghQZPO2RMMukOqVC
+         xnzw==
+X-Gm-Message-State: AC+VfDyFhLiIjGXiFVqBCi8slbIcj0JLJrYxN6DqFA45rI068NxtxVhl
+	IFfsz+Kan3WNigx5ixmmwXWfkAPFa2tXi+r2YhO/n2dSrQsOttIOyO8Crtq1vt/GdU9tm4diS0s
+	itYTrE8IibCRFZS9g
+X-Received: by 2002:a5d:55cf:0:b0:304:b967:956f with SMTP id i15-20020a5d55cf000000b00304b967956fmr16336615wrw.8.1683810026739;
+        Thu, 11 May 2023 06:00:26 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6maX1bAPZW0k8hxurkuPzMZqG473m27W7e8iBYUPNc8cfDsYenYLW5jeTNv5v8llwVfwyINA==
+X-Received: by 2002:a5d:55cf:0:b0:304:b967:956f with SMTP id i15-20020a5d55cf000000b00304b967956fmr16336585wrw.8.1683810026412;
+        Thu, 11 May 2023 06:00:26 -0700 (PDT)
+Received: from sgarzare-redhat ([5.77.69.175])
+        by smtp.gmail.com with ESMTPSA id w14-20020a5d680e000000b003079693eff2sm12447627wru.41.2023.05.11.06.00.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 May 2023 06:00:25 -0700 (PDT)
+Date: Thu, 11 May 2023 15:00:20 +0200
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: Zhuang Shengen <zhuangshengen@huawei.com>
+Cc: virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, arei.gonglei@huawei.com, 
+	longpeng2@huawei.com, jianjay.zhou@huawei.com
+Subject: Re: [PATCH net v2] vsock: avoid to close connected socket after the
+ timeout
+Message-ID: <atd47kt3wyhw2mhrzob4fxzlvmw37xviehn7agao3srni2jmts@gxgzvqrb7mc7>
+References: <20230511113430.646292-1-zhuangshengen@huawei.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BN0PR13MB5136:EE_
-X-MS-Office365-Filtering-Correlation-Id: bc37cf13-3dc3-486a-2614-08db521f1bb1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Phe/2Dg+O/G3xp0XUVbLGDmq40uSmH97FKk9YgjNDVwAifXD3iV5Vjkw/vp1M1syR19RUEO9F4Es3Fh/f8DQqOKUcMF1TVS6z+ZB7SyWpEMHKmH61dH4cA/dYiq+RiCkgEZDPbJnZRnl5nezgjYCxmi5+pnAwiEJjJoIEx3WXzvssUhG9coHt6aXznT48/D2+yayA0wczydv8qMUg+R+lQ0Bg73mZHal4ANO5+uPd69AnMHcS2POgWMpnuv4NLxkfIFJ3c5fchyZScb1TpCyCWpwnTgcmJDVdewGY/l8FT0v93RKTeCZHTpnveLA0LIuoLkRFYh+agU5S1+aEoXP1H0vwk7kaHS248oQd3x39q/GmfGxdRk5heIScGQvvYHnf0kTdccYn54nbOYsnUB1U6tTHWM/5F3FYtg9Ge7ahnJx8M66JSqSqMOf12v6wH9bZIhN/f15EMKZHcsticJG025xEzYxYoe19T6nI5l3fKtDnrcdeWEjf8vI3A2HLrO12VVii4A6GxF7UoGoVctfJi6x9OhLN62j5yJThutdyGs=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39840400004)(376002)(366004)(346002)(451199021)(186003)(2616005)(4744005)(2906002)(83380400001)(36756003)(38100700002)(86362001)(6486002)(966005)(8676002)(8936002)(316002)(6666004)(41300700001)(44832011)(5660300002)(478600001)(6916009)(66946007)(4326008)(66476007)(66556008)(6512007)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?DvglMie2n9Ht8G1caX8zfcFAgwNgyo93aMeKh8SmzLdr76cIVlNlahLdGsMA?=
- =?us-ascii?Q?Vhr2PLzMYGsfDX6DGNwyMDq3Dm5yneucYIm3E20JMTVbClGjlUdzGA3OGlz9?=
- =?us-ascii?Q?h3CVJ8NDoHgYKRCLHwMO48HVedKKBFRbMtRvj7zSkFkNx0HJZNvzJyQOO0mA?=
- =?us-ascii?Q?fTKZ6HgXwZpjJKOyvmbkbBkCFl1JKezCURcLX4Y/RCruU8iDTA9BtFTGIWU4?=
- =?us-ascii?Q?QaTPer6H3tIVa6ug+4xJNIwj7PgQK1DUBVTW5/nr5LZS0nxmj3ttKUrbi47d?=
- =?us-ascii?Q?rHTGJNQp1FBN18y3Ml1iGAM8RHSXp0KihSLDrIFHKJ7KPHJfb6nhbVERo1c/?=
- =?us-ascii?Q?1syoknRFjoShEOYkeJCIBzN8uelQFazT2PM3sXzm9EnA6NZiM2JhGaoh2vQI?=
- =?us-ascii?Q?Kqy0xoWd+8OYy+WiR88zX/PPIH/psE8EAdnjIqrrQJvafRihnfnp69c4N4YJ?=
- =?us-ascii?Q?qTPHFEai/gQWm90kIQ9wg2P9t8okVcLXpo52JOEEtD3BRVDZS3Msoea3qdsy?=
- =?us-ascii?Q?/tnfCg6p0vURRODBZYsNvQFcNKZe1fCfjLQVNj/j97IRaKAOtVXtX/LGOmb7?=
- =?us-ascii?Q?sXr3NUjubytl2xxDQY18v7bCkva5e20RXI17eaP088fIbHlI6DdKNlmv3pfo?=
- =?us-ascii?Q?dyCp4qtpDRX7h7kxdcmGIBedj/htqdpX4/Is9FMLkC5kZaygonNz9L8RjxgL?=
- =?us-ascii?Q?wEd4aYMHFkV1p2kQXUG4ALOYZkTc2b/xZJU+pqgPa9bOiMpQMV3XCevGYnNq?=
- =?us-ascii?Q?kQgXTaOctVxkdtsxpVGhuluwxNJF/REp7couuimUzdBg0gv5w95iERCcV5Q9?=
- =?us-ascii?Q?8lSW2BpVuWvuR1+HIdI3Q3mpAn4X2DYGTnjbUcQDpPuEEUfvgSvSti0bGPMv?=
- =?us-ascii?Q?msauVvUAmVgll/vtER/EF2hakA1lO1XDoPviYjCwMhq7/LxqegVru2Q64T7u?=
- =?us-ascii?Q?DNxlItTI5UVi1nw8OEf5qNRKkJlIz0DeZzF7qSDq8hIPoXpw2aCQU+BtshdU?=
- =?us-ascii?Q?0Zn6TF82S4LW7g5U82GY/LZOd5IEGHY2g/fPodtk5a53VvHEsP8j5j8fSPsv?=
- =?us-ascii?Q?3rnQB/5NUEgtQ0Z67GAktqZ/F4pCDlnqIeTP7Camdw2T+arJwHsdLObBptda?=
- =?us-ascii?Q?B72kgZqktI0jQf/G3KzBPveUvYdlJmDZSM+lrGY/i58jJ/8RPM75Mdp9mCpT?=
- =?us-ascii?Q?ZbTcZwTN6UjwYZT3HiApp1wkB6xTK7R7+qc7BTVCC1wTFLNmzbi4pN545lHy?=
- =?us-ascii?Q?p9Ac8XpvthOMVcRFSc7q2AfrGO8a6ewS9RwAPXjuhiyKO2tJyfoqRv5pe+bE?=
- =?us-ascii?Q?S3QtEWrguK52hROnsJxcscj+v0wV4NnUD3hDbCbarl//YRkljCutQ82z2Fzr?=
- =?us-ascii?Q?U0dj0RqHkA+8FnrzKF36xzwPgBat1EBsUvStWBuPydRrLBkLh+sXcb478m2v?=
- =?us-ascii?Q?A03I3zOu9lKI5g3j4q0qxOOozJ04zWtLaHQyfp/myCBK7t+dDYgZlMBYkpVd?=
- =?us-ascii?Q?EiZkRT/KNEAr1YwTf9BbsHipQMgCYGaixd/wsI2NTGvOlU0uzSf1ZYfOKrZ5?=
- =?us-ascii?Q?ozzeV/NFnFlNae4BeRH7YxDxdqa9cgb77uOypel+6721aK0DU/KyAr5zheQV?=
- =?us-ascii?Q?t0KbfgTuvCuzcdzBofmvHc5oWOCjU2lwZ5ecDZjy/Wh7YbDX2BR4tEkP5bne?=
- =?us-ascii?Q?eB9gaw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc37cf13-3dc3-486a-2614-08db521f1bb1
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2023 12:56:16.7445
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KjTXO5vOcyKjgCOgG9nZHaZerQhgZwev+zVF/XOkiaYKoCDzzfYQBcU++G621erVSJSeT5XCQkYicI1liyUR52ftCNDf9ffbhxSwFHSZ6AU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB5136
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230511113430.646292-1-zhuangshengen@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 11, 2023 at 03:21:19PM +0800, Yang Li wrote:
-> The call netdev_{put, hold} of dev_{put, hold} will check NULL,
-> so there is no need to check before using dev_{put, hold},
-> remove it to silence the warning:
-> 
-> ./drivers/net/ipvlan/ipvlan_core.c:559:3-11: WARNING: NULL check before dev_{put, hold} functions is not needed.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4930
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+On Thu, May 11, 2023 at 07:34:30PM +0800, Zhuang Shengen wrote:
+>When client and server establish a connection through vsock,
+>the client send a request to the server to initiate the connection,
+>then start a timer to wait for the server's response. When the server's
+>RESPONSE message arrives, the timer also times out and exits. The
+>server's RESPONSE message is processed first, and the connection is
+>established. However, the client's timer also times out, the original
+>processing logic of the client is to directly set the state of this vsock
+>to CLOSE and return ETIMEDOUT. It will not notify the server when the port
+>is released, causing the server port remain.
+>when client's vsock_connect timeout，it should check sk state is
+>ESTABLISHED or not. if sk state is ESTABLISHED, it means the connection
+>is established, the client should not set the sk state to CLOSE
+>
+>Note: I encountered this issue on kernel-4.18, which can be fixed by
+>this patch. Then I checked the latest code in the community
+>and found similar issue.
+>
+>Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+>Signed-off-by: Zhuang Shengen <zhuangshengen@huawei.com>
+>---
+> net/vmw_vsock/af_vsock.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+The patch LGTM:
+
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+
+I noticed that the net maintainers are not in cc, if this patch isn't
+queued in the next days, please resend it by cc'ing all the
+maintainers [1]:
+
+$ ./scripts/get_maintainer.pl \
+   20230510_zhuangshengen_vsock_bugfix_port_residue_in_server.mbx
+Stefano Garzarella <sgarzare@redhat.com> (maintainer:VM SOCKETS (AF_VSOCK))
+"David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING [GENERAL])
+Eric Dumazet <edumazet@google.com> (maintainer:NETWORKING [GENERAL])
+Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING [GENERAL])
+Paolo Abeni <pabeni@redhat.com> (maintainer:NETWORKING [GENERAL])
+virtualization@lists.linux-foundation.org (open list:VM SOCKETS (AF_VSOCK))
+netdev@vger.kernel.org (open list:VM SOCKETS (AF_VSOCK))
+linux-kernel@vger.kernel.org (open list)
+
+Thanks,
+Stefano
+
+[1] https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html#select-the-recipients-for-your-patch
+
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index 413407bb646c..efb8a0937a13 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -1462,7 +1462,7 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+> 			vsock_transport_cancel_pkt(vsk);
+> 			vsock_remove_connected(vsk);
+> 			goto out_wait;
+>-		} else if (timeout == 0) {
+>+		} else if ((sk->sk_state != TCP_ESTABLISHED) && (timeout == 0)) {
+> 			err = -ETIMEDOUT;
+> 			sk->sk_state = TCP_CLOSE;
+> 			sock->state = SS_UNCONNECTED;
+>-- 
+>2.27.0
+>
+
 
