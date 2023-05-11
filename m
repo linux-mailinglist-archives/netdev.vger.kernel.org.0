@@ -1,43 +1,54 @@
-Return-Path: <netdev+bounces-1951-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1952-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CE0816FFB6B
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 22:45:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 02BCD6FFB77
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 22:50:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8A5BE2817F9
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 20:45:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 145B11C21070
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 20:50:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E67DA939;
-	Thu, 11 May 2023 20:45:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEB92AD53;
+	Thu, 11 May 2023 20:50:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82B678F56
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 20:45:39 +0000 (UTC)
-Received: from fgw20-7.mail.saunalahti.fi (fgw20-7.mail.saunalahti.fi [62.142.5.81])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F2F1FF1
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:45:37 -0700 (PDT)
-Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
-	by fgw20.mail.saunalahti.fi (Halon) with ESMTP
-	id c56bfb84-f03c-11ed-b3cf-005056bd6ce9;
-	Thu, 11 May 2023 23:45:33 +0300 (EEST)
-From: andy.shevchenko@gmail.com
-Date: Thu, 11 May 2023 23:45:31 +0300
-To: Jiawen Wu <jiawenwu@trustnetic.com>
-Cc: netdev@vger.kernel.org, jarkko.nikula@linux.intel.com,
-	andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com,
-	jsd@semihalf.com, Jose.Abreu@synopsys.com, andrew@lunn.ch,
-	hkallweit1@gmail.com, linux@armlinux.org.uk,
-	linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-	mengyuanlou@net-swift.com
-Subject: Re: [PATCH net-next v7 6/9] net: txgbe: Support GPIO to SFP socket
-Message-ID: <ZF1T62BnVFgR33w0@surfacebook>
-References: <20230509022734.148970-1-jiawenwu@trustnetic.com>
- <20230509022734.148970-7-jiawenwu@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE03F624
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 20:50:36 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C704C12
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:50:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=bPs0zS9xgFQ7+41ilgCrZTaFE7mVYdjm2apdd2EgTOg=; b=QDZPq0pTwfDP9ktaZJefUI+ryA
+	kfL/Q5RvRRNzIXeWET6mr07fWm2K4m1kheCzULeANCcy2XPehFHpnn8ZbXiH2J3YFpbLW9BR5RVvJ
+	aiV5k4iET/pIFcL2qRUFHafWeNdt5sZedcCwA7pwISdnln3CLk3ItqVsLmN7vISbz410=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1pxDF8-00Cak4-5N; Thu, 11 May 2023 22:50:30 +0200
+Date: Thu, 11 May 2023 22:50:30 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: Jakub Kicinski <kuba@kernel.org>,
+	=?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>,
+	netdev@vger.kernel.org, glipus@gmail.com,
+	maxime.chevallier@bootlin.com, vadim.fedorenko@linux.dev,
+	richardcochran@gmail.com, gerhard@engleder-embedded.com,
+	thomas.petazzoni@bootlin.com, krzysztof.kozlowski+dt@linaro.org,
+	robh+dt@kernel.org, linux@armlinux.org.uk
+Subject: Re: [PATCH net-next RFC v4 2/5] net: Expose available time stamping
+ layers to user space.
+Message-ID: <54e14000-3fd7-47fa-aec3-ffc2bab2e991@lunn.ch>
+References: <20230406173308.401924-1-kory.maincent@bootlin.com>
+ <20230406173308.401924-3-kory.maincent@bootlin.com>
+ <20230406184646.0c7c2ab1@kernel.org>
+ <20230511203646.ihljeknxni77uu5j@skbuf>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -46,162 +57,35 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230509022734.148970-7-jiawenwu@trustnetic.com>
-X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
-	SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
+In-Reply-To: <20230511203646.ihljeknxni77uu5j@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Tue, May 09, 2023 at 10:27:31AM +0800, Jiawen Wu kirjoitti:
-> Register GPIO chip and handle GPIO IRQ for SFP socket.
+On Thu, May 11, 2023 at 11:36:46PM +0300, Vladimir Oltean wrote:
+> On Thu, Apr 06, 2023 at 06:46:46PM -0700, Jakub Kicinski wrote:
+> > > +/* Hardware layer of the SO_TIMESTAMPING provider */
+> > > +enum timestamping_layer {
+> > > +	SOF_MAC_TIMESTAMPING = (1<<0),
+> > > +	SOF_PHY_TIMESTAMPING = (1<<1),
+> > 
+> > We need a value for DMA timestamps here.
+> 
+> What's a DMA timestamp, technically? Is it a snapshot of the PHC's time
+> domain, just not at the MII pins?
 
-...
+I also wounder if there is one definition of DMA timestampting, or
+multiple. It could simply be that the time stamp is in the DMA
+descriptor, but the sample of the PHC was taken as the SOF was
+received. It could be the sample of the PHC at the point the DMA
+descriptor was handed back to the host. It could be the PHC was
+sampled when the host reads the descriptor, etc.
 
-> +#include <linux/gpio/consumer.h>
+I also wounder if there is sufficient documentation to be able to tell
+them apart for devices which support it. So maybe it does not even
+matter what the exact definition is?
 
-What for?
-
-> +#include <linux/gpio/machine.h>
-> +#include <linux/gpio/driver.h>
-
-...
-
-> +static int txgbe_gpio_get(struct gpio_chip *chip, unsigned int offset)
-> +{
-> +	struct wx *wx = gpiochip_get_data(chip);
-> +	struct txgbe *txgbe = wx->priv;
-> +	int val;
-> +
-> +	val = rd32m(wx, WX_GPIO_EXT, BIT(offset));
-> +
-> +	txgbe->gpio_orig &= ~BIT(offset);
-> +	txgbe->gpio_orig |= val;
-
-This can use standard pattern in conjunction with simple rd32() call:
-
-	txgbe->gpio_orig = (txgbe->gpio_orig & ~BIT(offset)) | (val & BIT(offset));
-
-otherwise it's not immediately obvious that val can have only one bit set.
-
-> +	return !!(val & BIT(offset));
-> +}
-
-...
-
-> +static int txgbe_gpio_direction_out(struct gpio_chip *chip, unsigned int offset,
-> +				    int val)
-> +{
-> +	struct wx *wx = gpiochip_get_data(chip);
-> +	u32 mask;
-> +
-> +	mask = BIT(offset) | BIT(offset - 1);
-> +	if (val)
-> +		wr32m(wx, WX_GPIO_DR, mask, mask);
-> +	else
-> +		wr32m(wx, WX_GPIO_DR, mask, 0);
-> +
-> +	wr32m(wx, WX_GPIO_DDR, BIT(offset), BIT(offset));
-
-Can you explain, what prevents to have this flow to be interleaved by other API
-calls, like ->direction_in()? Didn't you missed proper locking schema?
-
-> +	return 0;
-> +}
-
-...
-
-> +	switch (type) {
-> +	case IRQ_TYPE_EDGE_BOTH:
-> +		level |= BIT(hwirq);
-> +		break;
-> +	case IRQ_TYPE_EDGE_RISING:
-> +		level |= BIT(hwirq);
-> +		polarity |= BIT(hwirq);
-> +		break;
-> +	case IRQ_TYPE_EDGE_FALLING:
-> +		level |= BIT(hwirq);
-
-> +		polarity &= ~BIT(hwirq);
-
-This...
-
-> +		break;
-> +	case IRQ_TYPE_LEVEL_HIGH:
-> +		level &= ~BIT(hwirq);
-
-...and this can be done outside of the switch-case. Then you simply set certain
-bits where it's needed.
-
-> +		polarity |= BIT(hwirq);
-> +		break;
-> +	case IRQ_TYPE_LEVEL_LOW:
-> +		level &= ~BIT(hwirq);
-> +		polarity &= ~BIT(hwirq);
-> +		break;
-
-default?
-
-> +	}
-
-...
-
-> +	/* workaround for hysteretic gpio interrupts */
-
-GPIO
-
-...
-
-> +	gc->can_sleep = false;
-
-Useless, kzalloc() already sets this to 0.
-
-...
-
-> +	girq->num_parents = 1;
-> +	girq->parents = devm_kcalloc(&pdev->dev, 1, sizeof(*girq->parents),
-
-Use girq->num_parents instead of explicit 1 in this call.
-
-> +				     GFP_KERNEL);
-
-Also with 
-
-	struct device *dev = &pdev->dev;
-
-this (and others) can be modified as
-
-	girq->parents = devm_kcalloc(dev, girq->num_parents, sizeof(*girq->parents),
-
-> +	if (!girq->parents)
-> +		return -ENOMEM;
-
-
-...
-
-> +#define TXGBE_PX_MISC_IEN_MASK ( \
-> +				TXGBE_PX_MISC_ETH_LKDN | \
-> +				TXGBE_PX_MISC_DEV_RST | \
-> +				TXGBE_PX_MISC_ETH_EVENT | \
-> +				TXGBE_PX_MISC_ETH_LK | \
-> +				TXGBE_PX_MISC_ETH_AN | \
-> +				TXGBE_PX_MISC_INT_ERR | \
-> +				TXGBE_PX_MISC_GPIO)
-
-Wouldn't be better
-
-#define TXGBE_PX_MISC_IEN_MASK				  \
-	(TXGBE_PX_MISC_ETH_LKDN | TXGBE_PX_MISC_ETH_LK |  \
-	 TXGBE_PX_MISC_ETH_EVENT | TXGBE_PX_MISC_ETH_AN | \
-	 TXGBE_PX_MISC_DEV_RST | TXGBE_PX_MISC_INT_ERR |  \
-	 TXGBE_PX_MISC_GPIO)
-
-?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+	Andrew
 
