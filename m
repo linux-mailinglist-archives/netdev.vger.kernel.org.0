@@ -1,43 +1,44 @@
-Return-Path: <netdev+bounces-1881-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1882-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0DF5F6FF66A
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:48:35 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8883F6FF66B
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:49:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2A68E1C20FB0
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:48:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9ABAD1C20FF6
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:49:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0FA4E647;
-	Thu, 11 May 2023 15:48:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50A53642;
+	Thu, 11 May 2023 15:49:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41D1E629;
-	Thu, 11 May 2023 15:48:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1669C433D2;
-	Thu, 11 May 2023 15:48:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC833647;
+	Thu, 11 May 2023 15:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52DB5C433D2;
+	Thu, 11 May 2023 15:49:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683820110;
-	bh=OyfApSLop6wGi6tJ8cu+P/1B7e3GxDFUSaByQ7EXDLw=;
+	s=k20201202; t=1683820142;
+	bh=2VbS/0HefNIvSk0HPkdVusgEbPCircg9pXTOurvUYnw=;
 	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=R/XqmjXRLQajaFnliWz27lzQ3o9Dg78ZTVTVLvCTvpsOoPhYsDmolFJj9yoSyPPzJ
-	 k/DKeY/EgFr4lGXEla0XuOsAneuiBpLqbfjpSbl1UpPI1eK4awRaluz97TWgaFavSr
-	 oAgq2tJpyQONFPoLHXUfQFgNAS24VpGNc7IQPPhDbJTMzJWjS9jGoV7z5ia7aJtLnm
-	 xDZsHHzfJJKHcqo8w9nfb+S6a3B1wpdwtL6Cq1kI+3sQq10kSLfW2NYl0ZokbrnZVG
-	 P/AgmkD2WeWX9/VpXhxkhU8s1sBOW/sNIh06cqiV9iXBV6LlV/JI6Ns7aa8iUrebFW
-	 KLKyKRsACUm6Q==
-Subject: [PATCH v3 3/6] net/handshake: Fix uninitialized local variable
+	b=AL03aW/KAN8REAFVNU7mUie0k50qGL1ifOL/VRS7IcFvByuSzN//zeG6KfPTn19F6
+	 RxsfRD37npHVBnUf2mRnCZ/99Wap5oX9BHPey7XLefGZbnV524xV1TIi0bOOvSCuHL
+	 oc17rH60y6qaKYmQoLAy6yZPXfSwaCh4BuPHHYW4is4ht2iGLpNpVleix3A5yaU+Jn
+	 B4+IfzfJACtZY1F2NS5TozfNPuALuZDcelFPHGAVTjTnxV8DBW+JLS7kSAfM2oE2z4
+	 ZlVrx981NCSYknV52BltCEwrCA7JG9FriJTdjgIuw+9U5QAQSDrbHf/9LMlgOa4Xuh
+	 WLtJZ8Hxdt8kQ==
+Subject: [PATCH v3 4/6] net/handshake: handshake_genl_notify() shouldn't
+ ignore @flags
 From: Chuck Lever <cel@kernel.org>
 To: netdev@vger.kernel.org
 Cc: kernel-tls-handshake@lists.linux.dev, dan.carpenter@linaro.org,
  chuck.lever@oracle.com
-Date: Thu, 11 May 2023 11:48:13 -0400
+Date: Thu, 11 May 2023 11:48:45 -0400
 Message-ID: 
- <168382008303.84244.4050103332725966411.stgit@91.116.238.104.host.secureserver.net>
+ <168382011519.84244.803200053084819033.stgit@91.116.238.104.host.secureserver.net>
 In-Reply-To: 
  <168381978252.84244.1933636428135211300.stgit@91.116.238.104.host.secureserver.net>
 References: 
@@ -54,9 +55,6 @@ Content-Transfer-Encoding: 7bit
 
 From: Chuck Lever <chuck.lever@oracle.com>
 
-trace_handshake_cmd_done_err() simply records the pointer in @req,
-so initializing it to NULL is sufficient and safe.
-
 Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
 Fixes: 3b3009ea8abb ("net/handshake: Create a NETLINK service for handling handshake requests")
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
@@ -66,19 +64,18 @@ Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
-index f5dc170689d9..16a4bde648ba 100644
+index 16a4bde648ba..1086653e1fad 100644
 --- a/net/handshake/netlink.c
 +++ b/net/handshake/netlink.c
-@@ -157,8 +157,8 @@ int handshake_nl_accept_doit(struct sk_buff *skb, struct genl_info *info)
- int handshake_nl_done_doit(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct net *net = sock_net(skb->sk);
-+	struct handshake_req *req = NULL;
- 	struct socket *sock = NULL;
--	struct handshake_req *req;
- 	int fd, status, err;
+@@ -48,7 +48,7 @@ int handshake_genl_notify(struct net *net, const struct handshake_proto *proto,
+ 				proto->hp_handler_class))
+ 		return -ESRCH;
  
- 	if (GENL_REQ_ATTR_CHECK(info, HANDSHAKE_A_DONE_SOCKFD))
+-	msg = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	msg = genlmsg_new(GENLMSG_DEFAULT_SIZE, flags);
+ 	if (!msg)
+ 		return -ENOMEM;
+ 
 
 
 
