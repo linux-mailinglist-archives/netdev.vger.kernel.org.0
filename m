@@ -1,108 +1,104 @@
-Return-Path: <netdev+bounces-1796-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1795-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9D5506FF2C3
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:27:50 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7DA096FF2C2
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:26:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6205728177B
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:27:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 62B981C20E74
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:26:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 92B121773E;
-	Thu, 11 May 2023 13:27:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5DBAE17739;
+	Thu, 11 May 2023 13:26:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A3C1F93D
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:27:47 +0000 (UTC)
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0094D047;
-	Thu, 11 May 2023 06:27:25 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1px6Im-00022X-Gn; Thu, 11 May 2023 15:25:48 +0200
-Message-ID: <71f119ab-24e2-6a35-2b7d-43ea2a9578b8@leemhuis.info>
-Date: Thu, 11 May 2023 15:25:47 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51D631F920
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:26:35 +0000 (UTC)
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54F812085
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 06:25:59 -0700 (PDT)
+Received: (Authenticated sender: kory.maincent@bootlin.com)
+	by mail.gandi.net (Postfix) with ESMTPSA id C588E1BF20A;
+	Thu, 11 May 2023 13:25:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1683811552;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=l9PY7mDL1sv/OsaTXw+3WsDF8udRzPE8U0ChKI/wPEA=;
+	b=nEuX5teov/t4DZnU63BblG8/qkD8FTzekFv6WvDZ+R+2pmagrv1wju1dlBrgBE0383LVSf
+	Opvr3M38iV8NGZNvNnAnpsVyCjaHDx3H0KeHFMRtSFwDFtK9ZDo5V47BuedaqlOVzgmME4
+	qnSr2CvE28sqi6YfzBj8B7ogJZjrr55qwXaJm41rMgTB9yT1Jydzt+49j5Ec9sNxzaNRb6
+	TMfIZWbh6EfJFyYc/pl1YQn8SrDcY6VMmbzSTqRQZ/AaTKWvXk2HRmdjPYG4iXNA8qDEOm
+	Icor4hA9uOrHR0SQIgKugTsK7YkoXyCZaWwlhYR+3bbTv+9pM91nkWpI6RnqtQ==
+Date: Thu, 11 May 2023 15:25:50 +0200
+From: =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: netdev@vger.kernel.org, kuba@kernel.org, glipus@gmail.com,
+ maxime.chevallier@bootlin.com, vadim.fedorenko@linux.dev,
+ richardcochran@gmail.com, gerhard@engleder-embedded.com,
+ thomas.petazzoni@bootlin.com, krzysztof.kozlowski+dt@linaro.org,
+ robh+dt@kernel.org, linux@armlinux.org.uk
+Subject: Re: [PATCH net-next RFC v4 3/5] dt-bindings: net: phy: add
+ timestamp preferred choice property
+Message-ID: <20230511152550.4de3da1f@kmaincent-XPS-13-7390>
+In-Reply-To: <20230511131008.so5vfvnc3mrbfeh6@skbuf>
+References: <20230406173308.401924-1-kory.maincent@bootlin.com>
+	<20230406173308.401924-4-kory.maincent@bootlin.com>
+	<20230412131421.3xeeahzp6dj46jit@skbuf>
+	<20230412154446.23bf09cf@kmaincent-XPS-13-7390>
+	<20230429174217.rawjgcxuyqs4agcf@skbuf>
+	<20230502111043.2e8d48c9@kmaincent-XPS-13-7390>
+	<20230511131008.so5vfvnc3mrbfeh6@skbuf>
+Organization: bootlin
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [regression] Kernel OOPS on boot with Kernel 6.3(.1) and RTL8153
- Gigabit Ethernet Adapter
-Content-Language: en-US, de-DE
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Linux regressions mailing list <regressions@lists.linux.dev>,
- =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
- Hayes Wang <hayeswang@realtek.com>, netdev@vger.kernel.org,
- Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
- "David S. Miller" <davem@davemloft.net>, Stanislav Fomichev
- <sdf@fomichev.me>, workflows@vger.kernel.org,
- Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-References: <ec4be122-e213-ca5b-f5d6-e8f9c3fd3bee@leemhuis.info>
- <87lei36q27.fsf@miraculix.mork.no> <20230505120436.6ff8cfca@kernel.org>
- <57dbce31-daa9-9674-513e-f123b94950da@leemhuis.info>
- <20230505123744.16666106@kernel.org>
- <9284a9ec-d7c9-68e8-7384-07291894937b@leemhuis.info>
- <20230508130944.30699c33@kernel.org>
-From: Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20230508130944.30699c33@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1683811645;98bcdeff;
-X-HE-SMSGID: 1px6Im-00022X-Gn
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Thu, 11 May 2023 16:10:08 +0300
+Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 
+> On Tue, May 02, 2023 at 11:10:43AM +0200, K=C3=B6ry Maincent wrote:
+> > If a future PHY, featured like this TI PHYTER, is supported in the futu=
+re
+> > the default timestamp will be the MAC and we won't be able to select the
+> > PHY by default.
+> > Another example is my case with the 88E151x PHY, on the Russell side wi=
+th
+> > the Macchiatobin board, the MAC is more precise, and in my side with a
+> > custom board with macb MAC, the PHY is more precise. Be able to select =
+the
+> > prefer one from devicetree is convenient. =20
+>=20
+> If convenience is all that there is, I guess that's not a very strong
+> argument for putting something in the device tree which couldn't have
+> been handled by user space through an init script, and nothing would
+> have been broken as a result of that.
 
-On 08.05.23 22:09, Jakub Kicinski wrote:
-> On Sat, 6 May 2023 08:20:23 +0200 Linux regression tracking (Thorsten
-> Leemhuis) wrote:
->>> I don't seem to have the permissions on BZ, but I'm guessing we could
->>> do the opposite - you could flip bugbot on first to have it flush the BZ
->>> report to the list, and then reply on the list with regzbot tracking?  
->>
->> That's the plan for the future, but for now I don't want to do that, as
->> it might mess up other peoples workflows, as hinted above already and
->> discussed here:
->>
->> https://lore.kernel.org/all/1f0ebf13-ab0f-d512-6106-3ebf7cb372f1@leemhuis.info/
->>
->> That was only recently, but if you jump in there as well it might
->> persuade Konstantin to enable bugbot for other products/components. Then
->> I could and would do what you suggested.
-> 
-> CC: workflows
-> 
-> I'm a bit confused. I understand that we don't want to automatically
-> send all bugzilla reports to the ML. But AFAIU this is to avoid spamming
-> the list / messing with people's existing BZ workflow.
-> If you pre-triage the problem and decide to forward it to the list -
-> whether you do it with buzbot + regzbot or manual + regzbot is moot.
-> 
-> The bugbot can be enabled per BZ entry (AFAIU), so you can flip it
-> individually for the thread you want to report. It should flush that 
-> BZ to the list. At which point you can follow your normal ML regression
-> process.
-> 
-> Where did I go off the rails?
-
-You missed that Konstantin (now CCed) is just a bit careful for the
-bugbot bring up and therefore for now only allows bugbot to be enabled
-for BZ entries that are filed against the product/component combination
-Linux/Kernel. I could reassigning bugs there, but that would break the
-workflow for maintainers like Kalle, which look at all bugs assigned to
-their product/component combo (Drivers/network-wireless in Kalle's case).
-
-Ciao, Thorsten
+The user may not and don't need to know which hardware timestamping is bett=
+er.
+He just want to use the best one by default without investigation and
+benchmarking.
+It is more related to the hardware design of the board which should be
+described in the devicetree, don't you think? Of course it should not break
+anything and if it does, well then let the user select it in userspace.
+But if you really think my point is irrelevant then I will drop this featur=
+e.
 
