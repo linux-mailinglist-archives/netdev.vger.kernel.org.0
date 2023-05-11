@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-1644-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1645-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4CA936FE9C2
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 04:15:41 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BD5126FE9CA
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 04:20:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6DC5C1C20CC0
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 02:15:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6F64B28159A
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 02:20:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A78F1F186;
-	Thu, 11 May 2023 02:15:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58A731F189;
+	Thu, 11 May 2023 02:20:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F7DDEC9
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 02:15:38 +0000 (UTC)
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B418A273E
-	for <netdev@vger.kernel.org>; Wed, 10 May 2023 19:15:36 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 41be03b00d2f7-517ca8972c5so1280412a12.0
-        for <netdev@vger.kernel.org>; Wed, 10 May 2023 19:15:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B8ED2F2D
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 02:20:22 +0000 (UTC)
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA72D180
+	for <netdev@vger.kernel.org>; Wed, 10 May 2023 19:20:20 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id 98e67ed59e1d1-2502f2854b2so1035926a91.0
+        for <netdev@vger.kernel.org>; Wed, 10 May 2023 19:20:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683771336; x=1686363336;
+        d=gmail.com; s=20221208; t=1683771620; x=1686363620;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=w75laJDqpUtwSwtVThmWcjAfJ8pDK9IL/fX0J7GIozg=;
-        b=X19fTtZ+/7OvVbfo5N90aZ5Xc7XTIKjNL+P/Zz5+YTn1oEgKPhQ4vkz7sQk0R/j9JI
-         CkOm4hbpkHSBCvbCqRyCC9FoX3gedwKDDMvrCKyuSWlpogIYMTgHM0Qii5659pZJN2AL
-         rFWr+u1kWqYpC74++CIb2ttHeOkuwQNjclUsWXBiMmjlxKAFejt+K72BLZTgckhiUtLp
-         5gAdWwATzxXQkrroPQIT7fPSYFo6RUXUBqjaUopemLJKxFud5HD87ThqB6uSv8d+tUXo
-         Pou6RHgvmr+3AyonemybmlL2pdePJoK9YPG/2S5/ESeRqwom3A2h0r59wnzBuYFYR6BL
-         FFaQ==
+        bh=bPVVu2202ryRmZRSsBFXxtFvR8OYbnStbiFs0POjB2c=;
+        b=IPw0XaLcrBIGVaD08UVEuFW48t2re0l2zm++M+LZtLwpPkvoxUtyp7HGbEge/2b+a+
+         kZ9+2ipoHD23mx+3RHgIesd2RHfTEjIq/SE8E68R6Tr7BCG02t6t5AoOt9vT4rVyIAl8
+         2ulgfc/+KV3BFfuA8Vp/qYQpdvbdjVmK5bV3lM6hoxrDypPonnnB/axH1WpVO+myouK1
+         9ALJ4XOH6056MV+dlriO1brifip3FegWa+hCk/reORs2eii/lEMh223S5/mbfXbOrvwO
+         lRjKO48IJmVJx70Ioxd2tKQtRSPcKSUoMBOSPCCBgrYH8aoQ7k3iEtt2tAeQ7+dnpogG
+         FrTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683771336; x=1686363336;
+        d=1e100.net; s=20221208; t=1683771620; x=1686363620;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=w75laJDqpUtwSwtVThmWcjAfJ8pDK9IL/fX0J7GIozg=;
-        b=OuXKXrLPmZTfn5bxvo92vy3ywZnRyjTqW80TMv2SyFVSkCBBARZYX9LdKBEdsCfBGF
-         omjYZF76iChGaAnEYVcqM32VsdWlKNFkVLGbDU2h7WrNRAWXe7mkRtgTxk+Me32VqPcr
-         zyZ4iENoahT3M8yKcq0P8Mqew9R7dTOmKwH7HqdgrtXcvaEt1vPLsVrCOwQzDn+cBrpR
-         1rE9ZpLMy0e8FUveWUsIxeeHX/ob3/x+LJRpEMGuK39/Nt6cPGrsT8FRQB5uE98O9rkH
-         0Lxk12AyOeVDX0k4NYq2rqUvg/EtFXxaedvCWM4M0NCRV/LPhjgFAKzQyKCqG7bIqkbQ
-         4nrA==
-X-Gm-Message-State: AC+VfDwWRI5kdPEtR7P0fnLl8zlCjtU/9SurKoIN02u1BClno1f4MikW
-	wjIB5UgYSue8ReKSJZA70To=
-X-Google-Smtp-Source: ACHHUZ4/rS4jhvITgBSKbClUIfqyuIavevrS7/qzCvSFZMFPzfF9G5bPjDb2eVf3r7s5Xzqc/fV3gg==
-X-Received: by 2002:a05:6a00:408c:b0:63d:2d6a:47be with SMTP id bw12-20020a056a00408c00b0063d2d6a47bemr23446986pfb.2.1683771336166;
-        Wed, 10 May 2023 19:15:36 -0700 (PDT)
+        bh=bPVVu2202ryRmZRSsBFXxtFvR8OYbnStbiFs0POjB2c=;
+        b=g1977hKJecKrhqj4v+PVNN9wYNgi3CNunvK9HfNfC8IszeB0LgIoXaPIDyEXgmk/T1
+         2XxPeea1JZ2rW9pHemFUnYx5XDsmBumb1NOAXsQwWOltJkwSNR11/H8M63nYZ8EghP5D
+         tqvWLkgeYKiOZ5Vd/fOZXV8z4xYPUiDS0rGN/SuZmGus0Arvl7JGUXGWVjSRaxN5dr7r
+         jzdnuO2KiGkYfDAPAj4wNHxsnzw/edo9vQ7OzO6F1eJG3KJteuu7CUudVEUVjYOETVNZ
+         Tfxck45ZWPJuqHYFdHjpbICF8/qMAAXohizMszZ4nb6rKSN3O/uJTRoFe15+6hsqkD/1
+         P5rw==
+X-Gm-Message-State: AC+VfDysDq3hdHpBQCbB7w5krk+MWvmYxV2oJ/xHWSIeAYPUBr/dglpX
+	7HLSqzRnH5TaUbbSA2Cqm/0=
+X-Google-Smtp-Source: ACHHUZ6ejF0c99IWqPkXIKkqL2CypI7/rPTKUa8Ttb+wIlee8ljuvnuieHLJeXeFlit4f9j3nBvUmw==
+X-Received: by 2002:a17:902:d505:b0:1a6:b196:619d with SMTP id b5-20020a170902d50500b001a6b196619dmr24148566plg.6.1683771620168;
+        Wed, 10 May 2023 19:20:20 -0700 (PDT)
 Received: from hoboy.vegasvil.org ([2601:640:8200:e:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id e21-20020a62ee15000000b0063b867a1959sm4136947pfi.133.2023.05.10.19.15.35
+        by smtp.gmail.com with ESMTPSA id jn22-20020a170903051600b001a80ad9c599sm4490038plb.294.2023.05.10.19.20.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 May 2023 19:15:35 -0700 (PDT)
-Date: Wed, 10 May 2023 19:15:33 -0700
+        Wed, 10 May 2023 19:20:19 -0700 (PDT)
+Date: Wed, 10 May 2023 19:20:17 -0700
 From: Richard Cochran <richardcochran@gmail.com>
 To: Rahul Rameshbabu <rrameshbabu@nvidia.com>
 Cc: netdev@vger.kernel.org, Saeed Mahameed <saeed@kernel.org>,
@@ -63,11 +63,11 @@ Cc: netdev@vger.kernel.org, Saeed Mahameed <saeed@kernel.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Jacob Keller <jacob.e.keller@intel.com>
-Subject: Re: [PATCH net-next 4/9] testptp: Add support for testing
- ptp_clock_info .adjphase callback
-Message-ID: <ZFxPxTlwyiJPkb5v@hoboy.vegasvil.org>
+Subject: Re: [PATCH net-next 5/9] ptp: Add .getmaxphase callback to
+ ptp_clock_info
+Message-ID: <ZFxQ4TNisTvc1sn0@hoboy.vegasvil.org>
 References: <20230510205306.136766-1-rrameshbabu@nvidia.com>
- <20230510205306.136766-5-rrameshbabu@nvidia.com>
+ <20230510205306.136766-6-rrameshbabu@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -76,7 +76,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230510205306.136766-5-rrameshbabu@nvidia.com>
+In-Reply-To: <20230510205306.136766-6-rrameshbabu@nvidia.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
 	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -84,16 +84,24 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 10, 2023 at 01:53:01PM -0700, Rahul Rameshbabu wrote:
-> Invoke clock_adjtime syscall with tx.modes set with ADJ_OFFSET when testptp
-> is invoked with a phase adjustment offset value. Support seconds and
-> nanoseconds for the offset value.
-> 
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Shuah Khan <shuah@kernel.org>
-> Cc: Richard Cochran <richardcochran@gmail.com>
-> Cc: Maciek Machnikowski <maciek@machnikowski.net>
-> Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+On Wed, May 10, 2023 at 01:53:02PM -0700, Rahul Rameshbabu wrote:
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+> +#define PTP_SHOW_CB_INT(name, cb)					\
+> +static ssize_t cb##_show(struct device *dev,				\
+> +			  struct device_attribute *attr, char *page)	\
+> +{									\
+> +	struct ptp_clock *ptp = dev_get_drvdata(dev);			\
+> +	return snprintf(page, PAGE_SIZE-1, "%d\n",			\
+> +			ptp->info->cb(ptp->info));			\
+> +}									\
+> +static DEVICE_ATTR(name, 0444, cb##_show, NULL);
+> +
+>  PTP_SHOW_INT(max_adjustment, max_adj);
+> +PTP_SHOW_CB_INT(max_phase_adjustment, getmaxphase);
+
+Ugh, please no macro here.  Just add it plainly like clock_name_show.
+Rest of patch LGTM.
+
+Thanks,
+Richard
 
