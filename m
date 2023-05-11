@@ -1,153 +1,133 @@
-Return-Path: <netdev+bounces-1910-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1912-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 97A636FF7FA
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 19:02:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B4E696FF813
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 19:06:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B34071C20F5E
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:02:53 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D28111C20FD1
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:06:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 230D28C1F;
-	Thu, 11 May 2023 17:01:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3ABA6AD9;
+	Thu, 11 May 2023 17:06:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18CC58F50
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 17:01:59 +0000 (UTC)
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2CC83FE;
-	Thu, 11 May 2023 10:01:53 -0700 (PDT)
-Received: (Authenticated sender: alexis.lothore@bootlin.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id C075024000D;
-	Thu, 11 May 2023 17:01:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1683824512;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fTuxrkB0duNmVfHAcGEfV5u3kO9O3f4gRWtdWgludoU=;
-	b=iWg/NcqqdHtC6BCNcZ7lAWCV96pFe+ZyOj5lUcCFqV/a6ZtBtz2bG7y0ySja8nMkfNb9+Z
-	HgKqFe1q93Gf9xi+f2yHYY94Ul8JpltYdBKfn/yyxPhxKJPwIduIZmyiTtqNO0iNXISxvy
-	BZ3nUVqFxwLTIqUh6RtTSbmcAAB6eHpdHtKBw3OJNLXiUFoNOpk8Lt4kniBEoJwlbDcO7M
-	zYQOhvw0IluxU5u3RE9uASQf+v6rU9KCRh6To/GXc+1QURxe3Q+csCE6Gl6GQBODHM854y
-	FcCuTjxHoA1zDsrz+XeS4QFq5h/nNWQs+OiCZ4Zi3cPVbkTLDlps9VBXEF1XHg==
-From: alexis.lothore@bootlin.com
-To: andrew@lunn.ch,
-	f.fainelli@gmail.com,
-	olteanv@gmail.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com
-Cc: linux-renesas-soc@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	thomas.petazzoni@bootlin.com,
-	herve.codina@bootlin.com,
-	miquel.raynal@bootlin.com,
-	milan.stevanovic@se.com,
-	jimmy.lalande@se.com,
-	pascal.eberhard@se.com
-Subject: [PATCH net v2 3/3] net: dsa: rzn1-a5psw: disable learning for standalone ports
-Date: Thu, 11 May 2023 19:02:02 +0200
-Message-Id: <20230511170202.742087-4-alexis.lothore@bootlin.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230511170202.742087-1-alexis.lothore@bootlin.com>
-References: <20230511170202.742087-1-alexis.lothore@bootlin.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C975D206A2
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 17:06:54 +0000 (UTC)
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912656A4B
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 10:06:52 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id 4fb4d7f45d1cf-50bc570b4a3so16092979a12.1
+        for <netdev@vger.kernel.org>; Thu, 11 May 2023 10:06:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1683824811; x=1686416811;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ayyCxGH0foji5L7wUxPjLMBEgCkH5OqBptH4GPUcYDk=;
+        b=yQ5Tj7C1ussm/VcwYYhA4Rs12QyIk3aRNikd5NJbYP25dBwJSb4EYVtQhvG8pWTpBH
+         T4xirmZIQF6GvaHKEl3CnI6q6yxNmmyJArTKL536EiBHClq2oE9DdnPzvaffsw88f9oQ
+         apVjOK+XLIqdMlsPQ8AdpHxkyZxSaQC/q0SOczMoE8nzExFNLJ332OEuk36w9nU25Fis
+         oh0U8+Izz6csTiIism28LBA5UWnvkp18HoOaJxdNL8kEEwUAGENOJfeL5tJh4/YhsP50
+         d5HhjkKL4Sys9jLGxfFXLt3eWF2KgIXzWpKN5Ix/Hw9lC0yvnEOfcW4a0SMfn/YEA+90
+         zksA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683824811; x=1686416811;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ayyCxGH0foji5L7wUxPjLMBEgCkH5OqBptH4GPUcYDk=;
+        b=d3AfG9x8JRYGyWNCMHVG9TI8cZve/npmIrvsT9LOr3+y78s55k5KjAL/0necL65hdL
+         /yxI+MBFoVttotlA00qHSMx6mHol2yGHgvZ2vBQoA9GQpla+DVITNsxJSx0sJXyYaLSO
+         oLAFhi8dLovmR8ZuUR9u1/RuD+moc2she8UBVTzLdlcVhJy4yRAeqmUz1rv31iizURWa
+         cKgds5fnYCMTABeTIghECoQknoL9fGBaHA9agGvmkSX3Rkn4JBKMRhUx3BLCJd/Zq0KR
+         y8SqRIy3umg//frBWwhuQXiLP6FjXp5unY42jAFkDtYdSaG5lwTW3Pb4feiC7i3uf0lc
+         lI6w==
+X-Gm-Message-State: AC+VfDwBawhmMt25nME3rpVbdb999wzjEiOpbMgOkPY084vKEVZa5FRk
+	8DfugkOQYJ72XvdAPcrWKyrABX5j8wzITQ7dpGVGJQ==
+X-Google-Smtp-Source: ACHHUZ4kcUwO/YhdtrTa+xFa/aeEXoGMeFo5bs2na974KrFHqO2vD2Z8Q1dUjxA1QOC5UsUxODF7gw==
+X-Received: by 2002:a17:906:6a1b:b0:968:2b4a:aba3 with SMTP id qw27-20020a1709066a1b00b009682b4aaba3mr14233722ejc.5.1683824810998;
+        Thu, 11 May 2023 10:06:50 -0700 (PDT)
+Received: from krzk-bin ([2a02:810d:15c0:828:d7cd:1be6:f89d:7218])
+        by smtp.gmail.com with ESMTPSA id jl21-20020a17090775d500b00965b5540ad7sm4331348ejc.17.2023.05.11.10.06.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 May 2023 10:06:50 -0700 (PDT)
+Date: Thu, 11 May 2023 19:06:47 +0200
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To: Daniel Golle <daniel@makrotopia.org>
+Cc: Eric Dumazet <edumazet@google.com>,
+	SkyLake Huang <SkyLake.Huang@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jakub Kicinski <kuba@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	linux-mediatek@lists.infradead.org,
+	Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+	Paolo Abeni <pabeni@redhat.com>, devicetree@vger.kernel.org,
+	Rob Herring <robh+dt@kernel.org>, Qingfang Deng <dqfext@gmail.com>,
+	Simon Horman <simon.horman@corigine.com>
+Subject: Re: [PATCH net-next v4 1/2] dt-bindings: arm: mediatek: add
+ mediatek,boottrap binding
+Message-ID: <20230511170647.g6c3ezlyqqislzaf@krzk-bin>
+References: <cover.1683813687.git.daniel@makrotopia.org>
+ <f2d447d8b836cf9584762465a784185e8fcf651f.1683813687.git.daniel@makrotopia.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <f2d447d8b836cf9584762465a784185e8fcf651f.1683813687.git.daniel@makrotopia.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Clément Léger <clement.leger@bootlin.com>
+On Thu, 11 May 2023 16:10:20 +0200, Daniel Golle wrote:
+> The boottrap is used to read implementation details from the SoC, such
+> as the polarity of LED pins. Add bindings for it as we are going to use
+> it for the LEDs connected to MediaTek built-in 1GE PHYs.
+> 
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> ---
+>  .../arm/mediatek/mediatek,boottrap.yaml       | 37 +++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.yaml
+> 
 
-When ports are in standalone mode, they should have learning disabled to
-avoid adding new entries in the MAC lookup table which might be used by
-other bridge ports to forward packets. While adding that, also make sure
-learning is enabled for CPU port.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Fixes: 888cdb892b61 ("net: dsa: rzn1-a5psw: add Renesas RZ/N1 advanced 5 port switch driver")
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-Signed-off-by: Alexis Lothoré <alexis.lothore@bootlin.com>
----
- drivers/net/dsa/rzn1_a5psw.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+yamllint warnings/errors:
 
-diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
-index a3acac29ffa6..02f83d19656a 100644
---- a/drivers/net/dsa/rzn1_a5psw.c
-+++ b/drivers/net/dsa/rzn1_a5psw.c
-@@ -340,6 +340,14 @@ static void a5psw_flooding_set_resolution(struct a5psw *a5psw, int port,
- 		a5psw_reg_writel(a5psw, offsets[i], a5psw->bridged_ports);
- }
- 
-+static void a5psw_port_set_standalone(struct a5psw *a5psw, int port,
-+				      bool standalone)
-+{
-+	a5psw_port_learning_set(a5psw, port, !standalone);
-+	a5psw_flooding_set_resolution(a5psw, port, !standalone);
-+	a5psw_port_mgmtfwd_set(a5psw, port, standalone);
-+}
-+
- static int a5psw_port_bridge_join(struct dsa_switch *ds, int port,
- 				  struct dsa_bridge bridge,
- 				  bool *tx_fwd_offload,
-@@ -355,8 +363,7 @@ static int a5psw_port_bridge_join(struct dsa_switch *ds, int port,
- 	}
- 
- 	a5psw->br_dev = bridge.dev;
--	a5psw_flooding_set_resolution(a5psw, port, true);
--	a5psw_port_mgmtfwd_set(a5psw, port, false);
-+	a5psw_port_set_standalone(a5psw, port, false);
- 
- 	return 0;
- }
-@@ -366,8 +373,7 @@ static void a5psw_port_bridge_leave(struct dsa_switch *ds, int port,
- {
- 	struct a5psw *a5psw = ds->priv;
- 
--	a5psw_flooding_set_resolution(a5psw, port, false);
--	a5psw_port_mgmtfwd_set(a5psw, port, true);
-+	a5psw_port_set_standalone(a5psw, port, true);
- 
- 	/* No more ports bridged */
- 	if (a5psw->bridged_ports == BIT(A5PSW_CPU_PORT))
-@@ -761,13 +767,15 @@ static int a5psw_setup(struct dsa_switch *ds)
- 		if (dsa_port_is_unused(dp))
- 			continue;
- 
--		/* Enable egress flooding for CPU port */
--		if (dsa_port_is_cpu(dp))
-+		/* Enable egress flooding and learning for CPU port */
-+		if (dsa_port_is_cpu(dp)) {
- 			a5psw_flooding_set_resolution(a5psw, port, true);
-+			a5psw_port_learning_set(a5psw, port, true);
-+		}
- 
--		/* Enable management forward only for user ports */
-+		/* Enable standalone mode for user ports */
- 		if (dsa_port_is_user(dp))
--			a5psw_port_mgmtfwd_set(a5psw, port, true);
-+			a5psw_port_set_standalone(a5psw, port, true);
- 	}
- 
- 	return 0;
--- 
-2.40.1
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.example.dtb: boottrap@1001f6f0: $nodename:0: 'boottrap' was expected
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.example.dtb: boottrap@1001f6f0: reg: [[0, 268564208], [0, 32]] is too long
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.yaml
 
+
+See https://patchwork.ozlabs.org/patch/1780124
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
