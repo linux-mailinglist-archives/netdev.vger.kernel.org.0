@@ -1,133 +1,145 @@
-Return-Path: <netdev+bounces-1912-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1913-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B4E696FF813
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 19:06:57 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id BCBDE6FF828
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 19:10:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D28111C20FD1
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:06:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 25E5628183B
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:10:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3ABA6AD9;
-	Thu, 11 May 2023 17:06:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BD506FB2;
+	Thu, 11 May 2023 17:10:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C975D206A2
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 17:06:54 +0000 (UTC)
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912656A4B
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 10:06:52 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id 4fb4d7f45d1cf-50bc570b4a3so16092979a12.1
-        for <netdev@vger.kernel.org>; Thu, 11 May 2023 10:06:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A2E32115
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 17:10:48 +0000 (UTC)
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521AB6A7C
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 10:10:40 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id d75a77b69052e-3f396606ab0so834511cf.0
+        for <netdev@vger.kernel.org>; Thu, 11 May 2023 10:10:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683824811; x=1686416811;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ayyCxGH0foji5L7wUxPjLMBEgCkH5OqBptH4GPUcYDk=;
-        b=yQ5Tj7C1ussm/VcwYYhA4Rs12QyIk3aRNikd5NJbYP25dBwJSb4EYVtQhvG8pWTpBH
-         T4xirmZIQF6GvaHKEl3CnI6q6yxNmmyJArTKL536EiBHClq2oE9DdnPzvaffsw88f9oQ
-         apVjOK+XLIqdMlsPQ8AdpHxkyZxSaQC/q0SOczMoE8nzExFNLJ332OEuk36w9nU25Fis
-         oh0U8+Izz6csTiIism28LBA5UWnvkp18HoOaJxdNL8kEEwUAGENOJfeL5tJh4/YhsP50
-         d5HhjkKL4Sys9jLGxfFXLt3eWF2KgIXzWpKN5Ix/Hw9lC0yvnEOfcW4a0SMfn/YEA+90
-         zksA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683824811; x=1686416811;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20221208; t=1683825039; x=1686417039;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ayyCxGH0foji5L7wUxPjLMBEgCkH5OqBptH4GPUcYDk=;
-        b=d3AfG9x8JRYGyWNCMHVG9TI8cZve/npmIrvsT9LOr3+y78s55k5KjAL/0necL65hdL
-         /yxI+MBFoVttotlA00qHSMx6mHol2yGHgvZ2vBQoA9GQpla+DVITNsxJSx0sJXyYaLSO
-         oLAFhi8dLovmR8ZuUR9u1/RuD+moc2she8UBVTzLdlcVhJy4yRAeqmUz1rv31iizURWa
-         cKgds5fnYCMTABeTIghECoQknoL9fGBaHA9agGvmkSX3Rkn4JBKMRhUx3BLCJd/Zq0KR
-         y8SqRIy3umg//frBWwhuQXiLP6FjXp5unY42jAFkDtYdSaG5lwTW3Pb4feiC7i3uf0lc
-         lI6w==
-X-Gm-Message-State: AC+VfDwBawhmMt25nME3rpVbdb999wzjEiOpbMgOkPY084vKEVZa5FRk
-	8DfugkOQYJ72XvdAPcrWKyrABX5j8wzITQ7dpGVGJQ==
-X-Google-Smtp-Source: ACHHUZ4kcUwO/YhdtrTa+xFa/aeEXoGMeFo5bs2na974KrFHqO2vD2Z8Q1dUjxA1QOC5UsUxODF7gw==
-X-Received: by 2002:a17:906:6a1b:b0:968:2b4a:aba3 with SMTP id qw27-20020a1709066a1b00b009682b4aaba3mr14233722ejc.5.1683824810998;
-        Thu, 11 May 2023 10:06:50 -0700 (PDT)
-Received: from krzk-bin ([2a02:810d:15c0:828:d7cd:1be6:f89d:7218])
-        by smtp.gmail.com with ESMTPSA id jl21-20020a17090775d500b00965b5540ad7sm4331348ejc.17.2023.05.11.10.06.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 May 2023 10:06:50 -0700 (PDT)
-Date: Thu, 11 May 2023 19:06:47 +0200
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To: Daniel Golle <daniel@makrotopia.org>
-Cc: Eric Dumazet <edumazet@google.com>,
-	SkyLake Huang <SkyLake.Huang@mediatek.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jakub Kicinski <kuba@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	linux-mediatek@lists.infradead.org,
-	Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-	Paolo Abeni <pabeni@redhat.com>, devicetree@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>, Qingfang Deng <dqfext@gmail.com>,
-	Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH net-next v4 1/2] dt-bindings: arm: mediatek: add
- mediatek,boottrap binding
-Message-ID: <20230511170647.g6c3ezlyqqislzaf@krzk-bin>
-References: <cover.1683813687.git.daniel@makrotopia.org>
- <f2d447d8b836cf9584762465a784185e8fcf651f.1683813687.git.daniel@makrotopia.org>
+        bh=DKdPt1RaUkWe8+eoJAPYnUVWfgFKro3FnMuByj1EFEU=;
+        b=nMaXyqypHxPLcxqTJyoCXYG5PeO32ubse8ArHPkY7RDeIj41LN5gMmyL7Ac6dVzFZ7
+         ZYsaygJet/Hh0cPTxWS+w/TorbpHNOudoOCWWvZYZnP7YjntjqS2vG64aKUfM9l7X+FF
+         szXnzl+jFkr+JYMupJ3DNTQHVvGEygGe/nzzvC3TnnfYnfbGVzKYI+ZYmr6YtCTY7dv/
+         xP2Nkwrzf9OcT4F1SVRzG9y5DNHc+Ym1rdaz3WmyeOF+N68nDo8FWm5t2BEEgjwBEkqw
+         BfyFN6ArnSBxwav+9BJ9XVHl2wCN5uN9vTchbBWjiZdITpYpyhiYpvWcAnK75GYRAy6A
+         t6sQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683825039; x=1686417039;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DKdPt1RaUkWe8+eoJAPYnUVWfgFKro3FnMuByj1EFEU=;
+        b=e73InhigDC02O69QFENPH9MgIM7RmrBDCtOuDZN6rIgIpqJW75UQz5AbCMl+3Kfgdl
+         53VItSRyc8myLGZiSuVAydFlGiVg+/swO6+tyKWCGwRMqZ4fntq4PLNTJ6J3DcuqPkXI
+         jJOe8Cs0au0bUUeh8n8lVgBCKPapjMNRHht3dHmTJJ9kfHOcdFMN50zzG7faFiPVIn7C
+         CQoJH2y3JNKaS3iL6mFqn7se8KrzlFh5LSEwGhMoLaV0UCZPBTcUN/CENgTj5U/jjkQ/
+         iCyJU/SNkVHqg5rMOAwkJptFeBKv3eJ0MR4ZJ2w6wnZZD72yZXxGkG7hGf7C1oVWOggr
+         ZLNg==
+X-Gm-Message-State: AC+VfDx9cnU4GI6eegTMfOvgvRXYA7uA4ljUd0t/6OvGqxhsEGs1R8tw
+	1ijL1fam4zR31ikXkztpgFZPv8ptl64EnpXivU0cHg==
+X-Google-Smtp-Source: ACHHUZ72Zw3GmxCRU2ZaY86LgkadjB4mn+Ucm1AlZWq3wRc03x5tQHjXd5p53hpYmdX5ou16duANvsOJUXYCZ5d/6Is=
+X-Received: by 2002:a05:622a:19a0:b0:3ef:31a5:13c with SMTP id
+ u32-20020a05622a19a000b003ef31a5013cmr76533qtc.3.1683825039339; Thu, 11 May
+ 2023 10:10:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <f2d447d8b836cf9584762465a784185e8fcf651f.1683813687.git.daniel@makrotopia.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+References: <20230508020801.10702-1-cathy.zhang@intel.com> <20230508020801.10702-2-cathy.zhang@intel.com>
+ <3887b08ac0e55e27a24d2f66afcfff1961ed9b13.camel@redhat.com>
+ <CH3PR11MB73459006FCE3887E1EA3B82FFC769@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CH3PR11MB73456D792EC6E7614E2EF14DFC769@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CANn89iL6Ckuu9vOEvc7A9CBLGuh-EpbwFRxRAchV-6VFyhTUpg@mail.gmail.com>
+ <CH3PR11MB73458BB403D537CFA96FD8DDFC769@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CANn89iJvpgXTwGEiXAkFwY3j3RqVhNzJ_6_zmuRb4w7rUA_8Ug@mail.gmail.com>
+ <CALvZod6JRuWHftDcH0uw00v=yi_6BKspGCkDA4AbmzLHaLi2Fg@mail.gmail.com>
+ <CH3PR11MB7345ABB947E183AFB7C18322FC779@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CANn89i+9rQcGey+AJyhR02pTTBNhWN+P78e4a8knfC9F5sx0hQ@mail.gmail.com>
+ <CH3PR11MB73455A98A232920B322C3976FC779@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CANn89i+J+ciJGPkWAFKDwhzJERFJr9_2Or=ehpwSTYO14qzHmA@mail.gmail.com>
+ <CH3PR11MB734502756F495CB9C520494FFC779@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CALvZod4n+Kwa1sOV9jxiEMTUoO7MaCGWz=wT3MHOuj4t-+9S6Q@mail.gmail.com>
+ <CH3PR11MB73454C44EC8BCD43685BCB58FC749@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <IA0PR11MB7355E486112E922AA6095CCCFC749@IA0PR11MB7355.namprd11.prod.outlook.com>
+ <CANn89iJbAGnZd42SVZEYWFLYVbmHM3p2UDawUKxUBhVDH5A2=A@mail.gmail.com>
+ <IA0PR11MB73557DEAB912737FD61D2873FC749@IA0PR11MB7355.namprd11.prod.outlook.com>
+ <CALvZod7Y+SxiopRBXOf1HoDKO=Xh8CNPfgz3Etd4XOq5BPc5Ag@mail.gmail.com> <CANn89iKoB2hn8QKBw+8faL4MWZ1ByDW8T9UHyS9G-8c11mWdOw@mail.gmail.com>
+In-Reply-To: <CANn89iKoB2hn8QKBw+8faL4MWZ1ByDW8T9UHyS9G-8c11mWdOw@mail.gmail.com>
+From: Shakeel Butt <shakeelb@google.com>
+Date: Thu, 11 May 2023 10:10:28 -0700
+Message-ID: <CALvZod5sbwXYqPZavojs1cvspxZv1iFHBG8=LQGNodinLXVL=w@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper size
+To: Eric Dumazet <edumazet@google.com>
+Cc: "Zhang, Cathy" <cathy.zhang@intel.com>, Linux MM <linux-mm@kvack.org>, 
+	Cgroups <cgroups@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	"davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>, 
+	"Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Srinivas, Suresh" <suresh.srinivas@intel.com>, 
+	"Chen, Tim C" <tim.c.chen@intel.com>, "You, Lizhen" <lizhen.you@intel.com>, 
+	"eric.dumazet@gmail.com" <eric.dumazet@gmail.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, 11 May 2023 16:10:20 +0200, Daniel Golle wrote:
-> The boottrap is used to read implementation details from the SoC, such
-> as the polarity of LED pins. Add bindings for it as we are going to use
-> it for the LEDs connected to MediaTek built-in 1GE PHYs.
-> 
-> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> ---
->  .../arm/mediatek/mediatek,boottrap.yaml       | 37 +++++++++++++++++++
->  1 file changed, 37 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.yaml
-> 
+On Thu, May 11, 2023 at 9:35=E2=80=AFAM Eric Dumazet <edumazet@google.com> =
+wrote:
+>
+[...]
+>
+> The suspect part is really:
+>
+> >      8.98%  mc-worker        [kernel.vmlinux]          [k] page_counter=
+_cancel
+> >             |
+> >              --8.97%--page_counter_cancel
+> >                        |
+> >                         --8.97%--page_counter_uncharge
+> >                                   drain_stock
+> >                                   __refill_stock
+> >                                   refill_stock
+> >                                   |
+> >                                    --8.91%--try_charge_memcg
+> >                                              mem_cgroup_charge_skmem
+> >                                              |
+> >                                               --8.91%--__sk_mem_raise_a=
+llocated
+> >                                                         __sk_mem_schedu=
+le
+>
+> Shakeel, networking has a per-cpu cache, of +/- 1MB.
+>
+> Even with asymmetric alloc/free, this would mean that a 100Gbit NIC
+> would require something like 25,000
+> operations on the shared cache line per second.
+>
+> Hardly an issue I think.
+>
+> memcg does not seem to have an equivalent strategy ?
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.example.dtb: boottrap@1001f6f0: $nodename:0: 'boottrap' was expected
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.example.dtb: boottrap@1001f6f0: reg: [[0, 268564208], [0, 32]] is too long
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/arm/mediatek/mediatek,boottrap.yaml
-
-
-See https://patchwork.ozlabs.org/patch/1780124
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+memcg has +256KiB per-cpu cache (note the absence of '-'). However it
+seems like Cathy already tested with 4MiB (1024 page batch) which is
+comparable to networking per-cpu cache (i.e. 2MiB window) and still
+see the issue. Additionally this is a single machine test (no NIC),
+so, I am kind of contemplating between (1) this is not real world
+workload and thus ignore or (2) implement asymmetric charge/uncharge
+strategy for memcg.
 
