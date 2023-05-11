@@ -1,62 +1,62 @@
-Return-Path: <netdev+bounces-1967-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1968-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D4E0A6FFBED
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 23:38:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 597EA6FFBF2
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 23:39:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 064541C20F64
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 21:38:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 668A91C20F39
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 21:39:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D28C9174F0;
-	Thu, 11 May 2023 21:37:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64C7317721;
+	Thu, 11 May 2023 21:39:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C22F42918
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 21:37:59 +0000 (UTC)
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABEB7A88;
-	Thu, 11 May 2023 14:37:53 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3f4ad71b00eso16272425e9.2;
-        Thu, 11 May 2023 14:37:53 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 597CB20691
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 21:39:04 +0000 (UTC)
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DDE5FD8;
+	Thu, 11 May 2023 14:39:03 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3f423521b10so40534605e9.0;
+        Thu, 11 May 2023 14:39:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683841072; x=1686433072;
+        d=gmail.com; s=20221208; t=1683841141; x=1686433141;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=HP9IX+oFYEkrid2vkZ3A+oMe1Mtqy6JGFpwOKyjaMok=;
-        b=QdJCtUjea8qftgI+GZM8430w5EaTtcdx0/3fVmTE5ljy+b8kGp6zY1hEL+T3jRwcDB
-         QESTDMbpcuD0mMfAOgxzRfLlfmXniMDbmgwKc2fQBGE1SIt70IlPPrD6GC2KjphkFuFo
-         oq4WG1QEh+6r6Thsci69a2/2IavsSWOB5zkgGXkopBmTqYJpscD1Upo6pgBCO8nTKWJm
-         hKZ+HhEQKWDNicDH5TW3c5ejYIpn/oIJ0DCuDTINPf+FheikWZ5YFAzqvaBBvqS+4X1Q
-         OZo0uI0Md1CdoT20igJ6qom+4JD3rO9wLmcMBUK/uhch9/p5KLqYzrztuXklH4VoJ0XD
-         fRcw==
+        bh=HjSZxJ1OCrOJjsx8zSdGmy+TGb8Q1mUA0B2cGHXhmJQ=;
+        b=g4XIPathQ4QaGvodIhWMXw1gpSEQg1sLQw9ED1Z6g0iagZwZXzplqLV0Cq6Drxm4zr
+         RP7T+i1a7ZQaDg/wL0v0doHQOZ11Ssx7Pj6Cxt9JeSbc9Gizu7ni1tzE78lqXzpjDy/R
+         RoAsyaufThjl4G7SC8Kout8WE1+D9vAntq/0q0g9hKItB4ATAmDZOrH3jaD1JO2fWpfs
+         y3dHZ0Bar1AMgshu0sGY99Z/8YQLj41fU+D4OkoD27CeQ2PBHD9N4A9Hdxmdqv/x7H0L
+         7thj3E+iE+Mgu6w56IpunlTbu1YwLMc/MCRafJ2E3A34icQF1cxrCsi408PvY9jA+OMq
+         itKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683841072; x=1686433072;
+        d=1e100.net; s=20221208; t=1683841141; x=1686433141;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HP9IX+oFYEkrid2vkZ3A+oMe1Mtqy6JGFpwOKyjaMok=;
-        b=YsPUEgpUXVh+yOnwmAPxqPGE0O7ngFhSs+aflWC19tE8+i1Awgfv16na2NO5FGuvQ0
-         SBw66RCvjJdWPtQ4n/QooI8QYE8WpkQWhblWlm9Cd4ghlaNpPRxheHSfc2BmD8XirSfu
-         WdXGgfHpPpe5+CUpy7iYy9K4SgWzOJcDUEpK8y7iQ1gZaVZczv4BHtEVrZGOSq7bLGI9
-         vI0qF1y04JNpta8hu4U7jYIXxVcu6Oo8ekl4QAlSGr+QeHUW32hxCwW+KR4/gnH7Qb13
-         VzsHuizwHsP2MY9P2pnsjbDBrfb47Z8/qnVzptstcCMWSNHPWyu3WzNMGvLtmk1dNXEy
-         uDlQ==
-X-Gm-Message-State: AC+VfDy0EOg3gFjOt1kcQkslVS6OTgtW0agOrim8GHWrEUrt6oJhfNYm
-	xu/MT9Om6cbNJWsj7hQeqyU=
-X-Google-Smtp-Source: ACHHUZ7ZIcU6DfMmilb1gsY37lnau5Q0qoIFKe5W0rGcb++N2S1k1GKwOFjgI7qkBb/p8RbCtXHR2A==
-X-Received: by 2002:a7b:c381:0:b0:3f1:8c37:fa79 with SMTP id s1-20020a7bc381000000b003f18c37fa79mr15931005wmj.31.1683841071831;
-        Thu, 11 May 2023 14:37:51 -0700 (PDT)
+        bh=HjSZxJ1OCrOJjsx8zSdGmy+TGb8Q1mUA0B2cGHXhmJQ=;
+        b=eVurTbMYRsB/7/XekUMEDzew8jfN82rE1ObqI4awEvZvzaapQtfqfc60z6g6MAXXmX
+         zmt8xhchXNDC4p4RTGwfLxkFHEUvQWqxXeNygXAgZgh0jo+ov2y3tM4Axhd6r1UWcxFz
+         U0UMfdivGIHb9XyZ4XToGn7T4FqEFTIQ3U8yKvljB0NKIM61r8f4klRhaHqvSGsgJLLN
+         Cpvlt5KGaQ9/5E7XhhPBEfk/4Dkhbup7Sqz9zuTsypA5Qgzf1bjzSXj6I9fJ5uW30Djb
+         OwHvGwJP6JhKV99PdMDHEwKeLnHw3/nUjpRZP/nDOpbWFJQ6igU7T6XQilw0eVs+F53A
+         mPgQ==
+X-Gm-Message-State: AC+VfDzMHxKGLnGwmTd/hqCNVa9V52JjwUpaV2p/6n+XsvKPCV2cOeg+
+	YR14qVaLBFaQtlFRB+6GFSDByamaXgjUTg==
+X-Google-Smtp-Source: ACHHUZ5RtOOeDpznVkS+cqz0IGxbm1e0p+0/TbPVhYfuNhEHSQL88OMypoFgbi9LK91oRHyc2rXMbg==
+X-Received: by 2002:a1c:f704:0:b0:3f1:9526:22be with SMTP id v4-20020a1cf704000000b003f1952622bemr15032505wmh.23.1683841141081;
+        Thu, 11 May 2023 14:39:01 -0700 (PDT)
 Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id c3-20020a7bc843000000b003f42314832fsm14806666wml.18.2023.05.11.14.37.50
+        by smtp.gmail.com with ESMTPSA id l2-20020a1c7902000000b003f195d540d9sm26490561wme.14.2023.05.11.14.39.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 May 2023 14:37:51 -0700 (PDT)
-Date: Fri, 12 May 2023 00:37:49 +0300
+        Thu, 11 May 2023 14:39:00 -0700 (PDT)
+Date: Fri, 12 May 2023 00:38:58 +0300
 From: Vladimir Oltean <olteanv@gmail.com>
 To: alexis.lothore@bootlin.com
 Cc: andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
@@ -66,10 +66,13 @@ Cc: andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
 	herve.codina@bootlin.com, miquel.raynal@bootlin.com,
 	milan.stevanovic@se.com, jimmy.lalande@se.com,
 	pascal.eberhard@se.com
-Subject: Re: [PATCH net v2 2/3] net: dsa: rzn1-a5psw: fix STP states handling
-Message-ID: <20230511213749.j2be7po5n2vgfwmu@skbuf>
+Subject: Re: [PATCH net v2 3/3] net: dsa: rzn1-a5psw: disable learning for
+ standalone ports
+Message-ID: <20230511213858.jdrp7josynmzbwcp@skbuf>
 References: <20230511170202.742087-1-alexis.lothore@bootlin.com>
- <20230511170202.742087-3-alexis.lothore@bootlin.com>
+ <20230511170202.742087-1-alexis.lothore@bootlin.com>
+ <20230511170202.742087-4-alexis.lothore@bootlin.com>
+ <20230511170202.742087-4-alexis.lothore@bootlin.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -79,7 +82,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230511170202.742087-3-alexis.lothore@bootlin.com>
+In-Reply-To: <20230511170202.742087-4-alexis.lothore@bootlin.com>
+ <20230511170202.742087-4-alexis.lothore@bootlin.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
 	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -87,18 +91,13 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 11, 2023 at 07:02:01PM +0200, alexis.lothore@bootlin.com wrote:
+On Thu, May 11, 2023 at 07:02:02PM +0200, alexis.lothore@bootlin.com wrote:
 > From: Clément Léger <clement.leger@bootlin.com>
 > 
-> stp_set_state() should actually allow receiving BPDU while in LEARNING
-> mode which is not the case. Additionally, the BLOCKEN bit does not
-> actually forbid sending forwarded frames from that port. To fix this, add
-> a5psw_port_tx_enable() function which allows to disable TX. However, while
-> its name suggest that TX is totally disabled, it is not and can still
-> allow to send BPDUs even if disabled. This can be done by using forced
-> forwarding with the switch tagging mechanism but keeping "filtering"
-> disabled (which is already the case in the rzn1-a5sw tag driver). With
-> these fixes, STP support is now functional.
+> When ports are in standalone mode, they should have learning disabled to
+> avoid adding new entries in the MAC lookup table which might be used by
+> other bridge ports to forward packets. While adding that, also make sure
+> learning is enabled for CPU port.
 > 
 > Fixes: 888cdb892b61 ("net: dsa: rzn1-a5psw: add Renesas RZ/N1 advanced 5 port switch driver")
 > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
@@ -106,19 +105,4 @@ On Thu, May 11, 2023 at 07:02:01PM +0200, alexis.lothore@bootlin.com wrote:
 > ---
 
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-
-> @@ -344,28 +376,35 @@ static void a5psw_port_bridge_leave(struct dsa_switch *ds, int port,
->  
->  static void a5psw_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
->  {
-> -	u32 mask = A5PSW_INPUT_LEARN_DIS(port) | A5PSW_INPUT_LEARN_BLOCK(port);
->  	struct a5psw *a5psw = ds->priv;
-> -	u32 reg = 0;
-> +	bool learning_enabled, rx_enabled, tx_enabled;
-
-Absolutely minor comment: in the networking subsystem there is a coding
-style preference to order lines with variable declarations longest to
-shortest (reverse Christmas tree). Since I don't see another less
-frivolous reason to resend the patch set, I thought I'd just mention
-for next time.
 
