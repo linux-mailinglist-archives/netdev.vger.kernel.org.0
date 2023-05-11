@@ -1,75 +1,78 @@
-Return-Path: <netdev+bounces-1680-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1681-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2FEEE6FECB7
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 09:25:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7EC756FECBF
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 09:26:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BC594281420
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 07:25:10 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F228E1C20EEB
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 07:26:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6FF481F;
-	Thu, 11 May 2023 07:25:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D5BD11B8EF;
+	Thu, 11 May 2023 07:26:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D90251B8E8
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 07:25:08 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382566A52;
-	Thu, 11 May 2023 00:24:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF2F781F
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 07:26:13 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0965136;
+	Thu, 11 May 2023 00:25:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1683789895; x=1715325895;
+  t=1683789942; x=1715325942;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=K1mgrZfFCls8u5NmU8XyZVTtBs5ziCVIjjKenDOXFvU=;
-  b=s9023dD7z+df7yxHAX7mk9XQCrSfVifSO3ecYBEmWgvVDEhugD0RErsw
-   kLTfypimc738n3tNYpH8uvlTR50n0KqjlH5k1VYBS9V5HOvdvqMiU60bN
-   fhmHJ0adCbA6BZc2B7K1vDMRpiwShIuBWhCTZUqBEyHrAOWpY4iwm07uz
-   MdQNEo/0LosQrfPdkLS6XCwR+d6xYNASDRagFy25f+MMcyZs8ToHjH/ny
-   4NPPrsEcgpc03k+7GQCztEKdoCe3/eiahg93+SlClgZuXazv7sWUuIMDy
-   peg87tztdjhIx8cBAelxmG89l37k0SM3ZQEOIlBOlHMQlyOIZOFHi/dit
-   A==;
+  bh=Hj9/Xos0c73jvpI7skfzLdMH/vZFNW5unlnGn+GOZFg=;
+  b=o9HoorndjnKoJ2Q4jemC+B8ONzZ6uhmKMd9pobZeaCQn9Ov3+TmYcUG1
+   s769KOrURGJVx554nynlZAi8nnMGLb5XqZfuqzaHHa4p3O0fLjfyJgniG
+   LqpWzGPMr6H5oXZS6wmJGnJomoyeC0lqp07Xs1kfioXrCNAKN8Qw4a6E5
+   UH0WmA8CZdcgw7qiTNv7YVZhEvsueS6OjgNITR5nkW4F4W1W15vSThX+9
+   u+4naXdPEcs9wutNKXTuzITszfW9NTuvRB0ivCmtiIJKorsinuIEjx9ml
+   SQNPR2IlwUMf6QDAKSan74+Ewyu+9jw8EU+JAu5d5x5CmrfzxEW9sbfyc
+   g==;
 X-IronPort-AV: E=Sophos;i="5.99,266,1677567600"; 
-   d="scan'208";a="213383976"
-X-Amp-Result: SKIPPED(no attachment in message)
+   d="asc'?scan'208";a="210719448"
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 May 2023 00:24:54 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 May 2023 00:25:38 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 11 May 2023 00:24:53 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Thu, 11 May 2023 00:24:52 -0700
-Date: Thu, 11 May 2023 09:24:52 +0200
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
-To: Shenwei Wang <shenwei.wang@nxp.com>
-CC: Wei Fang <wei.fang@nxp.com>, "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, Clark Wang <xiaoning.wang@nxp.com>, NXP Linux Team
-	<linux-imx@nxp.com>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
-	<daniel@iogearbox.net>, Jesper Dangaard Brouer <hawk@kernel.org>, John
- Fastabend <john.fastabend@gmail.com>, Alexander Lobakin
-	<alexandr.lobakin@intel.com>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <imx@lists.linux.dev>
-Subject: Re: [PATCH v2 net 1/1] net: fec: using the standard return codes
- when xdp xmit errors
-Message-ID: <20230511072452.umskoyoscsxgmcoo@soft-dev3-1>
-References: <20230510200523.1352951-1-shenwei.wang@nxp.com>
+ 15.1.2507.21; Thu, 11 May 2023 00:25:38 -0700
+Received: from wendy (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
+ Transport; Thu, 11 May 2023 00:25:35 -0700
+Date: Thu, 11 May 2023 08:25:15 +0100
+From: Conor Dooley <conor.dooley@microchip.com>
+To: Pranavi Somisetty <pranavi.somisetty@amd.com>
+CC: <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
+	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <richardcochran@gmail.com>, <linux@armlinux.org.uk>,
+	<palmer@dabbelt.com>, <git@amd.com>, <michal.simek@amd.com>,
+	<harini.katakam@amd.com>, <radhey.shyam.pandey@amd.com>,
+	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-riscv@lists.infradead.org>
+Subject: Re: [PATCH net-next v2 1/2] dt-bindings: net: cdns,macb: Add
+ rx-watermark property
+Message-ID: <20230511-canned-gray-005130594368@wendy>
+References: <20230511071214.18611-1-pranavi.somisetty@amd.com>
+ <20230511071214.18611-2-pranavi.somisetty@amd.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="H+osmLhakqf8SYZU"
 Content-Disposition: inline
-In-Reply-To: <20230510200523.1352951-1-shenwei.wang@nxp.com>
+In-Reply-To: <20230511071214.18611-2-pranavi.somisetty@amd.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
 	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
@@ -77,68 +80,71 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The 05/10/2023 15:05, Shenwei Wang wrote:
-> 
-> This patch standardizes the inconsistent return values for unsuccessful
-> XDP transmits by using standardized error codes (-EBUSY or -ENOMEM).
+--H+osmLhakqf8SYZU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Shouldn't this patch target net-next instead of net? As Simon suggested
-here [1], or maybe is just me who misunderstood that part.
-Also it is nice to CC people who comment at your previous patches in all
-the next versions.
+On Thu, May 11, 2023 at 01:12:13AM -0600, Pranavi Somisetty wrote:
+> watermark value is the minimum amount of packet data
+> required to activate the forwarding process. The watermark
+> implementation and maximum size is dependent on the device
+> where Cadence MACB/GEM is used.
+>=20
+> Signed-off-by: Pranavi Somisetty <pranavi.somisetty@amd.com>
 
-Just a small thing, if there is only 1 patch in the series, you don't
-need to add 1/1 in the subject.
+Please send dt-binding patches to the dt-binding maintainers and list.
+get_maintainer.pl should have told you to do so & without having done
+so, the bindings will not get tested :/
 
-[1] https://lore.kernel.org/netdev/20230509193845.1090040-1-shenwei.wang@nxp.com/T/#m4b6b21c75512391496294fc78db2fbdf687f1381
+Thanks,
+Conor.
 
-> 
-> Fixes: 26312c685ae0 ("net: fec: correct the counting of XDP sent frames")
-> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
 > ---
->  v2:
->   - focusing on code clean up per Simon's feedback.
-> 
->  drivers/net/ethernet/freescale/fec_main.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index 42ec6ca3bf03..6a021fe24dfe 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -3798,8 +3798,7 @@ static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
->         entries_free = fec_enet_get_free_txdesc_num(txq);
->         if (entries_free < MAX_SKB_FRAGS + 1) {
->                 netdev_err(fep->netdev, "NOT enough BD for SG!\n");
-> -               xdp_return_frame(frame);
-> -               return NETDEV_TX_BUSY;
-> +               return -EBUSY;
->         }
-> 
->         /* Fill in a Tx ring entry */
-> @@ -3813,7 +3812,7 @@ static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
->         dma_addr = dma_map_single(&fep->pdev->dev, frame->data,
->                                   frame->len, DMA_TO_DEVICE);
->         if (dma_mapping_error(&fep->pdev->dev, dma_addr))
-> -               return FEC_ENET_XDP_CONSUMED;
-> +               return -ENOMEM;
-> 
->         status |= (BD_ENET_TX_INTR | BD_ENET_TX_LAST);
->         if (fep->bufdesc_ex)
-> @@ -3869,7 +3868,7 @@ static int fec_enet_xdp_xmit(struct net_device *dev,
->         __netif_tx_lock(nq, cpu);
-> 
->         for (i = 0; i < num_frames; i++) {
-> -               if (fec_enet_txq_xmit_frame(fep, txq, frames[i]) != 0)
-> +               if (fec_enet_txq_xmit_frame(fep, txq, frames[i]) < 0)
->                         break;
->                 sent_frames++;
->         }
-> --
-> 2.34.1
-> 
-> 
+>  Documentation/devicetree/bindings/net/cdns,macb.yaml | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Docum=
+entation/devicetree/bindings/net/cdns,macb.yaml
+> index bef5e0f895be..779bc25cf005 100644
+> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> @@ -109,6 +109,13 @@ properties:
+>    power-domains:
+>      maxItems: 1
+> =20
+> +  rx-watermark:
+> +    maxItems: 1
+> +    $ref: /schemas/types.yaml#/definitions/uint16
+> +    description:
+> +      Set watermark value for pbuf_rxcutthru reg and enable
+> +      rx partial store and forward.
+> +
+>    '#address-cells':
+>      const: 1
+> =20
+> @@ -166,6 +173,7 @@ examples:
+>              compatible =3D "cdns,macb";
+>              reg =3D <0xfffc4000 0x4000>;
+>              interrupts =3D <21>;
+> +            rx-watermark =3D /bits/ 16 <0x44>;
+>              phy-mode =3D "rmii";
+>              local-mac-address =3D [3a 0e 03 04 05 06];
+>              clock-names =3D "pclk", "hclk", "tx_clk";
+> --=20
+> 2.36.1
+>=20
 
--- 
-/Horatiu
+--H+osmLhakqf8SYZU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZFyYUAAKCRB4tDGHoIJi
+0jMaAP0Qag2Eb48tWi3gGaw/nHxQP9YRqnaVqNrnLGsYG7A38wEAxpLH3SseU5ek
+OeYBBUqOa21Fw8xZH0uSrW8O94TXdAw=
+=B22H
+-----END PGP SIGNATURE-----
+
+--H+osmLhakqf8SYZU--
 
