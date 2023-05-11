@@ -1,59 +1,85 @@
-Return-Path: <netdev+bounces-1635-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1636-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 91E806FE983
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 03:34:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 656526FE98A
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 03:43:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4E4DA281621
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:34:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C2052280E4E
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:43:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C084C8F6D;
-	Thu, 11 May 2023 01:34:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB4BB1F175;
+	Thu, 11 May 2023 01:43:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5209E8F63
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 01:33:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8A9AC433D2;
-	Thu, 11 May 2023 01:33:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AC29645
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 01:43:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6823C433D2;
+	Thu, 11 May 2023 01:43:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683768839;
-	bh=ehqsTiJeXFoWkUX5m5q0zk18w02eaYb37H/12j3Sn0o=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=IAhOu6LrMht7xbTJep54i6CMeulj3I6IaiVMsI/5MkwveegjGXHRYDTJX+0+mFQHv
-	 zpi00o+jL4R/ExIKZ4pX96puTIutUnwczhPtBpsMilapsVzs1cUFBYluTXZMK6Innp
-	 toc4yivNoAXKNC5RaBbS76xqCPAfJ8nyvTlKWnbSjNnBX1WgQQgH1D0avorewZOX4s
-	 6sEAlYIduBkv3esrsb62oKZFan4AWeT6PD0tbTUcPagclZuikmOuF/IDIzMvFbzBsD
-	 8Owff3bWC8iKsyHFCULBd/InX9Qjcxp19ty4naH8jDTAwBC193pISEU4M0H43J2wgc
-	 vDL95Ri8C3eiQ==
-Date: Wed, 10 May 2023 18:33:57 -0700
+	s=k20201202; t=1683769421;
+	bh=WgiagVILFlJr+BssirgOWdx4EX6xaOlwOwJSQdWpN6M=;
+	h=From:To:Cc:Subject:Date:From;
+	b=ByRJMek1Bn5TXGuVVZO1SyoLXds2iMI5zSyd7EQfLgL1hQWlWUlVoXPaz3Id/G1lK
+	 r32ICq2Mr+hXG0qjY0HpHmf3wLwmRZzV49qXY7y58VTMjvW1gIfjXH8jKa7EkVL5Nh
+	 M2XN4T6JGGIyBKJ3BWrTmdPwXCJKqE+KRkFUxMjr4AnSheyZIJEYSoCBu2oV/UYA2b
+	 5aNUmrxyjrGr7cLM2yC3idtBISan6Zj3N8SYmHsXCFkXcHVNRx5cjyg+Sv6neEs2E4
+	 O2ye0MrmZNlAP98AYSWcish3ckD8ZVU5AFeB1PK+EP5eFtXr826rQ5/wT1/A7gUDv2
+	 bXBqDGUD6r0Kg==
 From: Jakub Kicinski <kuba@kernel.org>
-To: Angus Chen <angus.chen@jaguarmicro.com>
-Cc: davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
- pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: Remove low_thresh in ip defrag
-Message-ID: <20230510183357.1b8501fd@kernel.org>
-In-Reply-To: <20230509071243.1572-1-angus.chen@jaguarmicro.com>
-References: <20230509071243.1572-1-angus.chen@jaguarmicro.com>
+To: davem@davemloft.net
+Cc: netdev@vger.kernel.org,
+	edumazet@google.com,
+	pabeni@redhat.com,
+	linux-doc@vger.kernel.org,
+	corbet@lwn.net,
+	Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] MAINTAINERS: don't CC docs@ for netlink spec changes
+Date: Wed, 10 May 2023 18:43:39 -0700
+Message-Id: <20230511014339.906663-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Tue,  9 May 2023 15:12:43 +0800 Angus Chen wrote:
-> As low_thresh has no work in fragment reassembles,del it.
+Documentation/netlink/ contains machine-readable protocol
+specs in YAML. Those are much like device tree bindings,
+no point CCing docs@ for the changes.
 
-You're not really deleting it. 
-Please use spellcheck.
-You also misspelled "unused" in the code.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7e0b87d5aa2e..1c78e61a3387 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6218,6 +6218,7 @@ X:	Documentation/devicetree/
+ X:	Documentation/driver-api/media/
+ X:	Documentation/firmware-guide/acpi/
+ X:	Documentation/i2c/
++X:	Documentation/netlink/
+ X:	Documentation/power/
+ X:	Documentation/spi/
+ X:	Documentation/userspace-api/media/
+@@ -14607,6 +14608,7 @@ B:	mailto:netdev@vger.kernel.org
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
+ F:	Documentation/core-api/netlink.rst
++F:	Documentation/netlink/
+ F:	Documentation/networking/
+ F:	Documentation/process/maintainer-netdev.rst
+ F:	Documentation/userspace-api/netlink/
 -- 
-pw-bot: cr
+2.40.1
+
 
