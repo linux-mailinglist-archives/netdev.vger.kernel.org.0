@@ -1,94 +1,118 @@
-Return-Path: <netdev+bounces-1752-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1751-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id F0B256FF0BC
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:56:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7FB7F6FF0BA
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:55:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AC0F32816CA
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 11:56:01 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2C512281623
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 11:55:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C90519BD1;
-	Thu, 11 May 2023 11:56:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1393B19BCF;
+	Thu, 11 May 2023 11:55:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0227D65B
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 11:55:59 +0000 (UTC)
-Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F612680;
-	Thu, 11 May 2023 04:55:58 -0700 (PDT)
-Received: from local
-	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-	 (Exim 4.96)
-	(envelope-from <daniel@makrotopia.org>)
-	id 1px4tm-0008Rg-01;
-	Thu, 11 May 2023 11:55:57 +0000
-Date: Thu, 11 May 2023 13:53:53 +0200
-From: Daniel Golle <daniel@makrotopia.org>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH 1/8] net: phy: realtek: rtl8221: allow to configure
- SERDES mode
-Message-ID: <ZFzXPGeob0q4DTza@pidgin.makrotopia.org>
-References: <cover.1683756691.git.daniel@makrotopia.org>
- <302d982c5550f10d589735fc2e46cf27386c39f4.1683756691.git.daniel@makrotopia.org>
- <81c3f04d-ec48-4ac0-ac16-b69dc6ae72e0@lunn.ch>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E1521FBB
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 11:55:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D85BFC433EF;
+	Thu, 11 May 2023 11:55:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683806126;
+	bh=+kvT7/6VOO4REq/h1o93a95WwTTOkKPBCj0EgJq20Cg=;
+	h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+	b=pn/XbW64EVxVK0nIbzPa2bbd3h+UY5hyF1YUXRtDnCFRF0x/kXk4th2N/IgvigxEL
+	 hosxaTpImq/bBXwY6SXmhIV9SRVbb8++fb+VQOTLoy75msLeVb/DSY93RlSC9UVb/d
+	 fB+H4jEnb4gBcjT3hjtluHsNpO1w6Ub9NxkSJXSFfxt/RRyXgA2xg6DmLBY/rxoLCY
+	 9EcDHKPyzDir71H3xh5pKWRaPl5qmuEqjA8W/WnGFBqZZohtMN0u1BKJZAMq15r636
+	 /Epim06tujDJKgyO3zHlbaXa9xGqunohSs4yQ9BKmX2x4Gv67pv5FW8g4/yuEm7znV
+	 F0LnSpyZkDdmg==
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <81c3f04d-ec48-4ac0-ac16-b69dc6ae72e0@lunn.ch>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CANn89iJ8Jvi2wk5fOGvkreqcUVN_qs=MJ3mYxtqUGC=jnCgLnw@mail.gmail.com>
+References: <20230511093456.672221-1-atenart@kernel.org> <CANn89iJ8Jvi2wk5fOGvkreqcUVN_qs=MJ3mYxtqUGC=jnCgLnw@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/4] net: tcp: make txhash use consistent for IPv4
+From: Antoine Tenart <atenart@kernel.org>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+To: Eric Dumazet <edumazet@google.com>
+Date: Thu, 11 May 2023 13:55:23 +0200
+Message-ID: <168380612338.9448.16859771930497024762@kwain>
 
-On Thu, May 11, 2023 at 02:41:07AM +0200, Andrew Lunn wrote:
-> > +#define RTL8221B_MMD_SERDES_CTRL		MDIO_MMD_VEND1
-> > +#define RTL8221B_MMD_PHY_CTRL			MDIO_MMD_VEND2
-> 
-> I suggest you don't do this. Use MDIO_MMD_VEND[1|2] to make it clear
-> these are vendor registers.
+Quoting Eric Dumazet (2023-05-11 12:24:15)
+> On Thu, May 11, 2023 at 11:35=E2=80=AFAM Antoine Tenart <atenart@kernel.o=
+rg> wrote:
+> >
+> > Series is divided in two parts. First two commits make the txhash (used
+> > for the skb hash in TCP) to be consistent for all IPv4/TCP packets (IPv6
+> > doesn't have the same issue). Last two commits improve doc/comment
+> > hash-related parts.
+> >
+> > One example is when using OvS with dp_hash, which uses skb->hash, to
+> > select a path. We'd like packets from the same flow to be consistent, as
+> > well as the hash being stable over time when using net.core.txrehash=3D=
+0.
+> > Same applies for kernel ECMP which also can use skb->hash.
+> >
+>=20
+> SGTM, thanks.
+>=20
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
+>=20
+> FYI while reviewing your patches, I found that I have to send this fix:
+>=20
+> I suggest we hold your patch series a bit before this reaches net-next tr=
+ee,
+> to avoid merge conflicts.
 
-Ack, I will not introduce new macros to label them, but just use
-MDIO_MMD_VEND1 and MDIO_MMD_VEND2 then.
+Sure, no problem. Thanks for the review!
 
-> 
-> > +	case RTL8221B_SERDES_OPTION_MODE_2500BASEX_SGMII:
-> > +	case RTL8221B_SERDES_OPTION_MODE_2500BASEX:
-> > +		phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x6a04, 0x0503);
-> > +		phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x6f10, 0xd455);
-> > +		phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x6f11, 0x8020);
-> > +		break;
-> > +	case RTL8221B_SERDES_OPTION_MODE_HISGMII_SGMII:
-> > +	case RTL8221B_SERDES_OPTION_MODE_HISGMII:
-> > +		phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x6a04, 0x0503);
-> > +		phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x6f10, 0xd433);
-> > +		phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x6f11, 0x8020);
-> > +		break;
-> > +	}
-> 
-> Is there anything in the datasheet to indicate register names and what
-> the values mean? It would be good to replace these magic values with
-> #defines.
-
-Unfortunately they are only mentioned as magic values which have to be
-written to magic registers also in the datasheet :(
-
+> Bug was added in commit f6c0f5d209fa ("tcp: honor SO_PRIORITY in
+> TIME_WAIT state")
+>=20
+>=20
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index 39bda2b1066e1d607a59fb79c6305d0ca30cb28d..06d2573685ca993a3a0a89807=
+f09d7b5c153cc72
+> 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -829,6 +829,9 @@ static void tcp_v4_send_reset(const struct sock
+> *sk, struct sk_buff *skb)
+>                                    inet_twsk(sk)->tw_priority : sk->sk_pr=
+iority;
+>                 transmit_time =3D tcp_transmit_time(sk);
+>                 xfrm_sk_clone_policy(ctl_sk, sk);
+> +       } else {
+> +               ctl_sk->sk_mark =3D 0;
+> +               ctl_sk->sk_priority =3D 0;
+>         }
+>         ip_send_unicast_reply(ctl_sk,
+>                               skb, &TCP_SKB_CB(skb)->header.h4.opt,
+> @@ -836,7 +839,6 @@ static void tcp_v4_send_reset(const struct sock
+> *sk, struct sk_buff *skb)
+>                               &arg, arg.iov[0].iov_len,
+>                               transmit_time);
+>=20
+> -       ctl_sk->sk_mark =3D 0;
+>         xfrm_sk_free_policy(ctl_sk);
+>         sock_net_set(ctl_sk, &init_net);
+>         __TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+> @@ -935,7 +937,6 @@ static void tcp_v4_send_ack(const struct sock *sk,
+>                               &arg, arg.iov[0].iov_len,
+>                               transmit_time);
+>=20
+> -       ctl_sk->sk_mark =3D 0;
+>         sock_net_set(ctl_sk, &init_net);
+>         __TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+>         local_bh_enable();
+>
 
