@@ -1,77 +1,73 @@
-Return-Path: <netdev+bounces-1822-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1823-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C9B9C6FF37A
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:56:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3378D6FF384
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 16:01:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E27B21C20F5B
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:56:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EA6B51C20F39
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 14:01:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1EF2219E70;
-	Thu, 11 May 2023 13:56:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B023019E71;
+	Thu, 11 May 2023 14:01:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11311369
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:56:39 +0000 (UTC)
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2061d.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaf::61d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6041F40E0
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 06:56:38 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9727C1F922
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 14:01:23 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2101.outbound.protection.outlook.com [40.107.220.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D877C5247;
+	Thu, 11 May 2023 07:01:21 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A1S1qvp9WDUqDp8CsGl5asBu4b4kEpumP0pXEfw8sgcVmZrwFBkmrFgLuBBmR0lFHZyCCCozCLZPRty3dreG3hJziuOdLDKq+PfaLcAR/aTuTSTelGoEUx0AXiLWK8qUg5LKxvQAvcAplU5ITCwxmsJ2r3PV5RkXkTIotHzVrOBQMYco1P3VAGlBm2I32MQx7J4mog9+Bf12Ez+EzP72FIdN8WEM/IHJ4rZhC57z2qwhdb59opNoTUz5Ox3xkLZt0viR8XpZ5YOsXIQzHB2j69/rCAIgKQmY3oTp55yV0Vm1FMLzfSn69BcPd7bK2vsQdPQX6uMtp0mr0SLCm2SiVw==
+ b=nvEEhQWa2r3jfeO7S7ABAzKPVKrPYQSP9fIKLWCltblxr6hDuO+1nt921lStOOTJXPnqAqqV0aP+gJH0ZmXnv0dp+nvMtD+avejgjyQ6gMsCsWPhzWkgABPjOcKh4pP2UnyWYSlS2fFVeSvmDP2TdEpeDhNeEvN8JIP5CwEJrswuiQtdpv8KzWJ8x2Zcnob65z+V4LdD1BMm6ceApdv0fYD5+OFzcez5Qa2HrK2oPWI+nT0vIkFhkAkxKVXIk2BVxuSk0SXV83Z4weRDAlN6nq6AllOXzfukoHrSY81qzzcB27aGikidsChs0gSorJy8028iznfRxgfoMWZ5620e4Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PARArIY1H4o67r2jbzHFC9s68lGg3atbjQLIMHfePD0=;
- b=IPvtkr2ePKrDze/AsxYphOYRc9LvErc4BfZbeP41B9pBMETB/iRmB0GotDg90/gpTXVYdvA1qQvJmm+6LvgLArP28alR/Zpprl58s8qUDGctJoWl8TsfGrk8PcM7uU/zynVfx3d2R+jNM32GIVh44if2ICO5PWRyLQrGeLgk8Gv3lhZAO36h0KHqjlxYp3w3fJdcjYrZZH2zNNINSfIQOFMdDWzpdXqdJMI0Da5EW+0qm4YZh+WeKU/ls260RAxMDYJ8VW+wbisRAwYrHzxvdtX4GPkG2AWgmuJ0KY1fKB23j/b3cwYVuPFO31SfcN3Scs0nHoiUnwPD552F0TyQzw==
+ bh=0Y0xI6rSh2R5D8r5eEnq2spcVeYewEFWya36jjItlxw=;
+ b=SSgb4HLrh5v0msP4B5hBXPAUpHe5Rr90+yOjcW5LscKYuo2XtZybA0YcLnxWKcXWMJ3ZyLBN/qYKxkjg7Q/5VYFYtDQ1KODRQ3B/egaAi617aSFM/FV4Ubt+qdVQn6UAjm6bcRA95G4z/daQV2MmTSThn10Tq+snAotEb+HX0Xw9xvu9P+XFYYniYsPbIuM329hXF+WCQwkPLjYz98vAr33AUIasgRfIJkk9UGMN/+MF40AeAjZ/m+RRiUQOM6Nl11+Bk2c+ojOPGO+iA8J/H8Xow4ugx2WI8HcnHqjXZo2mX9MQPS7UCFPTVEYKvCrYKCm1hzuzfe9rebsP/Dh36w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PARArIY1H4o67r2jbzHFC9s68lGg3atbjQLIMHfePD0=;
- b=IOXC6UzszY4v8WdhB6i2vQJulQe2k4luVMmbks3PPpYt/C6hatviCfyxK+5SEm05fYLweNvVAYxaWV59KaS4tObpOR7bJGlUC0eAgsbpwzL52wBbuNBoT3RnPqGh5/8yZuawk6j7U7LrJ6HHm2FVWgR3gYkqLH+Dvd6LTIPGL8o=
+ bh=0Y0xI6rSh2R5D8r5eEnq2spcVeYewEFWya36jjItlxw=;
+ b=sL64lqnfwOAD/Ao0I0vUzvxLuNhvJJV/55oGL/o+vnFjwIV6w/rr60rXpfa0Lf8BUFM+dkPTKWlbB4xJbWj7tmRkhTia20/PYKaFuGVIveNBu3WgN/IGTVCA1huKb71pkp24PtB2Tmt8ETNBWvqm5HN0I0RAzRTEpQZU7fpJGAk=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AS8PR04MB8771.eurprd04.prod.outlook.com (2603:10a6:20b:42c::7) with
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MW5PR13MB5581.namprd13.prod.outlook.com (2603:10b6:303:195::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.21; Thu, 11 May
- 2023 13:56:34 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::245a:9272:b30a:a21c]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::245a:9272:b30a:a21c%3]) with mapi id 15.20.6363.033; Thu, 11 May 2023
- 13:56:34 +0000
-Date: Thu, 11 May 2023 16:56:31 +0300
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-To: =?utf-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
-Cc: netdev@vger.kernel.org, kuba@kernel.org, glipus@gmail.com,
-	maxime.chevallier@bootlin.com, vadim.fedorenko@linux.dev,
-	richardcochran@gmail.com, gerhard@engleder-embedded.com,
-	thomas.petazzoni@bootlin.com, krzysztof.kozlowski+dt@linaro.org,
-	robh+dt@kernel.org, linux@armlinux.org.uk
-Subject: Re: [PATCH net-next RFC v4 3/5] dt-bindings: net: phy: add timestamp
- preferred choice property
-Message-ID: <20230511135631.dzszb4zen26mtsqq@skbuf>
-References: <20230406173308.401924-1-kory.maincent@bootlin.com>
- <20230406173308.401924-4-kory.maincent@bootlin.com>
- <20230412131421.3xeeahzp6dj46jit@skbuf>
- <20230412154446.23bf09cf@kmaincent-XPS-13-7390>
- <20230429174217.rawjgcxuyqs4agcf@skbuf>
- <20230502111043.2e8d48c9@kmaincent-XPS-13-7390>
- <20230511131008.so5vfvnc3mrbfeh6@skbuf>
- <20230511152550.4de3da1f@kmaincent-XPS-13-7390>
-Content-Type: text/plain; charset=iso-8859-1
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.19; Thu, 11 May
+ 2023 14:01:12 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.020; Thu, 11 May 2023
+ 14:01:12 +0000
+Date: Thu, 11 May 2023 16:00:37 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Harini Katakam <harini.katakam@amd.com>
+Cc: andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+	davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+	pabeni@redhat.com, vladimir.oltean@nxp.com,
+	wsa+renesas@sang-engineering.com, mkl@pengutronix.de,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	harinikatakamlinux@gmail.com, michal.simek@amd.com,
+	radhey.shyam.pandey@amd.com
+Subject: Re: [PATCH net-next v3 2/3] phy: mscc: Add support for RGMII delay
+ configuration
+Message-ID: <ZFz1Bb8byoR1mQxH@corigine.com>
+References: <20230511120808.28646-1-harini.katakam@amd.com>
+ <20230511120808.28646-3-harini.katakam@amd.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230511152550.4de3da1f@kmaincent-XPS-13-7390>
-X-ClientProxiedBy: BE1P281CA0072.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:26::13) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+In-Reply-To: <20230511120808.28646-3-harini.katakam@amd.com>
+X-ClientProxiedBy: AM0PR05CA0094.eurprd05.prod.outlook.com
+ (2603:10a6:208:136::34) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -79,115 +75,169 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB8771:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5bf54e1a-2130-43e5-7660-08db52278817
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW5PR13MB5581:EE_
+X-MS-Office365-Filtering-Correlation-Id: 507718f9-5a87-45b0-b3a4-08db52282d9e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	/0lEJMFDvcxfkbUorS8aU8Fm19ApFYgdkxiU14HE29UYpsQggWq/Q4OFsssprbiv7h8JunpZJHb3L2fhgDRD/cC74RlmcGGzR2KbHMWetmNFUjfVvw5oM2AzGUvKUUpxj3xKcqlPUCY4xcwqiJORummNUYJbiwGTml0c26VsqzOyZ2tkfQevbo5OFlWusiF+j33ReRgse7JfCqQP8vB2NkdLeCY7FKeyhzAUnM8wMFSggmPghlFm2bPg596IgVkBGAby1w+dlIwhv4KT7pOSUbMDHactxTy5+27ddqita5IKOHpGPbRQvuh++TzjYgwmX4Mqr99rBdYuxv2oxhIF7XccGeNBagR1246WxQJR4+a5tAow4uhmczQzZ0E8FVLq4M/Vjk9iyKgFwswqzIw8jOtiz1b2CNIfyvkHiu4VgGhKVwFZwbm8cPTP+XleujCOfLHP6ZQAsI9AsKXqDv0/C7/iWLHQzf4ytmqRCebhzSQ5BbEuHoiDw/+IACjuNkhcfADY/+ju+CznXsCwiiJjpdPUz+SFGuDKmxD3y6upU6EUCFbMamVstghxBWZ1GaNZ
+	lsL8zNuiqnN2DNRmO1xNFnppFjnfcfR5mdrEcAPOf6bkR8/Yh/yo3YtnLc8ZxchhSlX559+PmLlHWpWAAg186sTakJWJqmp98nDATFsoPkxqlq6GSvNmTrqwkSqRTL2pl7VDtTCoPfiNt6t8P5X59CuI8WJdDNvAsdIdzDxSDunyCsGx+6BbuMbcLd/kpeyL9An35iJysneoXVncRRupj1eLqPCqzipwA1N5/hY3/EmjSPv8WSX4vu8TficmCyj/4Xk3/0m0fuZBmxV7tDxSWjmm+cBmJw5IM1cOb2Ujr85qaAmNHrROd8JYWNhY6vn1M4dL2W4lRcJ4vZuMnzgh/bqJfFZK6TJKQyh0myLVAlZryyZZX5MHjSAtwhxTwg9rwryZKAVHZVDVP7l6fs5vu62SoC+9g5UQcD0wY0fkUuSNvLgI7FQBu3VIGVOPo2SvxC51XWF7PBT1eceTXepGU0asuu4gqFEy+m7JnkL46wvrzTWd5cQn8dOCeUCBqKV7eI9/4tw8i6HDqJALFL7NObloRuT9op9ajrD0lT45tv4RsHCq7SthVLXKrTGyTEU+7Q4GuFVYSu1Y//774WBN/RikEsN0EKjy/UeRQTqDw6o=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(136003)(376002)(396003)(346002)(39860400002)(366004)(451199021)(38100700002)(33716001)(86362001)(6916009)(41300700001)(316002)(5660300002)(186003)(7416002)(8936002)(44832011)(26005)(1076003)(8676002)(4326008)(6506007)(9686003)(6512007)(66556008)(2906002)(66574015)(66946007)(66476007)(478600001)(83380400001)(6666004)(6486002);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(376002)(366004)(39840400004)(451199021)(186003)(36756003)(478600001)(86362001)(6486002)(40140700001)(6666004)(38100700002)(2906002)(8676002)(8936002)(7416002)(5660300002)(44832011)(6916009)(66476007)(66946007)(66556008)(41300700001)(316002)(6506007)(6512007)(4326008)(2616005)(83380400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?iso-8859-1?Q?O5h6YwFH0cLkTeayEpCzQtm/0XrXyJ7+DQUb1Ryc6rlnzVV1Yrfbjw61O+?=
- =?iso-8859-1?Q?gsZbVJUFLmeVvrS0ZB6Nxwv194IfpsCHj0rxYjrQlw4aLEBj29jar6HEnr?=
- =?iso-8859-1?Q?511FZggTQp7OY5dk2zj+NCf7uYpzLRFmZFTEr7yFsbPu1tfo2mtr6WZblQ?=
- =?iso-8859-1?Q?jAc+KGILc8jA5rH0AqD0l9qKUW8uO+pG9aOHON4+iR/1QBlycLw2jRE0KV?=
- =?iso-8859-1?Q?gHO58hGqZ6o2athznp+2g6at3BYRKK763I+M8rwBnDcyrOUesvQVDT8Yo3?=
- =?iso-8859-1?Q?3yaj/Ib2eRMXwWfLazWpw0ZLujLWfyISKbg6MrS9ObzyoZinu/AEpB+3CC?=
- =?iso-8859-1?Q?xRwyRfCzF14aRBwdEOIHb8JqN1cTgeRkll5wF5pLvmKFyYL1KZej8htoIG?=
- =?iso-8859-1?Q?QL8cy80Am1MrC2zLott/KmaWQdfTLPjaJrHCTBZ0vQsO7YroJhlKtRxyMn?=
- =?iso-8859-1?Q?J0aaUdYYZXcxYCoAntYjBIseH9h0s8F2H1lS9zJdREm0Y5henonc9IrdPy?=
- =?iso-8859-1?Q?B0/pqRxUfCGmeS66LdDCqwz8zZUptunBX1JD+kfxz7dRfNQrXpstXj6UOI?=
- =?iso-8859-1?Q?6xmT/Vx+GRonybyK1j0qR2vflRZtcEFM9ramn7DTaZsQeCqcDb+pmcDnMT?=
- =?iso-8859-1?Q?oDtbpA3mG6XH7QRe8039KKDsX9YOEPyDNyzxlFkyxjDL6F1wU4zhU0h031?=
- =?iso-8859-1?Q?9Mk+7StGz/cosVL1YeNHM3r9Gy2DDJZZl7tVtyd/W5p3GtgEAQ+XpmAvyj?=
- =?iso-8859-1?Q?JvhFT/crNQxIGfGl42lbFJOg+Filr7JysZGNZ0TUd3jjwBMhXzT+kJgXre?=
- =?iso-8859-1?Q?n9lLJWKX1M6wgapObvpzyzarp1dAgJygOo+9sd8Znxz4DrwpA6n4VPZPhL?=
- =?iso-8859-1?Q?2qncbnCnlgLdYMnAfiBXjnl7L8cfbH19BfIRHzz6zKQUGvL75GYPuk7yFu?=
- =?iso-8859-1?Q?RD/vjg0u1lFLO5xLhCyL8x9BYZXy7Br67k+foHYzQLwNitzeR1V05sUtqK?=
- =?iso-8859-1?Q?ny9ixffa4VaclbtAN9FkQB/bxha05pSu03K4toGQSCv+FTfPHNTp5GB33r?=
- =?iso-8859-1?Q?cok4Xm4LPEBolfFs4XgIDXFt/PUaArg3JQSE8qxGt1Gq5kso2aE6DS8LGx?=
- =?iso-8859-1?Q?DxEVZnuQce6UOh6iSETdeBDXMYZSa7inWR6+RldebWwKnow/MAXwi4UvvR?=
- =?iso-8859-1?Q?VHvKN7BAXz+IpoTH/f0DJroFCxq2pjdJxJpGjzJhkNIleOaDciQ6BNmElE?=
- =?iso-8859-1?Q?a5OvAclKCe7FcheTmVrFDQ1mtD9VFIAsIGKgQwK/hic/Hi2gtBav0VdWf0?=
- =?iso-8859-1?Q?MRs6lM6llNaR2sxn9yYV7wCW95pI01jHlvEqkyhf6WXEXVT4wOXXpmjozQ?=
- =?iso-8859-1?Q?QqClo3hmGRgLIObmGd7m59/BYAZV88dYFK/De0emIHIqBErbJim88mybGY?=
- =?iso-8859-1?Q?skCCl0Rnbyi9XPvXWE21b+CxySSYYG0YmcJ55irl1IpsBLURR4B4R1140b?=
- =?iso-8859-1?Q?Q6gTvxV3dGwkx4PB6vEty1HDbBTy7jb2v2QtHT/o/YwmSx2v76dGFX3sQW?=
- =?iso-8859-1?Q?twNWl8vm2bF//2oWGv61dM55ECNzjm9kB688QvJB+7c4bUBIVSP7WZg5bQ?=
- =?iso-8859-1?Q?wa3fGmWuWj+7lmIEiNF4ZJ9GThPjA0AUz2Os0d4ELkr4fUZUV0AzFTWA?=
- =?iso-8859-1?Q?=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5bf54e1a-2130-43e5-7660-08db52278817
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+	=?us-ascii?Q?wiThRKD5Up2h3/k/0L6W0xS4XFVSSzlGf7kAqR08ZZf91wcI1p860g7WRsTo?=
+ =?us-ascii?Q?rJEWi1v7AMXvbgS8R78RuVy3+JXw05fpUWXH0wLy1OP1rBSfDyGlPyaJjw2H?=
+ =?us-ascii?Q?/HknvyQ/p9CyXU8DiMap/FLayiQZThAlazRw7nwRG0xvwU8xkeTcaaobp0Jv?=
+ =?us-ascii?Q?4DWpiAiMcWgerfRVugt/uhNbccTO9+cM1zr5i2IJESvg/cD4iyU4BDNN1q0M?=
+ =?us-ascii?Q?ACWgSkT0iOAx/UInAXqsp82BRk0aZkdJJU6sqMOt25zuTqWpGSjO6MxmAr3E?=
+ =?us-ascii?Q?lDTpm0SC1ivc/0KLKdsEXAskhQCuCKtq6L+eE/aqSIvsf1wDJsglYroIJD01?=
+ =?us-ascii?Q?AtDv2HmyiXmeqU3eF9zboNUodLarbkv1g4brb28h7VgQ2Jdjces4biTTKswe?=
+ =?us-ascii?Q?347D9sy4vXeG64lG+VsBz0Ehmj1hVJsxlbl7mn0jI+gcVbNHfNEdZrhnBdT6?=
+ =?us-ascii?Q?Wn+N1vOzoZ3SxwgHjSDzl1KidSfv384A0P8a+MdC3FwvsXkFNWLXD/1WvrzA?=
+ =?us-ascii?Q?S5IDUrl3aTP24U9iZ0IzA4kedYVKBeG/KDjiUv295ezyLE2dLcMoX05cOU+z?=
+ =?us-ascii?Q?V76aBEV4YOfcQjuSjXWlO8mum65IDoSVX2D5oyyKG5x1xsJMj9EmEuORv/te?=
+ =?us-ascii?Q?ZjTIFfbglGGtgloYeTbH77bnPY8oKQQTPeAqwmR8AKU3hBEgV4ICH6Mg5K16?=
+ =?us-ascii?Q?m9Fg+u15XV6PviT/ahvmX1LZJsKgHIojGsm3Ie9F+y0n8DlMR344z9jCGyTp?=
+ =?us-ascii?Q?Z3xg9ei0Le+FZumrwU1Nh8rr6VENUe4f/afuG64/nLb+yLm9KApGtcTirTWH?=
+ =?us-ascii?Q?6XuVhIAmPOIYRV+ax/ES+cosCMMx64eg2C3Kaf9MjkArhd/nf+EDWggbEKVH?=
+ =?us-ascii?Q?w1dyrgjkO+XSb9WbIBlIHiLIyVQRMlEC07sUcnmDRB7oMJ5j8D/Sn63BQyLW?=
+ =?us-ascii?Q?55FTcuWQr4xCFMMkqTLXaoT+Li49UzT5EbI4mp4fXbO/9V79/5RrWPpZZjz/?=
+ =?us-ascii?Q?0P9xQWVXJ/GgKTmWcsvTgFhoDUTOaX6QfhXudHD15KoyjjWUEbdSRDiD1TG+?=
+ =?us-ascii?Q?0T8sPVU0zKEGPSoTeXvKCpLvydit4sgKMJMZGdn4Dx83p7jbEPsl9+eKTam1?=
+ =?us-ascii?Q?CnRKONN4eU9djfiVHCLN4hVXp4cBjnMXjRBWNL2ct0emetqeuAuUug6BZ4eA?=
+ =?us-ascii?Q?Uwj3hiRqhgFDO21P8A38+6YwBckwZ7EmYZq8GO8nrYS/WSxtAf3uNNwLFWlZ?=
+ =?us-ascii?Q?LNUJ/FxSduwXRBh0KdtN/1lun12bUT0aIR4XBt4FvRbemk3ygAINyGM7f6Av?=
+ =?us-ascii?Q?z9sNGOHLKTNuwPqK5l81gqp6feXTRnS6P1F35nUXP3SbYjEt9vwGcjVszTZp?=
+ =?us-ascii?Q?g4TuWACxBamz6IyUtqiOJ/s0LfKixstbK/DRXce+cscAwzRmVp/QKchZPo2q?=
+ =?us-ascii?Q?emLLRZ8bsHyHn555Q9uCJvtqQLshnQ9baYqdnhXLqZRkWbyOVHFmGKfRr0W2?=
+ =?us-ascii?Q?sW8nccjqtnqOnL+eZSt4bLKeu/tTLguuzOdy4onSSZJPMgM27y4pa0R6m1yj?=
+ =?us-ascii?Q?FcNIxkNAd+3I9f68gsQ/xePhUsisNujI4UKf5LRp7ma/Y63FOjtwPPFNjlG3?=
+ =?us-ascii?Q?SR2VDT5ewsTPhP21BGa0XKjqm4keXP14Z2zO4yKuB2FUqkStP1UdIEkkc2lj?=
+ =?us-ascii?Q?KYdjaw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 507718f9-5a87-45b0-b3a4-08db52282d9e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2023 13:56:34.5093
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2023 14:01:12.2416
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: edadQ8NnjTO9YMC3zHXm/0XLGiTX59d5EPMUf0l1C16ECuKLIssaewoNRi4M7+eMPCWjDQRkmz4H3pGAcCOJcA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8771
-X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,FORGED_SPF_HELO,KHOP_HELO_FCRDNS,SPF_HELO_PASS,
-	T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=no autolearn_force=no
-	version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: Hz3CtzpR4VjzyCu+kkMi7GsCFPCzoVCM9QnBOQGL2SkJA7td7R+exwUI20HeSFmE9Y1kAJG+L6UdnccKxuKjJjRDGKBdg4JqGPA2oxqNnpM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR13MB5581
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 11, 2023 at 03:25:50PM +0200, Köry Maincent wrote:
-> The user may not and don't need to know which hardware timestamping is better.
-> He just want to use the best one by default without investigation and
-> benchmarking.
-> It is more related to the hardware design of the board which should be
-> described in the devicetree, don't you think? Of course it should not break
-> anything and if it does, well then let the user select it in userspace.
-> But if you really think my point is irrelevant then I will drop this feature.
+On Thu, May 11, 2023 at 05:38:07PM +0530, Harini Katakam wrote:
+> Add support for optional rx/tx-internal-delay-ps from devicetree.
+> - When rx/tx-internal-delay-ps is/are specified, these take priority
+> - When either is absent,
+> 1) use 2ns for respective settings if rgmii-id/rxid/txid is/are present
+> 2) use 0.2ns for respective settings if mode is rgmii
+> 
+> Signed-off-by: Harini Katakam <harini.katakam@amd.com>
+> ---
+> v3 - Patch split:
+> - Use rx/tx-internal-delay-ps with phy_get_internal_delay
+> - Change RGMII delay selection precedence
+> - Update commit description and subject everywhere to say RGMII delays
+> instead of RGMII tuning.
+> 
+>  drivers/net/phy/mscc/mscc.h      |  2 ++
+>  drivers/net/phy/mscc/mscc_main.c | 35 +++++++++++++++++++++++++-------
+>  2 files changed, 30 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
+> index 9acee8759105..ab6c0b7c2136 100644
+> --- a/drivers/net/phy/mscc/mscc.h
+> +++ b/drivers/net/phy/mscc/mscc.h
+> @@ -374,6 +374,8 @@ struct vsc8531_private {
+>  	 * package.
+>  	 */
+>  	unsigned int base_addr;
+> +	u32 rx_delay;
+> +	u32 tx_delay;
 
-You are putting an equality sign between user space and the end-user of
-a system. A user space distribution has a lot of configuration files
-where the end user isn't expected to know how to configure them all, and
-that's not an argument for putting them in the kernel/device tree, is it?
+rx_delay and tx_delay are unsigned...
 
-I can relate to 2 examples which are closer to what I know slightly
-better (Documentation/devicetree/bindings/net/dsa/dsa-port.yaml).
+>  
+>  #if IS_ENABLED(CONFIG_MACSEC)
+>  	/* MACsec fields:
+> diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+> index 91010524e03d..9e856231e464 100644
+> --- a/drivers/net/phy/mscc/mscc_main.c
+> +++ b/drivers/net/phy/mscc/mscc_main.c
+> @@ -525,17 +525,14 @@ static int vsc85xx_rgmii_set_skews(struct phy_device *phydev, u32 rgmii_cntl,
+>  {
+>  	u16 rgmii_rx_delay_pos = ffs(rgmii_rx_delay_mask) - 1;
+>  	u16 rgmii_tx_delay_pos = ffs(rgmii_tx_delay_mask) - 1;
+> +	struct vsc8531_private *vsc8531 = phydev->priv;
+>  	u16 reg_val = 0;
+>  	int rc;
+>  
+>  	mutex_lock(&phydev->lock);
+>  
+> -	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
+> -	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+> -		reg_val |= RGMII_CLK_DELAY_2_0_NS << rgmii_rx_delay_pos;
+> -	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
+> -	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+> -		reg_val |= RGMII_CLK_DELAY_2_0_NS << rgmii_tx_delay_pos;
+> +	reg_val |= vsc8531->rx_delay << rgmii_rx_delay_pos;
+> +	reg_val |= vsc8531->tx_delay << rgmii_tx_delay_pos;
+>  
+>  	rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
+>  			      rgmii_cntl,
+> @@ -1808,10 +1805,34 @@ static irqreturn_t vsc8584_handle_interrupt(struct phy_device *phydev)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> +static const int vsc8531_internal_delay[] = {200, 800, 1100, 1700, 2000, 2300,
+> +					     2600, 3400};
+>  static int vsc85xx_config_init(struct phy_device *phydev)
+>  {
+> -	int rc, i, phy_id;
+> +	int delay_size = ARRAY_SIZE(vsc8531_internal_delay);
+>  	struct vsc8531_private *vsc8531 = phydev->priv;
+> +	struct device *dev = &phydev->mdio.dev;
+> +	int rc, i, phy_id;
+> +
+> +	vsc8531->rx_delay = phy_get_internal_delay(phydev, dev, &vsc8531_internal_delay[0],
+> +						   delay_size, true);
 
-One is "label" (the netdev name of a switch port). It has been argued
-that we should deprecate this, because udev permits selecting specific
-netdev named based on hardware properties already.
+But phy_get_internal_delay a signed value.
 
-I agree with this, and this is why on NXP LS1028A, we don't use "label"
-in the device tree, but advise people to ship this in the rootfs:
+> +	if (vsc8531->rx_delay < 0) {
 
-cat /etc/udev/rules.d/10-network.rules
-# ENETC rules
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.0", DRIVERS=="fsl_enetc", NAME:="eno0"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.1", DRIVERS=="fsl_enetc", NAME:="eno1"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.2", DRIVERS=="fsl_enetc", NAME:="eno2"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.6", DRIVERS=="fsl_enetc", NAME:="eno3"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:01.0", DRIVERS=="fsl_enetc_vf", NAME:="eno0vf0"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:01.1", DRIVERS=="fsl_enetc_vf", NAME:="eno0vf1"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:01.2", DRIVERS=="fsl_enetc_vf", NAME:="eno1vf0"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:01.3", DRIVERS=="fsl_enetc_vf", NAME:="eno1vf1"
-# LS1028 switch rules
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p0", NAME="swp0"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p1", NAME="swp1"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p2", NAME="swp2"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p3", NAME="swp3"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p4", NAME="swp4"
-ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p5", NAME="swp5"
+This comparison can never be true due to the unsigned type of rx_delay.
 
-The other example is "dsa-tag-protocol", which you'd normally expect
-that user space would select through /sys/class/net/ethN/dsa/tagging and
-that would be the end of the story. I was only convinced to let it live
-in the device tree because a tagging protocol change might be necessary
-for traffic on the port to work at all, and if traffic doesn't work,
-then the kernel can't load userspace through e.g. NFS, and thus, user
-space can't change this setting. In your case, I don't think this
-argument applies.
+> +		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
+> +		    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+> +			vsc8531->rx_delay = RGMII_CLK_DELAY_2_0_NS;
+> +		else
+> +			vsc8531->rx_delay = RGMII_CLK_DELAY_0_2_NS;
+> +	}
+> +
+> +	vsc8531->tx_delay = phy_get_internal_delay(phydev, dev, &vsc8531_internal_delay[0],
+> +						   delay_size, false);
+> +	if (vsc8531->tx_delay < 0) {
 
-I guess the general rule of thumb is - if a functionality can live outside
-the kernel or of the device tree, it's probably better that it does.
+Here too.
+
+> +		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
+> +		    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+> +			vsc8531->rx_delay = RGMII_CLK_DELAY_2_0_NS;
+> +		else
+> +			vsc8531->rx_delay = RGMII_CLK_DELAY_0_2_NS;
+> +	}
+>  
+>  	rc = vsc85xx_default_config(phydev);
+>  	if (rc)
+
+---
+pw-bot: cr
 
