@@ -1,74 +1,74 @@
-Return-Path: <netdev+bounces-1847-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1848-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 081FB6FF4A8
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 16:39:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9A9BD6FF4AB
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 16:40:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0A80B1C20F0A
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 14:39:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 55396281618
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 14:40:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B24A372;
-	Thu, 11 May 2023 14:39:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A0EB62A;
+	Thu, 11 May 2023 14:39:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3A9F36D
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 14:39:35 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389308E
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 07:39:34 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DF1336D
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 14:39:40 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D9213A
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 07:39:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683815973;
+	s=mimecast20190719; t=1683815978;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=bTPhWMsRGfOJE7oIw5IMJbbyTPlYMqaoJbuyuu8PVWA=;
-	b=VFslfgacGJQX/PaBqqhh16Y+6N1aXe+nxT+o+n/SBq6RblNORLtf0zI9YYYKo2rsBybUup
-	VaiITWkY9mykHpdaHwgTHlZ/wjaYl01YK2sjP7skd1ySZIQHz5VxbLTeJAfXsM2MQqc8t7
-	ki8i8CgQ5+XKyV6F3mRzqkjSy0BMDuM=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=beqfaC6OiZWnknb8MSz7RGlb6quTGCMq8b6XuBHQkik=;
+	b=RWazumTySL6sb38ogib4y/SqPHp/lqLmkB94cckkT96eKNKt7SmCEQqKbZzB/lurhi6YEJ
+	ducchdRqVQPgSUdmLPvf0tOjvROK0AA7dyA8AvY9ET3lGZEYt7ugJ/ko2CwlpW8a+FBlaB
+	lx+XglgEgefX/EUDm7+0jf80CVy0eYA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-272--4IPmI1fMl-0RvtdcDVhUA-1; Thu, 11 May 2023 10:39:29 -0400
-X-MC-Unique: -4IPmI1fMl-0RvtdcDVhUA-1
-Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-306489b7585so3056051f8f.3
-        for <netdev@vger.kernel.org>; Thu, 11 May 2023 07:39:29 -0700 (PDT)
+ us-mta-131-khT-SY4DNTyFaPR68ZPcjw-1; Thu, 11 May 2023 10:39:36 -0400
+X-MC-Unique: khT-SY4DNTyFaPR68ZPcjw-1
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-3f422dc5ee5so29821685e9.0
+        for <netdev@vger.kernel.org>; Thu, 11 May 2023 07:39:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683815968; x=1686407968;
+        d=1e100.net; s=20221208; t=1683815975; x=1686407975;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bTPhWMsRGfOJE7oIw5IMJbbyTPlYMqaoJbuyuu8PVWA=;
-        b=Viy0HlmHL/yTjq36tB5IOVMzVJ2KhQSwXor3VTTTLnBLKeuUeOSV8ccJBxeurjp21Q
-         GIXYggHYbO+/0ppmjK0ZTV/LKUKOrp5PQguYfrf+D4tEHDbMn0NEgSeGN5je/d+Gkxae
-         2jW2n8bEl2ok7HWexX+OS2Jqdro209jC4n/DIjYFK93/1U45lLeVHUlKMzjEm7lrSrE8
-         6uhEOUkHHEvG1oTtRrV2i6CEmEpUIaGKwqrlrg3fhgD0JNUUEuHFZ3BOVzx+OFrOcloz
-         4Vf3FYy9qvX6s01fURubgl1LNKdq8JoEQrSUeaA2NvMwiprbzsxXu/wLIyM/XchSu/rl
-         BN2A==
-X-Gm-Message-State: AC+VfDzl+vLpEv+MT7/b4Ii8Ffe07y0FxK44vY/+JbpgnO9QN8Ht2ROm
-	e56ljwFKEqzITbuAouc8Z4TKCnw1N2SVOLW73rzTmkx1VKxmX/wMlZAjabR6A4GFFy0sXN1+Zx6
-	O5G+NBHglExMl8Iuh1LYvibf3
-X-Received: by 2002:adf:e941:0:b0:307:a8e8:ca6c with SMTP id m1-20020adfe941000000b00307a8e8ca6cmr6514364wrn.35.1683815968176;
-        Thu, 11 May 2023 07:39:28 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ55nQ0Tt4jnQQcnz5/0YGI0q3kRKPy+bMkwu/gzA47Fm5PhkDZcf9Lyr6Lm0klY1ega3utDFA==
-X-Received: by 2002:adf:e941:0:b0:307:a8e8:ca6c with SMTP id m1-20020adfe941000000b00307a8e8ca6cmr6514352wrn.35.1683815967970;
-        Thu, 11 May 2023 07:39:27 -0700 (PDT)
+        bh=beqfaC6OiZWnknb8MSz7RGlb6quTGCMq8b6XuBHQkik=;
+        b=goZd46h2n4BLOp22R6bXy7RByH1HBt3dOKZZNwuWEyuLSnFBK0+2XgFnqqakvit0eo
+         Vl10uOyxggPh56n0TktpzSvKaA8kWWjZ1WX7wQZS3HsclcYoHVgM/PJUGR69814CLSJJ
+         ZPYG6Q+s8ZxPe7H4LmkBzWMk0j9IJ330HFjqOb/9uanr5ICOVAuLy1Td6o1MqEbtDQ48
+         ITrQMoa+zRPFvSKhYfkfJ0hv6H3EDQzflkm1LXehMkfJqAbSSMVfz10y+6wIsNvTdaFA
+         bb/2u8T2rLXR3z4dS41sLfN4pa+pyR/USQjvvExYDFybJwY9CS0PRhjJQrvMtJGvXiw0
+         CjCg==
+X-Gm-Message-State: AC+VfDyDpJSFkLXmhSr8MVYQnAMmJMSUyrDyyQh/de5W9rpnzt4UNauC
+	a/iwONo3WJ6KZBLqz5BywcG3v95Dug0EJ0VISalSaMqaVhPJvOXEBLZedAiSItICp79Vzh1tjLP
+	dBx0gajnyFAtLBHzu
+X-Received: by 2002:a05:600c:228e:b0:3f4:2174:b28a with SMTP id 14-20020a05600c228e00b003f42174b28amr13420227wmf.15.1683815975624;
+        Thu, 11 May 2023 07:39:35 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7+y28Bl7bB10C3fyQtaC95xoWD2pb3TfmNHNU83MF1yoUFCZwenAZcLiaKsIeQaoLhueA4sA==
+X-Received: by 2002:a05:600c:228e:b0:3f4:2174:b28a with SMTP id 14-20020a05600c228e00b003f42174b28amr13420200wmf.15.1683815975287;
+        Thu, 11 May 2023 07:39:35 -0700 (PDT)
 Received: from debian (2a01cb058918ce00af30fd5ba5292148.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:af30:fd5b:a529:2148])
-        by smtp.gmail.com with ESMTPSA id b15-20020a5d4b8f000000b003064600cff9sm20600864wrt.38.2023.05.11.07.39.27
+        by smtp.gmail.com with ESMTPSA id p20-20020a1c7414000000b003f435652aaesm5924051wmc.11.2023.05.11.07.39.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 May 2023 07:39:27 -0700 (PDT)
-Date: Thu, 11 May 2023 16:39:25 +0200
+        Thu, 11 May 2023 07:39:34 -0700 (PDT)
+Date: Thu, 11 May 2023 16:39:32 +0200
 From: Guillaume Nault <gnault@redhat.com>
 To: David Miller <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>
 Cc: netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>
-Subject: [PATCH v2 net-next 1/4] selftests: Add SO_DONTROUTE option to
- nettest.
-Message-ID: <0b28378e6a34c9a1ffda95449a1a171491079f06.1683814269.git.gnault@redhat.com>
+Subject: [PATCH v2 net-next 2/4] selftests: fcnal: Test SO_DONTROUTE on TCP
+ sockets.
+Message-ID: <a54cb9d143611e568d3e34b801e24dce440c309d.1683814269.git.gnault@redhat.com>
 References: <cover.1683814269.git.gnault@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -81,134 +81,104 @@ Content-Disposition: inline
 In-Reply-To: <cover.1683814269.git.gnault@redhat.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add --client-dontroute and --server-dontroute options to nettest. They
-allow to set the SO_DONTROUTE option to the client and server sockets
-respectively. This will be used by the following patches to test
-the SO_DONTROUTE kernel behaviour with TCP and UDP.
+Use nettest --{client,server}-dontroute to test the kernel behaviour
+with TCP sockets having the SO_DONTROUTE option. Sending packets to a
+neighbour (on link) host, should work. When the host is behind a
+router, sending should fail.
+
+Client and server sockets are tested independently, so that we can
+cover different TCP kernel paths.
+
+SO_DONTROUTE also affects the syncookies path. So ipv4_tcp_dontroute()
+is made to work with or without syncookies, to cover both paths.
 
 Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- v2: Use two different options for setting SO_DONTROUTE either on the
-     client or on the server socket.
+ v2: Use 'nettest -B' instead of invoking two nettest instances for
+     client and server.
 
- tools/testing/selftests/net/nettest.c | 46 ++++++++++++++++++++++++++-
- 1 file changed, 45 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/fcnal-test.sh | 56 +++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-index ee9a72982705..39a0e01f8554 100644
---- a/tools/testing/selftests/net/nettest.c
-+++ b/tools/testing/selftests/net/nettest.c
-@@ -76,7 +76,9 @@ struct sock_args {
- 		     has_grp:1,
- 		     has_expected_laddr:1,
- 		     has_expected_raddr:1,
--		     bind_test_only:1;
-+		     bind_test_only:1,
-+		     client_dontroute:1,
-+		     server_dontroute:1;
- 
- 	unsigned short port;
- 
-@@ -611,6 +613,18 @@ static int set_dsfield(int sd, int version, int dsfield)
- 	return 0;
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 21ca91473c09..3a1f3051321f 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -1098,6 +1098,59 @@ test_ipv4_md5_vrf__global_server__bind_ifindex0()
+ 	set_sysctl net.ipv4.tcp_l3mdev_accept="$old_tcp_l3mdev_accept"
  }
  
-+static int set_dontroute(int sd)
++ipv4_tcp_dontroute()
 +{
-+	unsigned int one = 1;
++	local syncookies=$1
++	local nsa_syncookies
++	local nsb_syncookies
++	local a
 +
-+	if (setsockopt(sd, SOL_SOCKET, SO_DONTROUTE, &one, sizeof(one)) < 0) {
-+		log_err_errno("setsockopt(SO_DONTROUTE)");
-+		return -1;
-+	}
++	#
++	# Link local connection tests (SO_DONTROUTE).
++	# Connections should succeed only when the remote IP address is
++	# on link (doesn't need to be routed through a gateway).
++	#
 +
-+	return 0;
++	nsa_syncookies=$(ip netns exec "${NSA}" sysctl -n net.ipv4.tcp_syncookies)
++	nsb_syncookies=$(ip netns exec "${NSB}" sysctl -n net.ipv4.tcp_syncookies)
++	ip netns exec "${NSA}" sysctl -wq net.ipv4.tcp_syncookies=${syncookies}
++	ip netns exec "${NSB}" sysctl -wq net.ipv4.tcp_syncookies=${syncookies}
++
++	# Test with eth1 address (on link).
++
++	a=${NSB_IP}
++	log_start
++	do_run_cmd nettest -B -N "${NSA}" -O "${NSB}" -r ${a} --client-dontroute
++	log_test_addr ${a} $? 0 "SO_DONTROUTE client, syncookies=${syncookies}"
++
++	a=${NSB_IP}
++	log_start
++	do_run_cmd nettest -B -N "${NSA}" -O "${NSB}" -r ${a} --server-dontroute
++	log_test_addr ${a} $? 0 "SO_DONTROUTE server, syncookies=${syncookies}"
++
++	# Test with loopback address (routed).
++	#
++	# The client would use the eth1 address as source IP by default.
++	# Therefore, we need to use the -c option here, to force the use of the
++	# routed (loopback) address as source IP (so that the server will try
++	# to respond to a routed address and not a link local one).
++
++	a=${NSB_LO_IP}
++	log_start
++	show_hint "Should fail 'Network is unreachable' since server is not on link"
++	do_run_cmd nettest -B -N "${NSA}" -O "${NSB}" -c "${NSA_LO_IP}" -r ${a} --client-dontroute
++	log_test_addr ${a} $? 1 "SO_DONTROUTE client, syncookies=${syncookies}"
++
++	a=${NSB_LO_IP}
++	log_start
++	show_hint "Should timeout since server cannot respond (client is not on link)"
++	do_run_cmd nettest -B -N "${NSA}" -O "${NSB}" -c "${NSA_LO_IP}" -r ${a} --server-dontroute
++	log_test_addr ${a} $? 2 "SO_DONTROUTE server, syncookies=${syncookies}"
++
++	ip netns exec "${NSB}" sysctl -wq net.ipv4.tcp_syncookies=${nsb_syncookies}
++	ip netns exec "${NSA}" sysctl -wq net.ipv4.tcp_syncookies=${nsa_syncookies}
 +}
 +
- static int str_to_uint(const char *str, int min, int max, unsigned int *value)
+ ipv4_tcp_novrf()
  {
- 	int number;
-@@ -1351,6 +1365,14 @@ static int msock_init(struct sock_args *args, int server)
- 	if (set_dsfield(sd, AF_INET, args->dsfield) != 0)
- 		goto out_err;
+ 	local a
+@@ -1217,6 +1270,9 @@ ipv4_tcp_novrf()
+ 	log_test_addr ${a} $? 1 "No server, device client, local conn"
  
-+	if (server) {
-+		if (args->server_dontroute && set_dontroute(sd) != 0)
-+			goto out_err;
-+	} else {
-+		if (args->client_dontroute && set_dontroute(sd) != 0)
-+			goto out_err;
-+	}
+ 	ipv4_tcp_md5_novrf
 +
- 	if (args->dev && bind_to_device(sd, args->dev) != 0)
- 		goto out_err;
- 	else if (args->use_setsockopt &&
-@@ -1482,6 +1504,9 @@ static int lsock_init(struct sock_args *args)
- 	if (set_dsfield(sd, args->version, args->dsfield) != 0)
- 		goto err;
++	ipv4_tcp_dontroute 0
++	ipv4_tcp_dontroute 2
+ }
  
-+	if (args->server_dontroute && set_dontroute(sd) != 0)
-+		goto err;
-+
- 	if (args->dev && bind_to_device(sd, args->dev) != 0)
- 		goto err;
- 	else if (args->use_setsockopt &&
-@@ -1698,6 +1723,9 @@ static int connectsock(void *addr, socklen_t alen, struct sock_args *args)
- 	if (set_dsfield(sd, args->version, args->dsfield) != 0)
- 		goto err;
- 
-+	if (args->client_dontroute && set_dontroute(sd) != 0)
-+		goto err;
-+
- 	if (args->dev && bind_to_device(sd, args->dev) != 0)
- 		goto err;
- 	else if (args->use_setsockopt &&
-@@ -1905,10 +1933,14 @@ static int ipc_parent(int cpid, int fd, struct sock_args *args)
- #define GETOPT_STR  "sr:l:c:Q:p:t:g:P:DRn:M:X:m:d:I:BN:O:SUCi6xL:0:1:2:3:Fbqf"
- #define OPT_FORCE_BIND_KEY_IFINDEX 1001
- #define OPT_NO_BIND_KEY_IFINDEX 1002
-+#define OPT_CLIENT_DONTROUTE 1003
-+#define OPT_SERVER_DONTROUTE 1004
- 
- static struct option long_opts[] = {
- 	{"force-bind-key-ifindex", 0, 0, OPT_FORCE_BIND_KEY_IFINDEX},
- 	{"no-bind-key-ifindex", 0, 0, OPT_NO_BIND_KEY_IFINDEX},
-+	{"client-dontroute", 0, 0, OPT_CLIENT_DONTROUTE},
-+	{"server-dontroute", 0, 0, OPT_SERVER_DONTROUTE},
- 	{0, 0, 0, 0}
- };
- 
-@@ -1954,6 +1986,12 @@ static void print_usage(char *prog)
- 	"    --no-bind-key-ifindex: Force TCP_MD5SIG_FLAG_IFINDEX off\n"
- 	"    --force-bind-key-ifindex: Force TCP_MD5SIG_FLAG_IFINDEX on\n"
- 	"        (default: only if -I is passed)\n"
-+	"    --client-dontroute: don't use gateways for client socket: send\n"
-+	"                        packets only if destination is on link (see\n"
-+	"                        SO_DONTROUTE in socket(7))\n"
-+	"    --server-dontroute: don't use gateways for server socket: send\n"
-+	"                        packets only if destination is on link (see\n"
-+	"                        SO_DONTROUTE in socket(7))\n"
- 	"\n"
- 	"    -g grp        multicast group (e.g., 239.1.1.1)\n"
- 	"    -i            interactive mode (default is echo and terminate)\n"
-@@ -2076,6 +2114,12 @@ int main(int argc, char *argv[])
- 		case OPT_NO_BIND_KEY_IFINDEX:
- 			args.bind_key_ifindex = -1;
- 			break;
-+		case OPT_CLIENT_DONTROUTE:
-+			args.client_dontroute = 1;
-+			break;
-+		case OPT_SERVER_DONTROUTE:
-+			args.server_dontroute = 1;
-+			break;
- 		case 'X':
- 			args.client_pw = optarg;
- 			break;
+ ipv4_tcp_vrf()
 -- 
 2.30.2
 
