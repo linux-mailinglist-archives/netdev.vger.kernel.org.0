@@ -1,114 +1,144 @@
-Return-Path: <netdev+bounces-1914-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1915-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DE5A86FF836
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 19:16:46 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 560FC6FF84F
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 19:21:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1F768281837
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:16:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6EC521C20C93
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:21:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10A9D6FD3;
-	Thu, 11 May 2023 17:16:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53C178F58;
+	Thu, 11 May 2023 17:21:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0C832068B
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 17:16:42 +0000 (UTC)
-Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF88C6597;
-	Thu, 11 May 2023 10:16:40 -0700 (PDT)
-Received: from local
-	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-	 (Exim 4.96)
-	(envelope-from <daniel@makrotopia.org>)
-	id 1px9u9-0001cR-35;
-	Thu, 11 May 2023 17:16:38 +0000
-Date: Thu, 11 May 2023 19:14:48 +0200
-From: Daniel Golle <daniel@makrotopia.org>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42EB58F50
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 17:21:19 +0000 (UTC)
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4241626AD;
+	Thu, 11 May 2023 10:21:16 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id 6a1803df08f44-61b79b9f45bso80048176d6.3;
+        Thu, 11 May 2023 10:21:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683825675; x=1686417675;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=DsHfsvncB2Dyg2euoMr83ZHCM4P0ZmQheB+9N6AzNcg=;
+        b=JPzqRMsH0Y3UjTQalZ3j3xJGbXfA2CQHOMu0QKMw2b8kzT3TAJUcKBuxM1BNPsoJMs
+         IupQoupJvWVSMuKB8DsRkhn/RqnGoTxW/BkOfPJzzOSW9dhJC6V8/HOW+Uww6Bqm+/+2
+         k9zGP/YDAul/t+llqLmHfhA5x79DD1/pJQesqHFMrpsyWkCqjRsbSHZeOVIQhu6jXsQA
+         ZG7gGLaeh1C3RoHx8Z802Hyy8lBV0FLdHly4TLbTGTb1EvHahABKg9xaue68SJEh/OAS
+         UanxwA62cPGy7gDJNL7bVaP+boeTvSHFrMGbVQ5mzzmYgatRW4rNnuTkVDxWAffNeymw
+         Gx9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683825675; x=1686417675;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DsHfsvncB2Dyg2euoMr83ZHCM4P0ZmQheB+9N6AzNcg=;
+        b=TRFNXdR9cwvhacLBk+0KEjZUpWKHwoS3PNDzREr5ccu0DCneqNqvnsM7dJI+OK9YDz
+         85CDH/SG2vDrjkhU3Br3ynpO3X3SB6Yyc6cyvCV9wTcWAHfLyXTpXD4vxShB+1HqsBJs
+         /J4F6QoneCqdhJmTVhjujWOpwoifW6SyU1Ou9ppPaCeWaoC6bhZowLoN6/4Km8LSDmNK
+         GzbjEO9jwg26mUQDL/FHW77s+M4IZPVj4IlGFWew2ZYb9yX6FhgPA9yQTY8imJMS/KnB
+         D0PVckZf+tvh00vxOOwO28rPUwexScFBySa0OecxK4lDNeRz886jw6qRGuU12EYRd6R3
+         AHIg==
+X-Gm-Message-State: AC+VfDyIWV84a42xhXIhKFxkupXkZvot1IJqrcNGAOm5MUnYlya1c4yh
+	5cH3hiS+NBvQi64YkecpQpiouIZmcg0=
+X-Google-Smtp-Source: ACHHUZ5XnvzgjnvU6xNffa62Ov3AwaHnJ84ljiVIdWyiG3gkAZvzAXJ7hwaoSkR4lHijV/sm1WsXrw==
+X-Received: by 2002:a05:6214:408:b0:619:3665:7ef8 with SMTP id z8-20020a056214040800b0061936657ef8mr36846808qvx.26.1683825674865;
+        Thu, 11 May 2023 10:21:14 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j7-20020a0ce007000000b0062168714c8fsm462822qvk.120.2023.05.11.10.21.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 May 2023 10:21:14 -0700 (PDT)
+From: Florian Fainelli <f.fainelli@gmail.com>
+To: netdev@vger.kernel.org
+Cc: Florian Fainelli <f.fainelli@gmail.com>,
+	Doug Berger <opendmb@gmail.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH net-next 0/8] Improvements for RealTek 2.5G Ethernet PHYs
-Message-ID: <ZF0iiDIZQzR8vMvm@pidgin.makrotopia.org>
-References: <cover.1683756691.git.daniel@makrotopia.org>
- <55c11fd9-54cf-4460-a10c-52ff62b46a4c@lunn.ch>
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	=?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+	Peter Geis <pgwipeout@gmail.com>,
+	Frank <Frank.Sae@motor-comm.com>,
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next v3 0/3] Support for Wake-on-LAN for Broadcom PHYs
+Date: Thu, 11 May 2023 10:21:07 -0700
+Message-Id: <20230511172110.2243275-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55c11fd9-54cf-4460-a10c-52ff62b46a4c@lunn.ch>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 11, 2023 at 02:28:15AM +0200, Andrew Lunn wrote:
-> On Thu, May 11, 2023 at 12:53:22AM +0200, Daniel Golle wrote:
-> > Improve support for RealTek 2.5G Ethernet PHYs (RTL822x series).
-> > The PHYs can operate with Clause-22 and Clause-45 MDIO.
-> > 
-> > When using Clause-45 it is desireable to avoid rate-adapter mode and
-> > rather have the MAC interface mode follow the PHY speed. The PHYs
-> > support 2500Base-X for 2500M, and Cisco SGMII for 1000M/100M/10M.
-> 
-> I don't see what clause-45 has to do with this. The driver knows that
-> both C22 and C45 addresses spaces exists in the hardware. It can do
-> reads/writes on both. If the bus master does not support C45, C45 over
-> C22 will be performed by the core.
+This patch series adds support for Wake-on-LAN to the Broadcom PHY
+driver. Specifically the BCM54210E/B50212E are capable of supporting
+Wake-on-LAN using an external pin typically wired up to a system's GPIO.
 
-My understanding is/was that switching the SerDes interface mode is only
-intended with Clause-45 PHYs, derived from this comment and code:
+These PHY operate a programmable Ethernet MAC destination address
+comparator which will fire up an interrupt whenever a match is received.
+Because of that, it was necessary to introduce patch #1 which allows the
+PHY driver's ->suspend() routine to be called unconditionally. This is
+necessary in our case because we need a hook point into the device
+suspend/resume flow to enable the wake-up interrupt as late as possible.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/phy/phylink.c#n1661
+Patch #2 adds support for the Broadcom PHY library and driver for
+Wake-on-LAN proper with the WAKE_UCAST, WAKE_MCAST, WAKE_BCAST,
+WAKE_MAGIC and WAKE_MAGICSECURE. Note that WAKE_FILTER is supportable,
+however this will require further discussions and be submitted as a RFC
+series later on.
 
+Patch #3 updates the GENET driver to defer to the PHY for Wake-on-LAN if
+the PHY supports it, thus allowing the MAC to be powered down to
+conserve power.
 
-Hence I concluded that for Clause-22 PHYs we expect the interface mode
-to always remain the same, while many Clause-45 PHYs require switching
-the SerDes interface mode depending on the speed of the external link.
-Trying to use interface mode switching (in the .read_status function)
-with is_c45 == false also just didn't work well:
+Changes in v3:
 
-https://github.com/openwrt/openwrt/pull/11990#issuecomment-1503160296
+- collected Reviewed-by tags
+- explicitly use return 0 in bcm54xx_phy_probe() (Paolo)
 
+Changes in v2:
 
-Up to 1000M this has no really been a problem, as the Cisco SGMII SerDes
-supports 10M, 100M and 1000M speeds. Starting with 2500M things have
-became more complicated, and we usually have the choice of either have
-the MAC<->PHY link operate at a contant mode and speed (e.g. 2500Base-X)
-or having to switch the MAC<->PHY interface mode (e.g. between
-2500Base-X and SGMII) depending on whether the link speed on the
-external interface is 2500M or not.
+- introduce PHY_ALWAYS_CALL_SUSPEND and only have the Broadcom PHY
+  driver set this flag to minimize changes to the suspend flow to only
+  drivers that need it
 
-Looking at PHYs which support speeds beyond one gigabit/sec due to the
-higher complexity and need for a larger register space most of them are
-managed using Clause-45 MDIO. 2500Base-T PHYs are kind of the exception
-because some of them (esp. RealTek) are still mostly being managed using
-Clause-22 MDIO using proprietary paging mechanisms to enlarge the
-register space.
+- corrected possibly uninitialized variable in bcm54xx_set_wakeup_irq
+  (Simon)
 
-I also don't like overloading the meaning of is_c45 to decide whether
-rate-adapter mode should be used or not, neither do I like the idea to
-tie the use of phylink to using SGMII in-band-status or not -- but at
-this point both do correlate and there aren't any other feature flags or
-validation methods to do it in a better way. In the end this can also
-just be solved by documenation, ie. makeing sure that those facts are
-well understood: interface mode switching only being supported when
-using Clause-45 MDIO and also the fact that phylink expects operating
-Cisco SGMII without in-band-status when connecting to a managed PHY.
+Florian Fainelli (3):
+  net: phy: Allow drivers to always call into ->suspend()
+  net: phy: broadcom: Add support for Wake-on-LAN
+  net: bcmgenet: Add support for PHY-based Wake-on-LAN
+
+ .../ethernet/broadcom/genet/bcmgenet_wol.c    |  14 ++
+ drivers/net/phy/bcm-phy-lib.c                 | 212 ++++++++++++++++++
+ drivers/net/phy/bcm-phy-lib.h                 |   5 +
+ drivers/net/phy/broadcom.c                    | 126 ++++++++++-
+ drivers/net/phy/phy_device.c                  |   5 +-
+ include/linux/brcmphy.h                       |  55 +++++
+ include/linux/phy.h                           |   4 +
+ 7 files changed, 416 insertions(+), 5 deletions(-)
+
+-- 
+2.34.1
 
 
