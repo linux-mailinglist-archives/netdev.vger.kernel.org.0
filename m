@@ -1,281 +1,233 @@
-Return-Path: <netdev+bounces-1921-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1922-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C03106FF917
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 20:00:21 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 46B4D6FF95F
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 20:10:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 80FC71C20FEC
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 18:00:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 995B328189C
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 18:10:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 164948F74;
-	Thu, 11 May 2023 18:00:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F7878F7A;
+	Thu, 11 May 2023 18:09:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F24D32068B
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 18:00:17 +0000 (UTC)
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55375FD7;
-	Thu, 11 May 2023 10:59:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1683827790; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=dQNDErFqxAcH2atIqmRYuzIFQtFDtybk0ITgq3nyLOJd2mrCcq1zv3ZeH2y4wDaDNu
-    YWZzpU5XD3QDYia2jloFpvNyPZ2Pqq+VBRqkEO6CaBCvqlTwHrwtAspYkBBnPhhvv1eH
-    Pkl/Y/6pUaq5CRgvDjJXE1EgXepFuyhxBvopMZcIFT2OuQPOuZ3dBBc32AGrbuVjBMT3
-    YROYm/BjL95od1sZ5//cCwVqB9m+smWiyLjwatoKoEplY7dc/abE/pMsPQAtoLGPEI/x
-    KZN3egoW/stT9SF/igVwKHCV81UV6oxJTt5j3xGT/MvKLVmWrE+eNBM7Yf2FDjR+iu00
-    tllg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1683827790;
-    s=strato-dkim-0002; d=strato.com;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=gLwUj8aS+Q4cABfQXUURa/vgdUsc7M5AAVAFpsKhw+g=;
-    b=M7s5L367o/SSEBi0T3+YtseAe+J65MRz97u0jjgqEFXqgbViP2fc68Bh12M8ffUszy
-    gqNjgTrPB9rCqW4TRehMJ3NERL/MWfNpEkpXeZOSYZ7YBYNBMaVTSTdbZbkjCseApfqR
-    QEWOOHUw/YGxNEbqJoiEc52R0koEZ3TYkzkAG7ODSWTTA0ENy1QhcNQ9TfWocclxne/T
-    aWsBwlln1of/CmjnoWuTcW2f1AsWivrPEnN0LADauMzaQUR9YqhmKKtkDDRGRnVQL4p/
-    jZmI0kyzu+fQiUGS3C2JKvKHc0at1FZ9DcSZUBHJmfajglVBrNn7xmbvJ4U4Z9GlEcKs
-    rNpw==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1683827790;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=gLwUj8aS+Q4cABfQXUURa/vgdUsc7M5AAVAFpsKhw+g=;
-    b=I3sTb6v0sd6IZlaxzMnt9xRCqf1Im8DOwkPD6AKIkmZMpXE0d8p77E8iU2+0UcaqU4
-    vYAmY+EwHkUBNzoJA09nv+B6GX+sZixbfeQukDGoQqNao8ctYWQeWhW7YE0lAl0xiHFv
-    RUZVmVUQ8EibdF9qf5EsKV2sGFVaKYqoDAWlW40pecrhNE85jSQG2JFxMgvbK7ipuvJr
-    F4csEFrOBWKWhFxV8S25Gxiswywysi8jnfua1qUXWisnkta1KHmITjJ6ZDZFxbeEvGvg
-    06pTZ0l0//MkFWu3aoHjwUQqW5xFKwxdHLbRDpCX5HeSJiqtiWmk10ywQmQb3WRL+d0d
-    Om4A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1683827790;
-    s=strato-dkim-0003; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=gLwUj8aS+Q4cABfQXUURa/vgdUsc7M5AAVAFpsKhw+g=;
-    b=/j0g5f5wj6iftljg1QE+ZWDmFDE6DArsYJgi6CC4IoJCUoIfaD+5DIqYznUw0MmnFn
-    39/Yng99ngCpSVg/49Dg==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusl129OHEdFq0USEbDUQnQ=="
-Received: from [IPV6:2a00:6020:4a8e:5000::923]
-    by smtp.strato.de (RZmta 49.4.0 AUTH)
-    with ESMTPSA id x06214z4BHuTaJA
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-	(Client did not present a certificate);
-    Thu, 11 May 2023 19:56:29 +0200 (CEST)
-Message-ID: <886183c2-8910-d6cd-92db-f650a0ab202e@hartkopp.net>
-Date: Thu, 11 May 2023 19:56:29 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4A8206A2
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 18:09:58 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAC26EB5;
+	Thu, 11 May 2023 11:09:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=3Pfh1zcvxcBTMC1uxi72MV10YZm42bS2IcEmQKZMb+4=; b=Xy6+Keou++GVj/codBoqrJy9gL
+	itBLJ1xjf1mlUPlIVxNfKjXcLTAAQxQgVvkDSW28XTylZidk6QtE2PQYmJQUJnQZWcxB5NeAld/vd
+	IYEOh2qbH0ToIRlW0gSw+S2gAJ1WGJ/1frb5LCaG8CQK1aq2Dnd7ahSmo492iNkilNBU6UOddVnaB
+	2G/DZ3A2kPXp+dk+BzsO26n/CDYET8gnNW/nnTphCuVOxiZeHj4Thy5ZL9FaiwRq+YC5K2OSx6ypl
+	/nzyY9khDwqIpRs6uKQTRNjfVzRCJDKCffYlnSGLHy612I3r9wY0uvnDsFnZ4KyWkAr1um0cluB6w
+	mZp1PVtw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35560)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1pxAjO-00075o-2n; Thu, 11 May 2023 19:09:34 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1pxAjM-0004F7-Bd; Thu, 11 May 2023 19:09:32 +0100
+Date: Thu, 11 May 2023 19:09:32 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Daniel Golle <daniel@makrotopia.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH net-next 0/8] Improvements for RealTek 2.5G Ethernet PHYs
+Message-ID: <ZF0vXAzWg44GT+fA@shell.armlinux.org.uk>
+References: <cover.1683756691.git.daniel@makrotopia.org>
+ <55c11fd9-54cf-4460-a10c-52ff62b46a4c@lunn.ch>
+ <ZF0iiDIZQzR8vMvm@pidgin.makrotopia.org>
+ <ZF0mUeKjdvZNG44q@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [syzbot] [can?] KCSAN: data-race in bcm_can_tx / bcm_tx_setup (3)
-Content-Language: en-US
-To: Dmitry Vyukov <dvyukov@google.com>
-Cc: syzbot <syzbot+e1786f049e71693263bf@syzkaller.appspotmail.com>,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- linux-can@vger.kernel.org, linux-kernel@vger.kernel.org, mkl@pengutronix.de,
- netdev@vger.kernel.org, pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-References: <00000000000059e1b705fa2494e4@google.com>
- <CACT4Y+YDzXb6WoMtBu5O-dpWOkVYwhUNKM7szC5gJ9ewtMUPDQ@mail.gmail.com>
- <b4306f50-08e4-d41d-1e59-5be1f9735dd6@hartkopp.net>
- <CACT4Y+b_3q-AjxKj3zF7JuXyZb5cttCX8hzVb0QMfq+aOnGSpA@mail.gmail.com>
-From: Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <CACT4Y+b_3q-AjxKj3zF7JuXyZb5cttCX8hzVb0QMfq+aOnGSpA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZF0mUeKjdvZNG44q@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello Dmitry,
-
-On 26.04.23 09:04, Dmitry Vyukov wrote:
-> On Tue, 25 Apr 2023 at 23:18, Oliver Hartkopp <socketcan@hartkopp.net> wrote:
->>
->> Hello Dmitry,
->>
->> On 25.04.23 10:36, Dmitry Vyukov wrote:
->>> On Tue, 25 Apr 2023 at 10:05, syzbot
->>> <syzbot+e1786f049e71693263bf@syzkaller.appspotmail.com> wrote:
->>>>
->>>> Hello,
->>>>
->>>> syzbot found the following issue on:
->>>>
->>>> HEAD commit:    1a0beef98b58 Merge tag 'tpmdd-v6.4-rc1' of git://git.kerne..
->>>> git tree:       upstream
->>>> console output: https://syzkaller.appspot.com/x/log.txt?x=1485f1dbc80000
->>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=501f7c86f7a05a13
->>>> dashboard link: https://syzkaller.appspot.com/bug?extid=e1786f049e71693263bf
->>>> compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
->>>>
->>>> Unfortunately, I don't have any reproducer for this issue yet.
->>>>
->>>> Downloadable assets:
->>>> disk image: https://storage.googleapis.com/syzbot-assets/f06c11683242/disk-1a0beef9.raw.xz
->>>> vmlinux: https://storage.googleapis.com/syzbot-assets/5c0a1cd5a059/vmlinux-1a0beef9.xz
->>>> kernel image: https://storage.googleapis.com/syzbot-assets/e4c318183ce3/bzImage-1a0beef9.xz
->>>>
->>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->>>> Reported-by: syzbot+e1786f049e71693263bf@syzkaller.appspotmail.com
->>>
->>> op->currframe and probably other op fields are concurrently
->>> read/modified by both bcm_tx_setup() and bcm_can_tx().
->>> If I am reading the code correctly, it can lead to a wide range of
->>> misbehavior, e.g. sending wrong/uninit data, reading/writing data
->>> out-of-bounds, etc.
->>> I think these functions need to be somehow serialized (stopping timers
->>> before doing any modifications to op?).
->>
->> KCSAN has detected a very special case here:
->>
->> The content of the CAN frames (in a running tx-job) has been altered and
->> the number of CAN frames has been reduced. (Increasing if the number of
->> CAN frames is not possible with an active tx-job/running hrtimer).
->>
->> Or (alternatively) the TX_RESET_MULTI_IDX flag has been set.
->>
->> In both cases op->currframe is set to zero to start the sequence of the
->> CAN frames in op->frames in the next(!) hrtimer execution.
->>
->> So setting values in op->currframe to zero (as pointed out by KCSAN) is
->> always a good move.
->>
->> When there would be a race between the op->currframe++ in bcm_can_tx()
->> and the test for
->> if (op->nframes != msg_head->nframes) in bcm_tx_setup() this would be
->> fixed with
->> if (op->currframe >= op->nframes) in bcm_can_tx().
->>
->> But looking at the code again I'm not sure if we might /potentially/
->> lose the TX_RESET_MULTI_IDX feature when the unlocked op->currframe++ is
->> performed concurrently in bcm_can_tx().
->>
->> So a short local locking around the op->currframe r/w operations in
->> bcm_can_tx() and bcm_tx_setup() would make sense IMO.
->>
->> The code is intended to update CAN frame content (with a fixed
->> non-increasing length) lock-less on the fly and there should be no other
->> "wide range of misbehavior" cases here.
->>
->> I will take a look and send a patch for the op->currframe locking.
->>
->> Many thanks for looking into this and best regards,
->> Oliver
+On Thu, May 11, 2023 at 06:30:57PM +0100, Russell King (Oracle) wrote:
+> On Thu, May 11, 2023 at 07:14:48PM +0200, Daniel Golle wrote:
+> > On Thu, May 11, 2023 at 02:28:15AM +0200, Andrew Lunn wrote:
+> > > On Thu, May 11, 2023 at 12:53:22AM +0200, Daniel Golle wrote:
+> > > > Improve support for RealTek 2.5G Ethernet PHYs (RTL822x series).
+> > > > The PHYs can operate with Clause-22 and Clause-45 MDIO.
+> > > > 
+> > > > When using Clause-45 it is desireable to avoid rate-adapter mode and
+> > > > rather have the MAC interface mode follow the PHY speed. The PHYs
+> > > > support 2500Base-X for 2500M, and Cisco SGMII for 1000M/100M/10M.
+> > > 
+> > > I don't see what clause-45 has to do with this. The driver knows that
+> > > both C22 and C45 addresses spaces exists in the hardware. It can do
+> > > reads/writes on both. If the bus master does not support C45, C45 over
+> > > C22 will be performed by the core.
+> > 
+> > My understanding is/was that switching the SerDes interface mode is only
+> > intended with Clause-45 PHYs, derived from this comment and code:
+> > 
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/phy/phylink.c#n1661
 > 
-> bcm_tx_timeout_handler() must also be racing with bcm_tx_setup() and
-> it reads more fields (kt_ival1, kt_ival2, flags, count) while they are
-> being changed.
-> Can bcm_tx_timeout_handler() read unint/partially
-> init/inconsistent/stale values for these fields?
-> Also can't bcm_can_tx() read partially overwritten/messed cf data when
-> sending, since it's already being overwritten by bcm_tx_setup()?
-
-I needed to stare on the code some more time to boil it down to the 
-relevant and critical variables and functions that are concurrently 
-modified and executed from user context and the soft hrtimer.
-
-And finally I had to figure out which kind of locking has to be used here:
-
-https://docs.kernel.org/kernel-hacking/locking.html
-"Locking Between User Context and Timers"
-
-The RFC patch can be found here:
-https://lore.kernel.org/linux-can/20230511174644.8849-1-socketcan@hartkopp.net/T/#u
-
-I'll do some more tests to check if the locking creates some 'real world 
-problems'.
-
-Many thanks for your support!
-
-Oliver
-
+> It's only because:
 > 
->>>> ==================================================================
->>>> BUG: KCSAN: data-race in bcm_can_tx / bcm_tx_setup
->>>>
->>>> write to 0xffff888137fcff10 of 4 bytes by task 10792 on cpu 0:
->>>>    bcm_tx_setup+0x698/0xd30 net/can/bcm.c:995
->>>>    bcm_sendmsg+0x38b/0x470 net/can/bcm.c:1355
->>>>    sock_sendmsg_nosec net/socket.c:724 [inline]
->>>>    sock_sendmsg net/socket.c:747 [inline]
->>>>    ____sys_sendmsg+0x375/0x4c0 net/socket.c:2501
->>>>    ___sys_sendmsg net/socket.c:2555 [inline]
->>>>    __sys_sendmsg+0x1e3/0x270 net/socket.c:2584
->>>>    __do_sys_sendmsg net/socket.c:2593 [inline]
->>>>    __se_sys_sendmsg net/socket.c:2591 [inline]
->>>>    __x64_sys_sendmsg+0x46/0x50 net/socket.c:2591
->>>>    do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->>>>    do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
->>>>    entry_SYSCALL_64_after_hwframe+0x63/0xcd
->>>>
->>>> write to 0xffff888137fcff10 of 4 bytes by interrupt on cpu 1:
->>>>    bcm_can_tx+0x38a/0x410
->>>>    bcm_tx_timeout_handler+0xdb/0x260
->>>>    __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
->>>>    __hrtimer_run_queues+0x217/0x700 kernel/time/hrtimer.c:1749
->>>>    hrtimer_run_softirq+0xd6/0x120 kernel/time/hrtimer.c:1766
->>>>    __do_softirq+0xc1/0x265 kernel/softirq.c:571
->>>>    invoke_softirq kernel/softirq.c:445 [inline]
->>>>    __irq_exit_rcu+0x57/0xa0 kernel/softirq.c:650
->>>>    sysvec_apic_timer_interrupt+0x6d/0x80 arch/x86/kernel/apic/apic.c:1107
->>>>    asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:645
->>>>    kcsan_setup_watchpoint+0x3fe/0x410 kernel/kcsan/core.c:696
->>>>    string_nocheck lib/vsprintf.c:648 [inline]
->>>>    string+0x16c/0x200 lib/vsprintf.c:726
->>>>    vsnprintf+0xa09/0xe20 lib/vsprintf.c:2796
->>>>    add_uevent_var+0xf0/0x1c0 lib/kobject_uevent.c:665
->>>>    kobject_uevent_env+0x225/0x5b0 lib/kobject_uevent.c:539
->>>>    kobject_uevent+0x1c/0x20 lib/kobject_uevent.c:642
->>>>    __loop_clr_fd+0x1e0/0x3b0 drivers/block/loop.c:1167
->>>>    lo_release+0xe4/0xf0 drivers/block/loop.c:1745
->>>>    blkdev_put+0x3fb/0x470
->>>>    kill_block_super+0x83/0xa0 fs/super.c:1410
->>>>    deactivate_locked_super+0x6b/0xd0 fs/super.c:331
->>>>    deactivate_super+0x9b/0xb0 fs/super.c:362
->>>>    cleanup_mnt+0x272/0x2e0 fs/namespace.c:1177
->>>>    __cleanup_mnt+0x19/0x20 fs/namespace.c:1184
->>>>    task_work_run+0x123/0x160 kernel/task_work.c:179
->>>>    resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
->>>>    exit_to_user_mode_loop+0xd1/0xe0 kernel/entry/common.c:171
->>>>    exit_to_user_mode_prepare+0x6c/0xb0 kernel/entry/common.c:204
->>>>    __syscall_exit_to_user_mode_work kernel/entry/common.c:286 [inline]
->>>>    syscall_exit_to_user_mode+0x26/0x140 kernel/entry/common.c:297
->>>>    do_syscall_64+0x4d/0xc0 arch/x86/entry/common.c:86
->>>>    entry_SYSCALL_64_after_hwframe+0x63/0xcd
->>>>
->>>> value changed: 0x00000059 -> 0x00000000
->>>>
->>>> Reported by Kernel Concurrency Sanitizer on:
->>>> CPU: 1 PID: 3096 Comm: syz-executor.5 Not tainted 6.3.0-syzkaller-00113-g1a0beef98b58 #0
->>>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 04/14/2023
->>>> ==================================================================
->>>>
->>>>
->>>> ---
->>>> This report is generated by a bot. It may contain errors.
->>>> See https://goo.gl/tpsmEJ for more information about syzbot.
->>>> syzbot engineers can be reached at syzkaller@googlegroups.com.
->>>>
->>>> syzbot will keep track of this issue. See:
->>>> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->>>>
->>>> --
->>>> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
->>>> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
->>>> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/00000000000059e1b705fa2494e4%40google.com.
+> 1) Clause 22 PHYs haven't done this.
+> 2) There is currently no way to know what set of interfaces a PHY would
+>    make use of - and that affects what ethtool linkmodes are possible.
+> 
+> What you point to is nothing more than a hack to make Clause 45 PHYs
+> work with the code that we currently have.
+> 
+> To sort this properly, we need PHY drivers to tell phylink what
+> interfaces they are going to switch between once they have been
+> attached to the network interface. This is what these patches in my
+> net-queue branch are doing:
+> 
+> net: phy: add possible interfaces
+> net: phy: marvell10g: fill in possible_interfaces
+> net: phy: bcm84881: fill in possible_interfaces
+> net: phylink: split out PHY validation from phylink_bringup_phy()
+> net: phylink: validate only used interfaces for c45 PHYs
+> 
+> Why only C45 PHYs again? Because the two PHY drivers that I've added
+> support for "possible_interfaces" to are both C45. There's no reason
+> we can't make that work for C22 PHYs as well.
+> 
+> We could probably make it work for C22 PHYs out of the box by setting
+> the appropriate bit for the supplied interface in "possible_interfaces"
+> inside phy_attach_direct() after the call to phy_init_hw() if
+> "possible_interfaces" is still empty, which means that if a PHY driver
+> isn't updated to setup "possible_interfaces" then we get basically
+> whatever interface mode we're attaching with there.
+> 
+> There may be a problem if phy_attach_direct() gets called with
+> PHY_INTERFACE_MODE_NA (which I believe is possible with DSA.)
+
+Maybe something like the below on top of those patches I've pointed
+to above? Note that this requires all MAC users of phylink to fill
+in the supported_interfaces bitmap. One of the other patches in my
+net-queue is:
+
+net: phylink: require supported_interfaces to be filled
+
+which comes before the above patches. I think that's a reasonable
+expectation today but needs testing and review of all users (esp.
+the DSA drivers.)
+
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index af070be717ec..1cfa101960b9 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1787,8 +1787,26 @@ static int phylink_validate_phy(struct phylink *pl, struct phy_device *phy,
+ 	 */
+ 	state->rate_matching = phy_get_rate_matching(phy, state->interface);
+ 
+-	/* If this is a clause 22 PHY or is using rate matching, it only
+-	 * operates in a single mode.
++	/* If the PHY provides a bitmap of the interfaces it will be using,
++	 * use this to validate the PHY. This can be used for both clause 22
++	 * and clause 45 PHYs.
++	 */
++	if (!phy_interface_empty(phy->possible_interfaces)) {
++		/* Calculate the union of the interfaces the PHY supports in
++		 * its configured state, and the host's supported interfaces.
++		 * We never want an interface that isn't supported by the host.
++		 */
++		phy_interface_and(interfaces, phy->possible_interfaces,
++				  pl->config->supported_interfaces);
++
++		return phylink_validate_mask(pl, mode, supported, state,
++					     interfaces);
++	}
++
++	/* If the PHY doesn't provide it a bitmap of the interfaces it will
++	 * be using, or is a traditional clause 22 PHY driver that doesn't
++	 * set ->possible_interfaces, or if we're using rate matching, then
++	 * we're operating in a single mode.
+ 	 */
+ 	if (!phy->is_c45 || state->rate_matching != RATE_MATCH_NONE)
+ 		return phylink_validate(pl, mode, supported, state);
+@@ -1797,28 +1815,18 @@ static int phylink_validate_phy(struct phylink *pl, struct phy_device *phy,
+ 	 * modes according to the negotiated media speed. For example, the
+ 	 * interface may switch between 10GBASE-R, 5GBASE-R, 2500BASE-X and
+ 	 * SGMII.
++	 *
++	 * If we're operating in such a mode, but haven't been provided a
++	 * possible_interfaces bitmap, then we need to validate all possible
++	 * interfaces.
+ 	 */
+-
+-	/* Backwards compatibility for those MAC drivers that don't set
+-	 * their supported_interfaces, or PHY drivers that don't set
+-	 * their possible_interfaces.
+-	 */
+-	if (phy_interface_empty(phy->possible_interfaces) &&
++	if (phy->is_c45 &&
+ 	    state->interface != PHY_INTERFACE_MODE_RXAUI &&
+ 	    state->interface != PHY_INTERFACE_MODE_XAUI &&
+-	    state->interface != PHY_INTERFACE_MODE_USXGMII) {
++	    state->interface != PHY_INTERFACE_MODE_USXGMII)
+ 		state->interface = PHY_INTERFACE_MODE_NA;
+-		return phylink_validate(pl, mode, supported, state);
+-	}
+-
+-	/* Calculate the union of the interfaces the PHY supports in
+-	 * its configured state, and the host's supported interfaces.
+-	 * We never want an interface that isn't supported by the host.
+-	 */
+-	phy_interface_and(interfaces, phy->possible_interfaces,
+-			  pl->config->supported_interfaces);
+ 
+-	return phylink_validate_mask(pl, mode, supported, state, interfaces);
++	return phylink_validate(pl, mode, supported, state);
+ }
+ 
+ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 4e0db4a14f30..b54aa9e8c122 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -178,6 +178,11 @@ static inline bool phy_interface_empty(const unsigned long *intf)
+ 	return bitmap_empty(intf, PHY_INTERFACE_MODE_MAX);
+ }
+ 
++static inline unsigned int phy_interface_weight(const unsigned long *intf)
++{
++	return bitmap_weight(intf, PHY_INTERFACE_MODE_MAX);
++}
++
+ static inline void phy_interface_and(unsigned long *dst, const unsigned long *a,
+ 				     const unsigned long *b)
+ {
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
