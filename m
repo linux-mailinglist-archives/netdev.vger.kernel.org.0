@@ -1,142 +1,134 @@
-Return-Path: <netdev+bounces-1918-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1919-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D80D06FF853
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 19:22:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 34BC26FF86A
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 19:31:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 939F128185E
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:22:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DE194281861
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:31:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4B68A947B;
-	Thu, 11 May 2023 17:21:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E081E8F63;
+	Thu, 11 May 2023 17:31:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B5E89472
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 17:21:25 +0000 (UTC)
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B5B8A4A;
-	Thu, 11 May 2023 10:21:23 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id 6a1803df08f44-61b58b6e864so77544956d6.3;
-        Thu, 11 May 2023 10:21:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683825682; x=1686417682;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SabCXeVjik/SQe8lEZKTulGkwrKo1Wd7M5yO8zFFbD4=;
-        b=KVrpGiKK9kahGnyXBq9oEXMDboWTQfOgu8/459WM56vuFQ/HDXQ+87Hyn7QUUwDZ4U
-         5n1Vygst+XHVPKZ/PmYi/wRHDHzpK+AWuxvb41w5vtHpWMPKZR7+x9tSJaUz46JboDj2
-         OArx6ofpcLM0aweQMEHQF03JX80OlIaQ8Pe2UDBVL94td7BUNgHPuMlZoFgg/F6FtAt0
-         1SmWSnop15jb0xwtln7CVqZB1VZbd3U/EYtfwWgL/tkEIv3eIJ/lHKD863dFXPuA/jEW
-         8SfUrYX6oS389IGnLeeagAm+e2qcyDNL4X4YOsWOwKmIyP+Y3bsgVdu03RQBDEdDVle1
-         GhMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683825682; x=1686417682;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SabCXeVjik/SQe8lEZKTulGkwrKo1Wd7M5yO8zFFbD4=;
-        b=gxbNT65d7J9TqqjBcMQ9yHwp8d8kX5YYNJ4rNJhDU7IPdmummLB/4MlrvkNmBpLCcN
-         2LPdGAOzXJOJVLqkIw4j5Z8kktOba+wzt6YIoq8YJIZmDQ7SDdY25BjMeUj2E0IubFz6
-         sf/u3sZPf26JDV3vg9hRJTLJQuboR5u5CyJOfmuTJP9N0Uio2Irp5vZQ1oH52GjW+3vl
-         srrlSVm/eGoUiXXcW6h9JBN9YfVfzO5hEQz/tm/iII8uuJ3z7SnTNROU4N09ugRLzfHX
-         YM2A9sSrLJDoMk6tSbh8cK1am+m5+k+uOifHEmTrb+evxfTTfZgjA7qdkT9sOI5BdySR
-         ToMA==
-X-Gm-Message-State: AC+VfDw3/3OthjakL7KRCnnYxD4QtrSh56N/dnLOwyPdZJkVtD1gQ0FQ
-	v7ShbaLYNZKw21ys7Hni3DINOIzLdmE=
-X-Google-Smtp-Source: ACHHUZ5414xAke2CWHd7H2AOAq1hZf2XDZplwb8S8lTVZuRwYevZUnLFRKY1JntsXwWblMQ0Y3XQEA==
-X-Received: by 2002:a05:6214:1243:b0:5c5:1a25:edf0 with SMTP id r3-20020a056214124300b005c51a25edf0mr34929330qvv.26.1683825682330;
-        Thu, 11 May 2023 10:21:22 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j7-20020a0ce007000000b0062168714c8fsm462822qvk.120.2023.05.11.10.21.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 May 2023 10:21:21 -0700 (PDT)
-From: Florian Fainelli <f.fainelli@gmail.com>
-To: netdev@vger.kernel.org
-Cc: Florian Fainelli <f.fainelli@gmail.com>,
-	Simon Horman <simon.horman@corigine.com>,
-	Doug Berger <opendmb@gmail.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3A092068B
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 17:31:08 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1268640C1;
+	Thu, 11 May 2023 10:31:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=+3MeGD4e+zpTZm4qDwhrhx/AMIAONPMrTTkRjCrQwwA=; b=wPhJHkv6R+rjiJGI0cDi92rsxN
+	0dmmlqZzFR6KpV7LrZ724rqU/7TSYLzUrbSR8Badw5GPQNsXFFkFzEP7VcolyRHqYKkDNmcmRLBVr
+	YzSnXHnd9i7SNPdqyZYUJndYEZlDxSY6Xiy7LzEWXKldMnz0dP8wXQEhkkUjrZOu1Aa01w6Wj6mm6
+	o5kwGXXSPO08myLrgcYRn3Xdcyfn51Kc16YYytB/0VNAiFJrH+iLwdqP6To46vjLffLJIRyhS4vz6
+	YnRNb9/TL3yII7sVhIYiYyzfMoUaei4KV9FAWqComQ+xCUDfTg999BX9xE/3kepIMcChV6H/63xBb
+	JEWcXePQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37684)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1pxA83-00072F-LC; Thu, 11 May 2023 18:30:59 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1pxA81-0004CA-K6; Thu, 11 May 2023 18:30:57 +0100
+Date: Thu, 11 May 2023 18:30:57 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Daniel Golle <daniel@makrotopia.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Heiner Kallweit <hkallweit1@gmail.com>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	=?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-	Peter Geis <pgwipeout@gmail.com>,
-	Frank <Frank.Sae@motor-comm.com>,
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v3 3/3] net: bcmgenet: Add support for PHY-based Wake-on-LAN
-Date: Thu, 11 May 2023 10:21:10 -0700
-Message-Id: <20230511172110.2243275-4-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230511172110.2243275-1-f.fainelli@gmail.com>
-References: <20230511172110.2243275-1-f.fainelli@gmail.com>
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH net-next 0/8] Improvements for RealTek 2.5G Ethernet PHYs
+Message-ID: <ZF0mUeKjdvZNG44q@shell.armlinux.org.uk>
+References: <cover.1683756691.git.daniel@makrotopia.org>
+ <55c11fd9-54cf-4460-a10c-52ff62b46a4c@lunn.ch>
+ <ZF0iiDIZQzR8vMvm@pidgin.makrotopia.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZF0iiDIZQzR8vMvm@pidgin.makrotopia.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-If available, interrogate the PHY to find out whether we can use it for
-Wake-on-LAN. This can be a more power efficient way of implementing
-that feature, especially when the MAC is powered off in low power
-states.
+On Thu, May 11, 2023 at 07:14:48PM +0200, Daniel Golle wrote:
+> On Thu, May 11, 2023 at 02:28:15AM +0200, Andrew Lunn wrote:
+> > On Thu, May 11, 2023 at 12:53:22AM +0200, Daniel Golle wrote:
+> > > Improve support for RealTek 2.5G Ethernet PHYs (RTL822x series).
+> > > The PHYs can operate with Clause-22 and Clause-45 MDIO.
+> > > 
+> > > When using Clause-45 it is desireable to avoid rate-adapter mode and
+> > > rather have the MAC interface mode follow the PHY speed. The PHYs
+> > > support 2500Base-X for 2500M, and Cisco SGMII for 1000M/100M/10M.
+> > 
+> > I don't see what clause-45 has to do with this. The driver knows that
+> > both C22 and C45 addresses spaces exists in the hardware. It can do
+> > reads/writes on both. If the bus master does not support C45, C45 over
+> > C22 will be performed by the core.
+> 
+> My understanding is/was that switching the SerDes interface mode is only
+> intended with Clause-45 PHYs, derived from this comment and code:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/phy/phylink.c#n1661
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+It's only because:
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-index 3a4b6cb7b7b9..7a41cad5788f 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-@@ -42,6 +42,12 @@ void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
- 	struct device *kdev = &priv->pdev->dev;
- 
-+	if (dev->phydev) {
-+		phy_ethtool_get_wol(dev->phydev, wol);
-+		if (wol->supported)
-+			return;
-+	}
-+
- 	if (!device_can_wakeup(kdev)) {
- 		wol->supported = 0;
- 		wol->wolopts = 0;
-@@ -63,6 +69,14 @@ int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
- 	struct device *kdev = &priv->pdev->dev;
-+	int ret;
-+
-+	/* Try Wake-on-LAN from the PHY first */
-+	if (dev->phydev) {
-+		ret = phy_ethtool_set_wol(dev->phydev, wol);
-+		if (ret != -EOPNOTSUPP)
-+			return ret;
-+	}
- 
- 	if (!device_can_wakeup(kdev))
- 		return -ENOTSUPP;
+1) Clause 22 PHYs haven't done this.
+2) There is currently no way to know what set of interfaces a PHY would
+   make use of - and that affects what ethtool linkmodes are possible.
+
+What you point to is nothing more than a hack to make Clause 45 PHYs
+work with the code that we currently have.
+
+To sort this properly, we need PHY drivers to tell phylink what
+interfaces they are going to switch between once they have been
+attached to the network interface. This is what these patches in my
+net-queue branch are doing:
+
+net: phy: add possible interfaces
+net: phy: marvell10g: fill in possible_interfaces
+net: phy: bcm84881: fill in possible_interfaces
+net: phylink: split out PHY validation from phylink_bringup_phy()
+net: phylink: validate only used interfaces for c45 PHYs
+
+Why only C45 PHYs again? Because the two PHY drivers that I've added
+support for "possible_interfaces" to are both C45. There's no reason
+we can't make that work for C22 PHYs as well.
+
+We could probably make it work for C22 PHYs out of the box by setting
+the appropriate bit for the supplied interface in "possible_interfaces"
+inside phy_attach_direct() after the call to phy_init_hw() if
+"possible_interfaces" is still empty, which means that if a PHY driver
+isn't updated to setup "possible_interfaces" then we get basically
+whatever interface mode we're attaching with there.
+
+There may be a problem if phy_attach_direct() gets called with
+PHY_INTERFACE_MODE_NA (which I believe is possible with DSA.)
+
 -- 
-2.34.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
