@@ -1,99 +1,85 @@
-Return-Path: <netdev+bounces-1873-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1874-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 561B16FF611
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:34:33 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 32C396FF61A
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:36:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8C4BE28146C
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:34:31 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 58B461C20D02
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:36:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A83E9641;
-	Thu, 11 May 2023 15:34:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5352B641;
+	Thu, 11 May 2023 15:36:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D9DA629
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 15:34:29 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F75D559F
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 08:34:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-	Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-	In-Reply-To:References; bh=JaUOMAwWPoxX7PGKWZzAjX2xPVWnbLnXWmeVJl45UHU=; b=ho
-	TqRUe+N93MzANpWilEp6Rrso+PgBkl9xykAMBFjERNOTnf1PjTO5v9bSEMyKcaGbCtA7rKmXg04li
-	HOHQs7bFe/Zzz3Bsqa4IeV5Xu6zlQCAJ9o3mNQ+PX/MBWm9scFGLDWBvpRRUWSJvUaTRb+kNMNhho
-	Mtbm23KZPAoE5Ls=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1px8JE-00CZTm-LG; Thu, 11 May 2023 17:34:24 +0200
-Date: Thu, 11 May 2023 17:34:24 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Ron Eggler <ron.eggler@mistywest.com>
-Cc: netdev@vger.kernel.org
-Subject: Re: PHY VSC8531 MDIO data not reflected in ethernet/ sub-module
-Message-ID: <69d0d5d9-5ed0-4254-adaf-cf3f85c103b9@lunn.ch>
-References: <2cc45d13-78e5-d5c1-3147-1b44efc6a291@mistywest.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E1EE629
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 15:36:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCBF6C433D2;
+	Thu, 11 May 2023 15:36:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683819382;
+	bh=4A8n03iQdhJdrXZijpx44Mz2CX3hR6qccf720TX/kus=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=RSTl0C7bnb8Fow+S1niMr3SJlq1SKSyyoHIhF61Vrv3a+pkMsZiLdsqb0oTFUaipM
+	 yBXYO0TS49grQwptrGoSHpY7XTthrrVOtoNZlhGWkgG5g+GysulYEYVS5p/paTsQH3
+	 Fc6w81omaJP9ioWf211nmTd/QZoXTbxcT0ojsADdFtc8pq5+pOjnoStmpHjW2gt+zh
+	 8oHIjSm0sS/GknSH479cPwoPIj7cj8PKbLFwWY5sIGTk1FIshnItZyf5MnPGZLLalb
+	 /vqRle8usr1UFmrGWG8MsZtoIHj8Ch+yrW5irKR4LKbrkxCSmkNHu9RADXIk8ZiZaA
+	 XyG67mJIafX7w==
+Date: Thu, 11 May 2023 08:36:20 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>,
+ netdev@vger.kernel.org, glipus@gmail.com, maxime.chevallier@bootlin.com,
+ vadim.fedorenko@linux.dev, richardcochran@gmail.com,
+ gerhard@engleder-embedded.com, thomas.petazzoni@bootlin.com,
+ krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+ linux@armlinux.org.uk
+Subject: Re: [PATCH net-next RFC v4 4/5] net: Let the active time stamping
+ layer be selectable.
+Message-ID: <20230511083620.15203ebe@kernel.org>
+In-Reply-To: <20230511134807.v4u3ofn6jvgphqco@skbuf>
+References: <20230406173308.401924-1-kory.maincent@bootlin.com>
+	<20230406173308.401924-1-kory.maincent@bootlin.com>
+	<20230406173308.401924-5-kory.maincent@bootlin.com>
+	<20230406173308.401924-5-kory.maincent@bootlin.com>
+	<20230429175807.wf3zhjbpa4swupzc@skbuf>
+	<20230502130525.02ade4a8@kmaincent-XPS-13-7390>
+	<20230511134807.v4u3ofn6jvgphqco@skbuf>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2cc45d13-78e5-d5c1-3147-1b44efc6a291@mistywest.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-> ***[ 6.728165] DEBUG: in ravb_emac_init_gbeth(), calling
-> ravb_set_rate_gbeth(), priv->duplex: 0, priv->speed: 0*
-> ***[ 6.751973] DEBUG: in ravb_set_rate_gbeth() - priv->speed 0*
-> ***[ 6.831153] DEBUG: in ravb_adjust_link(), phydev->speed -1, priv->speed
-> 0*
-> ***[ 6.839952] DEBUG: in ravb_adjust_link(), priv->no_avb_link 0,
-> phydev->link 0*
+On Thu, 11 May 2023 16:48:07 +0300 Vladimir Oltean wrote:
+> > Ok, right you move it on to dsa stub. What do you think of our case, should we
+> > continue with netdev notifier?   
+> 
+> I don't know.
+> 
+> AFAIU, the plan forward with this patch set is that, if the active
+> timestamping layer is the PHY, phy_mii_ioctl() gets called and the MAC
+> driver does not get notified in any way of that. That is an issue
+> because if it's a switch, it will want to trap PTP even if it doesn't
+> timestamp it, and with this proposal it doesn't get a chance to do that.
+> 
+> What is your need for this? Do you have this scenario? If not, just drop
+> this part from the patch.
+> 
+> Jakub, you said "nope" to netdev notifiers, what would you suggest here
+> instead? ndo_change_ptp_traps()?
 
-If there is no link, everything else is meaningless. You cannot have
-speed without link.
+More importantly "monolithic" drivers have DMA/MAC/PHY all under 
+the NDO so assuming that SOF_PHY_TIMESTAMPING implies a phylib PHY
+is not going to work.
 
-> While I also receive the following using the mii-tool utility:
-> # mii-tool -vv eth0
-> Using SIOCGMIIPHY=0x8947
-> eth0: negotiated 1000baseT-FD flow-control, link ok
->   registers for MII PHY 0:
->     1040 796d 0007 0572 01e1 cde1 000f 2001
->     4006 0300 7800 0000 0000 4002 0000 3000
->     0000 f000 0088 0000 0000 0001 3200 1000
->     0000 0000 0000 0000 a035 0054 0400 0000
->   product info: vendor 00:01:c1, model 23 rev 2
->   basic mode:   autonegotiation enabled
->   basic status: autonegotiation complete, link ok
->   capabilities: 1000baseT-HD 1000baseT-FD 100baseTx-FD 100baseTx-HD
-> 10baseT-FD 10baseT-HD
->   advertising:  1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
->   link partner: 1000baseT-HD 1000baseT-FD 100baseTx-FD 100baseTx-HD
-> 10baseT-FD 10baseT-HD flow-control
-
-Assuming you are not using interrupts, phylib will poll the PHY once a
-second, calling
-phy_check_link_status()->
-  phy_read_status()->
-    phydev->drv->read_status()
-or
-    genphy_read_status()
-
-Check what these are doing, why do they think the link is down.
-
-      Andrew
+We need a more complex calling convention for the NDO.
 
