@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-1791-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1792-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 15A406FF26F
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:17:32 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2115B6FF279
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:17:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C5810281833
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:17:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2F78A1C20B0A
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 13:17:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A3451F95D;
-	Thu, 11 May 2023 13:17:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 413531F95A;
+	Thu, 11 May 2023 13:17:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EF931F93F
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:17:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3532A19E4A
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 13:17:14 +0000 (UTC)
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325809EFF;
-	Thu, 11 May 2023 06:16:25 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CE010A20;
+	Thu, 11 May 2023 06:16:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683810985; x=1715346985;
+  t=1683810996; x=1715346996;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zAxNSgIqZEwmVaKE1U0kMXB6SpY1gyI1AhVmM1SO/rc=;
-  b=UMPB7hfb9ytQzzBpkPtYdBPMzV7Q9t9I4ffucvoR2bBvGwvO9jjR2BfR
-   7VjJa38tdqsQdWT32BO8X1kDZuuUGoIEbcRLQXQ2XgREzIsvavqao1aRK
-   4msmBSrrL6ovBZjWc6WvppbJG9K68xh2e+J50taZsvuawBJKOq4Tv6G/4
-   AFDOSMFgsxcRizeLJc67lyJdFg5zxwrL2gAqGrvMJ/2CafiDiblTbhSIF
-   owwcCn0/ybQQmLJFfHmYW1sULhhy2ub2FDuHSi+5WjXHssgyTQnxBltWu
-   qtOtABt1Kafoh4gEWbCyGsvKvDgHF98X5D4+6nDGzIuu3S+JudROB/ihF
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="378619730"
+  bh=TAC73s9QwdyGD3M/5SJI0+AWbjKADBP6Sv9hNzZQGXc=;
+  b=AE6fCeq7PdQ1tgyOEDZs6HW9qtthi8TSinwt4pGMtaQiIm9o4LVsT8o9
+   fasc9cuZinK6CYaTI1icSiLKMIKWtwLZS2aYlyFfw9gXfQx9MadayymKw
+   ot8K3m7Mj6Z/Jw6OeBdPRbob9JIEXzznfhLt8M1tRHAm1oIXk/xZZ2V0C
+   gBlS24sxr4PJfwtvW1zdZgT0nhFMl0Url462gYyZi4VYq70ykoDfX1hD5
+   ZmIVOgtNNRXkeyij0rH8/DBHIcd7xRK/nWMF2wD/G4meIAfaFlDH03vS/
+   FoNUlsuoGDgBcwvIT5SP01uAiwshYpPCsN2SJzeMtNhPDMa85bhtOEPcl
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="378619781"
 X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
-   d="scan'208";a="378619730"
+   d="scan'208";a="378619781"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 06:15:57 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 06:16:01 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="650170118"
+X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="650170161"
 X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
-   d="scan'208";a="650170118"
+   d="scan'208";a="650170161"
 Received: from jsanche3-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.39.112])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 06:15:52 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 06:15:57 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To: linux-pci@vger.kernel.org,
 	Bjorn Helgaas <helgaas@kernel.org>,
@@ -57,14 +57,14 @@ To: linux-pci@vger.kernel.org,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
-	ath11k@lists.infradead.org,
+	ath12k@lists.infradead.org,
 	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 15/17] wifi: ath11k: Use pcie_lnkctl_clear_and_set() for changing LNKCTL
-Date: Thu, 11 May 2023 16:14:39 +0300
-Message-Id: <20230511131441.45704-16-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 16/17] wifi: ath12k: Use pcie_lnkctl_clear_and_set() for changing LNKCTL
+Date: Thu, 11 May 2023 16:14:40 +0300
+Message-Id: <20230511131441.45704-17-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230511131441.45704-1-ilpo.jarvinen@linux.intel.com>
 References: <20230511131441.45704-1-ilpo.jarvinen@linux.intel.com>
@@ -92,14 +92,14 @@ losing concurrent updates to the register value.
 Suggested-by: Lukas Wunner <lukas@wunner.de>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/net/wireless/ath/ath11k/pci.c | 8 ++++----
+ drivers/net/wireless/ath/ath12k/pci.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index 7b33731a50ee..d0885d30dcbc 100644
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -581,8 +581,8 @@ static void ath11k_pci_aspm_disable(struct ath11k_pci *ab_pci)
+diff --git a/drivers/net/wireless/ath/ath12k/pci.c b/drivers/net/wireless/ath/ath12k/pci.c
+index 9f174daf324c..fa88a0b88520 100644
+--- a/drivers/net/wireless/ath/ath12k/pci.c
++++ b/drivers/net/wireless/ath/ath12k/pci.c
+@@ -794,8 +794,8 @@ static void ath12k_pci_aspm_disable(struct ath12k_pci *ab_pci)
  		   u16_get_bits(ab_pci->link_ctl, PCI_EXP_LNKCTL_ASPM_L1));
  
  	/* disable L0s and L1 */
@@ -108,19 +108,19 @@ index 7b33731a50ee..d0885d30dcbc 100644
 +	pcie_lnkctl_clear_and_set(ab_pci->pdev,
 +				  ab_pci->link_ctl & PCI_EXP_LNKCTL_ASPMC, 0);
  
- 	set_bit(ATH11K_PCI_ASPM_RESTORE, &ab_pci->flags);
+ 	set_bit(ATH12K_PCI_ASPM_RESTORE, &ab_pci->flags);
  }
-@@ -590,8 +590,8 @@ static void ath11k_pci_aspm_disable(struct ath11k_pci *ab_pci)
- static void ath11k_pci_aspm_restore(struct ath11k_pci *ab_pci)
+@@ -803,8 +803,8 @@ static void ath12k_pci_aspm_disable(struct ath12k_pci *ab_pci)
+ static void ath12k_pci_aspm_restore(struct ath12k_pci *ab_pci)
  {
- 	if (test_and_clear_bit(ATH11K_PCI_ASPM_RESTORE, &ab_pci->flags))
+ 	if (test_and_clear_bit(ATH12K_PCI_ASPM_RESTORE, &ab_pci->flags))
 -		pcie_capability_write_word(ab_pci->pdev, PCI_EXP_LNKCTL,
 -					   ab_pci->link_ctl);
 +		pcie_lnkctl_clear_and_set(ab_pci->pdev, 0,
 +					  ab_pci->link_ctl & PCI_EXP_LNKCTL_ASPMC);
  }
  
- static int ath11k_pci_power_up(struct ath11k_base *ab)
+ static void ath12k_pci_kill_tasklets(struct ath12k_base *ab)
 -- 
 2.30.2
 
