@@ -1,42 +1,42 @@
-Return-Path: <netdev+bounces-1629-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1630-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4F1016FE948
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 03:21:44 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 53EF16FE94B
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 03:21:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ABB0E28155B
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:21:42 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0F29A28164D
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 01:21:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E18D081E;
-	Thu, 11 May 2023 01:20:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 310E5EC1;
+	Thu, 11 May 2023 01:20:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5038063A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AE3E647
 	for <netdev@vger.kernel.org>; Thu, 11 May 2023 01:20:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3F63C433A1;
-	Thu, 11 May 2023 01:20:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31562C4339E;
+	Thu, 11 May 2023 01:20:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1683768043;
-	bh=b8az4R8dYUkWGYWi4C0EGW3MFAb1E2wtwl10OTR/PRk=;
+	bh=s/l0Tk72Bi3i9Q9DCHgfaezHk21X349lPs/q1XIi3Fk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=iN5FUsOsHYXyLEk8jf31+CJ5LP9gdlgU7tEMC+3icwVUhQEu21XKx4HCLbNvSEZFu
-	 RHRGC9t1EfJamPyCOOJQNVDqY+XUF57HOkjqynhGiYpfovqTsUYKrKCDkbNxqwSIj4
-	 GQp3LZxTqsDH9lpnl8FWyfJ1RvKvzjuanq+at591UQeZe3GNJJfTmt99qYy6N9cqa/
-	 QQPi2bIMeoPxqVbxS21YS0qVplJoBQ1PZY4jLPb35xVEHfkMA/lQfsMwLpJLLlJyHX
-	 5g3U7Wxl992yjaH4TAKKJF8eoexsNflc3lXY6xO09pInsGkb6sq3qv+e4VQBUIEqen
-	 fasEwfu69yDnQ==
+	b=WgIZMajWc5/Fal3qEw5o8SrlHZ7VCXfZHSsVQcteXByo0b8lyzsmtgGoZbKHQ2UHE
+	 u4tFatqLeK2Sd27ENvZ78HRv2TozkxaRNqXo0ZP4u4sZJpnMWBTrHHNGXrbPeC9Uqk
+	 1yVNl+gXqWPmmMu15MsASL5vUtcovwEaxxoFmRQ0cNWnHLE0sciSP6gVhBTkuk6RxS
+	 bFaqXkKyiTehLbezCXDgpeyg79YvGjAmYEe4ddiwaW6uohXeXGOBOwYFMxc9fldBmZ
+	 7CU7PhOG87uK0uHaXJ7nskWeovIPVW04EorDezZE3Z7Z27IwVwbHFactI64NCG2NL4
+	 Ae7yYvzrawibQ==
 From: Jakub Kicinski <kuba@kernel.org>
 To: tariqt@nvidia.com
 Cc: netdev@vger.kernel.org,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC / RFT net 4/7] tls: rx: strp: fix determining record length in copy mode
-Date: Wed, 10 May 2023 18:20:31 -0700
-Message-Id: <20230511012034.902782-5-kuba@kernel.org>
+Subject: [RFC / RFT net 5/7] tls: rx: strp: factor out copying skb data
+Date: Wed, 10 May 2023 18:20:32 -0700
+Message-Id: <20230511012034.902782-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230511012034.902782-1-kuba@kernel.org>
 References: <20230511012034.902782-1-kuba@kernel.org>
@@ -48,61 +48,71 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-We call tls_rx_msg_size(skb) before doing skb->len += chunk.
-So the tls_rx_msg_size() code will see old skb->len, most
-likely leading to an over-read.
+We'll need to copy input skbs individually in the next patch.
+Factor that code out (without assuming we're copying a full record).
 
-Worst case we will over read an entire record, next iteration
-will try to trim the skb but may end up turning frag len negative
-or discarding the subsequent record (since we already told TCP
-we've read it during previous read but now we'll trim it out of
-the skb).
-
-Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/tls/tls_strp.c | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ net/tls/tls_strp.c | 29 +++++++++++++++++++++--------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
 
 diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
-index 9a125c28da88..7b0c8145ace6 100644
+index 7b0c8145ace6..61fbf84baf9e 100644
 --- a/net/tls/tls_strp.c
 +++ b/net/tls/tls_strp.c
-@@ -210,19 +210,28 @@ static int tls_strp_copyin(read_descriptor_t *desc, struct sk_buff *in_skb,
- 					   skb_frag_size(frag),
- 					   chunk));
+@@ -34,23 +34,22 @@ static void tls_strp_anchor_free(struct tls_strparser *strp)
+ 	strp->anchor = NULL;
+ }
  
--		sz = tls_rx_msg_size(strp, strp->anchor);
-+		skb->len += chunk;
-+		skb->data_len += chunk;
-+		skb_frag_size_add(frag, chunk);
-+
-+		sz = tls_rx_msg_size(strp, skb);
- 		if (sz < 0) {
- 			desc->error = sz;
- 			return 0;
- 		}
+-/* Create a new skb with the contents of input copied to its page frags */
+-static struct sk_buff *tls_strp_msg_make_copy(struct tls_strparser *strp)
++static struct sk_buff *
++tls_strp_skb_copy(struct tls_strparser *strp, struct sk_buff *in_skb,
++		  int offset, int len)
+ {
+-	struct strp_msg *rxm;
+ 	struct sk_buff *skb;
+-	int i, err, offset;
++	int i, err;
  
- 		/* We may have over-read, sz == 0 is guaranteed under-read */
--		if (sz > 0)
--			chunk =	min_t(size_t, chunk, sz - skb->len);
-+		if (unlikely(sz && sz < skb->len)) {
-+			int over = skb->len - sz;
-+
-+			WARN_ON_ONCE(over > chunk);
-+			skb->len -= over;
-+			skb->data_len -= over;
-+			skb_frag_size_add(frag, -over);
-+
-+			chunk -= over;
-+		}
+-	skb = alloc_skb_with_frags(0, strp->stm.full_len, TLS_PAGE_ORDER,
++	skb = alloc_skb_with_frags(0, len, TLS_PAGE_ORDER,
+ 				   &err, strp->sk->sk_allocation);
+ 	if (!skb)
+ 		return NULL;
  
--		skb->len += chunk;
--		skb->data_len += chunk;
--		skb_frag_size_add(frag, chunk);
- 		frag++;
- 		len -= chunk;
- 		offset += chunk;
+-	offset = strp->stm.offset;
+ 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
+ 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+ 
+-		WARN_ON_ONCE(skb_copy_bits(strp->anchor, offset,
++		WARN_ON_ONCE(skb_copy_bits(in_skb, offset,
+ 					   skb_frag_address(frag),
+ 					   skb_frag_size(frag)));
+ 		offset += skb_frag_size(frag);
+@@ -58,7 +57,21 @@ static struct sk_buff *tls_strp_msg_make_copy(struct tls_strparser *strp)
+ 
+ 	skb->len = len;
+ 	skb->data_len = len;
+-	skb_copy_header(skb, strp->anchor);
++	skb_copy_header(skb, in_skb);
++	return skb;
++}
++
++/* Create a new skb with the contents of input copied to its page frags */
++static struct sk_buff *tls_strp_msg_make_copy(struct tls_strparser *strp)
++{
++	struct strp_msg *rxm;
++	struct sk_buff *skb;
++
++	skb = tls_strp_skb_copy(strp, strp->anchor, strp->stm.offset,
++				strp->stm.full_len);
++	if (!skb)
++		return NULL;
++
+ 	rxm = strp_msg(skb);
+ 	rxm->offset = 0;
+ 	return skb;
 -- 
 2.40.1
 
