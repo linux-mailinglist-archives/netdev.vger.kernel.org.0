@@ -1,125 +1,138 @@
-Return-Path: <netdev+bounces-1865-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1866-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8453F6FF5B3
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 52D106FF5BC
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 17:21:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BE2C4281774
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:19:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0F10C28146A
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 15:20:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67A4D642;
-	Thu, 11 May 2023 15:19:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 26AB262C;
+	Thu, 11 May 2023 15:20:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 531F463B
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 15:19:32 +0000 (UTC)
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E571710
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 08:19:30 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-50bd37ca954so80542380a12.0
-        for <netdev@vger.kernel.org>; Thu, 11 May 2023 08:19:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent.com; s=google; t=1683818369; x=1686410369;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mJpRi8U4anHxP91Og34clDJuvOhSvC/Ny6ZY6fVS6NA=;
-        b=TmbsosqpHKsbyV71znStNqd9RFeitV2eXYJsFJpgGLAWKEAdwqfW53ks0v0R3avk2a
-         OghVcmxL6fmRRmfoUA4i/6v/wgDgTX0cvj9AUrkOz/zF7mPs0BqHfcVS2hkuwk6XwS/l
-         tgMfDkjGR3PYqyeIZy8t1VHU63NOqSI8LZ6E9Z0I7c7m6chu1sFS75o4OdKGtCdxWUy8
-         oaGw6twk/jGvsUjdobAivroaAm9uEvUB5AgLXUEtT6Q+Mx6aT+2IUSp37uPhTN+O+//J
-         sDyoZFGrkuM56fa5LetP7SulRGvgVJuU++QlN4eWnma9MIYk0XJiH3dWLRUMrxLfbRML
-         2kdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683818369; x=1686410369;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mJpRi8U4anHxP91Og34clDJuvOhSvC/Ny6ZY6fVS6NA=;
-        b=Pgzvpx7opeSqTddS1BAXD91WL0rRfdc6K8UP2IKitp5G503Tparm3giaPu2eg/B0e7
-         Vj8pM11w+/j706MpZV4YZKqg9t0akT1a2kxpLMQ3Nc/EEkjGNjhXD/KwiEofZGw5vAnY
-         rbDF2eId9PIYIa2XgmkMp5GajD4MsByAXVFHdbRxYQlDA+7pXJE/XPhEuwBT7yc1DOBg
-         nlIdr4mvBj5R/lTpP8MyHi0OEwHAf/Kz2uXosXneN0ll/1ejmyuWWQmrZHJnpCyRVnFu
-         SL774kfnG8V7K13pMNLB7JvQJADEPU5azWM48LCcDv6qrgtjM3x552kTa3lUEQ1jVplw
-         J9iw==
-X-Gm-Message-State: AC+VfDzN8utjgCoSgWJlosyUFJEQbkdSAD6WR6vERBYE42G+H8k6mnz9
-	mFYpy9hZ849eRQBLmmFpD4cUXYtPijPEOY5T7tketA==
-X-Google-Smtp-Source: ACHHUZ622cGWEkiUpT7RoLmMpy0Uatilmpa5SvU9Xkc1QW1rLBsLFS38+mmhk0wsxGczsQ251uXMbzXui36AgnhTh7U=
-X-Received: by 2002:a17:907:8a08:b0:969:2df9:a0dd with SMTP id
- sc8-20020a1709078a0800b009692df9a0ddmr12191725ejc.25.1683818368935; Thu, 11
- May 2023 08:19:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49EFA629
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 15:20:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B049C4339B;
+	Thu, 11 May 2023 15:20:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683818454;
+	bh=LlEqzQak7c2TgFwwm3ndbqMEHDmT7FAykIqojK/MUaI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=DeYnWczTbjryXUB8lBvhvHWi0u2Rm/cpjy+OQhjGO4NDivP+aEqko9+fC9a49IRTD
+	 iHzd80Bck8SR4V5N7RBxfAvGushssgM3AY2IVsYFCrurag+7IIvfkoN7zJtTuUByIM
+	 r/M5lCaAGascT2J7/uNiJohBvZUppQhsB2HGRKFZfGzl+nZg6PTEN+YdKJzuaovSGS
+	 Qk16NnM3cDQBCsGq28ghEaArT0tDFYrfSLfSHKxdYe86YJ6wMM2+9xAFSaujIOFKoK
+	 3R9s2LiF1Cs4cClofYGpRebTh/3KvbG9duNxgWvXOg14n9M0K0FwaSlin1GBYLhf1R
+	 qGHwtPD+kMuyw==
+Date: Thu, 11 May 2023 08:20:53 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+Cc: Vadim Fedorenko <vadfed@meta.com>, Jiri Pirko <jiri@resnulli.us>,
+ Jonathan Lemon <jonathan.lemon@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
+ "Olech, Milena" <milena.olech@intel.com>, "Michalik, Michal"
+ <michal.michalik@intel.com>, "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>, poros <poros@redhat.com>, mschmidt
+ <mschmidt@redhat.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>, Vadim Fedorenko
+ <vadim.fedorenko@linux.dev>
+Subject: Re: [RFC PATCH v7 1/8] dpll: spec: Add Netlink spec in YAML
+Message-ID: <20230511082053.7d2e57e3@kernel.org>
+In-Reply-To: <MN2PR11MB46645511A6C93F5C98A8A66F9B749@MN2PR11MB4664.namprd11.prod.outlook.com>
+References: <20230428002009.2948020-1-vadfed@meta.com>
+	<20230428002009.2948020-2-vadfed@meta.com>
+	<ZFOe1sMFtAOwSXuO@nanopsycho>
+	<20230504142451.4828bbb5@kernel.org>
+	<MN2PR11MB46645511A6C93F5C98A8A66F9B749@MN2PR11MB4664.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <00000000000019af1d05fb5fdd99@google.com>
-In-Reply-To: <00000000000019af1d05fb5fdd99@google.com>
-From: Lorenz Bauer <lmb@isovalent.com>
-Date: Thu, 11 May 2023 08:19:17 -0700
-Message-ID: <CAN+4W8jFTcnS-EBppkoRXmfzUOgiGNwBku69==-b-Z_2fDHfUw@mail.gmail.com>
-Subject: Re: [syzbot] [bpf?] KASAN: slab-out-of-bounds Write in copy_array (2)
-To: syzbot <syzbot+d742fd7d34097f949179@syzkaller.appspotmail.com>
-Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org, 
-	daniel@iogearbox.net, davem@davemloft.net, haoluo@google.com, hawk@kernel.org, 
-	john.fastabend@gmail.com, jolsa@kernel.org, kpsingh@kernel.org, 
-	kuba@kernel.org, linux-kernel@vger.kernel.org, llvm@lists.linux.dev, 
-	martin.lau@linux.dev, nathan@kernel.org, ndesaulniers@google.com, 
-	netdev@vger.kernel.org, sdf@google.com, song@kernel.org, 
-	syzkaller-bugs@googlegroups.com, trix@redhat.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 10, 2023 at 5:14=E2=80=AFPM syzbot
-<syzbot+d742fd7d34097f949179@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    950b879b7f02 riscv: Fixup race condition on PG_dcache_cle=
-a..
-> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux=
-.git fixes
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D17eaa0c628000=
-0
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3Decebece1b90c0=
-342
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3Dd742fd7d34097f9=
-49179
-> compiler:       riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, =
-GNU ld (GNU Binutils for Debian) 2.35.2
-> userspace arch: riscv64
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> Downloadable assets:
-> disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/5=
-ab53d394dbf/non_bootable_disk-950b879b.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/938475579d6c/vmlinu=
-x-950b879b.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/bcf263d8c574/I=
-mage-950b879b.xz
->
-> IMPORTANT: if you fix the issue, please add the following tag to the comm=
-it:
-> Reported-by: syzbot+d742fd7d34097f949179@syzkaller.appspotmail.com
+On Thu, 11 May 2023 07:40:26 +0000 Kubalewski, Arkadiusz wrote:
+> >> Remove "no holdover available". This is not a state, this is a mode
+> >> configuration. If holdover is or isn't available, is a runtime info.  
+> >
+> >Agreed, seems a little confusing now. Should we expose the system clk
+> >as a pin to be able to force lock to it? Or there's some extra magic
+> >at play here?  
+> 
+> In freerun you cannot lock to anything it, it just uses system clock from
+> one of designated chip wires (which is not a part of source pins pool) to feed
+> the dpll. Dpll would only stabilize that signal and pass it further.
+> Locking itself is some kind of magic, as it usually takes at least ~15 seconds
+> before it locks to a signal once it is selected.
 
-That tree doesn't have the fix yet:
-https://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git/tree/kernel=
-/bpf/verifier.c?h=3Dfixes&id=3D950b879b7f02#n1065
+Okay, I guess that makes sense.
 
-#syz fix: bpf: Always use maximal size for copy_array()
+I was wondering if there may be a DPLLs which allow other input clocks
+to bypass the PLL logic, and output purely a stabilized signal. In
+which case we should model this as a generic PLL bypass, FREERUN being
+just one special case where we're bypassing with the system clock.
+
+But that may well be a case of "software guy thinking", so if nobody
+thinks this can happen in practice we can keep FREERUN.
+
+> >Noob question, what is NCO in terms of implementation?
+> >We source the signal from an arbitrary pin and FW / driver does
+> >the control? Or we always use system refclk and then tune?
+> >  
+> 
+> Documentation of chip we are using, stated NCO as similar to FREERUN, and it
+> runs on a SYSTEM CLOCK provided to the chip (plus some stabilization and
+> dividers before it reaches the output).
+> It doesn't count as an source pin, it uses signal form dedicated wire for
+> SYSTEM CLOCK.
+> In this case control over output frequency is done by synchronizer chip
+> firmware, but still it will not lock to any source pin signal.
+
+Reading wikipedia it sounds like NCO is just a way of generating 
+a waveform from synchronous logic.
+
+Does the DPLL not allow changing clock frequency when locked?
+I.e. feeding it one frequency and outputting another?
+Because I think that'd be done by an NCO, no?
+
+> >> Is it needed to mention the holdover mode. It's slightly confusing,
+> >> because user might understand that the lock-status is always "holdover"
+> >> in case of "holdover" mode. But it could be "unlocked", can't it?
+> >> Perhaps I don't understand the flows there correctly :/  
+> >
+> >Hm, if we want to make sure that holdover mode must result in holdover
+> >state then we need some extra atomicity requirements on the SET
+> >operation. To me it seems logical enough that after setting holdover
+> >mode we'll end up either in holdover or unlocked status, depending on
+> >lock status when request reached the HW.
+> >  
+> 
+> Improved the docs:
+>         name: holdover
+>         doc: |
+>           dpll is in holdover state - lost a valid lock or was forced
+>           by selecting DPLL_MODE_HOLDOVER mode (latter possible only
+>           when dpll lock-state was already DPLL_LOCK_STATUS_LOCKED,
+> 	  if it was not, the dpll's lock-status will remain
+>           DPLL_LOCK_STATUS_UNLOCKED even if user requests
+>           DPLL_MODE_HOLDOVER)
+> Is that better?
+
+Yes, modulo breaking it up into sentences, as Jiri says.
+
+> What extra atomicity you have on your mind?
+> Do you suggest to validate and allow (in dpll_netlink.c) only for 'unlocked'
+> or 'holdover' states of dpll, once DPLL_MODE_HOLDOVER was successfully
+> requested by the user?
+
+No, I was saying that making sure that we end up in holdover (rather
+than unlocked) when user requested holdover is hard, and we shouldn't 
+even try to implement that.
 
