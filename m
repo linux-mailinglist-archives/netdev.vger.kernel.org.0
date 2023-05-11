@@ -1,185 +1,209 @@
-Return-Path: <netdev+bounces-1973-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1974-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2DF2A6FFCEE
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 01:07:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9D0A76FFCF7
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 01:08:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DF0571C210D9
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 23:07:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5A66F281740
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 23:08:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 77349174E7;
-	Thu, 11 May 2023 23:07:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B334174F0;
+	Thu, 11 May 2023 23:08:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 545333FDF
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 23:07:26 +0000 (UTC)
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2082.outbound.protection.outlook.com [40.107.20.82])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB79E2D4A
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 16:07:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G9vDx9MXqVm62W1L7G+FPYCJtoa5tmelSwHhrQdDlOYmR55+pwUv5oi/j6ov9EtR+2D5OUy4L5rpKmDFGawsg9EBXRHI8Igq2m7hxcVLqrRIma/CbV+rncc7XC1/+3wb+NcGwPkDkrb+CevSVCOLZau9P4DXvs2aoTIK/6+B887OaC++ZbH68UsGHtHlW5dqN/VBjPrIGWuGo74+orP5s844IlmJvcTPhblFg1bBSLjmkj0l3hU+KL6eFC7xQe5bonkliJB/wp0Be/RCX5OSJwvlJUY0bjQeVeGim1VcaM1iP+h45aRU2nI8t5ffLtO3fgzuILFl1GRCIaiNxBFlhg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1IlA1f7V1VdhZA/al7LZceH2+MC4CvyT8H7MvbcV8zg=;
- b=lIDp4dYpvfaqBGDHam7TBjU4JBwcl5HCIqYIF8ZyXtXoPjYXJBdsBgxE7TBr3d7SdVK4vqMxKbw6+/WBX/7jaGHUG6djcIdL1Fcw23cxxhhJNBIdNiw7iyB13pjvPbqc3R1XTdmn3n5SSvLdAQnyyBG2ajKjJiSx+vC1mItrRkp/S6MpYOwoQ9F66SSQ6xonI2ZcE7fTjPDWRiD7b64m5KSymr9s4rOfinxHf+eg1Ng6brVPDdVbrGL7M2dBNCAtbCSte6xYmH3kn6PfZ8AuKM1AfCT8FEcBw7ZbTzQszdNtE+68OHDyU+2xYU/EK2CRP15cxSgatOabg3k160ujKQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1IlA1f7V1VdhZA/al7LZceH2+MC4CvyT8H7MvbcV8zg=;
- b=ECcqu7PUhOvfTXY7pZs/2JQRfBWmfEfKN7Ou002pIL8uyOaB9hjnPKCXxIyUdY18W5q6MsX5a67RkgXPyu56WStynwrQ9/kcELCxBQwp6ESphCySGQSAtuwnREAVIl/mEX5Fnkh3Vaxnxk4a1ncK7Sir2D2LTUyt18RfeyaoiCA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AM8PR04MB7363.eurprd04.prod.outlook.com (2603:10a6:20b:1c7::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.21; Thu, 11 May
- 2023 23:07:21 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::245a:9272:b30a:a21c]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::245a:9272:b30a:a21c%3]) with mapi id 15.20.6363.033; Thu, 11 May 2023
- 23:07:20 +0000
-Date: Fri, 12 May 2023 02:07:17 +0300
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: "Russell King (Oracle)" <linux@armlinux.org.uk>,
-	Andrew Lunn <andrew@lunn.ch>,
-	=?utf-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>,
-	netdev@vger.kernel.org, glipus@gmail.com,
-	maxime.chevallier@bootlin.com, vadim.fedorenko@linux.dev,
-	richardcochran@gmail.com, gerhard@engleder-embedded.com,
-	thomas.petazzoni@bootlin.com, krzysztof.kozlowski+dt@linaro.org,
-	robh+dt@kernel.org
-Subject: Re: [PATCH net-next RFC v4 2/5] net: Expose available time stamping
- layers to user space.
-Message-ID: <20230511230717.hg7gtrq5ppvuzmcx@skbuf>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58F193FE3
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 23:08:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8391BC433D2;
+	Thu, 11 May 2023 23:08:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683846527;
+	bh=onc2eTqpF1QTWiN9tPcHZRCZCXL/LiRFls1M/UxLEDo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=nwb5zq3DJOz9eTa5PgvbUxdNniCtdw6JC60yIBEUIkr/Tisy+beRXJiJ5MyVS0gj+
+	 GylakY8iiu2meWT32gXmNm3azyCegkzYngmuS170Ki1ahIdw0ONRb5qOfkWm/iGkf8
+	 eY5lSpKVQzaAK3EVdWhcAA9rKE7e9a0WD+/KgVr/ZaZIF8/zX3PykMfFriWKQcyzCG
+	 ezY0ulG0Sk5rap0U/U3gZVxm68noyQLBCfMDEYYSEAzTsEGFo5IxrbKfaBmTSgqZ8j
+	 un67tcJwOAtoZhYkH0x1TiHEYaDiUubMbN5mjLCf5PhKDtW2swF6euz5uXO/QrFNOE
+	 jfEwjXBoCRyTA==
+Date: Thu, 11 May 2023 16:08:45 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>,
+ netdev@vger.kernel.org, glipus@gmail.com, maxime.chevallier@bootlin.com,
+ vadim.fedorenko@linux.dev, richardcochran@gmail.com,
+ gerhard@engleder-embedded.com, thomas.petazzoni@bootlin.com,
+ krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+ linux@armlinux.org.uk
+Subject: Re: [PATCH net-next RFC v4 4/5] net: Let the active time stamping
+ layer be selectable.
+Message-ID: <20230511160845.730688af@kernel.org>
+In-Reply-To: <20230511205435.pu6dwhkdnpcdu3v2@skbuf>
 References: <20230406173308.401924-1-kory.maincent@bootlin.com>
- <20230406173308.401924-3-kory.maincent@bootlin.com>
- <20230406184646.0c7c2ab1@kernel.org>
- <20230511203646.ihljeknxni77uu5j@skbuf>
- <54e14000-3fd7-47fa-aec3-ffc2bab2e991@lunn.ch>
- <ZF1WS4a2bbUiTLA0@shell.armlinux.org.uk>
- <20230511210237.nmjmcex47xadx6eo@skbuf>
- <20230511150902.57d9a437@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230511150902.57d9a437@kernel.org>
-X-ClientProxiedBy: BE1P281CA0257.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:86::20) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+	<20230406173308.401924-1-kory.maincent@bootlin.com>
+	<20230406173308.401924-5-kory.maincent@bootlin.com>
+	<20230406173308.401924-5-kory.maincent@bootlin.com>
+	<20230429175807.wf3zhjbpa4swupzc@skbuf>
+	<20230502130525.02ade4a8@kmaincent-XPS-13-7390>
+	<20230511134807.v4u3ofn6jvgphqco@skbuf>
+	<20230511083620.15203ebe@kernel.org>
+	<20230511155640.3nqanqpczz5xwxae@skbuf>
+	<20230511092539.5bbc7c6a@kernel.org>
+	<20230511205435.pu6dwhkdnpcdu3v2@skbuf>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AM8PR04MB7363:EE_
-X-MS-Office365-Filtering-Correlation-Id: 36accc8e-fb57-4703-5bc9-08db52747912
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	0hYUU+8jEFRo1Ptr9C2qazW4kjJrbBitOspZFpjEaG1fE9M/bl8ftPsRyVinNaV4+Qo4qjvdEcyS4bUe3dzmKQvEToLptA1s0GxwsxEAMIxN3mzL3AYoYRUm21bA7RMo3A3jquaaxwhplQNYTGRiFOj8jWCu/A4OqEOkAlHZcAUZyTLnBoSfyMDGZxAxzM6IjTaBzFg5lUVZ4lES7BhUoHxACMml7Dzld1mYfhW4V3oJHLvlLixrWmAS40HCwyhxB3Hb5aQM1ixpVZkupb0ALwuUU5HSFEs0CSIOAyZdJnlcN+Fw6ROai+JAaDZJDWPZV2I1BT3vkGEkCjweGveWZxJ1bG4GRecC/PqV5oT7T2gv4iZ0UALeI/Fag4686tqoHeHkhpCOaUS/J5d3RHeiaXVo93ANnZQCBr/amN06SfqE5mbMUTaK3I/sTJagsc8QREDcwyEIGjPsPhrqcQ66dUa6kRSEQKESeSJe3y/legyNhX94etjUIKWVYX/0hn2FKihQ+kNosi2m2BjanK9cuVCDmxu0+vlcMXSSLgXuZhU=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(39860400002)(366004)(376002)(396003)(136003)(346002)(451199021)(38100700002)(966005)(6666004)(6486002)(9686003)(1076003)(33716001)(6506007)(83380400001)(186003)(6512007)(26005)(2906002)(66946007)(4326008)(66476007)(6916009)(54906003)(5660300002)(66556008)(8676002)(86362001)(8936002)(316002)(44832011)(41300700001)(7416002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?wW8gHVCeBU1DYyUnXn1sx2am3JY4wxc1TVD+TOeQkcwKKuxOWIlTAhBR0+NR?=
- =?us-ascii?Q?fNy3XmrLLWe2DsznELpfSKnwmKJGyOkfbCr7rv7zmxBoVjd5R8e/K9IwUWbP?=
- =?us-ascii?Q?xeqdWHA8EgsEF9pMGJbfC+QhTAyLvYEUfZh8gyDZkDviu8xXpmKLNBr7Y/cl?=
- =?us-ascii?Q?dP+wQzoZPOSV2jNp/U8keEfufjpyK2oVk5j66WOyc7xFQGIsgjkNu44fvxVm?=
- =?us-ascii?Q?stIf4qdN/Ak81P5pltmEa7rZo9cOfCz4prFjVdNZ/cPbfMNoIOjKgvpq1HvA?=
- =?us-ascii?Q?mBKHYgEczoODIg+pguUse+6xIqWaP6ua38/7Yg9K8qSiK47by8A0ho7umanp?=
- =?us-ascii?Q?eztuXnTwGsIjNISNwUqnmSEWAWgI3OMfOxmwnu5RC7bpDtv7S6sM6RrM3Q0q?=
- =?us-ascii?Q?pOiTuj9Btt3FWAYXA1odkXoGwOWDvuRiljLsb0ETvIFEw8HH2p/rme2Ycrfo?=
- =?us-ascii?Q?YG4mVsjQPmf1P8G4maUpRxnSsWqNxAUX4N7rfFEH8cxbnuYqSbO3z7VGBrZS?=
- =?us-ascii?Q?2DrR5RY9VtVvD4hd+D75qyHK5iUIprWR9e3bqUNintKA1orXuwjuOfkn0OyC?=
- =?us-ascii?Q?NPta6j7TusEweM3plValRYKJv3xYUBWWpX+brnFas9pc0lrs7Phgb9TDvd3U?=
- =?us-ascii?Q?nyhKWGE1B0rLQCJs0QF4n2UqRrcROaF4SbccNz17NOYUA6o3QEWXM8YEpblD?=
- =?us-ascii?Q?PB2K01MkbJTl/qn+vdHMhnLGuF3P9z1FY+C8N6l00vL+ffKFIShVeejxxy6y?=
- =?us-ascii?Q?gNa+AHopjDWxuD6dRmZkNBQh1GUvmOVgZWg6f1RvQZfX2BUyn5HQ6Y+C/kUc?=
- =?us-ascii?Q?OGw1hAZml1syKL4PYw16vyqKw6QvJ1u3nu1HyVLybhP4qrdMz25fXTWOdIoH?=
- =?us-ascii?Q?zFadWqOWX4GPT3t3xgehQFK/vTiZzQBCy+FGhRIGfgXpO6Pz1VuleX0wRq7w?=
- =?us-ascii?Q?0R8X0MEo/4WJEvJXs0Hod6MlgpkFLs979Hd6nsixXX1N4kNamtXlyn56eIop?=
- =?us-ascii?Q?tLt9rgbCwzX6e4PbbqCUv3xtHwBxkmLGPW8voBcCPZj2Dgtv/bsHqOk4OXkH?=
- =?us-ascii?Q?3j02oM+J8umhcIvEL/ES12qoiMezdCQMV2NITIryzTB0TA3Lphn952OQB3lu?=
- =?us-ascii?Q?qZVGSaWbloNM2dZIyJHiO50axBM7yBxGsitircp3RNu+1XAo2jnWFdi5Mojw?=
- =?us-ascii?Q?qW1UNYUj7Lnl72fiDLMb1AKB6wJK1nHApmBd2kcaigbFuz53GQoDHioUv1Zz?=
- =?us-ascii?Q?ipZ51gZ34MfHNwNFvgC45nwXhtaunTLZXtJmKfLFT76JDNhLW7aO7wFabLxc?=
- =?us-ascii?Q?VWVgotZ0QUIQbW2o1bdV7rnQiXsm0xnXAigqI2VbNBHjnknoGF+ugv8T2u9i?=
- =?us-ascii?Q?oZaUucMMQv737lFRHu6yl5jBQ8aYAVgfJlr9d2/knJVwfea0pRFDUzWA9iZN?=
- =?us-ascii?Q?BDjwuHyxyip/u0C7p7v1m6cWocTxn8OP5iquPlnJbVLb27ADyehHntT8Incl?=
- =?us-ascii?Q?Nhcyb8LctRNvVdwavkwSL9aQn+iM12UVWf4fhlzOf7rT8exx1HBvIimkmhDO?=
- =?us-ascii?Q?fZt7maiwud8DNLS8QCADLjVs0EWeSbRxKhNoxl7no9adSA+PcqSGNJrXnELI?=
- =?us-ascii?Q?wA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36accc8e-fb57-4703-5bc9-08db52747912
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2023 23:07:20.5714
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1v8ji+Bz7E452H319owl5lXKrDsc60GC1UjRXm0DfmRAcmbqaO8vWXBxnxwcbfqIy4qfGCOTK47VWVyuB5E48g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7363
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 11, 2023 at 03:09:02PM -0700, Jakub Kicinski wrote:
-> Exactly, think Tx. For Rx hauling the TS in metadata from PHY/MAC to
-> descriptor is easy. For Tx device will buffer the packet so the DMA
-> completion happens before the packet actually left onto the wire.
-> 
-> Which is not to say that some devices may not generate the Rx timestamp
-> when the packet is DMA'ed out of laziness, too.
-> 
-> > timestamps is an alternate solution to the same problem as DMA
-> > timestamps, or whatever:
-> > https://lore.kernel.org/netdev/20221018010733.4765-1-muhammad.husaini.zulkifli@intel.com/
-> 
-> What I was thinking was:
-> 
->  - PHY - per spec, at the RS layer
->  - MAC - "close to the wire" in the MAC, specifically the pipeline
->    delay (PHY stamp vs MAC stamp) should be constant for all packets;
->    there must be no variable-time buffering and (for Tx) the time
->    stamping must be past the stage of the pipeline affected by pause
->    frames
->  - DMA - worst quality, variable delay timestamp, usually taken when
->    packets DMA descriptors (Rx or completion) are being written
-> 
-> With these definitions MAC and PHY timestamps are pretty similar
-> from the perspective of accuracy.
+On Thu, 11 May 2023 23:54:35 +0300 Vladimir Oltean wrote:
+> On Thu, May 11, 2023 at 09:25:39AM -0700, Jakub Kicinski wrote:
+> > > It's the first time I become aware of the issue of PHY timestamping in
+> > > monolithic drivers that don't use phylib, and it's actually a very go=
+od
+> > > point. I guess that input gives a clearer set of constraints for K=C3=
+=B6ry to
+> > > design an API where the selected timestamping layer is maybe passed to
+> > > ndo_hwtstamp_set() and MAC drivers are obliged to look at it.
+> > >=20
+> > > OTOH, a complaint about the current ndo_eth_ioctl() -> phy_mii_ioctl()
+> > > code path was that phylib PHY drivers need to have the explicit bless=
+ing
+> > > from the MAC driver in order to enable timestamping. This patch set
+> > > attempts to circumvent that, and you're basically saying that it shou=
+ldn't. =20
+> >=20
+> > Yes, we don't want to lose the simplification benefit for the common
+> > cases. =20
+>=20
+> While I'm all for simplification in general, let's not take that for
+> granted and see what it implies, first.
+>=20
+> If the new default behavior for the common case is going to be to bypass
+> the MAC's ndo_hwtstamp_set(), then MAC drivers which didn't explicitly
+> allow phylib PHY timestamping will now do.
+>=20
+> Let's group them into:
+>=20
+> (A) MAC drivers where that is perfectly fine
+>=20
+> (B) MAC drivers with forwarding offload, which would forward/flood PTP
+>     frames carrying PHY timestamps
+>=20
+> (C) "solipsistic" MAC drivers which assume that any skb with
+>     SKBTX_HW_TSTAMP is a skb for *me* to timestamp
+>=20
+> Going for the simplification would mean making sure that cases (B)
+> and (C) are well handled, and have a reasonable chance of not getting
+> reintroduced in the future.
+>=20
+> For case (B) it would mean patching all existing switch drivers which
+> don't allow PHY timestamping to still not allow PHY timestamping, and
+> fixing those switch drivers which allow PHY timestamping but don't set
+> up traps (probably those weren't tested in a bridging configuration).
+>=20
+> For case (C) it would mean scanning all MAC drivers for bugs akin to the
+> one fixed in commit c26a2c2ddc01 ("gianfar: Fix TX timestamping with a
+> stacked DSA driver"). I did that once, but it was years ago and I can't
+> guarantee what is the current state or that I didn't miss anything.
+> For example, I missed the minor fact that igc would count skbs
+> timestamped by a non-igc entity in its TX path as 'tx_hwtstamp_skipped'
+> packets, visible in ethtool -S:
+> https://lore.kernel.org/intel-wired-lan/20230504235233.1850428-2-vinicius=
+.gomes@intel.com/
+>=20
+> It has to be said that nowadays, Documentation/networking/timestamping.rst
+> does warn about stacked PHCs, and those who read will find it. Also,
+> ptp4l nowadays warns if there are multiple TX timestamps received for
+> the same skb, and that's a major user of this functionality. So I don't
+> mean to point this case out as a form of discouragement, but it is going
+> to be a bit of a roll of dice.
 
-So if I add a call to ptp_clock_info :: gettimex64() where the
-skb_tx_timestamp() call is located in a driver, could that pass as
-a DMA timestamp?
+I think it's worth calling out that we may be touching most / all
+drivers anyway to transition them from the IOCTL NDO to a normal
+timestamp NDO.
 
-The question is how much do we want to encourage these DMA timestamps:
-enough to make them a first-class citizen in the UAPI? Are users even
-happy with their existence?
+> The alternative (ditching the simplification) is that someone still
+> has to code up the glue logic from ndo_hwtstamp_set() -> phy_mii_ioctl(),
+> and that presumes some minimal level of testing, which we are now
+> "simplifying" away.
+>=20
+> The counter-argument against ditching the simplification is that DSA
+> is also vulnerable to the bugs from case (C), but as opposed to PHY
+> timestamping where currently MACs need to voluntarily pass the
+> phy_mii_ioctl() call themselves, MACs don't get to choose if they want
+> to act as DSA masters or not. That gives some more confidence that bugs
+> in this area might not be so common, and leaves just (B) a concern.
+>=20
+> To analyze how common is the common case is a simple matter of counting
+> how many drivers among those with SIOCSHWTSTAMP implementations also
+> have some form of forwarding offload, OR, as you point out, how many
+> don't use phylib.
 
-I mean, I can't ignore the fact that there are NICs that can provide
-2-step TX timestamps at line rate for all packets (not just PTP) for
-line rates exceeding 10G, in band with the descriptor in its TX
-completion queue. I don't want to give any names, just to point out
-that there isn't any inherent limitation in the technology. AFAIU from
-igc_ptp_tx_hwtstamp(), it's just that the igc DMA controller did not
-bother to transport the timestamps from the MAC back into the
-descriptor, leaving it up to software to do it out of band, which of
-course may cause correlation bugs and limits throughput. Surely they
-can do better.
+"Common" is one way of looking at it, another is trying to get the
+default ("I didn't know I have to set extra flags") to do the right
+thing or fail.
+
+> > I think we should make the "please call me for PHY requests" an opt in.
+> >=20
+> > Annoyingly the "please call me for PHY/all requests" needs to be
+> > separate from "this MAC driver supports PHY timestamps". Because in
+> > your example the switch driver may not in fact implement PHY stamping,
+> > it just wants to know about the configuration.
+> >=20
+> > So we need a bit somewhere (in ops? in some other struct? in output=20
+> > of get_ts?) to let the driver declare that it wants to see all TS
+> > requests. (I've been using bits in ops, IDK if people find that
+> > repulsive or neat :)) =20
+>=20
+> It's either repulsive or neat, depending on the context.
+>=20
+> Last time you suggested something like this in an ops structure was IIRC
+> something like whether "MAC Merge is supported". My objection was that
+> DSA has a common set of ops structures (dsa_slave_ethtool_ops,
+> dsa_slave_netdev_ops) behind which lie different switch families from
+> at least 13 vendors. A shared const ops structure is not an appropriate
+> means to communicate whether 13 switch vendors support a TSN MAC Merge
+> layer or not.
+>=20
+> With declaring interest in all hardware timestamping requests in the
+> data path of a MAC, be they MAC-level requests or otherwise, it's a bit
+> different, because all DSA switches have one thing in common, which is
+> that they're switches, and that is relevant here. So I'm not opposed to
+> setting a bit in the ethtool ops structure, at least for DSA that could
+> work just fine.
+>=20
+> > Then if bit is not set or NDO returns -EOPNOTSUPP for PHY requests we
+> > still try to call the PHY in the core? =20
+>=20
+> Well, if there is no interest for special behavior from the MAC driver,
+> then I guess the memo is "yolo"...
+>=20
+> But OTOH, if a macro-driver like DSA declares its interest in receiving
+> all timestamping requests, but then that particular DSA switch returns
+> -EOPNOTSUPP in the ndo_hwtstamp_set() handler, it would be silly for the
+> core to still "force the entry" and call phy_mii_ioctl() anyway - because
+> we know that's going to be broken.
+>=20
+> So with "NDO returns -EOPNOTSUPP", I hope you don't mean *that* NDO
+> (ndo_hwtstamp_set()) but a previously unnamed one that serves the same
+> purpose as the capability bit - ndo_hey_are_you_interested_in_this_hwtsta=
+mp_request().
+> In that case, yes - with -EOPNOTSUPP we're back to "yolo".
+
+Why can't we treat ndo_hwtstamp_set() =3D=3D -EOPNOTSUPP as a signal=20
+to call the PHY? ndo_hwtstamp_set() does not exist, we can give
+it whatever semantics we want.
+
+> > Separately the MAC driver needs to be able to report what stamping=20
+> > it supports (DMA, MAC, PHY, as mentioned in reply to patch 2). =20
+>=20
+> I'm a bit unclear on that - responded there.
 
