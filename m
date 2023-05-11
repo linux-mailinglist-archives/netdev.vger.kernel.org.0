@@ -1,109 +1,138 @@
-Return-Path: <netdev+bounces-1897-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1898-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5F8556FF6C1
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 18:06:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E29FE6FF6EE
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 18:17:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7DBEE1C20FA5
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 16:06:19 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6494E281814
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 16:17:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD56F4696;
-	Thu, 11 May 2023 16:06:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 78F9B46A1;
+	Thu, 11 May 2023 16:17:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2396653
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 16:06:19 +0000 (UTC)
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCAA559E
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 09:06:17 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id 98e67ed59e1d1-24ded4b33d7so6094116a91.3
-        for <netdev@vger.kernel.org>; Thu, 11 May 2023 09:06:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CE12206A9
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 16:17:24 +0000 (UTC)
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DFAE70;
+	Thu, 11 May 2023 09:17:23 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-64115e652eeso59152747b3a.0;
+        Thu, 11 May 2023 09:17:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1683821177; x=1686413177;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yjcQw5qfoWhZrHShMenKyn6N6JRDwRPKfT0j3vGPb74=;
-        b=O99GbI7t2R7iCSmuWqIAWRBpWiqB5S/bkuc71mZR9seDW2TcyxC4NWNMQr8lVBcHh1
-         ktf8bgGWxvwJzfDEmy0q2E/gnPMr2u+QXjAEfPyXnQx5eokWsKyerUoh/nAOEzEkT1tX
-         jmIyPIGMJykQ1GWWv4ZeOBG97LMOEMlqeSvz8=
+        d=gmail.com; s=20221208; t=1683821843; x=1686413843;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hWigqkmbwjH+qj3HGTAq3LiZQSthJU7TTJei/KtCz3g=;
+        b=Jp1MM5zIbOC3i2hi5NdnJJmDqd3d2Rnhtlgw5+jQUuy5eqkiQp6/+5+pp0Lvru6PcD
+         b6s+xNjGNIS5mo2Vcs2gq6pLhRq6MxMQWXxnJMzKMyGPRBN6uVk0vZb1bvSiOf3o+Fk3
+         i9jaGw1USscmRimFSbu3Ieqx5LSP1wd2Y+4N2agK3FRRBzvlV63EP/dHFg10g6HH9LTa
+         VlMXO2N6xJOMDlqdEp8Q71knZoyCcGreepvR4xfkD1X5GPaYSQulMI9v2jgY1xy8LlMR
+         OYrysA98QUxjt8zPVYuCE6wU/cwl7YuAmO9RA1pTV6RdMhJnCBuQPEDtxaOBASc0/WTW
+         jezA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683821177; x=1686413177;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yjcQw5qfoWhZrHShMenKyn6N6JRDwRPKfT0j3vGPb74=;
-        b=gc4TPSZcc2LTLGV7YJGVPyZxoVMowGVMAhvOr6rxzB/2It+l7IMl5MxQki2XFCanFz
-         GV2hbK1IUC1qx44fRPGFJHl6mdZBd0pQXwYOKpZJGr8u1At3YCpeAlJ4DKPZW5wFlwSw
-         mmwceFijWysewkxNjh58r91TUiwh+r2iqXmG4SBE/mR0jUFx/ERAd7GYRK13XYrbh2nb
-         sM+8vqritSsVCJcgmzUJdlNVRJTrCWD81T3kV5xUpDohmz6Ta2xYsvAVHxukvih8lA6v
-         EXNZFVJcogLc2eBI6K8Cr6Dj+UnzW6swOzSQC4vP1pa8L/oWN1agVwGktyQWhAhXFXi6
-         o40w==
-X-Gm-Message-State: AC+VfDzZbgWvy4wkfNTW7KXK+usoHWV+fd+8N+Ysst8JUIhJRTE2x98B
-	qdOk+ZH5oQMeGkWe258E0ZGf1zNJxPQ/K7VdH78=
-X-Google-Smtp-Source: ACHHUZ4T7fGPw6RhgXB3YhPDAVdBil7K8ZjbNA7hvHIB3GIJ2h84kwHUsXVjfo+wUT2IQqmnyofUhA==
-X-Received: by 2002:a17:90a:dd8d:b0:252:98ca:e7ac with SMTP id l13-20020a17090add8d00b0025298cae7acmr1639114pjv.44.1683821177052;
-        Thu, 11 May 2023 09:06:17 -0700 (PDT)
-Received: from nitro.local ([2001:4958:15a0:30:e305:5a3c:4c5a:1bc7])
-        by smtp.gmail.com with ESMTPSA id q22-20020a656256000000b005287a0560c9sm4989386pgv.1.2023.05.11.09.06.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 May 2023 09:06:16 -0700 (PDT)
-Date: Thu, 11 May 2023 12:06:14 -0400
-From: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To: Thorsten Leemhuis <regressions@leemhuis.info>
-Cc: Jakub Kicinski <kuba@kernel.org>, 
-	Linux regressions mailing list <regressions@lists.linux.dev>, =?utf-8?B?QmrDuHJu?= Mork <bjorn@mork.no>, 
-	Hayes Wang <hayeswang@realtek.com>, netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>, 
-	Eric Dumazet <edumazet@google.com>, "David S. Miller" <davem@davemloft.net>, 
-	Stanislav Fomichev <sdf@fomichev.me>, workflows@vger.kernel.org
-Subject: Re: [regression] Kernel OOPS on boot with Kernel 6.3(.1) and RTL8153
- Gigabit Ethernet Adapter
-Message-ID: <20230511-tart-asthma-girth-11164c@meerkat>
-References: <ec4be122-e213-ca5b-f5d6-e8f9c3fd3bee@leemhuis.info>
- <87lei36q27.fsf@miraculix.mork.no>
- <20230505120436.6ff8cfca@kernel.org>
- <57dbce31-daa9-9674-513e-f123b94950da@leemhuis.info>
- <20230505123744.16666106@kernel.org>
- <9284a9ec-d7c9-68e8-7384-07291894937b@leemhuis.info>
- <20230508130944.30699c33@kernel.org>
- <71f119ab-24e2-6a35-2b7d-43ea2a9578b8@leemhuis.info>
+        d=1e100.net; s=20221208; t=1683821843; x=1686413843;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hWigqkmbwjH+qj3HGTAq3LiZQSthJU7TTJei/KtCz3g=;
+        b=VzFJlAVqHMoJHOmicC1aEHXVMHIlLFB18kJ2G05HBWj17IFo3fNEjqLdn9iU4+Hfh4
+         F0/Fn2TVXoYQ5uYZTT70+Dq9WX287DVRW4om4hR697x9QdC8Dty5Z4ynyABBN/c6anF2
+         yTQc+cvkQTq51xR57Nxlgx30iy8CfSPCaBjE9pR7eQ6fYp6+O2KbKf/f57K7RiybpFoX
+         D5Rx5JnOA8BR5KYs5OFEznkru9/wyK2e+NDdLMAZl+0h0+opIXrys2taTsOmTLMiL8CE
+         LLptU89gs4Ugg0Q+auviTuPNH4/KZAMYC94UQHfxScHN7WeT1iBJDMECBTsPjZ0+DbYX
+         R6Sg==
+X-Gm-Message-State: AC+VfDwlmoHHb2qMB3UAIJXkiBSmcAF6vg1TmkJS2QzfQT4Gy443LCgn
+	I9h7lFcA34FcAIUeTaiRvqU=
+X-Google-Smtp-Source: ACHHUZ4sv20ghK1eTdLmYspjK4wvNz7eoffWCAy6KbdvGlMSgAPxDSiU53v1bB/4D3cnwFEYfmG+cw==
+X-Received: by 2002:a17:90b:3ece:b0:24e:3413:c7ff with SMTP id rm14-20020a17090b3ece00b0024e3413c7ffmr32458870pjb.7.1683821842539;
+        Thu, 11 May 2023 09:17:22 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id bj8-20020a17090b088800b00247164c1947sm10638556pjb.0.2023.05.11.09.17.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 May 2023 09:17:21 -0700 (PDT)
+Message-ID: <e459ad06-e261-91a0-1c42-d9135b9ca6b5@gmail.com>
+Date: Thu, 11 May 2023 09:17:19 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <71f119ab-24e2-6a35-2b7d-43ea2a9578b8@leemhuis.info>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next v2 2/3] net: phy: broadcom: Add support for
+ Wake-on-LAN
+Content-Language: en-US
+To: Paolo Abeni <pabeni@redhat.com>, Florian Fainelli <f.fainelli@gmail.com>,
+ netdev@vger.kernel.org
+Cc: Doug Berger <opendmb@gmail.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+ Heiner Kallweit <hkallweit1@gmail.com>, Russell King
+ <linux@armlinux.org.uk>, =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+ Peter Geis <pgwipeout@gmail.com>, Frank <Frank.Sae@motor-comm.com>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20230509223403.1852603-1-f.fainelli@gmail.com>
+ <20230509223403.1852603-3-f.fainelli@gmail.com>
+ <8aebd38cf057cf659d5133527f55e1ced0e6f70c.camel@redhat.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <8aebd38cf057cf659d5133527f55e1ced0e6f70c.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 11, 2023 at 03:25:47PM +0200, Thorsten Leemhuis wrote:
-> > The bugbot can be enabled per BZ entry (AFAIU), so you can flip it
-> > individually for the thread you want to report. It should flush that 
-> > BZ to the list. At which point you can follow your normal ML regression
-> > process.
-> > 
-> > Where did I go off the rails?
+On 5/11/23 03:26, Paolo Abeni wrote:
+> Hi,
 > 
-> You missed that Konstantin (now CCed) is just a bit careful for the
-> bugbot bring up and therefore for now only allows bugbot to be enabled
-> for BZ entries that are filed against the product/component combination
-> Linux/Kernel. I could reassigning bugs there, but that would break the
-> workflow for maintainers like Kalle, which look at all bugs assigned to
-> their product/component combo (Drivers/network-wireless in Kalle's case).
+> On Tue, 2023-05-09 at 15:34 -0700, Florian Fainelli wrote:
+>> @@ -821,7 +917,28 @@ static int bcm54xx_phy_probe(struct phy_device *phydev)
+>>   	if (IS_ERR(priv->ptp))
+>>   		return PTR_ERR(priv->ptp);
+>>   
+>> -	return 0;
+>> +	/* We cannot utilize the _optional variant here since we want to know
+>> +	 * whether the GPIO descriptor exists or not to advertise Wake-on-LAN
+>> +	 * support or not.
+>> +	 */
+>> +	wakeup_gpio = devm_gpiod_get(&phydev->mdio.dev, "wakeup", GPIOD_IN);
+>> +	if (PTR_ERR(wakeup_gpio) == -EPROBE_DEFER)
+>> +		return PTR_ERR(wakeup_gpio);
+>> +
+>> +	if (!IS_ERR(wakeup_gpio)) {
+>> +		priv->wake_irq = gpiod_to_irq(wakeup_gpio);
+>> +		ret = irq_set_irq_type(priv->wake_irq, IRQ_TYPE_LEVEL_LOW);
+>> +		if (ret)
+>> +			return ret;
+>> +	}
+>> +
+>> +	/* If we do not have a main interrupt or a side-band wake-up interrupt,
+>> +	 * then the device cannot be marked as wake-up capable.
+>> +	 */
+>> +	if (!bcm54xx_phy_can_wakeup(phydev))
+>> +		return ret;
+> 
+> AFAICS, as this point 'ret' is 0, so the above is confusing. Do you
+> intend the probe to complete successfully? If so, would not be
+> better/more clear:
+> 
+> 		return 0;
 
-I hope to start opening this up to other products within the next few weeks,
-as things are looking fairly stable for our initial tests.
+Yes probe needs to be successful if bcm54xx_phy_can_wakeup() returns 
+false, will change to return 0 to make that clearer. Thanks!
+-- 
+Florian
 
--K
 
