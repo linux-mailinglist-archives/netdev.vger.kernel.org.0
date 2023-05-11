@@ -1,80 +1,76 @@
-Return-Path: <netdev+bounces-1824-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1825-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D3DB06FF386
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 16:03:36 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id EAA7D6FF392
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 16:06:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D0AD01C20F58
-	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 14:03:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D6BE81C20F5B
+	for <lists+netdev@lfdr.de>; Thu, 11 May 2023 14:06:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E44BF19E75;
-	Thu, 11 May 2023 14:03:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EDE6A19E7A;
+	Thu, 11 May 2023 14:06:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31177369
-	for <netdev@vger.kernel.org>; Thu, 11 May 2023 14:03:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ACD7C433D2;
-	Thu, 11 May 2023 14:03:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683813811;
-	bh=NvgptMXhoibVUzwMhVycsWLnIvK3fc/9CTGYWKNunNM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=T2vpb78EXlrqTCLfdpy7FD2AruqhHuzlgr+rxt/4McJyAgp4jjUrdObAQWTHkFYN/
-	 ak8q1lPAjB/dZ5msC10PFGQbxFfz5zqP+w2tFkw13wnj+WrJNRYdu0FFXXnFz3C7w/
-	 FW5F96WWEkN+VJhqJ4yF17WdKwyjStqQ0eR0EzISDzxzMuWuUrsyg+35dCvtVSWuur
-	 omqEGMbhrQ+w9wURS5faW9/pzGwRpaLqTsiQOHvYhUiV4jRliO7HK4dwQUASflE/wL
-	 JfaU3ZyOa5WeEOwOhY5uqUIyzugJyZR/Xf19UkfPlD2TLTXU7692ZwleCUEzg3Bg5j
-	 1r+JAhOFsn2ng==
-Message-ID: <97dd1d05-cfc4-61aa-ac3e-cc1a662c63ed@kernel.org>
-Date: Thu, 11 May 2023 16:03:24 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEA2F1F920
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 14:06:04 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082E010FF;
+	Thu, 11 May 2023 07:05:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=MtnwjUGQMTg1yfTTLU9Z+2ghB5SIPLEsC/rY/cUh02I=; b=hly3rb5w639+90+1SucuCz1Ifm
+	3WCHiSXMIRtwdCiXL5a5D0qYmHL5SsocwYX5WuffMZ0XFnbpLrH4IMYW+iVaZ21wW+UjgX2aebOax
+	9YXZSz4Und/V0E+W8F80Y396RNt0EGZ0K27Caxf3HHdohA+CZWPru/AWHQzJxDFb0VzY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1px6vN-00CYvh-P7; Thu, 11 May 2023 16:05:41 +0200
+Date: Thu, 11 May 2023 16:05:41 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Harini Katakam <harini.katakam@amd.com>
+Cc: hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+	kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+	vladimir.oltean@nxp.com, wsa+renesas@sang-engineering.com,
+	simon.horman@corigine.com, mkl@pengutronix.de,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	harinikatakamlinux@gmail.com, michal.simek@amd.com,
+	radhey.shyam.pandey@amd.com
+Subject: Re: [PATCH net-next v3 1/3] phy: mscc: Use PHY_ID_MATCH_VENDOR to
+ minimize PHY ID table
+Message-ID: <428db3e5-fb22-45a3-8d75-85cfbf67fe56@lunn.ch>
+References: <20230511120808.28646-1-harini.katakam@amd.com>
+ <20230511120808.28646-2-harini.katakam@amd.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net-next v2 1/2] dt-bindings: net: cdns,macb: Add
- rx-watermark property
-To: Pranavi Somisetty <pranavi.somisetty@amd.com>,
- nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, richardcochran@gmail.com, linux@armlinux.org.uk,
- palmer@dabbelt.com
-Cc: git@amd.com, michal.simek@amd.com, harini.katakam@amd.com,
- radhey.shyam.pandey@amd.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-References: <20230511071214.18611-1-pranavi.somisetty@amd.com>
- <20230511071214.18611-2-pranavi.somisetty@amd.com>
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20230511071214.18611-2-pranavi.somisetty@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230511120808.28646-2-harini.katakam@amd.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On 11/05/2023 09:12, Pranavi Somisetty wrote:
-> watermark value is the minimum amount of packet data
-> required to activate the forwarding process. The watermark
-> implementation and maximum size is dependent on the device
-> where Cadence MACB/GEM is used.
+On Thu, May 11, 2023 at 05:38:06PM +0530, Harini Katakam wrote:
+> All the PHY devices variants specified have the same mask and
+> hence can be simplified to one vendor look up for 0x00070400.
+> Any individual config can be identified by PHY_ID_MATCH_EXACT
+> in the respective structure.
 > 
-> Signed-off-by: Pranavi Somisetty <pranavi.somisetty@amd.com>
+> Signed-off-by: Harini Katakam <harini.katakam@amd.com>
 
-Please use scripts/get_maintainers.pl to get a list of necessary people
-and lists to CC.  It might happen, that command when run on an older
-kernel, gives you outdated entries.  Therefore please be sure you base
-your patches on recent Linux kernel.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-You missed at least DT list (maybe more), so this won't be tested.
-Please resend and include all necessary entries.
-
-Best regards,
-Krzysztof
-
+    Andrew
 
