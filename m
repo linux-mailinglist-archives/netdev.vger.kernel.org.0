@@ -1,231 +1,157 @@
-Return-Path: <netdev+bounces-2094-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2096-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 714FE7003B9
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 11:27:20 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3FDA97003BC
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 11:29:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 28772281ACA
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 09:27:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5A6661C2116D
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 09:29:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DFAA2BE5E;
-	Fri, 12 May 2023 09:24:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1974BE5D;
+	Fri, 12 May 2023 09:29:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD77E138A
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 09:24:56 +0000 (UTC)
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D5110A0A
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 02:24:53 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-50bd37ca954so87593391a12.0
-        for <netdev@vger.kernel.org>; Fri, 12 May 2023 02:24:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683883492; x=1686475492;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=e59Z513Z+sJEMOgqzM+yyZIxs7sBXNtv5zHcR3wz36w=;
-        b=MyFqPnWUtOSHxIbollXfdpTNYzXVp7iLGBKBd5Vq6XLbSNYUSE8dEbqJPngxRyOC7/
-         sX0Ks08xrJgBSlSzkL9JV/xCX5rqktn4NtWUhFjDziTMIZ8gTCPj/6wvueQs36/s2JeG
-         u3uVT/h8pBy5DAMnK4f1ye83PDh41FXCVDFZYsf4M5ku2yIMF50rQnS6Bl723FYGUQ3P
-         CFasVqbiH3Iv+5MH22t7QPmZM5MCADP9uVE3AKhU5AFFc7wQVTfpbwo8s+xHmRDTxIqs
-         ImUuss9P8DFFe36TP2KNbiKHmwfZn5vMiv4+uk5epvPaenu/M2YtD3t5R700qsQpy2uc
-         Boeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683883492; x=1686475492;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=e59Z513Z+sJEMOgqzM+yyZIxs7sBXNtv5zHcR3wz36w=;
-        b=KMSUOFdJTLDI3wLktkvkxgqA7eVp7qPQVh5+zjdxpH1++LVayembpI+Wb3XnYk/1iH
-         2hSI4vAQxWhzUKXQ8U6LH5Qxy3RrIq62zp46vZnce+UAobDv6+x/FaBny5wlwPrXJXPf
-         kXZLQasGn4aNNpKAoJ1Z73cDKDwdRaiSDpxR0AVkSMwNQ4OBpH2CfTvaIFVa2U0W83yc
-         7eLG44fdw9aXLn2hC4Ft5Hmd/LLHJPqXP41RRwfKEGRG8458zB25oWpZPNdVEJ0nupEz
-         izxDTbM7IJ08RIMHp7CioPaE8+BjXvtTYEl7TCvb7RYXzVe+Ccy/A7cHA+chJkvSL5zN
-         zw2w==
-X-Gm-Message-State: AC+VfDw4zZsPch9+/S8TNiuxmTFdK6eyuZvxSUdhfTSlGvUl/sFlCp8U
-	DHlI0M1WRg4UOA5on740mk8Nyg==
-X-Google-Smtp-Source: ACHHUZ5SJgRjdxPTyQHwUlqVbdI9FOAmLfmVC4nzz5A6wB+hQJViZGkFBW/A41OdjL/VFyueRMCDeg==
-X-Received: by 2002:a17:907:2d0e:b0:967:13a3:d82c with SMTP id gs14-20020a1709072d0e00b0096713a3d82cmr16110519ejc.26.1683883492322;
-        Fri, 12 May 2023 02:24:52 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:7ede:fc7b:2328:3883? ([2a02:810d:15c0:828:7ede:fc7b:2328:3883])
-        by smtp.gmail.com with ESMTPSA id gf25-20020a170906e21900b0094edfbd475csm5063131ejb.127.2023.05.12.02.24.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 May 2023 02:24:51 -0700 (PDT)
-Message-ID: <5b826dc7-2d02-d4ed-3b6a-63737abe732b@linaro.org>
-Date: Fri, 12 May 2023 11:24:50 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B45B3BE5C
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 09:29:00 +0000 (UTC)
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01olkn2109.outbound.protection.outlook.com [40.92.52.109])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F04B9;
+	Fri, 12 May 2023 02:28:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gUr7YFaWRjAzwX3AS8Dd9dsYevOGtqc5r3iAh5rADMam0P6QpxTH3HtVHkcMcyZVHdgf8ao66BCBwTLYjiUgnTRiIw0sQ8glFWGKdqHUVk1r79UwM5UGcOBfgsF8IYJZCenP5xObxfn/Kd9+WlXM55PNHmghOPA3qT7+4ZgPa3qLVFh59DdOjPwSyUVvd9FB3Sb17BsUs8DEimKG3u6bmWx20WqsS/BZMsuykjAefs3hDDeea5KCr3AjHuToi9At6EE4uh9xJwtdRAky8NU50wA2bZEf50JMzIzd2wkv4YY4SUvCygES2O6g1casBPDmDSU1Drb8GfV4+fcVEH+A6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nwYIf4TyttllzKKaZbpdPCQAKhoGTt529yNl8eOTAOI=;
+ b=C5e1kznxX/uzQ6m+GITcvizTBTjMAOolqa4DdcIlma1WgpeUYQzUXLu4dZdjxHnwf4+mCBqF98+NPA/BaaKvdVjDym5UW/UVDlZlQZHuADIlZlqxoMdPZx537QeegO44h4mIBENcZDcK/Cf5Ph49DpI0cWQtb0hFc6Go/VmCP6FbeSBJf+1/uTWdHxg9JtfzqQETe+FsfvVyMSlXWoPpHcYtDujjsyZVeuGKfLfJ0oHyI79+pQIONJnrbTOj9/HRY3Y+wJWfWQe3GoFk4ruGavXQMdIeWf93QQEoJd7KsbScw6JjIuvwjjrSW9HscozQzEq8p7v9LIw3K4vfGde7tg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nwYIf4TyttllzKKaZbpdPCQAKhoGTt529yNl8eOTAOI=;
+ b=B0t7W6arvMhMtaWjl5V0myfvfyHLMiz8J5WBIZITFBNGSnPJltGvxwidkfquTmbTScJfv9TmVknAYyv/J/8tX8uRAq7ps/BhrMotantNSpCqo7sZxzDxHZPMGBUulE2//tJGCc2EavM1S7ZvhGfL9Nmt3EeHfzuRORSJgKH/5NrqHWcAgz9KdCY1CjU2+R/GH7+W6dPisjOfbwaL6bJ1dJWrF+rxwwkdpq8VaLXOaBU+HrQ/e3kC0r3zFpY4dQLNDbxdevgeTap1mvARkW4XbpZ6LVkNNgaeDbgPKHB/oCBMxKuH8WSp/r/ic/GJAs+hh5wBJkvZ551JHM6fNuXTsg==
+Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:9a::12) by JH0PR01MB5708.apcprd01.prod.exchangelabs.com
+ (2603:1096:990:11::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.22; Fri, 12 May
+ 2023 09:28:54 +0000
+Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ ([fe80::93cb:1631:4c4c:1821]) by KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ ([fe80::93cb:1631:4c4c:1821%4]) with mapi id 15.20.6387.018; Fri, 12 May 2023
+ 09:28:54 +0000
+Message-ID:
+ <KL1PR01MB54488021E5650ED8A203057FE6759@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
+Date: Fri, 12 May 2023 17:28:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v5] net: mdiobus: Add a function to deassert reset
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <KL1PR01MB54486A247214CC72CAB5A433E6759@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
+ <ZF4AjX6csKkVJzht@shell.armlinux.org.uk>
+From: Yan Wang <rk.code@outlook.com>
+In-Reply-To: <ZF4AjX6csKkVJzht@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TMN: [7hdJPv3gWsM6dVisk/UnX6uwCH4g0O7NV5E85l51d1E=]
+X-ClientProxiedBy: TYCP286CA0047.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:2b5::18) To KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:9a::12)
+X-Microsoft-Original-Message-ID:
+ <987e4c9f-6eaf-935c-6183-d574fbfba35b@outlook.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v2 3/5] dt-bindings: net: add mac-address-increment option
-Content-Language: en-US
-To: Ivan Mikhaylov <fr0st61te@gmail.com>,
- Samuel Mendoza-Jonas <sam@mendozajonas.com>,
- "David S . Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
- Paul Fertser <fercerpav@gmail.com>
-References: <20230509143504.30382-1-fr0st61te@gmail.com>
- <20230509143504.30382-4-fr0st61te@gmail.com>
- <6b5be71e-141e-c02a-8cba-a528264b26c2@linaro.org>
- <fc3dae42f2dfdf046664d964bae560ff6bb32f69.camel@gmail.com>
- <8de01e81-43dc-71af-f56f-4fba957b0b0b@linaro.org>
- <be85bef7e144ebe08f422bf53bb81b59a130cb29.camel@gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <be85bef7e144ebe08f422bf53bb81b59a130cb29.camel@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: KL1PR01MB5448:EE_|JH0PR01MB5708:EE_
+X-MS-Office365-Filtering-Correlation-Id: faec82a0-4b30-4c62-4d11-08db52cb4df8
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	PVdk6HvBOSIxT7AZxekJyFrzJH6jRB6APLGD5gAQT3prboMl2iCmlYqL/Jxgq0n2DjVDrO4xW8TssILU0fRBCEKj2hTUekc5GpAeWQx08a3y6Nctd1ddluCjVBOJJ7SyGGOtI/MyOBuVORoLCeHxmJQTkvxLwccWY3wEVbGcwYl9t+BDsJD7WrPz6nGOjkgLmUYKoAwNiVe76DmCCp4fA+BpvClx3Hdh81DDy2XPacGUKHB39tuLXLQP3eL+pi+FbWAzwMl+4nBApFMt+aPScUxEB/gvpRF7Vqmp9eC000VC69noD4qfC3HZA6x62ieyyQ/cprIsjViXsDZenDZVp/DYDlajXNQz2pLddWfyVnfzf6ihcx+w8QcSvDH2Fkxgj/N8k/cHT0ee22Ud+WP7BGX/INTLf832nSI8JiL+kiTzjJRz/DtGaR1GYh5jdra+4KeiJcbJy4O9P8dU0PxHyZG1UnJ2GzT6L8ONnnevZ9mdP9vwKc8akv7qKQPLSxKFZem+GATXjGbnO2zWaT5A7/TtBTilCPnHdEbirIETcU4ixCZXLhH+5h7pa/KF9AApYlsOSPIq0UokSjD19jgU7EjlzrIMsa3PWQpuxOlmVixqUJGAcVqGnHLUnX2DR1L5
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?eE9CQXF4TXJlNVEzVHFCZTd1QnpJWUtpbzFXeU8rcFRkYUlvSURMNGk4VmM3?=
+ =?utf-8?B?WE9yeHdXV1NadW9XUVRTYXZuTHljbmx1d3ZDR0tBR3FKOFdzVVhDajEySldl?=
+ =?utf-8?B?T1IzMEhQTExBRFZIRG95UVRwTGVZL29TU1FNSkkzU0d3VEFobEN4RTNCMXA5?=
+ =?utf-8?B?NHd4YkRESDBoZVp0RjlMaWszYjc2QzUrQ1cyeEUrZnhXQ0dDMzNYd21ISUh3?=
+ =?utf-8?B?VGc3MUVGZHZjNktpMng2STNLYWxsejRBS2I4Z2lmSGd1bUFrVFo3S1BCbHVq?=
+ =?utf-8?B?R29SOGEvNHJMc1ZQUEsyMzJxckxiRUtxWFJhemxtSW9YUk9aU1pla3pqaFJo?=
+ =?utf-8?B?MTRFeGtEZC8wRnEzcVN3cHlpMUlZQU1zZ0N1M3RFaG1uZk9UR0ZYMkloLzI0?=
+ =?utf-8?B?YzJVbnQ2aGRuMXRuV3NOMkpYYUo4ZGZJRHcrR0MzV2NXbkVVSWRmeUpkQVQz?=
+ =?utf-8?B?SDlaSVN0TU9IN2UrWVk4c2kzVGs4aUxPWmZSZGdZMFQ5b3BiUW40RUJqZk5n?=
+ =?utf-8?B?Q0xRendXaTRwa1Y4VWR5RVEwcno4Rnk0QVZvejRmNUhhSkludE5FRnF1ZkU4?=
+ =?utf-8?B?RUZPeEw2aGZMSzVWVjRzaGt3UnJtVHJHT2gxNTBMTXpLWG9jVWYzbFVzbW13?=
+ =?utf-8?B?MWZoTkc2SXhscVBBV3h0YVJlbmJXb1NtM1dYWVFzU2lHZGJrbGFpamxtMnIz?=
+ =?utf-8?B?K3FCcTBpajlmZDYvRzlKb1h4azIybTlibWY2R2hUeElienhkQWVCYklBeU1j?=
+ =?utf-8?B?TnFaZkVONGU0ZVBQQU1sWmJIVExicytJK0s0dmR1dzRYY0g0emljdENhcE92?=
+ =?utf-8?B?aHQxV09sdytleDBlK1VlaG9mVjlqTTBYOUM4WnJVd2FCWUFOQkFSVmtiWjFu?=
+ =?utf-8?B?QzlkUDVtRTd5U3dUaXd2cWdTdDVOOC9QVDdQWFd6UVl1N01PSk5OOXZYb3J2?=
+ =?utf-8?B?ekczRjdKcS9semZyamJZYzFHdGxaaFVkalozcjZNK3dVanpwcW5YYlJ5clF1?=
+ =?utf-8?B?WFI0ajBMWHZmZzdRa1ZnZThQS1FhT0ZDQUVCRGhSVXh6MTRlRS9ZM0N5M0lu?=
+ =?utf-8?B?WVNGSjluVW5GOG9pbksrZEloYlZEdWtLNERzdzlUL0xxeWdOamQrb0cySlFj?=
+ =?utf-8?B?emRZaUhCSlZHNGhZNC94aVNFa1hJZ3owbmRSWXZXdWQwNzZaS0NVTklhYk5p?=
+ =?utf-8?B?aGxoL0xkTkpIaDdpcms3MnZreVJYd1BTTGEwYWR4S05QYk44T1Q0T3hXZzhQ?=
+ =?utf-8?B?bXlyWGx5VUdrMnB6ME9VY0xzUUQ3VkdNWmRteVplNzc1YWNkUFRidFBCZURa?=
+ =?utf-8?B?bjlWM3I4V1FVeVBkRTJHUnQyNE5MRUkvUFZnNE9YdzFiU0U4Zk5VTE9Zem1j?=
+ =?utf-8?B?R2JoN0tZQ2pXNURkUi9LWnVVWlV1OTMyMnRPbFpJNnZZOCtxdXBjWG1Gc3NU?=
+ =?utf-8?B?UUY4ZU8waVhXb2RxTHRiOUJ1Y3lKemN0N1pMMWtuN2d1eEtLUjYyME84RmpG?=
+ =?utf-8?B?eThGbzlNdlA3RnVzajZXTTM5QnBMYWcyY0NUOW5UR3FNcENucHRic21MajV2?=
+ =?utf-8?B?RXNaNmtvL0M2c2kwTzIxeEJjRjhGQVBlbUNFeVJNdDExRzdpNUR3TFVmTUhv?=
+ =?utf-8?B?YU9aaE1MWVBCb25IeXR0b005ZDEyMEE9PQ==?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: faec82a0-4b30-4c62-4d11-08db52cb4df8
+X-MS-Exchange-CrossTenant-AuthSource: KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2023 09:28:54.5183
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: JH0PR01MB5708
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_MUA_MOZILLA,
+	FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 12/05/2023 13:28, Ivan Mikhaylov wrote:
-> On Fri, 2023-05-12 at 08:22 +0200, Krzysztof Kozlowski wrote:
->> On 11/05/2023 01:31, Ivan Mikhaylov wrote:
->>> On Wed, 2023-05-10 at 16:48 +0200, Krzysztof Kozlowski wrote:
->>>> On 09/05/2023 16:35, Ivan Mikhaylov wrote:
->>>>> Add the mac-address-increment option for specify MAC address
->>>>> taken
->>>>> by
->>>>> any other sources.
->>>>>
->>>>> Signed-off-by: Paul Fertser <fercerpav@gmail.com>
->>>>> Signed-off-by: Ivan Mikhaylov <fr0st61te@gmail.com>
->>>>> ---
->>>>>  .../devicetree/bindings/net/ethernet-controller.yaml      | 8
->>>>> ++++++++
->>>>>  1 file changed, 8 insertions(+)
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/net/ethernet-
->>>>> controller.yaml
->>>>> b/Documentation/devicetree/bindings/net/ethernet-
->>>>> controller.yaml
->>>>> index 00be387984ac..6900098c5105 100644
->>>>> --- a/Documentation/devicetree/bindings/net/ethernet-
->>>>> controller.yaml
->>>>> +++ b/Documentation/devicetree/bindings/net/ethernet-
->>>>> controller.yaml
->>>>> @@ -34,6 +34,14 @@ properties:
->>>>>      minItems: 6
->>>>>      maxItems: 6
->>>>>  
->>>>> +  mac-address-increment:
->>>>> +    $ref: /schemas/types.yaml#/definitions/int32
->>>>> +    description:
->>>>> +      Specifies the MAC address increment to be added to the
->>>>> MAC
->>>>> address.
->>>>> +      Should be used in cases when there is a need to use MAC
->>>>> address
->>>>> +      different from one obtained by any other level, like u-
->>>>> boot
->>>>> or the
->>>>> +      NC-SI stack.
->>>>
->>>> We don't store MAC addresses in DT, but provide simple
->>>> placeholder
->>>> for
->>>> firmware or bootloader. Why shall we store static "increment"
->>>> part of
->>>> MAC address? Can't the firmware give you proper MAC address?
->>>>
->>>> Best regards,
->>>> Krzysztof
->>>>
->>>
->>> Krzysztof, maybe that's a point to make commit message with better
->>> explanation from my side. At current time there is at least two
->>> cases
->>> where I see it's possible to be used:
->>>
->>> 1. NC-SI
->>> 2. embedded
->>>
->>> At NC-SI level there is Get Mac Address command which provides to
->>> BMC
->>> mac address from the host which is same as host mac address, it
->>> happens
->>> at runtime and overrides old one.
->>>
->>> Also, this part was also to be discussed 2 years ago in this
->>> thread:
->>> https://lore.kernel.org/all/OF8E108F72.39D22E89-ON00258765.001E46EB-00258765.00251157@ibm.com/
->>
->> Which was not sent to Rob though...
->>
->>
->>>
->>> Where Milton provided this information:
->>>
->>> DTMF spec DSP0222 NC-SI (network controller sideband interface)
->>> is a method to provide a BMC (Baseboard management controller)
->>> shared
->>> access to an external ethernet port for comunication to the
->>> management
->>> network in the outside world.  The protocol describes ethernet
->>> packets 
->>> that control selective bridging implemented in a host network
->>> controller
->>> to share its phy.  Various NIC OEMs have added a query to find out
->>> the 
->>> address the host is using, and some vendors have added code to
->>> query
->>> host
->>> nic and set the BMC mac to a fixed offset (current hard coded +1
->>> from
->>> the host value).  If this is compiled in the kernel, the NIC OEM is
->>> recognised and the BMC doesn't miss the NIC response the address is
->>> set
->>> once each time the NCSI stack reinitializes.  This mechanism
->>> overrides
->>> any mac-address or local-mac-address or other assignment.
->>>
->>> DSP0222
->>> https://www.dmtf.org/documents/pmci/network-controller-sideband-interface-nc-si-specification-110
->>>
->>>
->>> In embedded case, sometimes you have different multiple ethernet
->>> interfaces which using one mac address which increments or
->>> decrements
->>> for particular interface, just for better explanation, there is
->>> patch
->>> with explanation which providing them such way of work:
->>> https://github.com/openwrt/openwrt/blob/master/target/linux/generic/pending-5.15/682-of_net-add-mac-address-increment-support.patch
->>>
->>> In their rep a lot of dts using such option.
->>
->> None of these explain why this is property of the hardware. I
->> understand
->> that this is something you want Linux to do, but DT is not for that
->> purpose. Do not encode system policies into DT and what above commit
->> says is a policy.
->>
-> 
-> Krzysztof, okay then to which DT subsystem it should belong? To
-> ftgmac100 after conversion?
 
-To my understanding, decision to add some numbers to MAC address does
-not look like DT property at all. Otherwise please help me to understand
-- why different boards with same device should have different offset/value?
 
-Anyway, commit msg also lacks any justification for this.
-
-Best regards,
-Krzysztof
-
+On 5/12/2023 5:02 PM, Russell King (Oracle) wrote:
+> On Fri, May 12, 2023 at 03:08:53PM +0800, Yan Wang wrote:
+>> +	gpiod_set_value_cansleep(reset, gpiod_is_active_low(reset));
+>> +	fsleep(reset_assert_delay);
+>> +	gpiod_set_value_cansleep(reset, !gpiod_is_active_low(reset));
+> Andrew, one of the phylib maintainers and thus is responsible for code
+> in the area you are touching. Andrew has complained about the above
+> which asserts and then deasserts reset on two occasions now, explained
+> why it is wrong, but still the code persists in doing this.
+>
+> I am going to add my voice as another phylib maintainer to this and say
+> NO to this code, for the exact same reasons that Andrew has given.
+>
+> You now have two people responsible for the code in question telling
+> you that this is the wrong approach.
+>
+> Until this is addressed in some way, it is pointless you posting
+> another version of this patch.
+>
+> Thanks.
+>
+I'm very sorry, I didn't have their previous intention.
+The meaning of the two assertions is reset and reset release.
+If you believe this is the wrong method, please ignore it.
 
