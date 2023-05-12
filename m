@@ -1,112 +1,81 @@
-Return-Path: <netdev+bounces-2115-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2120-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2F40E7004E7
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 12:09:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1D6577004FE
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 12:13:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 33B311C211B1
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 10:09:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 32E991C21130
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 10:13:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66EE1D308;
-	Fri, 12 May 2023 10:07:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 091DFD2F7;
+	Fri, 12 May 2023 10:13:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A428DF6D
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 10:07:08 +0000 (UTC)
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C13BE55;
-	Fri, 12 May 2023 03:07:04 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id 41be03b00d2f7-52079a12451so6962099a12.3;
-        Fri, 12 May 2023 03:07:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1D13BE4D
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 10:13:40 +0000 (UTC)
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA7F124B3;
+	Fri, 12 May 2023 03:13:10 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id d2e1a72fcca58-6436e075166so7343994b3a.0;
+        Fri, 12 May 2023 03:13:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683886024; x=1686478024;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AEkf8gWG96+9b1qBPiSXz5T2EndzrX4ufiHLwT0g7bA=;
-        b=NtT2Weul5m/pMpgN7JMgRZwAS7itAs93/P0LzS4vUShEcK4Wgq6OBo6+Iatwn9wpVD
-         gjwOOVQF9lpQUpgZtCaIQd72ZQugKVSyWb/PZE3vbwTwZfVQOVRMM5yFDD9yOMR8F8v9
-         Q6mqq6T2rl9lqGnp0ASIgno/r7T1raas8x36CbHSlmTglCyt796jfNmZNms+AHHWvurY
-         bpdR4yzAgfnxl9sTBuFoAQ83WYpg4uDnVq+BVTki6Qok27DFkNkCpOj+hRAet1+egzhD
-         pOlOJRvO3bBmkfuIVwyM2IrmdnbNpKYJ1dCyJSgwjBaFgR6C5YpCvelGbphwVnKpkpl7
-         XTUA==
+        d=gmail.com; s=20221208; t=1683886389; x=1686478389;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=R5FsU0vvdQKuTXYmnQb/fKvraHaaia5fjLFwaOpzG0E=;
+        b=gKopIC0Ejr48prllIgxRsCQpmc0UCbbE0J/p/JeQsDMnu5wwSkuLm5jJtN1x3aGEHv
+         cf/5UKnsMWXmF6gZVZ+1xrR4MF5siAKKTPM4lWwCFJJAUPO7ksT5n1CrW+5m0aS2PlxF
+         MAZ8nUhFUZMvni4AqwbBF9Jmmm1x2iyqIC8dSyT3L/n+7EbqeYDhib4olC/n92hzcJKv
+         /y2ORWqodoipIrbSefE3VXRIy+6mkZNWtncp7U/YqsfphOV+nTpwnSPklWexR7tq7zoe
+         kpH5gAqmvw2mDopFV+Qf9i8LfdeNgSJgEIOmGLtQH4ULyL2YbHojZOKrVZIIQ35q9gbu
+         YsDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683886024; x=1686478024;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AEkf8gWG96+9b1qBPiSXz5T2EndzrX4ufiHLwT0g7bA=;
-        b=gesSp8UOjlWGm2zdMhLJAIvCpMrIkfSNthQCQ6nsPEgUTbTyJKslHca7PK6X4meJjd
-         lNQtsEO4PUIbLtRDkJceaUzZ0MW3O5r0ReJhyfy7o1mZxykha/C6TVC/MU5R6SkHmpgy
-         HPLgnv+GUb8BMCkA6OO2EulGQ1PzeZtUStCjQBg668i0RM1lYExnAzhWjoXWivfyWzun
-         4KQ41XdDShsWhQ3EsQTquOeL8ta6tI0CwagmWJ5OBRg66O5TiL0VihiDcN0ngo45woMM
-         rK/tWhgSTqNzkQzlRQpBjkAs63Wtn56OsfgCiISDGgG799Sh9hK2wbVHM6jlqgcLSIFj
-         G2bQ==
-X-Gm-Message-State: AC+VfDx4G/Xesf3bJx5kFOzJtEmkl2m63Vi3dpRl0/608iBHPwOg5Awf
-	0y99EL8I7852raN1dFpvUls=
-X-Google-Smtp-Source: ACHHUZ7imq7bgHR/sJmRlazsESDion5s8yIT3WhCK3D8T5obXOuXCzu+YMDtulbCky0jUvuEXkpPNA==
-X-Received: by 2002:a17:902:a609:b0:1ac:946e:4690 with SMTP id u9-20020a170902a60900b001ac946e4690mr12908005plq.49.1683886023679;
-        Fri, 12 May 2023 03:07:03 -0700 (PDT)
-Received: from debian.me (subs28-116-206-12-58.three.co.id. [116.206.12.58])
-        by smtp.gmail.com with ESMTPSA id n21-20020a170902969500b001a634e79af0sm7528924plp.283.2023.05.12.03.07.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 May 2023 03:07:03 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-	id 49702106B43; Fri, 12 May 2023 17:06:56 +0700 (WIB)
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Linux SPDX Licenses <linux-spdx@vger.kernel.org>,
-	Linux DRI Development <dri-devel@lists.freedesktop.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Linux Networking <netdev@vger.kernel.org>,
-	Linux ARM <linux-arm-kernel@lists.infradead.org>,
-	Linux Staging Drivers <linux-staging@lists.linux.dev>,
-	Linux Watchdog Devices <linux-watchdog@vger.kernel.org>,
-	Linux Kernel Actions <linux-actions@lists.infradead.org>
-Cc: Diederik de Haas <didi.debian@cknow.org>,
-	Kate Stewart <kstewart@linuxfoundation.org>,
-	Philippe Ombredanne <pombredanne@nexb.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	David Airlie <airlied@redhat.com>,
-	Karsten Keil <isdn@linux-pingi.de>,
-	Jay Vosburgh <j.vosburgh@gmail.com>,
-	Andy Gospodarek <andy@greyhouse.net>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Sam Creasey <sammy@sammy.net>,
-	Dominik Brodowski <linux@dominikbrodowski.net>,
-	Daniel Mack <daniel@zonque.org>,
-	Haojian Zhuang <haojian.zhuang@gmail.com>,
-	Robert Jarzmik <robert.jarzmik@free.fr>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jan Kara <jack@suse.com>,
-	=?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Bagas Sanjaya <bagasdotme@gmail.com>,
-	Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v2 10/10] include: synclink: Replace GPL license notice with SPDX identifier
-Date: Fri, 12 May 2023 17:06:21 +0700
-Message-Id: <20230512100620.36807-11-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230512100620.36807-1-bagasdotme@gmail.com>
-References: <20230512100620.36807-1-bagasdotme@gmail.com>
+        d=1e100.net; s=20221208; t=1683886389; x=1686478389;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=R5FsU0vvdQKuTXYmnQb/fKvraHaaia5fjLFwaOpzG0E=;
+        b=ApJizOSo4R2YLf9H/e9uZUIK5z1Yyur0o6/2H6M7ID/lZG+0oC/jmyVY7kwbf4S2YE
+         LuEQPxTJ7a5+GV4We6iHbyeOV15W6AhzAfcdni8VhEKOHIr1jcwrpdQfqTlgJ5SoHqke
+         M41FQlCjozLdQxeO5W/0tRcBNuXnLil7EhL4yWE1Y4Xy5W0t4JDvTyZhsnmDqGs4rXIk
+         3Ra5tNFz0JzrlMhXldIv8TQ4TfZNm4mYYaBdip83+fXSO9blXRu6LumbhyTYygOxRpq2
+         815Ua99v9N3FK9oNn+0etje/db725wgPIUy4QKYGaSEvsA1OBh/QFPhNgJ4XUIsPs+6v
+         1DpQ==
+X-Gm-Message-State: AC+VfDyHWjJKNOjOCM8k7jIOlcpqpGoNd1v2p/Fck4U0G+7HztWqCNu+
+	mlLc5LBe7G80o6RBerDB0BxWpcYAqliQJUMUduM=
+X-Google-Smtp-Source: ACHHUZ61fMQpTF3gL5Pk8bJT/AuFGjVhuC2bfNcjv1mV+HWWVXLBYLqf/jxgByLJsBHmn85Z2xXgWxcIlfP9BlcgaEk=
+X-Received: by 2002:a05:6a00:248d:b0:626:29ed:941f with SMTP id
+ c13-20020a056a00248d00b0062629ed941fmr33453173pfv.5.1683886388780; Fri, 12
+ May 2023 03:13:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=881; i=bagasdotme@gmail.com; h=from:subject; bh=PkQY9HnKXIwg0IaXpF33XHuRDzB1ZRiNQ1FLD5oV4q4=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDClx/DNlZ3lanJT7p1ayYymLq+t2lUf7xU5xTbIv2zq/P c1cwzS3o5SFQYyLQVZMkWVSIl/T6V1GIhfa1zrCzGFlAhnCwMUpABPZwsnI0DSB1bvrwoZSud8H 0ne/3frdnuH0pjxjmXVPMvvE5m9y3cPwP/SEaKC5kN1FhVtfGU8aFdcIxYbGRS4xOZrN1MAp9PA sNwA=
-X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
-Content-Transfer-Encoding: 8bit
+References: <20230511151444.162882-1-Mikhail.Golubev-Ciuchea@opensynergy.com> <ZF0MXKkK1tEN6QyV@corigine.com>
+In-Reply-To: <ZF0MXKkK1tEN6QyV@corigine.com>
+From: Vincent Mailhol <vincent.mailhol@gmail.com>
+Date: Fri, 12 May 2023 19:12:57 +0900
+Message-ID: <CAMZ6Rq+6vv34Ps0G2SpB-9LHXYiD=esi604rm2tCE5Crp3QLvA@mail.gmail.com>
+Subject: Re: [RFC PATCH v3] can: virtio: Initial virtio CAN driver.
+To: Simon Horman <simon.horman@corigine.com>
+Cc: Mikhail Golubev-Ciuchea <Mikhail.Golubev-Ciuchea@opensynergy.com>, 
+	virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org, 
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	virtualization@lists.linux-foundation.org, 
+	Wolfgang Grandegger <wg@grandegger.com>, Marc Kleine-Budde <mkl@pengutronix.de>, 
+	"David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	"Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, 
+	Damir Shaikhutdinov <Damir.Shaikhutdinov@opensynergy.com>, 
+	Harald Mommer <harald.mommer@opensynergy.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
 	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -114,34 +83,55 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Replace unversioned GPL license notice with appropriate SPDX
-identifier, which is GPL 1.0+.
+Hi Simon,
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- include/linux/synclink.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+On Fri. 12 May 2023 at 00:45, Simon Horman <simon.horman@corigine.com> wrote:
+> On Thu, May 11, 2023 at 05:14:44PM +0200, Mikhail Golubev-Ciuchea wrote:
 
-diff --git a/include/linux/synclink.h b/include/linux/synclink.h
-index f1405b1c71ba15..85195634c81dfa 100644
---- a/include/linux/synclink.h
-+++ b/include/linux/synclink.h
-@@ -1,3 +1,4 @@
-+/* SPDX-License-Identifier: GPL-1.0+ */
- /*
-  * SyncLink Multiprotocol Serial Adapter Driver
-  *
-@@ -5,8 +6,6 @@
-  *
-  * Copyright (C) 1998-2000 by Microgate Corporation
-  *
-- * Redistribution of this file is permitted under
-- * the terms of the GNU Public License (GPL)
-  */
- #ifndef _SYNCLINK_H_
- #define _SYNCLINK_H_
--- 
-An old man doll... just what I always wanted! - Clara
+[...]
 
+> > +static u8 virtio_can_send_ctrl_msg(struct net_device *ndev, u16 msg_type)
+> > +{
+> > +     struct virtio_can_priv *priv = netdev_priv(ndev);
+> > +     struct device *dev = &priv->vdev->dev;
+> > +     struct virtqueue *vq = priv->vqs[VIRTIO_CAN_QUEUE_CONTROL];
+> > +     struct scatterlist sg_out[1];
+> > +     struct scatterlist sg_in[1];
+> > +     struct scatterlist *sgs[2];
+> > +     int err;
+> > +     unsigned int len;
+>
+> nit: For networking code please arrange local variables in reverse xmas
+>      tree order - longest line to shortest.
+
+Sorry for my curiosity, but where is it documented that the networking
+code is using reverse christmas tree style?
+
+I already inquired in the past here:
+
+  https://lore.kernel.org/linux-can/CAMZ6Rq+zsC4F-mNhjKvqgPQuLhnnX1y79J=qOT8szPvkHY86VQ@mail.gmail.com/
+
+but did not get an answer.
+
+>      You can check this using: https://github.com/ecree-solarflare/xmastree
+
+If we have to check for that, then please have this patch revived and merged:
+
+  https://lore.kernel.org/lkml/1478242438.1924.31.camel@perches.com/
+
+Personally, I am not willing to apply an out of tree linter for one
+single use case.
+
+>      In this case I think it would be:
+>
+>         struct virtio_can_priv *priv = netdev_priv(ndev);
+>         struct device *dev = &priv->vdev->dev;
+>         struct scatterlist sg_out[1];
+>         struct scatterlist sg_in[1];
+>         struct scatterlist *sgs[2];
+>         struct virtqueue *vq;
+>         unsigned int len;
+>         int err;
+>
+>         vq = priv->vqs[VIRTIO_CAN_QUEUE_CONTROL];
 
