@@ -1,120 +1,167 @@
-Return-Path: <netdev+bounces-2157-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2155-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C782D7008F6
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 15:17:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9DF777008E4
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 15:15:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B74141C2105D
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 13:17:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4F6A0281A0D
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 13:15:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5D731DDF8;
-	Fri, 12 May 2023 13:17:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6123B1DDF4;
+	Fri, 12 May 2023 13:15:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8EA1D520;
-	Fri, 12 May 2023 13:17:48 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1192689;
-	Fri, 12 May 2023 06:17:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683897459; x=1715433459;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=v3ur4im9RMBVOzsWz/PbY2NOqCZy1ova0YsE+zQNmWo=;
-  b=OId8rLo3ygd0DARO4RUCtgZNdIlJma94kTihxye1zJCe4dMN2BV12Luq
-   gxSixrl2S2VAqnaV8wnLbGszs6inMzYLhYULDZCa5JiZENJTXEusAvmT1
-   gUSxm9otk5KQvnIeDe0Zx6Ul6Ww+MXHondx8pSfMusRSkrWa6oJJwOELl
-   68N/bO6awE2NoafruZ2+b0KE77JkIB96VNyC3MyEZsc2hOOU0gM9RUNww
-   vgxLFvS80XpZjHSo9b7a0t3x9Y49/0J2hUuYeDuECXJiizQR1u6F3Ol+9
-   QsM9I9HMcjF1zfnyhoLimrJHIfTj2deM5DhyG1+hU29ySJ0tAkiUnAYG4
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10708"; a="414155598"
-X-IronPort-AV: E=Sophos;i="5.99,269,1677571200"; 
-   d="scan'208";a="414155598"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2023 06:13:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10708"; a="730817781"
-X-IronPort-AV: E=Sophos;i="5.99,269,1677571200"; 
-   d="scan'208";a="730817781"
-Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 12 May 2023 06:13:48 -0700
-Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pxSah-0004sP-1q;
-	Fri, 12 May 2023 13:13:47 +0000
-Date: Fri, 12 May 2023 21:13:32 +0800
-From: kernel test robot <lkp@intel.com>
-To: "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
-	wenjia@linux.ibm.com, jaka@linux.ibm.com, ast@kernel.org,
-	daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-	pabeni@redhat.com, song@kernel.org, sdf@google.com,
-	haoluo@google.com, yhs@fb.com, edumazet@google.com,
-	john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org,
-	guwen@linux.alibaba.com
-Cc: oe-kbuild-all@lists.linux.dev, kuba@kernel.org, davem@davemloft.net,
-	netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-	linux-rdma@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v1 2/5] net/smc: allow smc to negotiate
- protocols on policies
-Message-ID: <202305122104.msaKEOV1-lkp@intel.com>
-References: <1683872684-64872-3-git-send-email-alibuda@linux.alibaba.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CF411952E
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 13:15:40 +0000 (UTC)
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA76E11B61;
+	Fri, 12 May 2023 06:14:57 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 5343D2225C;
+	Fri, 12 May 2023 13:14:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1683897267; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=vT/R3PsdI/1sURxV66XoglSLT9Wc6TGMzQUNQ6f+Kzg=;
+	b=1Gk1TurzRmIwLiiJ1S0QFJMoNFIvVLfVV2/CluRuqaVT7kyk53X0knKoYw2Tgi9laEHTAF
+	DOJPFl9SZrrBcT8HnvhVonK5rSy+kGn+kMu2HY8KlW3akNQodQWbr5XdhBEB2A7AX5PNUO
+	DgK7Ni+IKgXMLPlxSy2FYEa/a5GZ/F4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1683897267;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=vT/R3PsdI/1sURxV66XoglSLT9Wc6TGMzQUNQ6f+Kzg=;
+	b=jrarGo0IOotAITjzSF0Q2TDEbr/STyxCIGJuzqZLf2zOPbVaIZHmpEQBh1SNDI62l6g/qe
+	/94Z4uvRjASZJgBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 096DC13466;
+	Fri, 12 May 2023 13:14:27 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id JaX+AbM7XmTGNwAAMHmgww
+	(envelope-from <afaerber@suse.de>); Fri, 12 May 2023 13:14:27 +0000
+Message-ID: <f52cd21e-2a71-159c-ca7f-b3ef9a679e44@suse.de>
+Date: Fri, 12 May 2023 15:14:26 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1683872684-64872-3-git-send-email-alibuda@linux.alibaba.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 08/10] drivers: watchdog: Replace GPL license notice
+ with SPDX identifier
+Content-Language: en-US
+To: Bagas Sanjaya <bagasdotme@gmail.com>,
+ Linux SPDX Licenses <linux-spdx@vger.kernel.org>,
+ Linux DRI Development <dri-devel@lists.freedesktop.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Networking <netdev@vger.kernel.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ Linux Staging Drivers <linux-staging@lists.linux.dev>,
+ Linux Watchdog Devices <linux-watchdog@vger.kernel.org>,
+ Linux Kernel Actions <linux-actions@lists.infradead.org>
+Cc: Diederik de Haas <didi.debian@cknow.org>,
+ Kate Stewart <kstewart@linuxfoundation.org>,
+ Philippe Ombredanne <pombredanne@nexb.com>,
+ Thomas Gleixner <tglx@linutronix.de>, David Airlie <airlied@redhat.com>,
+ Karsten Keil <isdn@linux-pingi.de>, Jay Vosburgh <j.vosburgh@gmail.com>,
+ Andy Gospodarek <andy@greyhouse.net>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Sam Creasey <sammy@sammy.net>, Dominik Brodowski
+ <linux@dominikbrodowski.net>, Daniel Mack <daniel@zonque.org>,
+ Haojian Zhuang <haojian.zhuang@gmail.com>,
+ Robert Jarzmik <robert.jarzmik@free.fr>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck
+ <linux@roeck-us.net>, Jan Kara <jack@suse.com>,
+ Manivannan Sadhasivam <mani@kernel.org>, Ray Lehtiniemi <rayl@mail.com>,
+ Alessandro Zummo <a.zummo@towertech.it>, Andrey Panin <pazke@donpac.ru>,
+ Oleg Drokin <green@crimea.edu>, Marc Zyngier <maz@kernel.org>,
+ Jonas Jensen <jonas.jensen@gmail.com>,
+ Sylver Bruneau <sylver.bruneau@googlemail.com>,
+ Andrew Sharp <andy.sharp@lsi.com>, Denis Turischev <denis@compulab.co.il>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Alan Cox <alan@linux.intel.com>, Simon Horman <simon.horman@corigine.com>
+References: <20230512100620.36807-1-bagasdotme@gmail.com>
+ <20230512100620.36807-9-bagasdotme@gmail.com>
+From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
+In-Reply-To: <20230512100620.36807-9-bagasdotme@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Wythe,
+Hi,
 
-kernel test robot noticed the following build errors:
+Am 12.05.23 um 12:06 schrieb Bagas Sanjaya:
+> Many watchdog drivers's source files has already SPDX license
+> identifier, while some remaining doesn't.
+> 
+> Convert notices on remaining files to SPDX identifier. While at it,
+> also move SPDX identifier for drivers/watchdog/rtd119x_wdt.c to the
+> top of file (as in other files).
+> 
+> Cc: Ray Lehtiniemi <rayl@mail.com>
+> Cc: Alessandro Zummo <a.zummo@towertech.it>
+> Cc: Andrey Panin <pazke@donpac.ru>
+> Cc: Oleg Drokin <green@crimea.edu>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Jonas Jensen <jonas.jensen@gmail.com>
+> Cc: Sylver Bruneau <sylver.bruneau@googlemail.com>
+> Cc: Andrew Sharp <andy.sharp@lsi.com>
+> Cc: Denis Turischev <denis@compulab.co.il>
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Cc: Alan Cox <alan@linux.intel.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> ---
+[...]
+> diff --git a/drivers/watchdog/rtd119x_wdt.c b/drivers/watchdog/rtd119x_wdt.c
+> index 95c8d7abce42e6..984905695dde51 100644
+> --- a/drivers/watchdog/rtd119x_wdt.c
+> +++ b/drivers/watchdog/rtd119x_wdt.c
+> @@ -1,9 +1,9 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+>   /*
+>    * Realtek RTD129x watchdog
+>    *
+>    * Copyright (c) 2017 Andreas Färber
+>    *
+> - * SPDX-License-Identifier: GPL-2.0+
+>    */
+>   
+>   #include <linux/bitops.h>
 
-[auto build test ERROR on bpf-next/master]
+Acked-by: Andreas Färber <afaerber@suse.de> # for RTD119x
 
-url:    https://github.com/intel-lab-lkp/linux/commits/D-Wythe/net-smc-move-smc_sock-related-structure-definition/20230512-142700
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-patch link:    https://lore.kernel.org/r/1683872684-64872-3-git-send-email-alibuda%40linux.alibaba.com
-patch subject: [PATCH bpf-next v1 2/5] net/smc: allow smc to negotiate protocols on policies
-config: mips-allmodconfig (https://download.01.org/0day-ci/archive/20230512/202305122104.msaKEOV1-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/db8daea84b78121c3612ad5e5ba1d1eaac2f4171
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review D-Wythe/net-smc-move-smc_sock-related-structure-definition/20230512-142700
-        git checkout db8daea84b78121c3612ad5e5ba1d1eaac2f4171
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202305122104.msaKEOV1-lkp@intel.com/
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "bpf_struct_ops_get" [net/smc/smc.ko] undefined!
->> ERROR: modpost: "bpf_struct_ops_put" [net/smc/smc.ko] undefined!
+Thanks,
+Andreas
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+SUSE Software Solutions Germany GmbH
+Frankenstraße 146, 90461 Nürnberg, Germany
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+HRB 36809 (AG Nürnberg)
 
