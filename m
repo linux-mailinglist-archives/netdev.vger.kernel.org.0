@@ -1,114 +1,88 @@
-Return-Path: <netdev+bounces-2310-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2311-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id E4BCF70116B
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 23:38:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C75CA70116E
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 23:39:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 27EF2281CC9
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 21:38:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8288D281C32
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 21:39:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DB81261ED;
-	Fri, 12 May 2023 21:38:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E2286261E7;
+	Fri, 12 May 2023 21:38:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31EFE138F
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 21:38:12 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B60835A0
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 14:38:11 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1pxaSY-0007zh-G2; Fri, 12 May 2023 23:37:54 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1pxaSV-0033aR-4j; Fri, 12 May 2023 23:37:51 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1pxaSU-003qld-8s; Fri, 12 May 2023 23:37:50 +0200
-Date: Fri, 12 May 2023 23:37:46 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Wolfgang Grandegger <wg@grandegger.com>,
-	Marc Kleine-Budde <mkl@pengutronix.de>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Chris Packham <chris.packham@alliedtelesis.co.nz>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Wolfram Sang <wsa@kernel.org>, Mark Brown <broonie@kernel.org>,
-	Dongliang Mu <dzm91@hust.edu.cn>
-Cc: netdev@vger.kernel.org, kernel@pengutronix.de,
-	linux-can@vger.kernel.org
-Subject: Re: [PATCH 12/19] can: mscan/mpc5xxx_can.c -- Convert to platform
- remove callback returning void
-Message-ID: <20230512213746.u5ip4n2dy6crpghi@pengutronix.de>
-References: <20230512212725.143824-1-u.kleine-koenig@pengutronix.de>
- <20230512212725.143824-13-u.kleine-koenig@pengutronix.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6F38138F
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 21:38:59 +0000 (UTC)
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991596A4F
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 14:38:55 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-643b7b8f8ceso5763457b3a.1
+        for <netdev@vger.kernel.org>; Fri, 12 May 2023 14:38:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683927535; x=1686519535;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Djd2glYCoXtMAi8uMNHt1OZRkjvlHu9budSpLUd929I=;
+        b=VCuHGOjf+gCpEolyK1paPF6u3j2kj6e3VJDrz6sSiF7z0db6uIFdPboBBhzpWFiK6I
+         c2tRKpNaS5cnKQwZCbuwrAmsHX4s4DcY3XicX1e/LvV//Q09vdbpO26WeFeO2VpUMsOT
+         aWi3mA7s/1BbUkQD1xjaTC42zoKwIH3fr8CUKvJq0U1EyaKtSnlM8tpziR47pmpp+dme
+         Ga2DxixzMQk0sM825xby9sCib5z2cr+jok+46SuRjG1vRqusoX3Bro+5tJj+FRT2096n
+         PYbYGRw3xa0i8D/U1/QM95ZIfnPDUGpZ+D3SbpWTxIwP5DX5unQZ0AfsgBuDSPy9y41Z
+         bZig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683927535; x=1686519535;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Djd2glYCoXtMAi8uMNHt1OZRkjvlHu9budSpLUd929I=;
+        b=Wv2N4cVfejkbYFauOvNFubdi0QYHS8McduLJWjsUwMbN0i3gE7H4Ht52/ll09QLgCH
+         cQis5i80fFiHT7hAF/RamDojZzp6v1zIe0ofkVDV7gh1iVYb+8cxUflOa67QP3fmH2bd
+         pDUJ2PdlkVia7H5lIMCt//jRP8Jrt+6sE0LT8j4iNrxjsisDnE71gncMkRcMAcLp/+zC
+         R1CPv6t8uTMPD0Ex3JOHMmN2t1Ah3HjeazIEB4QOPemd59odATtz6S5C+TWWNbW6h+UK
+         nn3Ri9i75jTOuyqKuf27v1hl9sWyO2sZUkKE52TrSfdcCCIvKxvFGgtmMePR3qC/v6It
+         thXA==
+X-Gm-Message-State: AC+VfDznHz5Ve/UJ8RBuHcJwfLxvIAT/AcRsAwHjBg/2huLz+9dtE4z8
+	QbiYTDtJixfOZ0pL2/A7vuCJP6sYH0q93XK80XA=
+X-Google-Smtp-Source: ACHHUZ6Q3jaExdrKrysNpvRR0YFArAOzwR8zPvGvseSlm5d0Th8CLkIe6kxWw654tK/4Js3DqHF8dj5XEEu7Zu0blvw=
+X-Received: by 2002:a05:6a20:4296:b0:103:a9ee:d732 with SMTP id
+ o22-20020a056a20429600b00103a9eed732mr11206375pzj.9.1683927535043; Fri, 12
+ May 2023 14:38:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="vhk4jyixv5dls47a"
-Content-Disposition: inline
-In-Reply-To: <20230512212725.143824-13-u.kleine-koenig@pengutronix.de>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+From: Sundar Nagarajan <sun.nagarajan@gmail.com>
+Date: Fri, 12 May 2023 14:38:44 -0700
+Message-ID: <CALnajPCaJfR+N=vP0R6bXoUwMbopQK6JsJ+pXxS=T6KT5NXswg@mail.gmail.com>
+Subject: NET_DSA_SJA1105 config declaration: tristate is not indented
+To: Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>, 
+	Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
---vhk4jyixv5dls47a
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello,
-
-I fatfingered the subject. I didn't adapt completely in the first rebase
-round as I was unsure what to pick and then forgot to fix that before
-sending out. Looking at the history the suitable prefix would be
-
-	can: mscan: mpc5xxx_can:
-
-=2E Feel free to adapt whan applying, otherwise I can resend this patch
-individually or the complete series. Just tell me how you prefer it.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---vhk4jyixv5dls47a
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmResagACgkQj4D7WH0S
-/k45fQf+K0RxBCTaHwASNUK8deKJH4D53RkNdw/oDyfNTjfdpD5i3fV4vL7O76wN
-XIHe/sRfpsFX/OHIycxAd0r6D07XUIr/wdZxLkQaMqttp15CJa9oP6BhXa5UC/H7
-LBlwLUVU7RJW5CPQdbnsJZM1fHdCVmjR+9qZ8lGYoKYccWw0Xjjex4AOaI45ri02
-lB1+ooVlImOG5ONHYktVpA4gL+CrXr/QlJ1O/kTZKcwtU05EI15GaxTPuZ65OuSs
-W/zwlnw+xej1eIZV6bq1PwZoVrvW7bXSN8/qSfN3115ACyuWLM9UhptBR6Q+1p0Q
-snUkmBr0U9w7VquMgceHmIHXHcZ0Jg==
-=7Msi
------END PGP SIGNATURE-----
-
---vhk4jyixv5dls47a--
+diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
+index 1291bba3f..63c9b049f 100644
+--- a/drivers/net/dsa/sja1105/Kconfig
++++ b/drivers/net/dsa/sja1105/Kconfig
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config NET_DSA_SJA1105
+-tristate "NXP SJA1105 Ethernet switch family support"
++ tristate "NXP SJA1105 Ethernet switch family support"
+  depends on NET_DSA && SPI
+  depends on PTP_1588_CLOCK_OPTIONAL
+  select NET_DSA_TAG_SJA1105
 
