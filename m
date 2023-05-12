@@ -1,195 +1,247 @@
-Return-Path: <netdev+bounces-2159-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2160-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id EF969700908
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 15:20:41 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 25012700918
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 15:21:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AACFE281B3A
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 13:20:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F39DD1C20FC7
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 13:21:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 092E51DDFA;
-	Fri, 12 May 2023 13:20:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BF071D2CB;
+	Fri, 12 May 2023 13:21:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8DAF12B74
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 13:20:38 +0000 (UTC)
-Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2060.outbound.protection.outlook.com [40.107.247.60])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80121FCD;
-	Fri, 12 May 2023 06:20:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R7yCim7ce1Iby3E1+AEvrOIzFnOpw7hoNVGXvXHBmTCxiZHelFwfulX4oT5NEpSEcxMKSteXYRDKGUANkmKk0zvhBbJkxU9tB2Vi+1NyTHrmReZVuvXk06niEVyXII/Lg6wbHAcfFPYJy4MUCMeLR9a9CO50q2MRrhSgNAiyf+d6eZecJNHZMM5dMKWLC4mRiq5EWVNQYuxdtEtiB1zoOL75r4/WS4hHbzhRsoWBRB7RnWGc7k7oh8WH/8Z6XIQvdNnsuQM9gCgMhzGFWdYDIdlUv6d4cyPHlW5wkeA+/Z2QW0v8XmTShTk0mBqxy/zBnZhgy/bzr/Zg4VfwJFpIOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mvcHDKk9aePOKSMBNr+7VfvUqJzy7NCLdTwBrhoER4E=;
- b=BlcPW29N2j1dyK9TjRfSh1mdCdPZjvAHxkvdREUGu6IL6zFFiPDdoRj5mY3iXY+7a+Au21ZLZLlBx1DSOqdQdwhNjE+ibRofCwy7EE8201y7Tg7StJXYCpYk1wbZYH23zPAybvsaLImEvSMwhBtH11IKcvmhYwTMokLOqFeb0YBLk/yY6aao3+P+frdEa/Ntv1DNumhM93uC+Ub7K/sjVysgTdhKWZUxJqHAgVl8YPeeOAQeH4BzB+gIwe79DsvSHX7C5Rd9DkwoAX4TVMx8tWolUpJOeX2GGRX2hPAKUpg07i9pYJlu4/NCudWHFXUSY4AdKP3ye8i0qKRT4Pb/2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mvcHDKk9aePOKSMBNr+7VfvUqJzy7NCLdTwBrhoER4E=;
- b=jkbKMNa7ryeiKqS6SpRF8Pw9M8Ur6TaCRRkjgbM/CfE44ivqszc83ZBRM3qzzA3240K6Du8HgOfGF2alyDUMNzDnJemJRihLMluJPnqIQYhJ7Q8tnY384e6BTm2rDNZy75jOunU43sg7UEjgtxsLE7BmbPeXtCahjmuJ6gkm3tc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
- by AM9PR04MB8730.eurprd04.prod.outlook.com (2603:10a6:20b:43d::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.23; Fri, 12 May
- 2023 13:20:34 +0000
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::28fb:82ec:7a6:62f3]) by PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::28fb:82ec:7a6:62f3%5]) with mapi id 15.20.6387.020; Fri, 12 May 2023
- 13:20:33 +0000
-From: Shenwei Wang <shenwei.wang@nxp.com>
-To: Wei Fang <wei.fang@nxp.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
-Cc: Shenwei Wang <shenwei.wang@nxp.com>,
-	Clark Wang <xiaoning.wang@nxp.com>,
-	NXP Linux Team <linux-imx@nxp.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Alexander Lobakin <alexandr.lobakin@intel.com>,
-	Horatiu Vultur <horatiu.vultur@microchip.com>,
-	Simon Horman <horms@kernel.org>,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	imx@lists.linux.dev,
-	Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v4] net: fec: using the standard return codes when xdp xmit errors
-Date: Fri, 12 May 2023 08:20:10 -0500
-Message-Id: <20230512132010.1358350-1-shenwei.wang@nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR13CA0040.namprd13.prod.outlook.com
- (2603:10b6:a03:2c2::15) To PAXPR04MB9185.eurprd04.prod.outlook.com
- (2603:10a6:102:231::11)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AC071DDF5
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 13:21:54 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AB114E66
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 06:21:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683897680;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4AlaRyQOy36sXdqy+JwhbCuIDwi8LlxpgbISw/CDPFM=;
+	b=WVuFVWO6/FlQSCVBFPSJC0w1/VEBS0do9vDz6gEOk7BY/kXbJ95LDYOtcqNM3WjHSaCZvw
+	q/dgJfGUO6xLvfizoSIiTsitotncXfuAFLv1jnZRfGTt6H0zQ0NrHOXe6e+urH9J6WHINu
+	+MPeFTCgNTF61UxaqRCOdNs9ZQWVvng=
+Received: from mail-vk1-f198.google.com (mail-vk1-f198.google.com
+ [209.85.221.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-674-ndbwY0gcNbax0oK91YUoew-1; Fri, 12 May 2023 09:21:19 -0400
+X-MC-Unique: ndbwY0gcNbax0oK91YUoew-1
+Received: by mail-vk1-f198.google.com with SMTP id 71dfb90a1353d-44fd17672b5so2536865e0c.3
+        for <netdev@vger.kernel.org>; Fri, 12 May 2023 06:21:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683897679; x=1686489679;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4AlaRyQOy36sXdqy+JwhbCuIDwi8LlxpgbISw/CDPFM=;
+        b=TERwgzWxQKDYtVjRieidyFvcyBYH+b8d3Hymt3FFSizLlJUV83K+5KstD6l1Yo2KBz
+         4bLB6Y17QJBBmd+ZI1B7uLf38Ow3uy81FB+l7HIFKRs66q4hVfFwLrIHW0PVIgD26i8i
+         aoECPAmtQE+IhZ6ZQTeKp6hGESfrLnXvmoI1KNDs4edgAFIcFbkDykWv1hryvRQnYi6M
+         g0tIxKsZx7SDOTvknOCyOuBqgNhgcRcHeDZlUeS9cp6vTYMQbl5sccdzqJKMsO22Pg8n
+         1NpwMI7tRo7sJcYcVEM7wT/4iETdFGNBICrk61De+3d+Ho8EwhNNNDqY6BV7eVmk+WmS
+         jnHA==
+X-Gm-Message-State: AC+VfDwL1E0zAx+YEy67j9xiGswz0Z/C5UQEXROoeGawGFbRHuVoJ1Fs
+	te78Nbx+nNjlPHrke9m1LYYZSAdDKHLmTMqxRtPMIKRXJf1P3KKJ6pN3NtZHgCe71zqPX8Tcv54
+	eIDqlfXvfBjmeZ4eol7JaXiQ/BbFAHFFm
+X-Received: by 2002:a67:ffd5:0:b0:434:69be:8495 with SMTP id w21-20020a67ffd5000000b0043469be8495mr9541607vsq.9.1683897678641;
+        Fri, 12 May 2023 06:21:18 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ56EVhPNDeIWeojbtIxhXDW0jsNAxPEwZjDUE5jSg6VIr1fyKKsgmU+sCABqffj01zeSX7annq0Y5IBzbAanRE=
+X-Received: by 2002:a67:ffd5:0:b0:434:69be:8495 with SMTP id
+ w21-20020a67ffd5000000b0043469be8495mr9541577vsq.9.1683897678350; Fri, 12 May
+ 2023 06:21:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR04MB9185:EE_|AM9PR04MB8730:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6d1501a4-de05-4844-3348-08db52ebaa4c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	eSAfMZr+BynppLTJtj0cuVXo1FAmxITPBW3Jd4niovBaJjHoxUNX2G5hbIT3odEL63D90ZUD+2J7h49MEfWyN9L3Q92Kidh9+0fiLkt25XGD+uReYGrKF4qfGGbekog7tbk42/neO20U0dy9XGw5zlY0mzZu2/jGz4h0VpB8COgutOMo/WaNRl00t/hyqbo+j4rnb2H5FC20iHZga+s8756hXvlmx90Rd+dJkCH0X++wr0Zo2ra/coUDZUw2yff2fU7dGeIqt9PQnEj8YbTD2CYFXVSlb1+XBw1+X5xHrrpXYTAk5za2woJCV3EX2Sgm8l4AmilAKWf0Nln63krl2iZ0+0jtfiXyeeLgYl+qs9To7j+B9SKepDFGKZKd3TP8sZWtylmWPsvZYDkj3qWHyUzSWm/eEP4F1j/zUSFEjteZg7GfsLr6+kkSKE3VQM0kqkngLxqHV5Q/kBRrklLfjq5pFt1RDOFsQTbtRN2WIq98a7yMlG6hYRFtBflTUvVP7/3cSpKKBBb4PzvoUqdNpTy8ToVa+YlwbaQpu39cJ96nnF0YOgvRzRRfJRX2RjIkB+Lz5pdX+O80H4LTIAMnmJM/+1r0Ozt5JFwh5SXgWSHkaDccTcEc4GLb6hAjea/1
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(366004)(346002)(376002)(396003)(451199021)(6666004)(52116002)(6486002)(54906003)(41300700001)(86362001)(44832011)(7416002)(110136005)(8936002)(8676002)(66476007)(478600001)(4326008)(316002)(66556008)(66946007)(5660300002)(6506007)(6512007)(55236004)(1076003)(36756003)(38350700002)(186003)(26005)(38100700002)(83380400001)(2616005)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?gM6ZX/Ci+0fywt+itmOQUVvSGF0g+fauwQ5hoisTuTQ4EC25oLoLAM0iBY4J?=
- =?us-ascii?Q?NKnXKhkQAZ3jWvLYVNPwtsMwMYjGqh3J94Ao6bQnsOiMOp3ohp29Z3vbXcGp?=
- =?us-ascii?Q?GlpXZ/dRhE4M92xiVOCb8Fe6hcvq87Qid2hQGspCsHKPR08D+yBbZAIMJ1/m?=
- =?us-ascii?Q?LwYyzZ8rrGaWb+6mrl+BztCzdTV0R7qOxX2EkOGbG79BsCMo86feyJ3JZHZH?=
- =?us-ascii?Q?xzfe5fVxXJmIxuOLkXadEVulIvolVkHjyy4YhloWWHbKQ/8HLbZEeKzifmKw?=
- =?us-ascii?Q?9h8mocpUjXKSQU8jbF9ve8jqxP1zaD8O4/zy+pGGV9hhY3q6LECeRySKI6Xq?=
- =?us-ascii?Q?r3j3KNawvRuI4dLvoMm48D6Fmk7ZD17wm2PLQLMuqRQEXql6QcnBJBD8LWJC?=
- =?us-ascii?Q?JazU1KhxyVe/toSuhhxFxFVniBrErBmGfEqW96oSzpk5+BIt1NGXNf+cmzn0?=
- =?us-ascii?Q?XhZWEzC21Yox1frsN1bk0y7AIx/5egr3n9euFPpWYjwnoTwQ0xkGEXjBuPg7?=
- =?us-ascii?Q?f7Ip4S/E4kCdD7/BG95wNrG76RneSecgawelYMnlW++X3mnel5vthE+AydFO?=
- =?us-ascii?Q?4DXF4WaE+UB7GM19dOs7XExgQaSODO+UzHuzPDbr/8BCIVjKAgwBHkvMXiIs?=
- =?us-ascii?Q?Eea5gAxVQYwj2InmQOzuP5YV00C/0ULeseTrlUVxsPwTzxpxQ6z4v+AV3TXy?=
- =?us-ascii?Q?3fP3ksJIBGyjDcFbEKevLll4cVZ1gO+o+xsvmNzhBUkbWTtoijM1Y8b0PEEs?=
- =?us-ascii?Q?TshPxE6xKJM0KpFggtzTwz2a8hyxW6YlrDGsqf+JSMtBjWP8xgmqnL+GJKjr?=
- =?us-ascii?Q?F7drzd+b9QdCQYp3WEfU1UVvn/V72R9oFg6hj7kcSu5vDl7LgmZ0TeJZJZmT?=
- =?us-ascii?Q?3UVhkMmt/U/2LoH6qM4eOGtOl42KQcrz4omKnjRbUd8pJV0caXCwykuEjEqi?=
- =?us-ascii?Q?TtsQLUQJnBvjhYAXHQL+cDAmAV1BNCp32+s7ZyedN48IXsFwquuYoEtJPqec?=
- =?us-ascii?Q?pUU2FqjDfIvYicLKGPSlzz8CzHxIrMqI+B+rRSUQzqEcycvKHpM8w7E16AI7?=
- =?us-ascii?Q?GYg+EDBYrnfXF35w0+fLbV/y32HkcVYTAv9METJx1BngAr69+8wObD4oMGCA?=
- =?us-ascii?Q?NwvJWeZ68Z64w6Guj9X6a9A5tnVrq1u+VUAEUtVDYVyTSgMklV930woZOVD8?=
- =?us-ascii?Q?L0OWOwHTx/JJpAewfmMntHjuI9nngLAT1OfdI+8+B4rqUtgs8NAvNhRGhOj9?=
- =?us-ascii?Q?qIMyjrRrVmmwUcQKnPc7c7u/nj3EZ98sEEzqwI1pMlH32NY5pB53NuzGtURV?=
- =?us-ascii?Q?wsA2f0fDW0IluOq6de9xYtrzSkiM+w1W4pbXAlJMzWIB9dpMyoz49lAoN5zy?=
- =?us-ascii?Q?VqnaQsgVaeKnIIHBkOZEsi+F+WHdtqXDkzwShSFGcQ7ei1Mq3x/gBrhzAkro?=
- =?us-ascii?Q?PPIV0Hd/kUnNKH6gk1c3BmN4t4827RnKiVbyP/GjN2OhfiBepcERX/Hjvqcv?=
- =?us-ascii?Q?X+ooZctAXviGjQzux/gwkNopHtvmwLngdDB0LHa9cMdahSRgta0o4eysGFCA?=
- =?us-ascii?Q?YACDpCnqrbBQcNi/JByHGD79wKiqaPjP5awxUMYi?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d1501a4-de05-4844-3348-08db52ebaa4c
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2023 13:20:33.3932
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SFBEG5lt1/N87RcPUVXS6gIrkb11bvjmyEtkRAWaUE+UCs+0y9J7QkDhR3aq8tdZthQZ8QBGbe3aUWdI5vtFbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8730
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230512100620.36807-1-bagasdotme@gmail.com> <20230512100620.36807-10-bagasdotme@gmail.com>
+In-Reply-To: <20230512100620.36807-10-bagasdotme@gmail.com>
+From: Richard Fontana <rfontana@redhat.com>
+Date: Fri, 12 May 2023 09:21:07 -0400
+Message-ID: <CAC1cPGzSpMZC3oJOpzjqiEDvgWUszzSztMri6uxW6vZ7oZtD5w@mail.gmail.com>
+Subject: Re: [PATCH v2 09/10] udf: Replace license notice with SPDX identifier
+To: Bagas Sanjaya <bagasdotme@gmail.com>
+Cc: Linux SPDX Licenses <linux-spdx@vger.kernel.org>, 
+	Linux DRI Development <dri-devel@lists.freedesktop.org>, 
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux Networking <netdev@vger.kernel.org>, 
+	Linux ARM <linux-arm-kernel@lists.infradead.org>, 
+	Linux Staging Drivers <linux-staging@lists.linux.dev>, 
+	Linux Watchdog Devices <linux-watchdog@vger.kernel.org>, 
+	Linux Kernel Actions <linux-actions@lists.infradead.org>, 
+	Diederik de Haas <didi.debian@cknow.org>, Kate Stewart <kstewart@linuxfoundation.org>, 
+	Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	David Airlie <airlied@redhat.com>, Karsten Keil <isdn@linux-pingi.de>, 
+	Jay Vosburgh <j.vosburgh@gmail.com>, Andy Gospodarek <andy@greyhouse.net>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Sam Creasey <sammy@sammy.net>, 
+	Dominik Brodowski <linux@dominikbrodowski.net>, Daniel Mack <daniel@zonque.org>, 
+	Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, 
+	Guenter Roeck <linux@roeck-us.net>, Jan Kara <jack@suse.com>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, 
+	Manivannan Sadhasivam <mani@kernel.org>, =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>, 
+	Simon Horman <simon.horman@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This patch standardizes the inconsistent return values for unsuccessful
-XDP transmits by using standardized error codes (-EBUSY or -ENOMEM).
+On Fri, May 12, 2023 at 6:07=E2=80=AFAM Bagas Sanjaya <bagasdotme@gmail.com=
+> wrote:
 
-Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
----
- v4:
-  - remove the fix of double call of xdp_return_frame in this patch and
-    will correct it in another patch for net.
+> diff --git a/fs/udf/ecma_167.h b/fs/udf/ecma_167.h
+> index de17a97e866742..b2b5bca45758df 100644
+> --- a/fs/udf/ecma_167.h
+> +++ b/fs/udf/ecma_167.h
+> @@ -1,3 +1,4 @@
+> +/* SPDX-License-Identifier: BSD-2-Clause OR GPL-1.0+ */
+>  /*
+>   * ecma_167.h
+>   *
+> @@ -8,29 +9,6 @@
+>   * Copyright (c) 2017-2019  Pali Roh=C3=A1r <pali@kernel.org>
+>   * All rights reserved.
+>   *
+> - * Redistribution and use in source and binary forms, with or without
+> - * modification, are permitted provided that the following conditions
+> - * are met:
+> - * 1. Redistributions of source code must retain the above copyright
+> - *    notice, this list of conditions, and the following disclaimer,
+> - *    without modification.
+> - * 2. The name of the author may not be used to endorse or promote produ=
+cts
+> - *    derived from this software without specific prior written permissi=
+on.
+> - *
+> - * Alternatively, this software may be distributed under the terms of th=
+e
+> - * GNU Public License ("GPL").
+> - *
+> - * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AN=
+D
+> - * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+> - * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PU=
+RPOSE
+> - * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABL=
+E FOR
+> - * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIA=
+L
+> - * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOO=
+DS
+> - * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+> - * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, S=
+TRICT
+> - * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY=
+ WAY
+> - * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O=
+F
+> - * SUCH DAMAGE.
+>   */
 
- v3:
-  - remove the fix tag.
-  - resend to net-next
+This is not BSD-2-Clause. Ignoring the interior statement about the
+GPL, I think the closest SPDX identifier might be
+https://spdx.org/licenses/BSD-Source-Code.html
+but it doesn't quite match.
 
- v2:
-  - focusing on code clean up per Simon's feedback.
 
- drivers/net/ethernet/freescale/fec_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> diff --git a/fs/udf/osta_udf.h b/fs/udf/osta_udf.h
+> index 157de0ec0cd530..6c09a4cb46f4a7 100644
+> --- a/fs/udf/osta_udf.h
+> +++ b/fs/udf/osta_udf.h
+> @@ -1,3 +1,4 @@
+> +/* SPDX-License-Identifier: BSD-2-Clause OR GPL-1.0+ */
+>  /*
+>   * osta_udf.h
+>   *
+> @@ -8,29 +9,6 @@
+>   * Copyright (c) 2017-2019  Pali Roh=C3=A1r <pali@kernel.org>
+>   * All rights reserved.
+>   *
+> - * Redistribution and use in source and binary forms, with or without
+> - * modification, are permitted provided that the following conditions
+> - * are met:
+> - * 1. Redistributions of source code must retain the above copyright
+> - *    notice, this list of conditions, and the following disclaimer,
+> - *    without modification.
+> - * 2. The name of the author may not be used to endorse or promote produ=
+cts
+> - *    derived from this software without specific prior written permissi=
+on.
+> - *
+> - * Alternatively, this software may be distributed under the terms of th=
+e
+> - * GNU Public License ("GPL").
+> - *
+> - * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AN=
+D
+> - * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+> - * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PU=
+RPOSE
+> - * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABL=
+E FOR
+> - * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIA=
+L
+> - * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOO=
+DS
+> - * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+> - * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, S=
+TRICT
+> - * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY=
+ WAY
+> - * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O=
+F
+> - * SUCH DAMAGE.
+>   */
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 42ec6ca3bf03..cd215ab20ff9 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3799,7 +3799,7 @@ static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
- 	if (entries_free < MAX_SKB_FRAGS + 1) {
- 		netdev_err(fep->netdev, "NOT enough BD for SG!\n");
- 		xdp_return_frame(frame);
--		return NETDEV_TX_BUSY;
-+		return -EBUSY;
- 	}
+Same comment - this is not BSD-2-Clause.
 
- 	/* Fill in a Tx ring entry */
-@@ -3813,7 +3813,7 @@ static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
- 	dma_addr = dma_map_single(&fep->pdev->dev, frame->data,
- 				  frame->len, DMA_TO_DEVICE);
- 	if (dma_mapping_error(&fep->pdev->dev, dma_addr))
--		return FEC_ENET_XDP_CONSUMED;
-+		return -ENOMEM;
+> diff --git a/fs/udf/udftime.c b/fs/udf/udftime.c
+> index fce4ad976c8c29..d0fce5348fd3f3 100644
+> --- a/fs/udf/udftime.c
+> +++ b/fs/udf/udftime.c
+> @@ -1,21 +1,4 @@
+> -/* Copyright (C) 1993, 1994, 1995, 1996, 1997 Free Software Foundation, =
+Inc.
+> -   This file is part of the GNU C Library.
+> -   Contributed by Paul Eggert (eggert@twinsun.com).
+> -
+> -   The GNU C Library is free software; you can redistribute it and/or
+> -   modify it under the terms of the GNU Library General Public License a=
+s
+> -   published by the Free Software Foundation; either version 2 of the
+> -   License, or (at your option) any later version.
+> -
+> -   The GNU C Library is distributed in the hope that it will be useful,
+> -   but WITHOUT ANY WARRANTY; without even the implied warranty of
+> -   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> -   Library General Public License for more details.
+> -
+> -   You should have received a copy of the GNU Library General Public
+> -   License along with the GNU C Library; see the file COPYING.LIB.  If n=
+ot,
+> -   write to the Free Software Foundation, Inc., 59 Temple Place - Suite =
+330,
+> -   Boston, MA 02111-1307, USA.  */
+> +// SPDX-License-Identifier: GPL-2.0-only
 
- 	status |= (BD_ENET_TX_INTR | BD_ENET_TX_LAST);
- 	if (fep->bufdesc_ex)
-@@ -3869,7 +3869,7 @@ static int fec_enet_xdp_xmit(struct net_device *dev,
- 	__netif_tx_lock(nq, cpu);
+Shouldn't this be
+// SPDX-License-Identifier: LGPL-2.0-or-later ?
+(or are you implicitly using the obscure LGPLv2.x section ... 3 mechanism?)
 
- 	for (i = 0; i < num_frames; i++) {
--		if (fec_enet_txq_xmit_frame(fep, txq, frames[i]) != 0)
-+		if (fec_enet_txq_xmit_frame(fep, txq, frames[i]) < 0)
- 			break;
- 		sent_frames++;
- 	}
---
-2.34.1
+Richard
 
 
