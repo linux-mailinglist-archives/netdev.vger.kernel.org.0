@@ -1,150 +1,149 @@
-Return-Path: <netdev+bounces-2173-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2174-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 71B397009F9
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 16:08:52 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9BE5A700A04
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 16:15:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3268D1C21262
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 14:08:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D0CC72817F4
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 14:14:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2ED2D1E53F;
-	Fri, 12 May 2023 14:08:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA5281EA62;
+	Fri, 12 May 2023 14:14:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C3521D2BC
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 14:08:49 +0000 (UTC)
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2091.outbound.protection.outlook.com [40.107.92.91])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F044C0C;
-	Fri, 12 May 2023 07:08:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oWvPyHjnONG2YSTc5pC6Hk0HlAbuNdqyq7fiu1W4MkYzL7rUlS3v0yrrhgwTChuBPzB6OXpBLGJSH3Az8mY4rgmQ4WTmtRmyTxjMPGqeAsRB58ucCsyxQ1CVPyfNqT/Fu7sYTCMn+gF2yRO0WpHuCIIn2rp6AJ4ftwXL6zO+nAbCCJW6LP8L1wX9EV21y1tD4wL9hHabgJyeHWAzvz5e2yE8EKu6CkgQM21hfg8UegxX6ZCIATG5XvxS9C8K19teJy3g8auzYkh0ZnKzZeko48A2Alr9nldqSc3S7EvE7/l6qyo+sgZBqfryOT9lyRTBfF1yoAliPGz+yDcUUdMmow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mSG6vBdSMbohx5Bw++s6I0tNK3HDz2DMBrBKlFhPBRI=;
- b=BLe2fmq1MnZbY93SWnBZqMbIhDxF60C5FJXxd9lIhbnzIHUwhYuJJA5qnxkpkgsioPwDrYPT9YxarI6/YVyAAGV7Zqpt+hHgmKqmOZgXbcVZikRm+SofaVpsxdSlSsvBPLSPBbWyKwKfkeCuhG++6N0pUcEFh2MbzRclvsuyo2XLdWVVUDQYkMPT+2ujp3MC0SdUf9MFfPniTFcvEtNJywtBm8BUbSAZ1FlG30p47DZMsd/IsuNleFlDlNprg5fbfAES7qPz6IiYK3+Bsv+29X8MyVsVvJc+5hEWUwwi3uNjpDoovjtfU44Jt5ulFfXv7e97idIGj0JITNZROxe3wg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mSG6vBdSMbohx5Bw++s6I0tNK3HDz2DMBrBKlFhPBRI=;
- b=QYEkRFuCey65JC9kBOs++xjfqXXtj89VWSKEdMLkj9a6Z8Ay3pI8Gdm+BwKub65Rmp1kxV0Rcx49YbtlB4FkWdPqvVwUNKfBRhKdXLL/en9dL/MDSK7OHem1idAb30TLKEWZf+M6jkxGOWOTn7qLuhiJge2oMsqFFp6tY6TM/m0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CO1PR13MB4808.namprd13.prod.outlook.com (2603:10b6:303:d9::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.24; Fri, 12 May
- 2023 14:08:43 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.024; Fri, 12 May 2023
- 14:08:42 +0000
-Date: Fri, 12 May 2023 16:08:36 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: Yang Li <yang.lee@linux.alibaba.com>, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] ipvlan: Remove NULL check before dev_{put, hold}
-Message-ID: <ZF5IZIlUwncUXBHS@corigine.com>
-References: <20230511072119.72536-1-yang.lee@linux.alibaba.com>
- <20230511085453.25ef33fc@hermes.local>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230511085453.25ef33fc@hermes.local>
-X-ClientProxiedBy: AS4P195CA0048.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:20b:65a::23) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F038B1DDDC;
+	Fri, 12 May 2023 14:14:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31363C433EF;
+	Fri, 12 May 2023 14:14:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683900892;
+	bh=I2SLq8jRsoL0+2OXWw2UIOj7p5Mdxwxb3J5ypYpoAUs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=bPPD+m+P86R0YFQUyAqfdOhufE7rhuL73K31mdpfdpvyOXzO9BDpwYpeVE9TIjMrD
+	 jNudwgimrBEKeXWM0l1TQ2IDGVYvNpEqnskCNymGQC/uxmtXz8GsE3zT7Iw5oB9vWI
+	 hfkK1iQImPASzdqKQ3hlueSkpeNNFO94/P+ofmj4Ui0mu6WLdhICj4VXcNayd+/jY4
+	 zuXtAML12bkIzNx2u3dNuQc8hmAzKEVHlyXgqkF9O63x54KG4JsnzPaBAZjYLSOuuN
+	 Rr4j5Lwb9ExHdelWa53gMknazbeNBs6u/FmfPv+Rpcycu+qJQZFCCLGl1urSsdXjVR
+	 JZJBmPGs6chZw==
+Date: Fri, 12 May 2023 16:14:48 +0200
+From: Lorenzo Bianconi <lorenzo@kernel.org>
+To: Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc: netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+	bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+	daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+	linyunsheng@huawei.com
+Subject: Re: [RFC net-next] net: veth: reduce page_pool memory footprint
+ using half page per-buffer
+Message-ID: <ZF5J2B4gS4AE3PHS@lore-desk>
+References: <d3ae6bd3537fbce379382ac6a42f67e22f27ece2.1683896626.git.lorenzo@kernel.org>
+ <c65eb429-035e-04a7-51d1-c588ac5053be@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO1PR13MB4808:EE_
-X-MS-Office365-Filtering-Correlation-Id: f9b952c7-68ef-4853-c606-08db52f2646e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	t+3n9gK+S0SYpL/Htv6UfO5YNmR9ZSSXpRXiXD0MRWSmhmXm7YmqA0gmgTrHUqco5kGuYSS77ymcT3irj322KpFCf9Q7nx9/Y71aseX/RRCnRNv8FduF2WhisQlEY8Y5Z++0WxTVobPLN7YwWkyUyzGlDohYjcupg/up+Og1Gvv3v3mbUzhtpJtak8XT48ZUs8/58zHam1Xl3fH4/hcHOWg7xPcXz7wZMy+sh6zBZScPNPvm+I/pbqgg0TD/kpqtwPp34BsnNcCEehA7P0nZTjN0kVhPvXiN0YeUXsz5htFSkckl//G7PAmDObUtdEizL0b0jPBD+Zw5eWEIKXKm7zGofaT+1T94FlrnaMycJFXYERnfmjdjyXiZOVoK0BY5a1Rb8CJF276x0kEmu+9NJ1MGLU8iTpJo+zqqFhE5S+I+YkQlBbhaYz+RpwlHdnZ8cFdVY1RUCruPh7jDfebQ+Dht+tPHm8qO0t8UdXOh2rt6gexQCgx50AiMAnvaEdXnl8IOSZ8pxmDm5hPOGzUJBhse84IpHwBdMRBAs/lrluO/3ukwLN75Jv5U0+suZ+tTwCVwqa2tSjD8ajLfw8QpdUpfelZGGlvoTkRB0765dXk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(136003)(396003)(39840400004)(366004)(451199021)(6486002)(54906003)(316002)(41300700001)(6666004)(4326008)(36756003)(478600001)(86362001)(66476007)(66946007)(66556008)(6916009)(6512007)(6506007)(83380400001)(966005)(2616005)(186003)(38100700002)(5660300002)(8676002)(8936002)(44832011)(4744005)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ZRUj2p/LSMBENEOOf69qdtn6m0LEiYIOz1K40nIH6h2wRQKSzPDyeLacKP38?=
- =?us-ascii?Q?dHnv89vjYaYUM73lgpkTS0qQxKtc87h3ObmS/Thkgs3jnEQAkCoFZQpH/uS1?=
- =?us-ascii?Q?jZ0xpel/kL987WiC11OwaGtpMV2hUI3ZXZtbBw+WLVNjFnszZK/X0GD0MxtZ?=
- =?us-ascii?Q?uB3sWlp3Ntyaxlf3aZ9BktmM22A/HNKd/mltl8ITEKC/eRCqPoaQWeEk9MsF?=
- =?us-ascii?Q?gOLaKtzxxopLrCWAn+bmnHfxJgGX2e6DXwZe4Ric+NJoHdfD+7NNt+0Hmk5k?=
- =?us-ascii?Q?6ngYKy7TpRts0f1Ax2WcIL1BOLiRX4i3zmiar9kBWPrtjkVR/mH+HCeBv0y+?=
- =?us-ascii?Q?DvexHzme+ghsi6jzPzSgpx1vhnwykoXHmIENW26wZ/VAcKTQMsBra45yPKQr?=
- =?us-ascii?Q?6WKzrAMei1eVlq3T9fAnYUuT8thQvKRioaBBR7nrCh/PznhWehAQ28L+hdjW?=
- =?us-ascii?Q?LLHaig0ouWrCXTwsLn4CEEPemWcvvMDXXa2ri0HKrjPlfnF8yUYlxY673TgP?=
- =?us-ascii?Q?ym7ik3zCmVWGZptEv+Xs7fHWe5ro29+IITmqzKodiMO3p/61lMHoIEq3bn0O?=
- =?us-ascii?Q?5NQ69RsnGD+jWytwSH/GCdKuKtJqa17IcNSJ56clLOdy3YpIPLmADcaSyuZ1?=
- =?us-ascii?Q?Zd/dy9ldSlnSO1aYQDECsaNOR3ynYrXkLpmwrPsbd9vS6teLKuUW7k+qgrDr?=
- =?us-ascii?Q?3RKTwHIGK+gY5WBFvLbVCc3S6wD9FQxyqnh4w0knPFBjj3Y7i2A0eeDpMwIl?=
- =?us-ascii?Q?xYVwO9rE/nZxFFfWAkLkONTOknTBd/+gBZ26DAoYir2F1bIcCUF4jhB3TcBb?=
- =?us-ascii?Q?SoNvHOxd/mOuTV+hCFKQPMvVYpKYvJuwipGzf3q3s81VGDkx1VFG9JOCpnd+?=
- =?us-ascii?Q?8yP1YBFyxe1Q5NjoebUtbWZYlctamYK4GMRiCGR/E2BmKnMYFk9fqXCH35uH?=
- =?us-ascii?Q?XW+Ke8cmKB5fnrTYD66HFNcRK1SJoxFL+jJalXrPpCf31kvTnRxYx84mMa27?=
- =?us-ascii?Q?MARdP3Emp90NFsq/Bvk+GME64+r2KcuZjP15XqQJe1Tt9U/jlCrShtyuZF1Z?=
- =?us-ascii?Q?z2P7oLRMsxhr1jFTLEPA1YP1fNXnSz/oLB9Z5y8hao5QNcSYR9jCy8byBGhP?=
- =?us-ascii?Q?gJT/DF3Twd5ZuWvuVqOjGd+2m/BnFvQ/WKorWCCXOe1AXh2XMNx3AP2K+OHz?=
- =?us-ascii?Q?kiuKffm+Ka2SN98Ut09XmQSkMRJgI/m1jDdTGOjqQYplpbYwO+JwjfPzBaF4?=
- =?us-ascii?Q?OlysVg2CNxko+BuUmaBpeUNojXNOuvghGOWj4MUTN6ycdOg97Csj/JvYZr0I?=
- =?us-ascii?Q?dgPazlsBTkamI2qdehO88l1M786zYEcS4G/vWgNZwqEmlm6HSqlm9JBzF3Q1?=
- =?us-ascii?Q?MuqJArl+s9qGFKw8zREU3ibi/Gq9GVItrZWi2+Z6gd0zMyo1znnT/o+Xm3Ou?=
- =?us-ascii?Q?/J1Xly23t/fAqLRcKyPoPUkH3VR6Mnoyk256pcrTl4gm1RN8Ytkvfn0qRXtY?=
- =?us-ascii?Q?3xnxJOROIwpddEaWC7EHvYD8FoM5Kk++CzRTC7SSvvhAv6Qj8ViPpx4wEh7A?=
- =?us-ascii?Q?WixlVELHHfR3sCJIDg/7msZfjQ1dKEa5l+uJF+GmQ7mzRLv2nh7g93l08I2D?=
- =?us-ascii?Q?LJ9TcQFtK/JjfJyQlAozeroUcgFbklhoHEyUOXt64228HXLIZaOYHH4kYEDe?=
- =?us-ascii?Q?aWBPqA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9b952c7-68ef-4853-c606-08db52f2646e
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2023 14:08:42.8089
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AJwakeaf2GVdKS8psXRIaG2Ny6ecaV85jHnt28Cw9KPalvw+M+DoE3WfVCdpQa0Kipjq9twW7r48r83W183H5koYvkaqZNqkT0c318hte/Y=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4808
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="pLSR8tqB7F9tZmtS"
+Content-Disposition: inline
+In-Reply-To: <c65eb429-035e-04a7-51d1-c588ac5053be@intel.com>
 
-On Thu, May 11, 2023 at 08:54:53AM -0700, Stephen Hemminger wrote:
-> On Thu, 11 May 2023 15:21:19 +0800
-> Yang Li <yang.lee@linux.alibaba.com> wrote:
-> 
-> > The call netdev_{put, hold} of dev_{put, hold} will check NULL,
-> > so there is no need to check before using dev_{put, hold},
-> > remove it to silence the warning:
-> > 
-> > ./drivers/net/ipvlan/ipvlan_core.c:559:3-11: WARNING: NULL check before dev_{put, hold} functions is not needed.
-> > 
-> > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> > Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4930
-> > Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> 
-> Maybe add new coccinelle script for this? scripts/free/dev_hold.cocci?
 
-FWIIW, I observe that Coccinelle flags this problem as per the log above.
-But perhaps I am missing your point.
+--pLSR8tqB7F9tZmtS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> From: Lorenzo Bianconi <lorenzo@kernel.org>
+> Date: Fri, 12 May 2023 15:08:13 +0200
+>=20
+> > In order to reduce page_pool memory footprint, rely on
+> > page_pool_dev_alloc_frag routine and reduce buffer size
+> > (VETH_PAGE_POOL_FRAG_SIZE) to PAGE_SIZE / 2 in order to consume one page
+> > for two 1500B frames. Reduce VETH_XDP_PACKET_HEADROOM to 192 from 256
+> > (XDP_PACKET_HEADROOM) to fit max_head_size in VETH_PAGE_POOL_FRAG_SIZE.
+> > Please note, using default values (CONFIG_MAX_SKB_FRAGS=3D17), maximum
+> > supported MTU is now reduced to 36350B.
+>=20
+> I thought we're stepping away from page splitting bit by bit O_o
+
+do you mean to driver private page_split implementation? AFAIK we are not
+stepping away from page_pool page split implementation (or maybe I missed i=
+t :))
+
+> Primarily for the reasons you mentioned / worked around here: it creates
+> several significant limitations and at least on 64-bit systems it
+> doesn't scale anymore. 192 bytes of headroom is less than what XDP
+> expects (isn't it? Isn't 256 standard-standard, so that skb XDP path
+> reallocates heads only to have 256+ there?), 384 bytes of shinfo can
+> change anytime and even now page split simply blocks you from increasing
+> MAX_SKB_FRAGS even by one. Not speaking of MTU limitations etc.
+> BTW Intel drivers suffer from the very same things due solely to page
+> split (and I'm almost done with converting at least some of them to Page
+> Pool and 1 page per buffer model), I don't recommend deliberately
+> falling into that pit =3D\ :D
+
+I am not sure about the 192 vs 256 bytes of headroom (this is why I sent th=
+is
+patch as RFC, my main goal is to discuss about this requirement). In the
+previous discussion [0] we deferred this implementation since if we do not
+reduce requested xdp headroom, we will not be able to fit two 1500B frames
+into a single page (for skb_shared_info size [1]) and we introduce a perfor=
+mance
+penalty.
+
+Regards,
+Lorenzo
+
+[0] https://lore.kernel.org/netdev/6298f73f7cc7391c7c4a52a6a89b1ae21488bda1=
+=2E1682188837.git.lorenzo@kernel.org/
+[1] $ pahole -C skb_shared_info vmlinux.o=20
+struct skb_shared_info {
+        __u8                       flags;                /*     0     1 */
+        __u8                       meta_len;             /*     1     1 */
+        __u8                       nr_frags;             /*     2     1 */
+        __u8                       tx_flags;             /*     3     1 */
+        unsigned short             gso_size;             /*     4     2 */
+        unsigned short             gso_segs;             /*     6     2 */
+        struct sk_buff *           frag_list;            /*     8     8 */
+        struct skb_shared_hwtstamps hwtstamps;           /*    16     8 */
+        unsigned int               gso_type;             /*    24     4 */
+        u32                        tskey;                /*    28     4 */
+        atomic_t                   dataref;              /*    32     4 */
+        unsigned int               xdp_frags_size;       /*    36     4 */
+        void *                     destructor_arg;       /*    40     8 */
+        skb_frag_t                 frags[17];            /*    48   272 */
+
+        /* size: 320, cachelines: 5, members: 14 */
+};
+
+>=20
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  drivers/net/veth.c | 39 +++++++++++++++++++++++++--------------
+> >  1 file changed, 25 insertions(+), 14 deletions(-)
+> [...]
+>=20
+> Thanks,
+> Olek
+
+--pLSR8tqB7F9tZmtS
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZF5J2AAKCRA6cBh0uS2t
+rCxAAQCSKLWjFxjZqsMfxfjAFqbeYwd4JydyXK1h0pDmtKOCqQD/RsjwdxwHbF7j
+/uTV1IUo47JLIqJhGSHB0lIzqD7YIww=
+=waNW
+-----END PGP SIGNATURE-----
+
+--pLSR8tqB7F9tZmtS--
 
