@@ -1,126 +1,134 @@
-Return-Path: <netdev+bounces-2180-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2181-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id EB4AA700A51
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 16:30:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BCBE3700A92
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 16:44:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2FB6B281B28
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 14:30:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DAB801C2126B
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 14:44:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 138511EA77;
-	Fri, 12 May 2023 14:30:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1867A54;
+	Fri, 12 May 2023 14:44:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05A361EA74
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 14:30:13 +0000 (UTC)
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9B613291
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 07:30:12 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id a640c23a62f3a-965e4be7541so1687193066b.1
-        for <netdev@vger.kernel.org>; Fri, 12 May 2023 07:30:12 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A352D813
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 14:44:04 +0000 (UTC)
+Received: from sv3.telemetry-investments.com (gw3a.telemetry-investments.com [38.76.0.51])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18A9B1FCE
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 07:44:03 -0700 (PDT)
+Received: from ti139.telemetry-investments.com (ti139 [192.168.53.139])
+	by sv3.telemetry-investments.com (Postfix) with ESMTP id 96A96107D;
+	Fri, 12 May 2023 10:44:01 -0400 (EDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1683901810; x=1686493810;
-        h=in-reply-to:references:subject:cc:to:from:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T0OGsKjyATKDb9jYmWbTNqZ4sLTa+V+9kzUcaHu+Bg4=;
-        b=NjrV3H/c9DiHGBEjjvqb8Ko94Brk1Dtf/oCUqkm+fROH8lHlSrr1UArdUvMSuEBrTZ
-         LG/tVEizSEHlJUQ6SllSMvjU3iTr8RuxOD5O+u1z9ny+O9O+qn5+rpUf8zaxad3xcWxy
-         JQN0iIZdGmRwGWUqSgV4B5rNFQVCc5GNL+f0uxFlOSL46MjDUc6RjinVG3auLy59Lnse
-         w+2tlm0HEpP81jVq5AOcpkkFZUZRCPRUR1AnN8yEihy7UhOoYS4+Iv+34hKuTifuEGJg
-         W2HF0KkXX8wGXC+UhlM6vOA8Bqs+Tku0ObCpDvdnf8n6wG3OfKQH8PW0B1e6Ic2kqOJo
-         bkxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683901810; x=1686493810;
-        h=in-reply-to:references:subject:cc:to:from:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=T0OGsKjyATKDb9jYmWbTNqZ4sLTa+V+9kzUcaHu+Bg4=;
-        b=SdUvXF5ytS+ltW7sF0ttLMbL9z5tn6cu6nYc78QSo1y63LjLoMmyviW+wxVY4Ct84n
-         W9pH+72D/XFV6RamqLODiJj3sjvmiBuUTxkNe836K0L9u/sW69moWAadfmv+sTTs0IyC
-         7LwfhQv4kowMzWqnUwN+T5OaMqckEOMX2n4BBgNpkva2eUwZe4SajiZptB5g60QhL47h
-         ypKqj4icFnoaDkXtUVkNu3GdFJz0G+z5cVJ19IJoiTGHdNI0GOgxR3ripKpyxIn9Assy
-         q5wEQ5h++WL+n1xRWKAd/rbZG65Au5B6KtnZodab+uEHD03QRhQIEl3KiurPMOTYvH9V
-         ndoQ==
-X-Gm-Message-State: AC+VfDyRzSF3NiqXFd8kqdDHsnUETGtz9RX4CI3nZD9XoK9T37rtlJ/9
-	ZF0YCkPF+PUrWOh+Vz7NsIpVHA==
-X-Google-Smtp-Source: ACHHUZ7wfROlWoHHVhBbZ9cSWpXy+k/in7usHaTGZqbXMeEoLhu2Kl4Yjqa2+xah0carSqkZXnUH/g==
-X-Received: by 2002:a17:907:a41e:b0:965:e556:8f6d with SMTP id sg30-20020a170907a41e00b00965e5568f6dmr23781673ejc.63.1683901810620;
-        Fri, 12 May 2023 07:30:10 -0700 (PDT)
-Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id kn3-20020a1709079b0300b0096a27dbb5b2sm3518504ejc.209.2023.05.12.07.30.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 May 2023 07:30:09 -0700 (PDT)
+	d=telemetry-investments.com; s=tele1409; t=1683902641;
+	bh=oqxNlAGY2D43Rnm4E6ddndclCw4GiVEBc81cPqMIMEo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=i/iVHu292njYNs/s7sfNgHF1tpUDqyN52j6aT+vs+PzBAQlLWDuA8SLR+kN5PDndN
+	 jeOISK6B7BpwcQhsRO3FpDSwPnjSqjrSNIiNyDmltdmMFxRZVn9AlHpn4uJpxgzWQC
+	 7DUWZfqtG3NWFYvfREwxXVY4DEqSNYFgH6VwIBwI=
+Received: by ti139.telemetry-investments.com (Postfix, from userid 300)
+	id 7315E827; Fri, 12 May 2023 10:44:01 -0400 (EDT)
+Date: Fri, 12 May 2023 10:44:01 -0400
+From: "Andrew J. Schorr" <aschorr@telemetry-investments.com>
+To: Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc: Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [Issue] Bonding can't show correct speed if lower interface is
+ bond 802.3ad
+Message-ID: <20230512144401.GA10864@ti139.telemetry-investments.com>
+References: <ZEt3hvyREPVdbesO@Laptop-X1>
+ <15524.1682698000@famine>
+ <ZFjAPRQNYRgYWsD+@Laptop-X1>
+ <84548.1683570736@vermin>
+ <ZFtMyi9wssslDuD0@Laptop-X1>
+ <20230510165738.GA23309@ti139.telemetry-investments.com>
+ <20230510171436.GA27945@ti139.telemetry-investments.com>
+ <13565.1683855528@famine>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 12 May 2023 16:30:08 +0200
-Message-Id: <CSKDDFPXC6FD.1TAU3XXOSGA0K@otso>
-From: "Luca Weiss" <luca.weiss@fairphone.com>
-To: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>, "David S.
- Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@google.com>, "Jakub
- Kicinski" <kuba@kernel.org>, "Paolo Abeni" <pabeni@redhat.com>, "Rob
- Herring" <robh+dt@kernel.org>, "Krzysztof Kozlowski"
- <krzysztof.kozlowski+dt@linaro.org>, "Balakrishna Godavarthi"
- <bgodavar@codeaurora.org>, "Rocky Liao" <rjliao@codeaurora.org>, "Marcel
- Holtmann" <marcel@holtmann.org>, "Johan Hedberg" <johan.hedberg@gmail.com>,
- "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>, "Andy Gross"
- <agross@kernel.org>, "Bjorn Andersson" <andersson@kernel.org>, "Konrad
- Dybcio" <konrad.dybcio@linaro.org>
-Cc: <~postmarketos/upstreaming@lists.sr.ht>, <phone-devel@vger.kernel.org>,
- <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
- <linux-arm-msm@vger.kernel.org>
-Subject: Re: [PATCH RFC 3/4] arm64: dts: qcom: sm6350: add uart1 node
-X-Mailer: aerc 0.15.1
-References: <20230421-fp4-bluetooth-v1-0-0430e3a7e0a2@fairphone.com>
- <20230421-fp4-bluetooth-v1-3-0430e3a7e0a2@fairphone.com>
- <8f312ded-8456-eced-85cc-0ae32a0c8bba@linaro.org>
-In-Reply-To: <8f312ded-8456-eced-85cc-0ae32a0c8bba@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <13565.1683855528@famine>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sun Apr 23, 2023 at 12:51 PM CEST, Krzysztof Kozlowski wrote:
-> On 21/04/2023 16:11, Luca Weiss wrote:
-> > Add the node describing uart1 incl. opp table and pinctrl.
-> >=20
-> > Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> > ---
-> >  arch/arm64/boot/dts/qcom/sm6350.dtsi | 63 ++++++++++++++++++++++++++++=
-++++++++
-> >  1 file changed, 63 insertions(+)
->
-> Please do not send DTS patches for net-next. DTS must go via Qualcomm
-> SoC. Split the series and mention where is the bindings change in DTS
-> patchset.
+Hi Jay,
 
-Sorry, just saw now after already sending v2.
+On Thu, May 11, 2023 at 06:38:48PM -0700, Jay Vosburgh wrote:
+> 	The individual port behavior is part of the LACP standard (IEEE
+> 802.1AX, recent editions call this "Solitary"), and is done
+> automatically by the kernel.  One of the reasons for it is to permit
+> exactly the situation you mention: to enable PXE or "fallback"
+> communication to work even if LACP negotiation fails or is not
+> configured or implemented at one end.  This is called out explicitly in
+> 802.1AX, 6.1.1.j.
+> 
+> 	The duplex test is only part of the "individual" logic; it comes
+> up because LACP negotiation requires the peers to be point-to-point
+> links, i.e., full duplex (IEEE 802.1AX-2014, 6.4.8).  That's the norm
+> for most everything now, but historically a port in half duplex could be
+> on a multiple access topology, e.g., 802.3 CSMA/CD 10BASE2 on a coax
+> cable, which is incompatible with LACP aggregation.  This situation
+> doesn't come up a lot these days.
+> 
+> 	The important part of the "individual" logic is whether or not
+> the port successfully completes LACP negotiation with a link partner.
+> If not, the port is an individual port, which acts essentially like an
+> aggregator with just one port in it.  This is separate from
+> "is_individual" in the bonding code, and happens in
+> ad_port_selection_logic(), after the comment "check if current
+> aggregator suits us".  "is_individual" is one element of this test, the
+> remaining tests compare the various keys and whether the partner MAC
+> address has been populated.
 
-Is this a special rule for linux-bluetooth@ / netdev@? Isn't it easier
-to keep it together so the status of series can be assessed easier? I've
-always submitted patches by topic, like input patches + dts patches and
-it was never mentioned.
+OK. So it sounds like this should just work automatically with no
+configuration required to identify which slaves are running in individual
+mode. Thanks for clarifying.
 
-Regards
-Luca
+> 	As far as documentation goes, the bonding docs[0] describe some
+> of the parameters, but doesn't describe the specifics of bonding's
+> ability to manage multiple aggregators; I should write that up, since
+> this comes up periodically.  The IEEE standard (to which the bonding
+> implementation conforms) describes how the whole system works, but
+> doesn't really have a simple overview.
+> 
+> [0] https://www.kernel.org/doc/Documentation/networking/bonding.rst
 
->
->
-> Best regards,
-> Krzysztof
+I noticed the parameters related to this and did do some google searching to
+learn about having multiple aggregators, but as you say, it would be
+helpful to have a few more clues about how this works in the Bonding Howto,
+as well as a mention of this individual port capability.
 
+> 	I'll have to give this some thought.  The best long term
+> solution would be to decouple the link monitoring stuff from the mode,
+> and thus allow ARP and MII in a wider variety of modes.  I've prototyped
+> that out in the past, along with changing the MII monitor to respond to
+> carrier state changes in real time instead of polling, and it's fairly
+> complicated.
+> 
+> 	In any event, this does sound like a valid use case for nesting
+> the bonds, so simply disabling that facility seems to be off the table.
+
+OK, great. Then I'll stick with this config for now, even though NetworkManager
+has some brain damage in this area, since it tries to bring up both bonds
+before the MAC addresses have gotten sorted out, which can leave everything
+with a random MAC address. I've managed to kludge a solution to this by setting
+ONBOOT=no for the active-backup bond, which convinces NetworkManager to start
+it a bit later and somehow fixes the race condition.
+
+Regards,
+Andy
 
