@@ -1,149 +1,136 @@
-Return-Path: <netdev+bounces-2021-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2022-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 61A576FFFC0
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 06:52:07 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 75E9A6FFFD0
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 07:07:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 21B7D281A02
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 04:52:06 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 34C281C210A6
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 05:07:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 77841A4A;
-	Fri, 12 May 2023 04:52:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DEE10A56;
+	Fri, 12 May 2023 05:06:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 666E2A41
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 04:52:04 +0000 (UTC)
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C31B2;
-	Thu, 11 May 2023 21:51:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683867105; x=1715403105;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NyIB/CXyxsn/NtOavJ2qH7mGRgxIAWm4RWZld4YUq1g=;
-  b=ZOEQMHammbndTT5jSZzdix6gtgJLUIarzN4h7cS3qjpu55k6fKL5FDCM
-   QI548v66ndbigQ3ruPBOi6+X1+MMUB5Yp2VXMNKgTjvykfAnd47V/qa+n
-   RXPTb5q+QFgtF8e4Sbk7ssnz6qQNEIVvRNOn1dL9Haam7B6NiX3C0KQI+
-   AarUMkEGXsxqedRYW/KVO0Yw6UvJJb1zv1V61HB8vhJ2HNyh9mmM/gxly
-   Dy3NMLmayhlXtE5G6Oy1UOJOXtXiEabVb8Ql/MK4o8T48vT7ylw94CFKz
-   yflKYiYh5jNnFP7d3DmE55byKj0CJKnO85fO+nfnaMWTQOx0aJlpaCWGC
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="416330128"
-X-IronPort-AV: E=Sophos;i="5.99,269,1677571200"; 
-   d="scan'208";a="416330128"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 21:51:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="677521648"
-X-IronPort-AV: E=Sophos;i="5.99,269,1677571200"; 
-   d="scan'208";a="677521648"
-Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 11 May 2023 21:51:37 -0700
-Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pxKki-0004XQ-1i;
-	Fri, 12 May 2023 04:51:36 +0000
-Date: Fri, 12 May 2023 12:50:56 +0800
-From: kernel test robot <lkp@intel.com>
-To: Bagas Sanjaya <bagasdotme@gmail.com>,
-	Linux DRI Development <dri-devel@lists.freedesktop.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Linux Networking <netdev@vger.kernel.org>,
-	Linux ARM <linux-arm-kernel@lists.infradead.org>,
-	Linux Staging Drivers <linux-staging@lists.linux.dev>,
-	Linux Watchdog Devices <linux-watchdog@vger.kernel.org>,
-	Linux Kernel Actions <linux-actions@lists.infradead.org>
-Cc: oe-kbuild-all@lists.linux.dev,
-	Kate Stewart <kstewart@linuxfoundation.org>,
-	Pavel Machek <pavel@ucw.cz>, Tom Rix <trix@redhat.com>,
-	Dominik Brodowski <linux@dominikbrodowski.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Viresh Kumar <viresh.kumar@linaro.org>,
-	Bagas Sanjaya <bagasdotme@gmail.com>,
-	"David A . Hinds" <dahinds@users.sourceforge.net>,
-	Maxime Bizon <mbizon@freebox.fr>,
-	Robert Jarzmik <robert.jarzmik@free.fr>,
-	Gaosheng Cui <cuigaosheng1@huawei.com>,
-	Andy Gospodarek <andy@greyhouse.net>,
-	Dan Carpenter <error27@gmail.com>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Minghao Chi <chi.minghao@zte.com.cn>,
-	Simon Horman <simon.horman@corigine.com>,
-	Jacob Keller <jacob.e.keller@intel.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Guenter Roeck <linux@roeck-us.net>, Sam Creasey <sammy@sammy.net>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Manivannan Sadhasivam <mani@kernel.org>
-Subject: Re: [PATCH 06/10] pcmcia: Add SPDX identifier
-Message-ID: <202305121243.1SzqYNEp-lkp@intel.com>
-References: <20230511133406.78155-7-bagasdotme@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEC3DA54
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 05:06:59 +0000 (UTC)
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0098F40DD
+	for <netdev@vger.kernel.org>; Thu, 11 May 2023 22:06:57 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-b9963a72fd9so20840364276.0
+        for <netdev@vger.kernel.org>; Thu, 11 May 2023 22:06:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1683868017; x=1686460017;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=XEaR3Dr2C8Lj1JCkXuxURcDiSzXLw0/h58n+0eTFpXk=;
+        b=h2TzF1Sm4wgRUFzC402/r2JRCTOK95t1n6LIDMbVzltdZxZ1uErK2N2BwmqWhMnZ2x
+         gDJIw0J+ieOpsXu8IU+C+9duObCvbbPPNDpYL988Bbh3KOzpvj3WlzGRiCq3UgH/fKdN
+         jnwqcwBkrJpjqMeb1gRz3IRnnjZdtsx6i43myLWpj4bq54RB0Rl+g5e4CVUWGbG7PuB/
+         R7uGjC+ttKIstS0IoBo1yuXXZ2eT57tZ2egiGWEnJXomBv7Vlig+QVZOkQZLtcw28KJY
+         LFbjerQqdZ+UkjE5fPUKDWc2gKvjdO5IUEWfiXlrRyC0zWLen+gMgJyctE6BqErCTj8Y
+         hz+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683868017; x=1686460017;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XEaR3Dr2C8Lj1JCkXuxURcDiSzXLw0/h58n+0eTFpXk=;
+        b=Mxe0C5gPyP9BW3wvueqOzBPnksqgDs6ESVnQrWSzrkQ7GpRsjs8OPcYgUZKGGe0b9J
+         WQ5AzygUuxOmfkIETTxqdtPD9tgwWr7L1i0ooGDWIVskIBMjLrqMSapnrQVcOqKw87Ng
+         /VdzMfBKzh8Nx11DFsAhKHhclK7L0ejIeN5Ueaypu5AQzyPjta5yB8+Z40ums2hBrTRP
+         x3vndPP4MlkRSY++O4sQFs8Rzor0HsMvE0OB77hyUvp0WidtLvtAbzNiWoL/x+/Xdgvc
+         hlEw0+hAI2ksX7L0SZgZtQodDA4ufhXbccAMJxUcaHjYQAT7jcUb0PWUmjJQT73bvk4/
+         vjDQ==
+X-Gm-Message-State: AC+VfDwQfxbuc/G1wtBWPgGHQ8m2iFNfTnYtHSTbTkS2qj7SODs70kTE
+	Sk5620Bct5/8a9AIXD2RIK/RT744wd3GRQ==
+X-Google-Smtp-Source: ACHHUZ7DT3BCZCjNOk8XAjSIGAmryIlHycJZyc76A2YAWgJLUvsduVjlwCBoIYJxBL1Q7Z3AnsVenTZUavGcRg==
+X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:262e])
+ (user=shakeelb job=sendgmr) by 2002:a25:6b11:0:b0:b9d:a7a1:cab8 with SMTP id
+ g17-20020a256b11000000b00b9da7a1cab8mr14344595ybc.7.1683868017143; Thu, 11
+ May 2023 22:06:57 -0700 (PDT)
+Date: Fri, 12 May 2023 05:06:55 +0000
+In-Reply-To: <CH3PR11MB7345F99927E27ED49EEFC6E5FC759@CH3PR11MB7345.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230511133406.78155-7-bagasdotme@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Mime-Version: 1.0
+References: <CANn89i+J+ciJGPkWAFKDwhzJERFJr9_2Or=ehpwSTYO14qzHmA@mail.gmail.com>
+ <CH3PR11MB734502756F495CB9C520494FFC779@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CALvZod4n+Kwa1sOV9jxiEMTUoO7MaCGWz=wT3MHOuj4t-+9S6Q@mail.gmail.com>
+ <CH3PR11MB73454C44EC8BCD43685BCB58FC749@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <IA0PR11MB7355E486112E922AA6095CCCFC749@IA0PR11MB7355.namprd11.prod.outlook.com>
+ <CANn89iJbAGnZd42SVZEYWFLYVbmHM3p2UDawUKxUBhVDH5A2=A@mail.gmail.com>
+ <IA0PR11MB73557DEAB912737FD61D2873FC749@IA0PR11MB7355.namprd11.prod.outlook.com>
+ <20230511211338.oi4xwoueqmntsuna@google.com> <CH3PR11MB734512D5836DBA1F1F3AE7CDFC759@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <CH3PR11MB7345F99927E27ED49EEFC6E5FC759@CH3PR11MB7345.namprd11.prod.outlook.com>
+Message-ID: <20230512050429.22du3gt6rrq6e37a@google.com>
+Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper size
+From: Shakeel Butt <shakeelb@google.com>
+To: cathy.zhang@intel.com
+Cc: Eric Dumazet <edumazet@google.com>, Linux MM <linux-mm@kvack.org>, 
+	Cgroups <cgroups@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net, 
+	kuba@kernel.org, Brandeburg@google.com, 
+	Brandeburg Jesse <jesse.brandeburg@intel.com>, Srinivas Suresh <suresh.srinivas@intel.com>, 
+	Chen Tim C <tim.c.chen@intel.com>, You Lizhen <lizhen.you@intel.com>, eric.dumazet@gmail.com, 
+	netdev@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Bagas,
+On Fri, May 12, 2023 at 03:23:45AM +0000, Zhang, Cathy wrote:
+> Remove the invalid mail addr added unintentionally.
+> 
 
-kernel test robot noticed the following build warnings:
+Sorry that was my buggy script.
 
-[auto build test WARNING on ac9a78681b921877518763ba0e89202254349d1b]
+[...]
+> > 
+> > Hi Shakeel,
+> > 
+> > Run with the temp change you provided,  the output shows it comes to
+> > drain_stock_1(), Here is the call trace:
+> > 
+> >      8.96%  mc-worker        [kernel.vmlinux]            [k] page_counter_cancel
+> >             |
+> >              --8.95%--page_counter_cancel
+> >                        |
+> >                         --8.95%--page_counter_uncharge
+> >                                   drain_stock_1
+> >                                   __refill_stock
+> >                                   refill_stock
+> >                                   |
+> >                                    --8.88%--try_charge_memcg
+> >                                              mem_cgroup_charge_skmem
+> >                                              |
+> >                                               --8.87%--__sk_mem_raise_allocated
+> >                                                         __sk_mem_schedule
+> >                                                         |
+> >                                                         |--5.37%--tcp_try_rmem_schedule
+> >                                                         |          tcp_data_queue
+> >                                                         |          tcp_rcv_established
+> >                                                         |          tcp_v4_do_rcv
+> 
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Bagas-Sanjaya/agp-amd64-Remove-GPL-distribution-notice/20230511-214307
-base:   ac9a78681b921877518763ba0e89202254349d1b
-patch link:    https://lore.kernel.org/r/20230511133406.78155-7-bagasdotme%40gmail.com
-patch subject: [PATCH 06/10] pcmcia: Add SPDX identifier
-reproduce:
-        scripts/spdxcheck.py
+Thanks a lot. This tells us that one or both of following scenarios are
+happening:
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202305121243.1SzqYNEp-lkp@intel.com/
+1. In the softirq recv path, the kernel is processing packets from
+multiple memcgs.
 
-spdxcheck warnings: (new ones prefixed by >>)
->> drivers/pcmcia/cirrus.h: 1:44 Invalid License ID: MPL
->> drivers/pcmcia/pd6729.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   include/net/bonding.h: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/isdn/mISDN/dsp_audio.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/isdn/mISDN/dsp_blowfish.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/isdn/mISDN/dsp_cmx.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/isdn/mISDN/dsp_core.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/isdn/mISDN/dsp_dtmf.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/isdn/mISDN/dsp_tones.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/bonding/bond_main.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/bonding/bonding_priv.h: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/8390.h: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/apne.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/axnet_cs.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/hydra.c: 1:28 Invalid License ID: GPL-1.0-only
-   drivers/net/ethernet/8390/lib8390.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/mac8390.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/ne.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/ne2k-pci.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/pcnet_cs.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/smc-ultra.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/8390/wd.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/i825xx/82596.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/i825xx/lasi_82596.c: 1:28 Invalid License ID: GPL-1.0-or-later
-   drivers/net/ethernet/i825xx/lib82596.c: 1:28 Invalid License ID: GPL-1.0-or-later
+2. The process running on the CPU belongs to memcg which is different
+from the memcgs whose packets are being received on that CPU.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+BTW have you seen this performance issue when you run the client and
+server on different machines? I am wondering if RFS would be good enough
+for such scenario and we only need to worry about the same machine case.
 
