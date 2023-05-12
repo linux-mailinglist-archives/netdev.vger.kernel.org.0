@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-2068-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2069-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0B21A700292
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 10:40:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6EDB87002F8
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 10:50:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8B1CE1C2112C
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 08:40:22 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3C2C81C21144
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 08:50:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D75B8F62;
-	Fri, 12 May 2023 08:40:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D48D9448;
+	Fri, 12 May 2023 08:50:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 815D82597
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 08:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 21A8DC433EF;
-	Fri, 12 May 2023 08:40:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCFE263DE
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 08:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5DAA1C4339B;
+	Fri, 12 May 2023 08:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683880820;
-	bh=2q9UxvogTQinLZup/fVIBVwsRQ10tcY2ScZqjk4A0u0=;
+	s=k20201202; t=1683881421;
+	bh=X9Pu/LiQiiKwz6TGPhaPE8hjbz6pdhvFBqu2FNeuMz0=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=mmqm7wtc3SAdcI/fcf4MRKsb/YfZw0ZM6fK3iQfQcGc9t3W/l+Wk1FG7o4/1b0hOn
-	 mNrp4qwXPHnfIywXs96K3BVsM/C5a9LQ+UUU+PqdtprmGwlggOtX3TCb30jUVtAtv3
-	 ucZgnKw8Q4aExfeZsBmQghwDPtZQ1cOMvWRBZRUx6GAL8QjNgFLRkfAuQJL6KxrEP6
-	 8XisTBpysUeunQcbqJh1vy176giceUoSttvBJRr2D3Ug6aSAfg+59VIQf0ICpzpx1Y
-	 2rHC96OhcUihAwJKFlzq12bYI+F9sMHVWR1nBF/29ZoSLb09++EQuLryUJsPk9Rj/J
-	 d1+0jOwA/LiAA==
+	b=sge5yawgla0F/7DykQ19p+sc3xIQnRp/gOD3aI7LzOmPmH68QVE3yAsKdPHWS+29u
+	 QAU0Qjb11K+li8rrARW3ZN8IWJAC2PIwyxDqjv2LHmT7Gwvg5K9tCkgxqQ+nTa7tia
+	 aI2ft1tDUA7VZpdG3vogpFx87JCX3A7HJzMmZFVF0TEckZHPzgWD95oYgoQ0bHtDuK
+	 AbUQUvnjKjHa+siS6bUknWILHHSbzcakF5wZ+Opnk6eDe6LkU5ce5WhE24cn8FuejL
+	 zaZKUN8I67XEYcJ4xpciDRihywJh/6AUP5MJPUnsaLViS8eVAKAyv8HtvstztFKooS
+	 0dt92cU4iU9Ew==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E7C20E450BB;
-	Fri, 12 May 2023 08:40:19 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3F163E26D2A;
+	Fri, 12 May 2023 08:50:21 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -41,39 +41,45 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] bonding: Always assign be16 value to
- vlan_proto
+Subject: Re: [PATCH v2 net-next 0/4] selftests: fcnal: Test SO_DONTROUTE socket
+ option.
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168388081993.5500.5871554155408487884.git-patchwork-notify@kernel.org>
-Date: Fri, 12 May 2023 08:40:19 +0000
-References: <20230420-bonding-be-vlan-proto-v2-1-9f594fabdbd9@kernel.org>
-In-Reply-To: <20230420-bonding-be-vlan-proto-v2-1-9f594fabdbd9@kernel.org>
-To: Simon Horman <horms@kernel.org>
-Cc: kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
- pabeni@redhat.com, j.vosburgh@gmail.com, andy@greyhouse.net,
- olteanv@gmail.com, netdev@vger.kernel.org
+ <168388142124.10506.10899839192921232411.git-patchwork-notify@kernel.org>
+Date: Fri, 12 May 2023 08:50:21 +0000
+References: <cover.1683814269.git.gnault@redhat.com>
+In-Reply-To: <cover.1683814269.git.gnault@redhat.com>
+To: Guillaume Nault <gnault@redhat.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+ edumazet@google.com, netdev@vger.kernel.org, dsahern@kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (main)
+This series was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 11 May 2023 17:07:12 +0200 you wrote:
-> The type of the vlan_proto field is __be16.
-> And most users of the field use it as such.
+On Thu, 11 May 2023 16:39:19 +0200 you wrote:
+> The objective is to cover kernel paths that use the RTO_ONLINK flag
+> in .flowi4_tos. This way we'll be able to safely remove this flag in
+> the future by properly setting .flowi4_scope instead. With these
+> selftests in place, we can make sure this won't introduce regressions.
 > 
-> In the case of setting or testing the field for the special VLAN_N_VID
-> value, host byte order is used. Which seems incorrect.
-> 
-> It also seems somewhat odd to store a VLAN ID value in a field that is
-> otherwise used to store Ether types.
+> For more context, the final objective is to convert .flowi4_tos to
+> dscp_t, to ensure that ECN bits don't influence route and fib-rule
+> lookups (see commit a410a0cf9885 ("ipv6: Define dscp_t and stop taking
+> ECN bits into account in fib6-rules")).
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2] bonding: Always assign be16 value to vlan_proto
-    https://git.kernel.org/netdev/net-next/c/c1bc7d73c964
+  - [v2,net-next,1/4] selftests: Add SO_DONTROUTE option to nettest.
+    https://git.kernel.org/netdev/net-next/c/aeefbb574c38
+  - [v2,net-next,2/4] selftests: fcnal: Test SO_DONTROUTE on TCP sockets.
+    https://git.kernel.org/netdev/net-next/c/dd017c72dde6
+  - [v2,net-next,3/4] selftests: fcnal: Test SO_DONTROUTE on UDP sockets.
+    https://git.kernel.org/netdev/net-next/c/a431327c4faa
+  - [v2,net-next,4/4] selftests: fcnal: Test SO_DONTROUTE on raw and ping sockets.
+    https://git.kernel.org/netdev/net-next/c/ceec9f272432
 
 You are awesome, thank you!
 -- 
