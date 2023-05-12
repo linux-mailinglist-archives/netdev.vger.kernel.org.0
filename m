@@ -1,53 +1,53 @@
-Return-Path: <netdev+bounces-2194-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2196-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AA3CE700B73
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 17:24:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8C7FC700B79
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 17:24:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BCFAA1C21264
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 15:24:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 45D802815AE
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 15:24:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 758AE1426F;
-	Fri, 12 May 2023 15:21:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A3AE1EA89;
+	Fri, 12 May 2023 15:21:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60CB52412F;
-	Fri, 12 May 2023 15:21:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 720612414D;
+	Fri, 12 May 2023 15:21:48 +0000 (UTC)
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3469EE6;
-	Fri, 12 May 2023 08:21:13 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF113AA5;
+	Fri, 12 May 2023 08:21:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683904873; x=1715440873;
+  t=1683904877; x=1715440877;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=S/i4FZlWSvJW010cQ5fIEi6AdM6FNT6Vg7Wn94JIdbs=;
-  b=MegRLGo2yF6JstsoRcu3yRt2CmT+fP5t3Lveoo5HSQutOLQfx98TpM0M
-   VqHHLwGEw2jazL2u3WQrZyuWIQfC1dLeoc5j6FKEierq6H+MUUIhbagcx
-   P4gZoCsKBFp2YrBlujpuHGGQo/jL2HvqiLdEKwMJpEaVyV8dTMn8vZJ4t
-   IASvTMSnlUkZ1dytSlXM6yAs8CDb6rryGUmu+vrZVVJGBDvAFWHeRJwdw
-   s2B+4GK2lIyjyUfRKycT2Tit8njqV8/tVZscsMnTsS6Iqy7RSJzuX8maV
-   E/js3zqaTFcGP3uevlkLRC6e36phMnjMqIzHHORvK3CR6JoUjb6+rJEJQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10708"; a="353061165"
+  bh=Ca3C3CN5XD0jYqPpaEXrBQ6QBGcOSKPhdaJMaphgwXU=;
+  b=YpCgaQwi9CMYhNmP/2C8eesAHsq2M3/nGleizp2kR9gs82tPALcw341C
+   mpFlSM8oE69nNXon7ercLK0nhU5PLOCGg4GR0sZBBALf/zQ59ElJut0ob
+   ZdHj04IiYKFqq1g68WG3ZCLFhr+1tUScYCGeBSYzYwUIoEnQPIRyTI61F
+   Jut14U9myb0crkE7076Ald57tK6HPVCTx+c6Ap5FyEIwKB6RNN+3jItLB
+   U38QmC1Urvd7zJsz5zyxMdTFaeloLEt7Z8dgOD62h3Fu8Am2FQnx4Xzw4
+   ThZWF5sf+CSlYDzgfb9YjSFCOGhTM6j5I0Qf9m2c1jTBLY3bnIwmuBTI7
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10708"; a="353061184"
 X-IronPort-AV: E=Sophos;i="5.99,269,1677571200"; 
-   d="scan'208";a="353061165"
+   d="scan'208";a="353061184"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2023 08:20:38 -0700
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2023 08:20:43 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10708"; a="812114328"
+X-IronPort-AV: E=McAfee;i="6600,9927,10708"; a="812114413"
 X-IronPort-AV: E=Sophos;i="5.99,269,1677571200"; 
-   d="scan'208";a="812114328"
+   d="scan'208";a="812114413"
 Received: from irvmail002.ir.intel.com ([10.43.11.120])
-  by fmsmga002.fm.intel.com with ESMTP; 12 May 2023 08:20:33 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 12 May 2023 08:20:39 -0700
 Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
-	by irvmail002.ir.intel.com (Postfix) with ESMTP id 81ACF35FB8;
-	Fri, 12 May 2023 16:20:30 +0100 (IST)
+	by irvmail002.ir.intel.com (Postfix) with ESMTP id AD00735FB7;
+	Fri, 12 May 2023 16:20:35 +0100 (IST)
 From: Larysa Zaremba <larysa.zaremba@intel.com>
 To: bpf@vger.kernel.org
 Cc: Larysa Zaremba <larysa.zaremba@intel.com>,
@@ -73,9 +73,9 @@ Cc: Larysa Zaremba <larysa.zaremba@intel.com>,
 	netdev@vger.kernel.org,
 	intel-wired-lan@lists.osuosl.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 09/15] xdp: Add VLAN tag hint
-Date: Fri, 12 May 2023 17:16:33 +0200
-Message-Id: <20230512151639.992033-10-larysa.zaremba@intel.com>
+Subject: [PATCH 10/15] ice: Implement VLAN tag hint
+Date: Fri, 12 May 2023 17:16:34 +0200
+Message-Id: <20230512151639.992033-11-larysa.zaremba@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230512151639.992033-1-larysa.zaremba@intel.com>
 References: <20230512151639.992033-1-larysa.zaremba@intel.com>
@@ -94,118 +94,70 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Implement functionality that enables drivers to expose VLAN tag
-to XDP code.
+Implement .xmo_rx_vlan_tag callback to allow XDP code to read
+packet's VLAN tag.
 
 Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
 ---
- Documentation/networking/xdp-rx-metadata.rst | 11 ++++++++-
- include/linux/netdevice.h                    |  2 ++
- include/net/xdp.h                            |  4 ++++
- kernel/bpf/offload.c                         |  4 ++++
- net/core/xdp.c                               | 24 ++++++++++++++++++++
- 5 files changed, 44 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 44 +++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-diff --git a/Documentation/networking/xdp-rx-metadata.rst b/Documentation/networking/xdp-rx-metadata.rst
-index 25ce72af81c2..73a78029c596 100644
---- a/Documentation/networking/xdp-rx-metadata.rst
-+++ b/Documentation/networking/xdp-rx-metadata.rst
-@@ -18,7 +18,16 @@ Currently, the following kfuncs are supported. In the future, as more
- metadata is supported, this set will grow:
- 
- .. kernel-doc:: net/core/xdp.c
--   :identifiers: bpf_xdp_metadata_rx_timestamp bpf_xdp_metadata_rx_hash
-+   :identifiers: bpf_xdp_metadata_rx_timestamp
-+
-+.. kernel-doc:: net/core/xdp.c
-+   :identifiers: bpf_xdp_metadata_rx_hash
-+
-+.. kernel-doc:: net/core/xdp.c
-+   :identifiers: bpf_xdp_metadata_rx_ctag
-+
-+.. kernel-doc:: net/core/xdp.c
-+   :identifiers: bpf_xdp_metadata_rx_stag
- 
- An XDP program can use these kfuncs to read the metadata into stack
- variables for its own consumption. Or, to pass the metadata on to other
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 08fbd4622ccf..fdae37fe11f5 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1655,6 +1655,8 @@ struct xdp_metadata_ops {
- 	int	(*xmo_rx_timestamp)(const struct xdp_md *ctx, u64 *timestamp);
- 	int	(*xmo_rx_hash)(const struct xdp_md *ctx, u32 *hash,
- 			       enum xdp_rss_hash_type *rss_type);
-+	int	(*xmo_rx_ctag)(const struct xdp_md *ctx, u16 *vlan_tag);
-+	int	(*xmo_rx_stag)(const struct xdp_md *ctx, u16 *vlan_tag);
- };
- 
- /**
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 6381560efae2..2db7439fc60f 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -389,6 +389,10 @@ void xdp_attachment_setup(struct xdp_attachment_info *info,
- 			   bpf_xdp_metadata_rx_timestamp) \
- 	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_HASH, \
- 			   bpf_xdp_metadata_rx_hash) \
-+	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_CTAG, \
-+			   bpf_xdp_metadata_rx_ctag) \
-+	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_STAG, \
-+			   bpf_xdp_metadata_rx_stag) \
- 
- enum {
- #define XDP_METADATA_KFUNC(name, _) name,
-diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
-index d9c9f45e3529..2c6b6e82cfac 100644
---- a/kernel/bpf/offload.c
-+++ b/kernel/bpf/offload.c
-@@ -848,6 +848,10 @@ void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
- 		p = ops->xmo_rx_timestamp;
- 	else if (func_id == bpf_xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH))
- 		p = ops->xmo_rx_hash;
-+	else if (func_id == bpf_xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_CTAG))
-+		p = ops->xmo_rx_ctag;
-+	else if (func_id == bpf_xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_STAG))
-+		p = ops->xmo_rx_stag;
- out:
- 	up_read(&bpf_devs_lock);
- 
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 41e5ca8643ec..eff21501609f 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -738,6 +738,30 @@ __bpf_kfunc int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32 *hash,
- 	return -EOPNOTSUPP;
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+index 1caa73644e7b..39547feb6106 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+@@ -627,7 +627,51 @@ static int ice_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash,
+ 	return 0;
  }
  
 +/**
-+ * bpf_xdp_metadata_rx_ctag - Read XDP packet inner vlan tag.
-+ * @ctx: XDP context pointer.
-+ * @vlan_tag: Return value pointer.
++ * ice_xdp_rx_ctag - VLAN tag XDP hint handler
++ * @ctx: XDP buff pointer
++ * @vlan_tag: destination address
 + *
-+ * Returns 0 on success or ``-errno`` on error.
++ * Copy VLAN tag (if was stripped) to the destination address.
 + */
-+__bpf_kfunc int bpf_xdp_metadata_rx_ctag(const struct xdp_md *ctx, u16 *vlan_tag)
++static int ice_xdp_rx_ctag(const struct xdp_md *ctx, u16 *vlan_tag)
 +{
-+	return -EOPNOTSUPP;
++	const struct ice_xdp_buff *xdp_ext = (void *)ctx;
++	netdev_features_t features;
++
++	features = xdp_ext->rx_ring->netdev->features;
++
++	if (!(features & NETIF_F_HW_VLAN_CTAG_RX))
++		return -EINVAL;
++
++	*vlan_tag = ice_get_vlan_tag_from_rx_desc(xdp_ext->eop_desc);
++	return 0;
 +}
 +
 +/**
-+ * bpf_xdp_metadata_rx_stag - Read XDP packet outer vlan tag.
-+ * @ctx: XDP context pointer.
-+ * @vlan_tag: Return value pointer.
++ * ice_xdp_rx_stag - VLAN s-tag XDP hint handler
++ * @ctx: XDP buff pointer
++ * @vlan_tag: destination address
 + *
-+ * Returns 0 on success or ``-errno`` on error.
++ * Copy VLAN s-tag (if was stripped) to the destination address.
 + */
-+__bpf_kfunc int bpf_xdp_metadata_rx_stag(const struct xdp_md *ctx, u16 *vlan_tag)
++static int ice_xdp_rx_stag(const struct xdp_md *ctx, u16 *vlan_tag)
 +{
-+	return -EOPNOTSUPP;
++	const struct ice_xdp_buff *xdp_ext = (void *)ctx;
++	netdev_features_t features;
++
++	features = xdp_ext->rx_ring->netdev->features;
++
++	if (!(features & NETIF_F_HW_VLAN_STAG_RX))
++		return -EINVAL;
++
++	*vlan_tag = ice_get_vlan_tag_from_rx_desc(xdp_ext->eop_desc);
++	return 0;
 +}
 +
- __diag_pop();
- 
- BTF_SET8_START(xdp_metadata_kfunc_ids)
+ const struct xdp_metadata_ops ice_xdp_md_ops = {
+ 	.xmo_rx_timestamp		= ice_xdp_rx_hw_ts,
+ 	.xmo_rx_hash			= ice_xdp_rx_hash,
++	.xmo_rx_ctag			= ice_xdp_rx_ctag,
++	.xmo_rx_stag			= ice_xdp_rx_stag,
+ };
 -- 
 2.35.3
 
