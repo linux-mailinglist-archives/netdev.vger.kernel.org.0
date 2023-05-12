@@ -1,51 +1,54 @@
-Return-Path: <netdev+bounces-2290-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2294-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5A7C570111E
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 23:28:08 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 172F270112B
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 23:29:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 16514281BF2
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 21:28:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2D9551C211A1
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 21:29:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 993C2138F;
-	Fri, 12 May 2023 21:27:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B66B261F4;
+	Fri, 12 May 2023 21:27:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DE0E944D
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 21:27:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D5521952B
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 21:27:52 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF1C4C25
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 14:27:43 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE3B72BC
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 14:27:46 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1pxaIX-0005Hw-TY; Fri, 12 May 2023 23:27:33 +0200
+	id 1pxaIY-0005Hv-3Z; Fri, 12 May 2023 23:27:34 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1pxaIX-0033WP-61; Fri, 12 May 2023 23:27:33 +0200
+	id 1pxaIX-0033WJ-1S; Fri, 12 May 2023 23:27:33 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1pxaIV-003qhz-W4; Fri, 12 May 2023 23:27:32 +0200
+	id 1pxaIW-003qi3-92; Fri, 12 May 2023 23:27:32 +0200
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Wolfgang Grandegger <wg@grandegger.com>,
 	Marc Kleine-Budde <mkl@pengutronix.de>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
+	Paolo Abeni <pabeni@redhat.com>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+	Oliver Hartkopp <socketcan@hartkopp.net>,
+	=?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: linux-can@vger.kernel.org,
 	netdev@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH 08/19] can: grcan: Convert to platform remove callback returning void
-Date: Fri, 12 May 2023 23:27:14 +0200
-Message-Id: <20230512212725.143824-9-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 09/19] can: ifi_canfd: Convert to platform remove callback returning void
+Date: Fri, 12 May 2023 23:27:15 +0200
+Message-Id: <20230512212725.143824-10-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230512212725.143824-1-u.kleine-koenig@pengutronix.de>
 References: <20230512212725.143824-1-u.kleine-koenig@pengutronix.de>
@@ -56,7 +59,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1817; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=dASDd+cKDMorNlE0KtDRmXHP/lqZVjZwM3RKRK6248Y=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkXq8sbZxeHtWVZ5SkogO3WMzqpnxMKNqXn7Rhk mRaXtRqD0KJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZF6vLAAKCRCPgPtYfRL+ TjVaCACl81I9GWMcO5Qo9bnMnTYYiQk3JdljcdWdfJmYWXATFndMtFZCPNmWLSw5ngsuw7acQiy v/YQcg4IyLkeAtTT51R11+mVA6H1W+UHgxZMgcr/5FSO5bxPy+8Sx2W+QuwlY2pw+UzFwo6mPVG zXDhdUJY0auiz3FvUf8GMX4gNS9Z6JETlOvkACBpmL5YK0WacYwytIX4PtJ3avY4BO+jTSt/k3T SrK7XpB7/h/H80gg4xCzz8MBhltnZWHZLm8f+iDaL+H2YYEDjj/UlbsPt/N8h9/ap1p1Z0rVw4H r34HvYNUiGfndA7wkBhQqBjRefeyc8ub61Gtspp0HurzBNQZ
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1850; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=kdShLIQpUJrsSsIKPrtvNQgwPNAoOiS9nLTHDJhPnTM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkXq8upoPvTVZYzKtJf9L2erHNdM0HUJzHVPUtU NejiHyrnq2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZF6vLgAKCRCPgPtYfRL+ TuS/CACLR4yzN+fk+DljwH6JOQJbOw7RWp9MPvwzbN7EmfBS47lqX+mSl3d65B22NsLJDd6Q0Gy bKqaIRTLhqdjtCZYsj8FiUkJsUf5nFBFW8pYEHO2lZTAV49QGmlrp3D6f3TA/SGpL3jyWouYX4y 3r/LcdrnDXTXBdzwpmwCv3c4AMeJxMM6bqohva2oa810JgjbJRbLxjosaq8vLUJOWproXOFSYXf CP8Hd+DGvl8I3r4Bt35w/s0Fzdh0cS7ZIBOUR0rGP7YUywJUFidaMM/3WGwfk2IWCF5nEyoUpKk yeaoCeSq9g/gPpGoMzFE1856WzBqso5P2mueJeKzxKQoHMIm
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -83,40 +86,39 @@ callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/net/can/grcan.c | 6 ++----
+ drivers/net/can/ifi_canfd/ifi_canfd.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
-index 4bedcc3eea0d..3174efdae271 100644
---- a/drivers/net/can/grcan.c
-+++ b/drivers/net/can/grcan.c
-@@ -1696,7 +1696,7 @@ static int grcan_probe(struct platform_device *ofdev)
- 	return err;
+diff --git a/drivers/net/can/ifi_canfd/ifi_canfd.c b/drivers/net/can/ifi_canfd/ifi_canfd.c
+index 07eaf724a572..1d6642c94f2f 100644
+--- a/drivers/net/can/ifi_canfd/ifi_canfd.c
++++ b/drivers/net/can/ifi_canfd/ifi_canfd.c
+@@ -1013,15 +1013,13 @@ static int ifi_canfd_plat_probe(struct platform_device *pdev)
+ 	return ret;
  }
  
--static int grcan_remove(struct platform_device *ofdev)
-+static void grcan_remove(struct platform_device *ofdev)
+-static int ifi_canfd_plat_remove(struct platform_device *pdev)
++static void ifi_canfd_plat_remove(struct platform_device *pdev)
  {
- 	struct net_device *dev = platform_get_drvdata(ofdev);
- 	struct grcan_priv *priv = netdev_priv(dev);
-@@ -1706,8 +1706,6 @@ static int grcan_remove(struct platform_device *ofdev)
- 	irq_dispose_mapping(dev->irq);
- 	netif_napi_del(&priv->napi);
- 	free_candev(dev);
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 
+ 	unregister_candev(ndev);
+ 	platform_set_drvdata(pdev, NULL);
+ 	free_candev(ndev);
 -
 -	return 0;
  }
  
- static const struct of_device_id grcan_match[] = {
-@@ -1726,7 +1724,7 @@ static struct platform_driver grcan_driver = {
- 		.of_match_table = grcan_match,
+ static const struct of_device_id ifi_canfd_of_table[] = {
+@@ -1036,7 +1034,7 @@ static struct platform_driver ifi_canfd_plat_driver = {
+ 		.of_match_table	= ifi_canfd_of_table,
  	},
- 	.probe = grcan_probe,
--	.remove = grcan_remove,
-+	.remove_new = grcan_remove,
+ 	.probe	= ifi_canfd_plat_probe,
+-	.remove	= ifi_canfd_plat_remove,
++	.remove_new = ifi_canfd_plat_remove,
  };
  
- module_platform_driver(grcan_driver);
+ module_platform_driver(ifi_canfd_plat_driver);
 -- 
 2.39.2
 
