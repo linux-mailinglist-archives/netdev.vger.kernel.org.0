@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-2091-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2092-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2CBF57003B2
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 11:26:03 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5D5987003B5
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 11:26:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C7BB728196D
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 09:26:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 763321C211A0
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 09:26:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 961E410781;
-	Fri, 12 May 2023 09:21:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E41C10791;
+	Fri, 12 May 2023 09:21:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 812EEBA2B;
-	Fri, 12 May 2023 09:21:44 +0000 (UTC)
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2BE3DDA6;
-	Fri, 12 May 2023 02:21:42 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id ffacd0b85a97d-305ec9ee502so1710527f8f.0;
-        Fri, 12 May 2023 02:21:42 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 913281078F;
+	Fri, 12 May 2023 09:21:46 +0000 (UTC)
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B793D2DC;
+	Fri, 12 May 2023 02:21:44 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id ffacd0b85a97d-3079b59230eso773849f8f.1;
+        Fri, 12 May 2023 02:21:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683883301; x=1686475301;
+        d=gmail.com; s=20221208; t=1683883303; x=1686475303;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=PzWxyGNbSoBHRNSOnQ8ExEGP+OZDzRJOzFMQHBZbMm4=;
-        b=lEWTirmklKR3TThN99xY58rhP/VdXuDuGJjBLcnGWYBJxc8BHzMb0KKS+2ij5nN8Sc
-         bpz83wsFAwn5kP81pFx8BFWOb0lcqamfyAHTQCRDxbw1+N3Q9xrto89HYMT0RbdJEU/x
-         ExriE3YbEB9lgY08Sm0NWYxXni4XARDEc0iRzZYNaczg/4UI8MG+jMcs9kjj0/O/7iaE
-         ATLbfZ/57KWavCNEF4kKBJ2Qpgp0DxJSsR4PRknIpOdesaJkZ2MVO2Wn89jvXHLPsJS+
-         hbWRoDom4oNknG/QZzLFTUwJMfVUHVmKU0C5FvRu01zOWEBUUnT5OFneZUqxf/MOFkfS
-         fCSQ==
+        bh=qpLGphmtmYp9llVxEEqTu82YRnVZuRWAB3QJZbit1Qc=;
+        b=BwOPQaqtK++Bjf2wHsZ1C5USn2Sedsrvc33RvjLrLGvenLi/vL29N/4DDoMlx/uJXJ
+         RbcPEZYlX0fbrfiKpGHnNHQKBySa/7ICeqM8QcEwHioEc5AEP/ETTm6uWshwLqoKHBmT
+         xq0H0FXLP+9l0lU9454DBK47W3FWjk2DqMmxgzzY9sEBb44HWRjYdtB1WvJQ2ZuXucDu
+         +6Iizb7onz7suTvzjCa0dVXgqoSV8K82HjIbZsA5SXedzP7qRAg/UcwIpKHX/PlLC9za
+         1RertRzuryjqwTzAbp/rfI5oQTXY7+CZ46K93e6kolekwjyaoweM+Wu+wxh/RTmZz4L1
+         KOHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683883301; x=1686475301;
+        d=1e100.net; s=20221208; t=1683883303; x=1686475303;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=PzWxyGNbSoBHRNSOnQ8ExEGP+OZDzRJOzFMQHBZbMm4=;
-        b=GgBbL4Q9iEdv0v+pCxqYWmUvpfY58Ak9Cqv81a+FQWtVUSBs0QYz7lcivmnX6aOqib
-         NEkEuCo/VVBUr2qyfb7sEPyaH4LjTXHRLzDgmuI9GvEtMmgk9lbfCjNtU88M+qqaf2K/
-         D1DZatPgASNtYdrr1GmoRsxMLCt8zQMSqrt6V7iU9bpQWbRWZ/ujzgSov0ndrUvDbJEA
-         eawAQhzc//NOXAoGIxG0aIbXxgEOsjDBAdSo3O1kwWyamlA0xxGWyuscyQ1npZKW2CKl
-         UERVNRLSMDV/WQfXVvTRpFT0msVyuEyYpbWje8gKpG3cXjXX1PLp9DySYfmooWgNUK2r
-         Un1g==
-X-Gm-Message-State: AC+VfDw7oTXh/f9EvvgkqG9VEj7dwXoqjr6+V77mbAbvA7tCnhoYXyhf
-	FjvQLDCXXkGN7sA93O9Is6s=
-X-Google-Smtp-Source: ACHHUZ4OWXIvsnYC/z+n6acuXu9nQEMOT9hNn/Z3/Bpl8ppHF9tP5lPfqXkPd07QkPbl8vj1uBEjFw==
-X-Received: by 2002:a5d:50c5:0:b0:307:d1a4:8066 with SMTP id f5-20020a5d50c5000000b00307d1a48066mr2066265wrt.5.1683883300835;
-        Fri, 12 May 2023 02:21:40 -0700 (PDT)
+        bh=qpLGphmtmYp9llVxEEqTu82YRnVZuRWAB3QJZbit1Qc=;
+        b=O8ng9sE4v/h4M4EsTSwXzeZ9aYBKQCB68GdfincU0qNJuliyNzct9uKQnrBPiNx6UI
+         rxPSm2rLyJSeWkofuoqAb/a+pccCDT3UjwkB1SZkM3NMosa7DQZ9KpAohtcGYFeptZGV
+         qzU7kMd2E2T95hQE5nxqQxQMpviYoGZCOL4WvvLv2cO3SjwDOJ3UhQdh3RuQFL7bmkvX
+         NwyebhiGkpSCoE7eLeWStxbTh3UtQloS3dpD2eskSzC6PeuWhV9/0Gids/COlJRo54/0
+         7i149+NlEIjGdkMmQQKqKXtwZets33OKaf+MhIlC0/PrSxoWZVA1m4F0/mKE2ACw9tJw
+         vOIQ==
+X-Gm-Message-State: AC+VfDyFp4/ONa0+HycZ/LAU3iqyREu305KwJsx6VRtGPCf4Meb2gcYb
+	xYJQzCIsHVn+wFRreqAsN0M=
+X-Google-Smtp-Source: ACHHUZ4OK1wc6emfq/bAQf3P68miw8neouIkojzOsNGV8AiKfKzSggVSM78pPugK2dgouJs0kbwdGw==
+X-Received: by 2002:a5d:5641:0:b0:305:f3c1:184e with SMTP id j1-20020a5d5641000000b00305f3c1184emr15710811wrw.3.1683883302709;
+        Fri, 12 May 2023 02:21:42 -0700 (PDT)
 Received: from localhost.localdomain (h-176-10-144-222.NA.cust.bahnhof.se. [176.10.144.222])
-        by smtp.gmail.com with ESMTPSA id i14-20020a5d558e000000b003079f2c2de7sm11467789wrv.112.2023.05.12.02.21.39
+        by smtp.gmail.com with ESMTPSA id i14-20020a5d558e000000b003079f2c2de7sm11467789wrv.112.2023.05.12.02.21.41
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 12 May 2023 02:21:40 -0700 (PDT)
+        Fri, 12 May 2023 02:21:42 -0700 (PDT)
 From: Magnus Karlsson <magnus.karlsson@gmail.com>
 To: magnus.karlsson@intel.com,
 	bjorn@kernel.org,
@@ -74,9 +74,9 @@ To: magnus.karlsson@intel.com,
 	haoluo@google.com,
 	jolsa@kernel.org,
 	tirthendu.sarkar@intel.com
-Subject: [PATCH bpf-next 09/10] selftests/xsk: generate data for multi-buffer packets
-Date: Fri, 12 May 2023 11:20:42 +0200
-Message-Id: <20230512092043.3028-10-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next 10/10] selftests/xsk: adjust packet pacing for multi-buffer support
+Date: Fri, 12 May 2023 11:20:43 +0200
+Message-Id: <20230512092043.3028-11-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230512092043.3028-1-magnus.karlsson@gmail.com>
 References: <20230512092043.3028-1-magnus.karlsson@gmail.com>
@@ -96,152 +96,168 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Add the ability to generate data in the packets that are correct for
-multi-buffer packets. The ethernet header should only go into the
-first fragment followed by data and the others should only have
-data. We also need to modify the pkt_dump function so that it knows
-what fragment has an ethernet header so it can print this.
+Modify the packet pacing algorithm so that it works with multi-buffer
+packets. This algorithm makes sure we do not send too many buffers to
+the receiving thread so that packets have to be dropped. The previous
+algorithm made the assumption that each packet only consumes one
+buffer, but that is not true anymore when multi-buffer support gets
+added. Instead, we find out what the largest packet size is in the
+packet stream and assume that each packet will consume this many
+buffers. This is conservative and overly cautious as there might be
+smaller packets in the stream that need fewer buffers per packet. But
+it keeps the algorithm simple.
+
+Also simplify it by removing the pthread conditional and just test if
+there is enough space in the Rx thread before trying to send one more
+batch. Also makes the tests run faster.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/xskxceiver.c | 70 +++++++++++++++---------
- 1 file changed, 43 insertions(+), 27 deletions(-)
+ tools/testing/selftests/bpf/xskxceiver.c | 48 ++++++++++++++----------
+ tools/testing/selftests/bpf/xskxceiver.h |  2 +-
+ 2 files changed, 30 insertions(+), 20 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-index f12847aead76..c21c57a1f6e9 100644
+index c21c57a1f6e9..1986fb9fe797 100644
 --- a/tools/testing/selftests/bpf/xskxceiver.c
 +++ b/tools/testing/selftests/bpf/xskxceiver.c
-@@ -142,12 +142,14 @@ static void report_failure(struct test_spec *test)
-  * 16-bits and a intra packet data sequence number in the lower 16 bits. So the 3rd packet's
-  * 5th word of data will contain the number (2<<16) | 4 as they are numbered from 0.
-  */
--static void write_payload(void *dest, u32 val, u32 size)
-+static void write_payload(void *dest, u32 pkt_nb, u32 start, u32 size)
- {
- 	u32 *ptr = (u32 *)dest, i;
- 
--	for (i = 0; i < size / sizeof(*ptr); i++)
--		ptr[i] = htonl(val << 16 | i);
-+	start /= sizeof(*ptr);
-+	size /= sizeof(*ptr);
-+	for (i = 0; i < size; i++)
-+		ptr[i] = htonl(pkt_nb << 16 | (i + start));
+@@ -555,6 +555,11 @@ static void pkt_set(struct xsk_umem_info *umem, struct pkt *pkt, int offset, u32
+ 		pkt->valid = true;
  }
  
- static void gen_eth_hdr(struct ifobject *ifobject, struct ethhdr *eth_hdr)
-@@ -563,8 +565,10 @@ static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb
++static u32 pkt_get_buffer_len(struct xsk_umem_info *umem, u32 len)
++{
++	return ceil_u32(len, umem->frame_size) * umem->frame_size;
++}
++
+ static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb_pkts, u32 pkt_len)
+ {
+ 	struct pkt_stream *pkt_stream;
+@@ -564,6 +569,8 @@ static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb
+ 	if (!pkt_stream)
+ 		exit_with_error(ENOMEM);
+ 
++	pkt_stream->nb_pkts = nb_pkts;
++	pkt_stream->max_pkt_len = pkt_len;
+ 	for (i = 0; i < nb_pkts; i++) {
+ 		struct pkt *pkt = &pkt_stream->pkts[i];
+ 
+@@ -661,10 +668,14 @@ static void __pkt_stream_generate_custom(struct ifobject *ifobj,
  		exit_with_error(ENOMEM);
  
  	for (i = 0; i < nb_pkts; i++) {
--		pkt_set(umem, &pkt_stream->pkts[i], 0, pkt_len);
+-		pkt_stream->pkts[i].offset = pkts[i].offset;
+-		pkt_stream->pkts[i].len = pkts[i].len;
 -		pkt_stream->pkts[i].pkt_nb = i;
+-		pkt_stream->pkts[i].valid = pkts[i].valid;
 +		struct pkt *pkt = &pkt_stream->pkts[i];
 +
-+		pkt_set(umem, pkt, 0, pkt_len);
++		pkt->offset = pkts[i].offset;
++		pkt->len = pkts[i].len;
 +		pkt->pkt_nb = i;
++		pkt->valid = pkts[i].valid;
++		if (pkt->len > pkt_stream->max_pkt_len)
++			pkt_stream->max_pkt_len = pkt->len;
  	}
  
- 	return pkt_stream;
-@@ -626,19 +630,24 @@ static u64 pkt_get_addr(struct pkt *pkt, struct xsk_umem_info *umem)
- 	return pkt->offset + umem_alloc_buffer(umem);
- }
+ 	ifobj->pkt_stream = pkt_stream;
+@@ -926,8 +937,6 @@ static int receive_pkts(struct test_spec *test, struct pollfd *fds)
  
--static void pkt_generate(struct ifobject *ifobject, struct pkt *pkt, u64 addr)
-+static void pkt_generate(struct ifobject *ifobject, u64 addr, u32 len, u32 pkt_nb,
-+			 u32 bytes_written)
+ 		pthread_mutex_lock(&pacing_mutex);
+ 		pkts_in_flight -= pkts_sent;
+-		if (pkts_in_flight < umem->num_frames)
+-			pthread_cond_signal(&pacing_cond);
+ 		pthread_mutex_unlock(&pacing_mutex);
+ 		pkts_sent = 0;
+ 	}
+@@ -938,10 +947,18 @@ static int receive_pkts(struct test_spec *test, struct pollfd *fds)
+ static int __send_pkts(struct ifobject *ifobject, struct pollfd *fds, bool timeout)
  {
--	struct ethhdr *eth_hdr;
--	void *data;
-+	void *data = xsk_umem__get_data(ifobject->umem->buffer, addr);
+ 	struct xsk_socket_info *xsk = ifobject->xsk;
++	struct xsk_umem_info *umem = ifobject->umem;
++	u32 i, idx = 0, valid_pkts = 0, buffer_len;
+ 	bool use_poll = ifobject->use_poll;
+-	u32 i, idx = 0, valid_pkts = 0;
+ 	int ret;
  
--	if (!pkt->valid || pkt->len < MIN_PKT_SIZE)
-+	if (len < MIN_PKT_SIZE)
- 		return;
- 
--	data = xsk_umem__get_data(ifobject->umem->buffer, addr);
--	eth_hdr = data;
-+	if (!bytes_written) {
-+		gen_eth_hdr(ifobject, data);
-+
-+		len -= PKT_HDR_SIZE;
-+		data += PKT_HDR_SIZE;
-+	} else {
-+		bytes_written -= PKT_HDR_SIZE;
++	buffer_len = pkt_get_buffer_len(umem, ifobject->pkt_stream->max_pkt_len);
++	/* pkts_in_flight might be negative if many invalid packets are sent */
++	if (pkts_in_flight >= (int)((umem_size(umem) - BATCH_SIZE * buffer_len) / buffer_len)) {
++		kick_tx(xsk);
++		return TEST_CONTINUE;
 +	}
- 
--	gen_eth_hdr(ifobject, eth_hdr);
--	write_payload(data + PKT_HDR_SIZE, pkt->pkt_nb, pkt->len - PKT_HDR_SIZE);
-+	write_payload(data, pkt_nb, bytes_written, len);
- }
- 
- static void __pkt_stream_generate_custom(struct ifobject *ifobj,
-@@ -681,27 +690,33 @@ static void pkt_print_data(u32 *data, u32 cnt)
- 	}
- }
- 
--static void pkt_dump(void *pkt, u32 len)
-+static void pkt_dump(void *pkt, u32 len, bool eth_header)
- {
- 	struct ethhdr *ethhdr = pkt;
--	u32 i;
-+	u32 i, *data;
- 
--	/*extract L2 frame */
--	fprintf(stdout, "DEBUG>> L2: dst mac: ");
--	for (i = 0; i < ETH_ALEN; i++)
--		fprintf(stdout, "%02X", ethhdr->h_dest[i]);
-+	if (eth_header) {
-+		/*extract L2 frame */
-+		fprintf(stdout, "DEBUG>> L2: dst mac: ");
-+		for (i = 0; i < ETH_ALEN; i++)
-+			fprintf(stdout, "%02X", ethhdr->h_dest[i]);
- 
--	fprintf(stdout, "\nDEBUG>> L2: src mac: ");
--	for (i = 0; i < ETH_ALEN; i++)
--		fprintf(stdout, "%02X", ethhdr->h_source[i]);
-+		fprintf(stdout, "\nDEBUG>> L2: src mac: ");
-+		for (i = 0; i < ETH_ALEN; i++)
-+			fprintf(stdout, "%02X", ethhdr->h_source[i]);
 +
-+		data = pkt + PKT_HDR_SIZE;
-+	} else {
-+		data = pkt;
-+	}
+ 	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE) {
+ 		if (use_poll) {
+ 			ret = poll(fds, 1, POLL_TMOUT);
+@@ -972,7 +989,7 @@ static int __send_pkts(struct ifobject *ifobject, struct pollfd *fds, bool timeo
+ 		if (!pkt)
+ 			break;
  
- 	/*extract L5 frame */
- 	fprintf(stdout, "\nDEBUG>> L5: seqnum: ");
--	pkt_print_data(pkt + PKT_HDR_SIZE, PKT_DUMP_NB_TO_PRINT);
-+	pkt_print_data(data, PKT_DUMP_NB_TO_PRINT);
- 	fprintf(stdout, "....");
- 	if (len > PKT_DUMP_NB_TO_PRINT * sizeof(u32)) {
- 		fprintf(stdout, "\n.... ");
--		pkt_print_data(pkt + PKT_HDR_SIZE + len - PKT_DUMP_NB_TO_PRINT * sizeof(u32),
-+		pkt_print_data(data + len / sizeof(u32) - PKT_DUMP_NB_TO_PRINT,
- 			       PKT_DUMP_NB_TO_PRINT);
- 	}
- 	fprintf(stdout, "\n---------------------------------------\n");
-@@ -772,7 +787,7 @@ static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
- 	return true;
- 
- error:
--	pkt_dump(data, len);
-+	pkt_dump(data, len, true);
- 	return false;
- }
- 
-@@ -959,9 +974,10 @@ static int __send_pkts(struct ifobject *ifobject, struct pollfd *fds, bool timeo
- 
- 		tx_desc->addr = pkt_get_addr(pkt, ifobject->umem);
+-		tx_desc->addr = pkt_get_addr(pkt, ifobject->umem);
++		tx_desc->addr = pkt_get_addr(pkt, umem);
  		tx_desc->len = pkt->len;
--		if (pkt->valid)
-+		if (pkt->valid) {
+ 		if (pkt->valid) {
  			valid_pkts++;
--		pkt_generate(ifobject, pkt, tx_desc->addr);
-+			pkt_generate(ifobject, tx_desc->addr, tx_desc->len, pkt->pkt_nb, 0);
-+		}
- 	}
+@@ -982,11 +999,6 @@ static int __send_pkts(struct ifobject *ifobject, struct pollfd *fds, bool timeo
  
  	pthread_mutex_lock(&pacing_mutex);
+ 	pkts_in_flight += valid_pkts;
+-	/* pkts_in_flight might be negative if many invalid packets are sent */
+-	if (pkts_in_flight >= (int)(ifobject->umem->num_frames - BATCH_SIZE)) {
+-		kick_tx(xsk);
+-		pthread_cond_wait(&pacing_cond, &pacing_mutex);
+-	}
+ 	pthread_mutex_unlock(&pacing_mutex);
+ 
+ 	xsk_ring_prod__submit(&xsk->tx, i);
+@@ -1032,9 +1044,11 @@ static int send_pkts(struct test_spec *test, struct ifobject *ifobject)
+ 
+ 	while (pkt_stream->current_pkt_nb < pkt_stream->nb_pkts) {
+ 		ret = __send_pkts(ifobject, &fds, timeout);
++		if (ret == TEST_CONTINUE && !test->fail)
++			continue;
+ 		if ((ret || test->fail) && !timeout)
+ 			return TEST_FAILURE;
+-		else if (ret == TEST_PASS && timeout)
++		if (ret == TEST_PASS && timeout)
+ 			return ret;
+ 	}
+ 
+@@ -1319,12 +1333,8 @@ static void *worker_testapp_validate_rx(void *arg)
+ 
+ 	if (!err && ifobject->validation_func)
+ 		err = ifobject->validation_func(ifobject);
+-	if (err) {
++	if (err)
+ 		report_failure(test);
+-		pthread_mutex_lock(&pacing_mutex);
+-		pthread_cond_signal(&pacing_cond);
+-		pthread_mutex_unlock(&pacing_mutex);
+-	}
+ 
+ 	pthread_exit(NULL);
+ }
+diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
+index 00862732e751..aaf27e067640 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.h
++++ b/tools/testing/selftests/bpf/xskxceiver.h
+@@ -121,6 +121,7 @@ struct pkt_stream {
+ 	u32 nb_pkts;
+ 	u32 current_pkt_nb;
+ 	struct pkt *pkts;
++	u32 max_pkt_len;
+ };
+ 
+ struct ifobject;
+@@ -173,7 +174,6 @@ struct test_spec {
+ 
+ pthread_barrier_t barr;
+ pthread_mutex_t pacing_mutex = PTHREAD_MUTEX_INITIALIZER;
+-pthread_cond_t pacing_cond = PTHREAD_COND_INITIALIZER;
+ 
+ int pkts_in_flight;
+ 
 -- 
 2.34.1
 
