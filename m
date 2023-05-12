@@ -1,91 +1,181 @@
-Return-Path: <netdev+bounces-2129-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2130-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8B04B7006CA
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 13:27:54 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5DF267006E9
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 13:34:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5993B1C211B9
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 11:27:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 20B672817D6
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 11:34:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E0A8D510;
-	Fri, 12 May 2023 11:27:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E357D511;
+	Fri, 12 May 2023 11:34:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E82B7F0
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 11:27:50 +0000 (UTC)
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA111BB
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 04:27:48 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-3f423ac6e2dso44246185e9.2
-        for <netdev@vger.kernel.org>; Fri, 12 May 2023 04:27:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1683890867; x=1686482867;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0MO8n0AWS/ztJyQBnj244iKl58C77Zq7y48ei4159sU=;
-        b=avuXv7yVdq3gkTqcAlTosK4b9MsHOSDgjHwW4NyH8/FD3FStACglRUeK4QpEU4FAP2
-         6/Qt2Br+17l7PT0sLlZZMQr7jW6yxsHSH+4HVUaWpaxJUZWm83Nx1UY1d08PtxIaTj08
-         NgmwpJijbeOjfzv/RnruLRtEGpBHgbuC5NgF8yG5fJyr58krpz7JATtibrxH4oCTAY2e
-         WSHJo8uoZH8mBehwVBezczfFNXdvoBtm6o4XLOLMCstJ/HVNdFUbe+EjguPPaUFtW17Y
-         N1CXDaLMnFx3AHiKAvabsS0vx1BtLOnuHiMS9JVzSjSTiKFxQSyRX7nVPF3V0beMbKlB
-         ebOQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 221D9BA56
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 11:34:44 +0000 (UTC)
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E59D05E;
+	Fri, 12 May 2023 04:34:42 -0700 (PDT)
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-3ef5b5d322dso99193501cf.2;
+        Fri, 12 May 2023 04:34:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683890867; x=1686482867;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0MO8n0AWS/ztJyQBnj244iKl58C77Zq7y48ei4159sU=;
-        b=Pd8aPYJ2aQwncGZv8F+62X30yHz9uKZBd/BNr4RNaMdSc/Deg+yFw/FkRnah65xzJM
-         UctZKB7s3iNzOdGBSsm0gDXo4AMnI+giExzfh6bWNGcYfUkmb5Krp4WWGwQnJNBjCA7E
-         HTIMivbghH/by/wMYiqd0g3iqGBduoVJoc2e0vnpgZI3WIlWS/RT255l2gRE/qhQxwkk
-         gh2T4bcD1T0WAbhOuqsQQGKfKrFdB4QOCUQuDufHX+02pNWkY1yoF1RCF/3i+H77hdSf
-         5WRBiggDdtlftjhyBZ2eQmDR3Hsdtg81AZdhaonA83GnNbah35RAXdWxGHHTC0hSCvoa
-         /IKg==
-X-Gm-Message-State: AC+VfDyII0nr5ev3IXCv5s3QZ0M9CM6JOsB54jR06ewrePMsY0oc9nEW
-	/MiH7K859yyuLPqPje3YLm2q9g==
-X-Google-Smtp-Source: ACHHUZ49zMy6r+ZsdMp5ufDLYezgCJT/Iu9DlKq1htf46lbhRfTh/RmSNTiSnwac4sit0WjxY6xyOQ==
-X-Received: by 2002:adf:e787:0:b0:2f0:6192:92db with SMTP id n7-20020adfe787000000b002f0619292dbmr16034921wrm.46.1683890866990;
-        Fri, 12 May 2023 04:27:46 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id r9-20020a5d4e49000000b003047ea78b42sm22763420wrt.43.2023.05.12.04.27.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 May 2023 04:27:46 -0700 (PDT)
-Date: Fri, 12 May 2023 13:27:45 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: netdev@vger.kernel.org, me@pmachata.org, jmaloy@redhat.com,
-	parav@nvidia.com, Nikolay Aleksandrov <razor@blackwall.org>
-Subject: Re: [PATCH iproute2 v2] Add MAINTAINERS file
-Message-ID: <ZF4isc8xGwht6zpC@nanopsycho>
-References: <20230511160002.25439-1-stephen@networkplumber.org>
+        d=1e100.net; s=20221208; t=1683891281; x=1686483281;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jRL0mFkBIJ4KpIHNQ0nXnFUPNdCjxMZJfjytXJxyHUs=;
+        b=RnMaoHKQty2EcLEaUL6R3/GL9nKNf2LnFZEeBqxJjdF7beqEn5Xc11wYAlgk6PC3XF
+         6OSUQcnZXziN/KMlS9Bf+/wlbyeHXHDULmj5rn+C5AFQvayMGuK4P7+wBTimmzAv9iF8
+         9J2bDyRTibimWbb2d53f2mK6cklI2cHZR+tMLt8j5c837itHN0VJcedm4hMrbeLTwdej
+         DFMjuzx9WMC8dpGlYVyHPOucQ0ZGb8bIofVrPrmF/zbHE6Q4lTEBe+sZaqWAbyc0cDmI
+         jp5R0Ix0w69Z73rtHVUeN9wkG3VkxqYsCGdkPlOf9LsA10DaRG3RE2uCz9UI1AHH9g0I
+         hkbQ==
+X-Gm-Message-State: AC+VfDxs9MZzvrF4JKEbWP4YiRuFxadQZ+xv4icyJKzNIRcsNzcHSVd6
+	2LTM22FByBb06IIS1AXlJke2xqiTSVfyUg==
+X-Google-Smtp-Source: ACHHUZ6g0qPmIXXysBtyKlJ8OBTOCCZ8wjQVTD+7qJVtXBQ1bHI8jYxrR/XdSPFvCFZmQTPVlLIYQA==
+X-Received: by 2002:a05:622a:1a21:b0:3ef:36d0:c06e with SMTP id f33-20020a05622a1a2100b003ef36d0c06emr44128699qtb.33.1683891281389;
+        Fri, 12 May 2023 04:34:41 -0700 (PDT)
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com. [209.85.160.175])
+        by smtp.gmail.com with ESMTPSA id ey16-20020a05622a4c1000b003f3941ba4d9sm385778qtb.32.2023.05.12.04.34.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 May 2023 04:34:41 -0700 (PDT)
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-3ef588dcf7aso99169331cf.1;
+        Fri, 12 May 2023 04:34:41 -0700 (PDT)
+X-Received: by 2002:a0d:d691:0:b0:539:1b13:3d64 with SMTP id
+ y139-20020a0dd691000000b005391b133d64mr23825102ywd.48.1683890887026; Fri, 12
+ May 2023 04:28:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230511160002.25439-1-stephen@networkplumber.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230512100620.36807-1-bagasdotme@gmail.com> <20230512100620.36807-5-bagasdotme@gmail.com>
+In-Reply-To: <20230512100620.36807-5-bagasdotme@gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 12 May 2023 13:27:55 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWrApnnmC+p_+jeVsswc-_JRSK3FtvpS2X4PrscBCZtAA@mail.gmail.com>
+Message-ID: <CAMuHMdWrApnnmC+p_+jeVsswc-_JRSK3FtvpS2X4PrscBCZtAA@mail.gmail.com>
+Subject: Re: [PATCH v2 04/10] net: ethernet: 8390: Replace GPL boilerplate
+ with SPDX identifier
+To: Bagas Sanjaya <bagasdotme@gmail.com>
+Cc: Linux SPDX Licenses <linux-spdx@vger.kernel.org>, 
+	Linux DRI Development <dri-devel@lists.freedesktop.org>, 
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux Networking <netdev@vger.kernel.org>, 
+	Linux ARM <linux-arm-kernel@lists.infradead.org>, 
+	Linux Staging Drivers <linux-staging@lists.linux.dev>, 
+	Linux Watchdog Devices <linux-watchdog@vger.kernel.org>, 
+	Linux Kernel Actions <linux-actions@lists.infradead.org>, 
+	Diederik de Haas <didi.debian@cknow.org>, Kate Stewart <kstewart@linuxfoundation.org>, 
+	Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	David Airlie <airlied@redhat.com>, Karsten Keil <isdn@linux-pingi.de>, 
+	Jay Vosburgh <j.vosburgh@gmail.com>, Andy Gospodarek <andy@greyhouse.net>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Sam Creasey <sammy@sammy.net>, 
+	Dominik Brodowski <linux@dominikbrodowski.net>, Daniel Mack <daniel@zonque.org>, 
+	Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, 
+	Guenter Roeck <linux@roeck-us.net>, Jan Kara <jack@suse.com>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, 
+	Manivannan Sadhasivam <mani@kernel.org>, "David A . Hinds" <dahinds@users.sourceforge.net>, 
+	Donald Becker <becker@scyld.com>, Peter De Schrijver <p2@mind.be>, Topi Kanerva <topi@susanna.oulu.fi>, 
+	Alain Malek <Alain.Malek@cryogen.com>, Bruce Abbott <bhabbott@inhb.co.nz>, 
+	Alan Cox <alan@linux.intel.com>, Greg Ungerer <gerg@linux-m68k.org>, 
+	Simon Horman <simon.horman@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Thu, May 11, 2023 at 06:00:02PM CEST, stephen@networkplumber.org wrote:
->Record the maintainers of subsections of iproute2.
->The subtree maintainers are based off of most recent current
->patches and maintainer of kernel portion of that subsystem.
->
->Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
->Acked-by: Petr Machata <me@pmachata.org> # For DCB
->Acked-by: Parav Pandit <parav@nvidia.com>
+Hi Bagas,
 
-Acked-by: Jiri Pirko <jiri@nvidia.com>
+On Fri, May 12, 2023 at 12:08=E2=80=AFPM Bagas Sanjaya <bagasdotme@gmail.co=
+m> wrote:
+> Replace GPL boilerplate notice on remaining files with appropriate SPDX
+> tag. For files mentioning COPYING, use GPL 2.0; otherwise GPL 1.0+.
+>
+> Cc: David A. Hinds <dahinds@users.sourceforge.net>
+> Cc: Donald Becker <becker@scyld.com>
+> Cc: Peter De Schrijver <p2@mind.be>
+> Cc: Topi Kanerva <topi@susanna.oulu.fi>
+> Cc: Alain Malek <Alain.Malek@cryogen.com>
+> Cc: Bruce Abbott <bhabbott@inhb.co.nz>
+> Cc: Alan Cox <alan@linux.intel.com>
+> Acked-by: Greg Ungerer <gerg@linux-m68k.org>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+
+Thanks for your patch!
+
+> --- a/drivers/net/ethernet/8390/apne.c
+> +++ b/drivers/net/ethernet/8390/apne.c
+> @@ -1,3 +1,4 @@
+> +// SPDX-License-Identifier: GPL-1.0+
+
+As per the removed lines below, this should be GPL-2.0-only.
+
+>  /*
+>   * Amiga Linux/68k 8390 based PCMCIA Ethernet Driver for the Amiga 1200
+>   *
+> @@ -19,12 +20,6 @@
+>   *
+>   * ---------------------------------------------------------------------=
+-------
+>   *
+> - * This file is subject to the terms and conditions of the GNU General P=
+ublic
+> - * License.  See the file COPYING in the main directory of the Linux
+> - * distribution for more details.
+> - *
+> - * ---------------------------------------------------------------------=
+-------
+> - *
+>   */
+>
+>
+
+> --- a/drivers/net/ethernet/8390/hydra.c
+> +++ b/drivers/net/ethernet/8390/hydra.c
+> @@ -1,10 +1,8 @@
+> +// SPDX-License-Identifier: GPL-1.0+
+
+Likewise.
+
+> +
+>  /* New Hydra driver using generic 8390 core */
+>  /* Based on old hydra driver by Topi Kanerva (topi@susanna.oulu.fi) */
+>
+> -/* This file is subject to the terms and conditions of the GNU General  =
+    */
+> -/* Public License.  See the file COPYING in the main directory of the   =
+    */
+> -/* Linux distribution for more details.                                 =
+    */
+> -
+>  /* Peter De Schrijver (p2@mind.be) */
+>  /* Oldenburg 2000 */
+>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
 
