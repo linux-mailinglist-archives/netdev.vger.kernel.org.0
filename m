@@ -1,36 +1,36 @@
-Return-Path: <netdev+bounces-1989-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-1990-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 519546FFE32
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 02:58:13 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A1056FFE34
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 03:00:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0DDE11C210D1
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 00:58:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C19BB281713
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 01:00:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D97737F0;
-	Fri, 12 May 2023 00:58:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE64E7FA;
+	Fri, 12 May 2023 01:00:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57B1539D;
-	Fri, 12 May 2023 00:58:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5282CC433D2;
-	Fri, 12 May 2023 00:58:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C60197EF;
+	Fri, 12 May 2023 01:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4773C433EF;
+	Fri, 12 May 2023 01:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683853087;
-	bh=Na7tNUvEVf6ByVUC4k87U3onJNIuQV7IWaT3nOoxrPA=;
+	s=k20201202; t=1683853210;
+	bh=7FidZPL6/JjR3aTG0/yt8Rh22XZmVz74jmu+VOu18Y8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ap1p4ygC9tf7kD886uOAEwUgJVinAxtgj6i8xx+YbFmZllbUDXazxNaM5rPdydFTo
-	 9qtNJO5RVcIybs+Z13CIck/ETTTsOxKoNh5mFhGFOd2c7tLmfip5Yv6mAWDn3NLJt3
-	 14ddehiK2OMAn5laRsPWu4WfW7FUi6naMMhvSNX4dk5/taJV5qHjhhtZT195R2msb8
-	 v4LHG/1cdnfeOppwShDTLotMgoLA4s3fYTuAOSLZ3FciDrogG8D9T96NsyHyX7hEqb
-	 Sb16m7V/SXK81T7BuyOl+IgfLiNBBSEJDiaDnc8mNtBzMA3BUs4yXLofvdfWsMGu2I
-	 l85908kduF9pg==
-Date: Thu, 11 May 2023 17:58:06 -0700
+	b=Bjf5oJYI8oN3E17VPraPX2agydE7OjsCS3FUzf65OoQ5iXw2Cm4PcTV9Y9/e+uqet
+	 Q+t0DzA5XTqAJD2zLFzWthP2Swto6kSV2zdkywDU+XTiYr70v5jnAq5yFzn8XduN0E
+	 KD0caRgfYN/zIj4UQkUJauhosv1gtGdLPKVBqPt8qilVNDXxSSUSjHPu+Bv8xzgkA/
+	 qMoan7ub0mpsIVWgZy1yfX1L1ZKVcwvMRRO/GIsdx/aEH7qdrQLAHTFHM/icwrUz6D
+	 K3dn2+9VLe/01/EjfQElNp9YcnjZfBa0CpvFiMhWgOHnyenYfeZdICIP1SvDT44tby
+	 w2pLvpsTTnO0Q==
+Date: Thu, 11 May 2023 18:00:08 -0700
 From: Jakub Kicinski <kuba@kernel.org>
 To: Shenwei Wang <shenwei.wang@nxp.com>
 Cc: Wei Fang <wei.fang@nxp.com>, "David S. Miller" <davem@davemloft.net>,
@@ -39,13 +39,14 @@ Cc: Wei Fang <wei.fang@nxp.com>, "David S. Miller" <davem@davemloft.net>,
  Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
  Jesper Dangaard Brouer <hawk@kernel.org>, John Fastabend
  <john.fastabend@gmail.com>, Alexander Lobakin <alexandr.lobakin@intel.com>,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org, imx@lists.linux.dev
-Subject: Re: [PATCH v2 net 1/1] net: fec: using the standard return codes
+ Horatiu Vultur <horatiu.vultur@microchip.com>, Simon Horman
+ <horms@kernel.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ imx@lists.linux.dev
+Subject: Re: [PATCH v3 net-next] net: fec: using the standard return codes
  when xdp xmit errors
-Message-ID: <20230511175806.4b1f84f6@kernel.org>
-In-Reply-To: <20230511175542.0bf5b773@kernel.org>
-References: <20230510200523.1352951-1-shenwei.wang@nxp.com>
-	<20230511175542.0bf5b773@kernel.org>
+Message-ID: <20230511180008.0a216e0b@kernel.org>
+In-Reply-To: <20230511152115.1355010-1-shenwei.wang@nxp.com>
+References: <20230511152115.1355010-1-shenwei.wang@nxp.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -55,13 +56,13 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 11 May 2023 17:55:42 -0700 Jakub Kicinski wrote:
-> On Wed, 10 May 2023 15:05:23 -0500 Shenwei Wang wrote:
-> > -		xdp_return_frame(frame);  
-> 
-> This line is a bug fix (double free).
-> 
-> I'm going to apply v2, it's good enough.
+On Thu, 11 May 2023 10:21:15 -0500 Shenwei Wang wrote:
+> This patch standardizes the inconsistent return values for unsuccessful
+> XDP transmits by using standardized error codes (-EBUSY or -ENOMEM).
 
-Let me take that back, I'll reply to v2.
+Let's split the return code cleanup from the double free fix.
+Please post a v4 patch with just the xdp_return_frame() removed,
+and none of the other changes. For net (rather than net-next),
+with the Fixes tag back.
+
 
