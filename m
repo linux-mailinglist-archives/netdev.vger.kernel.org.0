@@ -1,233 +1,170 @@
-Return-Path: <netdev+bounces-2063-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2064-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 59E0B700218
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 10:02:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 09FE970025B
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 10:15:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 149BF281A8B
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 08:02:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 15D211C2113F
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 08:15:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A07163D8;
-	Fri, 12 May 2023 08:01:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C61FF944D;
+	Fri, 12 May 2023 08:15:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F529442
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 08:01:45 +0000 (UTC)
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC5FE709;
-	Fri, 12 May 2023 01:01:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1880A56
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 08:15:22 +0000 (UTC)
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2096.outbound.protection.outlook.com [40.107.212.96])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB2590;
+	Fri, 12 May 2023 01:15:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cmO6OnPYSeAoB/URQ/DZNrlTwZW8j+78/4Hy3QTGRm4VPa5SFxURJBf3jJITGuAfluwNoMZIjIHoOsZluqLN83mq/ztFBz5rJflUVb+tOWAj8jOCnhNx2+SCjYdsGKK4JdCnsZns0/64JCj9aUzqxPC4inpJL/gwYcy2PH27BbVX0gWTj82eBEyguo/8K6M1VzCEvBOx2+cQXtJ/CsGruRp5N9fv0uBie4BVeyQICDKRy2dLZEJNykYBd6miq0COnJwfP1v2DhS2zIpvh6VtfFUr8cEAAFuZ1u2tCtTmKAeblSVnMn27dpiUAHWVbzTxw4ujCIX8byks+EinqWI4sw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CgeVkZPZlgqkGXAo9xhdU480c+cwULsBbinZmJWYnIM=;
+ b=Bln35hR3tW+UM8MGdmjqnJi5Xlw45PM+5FVHsz6O1gMVooEBWp2UtO0onY17nZK3aHMKJH5zH1sIrasZfGfkSYUqUcvvrK/f6kK579L6LkzJw04XVma4gz40g6yX9f6+3B6qHFBFsp8GVjGTkc7zLuhPMZMbQWtppbyraTeUhA0/TPHoTa4jOV8NCl6ZKZKaGeamB2fToiOZgkTrAFh2tSvYWJDMAn/aGiXB/+TkZioTdii5XG3NasRlIONvjcUgGDFcyk8VLmrnAaZUMs/bTK/woo7Vml4HLPxhQ2kPsTZ9cPHSh1YgQjkxFA1hwrGv+VpIVfJz3sWK4xbPfhjL0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1683878504; x=1715414504;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ajWaCQwEk/326TqmtMr3s5MnclnzjZmm203gVg+Ed5k=;
-  b=VQDVUyUvxraaP0s1iV7aPF0hRT9Tgx8Zs1mokMtEpnrzbDnAOXfWGHUq
-   bg4EE2a5hBU6Q9G8FPeCqSvV/xKD74qkfaAOQtIteXtjW06rczMIrzMVz
-   j/1cjWR4PRXvTaUsXTzaMzXZfxKmln8sY2ExFSthakiSz9dyV9HDCwVSt
-   fW9+nP+9Y5H+sT92akwlapq8gdYg57WCefU7q24TQ+G87YYKx0q7xRIAE
-   QcyNGiRZFG8Zl5CWbVZeDT7x05R20QqMFKrmO/ByrkO0YplbAKFvmeZXL
-   ore74vLgQ1pOO9IW3HUgDD97pbe4lY6yqQhbauja45KlOV6Xg6mcMxJaO
-   w==;
-X-IronPort-AV: E=Sophos;i="5.99,269,1677538800"; 
-   d="scan'208";a="30870499"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 12 May 2023 10:01:42 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Fri, 12 May 2023 10:01:42 +0200
-X-PGP-Universal: processed;
-	by tq-pgp-pr1.tq-net.de on Fri, 12 May 2023 10:01:42 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1683878502; x=1715414502;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ajWaCQwEk/326TqmtMr3s5MnclnzjZmm203gVg+Ed5k=;
-  b=JEsWPmY78EGOncUCqWxqN/9nJW3qYYNo3tyhETttj3/PRjc3RWL5/8vc
-   m7t1/QwftVV+Vr/jARIkjxm7ICuGXDTmU8rDS/2u89KHJVawPx6hOtPFA
-   MjepEEl9wQ7OJyBZVgZO52MCIniKsM6+HigESecdhuPNlwgLTbaJ8tb6G
-   YcgYdSQi5hnQ3a1ce2zTdYq6nXH7sHY0jZ3nStm4uf7ytdRjacbeyQlcN
-   O9VK+q20VfskWbyTvst5V0HC4j4h475tcQnheT5ybi02PcuQHlftDO78I
-   3fa/lHSBbmjltbhjxhasjae7UuczfBvJ56qQxXfyC3waLM6hxZLc5UgBD
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.99,269,1677538800"; 
-   d="scan'208";a="30870498"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 12 May 2023 10:01:41 +0200
-Received: from steina-w.localnet (unknown [10.123.53.21])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-	(No client certificate requested)
-	by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 8434D280056;
-	Fri, 12 May 2023 10:01:41 +0200 (CEST)
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
-To: andrew@lunn.ch, Yan Wang <rk.code@outlook.com>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>, Russell King <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, "open list:ETHERNET PHY LIBRARY" <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] net: mdiobus: Add a function to deassert reset
-Date: Fri, 12 May 2023 10:01:41 +0200
-Message-ID: <2561676.Lt9SDvczpP@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <KL1PR01MB54486E8738DC81E062BA2D0EE6749@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
-References: <96a1b95e-d05e-40f0-ada9-1956f43010e0@lunn.ch> <9107661.CDJkKcVGEf@steina-w> <KL1PR01MB54486E8738DC81E062BA2D0EE6749@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CgeVkZPZlgqkGXAo9xhdU480c+cwULsBbinZmJWYnIM=;
+ b=lLprkHy0I9SOwAIApQ3tTTtE+LWrWLTCvysPdoOoZC/QfOIDANNvdTGKQJnl1ooqa4bRTlanM7JOJDqZENv9DrUDrCVOD2ic0/DcSDIhV5XvHGDIZIfwFHwKaYdeqq8bbPsFluQNi+fpO1Wh7UpGtL4v84+WQUWsjZF1dqHQGO4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY1PR13MB6214.namprd13.prod.outlook.com (2603:10b6:a03:530::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.18; Fri, 12 May
+ 2023 08:15:17 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.024; Fri, 12 May 2023
+ 08:15:17 +0000
+Date: Fri, 12 May 2023 10:15:12 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Bilal Khan <bilalkhanrecovered@gmail.com>, majordomo@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: Re: [PATCH] Fix grammar in ip-rule(8) man page
+Message-ID: <ZF31kDnecf0t19HT@corigine.com>
+References: <CA++M5eLYdY=UO2QBz17YLLw8OyG6cDYHm1dvs=mc8zQ7nPvYVA@mail.gmail.com>
+ <ZFyyK4Cvcn//yZdV@corigine.com>
+ <20230511085009.72b9da9e@hermes.local>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230511085009.72b9da9e@hermes.local>
+X-ClientProxiedBy: AM0PR02CA0219.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28f::26) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY1PR13MB6214:EE_
+X-MS-Office365-Filtering-Correlation-Id: 99718443-e57d-443d-6130-08db52c104ee
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	oJ3+Qcq8w8Fpx3ja6i/NztG4Zlc8W81ggc9VwdAHIv0DfeevUbmFSz+Yx/lvurAuYwmVU807svB5WCCioYGlPfTbMeaTtgmvI6//Agxyhhy7f7B9TDaskLk3mqcAVBqIwleayKQSeB257LFpmIRpvJ/iHSBnDQRUHpmPHtPysRvp9cuj065D+WYOCCj89PIeWj+h9je/tHCHRkf9hhche5UJfcXhouRyt1Vuq4LMIaIbb0FxR00RJmfPv4mzzNb3zgW+e4pzO0LNYq/cOOXYD7gJbCOEg1Km8k+2HOagDw+CcFWfAvanKuPUBaHn5dZ8XW45zYjvL2RcvndMbVTd+q+PdI+OnAAN6GA+6ONisnGeY/Y2hGZHUjQoqoxure+rUAo4eSf0V7GuJdKL/tr9KaHCZJAEtwKp94Np9GGzMm/VagTmaB15uTPq8Bu0TAVKqfP7VY1gwA3QHECNi8tSwm92sbm4o9x4xIIWKhcBvZGp+frG+Nf/sgg0yz6vcR+yrt7AS0ql4ZJkPGJpGIQMsaMBkKJQkCoioeCDx7WTom9W5+YWBgQ3lvbcoUUwH+G/
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(366004)(376002)(396003)(39850400004)(451199021)(6666004)(2616005)(83380400001)(36756003)(6506007)(186003)(6512007)(6486002)(4326008)(66946007)(316002)(2906002)(66476007)(44832011)(5660300002)(86362001)(6916009)(8936002)(8676002)(41300700001)(66556008)(478600001)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1k1za2W6i1BaWIT0o921sMLYK1dFLoRawM7BXLr8I0Uqg7ZYf+qdozD/ybVm?=
+ =?us-ascii?Q?6oTItmf4hdZ+++snd+0oNUIIt5D5tt+wcZ7BI61Nt22UR4kpPQhgN+/7yNT4?=
+ =?us-ascii?Q?S78aGrwKgFizUMv7tA5mznRy89Wo6z74fOORpKk+C26pM9YEhumbCTkLXF8m?=
+ =?us-ascii?Q?YpFZAM8zIIJzfu94qFKW5XVoNgVeymCNkJcPxUurpiWgpaQKU4JrD0/X41Jo?=
+ =?us-ascii?Q?LjdUFrDYhS0YIyGoE7F2r0Vj2+ydxWpSCGHPKXxJcmGFRP32cYOMaiuvu5+Y?=
+ =?us-ascii?Q?QFzRb3K2E3nulrubgArHUDVdblWT6eNcjomN8n4O8GaUT0tMN+jxOC0OxZsH?=
+ =?us-ascii?Q?at8+F/7J7fx4ICKNNQKDVmFHzP2zUtA1l1he22N92Xtepy8vCynW5/msOjWO?=
+ =?us-ascii?Q?BPAbm1IJExrR1PI3DnaLmQv5F5c3s11eHMMD+Pp6PZinpl5gCtcQTeC945ez?=
+ =?us-ascii?Q?yCqrKAdQQ/R+jnIrwmgArqgVzdO6R4sp1VyGRoYsVESHvDBD2AuEs79mNXX1?=
+ =?us-ascii?Q?3PJhccx8rStRK70RreY0dEL8IRJurEtJ2NYjIdpWkMlk9BTniXyzfgLJqGwa?=
+ =?us-ascii?Q?rodxX9ehWOe+Q795idgAN8ZpuFT5sLbabPbsktXD8DnwHxyP4t2inqof2NIF?=
+ =?us-ascii?Q?+KtP2EeQ4nDWsPe3KLJJ0lPeNnIGUIpa2rZ1FpcpZybTCyGyHK9umMTawQBQ?=
+ =?us-ascii?Q?mYnygoeq5dHZ5V/FDIVRjbC4i8yMe3lcgoQfw8oIXb87FyHiCaQxoj3OmWIa?=
+ =?us-ascii?Q?uqkaOvCuj0nwuN/8B4XX9fsMsB7M2kGqV+1bMstqL9uJHPJ3Ps30uFFXrYKt?=
+ =?us-ascii?Q?5dcgIa5S2/GKuTTEXn3shmp37eoP6J8zgfZ2PquG/fDk7NiFdrqsHm9Rvh+4?=
+ =?us-ascii?Q?gLejspSRwfm+agYwsCAxIlxrbza23wVl9E7Zlijrv2Mm8to5v7KTTeJ2Gnto?=
+ =?us-ascii?Q?/oF/Q/3AX/vnSyDWZxdbvTUKJVR6LBLqIi8u51KWbkMxOSygUKTXp31Q1orE?=
+ =?us-ascii?Q?PhMbk+3H8r3M/WrqtGknIxFDUnOg+kkJFMb/KS08e5TjpT4qMBTrOeo+9i5B?=
+ =?us-ascii?Q?UyTCpER/j6XCKDCF9hi4yHeyfARn1MMB1RoK8Ov/PyPQK3rw6F0eirjmBpbN?=
+ =?us-ascii?Q?0SklXoHJoqS5OiTBDTmffxyZ0YHZkcdpNceSSKJrMyHT8N4X0nJ0zvDZO/v3?=
+ =?us-ascii?Q?jRg+UKAdqJwoTX/5qoNb0jp0qal+o6xTiuByx5B3mKOpxqBEVT+L+/+GwcXC?=
+ =?us-ascii?Q?uJnY9N3/BJ9jC2HA70iqFNz51BX6ufDoHo8ubT95za8UMnq2eS/MCHkh+oml?=
+ =?us-ascii?Q?IZ0C2ctkGDtwerXPMzskz5lJbpZ9xNPDIk7sDS1mqzsF5bhuSsosR7s/HiXi?=
+ =?us-ascii?Q?H4hYzu6IEpLyscQkx2IQEpitdjIpDrBnFizQCDlBLnCJmWvyAQQrxkrCMf/W?=
+ =?us-ascii?Q?QlU3FU2grTL6cAGbgtsN04nH4RB7wyjRTwK/DRsOQ9bMY3Bdt7z3jqYryWJl?=
+ =?us-ascii?Q?9JFPNyE5HFIvSzpt37VH1JYE8hK+dQIMtW1xJ6QCW8gxmIQVHTK4+lyBOKPZ?=
+ =?us-ascii?Q?j4ghSowTNof6Gsgpc5oUHv12CHRL5blVD7VODus39BWqzwir/QAC3XCTb1i3?=
+ =?us-ascii?Q?QObz4JsYy1dM/p/xxeNqNuc11gCrzhG68HDd26Giy9Czz0F28gqkyZEYZ6bp?=
+ =?us-ascii?Q?4XG11Q=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99718443-e57d-443d-6130-08db52c104ee
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2023 08:15:16.9448
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TSXyWsxPJjLqZx/cswA9P3/W4VQAxoCLX185MrM4lGrwiK5jNkwpKGTA/PJ2UvHwrsidV3p5sCi0NVlhpBj1zl2Bym/e1lkJh2NrLHXdwOo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY1PR13MB6214
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Am Donnerstag, 11. Mai 2023, 05:16:52 CEST schrieb Yan Wang:
-> On 5/10/2023 7:55 PM, Alexander Stein wrote:
-> > Am Mittwoch, 10. Mai 2023, 10:02:52 CEST schrieb Yan Wang:
-> >> It is possible to mount multiple sub-devices on the mido bus.
-> >=20
-> > mdio bus
->=20
-> Yes, misspelled.
->=20
-> >> The hardware power-on does not necessarily reset these devices.
-> >> The device may be in an uncertain state, causing the device's ID
-> >> to be scanned.
-> >>=20
-> >> So, before adding a reset to the scan, make sure the device is in
-> >> normal working mode.
-> >>=20
-> >> I found that the subsequent drive registers the reset pin into the
-> >> structure of the sub-device to prevent conflicts, so release the
-> >> reset pin.
-> >>=20
-> >> Signed-off-by: Yan Wang <rk.code@outlook.com>
-> >=20
-> > We had similar cases where the (single) PHY was in reset during Linux
-> > boot.
-> > Should you be able to make this work by using a "ethernet-phy-id%4x.%4x"
-> > compatible? See also [1]
-> >=20
-> > [1] https://lkml.org/lkml/2020/10/28/1139
->=20
-> Well, I've seen the [1] before, this method may mask some issues. For
-> example ,if I use
-> another type of phy ,I have to modify the DT, Is it very cumbersome?
+On Thu, May 11, 2023 at 08:50:09AM -0700, Stephen Hemminger wrote:
+> On Thu, 11 May 2023 11:15:23 +0200
+> Simon Horman <simon.horman@corigine.com> wrote:
+> 
+> > On Mon, May 08, 2023 at 01:05:02PM +0500, Bilal Khan wrote:
+> > > Hey there,
+> > > 
+> > > I have identified a small grammatical error in the ip-rule(8) man
+> > > page, and have created a patch to fix it. The current first line of
+> > > the DESCRIPTION section reads:
+> > >   
+> > > > ip rule manipulates rules in the routing policy database control the route selection algorithm.  
+> > > 
+> > > This sentence contains a grammatical error, as "control" should either
+> > > be changed to "that controls" (to apply to "database") or "to control"
+> > > (to apply to "manipulates"). I have updated the sentence to read:
+> > >   
+> > > > ip rule manipulates rules in the routing policy database that controls the route selection algorithm.  
+> > > 
+> > > This change improves the readability and clarity of the ip-rule(8) man
+> > > page and makes it easier for users to understand how to use the IP
+> > > rule command.
+> > > 
+> > > I have attached the patch file by the name
+> > > "0001-fixed-the-grammar-in-ip-rule-8-man-page.patch" to this email and
+> > > would appreciate any feedback or suggestions for improvement.
+> > > 
+> > > Thank you!  
+> > 
+> > FWIIW, I'm not sure that an attachment is the right way to submit patches.
+> > It's more usual to use something like git send-email or b4 to send
+> > basically what is in your attachment.
+> > 
+> > I'm sure Stephen will provide guidance if he'd like things done a different
+> > way.
+> 
+> Applied and did small fixups. Novices get more leeway in initial patch submissions.
+> The main requirements are that it correct, applies clean, and has required DCO.
 
-You have to change the reset timings and possibly other properties as well =
-if=20
-you change the PHY, so a DT change is necessary anyway.
-
-Regards,
-Alexander
-
->=20
-> >> ---
-> >>=20
-> >> v2:
-> >>    - fixed commit message
-> >>    - Using gpiod_ replace gpio_
-> >>=20
-> >> v1:
-> >> https://lore.kernel.org/all/KL1PR01MB5448631F2D6F71021602117FE6769@KL1=
-PR0
-> >> 1M
-> >> B5448.apcprd01.prod.exchangelabs.com/ - Incorrect description of commit
-> >> message.
-> >>=20
-> >>    - The gpio-api too old
-> >>=20
-> >> ---
-> >>=20
-> >>   drivers/net/mdio/fwnode_mdio.c | 16 ++++++++++++++++
-> >>   1 file changed, 16 insertions(+)
-> >>=20
-> >> diff --git a/drivers/net/mdio/fwnode_mdio.c
-> >> b/drivers/net/mdio/fwnode_mdio.c index 1183ef5e203e..6695848b8ef2 1006=
-44
-> >> --- a/drivers/net/mdio/fwnode_mdio.c
-> >> +++ b/drivers/net/mdio/fwnode_mdio.c
-> >> @@ -57,6 +57,20 @@ fwnode_find_mii_timestamper(struct fwnode_handle
-> >> *fwnode) return register_mii_timestamper(arg.np, arg.args[0]);
-> >>=20
-> >>   }
-> >>=20
-> >> +static void fwnode_mdiobus_pre_enable_phy(struct fwnode_handle *fwnod=
-e)
-> >> +{
-> >> +	struct gpio_desc *reset;
-> >> +
-> >> +	reset =3D fwnode_gpiod_get_index(fwnode, "reset", 0, GPIOD_OUT_HIGH,
-> >=20
-> > NULL);
-> >=20
-> >> +	if (IS_ERR(reset) && PTR_ERR(reset) !=3D -EPROBE_DEFER)
-> >=20
-> > How are you dealing with EPROBE_DEFER if the reset line is e.g. attached
-> > to an i2c expander, which is to be probed later on?
->=20
-> Thank you ,The logic is wrong,trying to fix it.
->=20
-> >> +		return;
-> >> +
-> >> +	usleep_range(100, 200);
-> >=20
-> > How do you know a PHY's reset pulse width?
-> >=20
-> >> +	gpiod_set_value_cansleep(reset, 0);
-> >=20
-> > What about post-reset stabilization times before MDIO access is allowed?
->=20
-> yes,I need to get reset pulse width and post-reset stabilization times
-> from reset-assert-us and  reset-deassert-us. right?
->=20
-> >> +	/*Release the reset pin,it needs to be registered with the PHY.*/
-> >=20
-> > /* Release [...] PHY. */
-> >=20
-> > Best regards,
-> > Alexander
->=20
-> Thank you for your support.
->=20
-> >> +	gpiod_put(reset);
-> >> +}
-> >> +
-> >>=20
-> >>   int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
-> >>  =20
-> >>   				       struct phy_device *phy,
-> >>   				       struct fwnode_handle *child,
-> >=20
-> > u32 addr)
-> >=20
-> >> @@ -119,6 +133,8 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bu=
-s,
-> >>=20
-> >>   	u32 phy_id;
-> >>   	int rc;
-> >>=20
-> >> +	fwnode_mdiobus_pre_enable_phy(child);
-> >> +
-> >>=20
-> >>   	psec =3D fwnode_find_pse_control(child);
-> >>   	if (IS_ERR(psec))
-> >>   =09
-> >>   		return PTR_ERR(psec);
-
-
-=2D-=20
-TQ-Systems GmbH | M=FChlstra=DFe 2, Gut Delling | 82229 Seefeld, Germany
-Amtsgericht M=FCnchen, HRB 105018
-Gesch=E4ftsf=FChrer: Detlef Schneider, R=FCdiger Stahl, Stefan Schneider
-http://www.tq-group.com/
-
-
+Yes, of course. Thanks Stephen.
 
