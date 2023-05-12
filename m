@@ -1,110 +1,161 @@
-Return-Path: <netdev+bounces-2230-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2231-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 74077700D6D
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 18:53:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DB36A700D83
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 18:58:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4428F1C21338
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 16:53:19 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1CFAF281A09
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 16:58:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF97C200B6;
-	Fri, 12 May 2023 16:53:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FB65200BD;
+	Fri, 12 May 2023 16:58:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3D45A32
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 16:53:09 +0000 (UTC)
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986A29EFA
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 09:53:07 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-50bcb00a4c2so15700657a12.1
-        for <netdev@vger.kernel.org>; Fri, 12 May 2023 09:53:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683910386; x=1686502386;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CN6pCJcBzZ51aATWk78TJrmoYzIoOv3jWdHbtYWFl7M=;
-        b=UleUVIttaU4XHJvEB1+6GxxvA45kFC6nR72DdRpYznNa2jmdFVRDxIn86/suJca+1B
-         tIGjCLwyVMCyPpPive1kMoRCAfLVtNELfcRIOO2H52H0HsKTUuOpT2/Zn7KQVyBasbDD
-         6sJwRb+rB3jne30p9niet/wVvcQ7G4zoTy54k//kk8SVuL+i6WmGmUjpKVQ5lLA/3FoL
-         30bQtM5bi+K1Om21XFzqcrOgtUZSNAZAKLWi0TNJzxoYuFsQw1MIFGOpeu19XhHinYrm
-         Elph7pG9udbsnNfrx5/c2AJDFBZpmoG5h/KihNfm+tSIWTMkjzv8D4oeso2eDVY5eV/D
-         fujw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683910386; x=1686502386;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CN6pCJcBzZ51aATWk78TJrmoYzIoOv3jWdHbtYWFl7M=;
-        b=YapCorPamjThYMrPIoou2IC05lswldqTrm+1H9yXCca6SbwX9Q/vo1W0RkmGrXhxWU
-         aBX8sWEPehh+EC7G3BcqgRNuayCtErkGneAROwSpqTO5+ckvNbGuFXBQV5ilLvxPaVti
-         XXYgIq1R6brXGzLEmK//2wYKaPb7yLiE0/ALkThMytcH/7Ks1jPS/bsCLfzX4IkfRlqx
-         ijJIzU9GgaNvN/AMTqcnoSmdAQ99eE3tEYqlh/EBdapDBYuRtIrR8mHp+GDsn8bMFpeD
-         BynrQlPl+5PgrCw1dOU3MpIxq07BkUjk8dR0H1tAFFKDNd7eXaFRfM9eNi2rIbHm68o9
-         nIxA==
-X-Gm-Message-State: AC+VfDxpQZh3IrzJvsIILiY4DH00W89EhEUFwLmEx6/8hh9hkrfqhqND
-	6wrEZF76sOhYtmgsi+GqQJQpuw==
-X-Google-Smtp-Source: ACHHUZ5giuXLk5Ub8rO6/Ah0SRPh0XXQGplyCO3M/vAYmJSQY6vGyQZ23uiBcc2mrclTGnogm7Tq5w==
-X-Received: by 2002:a17:906:4fcf:b0:94e:1764:b09b with SMTP id i15-20020a1709064fcf00b0094e1764b09bmr24949873ejw.45.1683910386031;
-        Fri, 12 May 2023 09:53:06 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:7ede:fc7b:2328:3883? ([2a02:810d:15c0:828:7ede:fc7b:2328:3883])
-        by smtp.gmail.com with ESMTPSA id 13-20020a170906328d00b00969f44bbef1sm4965177ejw.89.2023.05.12.09.53.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 May 2023 09:53:05 -0700 (PDT)
-Message-ID: <3a4abc55-971f-9e8c-692a-aa9acc4dd7ea@linaro.org>
-Date: Fri, 12 May 2023 18:53:04 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42085A32
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 16:58:47 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029B99ED6
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 09:58:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+	:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+	Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=hfyDtQjOE6Y2QG8MZgO1rttagmSW/tPrY0LH/rQoBJM=; b=UiWZqji1jHCcoF+ZUpVS5F6tXQ
+	JKAvGCED5Da8jN2JBY7CwKx+zQRcFS7oEABCcbLIu3RFqQMCXv8s1ZWvm3MltDAvlb8yOBIjmKugU
+	WnYY37dIfZBdHT5qXLz8Nie/qSq8vglxTXIAceHfParI4gckGCaLdiwjuZ1I8PBPcDNWaySiheiW9
+	kxMfmmM41zvSdrL5j/aSOgOKayzvQAKwCvlJF6+T+cMWzWBjTyfkI+jXRLOuY+oJoVD5zc/+mnKh7
+	uOZpcyjNUtlW0zXlhAsqn45VNqn8zMhWoDnq3NyusGF2YMkoAruGoVjuvyRNbS6WNBeM4oLeE9Jyv
+	PCe+ZdKg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:51764 helo=rmk-PC.armlinux.org.uk)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <rmk@armlinux.org.uk>)
+	id 1pxW6I-0000BE-K3; Fri, 12 May 2023 17:58:38 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+	id 1pxW6H-002QFs-SG; Fri, 12 May 2023 17:58:37 +0100
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org
+Subject: [PATCH net-next] net: phylink: constify fwnode arguments
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH V2 3/5] dt-bindings: clock: qcom: Add RPMHCC for SDX75
-Content-Language: en-US
-To: Taniya Das <quic_tdas@quicinc.com>,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Richard Cochran <richardcochran@gmail.com>,
- Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>
-Cc: Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>,
- Imran Shaik <quic_imrashai@quicinc.com>, linux-arm-msm@vger.kernel.org,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, netdev@vger.kernel.org, jkona@quicinc.com,
- quic_rohiagar@quicinc.com
-References: <20230512122347.1219-1-quic_tdas@quicinc.com>
- <20230512122347.1219-4-quic_tdas@quicinc.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230512122347.1219-4-quic_tdas@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1pxW6H-002QFs-SG@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date: Fri, 12 May 2023 17:58:37 +0100
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 12/05/2023 14:23, Taniya Das wrote:
-> From: Imran Shaik <quic_imrashai@quicinc.com>
-> 
-> Add compatible string for qcom RPMHCC for SDX75 platform.
-> 
-> Signed-off-by: Imran Shaik <quic_imrashai@quicinc.com>
-> Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-> ---
+Both phylink_create() and phylink_fwnode_phy_connect() do not modify
+the fwnode argument that they are passed, so lets constify these.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phylink.c | 11 ++++++-----
+ include/linux/phylink.h   |  9 +++++----
+ 2 files changed, 11 insertions(+), 9 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index a4111f1be375..cf53096047e6 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -708,7 +708,7 @@ static int phylink_validate(struct phylink *pl, unsigned long *supported,
+ }
+ 
+ static int phylink_parse_fixedlink(struct phylink *pl,
+-				   struct fwnode_handle *fwnode)
++				   const struct fwnode_handle *fwnode)
+ {
+ 	struct fwnode_handle *fixed_node;
+ 	bool pause, asym_pause, autoneg;
+@@ -819,7 +819,8 @@ static int phylink_parse_fixedlink(struct phylink *pl,
+ 	return 0;
+ }
+ 
+-static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
++static int phylink_parse_mode(struct phylink *pl,
++			      const struct fwnode_handle *fwnode)
+ {
+ 	struct fwnode_handle *dn;
+ 	const char *managed;
+@@ -1441,7 +1442,7 @@ static void phylink_fixed_poll(struct timer_list *t)
+ static const struct sfp_upstream_ops sfp_phylink_ops;
+ 
+ static int phylink_register_sfp(struct phylink *pl,
+-				struct fwnode_handle *fwnode)
++				const struct fwnode_handle *fwnode)
+ {
+ 	struct sfp_bus *bus;
+ 	int ret;
+@@ -1480,7 +1481,7 @@ static int phylink_register_sfp(struct phylink *pl,
+  * must use IS_ERR() to check for errors from this function.
+  */
+ struct phylink *phylink_create(struct phylink_config *config,
+-			       struct fwnode_handle *fwnode,
++			       const struct fwnode_handle *fwnode,
+ 			       phy_interface_t iface,
+ 			       const struct phylink_mac_ops *mac_ops)
+ {
+@@ -1809,7 +1810,7 @@ EXPORT_SYMBOL_GPL(phylink_of_phy_connect);
+  * Returns 0 on success or a negative errno.
+  */
+ int phylink_fwnode_phy_connect(struct phylink *pl,
+-			       struct fwnode_handle *fwnode,
++			       const struct fwnode_handle *fwnode,
+ 			       u32 flags)
+ {
+ 	struct fwnode_handle *phy_fwnode;
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index 71755c66c162..bb782f05ad08 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -568,16 +568,17 @@ void phylink_generic_validate(struct phylink_config *config,
+ 			      unsigned long *supported,
+ 			      struct phylink_link_state *state);
+ 
+-struct phylink *phylink_create(struct phylink_config *, struct fwnode_handle *,
+-			       phy_interface_t iface,
+-			       const struct phylink_mac_ops *mac_ops);
++struct phylink *phylink_create(struct phylink_config *,
++			       const struct fwnode_handle *,
++			       phy_interface_t,
++			       const struct phylink_mac_ops *);
+ void phylink_destroy(struct phylink *);
+ bool phylink_expects_phy(struct phylink *pl);
+ 
+ int phylink_connect_phy(struct phylink *, struct phy_device *);
+ int phylink_of_phy_connect(struct phylink *, struct device_node *, u32 flags);
+ int phylink_fwnode_phy_connect(struct phylink *pl,
+-			       struct fwnode_handle *fwnode,
++			       const struct fwnode_handle *fwnode,
+ 			       u32 flags);
+ void phylink_disconnect_phy(struct phylink *);
+ 
+-- 
+2.30.2
 
 
