@@ -1,135 +1,146 @@
-Return-Path: <netdev+bounces-2182-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2183-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1848D700AF6
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 17:04:58 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A3E92700B1A
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 17:11:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B3FE7281876
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 15:04:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BC1F2281BD4
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 15:11:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7DC12413D;
-	Fri, 12 May 2023 15:04:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B1FF2413F;
+	Fri, 12 May 2023 15:11:32 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94EDC2412E
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 15:04:54 +0000 (UTC)
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192D73596
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 08:04:52 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-96a5903758fso471216566b.1
-        for <netdev@vger.kernel.org>; Fri, 12 May 2023 08:04:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76022412F
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 15:11:31 +0000 (UTC)
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2123.outbound.protection.outlook.com [40.107.244.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BB14C1C
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 08:11:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IWZNFYOMVHhcToN/Mc4m4dVC/2GZWmm/ZqpQw3S9oLLqSQeJ0/AqI4B7An6UekTaFjBfIw+ZCDjxnWgR8uP8uwJol+lO2O3bebdeMkya71mCQM3bBJ7cFjQ6U9X1PnnbGPAvhsw/KfuCldgnhGISgqndJ/48gLaqo3ixgnAG1sFP+NIsISqe3Wm1jjZbywtP7sqLBhu6nYbQu59/wA2eIzcPmmdKtckE+lyIBVk9PHkvwQiq0BKsEWp8D/M4DdDNlO2UzhQSiOSdkSjej/1KWkKGzqIP/B45XPzl3T/8SCjnXs1bPrOfUmR9Q2IfrAEibtNXoQGRAu7e9l5jaRuP9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wj46vWMGOVaAnuvODJL7DKJhdyz0I0QI8AvwYn7KtN8=;
+ b=XU0Oow6DabwmoBEgsg6lDZG+xth43HrVNQUIqO+xbIL2T2Ek14kuEiaJwry5RPLVMIM8K8YeTySKeq6IOqExqbXCkU5vI1YRZlcVqQS1/BcvURMijxbdgLq4flVKdXKhBDkK9ujHOAo8sTKGGBpOqtoQMUx0BZN2CUk2zhVhIp1s/DF/QDMXc3DbrNNdDLHVU6YFERWU1QX+PxGyWLsLhz5j/4+LJosMe3fRz/2/OuSKhB/3zI6p8EzUpIaBugzIStWt3V2A3S55RhxCO3253+ZgQs70/gQwZp3R88on4/YmWq+vLy25lYLMoB7lt7Zjw2Dh6ZH/doggnr4CL20i8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683903890; x=1686495890;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Izo9VyuS3FYVOaF5kDuL/kD/h+2fgLodxAQ6aVvs7H0=;
-        b=sKyoYjJI3MITFAQvCWjifmcHx6zBpuP0ztPuFznpYfThmM4g0xW4O99Wbgwehrfo6l
-         ii+axgB4VFElG7ydQPiDBK1S147zQN9q5NdLomm5nadH9LrR8FvWrHOsCQp+CkAX3+4k
-         FXhFb1hJR93yOwuvwtRm0qy5VdMYjP5FTlWr1OciXu4KAHGKLCWxtzDAy3g1oqSo/HTt
-         ZYVdq9jk3D9bkee4kFctBMIt2TzyU/vpXhH2r4fcixZoaW0+24Yzh7W/qfIg4lhvkgTz
-         iRZgZeJ36ZUn/iOJCEJFFxb06e9X1/qr357MQjoTpMTFXOuCHQBDQU0Vr3ZnThyooDUG
-         1kJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683903890; x=1686495890;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Izo9VyuS3FYVOaF5kDuL/kD/h+2fgLodxAQ6aVvs7H0=;
-        b=H5TPPrl4R9EdRMhlIPVkHmxwDfg9/vEFMrVAg5N5XWlfoL135Zzr20pUy2jfFiKOLA
-         XSvGw30oMTxtWouWoldniQqp4KwI9MVJ2ng+cL7t5i0oUwArVfDcZs3eabn3bJnc6/RP
-         MgYFt9nEdTcQKIvhyVRkHCS6zsim4G0qpp2GCaexilwMdh4wzYm5YsfZY848hl3ZydHs
-         Vko60MOG+kptV5ki85SFiG/z5dluaPj6uJKiQ8HJj2ZqQ8iiMERhmX6QC771dG3nTjDl
-         Av5KGK+tdRw0IJBiCeAXf61YeiJ+htoTpPHL+1OdlUvLLbr7LTiHw9tsnkk680kM+Lq2
-         EqaQ==
-X-Gm-Message-State: AC+VfDwOwI/BBzRx8CSMzpmpO8xS/oBy5rL9QoeDqTV4fC44TeLdiWT5
-	pCFIT/DJgjfVVvCKGd2Enh/sKg==
-X-Google-Smtp-Source: ACHHUZ6M194Dg8rWd+r2CKNK1pmDrJfHYbuczNjD43YKU8yr9uviJFXyK7iwoTpVM06NfGGU6TJtHA==
-X-Received: by 2002:a17:907:169f:b0:96a:6723:da47 with SMTP id hc31-20020a170907169f00b0096a6723da47mr6872111ejc.43.1683903890512;
-        Fri, 12 May 2023 08:04:50 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:7ede:fc7b:2328:3883? ([2a02:810d:15c0:828:7ede:fc7b:2328:3883])
-        by smtp.gmail.com with ESMTPSA id hg8-20020a1709072cc800b00932fa67b48fsm5487124ejc.183.2023.05.12.08.04.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 May 2023 08:04:49 -0700 (PDT)
-Message-ID: <67a2f8d6-104b-e7dd-d1b6-3791d5298284@linaro.org>
-Date: Fri, 12 May 2023 17:04:47 +0200
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wj46vWMGOVaAnuvODJL7DKJhdyz0I0QI8AvwYn7KtN8=;
+ b=F60+gA5rTezCvJsrhi2bLcXupUsWjWZ7U8YbKUzzsIAsqm74q//0LqKgSKT02znI2xBDCzs4NNstT/TzvUmysHfCAyvHmImDbtuQveGo41t/8e2JHwOqfy4v4QFAawZQkqG+od42Xsf81Jan+RJPOGwAejIcqZj1SQ6HXx7Ohl0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH7PR13MB5455.namprd13.prod.outlook.com (2603:10b6:510:139::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.20; Fri, 12 May
+ 2023 15:11:26 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.024; Fri, 12 May 2023
+ 15:11:26 +0000
+Date: Fri, 12 May 2023 17:11:18 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: daire.mcnamara@microchip.com
+Cc: nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, netdev@vger.kernel.org,
+	conor.dooley@microchip.com
+Subject: Re: [PATCH v4 1/1] net: macb: Shorten max_tx_len to 4KiB - 56 on mpfs
+Message-ID: <ZF5XFhm6urnFEqLH@corigine.com>
+References: <20230512122032.2902335-1-daire.mcnamara@microchip.com>
+ <20230512122032.2902335-2-daire.mcnamara@microchip.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230512122032.2902335-2-daire.mcnamara@microchip.com>
+X-ClientProxiedBy: AM0PR06CA0086.eurprd06.prod.outlook.com
+ (2603:10a6:208:fa::27) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH RFC 3/4] arm64: dts: qcom: sm6350: add uart1 node
-Content-Language: en-US
-To: Luca Weiss <luca.weiss@fairphone.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Balakrishna Godavarthi <bgodavar@codeaurora.org>,
- Rocky Liao <rjliao@codeaurora.org>, Marcel Holtmann <marcel@holtmann.org>,
- Johan Hedberg <johan.hedberg@gmail.com>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Andy Gross
- <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
- netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
- linux-arm-msm@vger.kernel.org
-References: <20230421-fp4-bluetooth-v1-0-0430e3a7e0a2@fairphone.com>
- <20230421-fp4-bluetooth-v1-3-0430e3a7e0a2@fairphone.com>
- <8f312ded-8456-eced-85cc-0ae32a0c8bba@linaro.org>
- <CSKDDFPXC6FD.1TAU3XXOSGA0K@otso>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CSKDDFPXC6FD.1TAU3XXOSGA0K@otso>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB5455:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8ca00717-a6e3-4e70-3c6d-08db52fb27d4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	FEPwJiYFwbiEz5V1B+QJlxHcP+WHRKyjPOXXGZZ/M4MA0YBPuqLavZJo8YB50vJb5QmB+xDQYOr2UMpeElTvaqOxNlmNN3x+/YhTCadNgJF9TEyNT2sv4xAbCZZeYQuRtHBJa1MZAPIXbNPdbdopUWc2HzMdCBL0Ky8havwWPUQjSBMBNc8tHwyziCKt2pt1sDEcme3OeXKFJTyhcFoSuGM6GX7RK+GljddiDutZubmmbRXt93LuZ4qD2oFBZvPT2eHioRi+OkQWK4qiLP3jf8M7owKfBaDcbB0qptZOYHDGUw58XJ58ObBy4S0xRb2YbLhSQwShtk6FskDGQnuqH2CXxspKxNa4pvkFEzjfeKwp82d/zqbjR2mW3k5PRh7j+SGUCP4OelpXIs+EDCDX9t+kt7gQVfY6DUrSBxLjnEWKZQ9UJRXACHQoxK76A9i2t2vSvFnmofkKA8/dspiIzx7AqxVgUoAdHxKFUdIXovw3msBbc2UXN7GaksipZ6t/Fo2CroH5Uu+t63tmTNX7KzAgPraGNw4VJAYs6QEhtDQZQdxYfpUppiTmsijNM8sh
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39840400004)(366004)(376002)(396003)(136003)(451199021)(5660300002)(44832011)(478600001)(66476007)(6486002)(8676002)(41300700001)(8936002)(6666004)(316002)(66556008)(6512007)(6506007)(4326008)(66946007)(6916009)(4744005)(2906002)(2616005)(186003)(86362001)(36756003)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Crdkm1LCBqvPfhDFvTiSdhps+LtH5UC8HreD9kWtttPDImZwJcYCKQD/p5bi?=
+ =?us-ascii?Q?x99O4ToEKVqfkaQRmnpDALRakiLbDN03IOXgYzKv10zq0HvnfU7jZU1vnXYv?=
+ =?us-ascii?Q?AhevZP1j5GSCeIRKHOhLa+jGZIejDSvANHX2RdjWGXPQWASC3cRX3Ww7zJ/P?=
+ =?us-ascii?Q?UJJeXYU6OZVkMcErGyxe0jz3qJvPRDJkC0sAIKwXjU+2Kr/4+komux/w3ehV?=
+ =?us-ascii?Q?bPB8zf3owXzs8yUmU1ogJLQrlrVjwMwZCvsFqeF/rT4V6aNoZ0qk/zZpICX4?=
+ =?us-ascii?Q?iIAw0LmK3WVbhRG+UkJ37QqQpArq+6T037GPDEu6IdH7WhtRl0V8rjMvh8NZ?=
+ =?us-ascii?Q?3EIbmwlWUeQWxZ50qSAhuUbtvgaNNRo7OORL474ANWtNecC/rnXAxqHaPnWz?=
+ =?us-ascii?Q?7fKo1vribyb8z6VEjnLxTrnbfj9ql1ao5p4gdlQ+eD77EzS5HN5A5ATzErTl?=
+ =?us-ascii?Q?XTKWV5fgm9ToJls1uE9YexZRdbPZS0jzhNE/l1qXLYbvV5NhRSqLRL8zje2K?=
+ =?us-ascii?Q?JibmlDzEXtIwy9m7ZvsXctjxC9A/mfXA0Mj0z6iVspXAmAWC5HpTqQ1BzP50?=
+ =?us-ascii?Q?xhY0+wwI3FTF1pGCXk9AdbgFBFU3iydFu4MsmJsJTFKu21lVxJwx+KAJYTRc?=
+ =?us-ascii?Q?o5ofuToQMkbZ2/awDRWvmWoZEtFRUBOTeE6HdTnVrEAZ9Hk0xbiktIoBELWe?=
+ =?us-ascii?Q?ekb6T7cKesFYWWad5v4ETQ95Ph2FOGEFGOoDvkSUYvALGcve6CnJH2NCHYT5?=
+ =?us-ascii?Q?2OOdzpIz5hvtaRICl5V3bObregbUfsdMHjhmrdukKre4a9mYBU1vxDeZnQY6?=
+ =?us-ascii?Q?kZ6OnZq1ka/zzPPJLrBP5hSqcRppCvVKGhSl+BhimgIABzshZgpQvADLSfCo?=
+ =?us-ascii?Q?v/sZn/pNRS9/EFzYoW7pFovd6qG21vAQtQwt3YUM75ZaH1UApiQuPlOzBpNn?=
+ =?us-ascii?Q?f+kXXCw3mV7qw5bTLbBV5S5iJeBnwsKVF/D6ZD3tZOFgVmcQ7CPzekUsWLg2?=
+ =?us-ascii?Q?B0vTjdd+EOUYlKTAKoMEJvkM8p9vQ7zDB8FC0jRqnRwkM4OBLoCTBDam5dC6?=
+ =?us-ascii?Q?ZRzmK5HLpZvD+9wiAaTTUGwnnUn5A6pzQqGsjNU+HiZ5Qu+RsWaC9ruj5G20?=
+ =?us-ascii?Q?F/2fOXMNJfZ8SKbTVYkXA9cRH1FoWflb8uLdCUbBYjmtDVMkGfC6xQyJyFcN?=
+ =?us-ascii?Q?7cKLafydx6tF/DKarpztKGP0jb9HReVZqmakidXhQZVBD9+6RdgEhF4q+LcN?=
+ =?us-ascii?Q?3kiVdvi16Wy5xUSwpb9nPzJm7CUUjRO/raaNvu0GO4fIWrR9xIuGLygB1eEe?=
+ =?us-ascii?Q?KqR1di05AD9gVMM4+ru2Ki5dQu0axVyiIxKXinpUNYt1owN8T4KYshybVYGO?=
+ =?us-ascii?Q?dCDjHR7UQmXyPlpxfLsE5/ClYq9MNwlpd2e+dwO12R+Z/z4gS4DB73c6lkej?=
+ =?us-ascii?Q?fDo8Ic2hX8x2jarvB+BqFfDL9L+62Z1eNYjXJl4F7Ob/8nS7WEeijXK/t4iP?=
+ =?us-ascii?Q?Om7gzUT8d9Be9oUiK8IZlmhpmcBbnzGqGVTJr9Dau8W2wQhn9Q97nN0LQHCD?=
+ =?us-ascii?Q?ZZ6D63UDMsb4Iv37rz+mVcWHUEqtyDPPzDbdLU70hMft96bGvBUGGSTqXOkV?=
+ =?us-ascii?Q?jzqO/1XAc7Ks2UPhGwTyszxbFhESBcsWaWV/wa4tVWK4LCuztCRbTdmB0Ewh?=
+ =?us-ascii?Q?4kjUkg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ca00717-a6e3-4e70-3c6d-08db52fb27d4
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2023 15:11:26.3409
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mhJNeko7e/7ZTGcPOJSv7EIXECdEFy7CZ6Qpftx4mlr/1bPq8VHfIOVQUJMEhF+OEt/r7J73HKLzmFuUyBXxeJMHxyi0p2oBm0ioZsZBgNU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5455
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 12/05/2023 16:30, Luca Weiss wrote:
-> On Sun Apr 23, 2023 at 12:51 PM CEST, Krzysztof Kozlowski wrote:
->> On 21/04/2023 16:11, Luca Weiss wrote:
->>> Add the node describing uart1 incl. opp table and pinctrl.
->>>
->>> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
->>> ---
->>>  arch/arm64/boot/dts/qcom/sm6350.dtsi | 63 ++++++++++++++++++++++++++++++++++++
->>>  1 file changed, 63 insertions(+)
->>
->> Please do not send DTS patches for net-next. DTS must go via Qualcomm
->> SoC. Split the series and mention where is the bindings change in DTS
->> patchset.
+On Fri, May 12, 2023 at 01:20:32PM +0100, daire.mcnamara@microchip.com wrote:
+> From: Daire McNamara <daire.mcnamara@microchip.com>
 > 
-> Sorry, just saw now after already sending v2.
+> On mpfs, with SRAM configured for 4 queues, setting max_tx_len
+> to GEM_TX_MAX_LEN=0x3f0 results multiple AMBA errors.
+> Setting max_tx_len to (4KiB - 56) removes those errors.
 > 
-> Is this a special rule for linux-bluetooth@ / netdev@? Isn't it easier
-> to keep it together so the status of series can be assessed easier? I've
-> always submitted patches by topic, like input patches + dts patches and
-> it was never mentioned.
+> The details are described in erratum 1686 by Cadence
+> 
+> The max jumbo frame size is also reduced for mpfs to (4KiB - 56).
+> 
+> Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
 
-The rule that DTS must go via Qualcomm SoC (arm-soc) was there always,
-but other maintainers often do not pay attention to this. I don't blame
-them, don't get me wrong. I am just stating the observed actions.
-Usually netdev folks and Greg will take everything you throw at them, so
-for these subsystems it is recommended to split DTS to different patchset.
-
-For other maintainers it is usually also more useful to split, because
-then they can apply entire patchset with one command, instead of picking
-up specific patches (omitting DTS).
-
-Best regards,
-Krzysztof
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
 
