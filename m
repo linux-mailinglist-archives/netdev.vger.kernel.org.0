@@ -1,135 +1,147 @@
-Return-Path: <netdev+bounces-2100-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2101-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A2D3A70041C
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 11:42:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D32DC70042D
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 11:44:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 23726281A28
-	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 09:42:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1717A2816F1
+	for <lists+netdev@lfdr.de>; Fri, 12 May 2023 09:44:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 33DDCBE5C;
-	Fri, 12 May 2023 09:42:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1660FBE5E;
+	Fri, 12 May 2023 09:44:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2650A747E
-	for <netdev@vger.kernel.org>; Fri, 12 May 2023 09:42:19 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D98811DAF;
-	Fri, 12 May 2023 02:41:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=7IRubd/9LUDaS7AZzS9MSSlrTD+Lz1RxX42jUzfFNis=; b=qZECOHXy4PsT+NcZQUsq6/3ZQH
-	MOKcOYAQDHgL5BDNC7W37CmfNq82INs3FUVzxmJO9ofFepVuA/lmdd7B27ea+TrqCEDXOiesozFCZ
-	HmEFwmCTtrSuoSMt8rGMCmVGI4WHY2600Dlpz88KW2NEEHdNS3lSkhvEfX3VGOEIwWFRDzyEFU/gD
-	kNiDYQI+essXwyQRc/DqfbO0cIZNGVLvXD/9xOsGFf5Ett8di61JhVhbqio9hfLm01Wk1Oh1XdgHT
-	1RA11imCbi4fCSxusHES6zHE5odbSJ6sZRiFiVu7nwvhMo2yY3XDewd+M0xmXM48qt3oMc869nL4X
-	5mO9qzKw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60252)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1pxPHT-00085g-GI; Fri, 12 May 2023 10:41:43 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1pxPHR-0004y9-Oq; Fri, 12 May 2023 10:41:41 +0100
-Date: Fri, 12 May 2023 10:41:41 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Yan Wang <rk.code@outlook.com>
-Cc: andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] net: mdiobus: Add a function to deassert reset
-Message-ID: <ZF4J1VqEqbnE6JG9@shell.armlinux.org.uk>
-References: <KL1PR01MB54486A247214CC72CAB5A433E6759@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
- <ZF4AjX6csKkVJzht@shell.armlinux.org.uk>
- <KL1PR01MB54488021E5650ED8A203057FE6759@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A461BA32
+	for <netdev@vger.kernel.org>; Fri, 12 May 2023 09:44:33 +0000 (UTC)
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C67612E82;
+	Fri, 12 May 2023 02:44:09 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id af79cd13be357-7577ef2fa31so1859657385a.0;
+        Fri, 12 May 2023 02:44:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683884648; x=1686476648;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=walULA5GXaP1Ds+NR7kLlfHXMwiCqcKU/HbSWG2/bBU=;
+        b=sqSsC09DP5vS7f29/1grNSwWzCl2MVecmSgTwQ2EFc/FdL1aq9uk9gWgqfvJu4iBin
+         F5y3GZkjjd6u72PAp6RCiaKXYgW09KIXbh8T9nuTVsLgi9gcQ8YyddZK0F3uxlEGRe+W
+         65OZpsYAVDMK2zuehPyYeWsn0oWx/g3pN2uZNQPEYOYvEh87qU4mpLnwG8/JopofjP1I
+         DxevgZWI5dzfErBoYQs9M6n22TEY0WC6Yt8p7l4SB0pxL+9Y+E8NEzv2GyAZIAyvpEr0
+         YOJIiiVYbPr+ku3utP3GGT+wl0UFJiGBKztsbxLA+kF5Y9P3pHsL3pyaiegkeXeCaTcq
+         MAPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683884648; x=1686476648;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=walULA5GXaP1Ds+NR7kLlfHXMwiCqcKU/HbSWG2/bBU=;
+        b=G1xCK/VNs8Z01kd5hH+jPNEk3aKbUjckpExvV3upqQdTZWP+yybP4N5k5TXKIZYzeu
+         9KCVQsUwF0uJ1/RlM6NIvVU8ZTQb0FGVPx/tkLgRLwGb5KHATCKUviW3k2VcEHuecw56
+         mh/PH60WwWWVmtxV2EKrxI2Dwpf63Q2seJXQDiE/uCckgWGU/2rPxF2RLdyNA0TnTo7r
+         JMsqwgvDHM22nxoeKgv9ldhhS5RmFBSnkY9YH9hCVPmolI21uEHaIeaLYwgRTQxae9cs
+         IVa2SGUIhv4NyK1jSrMUrIbVgN/2YTIVjXd+TiT5d/bhRJPkNCptAdUp3xoCeFAOTr3t
+         Q/Lg==
+X-Gm-Message-State: AC+VfDysGIvREVcwXK4ZuQu86Hru0iJw0P9HZNRcYlO4MuFEfnMD3h1Z
+	C5mZDysaGcdjaorHi5lO9+vCTsVBRMElDd2Rdy8=
+X-Google-Smtp-Source: ACHHUZ4mqn546jiUsKSUmsQb4vfQOt2zvNLc3McQ/r/bigtLwhrNE/6Dt4wsuoRDCyRwuvMwDCPLoC3QQ+XLZbAmjPA=
+X-Received: by 2002:a05:6214:b6b:b0:61b:6382:4579 with SMTP id
+ ey11-20020a0562140b6b00b0061b63824579mr38845303qvb.9.1683884648528; Fri, 12
+ May 2023 02:44:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <KL1PR01MB54488021E5650ED8A203057FE6759@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230509022734.148970-1-jiawenwu@trustnetic.com>
+ <20230509022734.148970-7-jiawenwu@trustnetic.com> <ZF1T62BnVFgR33w0@surfacebook>
+ <000001d984af$c9bc89e0$5d359da0$@trustnetic.com>
+In-Reply-To: <000001d984af$c9bc89e0$5d359da0$@trustnetic.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 12 May 2023 12:43:32 +0300
+Message-ID: <CAHp75Ves+PdNk0KaSLiwd0ozXEZAH_tQLUS4VUm_1Hvk6vBP4w@mail.gmail.com>
+Subject: Re: [PATCH net-next v7 6/9] net: txgbe: Support GPIO to SFP socket
+To: Jiawen Wu <jiawenwu@trustnetic.com>
+Cc: netdev@vger.kernel.org, jarkko.nikula@linux.intel.com, 
+	andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com, 
+	jsd@semihalf.com, Jose.Abreu@synopsys.com, andrew@lunn.ch, 
+	hkallweit1@gmail.com, linux@armlinux.org.uk, linux-i2c@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 12, 2023 at 05:28:47PM +0800, Yan Wang wrote:
-> 
-> 
-> On 5/12/2023 5:02 PM, Russell King (Oracle) wrote:
-> > On Fri, May 12, 2023 at 03:08:53PM +0800, Yan Wang wrote:
-> > > +	gpiod_set_value_cansleep(reset, gpiod_is_active_low(reset));
-> > > +	fsleep(reset_assert_delay);
-> > > +	gpiod_set_value_cansleep(reset, !gpiod_is_active_low(reset));
-> > Andrew, one of the phylib maintainers and thus is responsible for code
-> > in the area you are touching. Andrew has complained about the above
-> > which asserts and then deasserts reset on two occasions now, explained
-> > why it is wrong, but still the code persists in doing this.
-> > 
-> > I am going to add my voice as another phylib maintainer to this and say
-> > NO to this code, for the exact same reasons that Andrew has given.
-> > 
-> > You now have two people responsible for the code in question telling
-> > you that this is the wrong approach.
-> > 
-> > Until this is addressed in some way, it is pointless you posting
-> > another version of this patch.
-> > 
-> > Thanks.
-> > 
-> I'm very sorry, I didn't have their previous intention.
-> The meaning of the two assertions is reset and reset release.
-> If you believe this is the wrong method, please ignore it.
+On Fri, May 12, 2023 at 11:58=E2=80=AFAM Jiawen Wu <jiawenwu@trustnetic.com=
+> wrote:
 
-As Andrew has told you twice:
+...
 
-We do not want to be resetting the PHY while we are probing the bus,
-and he has given one reason for it.
+> > > +   switch (type) {
+> > > +   case IRQ_TYPE_EDGE_BOTH:
+> > > +           level |=3D BIT(hwirq);
+> > > +           break;
+> > > +   case IRQ_TYPE_EDGE_RISING:
+> > > +           level |=3D BIT(hwirq);
+> > > +           polarity |=3D BIT(hwirq);
+> > > +           break;
+> > > +   case IRQ_TYPE_EDGE_FALLING:
+> > > +           level |=3D BIT(hwirq);
+> >
+> > > +           polarity &=3D ~BIT(hwirq);
+> >
+> > This...
+> >
+> > > +           break;
+> > > +   case IRQ_TYPE_LEVEL_HIGH:
+> > > +           level &=3D ~BIT(hwirq);
+> >
+> > ...and this can be done outside of the switch-case. Then you simply set=
+ certain
+> > bits where it's needed.
+> >
+> > > +           polarity |=3D BIT(hwirq);
+> > > +           break;
+> > > +   case IRQ_TYPE_LEVEL_LOW:
+> > > +           level &=3D ~BIT(hwirq);
+> > > +           polarity &=3D ~BIT(hwirq);
+> > > +           break;
+> >
+> > default?
+>
+> Do you mean that treat IRQ_TYPE_LEVEL_LOW as default case, clear level an=
+d
+> polarity firstly, then set the bits in other needed case?
 
-The reason Andrew gave is that hardware resetting a PHY that was not
-already in reset means that any link is immediately terminated, and
-the PHY has to renegotiate with its link partner when your code
-subsequently releases the reset signal. This is *not* the behaviour
-that phylib maintainers want to see.
+level &=3D ...
+polarity &=3D ...
 
-The second problem that Andrew didn't mention is that always hardware
-resetting the PHY will clear out any firmware setup that has happened
-before the kernel has been booted. Again, that's a no-no.
+switch () {
+case X:
+  level |=3D ...
+  break;
+case Y:
+  polarity |=3D ...
+  break;
+case Z:
+  ...
+  break;
+default:
+  ...handle error...
+}
 
-The final issue I have is that your patch is described as "add a
-function do *DEASSERT* reset" not "add a function to *ALWAYS* *RESET*"
-which is what you are actually doing here. So the commit message and
-the code disagree with what's going on - the summary line is at best
-misleading.
 
-If your hardware case is that the PHY is already in reset, then of
-course you don't see any of the above as a problem, but that is not
-universally true - and that is exactly why Andrew is bringing this
-up. There are platforms out there where the reset is described in
-the firmware hardware description, *but* when the kernel boots, the
-reset signal is already deasserted. Raising it during kernel boot as
-you are doing will terminate the PHY's link with the remote end,
-and then deasserting it will cause it to renegotiate.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+--=20
+With Best Regards,
+Andy Shevchenko
 
