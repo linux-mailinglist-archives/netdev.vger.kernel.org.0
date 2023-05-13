@@ -1,115 +1,128 @@
-Return-Path: <netdev+bounces-2341-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2342-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 16B8A70159B
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 11:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id AEC227015A0
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 11:25:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AB460281881
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 09:24:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 489E3281B12
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 09:25:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA3921385;
-	Sat, 13 May 2023 09:24:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD90B1390;
+	Sat, 13 May 2023 09:25:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF567137B
-	for <netdev@vger.kernel.org>; Sat, 13 May 2023 09:24:19 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81CB3448A
-	for <netdev@vger.kernel.org>; Sat, 13 May 2023 02:24:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=XVh8KT9gVBykDIb1/H0Lx91tru6ENRaXWSfNY5scpLw=; b=ULaLP4WVTvp3xqw5S9/DZpOhGg
-	k78QwHicUmyKSk3wyiVD9ylMk0D7L0odUvTyR8oatnle9bgtpnirIBZtnbZimTxCLfO29xuc/x0OU
-	B/ENMWUpQySBiy4m1hJPx8ERt8lOGnGBjnIwHMb0pN6V7DMjC7LpDRyiOCtNnuub7UkoKwq7qPLYD
-	bng2648049SGkdeWXdXHvEdBfbndfOqbkXXkeCAe/RdvXHMSsNmxJpBXWwGVg+NVuz2/IfetE0X+H
-	gqX0PtUBfAwn9YyOBuTh5rVltozfJaPCLKrnac5BEgFiE59gk/5kCM8NontaFMmVDJvXESTk0ITkE
-	MdYYF2pw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48936)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1pxlU1-0001AI-76; Sat, 13 May 2023 10:24:09 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1pxlTy-0005zE-FT; Sat, 13 May 2023 10:24:06 +0100
-Date: Sat, 13 May 2023 10:24:06 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: Jose Abreu <Jose.Abreu@synopsys.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH RFC net-next 3/9] net: phylink: add function to resolve
- clause 73 negotiation
-Message-ID: <ZF9XNhXthYfALp44@shell.armlinux.org.uk>
-References: <ZF52z7PqH2HLrWEU@shell.armlinux.org.uk>
- <E1pxWXz-002Qs5-0N@rmk-PC.armlinux.org.uk>
- <7cec3e9f-e614-43b4-abe9-c423d5f63563@lunn.ch>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF5181111
+	for <netdev@vger.kernel.org>; Sat, 13 May 2023 09:25:12 +0000 (UTC)
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBFE40FB;
+	Sat, 13 May 2023 02:25:11 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id d9443c01a7336-1aaea43def7so75178055ad.2;
+        Sat, 13 May 2023 02:25:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683969911; x=1686561911;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SlCH0G2m8kRJpvkxVEbC2XIL/mZruz0Jkv7EOy6aMxk=;
+        b=fhQmRZtAHOH36wyJU2rlLs/w4OhknwgCOTsAGH2bgx5fytY08pzzIFphrFGUASWOq4
+         OJdOATuTGchZKM4Uo+PM0gi4v5ssEvxQhbP9KKE13C8v98wtMD+0EMeZmXHJisssn9sc
+         7wGGpl0vvH/oFaYAgkHUwbLvVLaE0veCNt8KAH1NSlY0Ed94HnOpf02KjqHMKTPNVWsf
+         lMUUQdgfMZhaDM5dvZ4gH8K/KW3Wyksje5KN4bUk6rttnH8+qeZslb3Bvhz7270CMq2l
+         WdoKImJ+rRYO0op8mHBawLeEcMBCh9GypjQC/Wdr3VxZSQh9TBvdN/qnGyyB1EcUBmob
+         2ZRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683969911; x=1686561911;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SlCH0G2m8kRJpvkxVEbC2XIL/mZruz0Jkv7EOy6aMxk=;
+        b=g228uvaO4KlmzKLuE+CgCyUcJdPdUXJ/dlnVzinhJqjrwlG9/HsEhM65oqmR4OJMrK
+         195b0u7NokxwWWtmyLAPGc6YdXCBQHBARHAcUCvl2B3D6f1JgwKmdi7yBL2dOG8luT2a
+         gkkZPDH2Z7TqlK8409QlP+me3gHBH41o4BYoL3voGei2UiK1jTzgdblE0Bx9JYDKlZt5
+         BkoaZh/T0NyGAFIKzP089aFyyuEyk4IKSisAX8R6RomU+kiI9bJd716Lipbxgs4zQnc1
+         t55ntGEa4+Gv6/2Tv1TRwkKxIq0JqTjx6bT9TCimLVHws3hS2Zcc3zajN+Dc77EX9Lwi
+         If0A==
+X-Gm-Message-State: AC+VfDw/SaT3vcnPX1VweePkOqmkTNV6EfAJe0TiCCoXRF8igwBs7ijl
+	R76CRu2TmwUki2h67xXSuuw=
+X-Google-Smtp-Source: ACHHUZ7LknF76h0kIjVXmGlmqNXZ+WVcST0A5b/F7jca+bKv9M+VoFiYWPkLa51Ng/PS0qu7yYpFQg==
+X-Received: by 2002:a17:903:338e:b0:1a9:8ba4:d0d3 with SMTP id kb14-20020a170903338e00b001a98ba4d0d3mr24277429plb.8.1683969911004;
+        Sat, 13 May 2023 02:25:11 -0700 (PDT)
+Received: from [192.168.43.80] (subs02-180-214-232-69.three.co.id. [180.214.232.69])
+        by smtp.gmail.com with ESMTPSA id d13-20020a170902728d00b001a217a7a11csm6335741pll.131.2023.05.13.02.25.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 13 May 2023 02:25:10 -0700 (PDT)
+Message-ID: <e53ccc96-49f5-6e01-6edf-d44b1cff405f@gmail.com>
+Date: Sat, 13 May 2023 16:25:01 +0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7cec3e9f-e614-43b4-abe9-c423d5f63563@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v2 00/10] Treewide GPL SPDX conversion and cleanup (in
+ response to Didi's GPL full name fixes)
+Content-Language: en-US
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linux SPDX Licenses <linux-spdx@vger.kernel.org>,
+ Linux DRI Development <dri-devel@lists.freedesktop.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Networking <netdev@vger.kernel.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ Linux Staging Drivers <linux-staging@lists.linux.dev>,
+ Linux Watchdog Devices <linux-watchdog@vger.kernel.org>,
+ Linux Kernel Actions <linux-actions@lists.infradead.org>,
+ Diederik de Haas <didi.debian@cknow.org>,
+ Kate Stewart <kstewart@linuxfoundation.org>,
+ Philippe Ombredanne <pombredanne@nexb.com>,
+ Thomas Gleixner <tglx@linutronix.de>, David Airlie <airlied@redhat.com>,
+ Karsten Keil <isdn@linux-pingi.de>, Jay Vosburgh <j.vosburgh@gmail.com>,
+ Andy Gospodarek <andy@greyhouse.net>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Sam Creasey <sammy@sammy.net>, Dominik Brodowski
+ <linux@dominikbrodowski.net>, Daniel Mack <daniel@zonque.org>,
+ Haojian Zhuang <haojian.zhuang@gmail.com>,
+ Robert Jarzmik <robert.jarzmik@free.fr>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck
+ <linux@roeck-us.net>, Jan Kara <jack@suse.com>,
+ =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
+ Manivannan Sadhasivam <mani@kernel.org>
+References: <20230512100620.36807-1-bagasdotme@gmail.com>
+ <2023051243-bunch-goliath-7380@gregkh>
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <2023051243-bunch-goliath-7380@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sat, May 13, 2023 at 01:57:46AM +0200, Andrew Lunn wrote:
-> > +void phylink_resolve_c73(struct phylink_link_state *state)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(phylink_c73_priority_resolution); i++) {
-> > +		int bit = phylink_c73_priority_resolution[i].bit;
-> > +		if (linkmode_test_bit(bit, state->advertising) &&
-> > +		    linkmode_test_bit(bit, state->lp_advertising))
-> > +			break;
-> > +	}
-> > +
-> > +	if (i < ARRAY_SIZE(phylink_c73_priority_resolution)) {
-> > +		state->speed = phylink_c73_priority_resolution[i].speed;
-> > +		state->duplex = DUPLEX_FULL;
-> > +	} else {
-> > +		/* negotiation failure */
-> > +		state->link = false;
-> > +	}
+On 5/12/23 18:23, Greg Kroah-Hartman wrote:
+> I'm glad to take these types of changes through the SPDX tree, but
+> please break them up into smaller changes that show the justification
+> for each type of change in each subsystem, so that we can evaluate them
+> on an individual basis.  As you did here, you are lumping things
+> together only by the existance of the file in the tree, not by the
+> logical type of change happening, which isn't ok.
 > 
-> Hi Russell
+> Also, you can send them as subsystem-specific series, so as to not have
+> to cross-post all of the changes all over the place.  I doubt the drm
+> developers care about ethernet driver license issues :)
 > 
-> This looks asymmetric in that state->link is not set true if a
-> resolution is found.
-> 
-> Can that set be moved here? Or are there other conditions which also
-> need to be fulfilled before it is set?
 
-It's intentionally so because it's a failure case. In theory, the
-PHY shouldn't report link-up if the C73 priority resolution doesn't
-give a valid result, but given that there are C73 advertisements
-that we don't support, and that the future may add further
-advertisements, if our software resolution fails to find a speed,
-we need to stop the link coming up. Also... PHYs... hardware
-bugs...
+OK, thanks!
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+An old man doll... just what I always wanted! - Clara
+
 
