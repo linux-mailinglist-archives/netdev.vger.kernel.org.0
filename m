@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-2335-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2344-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A3D7C701560
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 10:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5309A7015D5
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 11:38:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9862C1C21132
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 08:52:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 54E8B1C20B8B
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 09:38:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 933871377;
-	Sat, 13 May 2023 08:52:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2D3941842;
+	Sat, 13 May 2023 09:38:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DEF610E1
-	for <netdev@vger.kernel.org>; Sat, 13 May 2023 08:52:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17635110E
+	for <netdev@vger.kernel.org>; Sat, 13 May 2023 09:38:52 +0000 (UTC)
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81D7527A;
-	Sat, 13 May 2023 01:52:17 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC6C3C24;
+	Sat, 13 May 2023 02:38:49 -0700 (PDT)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-	by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34D8SuGY009196;
-	Sat, 13 May 2023 01:52:07 -0700
+	by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34D9Pp6o018173;
+	Sat, 13 May 2023 02:38:36 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=quIoTzU+ZQfJe1/09P0101Rwwp83P0V7bzPHtaqCe6A=;
- b=BOUA+zYRBrm8pkYhYgPqx6a7LnIXt+Wogwo90vLvT6dj2hIqm/ixQ2nfBZ8ZI4EDnoR0
- x4ix/kLJYewm8UL2YEKgqxnR2lqoolwypYr6T4b+/XlKNepmzSUPNnOoPqsP9Bu3jyDG
- x63k5K8n3mesl+7v7nQVxaq5eyM7ZS5MDq7sBC4EPu6CYNsbW5udopjE2GsCpWvbL0Xv
- Vi0jejx2Wc6HXkx/WpGZKGe3ii54H70k/VYDvY7fGzXeODJ536GcQ4NeAsCnPxahJ8mM
- FUbZdz8y4HubGwWGnDiw/lfRe0IhiSCaEPnklrQSGgRQegCkKUPTLvxyICu23x46DWJM 2Q== 
+ content-type; s=pfpt0220; bh=KX072gQbd4e3mYq++zUacCeDwpux4oqgEH1cLO0mS0A=;
+ b=USN9euJ9bNEpuUbx8DdrW6uQuPM9CTDtSiZTRt2upYEveMHofTVwACOP/P5AzBQKpCbV
+ x2qcywSrGxFZayBjxnfLFL8dY1yoFAhs3OBWP4n/+yEW3DiSMQNsWrjyxluE8NPmYJRW
+ eJGA10/jRUUR8zYqH78+hcSWW0eNPODG8LB+mAYyEUTO+Y0E8J9sxMfZTNjcaccRhesS
+ iF1RqS/07aHm6tx1xPIm/RAgX7nwIfoZHvJWIR4s0sveO5QJB8RUtpI+w2u4eTdgiQnE
+ m7C3FKTGf2bkStyyoWl/NNt0I765tdQHc/7GBEdu38YRuBrLD0IuXjbmJCa0Nb3DXeKS tA== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3qhs82tg61-1
+	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3qj7wnr18m-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Sat, 13 May 2023 01:52:07 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+	Sat, 13 May 2023 02:38:36 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Sat, 13 May
- 2023 01:52:06 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Sat, 13 May 2023 01:52:05 -0700
+ 2023 02:38:35 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Sat, 13 May 2023 02:38:35 -0700
 Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-	by maili.marvell.com (Postfix) with ESMTP id 8D6AD62691F;
-	Sat, 13 May 2023 01:51:57 -0700 (PDT)
+	by maili.marvell.com (Postfix) with ESMTP id EA5C6626A12;
+	Sat, 13 May 2023 01:52:04 -0700 (PDT)
 From: Hariprasad Kelam <hkelam@marvell.com>
 To: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC: <kuba@kernel.org>, <davem@davemloft.net>,
@@ -54,9 +54,9 @@ CC: <kuba@kernel.org>, <davem@davemloft.net>,
         <naveenm@marvell.com>, <edumazet@google.com>, <pabeni@redhat.com>,
         <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
         <maxtram95@gmail.com>, <corbet@lwn.net>, <linux-doc@vger.kernel.org>
-Subject: [net-next Patch v10 2/8] octeontx2-pf: Rename tot_tx_queues to non_qos_queues
-Date: Sat, 13 May 2023 14:21:37 +0530
-Message-ID: <20230513085143.3289-3-hkelam@marvell.com>
+Subject: [net-next Patch v10 3/8] octeontx2-pf: qos send queues management
+Date: Sat, 13 May 2023 14:21:38 +0530
+Message-ID: <20230513085143.3289-4-hkelam@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230513085143.3289-1-hkelam@marvell.com>
 References: <20230513085143.3289-1-hkelam@marvell.com>
@@ -67,11 +67,11 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-GUID: npGiSSg7Cca0KJz4KSFK-HMGg56x3wAa
-X-Proofpoint-ORIG-GUID: npGiSSg7Cca0KJz4KSFK-HMGg56x3wAa
+X-Proofpoint-GUID: ESBXsvRnQW_tuZLTVD3r-BbIA24Gxy0p
+X-Proofpoint-ORIG-GUID: ESBXsvRnQW_tuZLTVD3r-BbIA24Gxy0p
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-13_05,2023-05-05_01,2023-02-09_01
+ definitions=2023-05-13_06,2023-05-05_01,2023-02-09_01
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -79,175 +79,867 @@ X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-current implementation is such that tot_tx_queues contains both
-xdp queues and normal tx queues. which will be allocated in interface
-open calls and deallocated on interface down calls respectively.
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-With addition of QOS, where send quees are allocated/deallacated upon
-user request Qos send queues won't be part of tot_tx_queues. So this
-patch renames tot_tx_queues to non_qos_queues.
+Current implementation is such that the number of Send queues (SQs)
+are decided on the device probe which is equal to the number of online
+cpus. These SQs are allocated and deallocated in interface open and c
+lose calls respectively.
 
+This patch defines new APIs for initializing and deinitializing Send
+queues dynamically and allocates more number of transmit queues for
+QOS feature.
+
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 12 ++++++------
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  2 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 14 +++++++-------
- .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  2 +-
- 4 files changed, 15 insertions(+), 15 deletions(-)
+ .../marvell/octeontx2/af/rvu_debugfs.c        |   5 +
+ .../ethernet/marvell/octeontx2/nic/Makefile   |   2 +-
+ .../marvell/octeontx2/nic/otx2_common.c       |  43 ++-
+ .../marvell/octeontx2/nic/otx2_common.h       |  39 ++-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  44 ++-
+ .../marvell/octeontx2/nic/otx2_txrx.c         |  24 +-
+ .../marvell/octeontx2/nic/otx2_txrx.h         |   3 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |   7 +-
+ .../net/ethernet/marvell/octeontx2/nic/qos.h  |  19 ++
+ .../ethernet/marvell/octeontx2/nic/qos_sq.c   | 282 ++++++++++++++++++
+ 10 files changed, 426 insertions(+), 42 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/qos.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/qos_sq.c
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index 26cfa501f1a1..66d3354e02b2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -1221,6 +1221,11 @@ static int rvu_dbg_npa_ctx_display(struct seq_file *m, void *unused, int ctype)
+ 
+ 	for (aura = id; aura < max_id; aura++) {
+ 		aq_req.aura_id = aura;
++
++		/* Skip if queue is uninitialized */
++		if (ctype == NPA_AQ_CTYPE_POOL && !test_bit(aura, pfvf->pool_bmap))
++			continue;
++
+ 		seq_printf(m, "======%s : %d=======\n",
+ 			   (ctype == NPA_AQ_CTYPE_AURA) ? "AURA" : "POOL",
+ 			aq_req.aura_id);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
+index 73fdb8798614..3d31ddf7c652 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
+@@ -8,7 +8,7 @@ obj-$(CONFIG_OCTEONTX2_VF) += rvu_nicvf.o otx2_ptp.o
+ 
+ rvu_nicpf-y := otx2_pf.o otx2_common.o otx2_txrx.o otx2_ethtool.o \
+                otx2_flows.o otx2_tc.o cn10k.o otx2_dmac_flt.o \
+-               otx2_devlink.o
++               otx2_devlink.o qos_sq.o
+ rvu_nicvf-y := otx2_vf.o otx2_devlink.o
+ 
+ rvu_nicpf-$(CONFIG_DCB) += otx2_dcbnl.o
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 8a41ad8ca04f..43bc56fb3c33 100644
+index 43bc56fb3c33..adbcc087d2a8 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -762,7 +762,7 @@ void otx2_sqb_flush(struct otx2_nic *pfvf)
+@@ -513,8 +513,8 @@ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx)
+ 		     (pfvf->hw.cq_ecount_wait - 1));
+ }
+ 
+-int __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+-		      dma_addr_t *dma)
++static int __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
++			     dma_addr_t *dma)
+ {
+ 	u8 *buf;
+ 
+@@ -532,8 +532,8 @@ int __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+ 	return 0;
+ }
+ 
+-static int otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+-			   dma_addr_t *dma)
++int otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
++		    dma_addr_t *dma)
+ {
+ 	int ret;
+ 
+@@ -758,11 +758,16 @@ int otx2_txschq_stop(struct otx2_nic *pfvf)
+ void otx2_sqb_flush(struct otx2_nic *pfvf)
+ {
+ 	int qidx, sqe_tail, sqe_head;
++	struct otx2_snd_queue *sq;
+ 	u64 incr, *ptr, val;
  	int timeout = 1000;
  
  	ptr = (u64 *)otx2_get_regaddr(pfvf, NIX_LF_SQ_OP_STATUS);
--	for (qidx = 0; qidx < pfvf->hw.tot_tx_queues; qidx++) {
-+	for (qidx = 0; qidx < pfvf->hw.non_qos_queues; qidx++) {
+-	for (qidx = 0; qidx < pfvf->hw.non_qos_queues; qidx++) {
++	for (qidx = 0; qidx < otx2_get_total_tx_queues(pfvf); qidx++) {
++		sq = &pfvf->qset.sq[qidx];
++		if (!sq->sqb_ptrs)
++			continue;
++
  		incr = (u64)qidx << 32;
  		while (timeout) {
  			val = otx2_atomic64_add(incr, ptr);
-@@ -1048,7 +1048,7 @@ int otx2_config_nix_queues(struct otx2_nic *pfvf)
+@@ -862,7 +867,7 @@ int otx2_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
+ 	return otx2_sync_mbox_msg(&pfvf->mbox);
+ }
+ 
+-static int otx2_sq_init(struct otx2_nic *pfvf, u16 qidx, u16 sqb_aura)
++int otx2_sq_init(struct otx2_nic *pfvf, u16 qidx, u16 sqb_aura)
+ {
+ 	struct otx2_qset *qset = &pfvf->qset;
+ 	struct otx2_snd_queue *sq;
+@@ -935,9 +940,17 @@ static int otx2_cq_init(struct otx2_nic *pfvf, u16 qidx)
+ 		cq->cint_idx = qidx - pfvf->hw.rx_queues;
+ 		cq->cqe_cnt = qset->sqe_cnt;
+ 	} else {
+-		cq->cq_type = CQ_XDP;
+-		cq->cint_idx = qidx - non_xdp_queues;
+-		cq->cqe_cnt = qset->sqe_cnt;
++		if (pfvf->hw.xdp_queues &&
++		    qidx < non_xdp_queues + pfvf->hw.xdp_queues) {
++			cq->cq_type = CQ_XDP;
++			cq->cint_idx = qidx - non_xdp_queues;
++			cq->cqe_cnt = qset->sqe_cnt;
++		} else {
++			cq->cq_type = CQ_QOS;
++			cq->cint_idx = qidx - non_xdp_queues -
++				       pfvf->hw.xdp_queues;
++			cq->cqe_cnt = qset->sqe_cnt;
++		}
  	}
+ 	cq->cqe_size = pfvf->qset.xqe_size;
  
- 	/* Initialize TX queues */
--	for (qidx = 0; qidx < pfvf->hw.tot_tx_queues; qidx++) {
-+	for (qidx = 0; qidx < pfvf->hw.non_qos_queues; qidx++) {
- 		u16 sqb_aura = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, qidx);
- 
- 		err = otx2_sq_init(pfvf, qidx, sqb_aura);
-@@ -1095,7 +1095,7 @@ int otx2_config_nix(struct otx2_nic *pfvf)
+@@ -1095,7 +1108,7 @@ int otx2_config_nix(struct otx2_nic *pfvf)
  
  	/* Set RQ/SQ/CQ counts */
  	nixlf->rq_cnt = pfvf->hw.rx_queues;
--	nixlf->sq_cnt = pfvf->hw.tot_tx_queues;
-+	nixlf->sq_cnt = pfvf->hw.non_qos_queues;
+-	nixlf->sq_cnt = pfvf->hw.non_qos_queues;
++	nixlf->sq_cnt = otx2_get_total_tx_queues(pfvf);
  	nixlf->cq_cnt = pfvf->qset.cq_cnt;
  	nixlf->rss_sz = MAX_RSS_INDIR_TBL_SIZE;
  	nixlf->rss_grps = MAX_RSS_GROUPS;
-@@ -1133,7 +1133,7 @@ void otx2_sq_free_sqbs(struct otx2_nic *pfvf)
+@@ -1133,7 +1146,7 @@ void otx2_sq_free_sqbs(struct otx2_nic *pfvf)
  	int sqb, qidx;
  	u64 iova, pa;
  
--	for (qidx = 0; qidx < hw->tot_tx_queues; qidx++) {
-+	for (qidx = 0; qidx < hw->non_qos_queues; qidx++) {
+-	for (qidx = 0; qidx < hw->non_qos_queues; qidx++) {
++	for (qidx = 0; qidx < otx2_get_total_tx_queues(pfvf); qidx++) {
  		sq = &qset->sq[qidx];
  		if (!sq->sqb_ptrs)
  			continue;
-@@ -1349,7 +1349,7 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
- 	stack_pages =
- 		(num_sqbs + hw->stack_pg_ptrs - 1) / hw->stack_pg_ptrs;
+@@ -1201,8 +1214,8 @@ void otx2_aura_pool_free(struct otx2_nic *pfvf)
+ 	pfvf->qset.pool = NULL;
+ }
  
--	for (qidx = 0; qidx < hw->tot_tx_queues; qidx++) {
-+	for (qidx = 0; qidx < hw->non_qos_queues; qidx++) {
- 		pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, qidx);
- 		/* Initialize aura context */
- 		err = otx2_aura_init(pfvf, pool_id, pool_id, num_sqbs);
-@@ -1369,7 +1369,7 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
- 		goto fail;
+-static int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
+-			  int pool_id, int numptrs)
++int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
++		   int pool_id, int numptrs)
+ {
+ 	struct npa_aq_enq_req *aq;
+ 	struct otx2_pool *pool;
+@@ -1278,8 +1291,8 @@ static int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
+ 	return 0;
+ }
  
- 	/* Allocate pointers and free them to aura/pool */
--	for (qidx = 0; qidx < hw->tot_tx_queues; qidx++) {
-+	for (qidx = 0; qidx < hw->non_qos_queues; qidx++) {
- 		pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, qidx);
- 		pool = &pfvf->qset.pool[pool_id];
- 
+-static int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
+-			  int stack_pages, int numptrs, int buf_size)
++int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
++		   int stack_pages, int numptrs, int buf_size)
+ {
+ 	struct npa_aq_enq_req *aq;
+ 	struct otx2_pool *pool;
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 3d22cc6a2804..b926a50138cc 100644
+index b926a50138cc..383a6716dbb9 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -189,7 +189,7 @@ struct otx2_hw {
+@@ -27,6 +27,7 @@
+ #include "otx2_txrx.h"
+ #include "otx2_devlink.h"
+ #include <rvu_trace.h>
++#include "qos.h"
+ 
+ /* IPv4 flag more fragment bit */
+ #define IPV4_FLAG_MORE				0x20
+@@ -189,6 +190,7 @@ struct otx2_hw {
  	u16                     rx_queues;
  	u16                     tx_queues;
  	u16                     xdp_queues;
--	u16                     tot_tx_queues;
-+	u16                     non_qos_queues; /* tx queues plus xdp queues */
++	u16			tc_tx_queues;
+ 	u16                     non_qos_queues; /* tx queues plus xdp queues */
  	u16			max_queues;
  	u16			pool_cnt;
- 	u16			rqpool_cnt;
+@@ -501,6 +503,8 @@ struct otx2_nic {
+ 	u16			pfc_schq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
+ 	bool			pfc_alloc_status[NIX_PF_PFC_PRIO_MAX];
+ #endif
++	/* qos */
++	struct otx2_qos		qos;
+ 
+ 	/* napi event count. It is needed for adaptive irq coalescing. */
+ 	u32 napi_events;
+@@ -745,8 +749,7 @@ static inline void cn10k_aura_freeptr(void *dev, int aura, u64 buf)
+ /* Alloc pointer from pool/aura */
+ static inline u64 otx2_aura_allocptr(struct otx2_nic *pfvf, int aura)
+ {
+-	u64 *ptr = (u64 *)otx2_get_regaddr(pfvf,
+-			   NPA_LF_AURA_OP_ALLOCX(0));
++	u64 *ptr = (__force u64 *)otx2_get_regaddr(pfvf, NPA_LF_AURA_OP_ALLOCX(0));
+ 	u64 incr = (u64)aura | BIT_ULL(63);
+ 
+ 	return otx2_atomic64_add(incr, ptr);
+@@ -888,12 +891,23 @@ static inline void otx2_dma_unmap_page(struct otx2_nic *pfvf,
+ 
+ static inline u16 otx2_get_smq_idx(struct otx2_nic *pfvf, u16 qidx)
+ {
++	u16 smq;
+ #ifdef CONFIG_DCB
+ 	if (qidx < NIX_PF_PFC_PRIO_MAX && pfvf->pfc_alloc_status[qidx])
+ 		return pfvf->pfc_schq_list[NIX_TXSCH_LVL_SMQ][qidx];
+ #endif
++	/* check if qidx falls under QOS queues */
++	if (qidx >= pfvf->hw.non_qos_queues)
++		smq = pfvf->qos.qid_to_sqmap[qidx - pfvf->hw.non_qos_queues];
++	else
++		smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
+ 
+-	return pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
++	return smq;
++}
++
++static inline u16 otx2_get_total_tx_queues(struct otx2_nic *pfvf)
++{
++	return pfvf->hw.non_qos_queues + pfvf->hw.tc_tx_queues;
+ }
+ 
+ /* MSI-X APIs */
+@@ -922,17 +936,22 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl, int prio, bool pfc_en);
+ int otx2_txsch_alloc(struct otx2_nic *pfvf);
+ int otx2_txschq_stop(struct otx2_nic *pfvf);
+ void otx2_sqb_flush(struct otx2_nic *pfvf);
+-int __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+-		      dma_addr_t *dma);
++int otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
++		    dma_addr_t *dma);
+ int otx2_rxtx_enable(struct otx2_nic *pfvf, bool enable);
+ void otx2_ctx_disable(struct mbox *mbox, int type, bool npa);
+ int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable);
+ void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
+ void otx2_cleanup_tx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
++int otx2_sq_init(struct otx2_nic *pfvf, u16 qidx, u16 sqb_aura);
+ int otx2_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura);
+ int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura);
+ int otx2_alloc_buffer(struct otx2_nic *pfvf, struct otx2_cq_queue *cq,
+ 		      dma_addr_t *dma);
++int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
++		   int stack_pages, int numptrs, int buf_size);
++int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
++		   int pool_id, int numptrs);
+ 
+ /* RSS configuration APIs*/
+ int otx2_rss_init(struct otx2_nic *pfvf);
+@@ -1040,4 +1059,14 @@ static inline void cn10k_handle_mcs_event(struct otx2_nic *pfvf,
+ {}
+ #endif /* CONFIG_MACSEC */
+ 
++/* qos support */
++static inline void otx2_qos_init(struct otx2_nic *pfvf, int qos_txqs)
++{
++	struct otx2_hw *hw = &pfvf->hw;
++
++	hw->tc_tx_queues = qos_txqs;
++}
++
++u16 otx2_select_queue(struct net_device *netdev, struct sk_buff *skb,
++		      struct net_device *sb_dev);
+ #endif /* OTX2_COMMON_H */
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 179433d0a54a..33d677849aa9 100644
+index 33d677849aa9..c9141d608342 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1257,7 +1257,7 @@ static irqreturn_t otx2_q_intr_handler(int irq, void *data)
+@@ -23,6 +23,7 @@
+ #include "otx2_struct.h"
+ #include "otx2_ptp.h"
+ #include "cn10k.h"
++#include "qos.h"
+ #include <rvu_trace.h>
+ 
+ #define DRV_NAME	"rvu_nicpf"
+@@ -1228,6 +1229,7 @@ static char *nix_snd_status_e_str[NIX_SND_STATUS_MAX] =  {
+ static irqreturn_t otx2_q_intr_handler(int irq, void *data)
+ {
+ 	struct otx2_nic *pf = data;
++	struct otx2_snd_queue *sq;
+ 	u64 val, *ptr;
+ 	u64 qidx = 0;
+ 
+@@ -1257,10 +1259,14 @@ static irqreturn_t otx2_q_intr_handler(int irq, void *data)
  	}
  
  	/* SQ */
--	for (qidx = 0; qidx < pf->hw.tot_tx_queues; qidx++) {
-+	for (qidx = 0; qidx < pf->hw.non_qos_queues; qidx++) {
+-	for (qidx = 0; qidx < pf->hw.non_qos_queues; qidx++) {
++	for (qidx = 0; qidx < otx2_get_total_tx_queues(pf); qidx++) {
  		u64 sq_op_err_dbg, mnq_err_dbg, snd_err_dbg;
  		u8 sq_op_err_code, mnq_err_code, snd_err_code;
  
-@@ -1383,7 +1383,7 @@ static void otx2_free_sq_res(struct otx2_nic *pf)
++		sq = &pf->qset.sq[qidx];
++		if (!sq->sqb_ptrs)
++			continue;
++
+ 		/* Below debug registers captures first errors corresponding to
+ 		 * those registers. We don't have to check against SQ qid as
+ 		 * these are fatal errors.
+@@ -1383,7 +1389,7 @@ static void otx2_free_sq_res(struct otx2_nic *pf)
  	otx2_ctx_disable(&pf->mbox, NIX_AQ_CTYPE_SQ, false);
  	/* Free SQB pointers */
  	otx2_sq_free_sqbs(pf);
--	for (qidx = 0; qidx < pf->hw.tot_tx_queues; qidx++) {
-+	for (qidx = 0; qidx < pf->hw.non_qos_queues; qidx++) {
+-	for (qidx = 0; qidx < pf->hw.non_qos_queues; qidx++) {
++	for (qidx = 0; qidx < otx2_get_total_tx_queues(pf); qidx++) {
  		sq = &qset->sq[qidx];
  		qmem_free(pf->dev, sq->sqe);
  		qmem_free(pf->dev, sq->tso_hdrs);
-@@ -1433,7 +1433,7 @@ static int otx2_init_hw_resources(struct otx2_nic *pf)
+@@ -1433,7 +1439,7 @@ static int otx2_init_hw_resources(struct otx2_nic *pf)
  	 * so, aura count = pool count.
  	 */
  	hw->rqpool_cnt = hw->rx_queues;
--	hw->sqpool_cnt = hw->tot_tx_queues;
-+	hw->sqpool_cnt = hw->non_qos_queues;
+-	hw->sqpool_cnt = hw->non_qos_queues;
++	hw->sqpool_cnt = otx2_get_total_tx_queues(pf);
  	hw->pool_cnt = hw->rqpool_cnt + hw->sqpool_cnt;
  
  	/* Maximum hardware supported transmit length */
-@@ -1688,7 +1688,7 @@ int otx2_open(struct net_device *netdev)
+@@ -1688,11 +1694,14 @@ int otx2_open(struct net_device *netdev)
  
  	netif_carrier_off(netdev);
  
--	pf->qset.cq_cnt = pf->hw.rx_queues + pf->hw.tot_tx_queues;
-+	pf->qset.cq_cnt = pf->hw.rx_queues + pf->hw.non_qos_queues;
+-	pf->qset.cq_cnt = pf->hw.rx_queues + pf->hw.non_qos_queues;
  	/* RQ and SQs are mapped to different CQs,
  	 * so find out max CQ IRQs (i.e CINTs) needed.
  	 */
-@@ -1708,7 +1708,7 @@ int otx2_open(struct net_device *netdev)
- 	if (!qset->cq)
- 		goto err_free_mem;
+-	pf->hw.cint_cnt = max(pf->hw.rx_queues, pf->hw.tx_queues);
++	pf->hw.cint_cnt = max3(pf->hw.rx_queues, pf->hw.tx_queues,
++			       pf->hw.tc_tx_queues);
++
++	pf->qset.cq_cnt = pf->hw.rx_queues + otx2_get_total_tx_queues(pf);
++
+ 	qset->napi = kcalloc(pf->hw.cint_cnt, sizeof(*cq_poll), GFP_KERNEL);
+ 	if (!qset->napi)
+ 		return -ENOMEM;
+@@ -1743,6 +1752,11 @@ int otx2_open(struct net_device *netdev)
+ 		else
+ 			cq_poll->cq_ids[CQ_XDP] = CINT_INVALID_CQ;
  
--	qset->sq = kcalloc(pf->hw.tot_tx_queues,
-+	qset->sq = kcalloc(pf->hw.non_qos_queues,
- 			   sizeof(struct otx2_snd_queue), GFP_KERNEL);
- 	if (!qset->sq)
- 		goto err_free_mem;
-@@ -2520,7 +2520,7 @@ static int otx2_xdp_setup(struct otx2_nic *pf, struct bpf_prog *prog)
- 		xdp_features_clear_redirect_target(dev);
++		cq_poll->cq_ids[CQ_QOS] = (qidx < pf->hw.tc_tx_queues) ?
++					  (qidx + pf->hw.rx_queues +
++					   pf->hw.non_qos_queues) :
++					  CINT_INVALID_CQ;
++
+ 		cq_poll->dev = (void *)pf;
+ 		cq_poll->dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_CQE;
+ 		INIT_WORK(&cq_poll->dim.work, otx2_dim_work);
+@@ -1938,6 +1952,12 @@ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	int qidx = skb_get_queue_mapping(skb);
+ 	struct otx2_snd_queue *sq;
+ 	struct netdev_queue *txq;
++	int sq_idx;
++
++	/* XDP SQs are not mapped with TXQs
++	 * advance qid to derive correct sq mapped with QOS
++	 */
++	sq_idx = (qidx >= pf->hw.tx_queues) ? (qidx + pf->hw.xdp_queues) : qidx;
+ 
+ 	/* Check for minimum and maximum packet length */
+ 	if (skb->len <= ETH_HLEN ||
+@@ -1946,7 +1966,7 @@ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		return NETDEV_TX_OK;
  	}
  
--	pf->hw.tot_tx_queues += pf->hw.xdp_queues;
-+	pf->hw.non_qos_queues += pf->hw.xdp_queues;
+-	sq = &pf->qset.sq[qidx];
++	sq = &pf->qset.sq[sq_idx];
+ 	txq = netdev_get_tx_queue(netdev, qidx);
  
- 	if (if_up)
- 		otx2_open(pf->netdev);
-@@ -2751,7 +2751,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	hw->pdev = pdev;
- 	hw->rx_queues = qcount;
- 	hw->tx_queues = qcount;
--	hw->tot_tx_queues = qcount;
-+	hw->non_qos_queues = qcount;
- 	hw->max_queues = qcount;
- 	hw->rbuf_len = OTX2_DEFAULT_RBUF_LEN;
- 	/* Use CQE of 128 byte descriptor size by default */
+ 	if (!otx2_sq_append_skb(netdev, sq, skb, qidx)) {
+@@ -1964,8 +1984,8 @@ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	return NETDEV_TX_OK;
+ }
+ 
+-static u16 otx2_select_queue(struct net_device *netdev, struct sk_buff *skb,
+-			     struct net_device *sb_dev)
++u16 otx2_select_queue(struct net_device *netdev, struct sk_buff *skb,
++		      struct net_device *sb_dev)
+ {
+ #ifdef CONFIG_DCB
+ 	struct otx2_nic *pf = netdev_priv(netdev);
+@@ -1987,6 +2007,7 @@ static u16 otx2_select_queue(struct net_device *netdev, struct sk_buff *skb,
+ #endif
+ 	return netdev_pick_tx(netdev, skb, NULL);
+ }
++EXPORT_SYMBOL(otx2_select_queue);
+ 
+ static netdev_features_t otx2_fix_features(struct net_device *dev,
+ 					   netdev_features_t features)
+@@ -2703,10 +2724,10 @@ static void otx2_sriov_vfcfg_cleanup(struct otx2_nic *pf)
+ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ {
+ 	struct device *dev = &pdev->dev;
++	int err, qcount, qos_txqs;
+ 	struct net_device *netdev;
+ 	struct otx2_nic *pf;
+ 	struct otx2_hw *hw;
+-	int err, qcount;
+ 	int num_vec;
+ 
+ 	err = pcim_enable_device(pdev);
+@@ -2731,8 +2752,9 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	/* Set number of queues */
+ 	qcount = min_t(int, num_online_cpus(), OTX2_MAX_CQ_CNT);
++	qos_txqs = min_t(int, qcount, OTX2_QOS_MAX_LEAF_NODES);
+ 
+-	netdev = alloc_etherdev_mqs(sizeof(*pf), qcount, qcount);
++	netdev = alloc_etherdev_mqs(sizeof(*pf), qcount + qos_txqs, qcount);
+ 	if (!netdev) {
+ 		err = -ENOMEM;
+ 		goto err_release_regions;
+@@ -2920,6 +2942,8 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto err_pf_sriov_init;
+ #endif
+ 
++	otx2_qos_init(pf, qos_txqs);
++
+ 	return 0;
+ 
+ err_pf_sriov_init:
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index 7045fedfd73a..e288f46b23a8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -464,12 +464,13 @@ static int otx2_tx_napi_handler(struct otx2_nic *pfvf,
+ 			break;
+ 		}
+ 
+-		if (cq->cq_type == CQ_XDP) {
++		qidx = cq->cq_idx - pfvf->hw.rx_queues;
++
++		if (cq->cq_type == CQ_XDP)
+ 			otx2_xdp_snd_pkt_handler(pfvf, sq, cqe);
+-		} else {
+-			otx2_snd_pkt_handler(pfvf, cq, sq, cqe, budget,
+-					     &tx_pkts, &tx_bytes);
+-		}
++		else
++			otx2_snd_pkt_handler(pfvf, cq, &pfvf->qset.sq[qidx],
++					     cqe, budget, &tx_pkts, &tx_bytes);
+ 
+ 		cqe->hdr.cqe_type = NIX_XQE_TYPE_INVALID;
+ 		processed_cqe++;
+@@ -486,7 +487,11 @@ static int otx2_tx_napi_handler(struct otx2_nic *pfvf,
+ 	if (likely(tx_pkts)) {
+ 		struct netdev_queue *txq;
+ 
+-		txq = netdev_get_tx_queue(pfvf->netdev, cq->cint_idx);
++		qidx = cq->cq_idx - pfvf->hw.rx_queues;
++
++		if (qidx >= pfvf->hw.tx_queues)
++			qidx -= pfvf->hw.xdp_queues;
++		txq = netdev_get_tx_queue(pfvf->netdev, qidx);
+ 		netdev_tx_completed_queue(txq, tx_pkts, tx_bytes);
+ 		/* Check if queue was stopped earlier due to ring full */
+ 		smp_mb();
+@@ -736,7 +741,8 @@ static void otx2_sqe_add_hdr(struct otx2_nic *pfvf, struct otx2_snd_queue *sq,
+ 		sqe_hdr->aura = sq->aura_id;
+ 		/* Post a CQE Tx after pkt transmission */
+ 		sqe_hdr->pnc = 1;
+-		sqe_hdr->sq = qidx;
++		sqe_hdr->sq = (qidx >=  pfvf->hw.tx_queues) ?
++			       qidx + pfvf->hw.xdp_queues : qidx;
+ 	}
+ 	sqe_hdr->total = skb->len;
+ 	/* Set SQE identifier which will be used later for freeing SKB */
+@@ -1221,8 +1227,10 @@ void otx2_cleanup_tx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq)
+ 	struct nix_cqe_tx_s *cqe;
+ 	int processed_cqe = 0;
+ 	struct sg_list *sg;
++	int qidx;
+ 
+-	sq = &pfvf->qset.sq[cq->cint_idx];
++	qidx = cq->cq_idx - pfvf->hw.rx_queues;
++	sq = &pfvf->qset.sq[qidx];
+ 
+ 	if (otx2_nix_cq_op_status(pfvf, cq) || !cq->pend_cqe)
+ 		return;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+index 93cac2c2664c..7ab6db9a986f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+@@ -102,7 +102,8 @@ enum cq_type {
+ 	CQ_RX,
+ 	CQ_TX,
+ 	CQ_XDP,
+-	CQS_PER_CINT = 3, /* RQ + SQ + XDP */
++	CQ_QOS,
++	CQS_PER_CINT = 4, /* RQ + SQ + XDP + QOS_SQ */
+ };
+ 
+ struct otx2_cq_poll {
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index ab126f8706c7..a078949430ce 100644
+index a078949430ce..5dddf067a810 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -570,7 +570,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	hw->rx_queues = qcount;
- 	hw->tx_queues = qcount;
- 	hw->max_queues = qcount;
--	hw->tot_tx_queues = qcount;
-+	hw->non_qos_queues = qcount;
- 	hw->rbuf_len = OTX2_DEFAULT_RBUF_LEN;
- 	/* Use CQE of 128 byte descriptor size by default */
- 	hw->xqe_size = 128;
+@@ -479,6 +479,7 @@ static const struct net_device_ops otx2vf_netdev_ops = {
+ 	.ndo_open = otx2vf_open,
+ 	.ndo_stop = otx2vf_stop,
+ 	.ndo_start_xmit = otx2vf_xmit,
++	.ndo_select_queue = otx2_select_queue,
+ 	.ndo_set_rx_mode = otx2vf_set_rx_mode,
+ 	.ndo_set_mac_address = otx2_set_mac_address,
+ 	.ndo_change_mtu = otx2vf_change_mtu,
+@@ -524,10 +525,10 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ {
+ 	int num_vec = pci_msix_vec_count(pdev);
+ 	struct device *dev = &pdev->dev;
++	int err, qcount, qos_txqs;
+ 	struct net_device *netdev;
+ 	struct otx2_nic *vf;
+ 	struct otx2_hw *hw;
+-	int err, qcount;
+ 
+ 	err = pcim_enable_device(pdev);
+ 	if (err) {
+@@ -550,7 +551,8 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	pci_set_master(pdev);
+ 
+ 	qcount = num_online_cpus();
+-	netdev = alloc_etherdev_mqs(sizeof(*vf), qcount, qcount);
++	qos_txqs = min_t(int, qcount, OTX2_QOS_MAX_LEAF_NODES);
++	netdev = alloc_etherdev_mqs(sizeof(*vf), qcount + qos_txqs, qcount);
+ 	if (!netdev) {
+ 		err = -ENOMEM;
+ 		goto err_release_regions;
+@@ -699,6 +701,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (err)
+ 		goto err_shutdown_tc;
+ #endif
++	otx2_qos_init(vf, qos_txqs);
+ 
+ 	return 0;
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/qos.h b/drivers/net/ethernet/marvell/octeontx2/nic/qos.h
+new file mode 100644
+index 000000000000..73a62d092e99
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/qos.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Marvell RVU Ethernet driver
++ *
++ * Copyright (C) 2023 Marvell.
++ *
++ */
++#ifndef OTX2_QOS_H
++#define OTX2_QOS_H
++
++#define OTX2_QOS_MAX_LEAF_NODES                16
++
++int otx2_qos_enable_sq(struct otx2_nic *pfvf, int qidx, u16 smq);
++void otx2_qos_disable_sq(struct otx2_nic *pfvf, int qidx, u16 mdq);
++
++struct otx2_qos {
++	       u16 qid_to_sqmap[OTX2_QOS_MAX_LEAF_NODES];
++	};
++
++#endif
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/qos_sq.c b/drivers/net/ethernet/marvell/octeontx2/nic/qos_sq.c
+new file mode 100644
+index 000000000000..e142d43f5a62
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/qos_sq.c
+@@ -0,0 +1,282 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Marvell RVU Physical Function ethernet driver
++ *
++ * Copyright (C) 2023 Marvell.
++ *
++ */
++
++#include <linux/netdevice.h>
++#include <net/tso.h>
++
++#include "cn10k.h"
++#include "otx2_reg.h"
++#include "otx2_common.h"
++#include "otx2_txrx.h"
++#include "otx2_struct.h"
++
++#define OTX2_QOS_MAX_LEAF_NODES 16
++
++static void otx2_qos_aura_pool_free(struct otx2_nic *pfvf, int pool_id)
++{
++	struct otx2_pool *pool;
++
++	if (!pfvf->qset.pool)
++		return;
++
++	pool = &pfvf->qset.pool[pool_id];
++	qmem_free(pfvf->dev, pool->stack);
++	qmem_free(pfvf->dev, pool->fc_addr);
++	pool->stack = NULL;
++	pool->fc_addr = NULL;
++}
++
++static int otx2_qos_sq_aura_pool_init(struct otx2_nic *pfvf, int qidx)
++{
++	struct otx2_qset *qset = &pfvf->qset;
++	int pool_id, stack_pages, num_sqbs;
++	struct otx2_hw *hw = &pfvf->hw;
++	struct otx2_snd_queue *sq;
++	struct otx2_pool *pool;
++	dma_addr_t bufptr;
++	int err, ptr;
++	u64 iova, pa;
++
++	/* Calculate number of SQBs needed.
++	 *
++	 * For a 128byte SQE, and 4K size SQB, 31 SQEs will fit in one SQB.
++	 * Last SQE is used for pointing to next SQB.
++	 */
++	num_sqbs = (hw->sqb_size / 128) - 1;
++	num_sqbs = (qset->sqe_cnt + num_sqbs) / num_sqbs;
++
++	/* Get no of stack pages needed */
++	stack_pages =
++		(num_sqbs + hw->stack_pg_ptrs - 1) / hw->stack_pg_ptrs;
++
++	pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, qidx);
++	pool = &pfvf->qset.pool[pool_id];
++
++	/* Initialize aura context */
++	err = otx2_aura_init(pfvf, pool_id, pool_id, num_sqbs);
++	if (err)
++		return err;
++
++	/* Initialize pool context */
++	err = otx2_pool_init(pfvf, pool_id, stack_pages,
++			     num_sqbs, hw->sqb_size);
++	if (err)
++		goto aura_free;
++
++	/* Flush accumulated messages */
++	err = otx2_sync_mbox_msg(&pfvf->mbox);
++	if (err)
++		goto pool_free;
++
++	/* Allocate pointers and free them to aura/pool */
++	sq = &qset->sq[qidx];
++	sq->sqb_count = 0;
++	sq->sqb_ptrs = kcalloc(num_sqbs, sizeof(*sq->sqb_ptrs), GFP_KERNEL);
++	if (!sq->sqb_ptrs) {
++		err = -ENOMEM;
++		goto pool_free;
++	}
++
++	for (ptr = 0; ptr < num_sqbs; ptr++) {
++		err = otx2_alloc_rbuf(pfvf, pool, &bufptr);
++		if (err)
++			goto sqb_free;
++		pfvf->hw_ops->aura_freeptr(pfvf, pool_id, bufptr);
++		sq->sqb_ptrs[sq->sqb_count++] = (u64)bufptr;
++	}
++
++	return 0;
++
++sqb_free:
++	while (ptr--) {
++		if (!sq->sqb_ptrs[ptr])
++			continue;
++		iova = sq->sqb_ptrs[ptr];
++		pa = otx2_iova_to_phys(pfvf->iommu_domain, iova);
++		dma_unmap_page_attrs(pfvf->dev, iova, hw->sqb_size,
++				     DMA_FROM_DEVICE,
++				     DMA_ATTR_SKIP_CPU_SYNC);
++		put_page(virt_to_page(phys_to_virt(pa)));
++		otx2_aura_allocptr(pfvf, pool_id);
++	}
++	sq->sqb_count = 0;
++	kfree(sq->sqb_ptrs);
++pool_free:
++	qmem_free(pfvf->dev, pool->stack);
++aura_free:
++	qmem_free(pfvf->dev, pool->fc_addr);
++	otx2_mbox_reset(&pfvf->mbox.mbox, 0);
++	return err;
++}
++
++static void otx2_qos_sq_free_sqbs(struct otx2_nic *pfvf, int qidx)
++{
++	struct otx2_qset *qset = &pfvf->qset;
++	struct otx2_hw *hw = &pfvf->hw;
++	struct otx2_snd_queue *sq;
++	u64 iova, pa;
++	int sqb;
++
++	sq = &qset->sq[qidx];
++	if (!sq->sqb_ptrs)
++		return;
++	for (sqb = 0; sqb < sq->sqb_count; sqb++) {
++		if (!sq->sqb_ptrs[sqb])
++			continue;
++		iova = sq->sqb_ptrs[sqb];
++		pa = otx2_iova_to_phys(pfvf->iommu_domain, iova);
++		dma_unmap_page_attrs(pfvf->dev, iova, hw->sqb_size,
++				     DMA_FROM_DEVICE,
++				     DMA_ATTR_SKIP_CPU_SYNC);
++		put_page(virt_to_page(phys_to_virt(pa)));
++	}
++
++	sq->sqb_count = 0;
++
++	sq = &qset->sq[qidx];
++	qmem_free(pfvf->dev, sq->sqe);
++	qmem_free(pfvf->dev, sq->tso_hdrs);
++	kfree(sq->sg);
++	kfree(sq->sqb_ptrs);
++	qmem_free(pfvf->dev, sq->timestamps);
++
++	memset((void *)sq, 0, sizeof(*sq));
++}
++
++/* send queue id */
++static void otx2_qos_sqb_flush(struct otx2_nic *pfvf, int qidx)
++{
++	int sqe_tail, sqe_head;
++	u64 incr, *ptr, val;
++
++	ptr = (__force u64 *)otx2_get_regaddr(pfvf, NIX_LF_SQ_OP_STATUS);
++	incr = (u64)qidx << 32;
++	val = otx2_atomic64_add(incr, ptr);
++	sqe_head = (val >> 20) & 0x3F;
++	sqe_tail = (val >> 28) & 0x3F;
++	if (sqe_head != sqe_tail)
++		usleep_range(50, 60);
++}
++
++static int otx2_qos_ctx_disable(struct otx2_nic *pfvf, u16 qidx, int aura_id)
++{
++	struct nix_cn10k_aq_enq_req *cn10k_sq_aq;
++	struct npa_aq_enq_req *aura_aq;
++	struct npa_aq_enq_req *pool_aq;
++	struct nix_aq_enq_req *sq_aq;
++
++	if (test_bit(CN10K_LMTST, &pfvf->hw.cap_flag)) {
++		cn10k_sq_aq = otx2_mbox_alloc_msg_nix_cn10k_aq_enq(&pfvf->mbox);
++		if (!cn10k_sq_aq)
++			return -ENOMEM;
++		cn10k_sq_aq->qidx = qidx;
++		cn10k_sq_aq->sq.ena = 0;
++		cn10k_sq_aq->sq_mask.ena = 1;
++		cn10k_sq_aq->ctype = NIX_AQ_CTYPE_SQ;
++		cn10k_sq_aq->op = NIX_AQ_INSTOP_WRITE;
++	} else {
++		sq_aq = otx2_mbox_alloc_msg_nix_aq_enq(&pfvf->mbox);
++		if (!sq_aq)
++			return -ENOMEM;
++		sq_aq->qidx = qidx;
++		sq_aq->sq.ena = 0;
++		sq_aq->sq_mask.ena = 1;
++		sq_aq->ctype = NIX_AQ_CTYPE_SQ;
++		sq_aq->op = NIX_AQ_INSTOP_WRITE;
++	}
++
++	aura_aq = otx2_mbox_alloc_msg_npa_aq_enq(&pfvf->mbox);
++	if (!aura_aq) {
++		otx2_mbox_reset(&pfvf->mbox.mbox, 0);
++		return -ENOMEM;
++	}
++
++	aura_aq->aura_id = aura_id;
++	aura_aq->aura.ena = 0;
++	aura_aq->aura_mask.ena = 1;
++	aura_aq->ctype = NPA_AQ_CTYPE_AURA;
++	aura_aq->op = NPA_AQ_INSTOP_WRITE;
++
++	pool_aq = otx2_mbox_alloc_msg_npa_aq_enq(&pfvf->mbox);
++	if (!pool_aq) {
++		otx2_mbox_reset(&pfvf->mbox.mbox, 0);
++		return -ENOMEM;
++	}
++
++	pool_aq->aura_id = aura_id;
++	pool_aq->pool.ena = 0;
++	pool_aq->pool_mask.ena = 1;
++
++	pool_aq->ctype = NPA_AQ_CTYPE_POOL;
++	pool_aq->op = NPA_AQ_INSTOP_WRITE;
++
++	return otx2_sync_mbox_msg(&pfvf->mbox);
++}
++
++int otx2_qos_enable_sq(struct otx2_nic *pfvf, int qidx, u16 smq)
++{
++	struct otx2_hw *hw = &pfvf->hw;
++	int pool_id, sq_idx, err;
++
++	if (pfvf->flags & OTX2_FLAG_INTF_DOWN)
++		return -EPERM;
++
++	sq_idx = hw->non_qos_queues + qidx;
++
++	mutex_lock(&pfvf->mbox.lock);
++	err = otx2_qos_sq_aura_pool_init(pfvf, sq_idx);
++	if (err)
++		goto out;
++
++	pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, sq_idx);
++	pfvf->qos.qid_to_sqmap[qidx] = smq;
++	err = otx2_sq_init(pfvf, sq_idx, pool_id);
++	if (err)
++		goto out;
++out:
++	mutex_unlock(&pfvf->mbox.lock);
++	return err;
++}
++
++void otx2_qos_disable_sq(struct otx2_nic *pfvf, int qidx, u16 mdq)
++{
++	struct otx2_qset *qset = &pfvf->qset;
++	struct otx2_hw *hw = &pfvf->hw;
++	struct otx2_snd_queue *sq;
++	struct otx2_cq_queue *cq;
++	int pool_id, sq_idx;
++
++	sq_idx = hw->non_qos_queues + qidx;
++
++	/* If the DOWN flag is set SQs are already freed */
++	if (pfvf->flags & OTX2_FLAG_INTF_DOWN)
++		return;
++
++	sq = &pfvf->qset.sq[sq_idx];
++	if (!sq->sqb_ptrs)
++		return;
++
++	if (sq_idx < hw->non_qos_queues ||
++	    sq_idx >= otx2_get_total_tx_queues(pfvf)) {
++		netdev_err(pfvf->netdev, "Send Queue is not a QoS queue\n");
++		return;
++	}
++
++	cq = &qset->cq[pfvf->hw.rx_queues + sq_idx];
++	pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, sq_idx);
++
++	otx2_qos_sqb_flush(pfvf, sq_idx);
++	otx2_smq_flush(pfvf, otx2_get_smq_idx(pfvf, sq_idx));
++	otx2_cleanup_tx_cqes(pfvf, cq);
++
++	mutex_lock(&pfvf->mbox.lock);
++	otx2_qos_ctx_disable(pfvf, sq_idx, pool_id);
++	mutex_unlock(&pfvf->mbox.lock);
++
++	otx2_qos_sq_free_sqbs(pfvf, sq_idx);
++	otx2_qos_aura_pool_free(pfvf, pool_id);
++}
 -- 
 2.17.1
 
