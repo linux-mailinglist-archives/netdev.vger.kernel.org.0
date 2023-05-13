@@ -1,85 +1,116 @@
-Return-Path: <netdev+bounces-2379-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2381-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 209C1701995
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 22:00:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7C1EA7019F7
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 23:03:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BD75B281742
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 20:00:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3493F1C20A4B
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 21:03:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 908109455;
-	Sat, 13 May 2023 20:00:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 219B52262F;
+	Sat, 13 May 2023 21:03:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAD3179F7
-	for <netdev@vger.kernel.org>; Sat, 13 May 2023 20:00:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 847F4C433D2;
-	Sat, 13 May 2023 20:00:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684008020;
-	bh=eUhAHC/Mjz+KeSXonfjEeINXLGPhel+E0J4Y3yjfr3o=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=HsO/p1zOCWYJphYFRwdCL1FhcuUl7fYCGy3R3oQXXSqy0MlGOQtNw27ws5NYnVaYd
-	 zVPXWjhiQALJeokeO0N6C5qbq/cffcFkPQsMRxWAqgv09jlg27R5ANT5XC5ncHnSNv
-	 VMZ146Kd7MrGnlfbiyLu9Jm3JShRwnmazheH+SZxIkBUrLNruczrA208awLOfZ1fCR
-	 1TgTXB8tZXNab+72/3selu3F/X/Hh+oXIZv6V3CFzsAau/oEN3lUKWCfsVfQSXQV0S
-	 zLSaYAv6mLueTski5+PBxM72ts+OptIMXswIbTd0ZceaeHFemyLukHCs7G9En9ietC
-	 vV5Bcr1mEygjw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5AB5BE450BB;
-	Sat, 13 May 2023 20:00:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1647022622
+	for <netdev@vger.kernel.org>; Sat, 13 May 2023 21:03:55 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C0A1FDE
+	for <netdev@vger.kernel.org>; Sat, 13 May 2023 14:03:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+	:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+	Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=01bFNaK2dD2QNagE7M4NLx/jFOI5IgNFHTwerspm28E=; b=xBoYDCfG2oX1ES0vEnEK8Zsy9s
+	D5vqCDJt/+viyqbUAabF+0eBU1VVy+WkO9y65do3B5s7/qOGCZvBaahAsYUxz9s99EdE2CsewILrA
+	qsjMLAtu1B+HdDdeLgJjtHYE0d0pKUdRHDiwmAAdo7xbC+kWJ+ltwUW1CmTMSfOY+Ykkuwu6Q/TZW
+	RtMplU4gGQYef87uoISRmaobbJxyH9xy/P/5ZhK1AFOTJGAaeLQorfjiKY2Leh2aGzSTv4Ezt64bC
+	x3TZd/6DE3fAXAOTPAVorg0qNESmz0aNtG3UHYaBhHwtTnm+onCz1M66w1TnLstRdwCl/NFrzpgk4
+	WeKD+fNQ==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:35554 helo=rmk-PC.armlinux.org.uk)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <rmk@armlinux.org.uk>)
+	id 1pxwP3-0001nF-MM; Sat, 13 May 2023 22:03:45 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+	id 1pxwP3-003e2k-2P; Sat, 13 May 2023 22:03:45 +0100
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	netdev@vger.kernel.org
+Subject: [PATCH net] net: phylink: fix ksettings_set() ethtool call
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] sfc: fix use-after-free in
- efx_tc_flower_record_encap_match()
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168400802036.779.18008463088768762971.git-patchwork-notify@kernel.org>
-Date: Sat, 13 May 2023 20:00:20 +0000
-References: <20230512153558.15025-1-edward.cree@amd.com>
-In-Reply-To: <20230512153558.15025-1-edward.cree@amd.com>
-To:  <edward.cree@amd.com>
-Cc: linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
- pabeni@redhat.com, edumazet@google.com, ecree.xilinx@gmail.com,
- netdev@vger.kernel.org, habetsm.xilinx@gmail.com, simon.horman@corigine.com
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1pxwP3-003e2k-2P@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date: Sat, 13 May 2023 22:03:45 +0100
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+While testing a Fiberstore SFP-10G-T module (which uses 10GBASE-R with
+rate adaption) in a Clearfog platform (which can't do that) it was
+found that the PHYs advertisement was not limited according to the
+hosts capabilities when using ethtool to change it.
 
-This patch was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
+Fix this by ensuring that we mask the advertisement with the computed
+support mask as the very first thing we do.
 
-On Fri, 12 May 2023 16:35:58 +0100 you wrote:
-> From: Edward Cree <ecree.xilinx@gmail.com>
-> 
-> When writing error messages to extack for pseudo collisions, we can't
->  use encap->type as encap has already been freed.  Fortunately the
->  same value is stored in local variable em_type, so use that instead.
-> 
-> Fixes: 3c9561c0a5b9 ("sfc: support TC decap rules matching on enc_ip_tos")
-> Reported-by: Simon Horman <simon.horman@corigine.com>
-> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
-> 
-> [...]
+Fixes: cbc1bb1e4689 ("net: phylink: simplify phy case for ksettings_set method")
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phylink.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Here is the summary with links:
-  - [net-next] sfc: fix use-after-free in efx_tc_flower_record_encap_match()
-    https://git.kernel.org/netdev/net-next/c/befcc1fce564
-
-You are awesome, thank you!
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index a4111f1be375..e237949deee6 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -2225,6 +2225,10 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
+ 
+ 	ASSERT_RTNL();
+ 
++	/* Mask out unsupported advertisements */
++	linkmode_and(config.advertising, kset->link_modes.advertising,
++		     pl->supported);
++
+ 	if (pl->phydev) {
+ 		/* We can rely on phylib for this update; we also do not need
+ 		 * to update the pl->link_config settings:
+@@ -2249,10 +2253,6 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
+ 
+ 	config = pl->link_config;
+ 
+-	/* Mask out unsupported advertisements */
+-	linkmode_and(config.advertising, kset->link_modes.advertising,
+-		     pl->supported);
+-
+ 	/* FIXME: should we reject autoneg if phy/mac does not support it? */
+ 	switch (kset->base.autoneg) {
+ 	case AUTONEG_DISABLE:
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
 
