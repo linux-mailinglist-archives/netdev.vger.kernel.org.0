@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-2375-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2376-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A4465701973
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 21:10:32 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C4C20701975
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 21:11:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6E71F1C20A14
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 19:10:29 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B7A441C20B8B
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 19:10:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 479FB79F5;
-	Sat, 13 May 2023 19:10:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F262479E4;
+	Sat, 13 May 2023 19:10:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6779FEA2
-	for <netdev@vger.kernel.org>; Sat, 13 May 2023 19:10:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F2B74C4339B;
-	Sat, 13 May 2023 19:10:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 799942583;
+	Sat, 13 May 2023 19:10:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1B657C4339E;
+	Sat, 13 May 2023 19:10:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1684005021;
-	bh=rMzEObVo1+RV026mKGwqGYRDOXtkjJwNnU5edhhv5SA=;
+	bh=REHf7EgiT9cfmIDG5iDRvXJ/VUyxKNWsx+skNYcLCLE=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=bf6d9fqb/C0NeZO26Q11fQve2+yJW4EkNsrpz2CbUqLVQPVk/V+DiaamgNc8jDGHg
-	 0hCUmd9wRezE+dqGISTQXOvlUu0yW97mF2bursoRfSUeblu2lcom35RuYJ9jHNYXZa
-	 VfLErewtzpAsP6H9YMl/PgjbhASt338MOgpEJgCYvOIEN5sV9zRUJ7wgvw29W1moYK
-	 F1wRb6YvwyfFKh6kKo8ZDOORM4O5OJXMPk9qvDDnb6g+rUvYF9XFcNpokCm3u4/GK4
-	 yLja2iaMtJnG7yXiPJme3gncxaZWzcc11bnSCsuU8UoL2dSrPuWxSh55rbvceZeEKG
-	 ujrFka4V4RVUw==
+	b=b0IJcsa2d0doIWc5BTgmW+LCMN9XF/bv4f0FXjJx/J7S6b/6NesUY+xAErgkFcpKL
+	 9XmXWUZiLISl7i6W0F7/Y7jC4d30wdSdrq2cq0RBA5VfkCSwuywS4/EeAAmwsjehM1
+	 JTH+iI7ZogofnAJS2sFJTcxHD0ERqRT8qQoeN26SpXB/NfeXZzKn0t+X5fVNY5qmlN
+	 LZo7WHqKpZ9PSIs8krzIzR5uiuBEWLHWMkOaHMTorQtzSquF5U+H31yNhDm7+ZAQme
+	 y19XBzEJaHIo5FsRuuc3IlKbDTDPj0ma/wIjMiSQs/QU0wMvbTmnY4mxMwzvEPcHta
+	 atWZv4oFm5NpQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D3993E450BB;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E7919E501EF;
 	Sat, 13 May 2023 19:10:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,44 +41,38 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v9 1/2] net: vxlan: Add nolocalbypass option to
- vxlan.
+Subject: Re: [PATCH net-next v2 0/2] introduce skb_frag_fill_page_desc()
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168400502086.13341.13192654722542171149.git-patchwork-notify@kernel.org>
+ <168400502094.13341.12095425560976446028.git-patchwork-notify@kernel.org>
 Date: Sat, 13 May 2023 19:10:20 +0000
-References: <20230512034034.16778-1-vladimir@nikishkin.pw>
-In-Reply-To: <20230512034034.16778-1-vladimir@nikishkin.pw>
-To: Vladimir Nikishkin <vladimir@nikishkin.pw>
-Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
- gnault@redhat.com, razor@blackwall.org, idosch@nvidia.com,
- liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com,
- shuah@kernel.org, linux-kselftest@vger.kernel.org
+References: <20230511011213.59091-1-linyunsheng@huawei.com>
+In-Reply-To: <20230511011213.59091-1-linyunsheng@huawei.com>
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org, bpf@vger.kernel.org
 
 Hello:
 
 This series was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 12 May 2023 11:40:33 +0800 you wrote:
-> If a packet needs to be encapsulated towards a local destination IP, the
-> packet will undergo a "local bypass" and be injected into the Rx path as
-> if it was received by the target VXLAN device without undergoing
-> encapsulation. If such a device does not exist, the packet will be
-> dropped.
-> 
-> There are scenarios where we do not want to perform such a bypass, but
-> instead want the packet to be encapsulated and locally received by a
-> user space program for post-processing.
+On Thu, 11 May 2023 09:12:11 +0800 you wrote:
+> Most users use __skb_frag_set_page()/skb_frag_off_set()/
+> skb_frag_size_set() to fill the page desc for a skb frag.
+> It does not make much sense to calling __skb_frag_set_page()
+> without calling skb_frag_off_set(), as the offset may depend
+> on whether the page is head page or tail page, so add
+> skb_frag_fill_page_desc() to fill the page desc for a skb
+> frag.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v9,1/2] net: vxlan: Add nolocalbypass option to vxlan.
-    https://git.kernel.org/netdev/net-next/c/69474a8a5837
-  - [net-next,v9,2/2] selftests: net: vxlan: Add tests for vxlan nolocalbypass option.
-    https://git.kernel.org/netdev/net-next/c/305c04189997
+  - [net-next,v2,1/2] net: introduce and use skb_frag_fill_page_desc()
+    https://git.kernel.org/netdev/net-next/c/b51f4113ebb0
+  - [net-next,v2,2/2] net: remove __skb_frag_set_page()
+    https://git.kernel.org/netdev/net-next/c/278fda0d52f6
 
 You are awesome, thank you!
 -- 
