@@ -1,186 +1,779 @@
-Return-Path: <netdev+bounces-2357-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2359-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BFBD070168A
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 14:07:20 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B1FE8701780
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 15:45:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A9E5C1C210C2
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 12:07:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9E5EA281816
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 13:45:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9294A46B5;
-	Sat, 13 May 2023 12:07:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E299646B5;
+	Sat, 13 May 2023 13:45:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F26E4408
-	for <netdev@vger.kernel.org>; Sat, 13 May 2023 12:07:17 +0000 (UTC)
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40361FEB;
-	Sat, 13 May 2023 05:07:15 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34DBrIM2004545;
-	Sat, 13 May 2023 05:06:57 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=syT/F4i0UTiSv1pXqwKX8DGCIcI+SGGzfmriqqhfSNY=;
- b=aAv7eM4nYmfUr+SW7dUf19XDo0ffggC//td8VRaYvKT8sQHwjxXGUg2FdKTiMd/LTFYD
- j/uuK6RA2NzSN6RvDTv68ILQQ0Qm0zBdRl/0eM60Hf5nmEyKyxBfMOFE2WXrSPS+CCql
- Hz3dlPanwyFTyu7Svi2QtN4T8waYKFEE41Z8YbveBCGZ7TpcQuNPQITnhsv3IaHXWoii
- G8/2V73j61MvdIDUqr1l+/Y+BbSBDzP+VG+Kij/RgHk8+1Ku1BHaQxXOhHg7hV4Tdb+g
- EGJ6p1MHuEp86m7ww8GaJdytQW5LvJ6xOTqn/WxkqLy0oxQSsxWfGBkG7pOz43dF7y/d LQ== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3qja2jg0uw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Sat, 13 May 2023 05:06:57 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Sat, 13 May
- 2023 05:06:55 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Sat, 13 May 2023 05:06:55 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-	by maili.marvell.com (Postfix) with ESMTP id 470CF5B77DF;
-	Sat, 13 May 2023 01:52:36 -0700 (PDT)
-From: Hariprasad Kelam <hkelam@marvell.com>
-To: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <kuba@kernel.org>, <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>, <gakula@marvell.com>,
-        <jerinj@marvell.com>, <sbhatta@marvell.com>, <hkelam@marvell.com>,
-        <naveenm@marvell.com>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <maxtram95@gmail.com>, <corbet@lwn.net>, <linux-doc@vger.kernel.org>
-Subject: [net-next Patch v10 7/8] octeontx2-pf: ethtool expose qos stats
-Date: Sat, 13 May 2023 14:21:42 +0530
-Message-ID: <20230513085143.3289-8-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230513085143.3289-1-hkelam@marvell.com>
-References: <20230513085143.3289-1-hkelam@marvell.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D01A0185C
+	for <netdev@vger.kernel.org>; Sat, 13 May 2023 13:45:13 +0000 (UTC)
+X-Greylist: delayed 433 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 13 May 2023 06:45:08 PDT
+Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE141BD5;
+	Sat, 13 May 2023 06:45:08 -0700 (PDT)
+Received: from local
+	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+	 (Exim 4.96)
+	(envelope-from <daniel@makrotopia.org>)
+	id 1pxpRQ-00030S-2g;
+	Sat, 13 May 2023 13:37:44 +0000
+Date: Sat, 13 May 2023 15:35:51 +0200
+From: Daniel Golle <daniel@makrotopia.org>
+To: linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Felix Fietkau <nbd@nbd.name>, Lorenzo Bianconi <lorenzo@kernel.org>,
+	Ryder Lee <ryder.lee@mediatek.com>,
+	Shayne Chen <shayne.chen@mediatek.com>,
+	Sean Wang <sean.wang@mediatek.com>, Kalle Valo <kvalo@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Alexander Couzens <lynxis@fe80.eu>,
+	Sujuan Chen <sujuan.chen@mediatek.com>,
+	Bo Jiao <bo.jiao@mediatek.com>,
+	Nicolas Cavallari <nicolas.cavallari@green-communications.fr>,
+	Howard Hsu <howard-yh.hsu@mediatek.com>,
+	MeiChia Chiu <MeiChia.Chiu@mediatek.com>,
+	Peter Chiu <chui-hao.chiu@mediatek.com>,
+	Johannes Berg <johannes.berg@intel.com>,
+	Wang Yufen <wangyufen@huawei.com>, Lorenz Brun <lorenz@brun.one>
+Subject: [PATCH] wifi: mt76: mt7915: add support for MT7981
+Message-ID: <ZF-SN-sElZB_g_bA@pidgin.makrotopia.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: 8ZHC1jwgFsTukrSkPy-0AkCUzETee2Lb
-X-Proofpoint-ORIG-GUID: 8ZHC1jwgFsTukrSkPy-0AkCUzETee2Lb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-13_08,2023-05-05_01,2023-02-09_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This patch extends ethtool stats support for QoS send queues as well.
-upon the number of transmit channels change request, Ensures the real
-number of transmit queues are equal to active QoS send queues plus
-configured transmit queues.
+From: Alexander Couzens <lynxis@fe80.eu>
 
-    ethtool -S eth0
-    txq_qos0: bytes: 3021391800
-    txq_qos0: frames: 1998275
-    txq_qos1: bytes: 4619766312
-    txq_qos1: frames: 3055401
-    ...
-    ...
+Add support for the MediaTek MT7981 SoC which is similar to the MT7986
+but with a newer IP cores and only 2x ARM Cortex-A53 instead of 4x.
+Unlike MT7986 the MT7981 can only connect a single wireless frontend,
+usually MT7976 is used for DBDC.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- .../marvell/octeontx2/nic/otx2_ethtool.c      | 29 +++++++++++++------
- 1 file changed, 20 insertions(+), 9 deletions(-)
+ .../net/wireless/mediatek/mt76/mt76_connac.h  |  10 ++
+ .../net/wireless/mediatek/mt76/mt7915/Kconfig |   6 +-
+ .../wireless/mediatek/mt76/mt7915/Makefile    |   2 +-
+ .../wireless/mediatek/mt76/mt7915/coredump.c  |   7 +-
+ .../net/wireless/mediatek/mt76/mt7915/dma.c   |   6 +-
+ .../wireless/mediatek/mt76/mt7915/eeprom.c    |   7 +-
+ .../net/wireless/mediatek/mt76/mt7915/init.c  |   6 +-
+ .../net/wireless/mediatek/mt76/mt7915/mac.c   |   2 +-
+ .../net/wireless/mediatek/mt76/mt7915/mcu.c   |   3 +
+ .../net/wireless/mediatek/mt76/mt7915/mmio.c  |  13 +-
+ .../wireless/mediatek/mt76/mt7915/mt7915.h    |  12 +-
+ .../net/wireless/mediatek/mt76/mt7915/regs.h  |  13 +-
+ .../net/wireless/mediatek/mt76/mt7915/soc.c   | 132 ++++++++++++------
+ 13 files changed, 154 insertions(+), 65 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 0f8d1a69139f..c47d91da32dc 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -92,10 +92,16 @@ static void otx2_get_qset_strings(struct otx2_nic *pfvf, u8 **data, int qset)
- 			*data += ETH_GSTRING_LEN;
- 		}
- 	}
--	for (qidx = 0; qidx < pfvf->hw.tx_queues; qidx++) {
-+
-+	for (qidx = 0; qidx < otx2_get_total_tx_queues(pfvf); qidx++) {
- 		for (stats = 0; stats < otx2_n_queue_stats; stats++) {
--			sprintf(*data, "txq%d: %s", qidx + start_qidx,
--				otx2_queue_stats[stats].name);
-+			if (qidx >= pfvf->hw.non_qos_queues)
-+				sprintf(*data, "txq_qos%d: %s",
-+					qidx + start_qidx - pfvf->hw.non_qos_queues,
-+					otx2_queue_stats[stats].name);
-+			else
-+				sprintf(*data, "txq%d: %s", qidx + start_qidx,
-+					otx2_queue_stats[stats].name);
- 			*data += ETH_GSTRING_LEN;
- 		}
- 	}
-@@ -159,7 +165,7 @@ static void otx2_get_qset_stats(struct otx2_nic *pfvf,
- 				[otx2_queue_stats[stat].index];
- 	}
- 
--	for (qidx = 0; qidx < pfvf->hw.tx_queues; qidx++) {
-+	for (qidx = 0; qidx < otx2_get_total_tx_queues(pfvf); qidx++) {
- 		if (!otx2_update_sq_stats(pfvf, qidx)) {
- 			for (stat = 0; stat < otx2_n_queue_stats; stat++)
- 				*((*data)++) = 0;
-@@ -254,7 +260,7 @@ static int otx2_get_sset_count(struct net_device *netdev, int sset)
- 		return -EINVAL;
- 
- 	qstats_count = otx2_n_queue_stats *
--		       (pfvf->hw.rx_queues + pfvf->hw.tx_queues);
-+		       (pfvf->hw.rx_queues + otx2_get_total_tx_queues(pfvf));
- 	if (!test_bit(CN10K_RPM, &pfvf->hw.cap_flag))
- 		mac_stats = CGX_RX_STATS_COUNT + CGX_TX_STATS_COUNT;
- 	otx2_update_lmac_fec_stats(pfvf);
-@@ -282,7 +288,7 @@ static int otx2_set_channels(struct net_device *dev,
- {
- 	struct otx2_nic *pfvf = netdev_priv(dev);
- 	bool if_up = netif_running(dev);
--	int err = 0;
-+	int err, qos_txqs;
- 
- 	if (!channel->rx_count || !channel->tx_count)
- 		return -EINVAL;
-@@ -296,14 +302,19 @@ static int otx2_set_channels(struct net_device *dev,
- 	if (if_up)
- 		dev->netdev_ops->ndo_stop(dev);
- 
--	err = otx2_set_real_num_queues(dev, channel->tx_count,
-+	qos_txqs = bitmap_weight(pfvf->qos.qos_sq_bmap,
-+				 OTX2_QOS_MAX_LEAF_NODES);
-+
-+	err = otx2_set_real_num_queues(dev, channel->tx_count + qos_txqs,
- 				       channel->rx_count);
- 	if (err)
- 		return err;
- 
- 	pfvf->hw.rx_queues = channel->rx_count;
- 	pfvf->hw.tx_queues = channel->tx_count;
--	pfvf->qset.cq_cnt = pfvf->hw.tx_queues +  pfvf->hw.rx_queues;
-+	if (pfvf->xdp_prog)
-+		pfvf->hw.xdp_queues = channel->rx_count;
-+	pfvf->hw.non_qos_queues =  pfvf->hw.tx_queues + pfvf->hw.xdp_queues;
- 
- 	if (if_up)
- 		err = dev->netdev_ops->ndo_open(dev);
-@@ -1405,7 +1416,7 @@ static int otx2vf_get_sset_count(struct net_device *netdev, int sset)
- 		return -EINVAL;
- 
- 	qstats_count = otx2_n_queue_stats *
--		       (vf->hw.rx_queues + vf->hw.tx_queues);
-+		       (vf->hw.rx_queues + otx2_get_total_tx_queues(vf));
- 
- 	return otx2_n_dev_stats + otx2_n_drv_stats + qstats_count + 1;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac.h b/drivers/net/wireless/mediatek/mt76/mt76_connac.h
+index 15653b274f83..77ca8f057d61 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac.h
+@@ -197,11 +197,21 @@ static inline bool is_mt7916(struct mt76_dev *dev)
+ 	return mt76_chip(dev) == 0x7906;
  }
+ 
++static inline bool is_mt7981(struct mt76_dev *dev)
++{
++	return mt76_chip(dev) == 0x7981;
++}
++
+ static inline bool is_mt7986(struct mt76_dev *dev)
+ {
+ 	return mt76_chip(dev) == 0x7986;
+ }
+ 
++static inline bool is_mt798x(struct mt76_dev *dev)
++{
++	return is_mt7981(dev) || is_mt7986(dev);
++}
++
+ static inline bool is_mt7996(struct mt76_dev *dev)
+ {
+ 	return mt76_chip(dev) == 0x7990;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/Kconfig b/drivers/net/wireless/mediatek/mt76/mt7915/Kconfig
+index d710726d47bf..896ec38c23d9 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/Kconfig
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/Kconfig
+@@ -14,12 +14,12 @@ config MT7915E
+ 
+ 	  To compile this driver as a module, choose M here.
+ 
+-config MT7986_WMAC
+-	bool "MT7986 (SoC) WMAC support"
++config MT798X_WMAC
++	bool "MT798x (SoC) WMAC support"
+ 	depends on MT7915E
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
+ 	select REGMAP
+ 	help
+-	  This adds support for the built-in WMAC on MT7986 SoC device
++	  This adds support for the built-in WMAC on MT7981 and MT7986 SoC device
+ 	  which has the same feature set as a MT7915, but enables 6E
+ 	  support.
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/Makefile b/drivers/net/wireless/mediatek/mt76/mt7915/Makefile
+index 797ae49805c3..e0ca638c91a5 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/Makefile
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/Makefile
+@@ -6,5 +6,5 @@ mt7915e-y := pci.o init.o dma.o eeprom.o main.o mcu.o mac.o \
+ 	     debugfs.o mmio.o
+ 
+ mt7915e-$(CONFIG_NL80211_TESTMODE) += testmode.o
+-mt7915e-$(CONFIG_MT7986_WMAC) += soc.o
++mt7915e-$(CONFIG_MT798X_WMAC) += soc.o
+ mt7915e-$(CONFIG_DEV_COREDUMP) += coredump.o
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/coredump.c b/drivers/net/wireless/mediatek/mt76/mt7915/coredump.c
+index d097a56dd33d..5daf2258dfe6 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/coredump.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/coredump.c
+@@ -52,7 +52,7 @@ static const struct mt7915_mem_region mt7916_mem_regions[] = {
+ 	},
+ };
+ 
+-static const struct mt7915_mem_region mt7986_mem_regions[] = {
++static const struct mt7915_mem_region mt798x_mem_regions[] = {
+ 	{
+ 		.start = 0x00800000,
+ 		.len = 0x0005ffff,
+@@ -92,9 +92,10 @@ mt7915_coredump_get_mem_layout(struct mt7915_dev *dev, u32 *num)
+ 	case 0x7915:
+ 		*num = ARRAY_SIZE(mt7915_mem_regions);
+ 		return &mt7915_mem_regions[0];
++	case 0x7981:
+ 	case 0x7986:
+-		*num = ARRAY_SIZE(mt7986_mem_regions);
+-		return &mt7986_mem_regions[0];
++		*num = ARRAY_SIZE(mt798x_mem_regions);
++		return &mt798x_mem_regions[0];
+ 	case 0x7916:
+ 		*num = ARRAY_SIZE(mt7916_mem_regions);
+ 		return &mt7916_mem_regions[0];
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/dma.c b/drivers/net/wireless/mediatek/mt76/mt7915/dma.c
+index 43a5456d4b97..86a93dedb1bf 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/dma.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/dma.c
+@@ -11,7 +11,7 @@ mt7915_init_tx_queues(struct mt7915_phy *phy, int idx, int n_desc, int ring_base
+ 	struct mt7915_dev *dev = phy->dev;
+ 
+ 	if (mtk_wed_device_active(&phy->dev->mt76.mmio.wed)) {
+-		if (is_mt7986(&dev->mt76))
++		if (is_mt798x(&dev->mt76))
+ 			ring_base += MT_TXQ_ID(0) * MT_RING_SIZE;
+ 		else
+ 			ring_base = MT_WED_TX_RING_BASE;
+@@ -370,7 +370,7 @@ static int mt7915_dma_enable(struct mt7915_dev *dev)
+ 		int ret;
+ 
+ 		wed_irq_mask |= MT_INT_TX_DONE_BAND0 | MT_INT_TX_DONE_BAND1;
+-		if (!is_mt7986(&dev->mt76))
++		if (!is_mt798x(&dev->mt76))
+ 			mt76_wr(dev, MT_INT_WED_MASK_CSR, wed_irq_mask);
+ 		else
+ 			mt76_wr(dev, MT_INT_MASK_CSR, wed_irq_mask);
+@@ -404,7 +404,7 @@ int mt7915_dma_init(struct mt7915_dev *dev, struct mt7915_phy *phy2)
+ 	mt7915_dma_disable(dev, true);
+ 
+ 	if (mtk_wed_device_active(&mdev->mmio.wed)) {
+-		if (!is_mt7986(mdev)) {
++		if (!is_mt798x(mdev)) {
+ 			u8 wed_control_rx1 = is_mt7915(mdev) ? 1 : 2;
+ 
+ 			mt76_set(dev, MT_WFDMA_HOST_CONFIG,
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.c b/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.c
+index a79628933948..76be7308460b 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.c
+@@ -39,6 +39,8 @@ static int mt7915_check_eeprom(struct mt7915_dev *dev)
+ 		return CHECK_EEPROM_ERR(is_mt7915(&dev->mt76));
+ 	case 0x7916:
+ 		return CHECK_EEPROM_ERR(is_mt7916(&dev->mt76));
++	case 0x7981:
++		return CHECK_EEPROM_ERR(is_mt7981(&dev->mt76));
+ 	case 0x7986:
+ 		return CHECK_EEPROM_ERR(is_mt7986(&dev->mt76));
+ 	default:
+@@ -52,6 +54,9 @@ static char *mt7915_eeprom_name(struct mt7915_dev *dev)
+ 	case 0x7915:
+ 		return dev->dbdc_support ?
+ 		       MT7915_EEPROM_DEFAULT_DBDC : MT7915_EEPROM_DEFAULT;
++	case 0x7981:
++		/* mt7981 only supports mt7976 and only in DBDC mode */
++		return MT7981_EEPROM_MT7976_DEFAULT_DBDC;
+ 	case 0x7986:
+ 		switch (mt7915_check_adie(dev, true)) {
+ 		case MT7976_ONE_ADIE_DBDC:
+@@ -215,7 +220,7 @@ void mt7915_eeprom_parse_hw_cap(struct mt7915_dev *dev,
+ 					eeprom[MT_EE_WIFI_CONF + 2 + band]);
+ 		}
+ 
+-		if (!is_mt7986(&dev->mt76))
++		if (!is_mt798x(&dev->mt76))
+ 			nss_max = 2;
+ 	}
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/init.c b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
+index ac2049f49bb3..34825a166671 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
+@@ -732,7 +732,7 @@ void mt7915_wfsys_reset(struct mt7915_dev *dev)
+ 		mt76_clear(dev, MT_TOP_MISC, MT_TOP_MISC_FW_STATE);
+ 
+ 		msleep(100);
+-	} else if (is_mt7986(&dev->mt76)) {
++	} else if (is_mt798x(&dev->mt76)) {
+ 		mt7986_wmac_disable(dev);
+ 		msleep(20);
+ 
+@@ -753,7 +753,7 @@ static bool mt7915_band_config(struct mt7915_dev *dev)
+ 
+ 	dev->phy.mt76->band_idx = 0;
+ 
+-	if (is_mt7986(&dev->mt76)) {
++	if (is_mt798x(&dev->mt76)) {
+ 		u32 sku = mt7915_check_adie(dev, true);
+ 
+ 		/*
+@@ -1162,7 +1162,7 @@ static void mt7915_stop_hardware(struct mt7915_dev *dev)
+ 	mt7915_dma_cleanup(dev);
+ 	tasklet_disable(&dev->mt76.irq_tasklet);
+ 
+-	if (is_mt7986(&dev->mt76))
++	if (is_mt798x(&dev->mt76))
+ 		mt7986_wmac_disable(dev);
+ }
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index 7df8d95fc3fb..fb6bab879832 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -1576,7 +1576,7 @@ void mt7915_mac_reset_work(struct work_struct *work)
+ 
+ 	if (mtk_wed_device_active(&dev->mt76.mmio.wed)) {
+ 		mtk_wed_device_stop(&dev->mt76.mmio.wed);
+-		if (!is_mt7986(&dev->mt76))
++		if (!is_mt798x(&dev->mt76))
+ 			mt76_wr(dev, MT_INT_WED_MASK_CSR, 0);
+ 	}
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 9fcb22fa1f97..9b5cf18bee64 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -13,6 +13,9 @@
+ 	case 0x7915:						\
+ 		_fw = MT7915_##name;				\
+ 		break;						\
++	case 0x7981:						\
++		_fw = MT7981_##name;				\
++		break;						\
+ 	case 0x7986:						\
+ 		_fw = MT7986_##name##__VA_ARGS__;		\
+ 		break;						\
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mmio.c b/drivers/net/wireless/mediatek/mt76/mt7915/mmio.c
+index 45f3558bf31c..984b5f60959f 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mmio.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mmio.c
+@@ -417,7 +417,7 @@ static u32 mt7915_reg_map_l1(struct mt7915_dev *dev, u32 addr)
+ 	u32 base = FIELD_GET(MT_HIF_REMAP_L1_BASE, addr);
+ 	u32 l1_remap;
+ 
+-	if (is_mt7986(&dev->mt76))
++	if (is_mt798x(&dev->mt76))
+ 		return MT_CONN_INFRA_OFFSET(addr);
+ 
+ 	l1_remap = is_mt7915(&dev->mt76) ?
+@@ -447,7 +447,7 @@ static u32 mt7915_reg_map_l2(struct mt7915_dev *dev, u32 addr)
+ 		/* use read to push write */
+ 		dev->bus_ops->rr(&dev->mt76, MT_HIF_REMAP_L2);
+ 	} else {
+-		u32 ofs = is_mt7986(&dev->mt76) ? 0x400000 : 0;
++		u32 ofs = is_mt798x(&dev->mt76) ? 0x400000 : 0;
+ 
+ 		offset = FIELD_GET(MT_HIF_REMAP_L2_OFFSET_MT7916, addr);
+ 		base = FIELD_GET(MT_HIF_REMAP_L2_BASE_MT7916, addr);
+@@ -785,7 +785,7 @@ int mt7915_mmio_wed_init(struct mt7915_dev *dev, void *pdev_ptr,
+ 	wed->wlan.nbuf = MT7915_HW_TOKEN_SIZE;
+ 	wed->wlan.tx_tbit[0] = is_mt7915(&dev->mt76) ? 4 : 30;
+ 	wed->wlan.tx_tbit[1] = is_mt7915(&dev->mt76) ? 5 : 31;
+-	wed->wlan.txfree_tbit = is_mt7986(&dev->mt76) ? 2 : 1;
++	wed->wlan.txfree_tbit = is_mt798x(&dev->mt76) ? 2 : 1;
+ 	wed->wlan.token_start = MT7915_TOKEN_SIZE - wed->wlan.nbuf;
+ 	wed->wlan.wcid_512 = !is_mt7915(&dev->mt76);
+ 
+@@ -795,7 +795,7 @@ int mt7915_mmio_wed_init(struct mt7915_dev *dev, void *pdev_ptr,
+ 	if (is_mt7915(&dev->mt76)) {
+ 		wed->wlan.rx_tbit[0] = 16;
+ 		wed->wlan.rx_tbit[1] = 17;
+-	} else if (is_mt7986(&dev->mt76)) {
++	} else if (is_mt798x(&dev->mt76)) {
+ 		wed->wlan.rx_tbit[0] = 22;
+ 		wed->wlan.rx_tbit[1] = 23;
+ 	} else {
+@@ -853,6 +853,7 @@ static int mt7915_mmio_init(struct mt76_dev *mdev,
+ 		dev->reg.map = mt7916_reg_map;
+ 		dev->reg.map_size = ARRAY_SIZE(mt7916_reg_map);
+ 		break;
++	case 0x7981:
+ 	case 0x7986:
+ 		dev->reg.reg_rev = mt7986_reg;
+ 		dev->reg.offs_rev = mt7916_offs;
+@@ -1062,7 +1063,7 @@ static int __init mt7915_init(void)
+ 	if (ret)
+ 		goto error_pci;
+ 
+-	if (IS_ENABLED(CONFIG_MT7986_WMAC)) {
++	if (IS_ENABLED(CONFIG_MT798X_WMAC)) {
+ 		ret = platform_driver_register(&mt7986_wmac_driver);
+ 		if (ret)
+ 			goto error_wmac;
+@@ -1080,7 +1081,7 @@ static int __init mt7915_init(void)
+ 
+ static void __exit mt7915_exit(void)
+ {
+-	if (IS_ENABLED(CONFIG_MT7986_WMAC))
++	if (IS_ENABLED(CONFIG_MT798X_WMAC))
+ 		platform_driver_unregister(&mt7986_wmac_driver);
+ 
+ 	pci_unregister_driver(&mt7915_pci_driver);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h b/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
+index b3ead3530740..103cd0d7376d 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
+@@ -34,6 +34,10 @@
+ #define MT7916_FIRMWARE_WM		"mediatek/mt7916_wm.bin"
+ #define MT7916_ROM_PATCH		"mediatek/mt7916_rom_patch.bin"
+ 
++#define MT7981_FIRMWARE_WA		"mediatek/mt7981_wa.bin"
++#define MT7981_FIRMWARE_WM		"mediatek/mt7981_wm.bin"
++#define MT7981_ROM_PATCH		"mediatek/mt7981_rom_patch.bin"
++
+ #define MT7986_FIRMWARE_WA		"mediatek/mt7986_wa.bin"
+ #define MT7986_FIRMWARE_WM		"mediatek/mt7986_wm.bin"
+ #define MT7986_FIRMWARE_WM_MT7975	"mediatek/mt7986_wm_mt7975.bin"
+@@ -43,6 +47,9 @@
+ #define MT7915_EEPROM_DEFAULT		"mediatek/mt7915_eeprom.bin"
+ #define MT7915_EEPROM_DEFAULT_DBDC	"mediatek/mt7915_eeprom_dbdc.bin"
+ #define MT7916_EEPROM_DEFAULT		"mediatek/mt7916_eeprom.bin"
++
++#define MT7981_EEPROM_MT7976_DEFAULT_DBDC	"mediatek/mt7981_eeprom_mt7976_dbdc.bin"
++
+ #define MT7986_EEPROM_MT7975_DEFAULT		"mediatek/mt7986_eeprom_mt7975.bin"
+ #define MT7986_EEPROM_MT7975_DUAL_DEFAULT	"mediatek/mt7986_eeprom_mt7975_dual.bin"
+ #define MT7986_EEPROM_MT7976_DEFAULT		"mediatek/mt7986_eeprom_mt7976.bin"
+@@ -420,8 +427,7 @@ mt7915_ext_phy(struct mt7915_dev *dev)
+ static inline u32 mt7915_check_adie(struct mt7915_dev *dev, bool sku)
+ {
+ 	u32 mask = sku ? MT_CONNINFRA_SKU_MASK : MT_ADIE_TYPE_MASK;
+-
+-	if (!is_mt7986(&dev->mt76))
++	if (!is_mt798x(&dev->mt76))
+ 		return 0;
+ 
+ 	return mt76_rr(dev, MT_CONNINFRA_SKU_DEC_ADDR) & mask;
+@@ -433,7 +439,7 @@ extern struct pci_driver mt7915_pci_driver;
+ extern struct pci_driver mt7915_hif_driver;
+ extern struct platform_driver mt7986_wmac_driver;
+ 
+-#ifdef CONFIG_MT7986_WMAC
++#ifdef CONFIG_MT798X_WMAC
+ int mt7986_wmac_enable(struct mt7915_dev *dev);
+ void mt7986_wmac_disable(struct mt7915_dev *dev);
+ #else
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/regs.h b/drivers/net/wireless/mediatek/mt76/mt7915/regs.h
+index c8e478a55081..374677f73e51 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/regs.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/regs.h
+@@ -871,7 +871,12 @@ enum offs_rev {
+ #define MT_AFE_RG_WBG_EN_WPLL_UP_MASK	BIT(20)
+ #define MT_AFE_RG_WBG_EN_PLL_UP_MASK	(MT_AFE_RG_WBG_EN_BPLL_UP_MASK | \
+ 					 MT_AFE_RG_WBG_EN_WPLL_UP_MASK)
+-#define MT_AFE_RG_WBG_EN_TXCAL_MASK	GENMASK(21, 17)
++#define MT_AFE_RG_WBG_EN_TXCAL_WF4	BIT(29)
++#define MT_AFE_RG_WBG_EN_TXCAL_BT	BIT(21)
++#define MT_AFE_RG_WBG_EN_TXCAL_WF3	BIT(20)
++#define MT_AFE_RG_WBG_EN_TXCAL_WF2	BIT(19)
++#define MT_AFE_RG_WBG_EN_TXCAL_WF1	BIT(18)
++#define MT_AFE_RG_WBG_EN_TXCAL_WF0	BIT(17)
+ 
+ #define MT_ADIE_SLP_CTRL_BASE(_band)	(0x18005000 + ((_band) << 19))
+ #define MT_ADIE_SLP_CTRL(_band, ofs)	(MT_ADIE_SLP_CTRL_BASE(_band) + (ofs))
+@@ -1096,6 +1101,12 @@ enum offs_rev {
+ #define MT_TOP_MCU_EMI_BASE		MT_TOP(0x1c4)
+ #define MT_TOP_MCU_EMI_BASE_MASK	GENMASK(19, 0)
+ 
++#define MT_TOP_WF_AP_PERI_BASE		MT_TOP(0x1c8)
++#define MT_TOP_WF_AP_PERI_BASE_MASK	GENMASK(19, 0)
++
++#define MT_TOP_EFUSE_BASE		MT_TOP(0x1cc)
++#define MT_TOP_EFUSE_BASE_MASK		GENMASK(19, 0)
++
+ #define MT_TOP_CONN_INFRA_WAKEUP	MT_TOP(0x1a0)
+ #define MT_TOP_CONN_INFRA_WAKEUP_MASK	BIT(0)
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/soc.c b/drivers/net/wireless/mediatek/mt76/mt7915/soc.c
+index 32c137066e7f..246f8b08be03 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/soc.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/soc.c
+@@ -16,6 +16,9 @@
+ 
+ #include "mt7915.h"
+ 
++#define MT7981_CON_INFRA_VERSION 0x02090000
++#define MT7986_CON_INFRA_VERSION 0x02070000
++
+ /* INFRACFG */
+ #define MT_INFRACFG_CONN2AP_SLPPROT	0x0d0
+ #define MT_INFRACFG_AP2CONN_SLPPROT	0x0d4
+@@ -167,11 +170,14 @@ static u32 mt76_wmac_rmw(void __iomem *base, u32 offset, u32 mask, u32 val)
+ 	return val;
+ }
+ 
+-static u8 mt7986_wmac_check_adie_type(struct mt7915_dev *dev)
++static u8 mt798x_wmac_check_adie_type(struct mt7915_dev *dev)
+ {
+ 	u32 val;
+ 
+-	val = readl(dev->sku + MT_TOP_POS_SKU);
++	if (is_mt7981(&dev->mt76))
++		return ADIE_DBDC;
++	else
++		val = readl(dev->sku + MT_TOP_POS_SKU);
+ 
+ 	return FIELD_GET(MT_TOP_POS_SKU_ADIE_DBDC_MASK, val);
+ }
+@@ -195,7 +201,7 @@ static int mt7986_wmac_gpio_setup(struct mt7915_dev *dev)
+ 	int ret;
+ 	u8 type;
+ 
+-	type = mt7986_wmac_check_adie_type(dev);
++	type = mt798x_wmac_check_adie_type(dev);
+ 	pinctrl = devm_pinctrl_get(dev->mt76.dev);
+ 	if (IS_ERR(pinctrl))
+ 		return PTR_ERR(pinctrl);
+@@ -257,16 +263,22 @@ static int mt7986_wmac_consys_lockup(struct mt7915_dev *dev, bool enable)
+ 	return 0;
+ }
+ 
+-static int mt7986_wmac_coninfra_check(struct mt7915_dev *dev)
++static int mt798x_wmac_coninfra_check(struct mt7915_dev *dev)
+ {
+ 	u32 cur;
++	u32 con_infra_version;
+ 
+-	return read_poll_timeout(mt76_rr, cur, (cur == 0x02070000),
++	if (is_mt7981(&dev->mt76))
++		con_infra_version = MT7981_CON_INFRA_VERSION;
++	if (is_mt7986(&dev->mt76))
++		con_infra_version = MT7986_CON_INFRA_VERSION;
++
++	return read_poll_timeout(mt76_rr, cur, (cur == con_infra_version),
+ 				 USEC_PER_MSEC, 50 * USEC_PER_MSEC,
+ 				 false, dev, MT_CONN_INFRA_BASE);
+ }
+ 
+-static int mt7986_wmac_coninfra_setup(struct mt7915_dev *dev)
++static int mt798x_wmac_coninfra_setup(struct mt7915_dev *dev)
+ {
+ 	struct device *pdev = dev->mt76.dev;
+ 	struct reserved_mem *rmem;
+@@ -284,15 +296,25 @@ static int mt7986_wmac_coninfra_setup(struct mt7915_dev *dev)
+ 
+ 	val = (rmem->base >> 16) & MT_TOP_MCU_EMI_BASE_MASK;
+ 
+-	/* Set conninfra subsys PLL check */
+-	mt76_rmw_field(dev, MT_INFRA_CKGEN_BUS,
+-		       MT_INFRA_CKGEN_BUS_RDY_SEL_MASK, 0x1);
+-	mt76_rmw_field(dev, MT_INFRA_CKGEN_BUS,
+-		       MT_INFRA_CKGEN_BUS_RDY_SEL_MASK, 0x1);
++	if (is_mt7986(&dev->mt76)) {
++		/* Set conninfra subsys PLL check */
++		mt76_rmw_field(dev, MT_INFRA_CKGEN_BUS,
++			       MT_INFRA_CKGEN_BUS_RDY_SEL_MASK, 0x1);
++		mt76_rmw_field(dev, MT_INFRA_CKGEN_BUS,
++			       MT_INFRA_CKGEN_BUS_RDY_SEL_MASK, 0x1);
++	}
+ 
+ 	mt76_rmw_field(dev, MT_TOP_MCU_EMI_BASE,
+ 		       MT_TOP_MCU_EMI_BASE_MASK, val);
+ 
++	if (is_mt7981(&dev->mt76)) {
++		mt76_rmw_field(dev, MT_TOP_WF_AP_PERI_BASE,
++			       MT_TOP_WF_AP_PERI_BASE_MASK, 0x300d0000 >> 16);
++
++		mt76_rmw_field(dev, MT_TOP_EFUSE_BASE,
++			       MT_TOP_EFUSE_BASE_MASK, 0x11f20000 >> 16);
++	}
++
+ 	mt76_wr(dev, MT_INFRA_BUS_EMI_START, rmem->base);
+ 	mt76_wr(dev, MT_INFRA_BUS_EMI_END, rmem->size);
+ 
+@@ -305,15 +327,18 @@ static int mt7986_wmac_coninfra_setup(struct mt7915_dev *dev)
+ 	return 0;
+ }
+ 
+-static int mt7986_wmac_sku_setup(struct mt7915_dev *dev, u32 *adie_type)
++static int mt798x_wmac_sku_setup(struct mt7915_dev *dev, u32 *adie_type)
+ {
+ 	int ret;
+-	u32 adie_main, adie_ext;
++	u32 adie_main = 0, adie_ext = 0;
+ 
+ 	mt76_rmw_field(dev, MT_CONN_INFRA_ADIE_RESET,
+ 		       MT_CONN_INFRA_ADIE1_RESET_MASK, 0x1);
+-	mt76_rmw_field(dev, MT_CONN_INFRA_ADIE_RESET,
+-		       MT_CONN_INFRA_ADIE2_RESET_MASK, 0x1);
++
++	if (is_mt7986(&dev->mt76)) {
++		mt76_rmw_field(dev, MT_CONN_INFRA_ADIE_RESET,
++			       MT_CONN_INFRA_ADIE2_RESET_MASK, 0x1);
++	}
+ 
+ 	mt76_wmac_spi_lock(dev);
+ 
+@@ -321,9 +346,11 @@ static int mt7986_wmac_sku_setup(struct mt7915_dev *dev, u32 *adie_type)
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = mt76_wmac_spi_read(dev, 1, MT_ADIE_CHIP_ID, &adie_ext);
+-	if (ret)
+-		goto out;
++	if (is_mt7986(&dev->mt76)) {
++		ret = mt76_wmac_spi_read(dev, 1, MT_ADIE_CHIP_ID, &adie_ext);
++		if (ret)
++			goto out;
++	}
+ 
+ 	*adie_type = FIELD_GET(MT_ADIE_CHIP_ID_MASK, adie_main) |
+ 		     (MT_ADIE_CHIP_ID_MASK & adie_ext);
+@@ -470,7 +497,7 @@ static int mt7986_wmac_adie_xtal_trim_7976(struct mt7915_dev *dev, u8 adie)
+ 	return ret;
+ }
+ 
+-static int mt7986_wmac_adie_patch_7976(struct mt7915_dev *dev, u8 adie)
++static int mt798x_wmac_adie_patch_7976(struct mt7915_dev *dev, u8 adie)
+ {
+ 	u32 id, version, rg_xo_01, rg_xo_03;
+ 	int ret;
+@@ -489,7 +516,10 @@ static int mt7986_wmac_adie_patch_7976(struct mt7915_dev *dev, u8 adie)
+ 		rg_xo_01 = 0x1d59080f;
+ 		rg_xo_03 = 0x34c00fe0;
+ 	} else {
+-		rg_xo_01 = 0x1959f80f;
++		if (is_mt7981(&dev->mt76))
++			rg_xo_01 = 0x1959c80f;
++		else if (is_mt7986(&dev->mt76))
++			rg_xo_01 = 0x1959f80f;
+ 		rg_xo_03 = 0x34d00fe0;
+ 	}
+ 
+@@ -611,7 +641,10 @@ static int mt7986_wmac_adie_patch_7975(struct mt7915_dev *dev, u8 adie)
+ 		return ret;
+ 
+ 	/* turn on SX0 LTBUF */
+-	ret = mt76_wmac_spi_write(dev, adie, 0x074, 0x00000002);
++	if (is_mt7981(&dev->mt76))
++		ret = mt76_wmac_spi_write(dev, adie, 0x074, 0x00000007);
++	else if (is_mt7986(&dev->mt76))
++		ret = mt76_wmac_spi_write(dev, adie, 0x074, 0x00000002);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -658,7 +691,10 @@ static int mt7986_wmac_adie_patch_7975(struct mt7915_dev *dev, u8 adie)
+ 		return ret;
+ 
+ 	/* set CKB driving and filter */
+-	return mt76_wmac_spi_write(dev, adie, 0x2c8, 0x00000072);
++	if (is_mt7986(&dev->mt76))
++		return mt76_wmac_spi_write(dev, adie, 0x2c8, 0x00000072);
++
++	return ret;
+ }
+ 
+ static int mt7986_wmac_adie_cfg(struct mt7915_dev *dev, u8 adie, u32 adie_type)
+@@ -686,7 +722,7 @@ static int mt7986_wmac_adie_cfg(struct mt7915_dev *dev, u8 adie, u32 adie_type)
+ 
+ 		ret = mt7986_wmac_adie_patch_7975(dev, adie);
+ 	} else if (is_7976(dev, adie, adie_type)) {
+-		if (mt7986_wmac_check_adie_type(dev) == ADIE_DBDC) {
++		if (mt798x_wmac_check_adie_type(dev) == ADIE_DBDC) {
+ 			ret = mt76_wmac_spi_write(dev, adie,
+ 						  MT_ADIE_WRI_CK_SEL, 0x1c);
+ 			if (ret)
+@@ -701,7 +737,7 @@ static int mt7986_wmac_adie_cfg(struct mt7915_dev *dev, u8 adie, u32 adie_type)
+ 		if (ret)
+ 			goto out;
+ 
+-		ret = mt7986_wmac_adie_patch_7976(dev, adie);
++		ret = mt798x_wmac_adie_patch_7976(dev, adie);
+ 	}
+ out:
+ 	mt76_wmac_spi_unlock(dev);
+@@ -714,6 +750,7 @@ mt7986_wmac_afe_cal(struct mt7915_dev *dev, u8 adie, bool dbdc, u32 adie_type)
+ {
+ 	int ret;
+ 	u8 idx;
++	u32 txcal;
+ 
+ 	mt76_wmac_spi_lock(dev);
+ 	if (is_7975(dev, adie, adie_type))
+@@ -744,12 +781,18 @@ mt7986_wmac_afe_cal(struct mt7915_dev *dev, u8 adie, bool dbdc, u32 adie_type)
+ 		       MT_AFE_RG_WBG_EN_WPLL_UP_MASK, 0x1);
+ 	usleep_range(60, 100);
+ 
+-	mt76_rmw_field(dev, MT_AFE_DIG_EN_01(idx),
+-		       MT_AFE_RG_WBG_EN_TXCAL_MASK, 0x1f);
++	txcal = (MT_AFE_RG_WBG_EN_TXCAL_BT |
++		      MT_AFE_RG_WBG_EN_TXCAL_WF0 |
++		      MT_AFE_RG_WBG_EN_TXCAL_WF1 |
++		      MT_AFE_RG_WBG_EN_TXCAL_WF2 |
++		      MT_AFE_RG_WBG_EN_TXCAL_WF3);
++	if (is_mt7981(&dev->mt76))
++		txcal |= MT_AFE_RG_WBG_EN_TXCAL_WF4;
++
++	mt76_set(dev, MT_AFE_DIG_EN_01(idx), txcal);
+ 	usleep_range(800, 1000);
+ 
+-	mt76_rmw(dev, MT_AFE_DIG_EN_01(idx),
+-		 MT_AFE_RG_WBG_EN_TXCAL_MASK, 0x0);
++	mt76_clear(dev, MT_AFE_DIG_EN_01(idx), txcal);
+ 	mt76_rmw(dev, MT_AFE_DIG_EN_03(idx),
+ 		 MT_AFE_RG_WBG_EN_PLL_UP_MASK, 0x0);
+ 
+@@ -806,7 +849,7 @@ static int mt7986_wmac_bus_timeout(struct mt7915_dev *dev)
+ 	mt76_rmw_field(dev, MT_INFRA_BUS_ON_TIMEOUT,
+ 		       MT_INFRA_BUS_TIMEOUT_EN_MASK, 0xf);
+ 
+-	return mt7986_wmac_coninfra_check(dev);
++	return mt798x_wmac_coninfra_check(dev);
+ }
+ 
+ static void mt7986_wmac_clock_enable(struct mt7915_dev *dev, u32 adie_type)
+@@ -876,14 +919,15 @@ static int mt7986_wmac_top_wfsys_wakeup(struct mt7915_dev *dev, bool enable)
+ 	if (!enable)
+ 		return 0;
+ 
+-	return mt7986_wmac_coninfra_check(dev);
++	return mt798x_wmac_coninfra_check(dev);
+ }
+ 
+ static int mt7986_wmac_wm_enable(struct mt7915_dev *dev, bool enable)
+ {
+ 	u32 cur;
+ 
+-	mt76_wr(dev, MT_CONNINFRA_SKU_DEC_ADDR, 0);
++	if (is_mt7986(&dev->mt76))
++		mt76_wr(dev, MT_CONNINFRA_SKU_DEC_ADDR, 0);
+ 
+ 	mt76_rmw_field(dev, MT7986_TOP_WM_RESET,
+ 		       MT7986_TOP_WM_RESET_MASK, enable);
+@@ -1006,7 +1050,7 @@ mt7986_wmac_adie_setup(struct mt7915_dev *dev, u8 adie, u32 adie_type)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!adie && (mt7986_wmac_check_adie_type(dev) == ADIE_DBDC))
++	if (!adie && (mt798x_wmac_check_adie_type(dev) == ADIE_DBDC))
+ 		ret = mt7986_wmac_afe_cal(dev, adie, true, adie_type);
+ 
+ 	return ret;
+@@ -1061,15 +1105,15 @@ int mt7986_wmac_enable(struct mt7915_dev *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = mt7986_wmac_coninfra_check(dev);
++	ret = mt798x_wmac_coninfra_check(dev);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = mt7986_wmac_coninfra_setup(dev);
++	ret = mt798x_wmac_coninfra_setup(dev);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = mt7986_wmac_sku_setup(dev, &adie_type);
++	ret = mt798x_wmac_sku_setup(dev, &adie_type);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1077,9 +1121,12 @@ int mt7986_wmac_enable(struct mt7915_dev *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = mt7986_wmac_adie_setup(dev, 1, adie_type);
+-	if (ret)
+-		return ret;
++	/* mt7981 doesn't support a second a-die */
++	if (is_mt7986(&dev->mt76)) {
++		ret = mt7986_wmac_adie_setup(dev, 1, adie_type);
++		if (ret)
++			return ret;
++	}
+ 
+ 	ret = mt7986_wmac_subsys_powerup(dev, adie_type);
+ 	if (ret)
+@@ -1132,7 +1179,7 @@ void mt7986_wmac_disable(struct mt7915_dev *dev)
+ 	mt7986_wmac_consys_reset(dev, false);
+ }
+ 
+-static int mt7986_wmac_init(struct mt7915_dev *dev)
++static int mt798x_wmac_init(struct mt7915_dev *dev)
+ {
+ 	struct device *pdev = dev->mt76.dev;
+ 	struct platform_device *pfdev = to_platform_device(pdev);
+@@ -1203,7 +1250,7 @@ static int mt7986_wmac_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto free_device;
+ 
+-	ret = mt7986_wmac_init(dev);
++	ret = mt798x_wmac_init(dev);
+ 	if (ret)
+ 		goto free_irq;
+ 
+@@ -1235,6 +1282,7 @@ static int mt7986_wmac_remove(struct platform_device *pdev)
+ }
+ 
+ static const struct of_device_id mt7986_wmac_of_match[] = {
++	{ .compatible = "mediatek,mt7981-wmac", .data = (u32 *)0x7981 },
+ 	{ .compatible = "mediatek,mt7986-wmac", .data = (u32 *)0x7986 },
+ 	{},
+ };
+@@ -1255,3 +1303,7 @@ MODULE_FIRMWARE(MT7986_FIRMWARE_WM);
+ MODULE_FIRMWARE(MT7986_FIRMWARE_WM_MT7975);
+ MODULE_FIRMWARE(MT7986_ROM_PATCH);
+ MODULE_FIRMWARE(MT7986_ROM_PATCH_MT7975);
++
++MODULE_FIRMWARE(MT7981_FIRMWARE_WA);
++MODULE_FIRMWARE(MT7981_FIRMWARE_WM);
++MODULE_FIRMWARE(MT7981_ROM_PATCH);
+
+base-commit: 285b2a46953cecea207c53f7c6a7a76c9bbab303
 -- 
-2.17.1
+2.40.1
 
 
