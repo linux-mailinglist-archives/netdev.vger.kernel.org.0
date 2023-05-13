@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-2364-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2366-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 783A5701822
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 18:10:25 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9390F701830
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 18:30:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5DEEF1C20C6E
-	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 16:10:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C49842819DA
+	for <lists+netdev@lfdr.de>; Sat, 13 May 2023 16:30:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 170BF63D3;
-	Sat, 13 May 2023 16:10:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2419A6FA8;
+	Sat, 13 May 2023 16:30:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19795EDB
-	for <netdev@vger.kernel.org>; Sat, 13 May 2023 16:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9BDACC4339B;
-	Sat, 13 May 2023 16:10:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EA6B2583
+	for <netdev@vger.kernel.org>; Sat, 13 May 2023 16:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8B5DDC4339C;
+	Sat, 13 May 2023 16:30:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683994219;
-	bh=sx+B0qUutwEArzZfFFqKmWL/adJRiJ4tbQH6/9N34h8=;
+	s=k20201202; t=1683995421;
+	bh=Rm1B/Tz+qEEuzzgM/Dcy1wNsz3PFzjdL0rMTDxR3Y/o=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=f6gUkRlzlM/quDX4c8tmF3xNm4LkBm51DSUuYusd2unuH+5/LJNXmYqo3Su+IQ1ZM
-	 4Uw+LoXis5iNwVOeOoOWPoLUYpr1Q4MkiN2SwCACvjxnm/MpgkBUC/0qtielhMMV8j
-	 egR1mcCbqMTIrz8x23y4tBOCsbd89ZDs6yx2WNkM6gIdzEu3pSUBXgcI6VLX/XHtkO
-	 RA0ZEgCXaHNA8ujnleKHpwJNcqaOUzPtfxqrFo3Hq7kFykN+mHoodnNDUcn/KIqZAx
-	 6qVfAGCRaCI/sNy3A2xgwxKyszhDFtGpy9av4GjMZ3m3tdxc+y8Q5A31nV7si7D/6N
-	 LvEtJ2zDxkdMg==
+	b=XG09ILYUmOfqlLRnYrSBcPvN6b1ak51XidSLs05b4AuoOuq+vS8wv/McSW5muA75X
+	 lvs5IPm4e7whMu3ecGTmJfJXF9wqRnJ5TFpaS7hwsav0x/j2tABSGHmZoEWpcOmJCi
+	 UOH/WPE/1YsbeXYc4nWnzPN8po7ivjhhV2FbNkl7jRIb4tz48Z3YjMnQJnXUfwrvsM
+	 v7n+wlW3rf/7MrdRc6wrsNIwR5femu2uI63X2jrTRVrXu5AfgTqM/jkp1x+MAasrOg
+	 pAnFJTaZC6JDNK1IEWlhz/qqDplobwqMzZVxKz3zn1F6OShdK5rH9k8geQd7McV27p
+	 tGxO21HbBqqlg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 812EAE49F61;
-	Sat, 13 May 2023 16:10:19 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 64A5BE4D011;
+	Sat, 13 May 2023 16:30:21 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -41,46 +41,47 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/3] Support for Wake-on-LAN for Broadcom PHYs
+Subject: Re: [PATCH net v3 0/3] net: dsa: rzn1-a5psw: fix STP states handling
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168399421952.32415.2895956813317833456.git-patchwork-notify@kernel.org>
-Date: Sat, 13 May 2023 16:10:19 +0000
-References: <20230511172110.2243275-1-f.fainelli@gmail.com>
-In-Reply-To: <20230511172110.2243275-1-f.fainelli@gmail.com>
-To: Florian Fainelli <f.fainelli@gmail.com>
-Cc: netdev@vger.kernel.org, opendmb@gmail.com,
- bcm-kernel-feedback-list@broadcom.com, davem@davemloft.net,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, andrew@lunn.ch,
- hkallweit1@gmail.com, linux@armlinux.org.uk, kabel@kernel.org,
- pgwipeout@gmail.com, Frank.Sae@motor-comm.com, linux-kernel@vger.kernel.org
+ <168399542140.7347.2797429777879901839.git-patchwork-notify@kernel.org>
+Date: Sat, 13 May 2023 16:30:21 +0000
+References: <20230512072712.82694-1-alexis.lothore@bootlin.com>
+In-Reply-To: <20230512072712.82694-1-alexis.lothore@bootlin.com>
+To: =?utf-8?q?Alexis_Lothor=C3=A9_=3Calexis=2Elothore=40bootlin=2Ecom=3E?=@codeaurora.org
+Cc: andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+ herve.codina@bootlin.com, miquel.raynal@bootlin.com, milan.stevanovic@se.com,
+ jimmy.lalande@se.com, pascal.eberhard@se.com
 
 Hello:
 
-This series was applied to netdev/net-next.git (main)
+This series was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 11 May 2023 10:21:07 -0700 you wrote:
-> This patch series adds support for Wake-on-LAN to the Broadcom PHY
-> driver. Specifically the BCM54210E/B50212E are capable of supporting
-> Wake-on-LAN using an external pin typically wired up to a system's GPIO.
+On Fri, 12 May 2023 09:27:09 +0200 you wrote:
+> From: Alexis Lothoré <alexis.lothore@bootlin.com>
 > 
-> These PHY operate a programmable Ethernet MAC destination address
-> comparator which will fire up an interrupt whenever a match is received.
-> Because of that, it was necessary to introduce patch #1 which allows the
-> PHY driver's ->suspend() routine to be called unconditionally. This is
-> necessary in our case because we need a hook point into the device
-> suspend/resume flow to enable the wake-up interrupt as late as possible.
+> This small series fixes STP support and while adding a new function to
+> enable/disable learning, use that to disable learning on standalone ports
+> at switch setup as reported by Vladimir Oltean.
+> 
+> This series was initially submitted on net-next by Clement Leger, but some
+> career evolutions has made him hand me over those topics.
+> Also, this new revision is submitted on net instead of net-next for V1
+> based on Vladimir Oltean's suggestion
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v3,1/3] net: phy: Allow drivers to always call into ->suspend()
-    https://git.kernel.org/netdev/net-next/c/a7e3448086d5
-  - [net-next,v3,2/3] net: phy: broadcom: Add support for Wake-on-LAN
-    https://git.kernel.org/netdev/net-next/c/8baddaa9d4ba
-  - [net-next,v3,3/3] net: bcmgenet: Add support for PHY-based Wake-on-LAN
-    https://git.kernel.org/netdev/net-next/c/7e400ff35cbe
+  - [net,v3,1/3] net: dsa: rzn1-a5psw: enable management frames for CPU port
+    https://git.kernel.org/netdev/net/c/9e4b45f20c5a
+  - [net,v3,2/3] net: dsa: rzn1-a5psw: fix STP states handling
+    https://git.kernel.org/netdev/net/c/ebe9bc509527
+  - [net,v3,3/3] net: dsa: rzn1-a5psw: disable learning for standalone ports
+    https://git.kernel.org/netdev/net/c/ec52b69c046a
 
 You are awesome, thank you!
 -- 
