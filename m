@@ -1,59 +1,59 @@
-Return-Path: <netdev+bounces-2445-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2446-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DF41D701F78
-	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 22:13:02 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C3548701F7A
+	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 22:13:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 996D1281087
-	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 20:13:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BE7DC1C209E1
+	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 20:13:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E1EDABE63;
-	Sun, 14 May 2023 20:11:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B432FC135;
+	Sun, 14 May 2023 20:11:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEE28C129
-	for <netdev@vger.kernel.org>; Sun, 14 May 2023 20:11:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A430AC129
+	for <netdev@vger.kernel.org>; Sun, 14 May 2023 20:11:34 +0000 (UTC)
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E57F1985;
-	Sun, 14 May 2023 13:11:30 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F16198E;
+	Sun, 14 May 2023 13:11:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1684095090; x=1715631090;
+  t=1684095092; x=1715631092;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=42l68SITaSuGX9G45D7m4x8tsaphU07/rLdo8Qld6kg=;
-  b=VFPdAMCZPHyaiS8+IOxW3TWckdwhKEEG0JeXWtXjCaLSKYBZzNCuELHW
-   XQf4DPLfWjXjPf/mT8pGM58NgYCQR8OSBfjN34t8I2eWwsikfCjX7CDlc
-   +Es9rhm0ZDN5rvLpQ/IHZnrcpMOuU+kEGIsnhKhJ3eAqFYqs7P2tin1/c
-   KXqQWZgP3+k+XU52pn86RT0ZmKFo5Mclr7JLv9MhFx7hy+SCy9j8J00Ld
-   00Ofd6oYuiRRbqnk65S00XuARWhb4K1l4eM6dQR0ZIbdZP6SpqLCGJiWJ
-   VYlHInjaTEpnuxCXf+0bTKog77mT24qsZgPIC6SXHxctzdfNqvDv/mlrK
+  bh=MaaL7DA4WhBR6pxezkJk8f7wbc7y5EcSETA7f9gCaqc=;
+  b=l7wFl/kB0Ue0Tdvra3qdLr+as9S5Xqv4jaXX8nSgBPBYnQjd9LAD3CeI
+   wHiD4+5PBTviBPVMzEG5I5+5ZgDMVlJ5sZ4j+u+BlBAxTunEt6Oq8TmWh
+   Gd8Jv44w5GLOnEokQcPaU+Rv2jBl1D7woewljE75B4NHTowqKycNiLw1j
+   AnMDyoUBCNfH/+FZsjJrD2c8CYO3+WXCjBNod2qYSgYRvXmXE3NNfhqc8
+   dRiqRF6KWkSdQNl9FS3rYJLUgwo1y0WFSQBUwhcEpELUwOx52ZrQjIn/S
+   uusIAzX1LEnMDlT5ydJcrTmyb01FLT4+PZ/cG/6b/POngHTFcW6ZO9/mb
    A==;
 X-IronPort-AV: E=Sophos;i="5.99,274,1677567600"; 
-   d="scan'208";a="211196328"
+   d="scan'208";a="211196332"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 May 2023 13:11:30 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 May 2023 13:11:32 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Sun, 14 May 2023 13:11:29 -0700
+ 15.1.2507.21; Sun, 14 May 2023 13:11:30 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Sun, 14 May 2023 13:11:27 -0700
+ 15.1.2507.21 via Frontend Transport; Sun, 14 May 2023 13:11:29 -0700
 From: Horatiu Vultur <horatiu.vultur@microchip.com>
 To: <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
 	<pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>, Horatiu Vultur
 	<horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 5/7] net: lan966x: Add support for offloading default prio
-Date: Sun, 14 May 2023 22:10:27 +0200
-Message-ID: <20230514201029.1867738-6-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 6/7] net: lan966x: Add support for PCP rewrite
+Date: Sun, 14 May 2023 22:10:28 +0200
+Message-ID: <20230514201029.1867738-7-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.38.0
 In-Reply-To: <20230514201029.1867738-1-horatiu.vultur@microchip.com>
 References: <20230514201029.1867738-1-horatiu.vultur@microchip.com>
@@ -72,83 +72,189 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add support for offloading default prio.
+Add support for rewrite of PCP and DEI value, based on QoS and DP level.
+
+The DCB rewrite table is queried for mappings between priority and
+PCP/DEI. The classified DP level is then encoded in the DEI bit, if a
+mapping for DEI exists.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../ethernet/microchip/lan966x/lan966x_dcb.c  | 12 +++++++++++
- .../ethernet/microchip/lan966x/lan966x_main.h |  1 +
- .../ethernet/microchip/lan966x/lan966x_port.c | 21 +++++++++++++++++++
- 3 files changed, 34 insertions(+)
+ .../ethernet/microchip/lan966x/lan966x_dcb.c  | 61 ++++++++++++++++++-
+ .../ethernet/microchip/lan966x/lan966x_main.h | 10 +++
+ .../ethernet/microchip/lan966x/lan966x_port.c | 37 +++++++++++
+ 3 files changed, 107 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c b/drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c
-index 2b518181b7f08..d86369dd2d9b7 100644
+index d86369dd2d9b7..56a2fad406333 100644
 --- a/drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c
-@@ -64,6 +64,11 @@ static void lan966x_dcb_app_update(struct net_device *dev)
- 		qos.dscp.map[i] = dcb_getapp(dev, &app_itr);
- 	}
+@@ -46,9 +46,11 @@ static bool lan966x_dcb_apptrust_contains(int portno, u8 selector)
  
-+	/* Get default prio */
-+	qos.default_prio = dcb_ieee_getapp_default_prio_mask(dev);
-+	if (qos.default_prio)
-+		qos.default_prio = fls(qos.default_prio) - 1;
+ static void lan966x_dcb_app_update(struct net_device *dev)
+ {
++	struct dcb_rewr_prio_pcp_map pcp_rewr_map = {0};
+ 	struct lan966x_port *port = netdev_priv(dev);
+ 	struct lan966x_port_qos qos = {0};
+ 	struct dcb_app app_itr;
++	bool pcp_rewr = false;
+ 
+ 	/* Get pcp ingress mapping */
+ 	for (int i = 0; i < ARRAY_SIZE(qos.pcp.map); i++) {
+@@ -69,10 +71,24 @@ static void lan966x_dcb_app_update(struct net_device *dev)
+ 	if (qos.default_prio)
+ 		qos.default_prio = fls(qos.default_prio) - 1;
+ 
++	/* Get pcp rewrite mapping */
++	dcb_getrewr_prio_pcp_mask_map(dev, &pcp_rewr_map);
++	for (int i = 0; i < ARRAY_SIZE(pcp_rewr_map.map); i++) {
++		if (!pcp_rewr_map.map[i])
++			continue;
++
++		pcp_rewr = true;
++		qos.pcp_rewr.map[i] = fls(pcp_rewr_map.map[i]) - 1;
++	}
 +
  	/* Enable use of pcp for queue classification */
- 	if (lan966x_dcb_apptrust_contains(port->chip_port, DCB_APP_SEL_PCP))
+-	if (lan966x_dcb_apptrust_contains(port->chip_port, DCB_APP_SEL_PCP))
++	if (lan966x_dcb_apptrust_contains(port->chip_port, DCB_APP_SEL_PCP)) {
  		qos.pcp.enable = true;
-@@ -106,6 +111,13 @@ static int lan966x_dcb_app_validate(struct net_device *dev,
- 	int err = 0;
  
- 	switch (app->selector) {
-+	/* Default priority checks */
-+	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
-+		if (app->protocol != 0)
-+			err = -EINVAL;
-+		else if (app->priority >= NUM_PRIO_QUEUES)
-+			err = -ERANGE;
-+		break;
- 	/* Dscp checks */
- 	case IEEE_8021QAZ_APP_SEL_DSCP:
- 		if (app->protocol >= LAN966X_PORT_QOS_DSCP_COUNT)
++		if (pcp_rewr)
++			qos.pcp_rewr.enable = true;
++	}
++
+ 	/* Enable use of dscp for queue classification */
+ 	if (lan966x_dcb_apptrust_contains(port->chip_port, IEEE_8021QAZ_APP_SEL_DSCP))
+ 		qos.dscp.enable = true;
+@@ -253,11 +269,54 @@ static int lan966x_dcb_getapptrust(struct net_device *dev, u8 *selectors,
+ 	return 0;
+ }
+ 
++static int lan966x_dcb_delrewr(struct net_device *dev, struct dcb_app *app)
++{
++	int err;
++
++	err = dcb_delrewr(dev, app);
++	if (err < 0)
++		return err;
++
++	lan966x_dcb_app_update(dev);
++
++	return 0;
++}
++
++static int lan966x_dcb_setrewr(struct net_device *dev, struct dcb_app *app)
++{
++	struct dcb_app app_itr;
++	u16 proto;
++	int err;
++
++	err = lan966x_dcb_app_validate(dev, app);
++	if (err)
++		goto out;
++
++	/* Delete current mapping, if it exists. */
++	proto = dcb_getrewr(dev, app);
++	if (proto) {
++		app_itr = *app;
++		app_itr.protocol = proto;
++		lan966x_dcb_delrewr(dev, &app_itr);
++	}
++
++	err = dcb_setrewr(dev, app);
++	if (err)
++		goto out;
++
++	lan966x_dcb_app_update(dev);
++
++out:
++	return err;
++}
++
+ static const struct dcbnl_rtnl_ops lan966x_dcbnl_ops = {
+ 	.ieee_setapp = lan966x_dcb_ieee_setapp,
+ 	.ieee_delapp = lan966x_dcb_ieee_delapp,
+ 	.dcbnl_setapptrust = lan966x_dcb_setapptrust,
+ 	.dcbnl_getapptrust = lan966x_dcb_getapptrust,
++	.dcbnl_setrewr = lan966x_dcb_setrewr,
++	.dcbnl_delrewr = lan966x_dcb_delrewr,
+ };
+ 
+ void lan966x_dcb_init(struct lan966x *lan966x)
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 8213440e08672..53711d5380166 100644
+index 53711d5380166..16b0149ac2b5d 100644
 --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -412,6 +412,7 @@ struct lan966x_port_qos_dscp {
+@@ -111,6 +111,10 @@
+ 
+ #define LAN966X_PORT_QOS_DSCP_COUNT	64
+ 
++/* Port PCP rewrite mode */
++#define LAN966X_PORT_REW_TAG_CTRL_CLASSIFIED	0
++#define LAN966X_PORT_REW_TAG_CTRL_MAPPED	2
++
+ /* MAC table entry types.
+  * ENTRYTYPE_NORMAL is subject to aging.
+  * ENTRYTYPE_LOCKED is not subject to aging.
+@@ -409,9 +413,15 @@ struct lan966x_port_qos_dscp {
+ 	bool enable;
+ };
+ 
++struct lan966x_port_qos_pcp_rewr {
++	u16 map[NUM_PRIO_QUEUES];
++	bool enable;
++};
++
  struct lan966x_port_qos {
  	struct lan966x_port_qos_pcp pcp;
  	struct lan966x_port_qos_dscp dscp;
-+	u8 default_prio;
++	struct lan966x_port_qos_pcp_rewr pcp_rewr;
+ 	u8 default_prio;
  };
  
- struct lan966x_port {
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-index 11c552e87ee44..a6608876b71ef 100644
+index a6608876b71ef..6887746d081f6 100644
 --- a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-@@ -443,11 +443,32 @@ static void lan966x_port_qos_dscp_set(struct lan966x_port *port,
- 			lan966x, ANA_DSCP_CFG(i));
+@@ -463,12 +463,49 @@ static int lan966x_port_qos_default_set(struct lan966x_port *port,
+ 	return 0;
  }
  
-+static int lan966x_port_qos_default_set(struct lan966x_port *port,
-+					struct lan966x_port_qos *qos)
++static void lan966x_port_qos_pcp_rewr_set(struct lan966x_port *port,
++					  struct lan966x_port_qos_pcp_rewr *qos)
 +{
-+	/* Set default prio and dp level */
-+	lan_rmw(ANA_QOS_CFG_DP_DEFAULT_VAL_SET(0) |
-+		ANA_QOS_CFG_QOS_DEFAULT_VAL_SET(qos->default_prio),
-+		ANA_QOS_CFG_DP_DEFAULT_VAL |
-+		ANA_QOS_CFG_QOS_DEFAULT_VAL,
-+		port->lan966x, ANA_QOS_CFG(port->chip_port));
++	u8 mode = LAN966X_PORT_REW_TAG_CTRL_CLASSIFIED;
++	u8 pcp, dei;
 +
-+	/* Set default pcp and dei for untagged frames */
-+	lan_rmw(ANA_VLAN_CFG_VLAN_DEI_SET(0) |
-+		ANA_VLAN_CFG_VLAN_PCP_SET(0),
-+		ANA_VLAN_CFG_VLAN_DEI |
-+		ANA_VLAN_CFG_VLAN_PCP,
-+		port->lan966x, ANA_VLAN_CFG(port->chip_port));
++	if (qos->enable)
++		mode = LAN966X_PORT_REW_TAG_CTRL_MAPPED;
 +
-+	return 0;
++	/* Map the values only if it is enabled otherwise will be the classified
++	 * value
++	 */
++	lan_rmw(REW_TAG_CFG_TAG_PCP_CFG_SET(mode) |
++		REW_TAG_CFG_TAG_DEI_CFG_SET(mode),
++		REW_TAG_CFG_TAG_PCP_CFG |
++		REW_TAG_CFG_TAG_DEI_CFG,
++		port->lan966x, REW_TAG_CFG(port->chip_port));
++
++	/* Map each value to pcp and dei */
++	for (int i = 0; i < ARRAY_SIZE(qos->map); i++) {
++		pcp = qos->map[i];
++		if (pcp > LAN966X_PORT_QOS_PCP_COUNT)
++			dei = 1;
++		else
++			dei = 0;
++
++		lan_rmw(REW_PCP_DEI_CFG_DEI_QOS_VAL_SET(dei) |
++			REW_PCP_DEI_CFG_PCP_QOS_VAL_SET(pcp),
++			REW_PCP_DEI_CFG_DEI_QOS_VAL |
++			REW_PCP_DEI_CFG_PCP_QOS_VAL,
++			port->lan966x,
++			REW_PCP_DEI_CFG(port->chip_port,
++					i + dei * LAN966X_PORT_QOS_PCP_COUNT));
++	}
 +}
 +
  void lan966x_port_qos_set(struct lan966x_port *port,
@@ -156,7 +262,8 @@ index 11c552e87ee44..a6608876b71ef 100644
  {
  	lan966x_port_qos_pcp_set(port, &qos->pcp);
  	lan966x_port_qos_dscp_set(port, &qos->dscp);
-+	lan966x_port_qos_default_set(port, qos);
+ 	lan966x_port_qos_default_set(port, qos);
++	lan966x_port_qos_pcp_rewr_set(port, &qos->pcp_rewr);
  }
  
  void lan966x_port_init(struct lan966x_port *port)
