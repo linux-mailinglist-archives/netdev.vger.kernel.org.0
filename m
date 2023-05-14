@@ -1,172 +1,128 @@
-Return-Path: <netdev+bounces-2405-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2407-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 54E56701BEB
-	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 08:18:36 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C1775701C2C
+	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 09:47:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 10DCD1C20A6E
-	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 06:18:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 28067281776
+	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 07:47:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB90B1876;
-	Sun, 14 May 2023 06:18:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9EDE01C33;
+	Sun, 14 May 2023 07:47:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C992B186D
-	for <netdev@vger.kernel.org>; Sun, 14 May 2023 06:18:32 +0000 (UTC)
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CB2C1FC0;
-	Sat, 13 May 2023 23:18:31 -0700 (PDT)
-Received: by linux.microsoft.com (Postfix, from userid 1004)
-	id 7B06E20EB22D; Sat, 13 May 2023 23:18:28 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7B06E20EB22D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-	s=default; t=1684045108;
-	bh=mkDSgMixtmxFXZXt8h2/2gvZqMCg8aIpGWf4AZFjQjw=;
-	h=From:To:Cc:Subject:Date:From;
-	b=o3tQbgag6GQZOid6zYnnPELIjRY/dITiZBdzdIRYYIK+RMpGY7myQnUVzTUY1srOJ
-	 T93Js7yLO7FYg4tJmMkz03daMN/OAJIKsxVoyE6e+rYNnIHu5CPhDSFER+uAWOtjl8
-	 tbFBzDCYUH4kuO01D69S24hKIQxAZYHgbpD29o30=
-From: longli@linuxonhyperv.com
-To: Jason Gunthorpe <jgg@ziepe.ca>,
-	Leon Romanovsky <leon@kernel.org>,
-	Ajay Sharma <sharmaajay@microsoft.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
-Cc: linux-rdma@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	netdev@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D7BD1C30
+	for <netdev@vger.kernel.org>; Sun, 14 May 2023 07:47:48 +0000 (UTC)
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14191FDE
+	for <netdev@vger.kernel.org>; Sun, 14 May 2023 00:47:43 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id d9443c01a7336-1aaf706768cso88251985ad.0
+        for <netdev@vger.kernel.org>; Sun, 14 May 2023 00:47:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=heitbaum.com; s=google; t=1684050463; x=1686642463;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=psVi+uu7gPRH/n0OWz4yeAMRQ5ZWsimFDEGiHD2LvJ8=;
+        b=AWe4i2zm1twY3RzeclNA2KPZeLsVWmdvGhmCNhP/v3rJcaUQfX6BVh8bK9hUZNK6tZ
+         LSsur3BEk57P2fPhgbvkp7++cjUrCUY4BH2LgWSRS+DDBD2oTRvuaYOouCfLb8yVkzvD
+         8IKT89FT0EI1MRY6pK9gPBQ4QImGr87/+vgsM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684050463; x=1686642463;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=psVi+uu7gPRH/n0OWz4yeAMRQ5ZWsimFDEGiHD2LvJ8=;
+        b=cmKy8IZKsQRYSNxGi8p8+ckBGGcmV3moklRPzwA+afsTPuUb5OFHd+mg0cfHJLSHZj
+         /MwtHrkLzPDz2IzTJ5bLpZC2wAjhX4K9irkIEclcNJMTjlGAwXpdNATuo0ucJUtoKaQn
+         lljVybCMWVvQq1prmfstaqxp4Jv78824gJzBfQ732H+yI3AJBgUUC8AUAtbFAXbqWNB/
+         PdcpM25St4wvJbrgdAQO9oc1jq38vkZMbRc7rAMlPKj5JjbHViTIR7MuhzH+LgZl+xLr
+         iPMnbJhkI5TPGW0+xTCHXXGGDDi+aoFGb03X81cquPV9kT2WaICdnHGd1sAuaQv3EtXO
+         nMWQ==
+X-Gm-Message-State: AC+VfDz17bFOaCs+CZRr5SV3tX8EA/skgK5dVbaQDSvg/VCAvmw+8/4y
+	zWmjfVCVlgE87EnAdGiiAhqwqMzUQgj/fH2hYfXIPbKs
+X-Google-Smtp-Source: ACHHUZ4sU9ia39wRPGImmuBohUL/goFz3e8Wrk/4kGZN2jmxqB16YV/nrkvMbJ9ZwHM67Dcx/yR0ig==
+X-Received: by 2002:a17:903:1110:b0:1ab:74c:bdf2 with SMTP id n16-20020a170903111000b001ab074cbdf2mr41326845plh.28.1684050463081;
+        Sun, 14 May 2023 00:47:43 -0700 (PDT)
+Received: from 8add390ca20e.heitbaum.com ([122.199.31.3])
+        by smtp.googlemail.com with ESMTPSA id j4-20020a17090276c400b00194caf3e975sm10903363plt.208.2023.05.14.00.47.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 May 2023 00:47:42 -0700 (PDT)
+From: Rudi Heitbaum <rudi@heitbaum.com>
+To: davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org,
+	wens@csie.org,
+	jernej.skrabec@gmail.com,
+	samuel@sholland.org,
+	marcel@holtmann.org,
+	johan.hedberg@gmail.com,
+	luiz.dentz@gmail.com,
+	anarsoul@gmail.com,
+	alistair@alistair23.me
+Cc: netdev@vger.kernel.org,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Long Li <longli@microsoft.com>
-Subject: [PATCH v2] RDMA/mana_ib: Use v2 version of cfg_rx_steer_req to enable RX coalescing
-Date: Sat, 13 May 2023 23:18:15 -0700
-Message-Id: <1684045095-31228-1-git-send-email-longli@linuxonhyperv.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-11.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+	linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev,
+	linux-bluetooth@vger.kernel.org,
+	Rudi Heitbaum <rudi@heitbaum.com>
+Subject: [PATCH 0/3] Bluetooth: btrtl: Add support for RTL8822BS
+Date: Sun, 14 May 2023 07:47:28 +0000
+Message-Id: <20230514074731.70614-1-rudi@heitbaum.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-From: Long Li <longli@microsoft.com>
+With the recent support of the RTL8822BS SDIO WiFi and the 
+BROKEN_LOCAL_EXT_FEATURES_PAGE_2 quirk complete the enablement by 
+adding Bluetooth support on the RTL8822BS UART with hci_ver = 0x07.
 
-With RX coalescing, one CQE entry can be used to indicate multiple packets
-on the receive queue. This saves processing time and PCI bandwidth over
-the CQ.
+The RTL8822BS requires the BROKEN_LOCAL_EXT_FEATURES_PAGE_2 quirk.
 
-The MANA Ethernet driver also uses the v2 version of the protocol. It
-doesn't use RX coalescing and its behavior is not changed.
+Test results:
 
-Signed-off-by: Long Li <longli@microsoft.com>
----
+[   10.029959] Bluetooth: hci0: RTL: examining hci_ver=07 hci_rev=000b lmp_ver=07 lmp_subver=8822
+[   10.047194] Bluetooth: hci0: RTL: rom_version status=0 version=2
+[   10.047250] Bluetooth: hci0: RTL: loading rtl_bt/rtl8822bs_fw.bin
+[   10.114730] Bluetooth: hci0: RTL: loading rtl_bt/rtl8822bs_config.bin
+[   10.237433] Bluetooth: hci0: RTL: cfg_sz 75, total sz 24543
+[   11.244540] Bluetooth: hci0: RTL: fw version 0xaa89f793
+[   11.279285] Bluetooth: hci0: broken local ext features page 2
 
-Change log
-v2: remove the definition of v1 protocol
+Rudi Heitbaum (3):
+  dt-bindings: net: realtek-bluetooth: Add RTL8822BS
+  Bluetooth: btrtl: Add support for RTL8822BS UART
+  arm64: dts: allwinner: h6: tanix-tx6: Add compatible bluetooth
 
- drivers/infiniband/hw/mana/qp.c               | 5 ++++-
- drivers/net/ethernet/microsoft/mana/mana_en.c | 5 ++++-
- include/net/mana/mana.h                       | 4 +++-
- 3 files changed, 11 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/net/realtek-bluetooth.yaml  | 13 ++++++++-----
+ .../boot/dts/allwinner/sun50i-h6-tanix-tx6.dts      |  2 +-
+ drivers/bluetooth/btrtl.c                           | 12 +++++++++++-
+ drivers/bluetooth/hci_h5.c                          |  6 ++++++
+ 4 files changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mana/qp.c b/drivers/infiniband/hw/mana/qp.c
-index 54b61930a7fd..4b3b5b274e84 100644
---- a/drivers/infiniband/hw/mana/qp.c
-+++ b/drivers/infiniband/hw/mana/qp.c
-@@ -13,7 +13,7 @@ static int mana_ib_cfg_vport_steering(struct mana_ib_dev *dev,
- 				      u8 *rx_hash_key)
- {
- 	struct mana_port_context *mpc = netdev_priv(ndev);
--	struct mana_cfg_rx_steer_req *req = NULL;
-+	struct mana_cfg_rx_steer_req_v2 *req;
- 	struct mana_cfg_rx_steer_resp resp = {};
- 	mana_handle_t *req_indir_tab;
- 	struct gdma_context *gc;
-@@ -33,6 +33,8 @@ static int mana_ib_cfg_vport_steering(struct mana_ib_dev *dev,
- 	mana_gd_init_req_hdr(&req->hdr, MANA_CONFIG_VPORT_RX, req_buf_size,
- 			     sizeof(resp));
- 
-+	req->hdr.req.msg_version = GDMA_MESSAGE_V2;
-+
- 	req->vport = mpc->port_handle;
- 	req->rx_enable = 1;
- 	req->update_default_rxobj = 1;
-@@ -46,6 +48,7 @@ static int mana_ib_cfg_vport_steering(struct mana_ib_dev *dev,
- 	req->num_indir_entries = MANA_INDIRECT_TABLE_SIZE;
- 	req->indir_tab_offset = sizeof(*req);
- 	req->update_indir_tab = true;
-+	req->cqe_coalescing_enable = 1;
- 
- 	req_indir_tab = (mana_handle_t *)(req + 1);
- 	/* The ind table passed to the hardware must have
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index 06d6292e09b3..b3fcb767b9ab 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -972,7 +972,7 @@ static int mana_cfg_vport_steering(struct mana_port_context *apc,
- 				   bool update_tab)
- {
- 	u16 num_entries = MANA_INDIRECT_TABLE_SIZE;
--	struct mana_cfg_rx_steer_req *req = NULL;
-+	struct mana_cfg_rx_steer_req_v2 *req;
- 	struct mana_cfg_rx_steer_resp resp = {};
- 	struct net_device *ndev = apc->ndev;
- 	mana_handle_t *req_indir_tab;
-@@ -987,6 +987,8 @@ static int mana_cfg_vport_steering(struct mana_port_context *apc,
- 	mana_gd_init_req_hdr(&req->hdr, MANA_CONFIG_VPORT_RX, req_buf_size,
- 			     sizeof(resp));
- 
-+	req->hdr.req.msg_version = GDMA_MESSAGE_V2;
-+
- 	req->vport = apc->port_handle;
- 	req->num_indir_entries = num_entries;
- 	req->indir_tab_offset = sizeof(*req);
-@@ -996,6 +998,7 @@ static int mana_cfg_vport_steering(struct mana_port_context *apc,
- 	req->update_hashkey = update_key;
- 	req->update_indir_tab = update_tab;
- 	req->default_rxobj = apc->default_rxobj;
-+	req->cqe_coalescing_enable = 0;
- 
- 	if (update_key)
- 		memcpy(&req->hashkey, apc->hashkey, MANA_HASH_KEY_SIZE);
-diff --git a/include/net/mana/mana.h b/include/net/mana/mana.h
-index cd386aa7c7cc..1512bd48df81 100644
---- a/include/net/mana/mana.h
-+++ b/include/net/mana/mana.h
-@@ -581,7 +581,7 @@ struct mana_fence_rq_resp {
- }; /* HW DATA */
- 
- /* Configure vPort Rx Steering */
--struct mana_cfg_rx_steer_req {
-+struct mana_cfg_rx_steer_req_v2 {
- 	struct gdma_req_hdr hdr;
- 	mana_handle_t vport;
- 	u16 num_indir_entries;
-@@ -594,6 +594,8 @@ struct mana_cfg_rx_steer_req {
- 	u8 reserved;
- 	mana_handle_t default_rxobj;
- 	u8 hashkey[MANA_HASH_KEY_SIZE];
-+	u8 cqe_coalescing_enable;
-+	u8 reserved2[7];
- }; /* HW DATA */
- 
- struct mana_cfg_rx_steer_resp {
+
+base-commit: bb7c241fae6228e89c0286ffd6f249b3b0dea225
 -- 
-2.34.1
+2.25.1
 
 
