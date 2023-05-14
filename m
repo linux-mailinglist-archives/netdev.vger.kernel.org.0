@@ -1,148 +1,104 @@
-Return-Path: <netdev+bounces-2451-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2440-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1D82A701FA1
-	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 23:04:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 35B4B701F6B
+	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 22:11:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2363C1C20995
-	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 21:04:13 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 024A91C209B0
+	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 20:11:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10CA9BE56;
-	Sun, 14 May 2023 21:04:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06F92BA3E;
+	Sun, 14 May 2023 20:11:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 013BFBA38
-	for <netdev@vger.kernel.org>; Sun, 14 May 2023 21:04:12 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FE410D7
-	for <netdev@vger.kernel.org>; Sun, 14 May 2023 14:04:11 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1pyIsh-0008IM-NV; Sun, 14 May 2023 23:03:51 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id 2BF241C3D1B;
-	Sun, 14 May 2023 20:09:51 +0000 (UTC)
-Date: Sun, 14 May 2023 22:09:50 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Harald Mommer <harald.mommer@opensynergy.com>
-Cc: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-	Mikhail Golubev-Ciuchea <Mikhail.Golubev-Ciuchea@opensynergy.com>,
-	virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	Wolfgang Grandegger <wg@grandegger.com>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"Michael S . Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Damir Shaikhutdinov <Damir.Shaikhutdinov@opensynergy.com>
-Subject: Re: [RFC PATCH v3] can: virtio: Initial virtio CAN driver.
-Message-ID: <20230514-senior-container-bf049eb882a9-mkl@pengutronix.de>
-References: <20230511151444.162882-1-Mikhail.Golubev-Ciuchea@opensynergy.com>
- <CAMZ6RqJbjoApwZbiivbvJRYQyBWfWXG4azmwuXGaicrMq0Lozg@mail.gmail.com>
- <a83e29fd-09d0-64b4-ce56-c7f7a5e44f66@opensynergy.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBAFEA93F
+	for <netdev@vger.kernel.org>; Sun, 14 May 2023 20:11:22 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86F61B5;
+	Sun, 14 May 2023 13:11:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1684095081; x=1715631081;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0v693RssdllD+u0hi8Qnrc42nWVUr677WOVyW0Gpybc=;
+  b=09ywQmsc2eZZXZ5URGVWr6pyMc0lkcRhgXULb1ILsbn067gklyQtmgvH
+   YAdVDwZKHMXpxEyyrKyeVlzKQGSsHGmS7rGvbPyrwXlc6YK0DEwqlMk7i
+   QYSM5BNnRAAuVUi+zPdXWIf/Y5X+KqRgphp4L5bpTR8b4Dl5R6LQ7uvpd
+   kMwu7ZHAazgEDNpSyTNEFKYM4NE2QmwZ5HW/m5S5f+lgpDlPOr5c0tgHd
+   +ymSdeG/spbgSG3X8NvgycgGXkpAv3W+P6N8+/ENxuhdqEhvGmJubjykk
+   SPOymlKqYF96ytLDe3II9o8vcW4k1IvgkJbscTWVyqQHXesO0KamaeumS
+   g==;
+X-IronPort-AV: E=Sophos;i="5.99,274,1677567600"; 
+   d="scan'208";a="211196321"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 May 2023 13:11:20 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Sun, 14 May 2023 13:11:19 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Sun, 14 May 2023 13:11:17 -0700
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+To: <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>, Horatiu Vultur
+	<horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 0/7] net: lan966x: Add support for PCP, DEI, DSCP
+Date: Sun, 14 May 2023 22:10:22 +0200
+Message-ID: <20230514201029.1867738-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="i6qfmmn4wmyaeefb"
-Content-Disposition: inline
-In-Reply-To: <a83e29fd-09d0-64b4-ce56-c7f7a5e44f66@opensynergy.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+This patch series extends lan966x to offload to the hardware the
+following features:
+- PCP: this configuration is per port both at ingress and egress.
+- App trust: which allows to specify a trust order of app selectors.
+  This can be PCP or DSCP or DSCP/PCP.
+- default priority
+- DSCP: this configuration is shared between the ports both at ingress
+  and egress.
 
---i6qfmmn4wmyaeefb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Horatiu Vultur (7):
+  net: lan966x: Add registers to configure PCP, DEI, DSCP
+  net: lan966x: Add support for offloading pcp table
+  net: lan966x: Add support for apptrust
+  net: lan966x: Add support for offloading dscp table
+  net: lan966x: Add support for offloading default prio
+  net: lan966x: Add support for PCP rewrite
+  net: lan966x: Add support for DSCP rewrite
 
-On 12.05.2023 19:39:40, Harald Mommer wrote:
-> > > diff --git a/drivers/net/can/Makefile b/drivers/net/can/Makefile
-> > > index ff8f76295d13..19314adaff59 100644
-> > > --- a/drivers/net/can/Makefile
-> > > +++ b/drivers/net/can/Makefile
-> > > @@ -17,8 +17,8 @@ obj-$(CONFIG_CAN_AT91)                +=3D at91_can=
-=2Eo
-> > >   obj-$(CONFIG_CAN_BXCAN)                +=3D bxcan.o
-> > >   obj-$(CONFIG_CAN_CAN327)       +=3D can327.o
-> > >   obj-$(CONFIG_CAN_CC770)                +=3D cc770/
-> > > -obj-$(CONFIG_CAN_C_CAN)                +=3D c_can/
-> > >   obj-$(CONFIG_CAN_CTUCANFD)     +=3D ctucanfd/
-> > > +obj-$(CONFIG_CAN_C_CAN)                +=3D c_can/
-> > This reordering is unrelated to this patch goal. Please send it as a
-> > separate patch.
->=20
-> @Marc Kleine-Budde: We got this reordering change from you.
+ .../net/ethernet/microchip/lan966x/Kconfig    |  11 +
+ .../net/ethernet/microchip/lan966x/Makefile   |   1 +
+ .../ethernet/microchip/lan966x/lan966x_dcb.c  | 366 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_main.c |   2 +
+ .../ethernet/microchip/lan966x/lan966x_main.h |  57 +++
+ .../ethernet/microchip/lan966x/lan966x_port.c | 149 +++++++
+ .../ethernet/microchip/lan966x/lan966x_regs.h | 132 +++++++
+ 7 files changed, 718 insertions(+)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c
 
-That reordering was not intended.
+-- 
+2.38.0
 
-> How to proceed?
-
-Remove that change and sorry for the confusion.
-
-> We can split this in 2 commits, reordering and on top adding virtio CAN. =
-No
-> issue, a question of minutes and done. Fine. But here the word "patch" was
-> used, not the word "commit".
-
-I think in first approximation patches and commits can be/are used
-interchangeably :) (One thought process might be: If you make it a
-separate commit and send it here, it's no longer in git and thus just a
-patch, no longer a commit.)
-
-> Sending a separate patch to somewhere? Maybe
-> Mikhail does this fight to get this in (unlikely), I personally would pre=
-fer
-> to run away. Or we don't reorder at all, wrong ordering remains and we wi=
-ll
-> not make only you unhappy.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---i6qfmmn4wmyaeefb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRhQAsACgkQvlAcSiqK
-BOiLrwf+MivjvW3UCXg71VmfmbA3FMZQOYEREO80Bd/GD1zKMbD3PtaN/jFo2bHo
-kYXOW4N67y4TYbwHFVoY4wYzzv+1OSfUzVc5xYgYbcGzBBxS80zmGlvMpEmI4H2z
-50XyMbZVBZOhxUrAvfQc40KY05IIoSWnkT1ReBN7nmYtm+FK0Ctpww1jgmyGK9/G
-9W0ZoIOfmoQWXSTp7KtocxpUWNiU4uCgZYFt9I5bNag/qZDztgjVTFbct1lCYejs
-jvNjWvWqXPneFd1B1I6Tca3zup1hTKTpT2C6uOZ1/GcN8GWoIbLdNtBZYIHnnlXg
-IhaMq27QJd3111vs57wiCmwwyWcZXQ==
-=kAT9
------END PGP SIGNATURE-----
-
---i6qfmmn4wmyaeefb--
 
