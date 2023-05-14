@@ -1,60 +1,62 @@
-Return-Path: <netdev+bounces-2440-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2441-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 35B4B701F6B
-	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 22:11:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 32E2D701F71
+	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 22:11:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 024A91C209B0
-	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 20:11:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2E4371C209B0
+	for <lists+netdev@lfdr.de>; Sun, 14 May 2023 20:11:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06F92BA3E;
-	Sun, 14 May 2023 20:11:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 55590BA55;
+	Sun, 14 May 2023 20:11:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBAFEA93F
-	for <netdev@vger.kernel.org>; Sun, 14 May 2023 20:11:22 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86F61B5;
-	Sun, 14 May 2023 13:11:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44765BA51
+	for <netdev@vger.kernel.org>; Sun, 14 May 2023 20:11:24 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C88F1BD;
+	Sun, 14 May 2023 13:11:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1684095081; x=1715631081;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0v693RssdllD+u0hi8Qnrc42nWVUr677WOVyW0Gpybc=;
-  b=09ywQmsc2eZZXZ5URGVWr6pyMc0lkcRhgXULb1ILsbn067gklyQtmgvH
-   YAdVDwZKHMXpxEyyrKyeVlzKQGSsHGmS7rGvbPyrwXlc6YK0DEwqlMk7i
-   QYSM5BNnRAAuVUi+zPdXWIf/Y5X+KqRgphp4L5bpTR8b4Dl5R6LQ7uvpd
-   kMwu7ZHAazgEDNpSyTNEFKYM4NE2QmwZ5HW/m5S5f+lgpDlPOr5c0tgHd
-   +ymSdeG/spbgSG3X8NvgycgGXkpAv3W+P6N8+/ENxuhdqEhvGmJubjykk
-   SPOymlKqYF96ytLDe3II9o8vcW4k1IvgkJbscTWVyqQHXesO0KamaeumS
-   g==;
+  t=1684095082; x=1715631082;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1jktiy2ZiXJQO8zghT241EepsJLiOFXrFmc94lpz8z0=;
+  b=0eFCppb+FcEek6W27Mps6j9lDcyvaRTuOXt/TwCM4TBJxtr5XkXRxatG
+   j/IrW9F7GXVaHAS2TKKJdGO5x34+p9b3vUaWfCYA5vKIKEH35ZxCINvnk
+   BMCpzQD2IkO8PrNOhHCjIe1hOxvrXTndVfAdiU2AKm7dx7NsjV4X4Js1S
+   ZPpuF2qts1qXwuCOeVc+ivmAYWLWhu7Zid823USKhP6UBwsTd4SEiREtQ
+   GgaR3j/Tj/C21rgcLCPcuF+WIBp1iHAZ3ndR2HbRlnz9RPCk+TLfAAVMt
+   VqUY97OD6D2LD847l19OURlUiG+ntG/CLNAvpxAy8+yUItwBrhwhGMRNo
+   A==;
 X-IronPort-AV: E=Sophos;i="5.99,274,1677567600"; 
-   d="scan'208";a="211196321"
+   d="scan'208";a="213249960"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 May 2023 13:11:20 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 May 2023 13:11:22 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Sun, 14 May 2023 13:11:19 -0700
+ 15.1.2507.21; Sun, 14 May 2023 13:11:21 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Sun, 14 May 2023 13:11:17 -0700
+ 15.1.2507.21 via Frontend Transport; Sun, 14 May 2023 13:11:19 -0700
 From: Horatiu Vultur <horatiu.vultur@microchip.com>
 To: <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
 	<pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>, Horatiu Vultur
 	<horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 0/7] net: lan966x: Add support for PCP, DEI, DSCP
-Date: Sun, 14 May 2023 22:10:22 +0200
-Message-ID: <20230514201029.1867738-1-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 1/7] net: lan966x: Add registers to configure PCP, DEI, DSCP
+Date: Sun, 14 May 2023 22:10:23 +0200
+Message-ID: <20230514201029.1867738-2-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.38.0
+In-Reply-To: <20230514201029.1867738-1-horatiu.vultur@microchip.com>
+References: <20230514201029.1867738-1-horatiu.vultur@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -65,39 +67,204 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+	UPPERCASE_50_75 autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This patch series extends lan966x to offload to the hardware the
-following features:
-- PCP: this configuration is per port both at ingress and egress.
-- App trust: which allows to specify a trust order of app selectors.
-  This can be PCP or DSCP or DSCP/PCP.
-- default priority
-- DSCP: this configuration is shared between the ports both at ingress
-  and egress.
+Add the registers that are needed to configure the PCP, DEI and DSCP
+of the switch both at ingress and also at egress.
 
-Horatiu Vultur (7):
-  net: lan966x: Add registers to configure PCP, DEI, DSCP
-  net: lan966x: Add support for offloading pcp table
-  net: lan966x: Add support for apptrust
-  net: lan966x: Add support for offloading dscp table
-  net: lan966x: Add support for offloading default prio
-  net: lan966x: Add support for PCP rewrite
-  net: lan966x: Add support for DSCP rewrite
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ .../ethernet/microchip/lan966x/lan966x_regs.h | 132 ++++++++++++++++++
+ 1 file changed, 132 insertions(+)
 
- .../net/ethernet/microchip/lan966x/Kconfig    |  11 +
- .../net/ethernet/microchip/lan966x/Makefile   |   1 +
- .../ethernet/microchip/lan966x/lan966x_dcb.c  | 366 ++++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_main.c |   2 +
- .../ethernet/microchip/lan966x/lan966x_main.h |  57 +++
- .../ethernet/microchip/lan966x/lan966x_port.c | 149 +++++++
- .../ethernet/microchip/lan966x/lan966x_regs.h | 132 +++++++
- 7 files changed, 718 insertions(+)
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c
-
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+index 2220391802766..4b553927d2e0e 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+@@ -283,6 +283,18 @@ enum lan966x_target {
+ #define ANA_VLAN_CFG_VLAN_POP_CNT_GET(x)\
+ 	FIELD_GET(ANA_VLAN_CFG_VLAN_POP_CNT, x)
+ 
++#define ANA_VLAN_CFG_VLAN_PCP                    GENMASK(15, 13)
++#define ANA_VLAN_CFG_VLAN_PCP_SET(x)\
++	FIELD_PREP(ANA_VLAN_CFG_VLAN_PCP, x)
++#define ANA_VLAN_CFG_VLAN_PCP_GET(x)\
++	FIELD_GET(ANA_VLAN_CFG_VLAN_PCP, x)
++
++#define ANA_VLAN_CFG_VLAN_DEI                    BIT(12)
++#define ANA_VLAN_CFG_VLAN_DEI_SET(x)\
++	FIELD_PREP(ANA_VLAN_CFG_VLAN_DEI, x)
++#define ANA_VLAN_CFG_VLAN_DEI_GET(x)\
++	FIELD_GET(ANA_VLAN_CFG_VLAN_DEI, x)
++
+ #define ANA_VLAN_CFG_VLAN_VID                    GENMASK(11, 0)
+ #define ANA_VLAN_CFG_VLAN_VID_SET(x)\
+ 	FIELD_PREP(ANA_VLAN_CFG_VLAN_VID, x)
+@@ -316,6 +328,39 @@ enum lan966x_target {
+ #define ANA_DROP_CFG_DROP_MC_SMAC_ENA_GET(x)\
+ 	FIELD_GET(ANA_DROP_CFG_DROP_MC_SMAC_ENA, x)
+ 
++/*      ANA:PORT:QOS_CFG */
++#define ANA_QOS_CFG(g)            __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 8, 0, 1, 4)
++
++#define ANA_QOS_CFG_DP_DEFAULT_VAL               BIT(8)
++#define ANA_QOS_CFG_DP_DEFAULT_VAL_SET(x)\
++	FIELD_PREP(ANA_QOS_CFG_DP_DEFAULT_VAL, x)
++#define ANA_QOS_CFG_DP_DEFAULT_VAL_GET(x)\
++	FIELD_GET(ANA_QOS_CFG_DP_DEFAULT_VAL, x)
++
++#define ANA_QOS_CFG_QOS_DEFAULT_VAL              GENMASK(7, 5)
++#define ANA_QOS_CFG_QOS_DEFAULT_VAL_SET(x)\
++	FIELD_PREP(ANA_QOS_CFG_QOS_DEFAULT_VAL, x)
++#define ANA_QOS_CFG_QOS_DEFAULT_VAL_GET(x)\
++	FIELD_GET(ANA_QOS_CFG_QOS_DEFAULT_VAL, x)
++
++#define ANA_QOS_CFG_QOS_DSCP_ENA                 BIT(4)
++#define ANA_QOS_CFG_QOS_DSCP_ENA_SET(x)\
++	FIELD_PREP(ANA_QOS_CFG_QOS_DSCP_ENA, x)
++#define ANA_QOS_CFG_QOS_DSCP_ENA_GET(x)\
++	FIELD_GET(ANA_QOS_CFG_QOS_DSCP_ENA, x)
++
++#define ANA_QOS_CFG_QOS_PCP_ENA                  BIT(3)
++#define ANA_QOS_CFG_QOS_PCP_ENA_SET(x)\
++	FIELD_PREP(ANA_QOS_CFG_QOS_PCP_ENA, x)
++#define ANA_QOS_CFG_QOS_PCP_ENA_GET(x)\
++	FIELD_GET(ANA_QOS_CFG_QOS_PCP_ENA, x)
++
++#define ANA_QOS_CFG_DSCP_REWR_CFG                GENMASK(1, 0)
++#define ANA_QOS_CFG_DSCP_REWR_CFG_SET(x)\
++	FIELD_PREP(ANA_QOS_CFG_DSCP_REWR_CFG, x)
++#define ANA_QOS_CFG_DSCP_REWR_CFG_GET(x)\
++	FIELD_GET(ANA_QOS_CFG_DSCP_REWR_CFG, x)
++
+ /*      ANA:PORT:VCAP_CFG */
+ #define ANA_VCAP_CFG(g)           __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 12, 0, 1, 4)
+ 
+@@ -415,6 +460,21 @@ enum lan966x_target {
+ #define ANA_VCAP_S2_CFG_OAM_DIS_GET(x)\
+ 	FIELD_GET(ANA_VCAP_S2_CFG_OAM_DIS, x)
+ 
++/*      ANA:PORT:QOS_PCP_DEI_MAP_CFG */
++#define ANA_PCP_DEI_CFG(g, r)     __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 32, r, 16, 4)
++
++#define ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL           BIT(3)
++#define ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL_SET(x)\
++	FIELD_PREP(ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL, x)
++#define ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL_GET(x)\
++	FIELD_GET(ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL, x)
++
++#define ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL          GENMASK(2, 0)
++#define ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL_SET(x)\
++	FIELD_PREP(ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL, x)
++#define ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL_GET(x)\
++	FIELD_GET(ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL, x)
++
+ /*      ANA:PORT:CPU_FWD_CFG */
+ #define ANA_CPU_FWD_CFG(g)        __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 96, 0, 1, 4)
+ 
+@@ -478,6 +538,15 @@ enum lan966x_target {
+ #define ANA_PORT_CFG_PORTID_VAL_GET(x)\
+ 	FIELD_GET(ANA_PORT_CFG_PORTID_VAL, x)
+ 
++/*      ANA:COMMON:DSCP_REWR_CFG */
++#define ANA_DSCP_REWR_CFG(r)      __REG(TARGET_ANA, 0, 1, 31232, 0, 1, 552, 332, r, 16, 4)
++
++#define ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL      GENMASK(5, 0)
++#define ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL_SET(x)\
++	FIELD_PREP(ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL, x)
++#define ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL_GET(x)\
++	FIELD_GET(ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL, x)
++
+ /*      ANA:PORT:POL_CFG */
+ #define ANA_POL_CFG(g)            __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 116, 0, 1, 4)
+ 
+@@ -547,6 +616,33 @@ enum lan966x_target {
+ #define ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA_GET(x)\
+ 	FIELD_GET(ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA, x)
+ 
++/*      ANA:COMMON:DSCP_CFG */
++#define ANA_DSCP_CFG(r)           __REG(TARGET_ANA, 0, 1, 31232, 0, 1, 552, 76, r, 64, 4)
++
++#define ANA_DSCP_CFG_DP_DSCP_VAL                 BIT(11)
++#define ANA_DSCP_CFG_DP_DSCP_VAL_SET(x)\
++	FIELD_PREP(ANA_DSCP_CFG_DP_DSCP_VAL, x)
++#define ANA_DSCP_CFG_DP_DSCP_VAL_GET(x)\
++	FIELD_GET(ANA_DSCP_CFG_DP_DSCP_VAL, x)
++
++#define ANA_DSCP_CFG_QOS_DSCP_VAL                GENMASK(10, 8)
++#define ANA_DSCP_CFG_QOS_DSCP_VAL_SET(x)\
++	FIELD_PREP(ANA_DSCP_CFG_QOS_DSCP_VAL, x)
++#define ANA_DSCP_CFG_QOS_DSCP_VAL_GET(x)\
++	FIELD_GET(ANA_DSCP_CFG_QOS_DSCP_VAL, x)
++
++#define ANA_DSCP_CFG_DSCP_TRUST_ENA              BIT(1)
++#define ANA_DSCP_CFG_DSCP_TRUST_ENA_SET(x)\
++	FIELD_PREP(ANA_DSCP_CFG_DSCP_TRUST_ENA, x)
++#define ANA_DSCP_CFG_DSCP_TRUST_ENA_GET(x)\
++	FIELD_GET(ANA_DSCP_CFG_DSCP_TRUST_ENA, x)
++
++#define ANA_DSCP_CFG_DSCP_REWR_ENA               BIT(0)
++#define ANA_DSCP_CFG_DSCP_REWR_ENA_SET(x)\
++	FIELD_PREP(ANA_DSCP_CFG_DSCP_REWR_ENA, x)
++#define ANA_DSCP_CFG_DSCP_REWR_ENA_GET(x)\
++	FIELD_GET(ANA_DSCP_CFG_DSCP_REWR_ENA, x)
++
+ /*      ANA:POL:POL_PIR_CFG */
+ #define ANA_POL_PIR_CFG(g)        __REG(TARGET_ANA, 0, 1, 16384, g, 345, 32, 0, 0, 1, 4)
+ 
+@@ -1468,6 +1564,18 @@ enum lan966x_target {
+ #define REW_TAG_CFG_TAG_TPID_CFG_GET(x)\
+ 	FIELD_GET(REW_TAG_CFG_TAG_TPID_CFG, x)
+ 
++#define REW_TAG_CFG_TAG_PCP_CFG                  GENMASK(3, 2)
++#define REW_TAG_CFG_TAG_PCP_CFG_SET(x)\
++	FIELD_PREP(REW_TAG_CFG_TAG_PCP_CFG, x)
++#define REW_TAG_CFG_TAG_PCP_CFG_GET(x)\
++	FIELD_GET(REW_TAG_CFG_TAG_PCP_CFG, x)
++
++#define REW_TAG_CFG_TAG_DEI_CFG                  GENMASK(1, 0)
++#define REW_TAG_CFG_TAG_DEI_CFG_SET(x)\
++	FIELD_PREP(REW_TAG_CFG_TAG_DEI_CFG, x)
++#define REW_TAG_CFG_TAG_DEI_CFG_GET(x)\
++	FIELD_GET(REW_TAG_CFG_TAG_DEI_CFG, x)
++
+ /*      REW:PORT:PORT_CFG */
+ #define REW_PORT_CFG(g)           __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 8, 0, 1, 4)
+ 
+@@ -1483,6 +1591,30 @@ enum lan966x_target {
+ #define REW_PORT_CFG_NO_REWRITE_GET(x)\
+ 	FIELD_GET(REW_PORT_CFG_NO_REWRITE, x)
+ 
++/*      REW:PORT:DSCP_CFG */
++#define REW_DSCP_CFG(g)           __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 12, 0, 1, 4)
++
++#define REW_DSCP_CFG_DSCP_REWR_CFG               GENMASK(1, 0)
++#define REW_DSCP_CFG_DSCP_REWR_CFG_SET(x)\
++	FIELD_PREP(REW_DSCP_CFG_DSCP_REWR_CFG, x)
++#define REW_DSCP_CFG_DSCP_REWR_CFG_GET(x)\
++	FIELD_GET(REW_DSCP_CFG_DSCP_REWR_CFG, x)
++
++/*      REW:PORT:PCP_DEI_QOS_MAP_CFG */
++#define REW_PCP_DEI_CFG(g, r)     __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 16, r, 16, 4)
++
++#define REW_PCP_DEI_CFG_DEI_QOS_VAL              BIT(3)
++#define REW_PCP_DEI_CFG_DEI_QOS_VAL_SET(x)\
++	FIELD_PREP(REW_PCP_DEI_CFG_DEI_QOS_VAL, x)
++#define REW_PCP_DEI_CFG_DEI_QOS_VAL_GET(x)\
++	FIELD_GET(REW_PCP_DEI_CFG_DEI_QOS_VAL, x)
++
++#define REW_PCP_DEI_CFG_PCP_QOS_VAL              GENMASK(2, 0)
++#define REW_PCP_DEI_CFG_PCP_QOS_VAL_SET(x)\
++	FIELD_PREP(REW_PCP_DEI_CFG_PCP_QOS_VAL, x)
++#define REW_PCP_DEI_CFG_PCP_QOS_VAL_GET(x)\
++	FIELD_GET(REW_PCP_DEI_CFG_PCP_QOS_VAL, x)
++
+ /*      REW:COMMON:STAT_CFG */
+ #define REW_STAT_CFG              __REG(TARGET_REW, 0, 1, 3072, 0, 1, 528, 520, 0, 1, 4)
+ 
 -- 
 2.38.0
 
