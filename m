@@ -1,311 +1,315 @@
-Return-Path: <netdev+bounces-2554-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2553-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8D1307027DD
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 11:09:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5657A7027DC
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 11:09:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 498251C20974
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 11825281149
 	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 09:09:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 09F9AA92D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03CD5A92A;
 	Mon, 15 May 2023 09:09:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFE728BFC
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C4E8BFB
 	for <netdev@vger.kernel.org>; Mon, 15 May 2023 09:09:16 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CB5120
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E09A7
 	for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:09:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684141753;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=awWutqv7Tku6RTy5++zNn2CsetnK4SAvTciCez0pzMg=;
-	b=FFfHPCVsvwCSQXZtogSRp5SBOQ0RozTtHOQqYVKSYc4v9zFytqGPiAAIs6modUg4Mw3MiC
-	rwVEPv05R8cQIV/OEmZV8DG4SIQErw2Q3RvPMrG79/FReJhr7cHalixPapyNPSAPH8CNbd
-	MHdLTk/tAyAH9aH6k7SBLm4hcTrIW+0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-659-KJdy53drOYK6CyyGE_o-bQ-1; Mon, 15 May 2023 05:09:08 -0400
-X-MC-Unique: KJdy53drOYK6CyyGE_o-bQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BB828800047;
-	Mon, 15 May 2023 09:09:07 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-32.pek2.redhat.com [10.72.12.32])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 6FF2D40C2063;
-	Mon, 15 May 2023 09:08:59 +0000 (UTC)
-From: Baoquan He <bhe@redhat.com>
-To: linux-kernel@vger.kernel.org
-Cc: linux-arch@vger.kernel.org,
-	linux-mm@kvack.org,
-	arnd@arndb.de,
-	christophe.leroy@csgroup.eu,
-	hch@infradead.org,
-	agordeev@linux.ibm.com,
-	wangkefeng.wang@huawei.com,
-	schnelle@linux.ibm.com,
-	David.Laight@ACULAB.COM,
-	shorne@gmail.com,
-	willy@infradead.org,
-	deller@gmx.de,
-	Baoquan He <bhe@redhat.com>,
-	loongarch@lists.linux.dev,
-	linux-m68k@lists.linux-m68k.org,
-	linux-mips@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	x86@kernel.org,
-	netdev@vger.kernel.org
-Subject: [PATCH v5 RESEND 01/17] asm-generic/iomap.h: remove ARCH_HAS_IOREMAP_xx macros
-Date: Mon, 15 May 2023 17:08:32 +0800
-Message-Id: <20230515090848.833045-2-bhe@redhat.com>
-In-Reply-To: <20230515090848.833045-1-bhe@redhat.com>
-References: <20230515090848.833045-1-bhe@redhat.com>
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20230515090912euoutp01636215e77e84b4fc229e1b7f9ce56379~fRgBQ4LB31070310703euoutp01k
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 09:09:12 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20230515090912euoutp01636215e77e84b4fc229e1b7f9ce56379~fRgBQ4LB31070310703euoutp01k
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1684141752;
+	bh=rggPCLxRkLbDt81t913xqS6ivsX2rO6bBG2+Kd5bXI8=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=Wty/KWRILaNKnwTA8UH5KKZ9lK/zOBx1nY+FkvfoTSEiZ/qfwIL9zm/nuCukDRA9g
+	 7sUUfmX9diBwiXP/fRS3UZQD4aYQm7yU1kc9FWKS6dO7D+hpd0QMjeSkOLZHW1Qm8H
+	 QoUQvODenhWKmKChYgXDYc5NDIDCzHVGe68HiAy4=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20230515090912eucas1p2fc59aec55a3fe9ab0c76ff81598a5bd0~fRgA88sS81683016830eucas1p2O;
+	Mon, 15 May 2023 09:09:12 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 79.0E.42423.8B6F1646; Mon, 15
+	May 2023 10:09:12 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20230515090912eucas1p2489efdc97f9cf1fddf2aad0449e8a2c7~fRgAm1JcZ2364823648eucas1p2c;
+	Mon, 15 May 2023 09:09:12 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20230515090912eusmtrp1212bd7ee6c96ad264864f27bc5755e4b~fRgAmGZAC3052030520eusmtrp1x;
+	Mon, 15 May 2023 09:09:12 +0000 (GMT)
+X-AuditID: cbfec7f2-a51ff7000002a5b7-36-6461f6b859b6
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id E9.11.14344.7B6F1646; Mon, 15
+	May 2023 10:09:12 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20230515090911eusmtip2e31e7b454e813c3b4bf19f408c6a3dc4~fRgACtJjk2356723567eusmtip2r;
+	Mon, 15 May 2023 09:09:11 +0000 (GMT)
+Message-ID: <600ddf9e-589a-2aa0-7b69-a438f833ca10@samsung.com>
+Date: Mon, 15 May 2023 11:09:10 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-type: text/plain
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
+	Gecko/20100101 Thunderbird/102.10.1
+Subject: Re: [patch net] devlink: change per-devlink netdev notifier to
+ static one
+Content-Language: en-US
+To: Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc: kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
+	edumazet@google.com, jacob.e.keller@intel.com, saeedm@nvidia.com,
+	moshe@nvidia.com
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20230510144621.932017-1-jiri@resnulli.us>
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrMKsWRmVeSWpSXmKPExsWy7djP87o7viWmGHzulLKYc76FxeLpsUfs
+	FieOLWSxuHg13eLCtj5Wi+2z/7FYHFsgZvHt9BtGi289c9kcOD22rLzJ5LFgU6nH4j0vmTw2
+	repk8+htfsfm8X7fVTaPqzerPT5vkgvgiOKySUnNySxLLdK3S+DKmHMksaDPouLvu3tMDYyb
+	9boYOTkkBEwkOl+cZ+9i5OIQEljBKDFz3iIWCOcLo8SU/fvYIJzPjBINHR9YYVrm3frCBJFY
+	DlQ1eRlUy0dGiSfvXoBV8QrYSTzd/p0dxGYRUJW4/2AfE0RcUOLkzCcsILaoQKrEqs0XmUFs
+	YYEQiZlHf4PVMAuIS9x6Mh/MFhGwlPh67zczyAJmgcmMEof+X2cDSbAJGEp0ve0CszkFzCWO
+	b21hhWiWl2jeOhusQULgB4fEp/vr2SHudpFo2nGABcIWlnh1fAtUXEbi9OQeFoiGdkaJBb/v
+	M0E4E4C+fn6LEaLKWuLOuV9A6ziAVmhKrN+lD2JKCDhKTDmpBmHySdx4KwhxA5/EpG3TmSHC
+	vBIdbUIQM9QkZh1fB7f14IVLzBMYlWYhBcssJO/PQvLNLIS1CxhZVjGKp5YW56anFhvmpZbr
+	FSfmFpfmpesl5+duYgSmq9P/jn/awTj31Ue9Q4xMHIyHGCU4mJVEeNtnxqcI8aYkVlalFuXH
+	F5XmpBYfYpTmYFES59W2PZksJJCeWJKanZpakFoEk2Xi4JRqYFrwWWTZftaN36Wqzs4W+xjj
+	t+b73krlO9fKz3VtfxD1/KhKq94VbobZR2S/JnU1qUoYcv9WqFb6sMB7zUHXF6e2KR1evHLR
+	Wp5jrE8mtAkmTl0woeUI+0erA3ZLrBRqGA879+06arN5/rerXYETklYdU8mY1udlNkmRJXH/
+	s8nef6W+bPFXkv/Bdy249l3Tw6Xucxe9WPLrheEzS5dPKcKFiy2PONd2lL3nitC2WbJlkWSH
+	+wKTqML1K3cvmyizMOR/AeuB+S7sq2Ovvu1nUUtTs/vu6epTqrhj7ZtH4vd+lOdJT49lWr8g
+	u9DvntBl8VkKr60kHspWT/ttapf9l8nZdVnSQ61ZK2LNvtoEBfcrsRRnJBpqMRcVJwIAD9lT
+	kMYDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrKIsWRmVeSWpSXmKPExsVy+t/xe7o7viWmGLS9Y7SYc76FxeLpsUfs
+	FieOLWSxuHg13eLCtj5Wi+2z/7FYHFsgZvHt9BtGi289c9kcOD22rLzJ5LFgU6nH4j0vmTw2
+	repk8+htfsfm8X7fVTaPqzerPT5vkgvgiNKzKcovLUlVyMgvLrFVija0MNIztLTQMzKx1DM0
+	No+1MjJV0rezSUnNySxLLdK3S9DLmHMksaDPouLvu3tMDYyb9boYOTkkBEwk5t36wtTFyMUh
+	JLCUUeLW5nPsEAkZiZPTGlghbGGJP9e62CCK3jNK9J36zQaS4BWwk3i6/TtYA4uAqsT9B/uY
+	IOKCEidnPmEBsUUFUiVOLr0BZgsLhEhsXTgLbCizgLjErSfzwepFBCwlvt77zQyygFlgMqNE
+	/9kdYAkhATOJSaseM4LYbAKGEl1vu8AWcwqYSxzf2gI1yEyia2sXI4QtL9G8dTbzBEahWUju
+	mIVk3ywkLbOQtCxgZFnFKJJaWpybnltspFecmFtcmpeul5yfu4kRGJ/bjv3csoNx5auPeocY
+	mTgYDzFKcDArifC2z4xPEeJNSaysSi3Kjy8qzUktPsRoCgyMicxSosn5wASRVxJvaGZgamhi
+	ZmlgamlmrCTO61nQkSgkkJ5YkpqdmlqQWgTTx8TBKdXANEWTU3Fm3Wx7n+QPcTfXFye+ant2
+	6q/gHkZWvks/hf4Hijyt6A0582BX77zoTFFhJfNtLdHPlrX9qYiZwty8ZQ77uqbCuQLFky/L
+	/GsqWvHZqNx2yro7ek8v5qSui+mt8nrrsY2rIzAv6M7UgHmF2Z97Wp7dnjzJ7syfdpUFyXnn
+	N+zUu/Z0f7lFYtMC3ikyDxL7jV3Vf3pcbJ8fUlV574XL1GodZYu5d2Sv/49cFdtwI+LiPaXZ
+	v6acVz/2L2eBt0L9BDv7L89viUxlV1KomxDv27+/fIXE6WnCXM7zOQ4qfXho4vtyyVcW5e+F
+	TzW9t/05v/PJHKfZXzne8gVUZt+3F5A+XSkjwG9gP6WZQ4mlOCPRUIu5qDgRAFbe2mFYAwAA
+X-CMS-MailID: 20230515090912eucas1p2489efdc97f9cf1fddf2aad0449e8a2c7
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20230515090912eucas1p2489efdc97f9cf1fddf2aad0449e8a2c7
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20230515090912eucas1p2489efdc97f9cf1fddf2aad0449e8a2c7
+References: <20230510144621.932017-1-jiri@resnulli.us>
+	<CGME20230515090912eucas1p2489efdc97f9cf1fddf2aad0449e8a2c7@eucas1p2.samsung.com>
+X-Spam-Status: No, score=-10.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Let's use '#define ioremap_xx' and "#ifdef ioremap_xx" instead.
+On 10.05.2023 16:46, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+>
+> The commit 565b4824c39f ("devlink: change port event netdev notifier
+> from per-net to global") changed original per-net notifier to be
+> per-devlink instance. That fixed the issue of non-receiving events
+> of netdev uninit if that moved to a different namespace.
+> That worked fine in -net tree.
+>
+> However, later on when commit ee75f1fc44dd ("net/mlx5e: Create
+> separate devlink instance for ethernet auxiliary device") and
+> commit 72ed5d5624af ("net/mlx5: Suspend auxiliary devices only in
+> case of PCI device suspend") were merged, a deadlock was introduced
+> when removing a namespace with devlink instance with another nested
+> instance.
+>
+> Here there is the bad flow example resulting in deadlock with mlx5:
+> net_cleanup_work -> cleanup_net (takes down_read(&pernet_ops_rwsem) ->
+> devlink_pernet_pre_exit() -> devlink_reload() ->
+> mlx5_devlink_reload_down() -> mlx5_unload_one_devl_locked() ->
+> mlx5_detach_device() -> del_adev() -> mlx5e_remove() ->
+> mlx5e_destroy_devlink() -> devlink_free() ->
+> unregister_netdevice_notifier() (takes down_write(&pernet_ops_rwsem)
+>
+> Steps to reproduce:
+> $ modprobe mlx5_core
+> $ ip netns add ns1
+> $ devlink dev reload pci/0000:08:00.0 netns ns1
+> $ ip netns del ns1
+>
+> Resolve this by converting the notifier from per-devlink instance to
+> a static one registered during init phase and leaving it registered
+> forever. Use this notifier for all devlink port instances created
+> later on.
+>
+> Note what a tree needs this fix only in case all of the cited fixes
+> commits are present.
+>
+> Reported-by: Moshe Shemesh <moshe@nvidia.com>
+> Fixes: 565b4824c39f ("devlink: change port event netdev notifier from per-net to global")
+> Fixes: ee75f1fc44dd ("net/mlx5e: Create separate devlink instance for ethernet auxiliary device")
+> Fixes: 72ed5d5624af ("net/mlx5: Suspend auxiliary devices only in case of PCI device suspend")
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 
-For each architecture to remove defined ARCH_HAS_IOREMAP_xx macros in
-To remove defined ARCH_HAS_IOREMAP_xx macros in <asm/io.h> of each ARCH,
-the ARCH's own ioremap_wc|wt|np definition need be above
-"#include <asm-generic/iomap.h>. Otherwise the redefinition error would
-be seen during compiling. So the relevant adjustments are made to avoid
-compiling error:
+This patch landed recently in linux-next as commit e93c9378e33f 
+("devlink: change per-devlink netdev notifier to static one"). 
+Unfortunately it causes serious regression with kernel compiled from 
+multi_v7_defconfig (ARM 32bit) on all my test boards. Here is a example 
+of the boot failure observed on QEMU's virt ARM 32bit machine:
 
-  loongarch:
-  - doesn't include <asm-generic/iomap.h>, defining ARCH_HAS_IOREMAP_WC
-    is redundant, so simply remove it.
+8<--- cut here ---
+Unable to handle kernel execution of memory at virtual address e5150010 
+when execute
+[e5150010] *pgd=4267a811, *pte=04750653, *ppte=04750453
+Internal error: Oops: 8000000f [#1] SMP ARM
+Modules linked in:
+CPU: 0 PID: 779 Comm: ip Not tainted 6.4.0-rc2-next-20230515 #6688
+Hardware name: Generic DT based system
+PC is at 0xe5150010
+LR is at notifier_call_chain+0x60/0x11c
+pc : [<e5150010>]    lr : [<c0365f50>]    psr: 60000013
+...
+Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+Control: 10c5387d  Table: 4397806a  DAC: 00000051
+...
+Process ip (pid: 779, stack limit = 0x82b757b5)
+Stack: (0xe9201a00 to 0xe9202000)
+...
+  notifier_call_chain from raw_notifier_call_chain+0x18/0x20
+  raw_notifier_call_chain from __dev_open+0x74/0x190
+  __dev_open from __dev_change_flags+0x17c/0x1f4
+  __dev_change_flags from dev_change_flags+0x18/0x54
+  dev_change_flags from do_setlink+0x24c/0xefc
+  do_setlink from rtnl_newlink+0x534/0x818
+  rtnl_newlink from rtnetlink_rcv_msg+0x250/0x300
+  rtnetlink_rcv_msg from netlink_rcv_skb+0xb8/0x110
+  netlink_rcv_skb from netlink_unicast+0x1f8/0x2bc
+  netlink_unicast from netlink_sendmsg+0x1cc/0x44c
+  netlink_sendmsg from ____sys_sendmsg+0x9c/0x260
+  ____sys_sendmsg from ___sys_sendmsg+0x68/0x94
+  ___sys_sendmsg from sys_sendmsg+0x4c/0x88
+  sys_sendmsg from ret_fast_syscall+0x0/0x54
+Exception stack(0xe9201fa8 to 0xe9201ff0)
+...
+---[ end trace 0000000000000000 ]---
+[....] Configuring network interfaces...Segmentation fault
+ifup: failed to bring up lo
 
-  m68k:
-  - selected GENERIC_IOMAP, <asm-generic/iomap.h> has been added in
-    <asm-generic/io.h>, and <asm/kmap.h> is included above
-    <asm-generic/iomap.h>, so simply remove ARCH_HAS_IOREMAP_WT defining.
 
-  mips:
-  - move "#include <asm-generic/iomap.h>" below ioremap_wc definition
-    in <asm/io.h>
+Reverting $subject patch on top of linux next-20230515 fixes this issue.
 
-  powerpc:
-  - remove "#include <asm-generic/iomap.h>" in <asm/io.h> because it's
-    duplicated with the one in <asm-generic/io.h>, let's rely on the
-    latter.
 
-  x86:
-  - selected GENERIC_IOMAP, remove #include <asm-generic/iomap.h> in
-    the middle of <asm/io.h>. Let's rely on <asm-generic/io.h>.
+> ---
+>   net/devlink/core.c          | 16 +++++++---------
+>   net/devlink/devl_internal.h |  1 -
+>   net/devlink/leftover.c      |  5 ++---
+>   3 files changed, 9 insertions(+), 13 deletions(-)
+>
+> diff --git a/net/devlink/core.c b/net/devlink/core.c
+> index 777b091ef74d..0e58eee44bdb 100644
+> --- a/net/devlink/core.c
+> +++ b/net/devlink/core.c
+> @@ -204,11 +204,6 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+>   	if (ret < 0)
+>   		goto err_xa_alloc;
+>   
+> -	devlink->netdevice_nb.notifier_call = devlink_port_netdevice_event;
+> -	ret = register_netdevice_notifier(&devlink->netdevice_nb);
+> -	if (ret)
+> -		goto err_register_netdevice_notifier;
+> -
+>   	devlink->dev = dev;
+>   	devlink->ops = ops;
+>   	xa_init_flags(&devlink->ports, XA_FLAGS_ALLOC);
+> @@ -233,8 +228,6 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+>   
+>   	return devlink;
+>   
+> -err_register_netdevice_notifier:
+> -	xa_erase(&devlinks, devlink->index);
+>   err_xa_alloc:
+>   	kfree(devlink);
+>   	return NULL;
+> @@ -266,8 +259,6 @@ void devlink_free(struct devlink *devlink)
+>   	xa_destroy(&devlink->params);
+>   	xa_destroy(&devlink->ports);
+>   
+> -	WARN_ON_ONCE(unregister_netdevice_notifier(&devlink->netdevice_nb));
+> -
+>   	xa_erase(&devlinks, devlink->index);
+>   
+>   	devlink_put(devlink);
+> @@ -303,6 +294,10 @@ static struct pernet_operations devlink_pernet_ops __net_initdata = {
+>   	.pre_exit = devlink_pernet_pre_exit,
+>   };
+>   
+> +static struct notifier_block devlink_port_netdevice_nb __net_initdata = {
+> +	.notifier_call = devlink_port_netdevice_event,
+> +};
+> +
+>   static int __init devlink_init(void)
+>   {
+>   	int err;
+> @@ -311,6 +306,9 @@ static int __init devlink_init(void)
+>   	if (err)
+>   		goto out;
+>   	err = register_pernet_subsys(&devlink_pernet_ops);
+> +	if (err)
+> +		goto out;
+> +	err = register_netdevice_notifier(&devlink_port_netdevice_nb);
+>   
+>   out:
+>   	WARN_ON(err);
+> diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+> index e133f423294a..62921b2eb0d3 100644
+> --- a/net/devlink/devl_internal.h
+> +++ b/net/devlink/devl_internal.h
+> @@ -50,7 +50,6 @@ struct devlink {
+>   	u8 reload_failed:1;
+>   	refcount_t refcount;
+>   	struct rcu_work rwork;
+> -	struct notifier_block netdevice_nb;
+>   	char priv[] __aligned(NETDEV_ALIGN);
+>   };
+>   
+> diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+> index dffca2f9bfa7..cd0254968076 100644
+> --- a/net/devlink/leftover.c
+> +++ b/net/devlink/leftover.c
+> @@ -7073,10 +7073,9 @@ int devlink_port_netdevice_event(struct notifier_block *nb,
+>   	struct devlink_port *devlink_port = netdev->devlink_port;
+>   	struct devlink *devlink;
+>   
+> -	devlink = container_of(nb, struct devlink, netdevice_nb);
+> -
+> -	if (!devlink_port || devlink_port->devlink != devlink)
+> +	if (!devlink_port)
+>   		return NOTIFY_OK;
+> +	devlink = devlink_port->devlink;
+>   
+>   	switch (event) {
+>   	case NETDEV_POST_INIT:
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Cc: loongarch@lists.linux.dev
-Cc: linux-m68k@lists.linux-m68k.org
-Cc: linux-mips@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: x86@kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-arch@vger.kernel.org
----
- arch/loongarch/include/asm/io.h     | 2 --
- arch/m68k/include/asm/io_mm.h       | 2 --
- arch/m68k/include/asm/kmap.h        | 2 --
- arch/mips/include/asm/io.h          | 5 ++---
- arch/powerpc/include/asm/io.h       | 9 +--------
- arch/x86/include/asm/io.h           | 5 -----
- drivers/net/ethernet/sfc/io.h       | 2 +-
- drivers/net/ethernet/sfc/siena/io.h | 2 +-
- include/asm-generic/iomap.h         | 6 +++---
- 9 files changed, 8 insertions(+), 27 deletions(-)
-
-diff --git a/arch/loongarch/include/asm/io.h b/arch/loongarch/include/asm/io.h
-index 545e2708fbf7..5fef1246c6fb 100644
---- a/arch/loongarch/include/asm/io.h
-+++ b/arch/loongarch/include/asm/io.h
-@@ -5,8 +5,6 @@
- #ifndef _ASM_IO_H
- #define _ASM_IO_H
- 
--#define ARCH_HAS_IOREMAP_WC
--
- #include <linux/kernel.h>
- #include <linux/types.h>
- 
-diff --git a/arch/m68k/include/asm/io_mm.h b/arch/m68k/include/asm/io_mm.h
-index d41fa488453b..6a0abd4846c6 100644
---- a/arch/m68k/include/asm/io_mm.h
-+++ b/arch/m68k/include/asm/io_mm.h
-@@ -26,8 +26,6 @@
- #include <asm/virtconvert.h>
- #include <asm/kmap.h>
- 
--#include <asm-generic/iomap.h>
--
- #ifdef CONFIG_ATARI
- #define atari_readb   raw_inb
- #define atari_writeb  raw_outb
-diff --git a/arch/m68k/include/asm/kmap.h b/arch/m68k/include/asm/kmap.h
-index dec05743d426..4efb3efa593a 100644
---- a/arch/m68k/include/asm/kmap.h
-+++ b/arch/m68k/include/asm/kmap.h
-@@ -4,8 +4,6 @@
- 
- #ifdef CONFIG_MMU
- 
--#define ARCH_HAS_IOREMAP_WT
--
- /* Values for nocacheflag and cmode */
- #define IOMAP_FULL_CACHING		0
- #define IOMAP_NOCACHE_SER		1
-diff --git a/arch/mips/include/asm/io.h b/arch/mips/include/asm/io.h
-index cc28d207a061..477773328a06 100644
---- a/arch/mips/include/asm/io.h
-+++ b/arch/mips/include/asm/io.h
-@@ -12,8 +12,6 @@
- #ifndef _ASM_IO_H
- #define _ASM_IO_H
- 
--#define ARCH_HAS_IOREMAP_WC
--
- #include <linux/compiler.h>
- #include <linux/kernel.h>
- #include <linux/types.h>
-@@ -25,7 +23,6 @@
- #include <asm/byteorder.h>
- #include <asm/cpu.h>
- #include <asm/cpu-features.h>
--#include <asm-generic/iomap.h>
- #include <asm/page.h>
- #include <asm/pgtable-bits.h>
- #include <asm/processor.h>
-@@ -210,6 +207,8 @@ void iounmap(const volatile void __iomem *addr);
- #define ioremap_wc(offset, size)					\
- 	ioremap_prot((offset), (size), boot_cpu_data.writecombine)
- 
-+#include <asm-generic/iomap.h>
-+
- #if defined(CONFIG_CPU_CAVIUM_OCTEON)
- #define war_io_reorder_wmb()		wmb()
- #else
-diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
-index f1e657c9bbe8..67a3fb6de498 100644
---- a/arch/powerpc/include/asm/io.h
-+++ b/arch/powerpc/include/asm/io.h
-@@ -3,11 +3,6 @@
- #define _ASM_POWERPC_IO_H
- #ifdef __KERNEL__
- 
--#define ARCH_HAS_IOREMAP_WC
--#ifdef CONFIG_PPC32
--#define ARCH_HAS_IOREMAP_WT
--#endif
--
- /*
-  */
- 
-@@ -732,9 +727,7 @@ static inline void name at					\
- #define writel_relaxed(v, addr)	writel(v, addr)
- #define writeq_relaxed(v, addr)	writeq(v, addr)
- 
--#ifdef CONFIG_GENERIC_IOMAP
--#include <asm-generic/iomap.h>
--#else
-+#ifndef CONFIG_GENERIC_IOMAP
- /*
-  * Here comes the implementation of the IOMAP interfaces.
-  */
-diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-index e9025640f634..76238842406a 100644
---- a/arch/x86/include/asm/io.h
-+++ b/arch/x86/include/asm/io.h
-@@ -35,9 +35,6 @@
-   *  - Arnaldo Carvalho de Melo <acme@conectiva.com.br>
-   */
- 
--#define ARCH_HAS_IOREMAP_WC
--#define ARCH_HAS_IOREMAP_WT
--
- #include <linux/string.h>
- #include <linux/compiler.h>
- #include <linux/cc_platform.h>
-@@ -212,8 +209,6 @@ void memset_io(volatile void __iomem *, int, size_t);
- #define memcpy_toio memcpy_toio
- #define memset_io memset_io
- 
--#include <asm-generic/iomap.h>
--
- /*
-  * ISA space is 'always mapped' on a typical x86 system, no need to
-  * explicitly ioremap() it. The fact that the ISA IO space is mapped
-diff --git a/drivers/net/ethernet/sfc/io.h b/drivers/net/ethernet/sfc/io.h
-index 30439cc83a89..07f99ad14bf3 100644
---- a/drivers/net/ethernet/sfc/io.h
-+++ b/drivers/net/ethernet/sfc/io.h
-@@ -70,7 +70,7 @@
-  */
- #ifdef CONFIG_X86_64
- /* PIO is a win only if write-combining is possible */
--#ifdef ARCH_HAS_IOREMAP_WC
-+#ifdef ioremap_wc
- #define EFX_USE_PIO 1
- #endif
- #endif
-diff --git a/drivers/net/ethernet/sfc/siena/io.h b/drivers/net/ethernet/sfc/siena/io.h
-index 30439cc83a89..07f99ad14bf3 100644
---- a/drivers/net/ethernet/sfc/siena/io.h
-+++ b/drivers/net/ethernet/sfc/siena/io.h
-@@ -70,7 +70,7 @@
-  */
- #ifdef CONFIG_X86_64
- /* PIO is a win only if write-combining is possible */
--#ifdef ARCH_HAS_IOREMAP_WC
-+#ifdef ioremap_wc
- #define EFX_USE_PIO 1
- #endif
- #endif
-diff --git a/include/asm-generic/iomap.h b/include/asm-generic/iomap.h
-index 08237ae8b840..196087a8126e 100644
---- a/include/asm-generic/iomap.h
-+++ b/include/asm-generic/iomap.h
-@@ -93,15 +93,15 @@ extern void __iomem *ioport_map(unsigned long port, unsigned int nr);
- extern void ioport_unmap(void __iomem *);
- #endif
- 
--#ifndef ARCH_HAS_IOREMAP_WC
-+#ifndef ioremap_wc
- #define ioremap_wc ioremap
- #endif
- 
--#ifndef ARCH_HAS_IOREMAP_WT
-+#ifndef ioremap_wt
- #define ioremap_wt ioremap
- #endif
- 
--#ifndef ARCH_HAS_IOREMAP_NP
-+#ifndef ioremap_np
- /* See the comment in asm-generic/io.h about ioremap_np(). */
- #define ioremap_np ioremap_np
- static inline void __iomem *ioremap_np(phys_addr_t offset, size_t size)
+Best regards
 -- 
-2.34.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
 
