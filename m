@@ -1,62 +1,54 @@
-Return-Path: <netdev+bounces-2768-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2769-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0D9E7703EB1
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 22:36:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F0165703EC2
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 22:47:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0968E281416
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 20:36:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DC4151C20C77
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 20:47:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15B58FC0A;
-	Mon, 15 May 2023 20:36:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18C75182B3;
+	Mon, 15 May 2023 20:47:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F389B1FBE
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:36:35 +0000 (UTC)
-Received: from smtp.smtpout.orange.fr (smtp-27.smtpout.orange.fr [80.12.242.27])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36354A5F3
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:36:33 -0700 (PDT)
-Received: from pop-os.home ([86.243.2.178])
-	by smtp.orange.fr with ESMTPA
-	id yevlpfkLqarguyevlp1xx0; Mon, 15 May 2023 22:36:32 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-	s=t20230301; t=1684182992;
-	bh=kB1RD+4WplvIWh7fw3+/GdX+k7JLdrHPlj+idk3PIbE=;
-	h=From:To:Cc:Subject:Date;
-	b=J5Pigy85+HmGNs0GS2F6HLphCoLP0S7NibMZAauZTrWNyHEN3RIg+r3U9Tx5qbDZN
-	 WcHC3AbzXyYUl8XZhf5yEfgrlcnrfZueGGx8720ABz6C9hwPJFcdpEOmEOqepS1ZNq
-	 d5WdVm+YnBxDM7gXZGjCO262mrJAj3waSrA+CTwoQeX/efsXHBwxXOzI13RxaR/FFk
-	 5R/zQdFQAQUxuXDmhvksnVscuU6EmcF6e/WWQ25gGsCef1CogVHWdf5bAAioP3bYNY
-	 uQ1Kii5ELDl1MiRzL2aOnjW1hY3uItYvfIekuv0K9aN1bA7z/9UaTSoQvPW0waHgj/
-	 ezA13kKQFL+sA==
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 15 May 2023 22:36:32 +0200
-X-ME-IP: 86.243.2.178
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To: Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-	Ondrej Ille <ondrej.ille@gmail.com>,
-	Wolfgang Grandegger <wg@grandegger.com>,
-	Marc Kleine-Budde <mkl@pengutronix.de>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Martin Jerabek <martin.jerabek01@gmail.com>
-Cc: linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D126FC0A
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:47:30 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55ED37EDD
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:47:29 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1pyf6N-0004k8-Nm
+	for netdev@vger.kernel.org; Mon, 15 May 2023 22:47:27 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+	by bjornoya.blackshift.org (Postfix) with SMTP id 126751C5C1E
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:47:26 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by bjornoya.blackshift.org (Postfix) with ESMTPS id C6B9F1C5C02;
+	Mon, 15 May 2023 20:47:24 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+	by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 9f6c67fa;
+	Mon, 15 May 2023 20:47:24 +0000 (UTC)
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: netdev@vger.kernel.org
+Cc: davem@davemloft.net,
+	kuba@kernel.org,
 	linux-can@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: [PATCH] can: ctucanfd: Fix an error handling path in ctucan_probe_common()
-Date: Mon, 15 May 2023 22:36:28 +0200
-Message-Id: <4b78c848826fde1b8a3ccd53f32b80674812cb12.1684182962.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+	kernel@pengutronix.de
+Subject: [PATCH net 0/9] pull-request: can 2023-05-15
+Date: Mon, 15 May 2023 22:47:13 +0200
+Message-Id: <20230515204722.1000957-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -64,45 +56,85 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-If register_candev() fails, a previous netif_napi_add() needs to be undone.
-Add the missing netif_napi_del() in the error handling path.
+Hello netdev-team,
 
-Fixes: 2dcb8e8782d8 ("can: ctucanfd: add support for CTU CAN FD open-source IP core - bus independent part.")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+this is a pull request of 9 patches for net/master.
+
+The first 2 patches are by Oliver Hartkopp and allow the
+MSG_CMSG_COMPAT flag for isotp and j1939.
+
+The next patch is by Oliver Hartkopp, too and adds missing CAN XL
+support in can_put_echo_skb().
+
+Geert Uytterhoeven's patch let's the bxcan driver depend on
+ARCH_STM32.
+
+The last 5 patches are from Dario Binacchi and also affect the bxcan
+driver. The bxcan driver hit mainline with v6.4-rc1 and was originally
+written for IP cores containing 2 CAN interfaces with shared
+resources. Dario's series updates the DT bindings and driver to
+support IP cores with a single CAN interface instance as well as
+adding the bxcan to the stm32f746's device tree.
+
+regards,
+Marc
+
 ---
- drivers/net/can/ctucanfd/ctucanfd_base.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/ctucanfd/ctucanfd_base.c b/drivers/net/can/ctucanfd/ctucanfd_base.c
-index 64c349fd4600..59e1708e43d6 100644
---- a/drivers/net/can/ctucanfd/ctucanfd_base.c
-+++ b/drivers/net/can/ctucanfd/ctucanfd_base.c
-@@ -1429,7 +1429,7 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
- 	ret = register_candev(ndev);
- 	if (ret) {
- 		dev_err(dev, "fail to register failed (err=%d)\n", ret);
--		goto err_deviceoff;
-+		goto err_del_napi;
- 	}
- 
- 	pm_runtime_put(dev);
-@@ -1439,6 +1439,8 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
- 
- 	return 0;
- 
-+err_del_napi:
-+	netif_napi_del(&priv->napi);
- err_deviceoff:
- 	pm_runtime_put(priv->dev);
- err_pmdisable:
--- 
-2.34.1
+The following changes since commit df0acdc59b094cdaef19b1c8d83c9721082bab7b:
+
+  net: phylink: fix ksettings_set() ethtool call (2023-05-15 10:31:23 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-6.4-20230515
+
+for you to fetch changes up to c08e24013aba49a593424715ffc04c928c84b9c9:
+
+  Merge patch series "can: bxcan: add support for single peripheral configuration" (2023-05-15 22:26:39 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-6.4-20230515
+
+----------------------------------------------------------------
+Dario Binacchi (5):
+      dt-bindings: net: can: add "st,can-secondary" property
+      ARM: dts: stm32f429: put can2 in secondary mode
+      ARM: dts: stm32: add pin map for CAN controller on stm32f7
+      can: bxcan: add support for single peripheral configuration
+      ARM: dts: stm32: add CAN support on stm32f746
+
+Geert Uytterhoeven (1):
+      can: CAN_BXCAN should depend on ARCH_STM32
+
+Marc Kleine-Budde (1):
+      Merge patch series "can: bxcan: add support for single peripheral configuration"
+
+Oliver Hartkopp (3):
+      can: isotp: recvmsg(): allow MSG_CMSG_COMPAT flag
+      can: j1939: recvmsg(): allow MSG_CMSG_COMPAT flag
+      can: dev: fix missing CAN XL support in can_put_echo_skb()
+
+ .../bindings/net/can/st,stm32-bxcan.yaml           | 19 +++--
+ arch/arm/boot/dts/stm32f429.dtsi                   |  1 +
+ arch/arm/boot/dts/stm32f7-pinctrl.dtsi             | 82 ++++++++++++++++++++++
+ arch/arm/boot/dts/stm32f746.dtsi                   | 47 +++++++++++++
+ drivers/net/can/Kconfig                            |  2 +-
+ drivers/net/can/bxcan.c                            | 34 ++++++---
+ drivers/net/can/dev/skb.c                          |  3 +-
+ net/can/isotp.c                                    |  2 +-
+ net/can/j1939/socket.c                             |  2 +-
+ 9 files changed, 173 insertions(+), 19 deletions(-)
+
 
 
