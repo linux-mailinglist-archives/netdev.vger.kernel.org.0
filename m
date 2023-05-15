@@ -1,164 +1,69 @@
-Return-Path: <netdev+bounces-2668-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2669-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 52F25702EBA
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:52:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2403C702ED0
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:53:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4A0081C20B55
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:52:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2A0FE1C20BA9
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:53:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 02366C8F8;
-	Mon, 15 May 2023 13:52:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35284D2E8;
+	Mon, 15 May 2023 13:53:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9A3963CA;
-	Mon, 15 May 2023 13:52:17 +0000 (UTC)
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0E9E6E;
-	Mon, 15 May 2023 06:52:15 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EB02C8F0;
+	Mon, 15 May 2023 13:53:01 +0000 (UTC)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96ED0268D;
+	Mon, 15 May 2023 06:52:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684158736; x=1715694736;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=n7yllujFV9tpaRgSKf9uC3OwShqrAhg7NEMdAe9MCgQ=;
-  b=g6tESjPkLMALRrYX909PscO31lXbxAWGFFTlC+C/ZRciWs0TVKYcZXws
-   hWbfdLdozPJ0xFgzqbXcQsEakurWGOGssmdPmMqBAWUvaf/jk3trAO2rf
-   JsCioDgAhfwumk6rojDTXeUIkfv4wRGy2SGwSh+CnLR+OZqPr8uq/m1v+
-   LKgz7vbHH41z+AZd0lVVyUxA0O30a6DTjS789fxaHyyVFQYVGMdu0L/g9
-   yYEPbkPJymIdR2azNCE+TumydiMVAvyxJopmqBg7ihgCNSLxBaUNIvcmu
-   dWRTw6q2T/72lz3EfHfZhSuj/ij/Dm4vuMDwOpqh89yB/5gRTDTmToQzn
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="331574354"
+  t=1684158773; x=1715694773;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Rs72Vzw8BQHCwDsmHBD36EAtM35B8o20rZOCfmA62LM=;
+  b=PXMzd/Lfj/g+kjzGa8w18qjfhmej/ADNtVNrELxc9AEcPnKJCiOAA3FU
+   1A6BQORfGuiDrj696zstHRfQD6sTXv85P8c2hk8KlsVUv2v7JoZtCrBSx
+   I3e/5hZ+NbrdFqh5sIxnsBHdItjzKxm/llpGgnewZWX/uXoh2wUp5P6SX
+   VDx74FPVncBoDb4X7SZsUNPEEj3yMbgRGvLxz0pyeex89f8MLwsCdyQHh
+   FY13q5JVqQOIaIb/aNg/CbY44LCUeO58XagGcxwlfSEeJc9+1HfwvHLAH
+   dsSWNLcsB2RB54LOE7r/eQVCYYWRBbokMxOMfNoFyvkA1mL7JY7kEQUei
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="348700074"
 X-IronPort-AV: E=Sophos;i="5.99,276,1677571200"; 
-   d="scan'208";a="331574354"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 06:52:16 -0700
+   d="scan'208";a="348700074"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 06:52:53 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="765936501"
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="695020874"
 X-IronPort-AV: E=Sophos;i="5.99,276,1677571200"; 
-   d="scan'208";a="765936501"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga008.fm.intel.com with ESMTP; 15 May 2023 06:52:15 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 15 May 2023 06:52:14 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Mon, 15 May 2023 06:52:14 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Mon, 15 May 2023 06:52:14 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CJIC5sl6933oO6QRJEpIpdAq97rQndkIdPC7qUcG5uFJ5m4nJ+Bm2ui1zvMPAQu4kRDjY90YN0YAuj5Uw9ZC5gIVBuuoCvXDkx9fdNOjdXPzSvBZwkWQuOURxmIgPRfPHu8sFtQktyCx35i4qAkJSD1qskxrUn1oKVVaKuAOgYPkZQaZABK8VZfzu+nTY8Dcx7IukNJw2YCxBODiyzffAqBM8+m0NYhkCaN9w6EfzG0MdHcCzy6fl/xzPEzAPvuTaI9Dvi+Em4UL/XNSDghLKOdSAc/xFdf67p0i2hIkMeFZCtJ4xF1YAWHfWxGXZIO7fQ3FXol7H+T7i0E5Pg95SA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pvx+i4VEzeLKTatwaIQU+GYJvDB5/nqzXAA3kH7G1rk=;
- b=H2H3tQRRrYvI7exnnsHmygWR/EKZyHpnMXGBOgYVJ1Y92Ggjz2oFCQBpwlS7pxfBnvXx8GkB/6gCKGalBuz3TULpvZTLuKqVR4n8R6iACI1nk2MS2WicF/8pFHJBzUYjowkl4fCqR7qrPxF/z+DHiKnnKeg7vvtMQACxjzsLlJfHenPbW2QntJCnj3wtnebEkHOKY8doIrJ29ple4Y6c/XYAvx5QcsLDKICrsGSQm1f239d1RdNU+0v4ySVMAoXZjijbqw8m/aVBYdhhub4VivoytsxBbN1VhPAjQOxKTWLRzPf2XBrf1snhFbfseI2/fMxKAvvdjf4BMvsobMepqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB5471.namprd11.prod.outlook.com (2603:10b6:5:39d::10)
- by PH0PR11MB7494.namprd11.prod.outlook.com (2603:10b6:510:283::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.29; Mon, 15 May
- 2023 13:52:10 +0000
-Received: from DM4PR11MB5471.namprd11.prod.outlook.com
- ([fe80::907c:ffaa:352a:8913]) by DM4PR11MB5471.namprd11.prod.outlook.com
- ([fe80::907c:ffaa:352a:8913%6]) with mapi id 15.20.6387.030; Mon, 15 May 2023
- 13:52:10 +0000
-Date: Mon, 15 May 2023 15:49:29 +0200
-From: Larysa Zaremba <larysa.zaremba@intel.com>
-To: Stanislav Fomichev <sdf@google.com>
-CC: <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>, "Daniel
- Borkmann" <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, "Jakub
- Kicinski" <kuba@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, Song
- Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>, John Fastabend
-	<john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, Jiri Olsa
-	<jolsa@kernel.org>, Jesse Brandeburg <jesse.brandeburg@intel.com>, "Tony
- Nguyen" <anthony.l.nguyen@intel.com>, Anatoly Burakov
-	<anatoly.burakov@intel.com>, Jesper Dangaard Brouer <brouer@redhat.com>,
-	Alexander Lobakin <alexandr.lobakin@intel.com>, Magnus Karlsson
-	<magnus.karlsson@gmail.com>, Maryam Tahhan <mtahhan@redhat.com>,
-	<xdp-hints@xdp-project.net>, <netdev@vger.kernel.org>,
-	<intel-wired-lan@lists.osuosl.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RESEND bpf-next 11/15] xdp: Add checksum level hint
-Message-ID: <ZGI4aS9UUdW4JwZ6@lincoln>
-References: <20230512152607.992209-1-larysa.zaremba@intel.com>
- <20230512152607.992209-12-larysa.zaremba@intel.com>
- <ZF6GrXsA8L0THVFB@google.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZF6GrXsA8L0THVFB@google.com>
-X-ClientProxiedBy: FR3P281CA0165.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a2::10) To DM4PR11MB5471.namprd11.prod.outlook.com
- (2603:10b6:5:39d::10)
+   d="scan'208";a="695020874"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga007.jf.intel.com with ESMTP; 15 May 2023 06:52:51 -0700
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To: intel-wired-lan@lists.osuosl.org
+Cc: netdev@vger.kernel.org,
+	bpf@vger.kernel.org,
+	anthony.l.nguyen@intel.com,
+	magnus.karlsson@intel.com,
+	simon.horman@corigine.com,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH iwl-net v2] ice: recycle/free all of the fragments from multi-buffer frame
+Date: Mon, 15 May 2023 15:52:47 +0200
+Message-Id: <20230515135247.142105-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.35.3
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB5471:EE_|PH0PR11MB7494:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6488149f-5c8d-4d52-fc24-08db554b945f
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: txeaj2X04LVyk6bqnVu3dSzOYjaA9boOLl87o+Cdrq3H38u6bXpZvlxRTzo8zgCHwfILdDXY4PsBJCLX+w2LAYVz7bq3hJuaWHeAXTEHBO/VckTO1QGc7Hv7hCyqffaDeWIYoy13dcEnj9Rmh6cUwVV3e1/06KAuJPZRoM89A4r1HfUCzL3SyTg/16rP9MBObyq6s3LnDM7k+zP9Z2EHcXJH51qtLe9U7ZANGQYI3JOhoYxOqwlJ0pk2QNvEm7tkIRK7GStQkODEy4kutkrDHaawo49xPJN4I3m9Rijpl14e4e26QtNeuV+stcTKcsBWYF51t8a0w8QxVnqsjwdwPX5tXNFivJX8R6B2Q3XGKDiwTZ/+W0KkWSDlyC0a8iYuTz0oSmEiCoNhrk+lBdENACsYNovWe1Lbf8Y97Vz5eM/XdKHiXJtg9dG6GIA4SZ806RO2ct0vsJBOquK2lPsHGhgEJRgtgb4zvaELtMRf94A5hLs5HdmRumNPt0zd3URASTkDDCLQSgix+oU98ul82MTtZexitBVOzCwOyPHu7e4ydc96VyqoF+VM+qdI8SaL
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5471.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(39860400002)(396003)(366004)(346002)(136003)(376002)(451199021)(86362001)(54906003)(316002)(66476007)(4326008)(6916009)(66946007)(6486002)(66556008)(478600001)(2906002)(33716001)(8936002)(5660300002)(8676002)(41300700001)(44832011)(6666004)(7416002)(38100700002)(82960400001)(9686003)(186003)(26005)(6506007)(83380400001)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2sDWlbujWPUffVyiaE5BPmn3JBi/y4A1OgsczZpvEun3BzA5KW0OzVwduNpS?=
- =?us-ascii?Q?RbBjRs/iv2Jnr4Xr4zuBSx7okdzV3+HNASi94JFt0FTZ5YKtM0fwoLGJtceT?=
- =?us-ascii?Q?FnVXmhljXwOssnTlyFjUDaxKpnIvVOcom6GJzAZMgyvws0ZOO7KUNPHQPHTt?=
- =?us-ascii?Q?IjVQ6v8OyL+FUZsrpClOcBhPwe0cirIrvNMLMhC/nzDVB8BN1xMPWVMs5aqf?=
- =?us-ascii?Q?i+ESxXNJurnwPn4pUUwx/pw+9Lh2QaiuUvlVfgGe0WWxhK8U1FHOM77NNtlm?=
- =?us-ascii?Q?SvxjhUQs0lKyXv5OvGhw7ec/b0p5meHYfMpfkgCoMs+nq8Es4d92reI3WxPZ?=
- =?us-ascii?Q?4JWwprls7Ffmdb86yxsrKdhXsfgLUL4LpxY1G8SDAaXATLgu8Z8lQ95sgZE1?=
- =?us-ascii?Q?KdMd0wnnxT54dFfxxFEAraTFOyPdJD9DWqSHtoRd/i34ZlxFJ3AuWDiJi0dH?=
- =?us-ascii?Q?L2lsYtcxM6K5LM9OmXIUZGTNBUnwgZ/qtYDP8e+SHXDnGx9kyaID34nujhA1?=
- =?us-ascii?Q?Uj+qdIL9g0QN9/cYQ2lKolSONJa9nrQCfwigMbvH/3rqNmwzxtE4K/7alAzN?=
- =?us-ascii?Q?eY9P787NIGq4RfqdpyyjgZziW9Yry1TSV4WiAqDQf7c7MK3L8sc+WxbExhOM?=
- =?us-ascii?Q?2zAEZAOPZsTum58f5UjH10imhJkizmHrqB4rCPSz8iHAt5zfX8jdBo027Q5T?=
- =?us-ascii?Q?cJakS1fACw3uCn2RPV5/9J+4gUB2ePxJJaeveGqmzKjzMo7gD8cQ/2vcoc3o?=
- =?us-ascii?Q?2Za62H0Sq8kvldU0qSJ0QrluLLuAMdOPk2/cRQWFtS2VIir3wQEwuTpVXzz6?=
- =?us-ascii?Q?mE/RGVUzO+uV9hR03rcRmxloHT8k4jf9YvUbm4+n0QGRjgAaaLU0zndBaT99?=
- =?us-ascii?Q?PHOsWfNU6/5tJWG1fwEbrudFXhajwjVxOugoqi/EQX/EzpfzYXnwL0r0+YyV?=
- =?us-ascii?Q?b+ERCOnxN10b9rLXZUkTgpyhm5HH+xVRZNRJHBHGvxFHrVx+CYYiU1uYorFK?=
- =?us-ascii?Q?6BeTdHSs7goPOneY3zZaoJNZpGIfZWkpE5wPDuV0lyT1DEZLkDBqNISPkG7h?=
- =?us-ascii?Q?m6do7MqrrNNb+z1ZRr12dqj3mle5ewHJg9htmMwMOPue0KSu+Cdkg+kIImfE?=
- =?us-ascii?Q?Be/rsL6pDePNX+EiHXVjCBl00ADh8HoQxk/QvV1ppulGg4Jo/ph1+fEA25/k?=
- =?us-ascii?Q?70bj02QRQc/c90ORURSt6W9AFqeABLxHWxJLhohYr8It85RqJA8HaLQIUhgl?=
- =?us-ascii?Q?LDZq31l/nU6b+rk9mk2KhfUpRSyJAuaDatGatqsNhbqhAWXzlCzUyusrPy9x?=
- =?us-ascii?Q?0QdnldTQkecdLtxgtHtYY1W8ntK6eT/w6NLESfHAXhq0MLWagGb0e3nRdwR+?=
- =?us-ascii?Q?+3nWupIhnQaiVE/HmBoZ21zVQ6OMY1yDdy52T0DoQmsEveTaX5smXJEDrKrN?=
- =?us-ascii?Q?RmcZbfKFbzXeLCTfcds/ZLik5u049Vkv+hjzvedpxu1vC1BIaBOmy1HD44As?=
- =?us-ascii?Q?9GARcAsS/I9kXUhYjH5+QDZ2ZtkZnSqZRNwHHowzXbUzveK1URThJwzMOuJN?=
- =?us-ascii?Q?0Clsy2HgTVj3FctoJBOJariWLX4GZKONXCK3cTKusEh4WhuT60j6n6pMicq2?=
- =?us-ascii?Q?Ig=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6488149f-5c8d-4d52-fc24-08db554b945f
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5471.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 13:52:10.6010
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dhUlJP/UxbM8+27KVBAfD1htHNsI8M51up/58XFRiS37raiSPqBL5jUykHWp9hU1UgAgjccGPbgsbjsRPWhmmCmY3IOJC9mpHAFZaqotVfc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB7494
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -166,104 +71,83 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 12, 2023 at 11:34:21AM -0700, Stanislav Fomichev wrote:
-> On 05/12, Larysa Zaremba wrote:
-> > Implement functionality that enables drivers to expose to XDP code,
-> > whether checksums was checked and on what level.
-> > 
-> > Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
-> > ---
-> >  Documentation/networking/xdp-rx-metadata.rst |  3 +++
-> >  include/linux/netdevice.h                    |  1 +
-> >  include/net/xdp.h                            |  2 ++
-> >  kernel/bpf/offload.c                         |  2 ++
-> >  net/core/xdp.c                               | 12 ++++++++++++
-> >  5 files changed, 20 insertions(+)
-> > 
-> > diff --git a/Documentation/networking/xdp-rx-metadata.rst b/Documentation/networking/xdp-rx-metadata.rst
-> > index 73a78029c596..f74f0e283097 100644
-> > --- a/Documentation/networking/xdp-rx-metadata.rst
-> > +++ b/Documentation/networking/xdp-rx-metadata.rst
-> > @@ -29,6 +29,9 @@ metadata is supported, this set will grow:
-> >  .. kernel-doc:: net/core/xdp.c
-> >     :identifiers: bpf_xdp_metadata_rx_stag
-> >  
-> > +.. kernel-doc:: net/core/xdp.c
-> > +   :identifiers: bpf_xdp_metadata_rx_csum_lvl
-> > +
-> >  An XDP program can use these kfuncs to read the metadata into stack
-> >  variables for its own consumption. Or, to pass the metadata on to other
-> >  consumers, an XDP program can store it into the metadata area carried
-> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > index fdae37fe11f5..ddade3a15366 100644
-> > --- a/include/linux/netdevice.h
-> > +++ b/include/linux/netdevice.h
-> > @@ -1657,6 +1657,7 @@ struct xdp_metadata_ops {
-> >  			       enum xdp_rss_hash_type *rss_type);
-> >  	int	(*xmo_rx_ctag)(const struct xdp_md *ctx, u16 *vlan_tag);
-> >  	int	(*xmo_rx_stag)(const struct xdp_md *ctx, u16 *vlan_tag);
-> > +	int	(*xmo_rx_csum_lvl)(const struct xdp_md *ctx, u8 *csum_level);
-> >  };
-> >  
-> >  /**
-> > diff --git a/include/net/xdp.h b/include/net/xdp.h
-> > index 2db7439fc60f..0fbd25616241 100644
-> > --- a/include/net/xdp.h
-> > +++ b/include/net/xdp.h
-> > @@ -393,6 +393,8 @@ void xdp_attachment_setup(struct xdp_attachment_info *info,
-> >  			   bpf_xdp_metadata_rx_ctag) \
-> >  	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_STAG, \
-> >  			   bpf_xdp_metadata_rx_stag) \
-> > +	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_CSUM_LVL, \
-> > +			   bpf_xdp_metadata_rx_csum_lvl) \
-> >  
-> >  enum {
-> >  #define XDP_METADATA_KFUNC(name, _) name,
-> > diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
-> > index 2c6b6e82cfac..8bd54fb4ac63 100644
-> > --- a/kernel/bpf/offload.c
-> > +++ b/kernel/bpf/offload.c
-> > @@ -852,6 +852,8 @@ void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
-> >  		p = ops->xmo_rx_ctag;
-> >  	else if (func_id == bpf_xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_STAG))
-> >  		p = ops->xmo_rx_stag;
-> > +	else if (func_id == bpf_xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_CSUM_LVL))
-> > +		p = ops->xmo_rx_csum_lvl;
-> >  out:
-> >  	up_read(&bpf_devs_lock);
-> >  
-> > diff --git a/net/core/xdp.c b/net/core/xdp.c
-> > index eff21501609f..7dd45fd62983 100644
-> > --- a/net/core/xdp.c
-> > +++ b/net/core/xdp.c
-> > @@ -762,6 +762,18 @@ __bpf_kfunc int bpf_xdp_metadata_rx_stag(const struct xdp_md *ctx, u16 *vlan_tag
-> >  	return -EOPNOTSUPP;
-> >  }
-> >  
-> > +/**
-> > + * bpf_xdp_metadata_rx_csum_lvl - Get depth at which HW has checked the checksum.
-> > + * @ctx: XDP context pointer.
-> > + * @csum_level: Return value pointer.
-> 
-> Let's maybe clarify what the level means here? For example, do we start
-> counting from 0 or 1?
+The ice driver caches next_to_clean value at the beginning of
+ice_clean_rx_irq() in order to remember the first buffer that has to be
+freed/recycled after main Rx processing loop. The end boundary is
+indicated by first descriptor of frame that Rx processing loop has ended
+its duties. Note that if mentioned loop ended in the middle of gathering
+multi-buffer frame, next_to_clean would be pointing to the descriptor in
+the middle of the frame BUT freeing/recycling stage will stop at the
+first descriptor. This means that next iteration of ice_clean_rx_irq()
+will miss the (first_desc, next_to_clean - 1) entries.
 
-Sure, I'll add a comment that the meaning of level is the same as in skb, 
-counting from 0.
+ When running various 9K MTU workloads, such splats were observed:
 
-> 
-> > + *
-> > + * Returns 0 on success (HW has checked the checksum) or ``-errno`` on error.
-> > + */
-> > +__bpf_kfunc int bpf_xdp_metadata_rx_csum_lvl(const struct xdp_md *ctx, u8 *csum_level)
-> > +{
-> > +	return -EOPNOTSUPP;
-> > +}
-> > +
-> >  __diag_pop();
-> >  
-> >  BTF_SET8_START(xdp_metadata_kfunc_ids)
-> > -- 
-> > 2.35.3
-> > 
+[  540.780716] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[  540.787787] #PF: supervisor read access in kernel mode
+[  540.793002] #PF: error_code(0x0000) - not-present page
+[  540.798218] PGD 0 P4D 0
+[  540.800801] Oops: 0000 [#1] PREEMPT SMP NOPTI
+[  540.805231] CPU: 18 PID: 3984 Comm: xskxceiver Tainted: G        W          6.3.0-rc7+ #96
+[  540.813619] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0008.031920191559 03/19/2019
+[  540.824209] RIP: 0010:ice_clean_rx_irq+0x2b6/0xf00 [ice]
+[  540.829678] Code: 74 24 10 e9 aa 00 00 00 8b 55 78 41 31 57 10 41 09 c4 4d 85 ff 0f 84 83 00 00 00 49 8b 57 08 41 8b 4f 1c 65 8b 35 1a fa 4b 3f <48> 8b 02 48 c1 e8 3a 39 c6 0f 85 a2 00 00 00 f6 42 08 02 0f 85 98
+[  540.848717] RSP: 0018:ffffc9000f42fc50 EFLAGS: 00010282
+[  540.854029] RAX: 0000000000000004 RBX: 0000000000000002 RCX: 000000000000fffe
+[  540.861272] RDX: 0000000000000000 RSI: 0000000000000001 RDI: 00000000ffffffff
+[  540.868519] RBP: ffff88984a05ac00 R08: 0000000000000000 R09: dead000000000100
+[  540.875760] R10: ffff88983fffcd00 R11: 000000000010f2b8 R12: 0000000000000004
+[  540.883008] R13: 0000000000000003 R14: 0000000000000800 R15: ffff889847a10040
+[  540.890253] FS:  00007f6ddf7fe640(0000) GS:ffff88afdf800000(0000) knlGS:0000000000000000
+[  540.898465] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  540.904299] CR2: 0000000000000000 CR3: 000000010d3da001 CR4: 00000000007706e0
+[  540.911542] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  540.918789] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  540.926032] PKRU: 55555554
+[  540.928790] Call Trace:
+[  540.931276]  <TASK>
+[  540.933418]  ice_napi_poll+0x4ca/0x6d0 [ice]
+[  540.937804]  ? __pfx_ice_napi_poll+0x10/0x10 [ice]
+[  540.942716]  napi_busy_loop+0xd7/0x320
+[  540.946537]  xsk_recvmsg+0x143/0x170
+[  540.950178]  sock_recvmsg+0x99/0xa0
+[  540.953729]  __sys_recvfrom+0xa8/0x120
+[  540.957543]  ? do_futex+0xbd/0x1d0
+[  540.961008]  ? __x64_sys_futex+0x73/0x1d0
+[  540.965083]  __x64_sys_recvfrom+0x20/0x30
+[  540.969155]  do_syscall_64+0x38/0x90
+[  540.972796]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
+[  540.977934] RIP: 0033:0x7f6de5f27934
+
+To fix this, set cached_ntc to first_desc so that at the end, when
+freeing/recycling buffers, descriptors from first to ntc are not missed.
+
+Fixes: 2fba7dc5157b ("ice: Add support for XDP multi-buffer on Rx side")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+v2: set cached_ntc directly to first_desc [Simon]
+
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 4fcf2d07eb85..730ee2741b7f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -1152,11 +1152,11 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
+ 	unsigned int total_rx_bytes = 0, total_rx_pkts = 0;
+ 	unsigned int offset = rx_ring->rx_offset;
+ 	struct xdp_buff *xdp = &rx_ring->xdp;
++	u32 cached_ntc = rx_ring->first_desc;
+ 	struct ice_tx_ring *xdp_ring = NULL;
+ 	struct bpf_prog *xdp_prog = NULL;
+ 	u32 ntc = rx_ring->next_to_clean;
+ 	u32 cnt = rx_ring->count;
+-	u32 cached_ntc = ntc;
+ 	u32 xdp_xmit = 0;
+ 	u32 cached_ntu;
+ 	bool failure;
+-- 
+2.34.1
+
 
