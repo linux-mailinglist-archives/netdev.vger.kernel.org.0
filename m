@@ -1,127 +1,167 @@
-Return-Path: <netdev+bounces-2679-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2680-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DFC1B703103
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 17:07:46 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6424C703154
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 17:18:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A5FED28137F
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:07:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1A7CB1C20C1F
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:18:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6041DD516;
-	Mon, 15 May 2023 15:07:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C76CD536;
+	Mon, 15 May 2023 15:18:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F98DC8E5
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 15:07:39 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F672137
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 08:07:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684163247;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jqAunJggVfMk8DVsWWYkCIQsfbXlahXMSDO8JBjiKzE=;
-	b=W8SGczOTxqx7AlFLKkDrWcLea6O7FflZEgKN9/OsGbSp+4WDkK5/HDq10Dt0hDAd0rUuAB
-	AViVexbfrBou4la1PaMVmA7ca+pr2PNW7HhHwiypmleiE5TGiTqrtaXwK+7XW4Z2RoEpMK
-	vRrYJuM/Qkg0aPKEUpL53wjrXRdOTfM=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-567-RQK420pFNUivajiie0VzMQ-1; Mon, 15 May 2023 11:07:23 -0400
-X-MC-Unique: RQK420pFNUivajiie0VzMQ-1
-Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-94a348facbbso1607738366b.1
-        for <netdev@vger.kernel.org>; Mon, 15 May 2023 08:07:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684163242; x=1686755242;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :to:subject:cc:user-agent:mime-version:date:message-id:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jqAunJggVfMk8DVsWWYkCIQsfbXlahXMSDO8JBjiKzE=;
-        b=Zqw2KHFiZEofxkfsjHQ8LkXL9jst9dX44YUkEoNh5BVKUtOe7CATn51GDxDI6P9h4V
-         E0NAEGZ0oXjyjlDspoiotm3AVFsUp0RXo5DW/NsKGtwcZ02bqHi1y4jQ/r3SSOX8H/ap
-         W3Hrhp0n95j2tv5tvFmkm3R+bsYBikeV9F1/4erkuT/wlQYDYCkoIUUxM+s11pT6K22H
-         uHF19QWigdUr6rOBeNkQIzPxaQWN87cBLhSMyfRquH9yxgFEtNqdar6WKyVt7VM65and
-         DsCBPUIaTL2F4gBDf0bC8xSjlOFsJM8GMjFpLH+6JWPJqe/l4TSxJh3BILf+vLoSvcv1
-         ISbw==
-X-Gm-Message-State: AC+VfDzimDjORZnIk/0c277YNUgp9fMJTwZnazpnrfwwBYNbVNW+2qJN
-	KUAgYiDIenuv7ydk+8scW9vV9lWQEYKl8SG2FcdJUWkgX3si1OkaWqRWFFNTD3H5GyiBlLm7dbF
-	fNwISv/pCCNC0YExY
-X-Received: by 2002:a17:907:d91:b0:933:4d37:82b2 with SMTP id go17-20020a1709070d9100b009334d3782b2mr31485025ejc.57.1684163242608;
-        Mon, 15 May 2023 08:07:22 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4KJfmiDaL9BJh3jJxYB1OG8NuTPCjYqSvJHsOpWGNg4A0jTsW7kReLmT9LoGqXUg8hKEYa+Q==
-X-Received: by 2002:a17:907:d91:b0:933:4d37:82b2 with SMTP id go17-20020a1709070d9100b009334d3782b2mr31484980ejc.57.1684163242248;
-        Mon, 15 May 2023 08:07:22 -0700 (PDT)
-Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id l17-20020a170907915100b0095004c87676sm9682583ejs.199.2023.05.15.08.07.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 May 2023 08:07:21 -0700 (PDT)
-From: Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <e4a9fa43-06f7-5271-effc-20cac59b0e64@redhat.com>
-Date: Mon, 15 May 2023 17:07:19 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41C3CD507
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 15:18:24 +0000 (UTC)
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D4C8E;
+	Mon, 15 May 2023 08:18:22 -0700 (PDT)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+	by mg.bb.i.ssi.bg (Proxmox) with ESMTP id A8C29A9E1;
+	Mon, 15 May 2023 18:18:20 +0300 (EEST)
+Received: from ink.ssi.bg (ink.ssi.bg [193.238.174.40])
+	by mg.bb.i.ssi.bg (Proxmox) with ESMTPS id 91973AB0B;
+	Mon, 15 May 2023 18:18:20 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+	by ink.ssi.bg (Postfix) with ESMTPS id 9CB5D3C080D;
+	Mon, 15 May 2023 18:18:16 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+	by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 34FFIDnO137144;
+	Mon, 15 May 2023 18:18:14 +0300
+Date: Mon, 15 May 2023 18:18:13 +0300 (EEST)
+From: Julian Anastasov <ja@ssi.bg>
+To: Abhijeet Rastogi <abhijeet.1989@gmail.com>
+cc: Simon Horman <horms@verge.net.au>, Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] ipvs: increase ip_vs_conn_tab_bits range for 64BIT
+In-Reply-To: <20230412-increase_ipvs_conn_tab_bits-v2-1-994c0df018e6@gmail.com>
+Message-ID: <56b88a99-db88-36e4-9ff1-a5d940578108@ssi.bg>
+References: <20230412-increase_ipvs_conn_tab_bits-v2-1-994c0df018e6@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Cc: brouer@redhat.com, bpf@vger.kernel.org,
- Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
- Andrii Nakryiko <andrii@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>,
- Yonghong Song <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>,
- KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
- Jesse Brandeburg <jesse.brandeburg@intel.com>,
- Tony Nguyen <anthony.l.nguyen@intel.com>,
- Anatoly Burakov <anatoly.burakov@intel.com>,
- Alexander Lobakin <alexandr.lobakin@intel.com>,
- Magnus Karlsson <magnus.karlsson@gmail.com>,
- Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
- netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND bpf-next 10/15] ice: Implement VLAN tag hint
-To: Larysa Zaremba <larysa.zaremba@intel.com>,
- Stanislav Fomichev <sdf@google.com>
-References: <20230512152607.992209-1-larysa.zaremba@intel.com>
- <20230512152607.992209-11-larysa.zaremba@intel.com>
- <ZF6F+UQlXA9REqag@google.com> <ZGI2oDcWX+o9Ea0T@lincoln>
-Content-Language: en-US
-In-Reply-To: <ZGI2oDcWX+o9Ea0T@lincoln>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
+	Hello,
 
-On 15/05/2023 15.41, Larysa Zaremba wrote:
->>> +	*vlan_tag = ice_get_vlan_tag_from_rx_desc(xdp_ext->eop_desc);
->> Should we also do the following:
->>
->> if (!*vlan_tag)
->> 	return -ENODATA;
->>
->> ?
-> Oh, returning VLAN tag with zero value really made sense to me at the beginning,
-> but after playing with different kinds of packets, I think returning error makes
-> more sense. Will change.
+On Sun, 14 May 2023, Abhijeet Rastogi wrote:
+
+> Current range [8, 20] is set purely due to historical reasons
+> because at the time, ~1M (2^20) was considered sufficient.
+> With this change, 27 is the upper limit for 64-bit, 20 otherwise.
 > 
+> Previous change regarding this limit is here.
+> 
+> Link: https://lore.kernel.org/all/86eabeb9dd62aebf1e2533926fdd13fed48bab1f.1631289960.git.aclaudi@redhat.com/T/#u
+> 
+> Signed-off-by: Abhijeet Rastogi <abhijeet.1989@gmail.com>
+> ---
+> The conversation for this started at: 
+> 
+> https://www.spinics.net/lists/netfilter/msg60995.html
+> 
+> The upper limit for algo is any bit size less than 32, so this
+> change will allow us to set bit size > 20. Today, it is common to have
+> RAM available to handle greater than 2^20 connections per-host.
+> 
+> Distros like RHEL already allow setting limits higher than 20.
+> ---
+> Changes in v2:
+> - Lower the ranges, 27 for 64bit, 20 otherwise
+> - Link to v1: https://lore.kernel.org/r/20230412-increase_ipvs_conn_tab_bits-v1-1-60a4f9f4c8f2@gmail.com
+> ---
+>  net/netfilter/ipvs/Kconfig      | 26 +++++++++++++-------------
+>  net/netfilter/ipvs/ip_vs_conn.c |  4 ++--
+>  2 files changed, 15 insertions(+), 15 deletions(-)
+> 
+> diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
+> index 271da8447b29..aac5d6bd82e6 100644
+> --- a/net/netfilter/ipvs/Kconfig
+> +++ b/net/netfilter/ipvs/Kconfig
+> @@ -44,7 +44,8 @@ config	IP_VS_DEBUG
+>  
+>  config	IP_VS_TAB_BITS
+>  	int "IPVS connection table size (the Nth power of 2)"
+> -	range 8 20
+> +	range 8 20 if !64BIT
+> +	range 8 27 if 64BIT
+>  	default 12
+>  	help
+>  	  The IPVS connection hash table uses the chaining scheme to handle
+> @@ -52,18 +53,17 @@ config	IP_VS_TAB_BITS
+>  	  reduce conflicts when there are hundreds of thousands of connections
+>  	  in the hash table.
+>  
+> -	  Note the table size must be power of 2. The table size will be the
+> -	  value of 2 to the your input number power. The number to choose is
+> -	  from 8 to 20, the default number is 12, which means the table size
+> -	  is 4096. Don't input the number too small, otherwise you will lose
+> -	  performance on it. You can adapt the table size yourself, according
+> -	  to your virtual server application. It is good to set the table size
+> -	  not far less than the number of connections per second multiplying
+> -	  average lasting time of connection in the table.  For example, your
+> -	  virtual server gets 200 connections per second, the connection lasts
+> -	  for 200 seconds in average in the connection table, the table size
+> -	  should be not far less than 200x200, it is good to set the table
+> -	  size 32768 (2**15).
+> +	  Note the table size must be power of 2. The table size will be the value
+> +	  of 2 to the your input number power. The number to choose is from 8 to 27
+> +	  for 64BIT(20 otherwise), the default number is 12, which means the table
+> +	  size is 4096. Don't input the number too small, otherwise you will lose
+> +	  performance on it. You can adapt the table size yourself, according to
+> +	  your virtual server application. It is good to set the table size not far
+> +	  less than the number of connections per second multiplying average lasting
+> +	  time of connection in the table.  For example, your virtual server gets
+> +	  200 connections per second, the connection lasts for 200 seconds in
+> +	  average in the connection table, the table size should be not far less
+> +	  than 200x200, it is good to set the table size 32768 (2**15).
 
-IIRC then VLAN tag zero is also a valid id, right?
+	Can you keep the previous line width of the above help
+because on standard 80-width window the help now gets truncated in
+make menuconfig.
 
---Jesper
+	After that I'll send a patch on top of yours to limit the
+rows depending on the memory.
+
+>  	  Another note that each connection occupies 128 bytes effectively and
+>  	  each hash entry uses 8 bytes, so you can estimate how much memory is
+> diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+> index 13534e02346c..e1b9b52909a5 100644
+> --- a/net/netfilter/ipvs/ip_vs_conn.c
+> +++ b/net/netfilter/ipvs/ip_vs_conn.c
+> @@ -1484,8 +1484,8 @@ int __init ip_vs_conn_init(void)
+>  	int idx;
+>  
+>  	/* Compute size and mask */
+> -	if (ip_vs_conn_tab_bits < 8 || ip_vs_conn_tab_bits > 20) {
+> -		pr_info("conn_tab_bits not in [8, 20]. Using default value\n");
+> +	if (ip_vs_conn_tab_bits < 8 || ip_vs_conn_tab_bits > 27) {
+> +		pr_info("conn_tab_bits not in [8, 27]. Using default value\n");
+>  		ip_vs_conn_tab_bits = CONFIG_IP_VS_TAB_BITS;
+>  	}
+>  	ip_vs_conn_tab_size = 1 << ip_vs_conn_tab_bits;
+> 
+> ---
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
 
 
