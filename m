@@ -1,57 +1,73 @@
-Return-Path: <netdev+bounces-2693-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2694-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 726B4703222
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 18:05:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id EECB1703253
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 18:08:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 291AF1C20C16
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 16:05:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9FCB01C20BD9
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 16:08:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B992E56E;
-	Mon, 15 May 2023 16:05:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66EA4E56F;
+	Mon, 15 May 2023 16:08:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2004DC8CE
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 16:05:42 +0000 (UTC)
-X-Greylist: delayed 193 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 May 2023 09:05:09 PDT
-Received: from pku.edu.cn (mx19.pku.edu.cn [162.105.129.182])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47398E44;
-	Mon, 15 May 2023 09:05:08 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56711E552
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 16:08:45 +0000 (UTC)
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE861987;
+	Mon, 15 May 2023 09:08:26 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-96aadfb19d7so695574566b.2;
+        Mon, 15 May 2023 09:08:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=pku.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-	Message-Id:In-Reply-To:References:MIME-Version:
-	Content-Transfer-Encoding; bh=Z2kSEouUK5ALcnlaK77eH+hTTBVNdMFUed
-	a5nYYd65Y=; b=NuaVhk4wftm9VB3gbKLQxqcucgJqrpnnFFujOmb0ksMs8GGYqG
-	+HQ++H/Mv47XFNSKsYLdRjIGNU35JZJx8IZmjsiu9cr9/vdkrveK2vx+WWfRb4sk
-	Bm47uJGardXJwIHpDxOaZn4cAvT6Pj9GwsSLl79UqAiqXXlxY5Ug1YfMY=
-Received: from localhost.localdomain (unknown [10.7.98.243])
-	by front02 (Coremail) with SMTP id 54FpogAHDU1PV2JkFco3FA--.0S2;
-	Tue, 16 May 2023 00:01:37 +0800 (CST)
-From: Ruihan Li <lrh2000@pku.edu.cn>
-To: linux-bluetooth@vger.kernel.org,
-	luiz.dentz@gmail.com,
-	johan.hedberg@gmail.com,
-	marcel@holtmann.org
-Cc: syzbot+cf54c1da6574b6c1b049@syzkaller.appspotmail.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	linux-kernel@vger.kernel.org,
+        d=gmail.com; s=20221208; t=1684166870; x=1686758870;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=p+/KgeGTvYD4VU83ivrKJR5CVNGs2S8SquG6Hadg/og=;
+        b=Wzoz++pGy8QtqPwGINL9MTm22bUrl5iQ3dcCvRt9Na/2JcGIbmlL1APBME/r7PqsHw
+         439/32CwXE9aBEN7lYst1prB/HQU+onlAhhkPG/L4456/5vXjWNyaMS5l3Y9Pk6il8x+
+         2XYs7SbfD6tu2jgkn4SDpJFzqgpSYv8FNwsPQWqF6vxgX0JD/5DJJV7RD6mU08L83JSh
+         5i6yWY5TdVDcRVkRUltie9HdFXODPTIDjS5aAzKt82ZvnObkbIwT38B9F/df4n7fFKw8
+         zvWoJ7YCS5yLyS+/ixcaYeQpyUbgt9hY07dfFJGraeUyGT0u6LxPfC72/0eTvtd0H9Uh
+         8GtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684166870; x=1686758870;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=p+/KgeGTvYD4VU83ivrKJR5CVNGs2S8SquG6Hadg/og=;
+        b=itAYb7eO3t9e5bt7HeUWvwyakvt4CvPUyjqTuqp6WaEbYUDLtH36kXK/HmqaAmALjR
+         nnLUGFMN0LBlq+2ct8tyI0a+e8uxjNKIP1aiOrSPm6vEJ77TMoOPrYmSd9K+8/oi/Kef
+         nKw5F0oEeXvxPOaCe1KLmfvrP6nGW8d6rgLGUVimuTlumxJqDo7kiV/BygqpxsMo3x8I
+         q5s/N9qtlDuUsFla8G26hQJ5N//R5lYku37KpvQmZgWd/uuw81pA/rwQZr0fYjNV36xs
+         f1lRlWDyESELF0QXXjLpTq0NUX/q/xlRc9SdyZlK9WycWhYsOUWcUSjccDk2Hz6/jVcA
+         MUjQ==
+X-Gm-Message-State: AC+VfDzHXl01K1o7MLil5v+2Bs3UrthwPF8AiykAP4pfeXdWfEZLEwos
+	gPxrtLLKBhPbBkrrYMPwqr1pKFMWwwU=
+X-Google-Smtp-Source: ACHHUZ60/UKpwLhdDOryw+hJysiWn2x7FkdlX8wrj2XmC21BXFu/hTtdwYUk37YHqBkXQS99sTdlAg==
+X-Received: by 2002:a17:907:26c7:b0:966:5bc0:bfe6 with SMTP id bp7-20020a17090726c700b009665bc0bfe6mr27042525ejc.2.1684166870002;
+        Mon, 15 May 2023 09:07:50 -0700 (PDT)
+Received: from 127.com ([2620:10d:c092:600::2:6366])
+        by smtp.gmail.com with ESMTPSA id z25-20020a17090674d900b0096ac3e01a35sm4407085ejl.130.2023.05.15.09.07.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 May 2023 09:07:49 -0700 (PDT)
+From: Pavel Begunkov <asml.silence@gmail.com>
+To: io-uring@vger.kernel.org,
 	netdev@vger.kernel.org,
-	pabeni@redhat.com,
-	syzkaller-bugs@googlegroups.com,
-	Ruihan Li <lrh2000@pku.edu.cn>
-Subject: Re: [syzbot] [bluetooth?] KASAN: slab-use-after-free Write in sco_chan_del
-Date: Tue, 16 May 2023 00:01:19 +0800
-Message-Id: <20230515160119.38957-1-lrh2000@pku.edu.cn>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <00000000000013b93805fbbadc50@google.com>
-References: <00000000000013b93805fbbadc50@google.com>
+	edumazet@google.com,
+	davem@davemloft.net,
+	dsahern@kernel.org,
+	kuba@kernel.org,
+	pabeni@redhat.com
+Cc: Pavel Begunkov <asml.silence@gmail.com>
+Subject: [PATCH net-next 0/2] minor tcp io_uring zc optimisations
+Date: Mon, 15 May 2023 17:06:35 +0100
+Message-Id: <cover.1684166247.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.40.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -59,64 +75,25 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:54FpogAHDU1PV2JkFco3FA--.0S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxJr13GrWxWw17JFWrAryUtrb_yoW8GFWxpa
-	yYv3Zaqr48Jwn5uanFkan7GrWkWrn5uFWjkry8XryrZ398trWDAa18Kr12qw45GFWkJF4U
-	AFW8t3W7tay5G37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUBa1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-	w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-	IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-	z280aVAFwI0_Jr0_Gr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r4UJwAac4AC62xK8x
-	CEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80
-	ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4
-	AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY
-	1x02628vn2kIc2xKxwCY02Avz4vE-syl42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaV
-	Av8VWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
-	3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIx
-	AIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAI
-	cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2js
-	IEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUlQ6LUUUUU=
-X-CM-SenderInfo: yssqiiarrvmko6sn3hxhgxhubq/1tbiAgEMBVPy7743xAAKsD
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-It seems that, while we remember to release unestablished SCO connections when
-the ACL connection tears down (since [1]), we forget to call hci_connect_cfm
-before hci_conn_del. Without hci_connect_cfm, the SCO socket may not be
-notified to clean up its associated SCO connection (in sco_connect_cfm),
-causing this use-after-free risk when operating the socket.
+Patch 1 is a simple cleanup, patch 2 gives removes 2 atomics from the
+io_uring zc TCP submission path, which yielded extra 0.5% for my
+throughput CPU bound tests based on liburing/examples/send-zerocopy.c
 
- [1] https://lore.kernel.org/linux-bluetooth/20230203173024.1.Ieb6662276f3bd3d79e9134ab04523d584c300c45@changeid/
+Pavel Begunkov (2):
+  net/tcp: don't peek at tail for io_uring zc
+  net/tcp: optimise io_uring zc ubuf refcounting
 
-However, I cannot figure out an easy and clear way to pass a proper error code
-to hci_connect_cfm at this point, so I wonder if it is acceptable to use
-HCI_ERROR_UNSPECIFIED directly. That said, the patch will look like this:
+ net/ipv4/tcp.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index f75ef12f1..73c120258 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -1102,8 +1102,10 @@ static void hci_conn_unlink(struct hci_conn *conn)
- 			 */
- 			if ((child->type == SCO_LINK ||
- 			     child->type == ESCO_LINK) &&
--			    child->handle == HCI_CONN_HANDLE_UNSET)
-+			    child->handle == HCI_CONN_HANDLE_UNSET) {
-+				hci_connect_cfm(child, HCI_ERROR_UNSPECIFIED);
- 				hci_conn_del(child);
-+			}
- 		}
- 
- 		return;
-
-Also, while this fix can semantically be applied to v6.1 and above, an explicit
-backport is required due to the hci_conn_unlink refactoring in the mainline.
-
-Thanks,
-Ruihan Li
+-- 
+2.40.0
 
 
