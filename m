@@ -1,181 +1,182 @@
-Return-Path: <netdev+bounces-2466-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2467-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BB4487021D5
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 04:45:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 117B17021DA
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 04:53:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E31E6281035
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 02:45:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1C8D5280EF0
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 02:53:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B2195139B;
-	Mon, 15 May 2023 02:45:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 38F3915D2;
+	Mon, 15 May 2023 02:53:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CE89EA0
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:45:26 +0000 (UTC)
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B5ED9;
-	Sun, 14 May 2023 19:45:24 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4QKNwz27qgzLmGM;
-	Mon, 15 May 2023 10:44:03 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 15 May 2023 10:45:21 +0800
-Message-ID: <ae4c68c8-e798-778f-f53c-9c455c6a9f6c@huawei.com>
-Date: Mon, 15 May 2023 10:45:20 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2568FEA0
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:53:53 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB62E7A
+	for <netdev@vger.kernel.org>; Sun, 14 May 2023 19:53:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684119230;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6CabpyALIbC0XiIqIpyQi+CRaEbpYdCuFNhvblzhbiM=;
+	b=J6gwXGgw2xnq2ePk6ol6dBPVFrdxxmfSY1RGYkDBTR5gnYIqS5JStR9MUP0/rkxpJ4WRkG
+	ZldHdptAbiDqHqaammo0CVxWVjPvBssMS86LsMBSNLm7xl4QTj89mnxK17RImob+ZTxai+
+	pUKvC4aug2uhKuPT1Uy61T3Zd/AMVjw=
+Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
+ [209.85.210.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-96-1RGvOHp1OVyaze_-yvQckQ-1; Sun, 14 May 2023 22:53:49 -0400
+X-MC-Unique: 1RGvOHp1OVyaze_-yvQckQ-1
+Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-648f83d2169so5021804b3a.0
+        for <netdev@vger.kernel.org>; Sun, 14 May 2023 19:53:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684119228; x=1686711228;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6CabpyALIbC0XiIqIpyQi+CRaEbpYdCuFNhvblzhbiM=;
+        b=ZcoyOGVny3topkg/dVAdnMC8J7NIc9iZ20bF7wvBDW4TA3KS2ZHN0CL/NTFM6Uz990
+         H3HpDf7Jhdulm4z+KMI3ijRGqlozKsN2Mty7WoQhQApCYCSdvb2qgK2gOfytrT4x8VAM
+         SqT28SLwoTl0qjWNAlXgz4/MicfE9A4YQM7VDdP3OQgUUE+p6qYIKQ6v5kUkwqyQ4dyy
+         p08sEiV+nZ1xqhg/qlCSPx19MdLt8PAkh9PKV/NS7lqBE6BdyOaRkebpw3yKFLyzEAEy
+         BfpfoBNdmcHxKpfN4XiiLaVwk8+saET7oXwFBFE9/vu2zLrZqM8mG3Dmzj01HqtlJZV0
+         Zpeg==
+X-Gm-Message-State: AC+VfDxuPUKCO9fQbtknvYNZAE1L6h2g667O4j7BYKG937smO0ASMn0x
+	QPlrisF3OSJ0chGnVDnOgU0iLbLZwSVS294zLuuTBXezvPBmINQFu4qUt5HFmV6vQ1vajc0+hfE
+	7vqK4CfE80kFcWPNpnPlfN2Tjq5WZPA==
+X-Received: by 2002:a05:6a00:14ce:b0:640:f313:efba with SMTP id w14-20020a056a0014ce00b00640f313efbamr44287684pfu.19.1684119227746;
+        Sun, 14 May 2023 19:53:47 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4H0Vhtb1WKGWG0qToJXua++R64IEkjUvFNR/u68c6n1aFTk5roUr6tBN4mKUL/UL196m7IKQ==
+X-Received: by 2002:a05:6a00:14ce:b0:640:f313:efba with SMTP id w14-20020a056a0014ce00b00640f313efbamr44287666pfu.19.1684119227419;
+        Sun, 14 May 2023 19:53:47 -0700 (PDT)
+Received: from [10.72.13.223] ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id c22-20020aa78816000000b00642c5ef6050sm9479859pfo.173.2023.05.14.19.53.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 May 2023 19:53:47 -0700 (PDT)
+Message-ID: <7012a65f-d265-e510-492b-5003b512ef05@redhat.com>
+Date: Mon, 15 May 2023 10:53:39 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [syzbot] [wireless?] memory leak in hwsim_new_radio_nl
-To: syzbot <syzbot+904ce6fbb38532d9795c@syzkaller.appspotmail.com>,
-	<davem@davemloft.net>, <edumazet@google.com>, <johannes@sipsolutions.net>,
-	<kuba@kernel.org>, <kvalo@kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-	<pabeni@redhat.com>, <syzkaller-bugs@googlegroups.com>
-References: <000000000000383da505fb8509b7@google.com>
-From: shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <000000000000383da505fb8509b7@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+Subject: Re: [PATCH v5 virtio 01/11] virtio: allow caller to override device
+ id in vp_modern
+To: Shannon Nelson <shannon.nelson@amd.com>, mst@redhat.com,
+ virtualization@lists.linux-foundation.org, brett.creeley@amd.com,
+ netdev@vger.kernel.org
+Cc: simon.horman@corigine.com, drivers@pensando.io
+References: <20230503181240.14009-1-shannon.nelson@amd.com>
+ <20230503181240.14009-2-shannon.nelson@amd.com>
+Content-Language: en-US
+From: Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20230503181240.14009-2-shannon.nelson@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
+在 2023/5/4 02:12, Shannon Nelson 写道:
+> To add a bit of vendor flexibility with various virtio based devices,
+> allow the caller to check for a different device id.  This adds a function
+> pointer field to struct virtio_pci_modern_device to specify an override
+> device id check.  If defined by the driver, this function will be called
+> to check that the PCI device is the vendor's expected device, and will
+> return the found device id to be stored in mdev->id.device.  This allows
+> vendors with alternative vendor device ids to use this library on their
+> own device BAR.
+>
+> Note: A lot of the diff in this is simply indenting the existing code
+> into an else block.
+>
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 
-On 2023/5/13 4:34, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    105131df9c3b Merge tag 'dt-fixes-6.4' of git://git.kernel...
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1193dc92280000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=fa9562c0bfb72fa2
-> dashboard link: https://syzkaller.appspot.com/bug?extid=904ce6fbb38532d9795c
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10b4577c280000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14a9e29e280000
-> 
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/029c9c553eb9/disk-105131df.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/c807843227d1/vmlinux-105131df.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/dfce3441d47b/bzImage-105131df.xz
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+904ce6fbb38532d9795c@syzkaller.appspotmail.com
-> 
-> Warning: Permanently added '10.128.1.177' (ECDSA) to the list of known hosts.
-> executing program
-> executing program
-> BUG: memory leak
-> unreferenced object 0xffff88810e2ac920 (size 32):
->    comm "syz-executor238", pid 4983, jiffies 4294944120 (age 14.000s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff815458a4>] kmalloc_trace+0x24/0x90 mm/slab_common.c:1057
->      [<ffffffff830fc4fb>] kmalloc include/linux/slab.h:559 [inline]
->      [<ffffffff830fc4fb>] hwsim_new_radio_nl+0x43b/0x660 drivers/net/wireless/virtual/mac80211_hwsim.c:5962
->      [<ffffffff83f4aa6e>] genl_family_rcv_msg_doit.isra.0+0xee/0x150 net/netlink/genetlink.c:968
->      [<ffffffff83f4ada7>] genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
->      [<ffffffff83f4ada7>] genl_rcv_msg+0x2d7/0x430 net/netlink/genetlink.c:1065
->      [<ffffffff83f49111>] netlink_rcv_skb+0x91/0x1e0 net/netlink/af_netlink.c:2546
->      [<ffffffff83f4a118>] genl_rcv+0x28/0x40 net/netlink/genetlink.c:1076
->      [<ffffffff83f4805b>] netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
->      [<ffffffff83f4805b>] netlink_unicast+0x39b/0x4d0 net/netlink/af_netlink.c:1365
->      [<ffffffff83f4852a>] netlink_sendmsg+0x39a/0x720 net/netlink/af_netlink.c:1913
->      [<ffffffff83db5258>] sock_sendmsg_nosec net/socket.c:724 [inline]
->      [<ffffffff83db5258>] sock_sendmsg+0x58/0xb0 net/socket.c:747
->      [<ffffffff83db5817>] ____sys_sendmsg+0x397/0x430 net/socket.c:2503
->      [<ffffffff83db9e08>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2557
->      [<ffffffff83db9fac>] __sys_sendmsg+0x8c/0x100 net/socket.c:2586
->      [<ffffffff84a127b9>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->      [<ffffffff84a127b9>] do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
->      [<ffffffff84c0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> BUG: memory leak
-> unreferenced object 0xffff88810e2ac800 (size 32):
->    comm "syz-executor238", pid 4984, jiffies 4294944700 (age 8.200s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff815458a4>] kmalloc_trace+0x24/0x90 mm/slab_common.c:1057
->      [<ffffffff830fc4fb>] kmalloc include/linux/slab.h:559 [inline]
->      [<ffffffff830fc4fb>] hwsim_new_radio_nl+0x43b/0x660 drivers/net/wireless/virtual/mac80211_hwsim.c:5962
->      [<ffffffff83f4aa6e>] genl_family_rcv_msg_doit.isra.0+0xee/0x150 net/netlink/genetlink.c:968
->      [<ffffffff83f4ada7>] genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
->      [<ffffffff83f4ada7>] genl_rcv_msg+0x2d7/0x430 net/netlink/genetlink.c:1065
->      [<ffffffff83f49111>] netlink_rcv_skb+0x91/0x1e0 net/netlink/af_netlink.c:2546
->      [<ffffffff83f4a118>] genl_rcv+0x28/0x40 net/netlink/genetlink.c:1076
->      [<ffffffff83f4805b>] netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
->      [<ffffffff83f4805b>] netlink_unicast+0x39b/0x4d0 net/netlink/af_netlink.c:1365
->      [<ffffffff83f4852a>] netlink_sendmsg+0x39a/0x720 net/netlink/af_netlink.c:1913
->      [<ffffffff83db5258>] sock_sendmsg_nosec net/socket.c:724 [inline]
->      [<ffffffff83db5258>] sock_sendmsg+0x58/0xb0 net/socket.c:747
->      [<ffffffff83db5817>] ____sys_sendmsg+0x397/0x430 net/socket.c:2503
->      [<ffffffff83db9e08>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2557
->      [<ffffffff83db9fac>] __sys_sendmsg+0x8c/0x100 net/socket.c:2586
->      [<ffffffff84a127b9>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->      [<ffffffff84a127b9>] do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
->      [<ffffffff84c0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> 
-> 
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+Thanks
+
+
 > ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> 
-> If the bug is already fixed, let syzbot know by replying with:
-> #syz fix: exact-commit-title
-> 
-> If you want syzbot to run the reproducer, reply with:
-> #syz test: git://repo/address.git branch-or-commit-hash
-> If you attach or paste a git patch, syzbot will apply it before testing.
-> 
-> If you want to change bug's subsystems, reply with:
-> #syz set subsystems: new-subsystem
-> (See the list of subsystem names on the web dashboard)
-> 
-> If the bug is a duplicate of another bug, reply with:
-> #syz dup: exact-subject-of-another-report
-> 
-> If you want to undo deduplication, reply with:
-> #syz undup
-> 
-> 
+>   drivers/virtio/virtio_pci_modern_dev.c | 30 ++++++++++++++++----------
+>   include/linux/virtio_pci_modern.h      |  3 +++
+>   2 files changed, 22 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
+> index 869cb46bef96..9b2d6614de67 100644
+> --- a/drivers/virtio/virtio_pci_modern_dev.c
+> +++ b/drivers/virtio/virtio_pci_modern_dev.c
+> @@ -218,21 +218,29 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
+>   	int err, common, isr, notify, device;
+>   	u32 notify_length;
+>   	u32 notify_offset;
+> +	int devid;
+>   
+>   	check_offsets();
+>   
+> -	/* We only own devices >= 0x1000 and <= 0x107f: leave the rest. */
+> -	if (pci_dev->device < 0x1000 || pci_dev->device > 0x107f)
+> -		return -ENODEV;
+> -
+> -	if (pci_dev->device < 0x1040) {
+> -		/* Transitional devices: use the PCI subsystem device id as
+> -		 * virtio device id, same as legacy driver always did.
+> -		 */
+> -		mdev->id.device = pci_dev->subsystem_device;
+> +	if (mdev->device_id_check) {
+> +		devid = mdev->device_id_check(pci_dev);
+> +		if (devid < 0)
+> +			return devid;
+> +		mdev->id.device = devid;
+>   	} else {
+> -		/* Modern devices: simply use PCI device id, but start from 0x1040. */
+> -		mdev->id.device = pci_dev->device - 0x1040;
+> +		/* We only own devices >= 0x1000 and <= 0x107f: leave the rest. */
+> +		if (pci_dev->device < 0x1000 || pci_dev->device > 0x107f)
+> +			return -ENODEV;
+> +
+> +		if (pci_dev->device < 0x1040) {
+> +			/* Transitional devices: use the PCI subsystem device id as
+> +			 * virtio device id, same as legacy driver always did.
+> +			 */
+> +			mdev->id.device = pci_dev->subsystem_device;
+> +		} else {
+> +			/* Modern devices: simply use PCI device id, but start from 0x1040. */
+> +			mdev->id.device = pci_dev->device - 0x1040;
+> +		}
+>   	}
+>   	mdev->id.vendor = pci_dev->subsystem_vendor;
+>   
+> diff --git a/include/linux/virtio_pci_modern.h b/include/linux/virtio_pci_modern.h
+> index c4eeb79b0139..e7b1db1dd0bb 100644
+> --- a/include/linux/virtio_pci_modern.h
+> +++ b/include/linux/virtio_pci_modern.h
+> @@ -38,6 +38,9 @@ struct virtio_pci_modern_device {
+>   	int modern_bars;
+>   
+>   	struct virtio_device_id id;
+> +
+> +	/* optional check for vendor virtio device, returns dev_id or -ERRNO */
+> +	int (*device_id_check)(struct pci_dev *pdev);
+>   };
+>   
+>   /*
 
-This issue is introduced by 92d13386ec55 ("mac80211_hwsim: add PMSR
-capability support")
-When parse_pmsr_capa failed in hwsim_new_radio_nl, the memory resources
-applied for by pmsr_capa are not released. It should replace
-param.pmsr_capa with pmsr_capa to release memory.
-
-I will fix it today.
-
-Zhengchao Shao
 
