@@ -1,197 +1,131 @@
-Return-Path: <netdev+bounces-2463-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2464-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B6992702163
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 04:13:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A8E157021A8
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 04:24:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B5A861C20A11
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 02:13:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2F3DC1C209AD
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 02:24:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA1D21381;
-	Mon, 15 May 2023 02:13:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3921B1389;
+	Mon, 15 May 2023 02:24:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBE4310EA
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:13:51 +0000 (UTC)
-Received: from mail-m127104.qiye.163.com (mail-m127104.qiye.163.com [115.236.127.104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B392110DB;
-	Sun, 14 May 2023 19:13:48 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPV6:240e:3b7:3270:1980:719c:500e:9fa7:6718])
-	by mail-m127104.qiye.163.com (Hmail) with ESMTPA id 83E3DA40111;
-	Mon, 15 May 2023 10:13:44 +0800 (CST)
-From: Ding Hui <dinghui@sangfor.com.cn>
-To: chuck.lever@oracle.com,
-	jlayton@kernel.org,
-	trond.myklebust@hammerspace.com,
-	anna@kernel.org
-Cc: davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	linux-nfs@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	dinghui@sangfor.com.cn,
-	stable@vger.kernel.org
-Subject: [PATCH] SUNRPC: Fix UAF in svc_tcp_listen_data_ready()
-Date: Mon, 15 May 2023 10:13:07 +0800
-Message-Id: <20230515021307.3072-1-dinghui@sangfor.com.cn>
-X-Mailer: git-send-email 2.17.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCThkYVksYGkIeTkwYS0xLGFUTARMWGhIXJBQOD1
-	lXWRgSC1lBWUlPSx5BSBlMQUhJTEtBSkJDS0FMSkIYQU5LSx5BQh0aTEFNTEpDWVdZFhoPEhUdFF
-	lBWU9LSFVKSktISkxVSktLVUtZBg++
-X-HM-Tid: 0a881d2f6370b282kuuu83e3da40111
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MT46Hio5Mj0XNxksMEIOHR8U
-	TD4wCSpVSlVKTUNPSkpNQ0lOSEJIVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-	QVlJT0seQUgZTEFISUxLQUpCQ0tBTEpCGEFOS0seQUIdGkxBTUxKQ1lXWQgBWUFOT01NNwY+
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BE601381
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:24:01 +0000 (UTC)
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979B61BE3;
+	Sun, 14 May 2023 19:23:21 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id 41be03b00d2f7-52c30fbccd4so11189252a12.0;
+        Sun, 14 May 2023 19:23:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684117315; x=1686709315;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=niU+K5V3bpGotdNKpKxWKa4Y6tYufU19KgTr2VkMAOs=;
+        b=TzK1q0I0oFDYjnlEeRsc/RoZzCBtJzngsvHVhHS26gVUo+WtNoR51Fq2J0eVQ7V9JY
+         XX0str2BASSFHiaTZa1p20RDKWbCbOTBcVuekLzpi+JmZ4hAQLVVVB90JscQ/O6LCq1m
+         33xxZQotsk6xDNqaz6r/SXYBOFjKiK34BEgRgIf3SE8nx/vpkktc1z5RUd4lzSW7sJB2
+         P3RGZxJ3dl0sty4J4Jtsg1bY3TLj3M9bGjC0VJ+RR/8NDFZFpuj/779GgmLIhRQ1UThQ
+         qCYHhUs9gdv2JpOwsO6mZQe93pMNthS3PcHmjjjp2VFKGesJhteE0NfOKhrUYUfNqBgH
+         +zsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684117315; x=1686709315;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=niU+K5V3bpGotdNKpKxWKa4Y6tYufU19KgTr2VkMAOs=;
+        b=ZAdH1+YoAz9QQwVYthSx29MvakU3YSlXFmniNN5AzAtYvQN6W2SumJJtUgVY43x3wt
+         UojbrrnGfWcU0WxX1N8wApzZiZyc02BQYeJiI0mkaIcSJw+//eYvLT62i48kCm3bquJR
+         6uEjfIXE03HB10wNCoAo8yEJz2dyW0Z4jv/Q7TwFBNcdPBWMIq9ZebTAFXLIXNm48jjv
+         8r76ILE0o04y0p9HzjfJ24qLa3L+8djeVT8TAzV7POveTr1J2oZ+KnYS3CSnE8g+drY9
+         +dlFg29bstcIZrJEz+dlpIvS1mqJrsqClK5VEa+NsjJwsZXbODtwYf8ld+O1Fj/x0dOb
+         OWNg==
+X-Gm-Message-State: AC+VfDzFNXel8zdKgCYFAwBlpyfWkURMI61DeAfUY5yN/XsGWPkPJBjd
+	zbgnbb+CG6/Sd+OhQqvuWGqSqEPxB5A=
+X-Google-Smtp-Source: ACHHUZ6b0O29/SbNOOB1m/nfqjkm8TsYEwR4PWrH+ndWxFONqfoISHkRpOfAkfaFUYT1OsPN24E65Q==
+X-Received: by 2002:a17:902:f7c9:b0:1ad:eb62:f617 with SMTP id h9-20020a170902f7c900b001adeb62f617mr9893964plw.45.1684117314765;
+        Sun, 14 May 2023 19:21:54 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-25.three.co.id. [180.214.233.25])
+        by smtp.gmail.com with ESMTPSA id r4-20020a1709028bc400b001a95aef9728sm4568073plo.19.2023.05.14.19.21.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 May 2023 19:21:54 -0700 (PDT)
+Message-ID: <018f62d0-ee1d-9198-9c38-e45b10921e2e@gmail.com>
+Date: Mon, 15 May 2023 09:21:38 +0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Content-Language: en-US
+To: Linux Regressions <regressions@lists.linux.dev>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Wireless <linux-wireless@vger.kernel.org>,
+ Broadcom 80211 Devices <brcm80211-dev-list.pdl@broadcom.com>,
+ SHA cyfmac Subsystem <SHA-cyfmac-dev-list@infineon.com>,
+ Linux Kernel Network Developers <netdev@vger.kernel.org>
+Cc: Hante Meuleman <hante.meuleman@broadcom.com>,
+ Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+ Franky Lin <franky.lin@broadcom.com>,
+ Arend van Spriel <arend.vanspriel@broadcom.com>,
+ Kalle Valo <kvalo@kernel.org>, julien.falque@gmail.com
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: Fwd: Freeze after resuming from hibernation (culprit is brcmfmac
+ change?)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-After the listener svc_sock be freed, and before invoking svc_tcp_accept()
-for the established child sock, there is a window that the newsock
-retaining a freed listener svc_sock in sk_user_data which cloning from
-parent. In the race windows if data is received on the newsock, we will
-observe use-after-free report in svc_tcp_listen_data_ready().
+Hi,
 
-Reproduce by two tasks:
+I notice a regression report on bugzilla [1]. Quoting from it:
 
-1. while :; do rpc.nfsd 0 ; rpc.nfsd; done
-2. while :; do echo "" | ncat -4 127.0.0.1 2049 ; done
+>  julien.falque@gmail.com 2023-05-14 09:55:38 UTC
+> 
+> Since a Kernel update a few weeks ago, my laptop freezes when resuming from hibernation. It seems to handle the resume process normally but at the moment I should see Gnome login screen, I either get a black screen with just a white underscore instead, or nothing displayed at all (no backlight). I can't do anything at that point and I have to hard reboot.
+> 
+> Steps to reproduce:
+> - hibernate
+> - resume
+> - wait until the resuming process should finish: black screen instead of e.g. Gnome's login screen
+> 
+> journalctl gives nothing between the beginning of the resume and the crash, as if it never happened.
+> 
+> I have a Dell XPS 15 (9550) with Arch Linux. The issue happens on linux (since v6.2.0 I think) but linux-lts (currently v6.1.28) is fine.
+> 
+> A bisect on linux-git gave commit da6d9c8ecd00 as the cause of the problem.
 
-KASAN report:
+See bugzilla for the full thread.
 
-  ==================================================================
-  BUG: KASAN: slab-use-after-free in svc_tcp_listen_data_ready+0x1cf/0x1f0 [sunrpc]
-  Read of size 8 at addr ffff888139d96228 by task nc/102553
-  CPU: 7 PID: 102553 Comm: nc Not tainted 6.3.0+ #18
-  Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 11/12/2020
-  Call Trace:
-   <IRQ>
-   dump_stack_lvl+0x33/0x50
-   print_address_description.constprop.0+0x27/0x310
-   print_report+0x3e/0x70
-   kasan_report+0xae/0xe0
-   svc_tcp_listen_data_ready+0x1cf/0x1f0 [sunrpc]
-   tcp_data_queue+0x9f4/0x20e0
-   tcp_rcv_established+0x666/0x1f60
-   tcp_v4_do_rcv+0x51c/0x850
-   tcp_v4_rcv+0x23fc/0x2e80
-   ip_protocol_deliver_rcu+0x62/0x300
-   ip_local_deliver_finish+0x267/0x350
-   ip_local_deliver+0x18b/0x2d0
-   ip_rcv+0x2fb/0x370
-   __netif_receive_skb_one_core+0x166/0x1b0
-   process_backlog+0x24c/0x5e0
-   __napi_poll+0xa2/0x500
-   net_rx_action+0x854/0xc90
-   __do_softirq+0x1bb/0x5de
-   do_softirq+0xcb/0x100
-   </IRQ>
-   <TASK>
-   ...
-   </TASK>
+Julien: I asked you to also provide dmesg log as I don't know
+what exactly happened, but you mentioned the culprit was
+da6d9c8ecd00e2 ("wifi: brcmfmac: add firmware vendor info in driver info"),
+which implies that the crash involves your wifi device. From my experience
+though, GDM crashes are usually caused by xwayland.
 
-  Allocated by task 102371:
-   kasan_save_stack+0x1e/0x40
-   kasan_set_track+0x21/0x30
-   __kasan_kmalloc+0x7b/0x90
-   svc_setup_socket+0x52/0x4f0 [sunrpc]
-   svc_addsock+0x20d/0x400 [sunrpc]
-   __write_ports_addfd+0x209/0x390 [nfsd]
-   write_ports+0x239/0x2c0 [nfsd]
-   nfsctl_transaction_write+0xac/0x110 [nfsd]
-   vfs_write+0x1c3/0xae0
-   ksys_write+0xed/0x1c0
-   do_syscall_64+0x38/0x90
-   entry_SYSCALL_64_after_hwframe+0x72/0xdc
+Anyway, I'm adding this to regzbot:
 
-  Freed by task 102551:
-   kasan_save_stack+0x1e/0x40
-   kasan_set_track+0x21/0x30
-   kasan_save_free_info+0x2a/0x50
-   __kasan_slab_free+0x106/0x190
-   __kmem_cache_free+0x133/0x270
-   svc_xprt_free+0x1e2/0x350 [sunrpc]
-   svc_xprt_destroy_all+0x25a/0x440 [sunrpc]
-   nfsd_put+0x125/0x240 [nfsd]
-   nfsd_svc+0x2cb/0x3c0 [nfsd]
-   write_threads+0x1ac/0x2a0 [nfsd]
-   nfsctl_transaction_write+0xac/0x110 [nfsd]
-   vfs_write+0x1c3/0xae0
-   ksys_write+0xed/0x1c0
-   do_syscall_64+0x38/0x90
-   entry_SYSCALL_64_after_hwframe+0x72/0xdc
+#regzbot introduced: da6d9c8ecd00e2 https://bugzilla.kernel.org/show_bug.cgi?id=217442
+#regzbot title: brcmfmac firmware vendor info addition triggers GDM crash on resuming from hibernation
 
-Fix the UAF by simply doing nothing in svc_tcp_listen_data_ready()
-if state != TCP_LISTEN, that will avoid dereferencing svsk for all
-child socket.
+Thanks. 
 
-Link: https://lore.kernel.org/lkml/20230507091131.23540-1-dinghui@sangfor.com.cn/
-Fixes: fa9251afc33c ("SUNRPC: Call the default socket callbacks instead of open coding")
-Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
-Cc: <stable@vger.kernel.org>
----
- net/sunrpc/svcsock.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+[1]: https://bugzilla.kernel.org/show_bug.cgi?id=217442
 
-diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
-index a51c9b989d58..9aca6e1e78e4 100644
---- a/net/sunrpc/svcsock.c
-+++ b/net/sunrpc/svcsock.c
-@@ -825,12 +825,6 @@ static void svc_tcp_listen_data_ready(struct sock *sk)
- 
- 	trace_sk_data_ready(sk);
- 
--	if (svsk) {
--		/* Refer to svc_setup_socket() for details. */
--		rmb();
--		svsk->sk_odata(sk);
--	}
--
- 	/*
- 	 * This callback may called twice when a new connection
- 	 * is established as a child socket inherits everything
-@@ -839,13 +833,18 @@ static void svc_tcp_listen_data_ready(struct sock *sk)
- 	 *    when one of child sockets become ESTABLISHED.
- 	 * 2) data_ready method of the child socket may be called
- 	 *    when it receives data before the socket is accepted.
--	 * In case of 2, we should ignore it silently.
-+	 * In case of 2, we should ignore it silently and DO NOT
-+	 * dereference svsk.
- 	 */
--	if (sk->sk_state == TCP_LISTEN) {
--		if (svsk) {
--			set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
--			svc_xprt_enqueue(&svsk->sk_xprt);
--		}
-+	if (sk->sk_state != TCP_LISTEN)
-+		return;
-+
-+	if (svsk) {
-+		/* Refer to svc_setup_socket() for details. */
-+		rmb();
-+		svsk->sk_odata(sk);
-+		set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
-+		svc_xprt_enqueue(&svsk->sk_xprt);
- 	}
- }
- 
 -- 
-2.17.1
-
+An old man doll... just what I always wanted! - Clara
 
