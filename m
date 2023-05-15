@@ -1,100 +1,100 @@
-Return-Path: <netdev+bounces-2544-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2545-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 61D9B702765
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 10:40:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 13441702774
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 10:42:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6275A1C20AC8
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 08:40:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BDD6528118B
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 08:42:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C15A879E6;
-	Mon, 15 May 2023 08:40:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C7A98462;
+	Mon, 15 May 2023 08:42:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A5F36FB9
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 08:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C9B8CC433EF;
-	Mon, 15 May 2023 08:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684140022;
-	bh=rkPYRVHYoFIq5x31MeyoOcvF2XsRlsAmrW6c/Ah20e4=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=T0qutthaj7wTluNWt8wE446nIlbekz+lyFEG3t+q84meeZCY+MNxV8qmdbf2LZs65
-	 lfPXz/m9LH2F7O97wL/kgUyR8jLdgNKr/JWT4S7XCIys4wNEhX6dkPi/74Aiu6IoqC
-	 MQa6KWpiVDHXrkb+d4bvKWFxsFnP3vkbijB4ksplyXE24LTvA1cS95UboNCDNT2wGY
-	 GQ6Dbtar5Q4Sfoh6sd8k5fixnUi79x15pSQOoV7rzqEa8yic9HrrE0c0XrF9+esg5u
-	 mmM3/JszZLwEiv+N18QdUBmp3F+0YkYbtV6rIiGgS0eCEm0hWtTrgOhlZxgarsk5+i
-	 /ccxQSz8XUC4g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AB959C41672;
-	Mon, 15 May 2023 08:40:22 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216A76FB9
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 08:42:16 +0000 (UTC)
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4B1E49;
+	Mon, 15 May 2023 01:42:13 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id E01D321D54;
+	Mon, 15 May 2023 08:42:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1684140131; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=iMyogPFU7LyhBaMdBwdBH4OR9+KTNXgm0SUPVyw/cGM=;
+	b=WfEJddmeb+29p4Y3ITjjtW/umMxsj58OkKEX+tSkh64CFkZ6yfmRmHR3mXd/FtHD7ALsc5
+	WnUbc4PsA8EGfZa+5pBI6C+/oFQLFv1V4FbBORqGHuHqoOzNB+OJ2j7OJksC5FB1elRXIS
+	LNLT5yabMKmcgL7bW9cinAbk0r0wRTc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1684140131;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=iMyogPFU7LyhBaMdBwdBH4OR9+KTNXgm0SUPVyw/cGM=;
+	b=EGOT908D3K2uelZ40g+IGjQ4ieCCK3s7Kglhwj1a9/vFOszfrNdYEE9z2lEyuHpN8TYxs/
+	WFpS7rEc2cBcxnAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BDE02138E5;
+	Mon, 15 May 2023 08:42:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id Yu+iLWPwYWTYMQAAMHmgww
+	(envelope-from <vbabka@suse.cz>); Mon, 15 May 2023 08:42:11 +0000
+Message-ID: <ab9c6c47-ef9d-c31f-e789-b70cf72231ce@suse.cz>
+Date: Mon, 15 May 2023 10:42:11 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next Patch v10 0/8] octeontx2-pf: HTB offload support
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168414002269.19885.17289418600724460807.git-patchwork-notify@kernel.org>
-Date: Mon, 15 May 2023 08:40:22 +0000
-References: <20230513085143.3289-1-hkelam@marvell.com>
-In-Reply-To: <20230513085143.3289-1-hkelam@marvell.com>
-To: Hariprasad Kelam <hkelam@marvell.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kuba@kernel.org,
- davem@davemloft.net, willemdebruijn.kernel@gmail.com, andrew@lunn.ch,
- sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
- jerinj@marvell.com, sbhatta@marvell.com, naveenm@marvell.com,
- edumazet@google.com, pabeni@redhat.com, jhs@mojatatu.com,
- xiyou.wangcong@gmail.com, jiri@resnulli.us, maxtram95@gmail.com,
- corbet@lwn.net, linux-doc@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH] net: skbuff: remove special handling for SLOB
+To: Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230509071207.28942-1-lukas.bulwahn@gmail.com>
+Content-Language: en-US
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20230509071207.28942-1-lukas.bulwahn@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
-
-This series was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
-
-On Sat, 13 May 2023 14:21:35 +0530 you wrote:
-> octeontx2 silicon and CN10K transmit interface consists of five
-> transmit levels starting from MDQ, TL4 to TL1. Once packets are
-> submitted to MDQ, hardware picks all active MDQs using strict
-> priority, and MDQs having the same priority level are chosen using
-> round robin. Each packet will traverse MDQ, TL4 to TL1 levels.
-> Each level contains an array of queues to support scheduling and
-> shaping.
+On 5/9/23 09:12, Lukas Bulwahn wrote:
+> Commit c9929f0e344a ("mm/slob: remove CONFIG_SLOB") removes CONFIG_SLOB.
+> Now, we can also remove special handling for socket buffers with the SLOB
+> allocator. The code with HAVE_SKB_SMALL_HEAD_CACHE=1 is now the default
+> behavior for all allocators.
 > 
-> [...]
+> Remove an unnecessary distinction between SLOB and SLAB/SLUB allocator
+> after the SLOB allocator is gone.
+> 
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-Here is the summary with links:
-  - [net-next,v10,1/8] sch_htb: Allow HTB priority parameter in offload mode
-    https://git.kernel.org/netdev/net-next/c/12e7789ad5b4
-  - [net-next,v10,2/8] octeontx2-pf: Rename tot_tx_queues to non_qos_queues
-    https://git.kernel.org/netdev/net-next/c/508c58f76ca5
-  - [net-next,v10,3/8] octeontx2-pf: qos send queues management
-    https://git.kernel.org/netdev/net-next/c/ab6dddd2a669
-  - [net-next,v10,4/8] octeontx2-pf: Refactor schedular queue alloc/free calls
-    https://git.kernel.org/netdev/net-next/c/6b4b2ded9c42
-  - [net-next,v10,5/8] octeontx2-pf: Prepare for QOS offload
-    https://git.kernel.org/netdev/net-next/c/cb748a7ebad7
-  - [net-next,v10,6/8] octeontx2-pf: Add support for HTB offload
-    https://git.kernel.org/netdev/net-next/c/5e6808b4c68d
-  - [net-next,v10,7/8] octeontx2-pf: ethtool expose qos stats
-    https://git.kernel.org/netdev/net-next/c/6cebb6a4b114
-  - [net-next,v10,8/8] docs: octeontx2: Add Documentation for QOS
-    https://git.kernel.org/netdev/net-next/c/efe103065ccb
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
 
