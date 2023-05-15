@@ -1,198 +1,290 @@
-Return-Path: <netdev+bounces-2676-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2677-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 18AEA703047
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 16:43:29 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 26F0A7030AA
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 16:55:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CC6821C20C12
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 14:43:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B23D72812AB
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 14:55:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F0F4DC8E5;
-	Mon, 15 May 2023 14:43:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C963BD2E6;
+	Mon, 15 May 2023 14:55:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E002F8836
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 14:43:25 +0000 (UTC)
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78A02D67;
-	Mon, 15 May 2023 07:43:24 -0700 (PDT)
-Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34FEdfW2001912;
-	Mon, 15 May 2023 14:42:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=3xmrodnLEt3plr6PfR2NiDKXpK4TnrjIaL6sDzQ/7GU=;
- b=q+a2WxQK3J7w6NJiJUphIIf9ajPoK7dLJYqI+t2yd270W7CmFhfqcxPQ4sLDs8I3yoHG
- pxet7qhizsDe49r5qacnn0up7txnPYLcrU93fC8Bm+i3aeBN80Ggy2bsIoIYrG+r6kUc
- J1XYXBbpdTFIkOMbNS2Hzs4i6D8uAWoosggxD2ywApVOUoB3k+0BLdM34/EKgjTr0v0I
- M1Qugs2xEIxBRanx3Lb4zTEg+aHcUy6ykjy9rtQaZ1BfcKCrOV62c4cgy2n4HHtWIcJg
- tOJu+la3PVYmFqjAttTuVrNtJHuyBkPyuDeqcvdGca4YJcbHej4ZLYZBslN6wQePhEil xg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qkpes0q07-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 15 May 2023 14:42:47 +0000
-Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34FEe63m005221;
-	Mon, 15 May 2023 14:42:46 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qkpes0pvy-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 15 May 2023 14:42:46 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-	by ppma01fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34FD2VOD016196;
-	Mon, 15 May 2023 14:42:43 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma01fra.de.ibm.com (PPS) with ESMTPS id 3qj264rxmt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 15 May 2023 14:42:42 +0000
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34FEgdw220447944
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 15 May 2023 14:42:39 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 4949420043;
-	Mon, 15 May 2023 14:42:39 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id DF9C920040;
-	Mon, 15 May 2023 14:42:36 +0000 (GMT)
-Received: from [9.171.65.23] (unknown [9.171.65.23])
-	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 15 May 2023 14:42:36 +0000 (GMT)
-Message-ID: <a2a9a2bdb431d7611588a9f9bdca64856ac56139.camel@linux.ibm.com>
-Subject: Re: [PATCH v9 5/6] iommu/dma: Allow a single FQ in addition to
- per-CPU FQs
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
-        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
-        Gerd
- Bayer <gbayer@linux.ibm.com>,
-        Julian Ruess <julianr@linux.ibm.com>,
-        Pierre
- Morel <pmorel@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger
- <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Suravee
- Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Hector Martin
- <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig
- <alyssa@rosenzweig.io>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu
- <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson
- <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu
- <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai
- <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan
- Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec
- <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry
- Reding <thierry.reding@gmail.com>,
-        Krishna Reddy <vdumpa@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-Date: Mon, 15 May 2023 16:42:36 +0200
-In-Reply-To: <ZGIuj2pRjOPffqZZ@ziepe.ca>
-References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
-	 <20230310-dma_iommu-v9-5-65bb8edd2beb@linux.ibm.com>
-	 <ZGIuj2pRjOPffqZZ@ziepe.ca>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.48.1 (3.48.1-1.fc38) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: gNuxWXJsmokdhsaD92T6yUFS_UMSNhrG
-X-Proofpoint-ORIG-GUID: me_7t4m8_jWebgWrnvUvQ84qdxzJLwc5
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5959C2FD
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 14:55:55 +0000 (UTC)
+Received: from mail-m127104.qiye.163.com (mail-m127104.qiye.163.com [115.236.127.104])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6419B171F;
+	Mon, 15 May 2023 07:55:49 -0700 (PDT)
+Received: from [IPV6:240e:3b7:3270:1980:1173:5169:256c:13b8] (unknown [IPV6:240e:3b7:3270:1980:1173:5169:256c:13b8])
+	by mail-m127104.qiye.163.com (Hmail) with ESMTPA id 015F4A4025D;
+	Mon, 15 May 2023 22:55:39 +0800 (CST)
+Message-ID: <0c007040-be5b-a372-6fb6-8ce1b601d74b@sangfor.com.cn>
+Date: Mon, 15 May 2023 22:55:11 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-15_11,2023-05-05_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- clxscore=1015 phishscore=0 spamscore=0 mlxscore=0 suspectscore=0
- mlxlogscore=596 bulkscore=0 impostorscore=0 lowpriorityscore=0
- malwarescore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2304280000 definitions=main-2305150121
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH] SUNRPC: Fix UAF in svc_tcp_listen_data_ready()
+To: Chuck Lever III <chuck.lever@oracle.com>
+Cc: Jeff Layton <jlayton@kernel.org>,
+ Trond Myklebust <trond.myklebust@hammerspace.com>,
+ Anna Schumaker <anna@kernel.org>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>,
+ Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>
+References: <20230515021307.3072-1-dinghui@sangfor.com.cn>
+ <65AFD2EF-E5D3-4461-B23A-D294486D5F65@oracle.com>
+From: Ding Hui <dinghui@sangfor.com.cn>
+In-Reply-To: <65AFD2EF-E5D3-4461-B23A-D294486D5F65@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlDGksaVksfQkpKQkoZQhpIS1UTARMWGhIXJBQOD1
+	lXWRgSC1lBWUlPSx5BSBlMQUhJTEtBSkJDS0FKSkxIQU5KTUJBSU5NGEFKSBlDWVdZFhoPEhUdFF
+	lBWU9LSFVKSktISkxVSktLVUtZBg++
+X-HM-Tid: 0a881fe8f37db282kuuu015f4a4025d
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NjY6FBw*SD0KPx8jFE0UVjBN
+	GT5PCRRVSlVKTUNPSk1JTk9LQkhPVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+	QVlJT0seQUgZTEFISUxLQUpCQ0tBSkpMSEFOSk1CQUlOTRhBSkgZQ1lXWQgBWUFKS0pOTDcG
+X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, 2023-05-15 at 10:07 -0300, Jason Gunthorpe wrote:
-> On Mon, May 15, 2023 at 11:15:55AM +0200, Niklas Schnelle wrote:
->=20
-> > +/**
-> > + * struct dma_iommu_options - Options for dma-iommu
-> > + *
-> > + * @flags: Flag bits for enabling/disabling dma-iommu settings
-> > + *
-> > + * This structure is intended to provide IOMMU drivers a way to influe=
-nce the
-> > + * behavior of the dma-iommu DMA API implementation. This allows optim=
-izing for
-> > + * example for a virtualized environment with slow IOTLB flushes.
-> > + */
-> > +struct dma_iommu_options {
-> > +#define IOMMU_DMA_OPTS_PER_CPU_QUEUE	(0L << 0)
-> > +#define IOMMU_DMA_OPTS_SINGLE_QUEUE	(1L << 0)
-> > +	u64	flags;
-> > +};
->=20
-> You need to hash it out with robin if we do something like this or use
-> more untyped caps as he put in this series:
->=20
-> https://lore.kernel.org/linux-iommu/cover.1683233867.git.robin.murphy@arm=
-.com/
->=20
-> Jason
+On 2023/5/15 20:01, Chuck Lever III wrote:
+> 
+> 
+>> On May 14, 2023, at 10:13 PM, Ding Hui <dinghui@sangfor.com.cn> wrote:
+>>
+>> After the listener svc_sock be freed, and before invoking svc_tcp_accept()
+>> for the established child sock, there is a window that the newsock
+>> retaining a freed listener svc_sock in sk_user_data which cloning from
+>> parent.
+> 
+> Thank you, I will apply this (after testing it).
+> 
+> The next step is to figure out why SUNRPC is trying to accept
+> on a dead listener. Any thoughts about that?
+> 
 
-Ok. I do wonder how to best represent this as a capability.
-Semantically I think a capability needs to be something positive i.e.
-while IOMMU_CAP_EXPENSIVE_FLUSH would technically work having slow
-IOTLB flushes really isn't a capability. So the best I can think of is
-maybe IOMMU_CAP_SHADOW_ON_FLUSH. It's a bit specific but does convey
-that the IOTLB flush does more than dropping hardware caches where the
-main cost is the then empty TLB not the operation itself. Or maybe to
-keep thing separate one would have to add capabilities for the existing
-users IOMMU_CAP_HW_FLUSH and IOMMU_CAP_CONCURRENT_FLUSH.
+A child sock is cloned from the listener sock, it inherits sk_data_ready
+and sk_user_data from its parent sock, which is svc_tcp_listen_data_ready()
+and listener svc_sock, the sk_state of the child becomes ESTABLISHED once
+after TCP handshake in protocol stack.
 
-Not sure though. It does feel more clunky than the tuning op I added
-and maybe instead these mechanisms should co-exist. After all even
-though the IOTLB flushes with shadowing are expensive they still
-benefit from the flush queue just with more entries and less
-parallelism.
+Case 1:
 
+listener sock      | child sock            |   nfsd thread
+=>sk_data_ready    | =>sk_data_ready       |
+-------------------+-----------------------+----------------------
+svc_tcp_listen_data_ready
+   svsk is listener svc_sock
+   set_bit(XPT_CONN)
+                                              svc_recv
+                                                svc_tcp_accept(listener)
+                                                  kernel_accept get child sock as newsock
+                                                  svc_setup_socket(newsock)
+                                                    newsock->sk_data_ready=svc_data_ready
+                                                    newsock->sk_user_data=newsvsk
+                     svc_data_ready
+                       svsk is newsvsk
+
+
+Case 2:
+
+listener sock      | child sock            |   nfsd thread
+=>sk_data_ready    | =>sk_data_ready       |
+-------------------+-----------------------+----------------------
+svc_tcp_listen_data_ready
+   svsk is listener svc_sock
+   set_bit(XPT_CONN)
+                     svc_tcp_listen_data_ready
+                       svsk is listener svc_sock
+                                              svc_recv
+                                                svc_tcp_accept(listener)
+                                                  kernel_accept get the child sock as newsock
+                                                  svc_setup_socket(newsock)
+                                                    newsock->sk_data_ready=svc_data_ready
+                                                    newsock->sk_user_data=newsvsk
+                     svc_data_ready
+                       svsk is newsvsk
+
+
+The UAF case:
+
+listener sock      | child sock            |   rpc.nfsd 0
+=>sk_data_ready    | =>sk_data_ready       |
+-------------------+-----------------------+----------------------
+svc_tcp_listen_data_ready
+   svsk is listener svc_sock
+   set_bit(XPT_CONN)
+                                             svc_xprt_destroy_all
+                                               svc_xprt_free
+                                                 kfree listener svc_sock
+                                             // the child sock has not yet been accepted,
+                                             // so it is not managed by SUNRPC for now.
+                     svc_tcp_listen_data_ready
+                       svsk is listener svc_sock
+                       svsk->sk_odata // UAF!
+
+> 
+>> In the race windows if data is received on the newsock, we will
+>> observe use-after-free report in svc_tcp_listen_data_ready().
+>>
+>> Reproduce by two tasks:
+>>
+>> 1. while :; do rpc.nfsd 0 ; rpc.nfsd; done
+>> 2. while :; do echo "" | ncat -4 127.0.0.1 2049 ; done
+> 
+> I will continue attempting to reproduce, as I would like a
+> root cause for this issue.
+> 
+> 
+>> KASAN report:
+>>
+>>   ==================================================================
+>>   BUG: KASAN: slab-use-after-free in svc_tcp_listen_data_ready+0x1cf/0x1f0 [sunrpc]
+>>   Read of size 8 at addr ffff888139d96228 by task nc/102553
+>>   CPU: 7 PID: 102553 Comm: nc Not tainted 6.3.0+ #18
+>>   Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 11/12/2020
+>>   Call Trace:
+>>    <IRQ>
+>>    dump_stack_lvl+0x33/0x50
+>>    print_address_description.constprop.0+0x27/0x310
+>>    print_report+0x3e/0x70
+>>    kasan_report+0xae/0xe0
+>>    svc_tcp_listen_data_ready+0x1cf/0x1f0 [sunrpc]
+>>    tcp_data_queue+0x9f4/0x20e0
+>>    tcp_rcv_established+0x666/0x1f60
+>>    tcp_v4_do_rcv+0x51c/0x850
+>>    tcp_v4_rcv+0x23fc/0x2e80
+>>    ip_protocol_deliver_rcu+0x62/0x300
+>>    ip_local_deliver_finish+0x267/0x350
+>>    ip_local_deliver+0x18b/0x2d0
+>>    ip_rcv+0x2fb/0x370
+>>    __netif_receive_skb_one_core+0x166/0x1b0
+>>    process_backlog+0x24c/0x5e0
+>>    __napi_poll+0xa2/0x500
+>>    net_rx_action+0x854/0xc90
+>>    __do_softirq+0x1bb/0x5de
+>>    do_softirq+0xcb/0x100
+>>    </IRQ>
+>>    <TASK>
+>>    ...
+>>    </TASK>
+>>
+>>   Allocated by task 102371:
+>>    kasan_save_stack+0x1e/0x40
+>>    kasan_set_track+0x21/0x30
+>>    __kasan_kmalloc+0x7b/0x90
+>>    svc_setup_socket+0x52/0x4f0 [sunrpc]
+>>    svc_addsock+0x20d/0x400 [sunrpc]
+>>    __write_ports_addfd+0x209/0x390 [nfsd]
+>>    write_ports+0x239/0x2c0 [nfsd]
+>>    nfsctl_transaction_write+0xac/0x110 [nfsd]
+>>    vfs_write+0x1c3/0xae0
+>>    ksys_write+0xed/0x1c0
+>>    do_syscall_64+0x38/0x90
+>>    entry_SYSCALL_64_after_hwframe+0x72/0xdc
+>>
+>>   Freed by task 102551:
+>>    kasan_save_stack+0x1e/0x40
+>>    kasan_set_track+0x21/0x30
+>>    kasan_save_free_info+0x2a/0x50
+>>    __kasan_slab_free+0x106/0x190
+>>    __kmem_cache_free+0x133/0x270
+>>    svc_xprt_free+0x1e2/0x350 [sunrpc]
+>>    svc_xprt_destroy_all+0x25a/0x440 [sunrpc]
+>>    nfsd_put+0x125/0x240 [nfsd]
+>>    nfsd_svc+0x2cb/0x3c0 [nfsd]
+>>    write_threads+0x1ac/0x2a0 [nfsd]
+>>    nfsctl_transaction_write+0xac/0x110 [nfsd]
+>>    vfs_write+0x1c3/0xae0
+>>    ksys_write+0xed/0x1c0
+>>    do_syscall_64+0x38/0x90
+>>    entry_SYSCALL_64_after_hwframe+0x72/0xdc
+>>
+>> Fix the UAF by simply doing nothing in svc_tcp_listen_data_ready()
+>> if state != TCP_LISTEN, that will avoid dereferencing svsk for all
+>> child socket.
+>>
+>> Link: https://lore.kernel.org/lkml/20230507091131.23540-1-dinghui@sangfor.com.cn/
+>> Fixes: fa9251afc33c ("SUNRPC: Call the default socket callbacks instead of open coding")
+>> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+>> Cc: <stable@vger.kernel.org>
+>> ---
+>> net/sunrpc/svcsock.c | 23 +++++++++++------------
+>> 1 file changed, 11 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+>> index a51c9b989d58..9aca6e1e78e4 100644
+>> --- a/net/sunrpc/svcsock.c
+>> +++ b/net/sunrpc/svcsock.c
+>> @@ -825,12 +825,6 @@ static void svc_tcp_listen_data_ready(struct sock *sk)
+>>
+>> trace_sk_data_ready(sk);
+>>
+>> - if (svsk) {
+>> - /* Refer to svc_setup_socket() for details. */
+>> - rmb();
+>> - svsk->sk_odata(sk);
+>> - }
+>> -
+>> /*
+>> * This callback may called twice when a new connection
+>> * is established as a child socket inherits everything
+>> @@ -839,13 +833,18 @@ static void svc_tcp_listen_data_ready(struct sock *sk)
+>> *    when one of child sockets become ESTABLISHED.
+>> * 2) data_ready method of the child socket may be called
+>> *    when it receives data before the socket is accepted.
+>> - * In case of 2, we should ignore it silently.
+>> + * In case of 2, we should ignore it silently and DO NOT
+>> + * dereference svsk.
+>> */
+>> - if (sk->sk_state == TCP_LISTEN) {
+>> - if (svsk) {
+>> - set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
+>> - svc_xprt_enqueue(&svsk->sk_xprt);
+>> - }
+>> + if (sk->sk_state != TCP_LISTEN)
+>> + return;
+>> +
+>> + if (svsk) {
+>> + /* Refer to svc_setup_socket() for details. */
+>> + rmb();
+>> + svsk->sk_odata(sk);
+>> + set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
+>> + svc_xprt_enqueue(&svsk->sk_xprt);
+>> }
+>> }
+>>
+>> -- 
+>> 2.17.1
+>>
+> 
+> --
+> Chuck Lever
+> 
+> 
+> 
+
+-- 
 Thanks,
-Niklas
+-dinghui
+
 
