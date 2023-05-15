@@ -1,46 +1,48 @@
-Return-Path: <netdev+bounces-2756-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2757-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3DF67703D9E
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 21:22:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 02C9B703DA3
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 21:23:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4195E1C20BB8
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 19:22:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2FCBC281107
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 19:23:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53B0A18C3C;
-	Mon, 15 May 2023 19:22:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5011018C3D;
+	Mon, 15 May 2023 19:23:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7290EFBF9
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 19:22:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04484C433EF;
-	Mon, 15 May 2023 19:21:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B08318C2B
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 19:22:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11B45C433D2;
+	Mon, 15 May 2023 19:22:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684178520;
-	bh=dzKqueiaHaieX4+u+VL0PHmUBtkteWDdFF1DX61gWSE=;
+	s=k20201202; t=1684178578;
+	bh=DKn8V8qUKyC2zS5fdUFCFELhcOoHQyGjcH5utef8LHY=;
 	h=Date:From:To:Cc:Subject:From;
-	b=V5k6DIgiH/dlVpUdsMUEr8rKPeg7MPaQ60Bo5vOUKYZ+ZhNZVVZxwVgNFWRs/PyE+
-	 815d/HlzGv/AsqhaZIJa+eAxpzJVczrik3YjSBNBB1Qbb9NVPwNSVncciDaxzO2TwU
-	 surfV1shNXy8mxM5ph3+IOaSCmxSitMoeuac9dfkikbLllgRvUbk+6tUX5zqPdORcu
-	 LlMQNu1uLuSmGgZLyVUi+SdoGBdLR8lqhmXduFSaF1gILEzT+xXDhO+TECAsoAfbns
-	 WtiGrJ5k//Onnyle/pkcsKyXmLb92tcE3hALUi5gGuEDdx+/LsDKvQcb1QidcxDP62
-	 jKNQHRzlQ67KA==
-Date: Mon, 15 May 2023 13:22:48 -0600
+	b=A+yw4vltayGbht8KlO20c43CyrKY4QDPdDHOE5eQDbtYKb+Vbj7QQwhXZQFzvIQ8F
+	 JozRAGk3+yuoVDOyrjOUbf51E6YZVkKr3/xr1IdZcy9QMc6u4XsSra9+nI2Re9yY/b
+	 v6r0ojfrb3t9xQ9D2OwIp09rg1DZJOJonBqkLVuFHL8B46SBSHWo+uzkdEuoES4Kej
+	 8ywaRDF1thUteDlk7CAB1qpdmAI7rPJYD0lQQk5SupLVCMDpUnIf4ozyhQP2z2px0t
+	 mC6LAS5LOIv6LZYnrj3JHVF0VDXxyI/zkye0rg2s0PHtYIBW2ZsLs0Z4ipit9Cb4U9
+	 Fq4iyGxK6VwhQ==
+Date: Mon, 15 May 2023 13:23:46 -0600
 From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To: "David S. Miller" <davem@davemloft.net>,
+To: Jiawen Wu <jiawenwu@trustnetic.com>,
+	Mengyuan Lou <mengyuanlou@net-swift.com>,
+	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Cc: mlxsw@nvidia.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
 	linux-hardening@vger.kernel.org
-Subject: [PATCH][next] mlxfw: Replace zero-length array with
- DECLARE_FLEX_ARRAY() helper
-Message-ID: <ZGKGiBxP0zHo6XSK@work>
+Subject: [PATCH][next] net: libwx: Replace zero-length array with
+ flexible-array member
+Message-ID: <ZGKGwtsobVZecWa4@work>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -50,34 +52,33 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-Zero-length arrays are deprecated and we are moving towards adopting
-C99 flexible-array members, instead. So, replace zero-length arrays
-declarations alone in structs with the new DECLARE_FLEX_ARRAY()
-helper macro.
+Zero-length arrays as fake flexible arrays are deprecated, and we are
+moving towards adopting C99 flexible-array members instead.
 
-This helper allows for flexible-array members alone in structs.
+Transform zero-length array into flexible-array member in struct
+wx_q_vector.
 
-Link: https://github.com/KSPP/linux/issues/193
-Link: https://github.com/KSPP/linux/issues/285
+Link: https://github.com/KSPP/linux/issues/21
+Link: https://github.com/KSPP/linux/issues/286
 Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_format.h | 2 +-
+ drivers/net/ethernet/wangxun/libwx/wx_type.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_format.h b/drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_format.h
-index b001e5258091..47f6cc0401c3 100644
---- a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_format.h
-+++ b/drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_format.h
-@@ -44,7 +44,7 @@ MLXFW_MFA2_TLV(multi, struct mlxfw_mfa2_tlv_multi,
- 	       MLXFW_MFA2_TLV_MULTI_PART);
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
+index 32f952d93009..cbe7f184b50e 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
++++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
+@@ -598,7 +598,7 @@ struct wx_q_vector {
+ 	char name[IFNAMSIZ + 17];
  
- struct mlxfw_mfa2_tlv_psid {
--	u8 psid[0];
-+	DECLARE_FLEX_ARRAY(u8, psid);
- } __packed;
+ 	/* for dynamic allocation of rings associated with this q_vector */
+-	struct wx_ring ring[0] ____cacheline_internodealigned_in_smp;
++	struct wx_ring ring[] ____cacheline_internodealigned_in_smp;
+ };
  
- MLXFW_MFA2_TLV_VARSIZE(psid, struct mlxfw_mfa2_tlv_psid,
+ enum wx_isb_idx {
 -- 
 2.34.1
 
