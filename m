@@ -1,151 +1,175 @@
-Return-Path: <netdev+bounces-2713-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2726-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 45A317032DB
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 18:26:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8E2FB7036E1
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 19:14:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 58484281354
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 16:26:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4AF382812D4
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 17:14:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 38243FBE0;
-	Mon, 15 May 2023 16:26:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9BC15FC07;
+	Mon, 15 May 2023 17:14:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 202ABC8ED
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 16:26:12 +0000 (UTC)
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281A595
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 09:26:10 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-3f42c86543bso50257585e9.3
-        for <netdev@vger.kernel.org>; Mon, 15 May 2023 09:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google; t=1684167968; x=1686759968;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WcjyJ4f2hV+VYMVZDZ/87BsHeuaz2N5BzUdms5sJR54=;
-        b=Pr46RbGt5lhHRgQqazQmVjm25lQT8dOouNUaBS6Aggj/Sw1st9l53mG6q8gmmSwFoW
-         lSWv3rgu5jHOM/SR7Oetthu9NLcR4/NEz4gEzQQ34zcxk1UN5xLGC0ebGGywQvDmQYfU
-         xrVxTAJdro53CJf9MjEozJLviaXJbmty5pnfjbLsB0Wdgk7495CXLAQoVi53n2u7LfYB
-         SNnNpVM0bLI6OlAWQ7Y2Y29J8ZV5zOMvN25RSEvbjECYI33x/36ijwsvMlg288ixbe0d
-         v1Fi8K9tYXDOlIEz0f4dhG6pHLVC1+JQ/4HGlz9460eTJxjUTXKCOtYllr/XhgOu0Lir
-         gYOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684167968; x=1686759968;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WcjyJ4f2hV+VYMVZDZ/87BsHeuaz2N5BzUdms5sJR54=;
-        b=Q/4J/9/zQyEc96Q/85og802RfwjtCpL13td9ME93lfOnLTSpTMBvk8aObogEc/Dv52
-         O5OBNtumjXRvECEwXhWEhJZpBYWYWigmu/wke8B+kfmhag1QJKTImVU/CkASNtZedkeZ
-         9E/ZLY6GvUIblPPEHH6Jw0gakYFp8GMkTRm4cdbzanxGSgjZruIomxpfRnM4YxNNm8Ja
-         2r6tPZPDQVlyikz76i+kfiMHL3oK5ejdhKjckOGTZIoe99CWgf1TsdmAcy6lcltRB3Rz
-         xEB+lJJ/31f8+3+yr6Wsu/bqkBYVFpZmK/dfUch/v3nNcPH4muYwXk3B6LPIS0ctjK+W
-         /XJg==
-X-Gm-Message-State: AC+VfDxv7H26SbAQmw6FW3uSJwYHKnG+F6K77jkTuYC12a05t3pudsLQ
-	Ejx3ILOJ8UVQ04fMMCeA2Z0IKA==
-X-Google-Smtp-Source: ACHHUZ7S3jKVqq8IbrDNX0+1Te4dZntni8kqKANL0kSL/xMj1Z7oYhSiUetbvRXqGWqeTtXS0dDfEQ==
-X-Received: by 2002:a05:6000:120a:b0:306:4054:6e41 with SMTP id e10-20020a056000120a00b0030640546e41mr27854752wrx.53.1684167968560;
-        Mon, 15 May 2023 09:26:08 -0700 (PDT)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id r10-20020a5d52ca000000b003079c402762sm270909wrv.19.2023.05.15.09.26.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 May 2023 09:26:08 -0700 (PDT)
-Message-ID: <eb6d0724-92d6-3c3f-b698-9734adc7e1b9@arista.com>
-Date: Mon, 15 May 2023 17:25:55 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E84A9FBF8;
+	Mon, 15 May 2023 17:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 179D0C433EF;
+	Mon, 15 May 2023 17:14:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1684170883;
+	bh=4jSls9SEgL+5agkw266mNjGCuZcNspC+bOyWIa1yb6I=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=jRYAjJ608jjjiUSdRUie7QQOp8sksSyc0lYCe+rMnhsYqNmfqaPJaGwYKFqEaNJwD
+	 Jix+TYhDkHwYlLIEBLWepcRRm2q4KLrkXmoOUlbz5/mSeQlv11/SJIfV95hHYubpxN
+	 TYN3I+WedvJaQTxke0ZPSFnlCr60Ti+e6XNpZehg=
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: stable@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	patches@lists.linux.dev,
+	syzbot+ebc945fdb4acd72cba78@syzkaller.appspotmail.com,
+	David Howells <dhowells@redhat.com>,
+	Marc Dionne <marc.dionne@auristor.com>,
+	Dmitry Vyukov <dvyukov@google.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	linux-afs@lists.infradead.org,
+	linux-fsdevel@vger.kernel.org,
+	netdev@vger.kernel.org,
+	Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 6.2 031/242] rxrpc: Fix potential data race in rxrpc_wait_to_be_connected()
+Date: Mon, 15 May 2023 18:25:57 +0200
+Message-Id: <20230515161722.857279092@linuxfoundation.org>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230515161721.802179972@linuxfoundation.org>
+References: <20230515161721.802179972@linuxfoundation.org>
+User-Agent: quilt/0.67
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v6 01/21] net/tcp: Prepare tcp_md5sig_pool for TCP-AO
-To: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
- Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
- Jakub Kicinski <kuba@kernel.org>, "David S. Miller" <davem@davemloft.net>,
- Andy Lutomirski <luto@amacapital.net>, Ard Biesheuvel <ardb@kernel.org>,
- Bob Gilligan <gilligan@arista.com>, Dan Carpenter <error27@gmail.com>,
- David Laight <David.Laight@aculab.com>, Dmitry Safonov
- <0x7f454c46@gmail.com>, Eric Biggers <ebiggers@kernel.org>,
- "Eric W. Biederman" <ebiederm@xmission.com>,
- Francesco Ruggeri <fruggeri05@gmail.com>,
- Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
- Ivan Delalande <colona@arista.com>, Leonard Crestez <cdleonard@gmail.com>,
- Salam Noureddine <noureddine@arista.com>, netdev@vger.kernel.org
-References: <20230512202311.2845526-1-dima@arista.com>
- <20230512202311.2845526-2-dima@arista.com>
- <ZGG5rtuHB4lvLyKI@gondor.apana.org.au>
-Content-Language: en-US
-From: Dmitry Safonov <dima@arista.com>
-In-Reply-To: <ZGG5rtuHB4lvLyKI@gondor.apana.org.au>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
 
-On 5/15/23 05:48, Herbert Xu wrote:
-> On Fri, May 12, 2023 at 09:22:51PM +0100, Dmitry Safonov wrote:
->> TCP-AO, similarly to TCP-MD5, needs to allocate tfms on a slow-path,
->> which is setsockopt() and use crypto ahash requests on fast paths,
->> which are RX/TX softirqs. Also, it needs a temporary/scratch buffer
->> for preparing the hash.
->>
->> Rework tcp_md5sig_pool in order to support other hashing algorithms
->> than MD5. It will make it possible to share pre-allocated crypto_ahash
->> descriptors and scratch area between all TCP hash users.
->>
->> Internally tcp_sigpool preferences crypto_clone_ahash() API over
->> pre-allocating per-CPU crypto requests. Kudos to Herbert, who provided
->> this new crypto API [1]. Currently, there's still per-CPU crypto request
->> allocation fallback, that is needed for ciphers, that yet don't support
->> cloning (TCP-AO requires cmac(aes128) in RFC5925).
->>
->> I was a little concerned over GFP_ATOMIC allocations of ahash and
->> crypto_request in RX/TX (see tcp_sigpool_start()), so I benchmarked both
->> "backends" with different algorithms, using patched version of iperf3[2].
->> On my laptop with i7-7600U @ 2.80GHz:
->>
->>                          clone-tfm                per-CPU-requests
->> TCP-MD5                  2.25 Gbits/sec           2.30 Gbits/sec
->> TCP-AO(hmac(sha1))       2.53 Gbits/sec           2.54 Gbits/sec
->> TCP-AO(hmac(sha512))     1.67 Gbits/sec           1.64 Gbits/sec
->> TCP-AO(hmac(sha384))     1.77 Gbits/sec           1.80 Gbits/sec
->> TCP-AO(hmac(sha224))     1.29 Gbits/sec           1.30 Gbits/sec
->> TCP-AO(hmac(sha3-512))    481 Mbits/sec            480 Mbits/sec
->> TCP-AO(hmac(md5))        2.07 Gbits/sec           2.12 Gbits/sec
->> TCP-AO(hmac(rmd160))     1.01 Gbits/sec            995 Mbits/sec
->> TCP-AO(cmac(aes128))     [not supporetd yet]      2.11 Gbits/sec
->>
->> So, it seems that my concerns don't have strong grounds and per-CPU
->> crypto_request allocation can be dropped/removed from tcp_sigpool once
->> ciphers get crypto_clone_ahash() support.
-> 
-> This support is now in the upstream kernel.  Please let me know
-> if you run into any issues using it.
+From: David Howells <dhowells@redhat.com>
 
-Hi Herbert, thanks for your patches. Could you point me to the repo that
-has ciphers clone-tfm support? I've looked in Torvald's/master, your
-cryptodev-2.6.git and in linux-next, but I can't see anywhere in
-cmac_create() something of inst->alg.base.clone_tfm = cmac_clone_tfm kind.
+[ Upstream commit 2b5fdc0f5caa505afe34d608e2eefadadf2ee67a ]
 
-As I wrote two paragraphs above, it's required for TCP-AO to provide
-cmac(aes128) support. Let me know if you have cmac clone-tfm somewhere
-or if you're cooking it. On the cover-letter for this patch set, it's in
-TODO.
+Inside the loop in rxrpc_wait_to_be_connected() it checks call->error to
+see if it should exit the loop without first checking the call state.  This
+is probably safe as if call->error is set, the call is dead anyway, but we
+should probably wait for the call state to have been set to completion
+first, lest it cause surprise on the way out.
 
-Thanks,
-         Dmitry
+Fix this by only accessing call->error if the call is complete.  We don't
+actually need to access the error inside the loop as we'll do that after.
+
+This caused the following report:
+
+    BUG: KCSAN: data-race in rxrpc_send_data / rxrpc_set_call_completion
+
+    write to 0xffff888159cf3c50 of 4 bytes by task 25673 on cpu 1:
+     rxrpc_set_call_completion+0x71/0x1c0 net/rxrpc/call_state.c:22
+     rxrpc_send_data_packet+0xba9/0x1650 net/rxrpc/output.c:479
+     rxrpc_transmit_one+0x1e/0x130 net/rxrpc/output.c:714
+     rxrpc_decant_prepared_tx net/rxrpc/call_event.c:326 [inline]
+     rxrpc_transmit_some_data+0x496/0x600 net/rxrpc/call_event.c:350
+     rxrpc_input_call_event+0x564/0x1220 net/rxrpc/call_event.c:464
+     rxrpc_io_thread+0x307/0x1d80 net/rxrpc/io_thread.c:461
+     kthread+0x1ac/0x1e0 kernel/kthread.c:376
+     ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+
+    read to 0xffff888159cf3c50 of 4 bytes by task 25672 on cpu 0:
+     rxrpc_send_data+0x29e/0x1950 net/rxrpc/sendmsg.c:296
+     rxrpc_do_sendmsg+0xb7a/0xc20 net/rxrpc/sendmsg.c:726
+     rxrpc_sendmsg+0x413/0x520 net/rxrpc/af_rxrpc.c:565
+     sock_sendmsg_nosec net/socket.c:724 [inline]
+     sock_sendmsg net/socket.c:747 [inline]
+     ____sys_sendmsg+0x375/0x4c0 net/socket.c:2501
+     ___sys_sendmsg net/socket.c:2555 [inline]
+     __sys_sendmmsg+0x263/0x500 net/socket.c:2641
+     __do_sys_sendmmsg net/socket.c:2670 [inline]
+     __se_sys_sendmmsg net/socket.c:2667 [inline]
+     __x64_sys_sendmmsg+0x57/0x60 net/socket.c:2667
+     do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+     do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+     entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+    value changed: 0x00000000 -> 0xffffffea
+
+Fixes: 9d35d880e0e4 ("rxrpc: Move client call connection to the I/O thread")
+Reported-by: syzbot+ebc945fdb4acd72cba78@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/000000000000e7c6d205fa10a3cd@google.com/
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: Dmitry Vyukov <dvyukov@google.com>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: Eric Dumazet <edumazet@google.com>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: Paolo Abeni <pabeni@redhat.com>
+cc: linux-afs@lists.infradead.org
+cc: linux-fsdevel@vger.kernel.org
+cc: netdev@vger.kernel.org
+Link: https://lore.kernel.org/r/508133.1682427395@warthog.procyon.org.uk
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/rxrpc/sendmsg.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index da49fcf1c4567..6caa47d352ed6 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -50,15 +50,11 @@ static int rxrpc_wait_to_be_connected(struct rxrpc_call *call, long *timeo)
+ 	_enter("%d", call->debug_id);
+ 
+ 	if (rxrpc_call_state(call) != RXRPC_CALL_CLIENT_AWAIT_CONN)
+-		return call->error;
++		goto no_wait;
+ 
+ 	add_wait_queue_exclusive(&call->waitq, &myself);
+ 
+ 	for (;;) {
+-		ret = call->error;
+-		if (ret < 0)
+-			break;
+-
+ 		switch (call->interruptibility) {
+ 		case RXRPC_INTERRUPTIBLE:
+ 		case RXRPC_PREINTERRUPTIBLE:
+@@ -69,10 +65,9 @@ static int rxrpc_wait_to_be_connected(struct rxrpc_call *call, long *timeo)
+ 			set_current_state(TASK_UNINTERRUPTIBLE);
+ 			break;
+ 		}
+-		if (rxrpc_call_state(call) != RXRPC_CALL_CLIENT_AWAIT_CONN) {
+-			ret = call->error;
++
++		if (rxrpc_call_state(call) != RXRPC_CALL_CLIENT_AWAIT_CONN)
+ 			break;
+-		}
+ 		if ((call->interruptibility == RXRPC_INTERRUPTIBLE ||
+ 		     call->interruptibility == RXRPC_PREINTERRUPTIBLE) &&
+ 		    signal_pending(current)) {
+@@ -85,6 +80,7 @@ static int rxrpc_wait_to_be_connected(struct rxrpc_call *call, long *timeo)
+ 	remove_wait_queue(&call->waitq, &myself);
+ 	__set_current_state(TASK_RUNNING);
+ 
++no_wait:
+ 	if (ret == 0 && rxrpc_call_is_complete(call))
+ 		ret = call->error;
+ 
+-- 
+2.39.2
+
+
 
 
