@@ -1,69 +1,69 @@
-Return-Path: <netdev+bounces-2467-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2468-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 117B17021DA
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 04:53:57 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B211D7021DC
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 04:54:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1C8D5280EF0
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 02:53:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6E481280FA2
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 02:54:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 38F3915D2;
-	Mon, 15 May 2023 02:53:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 873D815D2;
+	Mon, 15 May 2023 02:54:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2568FEA0
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:53:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B25BEA0
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:54:23 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB62E7A
-	for <netdev@vger.kernel.org>; Sun, 14 May 2023 19:53:51 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75F4E7A
+	for <netdev@vger.kernel.org>; Sun, 14 May 2023 19:54:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684119230;
+	s=mimecast20190719; t=1684119260;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=6CabpyALIbC0XiIqIpyQi+CRaEbpYdCuFNhvblzhbiM=;
-	b=J6gwXGgw2xnq2ePk6ol6dBPVFrdxxmfSY1RGYkDBTR5gnYIqS5JStR9MUP0/rkxpJ4WRkG
-	ZldHdptAbiDqHqaammo0CVxWVjPvBssMS86LsMBSNLm7xl4QTj89mnxK17RImob+ZTxai+
-	pUKvC4aug2uhKuPT1Uy61T3Zd/AMVjw=
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
- [209.85.210.200]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=EkzlwX51KE129ml/9poCdEkruLOF2qo9tI3tXAC4N1o=;
+	b=VhF2ER+xRtp+nhNbzEhUUviimG+qmMuGKzEQlvH04IaBL53cXOk0tdS4h3vtBWxmuRUCWt
+	xosnhDtNXyQGtMHQJohq2ZHAkOcyeEz+/3prmqhbNPwOusnGcecnKUFpZkE8FVX2sNueQ+
+	CUDTGjrstkHFz3PAdZOBDRhI08Dqf60=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-96-1RGvOHp1OVyaze_-yvQckQ-1; Sun, 14 May 2023 22:53:49 -0400
-X-MC-Unique: 1RGvOHp1OVyaze_-yvQckQ-1
-Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-648f83d2169so5021804b3a.0
-        for <netdev@vger.kernel.org>; Sun, 14 May 2023 19:53:49 -0700 (PDT)
+ us-mta-412-0bKImmVmMje49XgTYBx0rA-1; Sun, 14 May 2023 22:54:19 -0400
+X-MC-Unique: 0bKImmVmMje49XgTYBx0rA-1
+Received: by mail-pf1-f199.google.com with SMTP id d2e1a72fcca58-6439a13ba1eso11804591b3a.0
+        for <netdev@vger.kernel.org>; Sun, 14 May 2023 19:54:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684119228; x=1686711228;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20221208; t=1684119257; x=1686711257;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6CabpyALIbC0XiIqIpyQi+CRaEbpYdCuFNhvblzhbiM=;
-        b=ZcoyOGVny3topkg/dVAdnMC8J7NIc9iZ20bF7wvBDW4TA3KS2ZHN0CL/NTFM6Uz990
-         H3HpDf7Jhdulm4z+KMI3ijRGqlozKsN2Mty7WoQhQApCYCSdvb2qgK2gOfytrT4x8VAM
-         SqT28SLwoTl0qjWNAlXgz4/MicfE9A4YQM7VDdP3OQgUUE+p6qYIKQ6v5kUkwqyQ4dyy
-         p08sEiV+nZ1xqhg/qlCSPx19MdLt8PAkh9PKV/NS7lqBE6BdyOaRkebpw3yKFLyzEAEy
-         BfpfoBNdmcHxKpfN4XiiLaVwk8+saET7oXwFBFE9/vu2zLrZqM8mG3Dmzj01HqtlJZV0
-         Zpeg==
-X-Gm-Message-State: AC+VfDxuPUKCO9fQbtknvYNZAE1L6h2g667O4j7BYKG937smO0ASMn0x
-	QPlrisF3OSJ0chGnVDnOgU0iLbLZwSVS294zLuuTBXezvPBmINQFu4qUt5HFmV6vQ1vajc0+hfE
-	7vqK4CfE80kFcWPNpnPlfN2Tjq5WZPA==
-X-Received: by 2002:a05:6a00:14ce:b0:640:f313:efba with SMTP id w14-20020a056a0014ce00b00640f313efbamr44287684pfu.19.1684119227746;
-        Sun, 14 May 2023 19:53:47 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4H0Vhtb1WKGWG0qToJXua++R64IEkjUvFNR/u68c6n1aFTk5roUr6tBN4mKUL/UL196m7IKQ==
-X-Received: by 2002:a05:6a00:14ce:b0:640:f313:efba with SMTP id w14-20020a056a0014ce00b00640f313efbamr44287666pfu.19.1684119227419;
-        Sun, 14 May 2023 19:53:47 -0700 (PDT)
+        bh=EkzlwX51KE129ml/9poCdEkruLOF2qo9tI3tXAC4N1o=;
+        b=RWbfhsf5uZTOGW30g06eXjiisit6BDS8lxIyHjawZIhh9WdVNlfRbkF8a8ugNYqnKq
+         +7cKjQhZm5+W46ibBuv+iOGYYBqr7hJn+CTIQ/nutdwxUeSlK0ZwSWOENG8Lr6i7aGPK
+         Hz7Ku1aEp25fXSza3uZi9aZs4r3JCYB8MDEkJ8VS2iooXGNkQRscU10dXcZsgpnDQWOA
+         VpjPVtlF+mcpajT+pNkomG/KEPcnj0MBRDOXlGIuOTz/js7RxmA05Kj09TUYIUaTzdXL
+         0otLntiauuUb5qctT/W3gtOO3btR3c9skYp1dfRKUhf8jmyHs+j8LJe1OMKpkaxNtgGe
+         ektQ==
+X-Gm-Message-State: AC+VfDyRC99Cw+dut/HKNWutQNDmxwd1WKmjXciAWma6nIXdAJTZ6+OI
+	MjA1U0OYf07PP/uL7D8lGKdW9CJ6uTnonkiMgNGnVfLuxqyWNF03I5v3fqn5vOLtFO7ZfsI3XN0
+	OnzyKvtKQptwWNtXpWB9AkEDiL0iF0g==
+X-Received: by 2002:a05:6a00:1a06:b0:645:e008:d7ba with SMTP id g6-20020a056a001a0600b00645e008d7bamr33616785pfv.27.1684119257506;
+        Sun, 14 May 2023 19:54:17 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ54myTqbH/N66ayTKu7p7Naxk1W4iTkxHVxbTrenFvZw42D9bZCcna/F3moNHQnqTqxvQG6IA==
+X-Received: by 2002:a05:6a00:1a06:b0:645:e008:d7ba with SMTP id g6-20020a056a001a0600b00645e008d7bamr33616766pfv.27.1684119257204;
+        Sun, 14 May 2023 19:54:17 -0700 (PDT)
 Received: from [10.72.13.223] ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id c22-20020aa78816000000b00642c5ef6050sm9479859pfo.173.2023.05.14.19.53.44
+        by smtp.gmail.com with ESMTPSA id f26-20020aa78b1a000000b0063b6bd2216dsm652307pfd.187.2023.05.14.19.54.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 May 2023 19:53:47 -0700 (PDT)
-Message-ID: <7012a65f-d265-e510-492b-5003b512ef05@redhat.com>
-Date: Mon, 15 May 2023 10:53:39 +0800
+        Sun, 14 May 2023 19:54:16 -0700 (PDT)
+Message-ID: <747f6c1f-2bd1-a331-796d-dbef43692183@redhat.com>
+Date: Mon, 15 May 2023 10:54:12 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -72,17 +72,17 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
  Gecko/20100101 Thunderbird/102.10.0
-Subject: Re: [PATCH v5 virtio 01/11] virtio: allow caller to override device
- id in vp_modern
+Subject: Re: [PATCH v5 virtio 02/11] virtio: allow caller to override device
+ DMA mask in vp_modern
+Content-Language: en-US
 To: Shannon Nelson <shannon.nelson@amd.com>, mst@redhat.com,
  virtualization@lists.linux-foundation.org, brett.creeley@amd.com,
  netdev@vger.kernel.org
 Cc: simon.horman@corigine.com, drivers@pensando.io
 References: <20230503181240.14009-1-shannon.nelson@amd.com>
- <20230503181240.14009-2-shannon.nelson@amd.com>
-Content-Language: en-US
+ <20230503181240.14009-3-shannon.nelson@amd.com>
 From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20230503181240.14009-2-shannon.nelson@amd.com>
+In-Reply-To: <20230503181240.14009-3-shannon.nelson@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -95,16 +95,11 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 在 2023/5/4 02:12, Shannon Nelson 写道:
 > To add a bit of vendor flexibility with various virtio based devices,
-> allow the caller to check for a different device id.  This adds a function
-> pointer field to struct virtio_pci_modern_device to specify an override
-> device id check.  If defined by the driver, this function will be called
-> to check that the PCI device is the vendor's expected device, and will
-> return the found device id to be stored in mdev->id.device.  This allows
-> vendors with alternative vendor device ids to use this library on their
-> own device BAR.
->
-> Note: A lot of the diff in this is simply indenting the existing code
-> into an else block.
+> allow the caller to specify a different DMA mask.  This adds a dma_mask
+> field to struct virtio_pci_modern_device.  If defined by the driver,
+> this mask will be used in a call to dma_set_mask_and_coherent() instead
+> of the traditional DMA_BIT_MASK(64).  This allows limiting the DMA space
+> on vendor devices with address limitations.
 >
 > Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 
@@ -115,66 +110,35 @@ Thanks
 
 
 > ---
->   drivers/virtio/virtio_pci_modern_dev.c | 30 ++++++++++++++++----------
->   include/linux/virtio_pci_modern.h      |  3 +++
->   2 files changed, 22 insertions(+), 11 deletions(-)
+>   drivers/virtio/virtio_pci_modern_dev.c | 3 ++-
+>   include/linux/virtio_pci_modern.h      | 3 +++
+>   2 files changed, 5 insertions(+), 1 deletion(-)
 >
 > diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
-> index 869cb46bef96..9b2d6614de67 100644
+> index 9b2d6614de67..aad7d9296e77 100644
 > --- a/drivers/virtio/virtio_pci_modern_dev.c
 > +++ b/drivers/virtio/virtio_pci_modern_dev.c
-> @@ -218,21 +218,29 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
->   	int err, common, isr, notify, device;
->   	u32 notify_length;
->   	u32 notify_offset;
-> +	int devid;
->   
->   	check_offsets();
->   
-> -	/* We only own devices >= 0x1000 and <= 0x107f: leave the rest. */
-> -	if (pci_dev->device < 0x1000 || pci_dev->device > 0x107f)
-> -		return -ENODEV;
-> -
-> -	if (pci_dev->device < 0x1040) {
-> -		/* Transitional devices: use the PCI subsystem device id as
-> -		 * virtio device id, same as legacy driver always did.
-> -		 */
-> -		mdev->id.device = pci_dev->subsystem_device;
-> +	if (mdev->device_id_check) {
-> +		devid = mdev->device_id_check(pci_dev);
-> +		if (devid < 0)
-> +			return devid;
-> +		mdev->id.device = devid;
->   	} else {
-> -		/* Modern devices: simply use PCI device id, but start from 0x1040. */
-> -		mdev->id.device = pci_dev->device - 0x1040;
-> +		/* We only own devices >= 0x1000 and <= 0x107f: leave the rest. */
-> +		if (pci_dev->device < 0x1000 || pci_dev->device > 0x107f)
-> +			return -ENODEV;
-> +
-> +		if (pci_dev->device < 0x1040) {
-> +			/* Transitional devices: use the PCI subsystem device id as
-> +			 * virtio device id, same as legacy driver always did.
-> +			 */
-> +			mdev->id.device = pci_dev->subsystem_device;
-> +		} else {
-> +			/* Modern devices: simply use PCI device id, but start from 0x1040. */
-> +			mdev->id.device = pci_dev->device - 0x1040;
-> +		}
+> @@ -268,7 +268,8 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
+>   		return -EINVAL;
 >   	}
->   	mdev->id.vendor = pci_dev->subsystem_vendor;
 >   
+> -	err = dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(64));
+> +	err = dma_set_mask_and_coherent(&pci_dev->dev,
+> +					mdev->dma_mask ? : DMA_BIT_MASK(64));
+>   	if (err)
+>   		err = dma_set_mask_and_coherent(&pci_dev->dev,
+>   						DMA_BIT_MASK(32));
 > diff --git a/include/linux/virtio_pci_modern.h b/include/linux/virtio_pci_modern.h
-> index c4eeb79b0139..e7b1db1dd0bb 100644
+> index e7b1db1dd0bb..067ac1d789bc 100644
 > --- a/include/linux/virtio_pci_modern.h
 > +++ b/include/linux/virtio_pci_modern.h
-> @@ -38,6 +38,9 @@ struct virtio_pci_modern_device {
->   	int modern_bars;
+> @@ -41,6 +41,9 @@ struct virtio_pci_modern_device {
 >   
->   	struct virtio_device_id id;
+>   	/* optional check for vendor virtio device, returns dev_id or -ERRNO */
+>   	int (*device_id_check)(struct pci_dev *pdev);
 > +
-> +	/* optional check for vendor virtio device, returns dev_id or -ERRNO */
-> +	int (*device_id_check)(struct pci_dev *pdev);
+> +	/* optional mask for devices with limited DMA space */
+> +	u64 dma_mask;
 >   };
 >   
 >   /*
