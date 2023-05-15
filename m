@@ -1,121 +1,85 @@
-Return-Path: <netdev+bounces-2611-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2612-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3BEA3702B16
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:08:36 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BE77A702B27
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:11:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3A2A11C20B01
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 11:08:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7AB72281242
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 11:11:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35819BE66;
-	Mon, 15 May 2023 11:08:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1A17BE79;
+	Mon, 15 May 2023 11:11:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 865488BFC
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 11:08:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EBB3C433EF;
-	Mon, 15 May 2023 11:08:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684148911;
-	bh=olj9SocFR66EhLbf+VVLOl+zHXsxnZV4TDEkh6zL2MY=;
-	h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-	b=q5ffqkbJfJH6tWfcBgdyCtzwgvmkFwV053vTKMs3YyZmiU5Y8p2btlgz4tGp8KF/R
-	 eQjK47v3+X3i222Euu8FijpFyP6Nux6pb+v4mqUszuRsT+9b8ebRl7RlQJguigbMDL
-	 BKqGQfmG0k1BT9oDUs2PSRk14FWIylwQf6mg3sDBQrMWhJePOaNOtmwK0T8pgA0GQE
-	 XczazgE+oqu70oDAJoBURTzKrgIdZVgPlKyQvEiypT1a8gZJtVLijr4AfSfRUqtWaa
-	 gu1sKTtNlutfPiEOJxu6ksFTDSE2WHfb1Eh2c20oLv+uQ/ujIemijRp4G9IL2eufEn
-	 THunG5weEt55A==
-From: Kalle Valo <kvalo@kernel.org>
-To: Daniel Golle <daniel@makrotopia.org>
-Cc: Simon Horman <simon.horman@corigine.com>,
-  linux-wireless@vger.kernel.org,  netdev@vger.kernel.org,
-  linux-mediatek@lists.infradead.org,
-  linux-arm-kernel@lists.infradead.org,  linux-kernel@vger.kernel.org,
-  Felix Fietkau <nbd@nbd.name>,  Lorenzo Bianconi <lorenzo@kernel.org>,
-  Ryder Lee <ryder.lee@mediatek.com>,  Shayne Chen
- <shayne.chen@mediatek.com>,  Sean Wang <sean.wang@mediatek.com>,  "David
- S. Miller" <davem@davemloft.net>,  Eric Dumazet <edumazet@google.com>,
-  Jakub Kicinski <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>,
-  Matthias Brugger <matthias.bgg@gmail.com>,  AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>,  Alexander Couzens
- <lynxis@fe80.eu>,  Sujuan Chen <sujuan.chen@mediatek.com>,  Bo Jiao
- <bo.jiao@mediatek.com>,  Nicolas Cavallari
- <nicolas.cavallari@green-communications.fr>,  Howard Hsu
- <howard-yh.hsu@mediatek.com>,  MeiChia Chiu <MeiChia.Chiu@mediatek.com>,
-  Peter Chiu <chui-hao.chiu@mediatek.com>,  Johannes Berg
- <johannes.berg@intel.com>,  Wang Yufen <wangyufen@huawei.com>,  Lorenz
- Brun <lorenz@brun.one>
-Subject: Re: [PATCH] wifi: mt76: mt7915: add support for MT7981
-References: <ZF-SN-sElZB_g_bA@pidgin.makrotopia.org>
-	<ZGD192iDcUqoUwo3@corigine.com>
-	<ZGENDwGXkuhrCGFY@pidgin.makrotopia.org>
-Date: Mon, 15 May 2023 14:08:22 +0300
-In-Reply-To: <ZGENDwGXkuhrCGFY@pidgin.makrotopia.org> (Daniel Golle's message
-	of "Sun, 14 May 2023 18:32:15 +0200")
-Message-ID: <87ednhn97d.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B404279D7;
+	Mon, 15 May 2023 11:11:16 +0000 (UTC)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38C81FC9;
+	Mon, 15 May 2023 04:10:55 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QKc7D2lSVzsRb1;
+	Mon, 15 May 2023 19:08:40 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Mon, 15 May
+ 2023 19:10:38 +0800
+Subject: Re: [RFC net-next] net: veth: reduce page_pool memory footprint using
+ half page per-buffer
+To: Lorenzo Bianconi <lorenzo@kernel.org>, <netdev@vger.kernel.org>
+CC: <lorenzo.bianconi@redhat.com>, <bpf@vger.kernel.org>,
+	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+	<hawk@kernel.org>, <john.fastabend@gmail.com>
+References: <d3ae6bd3537fbce379382ac6a42f67e22f27ece2.1683896626.git.lorenzo@kernel.org>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <62654fa5-d3a2-4b81-af70-59c9e90db842@huawei.com>
+Date: Mon, 15 May 2023 19:10:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <d3ae6bd3537fbce379382ac6a42f67e22f27ece2.1683896626.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-8.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Daniel Golle <daniel@makrotopia.org> writes:
+On 2023/5/12 21:08, Lorenzo Bianconi wrote:
+> In order to reduce page_pool memory footprint, rely on
+> page_pool_dev_alloc_frag routine and reduce buffer size
+> (VETH_PAGE_POOL_FRAG_SIZE) to PAGE_SIZE / 2 in order to consume one page
 
-> On Sun, May 14, 2023 at 04:53:43PM +0200, Simon Horman wrote:
->> On Sat, May 13, 2023 at 03:35:51PM +0200, Daniel Golle wrote:
->> > From: Alexander Couzens <lynxis@fe80.eu>
->> > 
->> > Add support for the MediaTek MT7981 SoC which is similar to the MT7986
->> > but with a newer IP cores and only 2x ARM Cortex-A53 instead of 4x.
->> > Unlike MT7986 the MT7981 can only connect a single wireless frontend,
->> > usually MT7976 is used for DBDC.
->> > 
->> > Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
->> > Signed-off-by: Daniel Golle <daniel@makrotopia.org>
->> 
->> ...
->> 
->> > @@ -489,7 +516,10 @@ static int mt7986_wmac_adie_patch_7976(struct mt7915_dev *dev, u8 adie)
->> >  		rg_xo_01 = 0x1d59080f;
->> >  		rg_xo_03 = 0x34c00fe0;
->> >  	} else {
->> > -		rg_xo_01 = 0x1959f80f;
->> > +		if (is_mt7981(&dev->mt76))
->> > +			rg_xo_01 = 0x1959c80f;
->> > +		else if (is_mt7986(&dev->mt76))
->> > +			rg_xo_01 = 0x1959f80f;
->> 
->> Hi Daniel,
->> 
->> 		rg_xo_01 will be used uninitialised below if we get here
->> 		and neither of the conditions above are true.
->> 
->> 		Can this occur?
->
-> No, it cannot occur. Either of is_mt7981() or is_mt7986() will return
-> true, as the driver is bound via one of the two compatibles
-> 'mediatek,mt7986-wmac' or newly added 'mediatek,mt7981-wmac'.
-> Based on that the match_data is either 0x7986 or 0x7981, which is then
-> used as chip_id, which is used by the is_mt7981() and is_mt7986()
-> functions.
+Is there any performance improvement beside the memory saving? As it
+should reduce TLB miss, I wonder if the TLB miss reducing can even
+out the cost of the extra frag reference count handling for the
+frag support?
 
-But what if later more changes are made, for example a third compatible
-is added? It would be good to add a warning or something else to protect
-that.
+> for two 1500B frames. Reduce VETH_XDP_PACKET_HEADROOM to 192 from 256
+> (XDP_PACKET_HEADROOM) to fit max_head_size in VETH_PAGE_POOL_FRAG_SIZE.
+> Please note, using default values (CONFIG_MAX_SKB_FRAGS=17), maximum
+> supported MTU is now reduced to 36350B.
 
-And I would not be a surpised if a compiler or static analyser would
-even warn about the uninitialised variable.
+Maybe we don't need to limit the frag size to VETH_PAGE_POOL_FRAG_SIZE,
+and use different frag size depending on the mtu or packet size?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Perhaps the page_pool_dev_alloc_frag() can be improved to return non-frag
+page if the requested frag size is larger than a specified size too.
+I will try to implement it if the above idea makes sense.
 
