@@ -1,43 +1,43 @@
-Return-Path: <netdev+bounces-2788-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2793-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 795EB703F28
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 23:01:07 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 88E6F703F31
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 23:02:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7C7311C20CEC
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 21:01:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8B0091C20D1F
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 21:02:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F193F1B91D;
-	Mon, 15 May 2023 20:58:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 030BA1DDD0;
+	Mon, 15 May 2023 20:58:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76EC1C77B
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:58:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E96231DDCC
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:58:46 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0548D050
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:58:27 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0842D100C5
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:58:32 -0700 (PDT)
 Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <mkl@pengutronix.de>)
-	id 1pyfGl-0006nA-DQ
-	for netdev@vger.kernel.org; Mon, 15 May 2023 22:58:11 +0200
+	id 1pyfGn-0006pU-87
+	for netdev@vger.kernel.org; Mon, 15 May 2023 22:58:13 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-	by bjornoya.blackshift.org (Postfix) with SMTP id 1BE9E1C5D34
+	by bjornoya.blackshift.org (Postfix) with SMTP id 6A4671C5D44
 	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:58:06 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by bjornoya.blackshift.org (Postfix) with ESMTPS id DC1E01C5CDA;
-	Mon, 15 May 2023 20:58:03 +0000 (UTC)
+	by bjornoya.blackshift.org (Postfix) with ESMTPS id 123521C5CE0;
+	Mon, 15 May 2023 20:58:04 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-	by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c02ca18f;
+	by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 07de9716;
 	Mon, 15 May 2023 20:58:02 +0000 (UTC)
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: netdev@vger.kernel.org
@@ -47,9 +47,9 @@ Cc: davem@davemloft.net,
 	kernel@pengutronix.de,
 	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
 	Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 12/22] can: ifi_canfd: Convert to platform remove callback returning void
-Date: Mon, 15 May 2023 22:57:49 +0200
-Message-Id: <20230515205759.1003118-13-mkl@pengutronix.de>
+Subject: [PATCH net-next 13/22] can: janz-ican3: Convert to platform remove callback returning void
+Date: Mon, 15 May 2023 22:57:50 +0200
+Message-Id: <20230515205759.1003118-14-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230515205759.1003118-1-mkl@pengutronix.de>
 References: <20230515205759.1003118-1-mkl@pengutronix.de>
@@ -86,42 +86,43 @@ Trivially convert this driver from always returning zero in the remove
 callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20230512212725.143824-10-u.kleine-koenig@pengutronix.de
+Link: https://lore.kernel.org/r/20230512212725.143824-11-u.kleine-koenig@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/ifi_canfd/ifi_canfd.c | 6 ++----
+ drivers/net/can/janz-ican3.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/ifi_canfd/ifi_canfd.c b/drivers/net/can/ifi_canfd/ifi_canfd.c
-index 07eaf724a572..1d6642c94f2f 100644
---- a/drivers/net/can/ifi_canfd/ifi_canfd.c
-+++ b/drivers/net/can/ifi_canfd/ifi_canfd.c
-@@ -1013,15 +1013,13 @@ static int ifi_canfd_plat_probe(struct platform_device *pdev)
+diff --git a/drivers/net/can/janz-ican3.c b/drivers/net/can/janz-ican3.c
+index 0732a5092141..d048ea565b89 100644
+--- a/drivers/net/can/janz-ican3.c
++++ b/drivers/net/can/janz-ican3.c
+@@ -2023,7 +2023,7 @@ static int ican3_probe(struct platform_device *pdev)
  	return ret;
  }
  
--static int ifi_canfd_plat_remove(struct platform_device *pdev)
-+static void ifi_canfd_plat_remove(struct platform_device *pdev)
+-static int ican3_remove(struct platform_device *pdev)
++static void ican3_remove(struct platform_device *pdev)
  {
  	struct net_device *ndev = platform_get_drvdata(pdev);
+ 	struct ican3_dev *mod = netdev_priv(ndev);
+@@ -2042,8 +2042,6 @@ static int ican3_remove(struct platform_device *pdev)
+ 	iounmap(mod->dpm);
  
- 	unregister_candev(ndev);
- 	platform_set_drvdata(pdev, NULL);
  	free_candev(ndev);
 -
 -	return 0;
  }
  
- static const struct of_device_id ifi_canfd_of_table[] = {
-@@ -1036,7 +1034,7 @@ static struct platform_driver ifi_canfd_plat_driver = {
- 		.of_match_table	= ifi_canfd_of_table,
+ static struct platform_driver ican3_driver = {
+@@ -2051,7 +2049,7 @@ static struct platform_driver ican3_driver = {
+ 		.name	= DRV_NAME,
  	},
- 	.probe	= ifi_canfd_plat_probe,
--	.remove	= ifi_canfd_plat_remove,
-+	.remove_new = ifi_canfd_plat_remove,
+ 	.probe		= ican3_probe,
+-	.remove		= ican3_remove,
++	.remove_new	= ican3_remove,
  };
  
- module_platform_driver(ifi_canfd_plat_driver);
+ module_platform_driver(ican3_driver);
 -- 
 2.39.2
 
