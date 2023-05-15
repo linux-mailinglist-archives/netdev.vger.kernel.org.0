@@ -1,164 +1,80 @@
-Return-Path: <netdev+bounces-2740-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2741-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4BF84703C89
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 20:23:29 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A557703C8E
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 20:25:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 294831C20C60
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 18:23:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CB141281302
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 18:25:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 14BE317AD5;
-	Mon, 15 May 2023 18:23:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF47717FF2;
+	Mon, 15 May 2023 18:25:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3C90C2C8
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 18:23:25 +0000 (UTC)
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE08315EEB
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 11:23:13 -0700 (PDT)
-Received: (Authenticated sender: i.maximets@ovn.org)
-	by mail.gandi.net (Postfix) with ESMTPSA id 0CEE31C0005;
-	Mon, 15 May 2023 18:23:10 +0000 (UTC)
-Message-ID: <7c7fc244-012c-7760-a62e-7c31242d489a@ovn.org>
-Date: Mon, 15 May 2023 20:23:28 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0966EC2C8
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 18:25:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFE5C433D2;
+	Mon, 15 May 2023 18:25:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684175128;
+	bh=Ig15CCmRbUDwPdPSwSK6wyvGYkr4LLBCPsnJsdn+kxc=;
+	h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+	b=WWqgCUvVE4SWqJhd6/HvsEI3yUhzihrHCFHep97/HecWMzqFFL7iqK68FJ7dIxva/
+	 GrB6/PUR+dRLm7VYmWDCGyy2ENv+QXUHT4TlgWcnErrfnGVcLAaqH+nT6Y+dBLzyNI
+	 ix4gmt5lVp4+27curWS55iBcCO4G1aIQw2n8A8NLLyQGHkhCeMUSEhS+g9PNpLsPKG
+	 5rciF5NncV3/zcYcVXwTuNjXAgSIlLZ/MGksntjpYkMRv7EFZd6gzHiFkV76+isBTB
+	 ynZI8nZ7vnhdbeiPCm6yRhOAr/RTrFXP6K/r2By+1emMjkPhH4cjN5FQOWOCRJWZOR
+	 J5I+CSUtoNCOQ==
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc: i.maximets@ovn.org, davem@davemloft.net, kuba@kernel.org,
- pabeni@redhat.com, netdev@vger.kernel.org
-Content-Language: en-US
-To: Antoine Tenart <atenart@kernel.org>, Dumitru Ceara <dceara@redhat.com>,
- Eric Dumazet <edumazet@google.com>
-References: <20230511093456.672221-1-atenart@kernel.org>
- <20230511093456.672221-5-atenart@kernel.org>
- <fe2f6594-b330-bc5b-55a5-8e1686a2eac1@redhat.com>
- <CANn89i+R4fdkbQr1u2L-upJobSM3aQOpGi6Kbbix_HPkkovnpA@mail.gmail.com>
- <2d54b3f5-d8c6-6009-a05a-e5bb2deafeda@redhat.com>
- <e45f3257-dc5c-3bcd-2de4-64f478ebb470@ovn.org>
- <11ece947-a839-0026-b272-7fb07bcaf1bb@redhat.com>
- <168413833063.4854.12088632353537054947@kwain>
-From: Ilya Maximets <i.maximets@ovn.org>
-Subject: Re: [PATCH net-next 4/4] net: skbuff: fix l4_hash comment
-In-Reply-To: <168413833063.4854.12088632353537054947@kwain>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Subject: Re: wifi: brcmfmac: wcc: Add debug messages
+From: Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20230509100420.26094-1-matthias.bgg@kernel.org>
+References: <20230509100420.26094-1-matthias.bgg@kernel.org>
+To: matthias.bgg@kernel.org
+Cc: Arend van Spriel <aspriel@gmail.com>,
+ Franky Lin <franky.lin@broadcom.com>,
+ Hante Meuleman <hante.meuleman@broadcom.com>,
+ Paolo Abeni <pabeni@redhat.com>, brcm80211-dev-list.pdl@broadcom.com,
+ netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+ SHA-cyfmac-dev-list@infineon.com,
+ Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+ Matthias Brugger <mbrugger@suse.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <168417511892.10390.13808783964763445641.kvalo@kernel.org>
+Date: Mon, 15 May 2023 18:25:25 +0000 (UTC)
 
-On 5/15/23 10:12, Antoine Tenart wrote:
-> Quoting Dumitru Ceara (2023-05-11 22:50:32)
->> On 5/11/23 19:54, Ilya Maximets wrote:
->>>>> Note that skb->hash has never been considered as canonical, for obvious reasons.
->>>
->>> I guess, the other point here is that it's not an L4 hash either.
->>>
->>> It's a random number.  So, the documentation will still not be
->>> correct even after the change proposed in this patch.
+matthias.bgg@kernel.org wrote:
+
+> From: Matthias Brugger <mbrugger@suse.com>
 > 
-> The proposed changed is "indicate hash is from layer 4 and provides a
-> uniform distribution over flows", which does not describe *how* the hash
-> is computed but *where* it comes from. This matches "random number set
-> by TCP" and changes in how hashes are computed won't affect the comment,
-> so we'll not end up in the same situation.
-
-I respectfully disagree,  "is from layer 4" and "random number" do not
-match for me.  So, "where it comes from" argument is not applicable.
-Random numbers come from random number generator, and not "from layer 4".
-
-Unless by "from layer 4" you mean "from the code that handles layer 4
-packet processing".  But that seems very confusing to me.  And it is
-definitely not the first thing that comes to mind while reading the
-documentation.
-
+> The message is attach and detach function are merly for debugging,
+> change them from pr_err to pr_debug.
 > 
->>> One way to not break everything doing that will be to introduce a
->>> new flag, e.g. 'rnd_hash' that will be a hash that is "not related
->>> to packet fields, but provides a uniform distribution over flows".
->>>
->>> skb_get_hash() then may return the current hash if it's any of
->>> l4, rnd or sw.  That should preserve the current logic across
->>> the kernel code.
->>> But having a new flag, we could introduce a new helper, for example
->>> skb_get_stable_hash() or skb_get_hash_nonrandom() or something like
->>> that, that will be equal to the current version of skb_get_hash(),
->>> i.e. not take the random hash into account.
->>>
->>> Affected subsystems (OVS, ECMP, SRv6) can be changed to use that
->>> new function.  This way these subsystems will get a software hash
->>> based on the real packet fields, if it was originally random.
->>> This will also preserve ability to use hash provided by the HW,
->>> since it is not normally random.
-> 
-> But then the whole point of txrehash would be dismissed, if ECMP and
-> others stop using the hash provided by TCP.
+> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
-I guess ECMP is not a good example as it doesn't use skb hash for locally
-generated traffic.  However, the argument about defeating the purpose of
-rehash doesn't stand either for the same reason.  The same next hop will
-be chosen for the same flow always, because the hash will be re-generated
-from a 5-tuple.  But anyway...
+Patch applied to wireless-next.git, thanks.
 
-In OVS and SRv6 cases we're also talking about load balancing, so unlike
-ECMP, final destinations may be different based on the hash.  In this case
-there is an issue.
+87807f77a03d wifi: brcmfmac: wcc: Add debug messages
 
-> This needs to be a
-> conditional setting, to make the skb hash to be stable over time only
-> when needed. That way both scenario are supported.
-> 
->> What I had in mind is not really a stable hash but a "good enough
->> alternative".  It's probably "good enough" (at least for OvS/OVN) if the
->> hash used by OvS doesn't change throughout the lifetime of a TCP session.
-> 
-> So what's important is not how the hash is computed but the fact that
-> it should be stable over time when requested. Isn't exactly what
-> net.core.txrehash=0 does? If there are some bugs they should be fixed.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20230509100420.26094-1-matthias.bgg@kernel.org/
 
-Not asking to disable re-hash.  Asking to provide a way to distinguish
-changing random numbers from a more stable hash, so we can avoid
-recalculating it on every packet.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-Of course, we can change the code to re-calculate every time, but that
-sounds wasteful if it's already done by the HW, for example.
-
-> On top of this, if OvS needs to additionally provide a canonical
-> 4/5-tuple hash because not only the stability over time is needed but
-> also the method is important, it needs to compute its own hash
-
-For the OVS_HASH_ALG_L4, the exact method is not really important.
-
-For OVS_HASH_ALG_SYM_L4, the hash has to symmetric, but this hashing
-algorithm is not implemented in the OVS kernel module today.
-
-> As part
-> of such potential series ways to cache the result can be explored.
-> Numbers would help too. (This can be discussed here, that's fine, but I
-> thought it's important to distinguish the two topics).
-
-I agree that topics are fairly different.  The rest of the set is probably
-fine (I didn't review).  I'm just not sure why we need to change the comment
-from one incorrect sentence to another similarly incorrect and confusing.
-Also making it look like subsystems that use it in a previously documented
-meaning are at fault.  It's just not fair.  I think, the issue should be
-fixed first.
-
-On the other note,
-I don't think that the rest of the patch set should be held back by that
-though.  So, maybe dropping this one patch from the set might be an option
-for now?
-
-Best regards, Ilya Maximets.
 
