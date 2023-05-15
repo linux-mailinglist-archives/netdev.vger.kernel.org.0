@@ -1,182 +1,188 @@
-Return-Path: <netdev+bounces-2684-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2685-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7AA007031A4
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 17:35:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id CB0697031A7
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 17:36:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3F3F52810D3
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:35:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 85C512812BA
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:36:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 72F13DF4F;
-	Mon, 15 May 2023 15:35:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA85CDF55;
+	Mon, 15 May 2023 15:36:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62BFFD537
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 15:35:10 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A495A19BC
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 08:35:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=8a+oLK/EjvW2iWa4CvVnKNi6T68qPXF5eHPAeQXKSvQ=; b=HGU6JtmhWszCAfdURqlW/Ut+66
-	84hfuyjtPVc0MwUYbNBETFcAfz5NM3sIeqSEbFmEmGNNvk3dFGzJLjogP8wMWREs0etAtaMdhmewm
-	eVB3ZrcO8d3CLxmquVIK+CrS92ER5HYC6ww+g+uoqGRBYqiImluxiC4kzdz5jaQ4iDt1Di0fqZKBe
-	ru8cAs/vtn2Mr9fpOiEsLtOvHpTZXDV2GgAXjra2y9NOMRR3vTgDvwzfD8V37n6i5xEat0O+glzPX
-	JGSGf6Toh6R6H9RaiXqOH9/EsOCgWMoGpewU/wbqrdHB1aQE0K5gpPeazG68DSGxo3CXk9EPM9nhq
-	Le3hPnQw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35164)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1pyaDg-0003ww-8S; Mon, 15 May 2023 16:34:40 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1pyaDZ-0008Ic-Pp; Mon, 15 May 2023 16:34:33 +0100
-Date: Mon, 15 May 2023 16:34:33 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Daniel Machon <daniel.machon@microchip.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Felix Fietkau <nbd@nbd.name>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Horatiu Vultur <horatiu.vultur@microchip.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	Jakub Kicinski <kuba@kernel.org>, John Crispin <john@phrozen.org>,
-	Jose Abreu <Jose.Abreu@synopsys.com>,
-	Lars Povlsen <lars.povlsen@microchip.com>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
-	Marcin Wojtas <mw@semihalf.com>,
-	Mark Lee <Mark-MC.Lee@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Maxime Chevallier <maxime.chevallier@bootlin.com>,
-	Paolo Abeni <pabeni@redhat.com>, Sean Wang <sean.wang@mediatek.com>,
-	Steen Hegelund <Steen.Hegelund@microchip.com>,
-	Taras Chornyi <taras.chornyi@plvision.eu>,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	UNGLinuxDriver@microchip.com, Vladimir Oltean <olteanv@gmail.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] Providing a helper for PCS inband negotiation
-Message-ID: <ZGJRCaR2gQqEt2+L@shell.armlinux.org.uk>
-References: <ZGIkGmyL8yL1q1zp@shell.armlinux.org.uk>
- <9f7b1d6f-ca62-4c6c-9cd5-37726e7857b7@lunn.ch>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5D8DC13E
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 15:36:21 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26A619BE
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 08:36:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684164978;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=x7CbMDqqB7Ef24aQqJke8PthcM5mzwIBmyE952+ZY6Q=;
+	b=XqQ0Z/KnMqF1TMAi/7tu5y6uf3zyazEP/HOyKomsE7cVgzdt55yrb9evo4x5DmNElgz/KV
+	VE6qmpQa2uNp8s/oSUOs630dgxUyo+9UAqllBnfEdBSSM3hp4sqAbA+SZhXhXiF6Li7NQC
+	w3cHD/9OlIx52Phuq+zWw9K9bUXD/uw=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-182-X6qLCd9dPOGHDmsLumbnrA-1; Mon, 15 May 2023 11:36:16 -0400
+X-MC-Unique: X6qLCd9dPOGHDmsLumbnrA-1
+Received: by mail-ed1-f72.google.com with SMTP id 4fb4d7f45d1cf-50bc57d7967so14333336a12.2
+        for <netdev@vger.kernel.org>; Mon, 15 May 2023 08:36:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684164975; x=1686756975;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=x7CbMDqqB7Ef24aQqJke8PthcM5mzwIBmyE952+ZY6Q=;
+        b=j4iAtMuD+WQYWEh9tKtl2LloH4pH9NK8X2tkfrE+9Gtd0qVNQVtJNgPEeWKekZSbFh
+         MVUIa2GqG/SduV0tJJ8NHcz/Ympp4hu6NcOgqmgYifcAA7sKVyRiXdlD+K+LwrytAJBQ
+         ijzeIAvDDva+XnbVjzhixqN+35sqE0R0pTiggt8XVD6hwDE5NLX7gSlsBFgPkrsvLfF5
+         C5O8qUHNdmfF6Rzn4UUF2WGeN87yIHSuxIbR6BcuXeUuu/i9+fqBxvWpBDXhBZXsZ4Pf
+         Ywp89FrXuOr32g4GUJMp1VUn3eUS2DsNieUSFo3BH5IcPoMpLNDmyXpO2Y739zBUdaUO
+         iRWg==
+X-Gm-Message-State: AC+VfDxfZ46yVxaqZDIyUpFKmrzx30d+4yJkE4p42rU28qFLAWJruedp
+	hqHtG9LNNXXt2S/K6WZl9Yhuo/p1rDc01KfamashDmo7MZki6/Wb347ifY0hFhu79F7UI5x4UQQ
+	JpUQUybBeqaXZrJun
+X-Received: by 2002:a17:907:804:b0:94f:adb2:171f with SMTP id wv4-20020a170907080400b0094fadb2171fmr27955079ejb.28.1684164975542;
+        Mon, 15 May 2023 08:36:15 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ46GxPVBqoq2psgT5XG+XapuVBE6/4vYM0++VGwPutqBc+4LJ5jMPnxCh49EGXYSOjGcFb1gg==
+X-Received: by 2002:a17:907:804:b0:94f:adb2:171f with SMTP id wv4-20020a170907080400b0094fadb2171fmr27955042ejb.28.1684164975130;
+        Mon, 15 May 2023 08:36:15 -0700 (PDT)
+Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id k18-20020a17090632d200b009661f07db93sm9660631ejk.223.2023.05.15.08.36.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 May 2023 08:36:14 -0700 (PDT)
+From: Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <b0694577-e2b3-f6de-cf85-aed99fdf2496@redhat.com>
+Date: Mon, 15 May 2023 17:36:12 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9f7b1d6f-ca62-4c6c-9cd5-37726e7857b7@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Cc: brouer@redhat.com, Stanislav Fomichev <sdf@google.com>,
+ Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+ Andrii Nakryiko <andrii@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+ Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>,
+ Yonghong Song <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>,
+ KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+ Jesse Brandeburg <jesse.brandeburg@intel.com>,
+ Tony Nguyen <anthony.l.nguyen@intel.com>,
+ Anatoly Burakov <anatoly.burakov@intel.com>,
+ Alexander Lobakin <alexandr.lobakin@intel.com>,
+ Magnus Karlsson <magnus.karlsson@gmail.com>,
+ Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+ netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND bpf-next 09/15] xdp: Add VLAN tag hint
+Content-Language: en-US
+To: Larysa Zaremba <larysa.zaremba@intel.com>, bpf@vger.kernel.org
+References: <20230512152607.992209-1-larysa.zaremba@intel.com>
+ <20230512152607.992209-10-larysa.zaremba@intel.com>
+In-Reply-To: <20230512152607.992209-10-larysa.zaremba@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 15, 2023 at 03:58:09PM +0200, Andrew Lunn wrote:
-> > 2. XLGMII.. Looking at the XPCS driver, it's unclear whether Clause 73
-> >    AN gets used for this. A quick scan of IEEE 802.3 suggests that
-> >    XLGMII doesn't have any support for any inband signalling, and it's
-> >    just an intermediary protocol between the MAC (more specifically the
-> >    RS, but for the purposes of this I'll just refer to MAC) and the
-> >    attached PCS, and any autonegotiation happens after the XLGMII link.
+
+
+On 12/05/2023 17.26, Larysa Zaremba wrote:
+> Implement functionality that enables drivers to expose VLAN tag
+> to XDP code.
 > 
-> So isn't XLGMII then a generic PHY thing, not a phylink thing?
+> Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+> ---
+[...]
 
-Honestly, I'm really not sure. It feels more like an internal-SoC
-thing. See my last diagram why I think this.
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 41e5ca8643ec..eff21501609f 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -738,6 +738,30 @@ __bpf_kfunc int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32 *hash,
+>   	return -EOPNOTSUPP;
+>   }
+>   
 
-> Or am i not correctly understanding how
-> drivers/phy/marvell/phy-*-comphy.c and
-> drivers/phy/microchip/*_serdev.c fit into the overall picture?
+Remember below becomes part of main documentation on HW metadata hints:
+  - https://kernel.org/doc/html/latest/networking/xdp-rx-metadata.html
 
-In the case of serdes-based protocols with an external PHY, the general
-structure we have is:
+Hint compiling locally I use:
+  make SPHINXDIRS="networking" htmldocs
 
-------------------------------+
-  SoC                         |
-+-----+   +-----+  +--------+ |          +--------------+
-| MAC +---+ PCS +--+ SERDES +------------+ Ethernet PHY +---- Media
-+-----+   +-----+  +--------+ |    ^     +--------------+
-------------------------------+    |
-                                   |
-PHY_INTERFACE_MODE_xxx has referred to this bit, and this is the bit
-where inband can occur.
+> +/**
+> + * bpf_xdp_metadata_rx_ctag - Read XDP packet inner vlan tag.
 
-In the case of multi-rate implementations, there can be one of many
-different PCS that can be placed there, and the SERDES handles
-converting the data stream from the PCS into its appropriate
-electrical form, essentially covering the PMA and PMD functions.
-(That same SERDES block generally can also handle PCIe and SATA.)
+Is bpf_xdp_metadata_rx_ctag a good function name for the inner vlan tag?
+Like wise below "stag".
 
-In the case of non-serdes based protocols, then it's essentially the
-same as the above, but with the PCS and SERDES blocks removed.
+I cannot remember if the C-tag or S-tag is the inner or outer vlan tag.
 
-For Fibre based connections:
+When reading BPF code that use these function names, then I would have
+to ask Google for help, or find-and-read this doc.
 
-------------------------------+
-  SoC                         |
-+-----+   +-----+  +--------+ |
-| MAC +---+ PCS +--+ SERDES +------------ Media
-+-----+   +-----+  +--------+ |    ^
-------------------------------+    |
-                                   |
-PHY_INTERFACE_MODE_xxx has referred to this bit, and 1000BASE-X runs
-negotiation on this. 10GBASE-R also used for fibre has no negotiation,
-but there's still the 10GBASE-R PCS and the 802.3 PMA/PMD are subsumed
-by the SERDES block.
+Can we come-up with a more intuitive name, that e.g. helps when reading
+the BPF-prog code?
 
-What I think seems to be the case with XPCS is:
+> + * @ctx: XDP context pointer.
+> + * @vlan_tag: Return value pointer.
+> + *
 
-------------------------------+
-  SoC                         |
-+-----+   +-----+  +--------+ |
-| MAC +---+ PCS +--+ SERDES +----------- Media
-+-----+ ^ +-----+  +--------+ |
---------|---------------------+
-        |
-PHY_INTERFACE_MODE_xxx seems to be referring to this bit. When clause 73
-negotiation is used, that happens where I've stated "media" above, and
-that's involved with negotiating backplane protocols e.g. 40GBASE-KR4,
-40GBASE-CR4, 25GBASE-KR, 10GBASE-KR, 1000BASE-KX etc on the bit I've
-called "Media" above.
+IMHO right here, there should be a description.
 
-However, we can also have this for a fibre link:
+E.g. for what a VLAN "tag" means.  I assume a "tag" isn't the VLAN id,
+but the raw VLAN tag that also contains the prio numbers etc.
 
-------------------------------+
-  SoC                         |
-+-----+   +-----+  +--------+ |
-| MAC +---+ PCS +--+ SERDES +----------- Fibre
-+-----+ ^ +-----+  +--------+ |    ^
---------|---------------------+    |
-        |                          |
-     XLGMII                    40GBASE-R
+It this VLAN tag expected to be in network-byte-order ?
+IMHO this doc should define what is expected (and driver devel must
+follow this).
 
-Given that in this case, we'd want PHY_INTERFACE_MODE_xxx to say
-40GBASE-R, using the existing PHY_INTERFACE_MODE_xxx to specify at
-where I've pointed XLGMII just makes things confused... but in the
-case above with clause 73 negotiation, we wouldn't have a standard
-PHY_INTERFACE_MODE_xxx specifier for the external "media" side
-because that's dependent on the result of the negotiation.
+> + * Returns 0 on success or ``-errno`` on error.
+> + */
+> +__bpf_kfunc int bpf_xdp_metadata_rx_ctag(const struct xdp_md *ctx, u16 *vlan_tag)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +/**
+> + * bpf_xdp_metadata_rx_stag - Read XDP packet outer vlan tag.
+> + * @ctx: XDP context pointer.
+> + * @vlan_tag: Return value pointer.
+> + *
+> + * Returns 0 on success or ``-errno`` on error.
 
-So... this seems to be a right can of wriggly things.
+IMHO we should provide more guidance to expected return codes, and what
+they mean.  IMHO driver developers must only return codes that are
+described here, and if they invent a new, add it as part of their patch.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+See, formatting in bpf_xdp_metadata_rx_hash and check how this gets
+compiled into HTML.
+
+
+> + */
+> +__bpf_kfunc int bpf_xdp_metadata_rx_stag(const struct xdp_md *ctx, u16 *vlan_tag)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+
 
