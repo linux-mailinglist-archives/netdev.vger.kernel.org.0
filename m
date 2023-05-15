@@ -1,112 +1,213 @@
-Return-Path: <netdev+bounces-2744-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2745-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id F35CD703CDD
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 20:40:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3AEE8703CE2
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 20:43:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 84A3A28136C
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 18:40:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 69401281313
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 18:43:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B8E2182D8;
-	Mon, 15 May 2023 18:40:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 75D0B18C18;
+	Mon, 15 May 2023 18:43:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 481E9846E
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 18:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99BA4C433D2;
-	Mon, 15 May 2023 18:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684176009;
-	bh=tRuNZav3ZYxTJeh1Boxnqx8CWxDg5z5hL4ZyPET6xT8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=mHTaJYZElNX4F2JSQWPlz4++4VHJvlcgFSEGuHDmgMglCQwMXPGKJXgwx9y9TCnSU
-	 m0gj4EJF3Tbr4UjkqYg08UO5YG9k/9uGrll7cGpjUzwgkpppFKLmkhgs7oV3aAQ+SU
-	 U1mxOuhXZW4meyshhRZ6m6I2GyW5Ls2LECp6q4K4uU9uiDvrueNU9O+ZIBMPbkKoK+
-	 J7rfT486SuuHjiY2dqGWfR8OQD1V2IaygwNYeVGt6CZde4JvqoUPnlHSv4WdsiLs9X
-	 9KTxv19OqLjOMrT+I3evDzwoIzJAvkKK4QAJ69LVQEi/qAh+fbv3TucRp4OtFntSTO
-	 FTpNZzwz37Urw==
-Message-ID: <d7edb614-3758-1df6-91b8-a0cb601137a4@kernel.org>
-Date: Mon, 15 May 2023 12:40:07 -0600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64F1E846E
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 18:43:07 +0000 (UTC)
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21611550D
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 11:42:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1684176142; x=1715712142;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=AikkA7pXOOdL9ZlEq07K8us3ptDOi8/7eROwfXmxtDA=;
+  b=izqliBoz/KCWzx1pXaFEf6M7XA8SYb4Exh/ngEPQxaMwP0uxEOwtsdet
+   y1tP0Tgd1vQmKoIHm1A9Jm6rIhjh/6L1lRRQhGbI+zXP/Ermk+w6Lfnz3
+   gzwHUegKxgzMxWBQpTSC2yviJf/RastOFsSL3Z6fVYcl2FAcSzdUSAvnH
+   k=;
+X-IronPort-AV: E=Sophos;i="5.99,277,1677542400"; 
+   d="scan'208";a="325241321"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-0aba4706.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 18:42:19 +0000
+Received: from EX19MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+	by email-inbound-relay-iad-1e-m6i4x-0aba4706.us-east-1.amazon.com (Postfix) with ESMTPS id 49DF9A0720;
+	Mon, 15 May 2023 18:42:17 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 15 May 2023 18:42:16 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.88.183.148) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 15 May 2023 18:42:14 +0000
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>
+CC: Jason Wang <jasowang@redhat.com>, Kuniyuki Iwashima <kuniyu@amazon.com>,
+	Kuniyuki Iwashima <kuni1840@gmail.com>, <netdev@vger.kernel.org>, syzkaller
+	<syzkaller@googlegroups.com>
+Subject: [PATCH v1 net] tun: Fix memory leak for detached NAPI queue.
+Date: Mon, 15 May 2023 11:42:04 -0700
+Message-ID: <20230515184204.10598-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-Subject: Re: [PATCH net-next 2/2] net/tcp: optimise io_uring zc ubuf
- refcounting
-Content-Language: en-US
-To: Eric Dumazet <edumazet@google.com>
-Cc: Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
- netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
- pabeni@redhat.com
-References: <cover.1684166247.git.asml.silence@gmail.com>
- <bdbbff06f20c100c00e59932ffecbd18ad699f57.1684166247.git.asml.silence@gmail.com>
- <99faed2d-8ea6-fc85-7f21-e15b24d041f1@kernel.org>
- <CANn89i+Bb7g9uDPVmomNDJivK7CZBYD1UXryxq2VEU77sajqEg@mail.gmail.com>
-From: David Ahern <dsahern@kernel.org>
-In-Reply-To: <CANn89i+Bb7g9uDPVmomNDJivK7CZBYD1UXryxq2VEU77sajqEg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.88.183.148]
+X-ClientProxiedBy: EX19D043UWC003.ant.amazon.com (10.13.139.240) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+Precedence: Bulk
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+	T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On 5/15/23 12:14 PM, Eric Dumazet wrote:
-> On Mon, May 15, 2023 at 7:29 PM David Ahern <dsahern@kernel.org> wrote:
->>
->> On 5/15/23 10:06 AM, Pavel Begunkov wrote:
->>> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
->>> index 40f591f7fce1..3d18e295bb2f 100644
->>> --- a/net/ipv4/tcp.c
->>> +++ b/net/ipv4/tcp.c
->>> @@ -1231,7 +1231,6 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->>>       if ((flags & MSG_ZEROCOPY) && size) {
->>>               if (msg->msg_ubuf) {
->>>                       uarg = msg->msg_ubuf;
->>> -                     net_zcopy_get(uarg);
->>>                       zc = sk->sk_route_caps & NETIF_F_SG;
->>>               } else if (sock_flag(sk, SOCK_ZEROCOPY)) {
->>>                       skb = tcp_write_queue_tail(sk);
->>> @@ -1458,7 +1457,9 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->>>               tcp_push(sk, flags, mss_now, tp->nonagle, size_goal);
->>>       }
->>>  out_nopush:
->>> -     net_zcopy_put(uarg);
->>> +     /* msg->msg_ubuf is pinned by the caller so we don't take extra refs */
->>> +     if (uarg && !msg->msg_ubuf)
->>> +             net_zcopy_put(uarg);
->>>       return copied + copied_syn;
->>>
->>>  do_error:
->>> @@ -1467,7 +1468,9 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->>>       if (copied + copied_syn)
->>>               goto out;
->>>  out_err:
->>> -     net_zcopy_put_abort(uarg, true);
->>> +     /* msg->msg_ubuf is pinned by the caller so we don't take extra refs */
->>> +     if (uarg && !msg->msg_ubuf)
->>> +             net_zcopy_put_abort(uarg, true);
->>>       err = sk_stream_error(sk, flags, err);
->>>       /* make sure we wake any epoll edge trigger waiter */
->>>       if (unlikely(tcp_rtx_and_write_queues_empty(sk) && err == -EAGAIN)) {
->>
->> Both net_zcopy_put_abort and net_zcopy_put have an `if (uarg)` check.
-> 
-> Right, but here this might avoid a read of msg->msg_ubuf, which might
-> be more expensive to fetch.
+syzkaller reported [0] memory leaks of sk and skb related to the TUN
+device with no repro, but we can reproduce it easily with:
 
-agreed.
+  struct ifreq ifr = {}
+  int fd_tun, fd_tmp;
+  char buf[4] = {};
 
-> 
-> Compiler will probably remove the second test (uarg) from net_zcopy_put()
-> 
-> Reviewed-by: Eric Dumazet <edumazet@google.com>
+  fd_tun = openat(AT_FDCWD, "/dev/net/tun", O_WRONLY, 0);
+  ifr.ifr_flags = IFF_TUN | IFF_NAPI | IFF_MULTI_QUEUE;
+  ioctl(fd_tun, TUNSETIFF, &ifr);
 
-The one in net_zcopy_put can be removed with the above change. It's
-other caller is net_zcopy_put_abort which has already checked uarg is set.
+  ifr.ifr_flags = IFF_DETACH_QUEUE;
+  ioctl(fd_tun, TUNSETQUEUE, &ifr);
+
+  fd_tmp = socket(AF_PACKET, SOCK_PACKET, 0);
+  ifr.ifr_flags = IFF_UP;
+  ioctl(fd_tmp, SIOCSIFFLAGS, &ifr);
+
+  write(fd_tun, buf, sizeof(buf));
+  close(fd_tun);
+
+If we enable NAPI and multi-queue on a TUN device, we can put skb into
+tfile->sk.sk_write_queue after the queue is detached.  We should prevent
+it by checking tfile->detached before queuing skb.
+
+Note this must be done under tfile->sk.sk_write_queue.lock because write()
+and ioctl(IFF_DETACH_QUEUE) can run concurrently.  Otherwise, there would
+be a small race window:
+
+  write()                             ioctl(IFF_DETACH_QUEUE)
+  `- tun_get_user                     `- __tun_detach
+     |- if (tfile->detached)             |- tun_disable_queue
+     |  `-> false                        |  `- tfile->detached = tun
+     |                                   `- tun_queue_purge
+     |- spin_lock_bh(&queue->lock)
+     `- __skb_queue_tail(queue, skb)
+
+Another solution is to call tun_queue_purge() when closing and
+reattaching the detached queue, but it could paper over another
+problems.  Also, we do the same kind of test for IFF_NAPI_FRAGS.
+
+[0]:
+unreferenced object 0xffff88801edbc800 (size 2048):
+  comm "syz-executor.1", pid 33269, jiffies 4295743834 (age 18.756s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
+  backtrace:
+    [<000000008c16ea3d>] __do_kmalloc_node mm/slab_common.c:965 [inline]
+    [<000000008c16ea3d>] __kmalloc+0x4a/0x130 mm/slab_common.c:979
+    [<000000003addde56>] kmalloc include/linux/slab.h:563 [inline]
+    [<000000003addde56>] sk_prot_alloc+0xef/0x1b0 net/core/sock.c:2035
+    [<000000003e20621f>] sk_alloc+0x36/0x2f0 net/core/sock.c:2088
+    [<0000000028e43843>] tun_chr_open+0x3d/0x190 drivers/net/tun.c:3438
+    [<000000001b0f1f28>] misc_open+0x1a6/0x1f0 drivers/char/misc.c:165
+    [<000000004376f706>] chrdev_open+0x111/0x300 fs/char_dev.c:414
+    [<00000000614d379f>] do_dentry_open+0x2f9/0x750 fs/open.c:920
+    [<000000008eb24774>] do_open fs/namei.c:3636 [inline]
+    [<000000008eb24774>] path_openat+0x143f/0x1a30 fs/namei.c:3791
+    [<00000000955077b5>] do_filp_open+0xce/0x1c0 fs/namei.c:3818
+    [<00000000b78973b0>] do_sys_openat2+0xf0/0x260 fs/open.c:1356
+    [<00000000057be699>] do_sys_open fs/open.c:1372 [inline]
+    [<00000000057be699>] __do_sys_openat fs/open.c:1388 [inline]
+    [<00000000057be699>] __se_sys_openat fs/open.c:1383 [inline]
+    [<00000000057be699>] __x64_sys_openat+0x83/0xf0 fs/open.c:1383
+    [<00000000a7d2182d>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<00000000a7d2182d>] do_syscall_64+0x3c/0x90 arch/x86/entry/common.c:80
+    [<000000004cc4e8c4>] entry_SYSCALL_64_after_hwframe+0x72/0xdc
+
+unreferenced object 0xffff88802f671700 (size 240):
+  comm "syz-executor.1", pid 33269, jiffies 4295743854 (age 18.736s)
+  hex dump (first 32 bytes):
+    68 c9 db 1e 80 88 ff ff 68 c9 db 1e 80 88 ff ff  h.......h.......
+    00 c0 7b 2f 80 88 ff ff 00 c8 db 1e 80 88 ff ff  ..{/............
+  backtrace:
+    [<00000000e9d9fdb6>] __alloc_skb+0x223/0x250 net/core/skbuff.c:644
+    [<000000002c3e4e0b>] alloc_skb include/linux/skbuff.h:1288 [inline]
+    [<000000002c3e4e0b>] alloc_skb_with_frags+0x6f/0x350 net/core/skbuff.c:6378
+    [<00000000825f98d7>] sock_alloc_send_pskb+0x3ac/0x3e0 net/core/sock.c:2729
+    [<00000000e9eb3df3>] tun_alloc_skb drivers/net/tun.c:1529 [inline]
+    [<00000000e9eb3df3>] tun_get_user+0x5e1/0x1f90 drivers/net/tun.c:1841
+    [<0000000053096912>] tun_chr_write_iter+0xac/0x120 drivers/net/tun.c:2035
+    [<00000000b9282ae0>] call_write_iter include/linux/fs.h:1868 [inline]
+    [<00000000b9282ae0>] new_sync_write fs/read_write.c:491 [inline]
+    [<00000000b9282ae0>] vfs_write+0x40f/0x530 fs/read_write.c:584
+    [<00000000524566e4>] ksys_write+0xa1/0x170 fs/read_write.c:637
+    [<00000000a7d2182d>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<00000000a7d2182d>] do_syscall_64+0x3c/0x90 arch/x86/entry/common.c:80
+    [<000000004cc4e8c4>] entry_SYSCALL_64_after_hwframe+0x72/0xdc
+
+Fixes: cde8b15f1aab ("tuntap: add ioctl to attach or detach a file form tuntap device")
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+ drivers/net/tun.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index d4d0a41a905a..d75456adc62a 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1977,6 +1977,14 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 		int queue_len;
+ 
+ 		spin_lock_bh(&queue->lock);
++
++		if (unlikely(tfile->detached)) {
++			spin_unlock_bh(&queue->lock);
++			rcu_read_unlock();
++			err = -EBUSY;
++			goto free_skb;
++		}
++
+ 		__skb_queue_tail(queue, skb);
+ 		queue_len = skb_queue_len(queue);
+ 		spin_unlock(&queue->lock);
+@@ -2512,6 +2520,13 @@ static int tun_xdp_one(struct tun_struct *tun,
+ 	if (tfile->napi_enabled) {
+ 		queue = &tfile->sk.sk_write_queue;
+ 		spin_lock(&queue->lock);
++
++		if (unlikely(tfile->detached)) {
++			spin_unlock(&queue->lock);
++			kfree_skb(skb);
++			return -EBUSY;
++		}
++
+ 		__skb_queue_tail(queue, skb);
+ 		spin_unlock(&queue->lock);
+ 		ret = 1;
+-- 
+2.30.2
+
 
