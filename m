@@ -1,406 +1,269 @@
-Return-Path: <netdev+bounces-2666-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2668-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AC632702EB1
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 52F25702EBA
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:52:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 720961C20B84
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:49:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4A0081C20B55
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:52:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2ACBFD52C;
-	Mon, 15 May 2023 13:48:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 02366C8F8;
+	Mon, 15 May 2023 13:52:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17A30D507
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:48:41 +0000 (UTC)
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B893410F1
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 06:48:38 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QKgcQ6ktCzLq0W;
-	Mon, 15 May 2023 21:45:42 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9A3963CA;
+	Mon, 15 May 2023 13:52:17 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0E9E6E;
+	Mon, 15 May 2023 06:52:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684158736; x=1715694736;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=n7yllujFV9tpaRgSKf9uC3OwShqrAhg7NEMdAe9MCgQ=;
+  b=g6tESjPkLMALRrYX909PscO31lXbxAWGFFTlC+C/ZRciWs0TVKYcZXws
+   hWbfdLdozPJ0xFgzqbXcQsEakurWGOGssmdPmMqBAWUvaf/jk3trAO2rf
+   JsCioDgAhfwumk6rojDTXeUIkfv4wRGy2SGwSh+CnLR+OZqPr8uq/m1v+
+   LKgz7vbHH41z+AZd0lVVyUxA0O30a6DTjS789fxaHyyVFQYVGMdu0L/g9
+   yYEPbkPJymIdR2azNCE+TumydiMVAvyxJopmqBg7ihgCNSLxBaUNIvcmu
+   dWRTw6q2T/72lz3EfHfZhSuj/ij/Dm4vuMDwOpqh89yB/5gRTDTmToQzn
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="331574354"
+X-IronPort-AV: E=Sophos;i="5.99,276,1677571200"; 
+   d="scan'208";a="331574354"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 06:52:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="765936501"
+X-IronPort-AV: E=Sophos;i="5.99,276,1677571200"; 
+   d="scan'208";a="765936501"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga008.fm.intel.com with ESMTP; 15 May 2023 06:52:15 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 15 May 2023 21:48:35 +0800
-From: Hao Lan <lanhao@huawei.com>
-To: <netdev@vger.kernel.org>
-CC: <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-	<pabeni@redhat.com>, <richardcochran@gmail.com>, <lanhao@huawei.com>,
-	<wangpeiyang1@huawei.com>, <shenjian15@huawei.com>, <chenhao418@huawei.com>,
-	<simon.horman@corigine.com>, <wangjie125@huawei.com>, <yuanjilin@cdjrlc.com>,
-	<cai.huoqing@linux.dev>, <xiujianfeng@huawei.com>
-Subject: [PATCH net-next 4/4] net: hns3: clear hns unused parameter alarm
-Date: Mon, 15 May 2023 21:46:43 +0800
-Message-ID: <20230515134643.48314-5-lanhao@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20230515134643.48314-1-lanhao@huawei.com>
-References: <20230515134643.48314-1-lanhao@huawei.com>
+ 15.1.2507.23; Mon, 15 May 2023 06:52:14 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Mon, 15 May 2023 06:52:14 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Mon, 15 May 2023 06:52:14 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CJIC5sl6933oO6QRJEpIpdAq97rQndkIdPC7qUcG5uFJ5m4nJ+Bm2ui1zvMPAQu4kRDjY90YN0YAuj5Uw9ZC5gIVBuuoCvXDkx9fdNOjdXPzSvBZwkWQuOURxmIgPRfPHu8sFtQktyCx35i4qAkJSD1qskxrUn1oKVVaKuAOgYPkZQaZABK8VZfzu+nTY8Dcx7IukNJw2YCxBODiyzffAqBM8+m0NYhkCaN9w6EfzG0MdHcCzy6fl/xzPEzAPvuTaI9Dvi+Em4UL/XNSDghLKOdSAc/xFdf67p0i2hIkMeFZCtJ4xF1YAWHfWxGXZIO7fQ3FXol7H+T7i0E5Pg95SA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pvx+i4VEzeLKTatwaIQU+GYJvDB5/nqzXAA3kH7G1rk=;
+ b=H2H3tQRRrYvI7exnnsHmygWR/EKZyHpnMXGBOgYVJ1Y92Ggjz2oFCQBpwlS7pxfBnvXx8GkB/6gCKGalBuz3TULpvZTLuKqVR4n8R6iACI1nk2MS2WicF/8pFHJBzUYjowkl4fCqR7qrPxF/z+DHiKnnKeg7vvtMQACxjzsLlJfHenPbW2QntJCnj3wtnebEkHOKY8doIrJ29ple4Y6c/XYAvx5QcsLDKICrsGSQm1f239d1RdNU+0v4ySVMAoXZjijbqw8m/aVBYdhhub4VivoytsxBbN1VhPAjQOxKTWLRzPf2XBrf1snhFbfseI2/fMxKAvvdjf4BMvsobMepqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB5471.namprd11.prod.outlook.com (2603:10b6:5:39d::10)
+ by PH0PR11MB7494.namprd11.prod.outlook.com (2603:10b6:510:283::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.29; Mon, 15 May
+ 2023 13:52:10 +0000
+Received: from DM4PR11MB5471.namprd11.prod.outlook.com
+ ([fe80::907c:ffaa:352a:8913]) by DM4PR11MB5471.namprd11.prod.outlook.com
+ ([fe80::907c:ffaa:352a:8913%6]) with mapi id 15.20.6387.030; Mon, 15 May 2023
+ 13:52:10 +0000
+Date: Mon, 15 May 2023 15:49:29 +0200
+From: Larysa Zaremba <larysa.zaremba@intel.com>
+To: Stanislav Fomichev <sdf@google.com>
+CC: <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>, "Daniel
+ Borkmann" <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, "Jakub
+ Kicinski" <kuba@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, Song
+ Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>, John Fastabend
+	<john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, Jiri Olsa
+	<jolsa@kernel.org>, Jesse Brandeburg <jesse.brandeburg@intel.com>, "Tony
+ Nguyen" <anthony.l.nguyen@intel.com>, Anatoly Burakov
+	<anatoly.burakov@intel.com>, Jesper Dangaard Brouer <brouer@redhat.com>,
+	Alexander Lobakin <alexandr.lobakin@intel.com>, Magnus Karlsson
+	<magnus.karlsson@gmail.com>, Maryam Tahhan <mtahhan@redhat.com>,
+	<xdp-hints@xdp-project.net>, <netdev@vger.kernel.org>,
+	<intel-wired-lan@lists.osuosl.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RESEND bpf-next 11/15] xdp: Add checksum level hint
+Message-ID: <ZGI4aS9UUdW4JwZ6@lincoln>
+References: <20230512152607.992209-1-larysa.zaremba@intel.com>
+ <20230512152607.992209-12-larysa.zaremba@intel.com>
+ <ZF6GrXsA8L0THVFB@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZF6GrXsA8L0THVFB@google.com>
+X-ClientProxiedBy: FR3P281CA0165.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a2::10) To DM4PR11MB5471.namprd11.prod.outlook.com
+ (2603:10b6:5:39d::10)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB5471:EE_|PH0PR11MB7494:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6488149f-5c8d-4d52-fc24-08db554b945f
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: txeaj2X04LVyk6bqnVu3dSzOYjaA9boOLl87o+Cdrq3H38u6bXpZvlxRTzo8zgCHwfILdDXY4PsBJCLX+w2LAYVz7bq3hJuaWHeAXTEHBO/VckTO1QGc7Hv7hCyqffaDeWIYoy13dcEnj9Rmh6cUwVV3e1/06KAuJPZRoM89A4r1HfUCzL3SyTg/16rP9MBObyq6s3LnDM7k+zP9Z2EHcXJH51qtLe9U7ZANGQYI3JOhoYxOqwlJ0pk2QNvEm7tkIRK7GStQkODEy4kutkrDHaawo49xPJN4I3m9Rijpl14e4e26QtNeuV+stcTKcsBWYF51t8a0w8QxVnqsjwdwPX5tXNFivJX8R6B2Q3XGKDiwTZ/+W0KkWSDlyC0a8iYuTz0oSmEiCoNhrk+lBdENACsYNovWe1Lbf8Y97Vz5eM/XdKHiXJtg9dG6GIA4SZ806RO2ct0vsJBOquK2lPsHGhgEJRgtgb4zvaELtMRf94A5hLs5HdmRumNPt0zd3URASTkDDCLQSgix+oU98ul82MTtZexitBVOzCwOyPHu7e4ydc96VyqoF+VM+qdI8SaL
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5471.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(39860400002)(396003)(366004)(346002)(136003)(376002)(451199021)(86362001)(54906003)(316002)(66476007)(4326008)(6916009)(66946007)(6486002)(66556008)(478600001)(2906002)(33716001)(8936002)(5660300002)(8676002)(41300700001)(44832011)(6666004)(7416002)(38100700002)(82960400001)(9686003)(186003)(26005)(6506007)(83380400001)(6512007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2sDWlbujWPUffVyiaE5BPmn3JBi/y4A1OgsczZpvEun3BzA5KW0OzVwduNpS?=
+ =?us-ascii?Q?RbBjRs/iv2Jnr4Xr4zuBSx7okdzV3+HNASi94JFt0FTZ5YKtM0fwoLGJtceT?=
+ =?us-ascii?Q?FnVXmhljXwOssnTlyFjUDaxKpnIvVOcom6GJzAZMgyvws0ZOO7KUNPHQPHTt?=
+ =?us-ascii?Q?IjVQ6v8OyL+FUZsrpClOcBhPwe0cirIrvNMLMhC/nzDVB8BN1xMPWVMs5aqf?=
+ =?us-ascii?Q?i+ESxXNJurnwPn4pUUwx/pw+9Lh2QaiuUvlVfgGe0WWxhK8U1FHOM77NNtlm?=
+ =?us-ascii?Q?SvxjhUQs0lKyXv5OvGhw7ec/b0p5meHYfMpfkgCoMs+nq8Es4d92reI3WxPZ?=
+ =?us-ascii?Q?4JWwprls7Ffmdb86yxsrKdhXsfgLUL4LpxY1G8SDAaXATLgu8Z8lQ95sgZE1?=
+ =?us-ascii?Q?KdMd0wnnxT54dFfxxFEAraTFOyPdJD9DWqSHtoRd/i34ZlxFJ3AuWDiJi0dH?=
+ =?us-ascii?Q?L2lsYtcxM6K5LM9OmXIUZGTNBUnwgZ/qtYDP8e+SHXDnGx9kyaID34nujhA1?=
+ =?us-ascii?Q?Uj+qdIL9g0QN9/cYQ2lKolSONJa9nrQCfwigMbvH/3rqNmwzxtE4K/7alAzN?=
+ =?us-ascii?Q?eY9P787NIGq4RfqdpyyjgZziW9Yry1TSV4WiAqDQf7c7MK3L8sc+WxbExhOM?=
+ =?us-ascii?Q?2zAEZAOPZsTum58f5UjH10imhJkizmHrqB4rCPSz8iHAt5zfX8jdBo027Q5T?=
+ =?us-ascii?Q?cJakS1fACw3uCn2RPV5/9J+4gUB2ePxJJaeveGqmzKjzMo7gD8cQ/2vcoc3o?=
+ =?us-ascii?Q?2Za62H0Sq8kvldU0qSJ0QrluLLuAMdOPk2/cRQWFtS2VIir3wQEwuTpVXzz6?=
+ =?us-ascii?Q?mE/RGVUzO+uV9hR03rcRmxloHT8k4jf9YvUbm4+n0QGRjgAaaLU0zndBaT99?=
+ =?us-ascii?Q?PHOsWfNU6/5tJWG1fwEbrudFXhajwjVxOugoqi/EQX/EzpfzYXnwL0r0+YyV?=
+ =?us-ascii?Q?b+ERCOnxN10b9rLXZUkTgpyhm5HH+xVRZNRJHBHGvxFHrVx+CYYiU1uYorFK?=
+ =?us-ascii?Q?6BeTdHSs7goPOneY3zZaoJNZpGIfZWkpE5wPDuV0lyT1DEZLkDBqNISPkG7h?=
+ =?us-ascii?Q?m6do7MqrrNNb+z1ZRr12dqj3mle5ewHJg9htmMwMOPue0KSu+Cdkg+kIImfE?=
+ =?us-ascii?Q?Be/rsL6pDePNX+EiHXVjCBl00ADh8HoQxk/QvV1ppulGg4Jo/ph1+fEA25/k?=
+ =?us-ascii?Q?70bj02QRQc/c90ORURSt6W9AFqeABLxHWxJLhohYr8It85RqJA8HaLQIUhgl?=
+ =?us-ascii?Q?LDZq31l/nU6b+rk9mk2KhfUpRSyJAuaDatGatqsNhbqhAWXzlCzUyusrPy9x?=
+ =?us-ascii?Q?0QdnldTQkecdLtxgtHtYY1W8ntK6eT/w6NLESfHAXhq0MLWagGb0e3nRdwR+?=
+ =?us-ascii?Q?+3nWupIhnQaiVE/HmBoZ21zVQ6OMY1yDdy52T0DoQmsEveTaX5smXJEDrKrN?=
+ =?us-ascii?Q?RmcZbfKFbzXeLCTfcds/ZLik5u049Vkv+hjzvedpxu1vC1BIaBOmy1HD44As?=
+ =?us-ascii?Q?9GARcAsS/I9kXUhYjH5+QDZ2ZtkZnSqZRNwHHowzXbUzveK1URThJwzMOuJN?=
+ =?us-ascii?Q?0Clsy2HgTVj3FctoJBOJariWLX4GZKONXCK3cTKusEh4WhuT60j6n6pMicq2?=
+ =?us-ascii?Q?Ig=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6488149f-5c8d-4d52-fc24-08db554b945f
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5471.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 13:52:10.6010
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dhUlJP/UxbM8+27KVBAfD1htHNsI8M51up/58XFRiS37raiSPqBL5jUykHWp9hU1UgAgjccGPbgsbjsRPWhmmCmY3IOJC9mpHAFZaqotVfc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB7494
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Peiyang Wang <wangpeiyang1@huawei.com>
+On Fri, May 12, 2023 at 11:34:21AM -0700, Stanislav Fomichev wrote:
+> On 05/12, Larysa Zaremba wrote:
+> > Implement functionality that enables drivers to expose to XDP code,
+> > whether checksums was checked and on what level.
+> > 
+> > Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+> > ---
+> >  Documentation/networking/xdp-rx-metadata.rst |  3 +++
+> >  include/linux/netdevice.h                    |  1 +
+> >  include/net/xdp.h                            |  2 ++
+> >  kernel/bpf/offload.c                         |  2 ++
+> >  net/core/xdp.c                               | 12 ++++++++++++
+> >  5 files changed, 20 insertions(+)
+> > 
+> > diff --git a/Documentation/networking/xdp-rx-metadata.rst b/Documentation/networking/xdp-rx-metadata.rst
+> > index 73a78029c596..f74f0e283097 100644
+> > --- a/Documentation/networking/xdp-rx-metadata.rst
+> > +++ b/Documentation/networking/xdp-rx-metadata.rst
+> > @@ -29,6 +29,9 @@ metadata is supported, this set will grow:
+> >  .. kernel-doc:: net/core/xdp.c
+> >     :identifiers: bpf_xdp_metadata_rx_stag
+> >  
+> > +.. kernel-doc:: net/core/xdp.c
+> > +   :identifiers: bpf_xdp_metadata_rx_csum_lvl
+> > +
+> >  An XDP program can use these kfuncs to read the metadata into stack
+> >  variables for its own consumption. Or, to pass the metadata on to other
+> >  consumers, an XDP program can store it into the metadata area carried
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index fdae37fe11f5..ddade3a15366 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -1657,6 +1657,7 @@ struct xdp_metadata_ops {
+> >  			       enum xdp_rss_hash_type *rss_type);
+> >  	int	(*xmo_rx_ctag)(const struct xdp_md *ctx, u16 *vlan_tag);
+> >  	int	(*xmo_rx_stag)(const struct xdp_md *ctx, u16 *vlan_tag);
+> > +	int	(*xmo_rx_csum_lvl)(const struct xdp_md *ctx, u8 *csum_level);
+> >  };
+> >  
+> >  /**
+> > diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > index 2db7439fc60f..0fbd25616241 100644
+> > --- a/include/net/xdp.h
+> > +++ b/include/net/xdp.h
+> > @@ -393,6 +393,8 @@ void xdp_attachment_setup(struct xdp_attachment_info *info,
+> >  			   bpf_xdp_metadata_rx_ctag) \
+> >  	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_STAG, \
+> >  			   bpf_xdp_metadata_rx_stag) \
+> > +	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_CSUM_LVL, \
+> > +			   bpf_xdp_metadata_rx_csum_lvl) \
+> >  
+> >  enum {
+> >  #define XDP_METADATA_KFUNC(name, _) name,
+> > diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
+> > index 2c6b6e82cfac..8bd54fb4ac63 100644
+> > --- a/kernel/bpf/offload.c
+> > +++ b/kernel/bpf/offload.c
+> > @@ -852,6 +852,8 @@ void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
+> >  		p = ops->xmo_rx_ctag;
+> >  	else if (func_id == bpf_xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_STAG))
+> >  		p = ops->xmo_rx_stag;
+> > +	else if (func_id == bpf_xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_CSUM_LVL))
+> > +		p = ops->xmo_rx_csum_lvl;
+> >  out:
+> >  	up_read(&bpf_devs_lock);
+> >  
+> > diff --git a/net/core/xdp.c b/net/core/xdp.c
+> > index eff21501609f..7dd45fd62983 100644
+> > --- a/net/core/xdp.c
+> > +++ b/net/core/xdp.c
+> > @@ -762,6 +762,18 @@ __bpf_kfunc int bpf_xdp_metadata_rx_stag(const struct xdp_md *ctx, u16 *vlan_tag
+> >  	return -EOPNOTSUPP;
+> >  }
+> >  
+> > +/**
+> > + * bpf_xdp_metadata_rx_csum_lvl - Get depth at which HW has checked the checksum.
+> > + * @ctx: XDP context pointer.
+> > + * @csum_level: Return value pointer.
+> 
+> Let's maybe clarify what the level means here? For example, do we start
+> counting from 0 or 1?
 
-Several functions in the hns3 driver have unused parameters.
-The compiler will warn about them when building
-with -Wunused-parameter option of hns3.
+Sure, I'll add a comment that the meaning of level is the same as in skb, 
+counting from 0.
 
-Signed-off-by: Peiyang Wang <wangpeiyang1@huawei.com>
-Signed-off-by: Hao Lan <lanhao@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  3 +-
- .../hns3/hns3_common/hclge_comm_rss.c         |  3 +-
- .../hns3/hns3_common/hclge_comm_rss.h         |  3 +-
- .../ethernet/hisilicon/hns3/hns3_debugfs.c    |  5 +-
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  2 +-
- .../net/ethernet/hisilicon/hns3/hns3_enet.h   |  2 +-
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    |  7 ++-
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 47 ++++++++-----------
- .../hisilicon/hns3/hns3vf/hclgevf_main.c      | 14 ++----
- 9 files changed, 34 insertions(+), 52 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 9c9c72dc57e0..b99d75260d59 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -647,8 +647,7 @@ struct hnae3_ae_ops {
- 	int (*rm_mc_addr)(struct hnae3_handle *handle,
- 			  const unsigned char *addr);
- 	void (*set_tso_stats)(struct hnae3_handle *handle, int enable);
--	void (*update_stats)(struct hnae3_handle *handle,
--			     struct net_device_stats *net_stats);
-+	void (*update_stats)(struct hnae3_handle *handle);
- 	void (*get_stats)(struct hnae3_handle *handle, u64 *data);
- 	void (*get_mac_stats)(struct hnae3_handle *handle,
- 			      struct hns3_mac_stats *mac_stats);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_rss.c b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_rss.c
-index ae2736549526..b4ae2160aff4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_rss.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_rss.c
-@@ -305,8 +305,7 @@ int hclge_comm_set_rss_indir_table(struct hnae3_ae_dev *ae_dev,
- 	return 0;
- }
- 
--int hclge_comm_set_rss_input_tuple(struct hnae3_handle *nic,
--				   struct hclge_comm_hw *hw, bool is_pf,
-+int hclge_comm_set_rss_input_tuple(struct hclge_comm_hw *hw,
- 				   struct hclge_comm_rss_cfg *rss_cfg)
- {
- 	struct hclge_comm_rss_input_tuple_cmd *req;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_rss.h b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_rss.h
-index 92af3d2980d3..cdafa63fe38b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_rss.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_rss.h
-@@ -112,8 +112,7 @@ int hclge_comm_init_rss_tuple_cmd(struct hclge_comm_rss_cfg *rss_cfg,
- 				  struct hnae3_ae_dev *ae_dev,
- 				  struct hclge_comm_rss_input_tuple_cmd *req);
- u64 hclge_comm_convert_rss_tuple(u8 tuple_sets);
--int hclge_comm_set_rss_input_tuple(struct hnae3_handle *nic,
--				   struct hclge_comm_hw *hw, bool is_pf,
-+int hclge_comm_set_rss_input_tuple(struct hclge_comm_hw *hw,
- 				   struct hclge_comm_rss_cfg *rss_cfg);
- int hclge_comm_set_rss_indir_table(struct hnae3_ae_dev *ae_dev,
- 				   struct hclge_comm_hw *hw, const u16 *indir);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index cf415cb37685..8679dd91a8a2 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -958,8 +958,7 @@ static const struct hns3_dbg_item tx_bd_info_items[] = {
- 	{ "MSS_HW_CSUM", 0 },
- };
- 
--static void hns3_dump_tx_bd_info(struct hns3_nic_priv *priv,
--				 struct hns3_desc *desc, char **result, int idx)
-+static void hns3_dump_tx_bd_info(struct hns3_desc *desc, char **result, int idx)
- {
- 	unsigned int j = 0;
- 
-@@ -1008,7 +1007,7 @@ static int hns3_dbg_tx_bd_info(struct hns3_dbg_data *d, char *buf, int len)
- 	for (i = 0; i < ring->desc_num; i++) {
- 		desc = &ring->desc[i];
- 
--		hns3_dump_tx_bd_info(priv, desc, result, i);
-+		hns3_dump_tx_bd_info(desc, result, i);
- 		hns3_dbg_fill_content(content, sizeof(content),
- 				      tx_bd_info_items, (const char **)result,
- 				      ARRAY_SIZE(tx_bd_info_items));
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index b676496ec6d7..9f6890059666 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2538,7 +2538,7 @@ static void hns3_nic_get_stats64(struct net_device *netdev,
- 	if (test_bit(HNS3_NIC_STATE_DOWN, &priv->state))
- 		return;
- 
--	handle->ae_algo->ops->update_stats(handle, &netdev->stats);
-+	handle->ae_algo->ops->update_stats(handle);
- 
- 	memset(&ring_total_stats, 0, sizeof(ring_total_stats));
- 	for (idx = 0; idx < queue_num; idx++) {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 1b360aa52e5d..8c0016b359b7 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -693,7 +693,7 @@ static inline unsigned int hns3_page_order(struct hns3_enet_ring *ring)
- 
- /* iterator for handling rings in ring group */
- #define hns3_for_each_ring(pos, head) \
--	for (pos = (head).ring; (pos); pos = (pos)->next)
-+	for ((pos) = (head).ring; (pos); (pos) = (pos)->next)
- 
- #define hns3_get_handle(ndev) \
- 	(((struct hns3_nic_priv *)netdev_priv(ndev))->ae_handle)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 51d1278b18f6..407d30ee55d2 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -228,7 +228,7 @@ static u32 hns3_lb_check_rx_ring(struct hns3_nic_priv *priv, u32 budget)
- }
- 
- static void hns3_lb_clear_tx_ring(struct hns3_nic_priv *priv, u32 start_ringid,
--				  u32 end_ringid, u32 budget)
-+				  u32 end_ringid)
- {
- 	u32 i;
- 
-@@ -295,8 +295,7 @@ static int hns3_lp_run_test(struct net_device *ndev, enum hnae3_loop mode)
- 
- out:
- 	hns3_lb_clear_tx_ring(priv, HNS3_NIC_LB_TEST_RING_ID,
--			      HNS3_NIC_LB_TEST_RING_ID,
--			      HNS3_NIC_LB_TEST_PKT_NUM);
-+			      HNS3_NIC_LB_TEST_RING_ID);
- 
- 	kfree_skb(skb);
- 	return ret_val;
-@@ -618,7 +617,7 @@ static void hns3_get_stats(struct net_device *netdev,
- 		return;
- 	}
- 
--	h->ae_algo->ops->update_stats(h, &netdev->stats);
-+	h->ae_algo->ops->update_stats(h);
- 
- 	/* get per-queue stats */
- 	p = hns3_get_stats_tqps(h, p);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 4fb5406c1951..1bbf18a96bf1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -689,8 +689,7 @@ static void hclge_update_stats_for_all(struct hclge_dev *hdev)
- 			"Update MAC stats fail, status = %d.\n", status);
- }
- 
--static void hclge_update_stats(struct hnae3_handle *handle,
--			       struct net_device_stats *net_stats)
-+static void hclge_update_stats(struct hnae3_handle *handle)
- {
- 	struct hclge_vport *vport = hclge_get_vport(handle);
- 	struct hclge_dev *hdev = vport->back;
-@@ -824,7 +823,7 @@ static void hclge_get_mac_stat(struct hnae3_handle *handle,
- 	struct hclge_vport *vport = hclge_get_vport(handle);
- 	struct hclge_dev *hdev = vport->back;
- 
--	hclge_update_stats(handle, NULL);
-+	hclge_update_stats(handle);
- 
- 	mac_stats->tx_pause_cnt = hdev->mac_stats.mac_tx_mac_pause_num;
- 	mac_stats->rx_pause_cnt = hdev->mac_stats.mac_rx_mac_pause_num;
-@@ -4965,9 +4964,7 @@ int hclge_rss_init_hw(struct hclge_dev *hdev)
- 	if (ret)
- 		return ret;
- 
--	ret = hclge_comm_set_rss_input_tuple(&hdev->vport[0].nic,
--					     &hdev->hw.hw, true,
--					     &hdev->rss_cfg);
-+	ret = hclge_comm_set_rss_input_tuple(&hdev->hw.hw, &hdev->rss_cfg);
- 	if (ret)
- 		return ret;
- 
-@@ -6243,8 +6240,7 @@ static int hclge_fd_check_spec(struct hclge_dev *hdev,
- 	return hclge_fd_check_ext_tuple(hdev, fs, unused_tuple);
- }
- 
--static void hclge_fd_get_tcpip4_tuple(struct hclge_dev *hdev,
--				      struct ethtool_rx_flow_spec *fs,
-+static void hclge_fd_get_tcpip4_tuple(struct ethtool_rx_flow_spec *fs,
- 				      struct hclge_fd_rule *rule, u8 ip_proto)
- {
- 	rule->tuples.src_ip[IPV4_INDEX] =
-@@ -6273,8 +6269,7 @@ static void hclge_fd_get_tcpip4_tuple(struct hclge_dev *hdev,
- 	rule->tuples_mask.ip_proto = 0xFF;
- }
- 
--static void hclge_fd_get_ip4_tuple(struct hclge_dev *hdev,
--				   struct ethtool_rx_flow_spec *fs,
-+static void hclge_fd_get_ip4_tuple(struct ethtool_rx_flow_spec *fs,
- 				   struct hclge_fd_rule *rule)
- {
- 	rule->tuples.src_ip[IPV4_INDEX] =
-@@ -6297,8 +6292,7 @@ static void hclge_fd_get_ip4_tuple(struct hclge_dev *hdev,
- 	rule->tuples_mask.ether_proto = 0xFFFF;
- }
- 
--static void hclge_fd_get_tcpip6_tuple(struct hclge_dev *hdev,
--				      struct ethtool_rx_flow_spec *fs,
-+static void hclge_fd_get_tcpip6_tuple(struct ethtool_rx_flow_spec *fs,
- 				      struct hclge_fd_rule *rule, u8 ip_proto)
- {
- 	be32_to_cpu_array(rule->tuples.src_ip, fs->h_u.tcp_ip6_spec.ip6src,
-@@ -6327,8 +6321,7 @@ static void hclge_fd_get_tcpip6_tuple(struct hclge_dev *hdev,
- 	rule->tuples_mask.ip_proto = 0xFF;
- }
- 
--static void hclge_fd_get_ip6_tuple(struct hclge_dev *hdev,
--				   struct ethtool_rx_flow_spec *fs,
-+static void hclge_fd_get_ip6_tuple(struct ethtool_rx_flow_spec *fs,
- 				   struct hclge_fd_rule *rule)
- {
- 	be32_to_cpu_array(rule->tuples.src_ip, fs->h_u.usr_ip6_spec.ip6src,
-@@ -6351,8 +6344,7 @@ static void hclge_fd_get_ip6_tuple(struct hclge_dev *hdev,
- 	rule->tuples_mask.ether_proto = 0xFFFF;
- }
- 
--static void hclge_fd_get_ether_tuple(struct hclge_dev *hdev,
--				     struct ethtool_rx_flow_spec *fs,
-+static void hclge_fd_get_ether_tuple(struct ethtool_rx_flow_spec *fs,
- 				     struct hclge_fd_rule *rule)
- {
- 	ether_addr_copy(rule->tuples.src_mac, fs->h_u.ether_spec.h_source);
-@@ -6388,8 +6380,7 @@ static void hclge_fd_get_user_def_tuple(struct hclge_fd_user_def_info *info,
- 	rule->ep.user_def = *info;
- }
- 
--static int hclge_fd_get_tuple(struct hclge_dev *hdev,
--			      struct ethtool_rx_flow_spec *fs,
-+static int hclge_fd_get_tuple(struct ethtool_rx_flow_spec *fs,
- 			      struct hclge_fd_rule *rule,
- 			      struct hclge_fd_user_def_info *info)
- {
-@@ -6397,31 +6388,31 @@ static int hclge_fd_get_tuple(struct hclge_dev *hdev,
- 
- 	switch (flow_type) {
- 	case SCTP_V4_FLOW:
--		hclge_fd_get_tcpip4_tuple(hdev, fs, rule, IPPROTO_SCTP);
-+		hclge_fd_get_tcpip4_tuple(fs, rule, IPPROTO_SCTP);
- 		break;
- 	case TCP_V4_FLOW:
--		hclge_fd_get_tcpip4_tuple(hdev, fs, rule, IPPROTO_TCP);
-+		hclge_fd_get_tcpip4_tuple(fs, rule, IPPROTO_TCP);
- 		break;
- 	case UDP_V4_FLOW:
--		hclge_fd_get_tcpip4_tuple(hdev, fs, rule, IPPROTO_UDP);
-+		hclge_fd_get_tcpip4_tuple(fs, rule, IPPROTO_UDP);
- 		break;
- 	case IP_USER_FLOW:
--		hclge_fd_get_ip4_tuple(hdev, fs, rule);
-+		hclge_fd_get_ip4_tuple(fs, rule);
- 		break;
- 	case SCTP_V6_FLOW:
--		hclge_fd_get_tcpip6_tuple(hdev, fs, rule, IPPROTO_SCTP);
-+		hclge_fd_get_tcpip6_tuple(fs, rule, IPPROTO_SCTP);
- 		break;
- 	case TCP_V6_FLOW:
--		hclge_fd_get_tcpip6_tuple(hdev, fs, rule, IPPROTO_TCP);
-+		hclge_fd_get_tcpip6_tuple(fs, rule, IPPROTO_TCP);
- 		break;
- 	case UDP_V6_FLOW:
--		hclge_fd_get_tcpip6_tuple(hdev, fs, rule, IPPROTO_UDP);
-+		hclge_fd_get_tcpip6_tuple(fs, rule, IPPROTO_UDP);
- 		break;
- 	case IPV6_USER_FLOW:
--		hclge_fd_get_ip6_tuple(hdev, fs, rule);
-+		hclge_fd_get_ip6_tuple(fs, rule);
- 		break;
- 	case ETHER_FLOW:
--		hclge_fd_get_ether_tuple(hdev, fs, rule);
-+		hclge_fd_get_ether_tuple(fs, rule);
- 		break;
- 	default:
- 		return -EOPNOTSUPP;
-@@ -6578,7 +6569,7 @@ static int hclge_add_fd_entry(struct hnae3_handle *handle,
- 	if (!rule)
- 		return -ENOMEM;
- 
--	ret = hclge_fd_get_tuple(hdev, fs, rule, &info);
-+	ret = hclge_fd_get_tuple(fs, rule, &info);
- 	if (ret) {
- 		kfree(rule);
- 		return ret;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index f24046250341..a84a15b7f645 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -121,8 +121,7 @@ static struct hclgevf_dev *hclgevf_ae_get_hdev(struct hnae3_handle *handle)
- 		return container_of(handle, struct hclgevf_dev, nic);
- }
- 
--static void hclgevf_update_stats(struct hnae3_handle *handle,
--				 struct net_device_stats *net_stats)
-+static void hclgevf_update_stats(struct hnae3_handle *handle)
- {
- 	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
- 	int status;
-@@ -1642,8 +1641,7 @@ static void hclgevf_reset(struct hclgevf_dev *hdev)
- 	hclgevf_reset_err_handle(hdev);
- }
- 
--static enum hnae3_reset_type hclgevf_get_reset_level(struct hclgevf_dev *hdev,
--						     unsigned long *addr)
-+static enum hnae3_reset_type hclgevf_get_reset_level(unsigned long *addr)
- {
- 	enum hnae3_reset_type rst_level = HNAE3_NONE_RESET;
- 
-@@ -1682,8 +1680,7 @@ static void hclgevf_reset_event(struct pci_dev *pdev,
- 
- 	if (hdev->default_reset_request)
- 		hdev->reset_level =
--			hclgevf_get_reset_level(hdev,
--						&hdev->default_reset_request);
-+			hclgevf_get_reset_level(&hdev->default_reset_request);
- 	else
- 		hdev->reset_level = HNAE3_VF_FUNC_RESET;
- 
-@@ -1825,7 +1822,7 @@ static void hclgevf_reset_service_task(struct hclgevf_dev *hdev)
- 
- 		hdev->last_reset_time = jiffies;
- 		hdev->reset_type =
--			hclgevf_get_reset_level(hdev, &hdev->reset_pending);
-+			hclgevf_get_reset_level(&hdev->reset_pending);
- 		if (hdev->reset_type != HNAE3_NONE_RESET)
- 			hclgevf_reset(hdev);
- 	} else if (test_and_clear_bit(HCLGEVF_RESET_REQUESTED,
-@@ -2157,8 +2154,7 @@ static int hclgevf_rss_init_hw(struct hclgevf_dev *hdev)
- 		if (ret)
- 			return ret;
- 
--		ret = hclge_comm_set_rss_input_tuple(&hdev->nic, &hdev->hw.hw,
--						     false, rss_cfg);
-+		ret = hclge_comm_set_rss_input_tuple(&hdev->hw.hw, rss_cfg);
- 		if (ret)
- 			return ret;
- 	}
--- 
-2.30.0
-
+> 
+> > + *
+> > + * Returns 0 on success (HW has checked the checksum) or ``-errno`` on error.
+> > + */
+> > +__bpf_kfunc int bpf_xdp_metadata_rx_csum_lvl(const struct xdp_md *ctx, u8 *csum_level)
+> > +{
+> > +	return -EOPNOTSUPP;
+> > +}
+> > +
+> >  __diag_pop();
+> >  
+> >  BTF_SET8_START(xdp_metadata_kfunc_ids)
+> > -- 
+> > 2.35.3
+> > 
 
