@@ -1,110 +1,68 @@
-Return-Path: <netdev+bounces-2671-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2672-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B2C2C702F3E
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 16:08:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E5B00702F49
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 16:09:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6A89F1C20C17
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 14:08:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DF7752810CC
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 14:09:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5DA83D51E;
-	Mon, 15 May 2023 14:08:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 314E4D524;
+	Mon, 15 May 2023 14:09:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A50C79D4;
-	Mon, 15 May 2023 14:08:23 +0000 (UTC)
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F021FC6;
-	Mon, 15 May 2023 07:08:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684159697; x=1715695697;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=4F2pe+Bi3JoNn8gnP2gF2BSYpLCG2EmCW2nizaBXhLQ=;
-  b=A759zOzYGMxOi2F9DhLZeKYxBQOLjFC67DnkVjTaseCBgr7QZuY5D5IW
-   VOpu+ohHE68KyZs9DW7HzTQ/TTzTGHdJ5zykSxDXo74sM0MhxIwn79wJy
-   3vAQz7Cz4g+8F9xX6v0bHIZ+Lxbd7GTSAgqLUaRcsdshL/EQ7WSiSy4OQ
-   QA1s//qYHW5X4/vhx4UISKSNKO/F2/73E5FQNU5v50AIqPqbDZmMfHWac
-   e1HJjKTeawk1yyu5q/GlCJIl4H42QdnwlkwE9nYr7YOa7ztFJQdwfwWYs
-   gtZvgQzXJEWPqWwjqioq68wdop1bLtBD2wc83FoT4muXj+La0R2DEqpR0
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="330828263"
-X-IronPort-AV: E=Sophos;i="5.99,276,1677571200"; 
-   d="scan'208";a="330828263"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 07:08:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="845272859"
-X-IronPort-AV: E=Sophos;i="5.99,276,1677571200"; 
-   d="scan'208";a="845272859"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga001.fm.intel.com with ESMTP; 15 May 2023 07:08:17 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 15 May 2023 07:08:16 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Mon, 15 May 2023 07:08:16 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Mon, 15 May 2023 07:08:15 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EB2E63CA
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 14:09:17 +0000 (UTC)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2133.outbound.protection.outlook.com [40.107.237.133])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4731E1BF0
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 07:09:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R3bTwZFnGQCpuuYXRw0Wdtsq7xox9I8JQCStTBl5XO2bEcKc3bwPBeTlChPXmJ7gATE2PxyIWOSgajNzPGNod4hxfzjvS+81HBZY1+3BEAA6lFMsfQ2ca/AGFdMr47pw6JpNMNPN5vVcFhj7KapSaR3FpP3W39udQ01xpUTSC/+2W0dfH6LhFk034lCEjs7it++0rhlpfwUbRjo2EO/8wv/D4xydqUMxU2+UcYy7SrK5ke/DFABD6Lphd5dXSP8c+EMbtXg8CSmYiJvDYEOH2kLWf426kQVY4DjcXPrSEA8X5Ckkv1aYRSFdbNEvHXMT80xS4WfCSDCBG65YgCvByw==
+ b=ARhmSMJAtEB8ph9iwu6oSHBFsBHQoctoo18kqzcXopIOf3s1UUDLxeHga++8to6ez+XkgPhdCe/xoWUoCLlrEM2Pc9PbjxqO7APFQ6z7ciEM1V0781ZOYyYlzxDcAv62KkEYJ+j26RC21h4kvPYFXI5qnQdpdT+fMwkyWWdzZIhyuSdK2IxFFSUcyh9HeUmxO/NmI59fglTLUu06+exDVZlAQo/u9yrQN8qJEOOEUPIoXBWgTZ5L/jmcJ8W8A3vfXCr34ahc9FyXxeMFOAX//T9KxhXvI4W7Nx2zosdzc3h9tpbNS9Ams03Fk7cBoFCc6ev61zaT2UVUgQsVSgGSGQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QvuS/89+PoiCdWvP1nE7wHNPVcNZ05MiiO6Sa+hNPZU=;
- b=j6faZbutL+t6GyXaVZoFPoDJs9cJnuTeONR2WW6kX5jtg1w3E7txANubXKg8J/l7B6WQs/Qp76TDtD/J9r2eHCzuEsXskNNqN5UqIOHo/DkcCE6/HLLGyOFnx+l1lwHaz35Bm364+rCZfHv1xlXIekDQ9eXroXJCc2tYolW0zXDNgCFJpSMS4u9RQi2hjZH1hK9GM9ed8rZ2ryFIxE8+bTWZoPk9DTcoHTVDZeA6G2TBUtopPRogLHZjtdkuoR3NyUXMPtz8SG33cgOqKYiITXsSwMotTjNSTkvy0MlFrdbQNTCiAW5V9wZGipziOMMbW8sf6RXuOtYhFBNPNQH0Sg==
+ bh=RnOQgwIOjflOsJq39U0XxmmTbJ2rGEGzJPhLYNJoOAM=;
+ b=Ny+BmFRuR5ElgTPDiogenLGSRb1kTkLy9f0QiBxuNj5Qh6sY53PnaL2ULEGkaQZvc6Gk/Iyb+KCxJI6DA1jyBX7AVL/2Ti93sowxO19+9I/av+E/GWTKGNsLt15AGDd4tLQGVt6q3f2Qa+TueRswjEBc4tiqzpSpYs2AoynYPa3sQPocMHfmJOBAi3rqKdH4JeR/4c9HNsT4a/keJSZHVUy5S0ZWPQlUOjZmOpySNIItgsfsbR95d0fCd2ULSRzLumd8efnFEGsP1tFxXRUE+ztfqVO9gw+egjmtnALKPSq5NLpTUjIjUdycDLwBJH+CgQfY/35Stx6n1FRKC3LpwA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RnOQgwIOjflOsJq39U0XxmmTbJ2rGEGzJPhLYNJoOAM=;
+ b=bw0ehmyTIlBoTrXdeLi1AIVWRemTIe0wpkwjOK0SAOhhD0QRj5U8kgYrtazaCa0vF21vE9vJWC4jCGhuZ6NI8CF6z5SUruI5/xB8r+pnhLCtto1GaU7HmlW4eQCJ9gp31dIRf2kZIGzpopgomfj8VA3jkPd8Fgsxjl+3jxhOCwo=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB5471.namprd11.prod.outlook.com (2603:10b6:5:39d::10)
- by BL1PR11MB5980.namprd11.prod.outlook.com (2603:10b6:208:387::18) with
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BN0PR13MB5085.namprd13.prod.outlook.com (2603:10b6:408:148::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Mon, 15 May
- 2023 14:08:11 +0000
-Received: from DM4PR11MB5471.namprd11.prod.outlook.com
- ([fe80::907c:ffaa:352a:8913]) by DM4PR11MB5471.namprd11.prod.outlook.com
- ([fe80::907c:ffaa:352a:8913%6]) with mapi id 15.20.6387.030; Mon, 15 May 2023
- 14:08:11 +0000
-Date: Mon, 15 May 2023 16:05:25 +0200
-From: Larysa Zaremba <larysa.zaremba@intel.com>
-To: Stanislav Fomichev <sdf@google.com>
-CC: <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>, "Daniel
- Borkmann" <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, "Jakub
- Kicinski" <kuba@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, Song
- Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>, John Fastabend
-	<john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, Jiri Olsa
-	<jolsa@kernel.org>, Jesse Brandeburg <jesse.brandeburg@intel.com>, "Tony
- Nguyen" <anthony.l.nguyen@intel.com>, Anatoly Burakov
-	<anatoly.burakov@intel.com>, Jesper Dangaard Brouer <brouer@redhat.com>,
-	Alexander Lobakin <alexandr.lobakin@intel.com>, Magnus Karlsson
-	<magnus.karlsson@gmail.com>, Maryam Tahhan <mtahhan@redhat.com>,
-	<xdp-hints@xdp-project.net>, <netdev@vger.kernel.org>,
-	<intel-wired-lan@lists.osuosl.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RESEND bpf-next 13/15] selftests/bpf: Allow VLAN packets
- in xdp_hw_metadata
-Message-ID: <ZGI8JZzWZ+4POkGx@lincoln>
-References: <20230512152607.992209-1-larysa.zaremba@intel.com>
- <20230512152607.992209-14-larysa.zaremba@intel.com>
- <ZF6GfoZVgKX78bpq@google.com>
-Content-Type: text/plain; charset="us-ascii"
+ 2023 14:09:12 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.030; Mon, 15 May 2023
+ 14:09:12 +0000
+Date: Mon, 15 May 2023 16:09:04 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Subbaraya Sundeep <sbhatta@marvell.com>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, gakula@marvell.com,
+	naveenm@marvell.com, hkelam@marvell.com, lcherian@marvell.com,
+	Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Subject: Re: [net-next PATCH] octeontx2-pf: mcs: Support VLAN in clear text
+Message-ID: <ZGI9ADCCUDBXtRec@corigine.com>
+References: <1684148326-29569-1-git-send-email-sbhatta@marvell.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZF6GfoZVgKX78bpq@google.com>
-X-ClientProxiedBy: FR0P281CA0037.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:48::19) To DM4PR11MB5471.namprd11.prod.outlook.com
- (2603:10b6:5:39d::10)
+In-Reply-To: <1684148326-29569-1-git-send-email-sbhatta@marvell.com>
+X-ClientProxiedBy: AM0PR10CA0054.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::34) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -112,130 +70,136 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB5471:EE_|BL1PR11MB5980:EE_
-X-MS-Office365-Filtering-Correlation-Id: e640867f-dac8-4f3f-d65c-08db554dd122
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BN0PR13MB5085:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5748cc50-e96b-4d4e-130a-08db554df567
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BFXzxTcELk2XfRck4UMXTxxGsJH6CdvWiUxnYIjbFr/G5YjAT1pd9N/l2QOS7VR1b8T8+3dCp6Puk5oYSgnldkUK36PuwtM01Q+wCiSYPB2/GDjgYr12VKW2xk6IKGzeu5GWbYA55XsPHnARnVbdmM7CHNiEfG/YmCUPhmKg82v9shGIoO/RPSl9TEOgrUSJC8YgqGapWERW3DUpfdOrBOVjEp3K8Pu9z0dM+c7ETlwO4bIbPSa9W4Bq6cQHemgYqsgFVE/IgA6dW6kdsAma6C7Y0awiYR6AQAqDd9meG0NYgN2af9HxY7E/G19DPvg3FLnNsCjwwUR3n3Th1ullGv2Wk4vJ7e/pkwtpZzEkuGEwYJ3csl3EJCWv3s6qUe9Bu2jqUGuK4JD23WmFXKRih7FIDF4Zf1KdGa15TjhXji5WVBfLKhj8hJEXEYP3ny+VJ2z70yXjjSLtHZ1Jme/5Tp/R1adKPRcAkBrY6vh+BxMgOYK5kOAf1Z/B07PUF3VvzwQuyMrwQ0mTzMhV2w9iJ5Si+TztG3TRugZP+9Q7GtU4kht0P0mBvgYqHk2Wsmzgom6re4ZsYkTxowIBS59dwDjgw32hvGBUCoVUe8wjvjA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5471.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(136003)(366004)(346002)(396003)(376002)(39860400002)(451199021)(33716001)(83380400001)(66476007)(66556008)(9686003)(66946007)(6486002)(26005)(6506007)(6512007)(478600001)(54906003)(6666004)(44832011)(186003)(7416002)(2906002)(5660300002)(86362001)(8936002)(8676002)(4326008)(6916009)(316002)(41300700001)(82960400001)(38100700002)(67856001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info:
+	DreB9vK0DqRGMtEOy8R+S+wSJERKbvND0/bc0jB4M7xh8cq4JK9MfTF9BUPk27vvCWrsscdCQ40TdAwP2cjjCGXt1BJYXZNZRlyq9IcAoSqXXHqy3in/8X6H9BjOg5loB7uMVGjlLUt82sMI9Tzz9q3GW3tOU1TQI1SJ8eqf/8F49DezVRirtiPryHGHx1w9eTnpnZctQb51xnF9Vj8+OS2IkK7lPEnlJkM60U/T6ijWk50SiUPnLcO4LkhVQH+AhSkzjh2+VzGyzt1Dykqh1ioHWrI+90qnstEQpzmMcv0aurEcTxGLZHpanyz1uIdHJdq1QMpqPoYhyIe4UApy3m9sQsDFw93iXH/jQTv8fJUO+xMjrzQnq6Jkp2gZEbvX2twEAtEIUp94Cw0WPGWCjj9bgFOYGaMnnECcZZraKVwgwX/EqvBq/MDAr4WtnbqoPSK9NKfltgUdc/A6z14BKquzXuORq1s4UWJRuBx9+MM6APYFdkCaghMzxJuFaiZ6KII+8ndA7AgVz/GQHaV4C8qM/TdpafT+efezKzwn+xiSeNrktMhgHzPhEjQrpaRW
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(366004)(39840400004)(396003)(376002)(451199021)(83380400001)(66476007)(66556008)(316002)(66946007)(2616005)(6486002)(6506007)(6512007)(478600001)(2906002)(6666004)(86362001)(186003)(44832011)(7416002)(8676002)(8936002)(5660300002)(36756003)(4326008)(6916009)(38100700002)(41300700001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?e8iNuG3HjyxsrhmfFu8Kdt1ZIYV53XrZocl6HsWlTg293dzQn+tJmLJ/X0z5?=
- =?us-ascii?Q?WbSndPkwm+IC/WtMGOPSaED6m804X417//0xS75aB9Ucuu4fWqh7oZQJ3mP9?=
- =?us-ascii?Q?VUW0YjXbEaemJ/KqPcjByARpLsBkNP+u/XG9nlpzBc1w39Wf+WRonV/xsjtu?=
- =?us-ascii?Q?TRBFy0vO9ZFqW3skiB7AF8FAbLticOFBfKao3X2KFqaqMFYEMtXv1Oj++nxa?=
- =?us-ascii?Q?uC1Trs+m+N8uv7VW1iKZZKVmLbJETjVIVsB2bomaOgkVmVF1WPjENxDUeS8m?=
- =?us-ascii?Q?fV9td95vuQWk845fRqJ3ub5ZB0f/IiE1Hfl5Mbd/pFF0RnSLodvj2Atz1DmN?=
- =?us-ascii?Q?BTox5f4iwESjKfdjTlwScpRAXbWUfA9eA0lqZ0ExVGqrmPpnbGIcCrEyKJiN?=
- =?us-ascii?Q?2i7/HlHJnuUPjB8sWemIXY2Jxr/27dmC4q42MCMABKj0LfCmkl4SyDfpSiZU?=
- =?us-ascii?Q?YYWnFI6yClMYyGANHsmp+N3U3lbCeHNZIWkkQZ+JF5wrkubFqTDF9qDnUli2?=
- =?us-ascii?Q?k3o2h7WkCczfqHtcNj/CfVGpkAodMnbLgGKpjvx38MGfP0OEXARuGHtwbptR?=
- =?us-ascii?Q?HZhQAITIgApKXUG+DNFeXoJy30yQgC3ZhspNl4vBqJudfPf6edI/4lBlpRtG?=
- =?us-ascii?Q?RYkfvUTtwDYklHRTeqzulnGon8QR1QQiHqmlYSBw5qS6pXJSh5+OMNvgM7G4?=
- =?us-ascii?Q?1n4FsTtbbkyZHj+46JK4K5r5vD2bTyYVvsWJoTRye95W+ort5AVk4YrDje7u?=
- =?us-ascii?Q?mQkQGxsoRl44IuXncXoIb+SAEi2DBuDg0TrYjOBOdrRfhNBXdzLeF6WW08p6?=
- =?us-ascii?Q?wMHCuk4VT8wIpuA9W/QhcNs5v2onNkbqisDZQNoe+TvrGDKI2va7Z5FsLZ4Q?=
- =?us-ascii?Q?RpAFnN094czGU+yeow26AY8dEgsvxP7aMoeyy+Yq4wbKxO6QttyoAIKLx8E1?=
- =?us-ascii?Q?68t90zaF2SrdMoP43MUK7rqlxG9OQZowfp7zG231m9lR+9ZRixRv6cZ/X/8U?=
- =?us-ascii?Q?c/TyaILfmC/rWHnFIKB6mmE+PLY4V1S1dNTI6JyhTMHl6SnmWWJMhkeVbpNA?=
- =?us-ascii?Q?lOixsgdqDpbh9PI65mchqHV+7/Raml6GxswqLjVnmGYls1DV4g8HrPZcnIcF?=
- =?us-ascii?Q?sZ9Du7mxz4uPlm9DSk0b6i1v0ZrUOrZL6lXHrZBsfmcDodtqbcjjx+MqsLNc?=
- =?us-ascii?Q?YFzGv1QkvbuY3MxsR+4wH3yEgu8zTiwzQkihhAIyvM0kCxPot9ZTGuBQPJ9J?=
- =?us-ascii?Q?xhlP7FoWIYtDKmJjRQYgnUkgNoBg4Tp4eyA2oj9bs9ox+wI6HXmtN5v8lQXb?=
- =?us-ascii?Q?lwyHK02yAG0LaTL5wc06Xfex9qqasgqUD0HkZv474aiKEjYVKMozyN2eQmGx?=
- =?us-ascii?Q?awCaVZFcteKGHW4AKT+P/YM3R1NnfZCsIso0emY0B+LoBPVC6EZ7dk1foYU+?=
- =?us-ascii?Q?x8YTfAcAd8yTI35LHQAIZQ8cifZgz2ZHdpJMGwnSgeWfRM2eDuvyarAZh/WA?=
- =?us-ascii?Q?Y35jj3pjdcefMbVV8Nrz8YoZjL9eNcrhK0zOIjqd4RJSo2Vwmy/XeZxrDGvT?=
- =?us-ascii?Q?jPiNgmpEyQcHSEe05cjHWkDk72DQYmpKTgIKkXzwTwX2aTP0y3E39+EbToOZ?=
- =?us-ascii?Q?Eg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e640867f-dac8-4f3f-d65c-08db554dd122
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5471.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?qEicaqc4Ual7Hk2fPVJWOa+OFzd7Frj+vvvyyvtaHAkxWj/lEA4vd2x1P1S5?=
+ =?us-ascii?Q?tZxpn0RQmTOVVUzLZOb9UdAIwx2u8o68Me/mHendg4Lkr7x8k3GJRjdqu0s1?=
+ =?us-ascii?Q?9mcBLznpWlzFehykCSXGPeNt0EBRPfS58FL7wkeYeY/VvaG2hH+Tpux/wXLp?=
+ =?us-ascii?Q?C8A9kUWUZRBGwe6oiGdM7c0/aNQifLinxTdY3WOcFMUpioYUviY8ZWIjq3us?=
+ =?us-ascii?Q?2igf/GJNNDCj04xqXjH5xg9oiLRTih8NkJEF0LRhI0VpunVIM1WEFBIc33qt?=
+ =?us-ascii?Q?8C7cTTF3lB4u9Com9P0FK+TPI+pZPK26LZt3wC11VqIbVTOEex+3aIi6l0dK?=
+ =?us-ascii?Q?cNrJZZR25f4AXMsTRXAA5hOBSBN61X2Kmfpd2mcFCgxByhlzfBpmsQgLrPPp?=
+ =?us-ascii?Q?tnM8bJM59QkrSKMphMH8g1PsQKqCGJTiR1pma1twfPEwA1zE9l3j/ApWlByi?=
+ =?us-ascii?Q?SnH1J/qpsDhu0MMM0OkpQrwn6vUSRmrV2p2lkCCktstWwpFVwrFhf4LzZPb5?=
+ =?us-ascii?Q?MZdA/4ExcGXULtgPhHtH97MQ7EgnOeq2hqp1xECL1wU3Qh+nId3pMaP0TbUr?=
+ =?us-ascii?Q?xX8efiAXwUw7e0sPbnPUc6JEzgswfHJBX2KFI+KJyls33xRFlC4v2lgaZrEk?=
+ =?us-ascii?Q?0aARDeSmiM7kwf9r9PDva9LWuRPvM7ildtcBfx+5Ghqc0wmYivK1TEQTdJv2?=
+ =?us-ascii?Q?rh+nRrWQbofaIqGX2ovvnleDxdObxLqgEp++OJacR+we/tdu6mrYwWJw7R5h?=
+ =?us-ascii?Q?WKtJ+XG8Q1t+rI9oF2qFK7hzY7mOyadhlO1CpdKVKWqIrOSDMmy/y6KgKF5n?=
+ =?us-ascii?Q?d2v3rg845BUsCH7qPiF1tkuNc9CFnuR9YbFubckR5ORUtj84X+gIr3FANkm0?=
+ =?us-ascii?Q?dQiP9KbtuuYqSmfcg71i1Z30CDRrpChwM58O7WNjv9XUCwS22Z7NgN9j2PxB?=
+ =?us-ascii?Q?EzDXh0UrAz3O1aM8kZlRS59SRZ49WsJQ83ocDVjK8Tx0NUUj2Bq5zC9i5V2t?=
+ =?us-ascii?Q?NSqF6Qsu6TtvWXRwjaBGJO8I8zapFu0kXniICWj0DFLoCURElBSVmffICPb8?=
+ =?us-ascii?Q?UH2pCX/CAeTw68Zbw96LkugzQ1Ksz4MmmCcZ3Z5+FjZ9EHRWte91L7H2urbT?=
+ =?us-ascii?Q?IennmGRD5Rf0qhjoDow6GLMiLrrLRM/Ete27N/MdYOX+i5hjYIQddfJFMfyl?=
+ =?us-ascii?Q?MvqQNMbrpELiBY8pguN0mBkwjgYF6TRfj4fTd2uiytWCOic8Cg2PPH0fU+Bq?=
+ =?us-ascii?Q?+igy9oZ9/7AlAG6/DWCqsyQ0qivkCm5H4sUZOIG82cfKqZeK2qS//0Pbn/k2?=
+ =?us-ascii?Q?gMZ6dyTyOrhyrPISbDtZX4BA9Zee8EpIQAaLQndmSAF00fpq9rjTycn38Egz?=
+ =?us-ascii?Q?FKqLVlpdHcZB5SdGD0l6b1/2pSzL1muDCCnpMxx+Zc4wkrXl0o8oz7n6zZzo?=
+ =?us-ascii?Q?/BEnCrwXKouUbvOVcTY3jfXffkUGlONvfkQcB7MFTPfEZrikBg7YNzx6whNK?=
+ =?us-ascii?Q?5r1/mhbqOOM5GrHhRfZz/W/BMGZHcpH1nMC2pFM2oOzcVDsbV8Gv5r8YV9J6?=
+ =?us-ascii?Q?YvDbo24AtZKTGou7pM/ZCcLTSi6zKR80KD8Qam7mXNW4hEUrxK4n22jKryBo?=
+ =?us-ascii?Q?bSU0IjhQr6YLqrftmRSiqxoesxOXXXoqqVSogNdwcJ56AIGug6p9qfTBWau4?=
+ =?us-ascii?Q?dJl3Cw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5748cc50-e96b-4d4e-130a-08db554df567
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 14:08:11.6173
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 14:09:12.4900
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b/5ovqCAviXxgpmav0FM+bhPA9oa7faKwf3LiA9RjEPsBkJQx6OUQHcTVX6Q6wgRJV68fci6RsoNsiYlItPt7nQSlwqm7bfoENzSANazdHY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5980
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: xRfjSCPnjHQ6DlcA+sj8Y2n3GsAFvX1u/2ZERzjV95u40SYPIYA0zFlQv5pCXlPUKYtywznv8/vZAsw8Ch1LW9Hn52DJ2+5pMsP7A+uWHQI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB5085
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 12, 2023 at 11:33:34AM -0700, Stanislav Fomichev wrote:
-> On 05/12, Larysa Zaremba wrote:
-> > Make VLAN c-tag and s-tag XDP hint testing more convenient
-> > by not skipping VLAN-ed packets.
-> > 
-> > Allow both 802.1ad and 802.1Q headers.
+On Mon, May 15, 2023 at 04:28:46PM +0530, Subbaraya Sundeep wrote:
+> Detect whether macsec secy is running on top of VLAN
+> which implies transmitting VLAN tag in clear text before
+> macsec SecTag. In this case configure hardware to insert
+> SecTag after VLAN tag.
 > 
-> Can we also extend non-hw test? That should require adding metadata
-> handlers to veth to extract relevant parts from skb + update ip link
-> commands to add vlan id. Should be relatively easy to do?
+> Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c | 7 +++++--
+>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h  | 1 +
+>  2 files changed, 6 insertions(+), 2 deletions(-)
 > 
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
+> index b59532c..c5e6d57 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
+> @@ -426,8 +426,10 @@ static int cn10k_mcs_write_tx_secy(struct otx2_nic *pfvf,
+>  	struct mcs_secy_plcy_write_req *req;
+>  	struct mbox *mbox = &pfvf->mbox;
+>  	struct macsec_tx_sc *sw_tx_sc;
+> -	/* Insert SecTag after 12 bytes (DA+SA)*/
+> -	u8 tag_offset = 12;
+> +	/* Insert SecTag after 12 bytes (DA+SA) or 16 bytes
+> +	 * if VLAN tag needs to be sent in clear text.
+> +	 */
+> +	u8 tag_offset = txsc->vlan_dev ? 16 : 12;
+>  	u8 sectag_tci = 0;
+>  	u64 policy;
+>  	u8 cipher;
 
-Seems like something I can and should do. Will be in v2.
+For networking code, please arrange local variables in reverse xmas tree
+order - longest line to shortest.
 
-> > 
-> > Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/progs/xdp_hw_metadata.c | 9 ++++++++-
-> >  tools/testing/selftests/bpf/xdp_metadata.h          | 8 ++++++++
-> >  2 files changed, 16 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-> > index b2dfd7066c6e..f95f82a8b449 100644
-> > --- a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-> > +++ b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-> > @@ -26,15 +26,22 @@ int rx(struct xdp_md *ctx)
-> >  {
-> >  	void *data, *data_meta, *data_end;
-> >  	struct ipv6hdr *ip6h = NULL;
-> > -	struct ethhdr *eth = NULL;
-> >  	struct udphdr *udp = NULL;
-> >  	struct iphdr *iph = NULL;
-> >  	struct xdp_meta *meta;
-> > +	struct ethhdr *eth;
-> >  	int err;
-> >  
-> >  	data = (void *)(long)ctx->data;
-> >  	data_end = (void *)(long)ctx->data_end;
-> >  	eth = data;
-> > +
-> > +	if (eth + 1 < data_end && eth->h_proto == bpf_htons(ETH_P_8021AD))
-> > +		eth = (void *)eth + sizeof(struct vlan_hdr);
-> > +
-> > +	if (eth + 1 < data_end && eth->h_proto == bpf_htons(ETH_P_8021Q))
-> > +		eth = (void *)eth + sizeof(struct vlan_hdr);
-> > +
-> >  	if (eth + 1 < data_end) {
-> >  		if (eth->h_proto == bpf_htons(ETH_P_IP)) {
-> >  			iph = (void *)(eth + 1);
-> > diff --git a/tools/testing/selftests/bpf/xdp_metadata.h b/tools/testing/selftests/bpf/xdp_metadata.h
-> > index 938a729bd307..6664893c2c77 100644
-> > --- a/tools/testing/selftests/bpf/xdp_metadata.h
-> > +++ b/tools/testing/selftests/bpf/xdp_metadata.h
-> > @@ -9,6 +9,14 @@
-> >  #define ETH_P_IPV6 0x86DD
-> >  #endif
-> >  
-> > +#ifndef ETH_P_8021Q
-> > +#define ETH_P_8021Q 0x8100
-> > +#endif
-> > +
-> > +#ifndef ETH_P_8021AD
-> > +#define ETH_P_8021AD 0x88A8
-> > +#endif
-> > +
-> >  struct xdp_meta {
-> >  	__u64 rx_timestamp;
-> >  	__u64 xdp_timestamp;
-> > -- 
-> > 2.35.3
-> > 
+I would suggest in this case something like:
+
+        struct mcs_secy_plcy_write_req *req;
+        struct mbox *mbox = &pfvf->mbox;
+        struct macsec_tx_sc *sw_tx_sc;
+        u8 sectag_tci = 0;
+        u8 tag_offset
+        u64 policy;
+        u8 cipher;
+        int ret;
+
+        /* Insert SecTag after 12 bytes (DA+SA)*/
+        tag_offset = txsc->vlan_dev ? 16 : 12;
+
+> @@ -1163,6 +1165,7 @@ static int cn10k_mdo_add_secy(struct macsec_context *ctx)
+>  	txsc->encoding_sa = secy->tx_sc.encoding_sa;
+>  	txsc->last_validate_frames = secy->validate_frames;
+>  	txsc->last_replay_protect = secy->replay_protect;
+> +	txsc->vlan_dev = is_vlan_dev(ctx->netdev);
+>  
+>  	list_add(&txsc->entry, &cfg->txsc_list);
+>  
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> index 0f2b2a9..b2267c8 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> @@ -419,6 +419,7 @@ struct cn10k_mcs_txsc {
+>  	u8 encoding_sa;
+>  	u8 salt[CN10K_MCS_SA_PER_SC][MACSEC_SALT_LEN];
+>  	ssci_t ssci[CN10K_MCS_SA_PER_SC];
+> +	bool vlan_dev; /* macsec running on VLAN ? */
+
+I think it would be good, as a follow-up, to consider adding
+a kdoc for this structure.
+
+>  };
+>  
+>  struct cn10k_mcs_rxsc {
+
+--
+pw-bot: cr
 
