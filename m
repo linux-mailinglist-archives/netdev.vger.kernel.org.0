@@ -1,116 +1,103 @@
-Return-Path: <netdev+bounces-2528-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2529-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7671A7025AD
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 09:07:35 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3EC6C7025C2
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 09:12:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 29A97281117
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 07:07:29 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 14A3D1C20A47
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 07:12:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DD1E79F3;
-	Mon, 15 May 2023 07:07:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35E1979FA;
+	Mon, 15 May 2023 07:12:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F51F1FB1
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 07:07:27 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB32E60
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:07:26 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1pySID-00010b-A3; Mon, 15 May 2023 09:06:49 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id 899EF1C40AE;
-	Mon, 15 May 2023 07:06:43 +0000 (UTC)
-Date: Mon, 15 May 2023 09:06:43 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Peter Hong <peter_hong@fintek.com.tw>
-Cc: kernel test robot <lkp@intel.com>, wg@grandegger.com,
-	michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
-	mailhol.vincent@wanadoo.fr, oe-kbuild-all@lists.linux.dev,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, frank.jungclaus@esd.eu,
-	linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-	netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
-Subject: Re: [PATCH V7] can: usb: f81604: add Fintek F81604 support
-Message-ID: <20230515-uniquely-prodigy-47c74080839b-mkl@pengutronix.de>
-References: <20230509073821.25289-1-peter_hong@fintek.com.tw>
- <202305091802.pRFS6n2j-lkp@intel.com>
- <20230509-exert-remindful-0c0e89bf6649-mkl@pengutronix.de>
- <39d076f3-e569-4b3b-84bf-95222cd61084@fintek.com.tw>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28CD779F6
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 07:12:37 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F04210F8
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:12:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684134755;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=xwF3bMtKzTBdMVk3tiqEPsRCHZdEoAnjzKN67iE7ThU=;
+	b=huMcrnHTpcxOYc/brtNEhEIbtjGgW3YLGQQZacxvfJ6KZCrSb/KH2+RLSeK+kd3ZDMcrg7
+	5z2HvtsIa8RHKrhosxAxM+VJgOiswOS75p2LKziTkSjpe6RCpuhNbdZhFJhVRRmxocNWpI
+	uFF8bE3FGyX596yFMkhSv15zR4q11bI=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-577-84IUaB9IOECh7Dz4AjEbDQ-1; Mon, 15 May 2023 03:12:33 -0400
+X-MC-Unique: 84IUaB9IOECh7Dz4AjEbDQ-1
+Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-50d89279d95so22336360a12.1
+        for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:12:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684134752; x=1686726752;
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xwF3bMtKzTBdMVk3tiqEPsRCHZdEoAnjzKN67iE7ThU=;
+        b=a0TkPApkifZ31CSs11FPF8XesSxKx8zXt26m25w/F16Vef5OIhMmYSbuO3JtWXDlNn
+         cHJeNjFBQeGo0+L4xFhvF3zY+tj7EP5/kPg/h29kHW0k8OeNPWqP9VvKUHEsXeMyfQ8E
+         HMDLho22ZEj/ZOYNNXWL6U8FKPV1UeTqwME8Cw9kmLRsMYojfInr4Y4DSgtoFzf6aW7w
+         SMlcQ/KnN4Swh7eLjJSiZrr8tSLJgmveTZlLRpmAZbnU/WTVb+c/FqwZ83Ueh7GcoaN4
+         cyZ2ztVUmLSKz2A9rsW+pvRRxg7sNgqw9r89fwksr8jHhUjlLEx6cBYD37fv/9F3eftN
+         0LKA==
+X-Gm-Message-State: AC+VfDzgJjawswBV34U5jCY4TfBGgAQWkVEajUZnuZ/o5yA+pyMMTjni
+	upeM0scsqdi3GSRomOphMmtxbnTQ11S8/b5tccKmPVWxja0VoRWRC/o/3d6UYwZ2BREAMpzVbFd
+	MWA2PCLaBp4AbXqBn
+X-Received: by 2002:a17:907:2d0e:b0:967:13a3:d82c with SMTP id gs14-20020a1709072d0e00b0096713a3d82cmr24677037ejc.26.1684134752853;
+        Mon, 15 May 2023 00:12:32 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6roqpg5jE0hXDmdOedggiZFhhlASXlWjExoRB/ZX0m8zeiDXY1K7sjvx8CPHbp5waK9vPFwQ==
+X-Received: by 2002:a17:907:2d0e:b0:967:13a3:d82c with SMTP id gs14-20020a1709072d0e00b0096713a3d82cmr24677011ejc.26.1684134752575;
+        Mon, 15 May 2023 00:12:32 -0700 (PDT)
+Received: from [10.39.192.162] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id f20-20020a17090660d400b00965ac8f8a3dsm9178766ejk.173.2023.05.15.00.12.31
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 May 2023 00:12:31 -0700 (PDT)
+From: Eelco Chaudron <echaudro@redhat.com>
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Pravin B Shelar <pshelar@ovn.org>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+ netdev@vger.kernel.org, dev@openvswitch.org
+Subject: Re: [RESEND PATCH net-next] net: openvswitch: Use struct_size()
+Date: Mon, 15 May 2023 09:12:30 +0200
+X-Mailer: MailMate (1.14r5964)
+Message-ID: <7EFC8D77-C24C-433E-8E8B-FBCF4387A7CC@redhat.com>
+In-Reply-To: <e7746fbbd62371d286081d5266e88bbe8d3fe9f0.1683388991.git.christophe.jaillet@wanadoo.fr>
+References: <e7746fbbd62371d286081d5266e88bbe8d3fe9f0.1683388991.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="glikuaxsspn5nww5"
-Content-Disposition: inline
-In-Reply-To: <39d076f3-e569-4b3b-84bf-95222cd61084@fintek.com.tw>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
---glikuaxsspn5nww5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 15.05.2023 09:11:34, Peter Hong wrote:
-> Hi Marc,
->=20
-> Marc Kleine-Budde =E6=96=BC 2023/5/9 =E4=B8=8B=E5=8D=88 08:14 =E5=AF=AB=
-=E9=81=93:
-> > Replaced "%lu% by "%zu" while applying the patch.
->=20
-> Should I fix the warning and resend the patch as v8? or you will modify t=
-he
-> v7 before apply it?
+On 13 May 2023, at 9:25, Christophe JAILLET wrote:
 
-I have applied to patch to my tree and replaced "%lu% by "%zu", no need
-to resend.
+> Use struct_size() instead of hand writing it.
+> This is less verbose and more informative.
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Marc
+Change looks good to me.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+Acked-by: Eelco Chaudron <echaudro@redhat.com>
 
---glikuaxsspn5nww5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRh2gAACgkQvlAcSiqK
-BOgmZwf/XVm9uzh7dxBQFJ8L0dU5BOP7tqJ03EyEFQVC/b9GWJEkg2d32t1/Psdl
-BuDj5kbrDkgYR6vHUKkjUpnfzXUNgfwSQkjj+qBlNM6aUztayan72c3x58v2mkOl
-/bsLY093SdGAoiJ8TtmO49bVW7GB6+1wlpNmZO7yh+TRm28N722n/VcGuZf6ITi+
-FYCIVoPLbO8OHcU7xowpk5+Rc2OEao7/5libji/ahgo6VD6h62u2I4bNvPIeMPiS
-c7GYI3bvTi97ZKdfzQnaKhxb4oDI74gfVCU/fuKX/DVDHLxKnsC3Vs4YDZsV82or
-f/p7ntxSZ6r5CmLHwxPNUzSRqb8AWQ==
-=+qml
------END PGP SIGNATURE-----
-
---glikuaxsspn5nww5--
 
