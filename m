@@ -1,226 +1,225 @@
-Return-Path: <netdev+bounces-2690-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2691-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id ADA257031DA
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 17:51:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8865A7031DE
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 17:51:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AE6C51C20920
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:51:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 430172813AC
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:51:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 587AAE560;
-	Mon, 15 May 2023 15:51:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1CF34E561;
+	Mon, 15 May 2023 15:51:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41EA5DF6B
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 15:51:11 +0000 (UTC)
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4EF1FDF
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 08:51:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684165869; x=1715701869;
-  h=from:to:cc:subject:date:message-id;
-  bh=NMjlOWeCYu/E4UppFsIuFRIQjkdH62VAMIj7zHRJxrA=;
-  b=C0qO+ufnb2c5cCuZc4jlDrI1MyP2zBwxrR9P3H2SBz88+IxbfK/krWqb
-   9s9QBd9/LuTuLY9eJovSiKyC4MvxzXJubWeeA2njOSyhew/UtiFcMRnXg
-   lG543ypHV0DxTIs1ZwdJ7YAuJJ2cpLxH4yXe1sx8cx1cFEyl21TucI9Pq
-   zf+OeppeDnyTfibz7m+L2VGIEaJ5t5ssEu2wsabsFJnqoe5/3PbWODczC
-   zDTQb5Dxq8GwEpDTvwgdcRbBbKWIa1gANPEnrbT1QplW38OdBEBw57WyB
-   bTiaOzS+obwuAJ70CRKZ909Qk61OFo4KCbLX8OkS+6d1Ww5WonPa8y80b
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="330852297"
-X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="scan'208";a="330852297"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 08:51:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="700988692"
-X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="scan'208";a="700988692"
-Received: from zulkifl3-ilbpg0.png.intel.com ([10.88.229.82])
-  by orsmga002.jf.intel.com with ESMTP; 15 May 2023 08:51:06 -0700
-From: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-To: intel-wired-lan@osuosl.org
-Cc: kuba@kernel.org,
-	muhammad.husaini.zulkifli@intel.com,
-	sasha.neftin@intel.com,
-	naamax.meir@linux.intel.com,
-	anthony.l.nguyen@intel.com,
-	maciej.fijalkowski@intel.com,
-	davem@davemloft.net,
-	pabeni@redhat.com,
-	edumazet@google.com,
-	netdev@vger.kernel.org
-Subject: [PATCH iwl-net v2] igc: Clean the TX buffer and TX descriptor ring
-Date: Mon, 15 May 2023 23:49:36 +0800
-Message-Id: <20230515154936.24540-1-muhammad.husaini.zulkifli@intel.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-1.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-	DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B2B4E560
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 15:51:16 +0000 (UTC)
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2119.outbound.protection.outlook.com [40.107.244.119])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2C91FE4
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 08:51:15 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=blqcwu6At9NGASBmHHK09GBSmgbL8cNeiSw1PFWcd4L4pvz6dbBLCNgowz11ddqPHHDfrQcatSASEz6np6xSu9749f1kG90QtXFLo8jwITZUzFa0kdsqI9KTRXRfmoX40dpzls31txQZxCf5INvUia4GzWaVanm+DOdmenkNlO0S/9h7CV9GvEd2bM6M+Rcm3Ow2DBExk5jy9enu82Pofrjp7PM59zeiiBUIfJ2bL4DQrBBiArYqK5PkB2rA8hOzmOqnu+GZ/Ve6XhSHm/6ZOu/AIrui2gRXSRe3lPK6i5tjVw0t09bjLzjAUttYWDBmz88rfs8+dkdN/o/mzOKTcA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gLCFJsuGZXsMzSavOAknrumiSOPmGxOmnXTeM0t410Q=;
+ b=Gi3Vu/eHjyRzMaXLTZwVNaYHA0uY5VR6ypY8kaOGCPXynxE7Dlf74Hmk3PIS+YJKxtbV66fKxMCg7+otVkMi3mnikbGsIOVFDD0vQU26XvyachJNwG5lR6j1CtMUT3Dkpz6l6j9f+A13cKU7lPgw7d7blCdw7XAJnA9RFSK96V48nQn2u3K21aTG/R27pJJhUHXC8XE4EcF+038l2/giqIqLVJYMJelz6lSMhi8wrqHoUR4VI9PWqzJThAcq/t2HUR3VPn1gZA9WCatyvDBl2DcxQQ5L+PoXOya5PqUCOjMGjMfeAkWGHKt6uJRIcOjXBRrySpoTyrWSUKG21WVooQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gLCFJsuGZXsMzSavOAknrumiSOPmGxOmnXTeM0t410Q=;
+ b=en5L8S/IbA7pQMC5atZTiTpyaBj5sBbck2aa/DPSSKBL14ttAnWJmLBO7o+SibvTEaE2FIE8GClL7g6bZfsHK27TCcrEJovh9ni5J0jR5rbeaPNEgSMpfNMB8DhMcVSBoRk88B4AeqSTdJ4rCK7WN0jVdNPqtjGtc6jEc/0fGAg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SN4PR13MB6033.namprd13.prod.outlook.com (2603:10b6:806:20a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Mon, 15 May
+ 2023 15:51:12 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.030; Mon, 15 May 2023
+ 15:51:12 +0000
+Date: Mon, 15 May 2023 17:51:03 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Hao Lan <lanhao@huawei.com>
+Cc: netdev@vger.kernel.org, yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, richardcochran@gmail.com,
+	wangpeiyang1@huawei.com, shenjian15@huawei.com,
+	chenhao418@huawei.com, wangjie125@huawei.com, yuanjilin@cdjrlc.com,
+	cai.huoqing@linux.dev, xiujianfeng@huawei.com
+Subject: Re: [PATCH net-next 1/4] net: hns3: refine the tcam key convert
+ handle
+Message-ID: <ZGJU55jrzqZYlWPH@corigine.com>
+References: <20230515134643.48314-1-lanhao@huawei.com>
+ <20230515134643.48314-2-lanhao@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230515134643.48314-2-lanhao@huawei.com>
+X-ClientProxiedBy: AS4P192CA0053.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:20b:658::17) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB6033:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2e2accd1-2df2-4812-c191-08db555c3523
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	5o2D9SUzd1pIqMptqPuzALV9qXVQvHIOaBW8xYVS0uOH70pBza2iJxml6pI6MW6CqT+Zfu+KYykskjfSyQQjPy4nGSwiJikDW8JCAPBx2bhoFDCGvIzz+YBPo8jY94SebPC+BDjNXvil/uLKkGDEdT9N3udYS4aDMzAAkgYOrvCkTCtvPMTSrgF1b/oR0UNcak5mOLR48Sykgfet5zLku9FGkwLYvrqP6yRTbE+Yt52bCnpEeQQCIuiuSmq8J0uwCMi+gZXBQECf/j/bele/9ZUR8XK6BjzdeXK6UzYTPKdjV3yCn2jNv6AQ6bGrbKWQd1OtmIwf9Bf5cgZqDzXvTQ7mcE8e37tnWryjfW4LNRlxXLjJPtH/YA9Cbj9BgM8BXPXRGV0edhK5NEJhZna94CwQ9SF5aC+vDWKutFIOVVALNrdKZ5OeIH0eoRcmtzdeEv9IxmYbUCzyrIuL+AUliHmGaYdmQHl1h9QmFIGnQiu96JCM/hhRCzeMSzDmtgwy+eL26048mE2JGdqjN7sE9T2x0K8TMXfrfrTqmYSAF1mK6aDb7W0x3nTL9DWYtDIp
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(366004)(396003)(346002)(136003)(376002)(451199021)(83380400001)(6506007)(2906002)(6512007)(36756003)(186003)(2616005)(38100700002)(7416002)(86362001)(5660300002)(6486002)(44832011)(8936002)(8676002)(6666004)(66556008)(66476007)(6916009)(4326008)(478600001)(66946007)(41300700001)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?L3ZRTUlGelhpeXFaQjhFQmJUaWs4YklSaCtjZGhzdnRwQkZGL0MrQmhRc3JW?=
+ =?utf-8?B?QmF3WjliQVdVTEovUW92c0VUSHR3Y2hzcDU4b3AxMWhOaTBvNUY1blMybnFF?=
+ =?utf-8?B?QVV0UXRHclVqV3luMWxJUmo5TTRpdnA3SHVqWGR3NFVtUVlQVUJSb0c4ekxh?=
+ =?utf-8?B?ZmRiUHJmMmo3ZUtKbGREdEYwYVlTaXNOZzdMRW54RVpqc0FCb0UrU0xrOXh0?=
+ =?utf-8?B?LzFvTXpxS0taN1oycERkc0FHUk00ODVqRHZaejFXNXU0UXRrR3oyVjlWYk9a?=
+ =?utf-8?B?MStCOEdDTzNEeEJpUHBjdWlFUkR6RUFPTmZMWjR3RXJDODU5S2dwc1JnVjIr?=
+ =?utf-8?B?ZVgvdTBkMjRPYm85N0ZyRzBRYVZXWG5VS2Fzc2JNMS8yUmU0U3BubER3VHI2?=
+ =?utf-8?B?anZXU1pFTmVrZTVJZmFlM2prZ1NpYXN4bkxrcWVDM0ZTeWdkS2hPUFVXVW5M?=
+ =?utf-8?B?bVZoWS9HOG83VytEbVhjTU13UVZGK3dmRnNubllnRW91TEUvMko0NjZwTDNW?=
+ =?utf-8?B?YUhtYWY2S2d1WGZEM0d1b0RBbE9laXhjNlFpdHVJL2RPY0VyLzZBSXVidnRF?=
+ =?utf-8?B?UlI1VmE1N1g4L2FHOGtIem5ua0dpVyt2S282dWJsY2NnMVVCcy9jNStraDJV?=
+ =?utf-8?B?Z2JKOXZJSE1HYzBBTTByLzZwaElvV3NOY0NVS0Y4YVVRV09SQkhCN2dCS2d6?=
+ =?utf-8?B?TzVuemxHQXlYNDB6N3lSMWs2MUROdE9yY05SM2drNFJhL3NETytTQkFVdWE0?=
+ =?utf-8?B?RXJlaU1lRjJDeXBjUlUvck9jamJDMlcrbFVRWUJUMkhNZEVGZHZxWW1mUThi?=
+ =?utf-8?B?b1RXelp2R0t2b2dUeTV2ZFlqUFNCQUZFTnhJUEo5OXFRb1AvckRzVml3WUx0?=
+ =?utf-8?B?MlJIK1JyZjhlY2h0Q1R1VFhNQ2FiWVZGM3IxLzBkWDVoOVNnRXFSSElQYWZN?=
+ =?utf-8?B?dVZIeExQM3BvK3dyckhleDVGUzF6cVdPMEQwVnUxQmw5K3JVZE1RTjZKRnF4?=
+ =?utf-8?B?WU1YZTBHVCtwMGRIMWw3VEtSRndYUTFIZW4xajFGUWl5N1JrbWdvdkJ4Tys2?=
+ =?utf-8?B?VEg2aFhkeVVEZ2pIeStxWU1ObHhIUlZZZGErMFhLMjJhWDlzZzRKbzRma0E2?=
+ =?utf-8?B?dGhqM2dUQVpIQUJLNXlweXB2emFBWUlYWk4zN1J5UG5xYUpsTnQ2MnNYb1Q5?=
+ =?utf-8?B?dk5jRVcyLzhUekJlWnJlamVYaEMwdDdSeVRhclZabms0Ry9mQ2FBM2ZsQVY4?=
+ =?utf-8?B?ZlFoLzF4b3k2SHVpcVFDN3JEcXVBcExpOFg4b3JxOGlTVFVUbmdZckpJUUEz?=
+ =?utf-8?B?R09ZSzAwTDdHRWhYY0lnL0d2dmlsZ0t3WGdyUzExZjlER29RUkRVcSt1bk03?=
+ =?utf-8?B?Mm9TcExvajNydGU1cnV1N0ZIZCsxUk5OYjdGZzA0aEJ5amJSeXRkdFA2cnVn?=
+ =?utf-8?B?QlpOZDgySnJUem9zY2Y4UnB0bDNmVFVTRzk5ZEpoclBIYSt6ODg2aStlYjBX?=
+ =?utf-8?B?RU9hMVBoQ2lPaWNLRnJxRlZXZ0c4SHhmWjlzOUUwMDlMRm54NFRWRVprdy8z?=
+ =?utf-8?B?ZytWMDRMNlJaeVI4NXExS21IUUV2ODRUQnMyN1lTa2g3elhSUWVPVW90WVMx?=
+ =?utf-8?B?c29xd0NndE1EVGpQaWN3cG45T1FoZG9NQUNrSmRaM3RrU1VmU1YwUHFEOFlo?=
+ =?utf-8?B?c1BLelZYT0FwZVNvSS9odmNULzBTbnpvbTVsM2pBa2NyS3JoYWUzaHJPM3NV?=
+ =?utf-8?B?bElVM0p5UXhzUHRqL2JyNk5BNmxGV0JvNXllZVRoMjc5bWRReXZDMkZTSVRp?=
+ =?utf-8?B?WXZ2VHp5UVEwZTVzQWNmRjQxTGJieFIxL3J0eDVVOXhKK29Vdld5SmJEbHZQ?=
+ =?utf-8?B?aE5BdFd1bFlLSFI4WjBYRUxLdGFKOTJ5Y3VIVWd3ZkExZmpSTy9CTmE1S2F1?=
+ =?utf-8?B?TTFSZXVaQlVQRjFpeVJlODRXdk4ycWZtalpJWGU5Qmx4a0tmdDB4aGJIL1A3?=
+ =?utf-8?B?M3BPOTNUUXkxM3MwWHFGZEZpN1pmbmJiUGppRTkvNFQzd1pxdW1LeG5jWU05?=
+ =?utf-8?B?WU9BUEc1TVBxN3cyMC9aMkJJTmp2a3YxMWg0ZVkvcGsvY2p1TE5SS29sTmN1?=
+ =?utf-8?B?NkNKeXhyUDNYWDVmQ0pYMVR5dDRDRGNmeWJqU2d1NERmNm9Yb1N5NXprdTBs?=
+ =?utf-8?B?dWdWTWtQV3p6QjdSM3FXTFNkMnYyQjdPODV0MUVZZHRaRXVMQ3N1dUdPTmx2?=
+ =?utf-8?B?ZVc1T1lTd2RiUlg5NVN5aS95TjF3PT0=?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e2accd1-2df2-4812-c191-08db555c3523
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 15:51:12.2020
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4OXZ9cFu6QfIRbXpqXLwYqTwVCN23R6dNs14xjjvpRH/g6BFKziqtg/y2Q9LG1YhToXGrIS3xICddrbxPiBSG8myGLaMILZVez35MzeWwcU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB6033
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-There could be a race condition during link down where interrupt
-being generated and igc_clean_tx_irq() been called to perform the
-TX completion. Properly clear the TX buffer/descriptor ring and
-disable the TX Queue ring in igc_free_tx_resources() to avoid that.
+On Mon, May 15, 2023 at 09:46:40PM +0800, Hao Lan wrote:
+> From: Jian Shen <shenjian15@huawei.com>
+> 
+> The expression '(k ^ ~v)' is exaclty '(k & v)', and
 
-Kernel trace:
-[  108.237177] Hardware name: Intel Corporation Tiger Lake Client Platform/TigerLake U DDR4 SODIMM RVP, BIOS TGLIFUI1.R00.4204.A00.2105270302 05/27/2021
-[  108.237178] RIP: 0010:refcount_warn_saturate+0x55/0x110
-[  108.242143] RSP: 0018:ffff9e7980003db0 EFLAGS: 00010286
-[  108.245555] Code: 84 bc 00 00 00 c3 cc cc cc cc 85 f6 74 46 80 3d 20 8c 4d 01 00 75 ee 48 c7 c7 88 f4 03 ab c6 05 10 8c 4d 01 01 e8 0b 10 96 ff <0f> 0b c3 cc cc cc cc 80 3d fc 8b 4d 01 00 75 cb 48 c7 c7 b0 f4 03
-[  108.250434]
-[  108.250434] RSP: 0018:ffff9e798125f910 EFLAGS: 00010286
-[  108.254358] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-[  108.259325]
-[  108.259325] RAX: 0000000000000000 RBX: ffff8ddb935b8000 RCX: 0000000000000027
-[  108.261868] RDX: ffff8de250a28800 RSI: ffff8de250a1c580 RDI: ffff8de250a1c580
-[  108.265538] RDX: 0000000000000027 RSI: 0000000000000002 RDI: ffff8de250a9c588
-[  108.265539] RBP: ffff8ddb935b8000 R08: ffffffffab2655a0 R09: ffff9e798125f898
-[  108.267914] RBP: ffff8ddb8a5b8d80 R08: 0000005648eba354 R09: 0000000000000000
-[  108.270196] R10: 0000000000000001 R11: 000000002d2d2d2d R12: ffff9e798125f948
-[  108.270197] R13: ffff9e798125fa1c R14: ffff8ddb8a5b8d80 R15: 7fffffffffffffff
-[  108.273001] R10: 000000002d2d2d2d R11: 000000002d2d2d2d R12: ffff8ddb8a5b8ed4
-[  108.276410] FS:  00007f605851b740(0000) GS:ffff8de250a80000(0000) knlGS:0000000000000000
-[  108.280597] R13: 00000000000002ac R14: 00000000ffffff99 R15: ffff8ddb92561b80
-[  108.282966] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  108.282967] CR2: 00007f053c039248 CR3: 0000000185850003 CR4: 0000000000f70ee0
-[  108.286206] FS:  0000000000000000(0000) GS:ffff8de250a00000(0000) knlGS:0000000000000000
-[  108.289701] PKRU: 55555554
-[  108.289702] Call Trace:
-[  108.289704]  <TASK>
-[  108.293977] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  108.297562]  sock_alloc_send_pskb+0x20c/0x240
-[  108.301494] CR2: 00007f053c03a168 CR3: 0000000184394002 CR4: 0000000000f70ef0
-[  108.301495] PKRU: 55555554
-[  108.306464]  __ip_append_data.isra.0+0x96f/0x1040
-[  108.309441] Call Trace:
-[  108.309443]  ? __pfx_ip_generic_getfrag+0x10/0x10
-[  108.314927]  <IRQ>
-[  108.314928]  sock_wfree+0x1c7/0x1d0
-[  108.318078]  ? __pfx_ip_generic_getfrag+0x10/0x10
-[  108.320276]  skb_release_head_state+0x32/0x90
-[  108.324812]  ip_make_skb+0xf6/0x130
-[  108.327188]  skb_release_all+0x16/0x40
-[  108.330775]  ? udp_sendmsg+0x9f3/0xcb0
-[  108.332626]  napi_consume_skb+0x48/0xf0
-[  108.334134]  ? xfrm_lookup_route+0x23/0xb0
-[  108.344285]  igc_poll+0x787/0x1620 [igc]
-[  108.346659]  udp_sendmsg+0x9f3/0xcb0
-[  108.360010]  ? ttwu_do_activate+0x40/0x220
-[  108.365237]  ? __pfx_ip_generic_getfrag+0x10/0x10
-[  108.366744]  ? try_to_wake_up+0x289/0x5e0
-[  108.376987]  ? sock_sendmsg+0x81/0x90
-[  108.395698]  ? __pfx_process_timeout+0x10/0x10
-[  108.395701]  sock_sendmsg+0x81/0x90
-[  108.409052]  __napi_poll+0x29/0x1c0
-[  108.414279]  ____sys_sendmsg+0x284/0x310
-[  108.419507]  net_rx_action+0x257/0x2d0
-[  108.438216]  ___sys_sendmsg+0x7c/0xc0
-[  108.439723]  __do_softirq+0xc1/0x2a8
-[  108.444950]  ? finish_task_switch+0xb4/0x2f0
-[  108.452077]  irq_exit_rcu+0xa9/0xd0
-[  108.453584]  ? __schedule+0x372/0xd00
-[  108.460713]  common_interrupt+0x84/0xa0
-[  108.467840]  ? clockevents_program_event+0x95/0x100
-[  108.474968]  </IRQ>
-[  108.482096]  ? do_nanosleep+0x88/0x130
-[  108.489224]  <TASK>
-[  108.489225]  asm_common_interrupt+0x26/0x40
-[  108.496353]  ? __rseq_handle_notify_resume+0xa9/0x4f0
-[  108.503478] RIP: 0010:cpu_idle_poll+0x2c/0x100
-[  108.510607]  __sys_sendmsg+0x5d/0xb0
-[  108.518687] Code: 05 e1 d9 c8 00 65 8b 15 de 64 85 55 85 c0 7f 57 e8 b9 ef ff ff fb 65 48 8b 1c 25 00 cc 02 00 48 8b 03 a8 08 74 0b eb 1c f3 90 <48> 8b 03 a8 08 75 13 8b 05 77 63 cd 00 85 c0 75 ed e8 ce ec ff ff
-[  108.525817]  do_syscall_64+0x44/0xa0
-[  108.531563] RSP: 0018:ffffffffab203e70 EFLAGS: 00000202
-[  108.538693]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
-[  108.546775]
-[  108.546777] RIP: 0033:0x7f605862b7f7
-[  108.549495] RAX: 0000000000000001 RBX: ffffffffab20c940 RCX: 000000000000003b
-[  108.551955] Code: 0e 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
-[  108.554068] RDX: 4000000000000000 RSI: 000000002da97f6a RDI: 00000000002b8ff4
-[  108.559816] RSP: 002b:00007ffc99264058 EFLAGS: 00000246
-[  108.564178] RBP: 0000000000000000 R08: 00000000002b8ff4 R09: ffff8ddb01554c80
-[  108.571302]  ORIG_RAX: 000000000000002e
-[  108.571303] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f605862b7f7
-[  108.574023] R10: 000000000000015b R11: 000000000000000f R12: ffffffffab20c940
-[  108.574024] R13: 0000000000000000 R14: ffff8de26fbeef40 R15: ffffffffab20c940
-[  108.578727] RDX: 0000000000000000 RSI: 00007ffc992640a0 RDI: 0000000000000003
-[  108.578728] RBP: 00007ffc99264110 R08: 0000000000000000 R09: 175f48ad1c3a9c00
-[  108.581187]  do_idle+0x62/0x230
-[  108.585890] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc992642d8
-[  108.585891] R13: 00005577814ab2ba R14: 00005577814addf0 R15: 00007f605876d000
-[  108.587920]  cpu_startup_entry+0x1d/0x20
-[  108.591422]  </TASK>
-[  108.596127]  rest_init+0xc5/0xd0
-[  108.600490] ---[ end trace 0000000000000000 ]---
+This part doesn't seem correct to me.
 
-Test Setup:
+Suppose both k and v are 0.
+For simplicity, consider only one bit.
 
-DUT:
-- Change mac address on DUT Side. Ensure NIC not having same MAC Address
-- Running udp_tai on DUT side. Let udp_tai running throughout the test
+Then: (k ^ ~v) == (0 ^ ~0) == (0 ^ 1) = 1
+But   (k & v)  == (0 & 0)  == 0
 
-Example:
-./udp_tai -i enp170s0 -P 100000 -p 90 -c 1 -t 0 -u 30004
+> '(k & v) & k' is exaclty 'k & v'. So simplify the
+> expression for tcam key convert.
 
-Host:
-- Perform link up/down every 5 second.
+This I follow.
 
-Result:
-Kernel panic will happen on DUT Side.
+> (k ^ ~v) & k ==  (k & v) & k ==  k & k & v == k & v
 
-Fixes: 13b5b7fd6a4a ("igc: Add support for Tx/Rx rings")
-Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+Looking at the truth table (in non table form), this seems correct.
 
----
-V1 -> V2: Disable the TX Queue ring during ndo_stop().
----
----
- drivers/net/ethernet/intel/igc/igc_main.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+k == 0, v == 0:
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index dd41db3253582..8e5b75b446fd6 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -254,6 +254,13 @@ static void igc_clean_tx_ring(struct igc_ring *tx_ring)
- 	/* reset BQL for queue */
- 	netdev_tx_reset_queue(txring_txq(tx_ring));
- 
-+	/* Zero out the buffer ring */
-+	memset(tx_ring->tx_buffer_info, 0,
-+	       sizeof(*tx_ring->tx_buffer_info) * tx_ring->count);
-+
-+	/* Zero out the descriptor ring */
-+	memset(tx_ring->desc, 0, tx_ring->size);
-+
- 	/* reset next_to_use and next_to_clean */
- 	tx_ring->next_to_use = 0;
- 	tx_ring->next_to_clean = 0;
-@@ -267,7 +274,7 @@ static void igc_clean_tx_ring(struct igc_ring *tx_ring)
-  */
- void igc_free_tx_resources(struct igc_ring *tx_ring)
- {
--	igc_clean_tx_ring(tx_ring);
-+	igc_disable_tx_ring(tx_ring);
- 
- 	vfree(tx_ring->tx_buffer_info);
- 	tx_ring->tx_buffer_info = NULL;
--- 
-2.17.1
+  (k ^ ~v) & k == (0 ^ ~0) & 0 == (0 ^ 1) & 0 == 1 & 0 == 0
+  k & v == 0 & 0 == 0
+  Good!
 
+k == 0, v == 1:
+
+  (k ^ ~v) & k == (0 ^ ~1) & 0 == (0 ^ 0) & 0 == 1 & 0 == 0
+  k & v == 0 & 1 == 0
+  Good!
+
+k == 1, v == 0:
+
+  (k ^ ~v) & k == (1 ^ ~0) & 1 == (1 ^ 1) & 1 == 0 & 1 == 0
+  k & v == 1 & 0 == 0
+  Good!
+
+k == 1, v == 1:
+
+  (k ^ ~v) & k == (1 ^ ~1) & 1 == (1 ^ 0) & 1 == 1 & 1 == 1
+  k & v == 1 & 1 == 1
+  Good!
+
+> 
+> It also add necessary brackets for them.
+> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> Signed-off-by: Hao Lan <lanhao@huawei.com>
+> ---
+>  .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h   | 11 +++--------
+>  1 file changed, 3 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> index 81aa6b0facf5..6a43d1515585 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> @@ -835,15 +835,10 @@ struct hclge_vf_vlan_cfg {
+>   * Then for input key(k) and mask(v), we can calculate the value by
+>   * the formulae:
+>   *	x = (~k) & v
+> - *	y = (k ^ ~v) & k
+> + *	y = k & v
+>   */
+> -#define calc_x(x, k, v) (x = ~(k) & (v))
+> -#define calc_y(y, k, v) \
+> -	do { \
+> -		const typeof(k) _k_ = (k); \
+> -		const typeof(v) _v_ = (v); \
+> -		(y) = (_k_ ^ ~_v_) & (_k_); \
+> -	} while (0)
+> +#define calc_x(x, k, v) ((x) = ~(k) & (v))
+> +#define calc_y(y, k, v) ((y) = (k) & (v))
+
+This also looks good to me.
+
+>  
+>  #define HCLGE_MAC_STATS_FIELD_OFF(f) (offsetof(struct hclge_mac_stats, f))
+>  #define HCLGE_STATS_READ(p, offset) (*(u64 *)((u8 *)(p) + (offset)))
 
