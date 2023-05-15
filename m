@@ -1,262 +1,258 @@
-Return-Path: <netdev+bounces-2588-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2589-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BD9D87028EE
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 11:39:15 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 45C007028F2
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 11:39:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B9ED81C20A47
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 09:39:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4BAB11C20A36
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 09:39:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CD0DC8FC;
-	Mon, 15 May 2023 09:35:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1EDDC2C7;
+	Mon, 15 May 2023 09:35:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E73FD2E3
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 09:35:06 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24291996
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:35:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684143303;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wF+2b4fBEfy00AN3VDBr6eYpnbX7vBgnsz0rKmJdTGo=;
-	b=JycCFDJHG01b2UP8fyduzTAF3ITz3l/zGnBfg7LOJ8fqRWbQB4qC5JQGGAV6jtEKOItqqO
-	w7G4i7i4j6ayRv9jM9LSQ+zSWcQ/5etHNobAl/HTeL1VF1lAVkQ8iCIj/+nEqxRcbbugKs
-	9WZLlRWjB+I/xeu4tcggVC8V6QB4J7U=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-616-mv3QcuzZMBiItf3Uupm36w-1; Mon, 15 May 2023 05:34:59 -0400
-X-MC-Unique: mv3QcuzZMBiItf3Uupm36w-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6FEA6101A551;
-	Mon, 15 May 2023 09:34:58 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.221])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 880FB4021C6;
-	Mon, 15 May 2023 09:34:55 +0000 (UTC)
-From: David Howells <dhowells@redhat.com>
-To: netdev@vger.kernel.org
-Cc: David Howells <dhowells@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	David Ahern <dsahern@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Al Viro <viro@zeniv.linux.org.uk>,
-	Christoph Hellwig <hch@infradead.org>,
-	Jens Axboe <axboe@kernel.dk>,
-	Jeff Layton <jlayton@kernel.org>,
-	Christian Brauner <brauner@kernel.org>,
-	Chuck Lever III <chuck.lever@oracle.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-fsdevel@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	Kuniyuki Iwashima <kuniyu@amazon.com>
-Subject: [PATCH net-next v7 16/16] unix: Convert udp_sendpage() to use MSG_SPLICE_PAGES
-Date: Mon, 15 May 2023 10:33:45 +0100
-Message-Id: <20230515093345.396978-17-dhowells@redhat.com>
-In-Reply-To: <20230515093345.396978-1-dhowells@redhat.com>
-References: <20230515093345.396978-1-dhowells@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A48FBD2E3
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 09:35:10 +0000 (UTC)
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D9910E6
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:35:07 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id 4fb4d7f45d1cf-50bc5197d33so22877566a12.1
+        for <netdev@vger.kernel.org>; Mon, 15 May 2023 02:35:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1684143306; x=1686735306;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=b6FHZG952yMeP5d9uy/Sr8OyCyw/Y1TfApSk7BaVv4s=;
+        b=HCWk+uwwmnNzMMeFpIcqFsZbLUsDRIeEHwo1VQDDLHp4Kxy+MKDbJs/9LEH/an1nHo
+         52YfiUmhHZBk21K/ogwZ0iTfjHETHeHt/oyDQSoRUH0RMVPuwyf+ErqHPIPthVNI8MZs
+         NyhVAfV25jd3pdZZnkhSXLvcyoDnVpV0unslH4x8UMFVLDhwDHW1QH+ecJo5leo6GFd6
+         FPpjypqwOjuUuRwwYX4GBuh6/YLCe77FqMu77N4GDFRyF+8VH/aivB6dNyffMg421ypV
+         kyz4WOZNKDpRYVHUCI5ILNR8sIpp3hl+X2m+5EHqFD55Op50jGDstMgmM80KQQ+kkfgC
+         Q0lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684143306; x=1686735306;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=b6FHZG952yMeP5d9uy/Sr8OyCyw/Y1TfApSk7BaVv4s=;
+        b=kG1acZyTr9mYxiheigi6tI50CqH4ieHIz2mbitTkkJo8Sj/EzFbplzCVXyFiSR1x27
+         iGedjaALxo3LSDy76JVB9ydeSSiW+NO+w1+5NEq71va6sdSan+/ByxQhCBnv5uzXddEz
+         1q5NOaE1s+Q5WHsClUAMWyB9P9EkhfV02lYR48SSHY863sN41/DxVvpVzvxvp6z0NlzW
+         loshiX4tVPNyDZnQgrqeapxrGmW9o83AQeUikKRDaw/hcFNZBeG4xrhAJK9eeLRmPXqG
+         sbmRa1WKFNJzABHII2MEKWyTbZZylHusGRhWrdWAXt5CgYi7JfSykCK+i0ci6RESND4f
+         qwGw==
+X-Gm-Message-State: AC+VfDwTyCg9OSGvBEH536v9dsxui42V5cYwyxulfoUseHZCIXwm0vQZ
+	WvaPbdFlVjn9MeVtgNOiVOkWew==
+X-Google-Smtp-Source: ACHHUZ66vWCtLvXIxys9HxPVVhXKGwpoDvnNATiGt01x/wHNdVOVPRNLYWbBerSN4okyWIHUPWh5WQ==
+X-Received: by 2002:aa7:c15a:0:b0:510:47a2:2b0c with SMTP id r26-20020aa7c15a000000b0051047a22b0cmr3188710edp.35.1684143305585;
+        Mon, 15 May 2023 02:35:05 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id b12-20020aa7dc0c000000b0050be1c28a0fsm7148224edu.7.2023.05.15.02.35.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 May 2023 02:35:05 -0700 (PDT)
+Message-ID: <e8d98be6-d540-59c6-79eb-353715625ea5@blackwall.org>
+Date: Mon, 15 May 2023 12:35:03 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next 1/2] bridge: Add a limit on FDB entries
+Content-Language: en-US
+To: Johannes Nixdorf <jnixdorf-oss@avm.de>, netdev@vger.kernel.org
+Cc: bridge@lists.linux-foundation.org, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Roopa Prabhu <roopa@nvidia.com>
+References: <20230515085046.4457-1-jnixdorf-oss@avm.de>
+From: Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230515085046.4457-1-jnixdorf-oss@avm.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Convert unix_stream_sendpage() to use sendmsg() with MSG_SPLICE_PAGES
-rather than directly splicing in the pages itself.
+On 15/05/2023 11:50, Johannes Nixdorf wrote:
+> A malicious actor behind one bridge port may spam the kernel with packets
+> with a random source MAC address, each of which will create an FDB entry,
+> each of which is a dynamic allocation in the kernel.
+> 
+> There are roughly 2^48 different MAC addresses, further limited by the
+> rhashtable they are stored in to 2^31. Each entry is of the type struct
+> net_bridge_fdb_entry, which is currently 128 bytes big. This means the
+> maximum amount of memory allocated for FDB entries is 2^31 * 128B =
+> 256GiB, which is too much for most computers.
+> 
+> Mitigate this by adding a bridge netlink setting IFLA_BR_FDB_MAX_ENTRIES,
+> which, if nonzero, limits the amount of entries to a user specified
+> maximum.
+> 
+> For backwards compatibility the default setting of 0 disables the limit.
+> 
+> All changes to fdb_n_entries are under br->hash_lock, which means we do
+> not need additional locking. The call paths are (✓ denotes that
+> br->hash_lock is taken around the next call):
+> 
+>  - fdb_delete <-+- fdb_delete_local <-+- br_fdb_changeaddr ✓
+>                 |                     +- br_fdb_change_mac_address ✓
+>                 |                     +- br_fdb_delete_by_port ✓
+>                 +- br_fdb_find_delete_local ✓
+>                 +- fdb_add_local <-+- br_fdb_changeaddr ✓
+>                 |                  +- br_fdb_change_mac_address ✓
+>                 |                  +- br_fdb_add_local ✓
+>                 +- br_fdb_cleanup ✓
+>                 +- br_fdb_flush ✓
+>                 +- br_fdb_delete_by_port ✓
+>                 +- fdb_delete_by_addr_and_port <--- __br_fdb_delete ✓
+>                 +- br_fdb_external_learn_del ✓
+>  - fdb_create <-+- fdb_add_local <-+- br_fdb_changeaddr ✓
+>                 |                  +- br_fdb_change_mac_address ✓
+>                 |                  +- br_fdb_add_local ✓
+>                 +- br_fdb_update ✓
+>                 +- fdb_add_entry <--- __br_fdb_add ✓
+>                 +- br_fdb_external_learn_add ✓
+> 
+> Signed-off-by: Johannes Nixdorf <jnixdorf-oss@avm.de>
+> ---
+>  include/uapi/linux/if_link.h | 1 +
+>  net/bridge/br_device.c       | 2 ++
+>  net/bridge/br_fdb.c          | 6 ++++++
+>  net/bridge/br_netlink.c      | 9 ++++++++-
+>  net/bridge/br_private.h      | 2 ++
+>  5 files changed, 19 insertions(+), 1 deletion(-)
+> 
 
-This allows ->sendpage() to be replaced by something that can handle
-multiple multipage folios in a single transaction.
+Hi,
+If you're sending a patch series please add a cover letter (--cover-letter) which
+explains what the series are trying to do and why.
+I've had a patch that implements this feature for a while but didn't get to upstreaming it. :)
+Anyway more comments below,
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: "David S. Miller" <davem@davemloft.net>
-cc: Eric Dumazet <edumazet@google.com>
-cc: Jakub Kicinski <kuba@kernel.org>
-cc: Paolo Abeni <pabeni@redhat.com>
-cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-cc: Jens Axboe <axboe@kernel.dk>
-cc: Matthew Wilcox <willy@infradead.org>
-cc: netdev@vger.kernel.org
----
- net/unix/af_unix.c | 134 +++------------------------------------------
- 1 file changed, 7 insertions(+), 127 deletions(-)
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 4ac1000b0ef2..27cf5f2d8790 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -510,6 +510,7 @@ enum {
+>  	IFLA_BR_VLAN_STATS_PER_PORT,
+>  	IFLA_BR_MULTI_BOOLOPT,
+>  	IFLA_BR_MCAST_QUERIER_STATE,
+> +	IFLA_BR_FDB_MAX_ENTRIES,
+>  	__IFLA_BR_MAX,
+>  };
+>  
+> diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+> index 8eca8a5c80c6..d455a28df7c9 100644
+> --- a/net/bridge/br_device.c
+> +++ b/net/bridge/br_device.c
+> @@ -528,6 +528,8 @@ void br_dev_setup(struct net_device *dev)
+>  	br->bridge_hello_time = br->hello_time = 2 * HZ;
+>  	br->bridge_forward_delay = br->forward_delay = 15 * HZ;
+>  	br->bridge_ageing_time = br->ageing_time = BR_DEFAULT_AGEING_TIME;
+> +	br->fdb_n_entries = 0;
+> +	br->fdb_max_entries = 0;
 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 976bc1c5e11b..115436ce1f8a 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -1839,24 +1839,6 @@ static void maybe_add_creds(struct sk_buff *skb, const struct socket *sock,
- 	}
- }
- 
--static int maybe_init_creds(struct scm_cookie *scm,
--			    struct socket *socket,
--			    const struct sock *other)
--{
--	int err;
--	struct msghdr msg = { .msg_controllen = 0 };
--
--	err = scm_send(socket, &msg, scm, false);
--	if (err)
--		return err;
--
--	if (unix_passcred_enabled(socket, other)) {
--		scm->pid = get_pid(task_tgid(current));
--		current_uid_gid(&scm->creds.uid, &scm->creds.gid);
--	}
--	return err;
--}
--
- static bool unix_skb_scm_eq(struct sk_buff *skb,
- 			    struct scm_cookie *scm)
- {
-@@ -2292,117 +2274,15 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
- static ssize_t unix_stream_sendpage(struct socket *socket, struct page *page,
- 				    int offset, size_t size, int flags)
- {
--	int err;
--	bool send_sigpipe = false;
--	bool init_scm = true;
--	struct scm_cookie scm;
--	struct sock *other, *sk = socket->sk;
--	struct sk_buff *skb, *newskb = NULL, *tail = NULL;
--
--	if (flags & MSG_OOB)
--		return -EOPNOTSUPP;
-+	struct bio_vec bvec;
-+	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES };
- 
--	other = unix_peer(sk);
--	if (!other || sk->sk_state != TCP_ESTABLISHED)
--		return -ENOTCONN;
--
--	if (false) {
--alloc_skb:
--		unix_state_unlock(other);
--		mutex_unlock(&unix_sk(other)->iolock);
--		newskb = sock_alloc_send_pskb(sk, 0, 0, flags & MSG_DONTWAIT,
--					      &err, 0);
--		if (!newskb)
--			goto err;
--	}
--
--	/* we must acquire iolock as we modify already present
--	 * skbs in the sk_receive_queue and mess with skb->len
--	 */
--	err = mutex_lock_interruptible(&unix_sk(other)->iolock);
--	if (err) {
--		err = flags & MSG_DONTWAIT ? -EAGAIN : -ERESTARTSYS;
--		goto err;
--	}
--
--	if (sk->sk_shutdown & SEND_SHUTDOWN) {
--		err = -EPIPE;
--		send_sigpipe = true;
--		goto err_unlock;
--	}
--
--	unix_state_lock(other);
-+	if (flags & MSG_SENDPAGE_NOTLAST)
-+		msg.msg_flags |= MSG_MORE;
- 
--	if (sock_flag(other, SOCK_DEAD) ||
--	    other->sk_shutdown & RCV_SHUTDOWN) {
--		err = -EPIPE;
--		send_sigpipe = true;
--		goto err_state_unlock;
--	}
--
--	if (init_scm) {
--		err = maybe_init_creds(&scm, socket, other);
--		if (err)
--			goto err_state_unlock;
--		init_scm = false;
--	}
--
--	skb = skb_peek_tail(&other->sk_receive_queue);
--	if (tail && tail == skb) {
--		skb = newskb;
--	} else if (!skb || !unix_skb_scm_eq(skb, &scm)) {
--		if (newskb) {
--			skb = newskb;
--		} else {
--			tail = skb;
--			goto alloc_skb;
--		}
--	} else if (newskb) {
--		/* this is fast path, we don't necessarily need to
--		 * call to kfree_skb even though with newskb == NULL
--		 * this - does no harm
--		 */
--		consume_skb(newskb);
--		newskb = NULL;
--	}
--
--	if (skb_append_pagefrags(skb, page, offset, size, MAX_SKB_FRAGS)) {
--		tail = skb;
--		goto alloc_skb;
--	}
--
--	skb->len += size;
--	skb->data_len += size;
--	skb->truesize += size;
--	refcount_add(size, &sk->sk_wmem_alloc);
--
--	if (newskb) {
--		err = unix_scm_to_skb(&scm, skb, false);
--		if (err)
--			goto err_state_unlock;
--		spin_lock(&other->sk_receive_queue.lock);
--		__skb_queue_tail(&other->sk_receive_queue, newskb);
--		spin_unlock(&other->sk_receive_queue.lock);
--	}
--
--	unix_state_unlock(other);
--	mutex_unlock(&unix_sk(other)->iolock);
--
--	other->sk_data_ready(other);
--	scm_destroy(&scm);
--	return size;
--
--err_state_unlock:
--	unix_state_unlock(other);
--err_unlock:
--	mutex_unlock(&unix_sk(other)->iolock);
--err:
--	kfree_skb(newskb);
--	if (send_sigpipe && !(flags & MSG_NOSIGNAL))
--		send_sig(SIGPIPE, current, 0);
--	if (!init_scm)
--		scm_destroy(&scm);
--	return err;
-+	bvec_set_page(&bvec, page, size, offset);
-+	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
-+	return unix_stream_sendmsg(socket, &msg, size);
- }
- 
- static int unix_seqpacket_sendmsg(struct socket *sock, struct msghdr *msg,
+Unnecessary, the private area is already cleared.
+
+>  	dev->max_mtu = ETH_MAX_MTU;
+>  
+>  	br_netfilter_rtable_init(br);
+> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+> index e69a872bfc1d..8a833e6dee92 100644
+> --- a/net/bridge/br_fdb.c
+> +++ b/net/bridge/br_fdb.c
+> @@ -329,6 +329,8 @@ static void fdb_delete(struct net_bridge *br, struct net_bridge_fdb_entry *f,
+>  	hlist_del_init_rcu(&f->fdb_node);
+>  	rhashtable_remove_fast(&br->fdb_hash_tbl, &f->rhnode,
+>  			       br_fdb_rht_params);
+> +	if (!WARN_ON(!br->fdb_n_entries))
+> +		br->fdb_n_entries--;
+
+This is pointless, just put the WARN_ON(!br->fdb_n_entries) above decrementing, if we
+hit that we are already in trouble and not decrementing doesn't help us.
+
+>  	fdb_notify(br, f, RTM_DELNEIGH, swdev_notify);
+>  	call_rcu(&f->rcu, fdb_rcu_free);
+>  }
+> @@ -391,6 +393,9 @@ static struct net_bridge_fdb_entry *fdb_create(struct net_bridge *br,
+>  	struct net_bridge_fdb_entry *fdb;
+>  	int err;
+>  
+> +	if (unlikely(br->fdb_max_entries && br->fdb_n_entries >= br->fdb_max_entries))
+> +		return NULL;
+> +
+
+This one needs more work, fdb_create() is also used when user-space is adding new
+entries, so it would be nice to return a proper error.
+
+>  	fdb = kmem_cache_alloc(br_fdb_cache, GFP_ATOMIC);
+>  	if (!fdb)
+>  		return NULL;
+> @@ -408,6 +413,7 @@ static struct net_bridge_fdb_entry *fdb_create(struct net_bridge *br,
+>  	}
+>  
+>  	hlist_add_head_rcu(&fdb->fdb_node, &br->fdb_list);
+> +	br->fdb_n_entries++;
+>  
+>  	return fdb;
+>  }
+> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+> index 05c5863d2e20..e5b8d36a3291 100644
+> --- a/net/bridge/br_netlink.c
+> +++ b/net/bridge/br_netlink.c
+> @@ -1527,6 +1527,12 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
+>  			return err;
+>  	}
+>  
+> +	if (data[IFLA_BR_FDB_MAX_ENTRIES]) {
+> +		u32 val = nla_get_u32(data[IFLA_BR_FDB_MAX_ENTRIES]);
+> +
+> +		br->fdb_max_entries = val;
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+> @@ -1656,7 +1662,8 @@ static int br_fill_info(struct sk_buff *skb, const struct net_device *brdev)
+>  	    nla_put_u8(skb, IFLA_BR_TOPOLOGY_CHANGE_DETECTED,
+>  		       br->topology_change_detected) ||
+>  	    nla_put(skb, IFLA_BR_GROUP_ADDR, ETH_ALEN, br->group_addr) ||
+> -	    nla_put(skb, IFLA_BR_MULTI_BOOLOPT, sizeof(bm), &bm))
+> +	    nla_put(skb, IFLA_BR_MULTI_BOOLOPT, sizeof(bm), &bm) ||
+> +	    nla_put_u32(skb, IFLA_BR_FDB_MAX_ENTRIES, br->fdb_max_entries))
+
+You are not returning the current entry count, that is also needed.
+
+>  		return -EMSGSIZE;
+>  
+>  #ifdef CONFIG_BRIDGE_VLAN_FILTERING
+> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> index 2119729ded2b..64fb359c6e3e 100644
+> --- a/net/bridge/br_private.h
+> +++ b/net/bridge/br_private.h
+> @@ -494,6 +494,8 @@ struct net_bridge {
+>  #endif
+>  
+>  	struct rhashtable		fdb_hash_tbl;
+> +	u32				fdb_n_entries;
+> +	u32				fdb_max_entries;
+
+These are not critical, so I'd use 4 byte holes in net_bridge and pack it better
+instead of making it larger.
+
+>  	struct list_head		port_list;
+>  #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+>  	union {
 
 
