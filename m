@@ -1,70 +1,103 @@
-Return-Path: <netdev+bounces-2654-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2653-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7A9B4702DBA
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:12:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 40490702DB7
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:11:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 38244280DB1
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:12:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ED5F2280D0F
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:11:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6729779D4;
-	Mon, 15 May 2023 13:11:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC12AC8EB;
+	Mon, 15 May 2023 13:11:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53F30C8F9
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:11:39 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2135.outbound.protection.outlook.com [40.107.223.135])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96863596
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 06:11:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C919679D4;
+	Mon, 15 May 2023 13:11:38 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D8130FF;
+	Mon, 15 May 2023 06:11:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684156279; x=1715692279;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=ZZeioi8rdQ60LYNBboy0f8d/uLsFvpcOfgARL23AxLs=;
+  b=F0MKPtMsslqGudSOxyvB3oPr+5aCSbv8r1dZdLz6uhmnho9ZBQ0sqRMo
+   Ilujxuz3TCFZ55sDSqDDYIakBpie6uh1zPqV1AGkiOLPY1MwCJOKapp+K
+   9EHVe+Nel+Do6e3yU2jHKQoNQQ1mRVjiE83Hur/1qe2oMX6/uTtzlfXz3
+   VmMxLtLvx8Zrstei9zEXf5OFQBmIreqCVzL/VJ0qc2QZlJj6qXniAAITD
+   RU1+gg3LvI/YlKKFZxIrjbNIu4G7Hx8dPF4xvrE0UxQUqHj3Mra1XjgeN
+   /ZwVHv76QdNi+XMPn4/ZKyKna576Rc21ms+f1g4Y75hw8PUONQ4mqTB5q
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="351229457"
+X-IronPort-AV: E=Sophos;i="5.99,276,1677571200"; 
+   d="scan'208";a="351229457"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 06:11:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="790642283"
+X-IronPort-AV: E=Sophos;i="5.99,276,1677571200"; 
+   d="scan'208";a="790642283"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by FMSMGA003.fm.intel.com with ESMTP; 15 May 2023 06:11:18 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 15 May 2023 06:11:18 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Mon, 15 May 2023 06:11:18 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
+ edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Mon, 15 May 2023 06:11:17 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VK7ZT8E1eNfY91rDTJPPJoNP04RMFKgmOVijRSLSA4xF0XAF1jcsfaoBkRaG3onEWcku2AWCPMwYlFVIAfEh1+UvMYGsCi3nOsAFsWa1ODrannLLmPkKNd9qKvvtdqyvxgmOMDaWDOxtESIK9iaF47kAtay4DZ3RPNFVLSjsWPmFaGw/IV6o7VAxLjaIBab93oEGmywKXUgcVCoajyffo7uETNC/YtUB2vMppYlSD8byVxcZ5VGWoBe5hXP/n5NTuyMJvugw3gjmBAQwQrmPoiK5MkwvD09lPsAlyQjfhGUZCjkaeuwTsmMEIuZl0RSsWgzqCASLt0Tp4iN0XskuYA==
+ b=dragWl/ylz6iGtIcV18TkND56WTV3Auz4thdsJyqUn0AIpIj9NjyYTcB4vRAdIaxJG8b86pk6yu3ySK4xi5VurEw81KwPouyaHvLTsdCxs0b0vCsTBUoZX95V2ZF+p9AgbO7X2KhmdpwY1bKGb8arWLytsYBVNuIS+AUjXW9VxSYq8ISsDVz5b4I0WQ3i+GQ5LCqrp8OyPR5PD0DLKDnHoCpxJ6YgzfDN+dRI2Y/P6J7voieSR4H43I69DUx/oO1ACQHj/lkRhZY1U6587HGe0AmjB8saXqljVSVYIA68/AMNxRgZ+IlurQRnzNDMY5gsJKYudWEowA5JyKKbsp9mg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Iitst0xdXUCfT6wMTFiPDq4OLQjJlFw715+zqObO6fY=;
- b=SQPSMbQOb8K25Snahk/97x9ZBkSBQ9dsEAlDAGl43peDTTI+WAiIoZemzuwFm7aklzzA5K5zUYbsM52MQ6xkEnofTI7xyl58eEwyG5nNZy9/FCGdDDDlul1aDPMm3DHsu0ALBbqqdhRmhMX11uCRo5PAc885b7RChfpscC39O+dF49pgEzlAHkPwzIhAztIYHNyTEVX26qsp7Qi07eSjywMRQGz1emvSXAHw23vAJ4b53OgbVlrd/F23BXoXhDzKPfvvxlFQFwEMWI+/XYojJwW9/xjPjau14Io/mLrak/A+MB27sn1kfEfuHdsalv0uvHIWxHL/52PYdWB96SYoFQ==
+ bh=aMSZufySicNoPOMlmBjpLiCxBC5jwQCvM6CjX+3LxT8=;
+ b=YfiSPhrV726rM5qUo5KtqDQeBKZBQKVmxQYoW/zlKQgOauiMEBYIL7whdoRd5+UuPibHxElN86C1OBJm47xu9vPrGu27Wl2PLRKIip3p8J4OhG5E67UBWLropJ66zkJsYYTAM/2CMzhg4MK0jZ6eFJOUc9wugaB7pvzGZQjUDwzZlXDy70VFJnkJLO/c1+ia1bxkJJGHNwxsPwijPJ3s2E8d1+/3eDCJUFDM2Rz4U4MEaKdOElT1Nc2q6IJh8k8ovSzcxh2AcP4nTeT0jY/GU7QM7ln7vnkP3VSiNqLsEV99SephPXzMZPdVl7qyESopusnG+gMeERTqXuoTJoZ9ow==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Iitst0xdXUCfT6wMTFiPDq4OLQjJlFw715+zqObO6fY=;
- b=JDBW+xYS45t0W8L9Cjd1u6XdbtYAtrdX7l2aBYmd333U2BQU5xYJgVz+mV56CrBO1LsQ+WXO3U/a/QRVKexiMkYPism5udHw3q+hDn4mXP5++vojzrHHyUVwN85HjTMBmLYakDDZ6AhuC9OuHQyg2hFlRmAyJtyeOS+JubZ+XeQ=
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH7PR13MB5528.namprd13.prod.outlook.com (2603:10b6:510:131::8) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ SJ0PR11MB4864.namprd11.prod.outlook.com (2603:10b6:a03:2d4::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Mon, 15 May
- 2023 13:11:15 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.030; Mon, 15 May 2023
+ 2023 13:11:16 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9e4f:80cc:e0aa:6809]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9e4f:80cc:e0aa:6809%2]) with mapi id 15.20.6387.030; Mon, 15 May 2023
  13:11:15 +0000
-Date: Mon, 15 May 2023 15:11:08 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Taehee Yoo <ap420073@gmail.com>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-	edumazet@google.com, jiri@resnulli.us, j.vosburgh@gmail.com,
-	andy@greyhouse.net, netdev@vger.kernel.org, jarod@redhat.com,
-	wangyufen@huawei.com,
-	syzbot+60748c96cf5c6df8e581@syzkaller.appspotmail.com
-Subject: Re: [PATCH net] net: fix stack overflow when LRO is disabled for
- virtual interfaces
-Message-ID: <ZGIvbCJqAgVMIJ57@corigine.com>
-References: <20230515053740.3065735-1-ap420073@gmail.com>
-Content-Type: text/plain; charset=us-ascii
+Date: Mon, 15 May 2023 15:11:09 +0200
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+CC: Yunsheng Lin <linyunsheng@huawei.com>, Lorenzo Bianconi
+	<lorenzo@kernel.org>, <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+	<hawk@kernel.org>, <john.fastabend@gmail.com>
+Subject: Re: [RFC net-next] net: veth: reduce page_pool memory footprint
+ using half page per-buffer
+Message-ID: <ZGIvbfPd46EIVZf/@boxer>
+References: <d3ae6bd3537fbce379382ac6a42f67e22f27ece2.1683896626.git.lorenzo@kernel.org>
+ <62654fa5-d3a2-4b81-af70-59c9e90db842@huawei.com>
+ <ZGIWZHNRvq5DSmeA@lore-desk>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230515053740.3065735-1-ap420073@gmail.com>
-X-ClientProxiedBy: AM4P190CA0019.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:200:56::29) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+In-Reply-To: <ZGIWZHNRvq5DSmeA@lore-desk>
+X-ClientProxiedBy: FR0P281CA0213.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:ac::7) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -72,140 +105,100 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB5528:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7cf136b8-680c-481f-208f-08db5545dcff
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|SJ0PR11MB4864:EE_
+X-MS-Office365-Filtering-Correlation-Id: 376c11ff-a9cf-4e8a-488f-08db5545dd23
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	TlUbwW3flD+gxrCsh0oORto3gCXoI6uPT4tSBQARWGa2txecUOzPpnONzXUKH/ULazDsjeBuq8KZK7QVcyTf08urBSUVunBnp/RFVSmu4wfABw3GoiNBEvFhDkUsRnvHq2Y3a2mMG83GabyF4YifQu2q6k5wtWWdBl6hVbM64K/y84IQyuyUl259Epv5v+vzw70D46loH4VYT6s+/SFZtOhdNO8uXXlwA0TJcvnhPFXMnI9u1Z4ijBofcPeYVrGC3TJqqq00tteArLqP34xU9JTF2ymO5s9VZtC5jbHG51ZngNkmK/n6K2yqMa/Uuh7Sn8k5wsKMXg6Lf9d5B1xpkbMvBqBNgy1g2JWH1yRyi2i2Ckea1Dj9eripsnbYfxxPENcfil8loZ19E+CMFlieFwTCvisVGGGH1XE7/VxAEcY+XhpzQS1P7IYevT+Rx068mx+b+c10bB2Czf87LxKo2Ydb5pgXAk0/yH98fT/hXhZwiIHGA8DZwuO+/C5uIgW+VU2jaikcv7QI5IyCOCBtq+5py3D9uyDACBnR/VL3b+6m040GBNWu0XzgYfGcZELia+TeogFk2bjWrPlIhXDQQZSVEqnXxxKRISMX3jkX0rM=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(346002)(366004)(39840400004)(136003)(451199021)(86362001)(478600001)(36756003)(186003)(6512007)(6486002)(6506007)(6666004)(316002)(38100700002)(41300700001)(66556008)(66476007)(66946007)(6916009)(4326008)(7416002)(5660300002)(8936002)(83380400001)(2906002)(8676002)(44832011)(2616005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 0WSpuvb9e+zMsQwUhhp4jfpX6u6zwlvtiH8+mWla0RyUGqNPKYKhmGczREsvlm8vmyE2ViKgDYmvl5NSc8dl+BWBelwDIAWDtlW+NAWULZ+EsBalOQSNbykW3cvNdyyKaMO7sUl1FV6q+S2ErZ4Txi5f9h58zAl0jDqhWuVwmfUSk3DxQDjrMBVXTeyyZOgXPPbVfKzAzUFDmv3dJhjcWd372J+r0xoqY02HgnfXFAN6dJNrYpUUNYGAqbxUzYNj3HnbHoDVMY+Uuh0Ja7qmjLBZXamPrFRhgF78a/cEYcTxfioF+i6ZZqQvKdISsTjYeQhbVxrTr3d0mwTr1G2JCFbS2Vmrrt8kbpcqG/zwH/wT6RsdIjOMgdImPT5NQjqWYDU58QStsHMQCPffACDzaeiwTxUXQkdtZKtKIhU9phNfUH/NC5DmBDqw3LbqbNAZzm/DaeLc0AcjJxMI/V5A6omfPjaHNzg4/r6S93wVk+k25719B4Ss1eN+WqtLKu612OaBHv0xLF6H29FP+9fUHsjS7m8TObJW2vWze3Sk5SlQNWxX1c9XCOBy8k6pfGaZ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(136003)(366004)(346002)(39860400002)(396003)(376002)(451199021)(6666004)(4326008)(6916009)(66476007)(316002)(38100700002)(478600001)(54906003)(66556008)(66946007)(33716001)(5660300002)(82960400001)(41300700001)(6486002)(83380400001)(8936002)(9686003)(8676002)(26005)(186003)(7416002)(6512007)(6506007)(44832011)(53546011)(2906002)(86362001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?W2sRiJvOcsxUrpvoB7euRnqMHNIxNCgq5qh57ryb4Ve+L0kpzAmnzObVo/Ag?=
- =?us-ascii?Q?GmILJO7bxNGj8hW+XoMNJ5oLuKa7/pfQL6TS1RvYrEiQK+QRX7tPc7e2d4RW?=
- =?us-ascii?Q?8k+Tn5KLIADAO/r/Aj1WCJX0Oo4D6p1g/eL/4G2hMMNdNzjZfkHdmwdayPv7?=
- =?us-ascii?Q?bbI4PpqgFiO+I7XSbLQ8k7/a2wFD1lNHvx1qqZcH3D8LH3YRWmJ3micENpjU?=
- =?us-ascii?Q?+kq3jYK23is6a4+/b0oOJrgWZ5ezKsAbrFTzatUOY9sXxylPm30a5mWOnexa?=
- =?us-ascii?Q?a2Qhi46+MrZsouYuGSuHrMIJHd+HWiIu0VnFR6hMW2bU8Osf2xexIIAte4ov?=
- =?us-ascii?Q?Lb2E1O350ao3C7MfyvzgTGp8QlYVBiwamYx7/aSxmyhyxlo3RpmbbfDN8h/b?=
- =?us-ascii?Q?78Gee3z6z8nDLlFn9cXNJAXSiCNGJgtGMO4tLzDIq66cQfeBrplTirnO62B9?=
- =?us-ascii?Q?xYjpR38oS2SSlZkSXpUhiVkhoHBG9ZwjHbXska0Y1S8Ak1KO/pe7ONGMXGld?=
- =?us-ascii?Q?8WSfLCzRHFq+8bUU97tAU2AUjVNaePXRUQt9sz3XDs0Fz/QtQ6CX4+K9EUoc?=
- =?us-ascii?Q?6NXCUfWwobHWf4q0nfgraxq/1oU933JURqo92ejeh1ld1QoX5+2jDf6cb/lB?=
- =?us-ascii?Q?8MLHWJbCjR8kZ53IokRQjBJPM5g1sC1Vu51JJ1Cdc7Sz/IQrvYivjUNX1Uwt?=
- =?us-ascii?Q?Tix15zZRIBs2fyrpb+mSGQ6H4YqYiicH5kYOzL53FAP0cFG/Rtxmvix+lut9?=
- =?us-ascii?Q?s2G2jYrvj38ng22WcWIjiuVp2ogf4lYGqe/oyrBmIfHR+KkQuOhYV1AMAaeB?=
- =?us-ascii?Q?k/DDqfaZO2SrGgBJtP4dkEcBVtnseBoKrlaCex9gcBgiheoHIugFj6nVZTfz?=
- =?us-ascii?Q?euSiAC4QyjOMbaneJjjK1uncDKba6mGTMsuv+r9Ep8YBcCNQwTw5OxPlBhyo?=
- =?us-ascii?Q?YG8TUhgaHKypgatBVLmZd6fmzhLwo/Fikc/3xPMVHxLOmTPJeNJKzh5Qay55?=
- =?us-ascii?Q?QPW5IksGv2sbSAClTl1mQmIs9FwXVS3+uRThDNIL+9zySb5E9x5crdNUm3ym?=
- =?us-ascii?Q?GIdm+ByZiS8GtW0hY0TEgGAfWqrvNFNGb0FXjX+ChadmxGeddC7k/tKNX2Ta?=
- =?us-ascii?Q?8q7+NQWr2QesYbS+YzqP3N1mK7pFKlYeLBt0G9qQgGjPGSxz20afiAswSG1S?=
- =?us-ascii?Q?TYHFXbuCI0FPBE5vkjxn6DVTWi07eIFbFgSqd72GMHI7m+k/6z13smF0FyQR?=
- =?us-ascii?Q?4QkiB65R8GjRq8laDl5lrqoDguZZ9nk5h/Y1V1cdkJG6GKrr6EmF7Vd6TEP9?=
- =?us-ascii?Q?LZMBst3ABQoSP2HBSYrwFkczcdfu4smYY4q8ROWV14HmNdF1sZCrgaRDixlx?=
- =?us-ascii?Q?U+ps4G7C9mQCJ3W1+LTJM/6VyAl/XVJr+Ykq88WZuG4NfE0rCvvzBe+YYcRe?=
- =?us-ascii?Q?Ks8OPzTilqFkK79IMcI6QzyJSpN7UtFgfIeb9iZMsli+sFm2A0lybLctiP2s?=
- =?us-ascii?Q?Oo7jT7ovx4vTWQhS7bSTv5CCk1DJDwym5Jvv4kqO5c0kcvklOdf1Pod0Y3hG?=
- =?us-ascii?Q?XcWw+eHbqZBnPhNV6kdvPwQnEHK18zZjxGiXoXJrCrowHSenzEeisT3m+UKk?=
- =?us-ascii?Q?YFshVqIv+ENx/kT6so90D0Qhd8Vy06iPSp/tOACsQYzXNwEdVvlOt4Ii8kMN?=
- =?us-ascii?Q?xgu7VA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7cf136b8-680c-481f-208f-08db5545dcff
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LJ1SZZbXBPCUz+88OEvNgjPyxsK+F8vAH/lOobZLds2rgv7+PD5SyD9F2vhV?=
+ =?us-ascii?Q?Wpu7UyNLQ1rGRN6uULixprWuXCZ0XmlMt0KSXKzPlZ5KYckNtRxoWiMeP0Ga?=
+ =?us-ascii?Q?x1P1Gwj65v9CDiinWGyUn+jeehS2jvVT6UG+OV+J++S/klcGsNdY89NYPm1G?=
+ =?us-ascii?Q?bTw59Wh/XXR4tJuDvqF3vw37G91FVW3dqcqp9QZlQ54hlsLKZIVP+qEmStv/?=
+ =?us-ascii?Q?UcKSYRUZwM9m+IR+n/nF/+FkxJkuCP+f5A1oGU18gftmQwhB5jB6AZc4s/Zo?=
+ =?us-ascii?Q?sRSDwtJv8arYdGvsZ69rdR7/mDFcxjCahmvjqabpFvwovt2yDefa0wRrGjTR?=
+ =?us-ascii?Q?WVAnqc81W6PniMLDiYcoZBOWTfYLZT8rxEMNATr2Ui/1ZW9RTsaGMKUy2H+L?=
+ =?us-ascii?Q?OiJnvZSUBw72su5g2GoYWud80wqD54pzm7Za663eXdiazXe/sDJYeGpqMBa0?=
+ =?us-ascii?Q?kgwb6+SQ4GU9z55cSI1DpaOx1qHlEz9NdPJyNC9FmB6x4VRiXBsg8onb21AI?=
+ =?us-ascii?Q?axM/LMcdfXJuKgQclN2OUWBov4P39FMHFPKxcFtfvrvfBM/U4+SeaP/koDRg?=
+ =?us-ascii?Q?6/tAZn5lOLtk/t9fCoVDcKROorkdmFL4n/ftVzmBpX25tTvrvSs4V7M7g/lz?=
+ =?us-ascii?Q?txSCQ8BG5lVorAxQBa94tNiILnrNfWvM/UK/5seABAo0njz43Dl8JUZN0Eva?=
+ =?us-ascii?Q?Hdy41iFjGlab/kg108+62+iwuFAVaN99pLX+KdqDstQ52rr5Qf0mPE8o0tvV?=
+ =?us-ascii?Q?aPZOWi9pQdYyNIEMj5LlQDs47nVwmfP8sLMzGwvFecYrOEnZ2kH+uX7Hd2Jf?=
+ =?us-ascii?Q?DjUlQGSsYBnJO76r6NzWMt5geHbCajhHq2Ml+JsDBpaOFsnbbZpIj6vBdXAy?=
+ =?us-ascii?Q?IiiY1EfH3mj5VmD7DlWdArt97vJ6jbRE6d7EmVz2Sm/FaSe/nVEJJS9sNha2?=
+ =?us-ascii?Q?41UNJFVQ3Xn3dHEwBbGETTJ3KgnM3p1opiqwD8PXsbKH+Zn6EafV1W7g+fEd?=
+ =?us-ascii?Q?CQf71e+g22Q3HnfKjIC6Sf3PgDV1+5nq4CbKUW4HsufeU8mqvJMbQmCny981?=
+ =?us-ascii?Q?JeFgaqPmVTWZ2h/F6UWj72H3BY9su3AmliJPOPu0cccDNGd5qW3WxP/s7oqW?=
+ =?us-ascii?Q?hdfciOCO9kiPcmf2+e/iZJu/47njT/Yku3ggfHZwsIQa/BuOQF3mrL58Jxi2?=
+ =?us-ascii?Q?Sr6U4/yZ9H4vK90xWuyEiQVRFrbW1NevkmZeVzCK8zP7te58sGpLyI+GuYAS?=
+ =?us-ascii?Q?XcQoiV/2lGwJGp6Lylwh01TGuUovVzGjVJdBBABpH2zEm0o6YggR1HNVOJ2F?=
+ =?us-ascii?Q?cebvMjuepbz4Os+wkxMGn9NqOhm/F8XVjC2dJFmAHoLXa+OOqG/nktWA4gjP?=
+ =?us-ascii?Q?+ssYV1VlAiwEyssr2tCG9lI9pwghNIYPTHb78/1ehRUjt6btSiMsnZXTdzKk?=
+ =?us-ascii?Q?yI8qY9sauHqA+C2hoZJX1X0aNMgLwAP+J5to1azRzRIvPUjQUdwpcz9qUOgr?=
+ =?us-ascii?Q?v99vCsfjiYClfsodM7W+4dBoSnuYf+lWG5dSQziF4/49B7na3u1g0K4YflJJ?=
+ =?us-ascii?Q?zQ+uoSHZgaakGTZMfQa+uYjrjU0JxMBdZtiDYsiI9B8+CQqtroS/jC4PXST7?=
+ =?us-ascii?Q?UA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 376c11ff-a9cf-4e8a-488f-08db5545dd23
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 13:11:15.3733
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 13:11:15.6960
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fQSMHKHdadvTUWePjuXkSk+rttuOz0FA0ynuAMqlJiPEf3G/KJmKGzt/+jMFDKPHCqdqf//mhy6tYEARs7t58zZd2hnskVzSUPl1XInnCL8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5528
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: y6JMI45pv/L7ge1J6Cu/Ph9mNq9tL7QZBNlYQUipvJqf+dImw6aZRZM5kNEp5L2ceSVFaOxMeG2eLYerYYFoYrwQIlvsoK1CNkjtXERTiik=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4864
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 15, 2023 at 05:37:40AM +0000, Taehee Yoo wrote:
-> When the virtual interface's feature is updated, it synchronizes the
-> updated feature for its own lower interface.
-> This propagation logic should be worked as the iteration, not recursively.
-> But it works recursively due to the netdev notification unexpectedly.
-> This problem occurs when it disables LRO only for the team and bonding
-> interface type.
+On Mon, May 15, 2023 at 01:24:20PM +0200, Lorenzo Bianconi wrote:
+> > On 2023/5/12 21:08, Lorenzo Bianconi wrote:
+> > > In order to reduce page_pool memory footprint, rely on
+> > > page_pool_dev_alloc_frag routine and reduce buffer size
+> > > (VETH_PAGE_POOL_FRAG_SIZE) to PAGE_SIZE / 2 in order to consume one page
+> > 
+> > Is there any performance improvement beside the memory saving? As it
+> > should reduce TLB miss, I wonder if the TLB miss reducing can even
+> > out the cost of the extra frag reference count handling for the
+> > frag support?
 > 
->        team0
->          |
->   +------+------+-----+-----+
->   |      |      |     |     |
-> team1  team2  team3  ...  team200
-> 
-> If team0's LRO feature is updated, it generates the NETDEV_FEAT_CHANGE
-> event to its own lower interfaces(team1 ~ team200).
-> It is worked by netdev_sync_lower_features().
-> So, the NETDEV_FEAT_CHANGE notification logic of each lower interface
-> work iteratively.
-> But generated NETDEV_FEAT_CHANGE event is also sent to the upper
-> interface too.
-> upper interface(team0) generates the NETDEV_FEAT_CHANGE event for its own
-> lower interfaces again.
-> lower and upper interfaces receive this event and generate this
-> event again and again.
-> So, the stack overflow occurs.
-> 
-> But it is not the infinite loop issue.
-> Because the netdev_sync_lower_features() updates features before
-> generating the NETDEV_FEAT_CHANGE event.
-> Already synchronized lower interfaces skip notification logic.
-> So, it is just the problem that iteration logic is changed to the
-> recursive unexpectedly due to the notification mechanism.
-> 
-> Reproducer:
-> 
-> ip link add team0 type team
-> ethtool -K team0 lro on
-> for i in {1..200}
-> do
->         ip link add team$i master team0 type team
->         ethtool -K team$i lro on
-> done
-> 
-> ethtool -K team0 lro off
-> 
-> In order to fix it, the priv_notifier_ctx net_device member is introduced.
-> This variable can be used by each interface in its own way in the
-> notification context. The bonding and team interface is going to use it
-> to avoid duplicated NETDEV_FEAT_CHANGE event handling.
-> 
-> Reported-by: syzbot+60748c96cf5c6df8e581@syzkaller.appspotmail.com
-> Fixes: fd867d51f889 ("net/core: generic support for disabling netdev features down stack")
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> reducing the requested headroom to 192 (from 256) we have a nice improvement in
+> the 1500B frame case while it is mostly the same in the case of paged skb
+> (e.g. MTU 8000B).
 
-...
+Can you define 'nice improvement' ? ;)
+Show us numbers or improvement in %.
 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 08fbd4622ccf..ebd49a54f0d5 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -2393,6 +2393,7 @@ struct net_device {
->  	unsigned		threaded:1;
->  
->  	struct list_head	net_notifier_list;
-> +	u32			priv_notifier_ctx;
+> 
+> > 
+> > > for two 1500B frames. Reduce VETH_XDP_PACKET_HEADROOM to 192 from 256
+> > > (XDP_PACKET_HEADROOM) to fit max_head_size in VETH_PAGE_POOL_FRAG_SIZE.
+> > > Please note, using default values (CONFIG_MAX_SKB_FRAGS=17), maximum
+> > > supported MTU is now reduced to 36350B.
+> > 
+> > Maybe we don't need to limit the frag size to VETH_PAGE_POOL_FRAG_SIZE,
+> > and use different frag size depending on the mtu or packet size?
+> > 
+> > Perhaps the page_pool_dev_alloc_frag() can be improved to return non-frag
+> > page if the requested frag size is larger than a specified size too.
+> > I will try to implement it if the above idea makes sense.
+> > 
+> 
+> since there are no significant differences between full page and fragmented page
+> implementation if the MTU is over the page boundary, does it worth to do so?
+> (at least for the veth use-case).
+> 
+> Regards,
+> Lorenzo
+> 
 
-Hi Taehee,
 
-Please add this new field to the kdoc for struct net_device.
-
->  
->  #if IS_ENABLED(CONFIG_MACSEC)
->  	/* MACsec management functions */
-
-...
-
----
-pw-bot: cr
 
