@@ -1,178 +1,243 @@
-Return-Path: <netdev+bounces-2455-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2456-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 06BF67020EB
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 03:06:16 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2DBC07020F0
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 03:07:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B49121C209DF
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 01:06:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DF71A2810C1
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 01:07:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A95B010F5;
-	Mon, 15 May 2023 01:06:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EFB7510EA;
+	Mon, 15 May 2023 01:06:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98CF710EA
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 01:06:12 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6EA10F1
-	for <netdev@vger.kernel.org>; Sun, 14 May 2023 18:06:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCDBC1363
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 01:06:59 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161F510F1
+	for <netdev@vger.kernel.org>; Sun, 14 May 2023 18:06:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684112769;
+	s=mimecast20190719; t=1684112816;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=uv5aIwjLG1oqVCUluD4Q4yzDZrBh0xxmyz40kJIsGCI=;
-	b=LCW9/MsipLW7rqu2tZmRrjUsDqa9ic4zYgdv1d/TO0ngZYgyEFXKJuZJi/cB+Vlhqzq5f0
-	ZVcEUiQrLAQ0mpvaoZudld0Tad/VEabUkLeNi/PmpbzpyeuoWgsN6yzIfk2xUWl7xdbuea
-	DFqjQZ3EQZFjlv1PrIWr8YUNRKvCa/M=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=+GShV9rQVPoiBC3aZLWHV81IRxeBh9KQe/grJK0OSZg=;
+	b=ev9SzvEhpHTPrYn8c6TIUyk5DUV2unRoYwlGrYTK653O+04V93u9/G2nMVu2bezpBcNri0
+	XRhBx6/nlP69MQcqb7B19Nx+5jr+e8fFdVbTU0wP7iZmsML5QVPLDAO7r+IwreUE8EO8tp
+	9jFTljBzI9f92V6FwBD8K9fwKiu9OwQ=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-308-Vml-cdnsN_qQP3bgRToDoQ-1; Sun, 14 May 2023 21:06:07 -0400
-X-MC-Unique: Vml-cdnsN_qQP3bgRToDoQ-1
-Received: by mail-lf1-f72.google.com with SMTP id 2adb3069b0e04-4ecb00906d0so7097056e87.1
-        for <netdev@vger.kernel.org>; Sun, 14 May 2023 18:06:06 -0700 (PDT)
+ us-mta-547-rRlGbMdyPq2FIADRkvnjaw-1; Sun, 14 May 2023 21:06:54 -0400
+X-MC-Unique: rRlGbMdyPq2FIADRkvnjaw-1
+Received: by mail-lf1-f70.google.com with SMTP id 2adb3069b0e04-4edc7406cb5so7191125e87.3
+        for <netdev@vger.kernel.org>; Sun, 14 May 2023 18:06:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684112765; x=1686704765;
+        d=1e100.net; s=20221208; t=1684112813; x=1686704813;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=uv5aIwjLG1oqVCUluD4Q4yzDZrBh0xxmyz40kJIsGCI=;
-        b=YNL2Wtc5tS9gQVova+gNJ/P+pkfOV7qru6DvS7hu3eNA2CtLn1jfGDLiu38gs2Eq6X
-         5IYf497FR7hsLQVzyNA8guvabByoop5OP2g6InmXM+NzOUZTkNtQL3tJSLtiV9ZCWOq3
-         IDEj5GB/3kgaBQNmKJ+47YLqCpR6eWfGuVoE+pn5S0MU1Rz/nx+1uQNemai1O/Wa0eoH
-         YtbQqPsCbgtLAmhPFKluzRP0U28tRJAAWCG3imfIpBeoIBFHjvy4ScbS4RBsq5cJjMHt
-         6+lFNgo5AkAtJrZiRxMlGU903DjYFfjgX6qR25xkNWqZBvuA9u2Jvu6GVi9uxWcFyC9+
-         9hkQ==
-X-Gm-Message-State: AC+VfDzwB4i0qny8SdnmJxejz9P6zrNzVEjsacVQ8nMJxtiv5FRu4r+n
-	VLuJdZkH0sZPHIPk3obPh7tY0T02sKwUM2B5KM2ew/YVcymam0GLNlv9nQ6KmYb8MTOoGFbmNwU
-	04dWD+HFKvHfa6EvOospzk3K+80+ryKTK
-X-Received: by 2002:ac2:4c21:0:b0:4ec:8c1e:c816 with SMTP id u1-20020ac24c21000000b004ec8c1ec816mr5376382lfq.34.1684112765556;
-        Sun, 14 May 2023 18:06:05 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5YPiZxBxVtf9zRH0XfAMrcB1fgSrLC9Ac+IoZn18054L1JMAhHHN2gwfb+4PNChIHs918idKFjoqWhSD5pyIM=
-X-Received: by 2002:ac2:4c21:0:b0:4ec:8c1e:c816 with SMTP id
- u1-20020ac24c21000000b004ec8c1ec816mr5376369lfq.34.1684112765255; Sun, 14 May
- 2023 18:06:05 -0700 (PDT)
+        bh=+GShV9rQVPoiBC3aZLWHV81IRxeBh9KQe/grJK0OSZg=;
+        b=AAQEXNV6WnV5/Cf87C2VsEDE5Zq3+9MrxDCFJp1YqN5O1rIoad2mwfPjytN/qQi2LP
+         ksJTV7urrXus5vCi6fJS4AI+sDQETb0JzhIEKkjKEE2Knlhq4VRcc2yGJiOSsiK+OrTo
+         rzdYfw6VHXCAGYQS9Msoh+n56z6lsHlO5pz45Ow6QcMMfv01CvqOtjfdPQig9P/XMBAv
+         Mx0+amzZKE/WsD08eUJbKSB2mjYOe68A1NeevwXv6MxrmIY7jJTRJ/ofOdDv4jSAGDnl
+         VouRMHiTEYgBGVFvJFdtBwh4lMVFL4Om5e7pSfIuI3Oev/+7cYDBPp6D9qshV78j84Ug
+         KUEA==
+X-Gm-Message-State: AC+VfDxJZn8veJcqWC2WMU4wUxHN8tZSJ2J/KXqvqeUZH7nsENG+txbW
+	sD1exHlDWCB7theCsFdfMpMXF8rH26Jxd+eHdFNSTo/qQ7jaDWCFYi2FW+YOae2m7MqMp3/pU1D
+	V1Xr0El+izn5FAXsPetVJg2tayxA2I5lC
+X-Received: by 2002:ac2:55a6:0:b0:4ee:d8f3:1398 with SMTP id y6-20020ac255a6000000b004eed8f31398mr5934357lfg.68.1684112813212;
+        Sun, 14 May 2023 18:06:53 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ45LxbE+gq1RPYwef6WE67FgUUzSqPe9cPjccRfp9vTAvE7LGqJ2vn8M657T3NlXAupmgs40Ezr6Ol6Lylly1U=
+X-Received: by 2002:ac2:55a6:0:b0:4ee:d8f3:1398 with SMTP id
+ y6-20020ac255a6000000b004eed8f31398mr5934353lfg.68.1684112813027; Sun, 14 May
+ 2023 18:06:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230413064027.13267-1-jasowang@redhat.com> <20230413064027.13267-2-jasowang@redhat.com>
- <20230413121525-mutt-send-email-mst@kernel.org> <CACGkMEunn1Z3n8yjVaWLqdV502yjaCBSAb_LO4KsB0nuxXmV8A@mail.gmail.com>
- <20230414031947-mutt-send-email-mst@kernel.org> <CACGkMEtutGn0CoJhoPHbzPuqoCLb4OCT6a_vB_WPV=MhwY0DXg@mail.gmail.com>
- <20230510012951-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230510012951-mutt-send-email-mst@kernel.org>
+References: <20230512151812.1806-1-feliu@nvidia.com>
+In-Reply-To: <20230512151812.1806-1-feliu@nvidia.com>
 From: Jason Wang <jasowang@redhat.com>
-Date: Mon, 15 May 2023 09:05:54 +0800
-Message-ID: <CACGkMEszPydzw_MOUOVJKBBW_8iYn66i_9OFvLDoZMH34hMx=w@mail.gmail.com>
-Subject: Re: [PATCH net-next V2 1/2] virtio-net: convert rx mode setting to
- use workqueue
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org, 
-	pabeni@redhat.com, virtualization@lists.linux-foundation.org, 
-	linux-kernel@vger.kernel.org, maxime.coquelin@redhat.com, 
-	alvaro.karsz@solid-run.com, eperezma@redhat.com, xuanzhuo@linux.alibaba.com, 
-	david.marchand@redhat.com, netdev <netdev@vger.kernel.org>
+Date: Mon, 15 May 2023 09:06:41 +0800
+Message-ID: <CACGkMEvMDWZg56TfMX0XV86ANet01WU1Mr+ZCQa_Xphem42ydw@mail.gmail.com>
+Subject: Re: [PATCH net v6] virtio_net: Fix error unwinding of XDP initialization
+To: Feng Liu <feliu@nvidia.com>
+Cc: virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, bpf@vger.kernel.org, 
+	"Michael S . Tsirkin" <mst@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, 
+	Simon Horman <simon.horman@corigine.com>, Bodong Wang <bodong@nvidia.com>, 
+	Jiri Pirko <jiri@nvidia.com>, William Tu <witu@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 10, 2023 at 1:33=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com>=
- wrote:
+On Fri, May 12, 2023 at 11:18=E2=80=AFPM Feng Liu <feliu@nvidia.com> wrote:
 >
-> On Mon, Apr 17, 2023 at 11:40:58AM +0800, Jason Wang wrote:
-> > On Fri, Apr 14, 2023 at 3:21=E2=80=AFPM Michael S. Tsirkin <mst@redhat.=
-com> wrote:
-> > >
-> > > On Fri, Apr 14, 2023 at 01:04:15PM +0800, Jason Wang wrote:
-> > > > Forget to cc netdev, adding.
-> > > >
-> > > > On Fri, Apr 14, 2023 at 12:25=E2=80=AFAM Michael S. Tsirkin <mst@re=
-dhat.com> wrote:
-> > > > >
-> > > > > On Thu, Apr 13, 2023 at 02:40:26PM +0800, Jason Wang wrote:
-> > > > > > This patch convert rx mode setting to be done in a workqueue, t=
-his is
-> > > > > > a must for allow to sleep when waiting for the cvq command to
-> > > > > > response since current code is executed under addr spin lock.
-> > > > > >
-> > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > >
-> > > > > I don't like this frankly. This means that setting RX mode which =
-would
-> > > > > previously be reliable, now becomes unreliable.
-> > > >
-> > > > It is "unreliable" by design:
-> > > >
-> > > >       void                    (*ndo_set_rx_mode)(struct net_device =
-*dev);
-> > > >
-> > > > > - first of all configuration is no longer immediate
-> > > >
-> > > > Is immediate a hard requirement? I can see a workqueue is used at l=
-east:
-> > > >
-> > > > mlx5e, ipoib, efx, ...
-> > > >
-> > > > >   and there is no way for driver to find out when
-> > > > >   it actually took effect
-> > > >
-> > > > But we know rx mode is best effort e.g it doesn't support vhost and=
- we
-> > > > survive from this for years.
-> > > >
-> > > > > - second, if device fails command, this is also not
-> > > > >   propagated to driver, again no way for driver to find out
-> > > > >
-> > > > > VDUSE needs to be fixed to do tricks to fix this
-> > > > > without breaking normal drivers.
-> > > >
-> > > > It's not specific to VDUSE. For example, when using virtio-net in t=
-he
-> > > > UP environment with any software cvq (like mlx5 via vDPA or cma
-> > > > transport).
-> > > >
-> > > > Thanks
-> > >
-> > > Hmm. Can we differentiate between these use-cases?
-> >
-> > It doesn't look easy since we are drivers for virtio bus. Underlayer
-> > details were hidden from virtio-net.
-> >
-> > Or do you have any ideas on this?
-> >
-> > Thanks
+> When initializing XDP in virtnet_open(), some rq xdp initialization
+> may hit an error causing net device open failed. However, previous
+> rqs have already initialized XDP and enabled NAPI, which is not the
+> expected behavior. Need to roll back the previous rq initialization
+> to avoid leaks in error unwinding of init code.
 >
-> I don't know, pass some kind of flag in struct virtqueue?
->         "bool slow; /* This vq can be very slow sometimes. Don't wait for=
- it! */"
+> Also extract helper functions of disable and enable queue pairs.
+> Use newly introduced disable helper function in error unwinding and
+> virtnet_close. Use enable helper function in virtnet_open.
 >
-> ?
->
+> Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
+> Signed-off-by: Feng Liu <feliu@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> Reviewed-by: William Tu <witu@nvidia.com>
 
-So if it's slow, sleep, otherwise poll?
-
-I feel setting this flag might be tricky, since the driver doesn't
-know whether or not it's really slow. E.g smartNIC vendor may allow
-virtio-net emulation over PCI.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
 Thanks
 
+> ---
+> v5 -> v6
+> feedbacks from Xuan Zhuo
+> - add disable_delayed_refill and cancel_delayed_work_sync
+>
+> v4 -> v5
+> feedbacks from Michael S. Tsirkin
+> - rename helper as virtnet_disable_queue_pair
+> - rename helper as virtnet_enable_queue_pair
+>
+> v3 -> v4
+> feedbacks from Jiri Pirko
+> - Add symmetric helper function virtnet_enable_qp to enable queues.
+> - Error handle:  cleanup current queue pair in virtnet_enable_qp,
+>   and complete the reset queue pairs cleanup in virtnet_open.
+> - Fix coding style.
+> feedbacks from Parav Pandit
+> - Remove redundant debug message and white space.
+>
+> v2 -> v3
+> feedbacks from Michael S. Tsirkin
+> - Remove redundant comment.
+>
+> v1 -> v2
+> feedbacks from Michael S. Tsirkin
+> - squash two patches together.
+>
+> ---
+>  drivers/net/virtio_net.c | 61 +++++++++++++++++++++++++++++-----------
+>  1 file changed, 44 insertions(+), 17 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index a12ae26db0e2..56ca1d270304 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1868,6 +1868,38 @@ static int virtnet_poll(struct napi_struct *napi, =
+int budget)
+>         return received;
+>  }
+>
+> +static void virtnet_disable_queue_pair(struct virtnet_info *vi, int qp_i=
+ndex)
+> +{
+> +       virtnet_napi_tx_disable(&vi->sq[qp_index].napi);
+> +       napi_disable(&vi->rq[qp_index].napi);
+> +       xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
+> +}
+> +
+> +static int virtnet_enable_queue_pair(struct virtnet_info *vi, int qp_ind=
+ex)
+> +{
+> +       struct net_device *dev =3D vi->dev;
+> +       int err;
+> +
+> +       err =3D xdp_rxq_info_reg(&vi->rq[qp_index].xdp_rxq, dev, qp_index=
+,
+> +                              vi->rq[qp_index].napi.napi_id);
+> +       if (err < 0)
+> +               return err;
+> +
+> +       err =3D xdp_rxq_info_reg_mem_model(&vi->rq[qp_index].xdp_rxq,
+> +                                        MEM_TYPE_PAGE_SHARED, NULL);
+> +       if (err < 0)
+> +               goto err_xdp_reg_mem_model;
+> +
+> +       virtnet_napi_enable(vi->rq[qp_index].vq, &vi->rq[qp_index].napi);
+> +       virtnet_napi_tx_enable(vi, vi->sq[qp_index].vq, &vi->sq[qp_index]=
+.napi);
+> +
+> +       return 0;
+> +
+> +err_xdp_reg_mem_model:
+> +       xdp_rxq_info_unreg(&vi->rq[qp_index].xdp_rxq);
+> +       return err;
+> +}
+> +
+>  static int virtnet_open(struct net_device *dev)
+>  {
+>         struct virtnet_info *vi =3D netdev_priv(dev);
+> @@ -1881,22 +1913,20 @@ static int virtnet_open(struct net_device *dev)
+>                         if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+>                                 schedule_delayed_work(&vi->refill, 0);
+>
+> -               err =3D xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, vi->=
+rq[i].napi.napi_id);
+> +               err =3D virtnet_enable_queue_pair(vi, i);
+>                 if (err < 0)
+> -                       return err;
+> -
+> -               err =3D xdp_rxq_info_reg_mem_model(&vi->rq[i].xdp_rxq,
+> -                                                MEM_TYPE_PAGE_SHARED, NU=
+LL);
+> -               if (err < 0) {
+> -                       xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
+> -                       return err;
+> -               }
+> -
+> -               virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
+> -               virtnet_napi_tx_enable(vi, vi->sq[i].vq, &vi->sq[i].napi)=
+;
+> +                       goto err_enable_qp;
+>         }
+>
+>         return 0;
+> +
+> +err_enable_qp:
+> +       disable_delayed_refill(vi);
+> +       cancel_delayed_work_sync(&vi->refill);
+> +
+> +       for (i--; i >=3D 0; i--)
+> +               virtnet_disable_queue_pair(vi, i);
+> +       return err;
+>  }
+>
+>  static int virtnet_poll_tx(struct napi_struct *napi, int budget)
+> @@ -2305,11 +2335,8 @@ static int virtnet_close(struct net_device *dev)
+>         /* Make sure refill_work doesn't re-enable napi! */
+>         cancel_delayed_work_sync(&vi->refill);
+>
+> -       for (i =3D 0; i < vi->max_queue_pairs; i++) {
+> -               virtnet_napi_tx_disable(&vi->sq[i].napi);
+> -               napi_disable(&vi->rq[i].napi);
+> -               xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
+> -       }
+> +       for (i =3D 0; i < vi->max_queue_pairs; i++)
+> +               virtnet_disable_queue_pair(vi, i);
+>
+>         return 0;
+>  }
 > --
-> MST
+> 2.37.1 (Apple Git-137.1)
 >
 
 
