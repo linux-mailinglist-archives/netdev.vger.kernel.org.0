@@ -1,43 +1,43 @@
-Return-Path: <netdev+bounces-2790-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2791-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 17C11703F2A
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 23:01:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7397B703F2B
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 23:01:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C7C71281424
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 21:01:39 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2D4BE281411
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 21:01:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21C591D2C3;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C7FB1D2C8;
 	Mon, 15 May 2023 20:58:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13AF01D2BE
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D6961D2C2
 	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:58:46 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4249DA5FD
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD23D863
 	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:58:30 -0700 (PDT)
 Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <mkl@pengutronix.de>)
-	id 1pyfGl-0006nL-L0
+	id 1pyfGl-0006nW-P9
 	for netdev@vger.kernel.org; Mon, 15 May 2023 22:58:11 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-	by bjornoya.blackshift.org (Postfix) with SMTP id 1EDCB1C5D35
+	by bjornoya.blackshift.org (Postfix) with SMTP id 1FD5D1C5D37
 	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:58:06 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by bjornoya.blackshift.org (Postfix) with ESMTPS id 89E4D1C5CD1;
+	by bjornoya.blackshift.org (Postfix) with ESMTPS id AE3EF1C5CD5;
 	Mon, 15 May 2023 20:58:03 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-	by hardanger.blackshift.org (OpenSMTPD) with ESMTP id bf828c60;
+	by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 748a67fd;
 	Mon, 15 May 2023 20:58:02 +0000 (UTC)
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: netdev@vger.kernel.org
@@ -47,9 +47,9 @@ Cc: davem@davemloft.net,
 	kernel@pengutronix.de,
 	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
 	Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 10/22] can: flexcan: Convert to platform remove callback returning void
-Date: Mon, 15 May 2023 22:57:47 +0200
-Message-Id: <20230515205759.1003118-11-mkl@pengutronix.de>
+Subject: [PATCH net-next 11/22] can: grcan: Convert to platform remove callback returning void
+Date: Mon, 15 May 2023 22:57:48 +0200
+Message-Id: <20230515205759.1003118-12-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230515205759.1003118-1-mkl@pengutronix.de>
 References: <20230515205759.1003118-1-mkl@pengutronix.de>
@@ -86,43 +86,43 @@ Trivially convert this driver from always returning zero in the remove
 callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20230512212725.143824-8-u.kleine-koenig@pengutronix.de
+Link: https://lore.kernel.org/r/20230512212725.143824-9-u.kleine-koenig@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/flexcan/flexcan-core.c | 6 ++----
+ drivers/net/can/grcan.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/flexcan/flexcan-core.c b/drivers/net/can/flexcan/flexcan-core.c
-index 6d638c93977b..ff0fc18baf13 100644
---- a/drivers/net/can/flexcan/flexcan-core.c
-+++ b/drivers/net/can/flexcan/flexcan-core.c
-@@ -2218,7 +2218,7 @@ static int flexcan_probe(struct platform_device *pdev)
+diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
+index 4bedcc3eea0d..3174efdae271 100644
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -1696,7 +1696,7 @@ static int grcan_probe(struct platform_device *ofdev)
  	return err;
  }
  
--static int flexcan_remove(struct platform_device *pdev)
-+static void flexcan_remove(struct platform_device *pdev)
+-static int grcan_remove(struct platform_device *ofdev)
++static void grcan_remove(struct platform_device *ofdev)
  {
- 	struct net_device *dev = platform_get_drvdata(pdev);
- 
-@@ -2227,8 +2227,6 @@ static int flexcan_remove(struct platform_device *pdev)
- 	unregister_flexcandev(dev);
- 	pm_runtime_disable(&pdev->dev);
+ 	struct net_device *dev = platform_get_drvdata(ofdev);
+ 	struct grcan_priv *priv = netdev_priv(dev);
+@@ -1706,8 +1706,6 @@ static int grcan_remove(struct platform_device *ofdev)
+ 	irq_dispose_mapping(dev->irq);
+ 	netif_napi_del(&priv->napi);
  	free_candev(dev);
 -
 -	return 0;
  }
  
- static int __maybe_unused flexcan_suspend(struct device *device)
-@@ -2379,7 +2377,7 @@ static struct platform_driver flexcan_driver = {
- 		.of_match_table = flexcan_of_match,
+ static const struct of_device_id grcan_match[] = {
+@@ -1726,7 +1724,7 @@ static struct platform_driver grcan_driver = {
+ 		.of_match_table = grcan_match,
  	},
- 	.probe = flexcan_probe,
--	.remove = flexcan_remove,
-+	.remove_new = flexcan_remove,
- 	.id_table = flexcan_id_table,
+ 	.probe = grcan_probe,
+-	.remove = grcan_remove,
++	.remove_new = grcan_remove,
  };
  
+ module_platform_driver(grcan_driver);
 -- 
 2.39.2
 
