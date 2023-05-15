@@ -1,53 +1,53 @@
-Return-Path: <netdev+bounces-2764-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2765-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5FCCB703E12
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 22:02:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B3B41703E14
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 22:04:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 632DE1C20BFF
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 20:02:46 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 98B321C20BCC
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 20:04:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 84CF019532;
-	Mon, 15 May 2023 20:02:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7506D19534;
+	Mon, 15 May 2023 20:04:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73A78D2E4
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:02:46 +0000 (UTC)
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2135.outbound.protection.outlook.com [40.107.220.135])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C2AE707
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:02:45 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65935D2E4
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 20:04:33 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2126.outbound.protection.outlook.com [40.107.220.126])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E2FE707
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:04:31 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sb+j7Fwvo3wQaBqDyAp3l06o0KW/Y4OhU+IhuOPfzLaO+jFRfZdt9hj2LgUKNTwY2j7RDgZpCNpRjcW9rYRmK1YNWseTeH1sW1Yu3Nn+w6F4zvtdFw6g0KFX3GSEsJNsdDaSgVr3zULT8YShIMrFsz6I0wrt3k+y2M76CWyXupWaePDLc2uihkLHcpggh5wGlP+q4vi56XmHGloE/MvGx4iMfbdp9ctku9MpcNK6bst916oEYK5eQXpvzpWEqgDReXdtA4bfTVr+iG2iw0hkua+BLNr5PyYbnNS/TbRCbZNs4vNr7/jd2y8TMDaRrYdY2Ze0uHLh2eaNbyq07C7piA==
+ b=WtHBiQ7ijK8xnW9xMsJ1wHtBZQi1C2b7q2D6/QCmmCShbOZRogpiWtjFvrXgYDSltuolfPyAVg4jgvPbYgHV36CbgxqSJZb0DyrPhTTlmRoOwXSwImw25y0IOXAFkt5d1TP+NmGdpVVOjJ6uyzBn3FxYv9jycEFqbz2qzL/MP88fhJn6lrtYVz4p4zu4kisdDi6OdcsMHtHOndOM1bjP1KlH89RYRKiE78rgNDy5iSjvSo5VFBbv/6R+D/tZTv6OlBA8Xwz0Jdvk8jvhnnT7qIQ7u1BP+X6Dr3YSMT2j8d8XFYjd7FsmRKF7T80c3W1ffA3SkJ/vFEW1m2Ar6B755g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z+RVTnENMdoB2NyvgegEShWDUIkLGZ77x8USlyzfNQ4=;
- b=bGAF4na3+nnl5cmTS2DlqILFW7Z3/CAPegoDzl3txLGhCnzDxgoSdYyjzn7jaBAn6iV+ddbaW/9ErXF0m+D5Z4a0Mod4YEC1KubRXqj0RfeZGIxWCM1UFID5NA50uEp27ZsViqS/IkmyUToQfx9WQ+wK8eL9W8gpX3v+Uc/nOZNfqYZYBdcp1pVzhVdL9D+rHLRhlBrR6raCsIwTcpK1RvDPcF8hV5g5Ai8i2EPsRp8T4tap6S8+jhjIp80Av2nLu5z9/EVbjgFUU5BbCQJMG3YytQ/y49PsfDLTwqo7qIM655S1RHxOuz8JAnmSpLLtMJe6N6KLZc4Lq1hd0xJvvw==
+ bh=dPWLMoNBC2pjIOfZ2qqPZcje4Wx+wEYvvS5yD+gtPg4=;
+ b=ob2vaTELNutfe7zuyxrQlAE7YsngrKdrlvA3Ss5SKD9cl2RFyBd0H+yQ/eEvVBP2jwmpmaPv8p18u7k1yYSBWYv6ZSj2Uft8aWeoMz9ckh4E3ibouVlN8/tLAY/Bd0ypwYMMUE2UoSNY33VFtc9108i0dqQMTfKHyrD+3QKJw4RtyIPoziqnunzhANUi1IN3VTr9J+LCsY8V38eAGlHfX9MzT9dImdXBHRCX5YeoVJleplokdXondgXTyvRSti2d712YpGaNVZvP/zDG5+mK06fK39lj7LAt4JnYaVOIgN5tj4xPLm9gpuNr2AsfczztZqr7gNUuW1gb5SfkV2yRJg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z+RVTnENMdoB2NyvgegEShWDUIkLGZ77x8USlyzfNQ4=;
- b=jPfaDmBOzAPJp57Ce+1mF8dSezBn4nxaHN/ntJi++kNupn2I+XI0OgqazHyDyL04hkkJdOvSREHcIkF2KRXULIHm7R+GUaz9yy+BQ8iQA/mo766de1jLp4cXw3I1xIR0dlMqg94eM6Vi7g9of8Jb1E1dvkkE9ukxeFbwWr3kSsM=
+ bh=dPWLMoNBC2pjIOfZ2qqPZcje4Wx+wEYvvS5yD+gtPg4=;
+ b=ni9zloh7NS/cOCChxp/Co91piz7bTghm4de2G8oycwkJcY4LjT8fCtWh58aszUPSGLfN+E8HLTyweiUFvYzzbGw6KHwV3GCHVRth1E2nNO5OoK2xu7ft7bH1ezipijPbKIntU+3RdQqqCVT8PEDKeBzE7vlpKGpeoFH0pmwgpmc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by LV3PR13MB6479.namprd13.prod.outlook.com (2603:10b6:408:194::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.13; Mon, 15 May
- 2023 20:02:38 +0000
+ 2023 20:04:29 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.030; Mon, 15 May 2023
- 20:02:38 +0000
-Date: Mon, 15 May 2023 22:02:28 +0200
+ 20:04:29 +0000
+Date: Mon, 15 May 2023 22:04:19 +0200
 From: Simon Horman <simon.horman@corigine.com>
 To: Hao Lan <lanhao@huawei.com>
 Cc: netdev@vger.kernel.org, yisen.zhuang@huawei.com, salil.mehta@huawei.com,
@@ -56,16 +56,18 @@ Cc: netdev@vger.kernel.org, yisen.zhuang@huawei.com, salil.mehta@huawei.com,
 	wangpeiyang1@huawei.com, shenjian15@huawei.com,
 	chenhao418@huawei.com, wangjie125@huawei.com, yuanjilin@cdjrlc.com,
 	cai.huoqing@linux.dev, xiujianfeng@huawei.com
-Subject: Re: [PATCH net-next 2/4] net: hns3: fix hns3 driver header file not
- self-contained issue
-Message-ID: <ZGKP1PKCocTAplDN@corigine.com>
+Subject: Re: [PATCH net-next 1/4] net: hns3: refine the tcam key convert
+ handle
+Message-ID: <ZGKQQ9j9XbVzMMnI@corigine.com>
 References: <20230515134643.48314-1-lanhao@huawei.com>
- <20230515134643.48314-3-lanhao@huawei.com>
-Content-Type: text/plain; charset=us-ascii
+ <20230515134643.48314-2-lanhao@huawei.com>
+ <ZGJU55jrzqZYlWPH@corigine.com>
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230515134643.48314-3-lanhao@huawei.com>
-X-ClientProxiedBy: AM9P250CA0021.EURP250.PROD.OUTLOOK.COM
- (2603:10a6:20b:21c::26) To PH0PR13MB4842.namprd13.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZGJU55jrzqZYlWPH@corigine.com>
+X-ClientProxiedBy: AM0P190CA0020.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:208:190::30) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -75,55 +77,64 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|LV3PR13MB6479:EE_
-X-MS-Office365-Filtering-Correlation-Id: d4ce6784-db4c-4d02-de9c-08db557f5537
+X-MS-Office365-Filtering-Correlation-Id: b4068a22-1b92-4988-0755-08db557f972c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	4FMyKCPRym8Y6aaLK9dz/+dwr91NR6D3dxBlT/Mou8WiLLDbhqjuQeBfardxnx5fHcmJAlbqWgdZs0nRqiE3zrlONtdtMvWj4MmsCbPwgzJgud1FPfmUjJQpWCi4ulKEU6otQagzi3T8RkDJT4OFBvYHZHrTU29c0x8zxHzI4KVBPXhBeL+op9cdi3KYE34U3qXRGAJaGNf8oxbxRYwkgbG8TPZIhaPj/k8dxO1092SNu7RzaJ+JHagqhOBuJ0oXkSOf4fkq5g7Z/4NVk8b8BiC2hsUEEBG1ai7neVV2Q4PLq4pVeIhqf9U3GXnAp9FGYCfAGDCRucbeMCsZQbV5wsIGedK7zeTj4t7EV4bkfBIRZBS2MDrdVg8rhINQHjjRIKswTdcVWD5akOcH2Sa2qELxG7x1i2mvmtdqnUIKeSE8NyYDLe+57gzeHNLKcECX8W66RrzKap5v+Sy9/B/nomBX/Lr/yP2tMHdHXj9N2v3A1fEmfT6mROzBqHJl42vcReyUVDkQWtMbY7oc/u1i65OSn9bKkXKydeTf6yeNxV8MCyz/6EaCKFjgeEg2PS1w
+	jXfFf+aoXOiaerDkhF6yWok2R580A/HTFB0zqsLjv/Z+nc5YkSwahzO49BNIhoOBUZ4cEMYDnPekkAO0uMWVuleNAPqUaOqZ58kzwK3j8jcVY2rDWgi2e4FNXqVk33EvhvSihlxRGE+TcKu4U5/1RePieRRSjXaIAjTBWYXh1J4oWv41hnJJ9f6YugSm/Yr3LBKL0cmymFhyTs0LyfpqgmE/S+s93rG468vUDO/6T47QNWLUGC/E1NdJq0lpU4J3dh/rb4vUgGU/U4sREAyt/6OFLKfv+hm4MD0v+QdpZLi8t0ApYlU/6K8jKx6R8R0PhLC0Hub2hOWaQ4XrZplneyzO2hr/HN2XV5Y14gQoVY0HbQhG6iTCEAZgP3GViQmzRQHiEjnCCFuehQMPMet3wOK0e2YHx6Vx+qrKV4cWdQq2Viv/Z7GMr2YjW23Gjl1Gxcz4SGJE3tUls5xViheTcZZPxk0A59cDg1Imz2/TxeTZQVSu/cXcmkoK9Pt66WFPIysZf8HuU47KkG1K7yGLGyjVYsm6+YZ+fLvAAhLXNH0M/6CrU9Sygmflvhb3Ox7s
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39840400004)(136003)(396003)(366004)(451199021)(316002)(6916009)(2906002)(66946007)(8676002)(5660300002)(44832011)(7416002)(8936002)(4744005)(66556008)(66476007)(4326008)(41300700001)(6666004)(86362001)(2616005)(478600001)(6486002)(36756003)(6512007)(186003)(6506007)(83380400001)(38100700002);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39840400004)(136003)(396003)(366004)(451199021)(316002)(6916009)(2906002)(66946007)(8676002)(5660300002)(44832011)(7416002)(8936002)(66556008)(66476007)(4326008)(41300700001)(6666004)(86362001)(2616005)(478600001)(6486002)(36756003)(6512007)(186003)(6506007)(83380400001)(38100700002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?85fo3QPeDSl/Em1eIn3tKfB5priLyDKGmoMlUZVTZpImnRgJkLSLN97a1DyU?=
- =?us-ascii?Q?IvH7+klxOCLGVCMHnbP9O0YKqawlNDA5vljQA7LVlLhtDr5wIxJ/YaTGCwDs?=
- =?us-ascii?Q?sLmuDLz5RVIf1e3rj9sdbLq97dfWDjfEZeidCSUdcQCCB9jYNv+S6oRagS8L?=
- =?us-ascii?Q?hceBSo27SEntsOa11JCjc8DDM5TB6GbEo4LiIK7eJHDZHTiUPrvzuXc5zLqc?=
- =?us-ascii?Q?5NucWLu9yXN+xWlfGB3PLokY7CWD60RmlWo3F4H0HCUrbW6dofoBjfYmZ+qG?=
- =?us-ascii?Q?39P7yH9bqNkMuNwHRh3w+4F5nTfuJNEzcYkwCsk8lWs/qIn1J3iuFCvEeK2z?=
- =?us-ascii?Q?YeFaaIqGig8/PPG9o2H1AoWJTgyCRSIdVGGVwIf76Lwc+dSL0Fxkq+bMlxdg?=
- =?us-ascii?Q?vXvxB5W+jWugCM32byOaQXDyBSTB0FSeKqvV6fXk+waJTJdQUjY/Hp29p30N?=
- =?us-ascii?Q?ogPTFbK0ZA2yp4LADjyMGyPDMD3EYjYRzmrdrNeuTL01rDbzcXJmjFplDiPd?=
- =?us-ascii?Q?uGJUdvrWzmtabyAiQTvBnpbON4Jl/XHYMSNgrmWbuEMPAS72467Y8VORX+8I?=
- =?us-ascii?Q?6b7RtdVyv2wlEC1A81lz5k69SOHZ+0XrVSXCQRSqp8tQ+I6//2TgwYQLfMtf?=
- =?us-ascii?Q?FODj5vCAJK0IB1jctM4sQHfzTG14jS4oxLRWRdV6tw57+bH/odZwAUhJjCDH?=
- =?us-ascii?Q?OCtr4KQsGs5A5xpav+/vevGOif02Aans6pmBXJCULsraY4Njcn7b2dOlYIZa?=
- =?us-ascii?Q?RHoQCv7Z7sKXFUlKj+c9oDtpifU7u2kGxzGjv7bbwIbR9ushdkt36ymYuYk3?=
- =?us-ascii?Q?jtJWq4W3wetoVgCrbGSwPLnlLYMnzqXfTR26Hl4Xv2v6RjlJVQE9tH7MJRxh?=
- =?us-ascii?Q?TaZNYW6FwnFbBWUzF94C4pEafkKB9u6R69e/yxfX9zZ+5S9eYu9WDlFSimHg?=
- =?us-ascii?Q?JHpikWmFRiZf/ylVq6d9muFPFcNOUE8YHHhwFZjnJ3zhJWgRXL6M/rGrFDN/?=
- =?us-ascii?Q?Uu4e3nn5gMQiaYHZD5HH6bmpbl9iGcrLWf8ywRxa7Jh85cgeSSN568+OQg7L?=
- =?us-ascii?Q?HOQMIwNWg6ZDj+6Dl8Hexd8QlUQrWSFj2ZA1q9m6vXjf849KrCQD7MFS3VhX?=
- =?us-ascii?Q?Pmi8y9Z2S2Gn29EqD684/0I1IqZpjvYkcmvSwwIMm/3O2mK+E3AqJzF36GTR?=
- =?us-ascii?Q?vcedZq6C8iWkHH97PDAoZbOpeQ/p9aKJ7S8DjciqDFVI7g59+4tZgNMmKLJr?=
- =?us-ascii?Q?G7TeFgijyDkEpjCvLtMiuy4VJLg8zqZoJfCdMxIxGFG0ktPRSsyFWmej7kjo?=
- =?us-ascii?Q?lgz6c1zoKVpelo08zJyCNHfaPn7jus9ZHAgHiEsM5pKHWthk1ghQ48RmIaC0?=
- =?us-ascii?Q?N21PTQq+VIbJ0tokaIiUVGsguQ/vgtEc3dWXcKz6cq29aeMCrQuLxSCmUSxE?=
- =?us-ascii?Q?m0Rqbekp8DxswCufiwTKAeZC6Cs8i0bZ9JfgN3yuL6/P0QIprLBUWUagw/tZ?=
- =?us-ascii?Q?xlh2ZHx6GZ7J9e058NTa90keFi5WPfNP4kAWL6LFICPzMNWnQRSvgqJr2vpl?=
- =?us-ascii?Q?ntFtmbqsbL5rbSTZPy1H3FO15CfxCHu5DHFB0a+tQ2xqXKf9ubKIBT1agZrH?=
- =?us-ascii?Q?PVxqzqSuh5sutbDZIWpYd8759lYt0oUUPj7ReVipYG8OJA6dhk9htzj1F3og?=
- =?us-ascii?Q?LdEMpg=3D=3D?=
+	=?utf-8?B?dm9yd3FzZVFWOEx2RHh4RWluM0ZPdDBldlhka0FVUkhFUnYwOGRza1gwZU13?=
+ =?utf-8?B?aWE2bUl5bHptVVhHeDJWWk8xdlNUZ09LTUZjalBMYUNoelNwT1J6Zm9pckVp?=
+ =?utf-8?B?OVl0cW9IdVRwb3lvS1hVNnNnMzYrTDhWUGM5Mk9iZzZCUDNRYWhQb0JjUlB6?=
+ =?utf-8?B?aE9HMnQzY2x0aGUyT3d2alhRTnh5RWNHZytxeWlYUDk1L0FLRGpGMmJLemZX?=
+ =?utf-8?B?SDh5RUxISjVkU0hKdHNWR1YrTUVzckNBVXhSam9LRXZuNDNaSlNOYlpMNWRi?=
+ =?utf-8?B?M0RSOXRHUEMzWVR1QXY1NFM4N2paOXp4Q3k0NlcxUnd0d01UREdzMDhiKzBp?=
+ =?utf-8?B?R3ZUT3lnamVKb09PTmRZdTZBdXFkRzRCczI5MGRTQnRoeVNyeUIxUk1TSTBI?=
+ =?utf-8?B?MHdOVEpSMzhKR212SEtzS2lwQmpUYmVhTEV5QURBQ2x0bllhNncrQUVFdXdn?=
+ =?utf-8?B?VzVQTGwrYXQ0eEFLUVR1dnVGVWkzL0pBZDZXNlBoTVpyK3BBajZuMEs1UWFB?=
+ =?utf-8?B?dGFXNjJCaWljeTFUWC9VSkxaelE0Zms4NEpaZXd6ZXovSkVOZWsvemFDQWdL?=
+ =?utf-8?B?YitUcno1c09lUEZ1c3MrQVdjeHkvOVZIRjJYdjI4Zkl4V3NnNWE1TnF1UzJk?=
+ =?utf-8?B?L3NkRno5Y1FoV0o4WkI4ZWVPR0p0VkFEenIrQ2dTaXRTTVRUK3JZYmlpczY5?=
+ =?utf-8?B?MmMyVHBnZUtFNElLOW9CRzZEYU1iL05vN0tabFY1ZWwwOGJVNHBuT2xzaVNo?=
+ =?utf-8?B?cXcwd3lqUkhkQjBpQVVtKy84SkxMdHJFY05VOHNaUll5R0FWNHlIZHJEeUZI?=
+ =?utf-8?B?WmlKSnhwL2JwZjJXa3hONFA1MTU3YmV5eVhYejdnU01YSHArOUh3ekVEbnRi?=
+ =?utf-8?B?TnAzQkdWVHFTMThmVkpaOHRqak1jeHRkVnZTVTZkWE9wb3pqa1l3ZXZjZnIv?=
+ =?utf-8?B?SEM4V1BQdVVXanMyMFQ2RUdqQnk4Y040Y2hFcFdqVHpGZHJBbVN1aURoTm1H?=
+ =?utf-8?B?dEFWbnVYV1h1WmZ3M2l4cFBtUU01LzViRmZNWUZDM0Nqem5OOEVrVkV1enR1?=
+ =?utf-8?B?RWt1TE1FTDY4VjFmRjh6MFltMCsrbm5FeWNFVjBncExZalMvMmp2QzIzN1VU?=
+ =?utf-8?B?WUFMa2liNmwxRThmVjVqZXlBYVlDamhCVFBnUllUN0M5OEVaME5VSnNWdHZB?=
+ =?utf-8?B?VVFTWHRJV0E3YktscVRqWlhERlM2ZjFocE1WZ0c3YmpMZXNsUW4ycWY0MU5G?=
+ =?utf-8?B?dmZzaVR6UFBuNTZkRksxdzA0Y1dySFprNzZTV3lFbGNmTXRTck8yazNHcnNp?=
+ =?utf-8?B?ZGdFKzNEdjl5cEo0M3pjNHdSRDFMRU1ROGxoTFBCUi9ncnRWQ1hMNmFWemdR?=
+ =?utf-8?B?WXRqMU1mTklaNkV1ZUNrbWRHQldrNDhIZFJnb3BLMVRVZkVyU2lXSXFRdEZ4?=
+ =?utf-8?B?V1dNODZja3hITlhMN3FmTG1PbjVXQlJrWlNITXkvT2FwWXFDWTNacURwNlZP?=
+ =?utf-8?B?OGFLNGc3Q1p5Q2MwT2w5bFJqZFMwYVF3cThKeWRrOEkwZm8ycmZhSDVCSXI4?=
+ =?utf-8?B?S1RMUW1xRXFDMXFhaEtvNFl4MVdTZGpaQnIySTJady9LMzh4UkVHUVdLMG9C?=
+ =?utf-8?B?empTS3dhVFVTaGlZTCtKRU9vdVAyVmlONXBpUENJSE05VllrVGxneHNNVzRq?=
+ =?utf-8?B?aHRHZU4yWUo0djZDRGVQWkF0N1NjSnMzcTNvakpEakpVSjRiRGVFaW9UWUNi?=
+ =?utf-8?B?Z2hocWtaR0ZlWnpqcGVzOUhKb0dRWmFFVUxZTDJFK0lteExQMGZuVGhmNy9L?=
+ =?utf-8?B?WEVlZ0R3UkFKM3RocytDVXFWQktZeWFoeHJDRGlpdmlDdnlVRitUbFI5Qmoy?=
+ =?utf-8?B?aXpHMHdEM0JDUEs1dE9XbkFSaE5pNWlWbjZkU2daSisyaXNKMU13dUYvQXp5?=
+ =?utf-8?B?dUY1S1RHRXJNc2M5TEswSlN0cEJaVnpmSTZrMzdqUWZ0QmpYaU1lbkpDK25Z?=
+ =?utf-8?B?dFZqSnpuNm13ZTduMUIwMGoyQ2loTlY1ZUpmSE1VZjN5TEhmb056eG5wRFZE?=
+ =?utf-8?B?SDNxVVZwaHA2WjVoVHhZc1Z4YnVVam44eWlucURpT1VpRTUyRnVwTGUrNkZK?=
+ =?utf-8?B?Mm5qcU4zdnFrMTVhSXY2V2xzRmRuSHdPblF3Q2pqcHBicVNzdDBwaU5Ic0ZX?=
+ =?utf-8?B?SXlJTXVuT0dqZlNFYU9WelN0TzZxUVRnMnZmUEFuMm53ZnR2MHNxSmtSSlkv?=
+ =?utf-8?B?VUZhLzcxSVJYeHRKbHRwa3hxNkJRPT0=?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4ce6784-db4c-4d02-de9c-08db557f5537
+X-MS-Exchange-CrossTenant-Network-Message-Id: b4068a22-1b92-4988-0755-08db557f972c
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 20:02:38.3352
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 20:04:29.1568
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9LAFdplbxfcKDu1/4zEjSRms0rX0bTW9jrZO/bE2eZcqHucqc1rXn6seBN/KbaACN9RigOwB0Mt5vZQ3J1nVXIwOMo4pStC0Ca7uRZt0pWg=
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ce29KHVmcQOO6vNCEpqlLDjTcyBuuAq24DjlatFbhzhyK4SrRxkiDHcax41Lbkv+W112rmanXW0cYTW8NsGk+FHuSmtfMSWmoicK4IWCAlA=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR13MB6479
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -131,28 +142,91 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 15, 2023 at 09:46:41PM +0800, Hao Lan wrote:
-> From: Hao Chen <chenhao418@huawei.com>
-> 
-> Hns3 driver header file uses the structure of other files, but does
-> not include corresponding file, which causes a check warning that the
-> header file is not self-contained by clang-tidy checker.
-> 
-> For example,
-> Header file 'hclge_mbx.h' is not self contained.
-> It should include following headers: (1) 'hclgevf_main.h'
-> due to symbols 'struct hclgevf_dev'. The main source file is hns3_enet.c
-> 
-> Therefore, the required header file is included in the header file, and
-> the structure declaration is added to the header file to avoid cyclic
-> dependency of the header file.
-> 
-> Signed-off-by: Hao Chen <chenhao418@huawei.com>
-> Signed-off-by: Hao Lan <lanhao@huawei.com>
+On Mon, May 15, 2023 at 05:51:03PM +0200, Simon Horman wrote:
+> On Mon, May 15, 2023 at 09:46:40PM +0800, Hao Lan wrote:
+> > From: Jian Shen <shenjian15@huawei.com>
+> > 
+> > The expression '(k ^ ~v)' is exaclty '(k & v)', and
 
-Hi,
+Sorry, one more thing: s/exaclty/exactly/
+Also one more time below.
 
-out of curiosity I'm wondering if you could provide some
-more information on how you generated the warnings that you are
-addressing here.
+> 
+> This part doesn't seem correct to me.
+> 
+> Suppose both k and v are 0.
+> For simplicity, consider only one bit.
+> 
+> Then: (k ^ ~v) == (0 ^ ~0) == (0 ^ 1) = 1
+> But   (k & v)  == (0 & 0)  == 0
+> 
+> > '(k & v) & k' is exaclty 'k & v'. So simplify the
+> > expression for tcam key convert.
+> 
+> This I follow.
+> 
+> > (k ^ ~v) & k ==  (k & v) & k ==  k & k & v == k & v
+> 
+> Looking at the truth table (in non table form), this seems correct.
+> 
+> k == 0, v == 0:
+> 
+>   (k ^ ~v) & k == (0 ^ ~0) & 0 == (0 ^ 1) & 0 == 1 & 0 == 0
+>   k & v == 0 & 0 == 0
+>   Good!
+> 
+> k == 0, v == 1:
+> 
+>   (k ^ ~v) & k == (0 ^ ~1) & 0 == (0 ^ 0) & 0 == 1 & 0 == 0
+>   k & v == 0 & 1 == 0
+>   Good!
+> 
+> k == 1, v == 0:
+> 
+>   (k ^ ~v) & k == (1 ^ ~0) & 1 == (1 ^ 1) & 1 == 0 & 1 == 0
+>   k & v == 1 & 0 == 0
+>   Good!
+> 
+> k == 1, v == 1:
+> 
+>   (k ^ ~v) & k == (1 ^ ~1) & 1 == (1 ^ 0) & 1 == 1 & 1 == 1
+>   k & v == 1 & 1 == 1
+>   Good!
+> 
+> > 
+> > It also add necessary brackets for them.
+> > 
+> > Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> > Signed-off-by: Hao Lan <lanhao@huawei.com>
+> > ---
+> >  .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h   | 11 +++--------
+> >  1 file changed, 3 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> > index 81aa6b0facf5..6a43d1515585 100644
+> > --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> > @@ -835,15 +835,10 @@ struct hclge_vf_vlan_cfg {
+> >   * Then for input key(k) and mask(v), we can calculate the value by
+> >   * the formulae:
+> >   *	x = (~k) & v
+> > - *	y = (k ^ ~v) & k
+> > + *	y = k & v
+> >   */
+> > -#define calc_x(x, k, v) (x = ~(k) & (v))
+> > -#define calc_y(y, k, v) \
+> > -	do { \
+> > -		const typeof(k) _k_ = (k); \
+> > -		const typeof(v) _v_ = (v); \
+> > -		(y) = (_k_ ^ ~_v_) & (_k_); \
+> > -	} while (0)
+> > +#define calc_x(x, k, v) ((x) = ~(k) & (v))
+> > +#define calc_y(y, k, v) ((y) = (k) & (v))
+> 
+> This also looks good to me.
+> 
+> >  
+> >  #define HCLGE_MAC_STATS_FIELD_OFF(f) (offsetof(struct hclge_mac_stats, f))
+> >  #define HCLGE_STATS_READ(p, offset) (*(u64 *)((u8 *)(p) + (offset)))
+> 
 
