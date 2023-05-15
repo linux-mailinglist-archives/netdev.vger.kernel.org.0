@@ -1,33 +1,33 @@
-Return-Path: <netdev+bounces-2664-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2665-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 21B0A702EA9
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:49:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9E561702EAA
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 15:49:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3020F1C20A5F
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:49:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 59F792812C5
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 13:49:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9DD0AD2FD;
-	Mon, 15 May 2023 13:48:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 60C07C8FC;
+	Mon, 15 May 2023 13:48:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 930E4D2EA
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:48:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C735D507
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 13:48:38 +0000 (UTC)
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582D21BC
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 06:48:35 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QKgdR3n1szsRlm;
-	Mon, 15 May 2023 21:46:35 +0800 (CST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD28A10F1
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 06:48:36 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QKgdS2hS3zsRsg;
+	Mon, 15 May 2023 21:46:36 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 15 May 2023 21:48:33 +0800
+ 15.1.2507.23; Mon, 15 May 2023 21:48:34 +0800
 From: Hao Lan <lanhao@huawei.com>
 To: <netdev@vger.kernel.org>
 CC: <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
@@ -36,9 +36,9 @@ CC: <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
 	<wangpeiyang1@huawei.com>, <shenjian15@huawei.com>, <chenhao418@huawei.com>,
 	<simon.horman@corigine.com>, <wangjie125@huawei.com>, <yuanjilin@cdjrlc.com>,
 	<cai.huoqing@linux.dev>, <xiujianfeng@huawei.com>
-Subject: [PATCH net-next 2/4] net: hns3: fix hns3 driver header file not self-contained issue
-Date: Mon, 15 May 2023 21:46:41 +0800
-Message-ID: <20230515134643.48314-3-lanhao@huawei.com>
+Subject: [PATCH net-next 3/4] net: hns3: fix strncpy() not using dest-buf length as length issue
+Date: Mon, 15 May 2023 21:46:42 +0800
+Message-ID: <20230515134643.48314-4-lanhao@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20230515134643.48314-1-lanhao@huawei.com>
 References: <20230515134643.48314-1-lanhao@huawei.com>
@@ -62,94 +62,132 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Hao Chen <chenhao418@huawei.com>
 
-Hns3 driver header file uses the structure of other files, but does
-not include corresponding file, which causes a check warning that the
-header file is not self-contained by clang-tidy checker.
+Now, strncpy() in hns3_dbg_fill_content() use src-length as copy-length,
+it may result in dest-buf overflow.
 
-For example,
-Header file 'hclge_mbx.h' is not self contained.
-It should include following headers: (1) 'hclgevf_main.h'
-due to symbols 'struct hclgevf_dev'. The main source file is hns3_enet.c
+This patch is to fix intel compile warning for csky-linux-gcc (GCC) 12.1.0
+compiler.
 
-Therefore, the required header file is included in the header file, and
-the structure declaration is added to the header file to avoid cyclic
-dependency of the header file.
+The warning reports as below:
+
+hclge_debugfs.c:92:25: warning: 'strncpy' specified bound depends on
+the length of the source argument [-Wstringop-truncation]
+
+strncpy(pos, items[i].name, strlen(items[i].name));
+
+hclge_debugfs.c:90:25: warning: 'strncpy' output truncated before
+terminating nul copying as many bytes from a string as its length
+[-Wstringop-truncation]
+
+strncpy(pos, result[i], strlen(result[i]));
+
+strncpy() use src-length as copy-length, it may result in
+dest-buf overflow.
+
+So,this patch add some values check to avoid this issue.
 
 Signed-off-by: Hao Chen <chenhao418@huawei.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/lkml/202207170606.7WtHs9yS-lkp@intel.com/T/
 Signed-off-by: Hao Lan <lanhao@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h              | 4 +++-
- .../hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.h        | 2 ++
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h              | 3 +++
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_ptp.h       | 5 ++++-
- 4 files changed, 12 insertions(+), 2 deletions(-)
+ .../ethernet/hisilicon/hns3/hns3_debugfs.c    | 31 ++++++++++++++-----
+ .../hisilicon/hns3/hns3pf/hclge_debugfs.c     | 29 ++++++++++++++---
+ 2 files changed, 48 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-index abcd7877f7d2..487216aeae50 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-@@ -7,6 +7,8 @@
- #include <linux/mutex.h>
- #include <linux/types.h>
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+index 4c3e90a1c4d0..cf415cb37685 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+@@ -438,19 +438,36 @@ static void hns3_dbg_fill_content(char *content, u16 len,
+ 				  const struct hns3_dbg_item *items,
+ 				  const char **result, u16 size)
+ {
++#define HNS3_DBG_LINE_END_LEN	2
+ 	char *pos = content;
++	u16 item_len;
+ 	u16 i;
  
-+struct hclgevf_dev;
++	if (!len) {
++		return;
++	} else if (len <= HNS3_DBG_LINE_END_LEN) {
++		*pos++ = '\0';
++		return;
++	}
 +
- enum HCLGE_MBX_OPCODE {
- 	HCLGE_MBX_RESET = 0x01,		/* (VF -> PF) assert reset */
- 	HCLGE_MBX_ASSERTING_RESET,	/* (PF -> VF) PF is asserting reset */
-@@ -233,7 +235,7 @@ struct hclgevf_mbx_arq_ring {
- 	__le16 msg_q[HCLGE_MBX_MAX_ARQ_MSG_NUM][HCLGE_MBX_MAX_ARQ_MSG_SIZE];
- };
+ 	memset(content, ' ', len);
+-	for (i = 0; i < size; i++) {
+-		if (result)
+-			strncpy(pos, result[i], strlen(result[i]));
+-		else
+-			strncpy(pos, items[i].name, strlen(items[i].name));
++	len -= HNS3_DBG_LINE_END_LEN;
  
--struct hclge_dev;
-+struct hclge_vport;
- 
- #define HCLGE_MBX_OPCODE_MAX 256
- struct hclge_mbx_ops_param {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.h b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.h
-index a46350162ee8..7aff1a544cf4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.h
-@@ -7,6 +7,8 @@
- #include <linux/etherdevice.h>
- #include "hnae3.h"
- 
-+struct hclge_comm_hw;
+-		pos += strlen(items[i].name) + items[i].interval;
++	for (i = 0; i < size; i++) {
++		item_len = strlen(items[i].name) + items[i].interval;
++		if (len < item_len)
++			break;
 +
- /* each tqp has TX & RX two queues */
- #define HCLGE_COMM_QUEUE_PAIR_SIZE 2
++		if (result) {
++			if (item_len < strlen(result[i]))
++				break;
++			memcpy(pos, result[i], strlen(result[i]));
++		} else {
++			memcpy(pos, items[i].name, strlen(items[i].name));
++		}
++		pos += item_len;
++		len -= item_len;
+ 	}
+-
+ 	*pos++ = '\n';
+ 	*pos++ = '\0';
+ }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index a0b46e7d863e..1354fd0461f7 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -88,16 +88,35 @@ static void hclge_dbg_fill_content(char *content, u16 len,
+ 				   const struct hclge_dbg_item *items,
+ 				   const char **result, u16 size)
+ {
++#define HCLGE_DBG_LINE_END_LEN	2
+ 	char *pos = content;
++	u16 item_len;
+ 	u16 i;
  
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 88af34bbee34..1b360aa52e5d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -13,6 +13,9 @@
- 
- struct iphdr;
- struct ipv6hdr;
-+struct gre_base_hdr;
-+struct tcphdr;
-+struct udphdr;
- 
- enum hns3_nic_state {
- 	HNS3_NIC_STATE_TESTING,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_ptp.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_ptp.h
-index bbee74cd8404..bceb61c791a1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_ptp.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_ptp.h
-@@ -8,8 +8,11 @@
- #include <linux/net_tstamp.h>
- #include <linux/types.h>
- 
--struct hclge_dev;
- struct ifreq;
-+struct ethtool_ts_info;
++	if (!len) {
++		return;
++	} else if (len <= HCLGE_DBG_LINE_END_LEN) {
++		*pos++ = '\0';
++		return;
++	}
 +
-+struct hnae3_handle;
-+struct hclge_dev;
- 
- #define HCLGE_PTP_REG_OFFSET	0x29000
- 
+ 	memset(content, ' ', len);
++	len -= HCLGE_DBG_LINE_END_LEN;
++
+ 	for (i = 0; i < size; i++) {
+-		if (result)
+-			strncpy(pos, result[i], strlen(result[i]));
+-		else
+-			strncpy(pos, items[i].name, strlen(items[i].name));
+-		pos += strlen(items[i].name) + items[i].interval;
++		item_len = strlen(items[i].name) + items[i].interval;
++		if (len < item_len)
++			break;
++
++		if (result) {
++			if (item_len < strlen(result[i]))
++				break;
++			memcpy(pos, result[i], strlen(result[i]));
++		} else {
++			memcpy(pos, items[i].name, strlen(items[i].name));
++		}
++		pos += item_len;
++		len -= item_len;
+ 	}
+ 	*pos++ = '\n';
+ 	*pos++ = '\0';
 -- 
 2.30.0
 
