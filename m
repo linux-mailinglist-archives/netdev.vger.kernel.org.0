@@ -1,185 +1,116 @@
-Return-Path: <netdev+bounces-2527-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2528-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E58097025A3
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 09:04:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7671A7025AD
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 09:07:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C6DD21C20A53
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 07:04:19 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 29A97281117
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 07:07:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E7B979ED;
-	Mon, 15 May 2023 07:04:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DD1E79F3;
+	Mon, 15 May 2023 07:07:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EF137468
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 07:04:19 +0000 (UTC)
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B20CE6C
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:04:15 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-644d9bf05b7so6920341b3a.3
-        for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:04:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1684134254; x=1686726254;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=uCD3xCkYfNGpqdz6rqz02ewnV2gLCfaLBzIL2dOb0BA=;
-        b=D1mpfMLp7iU8M3v125lHslePhrwXN2Nt+06xjigCCbJbL7mP0D+PJFTTNI1FYgUUnK
-         QfR/RWKA7uYUn+C43m2jOF6GoSJl0ykfcND/3ZN091cctME9K2XC/JNzB1753dN4T9Ey
-         OQ/E70uGGf4o0/+3IMxEk2A90Bb3asP4DRWoDhHoQj3S9WoYOC+cGjUZbhhDQGov+y67
-         +BReDFE2p3uqO+uou1s35DoJB5zjfdW/4L25mlP/NIClKgpvH5i0+UsCJVL2I3e28O/d
-         BWTzFROMVrCyDaOEKspvZN13aEQIjFp8KPDBy49bn9aBw4mGXN2RiRazZgKIomioxJs5
-         0rAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684134254; x=1686726254;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uCD3xCkYfNGpqdz6rqz02ewnV2gLCfaLBzIL2dOb0BA=;
-        b=GAwFpzOCWHWQYerBLQwLomJ/hEXtl/+QvP4SQtCJTovQ0xdiAmqc8BWVNhO1ov0gG/
-         tSuFDpY6xzVq3jbGktAtAGIhZdtNTX/5vgO8EYK71MApacdxVFPnchMBg7dvfGjjlT5M
-         42ml4Mv5Lt0H+nsxzXJU68Zy5w4z6PT/Z+rvUkAUv2aog9OxAaxjl0Gvp9RKlWoJdFWd
-         tBIQmS+3xjr/N6yobMCvy6ddclWGs6UJPGeLQCNdtMFUg/wWF04PcRB4ymWNs9jKqJXH
-         HhOm89Z9jmDxgT2NbANw+G0HK6gcm+DoefuElpPHT7jbvWOWtgrlxkeVG70DAI0ym3+B
-         BKpQ==
-X-Gm-Message-State: AC+VfDzzjhLLHDw+K+vn3ZQXsxqSZdTreHuPRg3G/reVN3MHkUvTpypO
-	5nb1oxdLprTz9NjxFhtFLkzqkQ==
-X-Google-Smtp-Source: ACHHUZ7xQVY62gBHyh5WbfOru28n/sfK3aVYm1uQn10+hMHGXiNsfOtkuRIeJBKrPkF4xBG0ETof1A==
-X-Received: by 2002:a05:6a00:158b:b0:64a:f730:1552 with SMTP id u11-20020a056a00158b00b0064af7301552mr11703642pfk.19.1684134254696;
-        Mon, 15 May 2023 00:04:14 -0700 (PDT)
-Received: from [10.255.9.129] ([139.177.225.233])
-        by smtp.gmail.com with ESMTPSA id c13-20020aa78e0d000000b00646ebc77b1fsm2099965pfr.75.2023.05.15.00.04.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 May 2023 00:04:14 -0700 (PDT)
-Message-ID: <6b355d57-30b4-748d-87f4-d79a50fe5487@bytedance.com>
-Date: Mon, 15 May 2023 15:04:09 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F51F1FB1
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 07:07:27 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB32E60
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:07:26 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1pySID-00010b-A3; Mon, 15 May 2023 09:06:49 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	(Authenticated sender: mkl-all@blackshift.org)
+	by smtp.blackshift.org (Postfix) with ESMTPSA id 899EF1C40AE;
+	Mon, 15 May 2023 07:06:43 +0000 (UTC)
+Date: Mon, 15 May 2023 09:06:43 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Peter Hong <peter_hong@fintek.com.tw>
+Cc: kernel test robot <lkp@intel.com>, wg@grandegger.com,
+	michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
+	mailhol.vincent@wanadoo.fr, oe-kbuild-all@lists.linux.dev,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, frank.jungclaus@esd.eu,
+	linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+	netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
+Subject: Re: [PATCH V7] can: usb: f81604: add Fintek F81604 support
+Message-ID: <20230515-uniquely-prodigy-47c74080839b-mkl@pengutronix.de>
+References: <20230509073821.25289-1-peter_hong@fintek.com.tw>
+ <202305091802.pRFS6n2j-lkp@intel.com>
+ <20230509-exert-remindful-0c0e89bf6649-mkl@pengutronix.de>
+ <39d076f3-e569-4b3b-84bf-95222cd61084@fintek.com.tw>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.1
-Subject: Re: [PATCH] sock: Fix misuse of sk_under_memory_pressure()
-From: Abel Wu <wuyun.abel@bytedance.com>
-To: Paolo Abeni <pabeni@redhat.com>, "David S . Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230506085903.96133-1-wuyun.abel@bytedance.com>
- <588689343dcd6c904e7fc142a001043015e5b14e.camel@redhat.com>
- <d2abfe0c-0152-860c-60f7-2787973c95d0@bytedance.com>
-Content-Language: en-US
-In-Reply-To: <d2abfe0c-0152-860c-60f7-2787973c95d0@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="glikuaxsspn5nww5"
+Content-Disposition: inline
+In-Reply-To: <39d076f3-e569-4b3b-84bf-95222cd61084@fintek.com.tw>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Gentle ping :)
 
-On 5/10/23 10:35 PM, Abel Wu wrote:
-> Hi Paolo, thanks very much for comment!
-> 
-> On 5/9/23 3:52 PM, Paolo Abeni wrote:
->> On Sat, 2023-05-06 at 16:59 +0800, Abel Wu wrote:
->>> The commit 180d8cd942ce ("foundations of per-cgroup memory pressure
->>> controlling") wrapped proto::memory_pressure status into an accessor
->>> named sk_under_memory_pressure(), and in the next commit e1aab161e013
->>> ("socket: initial cgroup code") added the consideration of net-memcg
->>> pressure into this accessor.
->>>
->>> But with the former patch applied, not all of the call sites of
->>> sk_under_memory_pressure() are interested in net-memcg's pressure.
->>> The __sk_mem_{raise,reduce}_allocated() only focus on proto/netns
->>> pressure rather than net-memcg's.
->>
->> Why do you state the above? The current behavior is established since
->> ~12y, arguably we can state quite the opposite.
->>
->> I think this patch should at least target net-next, and I think we need
->> a more detailed reasoning to introduce such behavior change.
-> 
-> Sorry for failed to provide a reasonable explanation... When @allocated
-> is no more than tcp_mem[0], the global tcp_mem pressure is gone even if
-> the socket's memcg is under pressure.
-> 
-> This reveals that prot::memory_pressure only considers the global tcp
-> memory pressure, and is irrelevant to the memcg's. IOW if we're updating
-> prot::memory_pressure or making desicions upon prot::memory_pressure,
-> the memcg stat should not be considered and sk_under_memory_pressure()
-> should not be called since it considers both.
-> 
->>
->>> IOW this accessor are generally
->>> used for deciding whether should reclaim or not.
->>>
->>> Fixes: e1aab161e013 ("socket: initial cgroup code")
->>> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
->>> ---
->>>   include/net/sock.h |  5 -----
->>>   net/core/sock.c    | 17 +++++++++--------
->>>   2 files changed, 9 insertions(+), 13 deletions(-)
->>>
->>> diff --git a/include/net/sock.h b/include/net/sock.h
->>> index 8b7ed7167243..752d51030c5a 100644
->>> --- a/include/net/sock.h
->>> +++ b/include/net/sock.h
->>> @@ -1404,11 +1404,6 @@ static inline int 
->>> sk_under_cgroup_hierarchy(struct sock *sk,
->>>   #endif
->>>   }
->>> -static inline bool sk_has_memory_pressure(const struct sock *sk)
->>> -{
->>> -    return sk->sk_prot->memory_pressure != NULL;
->>> -}
->>> -
->>>   static inline bool sk_under_memory_pressure(const struct sock *sk)
->>>   {
->>>       if (!sk->sk_prot->memory_pressure)
->>> diff --git a/net/core/sock.c b/net/core/sock.c
->>> index 5440e67bcfe3..8d215f821ea6 100644
->>> --- a/net/core/sock.c
->>> +++ b/net/core/sock.c
->>> @@ -3017,13 +3017,14 @@ int __sk_mem_raise_allocated(struct sock *sk, 
->>> int size, int amt, int kind)
->>>           }
->>>       }
->>> -    if (sk_has_memory_pressure(sk)) {
->>> -        u64 alloc;
->>> -
->>> -        if (!sk_under_memory_pressure(sk))
->>> -            return 1;
->>> -        alloc = sk_sockets_allocated_read_positive(sk);
->>> -        if (sk_prot_mem_limits(sk, 2) > alloc *
->>> +    if (prot->memory_pressure) {
->>> +        /*
->>> +         * If under global pressure, allow the sockets that are below
->>> +         * average memory usage to raise, trying to be fair between all
->>> +         * the sockets under global constrains.
->>> +         */
->>> +        if (!*prot->memory_pressure ||
->>> +            sk_prot_mem_limits(sk, 2) > 
->>> sk_sockets_allocated_read_positive(sk) *
->>
->> The above introduces unrelated changes that makes the code IMHO less
->> readable - I don't see a good reason to drop the 'alloc' variable.
-> Besides drop the @alloc variable, this change also removes the condition
-> of memcg's pressure from sk_under_memory_pressure() due to the reason
-> aforementioned. I can re-introduce @alloc in the next version if you
-> think it makes code more readable.
-> 
-> Thanks & Best,
->      Abel
-> 
+--glikuaxsspn5nww5
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 15.05.2023 09:11:34, Peter Hong wrote:
+> Hi Marc,
+>=20
+> Marc Kleine-Budde =E6=96=BC 2023/5/9 =E4=B8=8B=E5=8D=88 08:14 =E5=AF=AB=
+=E9=81=93:
+> > Replaced "%lu% by "%zu" while applying the patch.
+>=20
+> Should I fix the warning and resend the patch as v8? or you will modify t=
+he
+> v7 before apply it?
+
+I have applied to patch to my tree and replaced "%lu% by "%zu", no need
+to resend.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--glikuaxsspn5nww5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRh2gAACgkQvlAcSiqK
+BOgmZwf/XVm9uzh7dxBQFJ8L0dU5BOP7tqJ03EyEFQVC/b9GWJEkg2d32t1/Psdl
+BuDj5kbrDkgYR6vHUKkjUpnfzXUNgfwSQkjj+qBlNM6aUztayan72c3x58v2mkOl
+/bsLY093SdGAoiJ8TtmO49bVW7GB6+1wlpNmZO7yh+TRm28N722n/VcGuZf6ITi+
+FYCIVoPLbO8OHcU7xowpk5+Rc2OEao7/5libji/ahgo6VD6h62u2I4bNvPIeMPiS
+c7GYI3bvTi97ZKdfzQnaKhxb4oDI74gfVCU/fuKX/DVDHLxKnsC3Vs4YDZsV82or
+f/p7ntxSZ6r5CmLHwxPNUzSRqb8AWQ==
+=+qml
+-----END PGP SIGNATURE-----
+
+--glikuaxsspn5nww5--
 
