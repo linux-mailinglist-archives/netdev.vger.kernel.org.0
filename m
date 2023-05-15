@@ -1,198 +1,154 @@
-Return-Path: <netdev+bounces-2476-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2477-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D2D3370229F
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 05:51:06 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5E2A37022B5
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 06:13:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8F4FD28109F
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 03:51:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F10942810B0
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 04:13:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4F5FE1C26;
-	Mon, 15 May 2023 03:51:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 251CB1FB6;
+	Mon, 15 May 2023 04:13:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CD101FAE
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 03:51:03 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A54F171D
-	for <netdev@vger.kernel.org>; Sun, 14 May 2023 20:50:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684122658;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Ug4lOczkCVIqRxzALymxlBcZQCDDkaOfinDuNkIF8Bg=;
-	b=XH0/cDkuVSox5vqtm77Rbb/EFA3YWt9sWzZtFN/mh7ZVWfV+v3Usr/7myA9pYbxnDCNdgf
-	ew3r6lJ3sK2E46dzTRTTD+0zTkrbRn+kTDUvndBwCGtLyfMHbg34X2W9QDHiVrEiBjm1SV
-	wTNuS2EVHAjR9Q6Ere3Ii1+5r+rqaRY=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-213-B2EUx_1ON6CsqgZxzDTkbw-1; Sun, 14 May 2023 23:50:57 -0400
-X-MC-Unique: B2EUx_1ON6CsqgZxzDTkbw-1
-Received: by mail-lj1-f200.google.com with SMTP id 38308e7fff4ca-2ad819ab909so44310311fa.0
-        for <netdev@vger.kernel.org>; Sun, 14 May 2023 20:50:56 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1335E1C26
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 04:13:35 +0000 (UTC)
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7343F1BE3
+	for <netdev@vger.kernel.org>; Sun, 14 May 2023 21:13:32 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id d75a77b69052e-3f38a9918d1so1313781cf.1
+        for <netdev@vger.kernel.org>; Sun, 14 May 2023 21:13:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1684124011; x=1686716011;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YStTJgpJxghtuoBZk87RzSQY/v+lqurPQ0sgyIhp1Ps=;
+        b=7SCyQfiTw4tckZw3oxtRgm3S34UkIVRMsMkishGxaYF42kqIOh9pOrwcNY8jsGk2+X
+         ViLkd+/8VsMrSaCScA6bvCPgpEshi1LK7YjW8cvAueeSF9E194mlh9pFfiPVe68yO34P
+         BXiEtC4ThZO5lrRoIy4NpWgOET9HuSbGTUwXM5hGC82mJxfcdWoorRGZ9oy9+XjtnH+A
+         uQrmk5y1LopWW9xCt17bquSWitNv9qWhbLYwLzFJAnYh4LH1n3RyKQUWnzfO8/Ev1Is0
+         JoUlKgdNqD1Wk2xHBUs/wKI3btKgUzNhwAuS5oFVszmlzYoHGwa8nU/79RCx/EgnhX3E
+         sBNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684122655; x=1686714655;
+        d=1e100.net; s=20221208; t=1684124011; x=1686716011;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Ug4lOczkCVIqRxzALymxlBcZQCDDkaOfinDuNkIF8Bg=;
-        b=Gt6/DG9Ejuf28Q25xc8RrOI2CSVp1gm83gwZtk9Gk3Glov5wnRH0j91jXrFL3xCCJN
-         4JbDBpnw/h/kcMAboQ9cYb6T5Jhf7wUCzcUP6tbiKRvGydAqaCGp+5RW0tguom5tBpw9
-         tDLFfPock1RJM9KwS2VAiF4nwKmyM3Bu6WMq1tVC8G4B0vt3+gQ8kS1a0c5FsTBJPXa2
-         raTtlVzXIs5QCvogQjkBXjgpmSGhYw1i2TqVxh11vu24LUiBZFWtbfdBbYjpGOgOfC5W
-         LwAOiiq7P7wNLhgtuaSAXWefwHAORUC+i7T5Vbu6iSswDt1Mbpoe7pUr91Ok6sHSOos1
-         wg2g==
-X-Gm-Message-State: AC+VfDwc9cK/bx8KB4xSm0leTnZ6jotORQt3ge1KU+rcC3kTlo2L/0A+
-	f9w111yRKz2S93PaYzcWtNNASuUwVj8GDF4OwJiHP9nWsqzpVM7Y2oD8fwPaEWAJaasim3+aFBU
-	ZHxaF94CEumZdNHwZh9VNK4gowv8y5F/O8xh94DuWRocg2w==
-X-Received: by 2002:a2e:984e:0:b0:298:ad8e:e65 with SMTP id e14-20020a2e984e000000b00298ad8e0e65mr6982121ljj.21.1684122655288;
-        Sun, 14 May 2023 20:50:55 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6O/xEgaCMEOq33lgXSdrKWYLGsR3UXF2SvNMhY54xBDhrM4Eis+wInccl5RJLEz0xoou22llWe2dqCNpmkfTQ=
-X-Received: by 2002:a2e:984e:0:b0:298:ad8e:e65 with SMTP id
- e14-20020a2e984e000000b00298ad8e0e65mr6982120ljj.21.1684122655078; Sun, 14
- May 2023 20:50:55 -0700 (PDT)
+        bh=YStTJgpJxghtuoBZk87RzSQY/v+lqurPQ0sgyIhp1Ps=;
+        b=blM61a3bEVXsoa2nKfhJm9bMCua3Vy22pXVIcGCdv9dbtaQlTzfkzTQsCxyKd9j0R8
+         ZxNCIocUlmdZ6rcl1HZBvOopSbu0UuS9OzjjjJUCio97k7M7j68ppGjG4N1MOxPVsbWq
+         rdUkCwPP8hedtyLMWYjaLyO12ctbXEmCf+sw2nERC9BHnRJwrke3e8Qdi/IUtP3dCWyS
+         DatJx6lW4KOQLandVO0ydlMOrlfbmwzoPagZnYC+nwzDrOhNiDNnKP71peo0ey39NETZ
+         x3vryPBbbSipVYuF5w9Jki2UtL1LKlTEIG0DDU1d7lDzqk2TIjTAfsM9iFr5PGXL9L0H
+         276g==
+X-Gm-Message-State: AC+VfDxr9de/ckk2O/jx5etxJRU7RbtvEnrpeNqhsUA9+N9gFu9TMHkW
+	cdCpMgaMajVmPtD6WdgiJiKG6bWEoTzdt8UQfIqgeQ==
+X-Google-Smtp-Source: ACHHUZ5ykYW2V6yWJQUZ51vyxTbY8cpo7eQrQ6U4bKjnsJLqpza5H8K01Tv4A9QRgZPm4hJ2ctiEFpsU4DiUiSzF1jo=
+X-Received: by 2002:a05:622a:14cf:b0:3e0:c2dd:fd29 with SMTP id
+ u15-20020a05622a14cf00b003e0c2ddfd29mr1061107qtx.4.1684124011324; Sun, 14 May
+ 2023 21:13:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230503181240.14009-1-shannon.nelson@amd.com> <20230503181240.14009-8-shannon.nelson@amd.com>
-In-Reply-To: <20230503181240.14009-8-shannon.nelson@amd.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Mon, 15 May 2023 11:50:44 +0800
-Message-ID: <CACGkMEv_sz4-XVH3-QNZZ+xQCZaQK_pzOcFqHS4si38fifVbpg@mail.gmail.com>
-Subject: Re: [PATCH v5 virtio 07/11] pds_vdpa: virtio bar setup for vdpa
-To: Shannon Nelson <shannon.nelson@amd.com>
-Cc: mst@redhat.com, virtualization@lists.linux-foundation.org, 
-	brett.creeley@amd.com, netdev@vger.kernel.org, simon.horman@corigine.com, 
-	drivers@pensando.io
+References: <CH3PR11MB7345DBA6F79282169AAFE9E0FC759@CH3PR11MB7345.namprd11.prod.outlook.com>
+ <20230512171702.923725-1-shakeelb@google.com> <CH3PR11MB7345035086C1661BF5352E6EFC789@CH3PR11MB7345.namprd11.prod.outlook.com>
+In-Reply-To: <CH3PR11MB7345035086C1661BF5352E6EFC789@CH3PR11MB7345.namprd11.prod.outlook.com>
+From: Shakeel Butt <shakeelb@google.com>
+Date: Sun, 14 May 2023 21:13:20 -0700
+Message-ID: <CALvZod7n2yHU8PMn5b39w6E+NhLtBynDKfo1GEfXaa64_tqMWQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper size
+To: "Zhang, Cathy" <cathy.zhang@intel.com>
+Cc: Eric Dumazet <edumazet@google.com>, Linux MM <linux-mm@kvack.org>, 
+	Cgroups <cgroups@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	"davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>, 
+	"Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Srinivas, Suresh" <suresh.srinivas@intel.com>, 
+	"Chen, Tim C" <tim.c.chen@intel.com>, "You, Lizhen" <lizhen.you@intel.com>, 
+	"eric.dumazet@gmail.com" <eric.dumazet@gmail.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 4, 2023 at 2:13=E2=80=AFAM Shannon Nelson <shannon.nelson@amd.c=
-om> wrote:
+On Sun, May 14, 2023 at 8:46=E2=80=AFPM Zhang, Cathy <cathy.zhang@intel.com=
+> wrote:
 >
-> Prep and use the "modern" virtio bar utilities to get our
-> virtio config space ready.
 >
-> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-Thanks
-
-> ---
->  drivers/vdpa/pds/aux_drv.c | 25 +++++++++++++++++++++++++
->  drivers/vdpa/pds/aux_drv.h |  3 +++
->  2 files changed, 28 insertions(+)
 >
-> diff --git a/drivers/vdpa/pds/aux_drv.c b/drivers/vdpa/pds/aux_drv.c
-> index aa748cf55d2b..0c4a135b1484 100644
-> --- a/drivers/vdpa/pds/aux_drv.c
-> +++ b/drivers/vdpa/pds/aux_drv.c
-> @@ -4,6 +4,7 @@
->  #include <linux/auxiliary_bus.h>
->  #include <linux/pci.h>
->  #include <linux/vdpa.h>
-> +#include <linux/virtio_pci_modern.h>
+> > -----Original Message-----
+> > From: Shakeel Butt <shakeelb@google.com>
+> > Sent: Saturday, May 13, 2023 1:17 AM
+> > To: Zhang, Cathy <cathy.zhang@intel.com>
+> > Cc: Shakeel Butt <shakeelb@google.com>; Eric Dumazet
+> > <edumazet@google.com>; Linux MM <linux-mm@kvack.org>; Cgroups
+> > <cgroups@vger.kernel.org>; Paolo Abeni <pabeni@redhat.com>;
+> > davem@davemloft.net; kuba@kernel.org; Brandeburg@google.com;
+> > Brandeburg, Jesse <jesse.brandeburg@intel.com>; Srinivas, Suresh
+> > <suresh.srinivas@intel.com>; Chen, Tim C <tim.c.chen@intel.com>; You,
+> > Lizhen <lizhen.you@intel.com>; eric.dumazet@gmail.com;
+> > netdev@vger.kernel.org
+> > Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a p=
+roper
+> > size
+> >
+> > On Fri, May 12, 2023 at 05:51:40AM +0000, Zhang, Cathy wrote:
+> > >
+> > >
+> > [...]
+> > > >
+> > > > Thanks a lot. This tells us that one or both of following scenarios
+> > > > are
+> > > > happening:
+> > > >
+> > > > 1. In the softirq recv path, the kernel is processing packets from
+> > > > multiple memcgs.
+> > > >
+> > > > 2. The process running on the CPU belongs to memcg which is
+> > > > different from the memcgs whose packets are being received on that =
+CPU.
+> > >
+> > > Thanks for sharing the points, Shakeel! Is there any trace records yo=
+u
+> > > want to collect?
+> > >
+> >
+> > Can you please try the following patch and see if there is any improvem=
+ent?
 >
->  #include <linux/pds/pds_common.h>
->  #include <linux/pds/pds_core_if.h>
-> @@ -19,12 +20,22 @@ static const struct auxiliary_device_id pds_vdpa_id_t=
-able[] =3D {
->         {},
->  };
+> Hi Shakeel,
 >
-> +static int pds_vdpa_device_id_check(struct pci_dev *pdev)
-> +{
-> +       if (pdev->device !=3D PCI_DEVICE_ID_PENSANDO_VDPA_VF ||
-> +           pdev->vendor !=3D PCI_VENDOR_ID_PENSANDO)
-> +               return -ENODEV;
-> +
-> +       return PCI_DEVICE_ID_PENSANDO_VDPA_VF;
-> +}
-> +
->  static int pds_vdpa_probe(struct auxiliary_device *aux_dev,
->                           const struct auxiliary_device_id *id)
+> Try the following patch, the data of 'perf top' from system wide indicate=
+s that
+> the overhead of page_counter_cancel is dropped from 15.52% to 4.82%.
 >
->  {
->         struct pds_auxiliary_dev *padev =3D
->                 container_of(aux_dev, struct pds_auxiliary_dev, aux_dev);
-> +       struct device *dev =3D &aux_dev->dev;
->         struct pds_vdpa_aux *vdpa_aux;
->         int err;
+> Without patch:
+>     15.52%  [kernel]            [k] page_counter_cancel
+>     12.30%  [kernel]            [k] page_counter_try_charge
+>     11.97%  [kernel]            [k] try_charge_memcg
 >
-> @@ -41,8 +52,21 @@ static int pds_vdpa_probe(struct auxiliary_device *aux=
-_dev,
->         if (err)
->                 goto err_free_mem;
+> With patch:
+>     10.63%  [kernel]            [k] page_counter_try_charge
+>      9.49%  [kernel]            [k] try_charge_memcg
+>      4.82%  [kernel]            [k] page_counter_cancel
 >
-> +       /* Find the virtio configuration */
-> +       vdpa_aux->vd_mdev.pci_dev =3D padev->vf_pdev;
-> +       vdpa_aux->vd_mdev.device_id_check =3D pds_vdpa_device_id_check;
-> +       vdpa_aux->vd_mdev.dma_mask =3D DMA_BIT_MASK(PDS_CORE_ADDR_LEN);
-> +       err =3D vp_modern_probe(&vdpa_aux->vd_mdev);
-> +       if (err) {
-> +               dev_err(dev, "Unable to probe for virtio configuration: %=
-pe\n",
-> +                       ERR_PTR(err));
-> +               goto err_free_mgmt_info;
-> +       }
-> +
->         return 0;
->
-> +err_free_mgmt_info:
-> +       pci_free_irq_vectors(padev->vf_pdev);
->  err_free_mem:
->         kfree(vdpa_aux);
->         auxiliary_set_drvdata(aux_dev, NULL);
-> @@ -55,6 +79,7 @@ static void pds_vdpa_remove(struct auxiliary_device *au=
-x_dev)
->         struct pds_vdpa_aux *vdpa_aux =3D auxiliary_get_drvdata(aux_dev);
->         struct device *dev =3D &aux_dev->dev;
->
-> +       vp_modern_remove(&vdpa_aux->vd_mdev);
->         pci_free_irq_vectors(vdpa_aux->padev->vf_pdev);
->
->         kfree(vdpa_aux);
-> diff --git a/drivers/vdpa/pds/aux_drv.h b/drivers/vdpa/pds/aux_drv.h
-> index dcec782e79eb..99e0ff340bfa 100644
-> --- a/drivers/vdpa/pds/aux_drv.h
-> +++ b/drivers/vdpa/pds/aux_drv.h
-> @@ -4,6 +4,8 @@
->  #ifndef _AUX_DRV_H_
->  #define _AUX_DRV_H_
->
-> +#include <linux/virtio_pci_modern.h>
-> +
->  #define PDS_VDPA_DRV_DESCRIPTION    "AMD/Pensando vDPA VF Device Driver"
->  #define PDS_VDPA_DRV_NAME           KBUILD_MODNAME
->
-> @@ -16,6 +18,7 @@ struct pds_vdpa_aux {
->
->         int vf_id;
->         struct dentry *dentry;
-> +       struct virtio_pci_modern_device vd_mdev;
->
->         int nintrs;
->  };
-> --
-> 2.17.1
+> The patch is applied on the latest net-next/main:
+> befcc1fce564 ("sfc: fix use-after-free in efx_tc_flower_record_encap_matc=
+h()")
 >
 
+Thanks a lot Cathy for testing. Do you see any performance improvement
+for the memcached benchmark with the patch?
 
