@@ -1,103 +1,111 @@
-Return-Path: <netdev+bounces-2529-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2530-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3EC6C7025C2
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 09:12:41 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 222597025F8
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 09:21:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 14A3D1C20A47
-	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 07:12:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 83C4B2810EF
+	for <lists+netdev@lfdr.de>; Mon, 15 May 2023 07:21:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35E1979FA;
-	Mon, 15 May 2023 07:12:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A64958468;
+	Mon, 15 May 2023 07:21:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28CD779F6
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 07:12:37 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F04210F8
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:12:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684134755;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xwF3bMtKzTBdMVk3tiqEPsRCHZdEoAnjzKN67iE7ThU=;
-	b=huMcrnHTpcxOYc/brtNEhEIbtjGgW3YLGQQZacxvfJ6KZCrSb/KH2+RLSeK+kd3ZDMcrg7
-	5z2HvtsIa8RHKrhosxAxM+VJgOiswOS75p2LKziTkSjpe6RCpuhNbdZhFJhVRRmxocNWpI
-	uFF8bE3FGyX596yFMkhSv15zR4q11bI=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-577-84IUaB9IOECh7Dz4AjEbDQ-1; Mon, 15 May 2023 03:12:33 -0400
-X-MC-Unique: 84IUaB9IOECh7Dz4AjEbDQ-1
-Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-50d89279d95so22336360a12.1
-        for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:12:33 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9759F1FB1
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 07:21:25 +0000 (UTC)
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E837E6D
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:21:19 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id 5b1f17b1804b1-3f4234f67feso339595e9.0
+        for <netdev@vger.kernel.org>; Mon, 15 May 2023 00:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1684135278; x=1686727278;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eu3hDAbGl6HJftPaP2zd9YmTOFBhpgmb60DHeeqSWU4=;
+        b=bGa5Diaj3pQHHQfFWaoJG2JWpF1v1vEk6B62v/9XOWFbenUFsbbXW5CnHpWNKzhOjT
+         rrbtvfQiH2zCGD6SYDl7MigsjZ7IgIZBK/iO83C76qnq70m3sCmOrrdl+aseIQFsRWoK
+         1u8C0YOQEjmiAks5TYSiPCt5uVRMbG61FmArKwy0tIw71koFITlAgUGubVlhNAdExYqd
+         AjL4ldt3FXYr+CZ/DoJgyW6Om9N00X3omSScyk5WxuPM+xbfKjYLSeoQ9DWX00liQnTl
+         k5L4RSc96Bo+vYwlQzDr6bYFMBHxnA73vmY9qFlNzwueZ3IAQSOtGR9WciZLICwhMv7Y
+         /GHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684134752; x=1686726752;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xwF3bMtKzTBdMVk3tiqEPsRCHZdEoAnjzKN67iE7ThU=;
-        b=a0TkPApkifZ31CSs11FPF8XesSxKx8zXt26m25w/F16Vef5OIhMmYSbuO3JtWXDlNn
-         cHJeNjFBQeGo0+L4xFhvF3zY+tj7EP5/kPg/h29kHW0k8OeNPWqP9VvKUHEsXeMyfQ8E
-         HMDLho22ZEj/ZOYNNXWL6U8FKPV1UeTqwME8Cw9kmLRsMYojfInr4Y4DSgtoFzf6aW7w
-         SMlcQ/KnN4Swh7eLjJSiZrr8tSLJgmveTZlLRpmAZbnU/WTVb+c/FqwZ83Ueh7GcoaN4
-         cyZ2ztVUmLSKz2A9rsW+pvRRxg7sNgqw9r89fwksr8jHhUjlLEx6cBYD37fv/9F3eftN
-         0LKA==
-X-Gm-Message-State: AC+VfDzgJjawswBV34U5jCY4TfBGgAQWkVEajUZnuZ/o5yA+pyMMTjni
-	upeM0scsqdi3GSRomOphMmtxbnTQ11S8/b5tccKmPVWxja0VoRWRC/o/3d6UYwZ2BREAMpzVbFd
-	MWA2PCLaBp4AbXqBn
-X-Received: by 2002:a17:907:2d0e:b0:967:13a3:d82c with SMTP id gs14-20020a1709072d0e00b0096713a3d82cmr24677037ejc.26.1684134752853;
-        Mon, 15 May 2023 00:12:32 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6roqpg5jE0hXDmdOedggiZFhhlASXlWjExoRB/ZX0m8zeiDXY1K7sjvx8CPHbp5waK9vPFwQ==
-X-Received: by 2002:a17:907:2d0e:b0:967:13a3:d82c with SMTP id gs14-20020a1709072d0e00b0096713a3d82cmr24677011ejc.26.1684134752575;
-        Mon, 15 May 2023 00:12:32 -0700 (PDT)
-Received: from [10.39.192.162] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id f20-20020a17090660d400b00965ac8f8a3dsm9178766ejk.173.2023.05.15.00.12.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 May 2023 00:12:31 -0700 (PDT)
-From: Eelco Chaudron <echaudro@redhat.com>
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Pravin B Shelar <pshelar@ovn.org>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
- netdev@vger.kernel.org, dev@openvswitch.org
-Subject: Re: [RESEND PATCH net-next] net: openvswitch: Use struct_size()
-Date: Mon, 15 May 2023 09:12:30 +0200
-X-Mailer: MailMate (1.14r5964)
-Message-ID: <7EFC8D77-C24C-433E-8E8B-FBCF4387A7CC@redhat.com>
-In-Reply-To: <e7746fbbd62371d286081d5266e88bbe8d3fe9f0.1683388991.git.christophe.jaillet@wanadoo.fr>
-References: <e7746fbbd62371d286081d5266e88bbe8d3fe9f0.1683388991.git.christophe.jaillet@wanadoo.fr>
+        d=1e100.net; s=20221208; t=1684135278; x=1686727278;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eu3hDAbGl6HJftPaP2zd9YmTOFBhpgmb60DHeeqSWU4=;
+        b=BNx365KVJcf1XrdyLECSQLKi2ynTZQ49mO/mcuL5i1tq2QazOzZsN1ytYTTizVuX5b
+         G4n2WV1xbOeeawdra5SswqblTvKBq0I75Lc50IYQ8HZOf7c1xFoGneisgUSrih+4/eDy
+         WS1inWKZNIYLFzKG5ZPulmsgMgnuTahWyg8yM9qL6l3HaA2TMaerlDDfrjihsY8hHskk
+         8b8PeESY0ZDnGJvMnodD53du5k+wkQOSnGVuaptA34k/ejLlJVB6zsc1MMzaCshyNsZq
+         GdnpnbUFLYbZv63qMQWhnOCHEZwaQ06QqEPKE7ITky8JgF5JAj7/pMVP4Yu52yo7RzX3
+         51pA==
+X-Gm-Message-State: AC+VfDynJWQbl3LPmola2O43TePi3RgsnbflUrzPp1IfaWOXwgoiCQyb
+	SDStXIQa+oX6yKszmOhN9CxyWMzeMPRQ81v0cGSYwQ==
+X-Google-Smtp-Source: ACHHUZ7tjmwMWHPqBXry7NtB6PsuS1/EDoxOqCq209J3AafhCRrw5MkONoPuu3c0G7v4oyy+WnR04mxGZhsqmK02950=
+X-Received: by 2002:a05:600c:310f:b0:3f1:6fe9:4a95 with SMTP id
+ g15-20020a05600c310f00b003f16fe94a95mr790926wmo.4.1684135277727; Mon, 15 May
+ 2023 00:21:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230506085903.96133-1-wuyun.abel@bytedance.com>
+ <588689343dcd6c904e7fc142a001043015e5b14e.camel@redhat.com>
+ <d2abfe0c-0152-860c-60f7-2787973c95d0@bytedance.com> <6b355d57-30b4-748d-87f4-d79a50fe5487@bytedance.com>
+In-Reply-To: <6b355d57-30b4-748d-87f4-d79a50fe5487@bytedance.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 15 May 2023 09:21:05 +0200
+Message-ID: <CANn89iJqzE6r9dm2hoHxgYeLQvStZYvRhCxFVmpV_LczaO-4xw@mail.gmail.com>
+Subject: Re: [PATCH] sock: Fix misuse of sk_under_memory_pressure()
+To: Abel Wu <wuyun.abel@bytedance.com>
+Cc: Paolo Abeni <pabeni@redhat.com>, "David S . Miller" <davem@davemloft.net>, 
+	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
-
-On 13 May 2023, at 9:25, Christophe JAILLET wrote:
-
-> Use struct_size() instead of hand writing it.
-> This is less verbose and more informative.
+On Mon, May 15, 2023 at 9:04=E2=80=AFAM Abel Wu <wuyun.abel@bytedance.com> =
+wrote:
 >
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Gentle ping :)
+>
 
-Change looks good to me.
+I still do not understand the patch.
 
-Acked-by: Eelco Chaudron <echaudro@redhat.com>
+If I do not understand the patch and its changelog now in May 2023,
+how will anyone understand it later
+when/if a regression is investigated ?
 
+I repeat :
+
+Changelog is evasive, I do not see what practical problem you want to solve=
+.
+
+
+sk_has_memory_pressure() is not about memcg, simply the fact that a
+proto has a non NULL memory_pressure pointer.
+
+I suggest that you answer these questions, and send a V2 with an
+updated changelog.
+
+Again, what is the practical problem you want to solve ?
+What is the behavior of the current stack that you think is a problem ?
+
+Thanks.
 
