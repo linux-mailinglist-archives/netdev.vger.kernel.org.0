@@ -1,245 +1,205 @@
-Return-Path: <netdev+bounces-2819-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2820-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 710CF704318
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 03:46:53 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id C2FF770431F
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 03:51:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E42161C20CA8
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 01:46:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C4E6C1C20D0C
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 01:51:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 946EF1FC1;
-	Tue, 16 May 2023 01:46:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C90D71FD6;
+	Tue, 16 May 2023 01:51:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C4171FB0
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:46:49 +0000 (UTC)
-Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967FCE4A;
-	Mon, 15 May 2023 18:46:47 -0700 (PDT)
-Received: by mail-vk1-xa30.google.com with SMTP id 71dfb90a1353d-45046c21e55so3447321e0c.1;
-        Mon, 15 May 2023 18:46:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2F6A1FB0;
+	Tue, 16 May 2023 01:51:25 +0000 (UTC)
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9BEDC;
+	Mon, 15 May 2023 18:51:23 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-6439f186366so8660518b3a.2;
+        Mon, 15 May 2023 18:51:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684201606; x=1686793606;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1684201883; x=1686793883;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fcw/atW51mgbVwTH4USOTRlFF9OK4r1s1etFUmDFJ98=;
-        b=VNkpiOUGMUigCL23X7MQWB88J2ylhb3KmIvpYDPvgLOoynrYCAMAqjDK8dgBOnwUHJ
-         fghfIxxiynkJ9HI5K+/b4QUldMYjo4w4LHeHFl45ByFnBJCj+r8P3MRNvbHs4B3vTJod
-         enuHr0plZAtOXa2A+2Nv1zoipTgxdlggpvvN15vB9ohGjIo243s6EIPtVOKS0T8yCjCY
-         9kEmnq0z7GXN/rbOGOcYBGkVkCjYQdyrLG/Z8XOx36iFxkB/seJ4QlX5DAuW+T67xnig
-         19d4uKWmSx44A7rwNL7lGYnn08MXT+uvbSbUXq6uJ48AJ7ct0MyUoWUM3+qCjDP7Zgyq
-         QUzw==
+        bh=IaREDRWAbcl36mTiSxnebwhOm44d1Ztth6M8Asrwng8=;
+        b=PwZRQctnLsWiagh6gh2eubJn7Jo1HUXnP1igjQdzgzPg0hDYubL6WUt9wlZ1nGKahi
+         CFZuYCjK48f+AggK+7kZWKRUliPHzeXRyVl4fXIWjryR4nnMkX0lKweMLEDZ037aJuLX
+         e/088Nvs3GSn5O4B4nLmPzApnDnoZ4DaSlTg7U44FFu2MKGDYiCev6AoMCrEIhGoeWkz
+         TTz1jICOo2URrIM6t/WcbqgJSK8yRziukbg9XrPjrwMAFEvW5sRiUh5vqcyTdlE6JMCV
+         cBj1pDAfDPhxAgSYMWcUL4kmyP4FcFYK/HSURrM0RFzL199gfcQ0wBtX+Z2cogz0nKHL
+         8EoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684201606; x=1686793606;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=fcw/atW51mgbVwTH4USOTRlFF9OK4r1s1etFUmDFJ98=;
-        b=DbkrnL9GIe9aF76t89s17AAXU79Zce8GUbzDYtFcfShGp88cIyz3ntyY1Wswwcot6Q
-         QT6kF7QqKQiL7iYVzUZ0BGTXNWIoBFpSMBzkuAnRH5wiBi+ojUWiT28aowx8EssbCXUD
-         z7ApShhUQA5XvJZJSeA3aZP5Bq2lewrtZ/46uMcpJyQtcsC2cOq5spIbill8dwg7i2UP
-         D/Q8Hv560vCCWoCU9DNhvBy8P75VOUo8FAInkBusgcsIlEIZ/LSq+RQ1Yq6zS/q6C+tp
-         /xP1+ozReVKES4eYRZUxorJBljDr6xilwdsv9eRRP5fDne+mzVfOITazewIcYaNrVUbW
-         lXBw==
-X-Gm-Message-State: AC+VfDyJb3oRO8VK//gXdTQph9D1qMXBf2jm4UqZw3h3FZ/yS/YKtnEp
-	G+ClKgdiH4lSdZbTJbGYV95ZX3WAMuxONWnGGStA2E4W7ZQ=
-X-Google-Smtp-Source: ACHHUZ4iM+AF+aVGcHvCFIhQX4yXng4lz+U/av6CcLOSLXhgdFfK4DhSX38mCQV1nWshsLiAwJiF+W8TulqEjPUTiNA=
-X-Received: by 2002:a1f:c112:0:b0:439:bd5c:630 with SMTP id
- r18-20020a1fc112000000b00439bd5c0630mr11969562vkf.6.1684201606376; Mon, 15
- May 2023 18:46:46 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684201883; x=1686793883;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=IaREDRWAbcl36mTiSxnebwhOm44d1Ztth6M8Asrwng8=;
+        b=l+TA3VIzo0t2wjIlzAeFxMaGPI0d0HkJOjSzXIGYVk+3EZQs8sEHj6kh5qkcJWLyKC
+         fS1X2OP7ID92uPl1tK0JYn0J0iQLVY7KmM5Rx1mxm9uO3nQ3h5lTenxrsuP4L7sf4fj5
+         4QabFoQy0KvHHXif9VUtZiKr+vPk5QhcvEl3Ckey/XE0VLsclWwSaFReL31z674wLAFE
+         +zU69NiP7DCLNZ5XH/Kwrg1QGEaNonwjYGwb7wa3Nsb7lhDUGc7fjWbHYX2abh48SGhz
+         RaUtxX4n88IIdJfCInBSNgl431D7FU7hadGGe23cVw/npcu0XaCbDNwf4u94IKo0XJF0
+         273g==
+X-Gm-Message-State: AC+VfDw6eScxKZx7jvxOtB4W10xHiF2pHkgOEZifXwLh2NOdSEqWNzor
+	pDMkhDBOyaLe44/hWhpewK8=
+X-Google-Smtp-Source: ACHHUZ7ifOvTRGfTXKjTKYgEcotKV3c62Y9zCkJuF0U/Gii3bHkd+B2WO/G2yxzIuc7y/o+9V7TZBQ==
+X-Received: by 2002:a05:6a00:2d0e:b0:63d:2680:94dd with SMTP id fa14-20020a056a002d0e00b0063d268094ddmr50143968pfb.6.1684201882982;
+        Mon, 15 May 2023 18:51:22 -0700 (PDT)
+Received: from localhost ([2605:59c8:148:ba10:3424:f8d7:c03b:2a7a])
+        by smtp.gmail.com with ESMTPSA id j18-20020a62b612000000b0063f534f0937sm12320899pff.46.2023.05.15.18.51.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 May 2023 18:51:22 -0700 (PDT)
+Date: Mon, 15 May 2023 18:51:20 -0700
+From: John Fastabend <john.fastabend@gmail.com>
+To: Jakub Sitnicki <jakub@cloudflare.com>, 
+ John Fastabend <john.fastabend@gmail.com>
+Cc: daniel@iogearbox.net, 
+ lmb@isovalent.com, 
+ edumazet@google.com, 
+ bpf@vger.kernel.org, 
+ netdev@vger.kernel.org, 
+ ast@kernel.org, 
+ andrii@kernel.org, 
+ will@isovalent.com
+Message-ID: <6462e1986fb64_250b4208ac@john.notmuch>
+In-Reply-To: <87jzxj3wsq.fsf@cloudflare.com>
+References: <20230502155159.305437-1-john.fastabend@gmail.com>
+ <20230502155159.305437-12-john.fastabend@gmail.com>
+ <87jzxj3wsq.fsf@cloudflare.com>
+Subject: Re: [PATCH bpf v7 11/13] bpf: sockmap, test shutdown() correctly
+ exits epoll and recv()=0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20230412-increase_ipvs_conn_tab_bits-v2-1-994c0df018e6@gmail.com> <56b88a99-db88-36e4-9ff1-a5d940578108@ssi.bg>
-In-Reply-To: <56b88a99-db88-36e4-9ff1-a5d940578108@ssi.bg>
-From: Abhijeet Rastogi <abhijeet.1989@gmail.com>
-Date: Mon, 15 May 2023 18:46:09 -0700
-Message-ID: <CACXxYfy+yoLLFr0W9HYuM78GjzJsQvbHnm43uRQbor_ncQdMgw@mail.gmail.com>
-Subject: Re: [PATCH v2] ipvs: increase ip_vs_conn_tab_bits range for 64BIT
-To: Julian Anastasov <ja@ssi.bg>
-Cc: Simon Horman <horms@verge.net.au>, Pablo Neira Ayuso <pablo@netfilter.org>, netdev@vger.kernel.org, 
-	lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org, 
-	coreteam@netfilter.org, linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Julian Anastasov,
-
->Can you keep the previous line width of the above help
-because on standard 80-width window the help now gets truncated in
-make menuconfig.
-
-Refer this screenshot: https://i.imgur.com/9LgttpC.png
-
-Sorry for the confusion, I was already expecting this comment. The
-patch had a few words added, hence it feels like many lines have
-changed. However, no line actually exceeds 80 width.
-
-Longest line is still 80-width max. Do you prefer I reduce it to a
-lower number like 70?
-
-Thanks,
-Abhijeet
-
-
-On Mon, May 15, 2023 at 8:18=E2=80=AFAM Julian Anastasov <ja@ssi.bg> wrote:
->
->
->         Hello,
->
-> On Sun, 14 May 2023, Abhijeet Rastogi wrote:
->
-> > Current range [8, 20] is set purely due to historical reasons
-> > because at the time, ~1M (2^20) was considered sufficient.
-> > With this change, 27 is the upper limit for 64-bit, 20 otherwise.
+Jakub Sitnicki wrote:
+> On Tue, May 02, 2023 at 08:51 AM -07, John Fastabend wrote:
+> > When session gracefully shutdowns epoll needs to wake up and any recv()
+> > readers should return 0 not the -EAGAIN they previously returned.
 > >
-> > Previous change regarding this limit is here.
+> > Note we use epoll instead of select to test the epoll wake on shutdown
+> > event as well.
 > >
-> > Link: https://lore.kernel.org/all/86eabeb9dd62aebf1e2533926fdd13fed48ba=
-b1f.1631289960.git.aclaudi@redhat.com/T/#u
-> >
-> > Signed-off-by: Abhijeet Rastogi <abhijeet.1989@gmail.com>
+> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 > > ---
-> > The conversation for this started at:
+> >  .../selftests/bpf/prog_tests/sockmap_basic.c  | 68 +++++++++++++++++++
+> >  .../bpf/progs/test_sockmap_pass_prog.c        | 32 +++++++++
+> >  2 files changed, 100 insertions(+)
+> >  create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
 > >
-> > https://www.spinics.net/lists/netfilter/msg60995.html
-> >
-> > The upper limit for algo is any bit size less than 32, so this
-> > change will allow us to set bit size > 20. Today, it is common to have
-> > RAM available to handle greater than 2^20 connections per-host.
-> >
-> > Distros like RHEL already allow setting limits higher than 20.
-> > ---
-> > Changes in v2:
-> > - Lower the ranges, 27 for 64bit, 20 otherwise
-> > - Link to v1: https://lore.kernel.org/r/20230412-increase_ipvs_conn_tab=
-_bits-v1-1-60a4f9f4c8f2@gmail.com
-> > ---
-> >  net/netfilter/ipvs/Kconfig      | 26 +++++++++++++-------------
-> >  net/netfilter/ipvs/ip_vs_conn.c |  4 ++--
-> >  2 files changed, 15 insertions(+), 15 deletions(-)
-> >
-> > diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
-> > index 271da8447b29..aac5d6bd82e6 100644
-> > --- a/net/netfilter/ipvs/Kconfig
-> > +++ b/net/netfilter/ipvs/Kconfig
-> > @@ -44,7 +44,8 @@ config      IP_VS_DEBUG
-> >
-> >  config       IP_VS_TAB_BITS
-> >       int "IPVS connection table size (the Nth power of 2)"
-> > -     range 8 20
-> > +     range 8 20 if !64BIT
-> > +     range 8 27 if 64BIT
-> >       default 12
-> >       help
-> >         The IPVS connection hash table uses the chaining scheme to hand=
-le
-> > @@ -52,18 +53,17 @@ config    IP_VS_TAB_BITS
-> >         reduce conflicts when there are hundreds of thousands of connec=
-tions
-> >         in the hash table.
-> >
-> > -       Note the table size must be power of 2. The table size will be =
-the
-> > -       value of 2 to the your input number power. The number to choose=
- is
-> > -       from 8 to 20, the default number is 12, which means the table s=
-ize
-> > -       is 4096. Don't input the number too small, otherwise you will l=
-ose
-> > -       performance on it. You can adapt the table size yourself, accor=
-ding
-> > -       to your virtual server application. It is good to set the table=
- size
-> > -       not far less than the number of connections per second multiply=
-ing
-> > -       average lasting time of connection in the table.  For example, =
-your
-> > -       virtual server gets 200 connections per second, the connection =
-lasts
-> > -       for 200 seconds in average in the connection table, the table s=
-ize
-> > -       should be not far less than 200x200, it is good to set the tabl=
-e
-> > -       size 32768 (2**15).
-> > +       Note the table size must be power of 2. The table size will be =
-the value
-> > +       of 2 to the your input number power. The number to choose is fr=
-om 8 to 27
-> > +       for 64BIT(20 otherwise), the default number is 12, which means =
-the table
-> > +       size is 4096. Don't input the number too small, otherwise you w=
-ill lose
-> > +       performance on it. You can adapt the table size yourself, accor=
-ding to
-> > +       your virtual server application. It is good to set the table si=
-ze not far
-> > +       less than the number of connections per second multiplying aver=
-age lasting
-> > +       time of connection in the table.  For example, your virtual ser=
-ver gets
-> > +       200 connections per second, the connection lasts for 200 second=
-s in
-> > +       average in the connection table, the table size should be not f=
-ar less
-> > +       than 200x200, it is good to set the table size 32768 (2**15).
->
->         Can you keep the previous line width of the above help
-> because on standard 80-width window the help now gets truncated in
-> make menuconfig.
->
->         After that I'll send a patch on top of yours to limit the
-> rows depending on the memory.
->
-> >         Another note that each connection occupies 128 bytes effectivel=
-y and
-> >         each hash entry uses 8 bytes, so you can estimate how much memo=
-ry is
-> > diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs=
-_conn.c
-> > index 13534e02346c..e1b9b52909a5 100644
-> > --- a/net/netfilter/ipvs/ip_vs_conn.c
-> > +++ b/net/netfilter/ipvs/ip_vs_conn.c
-> > @@ -1484,8 +1484,8 @@ int __init ip_vs_conn_init(void)
-> >       int idx;
-> >
-> >       /* Compute size and mask */
-> > -     if (ip_vs_conn_tab_bits < 8 || ip_vs_conn_tab_bits > 20) {
-> > -             pr_info("conn_tab_bits not in [8, 20]. Using default valu=
-e\n");
-> > +     if (ip_vs_conn_tab_bits < 8 || ip_vs_conn_tab_bits > 27) {
-> > +             pr_info("conn_tab_bits not in [8, 27]. Using default valu=
-e\n");
-> >               ip_vs_conn_tab_bits =3D CONFIG_IP_VS_TAB_BITS;
-> >       }
-> >       ip_vs_conn_tab_size =3D 1 << ip_vs_conn_tab_bits;
-> >
-> > ---
->
-> Regards
->
-> --
-> Julian Anastasov <ja@ssi.bg>
->
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> > index 0ce25a967481..f9f611618e45 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> > @@ -2,6 +2,7 @@
+> >  // Copyright (c) 2020 Cloudflare
+> >  #include <error.h>
+> >  #include <netinet/tcp.h>
+> > +#include <sys/epoll.h>
+> >  
+> >  #include "test_progs.h"
+> >  #include "test_skmsg_load_helpers.skel.h"
+> > @@ -9,8 +10,11 @@
+> >  #include "test_sockmap_invalid_update.skel.h"
+> >  #include "test_sockmap_skb_verdict_attach.skel.h"
+> >  #include "test_sockmap_progs_query.skel.h"
+> > +#include "test_sockmap_pass_prog.skel.h"
+> >  #include "bpf_iter_sockmap.skel.h"
+> >  
+> > +#include "sockmap_helpers.h"
+> > +
+> >  #define TCP_REPAIR		19	/* TCP sock is under repair right now */
+> >  
+> >  #define TCP_REPAIR_ON		1
+> > @@ -350,6 +354,68 @@ static void test_sockmap_progs_query(enum bpf_attach_type attach_type)
+> >  	test_sockmap_progs_query__destroy(skel);
+> >  }
+> >  
+> > +#define MAX_EVENTS 10
+> > +static void test_sockmap_skb_verdict_shutdown(void)
+> > +{
+> > +	int n, err, map, verdict, s, c0, c1, p0, p1;
+> > +	struct epoll_event ev, events[MAX_EVENTS];
+> > +	struct test_sockmap_pass_prog *skel;
+> > +	int epollfd;
+> > +	int zero = 0;
+> > +	char b;
+> > +
+> > +	skel = test_sockmap_pass_prog__open_and_load();
+> > +	if (!ASSERT_OK_PTR(skel, "open_and_load"))
+> > +		return;
+> > +
+> > +	verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
+> > +	map = bpf_map__fd(skel->maps.sock_map_rx);
+> > +
+> > +	err = bpf_prog_attach(verdict, map, BPF_SK_SKB_STREAM_VERDICT, 0);
+> > +	if (!ASSERT_OK(err, "bpf_prog_attach"))
+> > +		goto out;
+> > +
+> > +	s = socket_loopback(AF_INET, SOCK_STREAM);
+> > +	if (s < 0)
+> > +		goto out;
+> > +	err = create_socket_pairs(s, AF_INET, SOCK_STREAM, &c0, &c1, &p0, &p1);
+> > +	if (err < 0)
+> > +		goto out;
+> > +
+> > +	err = bpf_map_update_elem(map, &zero, &c1, BPF_NOEXIST);
+> > +	if (err < 0)
+> > +		goto out_close;
+> > +
+> > +	shutdown(c0, SHUT_RDWR);
+> > +	shutdown(p1, SHUT_WR);
+> > +
+> > +	ev.events = EPOLLIN;
+> > +	ev.data.fd = c1;
+> > +
+> > +	epollfd = epoll_create1(0);
+> > +	if (!ASSERT_GT(epollfd, -1, "epoll_create(0)"))
+> > +		goto out_close;
+> > +	err = epoll_ctl(epollfd, EPOLL_CTL_ADD, c1, &ev);
+> > +	if (!ASSERT_OK(err, "epoll_ctl(EPOLL_CTL_ADD)"))
+> > +		goto out_close;
+> > +	err = epoll_wait(epollfd, events, MAX_EVENTS, -1);
+> > +	if (!ASSERT_EQ(err, 1, "epoll_wait(fd)"))
+> > +		goto out_close;
+> > +
+> > +	n = recv(c1, &b, 1, SOCK_NONBLOCK);
+> > +	ASSERT_EQ(n, 0, "recv_timeout(fin)");
+> > +	n = recv(p0, &b, 1, SOCK_NONBLOCK);
+> > +	ASSERT_EQ(n, 0, "recv_timeout(fin)");
+> > +
+> > +out_close:
+> > +	close(c0);
+> > +	close(p0);
+> > +	close(c1);
+> > +	close(p1);
+> > +out:
+> > +	test_sockmap_pass_prog__destroy(skel);
+> > +}
+> > +
+> 
+> This test has me scratching my head. I don't grasp what we're testing
+> with (c0, p0) socket pair, since c0 is not in any sockmap?
 
-
---
-Cheers,
-Abhijeet (https://abhi.host)
+Yeah the test is on (c1,p1) I was just lazy and using the API as is
+I can fix the API to allow single set c1,p1.
 
