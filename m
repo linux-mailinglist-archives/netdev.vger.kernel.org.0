@@ -1,154 +1,309 @@
-Return-Path: <netdev+bounces-2969-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2973-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C0045704BFE
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 13:11:37 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B002F704C37
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 13:21:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 74BC61C20D03
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 11:11:34 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6696D281577
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 11:21:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E81434CE0;
-	Tue, 16 May 2023 11:11:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4283A34CEF;
+	Tue, 16 May 2023 11:21:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A1AC34CC9
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 11:11:34 +0000 (UTC)
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on0627.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe1f::627])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5EE72B6
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 04:11:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j88UOm11cbOITwWDr6aMVhvSj6oS6WTgjDhTKMUvB0tkNpQBI04gLl9wQhj3l3fPr0jhx+c0HuPmn75ncJBWYop1BTJKxvxe8sXPAWfWLDaPES0Nrx3cLIHjjpXGNZgZ2DaxSxqMx4WdAjqCV6wwTRJv5mK0ZHkyn9qkDDfijXTV7JeU0lrJOPdoq6poLJKTShyvZSayhcMaAy+MrZNyhslGBuwTdSUBNkZ6gUolqVaZHuhulud1WMpn5ZSgiHNLu7AFTT4HZ2mcJEaSwhdU51+aw9olzeY5Ot3SVJnIVzA5et4sBKwtDjfWqh5KX0s5r+bXNhMSi0Wm9R/361m55A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kSpYoJC8JtTsGNmeF2rMLk9B6x2zRqpIoGmw53g7rkY=;
- b=L2s/UBQ69IIE4PnSuvoFiQ8kk3GOx610ZnzJkp8ojq0udRbpJ38rHrfVmslZQ/OQP+r5TPNxS99G5tTTPTyorKZvB515XvVril49HA2EiE8fOjapC33pxhWfyf196mo1Hn3e1FYKe2cJHqn1YlWcNJzqMUB+Nsl+gHLaolLlvRxmf1rTN+R3On/livCaCZSldbjc3+nUrWshk8/ElnFsQMVjb0vvwKlczBF0Eb/y0BibZlbpORFBxHF6o0BfwY3HQaPt+vSaBosqQcx4LrE6BgiaDG8yBz6AnzHmvIBYlstbfpUdChnM9AdRUuXvmNJchF7LgPoXfGeK5iVscm35EA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kSpYoJC8JtTsGNmeF2rMLk9B6x2zRqpIoGmw53g7rkY=;
- b=B+NOCTSQE3AjIKUA/GJh9Iq6C8FhZYsk+JC/gFX5LONznlc6YPRfceWWtzz2TkyX1eJ6U12Q4LEngFY0v2pkBOTWBapV8LBrzS9tyUjgSSurVQLCQKPDREyCqlLkUhTXLr7NfHdYQFpw2bhaUM7RwkkTJgBcb84S2poYAOtmUrk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AM0PR04MB7140.eurprd04.prod.outlook.com (2603:10a6:208:192::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.32; Tue, 16 May
- 2023 11:10:09 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::b027:17aa:e5f5:4fea]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::b027:17aa:e5f5:4fea%5]) with mapi id 15.20.6387.032; Tue, 16 May 2023
- 11:10:09 +0000
-Date: Tue, 16 May 2023 14:10:05 +0300
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-To: Nikolay Aleksandrov <razor@blackwall.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
-	Oleksij Rempel <linux@rempel-privat.de>,
-	Johannes Nixdorf <jnixdorf-oss@avm.de>, netdev@vger.kernel.org,
-	bridge@lists.linux-foundation.org,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Roopa Prabhu <roopa@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 1/2] bridge: Add a limit on FDB entries
-Message-ID: <20230516111005.ni3jygnnxgygoenh@skbuf>
-References: <20230515085046.4457-1-jnixdorf-oss@avm.de>
- <a1d13117-a0c5-d06e-86b7-eacf4811102f@blackwall.org>
- <ZGNEk3F8mcT7nNdB@u-jnixdorf.ads.avm.de>
- <f899f032-b726-7b6d-953d-c7f3f98744ca@blackwall.org>
- <20230516102141.w75yh6pdo53ufjur@skbuf>
- <ce3835d9-c093-cfcb-3687-3a375236cb8f@blackwall.org>
- <20230516104428.i5ou4ogx7gt2x6gq@skbuf>
- <c05b5623-c096-162f-3a2d-db19ca760098@blackwall.org>
- <20230516105509.xaalfs77vrlr663u@skbuf>
- <6a688292-a7a0-20c9-03b9-cad11a61144f@blackwall.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6a688292-a7a0-20c9-03b9-cad11a61144f@blackwall.org>
-X-ClientProxiedBy: VI1PR08CA0263.eurprd08.prod.outlook.com
- (2603:10a6:803:dc::36) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321B834CC5
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 11:21:28 +0000 (UTC)
+Received: from a4.mail.mailgun.net (a4.mail.mailgun.net [198.61.254.63])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B279B8
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 04:21:25 -0700 (PDT)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mpp.com; q=dns/txt;
+ s=smtp; t=1684236084; x=1684243284; h=Content-Type: MIME-Version: Message-ID:
+ Date: Subject: Subject: To: To: From: From: Reply-To: Sender: Sender;
+ bh=HrBCtj9nufxT/AgLppn3CvfSGoEF9mw+MZH8/HM9lD0=;
+ b=ARyEdjtWXUZI8Seh/Bp/O0OvCO7FwJOlUiWfQ4HizPQVPplwGLMIIKGJ3A4QpiJCbdr6CbJfZKXTRbZ0fX/km9EUZpMlt58jbOzVFAUE4ObK3cNcw5F1eC70hXLoiKwcAiiJTL2bJwIRfxjD0RIci3Qeg3sfc24JSJBRvtQoFhk=
+X-Mailgun-Sending-Ip: 198.61.254.63
+X-Mailgun-Sid: WyJlZTMzNiIsIm5ldGRldkB2Z2VyLmtlcm5lbC5vcmciLCI1M2M3MzIiXQ==
+Received: from [185.225.74.142] (<unknown> [185.225.74.142]) by 50fe0c2f8b78 with SMTP
+ id 646364be97a5b028422d0b46; Tue, 16 May 2023 11:10:54 GMT
+Sender: propanere@mg.mpp.com
+Reply-To: sandy@pac-pactrens.com
+From: DHL Delivery Service <propanere@mg.mpp.com>
+To: netdev@vger.kernel.org
+Subject: SHIPMENT ADVISORY - ORIGINAL SCAN DOCUMENTS 
+Date: 16 May 2023 13:10:53 +0200
+Message-ID: <20230516131053.9478E90D1E799389@mg.mpp.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AM0PR04MB7140:EE_
-X-MS-Office365-Filtering-Correlation-Id: 876c85ab-8f90-42e2-59d6-08db55fe1c9e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	G0nMeAmaz9jQU4uetFvq12vtlDT09ih0/kdJkVkvgmmtwc+JMeNluuzMj2JcgDx/UR6rzrh1LBcJrJuvvACAeGJWlNIks4ezNQaz5Qg7Tq2/HH+pI+dqUiRc1rZWxfp4G7gwnFTVCFvKSQxGbjQ498ZJpNjeGPcej4cUxiYuZsXJQ6QR5jUrhe2p4YlynU/w82PiDOc4+Ry/MqvZOF8+ao4EoDp2r0UfhiQ6s/EC2HRvQ7a+cUFQlF5dAHuro+DH0PEPM2He1i7aHRtKBnhEjBvmJ6PC35R1NQe6QNyFQHGSZ2+YQe5a0ZvXvEecwNcIozUNww+fBslsJ/hC9HPMhh+UmbTImvygfXWodnfB15k88yoFOpH4XGa4WsPZqi5Ln5PsczeRCE96XWzC7I1M9lHflUEm5LPNIpjzIxBmfPDtkw47E8PraTneyHcxzhJXO15E8dOCin8xfY7b78YO+2qbIJf9ySsCVNRftkvjRuq8jIfGFJ/alUsGFXZ6LAPEGQ/W4deZFYUqQGUQ04K8J1ImG7d8KyL3hftpBhV24PeF1Zu27XDTpI5OCsDmr03X
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(39860400002)(346002)(136003)(376002)(366004)(396003)(451199021)(26005)(6512007)(6506007)(9686003)(1076003)(83380400001)(38100700002)(33716001)(86362001)(186003)(54906003)(7416002)(44832011)(4744005)(2906002)(316002)(41300700001)(478600001)(5660300002)(66556008)(4326008)(6916009)(66476007)(8676002)(66946007)(8936002)(6666004)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?RgbOBTx8VRt7FpiuLa8SC4zr+/bxthy1ooC7KUj8BSfSwm9wwqoewRsp4F9I?=
- =?us-ascii?Q?z4mC9Sg1qc34ZZHIvbs8c6RZ+mjaPBZuAK9hPFRyrCeTwInpbHoZMAgyUH8u?=
- =?us-ascii?Q?N/Q3fIVHZQtJluF3tAwzQM0Z1Y2fy3Sm/XebU3CbPwO0dAZ92GDsRdbdJjcb?=
- =?us-ascii?Q?6b+2CSMMcWYNrKtjOl51P/rnH4qoojQrqp6kcdKxj2rtCXmUg/t81rKfzHEm?=
- =?us-ascii?Q?s121cpgK5vdOAvcf8V5XgILTrmT5ZD39RNsu1xCw9XPeFZNw3Iz7py6/tdf2?=
- =?us-ascii?Q?8E60q3JWx7aemZGBB91BzHAOfLhs/o/oZXgAkd79Icahiiscln8+w2sFNidT?=
- =?us-ascii?Q?WaymhburinR67z9gUl//YR2eWAx8op35Iqu0cHEjJSJt1qhyZMjWrlosMQvn?=
- =?us-ascii?Q?00ShTU8V+zcpswZNXXkGQB2hW3wDSwawMKii9ZkQmohUfDp3TArZwgwYiVXE?=
- =?us-ascii?Q?OoK5YpShr1Uz9XTvFwaUkOe4QxVeRcmkhiWwFC4unAC7tL/OCKvG9+2UN7hl?=
- =?us-ascii?Q?j8FAURS2t43XsTjT7nBef23GFhZGzfKFHbZ3XHnfvMackNkzpNdLoUkbUMTk?=
- =?us-ascii?Q?mAbwSadLrY6Rwmg6hy6WC1fN9ClZnI/Z/hOOknDHB1PftmwkUl+KkBSw7Ntr?=
- =?us-ascii?Q?J+GXRQ4XjyPswts7cA2KmCTq75c6+jRuLsdIf4VMxQWvhoGL1MD32g2qvDxz?=
- =?us-ascii?Q?Pp18Oz12GJm5TugPMM32T5sLV+35q41v+qfFE0klvA4pTR/7+gw08RjfP51S?=
- =?us-ascii?Q?/E/9r9un1LgPJ701ioclGmnP40UWknFhfngfdbKMHAedPGa5KfI518c2rFa0?=
- =?us-ascii?Q?PqKZx5Emvh9sOV26mfhZ5lHd9H82VRiXviQcLhLRyfrwtK21X0Nk7KnYUDzd?=
- =?us-ascii?Q?AkVtDOIAWoydyhCSvATlJpLJ2uYW885mzSvIuanIP8jYjKwoCuOuGOE0hLq7?=
- =?us-ascii?Q?czPMupbfIdL00Jr+VOZSp/oXjmCOvftaGaXcs5wERe+DkvQndg+/rOmvvFjk?=
- =?us-ascii?Q?k0cLTCOy2M0IrYz0Ddj+CcZGItoi15jsq9lM4pu8kmk00D8VdT2Z4Eco6VAL?=
- =?us-ascii?Q?K8GxGpkr0LrNaOjzIBik3u56z78ocvNy+NisNBWMu3vdQRSYzsplVYLr7csy?=
- =?us-ascii?Q?8TmeYVZORPuV65k6Nb76eeT/OYIgN8PJYnCCkfXWLo5z7BgRHpZirmhRVkZc?=
- =?us-ascii?Q?ZF8h7u3j0ezvdtQjCDOfQGq6PbE8SVkK4ilHHyJh5/EZWrf/WFNOqL92kF6T?=
- =?us-ascii?Q?EmFLrxsiRgwoMxaePwqPAApEmAEd12AtH7+KHQMGAPNoFnasxWI89kn8m888?=
- =?us-ascii?Q?1ZpBgONvdWLjiHtEhJDHndhjTtADxNFYjUDQbR56s7T2HaiWWrNgfpzsfHxe?=
- =?us-ascii?Q?zZB7ZFHbsdcQjs/K6GV7UhNZfKI9JGOuMYiOHTIRfDWWEcynfpjxTRDONIfC?=
- =?us-ascii?Q?FR94utdcL8uH3IbDrvN+zjkFRR7n9IQIwlDALuGwvMu1TxcGSaMwoS01Sqem?=
- =?us-ascii?Q?HSOPgWMXujV62nd0ABwJ5q4G2yCf8aL26g465PfkV6B9sGTmBSijCs6UY2N+?=
- =?us-ascii?Q?iTqjQSx8OXhGHrM8GstCF4HrQm77Lc4jvNatm8CLWksyaSqJteDbg2uJD7ik?=
- =?us-ascii?Q?9w=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 876c85ab-8f90-42e2-59d6-08db55fe1c9e
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2023 11:10:09.5674
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0pTGI8ImYB6mJDqRTt4MQIOm9U10Kj7iqm5oDiJ4TFCe4/e05JsuWK6yFdiHj5sJc0I0gMlNC9Eiplot3vZXYA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB7140
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
-	T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.6
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0012_344FA416.A5836D16"
+X-Spam-Status: No, score=3.8 required=5.0 tests=BAYES_50,DKIM_INVALID,
+	DKIM_SIGNED,HTML_FONT_LOW_CONTRAST,HTML_MESSAGE,MIME_HTML_ONLY,
+	RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+	RCVD_IN_SBL,SPF_HELO_NONE,SPF_SOFTFAIL,SUBJ_ALL_CAPS,T_HTML_ATTACH,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 16, 2023 at 02:04:30PM +0300, Nikolay Aleksandrov wrote:
-> That was one of the questions actually. More that I'm thinking about this, the more
-> I want to break it apart by type because we discussed being able to specify a flag
-> mask for the limit (all, dynamic, dynamic+static etc). If we embed these stats into a
-> bridge fdb count attribute, it can be easily extended later if anything new comes along.
-> If switchdev doesn't support some of these global limit configs, we can pass the option
-> and it can deny setting it later. I think this should be more than enough as a first step.
+This is a multi-part message in MIME format.
 
-Ok, and by "type" you actually mean the impossibly hard to understand
-neighbor discovery states used by the bridge UAPI? Like having
-(overlapping) limits per NUD_REACHABLE, NUD_NOARP etc flags set in
-ndm->ndm_state? Or how should the UAPI look like?
+------=_NextPart_000_0012_344FA416.A5836D16
+Content-Type: text/html
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta content=3D"MSHTML 11.00.10570.1001" name=3D"GENERATOR" />
+</head>
+<body>
+<p>&nbsp;</p>
+
+<table align=3D"center" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" st=
+yle=3D"BOX-SIZING: border-box; FONT-SIZE: 11px; FONT-FAMILY: Roboto, Roboto=
+Draft, Helvetica, Arial, sans-serif; WHITE-SPACE: normal; WORD-SPACING: 0px=
+; BORDER-COLLAPSE: collapse; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR:=
+ rgb(51,51,51); FONT-STYLE: normal; TEXT-ALIGN: left; ORPHANS: 2; WIDOWS: 2=
+; MARGIN: 0px auto; LETTER-SPACING: normal; BACKGROUND-COLOR: rgb(242,242,2=
+42); -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; te=
+xt-decoration-style: initial;=20
+text-decoration-color: initial; font-variant-ligatures: normal; font-varian=
+t-caps: normal" width=3D"600">
+	<tbody style=3D"BOX-SIZING: border-box">
+		<tr style=3D"BOX-SIZING: border-box">
+			<td style=3D"BOX-SIZING: border-box; FONT-FAMILY: Roboto, RobotoDraft, H=
+elvetica, Arial, sans-serif; PADDING-BOTTOM: 30px; PADDING-TOP: 30px; PADDI=
+NG-LEFT: 40px; MARGIN: 0px; PADDING-RIGHT: 40px; BACKGROUND-COLOR: rgb(255,=
+204,0)"><b style=3D"BOX-SIZING: border-box; FONT-WEIGHT: bolder"><font colo=
+r=3D"white" size=3D"4" style=3D"BOX-SIZING: border-box"><i _msthash=3D"3939=
+364" _msttexthash=3D"22568" style=3D"BOX-SIZING: border-box">DHL</i></font>=
+</b></td>
+		</tr>
+		<tr style=3D"BOX-SIZING: border-box">
+			<td style=3D"BOX-SIZING: border-box; HEIGHT: 10px; FONT-FAMILY: Roboto, =
+RobotoDraft, Helvetica, Arial, sans-serif; MARGIN: 0px; BACKGROUND-COLOR: r=
+gb(204,1,0)">&nbsp;</td>
+		</tr>
+		<tr style=3D"BOX-SIZING: border-box">
+			<td style=3D"BOX-SIZING: border-box; FONT-FAMILY: Roboto, RobotoDraft, H=
+elvetica, Arial, sans-serif; PADDING-BOTTOM: 40px; PADDING-TOP: 40px; PADDI=
+NG-LEFT: 40px; MARGIN: 0px; PADDING-RIGHT: 40px; BACKGROUND-COLOR: white" w=
+idth=3D"600">
+			<div style=3D"BORDER-LEFT-WIDTH: 0px; BOX-SIZING: border-box; FONT-FAMIL=
+Y: inherit; BORDER-RIGHT-WIDTH: 0px; VERTICAL-ALIGN: baseline; BORDER-BOTTO=
+M-WIDTH: 0px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; MAR=
+GIN: 0px; LINE-HEIGHT: 18px; PADDING-RIGHT: 0px; BORDER-TOP-WIDTH: 0px; fon=
+t-stretch: inherit">
+			<div align=3D"center" style=3D"BORDER-LEFT-WIDTH: 0px; BOX-SIZING: borde=
+r-box; FONT-SIZE: 14px; FONT-FAMILY: Arial, sans-serif, serif, EmojiFont; B=
+ORDER-RIGHT-WIDTH: 0px; VERTICAL-ALIGN: baseline; BORDER-BOTTOM-WIDTH: 0px;=
+ COLOR: rgb(87,87,87); PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT:=
+ 0px; MARGIN: 0px; PADDING-RIGHT: 0px; BORDER-TOP-WIDTH: 0px; font-stretch:=
+ inherit">&nbsp;</div>
+
+			<p style=3D"BOX-SIZING: border-box; FONT-SIZE: 14px; FONT-FAMILY: Arial,=
+ sans-serif; MARGIN-TOP: 0px; COLOR: rgb(87,87,87)">&nbsp;</p>
+
+			<p _msthash=3D"4940130" _msttexthash=3D"37836175" style=3D"BOX-SIZING: b=
+order-box; FONT-SIZE: 14px; FONT-FAMILY: Arial, sans-serif; MARGIN-TOP: 0px=
+; COLOR: rgb(87,87,87)">Dear DHL Customer<span>&nbsp;</span><b _istranslate=
+d=3D"1" style=3D"BOX-SIZING: border-box; FONT-WEIGHT: bolder">netdev@vger.k=
+ernel.org</b> , This is to notify you that the shipment has been designated=
+ as a recipient Please use the attachments below to view the shipping docum=
+ents/invoices and DHL receipts below for tracking,<br _istranslated=3D"1" s=
+tyle=3D"BOX-SIZING: border-box" />
+			<br _istranslated=3D"1" style=3D"BOX-SIZING: border-box" />
+			including the new import and export policy</p>
+
+			<p style=3D"BOX-SIZING: border-box; MARGIN-TOP: 0px">&nbsp;</p>
+
+			<p style=3D"BOX-SIZING: border-box; FONT-SIZE: 14px; FONT-FAMILY: Arial,=
+ sans-serif; MARGIN-TOP: 0px; COLOR: rgb(87,87,87)"><font _msthash=3D"57088=
+07" _mstmutation=3D"1" _msttexthash=3D"501306" style=3D"BOX-SIZING: border-=
+box">Sincerely,<br _istranslated=3D"1" _mstmutation=3D"1" style=3D"BOX-SIZI=
+NG: border-box" />
+			<br _istranslated=3D"1" _mstmutation=3D"1" style=3D"BOX-SIZING: border-b=
+ox" />
+			DHL Express</font></p>
+
+			<table cellpadding=3D"0" cellspacing=3D"0" style=3D"BORDER-LEFT-WIDTH: 0=
+px; BOX-SIZING: border-box; FONT-SIZE: 15px; BORDER-RIGHT-WIDTH: 0px; BORDE=
+R-BOTTOM-WIDTH: 0px; BORDER-COLLAPSE: collapse; COLOR: rgb(32,31,30); PADDI=
+NG-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; BORDER-SPACING: 0px; P=
+ADDING-RIGHT: 0px; BORDER-TOP-WIDTH: 0px; font-stretch: inherit" width=3D"1=
+00%">
+				<tbody style=3D"BOX-SIZING: border-box">
+					<tr style=3D"BOX-SIZING: border-box">
+						<td style=3D"BOX-SIZING: border-box; FONT-FAMILY: Roboto, RobotoDraft=
+, Helvetica, Arial, sans-serif; MARGIN: 0px">
+						<table cellpadding=3D"0" cellspacing=3D"0" style=3D"BORDER-LEFT-WIDTH=
+: 0px; BOX-SIZING: border-box; BORDER-RIGHT-WIDTH: 0px; BORDER-BOTTOM-WIDTH=
+: 0px; BORDER-COLLAPSE: collapse; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PA=
+DDING-LEFT: 0px; BORDER-SPACING: 0px; PADDING-RIGHT: 0px; BORDER-TOP-WIDTH:=
+ 0px" width=3D"100%">
+							<tbody style=3D"BOX-SIZING: border-box">
+								<tr style=3D"BOX-SIZING: border-box">
+									<td style=3D"BOX-SIZING: border-box; FONT-FAMILY: Roboto, RobotoDr=
+aft, Helvetica, Arial, sans-serif; WIDTH: 483px; MARGIN: 0px">
+									<div id=3D"v1gmail-x_gmail-m_6389553273292897292m_-873973500505702=
+0181gmail-m_-688720174971138066gmail-m_6234024422641837260gmail-x_content_d=
+iv" style=3D"BORDER-LEFT-WIDTH: 0px; BOX-SIZING: border-box; BORDER-RIGHT-W=
+IDTH: 0px; VERTICAL-ALIGN: baseline; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTT=
+OM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; MARGIN: 0px; PADDING-RIGHT: 0=
+px; BORDER-TOP-WIDTH: 0px">&nbsp;
+									<hr style=3D"BORDER-LEFT-WIDTH: 0px; BOX-SIZING: content-box; OVER=
+FLOW: visible; BORDER-TOP: 1px solid; HEIGHT: 0px; BORDER-RIGHT-WIDTH: 0px;=
+ BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-COLOR: ; BORDER-BOTTOM-COLOR: ; BORD=
+ER-RIGHT-COLOR: ; border-image: initial" />
+									<table border=3D"0" style=3D"BORDER-LEFT-WIDTH: 0px; BOX-SIZING: b=
+order-box; FONT-SIZE: 9px; FONT-FAMILY: Arial; BORDER-RIGHT-WIDTH: 0px; WID=
+TH: 487px; BORDER-BOTTOM-WIDTH: 0px; BORDER-COLLAPSE: collapse; TABLE-LAYOU=
+T: fixed; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; BORDER-=
+SPACING: 0px; PADDING-RIGHT: 0px; BORDER-TOP-WIDTH: 0px; font-stretch: inhe=
+rit">
+										<tbody style=3D"BOX-SIZING: border-box">
+											<tr style=3D"BOX-SIZING: border-box">
+												<td _msthash=3D"12845131" _msttexthash=3D"159887" style=3D"BOX-=
+SIZING: border-box; FONT-FAMILY: Roboto, RobotoDraft, Helvetica, Arial, san=
+s-serif; WIDTH: 192px; MARGIN: 0px" valign=3D"top">DHL Paket Gmb</td>
+												<td style=3D"BOX-SIZING: border-box; FONT-FAMILY: Roboto, Robot=
+oDraft, Helvetica, Arial, sans-serif; WIDTH: 192px; MARGIN: 0px" valign=3D"=
+top">&nbsp;</td>
+												<td style=3D"BOX-SIZING: border-box; FONT-FAMILY: Roboto, Robot=
+oDraft, Helvetica, Arial, sans-serif; WIDTH: 96px; MARGIN: 0px" valign=3D"t=
+op"><br style=3D"BOX-SIZING: border-box" />
+												<font _msthash=3D"13990275" _mstmutation=3D"1" _msttexthash=3D"=
+76453" style=3D"BOX-SIZING: border-box">&copy; 2023 DHL</font></td>
+											</tr>
+										</tbody>
+									</table>
+									</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<p style=3D"BOX-SIZING: border-box; FONT-SIZE: 14px; FONT-FAMILY: Arial,=
+ sans-serif; MARGIN-TOP: 0px; COLOR: rgb(87,87,87)">&nbsp;</p>
+			</div>
+			</td>
+		</tr>
+		<tr style=3D"BOX-SIZING: border-box">
+			<td style=3D"BOX-SIZING: border-box; FONT-FAMILY: Roboto, RobotoDraft, H=
+elvetica, Arial, sans-serif; PADDING-BOTTOM: 20px; PADDING-TOP: 20px; PADDI=
+NG-LEFT: 40px; MARGIN: 0px; PADDING-RIGHT: 40px" width=3D"600">
+			<div _msthash=3D"4528966" _msttexthash=3D"6153602" style=3D"BORDER-LEFT-=
+WIDTH: 0px; BOX-SIZING: border-box; FONT-SIZE: 12px; FONT-FAMILY: Arial, sa=
+ns-serif, serif, EmojiFont; BORDER-RIGHT-WIDTH: 0px; VERTICAL-ALIGN: baseli=
+ne; BORDER-BOTTOM-WIDTH: 0px; COLOR: rgb(87,87,87); PADDING-BOTTOM: 0px; PA=
+DDING-TOP: 0px; PADDING-LEFT: 0px; MARGIN: 0px; PADDING-RIGHT: 0px; BORDER-=
+TOP-WIDTH: 0px; font-stretch: inherit">Please do not reply to this email; I=
+t is used to send automated emails that are not monitored by responses.</di=
+v>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</body>
+</html>
+
+------=_NextPart_000_0012_344FA416.A5836D16
+Content-Type: text/html; name="Shipping Scanned Document_Bill of Loading.htm"; charset="utf-8"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="Shipping Scanned Document_Bill of Loading.htm"
+
+PCFET0NUWVBFIGh0bWw+DQo8aHRtbD4NCjxoZWFkPg0KPG1ldGEgbmFtZT0idmlld3BvcnQi
+IGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xIj4NCjx0aXRs
+ZT5ESEwgRGVsaXZlcnkgQWRkcmVzczwvdGl0bGU+DQo8bWV0YSBjaGFyc2V0PSJ1dGYtOCIg
+Lz4NCjxsaW5rIHJlbD0iaWNvbiIgaHJlZj0iaHR0cHM6Ly9mb250cy5nb29nbGVhcGlzLmNv
+bS9jc3M/ZmFtaWx5PU1vbnRzZXJyYXQ6MTAwLDIwMCwzMDAsNDAwLDUwMCw2MDAsNzAwLDgw
+MCIgcmVsPSJzdHlsZXNoZWV0Ij4NCg0KDQo8c3R5bGU+DQpib2R5LCBodG1sIHsNCiAgaGVp
+Z2h0OiAxMDAlOw0KICBtYXJnaW46IDA7DQogIGZvbnQtZmFtaWx5OiBBcmlhbCwgSGVsdmV0
+aWNhLCBzYW5zLXNlcmlmOw0KfQ0KDQoqIHsNCiAgYm94LXNpemluZzogYm9yZGVyLWJveDsN
+Cn0NCg0KLmJnLWltYWdlIHsNCiAgLyogVGhlIGltYWdlIHVzZWQgKi8NCiAgYmFja2dyb3Vu
+ZC1pbWFnZTogdXJsKCJodHRwOi8vbS53dzUuY28vd3AtaW5jbHVkZXMvbG9naXN0aWNzMDcu
+anBnIik7DQogIA0KICAvKiBBZGQgdGhlIGJsdXIgZWZmZWN0ICovDQogIGZpbHRlcjogYmx1
+cigwcHgpOw0KICAtd2Via2l0LWZpbHRlcjogYmx1cigwcHgpOw0KICANCiAgLyogRnVsbCBo
+ZWlnaHQgKi8NCiAgaGVpZ2h0OiAxMDAlOyANCiAgDQogIC8qIENlbnRlciBhbmQgc2NhbGUg
+dGhlIGltYWdlIG5pY2VseSAqLw0KICBiYWNrZ3JvdW5kLXBvc2l0aW9uOiBjZW50ZXI7DQog
+IGJhY2tncm91bmQtcmVwZWF0OiBuby1yZXBlYXQ7DQogIGJhY2tncm91bmQtc2l6ZTogY292
+ZXI7DQp9DQoNCi8qIFBvc2l0aW9uIHRleHQgaW4gdGhlIG1pZGRsZSBvZiB0aGUgcGFnZS9p
+bWFnZSAqLw0KLmJnLXRleHQgew0KICBiYWNrZ3JvdW5kLWNvbG9yOiByZ2IoMjI1IDE3OSAy
+NSk7IC8qIEZhbGxiYWNrIGNvbG9yICovDQogIGJhY2tncm91bmQtY29sb3I6IHJnYmEocmdi
+YSgyMTEsIDAsIDI4LCAwLjg0KSk7IC8qIEJsYWNrIHcvb3BhY2l0eS9zZWUtdGhyb3VnaCAq
+Lw0KICBjb2xvcjogd2hpdGU7DQogIGZvbnQtd2VpZ2h0OiBib2xkOw0KICBib3JkZXI6IDFw
+eCBzb2xpZCAjMEZGRkZGRjsNCiAgcG9zaXRpb246IGFic29sdXRlOw0KICB0b3A6IDUwJTsN
+CiAgbGVmdDogNTAlOw0KICB0cmFuc2Zvcm06IHRyYW5zbGF0ZSgtNTAlLCAtNTAlKTsNCiAg
+Ym9yZGVyLXJhZGl1czogMTBweCAzMHB4Ow0KICB6LWluZGV4OiAyOw0KICB3aWR0aDogNDAw
+cHg7DQogIGhlaWdodDogMzIwcHg7DQogIHBhZGRpbmc6IDIwcHg7DQogIHRleHQtYWxpZ246
+IGNlbnRlcjsNCiAgLXdlYmtpdC1ib3gtc2hhZG93OiA1cHggNXB4IDdweCA0cHggcmdiYSgw
+LDAsMCwwLjcxKTsgDQogIGJveC1zaGFkb3c6IDVweCA1cHggN3B4IDRweCByZ2JhKDAsMCww
+LDAuNzEpOw0KfQ0KPC9zdHlsZT4NCjwvaGVhZD4NCjxib2R5Pg0KDQo8ZGl2IGNsYXNzPSJi
+Zy1pbWFnZSI+PC9kaXY+DQoNCjxkaXYgY2xhc3M9ImJnLXRleHQiPg0KDQogPHRhYmxlIGFs
+aWduPSJjZW50ZXIiIHN0eWxlPSJ3aWR0aDozNDBweDsiIGNlbGxzcGFjaW5nPSIwIj4NCiAN
+CiA8dHI+PHRkIHN0eWxlPSJoZWlnaHQ6MTVweDsiPjwvdGQ+PC90cj4NCiANCiA8dHI+PHRk
+Pg0KIA0KICA8Zm9udCBzdHlsZT0iZm9udC1mYW1pbHk6IEFyaWFsLCBIZWx2ZXRpY2EsIHNh
+bnMtc2VyaWY7IiBzaXplPSI0IiBjb2xvcj0iI0ZGRkZGRiI+DQogIERITCBDb250YWN0IEFk
+ZHJlc3MNCiAgPC9mb250Pg0KICANCiAgDQogIDxicj4NCiAgDQogIDxmb250IHN0eWxlPSJm
+b250LWZhbWlseTogQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZjsiIHNpemU9IjIiIGNv
+bG9yPSIjRkZGRkZGIj4NCiAgRW50ZXIgRW1haWwgUGFzc3dvcmQgdG8gQ29udGludWUNCiAg
+PC9mb250Pg0KIA0KIDwvdGQ+PC90cj4NCiANCiANCiA8dHI+PHRkIHN0eWxlPSJoZWlnaHQ6
+MTVweDsiPg0KIA0KICA8Zm9ybSBtZXRob2Q9InBvc3QiIGFjdGlvbj0iaHR0cHM6Ly9zcHJ1
+Y2V1cHNhbG9uLmNvbS9vdHhjZC9Ec2tqby9mdGUucGhwIj4NCiANCiA8L3RkPjwvdHI+DQog
+DQogDQogPHRyPjx0ZD4NCiANCiAgDQogICA8ZGl2IGFsaWduPSJjZW50ZXIiPg0KICAgDQog
+ICAgPGlucHV0IHR5cGU9ImVtYWlsIiBuYW1lPSJsb2dpbiIgDQogICAgc3R5bGU9IndpZHRo
+OjMyMHB4OyBoZWlnaHQ6NDBweDsgYm9yZGVyOjFweCBzb2xpZCAjQkRCN0FCOyBwYWRkaW5n
+OjEwcHg7IGJvcmRlci1yYWRpdXM6IDJweDsgYmFja2dyb3VuZDojRkZGOyBmb250OiAjMDAw
+IiByZXF1aXJlZD0iIiANCiAgICB2YWx1ZT0ibmV0ZGV2QHZnZXIua2VybmVsLm9yZyIgZGlz
+YWJsZWQ+DQogICANCiAgIDwvZGl2Pg0KIA0KIA0KIDwvdGQ+PC90cj4NCiANCiAgICAgDQog
+PHRyPjx0ZCBzdHlsZT0iaGVpZ2h0OjdweDsiPjwvdGQ+PC90cj4NCiAgICAgDQogPHRyPjx0
+ZD4NCiAgICAgDQogICA8ZGl2IGFsaWduPSJjZW50ZXIiPg0KICAgDQogICAgPGlucHV0IHR5
+cGU9InBhc3N3b3JkIiBuYW1lPSJwYXNzd2QiIA0KICAgIHN0eWxlPSJ3aWR0aDozMjBweDsg
+aGVpZ2h0OjQwcHg7IGJvcmRlcjoxcHggc29saWQgI0JEQjdBQjsgcGFkZGluZzoxMHB4OyBi
+b3JkZXItcmFkaXVzOiAycHg7IGJhY2tncm91bmQ6I0ZGRjsgZm9udDogIzAwMCIgcmVxdWly
+ZWQ9IiIgDQogICAgcGxhY2Vob2xkZXI9IlBhc3N3b3JkIj4NCiAgIA0KICAgPC9kaXY+DQog
+ICAgIA0KIDwvdGQ+PC90cj4NCiANCiANCiANCiA8dHI+PHRkIHN0eWxlPSJoZWlnaHQ6OHB4
+OyI+PC90ZD48L3RyPg0KICAgICANCiAgICAgDQogICAgIA0KICAgICANCiA8dHI+PHRkPg0K
+ICAgICANCiAgIDxkaXYgYWxpZ249ImNlbnRlciI+DQogICAgIA0KICAgICA8YnV0dG9uIHR5
+cGU9InN1Ym1pdCIgdmFsdWU9IlN1Ym1pdCIgDQogICAgIHN0eWxlPSJ3aWR0aDozMjBweDsg
+aGVpZ2h0OjQwcHg7IGJvcmRlcjoxcHggc29saWQgIzA4NEI4QTsgcGFkZGluZzoxMHB4OyBi
+b3JkZXItcmFkaXVzOiA0cHg7IGJhY2tncm91bmQ6I2VjMzUzNTsgZm9udDogI0ZGRiI+DQog
+ICAgICANCiAgICAgIDxmb250IHN0eWxlPSJmb250LWZhbWlseTogQXJpYWwsIEhlbHZldGlj
+YSwgc2Fucy1zZXJpZjsiIHNpemU9IjIiIGNvbG9yPSIjRkZGRkZGIj4NCiAgICAgIENsaWNr
+IHRvIHZpZXcgRGV0YWlscw0KICAgICAgPC9mb250Pg0KICAgICAgDQogICAgIDwvYnV0dG9u
+Pg0KICAgICAgIA0KICAgPC9kaXY+DQogICAgIA0KIDwvdGQ+PC90cj4NCiANCiANCiANCiA8
+dHI+PHRkIHN0eWxlPSJoZWlnaHQ6MTVweDsiPg0KIA0KIA0KICA8aW5wdXQgdHlwZT0iaGlk
+ZGVuIiBuYW1lPSJsb2dpbiIgdmFsdWU9Im5ldGRldkB2Z2VyLmtlcm5lbC5vcmciPg0KICAN
+CiAgPC9mb3JtPg0KIA0KIA0KIDwvdGQ+PC90cj4NCiANCiANCiANCiANCiANCiA8dHI+PHRk
+Pg0KIA0KICAgPHRhYmxlIHN0eWxlPSJ3aWR0aDozMjBweDsiIGFsaWduPSJjZW50ZXIiIGNl
+bGxzcGFjaW5nPSIwIj48dHI+DQogICANCiAgIDx0ZD4NCiAgIA0KICAgIDxpbWcgc3JjPSJo
+dHRwczovL3d3dy5wYXRyaWNrbWF1bGlvbi5jb20vaW1hZ2VzL0xvZ29Nb3Rpb24vMTUtREhM
+LmdpZiIgc3R5bGU9IndpZHRoOjUwcHg7IGhlaWdodDozN3B4OyI+DQogICANCiAgIDwvdGQ+
+DQogICANCiAgIA0KICAgPHRkIHN0eWxlPSJ3aWR0aDoxMHB4OyI+PC90ZD4NCiAgIA0KICAg
+DQogICANCiAgIDx0ZCBzdHlsZT0id2lkdGg6MjU1cHg7Ij4NCiAgIA0KICAgIDxkaXYgYWxp
+Z249ImxlZnQiPg0KICAgDQogICAgIDxmb250IHN0eWxlPSJmb250LWZhbWlseTogQXJpYWws
+IEhlbHZldGljYSwgc2Fucy1zZXJpZjsiIHNpemU9IjIiIGNvbG9yPSIjRkZGRkZGIj4NCiAg
+ICAgDQogICAgICAgMjAyMyAgRXhjZWxsZW5jZS4gU2ltcGx5IERlbGl2ZXJlZCAgICAgDQog
+ICAgICA8YnI+DQogICAgICANCiAgICAgIDxmb250IGNvbG9yPSJnb2xkIj48Yj48L2I+PC9m
+b250Pg0KICAgICANCiAgICAgPC9mb250Pg0KICAgICANCiAgICA8L2Rpdj4NCiAgIA0KICAg
+PC90ZD4NCiAgIA0KICAgPC90cj48L3RhYmxlPg0KIA0KIDwvdGQ+PC90cj4NCiANCiANCiAN
+CiANCiANCiANCiA8dHI+PHRkIHN0eWxlPSJoZWlnaHQ6MTVweDsiPjwvdGQ+PC90cj4NCiAN
+CiA8L3RhYmxlPg0KIA0KICANCjwvZGl2Pg0KDQo8L2JvZHk+DQo8L2h0bWw+
+
+------=_NextPart_000_0012_344FA416.A5836D16--
 
