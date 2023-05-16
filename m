@@ -1,181 +1,171 @@
-Return-Path: <netdev+bounces-2884-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2885-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9AAE67046A4
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 09:40:20 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 352497046C5
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 09:45:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 56BD0281430
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 07:40:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F00321C20D92
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 07:45:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 774481DDCF;
-	Tue, 16 May 2023 07:40:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AAD431DDD5;
+	Tue, 16 May 2023 07:45:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6174B1D2D0
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 07:40:17 +0000 (UTC)
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2E71737;
-	Tue, 16 May 2023 00:40:16 -0700 (PDT)
-Received: from pps.filterd (m0353727.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34G7aShZ005037;
-	Tue, 16 May 2023 07:39:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=oyXmAuPB2QwCsFmA09TyMaE9r5Wsa42TS9CvhNr4Xxo=;
- b=jQyJnX2IE0Q9/uHuiK+tFFDM2ICZfdAS10yyEEvjakfFqK1quX2CS8p56sTYXWMVS9QP
- hlMhqOQ+mI2WQwYJsEhn/wIKZL3WkKjRMXk6BZ5K5F/WPJmxqsampKPSkDiJmsAwxLPd
- QY59SXf1QlQ2ey9cq+26TAma4O3D76d5TXhUj46eB6o4zAbnPGEbluM8Lr7Wt3ylPD0b
- TxIDWKMJtEgDfyXMimQ6TXr011dMhE4PtQ4wOjElsEyFil+mkDcEqxqAJcWoxs0Fmgce
- X8T8mgU2Vps3ESnTmGZo3FC5OP5dsorRnLIdraV+j9qiSgyKFAl3jwTnHpk6XFcyzama 7Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qm4y8hh1p-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 16 May 2023 07:39:32 +0000
-Received: from m0353727.ppops.net (m0353727.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34G7amRA007488;
-	Tue, 16 May 2023 07:39:31 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qm4y8hgpq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 16 May 2023 07:39:31 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-	by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34G3qs8k006665;
-	Tue, 16 May 2023 07:39:23 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3qj264sfp5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 16 May 2023 07:39:23 +0000
-Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34G7dKNV41615626
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 16 May 2023 07:39:20 GMT
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3C0C320043;
-	Tue, 16 May 2023 07:39:20 +0000 (GMT)
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7498920040;
-	Tue, 16 May 2023 07:39:18 +0000 (GMT)
-Received: from [9.152.222.242] (unknown [9.152.222.242])
-	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Tue, 16 May 2023 07:39:18 +0000 (GMT)
-Message-ID: <168d8026-207a-e7ee-21b3-4a02ed00f0ce@linux.ibm.com>
-Date: Tue, 16 May 2023 09:39:17 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9159E1DDC0;
+	Tue, 16 May 2023 07:45:37 +0000 (UTC)
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269AA1BF0;
+	Tue, 16 May 2023 00:45:36 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id 3f1490d57ef6-b8f46ca241bso2256787276.1;
+        Tue, 16 May 2023 00:45:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684223135; x=1686815135;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=qOxPv9nPBMO3v5ymnEoGctbo7W28IsAWHhOyGgOsfAo=;
+        b=rn8r3uk514tGfZzxcoqhVSweRfgsRBfDsNKddNMquvveoh25KJ3Mgrb5YIun9dnf6P
+         xq4wPBSiPFBumuBDLrGBsSqlQr9MTmjVSIgIFujpu4flTasDk4Vxp29BSXWE6IiUhgUx
+         4owZF74YRt1u2K5AoKkVKWYhBsCVKoLqMqv6d464COGq+D3tmXsNiWn/+ax4O/uuagbO
+         prN2Xj8WVRdle6TYQmVMna/R4Q2JH+RVKLYfnBTdIyIgllIGgDMzeW2T6uOuf6kOIAro
+         YtlqIpRfWoSoTOW4pKjczEpzhr8EOnRPgb4P3K6mOhe1FgU/M3n0962Loz1z90VG6l4o
+         6ODA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684223135; x=1686815135;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qOxPv9nPBMO3v5ymnEoGctbo7W28IsAWHhOyGgOsfAo=;
+        b=DNtJ04M562VZc4lZzv1itAcwZVi/dUf0C//ZKq9GBUhoJKLj072Zy2qBy8bWdcCbfi
+         m9Er4K8WYU042ebd9EXqc2si3gfzRT32EXjZb2hlRXixhBqYhmWMDjF72gLcOZK9A7Zi
+         eJwyAwG24hgJxycGBPXGvYF0+3CdCmERQzoa+5u2VjBBrSSBDU8Xicuvlf8OpBw3pbxJ
+         STjb5sdVmWf3p5uxqir3X08Zb4jM/UbamBdJ5PuhvmX0pf3DOuXkFk3R2RZrEnqZ/Q1l
+         MUjRGIqEEmMIUKLcQi0RKMwLtiWtRcD1D3jAjhvA9JjvS05a6EwI+6rVLL2l4JWiNa5n
+         zIPg==
+X-Gm-Message-State: AC+VfDwd8onmdLh/8Wr88TnsUor56q5SH6Dbi6CKA5GbPCgpOmO1VsZm
+	qRTCqmraWN4ISO8yontKfbWS5tIfv6vcGpBAjOo=
+X-Google-Smtp-Source: ACHHUZ4OR+YiLhv43Pg/guNmEoGZROCAfsAlIJ6/pG9z+2LJBQ9Hgoc2Yk/aBST6KVFbW504Ww/ksaHd44302ZZstIA=
+X-Received: by 2002:a25:aa8e:0:b0:ba7:498a:46f with SMTP id
+ t14-20020a25aa8e000000b00ba7498a046fmr1551395ybi.2.1684223135132; Tue, 16 May
+ 2023 00:45:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v9 1/6] s390/ism: Set DMA coherent mask
-Content-Language: en-US
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
-        Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Heiko Carstens
- <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang
- <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krishna Reddy
- <vdumpa@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
- <20230310-dma_iommu-v9-1-65bb8edd2beb@linux.ibm.com>
-From: Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20230310-dma_iommu-v9-1-65bb8edd2beb@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: J4ionigi6aUPze2O9mlNApMYAufA_hrk
-X-Proofpoint-GUID: i4d6Dd2ZX11emMnTTTHfoZmJwBDtd8nN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-16_02,2023-05-05_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=999
- clxscore=1011 spamscore=0 priorityscore=1501 malwarescore=0 adultscore=0
- mlxscore=0 impostorscore=0 bulkscore=0 suspectscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
- definitions=main-2305160065
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+References: <20230512092043.3028-1-magnus.karlsson@gmail.com> <9e553914-3703-8f10-b3b8-7d7e90462417@iogearbox.net>
+In-Reply-To: <9e553914-3703-8f10-b3b8-7d7e90462417@iogearbox.net>
+From: Magnus Karlsson <magnus.karlsson@gmail.com>
+Date: Tue, 16 May 2023 09:45:24 +0200
+Message-ID: <CAJ8uoz3jf2xdmaDYiBZ3jcM4G1-9h5ngXXEpmnU8iwKwp9PZdw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 00/10] seltests/xsk: prepare for AF_XDP
+ multi-buffer testing
+To: Daniel Borkmann <daniel@iogearbox.net>
+Cc: magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org, 
+	netdev@vger.kernel.org, maciej.fijalkowski@intel.com, bpf@vger.kernel.org, 
+	yhs@fb.com, andrii@kernel.org, martin.lau@linux.dev, song@kernel.org, 
+	john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com, 
+	haoluo@google.com, jolsa@kernel.org, tirthendu.sarkar@intel.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
-On 5/15/23 11:15, Niklas Schnelle wrote:
-> A future change will convert the DMA API implementation from the
-> architecture specific arch/s390/pci/pci_dma.c to using the common code
-> drivers/iommu/dma-iommu.c which the utilizes the same IOMMU hardware
-> through the s390-iommu driver. Unlike the s390 specific DMA API this
-> requires devices to correctly call set the coherent mask to be allowed
-
-
-s/call//
-
-
-> to use IOVAs >2^32 in dma_alloc_coherent(). This was however not done
-> for ISM devices. ISM requires such addresses since currently the DMA
-> aperture for PCI devices starts at 2^32 and all calls to
-> dma_alloc_coherent() would thus fail.
+On Mon, 15 May 2023 at 23:12, Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
-> Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->   drivers/s390/net/ism_drv.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> Hi Magnus,
 >
-> diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-> index 8acb9eba691b..1399b5dc646c 100644
-> --- a/drivers/s390/net/ism_drv.c
-> +++ b/drivers/s390/net/ism_drv.c
-> @@ -660,7 +660,7 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->   	if (ret)
->   		goto err_disable;
->   
-> -	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-> +	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
->   	if (ret)
->   		goto err_resource;
->   
+> On 5/12/23 11:20 AM, Magnus Karlsson wrote:
+> >
+> > Prepare the AF_XDP selftests test framework code for the upcoming
+> > multi-buffer support in AF_XDP. This so that the multi-buffer patch
+> > set does not become way too large. In that upcoming patch set, we are
+> > only including the multi-buffer tests together with any framework
+> > code that depends on the new options bit introduced in the AF_XDP
+> > multi-buffer implementation itself.
+> >
+> > Currently, the test framework is based on the premise that a packet
+> > consists of a single fragment and thus occupies a single buffer and a
+> > single descriptor. Multi-buffer breaks this assumption, as that is the
+> > whole purpose of it. Now, a packet can consist of multiple buffers and
+> > therefore consume multiple descriptors.
+> >
+> > The patch set starts with some clean-ups and simplifications followed
+> > by patches that make sure that the current code works even when a
+> > packet occupies multiple buffers. The actual code for sending and
+> > receiving multi-buffer packets will be included in the AF_XDP
+> > multi-buffer patch set as it depends on a new bit being used in the
+> > options field of the descriptor.
+> >
+> > Patch set anatomy:
+> > 1: The XDP program was unnecessarily changed many times. Fixes this.
+> >
+> > 2: There is no reason to generate a full UDP/IPv4 packet as it is
+> >     never used. Simplify the code by just generating a valid Ethernet
+> >     frame.
+> >
+> > 3: Introduce a more complicated payload pattern that can detect
+> >     fragments out of bounds in a multi-buffer packet and other errors
+> >     found in single-fragment packets.
+> >
+> > 4: As a convenience, dump the content of the faulty packet at error.
+> >
+> > 5: To simplify the code, make the usage of the packet stream for Tx
+> >     and Rx more similar.
+> >
+> > 6: Store the offset of the packet in the buffer in the struct pkt
+> >     definition instead of the address in the umem itself and introduce
+> >     a simple buffer allocator. The address only made sense when all
+> >     packets consumed a single buffer. Now, we do not know beforehand
+> >     how many buffers a packet will consume, so we instead just allocate
+> >     a buffer from the allocator and specify the offset within that
+> >     buffer.
+> >
+> > 7: Test for huge pages only once instead of before each test that needs it.
+> >
+> > 8: Populate the fill ring based on how many frags are needed for each
+> >     packet.
+> >
+> > 9: Change the data generation code so it can generate data for
+> >     multi-buffer packets too.
+> >
+> > 10: Adjust the packet pacing algorithm so that it can cope with
+> >      multi-buffer packets. The pacing algorithm is present so that Tx
+> >      does not send too many packets/frames to Rx that it starts to drop
+> >      packets. That would ruin the tests.
 >
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+> This triggers build error in BPF CI:
 
+Thanks Daniel. Will fix.
+
+>    https://github.com/kernel-patches/bpf/actions/runs/4984982413/jobs/8924047266
+>
+>    [...]
+>    xskxceiver.c:1881:2: error: variable 'ret' is used uninitialized whenever switch default is taken [-Werror,-Wsometimes-uninitialized]
+>            default:
+>            ^~~~~~~
+>    xskxceiver.c:1885:6: note: uninitialized use occurs here
+>            if (ret == TEST_PASS)
+>                ^~~
+>    xskxceiver.c:1779:9: note: initialize the variable 'ret' to silence this warning
+>      GEN-SKEL [test_progs] test_subskeleton.skel.h
+>      GEN-SKEL [test_progs] test_subskeleton_lib.skel.h
+>            int ret;
+>                   ^
+>                    = 0
+>    1 error generated.
+>    make: *** [Makefile:617: /tmp/work/bpf/bpf/tools/testing/selftests/bpf/xskxceiver] Error 1
+>    make: *** Waiting for unfinished jobs....
+>      GEN-SKEL [test_progs] test_usdt.skel.h
+>    make: Leaving directory '/tmp/work/bpf/bpf/tools/testing/selftests/bpf'
+>
+> Pls fix and respin, thanks.
 
