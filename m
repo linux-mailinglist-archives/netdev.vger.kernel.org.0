@@ -1,137 +1,154 @@
-Return-Path: <netdev+bounces-2951-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2956-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CC465704ACA
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 12:35:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 467ED704ADC
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 12:38:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3A5CC28175B
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:35:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E4F57281777
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:38:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3655D209B1;
-	Tue, 16 May 2023 10:31:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 274ED449C8;
+	Tue, 16 May 2023 10:32:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B1FC261E8
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 10:31:57 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF0F8558D;
-	Tue, 16 May 2023 03:31:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-	Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=7BbKaGK0k3mMet6w52ykKHKxgzU5is36rQuBtebxFzY=; b=GQ9oVxlA9O4SkwGrcpKP1ccZLQ
-	/82beaQrLsALoQv6tV+/5hCmu5PPVr4n6y12QOkzOblA6MW/ZCdugnKbOxjJx2AWUlBPg6qo0+PfS
-	PDEB89Be3IvidOhxWpuojouKGQQzZjUTLP4l0hy7RuLzt4XKs+LlJZMjZJk8MC+1DIl1w4gzr03Lq
-	a20bWszy5itdO7hyeKoMC/jjpVh2Y/8JLwQB8rVOzYqTOVlGswoIdtGoVxmZLVYB4O3b+LYDZylxl
-	4BbcFxdlUBFyLXoUYRq1seXpu7Zg3DXAo3L5eHrb1vE9zLwdf8J9d3FdJFx0dLdr3nqR8QZfD7w1i
-	7PN4pQAQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34894)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1pyrxg-0005Yd-45; Tue, 16 May 2023 11:31:20 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1pyrxX-0000jQ-Q8; Tue, 16 May 2023 11:31:11 +0100
-Date: Tue, 16 May 2023 11:31:11 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
-	jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
-	mika.westerberg@linux.intel.com, jsd@semihalf.com,
-	Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
-	linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-	mengyuanlou@net-swift.com
-Subject: Re: [PATCH net-next v8 6/9] net: txgbe: Support GPIO to SFP socket
-Message-ID: <ZGNbb2Oe9aLIT04p@shell.armlinux.org.uk>
-References: <20230515063200.301026-1-jiawenwu@trustnetic.com>
- <20230515063200.301026-7-jiawenwu@trustnetic.com>
- <ZGH-fRzbGd_eCASk@surfacebook>
- <00cd01d9879f$8e444950$aaccdbf0$@trustnetic.com>
- <CAHp75VdthEZL6GvT5Q=f7rbcDfA5XX=7-VLfVz1kZmBFem_eCA@mail.gmail.com>
- <aed598bbe094633859f477dd99ff7d086261b071.camel@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14536449C5
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 10:32:40 +0000 (UTC)
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 575CF5FD2
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 03:32:09 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-9661047f8b8so2178008266b.0
+        for <netdev@vger.kernel.org>; Tue, 16 May 2023 03:32:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1684233128; x=1686825128;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=d8XX1tnrPyv3VxvKbHs/8JHiurxuDpWuL5gr09/Ey0k=;
+        b=RrCwJVoU1I745RI0LnW3FW5qN9d4s8Vhhltm9l1sd4sOwZY/p1q8y/5I1K5q7y2Jzq
+         c/8OCA+HO8xWDfVllymQ21GI3+d9MAxoDZWKWrOYYmjrk8T4H1DDHmOylswO+T6OZ1MN
+         kfiD0isdnkaSdFnW5tRqN348l2Vfk2YfmNt3Cd4c34W7OF1gNMj7kMTVU9dsy8WuXXO1
+         WRRhsBvP4Oz8WaOoHp3K9lvlrmG3rZZcsgrrA0p4tNVGKjX55dehyE9/zMsPQptmJIeP
+         8sjqrdGd8Qct4wePBtQ2nrGI8Vjh5AnaBLxvjz6rUs61qYt1M2PnQyfzUInsFRRjLi9X
+         Y8EA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684233128; x=1686825128;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=d8XX1tnrPyv3VxvKbHs/8JHiurxuDpWuL5gr09/Ey0k=;
+        b=duv9F3bQoCBfW7JJ6Scry8OOqPct8augRz4BMgomzdTFBx7uNGyAwpJiEhvxS4uYUp
+         ze9XPfs0H8lwX+tqNhgyau2lrIDD1P+Gtc0ET6wwocviNsG00aUUvMbK3xeQGtwK6f3Y
+         4wr78B8Hhf/13icPw5vYhrjGqlKn/KU+98cviRjClraarWxH6jceB2C2eU0fOZ26qj4X
+         kjp1asMpQZiG33Ky8KYgtUjYCIOpt5KsHapvXC7fRtJn3wETOra7CshdIH5zCJa7uuOx
+         R46j0Y6ctCKaIcMKMs+SkNts6kSqHbJUVN+yMjKgrB+J2a6rWbDFUqpgejxQKEup+zCI
+         Aqcg==
+X-Gm-Message-State: AC+VfDz3nP7U/R4mXw7Dgz+xvN2Ciwwj15QiJ36IpjOZssr0YQM1lpAr
+	NVP7b0Iw0Vrs0aeeRNoiCvu5u30w6sE8X2EfJjqSO1eu
+X-Google-Smtp-Source: ACHHUZ55jncQz7sMyUV69ZVYXPKrRA32J843kSEo4g+9GLsvzFebpHDmlszHzSseYvaqa1FBI11Hfg==
+X-Received: by 2002:a17:907:2d92:b0:966:612b:c292 with SMTP id gt18-20020a1709072d9200b00966612bc292mr32466929ejc.11.1684233127485;
+        Tue, 16 May 2023 03:32:07 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id s25-20020a170906285900b0096a5d341b50sm7703206ejc.111.2023.05.16.03.32.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 May 2023 03:32:07 -0700 (PDT)
+Message-ID: <ce3835d9-c093-cfcb-3687-3a375236cb8f@blackwall.org>
+Date: Tue, 16 May 2023 13:32:05 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aed598bbe094633859f477dd99ff7d086261b071.camel@redhat.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next 1/2] bridge: Add a limit on FDB entries
+Content-Language: en-US
+To: Vladimir Oltean <vladimir.oltean@nxp.com>, Andrew Lunn <andrew@lunn.ch>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ Oleksij Rempel <linux@rempel-privat.de>
+Cc: Johannes Nixdorf <jnixdorf-oss@avm.de>, netdev@vger.kernel.org,
+ bridge@lists.linux-foundation.org, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Roopa Prabhu <roopa@nvidia.com>,
+ Ido Schimmel <idosch@nvidia.com>
+References: <20230515085046.4457-1-jnixdorf-oss@avm.de>
+ <a1d13117-a0c5-d06e-86b7-eacf4811102f@blackwall.org>
+ <ZGNEk3F8mcT7nNdB@u-jnixdorf.ads.avm.de>
+ <f899f032-b726-7b6d-953d-c7f3f98744ca@blackwall.org>
+ <20230516102141.w75yh6pdo53ufjur@skbuf>
+From: Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230516102141.w75yh6pdo53ufjur@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 16, 2023 at 11:39:08AM +0200, Paolo Abeni wrote:
-> On Tue, 2023-05-16 at 10:12 +0300, Andy Shevchenko wrote:
-> > On Tue, May 16, 2023 at 5:39 AM Jiawen Wu <jiawenwu@trustnetic.com> wrote:
-> > 
-> > ...
-> > 
-> > > > > +   struct gpio_irq_chip *girq;
-> > > > > +   struct wx *wx = txgbe->wx;
-> > > > > +   struct gpio_chip *gc;
-> > > > > +   struct device *dev;
-> > > > > +   int ret;
-> > > > 
-> > > > > +   dev = &wx->pdev->dev;
-> > > > 
-> > > > This can be united with the defintion above.
-> > > > 
-> > > >       struct device *dev = &wx->pdev->dev;
-> > > > 
-> > > 
-> > > This is a question that I often run into, when I want to keep this order,
-> > > i.e. lines longest to shortest, but the line of the pointer which get later
-> > > is longer. For this example:
-> > > 
-> > >         struct wx *wx = txgbe->wx;
-> > >         struct device *dev = &wx->pdev->dev;
-> > 
-> > So, we locate assignments according to the flow. I do not see an issue here.
+On 16/05/2023 13:21, Vladimir Oltean wrote:
+> Hi,
 > 
-> That would break the reverse x-mass tree order.
+> On Tue, May 16, 2023 at 11:56:41AM +0300, Nikolay Aleksandrov wrote:
+>> Hmm.. perhaps we can add a flag mask of entries to count. Initially it can be
+>> only dynamic entries. We should include more people in this discussion (+CC Ido and Vladimir).
+>> Switchdev folks might have more specific requirements and restrictions, so it'd be nice to get
+>> their input as well.
 > 
-> > > should I split the line, or put the long line abruptly there?
-> > 
-> > The latter is fine.
+> I have some other things to do until I can take a closer look at this
+> discussion, but in principle, switchdev drivers will likely want to
+> impose their own limit on FDB entries because the hardware itself is
+> inherently limited in size, so I'm thinking there should be another way
+> for the software bridge to be informed about this limit other than UAPI.
+
+Yep, that's ok but it can be added later. This is pretty much internal.
+
+> Which ports that limit should affect (think bridging between ports of
+> different switches with different FDB sizes) I don't know. If we only
+> consider switchdev, FDB limits should probably be per hwdom.
 > 
-> This is minor, but I have to disagree. My understanding is that
-> respecting the reversed x-mass tree is preferred. In case of dependent
-> initialization as the above, the preferred style it the one used by
-> this patch.
 
-Meanwhile, I've been told something completely different, and therefore
-I do something else, namely:
+Now, that's a whole different issue (per-port limits). I've prototype patches
+for that too, but it's a much harder problem to solve and scale in software.
+Let's please focus on the single global limit for the moment.
 
+> Also, in terms of static vs dynamic limits, I've seen hardware
+> implementations where static FDB entries go to a different FDB table
+> compared to dynamic ones (Microchip KSZ DSA switches), implementations
+> where static partitioning between static and dynamic FDB entries is
+> possible but configurable, and implementations where they all consume
+> from the shared space and you'd have to evict a dynamic entry to install
+> a static one. So it's hard to really say what's the size. That, plus not
+> to mention, many hardware FDBs are not fully associative, and due to
+> hash collisions, you may be unable to install an entry in the 4-way
+> associative bin where its {MAC,VID} hash says it should go, even though
+> the FDB at large is not full.
+> 
+> It sounds sexy to take switchdev into consideration, but I'm not really
+> sure what we want. Something flexible to cater for the above, probably.
+> This discussion should probably be merged with:
+> https://lore.kernel.org/netdev/20230324144917.32lnpgtw5auuyovy@skbuf/T/#ma600839815582ca61886e83ba533b1dfbe447557
+> so I'm CCing Oleksij too, since he probably knows better than me what he
+> wants.
+> 
 
-	struct device *dev;
-	struct wx *wx;
+Let's take a step back, I wasn't suggesting we start with a full-fledged switchdev
+implementation. :) I meant only to see if the minimum global limit implementation
+suggested would suffice and would be able to later extend so switchdev can use and
+potentially modify (e.g. drivers setting limits etc). We can start with a simple
+support for limits and then extend accordingly. The important part here is to
+not add any uAPI that can't be changed later which would impact future changes.
 
-	wx = txgbe->wx;
-	dev = &wx->pdev->dev;
+> In the thread with DSA trace events, there also was a short talk about
+> user space theoretically being able to infer FDB sizes and utilization
+> degree based on instrumenting with ftrace, which is something we wouldn't
+> like to have to maintain. So I'm adding the DSA maintainers too, since
+> there is interest for agreeing on a different API.
+> https://lore.kernel.org/netdev/2f150ad4-34f4-4af9-b3ce-c1aff208ec7e@lunn.ch/T/#mfa895245fd012e8f66db784fa568109dba396aa7
 
-	...
-
-I've been lead to believe that this is preferred in netdev to breaking
-the reverse christmas-tree due to dependent initialisations.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
