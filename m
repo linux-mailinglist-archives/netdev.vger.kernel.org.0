@@ -1,103 +1,182 @@
-Return-Path: <netdev+bounces-2861-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2862-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BCFCC7044F7
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:03:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 570CD7044FD
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:12:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C5391280DC0
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 06:03:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 77FD228117E
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 06:12:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEAC61D2B0;
-	Tue, 16 May 2023 06:03:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D1161D2B4;
+	Tue, 16 May 2023 06:12:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA38E19E73
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 06:03:43 +0000 (UTC)
-X-Greylist: delayed 799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 May 2023 23:03:39 PDT
-Received: from a27-27.smtp-out.us-west-2.amazonses.com (a27-27.smtp-out.us-west-2.amazonses.com [54.240.27.27])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AC2189;
-	Mon, 15 May 2023 23:03:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-	s=s25kmyuhzvo7troimxqpmtptpemzlc6l; d=exabit.dev; t=1684215801;
-	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:Mime-Version:Content-Type:Content-Transfer-Encoding;
-	bh=74L/YZxtx3KSMNRkAtfGsObxFGNIU40Nx7IaCnAIASs=;
-	b=Fb57bjgi9iNYj6jzCsbxCmfIYnohkIz4bYU+CxnrCz3xlA9U85k5fHpgnFot9onw
-	nDwzmtdinp2fK+jgwTl2sti9Nw+UnYaKMRa4m7c2jPTqQz0z9FQQcKl2A/v3wTUBY/6
-	Scen8C9NQN3GoscAahkrDpveghZ4aoxRjP5/pdMKwCMgXTm+4vGHudZXo2XvjRVBflN
-	XvG8gf2NLHa5TK4Mo17O19wEcyitAgXd5zeg5bdCEG4WcUZHsJvk/wVJB5O9wughXU1
-	bu2od+6vHf3aeShGniEYHiv0/TowMR/FwDBJkO/yDWcAQbk9vy0jPkn9t4+uSsW0JVN
-	eTQuwa1NuA==
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-	s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1684215801;
-	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:Mime-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID;
-	bh=74L/YZxtx3KSMNRkAtfGsObxFGNIU40Nx7IaCnAIASs=;
-	b=c8xFgWBiF4V2XwwMgG32ZlMFOZGSvEG7VbJzn0ETgqC7jc50j9omRhsrhcbWT/FZ
-	r4GNlEpuPGfYKbPKHfeoI9TE1pd6ZhyQ7Cnk5IbwA7KiMtfTn/pZe7KTcsbtH5E8ZnC
-	oxxoJgSGGKHtfxFNHH6tpQ5IqBuNDgrQnlzTnV+k=
-Date: Tue, 16 May 2023 05:43:21 +0000
-Message-ID: <010101882315a489-908f5965-2e67-497f-97f8-5c91bc928673-000000@us-west-2.amazonses.com>
-To: andrew@lunn.ch
-Cc: tomo@exabit.dev, rust-for-linux@vger.kernel.org,
- netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
- fujita.tomonori@gmail.com
-Subject: Re: [PATCH 2/2] rust: add socket support
-From: FUJITA Tomonori <tomo@exabit.dev>
-In-Reply-To: <f22b24f8-f599-4eec-9535-bcca71138057@lunn.ch>
-References: <20230515043353.2324288-1-tomo@exabit.dev>
-	<010101881db03866-754b644c-682c-44be-8d8e-8376d34c77b3-000000@us-west-2.amazonses.com>
-	<f22b24f8-f599-4eec-9535-bcca71138057@lunn.ch>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E1CE3FDC
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 06:12:51 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B0FF10C1
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 23:12:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684217569;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=acXAPI+j75jg9aaFVO84Z4crvWYhC8JaTkZZBzVz0e8=;
+	b=MGZ5fYoI7lSvWPMnQnVppYhNOPjVbxxroAX5T9k/5E7wCFg7ECcVuGvvgQ9jmFMhE8pdvQ
+	0G/jAAobgWJ93ueKseCPPBxUwciIfyIBG8CSn6z7w2Lp0GnDi/F5+SJNix3CLgfkkeGQYi
+	aZmHWwVF13ALHi0gN86XBhr+Sxce/sA=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-144-oyq6lbegPRGo9nnkojUE0g-1; Tue, 16 May 2023 02:12:48 -0400
+X-MC-Unique: oyq6lbegPRGo9nnkojUE0g-1
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-3f433a2308bso8832765e9.0
+        for <netdev@vger.kernel.org>; Mon, 15 May 2023 23:12:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684217567; x=1686809567;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=acXAPI+j75jg9aaFVO84Z4crvWYhC8JaTkZZBzVz0e8=;
+        b=erC/lXKDS8RS+Aa+9FFK7qUOQ2zwyV0G/eO7DXrnpYy5x7oaayUC2zrPcUP5Lm383Z
+         OKSR+LaToMajRWiHRRm77oW3ue1pxhXAt3Jo7Wd3oFibRseHfeFllG+ZRb05rwm4YbTr
+         tnc0kaJ3vZPO+73Vg260VfUDn4Z+dnKN04H4618tojImwNMWmJJnC7HF0AGKhCCUL6Yd
+         4mUJi/JMPUdnEQs7Y/AKX7CSyFsJytmKGd0P2iETgmL8siNnhZKdeepO0EJH+o3gCzqr
+         R/CQXwjOHunpsoPwwcBQBji4HPvMWluwOAO6wvyqe5iVe+fVyRMD+ucUzBnYS1QC+04V
+         Qwlw==
+X-Gm-Message-State: AC+VfDxyNVCBVcezSNk1UmBlC6EM1toQvzkcPZIVQxehU+1m7YeAVdtQ
+	XE3TFjQj3fcWyncHQPHwFNphIOuh18fVr9V5RlZhEEqrvX0SD2fjtpT1uMaQegL1EsYQot6gGfL
+	aFN4nz2bnirR1gPTN
+X-Received: by 2002:a05:600c:4f45:b0:3f4:2bcf:e19 with SMTP id m5-20020a05600c4f4500b003f42bcf0e19mr16817559wmq.8.1684217566884;
+        Mon, 15 May 2023 23:12:46 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6QmQ2YHayqLcYv6xqe53acMOnxaqTXWoMpXiMr4c4hHzQCAirgTrt8EM5xbrYsKan7zlNlmw==
+X-Received: by 2002:a05:600c:4f45:b0:3f4:2bcf:e19 with SMTP id m5-20020a05600c4f4500b003f42bcf0e19mr16817542wmq.8.1684217566547;
+        Mon, 15 May 2023 23:12:46 -0700 (PDT)
+Received: from redhat.com ([2.52.26.5])
+        by smtp.gmail.com with ESMTPSA id w12-20020a05600c474c00b003f07ef4e3e0sm32311772wmo.0.2023.05.15.23.12.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 May 2023 23:12:45 -0700 (PDT)
+Date: Tue, 16 May 2023 02:12:42 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Shannon Nelson <shannon.nelson@amd.com>
+Cc: jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+	brett.creeley@amd.com, netdev@vger.kernel.org,
+	simon.horman@corigine.com, drivers@pensando.io
+Subject: Re: [PATCH v6 virtio 04/11] pds_vdpa: move enum from common to
+ adminq header
+Message-ID: <20230516020938-mutt-send-email-mst@kernel.org>
+References: <20230516025521.43352-1-shannon.nelson@amd.com>
+ <20230516025521.43352-5-shannon.nelson@amd.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Feedback-ID: 1.us-west-2.j0GTvY5MHQQ5Spu+i4ZGzzYI1gDE7m7iuMEacWMZbe8=:AmazonSES
-X-SES-Outgoing: 2023.05.16-54.240.27.27
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230516025521.43352-5-shannon.nelson@amd.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, 15 May 2023 16:14:56 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
-
-> On Mon, May 15, 2023 at 04:34:28AM +0000, FUJITA Tomonori wrote:
->> From: FUJITA Tomonori <fujita.tomonori@gmail.com>
->> 
->> minimum abstraction for networking.
+On Mon, May 15, 2023 at 07:55:14PM -0700, Shannon Nelson wrote:
+> The pds_core_logical_qtype enum and IFNAMSIZ are not needed
+> in the common PDS header, only needed when working with the
+> adminq, so move them to the adminq header.
 > 
->> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
->> ---
->>  rust/bindings/bindings_helper.h |   3 +
->>  rust/kernel/lib.rs              |   2 +
->>  rust/kernel/net.rs              | 174 ++++++++++++++++++++++++++++++++
+> Note: This patch might conflict with pds_vfio patches that are
+>       in review, depending on which patchset gets pulled first.
 > 
-> The full networking API is huge. So trying to put it all into net.rs
-> is unlikely to work in the long run. Maybe it would be better to name
-> this file based on the tiny little bit of the network API you are
-> writing an abstraction for?
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+> Acked-by: Jason Wang <jasowang@redhat.com>
 
-Yeah, in the long run. I tried the simplest but if the maintainers
-prefer that approach as the first step, I'll update the patch. how
-about rust/net/socket.rs ?
+It's a bit weird to add code in one patch then move it
+in another. Why not start with it in the final location?
 
+More importantly, the use of adminq terminology here
+is a going to be somewhat confusing with the unrelated
+admin virtqueue just having landed in the virtio spec.
+Is this terminology coming from some hardware spec?
 
-> If i'm reading the code correctly, you are abstracting the in kernel
-> socket API for only TCP over IPv4. Probably with time that will get
-> extended to IPv6, and then UDP. So maybe call this net-kern-socket.rs?
+> ---
+>  include/linux/pds/pds_adminq.h | 21 +++++++++++++++++++++
+>  include/linux/pds/pds_common.h | 21 ---------------------
+>  2 files changed, 21 insertions(+), 21 deletions(-)
+> 
+> diff --git a/include/linux/pds/pds_adminq.h b/include/linux/pds/pds_adminq.h
+> index 98a60ce87b92..61b0a8634e1a 100644
+> --- a/include/linux/pds/pds_adminq.h
+> +++ b/include/linux/pds/pds_adminq.h
+> @@ -222,6 +222,27 @@ enum pds_core_lif_type {
+>  	PDS_CORE_LIF_TYPE_DEFAULT = 0,
+>  };
+>  
+> +#define PDS_CORE_IFNAMSIZ		16
+> +
+> +/**
+> + * enum pds_core_logical_qtype - Logical Queue Types
+> + * @PDS_CORE_QTYPE_ADMINQ:    Administrative Queue
+> + * @PDS_CORE_QTYPE_NOTIFYQ:   Notify Queue
+> + * @PDS_CORE_QTYPE_RXQ:       Receive Queue
+> + * @PDS_CORE_QTYPE_TXQ:       Transmit Queue
+> + * @PDS_CORE_QTYPE_EQ:        Event Queue
+> + * @PDS_CORE_QTYPE_MAX:       Max queue type supported
+> + */
+> +enum pds_core_logical_qtype {
+> +	PDS_CORE_QTYPE_ADMINQ  = 0,
+> +	PDS_CORE_QTYPE_NOTIFYQ = 1,
+> +	PDS_CORE_QTYPE_RXQ     = 2,
+> +	PDS_CORE_QTYPE_TXQ     = 3,
+> +	PDS_CORE_QTYPE_EQ      = 4,
+> +
+> +	PDS_CORE_QTYPE_MAX     = 16   /* don't change - used in struct size */
+> +};
+> +
+>  /**
+>   * union pds_core_lif_config - LIF configuration
+>   * @state:	    LIF state (enum pds_core_lif_state)
+> diff --git a/include/linux/pds/pds_common.h b/include/linux/pds/pds_common.h
+> index 2a0d1669cfd0..435c8e8161c2 100644
+> --- a/include/linux/pds/pds_common.h
+> +++ b/include/linux/pds/pds_common.h
+> @@ -41,27 +41,6 @@ enum pds_core_vif_types {
+>  
+>  #define PDS_VDPA_DEV_NAME	PDS_CORE_DRV_NAME "." PDS_DEV_TYPE_VDPA_STR
+>  
+> -#define PDS_CORE_IFNAMSIZ		16
+> -
+> -/**
+> - * enum pds_core_logical_qtype - Logical Queue Types
+> - * @PDS_CORE_QTYPE_ADMINQ:    Administrative Queue
+> - * @PDS_CORE_QTYPE_NOTIFYQ:   Notify Queue
+> - * @PDS_CORE_QTYPE_RXQ:       Receive Queue
+> - * @PDS_CORE_QTYPE_TXQ:       Transmit Queue
+> - * @PDS_CORE_QTYPE_EQ:        Event Queue
+> - * @PDS_CORE_QTYPE_MAX:       Max queue type supported
+> - */
+> -enum pds_core_logical_qtype {
+> -	PDS_CORE_QTYPE_ADMINQ  = 0,
+> -	PDS_CORE_QTYPE_NOTIFYQ = 1,
+> -	PDS_CORE_QTYPE_RXQ     = 2,
+> -	PDS_CORE_QTYPE_TXQ     = 3,
+> -	PDS_CORE_QTYPE_EQ      = 4,
+> -
+> -	PDS_CORE_QTYPE_MAX     = 16   /* don't change - used in struct size */
+> -};
+> -
+>  int pdsc_register_notify(struct notifier_block *nb);
+>  void pdsc_unregister_notify(struct notifier_block *nb);
+>  void *pdsc_get_pf_struct(struct pci_dev *vf_pdev);
+> -- 
+> 2.17.1
 
-Yes. It's thin abstraction, just wrapping socket APIs. So it's easy to
-extend it for IPv6, non IP protocols, etc.
-
-Thanks,
 
