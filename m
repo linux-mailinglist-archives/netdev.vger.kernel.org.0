@@ -1,148 +1,145 @@
-Return-Path: <netdev+bounces-2913-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2914-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1F7667047FD
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:37:50 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 68A64704802
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:38:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7D9A128163A
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:37:48 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6136E1C20DEA
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:38:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E9292C723;
-	Tue, 16 May 2023 08:37:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 541862C723;
+	Tue, 16 May 2023 08:38:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C7832C722
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:37:46 +0000 (UTC)
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2099.outbound.protection.outlook.com [40.107.212.99])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E4A4C3B;
-	Tue, 16 May 2023 01:37:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g23JEsSKQKWeSWzcsk6SxYuJ+d+NatKKMpJq9/102pkSN0l1ul0zygOTFnvSkoYOjKOaFEY1Ys1ALJ2QRQvzWfD7meFmuRf4b6PNoqToRKbBbGo3NXAGEA4GV8lhczeH8wg2H833puGBKX7lOUUqH0QZ5hfiN1oCmN7ovY964IIJgJvYJmYDkwdM18mJR5oD/sVtMu90uONeXOhNG921s5NCKhQEOCySz5/FSq4kTo4p6GPD+820Y4bWic7q+/lGEnCP93JcsRmsoCYU6ZRj8eq3THhh0JVnBlO+igcSXClGogiOtUOpupL4SjYMflXoFp77FugaVAYEfSqyZL0NEg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t6L/buSjQTz29cSfQVXuu5fAv2EIC8EKt7/nOgvLYqQ=;
- b=cUx7DBp/OaR9428NjbMYZj90YE3pLX9lE2FCkJursxMHq9Tja/G4+DIKVOkq++k6EwC6opaNH2jBIz//RE/rhbmuwxF7CGBW7dj9PBeAgALFfMiXDtqxzN4/lpHvFoCYonKEaAYkeC/E6/CEvdxpP7SxGWnALvjU0f5glTXprw4llx88cxDfhYb2aBCHv4+mXc9IlPeHmgnoOrW+mN/AuTc6JebOxXQlCz/z/v6tH/p/zIl3Scr7WP/88pZJa+nc5CcY64VTnkWLtyr3taewhCnVzN0fn8Ze9g4dWywvxoGwpItYG0PfeZCi/QX0FXS5f3MoBeVj3C/8PXD8wSnKLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 435912C722
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:38:19 +0000 (UTC)
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE7A40DE
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:38:14 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-965d2749e2eso2098302066b.1
+        for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:38:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t6L/buSjQTz29cSfQVXuu5fAv2EIC8EKt7/nOgvLYqQ=;
- b=F+M91k9nA1LcjvnpGaA6V4f5RF5FDDE8+36dfxnD09fcnhnYZPwnc8UtKvGg95sUIm/DMJBN1MdUOUsns86L/kyZO5jwJ+XLozTRE3Agw/X2i5idwsu5zaLiTKqmga32XvAeOt3AmrNA6LY1+WUCyFYft4iAlRiDIfTCNQKBJ94=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH2PR13MB3669.namprd13.prod.outlook.com (2603:10b6:610:a1::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.33; Tue, 16 May
- 2023 08:37:32 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.033; Tue, 16 May 2023
- 08:37:32 +0000
-Date: Tue, 16 May 2023 10:37:25 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc: Kalle Valo <kvalo@kernel.org>, "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] wifi: wil6210: wmi: Replace zero-length array with
- DECLARE_FLEX_ARRAY() helper
-Message-ID: <ZGNAxZgv7SKXig3q@corigine.com>
-References: <ZGKHM+MWFsuqzTjm@work>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZGKHM+MWFsuqzTjm@work>
-X-ClientProxiedBy: AS4P191CA0022.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d9::13) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1684226293; x=1686818293;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qoPnstjPrS2tzxEaPLFxVKxPj2WD+daPAFjbj9WTzeA=;
+        b=x+AYYlvmcvoPE6XEGFZ+zXR1dy97/Gjk9/JFLJgq598TT4S2KgCmm7js1PYCuIu2aa
+         BgK6e/PbU25N55S47oUFbt8DQ4RJSpuOYyYOf1QTi3BuRFdSSSrcJnkgzDDzV3lX7Uo4
+         ZuCRK7bEeBkio/9mz3kpnivYgynTlowWBwmnd6Z0jR2frjS+euEznXRhH7wr1/TJ6QLq
+         VDdyZKJttmdjpHvDAzqdFAroThW0zhwWEcLH4NRdbcEGY1FbzjnHSzc8Rm9Lp/A+flMK
+         2enzAg2BLSXp1asCYWGYxX6zQ2eupJXgV0c/Xooa8maBNLaUOO0FajLMXLjLcnXgTGpl
+         o7dA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684226293; x=1686818293;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qoPnstjPrS2tzxEaPLFxVKxPj2WD+daPAFjbj9WTzeA=;
+        b=DQxM4yFe1jCEnnupFxuvEuAO9YiGzrQBUQiHMCcdSv3tpqKi8CYxqc76oHss92ADpg
+         t75dFPWYAFctr2H3vzJ6Dpmolarc2rk+CqA+7gMpyP8marfNc00hqHu9EGa61FtlSk/6
+         EsTkGl0irQ268W5/1T2w2g6IG+pDY6bQV9e2mIVMlr3xly57O/oHptc8GKdQov/meVuf
+         Bce6VUBEeF1cy+yBvTt0nCkROr1c9naifJ3PM/rYvfSohq3269hVBAr38QBTnkac/Jtg
+         9u3575pVoH+VIfo9u6JshKqds0sR5gq/0oIp7LOXtkATGMNJ47WA58ex6xVJICW1Cv6f
+         OHIw==
+X-Gm-Message-State: AC+VfDzD4JhCEk1Xmr7pPeKrDcExYxvGWB8dcbO61++cdUaUtJqZaPSI
+	4O2QM2mBvH8pZfgurRjSu8FDFg==
+X-Google-Smtp-Source: ACHHUZ6Q+QdDd2QgHb7UBFSvM9CUZLslb7mOVHq9gxwNwTBL5U4Ajwc98dA6zarZLWptkeY381IbrA==
+X-Received: by 2002:a17:907:168d:b0:969:f677:11b9 with SMTP id hc13-20020a170907168d00b00969f67711b9mr27436435ejc.54.1684226293002;
+        Tue, 16 May 2023 01:38:13 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id tk13-20020a170907c28d00b0094f185d82dcsm10506975ejc.21.2023.05.16.01.38.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 May 2023 01:38:12 -0700 (PDT)
+Message-ID: <a1d13117-a0c5-d06e-86b7-eacf4811102f@blackwall.org>
+Date: Tue, 16 May 2023 11:38:11 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3669:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5bd84928-8823-45c4-03c4-08db55e8ca4e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	+UXf9iGU0vgZ4L7QIaanWFr9ffFAANyVMQ1eEXinMF78a4cQZIfvYckIE6nWpfFXtsqG1TDuws5Qh+wOJfUqpWks2Zd41xEgH8YwyRPzHpHUP6qAdYtKm1wglNofK1bUNYkeCUSl5qVHc1ODjzldBD0QWBerc/EtpqZIGqnBfDq+SUC1IVfmcYtxYMZXMeVttotXZHlerDuV5V//2gq0AagDlMx+EnWaGPU169Rd+I7Y73FyoeZYxn7ufZuETUSCGdrxX+XRuniIbL8m2j/sKxl78iQlspcbTxXxILknHEbh27C2lDp9jEUR5UHzwhfT0WY7ewjpqkhEUGLR8JO/mvUI5S2DPrImxSkWpU7Z+wljOdHdQ/zcgGYtIZq+kRhV3q3Q+o0oYBkTcHV5Xhn3k+5b+yuw+5QfOWCpW91E00PMSFFSGsVAnwAyPwl+tYhmVhwXRXN3mDPZhc4IjI8ZKn7iWOZxDxeDdeUV+F4uSnF9aJFP0zi2S9xl2OzS/XgmrAynvjz9quIFC6QGRQx8i+DAQnW027yyWdqNNZnQS9I=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(366004)(376002)(346002)(39840400004)(451199021)(38100700002)(36756003)(86362001)(316002)(6916009)(41300700001)(4326008)(186003)(5660300002)(6506007)(8936002)(8676002)(7416002)(54906003)(6512007)(44832011)(4744005)(2616005)(2906002)(66946007)(66476007)(966005)(66556008)(6666004)(6486002)(478600001)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?+0UlobRGZPlZnp0eorAFIafAo5xXnQCg2firtzsDCroNBwcbpzq8nSgp2wXz?=
- =?us-ascii?Q?f3kQriIiC10WyXCOoNpA9mQSn1pXG5RNxyLvHkCFoAsJwRg5ItIjKapmFbwO?=
- =?us-ascii?Q?7vW0MWEef/Da4E2x1lvrcnlWX/6Vdcir9z3FhGNHSMKd1ImEXFVrdvIgsMfh?=
- =?us-ascii?Q?f4Jp5Bidp9k8XW0P+Tr2ajDrwOCAENrZ1oOqtjZ/zuhuiHe88Pugji+HOQiO?=
- =?us-ascii?Q?XQACvR7PSLNIsTJ4VCQzzo56qMzGxMRudBg5rNqhfLCn/boudymILQorK03P?=
- =?us-ascii?Q?Yh7Y3FX2rHKjorTUduSKxFmgxip4ug4WDE4Y9UG67QqfoyuerTAde72oUNzj?=
- =?us-ascii?Q?5hmV+VDwGUMhLvEGUxDcipveMZwpfSC7WkIaxsyOIwyOtqrHWbNhAy6Tyb4/?=
- =?us-ascii?Q?DcIln7Nc8AniuUQ8jxacSYyolLwaflDOxNRN/4tDvGhIwK9toUhInU+L4pN3?=
- =?us-ascii?Q?XI+z3rQg2tNxLLZSt2v+KxQHKm5s8nOPNHgIiWbdaesSUfAHSRs37uFjDMXv?=
- =?us-ascii?Q?P55WO6iMt9IrJd5Bi6v3GHHleSGIwXRvyJHp96OMcwFLy0jQ4PQyuRNRccsv?=
- =?us-ascii?Q?Xqbc4kqeP73pXsVhz4SGg8mo6/FgcZChkXaQguSv31yKaxUni4pLs6w/KGOs?=
- =?us-ascii?Q?sSNMo77QEw4uPp+Yq3JBJNwqDPPByjZb+m6YFEZjtOM06B+A7deR9UjseUFY?=
- =?us-ascii?Q?riellz4KNjG7ZU9bD2NGs5yG4Njj95ZmfMSVy5ZeGGNA+aSZFUv89/uTcIj2?=
- =?us-ascii?Q?4dUtaa+/irW875WlJSs8JwZalQ5CMtlW7dQlXryXCT5jB1z84UO2jbpWIdq+?=
- =?us-ascii?Q?f4xFzML6mBf7/dIthqsWzg7AKl3QLbRQPzfNRmiWqcvv7cxOOONpDYGpVuG/?=
- =?us-ascii?Q?yvqk38gOYtlLca8VlK9nIu4JOUjzgds5GidfcBJz0gWnhgez17t0jOIXZBSp?=
- =?us-ascii?Q?/H8SH8JLps53TjrN9XdIdlDGdE85zeC/Np6d28xLEQyE4gHm7FvDk8hKN5uw?=
- =?us-ascii?Q?ym4ypfRGwxsJWCtT0ydrkQIh4DDZ5sHn0IPzH60kjE/t0TunijRLjCGS44+e?=
- =?us-ascii?Q?SboBy2m+OOl6scKD6OYe7oYm5hSAYN4rI7MPMArT5tw+q9fX67PAkBQo8nDM?=
- =?us-ascii?Q?Xl73pZsrMKJO/0rViIjPB2GEUtLwh5JK0OmtKEj1xXE9YpKMTEssrozhCI6V?=
- =?us-ascii?Q?T6G0ODkT6ussGtWdca5iqGpp/W4/t16pZxSsfP5VZJWfUcKUqonaYrwNH/Pc?=
- =?us-ascii?Q?UfubyPTKLjsqPLsj8R2H1eZR+TDzcw+ziflyfFBX8kI1aahXNzY7vMTUzvBt?=
- =?us-ascii?Q?zSKKqyrunUmXmbXHaEUJar21pirwpcciPySUfnPixm6W0dgfb6JCBAIFUq32?=
- =?us-ascii?Q?tdles5EGnu1IJrVqNXP2zn8H2k3gkjztne3TCZEesGhLiLl1GBTK7ya3d49i?=
- =?us-ascii?Q?wQHYAQPb3RI3XsjzVhcDADZAN/lcvrkQfDPJP/Xbbu52eR+xI3V6o9D5vCMV?=
- =?us-ascii?Q?ivoA/4NKQCf5a93FXZKySeBksJVtAUKj44pNZXJbawi0i/kJLT2VHcTTVgts?=
- =?us-ascii?Q?4OEX20o0NsPS098ySm9CktJj9V8gaOHQrBBQTpkjr6AypZvEtJq0JmD+vWVl?=
- =?us-ascii?Q?gfw/IDx/wJTm0Oyo3AiYWwA8ygYxTJe8HqL45+Iv8S4NreTj/HkvxBAMlyem?=
- =?us-ascii?Q?2dxG9g=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5bd84928-8823-45c4-03c4-08db55e8ca4e
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2023 08:37:31.9367
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QAmBe/IzkAUKjrQGBco1GMCjTGe4nCOWhBvyXPrdZccGHDTG0LvPAUFRUhpS+jcOhCFPjhAGpPVlB7/Cf7JvbteCcXk3OxalNKkFnDwMd9M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3669
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next 1/2] bridge: Add a limit on FDB entries
+Content-Language: en-US
+To: Johannes Nixdorf <jnixdorf-oss@avm.de>, netdev@vger.kernel.org
+Cc: bridge@lists.linux-foundation.org, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Roopa Prabhu <roopa@nvidia.com>
+References: <20230515085046.4457-1-jnixdorf-oss@avm.de>
+From: Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230515085046.4457-1-jnixdorf-oss@avm.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 15, 2023 at 01:25:39PM -0600, Gustavo A. R. Silva wrote:
-> Zero-length arrays are deprecated, and we are moving towards adopting
-> C99 flexible-array members, instead. So, replace zero-length arrays
-> declarations alone in structs with the new DECLARE_FLEX_ARRAY()
-> helper macro.
+On 15/05/2023 11:50, Johannes Nixdorf wrote:
+> A malicious actor behind one bridge port may spam the kernel with packets
+> with a random source MAC address, each of which will create an FDB entry,
+> each of which is a dynamic allocation in the kernel.
 > 
-> This helper allows for flexible-array members alone in structs.
+> There are roughly 2^48 different MAC addresses, further limited by the
+> rhashtable they are stored in to 2^31. Each entry is of the type struct
+> net_bridge_fdb_entry, which is currently 128 bytes big. This means the
+> maximum amount of memory allocated for FDB entries is 2^31 * 128B =
+> 256GiB, which is too much for most computers.
 > 
-> Link: https://github.com/KSPP/linux/issues/193
-> Link: https://github.com/KSPP/linux/issues/288
-> Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Mitigate this by adding a bridge netlink setting IFLA_BR_FDB_MAX_ENTRIES,
+> which, if nonzero, limits the amount of entries to a user specified
+> maximum.
+> 
+> For backwards compatibility the default setting of 0 disables the limit.
+> 
+> All changes to fdb_n_entries are under br->hash_lock, which means we do
+> not need additional locking. The call paths are (✓ denotes that
+> br->hash_lock is taken around the next call):
+> 
+>  - fdb_delete <-+- fdb_delete_local <-+- br_fdb_changeaddr ✓
+>                 |                     +- br_fdb_change_mac_address ✓
+>                 |                     +- br_fdb_delete_by_port ✓
+>                 +- br_fdb_find_delete_local ✓
+>                 +- fdb_add_local <-+- br_fdb_changeaddr ✓
+>                 |                  +- br_fdb_change_mac_address ✓
+>                 |                  +- br_fdb_add_local ✓
+>                 +- br_fdb_cleanup ✓
+>                 +- br_fdb_flush ✓
+>                 +- br_fdb_delete_by_port ✓
+>                 +- fdb_delete_by_addr_and_port <--- __br_fdb_delete ✓
+>                 +- br_fdb_external_learn_del ✓
+>  - fdb_create <-+- fdb_add_local <-+- br_fdb_changeaddr ✓
+>                 |                  +- br_fdb_change_mac_address ✓
+>                 |                  +- br_fdb_add_local ✓
+>                 +- br_fdb_update ✓
+>                 +- fdb_add_entry <--- __br_fdb_add ✓
+>                 +- br_fdb_external_learn_add ✓
+> 
+> Signed-off-by: Johannes Nixdorf <jnixdorf-oss@avm.de>
+> ---
+>  include/uapi/linux/if_link.h | 1 +
+>  net/bridge/br_device.c       | 2 ++
+>  net/bridge/br_fdb.c          | 6 ++++++
+>  net/bridge/br_netlink.c      | 9 ++++++++-
+>  net/bridge/br_private.h      | 2 ++
+>  5 files changed, 19 insertions(+), 1 deletion(-)
+> 
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+I completely missed the fact that you don't deal with the situation where you already have fdbs created
+and a limit is set later, then it would be useless because it will start counting from 0 even though
+there are already entries. Also another issue that came to mind is that you don't deal with fdb_create()
+for "special" entries, i.e. when adding a port. Currently it will print an error, but you should revisit
+all callers and see where it might be a problem.
+
+
 
 
