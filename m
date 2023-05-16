@@ -1,185 +1,160 @@
-Return-Path: <netdev+bounces-3028-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3029-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 73A6A7051CB
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 17:15:55 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id DA32670524B
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 17:35:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 339212815B4
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 15:15:54 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C007E1C20E16
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 15:35:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 82FB528C29;
-	Tue, 16 May 2023 15:15:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A162428C39;
+	Tue, 16 May 2023 15:35:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F92E34CEC
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 15:15:52 +0000 (UTC)
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED5540E8
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:15:48 -0700 (PDT)
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D61DB3F4D8
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 15:15:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1684250145;
-	bh=iTvlFKSwib93tIKFKt+HnqYlA/ksROMfbN2GQTLTXB8=;
-	h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-	 Content-Type:Date:Message-ID;
-	b=rx7UWIe4zLbK0WaPpGFOQGI2HwBd4nXdDIroFcBad3A2XvQB2C/v545boT5d47eoK
-	 AJzrUvBCMYFAsFpWkybWJmO0Za3P22PscntOL08FAFUXVL1/+A2y63j5ld04Ca9xfZ
-	 l4uwjlHStOQ1/hABkTzrPeb90epUP2J233QmlMLvwedau2lKZHuNlGAR3weEVtnO2/
-	 shb5u+rtmZXJi42peM1StGRYmGIKQDFYSEIwjLKAbPWFo+/9daBxq0qE0+8xHn/0al
-	 InwdrCL1sas26nW85kyGsOxl/5kdnSGtqn6CyShTP6OmbhcA0LNgNL7xXqc1qSdxi3
-	 Mw0rMExqYwJDA==
-Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-64378a8b332so8307680b3a.2
-        for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:15:45 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B07334CEC
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 15:35:38 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271817DA2
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:35:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684251333;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=CcyRieVlUfnyzXKTzR5d4JdkM5K3TgxrxW94yInGt+Q=;
+	b=B4gbIoW+U4T+vrwvlrmUl5rf188eqf7cSfjIo0mXWYIIchfOygUjADKXXakTQfYH+0lP/L
+	SfB0Lqc0FM7K8kcUGRvqxN9SNmAQNpqfReV5i6I/lmkW3eQY+/j17Gh4AZUVZEaJn9DVtr
+	nIkUQ4xZmuCozTuD+Kj+k26tCKc88qg=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-671-SAqJFMOsN6GbH4EeEBd6vg-1; Tue, 16 May 2023 11:35:31 -0400
+X-MC-Unique: SAqJFMOsN6GbH4EeEBd6vg-1
+Received: by mail-ed1-f70.google.com with SMTP id 4fb4d7f45d1cf-5104a3f0a45so3231915a12.2
+        for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:35:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684250144; x=1686842144;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iTvlFKSwib93tIKFKt+HnqYlA/ksROMfbN2GQTLTXB8=;
-        b=ffKKrYQsBh3mWdFx5PqrouFGIxQ2lRuFKj6+cT9UmgskSHh4XmVv+XykOchDU5VARd
-         8FhR9o0ulZwuD2nv2QRuyOoevPbrFM6cuwHNJo5DIaiXeEVjtYU+ZgRXOXl36pliWBsD
-         tfVKWNSQpxTpskrGy2b0wI0GRAWlgekTpYhrg02JiKp18x+sie75GnROM0p6kNxMcRqP
-         P0OcaP76H6+2r3itjuYKuN/Uk3Kmhgyk6r5y5y8sbCoCgnGHuyfM5LPULNTV8huwGZ/x
-         DhaoWRClPd4WntkilkIyrVTpL/ucznktKb9CY11FyIysoaqxzycTuKnq0oqmNCheGAbX
-         luAQ==
-X-Gm-Message-State: AC+VfDxHMz9HHBKTGVvwBrf3vVTcDdpwuHs4VVFW4VwgOVbgvOi0tPRG
-	JlDaKyRUYNzdBEZGbtULyAo9KpVZ5o2n8Nf6bMGqZVaMs3ezftjEVXd7xVfT/jF4Ubl+anqyfus
-	xC+0RRAi6HV9IjtDTA/HeJeS4GX/vR9sqkg==
-X-Received: by 2002:a17:902:b08c:b0:1a1:ee8c:eef7 with SMTP id p12-20020a170902b08c00b001a1ee8ceef7mr40074953plr.48.1684250144291;
-        Tue, 16 May 2023 08:15:44 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4HdnQri2vBDojSeMXzhQ/Kg3CFAbObWMUuLf6FCcHU8PLL8nvl4lJAozdWpffiiE0Clk/y7A==
-X-Received: by 2002:a17:902:b08c:b0:1a1:ee8c:eef7 with SMTP id p12-20020a170902b08c00b001a1ee8ceef7mr40074921plr.48.1684250143933;
-        Tue, 16 May 2023 08:15:43 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id iz3-20020a170902ef8300b001ac444fd07fsm11895135plb.100.2023.05.16.08.15.43
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 May 2023 08:15:43 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-	id EC208608D4; Tue, 16 May 2023 08:15:42 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-	by famine.localdomain (Postfix) with ESMTP id DC7179FAA4;
-	Tue, 16 May 2023 08:15:42 -0700 (PDT)
-From: Jay Vosburgh <jay.vosburgh@canonical.com>
-To: Mateusz Palczewski <mateusz.palczewski@intel.com>
-cc: andy@greyhouse.net, davem@davemloft.net, edumazet@google.com,
-    kuba@kernel.org, pabeni@redhat.com, dbanerje@akamai.com,
-    netdev@vger.kernel.org,
-    Sebastian Basierski <sebastianx.basierski@intel.com>
-Subject: Re: [PATCH iwl-net v1 2/2] drivers/net/bonding: Added some delay while checking for VFs link
-In-reply-to: <20230516134447.193511-3-mateusz.palczewski@intel.com>
-References: <20230516134447.193511-1-mateusz.palczewski@intel.com> <20230516134447.193511-3-mateusz.palczewski@intel.com>
-Comments: In-reply-to Mateusz Palczewski <mateusz.palczewski@intel.com>
-   message dated "Tue, 16 May 2023 09:44:47 -0400."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        d=1e100.net; s=20221208; t=1684251330; x=1686843330;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CcyRieVlUfnyzXKTzR5d4JdkM5K3TgxrxW94yInGt+Q=;
+        b=P7I+TTTnpuxpexbOf9tftqpIga9Ug+ndjNMi5IUnwgRY6YBJC3QirBDTXzb8x7Dam2
+         awbmOgYSS+5zlxJRkzGdbkz50gYuSXnqHiX5sQocMOejSdLZD+jvJIdSgKdVIVWO0bPb
+         1z2tIU4JIXsReVnVJjxjGekOax1zP+s6H/IRkM1OKJjH1+vfuc0p05ReW6n4uFU4n/2O
+         agwy7rLUloWAnON7QFiYCZZzXFMbJKc5GS8bP3Nfwtvj47qJ119/TeOwILQLTKapICtt
+         7RxLY+FbJT4DOWH/UkSyKDrhPULOs7tTnu80R0NtEtjd9kALkQsF1rAieI6f/c5KnUmV
+         IZQw==
+X-Gm-Message-State: AC+VfDzS9qgwbQKjnYLqhGkQJY/kk/i+sbg6GAbzkeRxHJeptST9vEil
+	kLX5N+L8qLPBeX+5NAntn0bWSxy8l5nniVV98NgVoTK9Tbq7j8IvlGahgl8OLeQ86iNQe21ki5U
+	1jFuETuHY4YxyMOU/
+X-Received: by 2002:a17:907:7241:b0:96a:f688:db6d with SMTP id ds1-20020a170907724100b0096af688db6dmr9440494ejc.39.1684251330715;
+        Tue, 16 May 2023 08:35:30 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ57HOpAvaM/nwXSOEpBnwKQLHKhU91w24YzKezDzveXbLZUSTWHiqd71UBuqaWRBls0iTWibg==
+X-Received: by 2002:a17:907:7241:b0:96a:f688:db6d with SMTP id ds1-20020a170907724100b0096af688db6dmr9440452ejc.39.1684251330293;
+        Tue, 16 May 2023 08:35:30 -0700 (PDT)
+Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
+        by smtp.gmail.com with ESMTPSA id og40-20020a1709071de800b0095807ab4b57sm11264399ejc.178.2023.05.16.08.35.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 May 2023 08:35:29 -0700 (PDT)
+From: Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <a37db72f-2e83-c838-7c81-8f01a5a0df32@redhat.com>
+Date: Tue, 16 May 2023 17:35:27 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <32199.1684250142.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 16 May 2023 08:15:42 -0700
-Message-ID: <32200.1684250142@famine>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Cc: brouer@redhat.com, Jesper Dangaard Brouer <jbrouer@redhat.com>,
+ bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>,
+ Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+ Andrii Nakryiko <andrii@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+ Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>,
+ Yonghong Song <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>,
+ KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+ Jesse Brandeburg <jesse.brandeburg@intel.com>,
+ Tony Nguyen <anthony.l.nguyen@intel.com>,
+ Anatoly Burakov <anatoly.burakov@intel.com>,
+ Alexander Lobakin <alexandr.lobakin@intel.com>,
+ Magnus Karlsson <magnus.karlsson@gmail.com>,
+ Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+ netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND bpf-next 14/15] net, xdp: allow metadata > 32
+Content-Language: en-US
+To: Alexander Lobakin <aleksander.lobakin@intel.com>,
+ Larysa Zaremba <larysa.zaremba@intel.com>
+References: <20230512152607.992209-1-larysa.zaremba@intel.com>
+ <20230512152607.992209-15-larysa.zaremba@intel.com>
+ <ee1ad4f2-34ab-4377-14d5-532cb0687180@redhat.com> <ZGJnFxzDTV2qE4zZ@lincoln>
+ <b9a879b2-bb62-ba18-0bdd-5c126a1086a9@intel.com>
+In-Reply-To: <b9a879b2-bb62-ba18-0bdd-5c126a1086a9@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Mateusz Palczewski <mateusz.palczewski@intel.com> wrote:
 
->From: Sebastian Basierski <sebastianx.basierski@intel.com>
->
->Right now bonding driver checks if link is ready once.
->VF interface takes a little more time to get ready than PF,
->so driver needs to wait for it to be ready.
->1000ms delay was set, if VF link will not be set within given amount
->of time, for sure problems should be investigated elsewhere.
 
-	Why is the "updelay" mechanism that's already available
-insufficient for this purpose?
+On 16/05/2023 14.37, Alexander Lobakin wrote:
+> From: Larysa Zaremba<larysa.zaremba@intel.com>
+> Date: Mon, 15 May 2023 19:08:39 +0200
+> 
+>> On Mon, May 15, 2023 at 06:17:02PM +0200, Jesper Dangaard Brouer wrote:
+>>>
+>>> On 12/05/2023 17.26, Larysa Zaremba wrote:
+>>>> From: Aleksander Lobakin<aleksander.lobakin@intel.com>
+>>>>
+>>>> When using XDP hints, metadata sometimes has to be much bigger
+>>>> than 32 bytes. Relax the restriction, allow metadata larger than 32 bytes
+>>>> and make __skb_metadata_differs() work with bigger lengths.
+>>>>
+>>>> Now size of metadata is only limited by the fact it is stored as u8
+>>>> in skb_shared_info, so maximum possible value is 255.
+ >>>
+>>> I'm confused, IIRC the metadata area isn't stored "in skb_shared_info".
+>>> The maximum possible size is limited by the XDP headroom, which is also
+>>> shared/limited with/by xdp_frame.  I must be reading the sentence wrong,
+>>> somehow.
+ >
+> skb_shared_info::meta_size  is u8. Since metadata gets carried from
+> xdp_buff to skb, this check is needed (it's compile-time constant anyway).
+> Check for headroom is done separately already (two sentences below).
+> 
 
-	Even without updelay, I'd expect the behavior to simply be that
-the carrier state flaps once or twice (because the VF is delayed in
-asserting carrier up).  This is reflecting reality; I'm unsure why we
-would want to hack in an extra delay to cover that up.
+Damn, argh, for SKBs the "meta_len" is stored in skb_shared_info, which
+is located on another cacheline.
+That is a sure way to KILL performance! :-(
 
-	Regardless of whether updelay handles this case or not, adding a
-1 second busy wait loop as this patch does is not a reasonable
-implementation.  This would cause a 1 second stall in the link state
-check for every bond interface that is carrier down.
+But only use for SKBs that gets created from xdp with metadata, right?
 
-	-J
 
->Fixes: b3c898e20b18 ("Revert "bonding: allow carrier and link status to d=
-etermine link state"")
->Signed-off-by: Sebastian Basierski <sebastianx.basierski@intel.com>
->Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
->---
-> drivers/net/bonding/bond_main.c | 14 +++++++++++++-
-> 1 file changed, 13 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
->index 710548dbd0c1..6d49fb25969e 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -736,6 +736,8 @@ const char *bond_slave_link_status(s8 link)
->  * It'd be nice if there was a good way to tell if a driver supports
->  * netif_carrier, but there really isn't.
->  */
->+#define BOND_CARRIER_CHECK_TIMEOUT 1000
->+
-> static int bond_check_dev_link(struct bonding *bond,
-> 			       struct net_device *slave_dev, int reporting)
-> {
->@@ -743,12 +745,22 @@ static int bond_check_dev_link(struct bonding *bond=
-,
-> 	int (*ioctl)(struct net_device *, struct ifreq *, int);
-> 	struct ifreq ifr;
-> 	struct mii_ioctl_data *mii;
->+	int delay;
-> =
 
-> 	if (!reporting && !netif_running(slave_dev))
-> 		return 0;
-> =
+>> It's not 'metadata is stored as u8', it's 'metadata size is stored as u8' :)
+>> Maybe I should rephrase it better in v2.
 
->+	for (delay =3D 0; delay < BOND_CARRIER_CHECK_TIMEOUT; delay++) {
->+		mdelay(1);
->+
->+		if (bond->params.use_carrier &&
->+		    netif_carrier_ok(slave_dev)) {
->+			return BMSR_LSTATUS;
->+		}
->+	}
->+
-> 	if (bond->params.use_carrier)
->-		return netif_carrier_ok(slave_dev) ? BMSR_LSTATUS : 0;
->+		return 0;
-> =
+Yes, a rephrase will be good.
 
-> 	/* Try to get link status using Ethtool first. */
-> 	if (slave_dev->ethtool_ops->get_link)
->-- =
+--Jesper
 
->2.31.1
->
->
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+
+static inline u8 skb_metadata_len(const struct sk_buff *skb)
+{
+	return skb_shinfo(skb)->meta_len;
+}
+
 
