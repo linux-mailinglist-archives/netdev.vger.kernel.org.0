@@ -1,48 +1,48 @@
-Return-Path: <netdev+bounces-3058-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3059-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9AB3F705523
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:39:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 40514705524
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:40:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5591128159C
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 17:39:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EFAD828168B
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 17:40:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 97AC01078A;
-	Tue, 16 May 2023 17:39:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36E601097C;
+	Tue, 16 May 2023 17:39:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A99B8814
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 17:39:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B6F410978
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 17:39:55 +0000 (UTC)
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE926582
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 10:39:52 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D696A54
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 10:39:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684258792; x=1715794792;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=x44eX8e+SHx4Euu4FAoiXYtbdzYvVk2gTRqRPHzR5P0=;
-  b=VTO32wEiUeTguxyRK6AKENdSQFwk4Xg8RbOb1J4vn6uczrQy11l1Swhj
-   SZQv+YzKWg7EiR5R5fq84i1WJulv1mIJaJXbTFf9OhF4QTBrSTmdI8JJE
-   KCazT8DeoaZoLvYkZDo/VOkc/BFnFKj/CCbk7gT81QhdsclSxBU0hvNXf
-   uPO9F/sa3mE61OY49LUeWaNeThLh2r5XkxHs4RDwd9oTS3JBLIa14J4Hh
-   u8tW1fZFM3n/m044CbS+Ccq/6Flj95/aLuVqd4NYH/zob/jhadHyfFuHA
-   UkcEVXKsxI9Fv3SNCS7YRCK2L03ndm5nbsqKsBxxpuI3YsLB5W8VNtRk0
+  t=1684258793; x=1715794793;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=vPDTUPv+OVs38OvxMiDdNGCutIkuVG+qRFsqFij+1L8=;
+  b=cbv+auWng6GHg3Uk8mOXE8iSv6LQtx0EKXY135CkvE58BulxLs56ynN3
+   ihwNv6s/Rb7T9CyOKeXTADj4z3tHQx67xlFfRrEF49d1bFFn5KyPDYeox
+   Q+HDBPja1i0TMz4OsPYr8jQLltP9VIHOQy1Tukr8rAgaYPTPkZ3YsuZ0K
+   1M8PNg0KWm1NwBeZTI3B1HlDelh8TyE2aEKbrKnXikYq9p0vEvIUr7Ime
+   ng6bPGZL69EZbTYW7MAnNtmVyxPrSboDI/D4OFmyVD17illv+ttoVw+95
+   Qcc5EeLYERK1myYGXaOSVcelprrJTmyw7eINhUTml/l1IA1pLG/VQyw56
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10712"; a="379730735"
+X-IronPort-AV: E=McAfee;i="6600,9927,10712"; a="379730741"
 X-IronPort-AV: E=Sophos;i="5.99,278,1677571200"; 
-   d="scan'208";a="379730735"
+   d="scan'208";a="379730741"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2023 10:39:52 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10712"; a="704489412"
+X-IronPort-AV: E=McAfee;i="6600,9927,10712"; a="704489417"
 X-IronPort-AV: E=Sophos;i="5.99,278,1677571200"; 
-   d="scan'208";a="704489412"
+   d="scan'208";a="704489417"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by fmsmga007.fm.intel.com with ESMTP; 16 May 2023 10:39:51 -0700
 From: Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -51,12 +51,17 @@ To: davem@davemloft.net,
 	pabeni@redhat.com,
 	edumazet@google.com,
 	netdev@vger.kernel.org
-Cc: Tony Nguyen <anthony.l.nguyen@intel.com>,
-	leonro@nvidia.com
-Subject: [PATCH net v2 0/3][pull request] Intel Wired LAN Driver Updates 2023-05-16
-Date: Tue, 16 May 2023 10:36:07 -0700
-Message-Id: <20230516173610.2706835-1-anthony.l.nguyen@intel.com>
+Cc: Ahmed Zaki <ahmed.zaki@intel.com>,
+	anthony.l.nguyen@intel.com,
+	Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Rafal Romanowski <rafal.romanowski@intel.com>,
+	Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH net v2 1/3] ice: Fix stats after PF reset
+Date: Tue, 16 May 2023 10:36:08 -0700
+Message-Id: <20230516173610.2706835-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20230516173610.2706835-1-anthony.l.nguyen@intel.com>
+References: <20230516173610.2706835-1-anthony.l.nguyen@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -72,42 +77,46 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This series contains updates to ice and iavf drivers.
+From: Ahmed Zaki <ahmed.zaki@intel.com>
 
-Ahmed adds setting of missed condition for statistics which caused
-incorrect reporting of values for ice. For iavf, he removes a call to set
-VLAN offloads during re-initialization which can cause incorrect values
-to be set.
+After a core PF reset, the VFs were showing wrong Rx/Tx stats. This is a
+regression in commit 6624e780a577 ("ice: split ice_vsi_setup into smaller
+functions") caused by missing to set "stat_offsets_loaded = false" in the
+ice_vsi_rebuild() path.
 
-Dawid adds checks to ensure VF is ready to be reset before executing
-commands that will require it to be reset on ice.
+Fixes: 6624e780a577 ("ice: split ice_vsi_setup into smaller functions")
+Signed-off-by: Ahmed Zaki <ahmed.zaki@intel.com>
+Reviewed-by: Alexander Lobakin <aleksander.lobakin@intel.com>
+Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
-v2:
-Patch 2
-- Redo commit message
+ drivers/net/ethernet/intel/ice/ice_lib.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-v1: https://lore.kernel.org/netdev/20230425170127.2522312-1-anthony.l.nguyen@intel.com/
-
-The following are changes since commit 225c657945c4a6307741cb3cc89467eadcc26e9b:
-  net: bcmgenet: Restore phy_stop() depending upon suspend/close
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
-
-Ahmed Zaki (2):
-  ice: Fix stats after PF reset
-  iavf: send VLAN offloading caps once after VFR
-
-Dawid Wesierski (1):
-  ice: Fix ice VF reset during iavf initialization
-
- .../net/ethernet/intel/iavf/iavf_virtchnl.c   |  5 -----
- drivers/net/ethernet/intel/ice/ice_lib.c      |  5 +++++
- drivers/net/ethernet/intel/ice/ice_sriov.c    |  8 ++++----
- drivers/net/ethernet/intel/ice/ice_vf_lib.c   | 19 +++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_vf_lib.h   |  1 +
- drivers/net/ethernet/intel/ice/ice_virtchnl.c |  1 +
- 6 files changed, 30 insertions(+), 9 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 450317dfcca7..11ae0e41f518 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -2745,6 +2745,8 @@ ice_vsi_cfg_def(struct ice_vsi *vsi, struct ice_vsi_cfg_params *params)
+ 			goto unroll_vector_base;
+ 
+ 		ice_vsi_map_rings_to_vectors(vsi);
++		vsi->stat_offsets_loaded = false;
++
+ 		if (ice_is_xdp_ena_vsi(vsi)) {
+ 			ret = ice_vsi_determine_xdp_res(vsi);
+ 			if (ret)
+@@ -2793,6 +2795,9 @@ ice_vsi_cfg_def(struct ice_vsi *vsi, struct ice_vsi_cfg_params *params)
+ 		ret = ice_vsi_alloc_ring_stats(vsi);
+ 		if (ret)
+ 			goto unroll_vector_base;
++
++		vsi->stat_offsets_loaded = false;
++
+ 		/* Do not exit if configuring RSS had an issue, at least
+ 		 * receive traffic on first queue. Hence no need to capture
+ 		 * return value
 -- 
 2.38.1
 
