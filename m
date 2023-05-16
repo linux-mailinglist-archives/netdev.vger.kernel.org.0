@@ -1,133 +1,112 @@
-Return-Path: <netdev+bounces-3072-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3074-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C1ECD70554C
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:47:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id ED245705569
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:49:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BF3FB1C20DA9
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 17:47:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A89E5281527
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 17:49:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D9FC2156F6;
-	Tue, 16 May 2023 17:45:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF6ED11C85;
+	Tue, 16 May 2023 17:49:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC46F101D7
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 17:45:41 +0000 (UTC)
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC307DA9;
-	Tue, 16 May 2023 10:45:39 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-	by mailout.nyi.internal (Postfix) with ESMTP id CD2DB5C01A6;
-	Tue, 16 May 2023 13:45:36 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Tue, 16 May 2023 13:45:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:sender:subject:subject:to:to; s=fm3; t=
-	1684259136; x=1684345536; bh=wBYZT0OYkMw2TLM13VW/L10+YF3tRMc4JyR
-	//pK6kKY=; b=tf1fA1FFYUbqAZixRp8n3F6FYjwLml0yhRx02Mc+jQx1fXN3meF
-	BOchr8HHmmt8N3tVVX5/REOIq4MqC96in9Gssin1m/pgpMma1vHzyKmNyNd046ud
-	/kaCW9N485Z8n2jm4ABp2v64TEyTtgvADgwkzPXss96AcVTE03BU8TD3ViZqsMiZ
-	b9n9NeMCzKQPGl/XFG0WkVa3PH8SOa7iM3+0FJUYMMkWBVm6BAKovQdF/STR5ZtM
-	viCu6pc+oMJk94JleK6TW54nvY+99ZZu0lJfRBKdvBIVjzd9QWPN2/tYjFMONVbR
-	6hZU0k5Q57S5ftGCGR5fDDmPMTMdU9JHttA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:sender:subject:subject:to:to:x-me-proxy
-	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-	1684259136; x=1684345536; bh=wBYZT0OYkMw2TLM13VW/L10+YF3tRMc4JyR
-	//pK6kKY=; b=HJT5rvzrsM8s9tPzR6nci6ldrk5LDTxA9hdX+pqi9vE41/Fu2AD
-	Gx2d0ih/RJPuU4BVqp7Y8z3uLn+yebQ5yujB+lPaZj7S27YX81E7Bshh/mevR0RF
-	7CtBx8O2ZT8GKs1Js6s+mBJ5Eqa0SLNYd0WguZJ55efojjjbntGhDfAIH5e8GuE5
-	Ss7egnenBo1YK34RNxNUGUPcxBw9zL08P0b6KSbKFBaqGSBEU70vK8qjW6TFiizQ
-	dQlmK0DbScTWTQaT9CpZAfJGgshN6KfiR7BeJthEPuRuRTeFdAXaERbAvpi2QVXp
-	ektRqGCslWB7Cw72p3wU5O/zLSmd5b3AwMQ==
-X-ME-Sender: <xms:QMFjZMoAK2OPNcQm_1u0VC3EvO7oghx7gHlmPm8Cewapqx6EmNMnVw>
-    <xme:QMFjZCruMgoq74UzUanNSr42TBdBQkRsqec395hH2h93kSSKHr-Wg2Pqk74VIT3LR
-    ujrqb2DiAAmNf9CMCY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeehledgudduhecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgfgsehtqhertderreejnecuhfhrohhmpedf
-    tehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrf
-    grthhtvghrnhepgfekueelgeeigefhudduledtkeefffejueelheelfedutedttdfgveeu
-    feefieegnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:QMFjZBN8wQu2db93aF2AsslCg4m3O6XSlktv_KnD_80zcmxh4JNAsA>
-    <xmx:QMFjZD5SQvdlsWY4df01KrZ4kUD-ZjCgKnloS6dgqGYXPP0K_KVe3Q>
-    <xmx:QMFjZL58jK6CwjPRQ3srZpxvMjPKm9mY98DHfQjssPpD-YYDN5voxQ>
-    <xmx:QMFjZDy2N_zTcpTAXLo6ta_tuOQ82FHVnQWlKuMnaHU1boX7gVR-BA>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 848A2B60089; Tue, 16 May 2023 13:45:36 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-431-g1d6a3ebb56-fm-20230511.001-g1d6a3ebb
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C35D6107BA
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 17:49:42 +0000 (UTC)
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42E5D870;
+	Tue, 16 May 2023 10:49:29 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-3f4249b7badso104154555e9.3;
+        Tue, 16 May 2023 10:49:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684259368; x=1686851368;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Wkvfa6m0vdZwcF4M9a5fBUmhIWptPRDqhsXwfDMKgPY=;
+        b=gzz2a/q9UY62WXhzjc23Wfn5th+xSv4XWhC0nMZya5qItV5OtlD8R/rJB8TuUzv1j8
+         13xMc7kBGYSDAr9VR5AUGPSePnrwCGeyCwIbqejeQ+E6ThYSsZCAr8OFovYaFolriRzg
+         wBVpGBiJymc2ZGYYL9fBhK+dAsqAWbuyYbsgDi8CI6izliI5MGeGCRZHe/5eLV6q0JRC
+         A/I1zemVQm1LR5XJruCHtchZGZEQ1zluUrD8zW2aLsvoWObS6PGLgVeFsJMau3aUn5Gz
+         H/GEKgrzQX1fZW1hzq6sSoB3jmc8p+RZsDgdVXipmU8fNmuRWJ/Xqe8DUPaB5htc+K7E
+         KLPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684259368; x=1686851368;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Wkvfa6m0vdZwcF4M9a5fBUmhIWptPRDqhsXwfDMKgPY=;
+        b=Y7MCvNwXrGoA4bPTcIZ/rkE6jXAqKFneJdZYQfnRUd4f+laLs91YmI44O3p654x3HG
+         S8T0/gbR0d+42gbJPlfO0Z5KkUo8GABe0EiGpfI9ubFICgSYgK95X5eH9QNNBjJ9c+Bt
+         OJrSwhX3MHI7aIudbCUMiKmXUoSudQKlwJRR0RjHilHmbkB2tpkEeflE1NNpGO+uQYaH
+         TmHgKxd3xcrP0eCHFUWUeSFTZBx+djzgqrep8VS6Vw9l3jklGQoat9TdHHaOhpjDO8jx
+         VcpnfQ9bCWu5ifI0U2aSOPcBRRQ8wHgceGAirSaTooJMZtf1bxcpUWomlxU+e6dgGHwS
+         PNew==
+X-Gm-Message-State: AC+VfDw+xAj1g4p72rjpBrYeKRENtXUCAMJD8Uphcts0XtmntZ7/mIJI
+	eiMePCV5v0QuAy2sbU0XMIDjx6JuXtE=
+X-Google-Smtp-Source: ACHHUZ4o5Q8uceN/RNtS9Ztb6gw5AQEQbMSuJHRag/x36srETjUb6QNW4Ul66pt/eK16iuC/BYApTQ==
+X-Received: by 2002:a7b:cd0f:0:b0:3f4:23df:c681 with SMTP id f15-20020a7bcd0f000000b003f423dfc681mr21939723wmj.12.1684259367754;
+        Tue, 16 May 2023 10:49:27 -0700 (PDT)
+Received: from [192.168.8.100] ([85.255.233.10])
+        by smtp.gmail.com with ESMTPSA id c22-20020a05600c0ad600b003f50876905dsm3057620wmr.6.2023.05.16.10.49.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 May 2023 10:49:27 -0700 (PDT)
+Message-ID: <e9527d98-b39e-74cc-026d-7ea2d7692a33@gmail.com>
+Date: Tue, 16 May 2023 18:46:35 +0100
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Message-Id: <b53f3673-f6b1-4071-9bcf-9ae5815593eb@app.fastmail.com>
-In-Reply-To: <20230516191245.4149c51a@barney>
-References: <20230516074554.1674536-1-arnd@kernel.org>
- <20230516191245.4149c51a@barney>
-Date: Tue, 16 May 2023 19:45:16 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: =?UTF-8?Q?Michael_B=C3=BCsch?= <m@bues.ch>,
- "Arnd Bergmann" <arnd@kernel.org>
-Cc: "Kalle Valo" <kvalo@kernel.org>, "David S . Miller" <davem@davemloft.net>,
- "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
- "Paolo Abeni" <pabeni@redhat.com>, "Nathan Chancellor" <nathan@kernel.org>,
- "Nick Desaulniers" <ndesaulniers@google.com>, "Tom Rix" <trix@redhat.com>,
- linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
- Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
- llvm@lists.linux.dev
-Subject: Re: [PATCH] wifi: b43: fix incorrect __packed annotation
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next 2/2] net/tcp: optimise io_uring zc ubuf
+ refcounting
+Content-Language: en-US
+To: David Ahern <dsahern@kernel.org>, Eric Dumazet <edumazet@google.com>
+Cc: io-uring@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+ kuba@kernel.org, pabeni@redhat.com
+References: <cover.1684166247.git.asml.silence@gmail.com>
+ <bdbbff06f20c100c00e59932ffecbd18ad699f57.1684166247.git.asml.silence@gmail.com>
+ <99faed2d-8ea6-fc85-7f21-e15b24d041f1@kernel.org>
+ <CANn89i+Bb7g9uDPVmomNDJivK7CZBYD1UXryxq2VEU77sajqEg@mail.gmail.com>
+ <d7edb614-3758-1df6-91b8-a0cb601137a4@kernel.org>
+ <ee609e87-0515-c1f8-8b27-78572c81b1b4@gmail.com>
+ <1182a9ae-8396-97d1-6708-b811ddd9d976@kernel.org>
+From: Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <1182a9ae-8396-97d1-6708-b811ddd9d976@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 16, 2023, at 19:12, Michael B=C3=BCsch wrote:
-> On Tue, 16 May 2023 09:45:42 +0200
-> Arnd Bergmann <arnd@kernel.org> wrote:
->
->> b43_iv { union {
->>  		__be16 d16;
->>  		__be32 d32;
->> -	} data __packed;
->> +	} __packed data;
->>  } __packed;
->> =20
->> =20
->
-> Oh, interesting. This has probably been there forever.
-> Did you check if the b43legacy driver has the same issue?
+On 5/16/23 15:37, David Ahern wrote:
+> On 5/16/23 6:59 AM, Pavel Begunkov wrote:
+>>
+>>
+>>> The one in net_zcopy_put can be removed with the above change. It's
+>>> other caller is net_zcopy_put_abort which has already checked uarg is
+>>> set.
+>>
+>> Ah yes, do you want me to fold it in?
+>>
+> 
+> no preference.
 
-I had not checked, but I see that it does have the same bug.
+I'll leave it for another patch then. It might be interesting
+to try remove null checks for all *_zcopy_* helpers, but it didn't
+feel right last time I tried.
 
-I only sent this one because the build bot (incorrectly)
-blamed one of my recent patches for a regression here.
-Which reminds me that I was missing:
-
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/oe-kbuild-all/202305160749.ay1HAoyP-lkp@in=
-tel.com/
-
-Should I resend this as a combined patch for both drivers?
-
-   Arnd
+-- 
+Pavel Begunkov
 
