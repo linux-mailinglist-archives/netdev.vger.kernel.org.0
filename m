@@ -1,140 +1,143 @@
-Return-Path: <netdev+bounces-2908-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2903-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 845B07047D9
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:31:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4470E7047C0
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:27:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 415F6281573
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:31:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 892992815A6
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:27:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5AC6824EA9;
-	Tue, 16 May 2023 08:31:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61B0D200D4;
+	Tue, 16 May 2023 08:27:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EE3224EA6
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:31:17 +0000 (UTC)
-X-Greylist: delayed 355 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 16 May 2023 01:31:15 PDT
-Received: from a27-22.smtp-out.us-west-2.amazonses.com (a27-22.smtp-out.us-west-2.amazonses.com [54.240.27.22])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A5B188;
-	Tue, 16 May 2023 01:31:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-	s=s25kmyuhzvo7troimxqpmtptpemzlc6l; d=exabit.dev; t=1684225520;
-	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:Mime-Version:Content-Type:Content-Transfer-Encoding;
-	bh=GScpAXv+J3eSM6qFgW9uds9TDleKdfcZkU54I1b2MRI=;
-	b=Y8G2vfQC3vwxxj6j4GwDb2AvnBwuAhbIXYMXBUinIRvi7RDzmhp6LNLO6fKYRJkD
-	lvnoSRy++FdjiK7WmboaZz3KIsmmtHCcFkWQMb6gR81gguLjzvEDRPh3Rd/QWJ3oryD
-	vqffG4sn6O0C6WCw4NTLqVMeUx7b/yAZKYsz7Jel9MHxCLB7IJfxZDJt849xpt3O+xR
-	lnZQ/Kp9wVfLkhqgV529PZunpOf9qjaZCKZ+CAgvOQ2giF0uxsIHHxzlWOQxzwA068N
-	uLfRH4mFBP6AX9AczUeYTIddfcTIgiezZoB6DDAFFiDSN3SO7j6NNOCIhDVZaYkVMpR
-	4O6peZXobA==
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-	s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1684225520;
-	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:Mime-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID;
-	bh=GScpAXv+J3eSM6qFgW9uds9TDleKdfcZkU54I1b2MRI=;
-	b=QF1W1RKbg7VbNHjsIPVKDaZMjOrcbd3oJrHgEXH9XligsGLyX3vbv0MOgV9r9TWa
-	vqFQqnM9GxCrLUobdPlSNl58NYltNrjnktWYlOUxHNGb7f63IGABFnRtFC0K1eKwtIU
-	OCqiiGYtzeMH8NkHxfFNiqFHaDIC8XK+Ieqt3NAc=
-Date: Tue, 16 May 2023 08:25:19 +0000
-Message-ID: <0101018823a9f0f2-a4620a25-6974-4464-a7ed-c997e9579243-000000@us-west-2.amazonses.com>
-To: ebiggers@kernel.org
-Cc: tomo@exabit.dev, rust-for-linux@vger.kernel.org,
- netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
- fujita.tomonori@gmail.com
-Subject: Re: [PATCH 1/2] rust: add synchronous message digest support
-From: FUJITA Tomonori <tomo@exabit.dev>
-In-Reply-To: <20230516055219.GC2704@sol.localdomain>
-References: <20230515043353.2324288-1-tomo@exabit.dev>
-	<010101881db037b4-c8c941a9-c482-4759-9c07-b8bf645d96ed-000000@us-west-2.amazonses.com>
-	<20230516055219.GC2704@sol.localdomain>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F7871F94F
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:27:05 +0000 (UTC)
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74141BFD
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:27:03 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-50b37f3e664so24239662a12.1
+        for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1684225622; x=1686817622;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+Q/Wa8M+8uvC4yapXeHr/mR9kOO52paWXj/dqyPoiGY=;
+        b=QBexmk+DMOo6mdKn5THtfjbOH7Fh/sar7zK4I1M/u/4HUWDtu9v8bKl/3t18wSNBro
+         oE12HbynSoEYrSJoElh+Zqa6TVqFxJnUthg+jxikGz9G+0tZm9NG0TzrFjZnaBTsDE3B
+         vF0ucHloTC5lpw0cIFX+5JD1aKa8uqbrHr0rXsqjaGdGLkLxFD2z1nqHiT1TrJM5FaJJ
+         8U3uLmynbkNmLLlbAV5ZjSote3XXh3ybIrOzP2PTcsCTdgV5QPc7iAJW7oawAOEPBQjQ
+         CP5+zR7nyHQ1HenOE+ibGvpdguNwUmSETmCeALgAl0yuFiDU8IS76OZy6cdtEHTYwB+x
+         lnPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684225622; x=1686817622;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+Q/Wa8M+8uvC4yapXeHr/mR9kOO52paWXj/dqyPoiGY=;
+        b=lMNPZ6cJVG9sGipvy1tbaklMZB8L5NtlkdpvM7UnKusoDnZAVv6ZNeWN/rGjThWRju
+         O5UaJqbpA0xO74axYzGGEroQYXsNouJdzJEx9AYGXFP4+zZzDxm4+3zEJGKYk8GOh4cg
+         ll7AIBdX2WVUZ/o37Wj5ISHlDB8NZgGvb9gtRdciyJUJcPeiQqlL9OCh+mJJgRTj2dp8
+         c3hh/RylZqVnJ8/y6yW0ZgRU+w8me95hFH0cVS5Q9k2KU9Vp/VGiuhI97UksfHqa/KMT
+         XSW+4rHRM9zMHkfwvq805HeeqvgVh+twn8pWCB1uvljQlKuLE9OeG/9hz9yxX2Hve7II
+         Nvrw==
+X-Gm-Message-State: AC+VfDyd4kNt8Ee7cCeJ8uoFPsA8bfx6yDQX4f17kPtzd1PPwth093Pf
+	dWyjGxsQj6y1B8s/SWD8PaLz2w==
+X-Google-Smtp-Source: ACHHUZ6NlWOJz275z3obUYiEtP8c/TLdPOFJP2OeK1hzxpP/JQGDLY0gdxUlrMuCCjjRzG9IMUV0nA==
+X-Received: by 2002:a05:6402:b03:b0:50b:c4a1:c6c0 with SMTP id bm3-20020a0564020b0300b0050bc4a1c6c0mr29560885edb.16.1684225622170;
+        Tue, 16 May 2023 01:27:02 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id i12-20020aa7c70c000000b0050bd7267a5csm7900857edq.58.2023.05.16.01.27.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 May 2023 01:27:01 -0700 (PDT)
+Message-ID: <824ad48b-c419-fd21-1889-23cd94d4b75d@blackwall.org>
+Date: Tue, 16 May 2023 11:27:00 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next 2/2] bridge: Add a sysctl to limit new brides FDB
+ entries
+Content-Language: en-US
+To: Johannes Nixdorf <jnixdorf-oss@avm.de>
+Cc: netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Roopa Prabhu <roopa@nvidia.com>
+References: <20230515085046.4457-1-jnixdorf-oss@avm.de>
+ <20230515085046.4457-2-jnixdorf-oss@avm.de>
+ <dc8dfe0b-cf22-c4f9-8532-87643a6a9ceb@blackwall.org>
+ <ZGIXB2DYA4sal9eW@u-jnixdorf.ads.avm.de>
+From: Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <ZGIXB2DYA4sal9eW@u-jnixdorf.ads.avm.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Feedback-ID: 1.us-west-2.j0GTvY5MHQQ5Spu+i4ZGzzYI1gDE7m7iuMEacWMZbe8=:AmazonSES
-X-SES-Outgoing: 2023.05.16-54.240.27.22
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi,
-
-On Mon, 15 May 2023 22:52:19 -0700
-Eric Biggers <ebiggers@kernel.org> wrote:
-
->> +#include <crypto/hash.h>
->>  #include <linux/bug.h>
->>  #include <linux/build_bug.h>
->>  #include <linux/err.h>
->> @@ -27,6 +28,29 @@
->>  #include <linux/sched/signal.h>
->>  #include <linux/wait.h>
->>  
->> +void rust_helper_crypto_free_shash(struct crypto_shash *tfm)
->> +{
->> +	crypto_free_shash(tfm);
->> +}
->> +EXPORT_SYMBOL_GPL(rust_helper_crypto_free_shash);
+On 15/05/2023 14:27, Johannes Nixdorf wrote:
+> On Mon, May 15, 2023 at 12:35:47PM +0300, Nikolay Aleksandrov wrote:
+>> On 15/05/2023 11:50, Johannes Nixdorf wrote:
+>>> This is a convenience setting, which allows the administrator to limit
+>>> the default limit of FDB entries for all created bridges, instead of
+>>> having to set it for each created bridge using the netlink property.
+>>>
+>>> The setting is network namespace local, and defaults to 0, which means
+>>> unlimited, for backwards compatibility reasons.
+>>>
+>>> Signed-off-by: Johannes Nixdorf <jnixdorf-oss@avm.de>
+>>> ---
+>>>  net/bridge/br.c         | 83 +++++++++++++++++++++++++++++++++++++++++
+>>>  net/bridge/br_device.c  |  4 +-
+>>>  net/bridge/br_private.h |  9 +++++
+>>>  3 files changed, 95 insertions(+), 1 deletion(-)
+>>>
+>>
+>> The bridge doesn't need private sysctls. Netlink is enough.
+>> Nacked-by: Nikolay Aleksandrov <razor@blackwall.org>
 > 
-> Shouldn't this code be compiled only when the crypto API is available?
-
-Oops, I'll add #ifdef CONFIG_CRYPTO
-
-
->> +impl<'a> ShashDesc<'a> {
->> +    /// Creates a [`ShashDesc`] object for a request data structure for message digest.
->> +    pub fn new(tfm: &'a Shash) -> Result<Self> {
->> +        // SAFETY: The type invariant guarantees that the pointer is valid.
->> +        let size = core::mem::size_of::<bindings::shash_desc>()
->> +            + unsafe { bindings::crypto_shash_descsize(tfm.0) } as usize;
->> +        let layout = Layout::from_size_align(size, 2)?;
->> +        let ptr = unsafe { alloc(layout) } as *mut bindings::shash_desc;
->> +        let mut desc = ShashDesc { ptr, tfm, size };
->> +        // SAFETY: The `desc.tfm` is non-null and valid for the lifetime of this object.
->> +        unsafe { (*desc.ptr).tfm = desc.tfm.0 };
->> +        Ok(desc)
->> +    }
->> +
->> +    /// (Re)initializes message digest.
->> +    pub fn init(&mut self) -> Result {
->> +        // SAFETY: The type invariant guarantees that the pointer is valid.
->> +        to_result(unsafe { bindings::crypto_shash_init(self.ptr) })
->> +    }
->> +
->> +    /// Adds data to message digest for processing.
->> +    pub fn update(&mut self, data: &[u8]) -> Result {
->> +        // SAFETY: The type invariant guarantees that the pointer is valid.
->> +        to_result(unsafe {
->> +            bindings::crypto_shash_update(self.ptr, data.as_ptr(), data.len() as u32)
->> +        })
->> +    }
->> +
->> +    /// Calculates message digest.
->> +    pub fn finalize(&mut self, output: &mut [u8]) -> Result {
->> +        // SAFETY: The type invariant guarantees that the pointer is valid.
->> +        to_result(unsafe { bindings::crypto_shash_final(self.ptr, output.as_mut_ptr()) })
->> +    }
+> Fair enough.
 > 
-> This doesn't enforce that init() is called before update() or finalize().  I
-> think that needs to be checked in the Rust code, since the C code doesn't have
-> defined behavior in that case.
+> I originally included the setting so there is a global setting an
+> administrator could toggle instead of having to hunt down each process
+> that might create a bridge, and teaching them to create them with an
+> FDB limit.
+> 
+> Does any of the following alternatives sound acceptable to you?:
+>  - Having the default limit (instead of the proposed default to unlimited)
+>    configurable in Kbuild. This would solve our problem, as we build
+>    our kernels ourselves, but I don't know whether putting a limit there
+>    would be acceptable for e.g. distributions.
 
-Surely, Rust side should handle the case.
+I don't mind, but it would be useless for everyone else. Kernels would be built
+without that limit set.
 
-If the new() function internally calls init() before returning, it
-works? The new() returns an initialized ShaDesc object.
+>  - Hardcoding a default limit != 0. I was afraid I'd break someones
+>    use-case with far too large bridged networks if I don't default to
+>    unlimited, but if you maintainers have a number in mind with which
+>    you don't see a problem, I'd be fine with it as well.
+> 
+> (Sorry for sending this mail twice, I accidentally dropped the list and
+> CC on the fist try)
 
 
-Thanks for reviewing!
+Right, that has been discussed before. So far there hasn't been any good
+option, so I'd say for the time being (or unless you have some better idea)
+we should stick with the netlink max attribute and distributions/admins
+would have to set it on bridge creation. We could add a warning when creating
+a bridge without fdb limit to remind people that it's advisable to set it.
+That warning can be removed when we come up with a proper solution.
 
