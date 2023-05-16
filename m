@@ -1,253 +1,103 @@
-Return-Path: <netdev+bounces-2860-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2861-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CFFAE7044EE
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 07:58:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id BCFCC7044F7
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:03:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 77EB61C20D3F
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 05:58:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C5391280DC0
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 06:03:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 737C01D2A6;
-	Tue, 16 May 2023 05:58:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEAC61D2B0;
+	Tue, 16 May 2023 06:03:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F0405C9C
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 05:58:02 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F5140F3
-	for <netdev@vger.kernel.org>; Mon, 15 May 2023 22:56:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684216590;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xE2vX9E3wrj8UcSGbMoNwC1q+B39hVP/OfNafMgz0vs=;
-	b=I2hmVjHSNEsIjmC2Lx5wzjtxkPOi33cCsEF43VuJ7EeJYM5q8BYUgP0kxr0/fUW4UOB++r
-	zHNHWrnnptisoFR2RX5xnPsd/kZ9mgmcpcPO7nA+Lr/Svh6f05lUIAyPi2jc85Bjoclz9D
-	Sn1ZjyoYSedYHMHWvLfLU6EYWduaKHE=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-156-vIhVUVTJNgmlJ1CQg8atdw-1; Tue, 16 May 2023 01:56:28 -0400
-X-MC-Unique: vIhVUVTJNgmlJ1CQg8atdw-1
-Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-3062e5d0cd3so5345285f8f.3
-        for <netdev@vger.kernel.org>; Mon, 15 May 2023 22:56:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684216588; x=1686808588;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xE2vX9E3wrj8UcSGbMoNwC1q+B39hVP/OfNafMgz0vs=;
-        b=DyHSVMC0AZnVJ6+Mr7cPeCJYW8VuERpuxKb3iPNxWWjaE6ZnFqvqjmyTtLNs4gcu/w
-         MIZOqdQ1ISGoCm4ncMldU+3hLrBEV8c8um1KVlf1PEn4Ti5o0aR6r47e8EESsVMQCct2
-         UvgsYh3rE5NWZbknI3vQFat4W2/9+QvFmv7JsWB6Y0MiWneA+BfAxPtFlAWEHvtUTKFC
-         QV9sOwlNq+CkuQV4yEjSBv4KHhKaV52f/FtM7VTvkIrE951JoYs9RL8jNWr3Pwrh6cqD
-         4rWdpJAIMX83FD2jWn76CEThcUTtO9hiJSkTtSSFksjnWuU36hfEoREs3j1wapahU9kK
-         WQbg==
-X-Gm-Message-State: AC+VfDzIf2/6EvcWzosCxWcqnvVl+3UJkdlfojbOYqVQieJrACMDGY1W
-	Gs0RFU9uTBD8wsYax5B1SVwDQhCFdITZVfMeC0TCubBzhFNG68DvkkrXtG5wuFpjqTrW963XYyI
-	F14gvhq2Q/4p4rjqh
-X-Received: by 2002:adf:e88a:0:b0:2ef:bada:2f25 with SMTP id d10-20020adfe88a000000b002efbada2f25mr23481280wrm.67.1684216587770;
-        Mon, 15 May 2023 22:56:27 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6VOYlL8HQ+iOu5OwzIWQzrbzMHDIe+8lZ375iEzXfw1aZ3CniP6q9reUDXiExA4a5y7ChjZg==
-X-Received: by 2002:adf:e88a:0:b0:2ef:bada:2f25 with SMTP id d10-20020adfe88a000000b002efbada2f25mr23481259wrm.67.1684216587465;
-        Mon, 15 May 2023 22:56:27 -0700 (PDT)
-Received: from redhat.com ([2.52.26.5])
-        by smtp.gmail.com with ESMTPSA id k15-20020a05600c0b4f00b003f4247fbb5fsm1067384wmr.10.2023.05.15.22.56.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 May 2023 22:56:26 -0700 (PDT)
-Date: Tue, 16 May 2023 01:56:22 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jason Wang <jasowang@redhat.com>
-Cc: kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
-	pabeni@redhat.com, virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, maxime.coquelin@redhat.com,
-	alvaro.karsz@solid-run.com, eperezma@redhat.com,
-	xuanzhuo@linux.alibaba.com, david.marchand@redhat.com,
-	netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next V2 1/2] virtio-net: convert rx mode setting to
- use workqueue
-Message-ID: <20230516015514-mutt-send-email-mst@kernel.org>
-References: <20230414031947-mutt-send-email-mst@kernel.org>
- <CACGkMEtutGn0CoJhoPHbzPuqoCLb4OCT6a_vB_WPV=MhwY0DXg@mail.gmail.com>
- <20230510012951-mutt-send-email-mst@kernel.org>
- <CACGkMEszPydzw_MOUOVJKBBW_8iYn66i_9OFvLDoZMH34hMx=w@mail.gmail.com>
- <20230515004422-mutt-send-email-mst@kernel.org>
- <CACGkMEv+Q2UoBarNOzKSrc3O=Wb2_73O2j9cZXFdAiLBm1qY-Q@mail.gmail.com>
- <20230515061455-mutt-send-email-mst@kernel.org>
- <CACGkMEt8QkK1PnTrRUjDbyJheBurdibr4--Es8P0Y9NZM659pQ@mail.gmail.com>
- <20230516000829-mutt-send-email-mst@kernel.org>
- <CACGkMEvCHQLFbtB2fbF27oCd5fNSjUtUOS0q-Lx7=MeYR8KzRA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA38E19E73
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 06:03:43 +0000 (UTC)
+X-Greylist: delayed 799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 May 2023 23:03:39 PDT
+Received: from a27-27.smtp-out.us-west-2.amazonses.com (a27-27.smtp-out.us-west-2.amazonses.com [54.240.27.27])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AC2189;
+	Mon, 15 May 2023 23:03:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=s25kmyuhzvo7troimxqpmtptpemzlc6l; d=exabit.dev; t=1684215801;
+	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:Mime-Version:Content-Type:Content-Transfer-Encoding;
+	bh=74L/YZxtx3KSMNRkAtfGsObxFGNIU40Nx7IaCnAIASs=;
+	b=Fb57bjgi9iNYj6jzCsbxCmfIYnohkIz4bYU+CxnrCz3xlA9U85k5fHpgnFot9onw
+	nDwzmtdinp2fK+jgwTl2sti9Nw+UnYaKMRa4m7c2jPTqQz0z9FQQcKl2A/v3wTUBY/6
+	Scen8C9NQN3GoscAahkrDpveghZ4aoxRjP5/pdMKwCMgXTm+4vGHudZXo2XvjRVBflN
+	XvG8gf2NLHa5TK4Mo17O19wEcyitAgXd5zeg5bdCEG4WcUZHsJvk/wVJB5O9wughXU1
+	bu2od+6vHf3aeShGniEYHiv0/TowMR/FwDBJkO/yDWcAQbk9vy0jPkn9t4+uSsW0JVN
+	eTQuwa1NuA==
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1684215801;
+	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:Mime-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID;
+	bh=74L/YZxtx3KSMNRkAtfGsObxFGNIU40Nx7IaCnAIASs=;
+	b=c8xFgWBiF4V2XwwMgG32ZlMFOZGSvEG7VbJzn0ETgqC7jc50j9omRhsrhcbWT/FZ
+	r4GNlEpuPGfYKbPKHfeoI9TE1pd6ZhyQ7Cnk5IbwA7KiMtfTn/pZe7KTcsbtH5E8ZnC
+	oxxoJgSGGKHtfxFNHH6tpQ5IqBuNDgrQnlzTnV+k=
+Date: Tue, 16 May 2023 05:43:21 +0000
+Message-ID: <010101882315a489-908f5965-2e67-497f-97f8-5c91bc928673-000000@us-west-2.amazonses.com>
+To: andrew@lunn.ch
+Cc: tomo@exabit.dev, rust-for-linux@vger.kernel.org,
+ netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+ fujita.tomonori@gmail.com
+Subject: Re: [PATCH 2/2] rust: add socket support
+From: FUJITA Tomonori <tomo@exabit.dev>
+In-Reply-To: <f22b24f8-f599-4eec-9535-bcca71138057@lunn.ch>
+References: <20230515043353.2324288-1-tomo@exabit.dev>
+	<010101881db03866-754b644c-682c-44be-8d8e-8376d34c77b3-000000@us-west-2.amazonses.com>
+	<f22b24f8-f599-4eec-9535-bcca71138057@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEvCHQLFbtB2fbF27oCd5fNSjUtUOS0q-Lx7=MeYR8KzRA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Feedback-ID: 1.us-west-2.j0GTvY5MHQQ5Spu+i4ZGzzYI1gDE7m7iuMEacWMZbe8=:AmazonSES
+X-SES-Outgoing: 2023.05.16-54.240.27.27
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 16, 2023 at 12:17:50PM +0800, Jason Wang wrote:
-> On Tue, May 16, 2023 at 12:13 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Tue, May 16, 2023 at 10:44:45AM +0800, Jason Wang wrote:
-> > > On Mon, May 15, 2023 at 6:17 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Mon, May 15, 2023 at 01:13:33PM +0800, Jason Wang wrote:
-> > > > > On Mon, May 15, 2023 at 12:45 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > >
-> > > > > > On Mon, May 15, 2023 at 09:05:54AM +0800, Jason Wang wrote:
-> > > > > > > On Wed, May 10, 2023 at 1:33 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > >
-> > > > > > > > On Mon, Apr 17, 2023 at 11:40:58AM +0800, Jason Wang wrote:
-> > > > > > > > > On Fri, Apr 14, 2023 at 3:21 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > > > >
-> > > > > > > > > > On Fri, Apr 14, 2023 at 01:04:15PM +0800, Jason Wang wrote:
-> > > > > > > > > > > Forget to cc netdev, adding.
-> > > > > > > > > > >
-> > > > > > > > > > > On Fri, Apr 14, 2023 at 12:25 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > > > > > >
-> > > > > > > > > > > > On Thu, Apr 13, 2023 at 02:40:26PM +0800, Jason Wang wrote:
-> > > > > > > > > > > > > This patch convert rx mode setting to be done in a workqueue, this is
-> > > > > > > > > > > > > a must for allow to sleep when waiting for the cvq command to
-> > > > > > > > > > > > > response since current code is executed under addr spin lock.
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > > > > > > > > >
-> > > > > > > > > > > > I don't like this frankly. This means that setting RX mode which would
-> > > > > > > > > > > > previously be reliable, now becomes unreliable.
-> > > > > > > > > > >
-> > > > > > > > > > > It is "unreliable" by design:
-> > > > > > > > > > >
-> > > > > > > > > > >       void                    (*ndo_set_rx_mode)(struct net_device *dev);
-> > > > > > > > > > >
-> > > > > > > > > > > > - first of all configuration is no longer immediate
-> > > > > > > > > > >
-> > > > > > > > > > > Is immediate a hard requirement? I can see a workqueue is used at least:
-> > > > > > > > > > >
-> > > > > > > > > > > mlx5e, ipoib, efx, ...
-> > > > > > > > > > >
-> > > > > > > > > > > >   and there is no way for driver to find out when
-> > > > > > > > > > > >   it actually took effect
-> > > > > > > > > > >
-> > > > > > > > > > > But we know rx mode is best effort e.g it doesn't support vhost and we
-> > > > > > > > > > > survive from this for years.
-> > > > > > > > > > >
-> > > > > > > > > > > > - second, if device fails command, this is also not
-> > > > > > > > > > > >   propagated to driver, again no way for driver to find out
-> > > > > > > > > > > >
-> > > > > > > > > > > > VDUSE needs to be fixed to do tricks to fix this
-> > > > > > > > > > > > without breaking normal drivers.
-> > > > > > > > > > >
-> > > > > > > > > > > It's not specific to VDUSE. For example, when using virtio-net in the
-> > > > > > > > > > > UP environment with any software cvq (like mlx5 via vDPA or cma
-> > > > > > > > > > > transport).
-> > > > > > > > > > >
-> > > > > > > > > > > Thanks
-> > > > > > > > > >
-> > > > > > > > > > Hmm. Can we differentiate between these use-cases?
-> > > > > > > > >
-> > > > > > > > > It doesn't look easy since we are drivers for virtio bus. Underlayer
-> > > > > > > > > details were hidden from virtio-net.
-> > > > > > > > >
-> > > > > > > > > Or do you have any ideas on this?
-> > > > > > > > >
-> > > > > > > > > Thanks
-> > > > > > > >
-> > > > > > > > I don't know, pass some kind of flag in struct virtqueue?
-> > > > > > > >         "bool slow; /* This vq can be very slow sometimes. Don't wait for it! */"
-> > > > > > > >
-> > > > > > > > ?
-> > > > > > > >
-> > > > > > >
-> > > > > > > So if it's slow, sleep, otherwise poll?
-> > > > > > >
-> > > > > > > I feel setting this flag might be tricky, since the driver doesn't
-> > > > > > > know whether or not it's really slow. E.g smartNIC vendor may allow
-> > > > > > > virtio-net emulation over PCI.
-> > > > > > >
-> > > > > > > Thanks
-> > > > > >
-> > > > > > driver will have the choice, depending on whether
-> > > > > > vq is deterministic or not.
-> > > > >
-> > > > > Ok, but the problem is, such booleans are only useful for virtio ring
-> > > > > codes. But in this case, virtio-net knows what to do for cvq. So I'm
-> > > > > not sure who the user is.
-> > > > >
-> > > > > Thanks
-> > > >
-> > > > Circling back, what exactly does the architecture you are trying
-> > > > to fix look like? Who is going to introduce unbounded latency?
-> > > > The hypervisor?
-> > >
-> > > Hypervisor is one of the possible reason, we have many more:
-> > >
-> > > Hardware device that provides virtio-pci emulation.
-> > > Userspace devices like VDUSE.
-> >
-> > So let's start by addressing VDUSE maybe?
-> 
-> It's reported by at least one hardware vendor as well. I remember it
-> was Alvaro who reported this first in the past.
-> 
-> >
-> > > > If so do we not maybe want a new feature bit
-> > > > that documents this? Hypervisor then can detect old guests
-> > > > that spin and decide what to do, e.g. prioritise cvq more,
-> > > > or fail FEATURES_OK.
-> > >
-> > > We suffer from this for bare metal as well.
-> > >
-> > > But a question is what's wrong with the approach that is used in this
-> > > patch? I've answered that set_rx_mode is not reliable, so it should be
-> > > fine to use workqueue. Except for this, any other thing that worries
-> > > you?
-> > >
-> > > Thanks
-> >
-> > It's not reliable for other drivers but has been reliable for virtio.
-> > I worry some software relied on this.
-> 
-> It's probably fine since some device like vhost doesn't support this
-> at all and we manage to survive for several years.
+On Mon, 15 May 2023 16:14:56 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-vhost is often connected to a clever learning backend
-such as a bridge which will DTRT without guest configuring
-anything at all though, this could be why it works.
+> On Mon, May 15, 2023 at 04:34:28AM +0000, FUJITA Tomonori wrote:
+>> From: FUJITA Tomonori <fujita.tomonori@gmail.com>
+>> 
+>> minimum abstraction for networking.
+> 
+>> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
+>> ---
+>>  rust/bindings/bindings_helper.h |   3 +
+>>  rust/kernel/lib.rs              |   2 +
+>>  rust/kernel/net.rs              | 174 ++++++++++++++++++++++++++++++++
+> 
+> The full networking API is huge. So trying to put it all into net.rs
+> is unlikely to work in the long run. Maybe it would be better to name
+> this file based on the tiny little bit of the network API you are
+> writing an abstraction for?
+
+Yeah, in the long run. I tried the simplest but if the maintainers
+prefer that approach as the first step, I'll update the patch. how
+about rust/net/socket.rs ?
 
 
+> If i'm reading the code correctly, you are abstracting the in kernel
+> socket API for only TCP over IPv4. Probably with time that will get
+> extended to IPv6, and then UDP. So maybe call this net-kern-socket.rs?
 
-> > You are making good points though ... could we get some
-> > maintainer's feedback on this?
-> 
-> That would be helpful. Jakub, any input on this?
-> 
-> Thanks
-> 
-> >
-> > > >
-> > > > > >
-> > > > > >
-> > > > > > > > --
-> > > > > > > > MST
-> > > > > > > >
-> > > > > >
-> > > >
-> >
+Yes. It's thin abstraction, just wrapping socket APIs. So it's easy to
+extend it for IPv6, non IP protocols, etc.
 
+Thanks,
 
