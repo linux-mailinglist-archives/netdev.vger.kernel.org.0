@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-2854-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2855-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 276B47044AD
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 07:25:50 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5DD827044AE
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 07:26:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2DA711C20D52
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 05:25:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1849628155D
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 05:26:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EEB301B91D;
-	Tue, 16 May 2023 05:24:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B5E821DDE4;
+	Tue, 16 May 2023 05:24:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3BD31DDCB
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 05:24:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A68C51DDE3
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 05:24:15 +0000 (UTC)
 Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6691A5
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA0A30C8
 	for <netdev@vger.kernel.org>; Mon, 15 May 2023 22:24:13 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-	by a.mx.secunet.com (Postfix) with ESMTP id E2314207A5;
+	by a.mx.secunet.com (Postfix) with ESMTP id 582C9201D3;
 	Tue, 16 May 2023 07:24:10 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
 	by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zinK05IBok1g; Tue, 16 May 2023 07:24:10 +0200 (CEST)
+	with ESMTP id ZzCJ7e9Ekp1k; Tue, 16 May 2023 07:24:09 +0200 (CEST)
 Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by a.mx.secunet.com (Postfix) with ESMTPS id 894052074A;
+	by a.mx.secunet.com (Postfix) with ESMTPS id 32976206BC;
 	Tue, 16 May 2023 07:24:09 +0200 (CEST)
 Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-	by mailout2.secunet.com (Postfix) with ESMTP id 7B68680004A;
+	by mailout2.secunet.com (Postfix) with ESMTP id 2414A80004A;
 	Tue, 16 May 2023 07:24:09 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 16 May 2023 07:24:09 +0200
+ 15.1.2507.23; Tue, 16 May 2023 07:24:08 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Tue, 16 May
  2023 07:24:08 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-	id C87B43182D86; Tue, 16 May 2023 07:24:07 +0200 (CEST)
+	id CBEFD3182DB7; Tue, 16 May 2023 07:24:07 +0200 (CEST)
 From: Steffen Klassert <steffen.klassert@secunet.com>
 To: David Miller <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>
 CC: Herbert Xu <herbert@gondor.apana.org.au>, Steffen Klassert
 	<steffen.klassert@secunet.com>, <netdev@vger.kernel.org>
-Subject: [PATCH 6/7] af_key: Reject optional tunnel/BEET mode templates in outbound policies
-Date: Tue, 16 May 2023 07:24:04 +0200
-Message-ID: <20230516052405.2677554-7-steffen.klassert@secunet.com>
+Subject: [PATCH 7/7] xfrm: Check if_id in inbound policy/secpath match
+Date: Tue, 16 May 2023 07:24:05 +0200
+Message-ID: <20230516052405.2677554-8-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230516052405.2677554-1-steffen.klassert@secunet.com>
 References: <20230516052405.2677554-1-steffen.klassert@secunet.com>
@@ -73,65 +73,74 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Tobias Brunner <tobias@strongswan.org>
+From: Benedict Wong <benedictwong@google.com>
 
-xfrm_state_find() uses `encap_family` of the current template with
-the passed local and remote addresses to find a matching state.
-If an optional tunnel or BEET mode template is skipped in a mixed-family
-scenario, there could be a mismatch causing an out-of-bounds read as
-the addresses were not replaced to match the family of the next template.
+This change ensures that if configured in the policy, the if_id set in
+the policy and secpath states match during the inbound policy check.
+Without this, there is potential for ambiguity where entries in the
+secpath differing by only the if_id could be mismatched.
 
-While there are theoretical use cases for optional templates in outbound
-policies, the only practical one is to skip IPComp states in inbound
-policies if uncompressed packets are received that are handled by an
-implicitly created IPIP state instead.
+Notably, this is checked in the outbound direction when resolving
+templates to SAs, but not on the inbound path when matching SAs and
+policies.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Tobias Brunner <tobias@strongswan.org>
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Test: Tested against Android kernel unit tests & CTS
+Signed-off-by: Benedict Wong <benedictwong@google.com>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- net/key/af_key.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ net/xfrm/xfrm_policy.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index a815f5ab4c49..31ab12fd720a 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1940,7 +1940,8 @@ static u32 gen_reqid(struct net *net)
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 21a3a1cd3d6d..6d15788b5123 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3312,7 +3312,7 @@ xfrm_secpath_reject(int idx, struct sk_buff *skb, const struct flowi *fl)
+ 
+ static inline int
+ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+-	      unsigned short family)
++	      unsigned short family, u32 if_id)
+ {
+ 	if (xfrm_state_kern(x))
+ 		return tmpl->optional && !xfrm_state_addr_cmp(tmpl, x, tmpl->encap_family);
+@@ -3323,7 +3323,8 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+ 		(tmpl->allalgs || (tmpl->aalgos & (1<<x->props.aalgo)) ||
+ 		 !(xfrm_id_proto_match(tmpl->id.proto, IPSEC_PROTO_ANY))) &&
+ 		!(x->props.mode != XFRM_MODE_TRANSPORT &&
+-		  xfrm_state_addr_cmp(tmpl, x, family));
++		  xfrm_state_addr_cmp(tmpl, x, family)) &&
++		(if_id == 0 || if_id == x->if_id);
  }
  
- static int
--parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_ipsecrequest *rq)
-+parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_policy *pol,
-+		   struct sadb_x_ipsecrequest *rq)
+ /*
+@@ -3335,7 +3336,7 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+  */
+ static inline int
+ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int start,
+-	       unsigned short family)
++	       unsigned short family, u32 if_id)
  {
- 	struct net *net = xp_net(xp);
- 	struct xfrm_tmpl *t = xp->xfrm_vec + xp->xfrm_nr;
-@@ -1958,9 +1959,12 @@ parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_ipsecrequest *rq)
- 	if ((mode = pfkey_mode_to_xfrm(rq->sadb_x_ipsecrequest_mode)) < 0)
- 		return -EINVAL;
- 	t->mode = mode;
--	if (rq->sadb_x_ipsecrequest_level == IPSEC_LEVEL_USE)
-+	if (rq->sadb_x_ipsecrequest_level == IPSEC_LEVEL_USE) {
-+		if ((mode == XFRM_MODE_TUNNEL || mode == XFRM_MODE_BEET) &&
-+		    pol->sadb_x_policy_dir == IPSEC_DIR_OUTBOUND)
-+			return -EINVAL;
- 		t->optional = 1;
--	else if (rq->sadb_x_ipsecrequest_level == IPSEC_LEVEL_UNIQUE) {
-+	} else if (rq->sadb_x_ipsecrequest_level == IPSEC_LEVEL_UNIQUE) {
- 		t->reqid = rq->sadb_x_ipsecrequest_reqid;
- 		if (t->reqid > IPSEC_MANUAL_REQID_MAX)
- 			t->reqid = 0;
-@@ -2002,7 +2006,7 @@ parse_ipsecrequests(struct xfrm_policy *xp, struct sadb_x_policy *pol)
- 		    rq->sadb_x_ipsecrequest_len < sizeof(*rq))
- 			return -EINVAL;
+ 	int idx = start;
  
--		if ((err = parse_ipsecrequest(xp, rq)) < 0)
-+		if ((err = parse_ipsecrequest(xp, pol, rq)) < 0)
- 			return err;
- 		len -= rq->sadb_x_ipsecrequest_len;
- 		rq = (void*)((u8*)rq + rq->sadb_x_ipsecrequest_len);
+@@ -3345,7 +3346,7 @@ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int star
+ 	} else
+ 		start = -1;
+ 	for (; idx < sp->len; idx++) {
+-		if (xfrm_state_ok(tmpl, sp->xvec[idx], family))
++		if (xfrm_state_ok(tmpl, sp->xvec[idx], family, if_id))
+ 			return ++idx;
+ 		if (sp->xvec[idx]->props.mode != XFRM_MODE_TRANSPORT) {
+ 			if (start == -1)
+@@ -3724,7 +3725,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 		 * are implied between each two transformations.
+ 		 */
+ 		for (i = xfrm_nr-1, k = 0; i >= 0; i--) {
+-			k = xfrm_policy_ok(tpp[i], sp, k, family);
++			k = xfrm_policy_ok(tpp[i], sp, k, family, if_id);
+ 			if (k < 0) {
+ 				if (k < -1)
+ 					/* "-2 - errored_index" returned */
 -- 
 2.34.1
 
