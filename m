@@ -1,90 +1,104 @@
-Return-Path: <netdev+bounces-3096-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3098-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id F367E7056FF
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 21:23:16 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1B75D705715
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 21:28:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DFA781C20BE1
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:23:13 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C77502812B9
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:28:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9A042910D;
-	Tue, 16 May 2023 19:23:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E883729112;
+	Tue, 16 May 2023 19:28:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDE012910B
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 19:23:13 +0000 (UTC)
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E4857682
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 12:23:10 -0700 (PDT)
-From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-	t=1684264988; bh=1p1Bnkvkp8DLKar/WrJYGPKNedFi9A3XCKlu91C48ZE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=sesW/jX8hHUuwQAahPgOyO0h3icjc3LXC+NVuLXWNe3JSgCd4R3ZJPsPK/lAXTOSw
-	 tvftalRe+UBvQu8FWLP8VaJPICGJ4E/C5V1O0mS9ALK4LSLk2cDQNEOTE/2KV3gngT
-	 1zSXkUgFunhJoYxhIqIl8/LMuJub2XWX8GFTjM3OqcyyHWp8GPK6h5DVWl0dCI/aXu
-	 aDbKZJy8ozMmssxNHGnPzEu0jiKM3BOHzkIpEbCAt6Wzq4eHiLDccEaBTXySnorWMf
-	 PU13BGzehBUsxDM4xvGmuwWTPiyb1cDE03/3SPrEWK+C36HG/QVPC0/68WCCV9zhEi
-	 0sEIxiWJQ/ULw==
-To: Thorsten Glaser <t.glaser@tarent.de>, Stephen Hemminger
- <stephen@networkplumber.org>
-Cc: Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
- Haye.Haehne@telekom.de
-Subject: Re: knob to disable locally-originating qdisc optimisation?
-In-Reply-To: <998e27d4-8a-2fd-7495-a8448a5427f9@tarent.de>
-References: <8a8c3e3b-b866-d723-552-c27bb33788f3@tarent.de>
- <20230427132126.48b0ed6a@kernel.org>
- <20230427163715.285e709f@hermes.local>
- <998e27d4-8a-2fd-7495-a8448a5427f9@tarent.de>
-Date: Tue, 16 May 2023 21:23:08 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <877ct8cc83.fsf@toke.dk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 231092910E
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 19:28:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 752EFC433EF;
+	Tue, 16 May 2023 19:28:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684265299;
+	bh=L1GD5QocH3Jsn+cIrib37lJSxVsOZOvF1CQcmEbnCAE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=YQV8LPLi54T6NgAYucibmfiqndW/o67vs6lMxUqomdGc10WDIEGCzXa/l/Zt4ksox
+	 Nz6veRH38kEYu7CkNQ0tSET0b7rzeQi7BgQuW7VD8WoV/33ktRpmPXR3s1ot6SXSg7
+	 s8DF1Ra1UvX66YTTGnlCVHqCGcg2I89GxXPQiqDb707vEzsdoq1VqQGjhWjgYSh5Qh
+	 VpeF/orscghewUQLYBDAzOitzTIvSVZ/JR/Rg5QuoG4HAoInxq1p0rFZQ7tVGA7tLC
+	 5rTBH9xo2vb6EHVisRounpeRyQVgPBJH6jETUwgGUYZevycV+tIfG3MoRmFL2GHTBm
+	 0ZSgFLbeAXnqA==
+Date: Tue, 16 May 2023 12:28:18 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+ glipus@gmail.com, maxime.chevallier@bootlin.com, vadim.fedorenko@linux.dev,
+ richardcochran@gmail.com, gerhard@engleder-embedded.com,
+ thomas.petazzoni@bootlin.com, linux@armlinux.org.uk
+Subject: Re: [PATCH net-next RFC v4 4/5] net: Let the active time stamping
+ layer be selectable.
+Message-ID: <20230516122818.1c3ff97b@kernel.org>
+In-Reply-To: <20230515110432.63b94557@kmaincent-XPS-13-7390>
+References: <20230406173308.401924-5-kory.maincent@bootlin.com>
+	<20230406173308.401924-5-kory.maincent@bootlin.com>
+	<20230429175807.wf3zhjbpa4swupzc@skbuf>
+	<20230502130525.02ade4a8@kmaincent-XPS-13-7390>
+	<20230511134807.v4u3ofn6jvgphqco@skbuf>
+	<20230511083620.15203ebe@kernel.org>
+	<20230511155640.3nqanqpczz5xwxae@skbuf>
+	<20230511092539.5bbc7c6a@kernel.org>
+	<20230511205435.pu6dwhkdnpcdu3v2@skbuf>
+	<20230511160845.730688af@kernel.org>
+	<20230511231803.oylnku5iiibgnx3z@skbuf>
+	<20230511163547.120f76b8@kernel.org>
+	<20230515110432.63b94557@kmaincent-XPS-13-7390>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Thorsten Glaser <t.glaser@tarent.de> writes:
+On Mon, 15 May 2023 11:04:32 +0200 K=C3=B6ry Maincent wrote:
+> > I see, so there is a legit reason to abort.=20
+> >=20
+> > We could use one of the high error codes, then, to signal=20
+> > the "I didn't care, please carry on to the PHY" condition?
+> > -ENOTSUPP?
+> >=20
+> > I guess we can add a separate "please configure traps for PTP/NTP"=20
+> > NDO, if you prefer. Mostly an implementation detail. =20
+>=20
+> I am not as expert as you on the network stack therefore I am trying to f=
+ollow
+> and understand all the remarks. Please correct me if I say something wron=
+g. It
+> is interesting to understand all the complications that these changes bri=
+ng.
+>=20
+> To summary, what do you think is preferable for this patch series?
+> - New ops for TS as suggested by Russell.
+>=20
+> - Continue on this implementation and check that Vladimir A,B and C cases=
+ are
+>   handled. Which imply, if I understand well, find a good way to deal wit=
+h PTP
+>   change trap (bit or new ndo ops), convert most drivers from IOCTL to NDO
+>   beforehand.=20
+>=20
+> - Add MAC-DMA TS? It think it is needed as MAC-DMA TS seems already used =
+and
+>   different from simple MAC TS in term of quality, as described by Jakub.
 
-> On Thu, 27 Apr 2023, Stephen Hemminger wrote:
->
->>On Thu, 27 Apr 2023 13:21:26 -0700
->>Jakub Kicinski <kuba@kernel.org> wrote:
->
->>> Doesn't ring a bell, what's your setup?
->
-> Intel NUC with Debian bullseye on it and a custom qdisc that
-> limits and delays outgoing traffic, therefore occasionally
-> returning NULL from .dequeue even if the qdisc is not empty.
->
-> iperf3 sending from the same NUC to a device on the network
-> behind that qdisc where the corresponding iperf server runs.
->
->>It might be BQL trying to limit outstanding packets locally.
->
-> Possibly?
+These aren't really disjoint alternatives, we need MAC-DMA TS and we
+need a way to direct all TS requests to the MAC driver. Whether we do
+it via an NDO, flags or new ops is kind of up to you. Question of
+aesthetics.
 
-Sounds like it's TSQ kicking in? The objective of that is to provide the
-maximum backpressure against the application socket buffer, precisely so
-the application can better react to congestion. Turning that off isn't
-going to help your E2E latency, quite the contrary. Pushing stuff into a
-qdisc so it can be ECN-marked is also nonsensical for locally generated
-traffic; you don't need the ECN roundtrip, you can just directly tell
-the local TCP sender to slow down (which is exactly what TSQ does).
-
--Toke
+Perhaps to move forward it'd be good to rev the patches, and address
+the feedback which is clear?
 
