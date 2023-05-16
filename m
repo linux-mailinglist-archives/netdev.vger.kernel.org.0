@@ -1,49 +1,50 @@
-Return-Path: <netdev+bounces-3103-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3105-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CCE357057CE
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 21:47:13 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4D9F77057D2
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 21:47:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BF5911C20C80
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:47:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 126E22813C8
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:47:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E2C2846D;
-	Tue, 16 May 2023 19:46:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81621168A2;
+	Tue, 16 May 2023 19:47:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A7EA18C12
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 19:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 832C2C433D2;
-	Tue, 16 May 2023 19:46:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20B862910E
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 19:47:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82409C433D2;
+	Tue, 16 May 2023 19:47:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684266412;
-	bh=Retqq5JfF+1v3Y0juT8ukUupAtMcuR+tzDBH2kPz0nA=;
+	s=k20201202; t=1684266445;
+	bh=WJ7zJ8wKo3Z+xOwBRYH0RqKqN+ywQ2CmZE2kNKIwXgM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=CYoYaBX+m/LPk4VBRp8JNpVscrno+XDoOxsbtT049WnQxI9/kSv1bR5kiaTmgxUUy
-	 yyC7zNWfHk1n1+Bj8Et1dY92a6p0p51q4zMvCDb9u/iIFhC965iehJ9+OHPWqp9bok
-	 8fR9wBQWSjY95WV68eJL+MIsjiuxWDC3uu+Jjzd0BE4+In115Zc1eGavYGPScFq5OB
-	 6WFmKjetm6poZK2aA6o+B7/MSKLwV/Sim4gAPGVazWEZDClKW9/9Ibhr3Xv7uzOEp1
-	 5qU0+8VwZdehpR7d99IB8cS41Y3EeSlnta9+f3e9RwtJ+zwAvcGzKZJEpKMztEPuVn
-	 DkgRIf/FWV1mw==
+	b=ScBp9XTf1mm/fEQERYAAs/zBoK/nbDJ0uqqFSmni2XihRGPIdvbwY3lfhG/YoV7Wk
+	 J5ctZDxpFI4vdvE84yROlQOdZt++NmUbf0ePCEcq3gAf4W0ER+QCu1TjjKdJMg8zwy
+	 XzcERynrFL0aWUV/od/4XdAGFFJAP1P/a3abFTGixVQcJ33obSRvsNIjuk5Dh9YzUq
+	 XlqokYWCIuxrYW2FM0CBvyrojG4GVxKaasDcH4rVYv3DL3b4MDus35EXkiWnSsy/9o
+	 GadEdoq7H/lLC2q01zg2HgZH0AXVtKEimojnWjMKwIvD36ya3ynPySjY3QcVIeXoGG
+	 XJY5mD3O5V5rQ==
 From: Arnd Bergmann <arnd@kernel.org>
 To: netdev@vger.kernel.org,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>
 Cc: Arnd Bergmann <arnd@arndb.de>,
-	Roopa Prabhu <roopa@nvidia.com>,
-	Nikolay Aleksandrov <razor@blackwall.org>,
-	bridge@lists.linux-foundation.org,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Oleksij Rempel <linux@rempel-privat.de>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Maxime Chevallier <maxime.chevallier@bootlin.com>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] bridge: always declare tunnel functions
-Date: Tue, 16 May 2023 21:45:35 +0200
-Message-Id: <20230516194625.549249-3-arnd@kernel.org>
+Subject: [PATCH 4/4] mdio_bus: unhide mdio_bus_init prototype
+Date: Tue, 16 May 2023 21:45:36 +0200
+Message-Id: <20230516194625.549249-4-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230516194625.549249-1-arnd@kernel.org>
 References: <20230516194625.549249-1-arnd@kernel.org>
@@ -57,49 +58,34 @@ Content-Transfer-Encoding: 8bit
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-When CONFIG_BRIDGE_VLAN_FILTERING is disabled, two functions are still
-defined but have no prototype or caller. This causes a W=1 warning for
-the missing prototypes:
+mdio_bus_init() is either used as a local module_init() entry,
+or it gets called in phy_device.c. In the former case, there
+is no declaration, which causes a warning:
 
-net/bridge/br_netlink_tunnel.c:29:6: error: no previous prototype for 'vlan_tunid_inrange' [-Werror=missing-prototypes]
-net/bridge/br_netlink_tunnel.c:199:5: error: no previous prototype for 'br_vlan_tunnel_info' [-Werror=missing-prototypes]
+drivers/net/phy/mdio_bus.c:1371:12: error: no previous prototype for 'mdio_bus_init' [-Werror=missing-prototypes]
 
-The functions are already contitional on CONFIG_BRIDGE_VLAN_FILTERING,
-and I coulnd't easily figure out the right set of #ifdefs, so just
-move the declarations out of the #ifdef to avoid the warning,
-at a small cost in code size over a more elaborate fix.
+Remove the #ifdef around the declaration to avoid the warning..
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- net/bridge/br_private_tunnel.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/linux/phy.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/bridge/br_private_tunnel.h b/net/bridge/br_private_tunnel.h
-index 2b053289f016..efb096025151 100644
---- a/net/bridge/br_private_tunnel.h
-+++ b/net/bridge/br_private_tunnel.h
-@@ -27,6 +27,10 @@ int br_process_vlan_tunnel_info(const struct net_bridge *br,
- int br_get_vlan_tunnel_info_size(struct net_bridge_vlan_group *vg);
- int br_fill_vlan_tunnel_info(struct sk_buff *skb,
- 			     struct net_bridge_vlan_group *vg);
-+bool vlan_tunid_inrange(const struct net_bridge_vlan *v_curr,
-+			const struct net_bridge_vlan *v_last);
-+int br_vlan_tunnel_info(const struct net_bridge_port *p, int cmd,
-+			u16 vid, u32 tun_id, bool *changed);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index c5a0dc829714..6478838405a0 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1900,10 +1900,8 @@ void phy_package_leave(struct phy_device *phydev);
+ int devm_phy_package_join(struct device *dev, struct phy_device *phydev,
+ 			  int addr, size_t priv_size);
  
- #ifdef CONFIG_BRIDGE_VLAN_FILTERING
- /* br_vlan_tunnel.c */
-@@ -43,10 +47,6 @@ void br_handle_ingress_vlan_tunnel(struct sk_buff *skb,
- 				   struct net_bridge_vlan_group *vg);
- int br_handle_egress_vlan_tunnel(struct sk_buff *skb,
- 				 struct net_bridge_vlan *vlan);
--bool vlan_tunid_inrange(const struct net_bridge_vlan *v_curr,
--			const struct net_bridge_vlan *v_last);
--int br_vlan_tunnel_info(const struct net_bridge_port *p, int cmd,
--			u16 vid, u32 tun_id, bool *changed);
- #else
- static inline int vlan_tunnel_init(struct net_bridge_vlan_group *vg)
- {
+-#if IS_ENABLED(CONFIG_PHYLIB)
+ int __init mdio_bus_init(void);
+ void mdio_bus_exit(void);
+-#endif
+ 
+ int phy_ethtool_get_strings(struct phy_device *phydev, u8 *data);
+ int phy_ethtool_get_sset_count(struct phy_device *phydev);
 -- 
 2.39.2
 
