@@ -1,52 +1,78 @@
-Return-Path: <netdev+bounces-2863-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2864-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4EB67704502
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id CA740704545
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:26:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CFCF328156C
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 06:16:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4E17A2814F3
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 06:26:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 045441D2C2;
-	Tue, 16 May 2023 06:16:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E5491D2C8;
+	Tue, 16 May 2023 06:26:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C630519E73;
-	Tue, 16 May 2023 06:16:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 907F1C433D2;
-	Tue, 16 May 2023 06:15:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684217760;
-	bh=JSKxIFbAGqeUfrEyWSCXAbIJPXLuLup+2ppnOocd+Xk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=HUdGEoKrHYqdQV9SKzKvV4HYtCsB6X2tL91pPrPLU7aNWXYb1cOIHv9LSMrHFD7CI
-	 0UTMXTpKUNkE9khoCtx9RUXA27WX/8zAAqq3qWqx7wkmbqiEDA9g8zX2B9xH3F+edr
-	 xWXEJ+1QmffpOMNcS1tYLp1lC2jqrVqLE/mM56vjQpDQB5I22BUv18GXFSNkei6e/5
-	 Lnopwl4GmIA1AWbZ9ApJSlye00mdX/GHqSbo/wMwd+5PuEF2+6V9I/luIZwajeiQqi
-	 HijxI+kept+Q4t/F6SqagBMmOxLf1/y5W+58LQldnVuOyrQH6/M5/nNwJ5xypS1sOp
-	 Ez80gpOsB3pew==
-Date: Tue, 16 May 2023 09:15:51 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Baoquan He <bhe@redhat.com>
-Cc: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-	linux-mm@kvack.org, arnd@arndb.de, christophe.leroy@csgroup.eu,
-	hch@infradead.org, agordeev@linux.ibm.com,
-	wangkefeng.wang@huawei.com, schnelle@linux.ibm.com,
-	David.Laight@aculab.com, shorne@gmail.com, willy@infradead.org,
-	deller@gmx.de, loongarch@lists.linux.dev,
-	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH v5 RESEND 01/17] asm-generic/iomap.h: remove
- ARCH_HAS_IOREMAP_xx macros
-Message-ID: <ZGMfl5KW9sXkhT8n@kernel.org>
-References: <20230515090848.833045-1-bhe@redhat.com>
- <20230515090848.833045-2-bhe@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 379775C9C
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 06:26:34 +0000 (UTC)
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB439E
+	for <netdev@vger.kernel.org>; Mon, 15 May 2023 23:26:31 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-96b4ed40d97so274695066b.0
+        for <netdev@vger.kernel.org>; Mon, 15 May 2023 23:26:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684218389; x=1686810389;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ncnk5u25n1gKhMi5UjBgWgY2AR5TG5mfySIQXV43uLs=;
+        b=Kpf7UzvzzxHh5bvV+R50ESbrX1kVXjvfxkNVibVXDJtGAxWpS101Rz44PC3CFQKUee
+         MbPbEX4/cAq1acTDSZnM3k911WeRpfekjBt62onyIfjBgtuSZcHwvzbyHSfn91Y2Wyyg
+         rIWlPvtCtFF/z0fggAO2rPmfJKLHnVTcfNJ1+1PvZx+YRNndB1J26YQ/yHXWXdcb77LU
+         tUo8ACRChqXD9dCbKGlVKdrSVj7Wi8QgYGW5Y1ER1OB76eO+I+CLXfbm+zHo3+Esc9tE
+         L2X6Hoa3CCIIzFbRe3A9odykqRsD2CpOfkoIDkb9RjscYGgLLf2um9ZbJm38ka50TBD2
+         mnqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684218389; x=1686810389;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ncnk5u25n1gKhMi5UjBgWgY2AR5TG5mfySIQXV43uLs=;
+        b=aNsZsgEWjh+DJ1yQnImh56wRgXsVSQ4Ci4+oKLD+vn+bvZVtI9ZX7ww7YBxa6gHeh+
+         EMIJsYN2NXUw3EgRryhrGFNGGrU/ZG1llRLDqhWNkpkHwT+ClxRqvYSyxgGgETq3mD3r
+         t777zHyuk8+fsSeeBl9JP1g/K2wWaUGQkuLrvj30svqbYA6yx++B24ppuwYdvYTnU5E6
+         n/lEj9A1n/QWN6oEFTxKLvRC5bZBQUSyzoOPQ5vu1iwGlB5D2ERwG/TJ+27hj+n28luU
+         d3ROEzYLxHMBab36sC1HP/XQ6VMqlitoYCKucA/nRdSH/8B8iQx04eC9FtjSJhAkDjuE
+         Lp3w==
+X-Gm-Message-State: AC+VfDxJ40Lj6eb532h8BsAmvTYuy1fQTqAH/AfrITNGWkLb4ZQItjRA
+	FUSol1na399/sq4hYJm7MDUAAg==
+X-Google-Smtp-Source: ACHHUZ4T0YNJLV13EFOWH4PksgAdo38fAvy+qD8boms/O8jp2/miH61xuB9s88pWcSdObsm+kMYFZQ==
+X-Received: by 2002:a17:907:60d6:b0:957:1df0:9cbf with SMTP id hv22-20020a17090760d600b009571df09cbfmr37389568ejc.19.1684218389369;
+        Mon, 15 May 2023 23:26:29 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id a23-20020a1709065f9700b0096a3d346d6asm8170826eju.211.2023.05.15.23.26.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 May 2023 23:26:28 -0700 (PDT)
+Date: Tue, 16 May 2023 08:26:27 +0200
+From: Jiri Pirko <jiri@resnulli.us>
+To: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+Cc: Vadim Fedorenko <vadfed@meta.com>, Jakub Kicinski <kuba@kernel.org>,
+	Jonathan Lemon <jonathan.lemon@gmail.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	"Olech, Milena" <milena.olech@intel.com>,
+	"Michalik, Michal" <michal.michalik@intel.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: Re: [RFC PATCH v7 5/8] ice: implement dpll interface to control cgu
+Message-ID: <ZGMiE1ByArIr8ARB@nanopsycho>
+References: <20230428002009.2948020-1-vadfed@meta.com>
+ <20230428002009.2948020-6-vadfed@meta.com>
+ <ZFJRIY1HM64gFo3a@nanopsycho>
+ <DM6PR11MB4657EAF163220617A94154A39B789@DM6PR11MB4657.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -55,242 +81,249 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230515090848.833045-2-bhe@redhat.com>
+In-Reply-To: <DM6PR11MB4657EAF163220617A94154A39B789@DM6PR11MB4657.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hi,
+Tue, May 16, 2023 at 12:07:57AM CEST, arkadiusz.kubalewski@intel.com wrote:
+>>From: Jiri Pirko <jiri@resnulli.us>
+>>Sent: Wednesday, May 3, 2023 2:19 PM
+>>
+>>Fri, Apr 28, 2023 at 02:20:06AM CEST, vadfed@meta.com wrote:
+>>>From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 
-On Mon, May 15, 2023 at 05:08:32PM +0800, Baoquan He wrote:
-> Let's use '#define ioremap_xx' and "#ifdef ioremap_xx" instead.
-> 
-> For each architecture to remove defined ARCH_HAS_IOREMAP_xx macros in
+[...]
 
-This sentence seems to be stale.
 
-> To remove defined ARCH_HAS_IOREMAP_xx macros in <asm/io.h> of each ARCH,
-> the ARCH's own ioremap_wc|wt|np definition need be above
-> "#include <asm-generic/iomap.h>. Otherwise the redefinition error would
-> be seen during compiling. So the relevant adjustments are made to avoid
-> compiling error:
-> 
->   loongarch:
->   - doesn't include <asm-generic/iomap.h>, defining ARCH_HAS_IOREMAP_WC
->     is redundant, so simply remove it.
-> 
->   m68k:
->   - selected GENERIC_IOMAP, <asm-generic/iomap.h> has been added in
->     <asm-generic/io.h>, and <asm/kmap.h> is included above
->     <asm-generic/iomap.h>, so simply remove ARCH_HAS_IOREMAP_WT defining.
-> 
->   mips:
->   - move "#include <asm-generic/iomap.h>" below ioremap_wc definition
->     in <asm/io.h>
-> 
->   powerpc:
->   - remove "#include <asm-generic/iomap.h>" in <asm/io.h> because it's
->     duplicated with the one in <asm-generic/io.h>, let's rely on the
->     latter.
-> 
->   x86:
->   - selected GENERIC_IOMAP, remove #include <asm-generic/iomap.h> in
->     the middle of <asm/io.h>. Let's rely on <asm-generic/io.h>.
-> 
-> Signed-off-by: Baoquan He <bhe@redhat.com>
-> Cc: loongarch@lists.linux.dev
-> Cc: linux-m68k@lists.linux-m68k.org
-> Cc: linux-mips@vger.kernel.org
-> Cc: linuxppc-dev@lists.ozlabs.org
-> Cc: x86@kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-arch@vger.kernel.org
+>>>+ * ice_dpll_frequency_set - wrapper for pin callback for set frequency
+>>>+ * @pin: pointer to a pin
+>>>+ * @pin_priv: private data pointer passed on pin registration
+>>>+ * @dpll: pointer to dpll
+>>>+ * @frequency: frequency to be set
+>>>+ * @extack: error reporting
+>>>+ * @pin_type: type of pin being configured
+>>>+ *
+>>>+ * Wraps internal set frequency command on a pin.
+>>>+ *
+>>>+ * Return:
+>>>+ * * 0 - success
+>>>+ * * negative - error pin not found or couldn't set in hw  */ static
+>>>+int ice_dpll_frequency_set(const struct dpll_pin *pin, void *pin_priv,
+>>>+		       const struct dpll_device *dpll,
+>>>+		       const u32 frequency,
+>>>+		       struct netlink_ext_ack *extack,
+>>>+		       const enum ice_dpll_pin_type pin_type) {
+>>>+	struct ice_pf *pf = pin_priv;
+>>>+	struct ice_dpll_pin *p;
+>>>+	int ret = -EINVAL;
+>>>+
+>>>+	if (!pf)
+>>>+		return ret;
+>>>+	if (ice_dpll_cb_lock(pf))
+>>>+		return -EBUSY;
+>>>+	p = ice_find_pin(pf, pin, pin_type);
+>>
+>>This does not make any sense to me. You should avoid the lookups and remove
+>>ice_find_pin() function entirely. The purpose of having pin_priv is to
+>>carry the struct ice_dpll_pin * directly. You should pass it down during
+>>pin register.
+>>
+>>pf pointer is stored in dpll_priv.
+>>
+>
+>In this case dpll_priv is not passed, so cannot use it.
 
-Reviewed-by: Mike Rapoport (IBM) <rppt@kernel.org>
+It should be passed. In general to every op where *dpll is passed, the
+dpll_priv pointer should be passed along. Please, fix this.
 
-> ---
->  arch/loongarch/include/asm/io.h     | 2 --
->  arch/m68k/include/asm/io_mm.h       | 2 --
->  arch/m68k/include/asm/kmap.h        | 2 --
->  arch/mips/include/asm/io.h          | 5 ++---
->  arch/powerpc/include/asm/io.h       | 9 +--------
->  arch/x86/include/asm/io.h           | 5 -----
->  drivers/net/ethernet/sfc/io.h       | 2 +-
->  drivers/net/ethernet/sfc/siena/io.h | 2 +-
->  include/asm-generic/iomap.h         | 6 +++---
->  9 files changed, 8 insertions(+), 27 deletions(-)
-> 
-> diff --git a/arch/loongarch/include/asm/io.h b/arch/loongarch/include/asm/io.h
-> index 545e2708fbf7..5fef1246c6fb 100644
-> --- a/arch/loongarch/include/asm/io.h
-> +++ b/arch/loongarch/include/asm/io.h
-> @@ -5,8 +5,6 @@
->  #ifndef _ASM_IO_H
->  #define _ASM_IO_H
->  
-> -#define ARCH_HAS_IOREMAP_WC
-> -
->  #include <linux/kernel.h>
->  #include <linux/types.h>
->  
-> diff --git a/arch/m68k/include/asm/io_mm.h b/arch/m68k/include/asm/io_mm.h
-> index d41fa488453b..6a0abd4846c6 100644
-> --- a/arch/m68k/include/asm/io_mm.h
-> +++ b/arch/m68k/include/asm/io_mm.h
-> @@ -26,8 +26,6 @@
->  #include <asm/virtconvert.h>
->  #include <asm/kmap.h>
->  
-> -#include <asm-generic/iomap.h>
-> -
->  #ifdef CONFIG_ATARI
->  #define atari_readb   raw_inb
->  #define atari_writeb  raw_outb
-> diff --git a/arch/m68k/include/asm/kmap.h b/arch/m68k/include/asm/kmap.h
-> index dec05743d426..4efb3efa593a 100644
-> --- a/arch/m68k/include/asm/kmap.h
-> +++ b/arch/m68k/include/asm/kmap.h
-> @@ -4,8 +4,6 @@
->  
->  #ifdef CONFIG_MMU
->  
-> -#define ARCH_HAS_IOREMAP_WT
-> -
->  /* Values for nocacheflag and cmode */
->  #define IOMAP_FULL_CACHING		0
->  #define IOMAP_NOCACHE_SER		1
-> diff --git a/arch/mips/include/asm/io.h b/arch/mips/include/asm/io.h
-> index cc28d207a061..477773328a06 100644
-> --- a/arch/mips/include/asm/io.h
-> +++ b/arch/mips/include/asm/io.h
-> @@ -12,8 +12,6 @@
->  #ifndef _ASM_IO_H
->  #define _ASM_IO_H
->  
-> -#define ARCH_HAS_IOREMAP_WC
-> -
->  #include <linux/compiler.h>
->  #include <linux/kernel.h>
->  #include <linux/types.h>
-> @@ -25,7 +23,6 @@
->  #include <asm/byteorder.h>
->  #include <asm/cpu.h>
->  #include <asm/cpu-features.h>
-> -#include <asm-generic/iomap.h>
->  #include <asm/page.h>
->  #include <asm/pgtable-bits.h>
->  #include <asm/processor.h>
-> @@ -210,6 +207,8 @@ void iounmap(const volatile void __iomem *addr);
->  #define ioremap_wc(offset, size)					\
->  	ioremap_prot((offset), (size), boot_cpu_data.writecombine)
->  
-> +#include <asm-generic/iomap.h>
-> +
->  #if defined(CONFIG_CPU_CAVIUM_OCTEON)
->  #define war_io_reorder_wmb()		wmb()
->  #else
-> diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
-> index f1e657c9bbe8..67a3fb6de498 100644
-> --- a/arch/powerpc/include/asm/io.h
-> +++ b/arch/powerpc/include/asm/io.h
-> @@ -3,11 +3,6 @@
->  #define _ASM_POWERPC_IO_H
->  #ifdef __KERNEL__
->  
-> -#define ARCH_HAS_IOREMAP_WC
-> -#ifdef CONFIG_PPC32
-> -#define ARCH_HAS_IOREMAP_WT
-> -#endif
-> -
->  /*
->   */
->  
-> @@ -732,9 +727,7 @@ static inline void name at					\
->  #define writel_relaxed(v, addr)	writel(v, addr)
->  #define writeq_relaxed(v, addr)	writeq(v, addr)
->  
-> -#ifdef CONFIG_GENERIC_IOMAP
-> -#include <asm-generic/iomap.h>
-> -#else
-> +#ifndef CONFIG_GENERIC_IOMAP
->  /*
->   * Here comes the implementation of the IOMAP interfaces.
->   */
-> diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-> index e9025640f634..76238842406a 100644
-> --- a/arch/x86/include/asm/io.h
-> +++ b/arch/x86/include/asm/io.h
-> @@ -35,9 +35,6 @@
->    *  - Arnaldo Carvalho de Melo <acme@conectiva.com.br>
->    */
->  
-> -#define ARCH_HAS_IOREMAP_WC
-> -#define ARCH_HAS_IOREMAP_WT
-> -
->  #include <linux/string.h>
->  #include <linux/compiler.h>
->  #include <linux/cc_platform.h>
-> @@ -212,8 +209,6 @@ void memset_io(volatile void __iomem *, int, size_t);
->  #define memcpy_toio memcpy_toio
->  #define memset_io memset_io
->  
-> -#include <asm-generic/iomap.h>
-> -
->  /*
->   * ISA space is 'always mapped' on a typical x86 system, no need to
->   * explicitly ioremap() it. The fact that the ISA IO space is mapped
-> diff --git a/drivers/net/ethernet/sfc/io.h b/drivers/net/ethernet/sfc/io.h
-> index 30439cc83a89..07f99ad14bf3 100644
-> --- a/drivers/net/ethernet/sfc/io.h
-> +++ b/drivers/net/ethernet/sfc/io.h
-> @@ -70,7 +70,7 @@
->   */
->  #ifdef CONFIG_X86_64
->  /* PIO is a win only if write-combining is possible */
-> -#ifdef ARCH_HAS_IOREMAP_WC
-> +#ifdef ioremap_wc
->  #define EFX_USE_PIO 1
->  #endif
->  #endif
-> diff --git a/drivers/net/ethernet/sfc/siena/io.h b/drivers/net/ethernet/sfc/siena/io.h
-> index 30439cc83a89..07f99ad14bf3 100644
-> --- a/drivers/net/ethernet/sfc/siena/io.h
-> +++ b/drivers/net/ethernet/sfc/siena/io.h
-> @@ -70,7 +70,7 @@
->   */
->  #ifdef CONFIG_X86_64
->  /* PIO is a win only if write-combining is possible */
-> -#ifdef ARCH_HAS_IOREMAP_WC
-> +#ifdef ioremap_wc
->  #define EFX_USE_PIO 1
->  #endif
->  #endif
-> diff --git a/include/asm-generic/iomap.h b/include/asm-generic/iomap.h
-> index 08237ae8b840..196087a8126e 100644
-> --- a/include/asm-generic/iomap.h
-> +++ b/include/asm-generic/iomap.h
-> @@ -93,15 +93,15 @@ extern void __iomem *ioport_map(unsigned long port, unsigned int nr);
->  extern void ioport_unmap(void __iomem *);
->  #endif
->  
-> -#ifndef ARCH_HAS_IOREMAP_WC
-> +#ifndef ioremap_wc
->  #define ioremap_wc ioremap
->  #endif
->  
-> -#ifndef ARCH_HAS_IOREMAP_WT
-> +#ifndef ioremap_wt
->  #define ioremap_wt ioremap
->  #endif
->  
-> -#ifndef ARCH_HAS_IOREMAP_NP
-> +#ifndef ioremap_np
->  /* See the comment in asm-generic/io.h about ioremap_np(). */
->  #define ioremap_np ioremap_np
->  static inline void __iomem *ioremap_np(phys_addr_t offset, size_t size)
-> -- 
-> 2.34.1
-> 
-> 
 
--- 
-Sincerely yours,
-Mike.
+>But in general it makes sense I will hold pf inside of ice_dpll_pin
+>and fix this.
+
+Nope, just use dpll_priv. That's why we have it.
+
+
+[...]
+
+
+>>>+/**
+>>>+ * ice_dpll_pin_state_set - set pin's state on dpll
+>>>+ * @dpll: dpll being configured
+>>>+ * @pin: pointer to a pin
+>>>+ * @pin_priv: private data pointer passed on pin registration
+>>>+ * @state: state of pin to be set
+>>>+ * @extack: error reporting
+>>>+ * @pin_type: type of a pin
+>>>+ *
+>>>+ * Set pin state on a pin.
+>>>+ *
+>>>+ * Return:
+>>>+ * * 0 - OK or no change required
+>>>+ * * negative - error
+>>>+ */
+>>>+static int
+>>>+ice_dpll_pin_state_set(const struct dpll_device *dpll,
+>>>+		       const struct dpll_pin *pin, void *pin_priv,
+>>>+		       const enum dpll_pin_state state,
+>>
+>>Why you use const with enums?
+>>
+>
+>Just show usage intention explicitly.
+
+Does not make any sense what so ever. Please avoid it.
+
+
+>>>+static int ice_dpll_rclk_state_on_pin_get(const struct dpll_pin *pin,
+>>>+					  void *pin_priv,
+>>>+					  const struct dpll_pin *parent_pin,
+>>>+					  enum dpll_pin_state *state,
+>>>+					  struct netlink_ext_ack *extack) {
+>>>+	struct ice_pf *pf = pin_priv;
+>>>+	u32 parent_idx, hw_idx = ICE_DPLL_PIN_IDX_INVALID, i;
+>>
+>>Reverse christmas tree ordering please.
+>
+>Fixed.
+>
+>>
+>>
+>>>+	struct ice_dpll_pin *p;
+>>>+	int ret = -EFAULT;
+>>>+
+>>>+	if (!pf)
+>>
+>>How exacly this can happen. My wild guess is it can't. Don't do such
+>>pointless checks please, confuses the reader.
+>>
+>
+>From driver perspective the pf pointer value is given by external entity,
+>why shouldn't it be valdiated?
+
+What? You pass it during register, you get it back here. Nothing to
+check. Please drop it. Non-sense checks like this have no place in
+kernel, they only confuse reader as he/she assumes it is a valid case.
+
+
+[...]
+
+
+>>
+>>
+>>>+			pins[i].pin = NULL;
+>>>+			return -ENOMEM;
+>>>+		}
+>>>+		if (cgu) {
+>>>+			ret = dpll_pin_register(pf->dplls.eec.dpll,
+>>>+						pins[i].pin,
+>>>+						ops, pf, NULL);
+>>>+			if (ret)
+>>>+				return ret;
+>>>+			ret = dpll_pin_register(pf->dplls.pps.dpll,
+>>>+						pins[i].pin,
+>>>+						ops, pf, NULL);
+>>>+			if (ret)
+>>>+				return ret;
+>>
+>>You have to call dpll_pin_unregister(pf->dplls.eec.dpll, pins[i].pin, ..)
+>>here.
+>>
+>
+>No, in case of error, the caller releases everything ice_dpll_release_all(..).
+
+
+How does ice_dpll_release_all() where you failed? If you need to
+unregister one or both or none? I know that in ice you have odd ways to
+handle error paths in general, but this one clearly seems to be broken.
+
+
+
+
+
+>
+>>
+>>>+		}
+>>>+	}
+>>>+	if (cgu) {
+>>>+		ops = &ice_dpll_output_ops;
+>>>+		pins = pf->dplls.outputs;
+>>>+		for (i = 0; i < pf->dplls.num_outputs; i++) {
+>>>+			pins[i].pin = dpll_pin_get(pf->dplls.clock_id,
+>>>+						   i + pf->dplls.num_inputs,
+>>>+						   THIS_MODULE, &pins[i].prop);
+>>>+			if (IS_ERR_OR_NULL(pins[i].pin)) {
+>>>+				pins[i].pin = NULL;
+>>>+				return -ENOMEM;
+>>
+>>Don't make up error values when you get them from the function you call:
+>>	return PTR_ERR(pins[i].pin);
+>
+>Fixed.
+>
+>>
+>>>+			}
+>>>+			ret = dpll_pin_register(pf->dplls.eec.dpll, pins[i].pin,
+>>>+						ops, pf, NULL);
+>>>+			if (ret)
+>>>+				return ret;
+>>>+			ret = dpll_pin_register(pf->dplls.pps.dpll, pins[i].pin,
+>>>+						ops, pf, NULL);
+>>>+			if (ret)
+>>>+				return ret;
+>>
+>>You have to call dpll_pin_unregister(pf->dplls.eec.dpll, pins[i].pin, ..)
+>>here.
+>>
+>
+>As above, in case of error, the caller releases everything.
+
+As above, I don't think it works.
+
+
+[...]
+
+
+>>>+	}
+>>>+
+>>>+	if (cgu) {
+>>>+		ret = dpll_device_register(pf->dplls.eec.dpll, DPLL_TYPE_EEC,
+>>>+					   &ice_dpll_ops, pf, dev);
+>>>+		if (ret)
+>>>+			goto put_pps;
+>>>+		ret = dpll_device_register(pf->dplls.pps.dpll, DPLL_TYPE_PPS,
+>>>+					   &ice_dpll_ops, pf, dev);
+>>>+		if (ret)
+>>
+>>You are missing call to dpll_device_unregister(pf->dplls.eec.dpll,
+>>DPLL_TYPE_EEC here. Fix the error path.
+>>
+>
+>The caller shall do the clean up, but yeah will fix this as here clean up
+>is not expected.
+
+:) Just make your error paths obvious and easy to follow to not to
+confuse anybody, you included.
+
+
+>
+>>
+>>>+			goto put_pps;
+>>>+	}
+>>>+
+>>>+	return 0;
+>>>+
+>>>+put_pps:
+>>>+	dpll_device_put(pf->dplls.pps.dpll);
+>>>+	pf->dplls.pps.dpll = NULL;
+>>>+put_eec:
+>>>+	dpll_device_put(pf->dplls.eec.dpll);
+>>>+	pf->dplls.eec.dpll = NULL;
+>>>+
+>>>+	return ret;
+>>>+}
+
+[...]
 
