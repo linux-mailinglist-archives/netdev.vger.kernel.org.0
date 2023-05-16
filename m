@@ -1,254 +1,245 @@
-Return-Path: <netdev+bounces-2818-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2819-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 10E677042B3
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 03:14:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 710CF704318
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 03:46:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 98CCA1C20C9E
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 01:14:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E42161C20CA8
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 01:46:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6C9AC1FA8;
-	Tue, 16 May 2023 01:14:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 946EF1FC1;
+	Tue, 16 May 2023 01:46:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6091A199
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:14:09 +0000 (UTC)
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32A810EA;
-	Mon, 15 May 2023 18:14:06 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QKyrL6wxqzsRhT;
-	Tue, 16 May 2023 09:12:02 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Tue, 16 May
- 2023 09:14:01 +0800
-Subject: Re: [PATCH net-next] octeontx2-pf: Add support for page pool
-To: Ratheesh Kannoth <rkannoth@marvell.com>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-CC: <sgoutham@marvell.com>, <davem@davemloft.net>, <edumazet@google.com>,
-	<kuba@kernel.org>, <pabeni@redhat.com>
-References: <20230515055607.651799-1-rkannoth@marvell.com>
-From: Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <c50a0969-4b17-f2c2-6ad6-b085b8ac4043@huawei.com>
-Date: Tue, 16 May 2023 09:14:01 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C4171FB0
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:46:49 +0000 (UTC)
+Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967FCE4A;
+	Mon, 15 May 2023 18:46:47 -0700 (PDT)
+Received: by mail-vk1-xa30.google.com with SMTP id 71dfb90a1353d-45046c21e55so3447321e0c.1;
+        Mon, 15 May 2023 18:46:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684201606; x=1686793606;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fcw/atW51mgbVwTH4USOTRlFF9OK4r1s1etFUmDFJ98=;
+        b=VNkpiOUGMUigCL23X7MQWB88J2ylhb3KmIvpYDPvgLOoynrYCAMAqjDK8dgBOnwUHJ
+         fghfIxxiynkJ9HI5K+/b4QUldMYjo4w4LHeHFl45ByFnBJCj+r8P3MRNvbHs4B3vTJod
+         enuHr0plZAtOXa2A+2Nv1zoipTgxdlggpvvN15vB9ohGjIo243s6EIPtVOKS0T8yCjCY
+         9kEmnq0z7GXN/rbOGOcYBGkVkCjYQdyrLG/Z8XOx36iFxkB/seJ4QlX5DAuW+T67xnig
+         19d4uKWmSx44A7rwNL7lGYnn08MXT+uvbSbUXq6uJ48AJ7ct0MyUoWUM3+qCjDP7Zgyq
+         QUzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684201606; x=1686793606;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fcw/atW51mgbVwTH4USOTRlFF9OK4r1s1etFUmDFJ98=;
+        b=DbkrnL9GIe9aF76t89s17AAXU79Zce8GUbzDYtFcfShGp88cIyz3ntyY1Wswwcot6Q
+         QT6kF7QqKQiL7iYVzUZ0BGTXNWIoBFpSMBzkuAnRH5wiBi+ojUWiT28aowx8EssbCXUD
+         z7ApShhUQA5XvJZJSeA3aZP5Bq2lewrtZ/46uMcpJyQtcsC2cOq5spIbill8dwg7i2UP
+         D/Q8Hv560vCCWoCU9DNhvBy8P75VOUo8FAInkBusgcsIlEIZ/LSq+RQ1Yq6zS/q6C+tp
+         /xP1+ozReVKES4eYRZUxorJBljDr6xilwdsv9eRRP5fDne+mzVfOITazewIcYaNrVUbW
+         lXBw==
+X-Gm-Message-State: AC+VfDyJb3oRO8VK//gXdTQph9D1qMXBf2jm4UqZw3h3FZ/yS/YKtnEp
+	G+ClKgdiH4lSdZbTJbGYV95ZX3WAMuxONWnGGStA2E4W7ZQ=
+X-Google-Smtp-Source: ACHHUZ4iM+AF+aVGcHvCFIhQX4yXng4lz+U/av6CcLOSLXhgdFfK4DhSX38mCQV1nWshsLiAwJiF+W8TulqEjPUTiNA=
+X-Received: by 2002:a1f:c112:0:b0:439:bd5c:630 with SMTP id
+ r18-20020a1fc112000000b00439bd5c0630mr11969562vkf.6.1684201606376; Mon, 15
+ May 2023 18:46:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20230515055607.651799-1-rkannoth@marvell.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-8.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+References: <20230412-increase_ipvs_conn_tab_bits-v2-1-994c0df018e6@gmail.com> <56b88a99-db88-36e4-9ff1-a5d940578108@ssi.bg>
+In-Reply-To: <56b88a99-db88-36e4-9ff1-a5d940578108@ssi.bg>
+From: Abhijeet Rastogi <abhijeet.1989@gmail.com>
+Date: Mon, 15 May 2023 18:46:09 -0700
+Message-ID: <CACXxYfy+yoLLFr0W9HYuM78GjzJsQvbHnm43uRQbor_ncQdMgw@mail.gmail.com>
+Subject: Re: [PATCH v2] ipvs: increase ip_vs_conn_tab_bits range for 64BIT
+To: Julian Anastasov <ja@ssi.bg>
+Cc: Simon Horman <horms@verge.net.au>, Pablo Neira Ayuso <pablo@netfilter.org>, netdev@vger.kernel.org, 
+	lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org, 
+	coreteam@netfilter.org, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 2023/5/15 13:56, Ratheesh Kannoth wrote:
-> Page pool for each rx queue enhance rx side performance
-> by reclaiming buffers back to each queue specific pool. DMA
-> mapping is done only for first allocation of buffers.
-> As subsequent buffers allocation avoid DMA mapping,
-> it results in performance improvement.
+Hi Julian Anastasov,
 
-Any performance data to share here?
+>Can you keep the previous line width of the above help
+because on standard 80-width window the help now gets truncated in
+make menuconfig.
 
-....
-> @@ -1170,15 +1199,24 @@ void otx2_free_aura_ptr(struct otx2_nic *pfvf, int type)
->  	/* Free SQB and RQB pointers from the aura pool */
->  	for (pool_id = pool_start; pool_id < pool_end; pool_id++) {
->  		iova = otx2_aura_allocptr(pfvf, pool_id);
-> +		pool = &pfvf->qset.pool[pool_id];
->  		while (iova) {
->  			if (type == AURA_NIX_RQ)
->  				iova -= OTX2_HEAD_ROOM;
->  
->  			pa = otx2_iova_to_phys(pfvf->iommu_domain, iova);
-> -			dma_unmap_page_attrs(pfvf->dev, iova, size,
-> -					     DMA_FROM_DEVICE,
-> -					     DMA_ATTR_SKIP_CPU_SYNC);
-> -			put_page(virt_to_page(phys_to_virt(pa)));
-> +			page = virt_to_page(phys_to_virt(pa));
+Refer this screenshot: https://i.imgur.com/9LgttpC.png
 
-virt_to_page() seems ok for order-0 page allocated from page
-pool as it does now, but it may break for order-1+ page as
-page_pool_put_page() expects head page of compound page or base
-page. Maybe add a comment for that or use virt_to_head_page()
-explicitly.
+Sorry for the confusion, I was already expecting this comment. The
+patch had a few words added, hence it feels like many lines have
+changed. However, no line actually exceeds 80 width.
 
-> +
-> +			if (pool->page_pool) {
-> +				page_pool_put_page(pool->page_pool, page, size, true);
+Longest line is still 80-width max. Do you prefer I reduce it to a
+lower number like 70?
 
-page_pool_put_full_page() seems more appropriate here, as the
-PP_FLAG_DMA_SYNC_DEV flag is not set, even if it is set, it seems
-the whole page need to be synced instead of a frag.
+Thanks,
+Abhijeet
 
 
-> +			} else {
-> +				dma_unmap_page_attrs(pfvf->dev, iova, size,
-> +						     DMA_FROM_DEVICE,
-> +						     DMA_ATTR_SKIP_CPU_SYNC);
-> +
-> +				put_page(page);
-> +			}
-> +
->  			iova = otx2_aura_allocptr(pfvf, pool_id);
->  		}
->  	}
-> @@ -1196,6 +1234,8 @@ void otx2_aura_pool_free(struct otx2_nic *pfvf)
->  		pool = &pfvf->qset.pool[pool_id];
->  		qmem_free(pfvf->dev, pool->stack);
->  		qmem_free(pfvf->dev, pool->fc_addr);
-> +		page_pool_destroy(pool->page_pool);
-> +		pool->page_pool = NULL;
->  	}
->  	devm_kfree(pfvf->dev, pfvf->qset.pool);
->  	pfvf->qset.pool = NULL;
-> @@ -1279,8 +1319,10 @@ static int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
->  }
->  
->  static int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
-> -			  int stack_pages, int numptrs, int buf_size)
-> +			  int stack_pages, int numptrs, int buf_size,
-> +			  int type)
->  {
-> +	struct page_pool_params pp_params = { 0 };
->  	struct npa_aq_enq_req *aq;
->  	struct otx2_pool *pool;
->  	int err;
-> @@ -1324,6 +1366,22 @@ static int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
->  	aq->ctype = NPA_AQ_CTYPE_POOL;
->  	aq->op = NPA_AQ_INSTOP_INIT;
->  
-> +	if (type != AURA_NIX_RQ) {
-> +		pool->page_pool = NULL;
-> +		return 0;
-> +	}
-> +
-> +	pp_params.flags = PP_FLAG_PAGE_FRAG | PP_FLAG_DMA_MAP;
-> +	pp_params.pool_size = numptrs;
-> +	pp_params.nid = NUMA_NO_NODE;
-> +	pp_params.dev = pfvf->dev;
-> +	pp_params.dma_dir = DMA_FROM_DEVICE;
-> +	pool->page_pool = page_pool_create(&pp_params);
-> +	if (!pool->page_pool) {
-> +		netdev_err(pfvf->netdev, "Creation of page pool failed\n");
-> +		return -EFAULT;
-> +	}
-> +
->  	return 0;
->  }
->  
-> @@ -1358,7 +1416,7 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
->  
->  		/* Initialize pool context */
->  		err = otx2_pool_init(pfvf, pool_id, stack_pages,
-> -				     num_sqbs, hw->sqb_size);
-> +				     num_sqbs, hw->sqb_size, AURA_NIX_SQ);
->  		if (err)
->  			goto fail;
->  	}
-> @@ -1421,7 +1479,7 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
->  	}
->  	for (pool_id = 0; pool_id < hw->rqpool_cnt; pool_id++) {
->  		err = otx2_pool_init(pfvf, pool_id, stack_pages,
-> -				     num_ptrs, pfvf->rbsize);
-> +				     num_ptrs, pfvf->rbsize, AURA_NIX_RQ);
->  		if (err)
->  			goto fail;
->  	}
-
-...
-
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-> index 7045fedfd73a..df5f45aa6980 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-> @@ -217,9 +217,10 @@ static bool otx2_skb_add_frag(struct otx2_nic *pfvf, struct sk_buff *skb,
->  		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
->  				va - page_address(page) + off,
->  				len - off, pfvf->rbsize);
-> -
-> +#ifndef CONFIG_PAGE_POOL
-
-Most driver does 'select PAGE_POOL' in config when adding page
-pool support, is there any reason it does not do it here?
-
->  		otx2_dma_unmap_page(pfvf, iova - OTX2_HEAD_ROOM,
->  				    pfvf->rbsize, DMA_FROM_DEVICE);
-> +#endif
->  		return true;
->  	}
->  
-> @@ -382,6 +383,8 @@ static void otx2_rcv_pkt_handler(struct otx2_nic *pfvf,
->  	if (pfvf->netdev->features & NETIF_F_RXCSUM)
->  		skb->ip_summed = CHECKSUM_UNNECESSARY;
->  
-> +	skb_mark_for_recycle(skb);
-> +
->  	napi_gro_frags(napi);
->  }
->  
-> @@ -1180,11 +1183,14 @@ bool otx2_sq_append_skb(struct net_device *netdev, struct otx2_snd_queue *sq,
->  }
->  EXPORT_SYMBOL(otx2_sq_append_skb);
->  
-> -void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq)
-> +void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq, int qidx)
->  {
->  	struct nix_cqe_rx_s *cqe;
->  	int processed_cqe = 0;
-> +	struct otx2_pool *pool;
-> +	struct page *page;
->  	u64 iova, pa;
-> +	u16 pool_id;
->  
->  	if (pfvf->xdp_prog)
->  		xdp_rxq_info_unreg(&cq->xdp_rxq);
-> @@ -1192,6 +1198,9 @@ void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq)
->  	if (otx2_nix_cq_op_status(pfvf, cq) || !cq->pend_cqe)
->  		return;
->  
-> +	pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_RQ, qidx);
-> +	pool = &pfvf->qset.pool[pool_id];
-> +
->  	while (cq->pend_cqe) {
->  		cqe = (struct nix_cqe_rx_s *)otx2_get_next_cqe(cq);
->  		processed_cqe++;
-> @@ -1205,8 +1214,14 @@ void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq)
->  		}
->  		iova = cqe->sg.seg_addr - OTX2_HEAD_ROOM;
->  		pa = otx2_iova_to_phys(pfvf->iommu_domain, iova);
-> -		otx2_dma_unmap_page(pfvf, iova, pfvf->rbsize, DMA_FROM_DEVICE);
-> -		put_page(virt_to_page(phys_to_virt(pa)));
-> +		page = virt_to_page(phys_to_virt(pa));
-> +
-> +		if (pool->page_pool) {
-> +			page_pool_put_page(pool->page_pool, page, pfvf->rbsize, true);
-> +		} else {
-> +			otx2_dma_unmap_page(pfvf, iova, pfvf->rbsize, DMA_FROM_DEVICE);
-> +			put_page(page);
-> +		}
-
-Maybe add a helper for the above as there is a similiar code block
-in the otx2_free_aura_ptr()
+On Mon, May 15, 2023 at 8:18=E2=80=AFAM Julian Anastasov <ja@ssi.bg> wrote:
+>
+>
+>         Hello,
+>
+> On Sun, 14 May 2023, Abhijeet Rastogi wrote:
+>
+> > Current range [8, 20] is set purely due to historical reasons
+> > because at the time, ~1M (2^20) was considered sufficient.
+> > With this change, 27 is the upper limit for 64-bit, 20 otherwise.
+> >
+> > Previous change regarding this limit is here.
+> >
+> > Link: https://lore.kernel.org/all/86eabeb9dd62aebf1e2533926fdd13fed48ba=
+b1f.1631289960.git.aclaudi@redhat.com/T/#u
+> >
+> > Signed-off-by: Abhijeet Rastogi <abhijeet.1989@gmail.com>
+> > ---
+> > The conversation for this started at:
+> >
+> > https://www.spinics.net/lists/netfilter/msg60995.html
+> >
+> > The upper limit for algo is any bit size less than 32, so this
+> > change will allow us to set bit size > 20. Today, it is common to have
+> > RAM available to handle greater than 2^20 connections per-host.
+> >
+> > Distros like RHEL already allow setting limits higher than 20.
+> > ---
+> > Changes in v2:
+> > - Lower the ranges, 27 for 64bit, 20 otherwise
+> > - Link to v1: https://lore.kernel.org/r/20230412-increase_ipvs_conn_tab=
+_bits-v1-1-60a4f9f4c8f2@gmail.com
+> > ---
+> >  net/netfilter/ipvs/Kconfig      | 26 +++++++++++++-------------
+> >  net/netfilter/ipvs/ip_vs_conn.c |  4 ++--
+> >  2 files changed, 15 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
+> > index 271da8447b29..aac5d6bd82e6 100644
+> > --- a/net/netfilter/ipvs/Kconfig
+> > +++ b/net/netfilter/ipvs/Kconfig
+> > @@ -44,7 +44,8 @@ config      IP_VS_DEBUG
+> >
+> >  config       IP_VS_TAB_BITS
+> >       int "IPVS connection table size (the Nth power of 2)"
+> > -     range 8 20
+> > +     range 8 20 if !64BIT
+> > +     range 8 27 if 64BIT
+> >       default 12
+> >       help
+> >         The IPVS connection hash table uses the chaining scheme to hand=
+le
+> > @@ -52,18 +53,17 @@ config    IP_VS_TAB_BITS
+> >         reduce conflicts when there are hundreds of thousands of connec=
+tions
+> >         in the hash table.
+> >
+> > -       Note the table size must be power of 2. The table size will be =
+the
+> > -       value of 2 to the your input number power. The number to choose=
+ is
+> > -       from 8 to 20, the default number is 12, which means the table s=
+ize
+> > -       is 4096. Don't input the number too small, otherwise you will l=
+ose
+> > -       performance on it. You can adapt the table size yourself, accor=
+ding
+> > -       to your virtual server application. It is good to set the table=
+ size
+> > -       not far less than the number of connections per second multiply=
+ing
+> > -       average lasting time of connection in the table.  For example, =
+your
+> > -       virtual server gets 200 connections per second, the connection =
+lasts
+> > -       for 200 seconds in average in the connection table, the table s=
+ize
+> > -       should be not far less than 200x200, it is good to set the tabl=
+e
+> > -       size 32768 (2**15).
+> > +       Note the table size must be power of 2. The table size will be =
+the value
+> > +       of 2 to the your input number power. The number to choose is fr=
+om 8 to 27
+> > +       for 64BIT(20 otherwise), the default number is 12, which means =
+the table
+> > +       size is 4096. Don't input the number too small, otherwise you w=
+ill lose
+> > +       performance on it. You can adapt the table size yourself, accor=
+ding to
+> > +       your virtual server application. It is good to set the table si=
+ze not far
+> > +       less than the number of connections per second multiplying aver=
+age lasting
+> > +       time of connection in the table.  For example, your virtual ser=
+ver gets
+> > +       200 connections per second, the connection lasts for 200 second=
+s in
+> > +       average in the connection table, the table size should be not f=
+ar less
+> > +       than 200x200, it is good to set the table size 32768 (2**15).
+>
+>         Can you keep the previous line width of the above help
+> because on standard 80-width window the help now gets truncated in
+> make menuconfig.
+>
+>         After that I'll send a patch on top of yours to limit the
+> rows depending on the memory.
+>
+> >         Another note that each connection occupies 128 bytes effectivel=
+y and
+> >         each hash entry uses 8 bytes, so you can estimate how much memo=
+ry is
+> > diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs=
+_conn.c
+> > index 13534e02346c..e1b9b52909a5 100644
+> > --- a/net/netfilter/ipvs/ip_vs_conn.c
+> > +++ b/net/netfilter/ipvs/ip_vs_conn.c
+> > @@ -1484,8 +1484,8 @@ int __init ip_vs_conn_init(void)
+> >       int idx;
+> >
+> >       /* Compute size and mask */
+> > -     if (ip_vs_conn_tab_bits < 8 || ip_vs_conn_tab_bits > 20) {
+> > -             pr_info("conn_tab_bits not in [8, 20]. Using default valu=
+e\n");
+> > +     if (ip_vs_conn_tab_bits < 8 || ip_vs_conn_tab_bits > 27) {
+> > +             pr_info("conn_tab_bits not in [8, 27]. Using default valu=
+e\n");
+> >               ip_vs_conn_tab_bits =3D CONFIG_IP_VS_TAB_BITS;
+> >       }
+> >       ip_vs_conn_tab_size =3D 1 << ip_vs_conn_tab_bits;
+> >
+> > ---
+>
+> Regards
+>
+> --
+> Julian Anastasov <ja@ssi.bg>
+>
 
 
-> 
+--
+Cheers,
+Abhijeet (https://abhi.host)
 
