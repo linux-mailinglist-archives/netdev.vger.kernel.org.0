@@ -1,154 +1,215 @@
-Return-Path: <netdev+bounces-2892-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2893-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D890B704746
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:04:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9E46D704749
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:04:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 83234280F87
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:04:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9ED261C20D7A
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:04:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 914E61F95B;
-	Tue, 16 May 2023 08:04:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0DB71F95C;
+	Tue, 16 May 2023 08:04:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86654168CA
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:04:23 +0000 (UTC)
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590194492;
-	Tue, 16 May 2023 01:04:21 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 1118540203;
-	Tue, 16 May 2023 08:04:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1684224259;
-	bh=HM165daVVQlgsXpSYpBed1TlG1Fivc1kTbICBUtM1fY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-	b=tLYBale+26PODPoS1VF+h6hLhTA1nVg0JrdCtmmL0KuYEfVG6PAheebGbw7kjPzbN
-	 6i5C/D2P9pFO4pkk1xROlDyRyEKLOGk3UHkO1tdo6l7c/SkQTXC11ukItYbKlE0BkC
-	 VShaetH7mco8w9HFAppmHL/PXPQhnvPcWhRGWZd69EFPhr2KUYNPVz0spC5xfXSm9v
-	 ReoJSrYFMJMX/OKYMyJovKxwvo1XsYhfLFLeGCuetAn26ytB2kw6Q5gPwDFzV19ERs
-	 sLXVAHIoLr2YfVNC1b7+i01xqgr6hZSwtZ6sRvbqnqvr/sWNhbs8KdGfOOBdtVjSIV
-	 9nNA24Z5mbJZA==
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
-To: chandrashekar.devegowda@intel.com,
-	linuxwwan@intel.com,
-	chiranjeevi.rapolu@linux.intel.com,
-	haijun.liu@mediatek.com,
-	m.chetan.kumar@linux.intel.com,
-	ricardo.martinez@linux.intel.com
-Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>,
-	Loic Poulain <loic.poulain@linaro.org>,
-	Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] net: wwan: t7xx: Ensure init is completed before system sleep
-Date: Tue, 16 May 2023 16:03:27 +0800
-Message-Id: <20230516080327.359825-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5EAC19518
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:04:48 +0000 (UTC)
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B104693
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:04:45 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id d75a77b69052e-3f396606ab0so1728961cf.0
+        for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:04:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1684224284; x=1686816284;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ymG9rXKQX74KxEckjwgBY3K7NGepxlJBgVG5eT5News=;
+        b=jb+nREVSXUogMXoT939DG0M6mkHjjtdNgXR1xW65myJHUPsvuE7UlYTTyltOg9Rgam
+         kyYfSs41xrm7IAIdSOxWJsqj2G27CIjiHlTUEGkewxVMeYNzbif7166sAxpsyysI/zv6
+         NmzbkvIoeACfD+Go5T6TZqcZPhDnZURFTzBB3908Q1uDhnnCwFxw07zMvC1YzcUPAMuI
+         swT/Y8W70E+LD7vfFLtg4zAYXk4puGsysRiPP4ACsWXpY7/5dwhkXfog+Yt10oY19I2v
+         8hbca6vK5LqC17Hh5gcSt6bXFBuTMVZkpZi7picxstYxqFMdiJ0ypcwqRmM8IWO6vRKU
+         rTaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684224284; x=1686816284;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ymG9rXKQX74KxEckjwgBY3K7NGepxlJBgVG5eT5News=;
+        b=cwngVQ1zsRdJKtbHX6sjgwhnrhS3QA9oqfXAigHIVYYnDyqqAAYNhH8AV3FazROZ/W
+         xNmaF/BBQmEU+q+JDyyLPzbWyIHTd2oLpFu2kco3oWtdFB1t4n9PizNgFbZs5IJrv6Uv
+         dViua4LSFCcZ+kLp0xNgDjGehexfL8qCsxLVyG/KPVVIbT8I6uh0kD4oBt1MPaghTDEG
+         g8wuGAWJFAcEVMb0h0oJnUcaqBEIDSV1DtmJa71+yoV4oJ71xrXt+ptxwAQz3NzTHMZ8
+         KHpRXu7Eijm8m1EP6i/v+HzyzINVDSyUGPG7bYTpppy8u2n2zfyIO64WXyyNS0mqqjFL
+         YTtQ==
+X-Gm-Message-State: AC+VfDwSjtXrcYHcL/iUqS2B4wn5sLXMvDyLFrFc7r6vifVyDnLHXncT
+	sFR1On3Lt0MMAL7FUPJEsXczbUlNlQNffzxb3omTNdQlDzms0gpXeN/iFg==
+X-Google-Smtp-Source: ACHHUZ5OkoeGj3LU7GOtXARCq0Sd4+iuBzdk2pf1uhTXftuRy34alUHsWsBMpYw1SiB5jQ85kMEKtjbWxQthmCAR06Y=
+X-Received: by 2002:a05:622a:1789:b0:3f4:f841:df89 with SMTP id
+ s9-20020a05622a178900b003f4f841df89mr101077qtk.1.1684224283986; Tue, 16 May
+ 2023 01:04:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <20230515091226.sd2sidyjll64jjay@soft-dev3-1> <CANn89iLDtbQTQEdOgkisHZ28O+cdXKBSKrwubHagA7iVUmKXBg@mail.gmail.com>
+ <20230516074533.t5pwat6ld5qqk5ak@soft-dev3-1>
+In-Reply-To: <20230516074533.t5pwat6ld5qqk5ak@soft-dev3-1>
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 16 May 2023 10:04:32 +0200
+Message-ID: <CANn89i+QT3nfE-nN9b6eeyMBp93CVHZYteuH6N9ErKYqF8PA=A@mail.gmail.com>
+Subject: Re: Performance regression on lan966x when extracting frames
+To: Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc: netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-When the system attempts to sleep while mtk_t7xx is not ready, the driver
-cannot put the device to sleep:
-[   12.472918] mtk_t7xx 0000:57:00.0: [PM] Exiting suspend, modem in invalid state
-[   12.472936] mtk_t7xx 0000:57:00.0: PM: pci_pm_suspend(): t7xx_pci_pm_suspend+0x0/0x20 [mtk_t7xx] returns -14
-[   12.473678] mtk_t7xx 0000:57:00.0: PM: dpm_run_callback(): pci_pm_suspend+0x0/0x1b0 returns -14
-[   12.473711] mtk_t7xx 0000:57:00.0: PM: failed to suspend async: error -14
-[   12.764776] PM: Some devices failed to suspend, or early wake event detected
+On Tue, May 16, 2023 at 9:45=E2=80=AFAM Horatiu Vultur
+<horatiu.vultur@microchip.com> wrote:
+>
+> The 05/15/2023 14:30, Eric Dumazet wrote:
+> >
+> > On Mon, May 15, 2023 at 11:12=E2=80=AFAM Horatiu Vultur
+> > <horatiu.vultur@microchip.com> wrote:
+>
+> Hi Eric,
+>
+> Thanks for looking at this.
+>
+> > >
+> > > Hi,
+> > >
+> > > I have noticed that on the HEAD of net-next[0] there is a performance=
+ drop
+> > > for lan966x when extracting frames towards the CPU. Lan966x has a Cor=
+tex
+> > > A7 CPU. All the tests are done using iperf3 command like this:
+> > > 'iperf3 -c 10.97.10.1 -R'
+> > >
+> > > So on net-next, I can see the following:
+> > > [  5]   0.00-10.01  sec   473 MBytes   396 Mbits/sec  456 sender
+> > > And it gets around ~97000 interrupts.
+> > >
+> > > While going back to the commit[1], I can see the following:
+> > > [  5]   0.00-10.02  sec   632 MBytes   529 Mbits/sec   11 sender
+> > > And it gets around ~1000 interrupts.
+> > >
+> > > I have done a little bit of searching and I have noticed that this
+> > > commit [2] introduce the regression.
+> > > I have tried to revert this commit on net-next and tried again, then =
+I
+> > > can see much better results but not exactly the same:
+> > > [  5]   0.00-10.01  sec   616 MBytes   516 Mbits/sec    0 sender
+> > > And it gets around ~700 interrupts.
+> > >
+> > > So my question is, was I supposed to change something in lan966x driv=
+er?
+> > > or is there a bug in lan966x driver that pop up because of this chang=
+e?
+> > >
+> > > Any advice will be great. Thanks!
+> > >
+> > > [0] befcc1fce564 ("sfc: fix use-after-free in efx_tc_flower_record_en=
+cap_match()")
+> > > [1] d4671cb96fa3 ("Merge branch 'lan966x-tx-rx-improve'")
+> > > [2] 8b43fd3d1d7d ("net: optimize ____napi_schedule() to avoid extra N=
+ET_RX_SOFTIRQ")
+> > >
+> > >
+> >
+> > Hmmm... thanks for the report.
+> >
+> > This seems related to softirq (k)scheduling.
+> >
+> > Have you tried to apply this recent commit ?
+> >
+> > Commit-ID:     d15121be7485655129101f3960ae6add40204463
+> > Gitweb:        https://git.kernel.org/tip/d15121be7485655129101f3960ae6=
+add40204463
+> > Author:        Paolo Abeni <pabeni@redhat.com>
+> > AuthorDate:    Mon, 08 May 2023 08:17:44 +02:00
+> > Committer:     Thomas Gleixner <tglx@linutronix.de>
+> > CommitterDate: Tue, 09 May 2023 21:50:27 +02:00
+> >
+> > Revert "softirq: Let ksoftirqd do its job"
+>
+> I have tried to apply this patch but the results are the same:
+> [  5]   0.00-10.01  sec   478 MBytes   400 Mbits/sec  188 sender
+> And it gets just a little bit bigger number of interrupts ~11000
+>
+> >
+> >
+> > Alternative would be to try this :
+> >
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index b3c13e0419356b943e90b1f46dd7e035c6ec1a9c..f570a3ca00e7aa0e6051787=
+15f90bae17b86f071
+> > 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -6713,8 +6713,8 @@ static __latent_entropy void
+> > net_rx_action(struct softirq_action *h)
+> >         list_splice(&list, &sd->poll_list);
+> >         if (!list_empty(&sd->poll_list))
+> >                 __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+> > -       else
+> > -               sd->in_net_rx_action =3D false;
+> > +
+> > +       sd->in_net_rx_action =3D false;
+> >
+> >         net_rps_action_and_irq_enable(sd);
+> >  end:;
+>
+> I have tried to use also this change with and without the previous patch
+> but the result is the same:
+> [  5]   0.00-10.01  sec   478 MBytes   401 Mbits/sec  256 sender
+> And it is the same number of interrupts.
+>
+> Is something else that I should try?
 
-Mediatek confirmed the device can take a rather long time to complete
-its initialization, so wait for up to 20 seconds until init is done.
+High number of interrupts for a saturated receiver seems wrong.
+(Unless it is not saturating the cpu ?)
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- drivers/net/wwan/t7xx/t7xx_pci.c | 15 +++++++++++++++
- drivers/net/wwan/t7xx/t7xx_pci.h |  1 +
- 2 files changed, 16 insertions(+)
+Perhaps hard irqs are not properly disabled by this driver.
 
-diff --git a/drivers/net/wwan/t7xx/t7xx_pci.c b/drivers/net/wwan/t7xx/t7xx_pci.c
-index 226fc1703e90..7ae85f09cdbf 100644
---- a/drivers/net/wwan/t7xx/t7xx_pci.c
-+++ b/drivers/net/wwan/t7xx/t7xx_pci.c
-@@ -96,6 +96,7 @@ static int t7xx_pci_pm_init(struct t7xx_pci_dev *t7xx_dev)
- 	spin_lock_init(&t7xx_dev->md_pm_lock);
- 	init_completion(&t7xx_dev->sleep_lock_acquire);
- 	init_completion(&t7xx_dev->pm_sr_ack);
-+	init_completion(&t7xx_dev->init_done);
- 	atomic_set(&t7xx_dev->md_pm_state, MTK_PM_INIT);
- 
- 	device_init_wakeup(&pdev->dev, true);
-@@ -124,6 +125,7 @@ void t7xx_pci_pm_init_late(struct t7xx_pci_dev *t7xx_dev)
- 	pm_runtime_mark_last_busy(&t7xx_dev->pdev->dev);
- 	pm_runtime_allow(&t7xx_dev->pdev->dev);
- 	pm_runtime_put_noidle(&t7xx_dev->pdev->dev);
-+	complete_all(&t7xx_dev->init_done);
- }
- 
- static int t7xx_pci_pm_reinit(struct t7xx_pci_dev *t7xx_dev)
-@@ -529,6 +531,18 @@ static void t7xx_pci_shutdown(struct pci_dev *pdev)
- 	__t7xx_pci_pm_suspend(pdev);
- }
- 
-+static int t7xx_pci_pm_prepare(struct device *dev)
-+{
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct t7xx_pci_dev *t7xx_dev;
-+
-+	t7xx_dev = pci_get_drvdata(pdev);
-+	if (!wait_for_completion_timeout(&t7xx_dev->init_done, 20 * HZ))
-+		dev_warn(dev, "Not ready for system sleep.\n");
-+
-+	return 0;
-+}
-+
- static int t7xx_pci_pm_suspend(struct device *dev)
- {
- 	return __t7xx_pci_pm_suspend(to_pci_dev(dev));
-@@ -555,6 +569,7 @@ static int t7xx_pci_pm_runtime_resume(struct device *dev)
- }
- 
- static const struct dev_pm_ops t7xx_pci_pm_ops = {
-+	.prepare = t7xx_pci_pm_prepare,
- 	.suspend = t7xx_pci_pm_suspend,
- 	.resume = t7xx_pci_pm_resume,
- 	.resume_noirq = t7xx_pci_pm_resume_noirq,
-diff --git a/drivers/net/wwan/t7xx/t7xx_pci.h b/drivers/net/wwan/t7xx/t7xx_pci.h
-index 112efa534eac..f08f1ab74469 100644
---- a/drivers/net/wwan/t7xx/t7xx_pci.h
-+++ b/drivers/net/wwan/t7xx/t7xx_pci.h
-@@ -69,6 +69,7 @@ struct t7xx_pci_dev {
- 	struct t7xx_modem	*md;
- 	struct t7xx_ccmni_ctrl	*ccmni_ctlb;
- 	bool			rgu_pci_irq_en;
-+	struct completion	init_done;
- 
- 	/* Low Power Items */
- 	struct list_head	md_pm_entities;
--- 
-2.34.1
+You also could try using napi_schedule_prep(), just in case it helps.
 
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+index bd72fbc2220f3010afd8b90f3704e261b9d0a98f..4694f4f34e6caf5cf540ada17a4=
+72c3c57f10823
+100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+@@ -628,10 +628,12 @@ irqreturn_t lan966x_fdma_irq_handler(int irq, void *a=
+rgs)
+        err =3D lan_rd(lan966x, FDMA_INTR_ERR);
+
+        if (db) {
+-               lan_wr(0, lan966x, FDMA_INTR_DB_ENA);
+-               lan_wr(db, lan966x, FDMA_INTR_DB);
++               if (napi_schedule_prep(&lan966x->napi)) {
++                       lan_wr(0, lan966x, FDMA_INTR_DB_ENA);
++                       lan_wr(db, lan966x, FDMA_INTR_DB);
+
+-               napi_schedule(&lan966x->napi);
++                       __napi_schedule(&lan966x->napi);
++               }
+        }
+
+        if (err) {
 
