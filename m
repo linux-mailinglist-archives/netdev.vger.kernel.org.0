@@ -1,170 +1,160 @@
-Return-Path: <netdev+bounces-3015-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3016-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CD79C705053
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 16:15:57 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8845E705080
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 16:23:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8904C1C20E06
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 14:15:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 43FA6280FE4
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 14:23:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4035E28C0E;
-	Tue, 16 May 2023 14:15:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2D78328C13;
+	Tue, 16 May 2023 14:23:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27EAB34CD9
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 14:15:54 +0000 (UTC)
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45271FEB
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 07:15:50 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id ffacd0b85a97d-3062b101ae1so9342569f8f.2
-        for <netdev@vger.kernel.org>; Tue, 16 May 2023 07:15:50 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B8462771D
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 14:23:46 +0000 (UTC)
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD82E44
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 07:23:44 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-ba81b24c1a5so1692556276.3
+        for <netdev@vger.kernel.org>; Tue, 16 May 2023 07:23:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684246549; x=1686838549;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Y/KV+Di6Ta48Z3epDbXpwwzm5dV8uJgv3AJwtxlWfCg=;
-        b=rrOfddcnfEZBwxzmGgMUvs0GaeImSK2XDlrisZWpbFOMOZHSlcxtTvHUUB4mQmH+eV
-         g8jI0Ef4kkCZuWbyfGJJ+/531XMWhB7wS+Ke9EQgY1pWxR17c3V1ylgAMmrB62hUyVB/
-         yIUSSzR1lkxya1024jRDl91LbJRXI8v7ZEoaXUe+dEvMz+F4vT8FCJyaN9pKO+rtxMsi
-         DB12YZ4hx7n5iHT3wnV5h9Gym77Hx48P9SfEwrNhW5f7ucgUfniH5fmCwEEB4dCaC0qc
-         E5voin6GVkmVTZ4ge3qvLwhFkc87KM7UM4qNJ9vbQ5iMQPlyakWVftf5o2OBlay7px8I
-         ht+w==
+        d=google.com; s=20221208; t=1684247024; x=1686839024;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=WxxVS85yV6hdEo6iskBnjsgf2L8wkqChxCWJ99ICchM=;
+        b=6mYBrUNkyc8ypwVbcSJKIklrunenjCM4cmEzWifC27C8zWAQTjeqQKdt/pYQ48rvvr
+         2VHv1cqBC/ckIyos7n8lexVW3GrRxMVdhJmtYfIASik6zOwlK2wDiiKV5pHM2pokxoHW
+         MWe7fAlBkYNKQspZ56I0FlnOeQ+TMVu4Q9l8e3Ef3XEeJqtmis0D8rBEkDkL6Ajt2Toj
+         a5PCqHD1dqjrBVwLoLZ1LYnhqiMFZiA5e2UWpswEEMlqK42gg8c3PsyS85zk0QBGnlcG
+         tP1PfXWBEbhhTtxC1zoHTYVKazcNLvm+j2K5eh2tFjTlSNQRAUyk3x6PhUR6GVFnvooY
+         TQxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684246549; x=1686838549;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Y/KV+Di6Ta48Z3epDbXpwwzm5dV8uJgv3AJwtxlWfCg=;
-        b=SYtAgO63sMG4Z0RSBi8scqMrWvrh8aCs0duxice6C4puXuNKTxzZExfBrPQQg9rrT0
-         UUxjovex3Q+g7Flh+OymVcx/ZGH4BC/TKw3/VrF8Z+WDnntozMOX28YZ+NuYa8KyKhmt
-         LtYsqiTLU7eaboI5RfdNWwk0scYdcgQy7cMKr/UF3X7oTOsGQ/sH1NlCcFAi8ztTN7K/
-         V+ZwNI2lyuNi52TMIdKUcWEhvapFLGoJQe6QNgs+3Wu67u/rBfFiFaEb5BtqCBzZYxkg
-         c+EBbRWaUnTyv9ND30YQ/LycTEZiZ1Svx5awUM/T3+vR7O9KHTf1br6gzpc0cz68GwlY
-         puRg==
-X-Gm-Message-State: AC+VfDxGww+jpAE+wPPYp4DcsnJWmqkeksuBY0z0doaF6TxOaRmQm/oj
-	mU93C8qSONgmBL1iTqE5wOs=
-X-Google-Smtp-Source: ACHHUZ7gv5FIY5ANveCmNmgink+NyF7kPovM0wBIJjVCLnmRAVn93SUkOHiTagFj0xuY6thsjMMmuA==
-X-Received: by 2002:a5d:4d0f:0:b0:307:c3bc:536 with SMTP id z15-20020a5d4d0f000000b00307c3bc0536mr14143099wrt.64.1684246548391;
-        Tue, 16 May 2023 07:15:48 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id z3-20020adff1c3000000b003093a412310sm963509wro.92.2023.05.16.07.15.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 May 2023 07:15:48 -0700 (PDT)
-Date: Tue, 16 May 2023 17:15:44 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: Andrew Lunn <andrew@lunn.ch>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Daniel Machon <daniel.machon@microchip.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Felix Fietkau <nbd@nbd.name>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Horatiu Vultur <horatiu.vultur@microchip.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	Jakub Kicinski <kuba@kernel.org>, John Crispin <john@phrozen.org>,
-	Jose Abreu <Jose.Abreu@synopsys.com>,
-	Lars Povlsen <lars.povlsen@microchip.com>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
-	Marcin Wojtas <mw@semihalf.com>,
-	Mark Lee <Mark-MC.Lee@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Maxime Chevallier <maxime.chevallier@bootlin.com>,
-	Paolo Abeni <pabeni@redhat.com>, Sean Wang <sean.wang@mediatek.com>,
-	Steen Hegelund <Steen.Hegelund@microchip.com>,
-	Taras Chornyi <taras.chornyi@plvision.eu>,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] Providing a helper for PCS inband negotiation
-Message-ID: <20230516141544.t2e3ll3snrbi3oqq@skbuf>
-References: <ZGIkGmyL8yL1q1zp@shell.armlinux.org.uk>
- <20230515195616.uwg62f7hw47mktfu@skbuf>
- <ZGKn8c2W1SI2CPq4@shell.armlinux.org.uk>
- <20230515220833.up43pd76zne2suy2@skbuf>
- <ZGLCAfbUjexCJ2+v@shell.armlinux.org.uk>
- <20230516090009.ssq3uedjl53kzsjr@skbuf>
- <ZGNt2MFeRolKGFck@shell.armlinux.org.uk>
+        d=1e100.net; s=20221208; t=1684247024; x=1686839024;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WxxVS85yV6hdEo6iskBnjsgf2L8wkqChxCWJ99ICchM=;
+        b=LdCfO68w2U0zuwwnKlMmyfCSccakxfFCF9OVF/3UIjaCZUTgSkzq4Om8vQKj4S0jpc
+         lhibIYsnnpXUfE1REga9yRw/SRjp8wUZZQl4ZkL7goLS6YSILTVSFR+A/aaNPVmwEY9+
+         l6LPVYAbTrgHtegzDTUqaD2HEj8qXvhMQGUH5gqslaAAzcUPaGk9VNlXudOQypEGVeGs
+         VV5rW8U/uXyynVmRcxYV+jteJohGQuBJRK6iPS9DSkX7XSx5HO2Q/IjmO0Lvgd1HlxI+
+         1B+7v9hgdY0/vWv3RrMqjF8Uu4nzm+JC2JuJAaN2/iMj/iOemP2WILoQmifNg4sOU7TI
+         dy7g==
+X-Gm-Message-State: AC+VfDyx5U9L9NR2LxxbFxquMKISk2DFb7ZYh9M3oFbwDTWyVd5GbGXa
+	y5cTb2yJ/ovOtrmyMGs4AydMRv4IWqri7w==
+X-Google-Smtp-Source: ACHHUZ5D4cgZTy+sRsGdCQ2rikZ7VWnnLZThhbjSnoVGn4zlfnuHKp09qPWfi42F8+XpKr4Zk4HM5RwqmlWjIw==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a25:5e54:0:b0:ba6:c041:e9ae with SMTP id
+ s81-20020a255e54000000b00ba6c041e9aemr10875073ybb.13.1684247024013; Tue, 16
+ May 2023 07:23:44 -0700 (PDT)
+Date: Tue, 16 May 2023 14:23:42 +0000
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZGNt2MFeRolKGFck@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.40.1.606.ga4b1b128d6-goog
+Message-ID: <20230516142342.2915501-1-edumazet@google.com>
+Subject: [PATCH net] vlan: fix a potential uninit-value in vlan_dev_hard_start_xmit()
+From: Eric Dumazet <edumazet@google.com>
+To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
+	Eric Dumazet <edumazet@google.com>, syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 16, 2023 at 12:49:44PM +0100, Russell King (Oracle) wrote:
-> What I'm getting at is if the interface mode is
-> PHY_INTERFACE_MODE_USXGMII, then... okay... we _may_ wish to do
-> clause 73 negotiation advertising 10GBASE-KR and then do clause 73
-                                                                  ~~
-                                                                  37
+syzbot triggered the following splat [1], sending an empty message
+through pppoe_sendmsg().
 
-> for the USXGMII control word - but the driver doesn't do this as far
-> as I can see. If C73 AN is being used, it merely reads the C73
-> state and returns the resolution from that. Any speed information that
-> a USXGMII PHY passes back over the C37 inband signalling would be
-> ignored because there seems to be no provision for the USXGMII
-> inband signalling.
-> 
-> So I'm confused what the xpcs driver _actually_ does when USXGMII
-> mode is selected by PHY_INTERFACE_MODE_USXGMII, because looking at
-> the driver, it doesn't look like it's USXGMII at all.
+When VLAN_FLAG_REORDER_HDR flag is set, vlan_dev_hard_header()
+does not push extra bytes for the VLAN header, because vlan is offloaded.
 
-If what you're looking for is strictly the USXGMII in-band autoneg code
-word derived from C37, then the short answer is that you won't find it,
-even when going back to the initial commit fcb26bd2b6ca ("net: phy: Add
-Synopsys DesignWare XPCS MDIO module").
+Unfortunately vlan_dev_hard_start_xmit() first reads veth->h_vlan_proto
+before testing (vlan->flags & VLAN_FLAG_REORDER_HDR).
 
-To the larger question 'what does XPCS actually do in phy-mode "usxgmii"',
-I guess the simple answer looking at the aforementioned initial commit
-is 'it violates the advertised coding scheme by using BASE-R instead of
-BASE-X for speeds lower than 10G', and 'if you don't want the USXGMII
-replicator just use phy-mode "10gbase-kr" which behaves basically the
-same except it doesn't advertise the rate-adapted speeds'. Disclaimer:
-I'm saying this based solely on the code and documentation.
+We need to swap the two conditions.
 
-> If we want to change that back to the old behaviour, that needs to
-> be:
-> 		if (test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, advertising)) {
-> 			...
-> 		}
-> 		break;
+[1]
+BUG: KMSAN: uninit-value in vlan_dev_hard_start_xmit+0x171/0x7f0 net/8021q/vlan_dev.c:111
+vlan_dev_hard_start_xmit+0x171/0x7f0 net/8021q/vlan_dev.c:111
+__netdev_start_xmit include/linux/netdevice.h:4883 [inline]
+netdev_start_xmit include/linux/netdevice.h:4897 [inline]
+xmit_one net/core/dev.c:3580 [inline]
+dev_hard_start_xmit+0x253/0xa20 net/core/dev.c:3596
+__dev_queue_xmit+0x3c7f/0x5ac0 net/core/dev.c:4246
+dev_queue_xmit include/linux/netdevice.h:3053 [inline]
+pppoe_sendmsg+0xa93/0xb80 drivers/net/ppp/pppoe.c:900
+sock_sendmsg_nosec net/socket.c:724 [inline]
+sock_sendmsg net/socket.c:747 [inline]
+____sys_sendmsg+0xa24/0xe40 net/socket.c:2501
+___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2555
+__sys_sendmmsg+0x411/0xa50 net/socket.c:2641
+__do_sys_sendmmsg net/socket.c:2670 [inline]
+__se_sys_sendmmsg net/socket.c:2667 [inline]
+__x64_sys_sendmmsg+0xbc/0x120 net/socket.c:2667
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Ok. I should send a patch fixing this, since I introduced the behavior
-change. I'll add your suggested tag.
+Uninit was created at:
+slab_post_alloc_hook+0x12d/0xb60 mm/slab.h:774
+slab_alloc_node mm/slub.c:3452 [inline]
+kmem_cache_alloc_node+0x543/0xab0 mm/slub.c:3497
+kmalloc_reserve+0x148/0x470 net/core/skbuff.c:520
+__alloc_skb+0x3a7/0x850 net/core/skbuff.c:606
+alloc_skb include/linux/skbuff.h:1277 [inline]
+sock_wmalloc+0xfe/0x1a0 net/core/sock.c:2583
+pppoe_sendmsg+0x3af/0xb80 drivers/net/ppp/pppoe.c:867
+sock_sendmsg_nosec net/socket.c:724 [inline]
+sock_sendmsg net/socket.c:747 [inline]
+____sys_sendmsg+0xa24/0xe40 net/socket.c:2501
+___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2555
+__sys_sendmmsg+0x411/0xa50 net/socket.c:2641
+__do_sys_sendmmsg net/socket.c:2670 [inline]
+__se_sys_sendmmsg net/socket.c:2667 [inline]
+__x64_sys_sendmmsg+0xbc/0x120 net/socket.c:2667
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-> but that wouldn't ever have been sufficient, even when the code was
-> using an_enabled, because both of these reflect the user configuration.
-> (an_enabled was just a proxy for this Autoneg bit). I'm going to call
-> both of these an "AN indicator" in the question below.
-> 
-> Isn't it rather perverse that the driver configures AN if this AN
-> indicator is set, but then does nothing if it isn't?
+CPU: 0 PID: 29770 Comm: syz-executor.0 Not tainted 6.3.0-rc6-syzkaller-gc478e5b17829 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
 
-Maybe. My copy of the databook is parameterized based on
-instantiation-dependent variables, and I can't really tell what are the
-out-of-reset register values for hardware I don't have, so it is hard
-for me to infer what is the behavior when AN is not enabled.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/8021q/vlan_dev.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> As this is the only phylink-using implementation that involves clause
-> 73 at present, I would like to ensure that there's a clear resolution
-> of the expected behaviour before we get further implementations, and
-> preferably document what's expected.
+diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+index 870e4935d6e6e117eec652b6867fc4c53b94350c..b90781b9ece6402664552295e1f07b2fd97c2465 100644
+--- a/net/8021q/vlan_dev.c
++++ b/net/8021q/vlan_dev.c
+@@ -109,8 +109,8 @@ static netdev_tx_t vlan_dev_hard_start_xmit(struct sk_buff *skb,
+ 	 * NOTE: THIS ASSUMES DIX ETHERNET, SPECIFICALLY NOT SUPPORTING
+ 	 * OTHER THINGS LIKE FDDI/TokenRing/802.3 SNAPs...
+ 	 */
+-	if (veth->h_vlan_proto != vlan->vlan_proto ||
+-	    vlan->flags & VLAN_FLAG_REORDER_HDR) {
++	if (vlan->flags & VLAN_FLAG_REORDER_HDR ||
++	    veth->h_vlan_proto != vlan->vlan_proto) {
+ 		u16 vlan_tci;
+ 		vlan_tci = vlan->vlan_id;
+ 		vlan_tci |= vlan_dev_get_egress_qos_mask(dev, skb->priority);
+-- 
+2.40.1.606.ga4b1b128d6-goog
 
-+1
-that's where I would like this to go, too.
 
