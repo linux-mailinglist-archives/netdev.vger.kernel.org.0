@@ -1,129 +1,210 @@
-Return-Path: <netdev+bounces-2999-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3000-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id EE050704F4C
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 15:29:25 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9B6A4704F4E
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 15:30:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 030F81C20DC4
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 13:29:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EEAED2815EA
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 13:30:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 38BC52771D;
-	Tue, 16 May 2023 13:29:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 433012771F;
+	Tue, 16 May 2023 13:30:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BC2E34CD9
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 13:29:23 +0000 (UTC)
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7AC30D2;
-	Tue, 16 May 2023 06:29:21 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-643557840e4so15179009b3a.2;
-        Tue, 16 May 2023 06:29:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684243761; x=1686835761;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3wrNPJ1N98rVkDqpmYGeRIPO4+D5MBPm+JHAP5bi0lI=;
-        b=SjRtJegJE4MAr3atEsh5GrsX4kXV3ummaSZDrZ73xCZ/6kfoKd46bGOkXMQZb54Jj1
-         4puqH8dQO7OZTsvvpSjwvp8K8RfvAP0ko13wSCMifnh2TWHbJUGJLXQ/SwjbP2NGtYzN
-         DUQOEPhwWew1+J81Mb7HdX2Hwg81LxoND9KpbzHdgaS79Kwvj7KLzNg7AagAewAiIgqO
-         d3Ng/7OU1xOn9AUAnpP5r9+hDoVNWvzD5kWguU2cqii3HaJO1JZb1lTSsNydYYFw8/IM
-         Ag7PWA5GTd9PB/B0/ZMc+TocjtWwMxfu3E9cmVPYea2NRcT9areWz+DrQhiDX2w2i3aR
-         BUiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684243761; x=1686835761;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3wrNPJ1N98rVkDqpmYGeRIPO4+D5MBPm+JHAP5bi0lI=;
-        b=VX/8P+3YNZ3aZ4+0pSGeQ+/hxhofAYdkNTJBe4V1ZciIPwSE9mGcWNQBJgMjiz0umU
-         mMt30o2w2j7jeNaaCXFMnjVK6luwjipk8i+mZFLkPYtpbSJ7oV2TKGYUwjAVkInXm5K1
-         /nB/tJx/9WzS/4vvWT8LisGrfcpmeJ6+Jq2jyVVudSkabg5FZL/yy19MBIJEpwQxYR2T
-         JqluFYry85OzZaw41CDkYE4cWdx7vomXWQBqhZQ/tE3nlUNaAOMfbqnXiGLxhiunF+8f
-         pkhePQfN7vKW7w9LgCby9I8r0gXauV3niRFOh8uc779uhWsPv5o2dA/r4C6J9Er4JXj6
-         JI0g==
-X-Gm-Message-State: AC+VfDxYhaTTJmM4qh/pbEX0lHPfG+M3lHLQSND3CE3522vQvFFC0a7E
-	gKiVSoaDFkTlXVij0zuBeiC+pHO/P14=
-X-Google-Smtp-Source: ACHHUZ7DPpDU7B5C2wwyP8aaXoM7xL1h9DVr5nZxlgJlahgICYkqDuYBEUd17Bm2S0qNhqXqre3jMw==
-X-Received: by 2002:a05:6a00:801:b0:63d:2260:f7d with SMTP id m1-20020a056a00080100b0063d22600f7dmr52997270pfk.8.1684243760730;
-        Tue, 16 May 2023 06:29:20 -0700 (PDT)
-Received: from [192.168.43.80] (subs02-180-214-232-8.three.co.id. [180.214.232.8])
-        by smtp.gmail.com with ESMTPSA id g25-20020a62e319000000b006414289ab69sm13379952pfh.52.2023.05.16.06.29.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 May 2023 06:29:20 -0700 (PDT)
-Message-ID: <30df7ad7-3b8b-c578-b153-7bf0a38fa0cc@gmail.com>
-Date: Tue, 16 May 2023 20:29:04 +0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C7A534CD9
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 13:30:06 +0000 (UTC)
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B6876A9
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 06:29:47 -0700 (PDT)
+Received: from kwepemm600001.china.huawei.com (unknown [172.30.72.57])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4QLH6Z4Bbwz18LS1;
+	Tue, 16 May 2023 21:25:26 +0800 (CST)
+Received: from dggpeml500020.china.huawei.com (7.185.36.88) by
+ kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 16 May 2023 21:29:45 +0800
+Received: from dggpeml500020.china.huawei.com ([7.185.36.88]) by
+ dggpeml500020.china.huawei.com ([7.185.36.88]) with mapi id 15.01.2507.023;
+ Tue, 16 May 2023 21:29:45 +0800
+From: "jiangheng (G)" <jiangheng14@huawei.com>
+To: "jiri@nvidia.com" <jiri@nvidia.com>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>
+CC: "Yanan (Euler)" <yanan@huawei.com>, "zhanghao (ES)"
+	<zhanghao383@huawei.com>
+Subject: [BUG REPORT] softlock up in net/core cleanup_net
+Thread-Topic: [BUG REPORT] softlock up in net/core cleanup_net
+Thread-Index: AdmH+k/8Y6WYzUSxQymoPiacww6E4w==
+Date: Tue, 16 May 2023 13:29:44 +0000
+Message-ID: <677f413cc87a4bc29e8f128435846470@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.136.117.195]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net v2 0/4] Documentation fixes for Mellanox mlx5 devlink
- info
-Content-Language: en-US
-To: Linux Networking <netdev@vger.kernel.org>,
- Remote Direct Memory Access Kernel Subsystem <linux-rdma@vger.kernel.org>,
- Linux Documentation <linux-doc@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc: Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Jonathan Corbet <corbet@lwn.net>, Gal Pressman <gal@nvidia.com>,
- Rahul Rameshbabu <rrameshbabu@nvidia.com>,
- Maher Sanalla <msanalla@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
- Tariq Toukan <tariqt@nvidia.com>
-References: <20230510035415.16956-1-bagasdotme@gmail.com>
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20230510035415.16956-1-bagasdotme@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 5/10/23 10:54, Bagas Sanjaya wrote:
-> Here are fixes for mlx5 devlink info documentation. The first fixes
-> htmldocs warnings on the mainline, while the rest is formatting fixes.
-> 
-> Changes since v1 [1]:
-> 
->   * Pick up Reviewed-by tags from Leon Romanovsky
->   * Rebase on current net tree
-> 
-> [1]: https://lore.kernel.org/linux-doc/20230503094248.28931-1-bagasdotme@gmail.com/
-> 
-> Bagas Sanjaya (4):
->   Documentation: net/mlx5: Wrap vnic reporter devlink commands in code
->     blocks
->   Documentation: net/mlx5: Use bullet and definition lists for vnic
->     counters description
->   Documentation: net/mlx5: Add blank line separator before numbered
->     lists
->   Documentation: net/mlx5: Wrap notes in admonition blocks
-> 
->  .../ethernet/mellanox/mlx5/devlink.rst        | 60 ++++++++++++-------
->  1 file changed, 37 insertions(+), 23 deletions(-)
-> 
+Hi all,
+on linux 5.10,=A0 we want to use isula interactively when testing an intern=
+al feature. When isula restarts the container, it will call cleanup_net and=
+ a crash will occur.
 
-Hi jon,
+[=A0 843.330515] CPU: 0 PID: 158 Comm: kworker/u8:2 Kdump: loaded Tainted: =
+G=A0=A0=A0 B=A0=A0=A0=A0=A0 OEL=A0=A0=A0 #1
+[=A0 843.330516] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/=
+2015
+[=A0 843.330523] Workqueue: netns cleanup_net
+[=A0 843.330526] pstate: 60400085 (nZCv daIf +PAN -UAO -TCO BTYPE=3D--)
+[=A0 843.330529] pc : machine_kexec+0x48/0x2b0
+[=A0 843.330531] lr : machine_kexec+0x48/0x2b0
+[=A0 843.330531] sp : ffff80010284bb10
+[=A0 843.330533] x29: ffff80010284bb10 x28: ffff0000ff851cf8
+[=A0 843.330535] x27: ffff0000ff851d78 x26: ffff80010284bda0
+[=A0 843.330537] x25: ffff800101d9c000 x24: 0000000000000001
+[=A0 843.330539] x23: ffff800101d9c650 x22: ffff800101eb6000
+[=A0 843.330541] x21: ffff800101eb6000 x20: ffff0000cba23c00
+[=A0 843.330543] x19: ffff0000cba23c00 x18: 0000000000000020
+[ =A0843.330545] x17: 0000000000000000 x16: ffff800100d27a3c
+[=A0 843.330548] x15: ffffffffffffffff x14: 0000000060000085
+[=A0 843.330550] x13: ffff8001001c090c x12: 0000000000000040
+[=A0 843.330552] x11: ffff800101aad158 x10: 00000000ffff8000
+[=A0 843.330554] x9 : ffff800100157654 x8 : 0000000000000000
+[=A0 843.330556] x7 : ffff8001017ed158 x6 : 0000000000017ffd
+[=A0 843.330559] x5 : ffff0000ff84b410 x4 : ffff80010284b910
+[=A0 843.330561] x3 : 0000000000000001 x2 : 0000000000000000
+[=A0 843.330563] x1 : 0000000000000000 x0 : ffff0000c09eb9c0
+[=A0 843.330566] Call trace:
+[=A0 843.330569]=A0 machine_kexec+0x48/0x2b0
+[=A0 843.330573]=A0 __crash_kexec+0x90/0x13c
+[=A0 843.330578]=A0 panic+0x314/0x4d8
+[=A0 843.330582]=A0 watchdog_timer_fn+0x26c/0x2f0
+[=A0 843.330585]=A0 __run_hrtimer+0x98/0x2b4
+[=A0 843.330586]=A0 __hrtimer_run_queues+0xbc/0x130
+[=A0 843.330588]=A0 hrtimer_interrupt+0x150/0x3e4
+[=A0 843.330592]=A0 arch_timer_handler_virt+0x3c/0x50
+[=A0 843.330596]=A0 handle_percpu_devid_irq+0x90/0x1f4
+[=A0 843.330599]=A0 __handle_domain_irq+0x84/0x100
+[=A0 843.330601]=A0 gic_handle_irq+0x88/0x2b0
+[=A0 843.330603]=A0 el1_irq+0xb8/0x140
+[=A0 843.330605]=A0 smp_call_function_single+0x1b8/0x1dc
+[=A0 843.330608]=A0 rcu_barrier+0x1c4/0x2d0
+[=A0 843.330612]=A0 netdev_run_todo+0x7c/0x330
+[=A0 843.330615]=A0 rtnl_unlock+0x18/0x24
+[=A0 843.330616]=A0 default_device_exit_batch+0x15c/0x190
+[=A0 843.330621]=A0 ops_exit_list+0x70/0x84
+[=A0 843.330622]=A0 cleanup_net+0x184/0x2e0
+[=A0 843.330625]=A0 process_one_work+0x1d4/0x4bc
+[=A0 843.330627]=A0 worker_thread+0x150/0x400
+[=A0 843.330629]=A0 kthread+0x108/0x134
+[=A0 843.330631]=A0 ret_from_fork+0x10/0x18
+[=A0 843.330633] ---[ end trace 8378c01c76c90cc4 ]---
+[=A0 843.330637] Bye!
 
-If there is no response from mellanox and/or netdev maintainers,
-would you like to review and pick this series up?
+Crash:bt -l
+PID: 158=A0=A0=A0 TASK: ffff0000c09eb9c0=A0 CPU: 0=A0=A0 COMMAND: "kworker/=
+u8:2"
+PID: 158=A0=A0=A0 TASK: ffff0000c09eb9c0=A0 CPU: 0=A0=A0 COMMAND: "kworker/=
+u8:2"
+bt: invalid kernel virtual address: 0=A0 type: "IRQ stack contents"
+bt: read of IRQ stack at 0 failed
+#0 [ffff80010284bb60] __crash_kexec at ffff8001001c0908
+=A0=A0=A0 /usr/src/debug/kernel/./arch/arm64/include/asm/kexec.h: 57
+#1 [ffff80010284bcf0] panic at ffff800100d256a4
+=A0=A0=A0 /usr/src/debug/kernel/kernel/panic.c: 392
+#2 [ffff80010284bde0] watchdog_timer_fn at ffff80010020a5c8
+=A0=A0=A0 /usr/src/debug/kernel/kernel/watchdog.c: 578
+#3 [ffff80010284be30] __run_hrtimer at ffff800100191d24
+=A0=A0=A0 /usr/src/debug/kernel/kernel/time/hrtimer.c: 1586
+#4 [ffff80010284be80] __hrtimer_run_queues at ffff800100191ffc
+=A0=A0=A0 /usr/src/debug/kernel/kernel/time/hrtimer.c: 1650
+#5 [ffff80010284bee0] hrtimer_interrupt at ffff80010019267c
+=A0=A0=A0 /usr/src/debug/kernel/kernel/time/hrtimer.c: 1712
+#6 [ffff80010284bf50] arch_timer_handler_virt at ffff800100aa9a38
+=A0=A0=A0 /usr/src/debug/kernel/drivers/clocksource/arm_arch_timer.c: 674
+#7 [ffff80010284bf60] handle_percpu_devid_irq at ffff80010016500c
+=A0=A0=A0 /usr/src/debug/kernel/./arch/arm64/include/asm/percpu.h: 45
+#8 [ffff80010284bf90] __handle_domain_irq at ffff80010015b840
+=A0=A0=A0 /usr/src/debug/kernel/./include/linux/irqdesc.h: 153
+#9 [ffff80010284bfd0] gic_handle_irq at ffff800100010144
+=A0=A0=A0 /usr/src/debug/kernel/./include/linux/irqdesc.h: 171
+--- <IRQ stack> ---
+#10 [ffff800102d4bb20] el1_irq at ffff800100012374
+=A0=A0=A0 /usr/src/debug/kernel/arch/arm64/kernel/entry.S: 672
+#11 [ffff800102d4bb40] smp_call_function_single at ffff8001001b1e68
+=A0=A0=A0 /usr/src/debug/kernel/./arch/arm64/include/asm/cmpxchg.h: 278
+#12 [ffff800102d4bba0] rcu_barrier at ffff800100178ba0
+=A0=A0=A0 /usr/src/debug/kernel/kernel/rcu/tree.c: 3920
+#13 [ffff800102d4bc00] netdev_run_todo at ffff800100b3f768
+=A0=A0=A0 /usr/src/debug/kernel/net/core/dev.c: 10313
+#14 [ffff800102d4bc80] rtnl_unlock at ffff800100b4cb54
+=A0=A0=A0 /usr/src/debug/kernel/net/core/rtnetlink.c: 114
+#15 [ffff800102d4bc90] default_device_exit_batch at ffff800100b378d8
+=A0=A0=A0 /usr/src/debug/kernel/net/core/dev.c: 11287
+#16 [ffff800102d4bd00] ops_exit_list at ffff800100b2337c
+=A0=A0=A0 /usr/src/debug/kernel/net/core/net_namespace.c: 200
+#17 [ffff800102d4bd30] cleanup_net at ffff800100b25ab0
+=A0=A0=A0 /usr/src/debug/kernel/net/core/net_namespace.c: 616
+#18 [ffff800102d4bd90] process_one_work at ffff8001000de784
+=A0=A0=A0 /usr/src/debug/kernel/kernel/workqueue.c: 2354
+#19 [ffff800102d4bdf0] worker_thread at ffff8001000df18c
+=A0=A0=A0 /usr/src/debug/kernel/kernel/workqueue.c: 2500
+#20 [ffff800102d4be50] kthread at ffff8001000e75a4
+=A0=A0=A0 /usr/src/debug/kernel/kernel/kthread.c: 313
 
-Thanks.
+The above backtrace seems to be caused func:netdev_run_todo() that the size=
+ of list not null.
+void netdev_run_todo(void)
+{
+=A0=A0=A0=A0=A0=A0=A0=A0 struct net_device *dev, *tmp;
+=A0=A0=A0=A0=A0=A0=A0=A0 struct list_head list;
+#ifdef CONFIG_LOCKDEP
+=A0=A0=A0=A0=A0=A0=A0=A0 struct list_head unlink_list;
 
--- 
-An old man doll... just what I always wanted! - Clara
+=A0=A0=A0=A0=A0=A0=A0=A0 list_replace_init(&net_unlink_list, &unlink_list);
+
+=A0=A0=A0=A0=A0=A0=A0=A0 while (!list_empty(&unlink_list)) {
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 struct net_device *d=
+ev =3D list_first_entry(&unlink_list,
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0         =
+                     struct net_device,
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0unlink_li=
+st);
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 list_del_init(&dev->=
+unlink_list);
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 dev->nested_level =
+=3D dev->lower_level - 1;
+=A0=A0=A0=A0=A0=A0=A0=A0 }
+#endif
+
+=A0=A0=A0=A0=A0=A0=A0=A0 /* Snapshot list, allow later requests */
+=A0=A0=A0=A0=A0=A0=A0=A0 list_replace_init(&net_todo_list, &list);
+
+=A0=A0=A0=A0=A0=A0=A0=A0 __rtnl_unlock();
+
+=A0=A0=A0=A0=A0=A0=A0=A0 /* Wait for rcu callbacks to finish before next ph=
+ase */
+=A0=A0=A0=A0=A0=A0=A0=A0 if !(list_empty(&list))
+=A0=A0=A0=A0=A0=A0=A0=A0=A0          rcu_barrier();
+
+I wonder if softlockup is due to the above code? Please help analyze the po=
+ssible causes of this.
 
 
