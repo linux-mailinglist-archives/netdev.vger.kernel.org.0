@@ -1,139 +1,263 @@
-Return-Path: <netdev+bounces-2977-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2978-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6AC92704CC7
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 13:47:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C78F2704CF8
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 13:50:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EA5CB2815D5
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 11:47:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7457D2815C4
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 11:50:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 689AD24EAB;
-	Tue, 16 May 2023 11:47:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8AC9824EB4;
+	Tue, 16 May 2023 11:50:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B32D34CEB
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 11:47:09 +0000 (UTC)
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6185242
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 04:46:43 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-50bceaf07b8so25487056a12.3
-        for <netdev@vger.kernel.org>; Tue, 16 May 2023 04:46:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684237601; x=1686829601;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=93Yzq0NQPKDWbsmyn4CBhtU/WekigFVvB0zAMgN57XI=;
-        b=SUIAwvI++5kAvyMBRhzQ8MviZaRm5/h1Y2uQSZusDH1AIVw9ICmGwylsvUeczZiPZR
-         bNaGsvQCvTmWmIyaCN/Rdv08q23K/aF8O1MIle6o8HrqjSsXrAv+rbXKsVDk+CMu2vlA
-         tkvSYGP8SY4X+4MZuWafcslj/1QsI4q9Q3qzgkwLH3u+eonbhz5tbQxv2ePF1Ldc28CK
-         rK4/j/VsoJrElP+ZbpVWibqAaM50B1PHxWEoVQ+ZtH1FjnAYK0YZDxM7Y1nF+rYb1bbB
-         Xr15ZesjVZock5QuYL7A3P5QQfnJwTajoUjJKBEd9Tt8SbIwVb+JnutoK7UjCX1TkBZa
-         Nk5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684237601; x=1686829601;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=93Yzq0NQPKDWbsmyn4CBhtU/WekigFVvB0zAMgN57XI=;
-        b=jx1n3WwwtPAiacZ/uWr6y7ogCGVLzUoYSttSDoXSroLs+nuGtym3Gks4GI1YmDv/Z7
-         ONsHYfHfzd/lLBUDwZVCIgR4JnIi//IpEejSEEC6DC026vvp8YEH3gV38PA9zwJzfhLJ
-         yRw9Bao/CFFgnRuQk4f9QKky/7ohhe+YwllVtgQLWAQckMgV933NFELfzSbK4RNkOXCl
-         yMA15As6kFyGSwAEpBeYNhlEjLMSRf5w7ZBNnVylOA5JFR6Ccwdz/FNIrbR/Vt+g++SR
-         Dm/426z3DT2Y0hqiC+RvVETyL+1TQm6WnU4Dw1EjRLs06hJuhk3GaRBRUcbM+GWw0JTQ
-         r05w==
-X-Gm-Message-State: AC+VfDwCjatxNfQuCCitpH8HdYVfj8TP/gzxfHYn86VXc+lRthmF6oEr
-	E5W8lUL67uB+nmu/9tPruSWF5g==
-X-Google-Smtp-Source: ACHHUZ6Le8AKBQWreteycC6kDR3GS8geixujQ/iDzkE/vuc3eDWlUxCWIkF3haHQxfAKxtuwY4i1qA==
-X-Received: by 2002:a17:906:58d5:b0:969:9fd0:7cee with SMTP id e21-20020a17090658d500b009699fd07ceemr26824898ejs.10.1684237601227;
-        Tue, 16 May 2023 04:46:41 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id qh20-20020a170906ecb400b009655eb8be26sm10862429ejb.73.2023.05.16.04.46.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 May 2023 04:46:40 -0700 (PDT)
-Date: Tue, 16 May 2023 13:46:39 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-Cc: Vadim Fedorenko <vadfed@meta.com>, Jakub Kicinski <kuba@kernel.org>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	"Olech, Milena" <milena.olech@intel.com>,
-	"Michalik, Michal" <michal.michalik@intel.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: Re: [RFC PATCH v7 5/8] ice: implement dpll interface to control cgu
-Message-ID: <ZGNtH1W3Y/pnx2Hk@nanopsycho>
-References: <20230428002009.2948020-1-vadfed@meta.com>
- <20230428002009.2948020-6-vadfed@meta.com>
- <ZGJn/tKjzxNYcNKU@nanopsycho>
- <DM6PR11MB46570013B31FCCF1FCE0854D9B799@DM6PR11MB4657.namprd11.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 779C424EA9
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 11:50:26 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEF6659E
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 04:50:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+	Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=12oCxnsjDGRIi94hOFSo73JpXQEuM8yD/ulEikbT2L4=; b=tuwTkh+5w5+Qt2MPL0jAfyNZxg
+	DWX0hQcDynjGyxGAzHbREit1U7MiRp8je4AjojwvfK7s9TJZa9Xg2DUAlpGMp7NaXJpSvN/46IQuS
+	Yp7YOpdIouupc8LfTIbSxG2pvxGVwVqRZsNKDVsmvS/YQFn8jrDZqvzjc4rPl2sljF4u5sAR9L7jx
+	dMQrhzkdiGF8W5w1z3UZ3qsv+YmJKrNr55c7y3DNyCTg9y67ip6RHyxOssInIQ440xlvY5pppOm0X
+	qZ8K8RliQdmLz9UKNIahBBG58/PAAZERMFtrsFVksLl/J1feC/Ku/KQGmoumQ7XZngXU485rQ8YRG
+	BYtONZZQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56526)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1pytBf-0005fL-QL; Tue, 16 May 2023 12:49:51 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1pytBY-0000me-Em; Tue, 16 May 2023 12:49:44 +0100
+Date: Tue, 16 May 2023 12:49:44 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Vladimir Oltean <olteanv@gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Daniel Machon <daniel.machon@microchip.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Felix Fietkau <nbd@nbd.name>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Horatiu Vultur <horatiu.vultur@microchip.com>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	Jakub Kicinski <kuba@kernel.org>, John Crispin <john@phrozen.org>,
+	Jose Abreu <Jose.Abreu@synopsys.com>,
+	Lars Povlsen <lars.povlsen@microchip.com>,
+	Lorenzo Bianconi <lorenzo@kernel.org>,
+	Marcin Wojtas <mw@semihalf.com>,
+	Mark Lee <Mark-MC.Lee@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	Paolo Abeni <pabeni@redhat.com>, Sean Wang <sean.wang@mediatek.com>,
+	Steen Hegelund <Steen.Hegelund@microchip.com>,
+	Taras Chornyi <taras.chornyi@plvision.eu>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] Providing a helper for PCS inband negotiation
+Message-ID: <ZGNt2MFeRolKGFck@shell.armlinux.org.uk>
+References: <ZGIkGmyL8yL1q1zp@shell.armlinux.org.uk>
+ <20230515195616.uwg62f7hw47mktfu@skbuf>
+ <ZGKn8c2W1SI2CPq4@shell.armlinux.org.uk>
+ <20230515220833.up43pd76zne2suy2@skbuf>
+ <ZGLCAfbUjexCJ2+v@shell.armlinux.org.uk>
+ <20230516090009.ssq3uedjl53kzsjr@skbuf>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <DM6PR11MB46570013B31FCCF1FCE0854D9B799@DM6PR11MB4657.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230516090009.ssq3uedjl53kzsjr@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Tue, May 16, 2023 at 11:22:37AM CEST, arkadiusz.kubalewski@intel.com wrote:
->>From: Jiri Pirko <jiri@resnulli.us>
->>Sent: Monday, May 15, 2023 7:13 PM
->>
->>Fri, Apr 28, 2023 at 02:20:06AM CEST, vadfed@meta.com wrote:
->>
->>[...]
->>
->>>+static const enum dpll_lock_status
->>>+ice_dpll_status[__DPLL_LOCK_STATUS_MAX] = {
->>>+	[ICE_CGU_STATE_INVALID] = DPLL_LOCK_STATUS_UNSPEC,
->>>+	[ICE_CGU_STATE_FREERUN] = DPLL_LOCK_STATUS_UNLOCKED,
->>>+	[ICE_CGU_STATE_LOCKED] = DPLL_LOCK_STATUS_CALIBRATING,
->>
->>This is a bit confusing to me. You are locked, yet you report
->>calibrating? Wouldn't it be better to have:
->>DPLL_LOCK_STATUS_LOCKED
->>DPLL_LOCK_STATUS_LOCKED_HO_ACQ
->>
->>?
->>
->
->Sure makes sense, will add this state.
+On Tue, May 16, 2023 at 12:00:09PM +0300, Vladimir Oltean wrote:
+> On Tue, May 16, 2023 at 12:36:33AM +0100, Russell King (Oracle) wrote:
+> > > Clause 73 negotiates the actual use of 10GBase-KR as a SERDES protocol
+> > > through the copper backplane in favor of other "Base-K*" alternative
+> > > link modes, so it's not quite proper to say that 10GBase-KR is a clause
+> > > 73 using protocol.
+> > 
+> > I believe it is correct to state it as such, because:
+> > 
+> > 72.1: Table 72–1—Physical Layer clauses associated with the 10GBASE-KR PMD
+> > 
+> > 	73—Auto-Negotiation for Backplane Ethernet              Required
+> > 
+> > Essentially, 802.3 doesn't permit 10GBASE-KR without hardware support
+> > for Clause 73 AN (but that AN doesn't have to be enabled by management
+> > software.)
+> 
+> Just like clause 40 (PCS and PMA for 1000BASE-T) requires clause 28 AN
+> to be supported. But, when the autoneg process begins, the use of
+> 10GBase-KR as a protocol over the backplane link hasn't even been yet
+> established, so I find it unnatural to speak of clause 73 autoneg as
+> something that 10GBase-KR has.
+> 
+> The reason why I'm insisting on this is because to me, to treat clause
+> 73 as an in-band autoneg process of 10GBase-KR sounds like a reversal of
+> causality. The clause 73 link codeword has a Technology Ability field
+> through which 10GBase-KR, 1GBase-KX etc are advertised as supported
+> protocols. If C73 is an inband protocol of 10GBase-KR, what should the
+> local PCS advertise for its Technology Ability? Only 10GBase-KR, because
+> this is what is implied by treating it as an attribute of 10GBase-KR, no?
 
-Do you need "calibrating" then? I mean, the docs says:
-  ``LOCK_STATUS_CALIBRATING``   dpll device calibrates to lock to the
-                                source pin signal
+I'm not going to get hung up on this, because I don't regard the point
+as being particularly important to this discussion. You are right that
+Clause 73 AN selects whether e.g. 10GBASE-KR gets used, and I don't
+disagree with that. We're just entering into what seems like a pointless
+debate that eats up email bandwidth.
 
-Yet you do: [ICE_CGU_STATE_LOCKED] = DPLL_LOCK_STATUS_CALIBRATING
-Seems like you should have:
-[ICE_CGU_STATE_LOCKED] = DPLL_LOCK_STATUS_LOCKED
-[ICE_CGU_STATE_LOCKED_HO_ACQ] = DPLL_LOCK_STATUS_LOCKED_HO_ACQ,
+> But that would be a denatured way of negotiating - advertise a single
+> link mode, take it or leave it. And what other inband autoneg protocols
+> permit, say, starting from SGMII and ending in 1000Base-X? Clause 73
+> can't be directly compared to what we currently mean by managed =
+> "in-band-status".
+> 
+> Not only is C37 autoneg not directly comparable to C73, but they are not
+> mutually exclusive, either. I would say they are more or less orthogonal.
+> More below.
+> 
+> I don't believe that toggling clause 73 autoneg based on phylink_pcs_neg_mode()
+> makes much sense.
 
-and remove DPLL_LOCK_STATUS_CALIBRATING as it would be unused?
+I agree, which means phylink_pcs_neg_mode() needs to document this so
+that people don't think it does - and that solves both of the issues
+I was bringing up in my original email.
 
-Also, as a sidenote, could you use the whole names of enum value names
-in documentation? Simple reason, greppability.
+> > However, if we did want to extend this topic, then there are a number
+> > of questions that really need to be asked is about the XPCS driver.
+> > Such as - what does 1000BASE-KX, 10000BASE-KX4, 10000BASE-KR and
+> > 2500BASE-X have to do with USXGMII, and why are there no copper
+> > ethtool modes listed when a USXGMII link can definitely support
+> > being connected to a copper PHY? (See xpcs_usxgmii_features[]).
+> > 
+> > Why does XPCS think that USXGMII uses Clause 73 AN? (see the first
+> > entry in synopsys_xpcs_compat[].)
+> 
+> First, in principle USXGMII and clause 73 are not mutually exclusive.
+> 
+> It is possible to use clause 73 to advertise 10GBase-KR as a link mode,
+> and that will give you link training for proper 3-tap electrical
+> equalization over the copper backplane.
+> 
+> Then, once C73 AN/LT ended and 10GBase-KR has been established, is
+> possible to configure the 10GBase-R PCS to enable C37 USXGMII to select
+> the actual data rate via symbol replication, while the SERDES lane
+> remains at 10GBaud. At least, the XPCS seems to permit enabling symbol
+> replication in conjunction with 10GBase-KR.
 
-Thanks!
+My comments are against the driver as it stands today, not some
+theoretical case that the hardware may support.
 
+What I'm getting at is if the interface mode is
+PHY_INTERFACE_MODE_USXGMII, then... okay... we _may_ wish to do
+clause 73 negotiation advertising 10GBASE-KR and then do clause 73
+for the USXGMII control word - but the driver doesn't do this as far
+as I can see. If C73 AN is being used, it merely reads the C73
+state and returns the resolution from that. Any speed information that
+a USXGMII PHY passes back over the C37 inband signalling would be
+ignored because there seems to be no provision for the USXGMII
+inband signalling.
 
->
->>
->>>+	[ICE_CGU_STATE_LOCKED_HO_ACQ] = DPLL_LOCK_STATUS_LOCKED,
->>>+	[ICE_CGU_STATE_HOLDOVER] = DPLL_LOCK_STATUS_HOLDOVER,
->>>+};
->>
->>[...]
+So I'm confused what the xpcs driver _actually_ does when USXGMII
+mode is selected by PHY_INTERFACE_MODE_USXGMII, because looking at
+the driver, it doesn't look like it's USXGMII at all.
+
+> Then, there's the entire issue that the code, as it was originally
+> introduced, is not the same as it is now. For example, this bit in
+> xpcs_do_config():
+> 
+> 	switch (compat->an_mode) {
+> 	case DW_AN_C73:
+> 		if (phylink_autoneg_inband(mode)) {
+> 			ret = xpcs_config_aneg_c73(xpcs, compat);
+> 			if (ret)
+> 				return ret;
+> 		}
+> 		break;
+> 
+> used to look at state->an_enabled rather than phylink_autoneg_inband().
+> Through my idiocy, I inadvertently converted that in commit 11059740e616
+> ("net: pcs: xpcs: convert to phylink_pcs_ops").
+
+If we want to change that back to the old behaviour, that needs to
+be:
+		if (test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, advertising)) {
+			...
+		}
+		break;
+
+but that wouldn't ever have been sufficient, even when the code was
+using an_enabled, because both of these reflect the user configuration.
+(an_enabled was just a proxy for this Autoneg bit). I'm going to call
+both of these an "AN indicator" in the question below.
+
+Isn't it rather perverse that the driver configures AN if this AN
+indicator is set, but then does nothing if it isn't?
+
+> > xpcs_sgmii_features[] only mentions copper linkmodes, but as we know,
+> > it's common for copper PHYs to also support fibre with an auto-
+> > selection mechanism. So, 1000BASE-X is definitely possible if SGMII
+> > is supported, so why isn't it listed.
+> 
+> Most likely explanation is that XPCS has never been paired up until now
+> to such a PHY.
+
+So it's probably safe to add ETHTOOL_LINK_MODE_1000baseX_Full_BIT
+there - thanks.
+
+> > As previously said, 1000BASE-X can be connected to a PHY that does
+> > 1000BASE-T, so why does xpcs_1000basex_features[] not mention
+> > 1000baseT_Full... there's probably more here as well.
+> > 
+> > Interestingly, xpcs_2500basex_features[] _does_ mention both
+> > 2500BASE-X and 2500BASE-T, but I think that only does because I
+> > happened to comment on it during a review.
+> > 
+> > I think xpcs is another can of worms, but is an easier can of worms
+> > to solve than trying to sort out that "what's an ethernet PHY"
+> > question we seem to be heading towards (which I think would be a
+> > mammoth task, even back when phylink didn't exist, to sort out.)
+> 
+> I wasn't necessarily going to go all the way into "what's a PHY?".
+> I just want to clarify some terms such that we can agree what is correct
+> and what is not. I believe that much of what's currently in XPCS w.r.t.
+> C73 is not correct, partly through initial intention and partly through
+> blind conversions such as mine.
+
+Right, that's probably why I'm having a hard time interpreting what
+this driver is doing when it comes to these modes that makes use
+clause 73.
+
+As this is the only phylink-using implementation that involves clause
+73 at present, I would like to ensure that there's a clear resolution
+of the expected behaviour before we get further implementations, and
+preferably document what's expected.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
