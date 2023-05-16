@@ -1,143 +1,106 @@
-Return-Path: <netdev+bounces-2903-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2904-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4470E7047C0
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:27:14 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 40C7B7047C1
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:27:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 892992815A6
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:27:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 414261C208DE
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:27:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61B0D200D4;
-	Tue, 16 May 2023 08:27:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B44E20980;
+	Tue, 16 May 2023 08:27:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F7871F94F
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:27:05 +0000 (UTC)
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74141BFD
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:27:03 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-50b37f3e664so24239662a12.1
-        for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:27:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1684225622; x=1686817622;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=+Q/Wa8M+8uvC4yapXeHr/mR9kOO52paWXj/dqyPoiGY=;
-        b=QBexmk+DMOo6mdKn5THtfjbOH7Fh/sar7zK4I1M/u/4HUWDtu9v8bKl/3t18wSNBro
-         oE12HbynSoEYrSJoElh+Zqa6TVqFxJnUthg+jxikGz9G+0tZm9NG0TzrFjZnaBTsDE3B
-         vF0ucHloTC5lpw0cIFX+5JD1aKa8uqbrHr0rXsqjaGdGLkLxFD2z1nqHiT1TrJM5FaJJ
-         8U3uLmynbkNmLLlbAV5ZjSote3XXh3ybIrOzP2PTcsCTdgV5QPc7iAJW7oawAOEPBQjQ
-         CP5+zR7nyHQ1HenOE+ibGvpdguNwUmSETmCeALgAl0yuFiDU8IS76OZy6cdtEHTYwB+x
-         lnPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684225622; x=1686817622;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+Q/Wa8M+8uvC4yapXeHr/mR9kOO52paWXj/dqyPoiGY=;
-        b=lMNPZ6cJVG9sGipvy1tbaklMZB8L5NtlkdpvM7UnKusoDnZAVv6ZNeWN/rGjThWRju
-         O5UaJqbpA0xO74axYzGGEroQYXsNouJdzJEx9AYGXFP4+zZzDxm4+3zEJGKYk8GOh4cg
-         ll7AIBdX2WVUZ/o37Wj5ISHlDB8NZgGvb9gtRdciyJUJcPeiQqlL9OCh+mJJgRTj2dp8
-         c3hh/RylZqVnJ8/y6yW0ZgRU+w8me95hFH0cVS5Q9k2KU9Vp/VGiuhI97UksfHqa/KMT
-         XSW+4rHRM9zMHkfwvq805HeeqvgVh+twn8pWCB1uvljQlKuLE9OeG/9hz9yxX2Hve7II
-         Nvrw==
-X-Gm-Message-State: AC+VfDyd4kNt8Ee7cCeJ8uoFPsA8bfx6yDQX4f17kPtzd1PPwth093Pf
-	dWyjGxsQj6y1B8s/SWD8PaLz2w==
-X-Google-Smtp-Source: ACHHUZ6NlWOJz275z3obUYiEtP8c/TLdPOFJP2OeK1hzxpP/JQGDLY0gdxUlrMuCCjjRzG9IMUV0nA==
-X-Received: by 2002:a05:6402:b03:b0:50b:c4a1:c6c0 with SMTP id bm3-20020a0564020b0300b0050bc4a1c6c0mr29560885edb.16.1684225622170;
-        Tue, 16 May 2023 01:27:02 -0700 (PDT)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id i12-20020aa7c70c000000b0050bd7267a5csm7900857edq.58.2023.05.16.01.27.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 May 2023 01:27:01 -0700 (PDT)
-Message-ID: <824ad48b-c419-fd21-1889-23cd94d4b75d@blackwall.org>
-Date: Tue, 16 May 2023 11:27:00 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D0B21F94F
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:27:14 +0000 (UTC)
+Received: from mail.avm.de (mail.avm.de [212.42.244.119])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD5C4696
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:27:12 -0700 (PDT)
+Received: from mail-auth.avm.de (unknown [IPv6:2001:bf0:244:244::71])
+	by mail.avm.de (Postfix) with ESMTPS;
+	Tue, 16 May 2023 10:27:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
+	t=1684225630; bh=Tyjh52SJUtEZHmo/Wzy9QwV/tPNvfbDEEm6u+11MU2I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LDkJ7udFpSJqnmgyawPTu++RK58Dl96gSGRBixHmhsVKfvnHypuCY49oKafaf9wBR
+	 0O7JcG68AGzGJRBtNNQJMp9ztVtukmHHInGGSqNszId8LOWAHNevaI+d7ma03tfuYt
+	 TDPTnk4Z8vP3CKhzMEhaqzsgJc/1V7twHeObB59k=
+Received: from localhost (unknown [172.17.88.63])
+	by mail-auth.avm.de (Postfix) with ESMTPSA id 5065F8210B;
+	Tue, 16 May 2023 10:27:10 +0200 (CEST)
+Date: Tue, 16 May 2023 10:27:10 +0200
+From: Johannes Nixdorf <jnixdorf-oss@avm.de>
+To: Stephen Hemminger <stephen@networkplumber.org>
+Cc: netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Roopa Prabhu <roopa@nvidia.com>,
+	Nikolay Aleksandrov <razor@blackwall.org>
+Subject: Re: [PATCH net-next 2/2] bridge: Add a sysctl to limit new brides
+ FDB entries
+Message-ID: <ZGM-Xv8sRmeePiGL@u-jnixdorf.ads.avm.de>
+References: <20230515085046.4457-1-jnixdorf-oss@avm.de>
+ <20230515085046.4457-2-jnixdorf-oss@avm.de>
+ <20230515085627.5897dab1@hermes.local>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next 2/2] bridge: Add a sysctl to limit new brides FDB
- entries
-Content-Language: en-US
-To: Johannes Nixdorf <jnixdorf-oss@avm.de>
-Cc: netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Roopa Prabhu <roopa@nvidia.com>
-References: <20230515085046.4457-1-jnixdorf-oss@avm.de>
- <20230515085046.4457-2-jnixdorf-oss@avm.de>
- <dc8dfe0b-cf22-c4f9-8532-87643a6a9ceb@blackwall.org>
- <ZGIXB2DYA4sal9eW@u-jnixdorf.ads.avm.de>
-From: Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <ZGIXB2DYA4sal9eW@u-jnixdorf.ads.avm.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230515085627.5897dab1@hermes.local>
+X-purgate-ID: 149429::1684225630-BC4657B1-D066D2A4/0/0
+X-purgate-type: clean
+X-purgate-size: 1286
+X-purgate-Ad: Categorized by eleven eXpurgate (R) http://www.eleven.de
+X-purgate: This mail is considered clean (visit http://www.eleven.de for further information)
+X-purgate: clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 15/05/2023 14:27, Johannes Nixdorf wrote:
-> On Mon, May 15, 2023 at 12:35:47PM +0300, Nikolay Aleksandrov wrote:
->> On 15/05/2023 11:50, Johannes Nixdorf wrote:
->>> This is a convenience setting, which allows the administrator to limit
->>> the default limit of FDB entries for all created bridges, instead of
->>> having to set it for each created bridge using the netlink property.
->>>
->>> The setting is network namespace local, and defaults to 0, which means
->>> unlimited, for backwards compatibility reasons.
->>>
->>> Signed-off-by: Johannes Nixdorf <jnixdorf-oss@avm.de>
->>> ---
->>>  net/bridge/br.c         | 83 +++++++++++++++++++++++++++++++++++++++++
->>>  net/bridge/br_device.c  |  4 +-
->>>  net/bridge/br_private.h |  9 +++++
->>>  3 files changed, 95 insertions(+), 1 deletion(-)
->>>
->>
->> The bridge doesn't need private sysctls. Netlink is enough.
->> Nacked-by: Nikolay Aleksandrov <razor@blackwall.org>
+On Mon, May 15, 2023 at 08:56:27AM -0700, Stephen Hemminger wrote:
+> On Mon, 15 May 2023 10:50:46 +0200
+> Johannes Nixdorf <jnixdorf-oss@avm.de> wrote:
 > 
-> Fair enough.
+> > +static struct ctl_table br_sysctl_table[] = {
+> > +	{
+> > +		.procname     = "bridge-fdb-max-entries-default",
 > 
-> I originally included the setting so there is a global setting an
-> administrator could toggle instead of having to hunt down each process
-> that might create a bridge, and teaching them to create them with an
-> FDB limit.
 > 
-> Does any of the following alternatives sound acceptable to you?:
->  - Having the default limit (instead of the proposed default to unlimited)
->    configurable in Kbuild. This would solve our problem, as we build
->    our kernels ourselves, but I don't know whether putting a limit there
->    would be acceptable for e.g. distributions.
-
-I don't mind, but it would be useless for everyone else. Kernels would be built
-without that limit set.
-
->  - Hardcoding a default limit != 0. I was afraid I'd break someones
->    use-case with far too large bridged networks if I don't default to
->    unlimited, but if you maintainers have a number in mind with which
->    you don't see a problem, I'd be fine with it as well.
+> That name is too long.
 > 
-> (Sorry for sending this mail twice, I accidentally dropped the list and
-> CC on the fist try)
+> Also, all the rest of bridge code does not use sysctl's.
 
+The code in net/bridge/br_netfilter_hooks.c also uses sysctls, which is
+where I took inspiration for the approach for setting them up, and also
+the naming scheme.
 
-Right, that has been discussed before. So far there hasn't been any good
-option, so I'd say for the time being (or unless you have some better idea)
-we should stick with the netlink max attribute and distributions/admins
-would have to set it on bridge creation. We could add a warning when creating
-a bridge without fdb limit to remind people that it's advisable to set it.
-That warning can be removed when we come up with a proper solution.
+> Why is this special and why should the property be global and not per bridge?
+
+As explained in the commit message and [1] it is a global default
+setting. It makes no sense to make it per bridge, as there is already
+a per bridge netlink setting that overrides it. The only alternative
+option is to not have it at all, which is what I will be going to do
+with a v2.
+
+> NAK
+
+Fair enough. I took it out in my pending-v2-state of the series, but
+would welcome some input on whether you see any value in the proposed
+alternatives in [1], or are strictly against having a global default !=
+0 here at all.
+
+[1]: https://lore.kernel.org/netdev/20230515085046.4457-1-jnixdorf-oss@avm.de/T/#ma4145398516bfd39dfa09976b7892f5fdb76f8c0
 
