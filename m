@@ -1,85 +1,157 @@
-Return-Path: <netdev+bounces-3100-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3101-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B9BC070573F
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 21:36:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B2ED07057C1
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 21:46:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5C1C02812DD
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:36:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AF2DD1C20CC2
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 19:46:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E1F329116;
-	Tue, 16 May 2023 19:36:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 830262911E;
+	Tue, 16 May 2023 19:46:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F9F329113
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 19:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32594C4339B;
-	Tue, 16 May 2023 19:36:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B181329118
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 19:46:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3BAFC433D2;
+	Tue, 16 May 2023 19:46:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684265796;
-	bh=OuFy3VqAIPXlxy9jiJj4Z1KMk1POVJhyIATNgEp9BiY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ebHfqCqajGW45iUzhEIDqRVSUeW5Q4Q+UyIGOYq+ywBIr6+8dJeOLg2jiHElX6GeA
-	 PTpD98AJAVJOLZQVEXLScQaV1HN6Lbm0MDqnYpShsiSPHN080dyrVNKMHk6EfIeepP
-	 gVRcpLNg0+ypamQdvttVkz6izNE95kr8fZAOzpOF5mWYwiFrad5gICIRMEEjcesbqT
-	 2SPT7intum6X8cxdXNHuYRzDOEUB6d332yxbRvREDcAPyUHid+ZG+PTqA2pYYqzOQC
-	 GRIaWGdZOyjKXjHYKryVT45Xm5X01vMrvtoOu6o7qDHhxPGr7lI5+RsZzi0A4zBCnB
-	 IuY99sY2QJy9Q==
-Date: Tue, 16 May 2023 12:36:35 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Jason Wang <jasowang@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, davem@davemloft.net,
- edumazet@google.com, pabeni@redhat.com,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- maxime.coquelin@redhat.com, alvaro.karsz@solid-run.com,
- eperezma@redhat.com, xuanzhuo@linux.alibaba.com, david.marchand@redhat.com,
- netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next V2 1/2] virtio-net: convert rx mode setting to
- use workqueue
-Message-ID: <20230516123635.58a20bb0@kernel.org>
-In-Reply-To: <CACGkMEvCHQLFbtB2fbF27oCd5fNSjUtUOS0q-Lx7=MeYR8KzRA@mail.gmail.com>
-References: <20230413121525-mutt-send-email-mst@kernel.org>
-	<CACGkMEunn1Z3n8yjVaWLqdV502yjaCBSAb_LO4KsB0nuxXmV8A@mail.gmail.com>
-	<20230414031947-mutt-send-email-mst@kernel.org>
-	<CACGkMEtutGn0CoJhoPHbzPuqoCLb4OCT6a_vB_WPV=MhwY0DXg@mail.gmail.com>
-	<20230510012951-mutt-send-email-mst@kernel.org>
-	<CACGkMEszPydzw_MOUOVJKBBW_8iYn66i_9OFvLDoZMH34hMx=w@mail.gmail.com>
-	<20230515004422-mutt-send-email-mst@kernel.org>
-	<CACGkMEv+Q2UoBarNOzKSrc3O=Wb2_73O2j9cZXFdAiLBm1qY-Q@mail.gmail.com>
-	<20230515061455-mutt-send-email-mst@kernel.org>
-	<CACGkMEt8QkK1PnTrRUjDbyJheBurdibr4--Es8P0Y9NZM659pQ@mail.gmail.com>
-	<20230516000829-mutt-send-email-mst@kernel.org>
-	<CACGkMEvCHQLFbtB2fbF27oCd5fNSjUtUOS0q-Lx7=MeYR8KzRA@mail.gmail.com>
+	s=k20201202; t=1684266391;
+	bh=DxI/UVhN0q2eJvXWiZ5VpavVr0sLMAGgJy7XONqqNTI=;
+	h=From:To:Cc:Subject:Date:From;
+	b=lZKVR+LO8BsQXXksU3lzecsMdCysi6jhPwGOc/TVemZ2b3rPKPWtZ/LYnR4Nckjpl
+	 Ltr84WhXcxbefIYu5DutkFEHN5YgnipvtkphFCMBevbtzxvAj6/d8VlrVRU+s/chK2
+	 xwxeW0A0uzQ7kJSQdiLXmares8h3DSqArOdgms4YDMB4zoMQ/tpasN7CuBK/fzJ0cd
+	 Ath6e7Sy7v6g8EYYsRTcF3oeMG1U90krJbg4cQABH3TTjOq20j4o0vCicD9ph/YeA9
+	 BovZrigvhzuPVkcmRYWSBo0OXgcwSB8J4682xDU1S4pf6VBAmuHWx5N3wAsj/UiOW3
+	 qjMyFtY+tYKkQ==
+From: Arnd Bergmann <arnd@kernel.org>
+To: netdev@vger.kernel.org,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] net: isa: include net/Space.h
+Date: Tue, 16 May 2023 21:45:33 +0200
+Message-Id: <20230516194625.549249-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Tue, 16 May 2023 12:17:50 +0800 Jason Wang wrote:
-> > It's not reliable for other drivers but has been reliable for virtio.
-> > I worry some software relied on this.  
-> 
-> It's probably fine since some device like vhost doesn't support this
-> at all and we manage to survive for several years.
-> 
-> > You are making good points though ... could we get some
-> > maintainer's feedback on this?  
-> 
-> That would be helpful. Jakub, any input on this?
+From: Arnd Bergmann <arnd@arndb.de>
 
-AFAIU the question is whether .ndo_set_rx_mode needs to be reliable 
-and instantaneous?  I haven't heard any complaints for it not being
-immediate, and most 10G+ NICs do the config via a workqueue.
+The legacy drivers that still get called from net/Space.c have prototypes
+in net/Space, but this header is not included in most of the files that
+define those functions:
 
-I even have an "intern task" to implement a workqueue in the core,
-for this to save the boilerplate code in the drivers.
+drivers/net/ethernet/cirrus/cs89x0.c:1649:28: error: no previous prototype for 'cs89x0_probe' [-Werror=missing-prototypes]
+drivers/net/ethernet/8390/ne.c:947:28: error: no previous prototype for 'ne_probe' [-Werror=missing-prototypes]
+drivers/net/ethernet/8390/smc-ultra.c:167:28: error: no previous prototype for 'ultra_probe' [-Werror=missing-prototypes]
+drivers/net/ethernet/amd/lance.c:438:28: error: no previous prototype for 'lance_probe' [-Werror=missing-prototypes]
+drivers/net/ethernet/3com/3c515.c:422:20: error: no previous prototype for 'tc515_probe' [-Werror=missing-prototypes]
+
+Add the inclusion to avoids the warnings.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/3com/3c515.c     | 4 +++-
+ drivers/net/ethernet/8390/ne.c        | 1 +
+ drivers/net/ethernet/8390/smc-ultra.c | 1 +
+ drivers/net/ethernet/8390/wd.c        | 1 +
+ drivers/net/ethernet/amd/lance.c      | 1 +
+ drivers/net/ethernet/cirrus/cs89x0.c  | 2 ++
+ 6 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/3com/3c515.c b/drivers/net/ethernet/3com/3c515.c
+index d2f4358cc550..ba3e7aa1a28f 100644
+--- a/drivers/net/ethernet/3com/3c515.c
++++ b/drivers/net/ethernet/3com/3c515.c
+@@ -66,8 +66,10 @@ static int max_interrupt_work = 20;
+ #include <linux/timer.h>
+ #include <linux/ethtool.h>
+ #include <linux/bitops.h>
+-
+ #include <linux/uaccess.h>
++
++#include <net/Space.h>
++
+ #include <asm/io.h>
+ #include <asm/dma.h>
+ 
+diff --git a/drivers/net/ethernet/8390/ne.c b/drivers/net/ethernet/8390/ne.c
+index 0a9118b8be0c..bc9c81dc00fd 100644
+--- a/drivers/net/ethernet/8390/ne.c
++++ b/drivers/net/ethernet/8390/ne.c
+@@ -52,6 +52,7 @@ static const char version2[] =
+ #include <linux/etherdevice.h>
+ #include <linux/jiffies.h>
+ #include <linux/platform_device.h>
++#include <net/Space.h>
+ 
+ #include <asm/io.h>
+ 
+diff --git a/drivers/net/ethernet/8390/smc-ultra.c b/drivers/net/ethernet/8390/smc-ultra.c
+index 6e62c37c9400..7465650c8078 100644
+--- a/drivers/net/ethernet/8390/smc-ultra.c
++++ b/drivers/net/ethernet/8390/smc-ultra.c
+@@ -66,6 +66,7 @@ static const char version[] =
+ #include <linux/isapnp.h>
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
++#include <net/Space.h>
+ 
+ #include <asm/io.h>
+ #include <asm/irq.h>
+diff --git a/drivers/net/ethernet/8390/wd.c b/drivers/net/ethernet/8390/wd.c
+index 5b00c452bede..119021d41451 100644
+--- a/drivers/net/ethernet/8390/wd.c
++++ b/drivers/net/ethernet/8390/wd.c
+@@ -37,6 +37,7 @@ static const char version[] =
+ #include <linux/delay.h>
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
++#include <net/Space.h>
+ 
+ #include <asm/io.h>
+ 
+diff --git a/drivers/net/ethernet/amd/lance.c b/drivers/net/ethernet/amd/lance.c
+index 8971665a4b2a..6cf38180cc01 100644
+--- a/drivers/net/ethernet/amd/lance.c
++++ b/drivers/net/ethernet/amd/lance.c
+@@ -59,6 +59,7 @@ static const char version[] = "lance.c:v1.16 2006/11/09 dplatt@3do.com, becker@c
+ #include <linux/skbuff.h>
+ #include <linux/mm.h>
+ #include <linux/bitops.h>
++#include <net/Space.h>
+ 
+ #include <asm/io.h>
+ #include <asm/dma.h>
+diff --git a/drivers/net/ethernet/cirrus/cs89x0.c b/drivers/net/ethernet/cirrus/cs89x0.c
+index 06a0c00af99c..276c32c3926a 100644
+--- a/drivers/net/ethernet/cirrus/cs89x0.c
++++ b/drivers/net/ethernet/cirrus/cs89x0.c
+@@ -72,6 +72,8 @@
+ #include <linux/gfp.h>
+ #include <linux/io.h>
+ 
++#include <net/Space.h>
++
+ #include <asm/irq.h>
+ #include <linux/atomic.h>
+ #if ALLOW_DMA
+-- 
+2.39.2
+
 
