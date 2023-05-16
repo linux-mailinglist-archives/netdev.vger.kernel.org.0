@@ -1,125 +1,204 @@
-Return-Path: <netdev+bounces-2907-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2909-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 186B17047D4
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B8EB67047E9
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 10:34:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 17D401C20DE2
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:30:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 626581C20DCB
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 08:34:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4657EA95C;
-	Tue, 16 May 2023 08:30:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D4E32C722;
+	Tue, 16 May 2023 08:34:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AC352098E
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:30:58 +0000 (UTC)
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B441BFD
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:30:56 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-50b37f3e664so24247183a12.1
-        for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:30:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1684225855; x=1686817855;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=M34/aMKN7ljoeujRQEvpnGsETt4x3AV3rvDr+t0qo4I=;
-        b=mIHFwFj4/b/BrjiM1IfcwgiHg2Z25LopZs63qB+UIFWa1KKJvsXiITrff343N6CSOk
-         T4DXsjUXNmlWSk07koYZJbuqxQDRRWeYeTTlN+8T3F4lkIwddDNQBI+9gbT/QV8SzONo
-         QeYwAHE76QLQevJaR0UsAxCZ6kbtoyIPROFGT+bphLahpBfs0LZrPIYE4BxvjDB2bVNW
-         lJJOKhNoVxxcEpOwfWqQvzBDCAPQGuCcVIePNflw9bUYSiimpnRER3doCWo6l4K0R5TE
-         95Imleo5fUwejVkWafhskPgwwZIPQMP/lx2Jv/2m3jI6KjBW9Fy/0qtLC7LGzaCAiFR4
-         f0Mg==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EAAE2C720
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 08:34:27 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336DE40D5
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:34:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684226056;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=L/l0pLc5PrB0GCBVRJIl+xdVcASfDrDe/hZu8/KOYH0=;
+	b=fFsn8WoRJxEcP6vmrvqrcxBrnzhnckVngnU6/NlntrDxjyAlgt5MQaQgV9jPE6c3F5BXT7
+	BysxjfQs/qFq/ygPe0SFk3dBE6RBEeYSr6HUdK1m2nhBqQsdNZzNJ6418PTGnLzVQz2jF3
+	gc3XJydLJced9YiBqXnv2i0Rv8zpN3s=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-612-_nJ7jbEhMHS0figeASrEOw-1; Tue, 16 May 2023 04:34:15 -0400
+X-MC-Unique: _nJ7jbEhMHS0figeASrEOw-1
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f4e45813ddso5747015e9.1
+        for <netdev@vger.kernel.org>; Tue, 16 May 2023 01:34:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684225855; x=1686817855;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=M34/aMKN7ljoeujRQEvpnGsETt4x3AV3rvDr+t0qo4I=;
-        b=UCaVNSeBecmqe+AG1gEBShVWY8KqMB3eE3HXGzIxird6SMsEO+PHQv7GoW3Vs4v3XF
-         dwdFqJcgCFTLoKsVtmiptOjhfd+9k+vGXfH5s5TMfe8JUhVH6jnbSEHdBAlZB7f+ZbYJ
-         xMbjYVeEaJhJzn/BsROr6PtoPhhbvn0szHUEXWo+KYnMzqK8IRJMXjZ+2ZoJrlU2yKQa
-         1D76AA9Q7qgOXAnHGFlJefuB9sz50SWoLcdE+hjiHCZVQJjjWTv1YHnmMOeFynzVXI1Q
-         uRLggujrtbZExYeJjAenfwah/KnHNRm55nFYDx9MsmoZe3tERH7fo0hiTlkNAklsr3sF
-         OSdw==
-X-Gm-Message-State: AC+VfDziHxPwsGGRh051aGNoSzPYGRHilmeZrRZ1rIPtUQFp2Pg/cJli
-	uLeu4IcGaUo+4wrv+gARBCAg5Q==
-X-Google-Smtp-Source: ACHHUZ7iU4fIk9gvLuIZGyu/Ww4Eq91ifhd18J31LOAEojj0tM05/0+W1TCrkhqlZO7NzvJFV32aHg==
-X-Received: by 2002:a17:906:db08:b0:94f:1c90:cb70 with SMTP id xj8-20020a170906db0800b0094f1c90cb70mr33953282ejb.66.1684225855192;
-        Tue, 16 May 2023 01:30:55 -0700 (PDT)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id l9-20020a170906078900b0094ed0370f8fsm10748836ejc.147.2023.05.16.01.30.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 May 2023 01:30:54 -0700 (PDT)
-Message-ID: <c4602c0f-76b1-c9a4-f7f1-1f5a02a56564@blackwall.org>
-Date: Tue, 16 May 2023 11:30:53 +0300
+        d=1e100.net; s=20221208; t=1684226054; x=1686818054;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=L/l0pLc5PrB0GCBVRJIl+xdVcASfDrDe/hZu8/KOYH0=;
+        b=TjJB6d5TEslb5HyxuKjb/Foa9ERdM1MtiMh/LrHD6VIx5KofcozfBpTr5w1M3ybBQc
+         3DMMahQbfkhcvV05HzSSHO3R8kz6fiBARJdcHb3MdWKliCXEUIWbrU8urJOnboJDj2O4
+         EyJMNBqP0L6adMfAcaK6a957NTz/A+i1f8gnLHjFpuEe5Fh2BLiVSXmA1mJzAdjJXUOz
+         x53WoGUAp+UlnppCQ/TJbZVn1un5q65WYrVT4DxwylcNe4bqKHwVoYM4G8wCdAUis6Gr
+         MF3YfZ3S3yZa3m5uJYDac4WlE2hdLA28ESDZCSxjwYEtJ0rmmVVoFJsIcbF66xCktxPA
+         nPwA==
+X-Gm-Message-State: AC+VfDzSVL/D/BRPpkzTjxtYiK05hmOxwMJ3i2psKX3qX5qxPT2REbJi
+	sUnaICHYY3Dx3vusKbbYejReulQXzLxOWFaiGkdZQ4rNAB5hD7TQ8jaH/bCnLIqjErQImj3+M58
+	cnGbqBT9yOH4IjuMG
+X-Received: by 2002:a05:600c:3514:b0:3f4:e426:e0b7 with SMTP id h20-20020a05600c351400b003f4e426e0b7mr1866031wmq.3.1684226053884;
+        Tue, 16 May 2023 01:34:13 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4xH2Lq7p3IYsAkm82uIQxTLiTKT1IK0Smzefvlo1QSjAngXJX9xIoDDjtwTfmkycqs6IG0Tw==
+X-Received: by 2002:a05:600c:3514:b0:3f4:e426:e0b7 with SMTP id h20-20020a05600c351400b003f4e426e0b7mr1866014wmq.3.1684226053566;
+        Tue, 16 May 2023 01:34:13 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-225-74.dyn.eolo.it. [146.241.225.74])
+        by smtp.gmail.com with ESMTPSA id f9-20020a7bc8c9000000b003f4253ddb7dsm1451527wml.43.2023.05.16.01.34.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 May 2023 01:34:12 -0700 (PDT)
+Message-ID: <813be3bd0823bac31dc1b018750fad29d794d9c2.camel@redhat.com>
+Subject: Re: [PATCH net] net: fix stack overflow when LRO is disabled for
+ virtual interfaces
+From: Paolo Abeni <pabeni@redhat.com>
+To: Taehee Yoo <ap420073@gmail.com>, Nikolay Aleksandrov
+ <razor@blackwall.org>,  davem@davemloft.net, kuba@kernel.org,
+ edumazet@google.com, jiri@resnulli.us,  j.vosburgh@gmail.com,
+ andy@greyhouse.net, netdev@vger.kernel.org
+Cc: jarod@redhat.com, wangyufen@huawei.com, 
+	syzbot+60748c96cf5c6df8e581@syzkaller.appspotmail.com
+Date: Tue, 16 May 2023 10:34:11 +0200
+In-Reply-To: <52da9cd3-508f-eb7d-98b3-cd777acc90eb@gmail.com>
+References: <20230515053740.3065735-1-ap420073@gmail.com>
+	 <eeff656b-22ac-082d-9b94-62980e806f0f@blackwall.org>
+	 <52da9cd3-508f-eb7d-98b3-cd777acc90eb@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next 1/2] bridge: Add a limit on FDB entries
-Content-Language: en-US
-To: Johannes Nixdorf <jnixdorf-oss@avm.de>
-Cc: netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Roopa Prabhu <roopa@nvidia.com>
-References: <20230515085046.4457-1-jnixdorf-oss@avm.de>
- <e8d98be6-d540-59c6-79eb-353715625ea5@blackwall.org>
- <ZGM64ODoVwK8J4u2@u-jnixdorf.ads.avm.de>
-From: Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <ZGM64ODoVwK8J4u2@u-jnixdorf.ads.avm.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 16/05/2023 11:12, Johannes Nixdorf wrote:
-[snip]
->>>  		return -EMSGSIZE;
->>>  
->>>  #ifdef CONFIG_BRIDGE_VLAN_FILTERING
->>> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
->>> index 2119729ded2b..64fb359c6e3e 100644
->>> --- a/net/bridge/br_private.h
->>> +++ b/net/bridge/br_private.h
->>> @@ -494,6 +494,8 @@ struct net_bridge {
->>>  #endif
->>>  
->>>  	struct rhashtable		fdb_hash_tbl;
->>> +	u32				fdb_n_entries;
->>> +	u32				fdb_max_entries;
->>
->> These are not critical, so I'd use 4 byte holes in net_bridge and pack it better
->> instead of making it larger.
-> 
-> For a v2 I now moved it into (conditional) holes now in front of
-> CONFIG_BRIDGE_VLAN_FILTERING (only a hole if it is enabled) and
-> CONFIG_SWITCHDEV (only a hole if it is disabled). I could not find any
-> other holes, but please tell me if you had any others in mind.
-> 
+On Mon, 2023-05-15 at 18:12 +0900, Taehee Yoo wrote:
+> On 5/15/23 15:24, Nikolay Aleksandrov wrote:
+>  > On 15/05/2023 08:37, Taehee Yoo wrote:
+>  >> When the virtual interface's feature is updated, it synchronizes the
+>  >> updated feature for its own lower interface.
+>  >> This propagation logic should be worked as the iteration, not=20
+> recursively.
+>  >> But it works recursively due to the netdev notification unexpectedly.
+>  >> This problem occurs when it disables LRO only for the team and bondin=
+g
+>  >> interface type.
+>  >>
+>  >>         team0
+>  >>           |
+>  >>    +------+------+-----+-----+
+>  >>    |      |      |     |     |
+>  >> team1  team2  team3  ...  team200
+>  >>
+>  >> If team0's LRO feature is updated, it generates the NETDEV_FEAT_CHANG=
+E
+>  >> event to its own lower interfaces(team1 ~ team200).
+>  >> It is worked by netdev_sync_lower_features().
+>  >> So, the NETDEV_FEAT_CHANGE notification logic of each lower interface
+>  >> work iteratively.
+>  >> But generated NETDEV_FEAT_CHANGE event is also sent to the upper
+>  >> interface too.
+>  >> upper interface(team0) generates the NETDEV_FEAT_CHANGE event for=20
+> its own
+>  >> lower interfaces again.
+>  >> lower and upper interfaces receive this event and generate this
+>  >> event again and again.
+>  >> So, the stack overflow occurs.
+>  >>
+>  >> But it is not the infinite loop issue.
+>  >> Because the netdev_sync_lower_features() updates features before
+>  >> generating the NETDEV_FEAT_CHANGE event.
+>  >> Already synchronized lower interfaces skip notification logic.
+>  >> So, it is just the problem that iteration logic is changed to the
+>  >> recursive unexpectedly due to the notification mechanism.
+>  >>
+>  >> Reproducer:
+>  >>
+>  >> ip link add team0 type team
+>  >> ethtool -K team0 lro on
+>  >> for i in {1..200}
+>  >> do
+>  >>          ip link add team$i master team0 type team
+>  >>          ethtool -K team$i lro on
+>  >> done
+>  >>
+>  >> ethtool -K team0 lro off
+>  >>
+>  >> In order to fix it, the priv_notifier_ctx net_device member is=20
+> introduced.
+>  >> This variable can be used by each interface in its own way in the
+>  >> notification context. The bonding and team interface is going to use =
+it
+>  >> to avoid duplicated NETDEV_FEAT_CHANGE event handling.
+>  >>
+>  >> Reported-by: syzbot+60748c96cf5c6df8e581@syzkaller.appspotmail.com
+>  >> Fixes: fd867d51f889 ("net/core: generic support for disabling netdev=
+=20
+> features down stack")
+>  >> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+>  >> ---
+>  >>   drivers/net/bonding/bond_main.c | 6 +++++-
+>  >>   drivers/net/team/team.c         | 6 +++++-
+>  >>   include/linux/netdevice.h       | 1 +
+>  >>   net/core/dev.c                  | 2 ++
+>  >>   4 files changed, 13 insertions(+), 2 deletions(-)
+>  >>
+>  >
+>  > Since you're syncing to lower devices, can't you check if the event=
+=20
+> source device
+>  > is lower to the current one (i.e. reverse propagation has happened)=
+=20
+> in the affected
+>  > drivers ? Adding a new struct netdevice member just for this seems=20
+> unnecessary to me.
+>  > Especially for a setup like a bond of bonds or a team of teams, these=
+=20
+> are corner case
+>  > setups that shouldn't exist in general. :)
+>  >
+>=20
+> I agree that this new variable is unnecessary right now.
+> I tried to avoid introducing new variables, but unfortunately, I=20
+> couldn't find a solution to detect duplicated notification events.
+>=20
+> The reason why I introduced the new member of the net_device is that I=
+=20
+> thought there might be similar problems in the future such as mtu.
+> so, I hoped that it can be used as a general variable to avoid similar=
+=20
+> problems.
+> But I really agree that this new variable is over-spec.
+> So, adding a new boolean variable into the struct bonding and team, not=
+=20
+> net_device would be reasonable if I can't find a proper solution.
 
-Just please don't add them in the first 64 bytes (first cache line) as we use that
-in the hot path and keep it for variables used there. I'd say use any of the other
-4 byte holes and just add both, so another 4 byte hole would be left after the second one.
+I think adding a bool variable to bonding/team priv would be better, as
+it looks like the issues is specific to such kind of devices.
 
->>>  	struct list_head		port_list;
->>>  #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
->>>  	union {
->>
-> 
-> Thanks for your detailed feedback.
+Thanks!
+
+Paolo
 
 
