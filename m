@@ -1,60 +1,60 @@
-Return-Path: <netdev+bounces-3112-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3114-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5A544705871
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 22:14:41 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 213CD70587B
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 22:15:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 51B411C20B14
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 20:14:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CC19F281229
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 20:15:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3786A271E8;
-	Tue, 16 May 2023 20:14:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8073D271FF;
+	Tue, 16 May 2023 20:14:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2300A271E6
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 20:14:22 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E9F3A9D;
-	Tue, 16 May 2023 13:14:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F24C271F6
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 20:14:29 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEF77DA2;
+	Tue, 16 May 2023 13:14:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1684268060; x=1715804060;
+  t=1684268066; x=1715804066;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=69Dlfl7230M9A59HAhr8bAJJvfZf/FBMqo1z6Z4ZdWc=;
-  b=VYJOWDKr34x22Xzwd3iuhKX7IwHsopti+4Cq8l40lz2EhR2gQKpyVZmn
-   bcbBDzXRWaMtEDJ2CacixTVYXrr0cLmdUlXa91zUCj/5GMDWdy4j6ZGdi
-   qbgu1306MrmWT1jpFjKanaVXltNX7s1ZC+JkSJZJbVup0ii8xcfi0qVbo
-   t6FrUgQNdiQtSTN6muf0ZR8DzqbtuDoGpPaTF0B5PcqSNbat9IibvaHh7
-   0Hpt5wfbxDcdBqRCZQ/zhoXQOC1+yZ8DxFTXxd89lWAjTrt11ta/H8MZf
-   KCkIHyM4acUDUPOiVkxRlG3nRtS/7/VmsXiO2LygegyNpbepY0gFoOzTO
-   A==;
+  bh=Qx+ChA0MdZiqU/fg5IxRcRg6zl5XiwYZ79/hzoBhdCo=;
+  b=IsK4ZS8nza6pw/g6t5jtr/tXU1vRbyDMPyZ0mrFuydeWSMcIvJ0HA7Ko
+   TX8gs2dzPCNwYALl9U65JKVM1b9ypM5Whh1gOzz0YIRTa2fiUUHzk63yO
+   EQmCz4uc5umDKVtLiLueXVWpjCdGrS14O9l4nRybhb5zWdo+zq857waKk
+   f2gbuMJKE/Rr721m9Hqp7ASdpZCykf/o3dAs9tb/8KSWNPCu2ULvWcdNl
+   mnWWUQRhwThWSRuRCqOVLZpK1rwy1snEVbQ96DxlXvKhQk8C/rfpDhD2U
+   0oSI0NH5Nk+jYG/dPm6qcRD4d6T4gwF2PYKtzVID71CyBj5GUnu4qWPaA
+   w==;
 X-IronPort-AV: E=Sophos;i="5.99,278,1677567600"; 
-   d="scan'208";a="225639957"
+   d="scan'208";a="152400208"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 May 2023 13:14:19 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 May 2023 13:14:25 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 16 May 2023 13:14:18 -0700
+ 15.1.2507.21; Tue, 16 May 2023 13:14:21 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Tue, 16 May 2023 13:14:16 -0700
+ 15.1.2507.21 via Frontend Transport; Tue, 16 May 2023 13:14:19 -0700
 From: Horatiu Vultur <horatiu.vultur@microchip.com>
 To: <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
 	<pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>,
 	<daniel.machon@microchip.com>, <piotr.raczynski@intel.com>, Horatiu Vultur
 	<horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 1/7] net: lan966x: Add registers to configure PCP, DEI, DSCP
-Date: Tue, 16 May 2023 22:14:02 +0200
-Message-ID: <20230516201408.3172428-2-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 2/7] net: lan966x: Add support for offloading pcp table
+Date: Tue, 16 May 2023 22:14:03 +0200
+Message-ID: <20230516201408.3172428-3-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.38.0
 In-Reply-To: <20230516201408.3172428-1-horatiu.vultur@microchip.com>
 References: <20230516201408.3172428-1-horatiu.vultur@microchip.com>
@@ -69,206 +69,277 @@ Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
 	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	UPPERCASE_50_75,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add the registers that are needed to configure the PCP, DEI and DSCP
-of the switch both at ingress and also at egress.
+Add support for offloading pcp app entries. Lan966x has 8 priority
+queues per port and for each priority it also has a drop precedence.
 
 Reviewed-by: Daniel Machon <daniel.machon@microchip.com>
 Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../ethernet/microchip/lan966x/lan966x_regs.h | 132 ++++++++++++++++++
- 1 file changed, 132 insertions(+)
+ .../net/ethernet/microchip/lan966x/Kconfig    |  11 ++
+ .../net/ethernet/microchip/lan966x/Makefile   |   1 +
+ .../ethernet/microchip/lan966x/lan966x_dcb.c  | 103 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_main.c |   2 +
+ .../ethernet/microchip/lan966x/lan966x_main.h |  25 +++++
+ .../ethernet/microchip/lan966x/lan966x_port.c |  30 +++++
+ 6 files changed, 172 insertions(+)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-index 2220391802766..4b553927d2e0e 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-@@ -283,6 +283,18 @@ enum lan966x_target {
- #define ANA_VLAN_CFG_VLAN_POP_CNT_GET(x)\
- 	FIELD_GET(ANA_VLAN_CFG_VLAN_POP_CNT, x)
+diff --git a/drivers/net/ethernet/microchip/lan966x/Kconfig b/drivers/net/ethernet/microchip/lan966x/Kconfig
+index 571e6d4da1e9d..f9ebffc04eb85 100644
+--- a/drivers/net/ethernet/microchip/lan966x/Kconfig
++++ b/drivers/net/ethernet/microchip/lan966x/Kconfig
+@@ -10,3 +10,14 @@ config LAN966X_SWITCH
+ 	select VCAP
+ 	help
+ 	  This driver supports the Lan966x network switch device.
++
++config LAN966X_DCB
++	bool "Data Center Bridging (DCB) support"
++	depends on LAN966X_SWITCH && DCB
++	default y
++	help
++	  Say Y here if you want to use Data Center Bridging (DCB) in the
++	  driver. This can be used to assign priority to traffic, based on
++	  DSCP and PCP.
++
++	  If unsure, set to Y.
+diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
+index 7b0cda4ffa6b5..3b6ac331691d0 100644
+--- a/drivers/net/ethernet/microchip/lan966x/Makefile
++++ b/drivers/net/ethernet/microchip/lan966x/Makefile
+@@ -15,6 +15,7 @@ lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
+ 			lan966x_xdp.o lan966x_vcap_impl.o lan966x_vcap_ag_api.o \
+ 			lan966x_tc_flower.o lan966x_goto.o
  
-+#define ANA_VLAN_CFG_VLAN_PCP                    GENMASK(15, 13)
-+#define ANA_VLAN_CFG_VLAN_PCP_SET(x)\
-+	FIELD_PREP(ANA_VLAN_CFG_VLAN_PCP, x)
-+#define ANA_VLAN_CFG_VLAN_PCP_GET(x)\
-+	FIELD_GET(ANA_VLAN_CFG_VLAN_PCP, x)
-+
-+#define ANA_VLAN_CFG_VLAN_DEI                    BIT(12)
-+#define ANA_VLAN_CFG_VLAN_DEI_SET(x)\
-+	FIELD_PREP(ANA_VLAN_CFG_VLAN_DEI, x)
-+#define ANA_VLAN_CFG_VLAN_DEI_GET(x)\
-+	FIELD_GET(ANA_VLAN_CFG_VLAN_DEI, x)
-+
- #define ANA_VLAN_CFG_VLAN_VID                    GENMASK(11, 0)
- #define ANA_VLAN_CFG_VLAN_VID_SET(x)\
- 	FIELD_PREP(ANA_VLAN_CFG_VLAN_VID, x)
-@@ -316,6 +328,39 @@ enum lan966x_target {
- #define ANA_DROP_CFG_DROP_MC_SMAC_ENA_GET(x)\
- 	FIELD_GET(ANA_DROP_CFG_DROP_MC_SMAC_ENA, x)
++lan966x-switch-$(CONFIG_LAN966X_DCB) += lan966x_dcb.o
+ lan966x-switch-$(CONFIG_DEBUG_FS) += lan966x_vcap_debugfs.o
  
-+/*      ANA:PORT:QOS_CFG */
-+#define ANA_QOS_CFG(g)            __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 8, 0, 1, 4)
+ # Provide include files
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c b/drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c
+new file mode 100644
+index 0000000000000..e0d49421812f1
+--- /dev/null
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_dcb.c
+@@ -0,0 +1,103 @@
++// SPDX-License-Identifier: GPL-2.0+
 +
-+#define ANA_QOS_CFG_DP_DEFAULT_VAL               BIT(8)
-+#define ANA_QOS_CFG_DP_DEFAULT_VAL_SET(x)\
-+	FIELD_PREP(ANA_QOS_CFG_DP_DEFAULT_VAL, x)
-+#define ANA_QOS_CFG_DP_DEFAULT_VAL_GET(x)\
-+	FIELD_GET(ANA_QOS_CFG_DP_DEFAULT_VAL, x)
++#include "lan966x_main.h"
 +
-+#define ANA_QOS_CFG_QOS_DEFAULT_VAL              GENMASK(7, 5)
-+#define ANA_QOS_CFG_QOS_DEFAULT_VAL_SET(x)\
-+	FIELD_PREP(ANA_QOS_CFG_QOS_DEFAULT_VAL, x)
-+#define ANA_QOS_CFG_QOS_DEFAULT_VAL_GET(x)\
-+	FIELD_GET(ANA_QOS_CFG_QOS_DEFAULT_VAL, x)
++static void lan966x_dcb_app_update(struct net_device *dev, bool enable)
++{
++	struct lan966x_port *port = netdev_priv(dev);
++	struct lan966x_port_qos qos = {0};
++	struct dcb_app app_itr;
 +
-+#define ANA_QOS_CFG_QOS_DSCP_ENA                 BIT(4)
-+#define ANA_QOS_CFG_QOS_DSCP_ENA_SET(x)\
-+	FIELD_PREP(ANA_QOS_CFG_QOS_DSCP_ENA, x)
-+#define ANA_QOS_CFG_QOS_DSCP_ENA_GET(x)\
-+	FIELD_GET(ANA_QOS_CFG_QOS_DSCP_ENA, x)
++	/* Get pcp ingress mapping */
++	for (int i = 0; i < ARRAY_SIZE(qos.pcp.map); i++) {
++		app_itr.selector = DCB_APP_SEL_PCP;
++		app_itr.protocol = i;
++		qos.pcp.map[i] = dcb_getapp(dev, &app_itr);
++	}
 +
-+#define ANA_QOS_CFG_QOS_PCP_ENA                  BIT(3)
-+#define ANA_QOS_CFG_QOS_PCP_ENA_SET(x)\
-+	FIELD_PREP(ANA_QOS_CFG_QOS_PCP_ENA, x)
-+#define ANA_QOS_CFG_QOS_PCP_ENA_GET(x)\
-+	FIELD_GET(ANA_QOS_CFG_QOS_PCP_ENA, x)
++	qos.pcp.enable = enable;
++	lan966x_port_qos_set(port, &qos);
++}
 +
-+#define ANA_QOS_CFG_DSCP_REWR_CFG                GENMASK(1, 0)
-+#define ANA_QOS_CFG_DSCP_REWR_CFG_SET(x)\
-+	FIELD_PREP(ANA_QOS_CFG_DSCP_REWR_CFG, x)
-+#define ANA_QOS_CFG_DSCP_REWR_CFG_GET(x)\
-+	FIELD_GET(ANA_QOS_CFG_DSCP_REWR_CFG, x)
++static int lan966x_dcb_app_validate(struct net_device *dev,
++				    const struct dcb_app *app)
++{
++	int err = 0;
 +
- /*      ANA:PORT:VCAP_CFG */
- #define ANA_VCAP_CFG(g)           __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 12, 0, 1, 4)
++	switch (app->selector) {
++	/* Pcp checks */
++	case DCB_APP_SEL_PCP:
++		if (app->protocol >= LAN966X_PORT_QOS_PCP_DEI_COUNT)
++			err = -EINVAL;
++		else if (app->priority >= NUM_PRIO_QUEUES)
++			err = -ERANGE;
++		break;
++	default:
++		err = -EINVAL;
++		break;
++	}
++
++	if (err)
++		netdev_err(dev, "Invalid entry: %d:%d\n", app->protocol,
++			   app->priority);
++
++	return err;
++}
++
++static int lan966x_dcb_ieee_delapp(struct net_device *dev, struct dcb_app *app)
++{
++	int err;
++
++	err = dcb_ieee_delapp(dev, app);
++	if (err < 0)
++		return err;
++
++	lan966x_dcb_app_update(dev, false);
++
++	return 0;
++}
++
++static int lan966x_dcb_ieee_setapp(struct net_device *dev, struct dcb_app *app)
++{
++	struct dcb_app app_itr;
++	int err;
++	u8 prio;
++
++	err = lan966x_dcb_app_validate(dev, app);
++	if (err)
++		return err;
++
++	/* Delete current mapping, if it exists */
++	prio = dcb_getapp(dev, app);
++	if (prio) {
++		app_itr = *app;
++		app_itr.priority = prio;
++		dcb_ieee_delapp(dev, &app_itr);
++	}
++
++	err = dcb_ieee_setapp(dev, app);
++	if (err)
++		return err;
++
++	lan966x_dcb_app_update(dev, true);
++
++	return 0;
++}
++
++static const struct dcbnl_rtnl_ops lan966x_dcbnl_ops = {
++	.ieee_setapp = lan966x_dcb_ieee_setapp,
++	.ieee_delapp = lan966x_dcb_ieee_delapp,
++};
++
++void lan966x_dcb_init(struct lan966x *lan966x)
++{
++	for (int p = 0; p < lan966x->num_phys_ports; ++p) {
++		struct lan966x_port *port;
++
++		port = lan966x->ports[p];
++		if (!port)
++			continue;
++
++		port->dev->dcbnl_ops = &lan966x_dcbnl_ops;
++	}
++}
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index ee2698698d71a..f6931dfb3e68e 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -1223,6 +1223,8 @@ static int lan966x_probe(struct platform_device *pdev)
+ 	if (err)
+ 		goto cleanup_fdma;
  
-@@ -415,6 +460,21 @@ enum lan966x_target {
- #define ANA_VCAP_S2_CFG_OAM_DIS_GET(x)\
- 	FIELD_GET(ANA_VCAP_S2_CFG_OAM_DIS, x)
++	lan966x_dcb_init(lan966x);
++
+ 	return 0;
  
-+/*      ANA:PORT:QOS_PCP_DEI_MAP_CFG */
-+#define ANA_PCP_DEI_CFG(g, r)     __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 32, r, 16, 4)
-+
-+#define ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL           BIT(3)
-+#define ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL_SET(x)\
-+	FIELD_PREP(ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL, x)
-+#define ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL_GET(x)\
-+	FIELD_GET(ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL, x)
-+
-+#define ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL          GENMASK(2, 0)
-+#define ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL_SET(x)\
-+	FIELD_PREP(ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL, x)
-+#define ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL_GET(x)\
-+	FIELD_GET(ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL, x)
-+
- /*      ANA:PORT:CPU_FWD_CFG */
- #define ANA_CPU_FWD_CFG(g)        __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 96, 0, 1, 4)
+ cleanup_fdma:
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+index 882d5a08e7d51..b9ca47ab6e8be 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+@@ -104,6 +104,11 @@
+ #define LAN966X_VCAP_CID_ES0_L0 VCAP_CID_EGRESS_L0 /* ES0 lookup 0 */
+ #define LAN966X_VCAP_CID_ES0_MAX (VCAP_CID_EGRESS_L1 - 1) /* ES0 Max */
  
-@@ -478,6 +538,15 @@ enum lan966x_target {
- #define ANA_PORT_CFG_PORTID_VAL_GET(x)\
- 	FIELD_GET(ANA_PORT_CFG_PORTID_VAL, x)
++#define LAN966X_PORT_QOS_PCP_COUNT	8
++#define LAN966X_PORT_QOS_DEI_COUNT	8
++#define LAN966X_PORT_QOS_PCP_DEI_COUNT \
++	(LAN966X_PORT_QOS_PCP_COUNT + LAN966X_PORT_QOS_DEI_COUNT)
++
+ /* MAC table entry types.
+  * ENTRYTYPE_NORMAL is subject to aging.
+  * ENTRYTYPE_LOCKED is not subject to aging.
+@@ -392,6 +397,15 @@ struct lan966x_port_tc {
+ 	struct flow_stats mirror_stat;
+ };
  
-+/*      ANA:COMMON:DSCP_REWR_CFG */
-+#define ANA_DSCP_REWR_CFG(r)      __REG(TARGET_ANA, 0, 1, 31232, 0, 1, 552, 332, r, 16, 4)
++struct lan966x_port_qos_pcp {
++	u8 map[LAN966X_PORT_QOS_PCP_DEI_COUNT];
++	bool enable;
++};
 +
-+#define ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL      GENMASK(5, 0)
-+#define ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL_SET(x)\
-+	FIELD_PREP(ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL, x)
-+#define ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL_GET(x)\
-+	FIELD_GET(ANA_DSCP_REWR_CFG_DSCP_QOS_REWR_VAL, x)
++struct lan966x_port_qos {
++	struct lan966x_port_qos_pcp pcp;
++};
 +
- /*      ANA:PORT:POL_CFG */
- #define ANA_POL_CFG(g)            __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 116, 0, 1, 4)
+ struct lan966x_port {
+ 	struct net_device *dev;
+ 	struct lan966x *lan966x;
+@@ -456,6 +470,9 @@ int lan966x_port_pcs_set(struct lan966x_port *port,
+ 			 struct lan966x_port_config *config);
+ void lan966x_port_init(struct lan966x_port *port);
  
-@@ -547,6 +616,33 @@ enum lan966x_target {
- #define ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA_GET(x)\
- 	FIELD_GET(ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA, x)
++void lan966x_port_qos_set(struct lan966x_port *port,
++			  struct lan966x_port_qos *qos);
++
+ int lan966x_mac_ip_learn(struct lan966x *lan966x,
+ 			 bool cpu_copy,
+ 			 const unsigned char mac[ETH_ALEN],
+@@ -680,6 +697,14 @@ int lan966x_goto_port_del(struct lan966x_port *port,
+ 			  unsigned long goto_id,
+ 			  struct netlink_ext_ack *extack);
  
-+/*      ANA:COMMON:DSCP_CFG */
-+#define ANA_DSCP_CFG(r)           __REG(TARGET_ANA, 0, 1, 31232, 0, 1, 552, 76, r, 64, 4)
++#ifdef CONFIG_LAN966X_DCB
++void lan966x_dcb_init(struct lan966x *lan966x);
++#else
++static inline void lan966x_dcb_init(struct lan966x *lan966x)
++{
++}
++#endif
 +
-+#define ANA_DSCP_CFG_DP_DSCP_VAL                 BIT(11)
-+#define ANA_DSCP_CFG_DP_DSCP_VAL_SET(x)\
-+	FIELD_PREP(ANA_DSCP_CFG_DP_DSCP_VAL, x)
-+#define ANA_DSCP_CFG_DP_DSCP_VAL_GET(x)\
-+	FIELD_GET(ANA_DSCP_CFG_DP_DSCP_VAL, x)
-+
-+#define ANA_DSCP_CFG_QOS_DSCP_VAL                GENMASK(10, 8)
-+#define ANA_DSCP_CFG_QOS_DSCP_VAL_SET(x)\
-+	FIELD_PREP(ANA_DSCP_CFG_QOS_DSCP_VAL, x)
-+#define ANA_DSCP_CFG_QOS_DSCP_VAL_GET(x)\
-+	FIELD_GET(ANA_DSCP_CFG_QOS_DSCP_VAL, x)
-+
-+#define ANA_DSCP_CFG_DSCP_TRUST_ENA              BIT(1)
-+#define ANA_DSCP_CFG_DSCP_TRUST_ENA_SET(x)\
-+	FIELD_PREP(ANA_DSCP_CFG_DSCP_TRUST_ENA, x)
-+#define ANA_DSCP_CFG_DSCP_TRUST_ENA_GET(x)\
-+	FIELD_GET(ANA_DSCP_CFG_DSCP_TRUST_ENA, x)
-+
-+#define ANA_DSCP_CFG_DSCP_REWR_ENA               BIT(0)
-+#define ANA_DSCP_CFG_DSCP_REWR_ENA_SET(x)\
-+	FIELD_PREP(ANA_DSCP_CFG_DSCP_REWR_ENA, x)
-+#define ANA_DSCP_CFG_DSCP_REWR_ENA_GET(x)\
-+	FIELD_GET(ANA_DSCP_CFG_DSCP_REWR_ENA, x)
-+
- /*      ANA:POL:POL_PIR_CFG */
- #define ANA_POL_PIR_CFG(g)        __REG(TARGET_ANA, 0, 1, 16384, g, 345, 32, 0, 0, 1, 4)
+ static inline void __iomem *lan_addr(void __iomem *base[],
+ 				     int id, int tinst, int tcnt,
+ 				     int gbase, int ginst,
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
+index 0050fcb988b75..0cee8127c48eb 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
+@@ -394,6 +394,36 @@ int lan966x_port_pcs_set(struct lan966x_port *port,
+ 	return 0;
+ }
  
-@@ -1468,6 +1564,18 @@ enum lan966x_target {
- #define REW_TAG_CFG_TAG_TPID_CFG_GET(x)\
- 	FIELD_GET(REW_TAG_CFG_TAG_TPID_CFG, x)
- 
-+#define REW_TAG_CFG_TAG_PCP_CFG                  GENMASK(3, 2)
-+#define REW_TAG_CFG_TAG_PCP_CFG_SET(x)\
-+	FIELD_PREP(REW_TAG_CFG_TAG_PCP_CFG, x)
-+#define REW_TAG_CFG_TAG_PCP_CFG_GET(x)\
-+	FIELD_GET(REW_TAG_CFG_TAG_PCP_CFG, x)
++static void lan966x_port_qos_pcp_set(struct lan966x_port *port,
++				     struct lan966x_port_qos_pcp *qos)
++{
++	u8 *pcp_itr = qos->map;
++	u8 pcp, dp;
 +
-+#define REW_TAG_CFG_TAG_DEI_CFG                  GENMASK(1, 0)
-+#define REW_TAG_CFG_TAG_DEI_CFG_SET(x)\
-+	FIELD_PREP(REW_TAG_CFG_TAG_DEI_CFG, x)
-+#define REW_TAG_CFG_TAG_DEI_CFG_GET(x)\
-+	FIELD_GET(REW_TAG_CFG_TAG_DEI_CFG, x)
++	lan_rmw(ANA_QOS_CFG_QOS_PCP_ENA_SET(qos->enable),
++		ANA_QOS_CFG_QOS_PCP_ENA,
++		port->lan966x, ANA_QOS_CFG(port->chip_port));
 +
- /*      REW:PORT:PORT_CFG */
- #define REW_PORT_CFG(g)           __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 8, 0, 1, 4)
- 
-@@ -1483,6 +1591,30 @@ enum lan966x_target {
- #define REW_PORT_CFG_NO_REWRITE_GET(x)\
- 	FIELD_GET(REW_PORT_CFG_NO_REWRITE, x)
- 
-+/*      REW:PORT:DSCP_CFG */
-+#define REW_DSCP_CFG(g)           __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 12, 0, 1, 4)
++	/* Map PCP and DEI to priority */
++	for (int i = 0; i < ARRAY_SIZE(qos->map); i++) {
++		pcp = *(pcp_itr + i);
++		dp = (i < LAN966X_PORT_QOS_PCP_COUNT) ? 0 : 1;
 +
-+#define REW_DSCP_CFG_DSCP_REWR_CFG               GENMASK(1, 0)
-+#define REW_DSCP_CFG_DSCP_REWR_CFG_SET(x)\
-+	FIELD_PREP(REW_DSCP_CFG_DSCP_REWR_CFG, x)
-+#define REW_DSCP_CFG_DSCP_REWR_CFG_GET(x)\
-+	FIELD_GET(REW_DSCP_CFG_DSCP_REWR_CFG, x)
++		lan_rmw(ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL_SET(pcp) |
++			ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL_SET(dp),
++			ANA_PCP_DEI_CFG_QOS_PCP_DEI_VAL |
++			ANA_PCP_DEI_CFG_DP_PCP_DEI_VAL,
++			port->lan966x,
++			ANA_PCP_DEI_CFG(port->chip_port, i));
++	}
++}
 +
-+/*      REW:PORT:PCP_DEI_QOS_MAP_CFG */
-+#define REW_PCP_DEI_CFG(g, r)     __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 16, r, 16, 4)
++void lan966x_port_qos_set(struct lan966x_port *port,
++			  struct lan966x_port_qos *qos)
++{
++	lan966x_port_qos_pcp_set(port, &qos->pcp);
++}
 +
-+#define REW_PCP_DEI_CFG_DEI_QOS_VAL              BIT(3)
-+#define REW_PCP_DEI_CFG_DEI_QOS_VAL_SET(x)\
-+	FIELD_PREP(REW_PCP_DEI_CFG_DEI_QOS_VAL, x)
-+#define REW_PCP_DEI_CFG_DEI_QOS_VAL_GET(x)\
-+	FIELD_GET(REW_PCP_DEI_CFG_DEI_QOS_VAL, x)
-+
-+#define REW_PCP_DEI_CFG_PCP_QOS_VAL              GENMASK(2, 0)
-+#define REW_PCP_DEI_CFG_PCP_QOS_VAL_SET(x)\
-+	FIELD_PREP(REW_PCP_DEI_CFG_PCP_QOS_VAL, x)
-+#define REW_PCP_DEI_CFG_PCP_QOS_VAL_GET(x)\
-+	FIELD_GET(REW_PCP_DEI_CFG_PCP_QOS_VAL, x)
-+
- /*      REW:COMMON:STAT_CFG */
- #define REW_STAT_CFG              __REG(TARGET_REW, 0, 1, 3072, 0, 1, 528, 520, 0, 1, 4)
- 
+ void lan966x_port_init(struct lan966x_port *port)
+ {
+ 	struct lan966x_port_config *config = &port->config;
 -- 
 2.38.0
 
