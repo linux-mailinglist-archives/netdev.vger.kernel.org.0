@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-2874-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2875-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A652E704600
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 09:14:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DABC9704603
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 09:14:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A69B61C20D6C
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 07:14:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 96FDD28159F
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 07:14:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C066917AC8;
-	Tue, 16 May 2023 07:13:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B0F5182B2;
+	Tue, 16 May 2023 07:14:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0BF8101EC
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 07:13:57 +0000 (UTC)
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86EF146A2;
-	Tue, 16 May 2023 00:13:38 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id 2adb3069b0e04-4f1fe1208a4so12907383e87.2;
-        Tue, 16 May 2023 00:13:38 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFFBC156FF
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 07:14:15 +0000 (UTC)
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4E744AB;
+	Tue, 16 May 2023 00:13:57 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id 2adb3069b0e04-4f1fe1208a4so12907697e87.2;
+        Tue, 16 May 2023 00:13:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684221217; x=1686813217;
+        d=gmail.com; s=20221208; t=1684221236; x=1686813236;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q84i2H2s0iKoSUbGo2nOM5QzhVg2YGGG+qJiK8DxGzU=;
-        b=LKQGxdUUyHhjZqUUxJBsN/HPYW7jSKRkZBQj+iHOApcRlxNZBtaPmkOW2agWLD/xKK
-         pbwhx1xEMlP7mmRl4HmoMcNwl4YeQ84y8I3h0u5OyXOQPRC4EvXU9mLPNK9Qh68X/l+k
-         lALMwNrBVPjZMurTddrdccvIpl3aT+vu8/w3Oly1QufkC+JLYWjis+n1RJwXon0xkIxW
-         n7OLGnj3P5J6YGK0h56ff3GaNwCMjt+vK4rSGv2BjLT9dcjbZK0qY0mPMYMI4MpicXAa
-         3k5VECX0KJo8ApCtCG0CcyyXiyxNJK770yTIhjLGDfcXjTG/+2P2Lkn7ooQz9gRlEzlu
-         n30g==
+        bh=x7iB2tT1FxzgZOFKdB6YdWc9HUsfJ2gQmhK2D8CH7ls=;
+        b=F2Ois8vAySQr2U0tMK8uXNP/3vsb8HWxhd6w6T0u9tyJsJpG2pIF8ViQo9DfDpnfH+
+         ud43j7l2z7rT6LClB56VEbDxtWMpj0tcryVQkZ5bW3jPDZ9XtjLm2zMJKzgSRXehqADn
+         ZnEgO9Z+BM4QphonC175O9hzG6X7T9769/kCCc/a3/EKDaSroyAYfT7VEsbgljBN/bf7
+         hbxb8Gn+FzJlB1r/Zc34QqxR4IKfKRwlZguJ6CWaoCayKTOhwxDHOIWrNuukamJVUny3
+         D3GG72MhfJvJV0OCp3SKi4vMdk1qI3SqJ9EiF8vNLYStQoXy8OtLLBqv2lH9MpU1wRVD
+         U7HA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684221217; x=1686813217;
+        d=1e100.net; s=20221208; t=1684221236; x=1686813236;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Q84i2H2s0iKoSUbGo2nOM5QzhVg2YGGG+qJiK8DxGzU=;
-        b=l+9gQD3dp33bKydoiJ+7jAgyxXYuf3GH3KOjFGqH4j8eusRiHOI6eBOpCmXsNLzlrq
-         XJk0TdUlDQI9GtNcFkYJoF3tkgks3bJV8GqLOWN67PCl/XxGbxAhSMrxb+qcGflqSH6/
-         fS1EwuV7CiUHiiEdTh4BOneoCkmvdb34yH8JBA7attomEGmUvybyPJOgof4Ps3aAi1Wq
-         uJZCwF1sss5u3QteFClD0nCQNDv8R+LzdTskwqzeXJrY/z6oZTZAHJcEhYZo1V/KMuH1
-         DwZkuQqIyKyR8cdx4Xyt7FoiD99M8YkybgoUxHZKCQw8gkHoLu67kjDmsj61ejMMohx9
-         SfzQ==
-X-Gm-Message-State: AC+VfDxZNzPIhEmVRL3Iv1SIB5YaVk5AQdK3NY6GyQCPqqUWy8Npyajp
-	UkdVW5WQyQZAZm+1qXGAZgk=
-X-Google-Smtp-Source: ACHHUZ7fIJMrkIh0IZ97adzWW9Rxn5SvLMT6faWlFwiAf9tq/V47SXiAfpEoQl7fpqXqpx8xg17QJQ==
-X-Received: by 2002:ac2:446b:0:b0:4ef:b18c:89b2 with SMTP id y11-20020ac2446b000000b004efb18c89b2mr8583772lfl.56.1684221216672;
-        Tue, 16 May 2023 00:13:36 -0700 (PDT)
+        bh=x7iB2tT1FxzgZOFKdB6YdWc9HUsfJ2gQmhK2D8CH7ls=;
+        b=fAlhPHwhRZHoo0Fjtxqhg4G5CR4+1F9vyR2x4PU6KVQez7B0lIrpZ129YKDjtrGAHm
+         5UMV6sx5wX+tMB9vpltvR+lCghWApvC0xhrTYJh51wUUIlAmVlDNxzvWWlqBUCDBXNv5
+         8QnycWiIR3y3hEUciCuZyn4FCSXYs8QSzV8ALOrOQ33d+Q+qlrTWCWSlkJsqkFETuKyl
+         GcSPu7+LzmEUBxjWvPYBxAqqr3agZ6ShJM3RmInOdr+HAUliuR2Vo3e0+j34yxM+KznM
+         OAg8sLYJpDHdkwv/L83QczksgpN28cleDTNoM2VamfAG9oQpI8AJRPnAr/DWhsLAi1C2
+         3bSg==
+X-Gm-Message-State: AC+VfDzY3njR/aQYBtt8IweGEXbCy587EkFWd3mw+kNH9DNlbOnXngOz
+	qWnk4BWdoX249kKKkIHsBJE=
+X-Google-Smtp-Source: ACHHUZ7mcAh05jssI9gTt04ul3aPVER3NAMZdK2vv5y3BfBFTtQFfWIVyeOwl11u37jMcbM3dX4Rrw==
+X-Received: by 2002:a05:6512:20e:b0:4f2:7b65:baf1 with SMTP id a14-20020a056512020e00b004f27b65baf1mr3635981lfo.23.1684221235879;
+        Tue, 16 May 2023 00:13:55 -0700 (PDT)
 Received: from fedora (62-78-225-252.bb.dnainternet.fi. [62.78.225.252])
-        by smtp.gmail.com with ESMTPSA id n7-20020ac24907000000b004f389c98aedsm164151lfi.201.2023.05.16.00.13.35
+        by smtp.gmail.com with ESMTPSA id c17-20020ac244b1000000b004f13eff5375sm2847608lfm.45.2023.05.16.00.13.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 May 2023 00:13:36 -0700 (PDT)
-Date: Tue, 16 May 2023 10:13:32 +0300
+        Tue, 16 May 2023 00:13:55 -0700 (PDT)
+Date: Tue, 16 May 2023 10:13:50 +0300
 From: Matti Vaittinen <mazziesaccount@gmail.com>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
@@ -80,8 +80,9 @@ Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	netdev@vger.kernel.org, openbmc@lists.ozlabs.org,
 	linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: [PATCH v4 5/7] pinctrl: ingenic: relax return value check for IRQ get
-Message-ID: <17d04e9b7d76fbc0804dde8e1c4a429d7f19de80.1684220962.git.mazziesaccount@gmail.com>
+Subject: [PATCH v4 6/7] pinctrl: pistachio: relax return value check for IRQ
+ get
+Message-ID: <d311f71335639239f07fca0ca99f286717ecd81b.1684220962.git.mazziesaccount@gmail.com>
 References: <cover.1684220962.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -90,7 +91,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="oZ11J20o9Px503h9"
+	protocol="application/pgp-signature"; boundary="QO1INaFvm5ku70AP"
 Content-Disposition: inline
 In-Reply-To: <cover.1684220962.git.mazziesaccount@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -101,7 +102,7 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
---oZ11J20o9Px503h9
+--QO1INaFvm5ku70AP
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
@@ -117,24 +118,28 @@ Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
 The first patch of the series changes the fwnode_irq_get() so this depends
 on the first patch of the series and should not be applied alone.
 ---
- drivers/pinctrl/pinctrl-ingenic.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/pinctrl/pinctrl-pistachio.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-in=
-genic.c
-index 2f220a47b749..86e71ad703a5 100644
---- a/drivers/pinctrl/pinctrl-ingenic.c
-+++ b/drivers/pinctrl/pinctrl-ingenic.c
-@@ -4201,8 +4201,6 @@ static int __init ingenic_gpio_probe(struct ingenic_p=
-inctrl *jzpc,
- 	err =3D fwnode_irq_get(fwnode, 0);
- 	if (err < 0)
- 		return err;
--	if (!err)
--		return -EINVAL;
- 	jzgc->irq =3D err;
+diff --git a/drivers/pinctrl/pinctrl-pistachio.c b/drivers/pinctrl/pinctrl-=
+pistachio.c
+index 53408344927a..8c50e0091b32 100644
+--- a/drivers/pinctrl/pinctrl-pistachio.c
++++ b/drivers/pinctrl/pinctrl-pistachio.c
+@@ -1393,12 +1393,6 @@ static int pistachio_gpio_register(struct pistachio_=
+pinctrl *pctl)
+ 			dev_err(pctl->dev, "Failed to retrieve IRQ for bank %u\n", i);
+ 			goto err;
+ 		}
+-		if (!ret) {
+-			fwnode_handle_put(child);
+-			dev_err(pctl->dev, "No IRQ for bank %u\n", i);
+-			ret =3D -EINVAL;
+-			goto err;
+-		}
+ 		irq =3D ret;
 =20
- 	girq =3D &jzgc->gc.irq;
+ 		bank =3D &pctl->gpio_banks[i];
 --=20
 2.40.1
 
@@ -151,20 +156,20 @@ Simon says - in Latin please.
 ~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
 Thanks to Simon Glass for the translation =3D]=20
 
---oZ11J20o9Px503h9
+--QO1INaFvm5ku70AP
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmRjLRwACgkQeFA3/03a
-ocXPaAf/dygTTCBKWb9BlQ6Z98e87PCCNuOAmUTiehu9/jb29Si1BTK9id/6JNBJ
-+WmJD+kgIFqMomCvVaguoDgi2ATWdAt4HM2hsDaN5b6jfoPp8qm95ZtIpGbhu9m/
-C4b/sikbRV5Qx+Of6ieabEPuVRJPaPT9v/erxuZ/pREaP6Q6c+JTVaAXgnknoto+
-jpolb3Vp5kCVmKGANY/0OuqOhRBbCFkNXimeAVfCPE9lN0wfXo82IWm1pVe1FreT
-s6Mc19Ol59QyrAvFoEFhYuqMXJQ+nXHuK1STrPVoMLH80vlDW4yr1orb9N+pXkOR
-0hdd17aj+KVcXbnUXoUVSOVN43SN7Q==
-=L/Jv
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmRjLS4ACgkQeFA3/03a
+ocUknAf8CDPxskRn/21aeRCh2QWEP8GThIfsY08YYUkaMIBNyK7WCUw5ecla4MXb
+KX3ugg/OBIvBDjUZVYQqRnrJeM8STw874hhvhKP4SBrVU7NQGtfVjaHbvDfaeSA9
+tz+pwO1wyzCwcpl5sLdSa1yL/oGyN7FYdtn+QvCXjMg6EEWSdQlmh+CmTreCIdPx
+/FarMuyx3IXZ6kJMOz+E5SNQ03ZsHBt2WS7/TvuYixkoi1Kyb4a7Qsv2jiFutrWG
+ds9dO9cOUpAbAj1my4EVHfNymcVbSDTcmHOyBZnHonWmTFdXAlxab7wABVTfrfaC
+1+fRL6XU/lfL2u1LY/I1ztrR4hoXww==
+=RbLa
 -----END PGP SIGNATURE-----
 
---oZ11J20o9Px503h9--
+--QO1INaFvm5ku70AP--
 
