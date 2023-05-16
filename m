@@ -1,139 +1,139 @@
-Return-Path: <netdev+bounces-2976-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2977-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5CED4704C86
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 13:40:48 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6AC92704CC7
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 13:47:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 127571C20BAC
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 11:40:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EA5CB2815D5
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 11:47:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E46F24EA7;
-	Tue, 16 May 2023 11:40:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 689AD24EAB;
+	Tue, 16 May 2023 11:47:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1208734CEB
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 11:40:44 +0000 (UTC)
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43362D4C
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 04:40:43 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-	by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34G7CKCb020489;
-	Tue, 16 May 2023 04:40:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=trVaEcEBAWCwREmjSGgh1hnmTuilXS9fBzjNfNgKoYs=;
- b=KBiuWHwMqd/qsxXWn1xvBzujGak3ZJiMmAujcwKS7JV3hj/O8uS5lRhuBe148puuLjeC
- BSHWRrkG2BCYpqqpBf/kGYQ98BMA8sMVI98xp9qGtVykD3GWdM2wJW+zX3mUOuzjtFG7
- FqQrDbGJ79uEtbi9S8S0S+3GTa26s2YfYz60LYodxeUDM38tFaorQwKj13/yb7eAOFU0
- Y5O+nIkbqQSzDPv+rEtycB1ffHG41DwsqmEWRn8Th3vDQi83UgwT1XDxteGdGyuVXgAZ
- f+bh8VlFW9AZMA4L56lI0uwSS07t3g+HaJ7ieLChTQi9g75N9INTB0vwW0FecsRdmWLX hw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3qkvbmk1yy-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Tue, 16 May 2023 04:40:37 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Tue, 16 May
- 2023 04:40:36 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Tue, 16 May 2023 04:40:36 -0700
-Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-	by maili.marvell.com (Postfix) with ESMTP id 028133F7074;
-	Tue, 16 May 2023 04:40:32 -0700 (PDT)
-From: Subbaraya Sundeep <sbhatta@marvell.com>
-To: <netdev@vger.kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>
-CC: <gakula@marvell.com>, <naveenm@marvell.com>, <hkelam@marvell.com>,
-        <lcherian@marvell.com>, Subbaraya Sundeep <sbhatta@marvell.com>,
-        "Sunil
- Kovvuri Goutham" <sgoutham@marvell.com>
-Subject: [net-next PATCH v2] octeontx2-pf: mcs: Support VLAN in clear text
-Date: Tue, 16 May 2023 17:10:31 +0530
-Message-ID: <1684237231-14217-1-git-send-email-sbhatta@marvell.com>
-X-Mailer: git-send-email 2.7.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B32D34CEB
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 11:47:09 +0000 (UTC)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6185242
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 04:46:43 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-50bceaf07b8so25487056a12.3
+        for <netdev@vger.kernel.org>; Tue, 16 May 2023 04:46:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684237601; x=1686829601;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=93Yzq0NQPKDWbsmyn4CBhtU/WekigFVvB0zAMgN57XI=;
+        b=SUIAwvI++5kAvyMBRhzQ8MviZaRm5/h1Y2uQSZusDH1AIVw9ICmGwylsvUeczZiPZR
+         bNaGsvQCvTmWmIyaCN/Rdv08q23K/aF8O1MIle6o8HrqjSsXrAv+rbXKsVDk+CMu2vlA
+         tkvSYGP8SY4X+4MZuWafcslj/1QsI4q9Q3qzgkwLH3u+eonbhz5tbQxv2ePF1Ldc28CK
+         rK4/j/VsoJrElP+ZbpVWibqAaM50B1PHxWEoVQ+ZtH1FjnAYK0YZDxM7Y1nF+rYb1bbB
+         Xr15ZesjVZock5QuYL7A3P5QQfnJwTajoUjJKBEd9Tt8SbIwVb+JnutoK7UjCX1TkBZa
+         Nk5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684237601; x=1686829601;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=93Yzq0NQPKDWbsmyn4CBhtU/WekigFVvB0zAMgN57XI=;
+        b=jx1n3WwwtPAiacZ/uWr6y7ogCGVLzUoYSttSDoXSroLs+nuGtym3Gks4GI1YmDv/Z7
+         ONsHYfHfzd/lLBUDwZVCIgR4JnIi//IpEejSEEC6DC026vvp8YEH3gV38PA9zwJzfhLJ
+         yRw9Bao/CFFgnRuQk4f9QKky/7ohhe+YwllVtgQLWAQckMgV933NFELfzSbK4RNkOXCl
+         yMA15As6kFyGSwAEpBeYNhlEjLMSRf5w7ZBNnVylOA5JFR6Ccwdz/FNIrbR/Vt+g++SR
+         Dm/426z3DT2Y0hqiC+RvVETyL+1TQm6WnU4Dw1EjRLs06hJuhk3GaRBRUcbM+GWw0JTQ
+         r05w==
+X-Gm-Message-State: AC+VfDwCjatxNfQuCCitpH8HdYVfj8TP/gzxfHYn86VXc+lRthmF6oEr
+	E5W8lUL67uB+nmu/9tPruSWF5g==
+X-Google-Smtp-Source: ACHHUZ6Le8AKBQWreteycC6kDR3GS8geixujQ/iDzkE/vuc3eDWlUxCWIkF3haHQxfAKxtuwY4i1qA==
+X-Received: by 2002:a17:906:58d5:b0:969:9fd0:7cee with SMTP id e21-20020a17090658d500b009699fd07ceemr26824898ejs.10.1684237601227;
+        Tue, 16 May 2023 04:46:41 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id qh20-20020a170906ecb400b009655eb8be26sm10862429ejb.73.2023.05.16.04.46.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 May 2023 04:46:40 -0700 (PDT)
+Date: Tue, 16 May 2023 13:46:39 +0200
+From: Jiri Pirko <jiri@resnulli.us>
+To: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+Cc: Vadim Fedorenko <vadfed@meta.com>, Jakub Kicinski <kuba@kernel.org>,
+	Jonathan Lemon <jonathan.lemon@gmail.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	"Olech, Milena" <milena.olech@intel.com>,
+	"Michalik, Michal" <michal.michalik@intel.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: Re: [RFC PATCH v7 5/8] ice: implement dpll interface to control cgu
+Message-ID: <ZGNtH1W3Y/pnx2Hk@nanopsycho>
+References: <20230428002009.2948020-1-vadfed@meta.com>
+ <20230428002009.2948020-6-vadfed@meta.com>
+ <ZGJn/tKjzxNYcNKU@nanopsycho>
+ <DM6PR11MB46570013B31FCCF1FCE0854D9B799@DM6PR11MB4657.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: 798Qp_m7qRs-nAWaZe3NJ_lZg88gCAqE
-X-Proofpoint-ORIG-GUID: 798Qp_m7qRs-nAWaZe3NJ_lZg88gCAqE
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-16_04,2023-05-16_01,2023-02-09_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR11MB46570013B31FCCF1FCE0854D9B799@DM6PR11MB4657.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Detect whether macsec secy is running on top of VLAN
-which implies transmitting VLAN tag in clear text before
-macsec SecTag. In this case configure hardware to insert
-SecTag after VLAN tag.
+Tue, May 16, 2023 at 11:22:37AM CEST, arkadiusz.kubalewski@intel.com wrote:
+>>From: Jiri Pirko <jiri@resnulli.us>
+>>Sent: Monday, May 15, 2023 7:13 PM
+>>
+>>Fri, Apr 28, 2023 at 02:20:06AM CEST, vadfed@meta.com wrote:
+>>
+>>[...]
+>>
+>>>+static const enum dpll_lock_status
+>>>+ice_dpll_status[__DPLL_LOCK_STATUS_MAX] = {
+>>>+	[ICE_CGU_STATE_INVALID] = DPLL_LOCK_STATUS_UNSPEC,
+>>>+	[ICE_CGU_STATE_FREERUN] = DPLL_LOCK_STATUS_UNLOCKED,
+>>>+	[ICE_CGU_STATE_LOCKED] = DPLL_LOCK_STATUS_CALIBRATING,
+>>
+>>This is a bit confusing to me. You are locked, yet you report
+>>calibrating? Wouldn't it be better to have:
+>>DPLL_LOCK_STATUS_LOCKED
+>>DPLL_LOCK_STATUS_LOCKED_HO_ACQ
+>>
+>>?
+>>
+>
+>Sure makes sense, will add this state.
 
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
-v2:
- Arranged variable tag_offset in reverse christmas tree order
+Do you need "calibrating" then? I mean, the docs says:
+  ``LOCK_STATUS_CALIBRATING``   dpll device calibrates to lock to the
+                                source pin signal
 
- drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c | 8 ++++++--
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h  | 1 +
- 2 files changed, 7 insertions(+), 2 deletions(-)
+Yet you do: [ICE_CGU_STATE_LOCKED] = DPLL_LOCK_STATUS_CALIBRATING
+Seems like you should have:
+[ICE_CGU_STATE_LOCKED] = DPLL_LOCK_STATUS_LOCKED
+[ICE_CGU_STATE_LOCKED_HO_ACQ] = DPLL_LOCK_STATUS_LOCKED_HO_ACQ,
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
-index b59532c..6e2fb24 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
-@@ -426,13 +426,16 @@ static int cn10k_mcs_write_tx_secy(struct otx2_nic *pfvf,
- 	struct mcs_secy_plcy_write_req *req;
- 	struct mbox *mbox = &pfvf->mbox;
- 	struct macsec_tx_sc *sw_tx_sc;
--	/* Insert SecTag after 12 bytes (DA+SA)*/
--	u8 tag_offset = 12;
- 	u8 sectag_tci = 0;
-+	u8 tag_offset;
- 	u64 policy;
- 	u8 cipher;
- 	int ret;
- 
-+	/* Insert SecTag after 12 bytes (DA+SA) or 16 bytes
-+	 * if VLAN tag needs to be sent in clear text.
-+	 */
-+	tag_offset = txsc->vlan_dev ? 16 : 12;
- 	sw_tx_sc = &secy->tx_sc;
- 
- 	mutex_lock(&mbox->lock);
-@@ -1163,6 +1166,7 @@ static int cn10k_mdo_add_secy(struct macsec_context *ctx)
- 	txsc->encoding_sa = secy->tx_sc.encoding_sa;
- 	txsc->last_validate_frames = secy->validate_frames;
- 	txsc->last_replay_protect = secy->replay_protect;
-+	txsc->vlan_dev = is_vlan_dev(ctx->netdev);
- 
- 	list_add(&txsc->entry, &cfg->txsc_list);
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 0f2b2a9..b2267c8 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -419,6 +419,7 @@ struct cn10k_mcs_txsc {
- 	u8 encoding_sa;
- 	u8 salt[CN10K_MCS_SA_PER_SC][MACSEC_SALT_LEN];
- 	ssci_t ssci[CN10K_MCS_SA_PER_SC];
-+	bool vlan_dev; /* macsec running on VLAN ? */
- };
- 
- struct cn10k_mcs_rxsc {
--- 
-2.7.4
+and remove DPLL_LOCK_STATUS_CALIBRATING as it would be unused?
 
+Also, as a sidenote, could you use the whole names of enum value names
+in documentation? Simple reason, greppability.
+
+Thanks!
+
+
+>
+>>
+>>>+	[ICE_CGU_STATE_LOCKED_HO_ACQ] = DPLL_LOCK_STATUS_LOCKED,
+>>>+	[ICE_CGU_STATE_HOLDOVER] = DPLL_LOCK_STATUS_HOLDOVER,
+>>>+};
+>>
+>>[...]
 
