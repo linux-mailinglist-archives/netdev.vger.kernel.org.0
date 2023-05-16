@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-2873-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-2874-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2977B7045FB
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 09:13:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A652E704600
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 09:14:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 51F5728102E
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 07:13:52 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A69B61C20D6C
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 07:14:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81F9017727;
-	Tue, 16 May 2023 07:13:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C066917AC8;
+	Tue, 16 May 2023 07:13:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FB5D101EC
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 07:13:37 +0000 (UTC)
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464601BE1;
-	Tue, 16 May 2023 00:13:21 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2ac836f4447so140644821fa.2;
-        Tue, 16 May 2023 00:13:21 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0BF8101EC
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 07:13:57 +0000 (UTC)
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86EF146A2;
+	Tue, 16 May 2023 00:13:38 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id 2adb3069b0e04-4f1fe1208a4so12907383e87.2;
+        Tue, 16 May 2023 00:13:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684221199; x=1686813199;
+        d=gmail.com; s=20221208; t=1684221217; x=1686813217;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5yQG+L+sWAMbAKI7nwRV3Mk7EmEihKSJv4LlESWu6Rc=;
-        b=EJMubyT2VJWX1+LZ4bUsldilZtFa74Xup//IE1hI4TlZKIQfXllceGaKcK0QLVkBIL
-         Y7qxewfxN44AeMrltk4wayz71pVgLc0+e753neV4npsln1uMXL38S0AZT+kDtTYj9qP8
-         5PIpqb7293xJpKlAEN0Ew/fWXEj94qECrNBK0QKsA8QGmPCJ/4G5PwFk+gvK1duKSHZO
-         mz/+dVg0Zlm0a1ZWDbbEl+EximPAP3Op3iQOYImkKl3PWIyKPc5QrRfsjPdiG0hRQWmN
-         ip2mV35sPoJTj9/NFRK99pq5bV4QfIgMM3Wj7+0fEe86D20GRLqSaVuheN4VpW3lgFvQ
-         5mDg==
+        bh=Q84i2H2s0iKoSUbGo2nOM5QzhVg2YGGG+qJiK8DxGzU=;
+        b=LKQGxdUUyHhjZqUUxJBsN/HPYW7jSKRkZBQj+iHOApcRlxNZBtaPmkOW2agWLD/xKK
+         pbwhx1xEMlP7mmRl4HmoMcNwl4YeQ84y8I3h0u5OyXOQPRC4EvXU9mLPNK9Qh68X/l+k
+         lALMwNrBVPjZMurTddrdccvIpl3aT+vu8/w3Oly1QufkC+JLYWjis+n1RJwXon0xkIxW
+         n7OLGnj3P5J6YGK0h56ff3GaNwCMjt+vK4rSGv2BjLT9dcjbZK0qY0mPMYMI4MpicXAa
+         3k5VECX0KJo8ApCtCG0CcyyXiyxNJK770yTIhjLGDfcXjTG/+2P2Lkn7ooQz9gRlEzlu
+         n30g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684221199; x=1686813199;
+        d=1e100.net; s=20221208; t=1684221217; x=1686813217;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=5yQG+L+sWAMbAKI7nwRV3Mk7EmEihKSJv4LlESWu6Rc=;
-        b=BvHLQLPnqyqZIOGR7pK9374MFWsVktmiWgsXbSHUP9Xn1VjfDa6gHzecgVqSlAkuPW
-         /uOlktWAIqDSI3JBNAvaq8yT8dsMYVWTFcqXkM/MRESk/J9Q/SUqPxp8ginTDbUC7xcE
-         sIAOMqJMFF/6CAnM1LhVMXomqYVaAPnh/137mFdWtTe42orQECsqocdYbTfx3c5djZ5l
-         2xw2loxGVD/u2fIQLamSrLE7mN3svP5l6DSt65oXGKo8+h49AHMIfDYAOV1PqrUPdUnQ
-         QlxcX8wHYIoG1Pub/61geXAfaQMMPl/OC8vEQGwK1QXkOHaMk+UXr0sDj/3dHg0ksxMy
-         5Waw==
-X-Gm-Message-State: AC+VfDwy9WMSStC55tASEC5kKP1p5xo42RYcuMO4bGpYGONI2r4krMOK
-	LYXQG3pH9WGyOhCx5RMaO5U=
-X-Google-Smtp-Source: ACHHUZ5TiNy3bPlF9s9syDX3x/nLlKnam1O4n3XDWwbGWRbrFC9CpZ/d33KhANYPsXPIuMpFPrSOVA==
-X-Received: by 2002:a2e:3511:0:b0:2ad:661b:ac44 with SMTP id z17-20020a2e3511000000b002ad661bac44mr7934095ljz.39.1684221199254;
-        Tue, 16 May 2023 00:13:19 -0700 (PDT)
+        bh=Q84i2H2s0iKoSUbGo2nOM5QzhVg2YGGG+qJiK8DxGzU=;
+        b=l+9gQD3dp33bKydoiJ+7jAgyxXYuf3GH3KOjFGqH4j8eusRiHOI6eBOpCmXsNLzlrq
+         XJk0TdUlDQI9GtNcFkYJoF3tkgks3bJV8GqLOWN67PCl/XxGbxAhSMrxb+qcGflqSH6/
+         fS1EwuV7CiUHiiEdTh4BOneoCkmvdb34yH8JBA7attomEGmUvybyPJOgof4Ps3aAi1Wq
+         uJZCwF1sss5u3QteFClD0nCQNDv8R+LzdTskwqzeXJrY/z6oZTZAHJcEhYZo1V/KMuH1
+         DwZkuQqIyKyR8cdx4Xyt7FoiD99M8YkybgoUxHZKCQw8gkHoLu67kjDmsj61ejMMohx9
+         SfzQ==
+X-Gm-Message-State: AC+VfDxZNzPIhEmVRL3Iv1SIB5YaVk5AQdK3NY6GyQCPqqUWy8Npyajp
+	UkdVW5WQyQZAZm+1qXGAZgk=
+X-Google-Smtp-Source: ACHHUZ7fIJMrkIh0IZ97adzWW9Rxn5SvLMT6faWlFwiAf9tq/V47SXiAfpEoQl7fpqXqpx8xg17QJQ==
+X-Received: by 2002:ac2:446b:0:b0:4ef:b18c:89b2 with SMTP id y11-20020ac2446b000000b004efb18c89b2mr8583772lfl.56.1684221216672;
+        Tue, 16 May 2023 00:13:36 -0700 (PDT)
 Received: from fedora (62-78-225-252.bb.dnainternet.fi. [62.78.225.252])
-        by smtp.gmail.com with ESMTPSA id w9-20020ac25989000000b004db3900da02sm2881066lfn.73.2023.05.16.00.13.17
+        by smtp.gmail.com with ESMTPSA id n7-20020ac24907000000b004f389c98aedsm164151lfi.201.2023.05.16.00.13.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 May 2023 00:13:18 -0700 (PDT)
-Date: Tue, 16 May 2023 10:13:14 +0300
+        Tue, 16 May 2023 00:13:36 -0700 (PDT)
+Date: Tue, 16 May 2023 10:13:32 +0300
 From: Matti Vaittinen <mazziesaccount@gmail.com>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
@@ -80,8 +80,8 @@ Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	netdev@vger.kernel.org, openbmc@lists.ozlabs.org,
 	linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: [PATCH v4 4/7] pinctrl: wpcm450: elax return value check for IRQ get
-Message-ID: <2d89de999a1d142efbd5eb10ff31cca12309e66d.1684220962.git.mazziesaccount@gmail.com>
+Subject: [PATCH v4 5/7] pinctrl: ingenic: relax return value check for IRQ get
+Message-ID: <17d04e9b7d76fbc0804dde8e1c4a429d7f19de80.1684220962.git.mazziesaccount@gmail.com>
 References: <cover.1684220962.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -90,7 +90,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="FETL4FejpREbPA/L"
+	protocol="application/pgp-signature"; boundary="oZ11J20o9Px503h9"
 Content-Disposition: inline
 In-Reply-To: <cover.1684220962.git.mazziesaccount@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -101,72 +101,40 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
---FETL4FejpREbPA/L
+--oZ11J20o9Px503h9
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-fwnode_irq_get[_byname]() were changed to not return 0 anymore. The
-special error case where device-tree based IRQ mapping fails can't no
-longer be reliably detected from this return value. This yields a
-functional change in the driver where the mapping failure is treated as
-an error.
+fwnode_irq_get[_byname]() were changed to not return 0 anymore.
 
-The mapping failure can occur for example when the device-tree IRQ
-information translation call-back(s) (xlate) fail, IRQ domain is not
-found, IRQ type conflicts, etc. In most cases this indicates an error in
-the device-tree and special handling is not really required.
-
-One more thing to note is that ACPI APIs do not return zero for any
-failures so this special handling did only apply on device-tree based
-systems.
-
-Drop the special (no error, just skip the IRQ) handling for DT mapping
-failures as these can no longer be separated from other errors at driver
-side.
+Drop check for return value 0.
 
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
 
 ---
 
-The special handling in this driver was added when fixing a problem
-where returning zero from fwnode_irq_get[_byname]() was treated as
-succes yielding zero being used as a valid IRQ by the driver.
-f4a31facfa80 ("pinctrl: wpcm450: Correct the fwnode_irq_get() return value =
-check")
-The commit message does not mention if choosing not to abort the probe
-on device-tree mapping failure (as is done on other errors) was chosen
-because: a) Abort would have broken some existing setup. b) Because skipping
-an IRQ on failure is "the right thing to do", or c) because it sounded like
-a way to minimize risk of breaking something.
-
-If the reason is a) - then I'd appreciate receiving some more
-information and a suggestion how to proceed (if possible). If the reason
-is b), then it might be best to just skip the IRQ instead of aborting
-the probe for all errors on IRQ getting. Finally, in case of c), well,
-by acking this change you will now accept the risk :)
-
 The first patch of the series changes the fwnode_irq_get() so this depends
 on the first patch of the series and should not be applied alone.
 ---
- drivers/pinctrl/nuvoton/pinctrl-wpcm450.c | 2 --
+ drivers/pinctrl/pinctrl-ingenic.c | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c b/drivers/pinctrl/nu=
-voton/pinctrl-wpcm450.c
-index 2d1c1652cfd9..f9326210b5eb 100644
---- a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
-+++ b/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
-@@ -1106,8 +1106,6 @@ static int wpcm450_gpio_register(struct platform_devi=
-ce *pdev,
- 			irq =3D fwnode_irq_get(child, i);
- 			if (irq < 0)
- 				break;
--			if (!irq)
--				continue;
+diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-in=
+genic.c
+index 2f220a47b749..86e71ad703a5 100644
+--- a/drivers/pinctrl/pinctrl-ingenic.c
++++ b/drivers/pinctrl/pinctrl-ingenic.c
+@@ -4201,8 +4201,6 @@ static int __init ingenic_gpio_probe(struct ingenic_p=
+inctrl *jzpc,
+ 	err =3D fwnode_irq_get(fwnode, 0);
+ 	if (err < 0)
+ 		return err;
+-	if (!err)
+-		return -EINVAL;
+ 	jzgc->irq =3D err;
 =20
- 			girq->parents[i] =3D irq;
- 			girq->num_parents++;
+ 	girq =3D &jzgc->gc.irq;
 --=20
 2.40.1
 
@@ -183,20 +151,20 @@ Simon says - in Latin please.
 ~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
 Thanks to Simon Glass for the translation =3D]=20
 
---FETL4FejpREbPA/L
+--oZ11J20o9Px503h9
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmRjLQoACgkQeFA3/03a
-ocWrpgf9Es5uS3oPPJiMPB5j728uVfLR1V5MMPKmq/eWa0H356kurmwVmaVf/TCi
-gy5E++bF0ZkmF3CbbHd+w1LbJyx8KcbVNs7UNR8+Gu4uqsFHTCLejVEendE0k1c7
-WnbOj0NbjkXfG98GwOWCeRVA+7cZqksBsfoTzgUFC0BS3WgPZTsvDdQdZ3zujIS4
-oC4EsMMh7LY505DoT0ulxa6KWhsVVlWZUjsxwH775Av8tJkRBSyzBtSqBupUc8Yj
-ZOXcXI5DB9QXJRpcdGtG9mvMVeh1nZh+hzENjzTw7z1jXtyCb0Gb6EZ1bGEZUbNx
-iStCbUdPds7aucV4grPrFMY7cxh6FQ==
-=T/JD
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmRjLRwACgkQeFA3/03a
+ocXPaAf/dygTTCBKWb9BlQ6Z98e87PCCNuOAmUTiehu9/jb29Si1BTK9id/6JNBJ
++WmJD+kgIFqMomCvVaguoDgi2ATWdAt4HM2hsDaN5b6jfoPp8qm95ZtIpGbhu9m/
+C4b/sikbRV5Qx+Of6ieabEPuVRJPaPT9v/erxuZ/pREaP6Q6c+JTVaAXgnknoto+
+jpolb3Vp5kCVmKGANY/0OuqOhRBbCFkNXimeAVfCPE9lN0wfXo82IWm1pVe1FreT
+s6Mc19Ol59QyrAvFoEFhYuqMXJQ+nXHuK1STrPVoMLH80vlDW4yr1orb9N+pXkOR
+0hdd17aj+KVcXbnUXoUVSOVN43SN7Q==
+=L/Jv
 -----END PGP SIGNATURE-----
 
---FETL4FejpREbPA/L--
+--oZ11J20o9Px503h9--
 
