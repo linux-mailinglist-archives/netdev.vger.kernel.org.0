@@ -1,69 +1,69 @@
-Return-Path: <netdev+bounces-3135-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3136-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AF5D1705B6F
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 01:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 21256705B71
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 01:41:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 627C52812BA
-	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 23:40:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7E0BA2811E5
+	for <lists+netdev@lfdr.de>; Tue, 16 May 2023 23:41:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 28B081078F;
-	Tue, 16 May 2023 23:40:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A948910795;
+	Tue, 16 May 2023 23:41:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE9529119
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 23:40:28 +0000 (UTC)
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA805253
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 16:40:26 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-3f41dceb9c9so860025e9.3
-        for <netdev@vger.kernel.org>; Tue, 16 May 2023 16:40:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C6FD29119
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 23:41:27 +0000 (UTC)
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9C65253
+	for <netdev@vger.kernel.org>; Tue, 16 May 2023 16:41:25 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-3f475366522so818495e9.1
+        for <netdev@vger.kernel.org>; Tue, 16 May 2023 16:41:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tarent.de; s=google; t=1684280425; x=1686872425;
+        d=tarent.de; s=google; t=1684280484; x=1686872484;
         h=content-transfer-encoding:mime-version:content-language:references
          :message-id:in-reply-to:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=3gJ6ClKCN5IpuWuuZ4gAq1QA9hxr0NJz78qq27otER0=;
-        b=T+iKqFa0QVTTwTfMy0EnKWcebI3l+7lITkXNnpLsCYqm8cxK/g+6daKPEqIf/YvVhO
-         +ZJ2cE7aglgGApQjd5vagAnlx+MzCErICKsJ/Sq7vUFKs2EjcBWxuPDVHMYhXi2DPCF9
-         tXCMhAlwdJUt0VqDRloYyeJ4clUmjjpRJHCSE=
+        bh=C65sXfL1mJr0UGlCqgcLGnQB6SsGV00QTiYnvn4B7qY=;
+        b=hORYyhWRyRe9Gpy38UIsNeuopunUofSdK5/4Rx/Q5YnVlrjEZ5ejJtmnq9jCPi95S+
+         n75thp7TfW14TO3IcJH9iSwWGuQkCgGInBl/tsZcWOPzXd1n/IUIZWsWNstLoYxA0d21
+         t55VtXp+hCxZwBu0Q7GdFPYbHflPhM8dLy9Iw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684280425; x=1686872425;
+        d=1e100.net; s=20221208; t=1684280484; x=1686872484;
         h=content-transfer-encoding:mime-version:content-language:references
          :message-id:in-reply-to:subject:cc:to:from:date:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=3gJ6ClKCN5IpuWuuZ4gAq1QA9hxr0NJz78qq27otER0=;
-        b=g4MAImvuu7Fo6OWs0BxmOhJcaYhs37/TtM1sNbBUjlf3CRjYiwDrhwUXM2dI+s8BLY
-         rWr6+3ZixGaUvDRzdLA0WF0l6HnEA57xp3E0Tl5NYv4wnDdquNf70KLZqwfyNrwMJUDX
-         sqcImHoYzKzHD8Tm4xb6D/damQ3s5V7HkBowfb3aBTFs5SN3eAauhqpZPBV2MU29O5To
-         AKuqJ4MpqYDBE0QveYttzvI6Fd+Si+itOGoEOW0RfxdlVPn4ju7dyX6uBmavHgYMSNms
-         uJ0YjpTVJ0UIbPgz6PxktP5mmqf3pQFk1e+DIeEvX21nmD1mbtrabJdtq92BjaYWPJ+r
-         u1LA==
-X-Gm-Message-State: AC+VfDyTPdj8waQa5Md2Nv14NUVDFOlzl/EDXLh3p8McanvWrO7DjQS1
-	E4qHAPwwa786fYSJR9jS5ZhcGQ==
-X-Google-Smtp-Source: ACHHUZ6p1bpyfuzEkMPYdkv0PWKr6f8mAIytG8MbwJGVw0PEc3dXSiAz+8FrEhHXpiekzKuRQE3Nrw==
-X-Received: by 2002:a05:600c:2116:b0:3f4:294d:8524 with SMTP id u22-20020a05600c211600b003f4294d8524mr20152496wml.22.1684280424842;
-        Tue, 16 May 2023 16:40:24 -0700 (PDT)
+        bh=C65sXfL1mJr0UGlCqgcLGnQB6SsGV00QTiYnvn4B7qY=;
+        b=QQ2MXBqfn6cRvg2zxxEJxg3JDDQSjO/canWltTubNcL4TbtN4j1fsfhmlCWXCS5Clq
+         nP4oq290xu/apq0ZrvdoHDgNS7krDb1n130fc45uhXKSeEQEtX3ZWvWF7RZiWgIXdrvL
+         /rN0GQ369JcNMi4+tO3aRrou9cfxp9rSMqIoCWhxRHf7paCDr/SI7W/okjFzoSc4uMQI
+         hAxoyfY3uGrktziYtIfCY+vYa49Esf/4CCmn0FBRavAnehB90b4C7CVtoZ46aF0w9LgX
+         JqyGlQ/JG8mAveOY3V7CqmbVzGu/tHLmOEJNMvjcSBLkNmE9PlQ9aeVF6yly0zSR5EYY
+         vGjQ==
+X-Gm-Message-State: AC+VfDz9ESTIoiYigcSUZYUrK6Gu29scq8ryo2m+G8BqxzpdSafDZv8P
+	3HBJj9Be6xkRDqoUPFmLVcoZH94487AaaTcPvLw=
+X-Google-Smtp-Source: ACHHUZ6F6pUYiU9E+9h6eZsjdQGgQ6YF7saUl9vlD63f7rjgCD7PA4DJ9LShg6UWzTCNJRhb5ffntg==
+X-Received: by 2002:a5d:43c4:0:b0:2f0:2dfe:e903 with SMTP id v4-20020a5d43c4000000b002f02dfee903mr29987449wrr.69.1684280484146;
+        Tue, 16 May 2023 16:41:24 -0700 (PDT)
 Received: from [2001:4dd7:624f:0:21f:3bff:fe0d:cbb1] (2001-4dd7-624f-0-21f-3bff-fe0d-cbb1.ipv6dyn.netcologne.de. [2001:4dd7:624f:0:21f:3bff:fe0d:cbb1])
-        by smtp.gmail.com with ESMTPSA id f17-20020a7bc8d1000000b003f4290720cbsm337611wml.29.2023.05.16.16.40.24
+        by smtp.gmail.com with ESMTPSA id o14-20020a5d58ce000000b0030629536e64sm788703wrf.30.2023.05.16.16.41.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 May 2023 16:40:24 -0700 (PDT)
-Date: Wed, 17 May 2023 01:40:23 +0200 (CEST)
+        Tue, 16 May 2023 16:41:23 -0700 (PDT)
+Date: Wed, 17 May 2023 01:41:23 +0200 (CEST)
 From: Thorsten Glaser <t.glaser@tarent.de>
-To: Stephen Hemminger <stephen@networkplumber.org>
-cc: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>, 
+To: =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+cc: Stephen Hemminger <stephen@networkplumber.org>, 
     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org, 
     Haye.Haehne@telekom.de
 Subject: Re: knob to disable locally-originating qdisc optimisation?
-In-Reply-To: <20230516160111.56b2c345@hermes.local>
-Message-ID: <d3fcafc-08-a74e-8bc8-b93cfcd2f5ef@tarent.de>
+In-Reply-To: <87y1loapvt.fsf@toke.dk>
+Message-ID: <92a90-421-da6-f85d-133727f3730@tarent.de>
 References: <8a8c3e3b-b866-d723-552-c27bb33788f3@tarent.de> <20230427132126.48b0ed6a@kernel.org> <20230427163715.285e709f@hermes.local> <998e27d4-8a-2fd-7495-a8448a5427f9@tarent.de> <877ct8cc83.fsf@toke.dk> <b88ee99e-92da-ac90-a726-a79db80f6b4@tarent.de>
- <87y1loapvt.fsf@toke.dk> <20230516160111.56b2c345@hermes.local>
+ <87y1loapvt.fsf@toke.dk>
 Content-Language: de-DE-1901
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -80,16 +80,14 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 16 May 2023, Stephen Hemminger wrote:
+On Wed, 17 May 2023, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
 
->If your qdisc was upstream, others could collaborate to resolve the issue.
->As it stands, the kernel development process is intentionally hostile
->to out of tree developer changes like this.
+>Well, if it's a custom qdisc you could just call skb_orphan() on the
+>skbs when enqueueing them?
 
-The qdisc is a simulation for the network connection of one
-5G UE. It=E2=80=99s not suitable as general router qdisc. I doubt
-it would even be considered for acceptance. The kernel
-upstreaming process is not the least hostile either=E2=80=A6
+What does that even do? (Yes, I found the comment in skbuff.h that
+passes for documentation. It isn=E2=80=99t comprehensible to an aspiring
+qdisc writer though.)
 
 bye,
 //mirabilos
