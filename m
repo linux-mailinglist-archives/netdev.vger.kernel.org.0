@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-3368-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3369-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9AB15706AB9
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 16:14:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7B0F5706ABC
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 16:14:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 48082280BF5
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:14:18 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 71EB61C20F6E
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:14:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 45B5E31EFC;
-	Wed, 17 May 2023 14:12:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A46731F07;
+	Wed, 17 May 2023 14:12:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B6AD18B16
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 14:12:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E6F118B16
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 14:12:42 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A4D5253
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 07:12:30 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708FA10F8
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 07:12:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
 	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
 	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=WWwzVMm8svrG5aIvi4VoqCkvkJ40fmF3b4Tgakr/GwU=; b=dX2EgGZsfXSvi7opmnBlF+Rm0W
-	09eRVkm8ozwOCEds5+q6xyIcFszgnC2quJ2fBI9leQxFq7GEU6EJ5AgADpqhIGDJoIDMsEKdeTbos
-	KMEpum43ERVLvE0Nx5+dKlh2DqxU1d+Sp6ogNJZ6MQfb9qUEt6lxVTnY3q2ZBOY1uP3CNwmoqoLYv
-	6tv41oq2MGI51yalzl6NiUSEL0Qcu6bHNrSHN4CAzbjpbm4iixy/lW7Slr8nYdtBXMoH7ugq2zqYz
-	Hv1o/YSw61mDgUyPiDgh0/+0ALH5rE59zM9QY88O+J8jcfYOmNjjp8lqcSlRQONJ6MVfLmKB4qCom
-	wLCKLwQw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:41288 helo=rmk-PC.armlinux.org.uk)
+	bh=QzSEgiy7ET0fYmt/QndmyXYcJi9dYIiJBSxe3mtbjPs=; b=yaMbvYiC3lRG1HZI1LNAeX5l8R
+	kRStP2e3BDQ+u6BV1o1Q0m/iK5LGZvVLVH1/AboMVHd5H6Ae0XlFmW7p/hHHxD+xURPpDWdNDyLLv
+	PEci2GA6UCdivAwIhvmJNHolgXIaVvGcF1NyOBtZAcJPheegvKKh8lXAkm2OesKzzCnsxN3FCsZnx
+	Fn4EAfmbbjPHJEqlCw07Oqu3qLoId9+ZDDEo0zdMpIJ6uvosIrb3qjkTQlRiVs7V+RLyfhcdqAvWG
+	x3HIRFeY7/hcduaEpafVIJnU3ril/kxgXrSRoCM8ofh6EAapH2gCB1sY13mYK9LCfzA/MXZT54KtR
+	9l2zvQQA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:43792 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <rmk@armlinux.org.uk>)
-	id 1pzHtB-000812-C1; Wed, 17 May 2023 15:12:25 +0100
+	id 1pzHtG-00081F-C0; Wed, 17 May 2023 15:12:30 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1pzHtA-005sgX-M6; Wed, 17 May 2023 15:12:24 +0100
+	id 1pzHtF-005sgd-Q1; Wed, 17 May 2023 15:12:29 +0100
 In-Reply-To: <ZGTglYakbbnWEIkw@shell.armlinux.org.uk>
 References: <ZGTglYakbbnWEIkw@shell.armlinux.org.uk>
 From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -52,8 +52,8 @@ Cc: Andrew Lunn <andrew@lunn.ch>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
 	netdev@vger.kernel.org
-Subject: [PATCH RFC net-next 8/9] net: pcs: xpcs: use phylink_resolve_c73()
- helper
+Subject: [PATCH RFC net-next 9/9] net: pcs: xpcs: avoid reading STAT1 more
+ than once
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -63,9 +63,9 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1pzHtA-005sgX-M6@rmk-PC.armlinux.org.uk>
+Message-Id: <E1pzHtF-005sgd-Q1@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date: Wed, 17 May 2023 15:12:24 +0100
+Date: Wed, 17 May 2023 15:12:29 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -73,79 +73,170 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use phylink_resolve_c73() to resolve the clause 73 autonegotiation
-result.
+Avoid reading the STAT1 registers more than once while getting the PCS
+state, as this register contains latching-low bits that are lost after
+the first read.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/pcs/pcs-xpcs.c | 40 +-------------------------------------
- 1 file changed, 1 insertion(+), 39 deletions(-)
+ drivers/net/pcs/pcs-xpcs.c | 91 +++++++++++++++++++++-----------------
+ 1 file changed, 50 insertions(+), 41 deletions(-)
 
 diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index beed799a69a7..c5fe944f48dd 100644
+index c5fe944f48dd..00cbd522f59a 100644
 --- a/drivers/net/pcs/pcs-xpcs.c
 +++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -336,22 +336,6 @@ static int xpcs_read_link_c73(struct dw_xpcs *xpcs)
- 	return link;
+@@ -271,15 +271,12 @@ static int xpcs_soft_reset(struct dw_xpcs *xpcs,
+ })
+ 
+ static int xpcs_read_fault_c73(struct dw_xpcs *xpcs,
+-			       struct phylink_link_state *state)
++			       struct phylink_link_state *state,
++			       u16 pcs_stat1)
+ {
+ 	int ret;
+ 
+-	ret = xpcs_read(xpcs, MDIO_MMD_PCS, MDIO_STAT1);
+-	if (ret < 0)
+-		return ret;
+-
+-	if (ret & MDIO_STAT1_FAULT) {
++	if (pcs_stat1 & MDIO_STAT1_FAULT) {
+ 		xpcs_warn(xpcs, state, "Link fault condition detected!\n");
+ 		return -EFAULT;
+ 	}
+@@ -321,21 +318,6 @@ static int xpcs_read_fault_c73(struct dw_xpcs *xpcs,
+ 	return 0;
  }
  
--static int xpcs_get_max_usxgmii_speed(const unsigned long *supported)
+-static int xpcs_read_link_c73(struct dw_xpcs *xpcs)
 -{
--	int max = SPEED_UNKNOWN;
+-	bool link = true;
+-	int ret;
 -
--	if (phylink_test(supported, 1000baseKX_Full))
--		max = SPEED_1000;
--	if (phylink_test(supported, 2500baseX_Full))
--		max = SPEED_2500;
--	if (phylink_test(supported, 10000baseKX4_Full))
--		max = SPEED_10000;
--	if (phylink_test(supported, 10000baseKR_Full))
--		max = SPEED_10000;
+-	ret = xpcs_read(xpcs, MDIO_MMD_PCS, MDIO_STAT1);
+-	if (ret < 0)
+-		return ret;
 -
--	return max;
+-	if (!(ret & MDIO_STAT1_LSTATUS))
+-		link = false;
+-
+-	return link;
 -}
 -
  static void xpcs_config_usxgmii(struct dw_xpcs *xpcs, int speed)
  {
  	int ret, speed_sel;
-@@ -534,28 +518,6 @@ static int xpcs_read_lpa_c73(struct dw_xpcs *xpcs,
- 	return 0;
+@@ -462,15 +444,11 @@ static int xpcs_config_aneg_c73(struct dw_xpcs *xpcs,
+ 
+ static int xpcs_aneg_done_c73(struct dw_xpcs *xpcs,
+ 			      struct phylink_link_state *state,
+-			      const struct xpcs_compat *compat)
++			      const struct xpcs_compat *compat, u16 an_stat1)
+ {
+ 	int ret;
+ 
+-	ret = xpcs_read(xpcs, MDIO_MMD_AN, MDIO_STAT1);
+-	if (ret < 0)
+-		return ret;
+-
+-	if (ret & MDIO_AN_STAT1_COMPLETE) {
++	if (an_stat1 & MDIO_AN_STAT1_COMPLETE) {
+ 		ret = xpcs_read(xpcs, MDIO_MMD_AN, MDIO_AN_LPA);
+ 		if (ret < 0)
+ 			return ret;
+@@ -488,16 +466,12 @@ static int xpcs_aneg_done_c73(struct dw_xpcs *xpcs,
  }
  
--static void xpcs_resolve_lpa_c73(struct dw_xpcs *xpcs,
--				 struct phylink_link_state *state)
--{
--	__ETHTOOL_DECLARE_LINK_MODE_MASK(res);
--	bool tx_pause, rx_pause;
--
--	/* Calculate the union of the advertising masks */
--	linkmode_and(res, state->lp_advertising, state->advertising);
--
--	/* Resolve pause modes */
--	linkmode_resolve_pause(state->advertising, state->lp_advertising,
--			       &tx_pause, &rx_pause);
--
--	if (tx_pause)
--		state->pause |= MLO_PAUSE_TX;
--	if (rx_pause)
--		state->pause |= MLO_PAUSE_RX;
--
--	state->speed = xpcs_get_max_usxgmii_speed(res);
--	state->duplex = DUPLEX_FULL;
--}
--
- static int xpcs_get_max_xlgmii_speed(struct dw_xpcs *xpcs,
- 				     struct phylink_link_state *state)
+ static int xpcs_read_lpa_c73(struct dw_xpcs *xpcs,
+-			     struct phylink_link_state *state)
++			     struct phylink_link_state *state, u16 an_stat1)
  {
-@@ -940,7 +902,7 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
- 	if (an_enabled && xpcs_aneg_done_c73(xpcs, state, compat)) {
- 		state->an_complete = true;
- 		xpcs_read_lpa_c73(xpcs, state);
--		xpcs_resolve_lpa_c73(xpcs, state);
-+		phylink_resolve_c73(state);
- 	} else if (an_enabled) {
- 		state->link = 0;
- 	} else if (state->link) {
+ 	u16 lpa[3];
+ 	int i, ret;
+ 
+-	ret = xpcs_read(xpcs, MDIO_MMD_AN, MDIO_STAT1);
+-	if (ret < 0)
+-		return ret;
+-
+-	if (!(ret & MDIO_AN_STAT1_LPABLE)) {
++	if (!(an_stat1 & MDIO_AN_STAT1_LPABLE)) {
+ 		phylink_clear(state->lp_advertising, Autoneg);
+ 		return 0;
+ 	}
+@@ -880,13 +854,25 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
+ 			      const struct xpcs_compat *compat)
+ {
+ 	bool an_enabled;
++	int pcs_stat1;
++	int an_stat1;
+ 	int ret;
+ 
++	/* The link status bit is latching-low, so it is important to
++	 * avoid unnecessary re-reads of this register to avoid missing
++	 * a link-down event.
++	 */
++	pcs_stat1 = xpcs_read(xpcs, MDIO_MMD_PCS, MDIO_STAT1);
++	if (pcs_stat1 < 0) {
++		state->link = false;
++		return pcs_stat1;
++	}
++
+ 	/* Link needs to be read first ... */
+-	state->link = xpcs_read_link_c73(xpcs) > 0 ? 1 : 0;
++	state->link = !!(pcs_stat1 & MDIO_STAT1_LSTATUS);
+ 
+ 	/* ... and then we check the faults. */
+-	ret = xpcs_read_fault_c73(xpcs, state);
++	ret = xpcs_read_fault_c73(xpcs, state, pcs_stat1);
+ 	if (ret) {
+ 		ret = xpcs_soft_reset(xpcs, compat);
+ 		if (ret)
+@@ -897,15 +883,38 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
+ 		return xpcs_do_config(xpcs, state->interface, MLO_AN_INBAND, NULL);
+ 	}
+ 
++	/* There is no point doing anything else if the link is down. */
++	if (!state->link)
++		return 0;
++
+ 	an_enabled = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+ 				       state->advertising);
+-	if (an_enabled && xpcs_aneg_done_c73(xpcs, state, compat)) {
+-		state->an_complete = true;
+-		xpcs_read_lpa_c73(xpcs, state);
++	if (an_enabled) {
++		/* The link status bit is latching-low, so it is important to
++		 * avoid unnecessary re-reads of this register to avoid missing
++		 * a link-down event.
++		 */
++		an_stat1 = xpcs_read(xpcs, MDIO_MMD_AN, MDIO_STAT1);
++		if (an_stat1 < 0) {
++			state->link = false;
++			return an_stat1;
++		}
++
++		state->an_complete = xpcs_aneg_done_c73(xpcs, state, compat,
++							an_stat1);
++		if (!state->an_complete) {
++			state->link = false;
++			return 0;
++		}
++
++		ret = xpcs_read_lpa_c73(xpcs, state, an_stat1);
++		if (ret < 0) {
++			state->link = false;
++			return ret;
++		}
++
+ 		phylink_resolve_c73(state);
+-	} else if (an_enabled) {
+-		state->link = 0;
+-	} else if (state->link) {
++	} else {
+ 		xpcs_resolve_pma(xpcs, state);
+ 	}
+ 
 -- 
 2.30.2
 
