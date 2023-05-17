@@ -1,171 +1,128 @@
-Return-Path: <netdev+bounces-3386-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3388-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E54AA706CEA
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 17:35:33 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6CBAC706D59
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 17:53:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D630B1C20968
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 15:35:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CAA322816B3
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 15:52:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B59CB10948;
-	Wed, 17 May 2023 15:35:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2CF01111A2;
+	Wed, 17 May 2023 15:52:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D2FE2F5B
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 15:35:30 +0000 (UTC)
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2115.outbound.protection.outlook.com [40.107.93.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1B6A5DE;
-	Wed, 17 May 2023 08:35:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bD3T165b85NeITIVT8eBlcBh6lu+BT9CSexggqv8IlungErks3H3pd7akZwpKJwtEG0CxBRg6vzPyZG9+2wOmnOObevO20yHZGIoi2C6QanJMolb4EEvIRrWeKwR1gebDTVbUwzVsgPQfyYrvQPHPVQcVtA07DkoozWilEWcNI7iAIy6WgQZhDmOkZgZz0JarsFCBt6S+wp3Z5f3GoCcy06nP4vHBSSn1BLg/jf3mQUMzXYAdLNni58H8DXG2OJCbxB8M8LV04Ms3gzBDDsGliSVdRE9yJBMZFL2TDFonsZSy7lwX2noPG8ZVAv6zFB7xWjevk6MzjZEg61WG9jRsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HZVNi/DiWxn99F4pi7d3yPC9aH+eFthHqWxC1nEdP60=;
- b=RZMpBilHR+EKAgm0ShQ/Y3OzmcwaAVAAFPsdSHCzkSSljTyPaTIe/LZACFZJ18Ld5XE7ZIzH9HvfV1akj/+HbO98/j9PyT//kXC9YJicL1sLy7KePK9+P8Wz2aeMPz5BqckXibtdEZhq1r6wR8bLRx7GQBS/Iaw73sHwbD8dlYBEGdoA5EfA+mduyiU30+W6mnsNd1mPIe/9fZJTixhoXLRSpZF7iZOIZqc/SpvlRx0YVkqEilGduMNw19VTqXno4H4y/QCFQ1QUAPm2Rq+gyjCtdrJY7djrBNoaHMm/9e0/0SPn9RSvB1zKpDKDqmyEwCotC+HwUQeTz3UDWI2LbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2029D567C
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 15:52:57 +0000 (UTC)
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A5FAD847
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 08:52:19 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-510d8b0169fso905594a12.1
+        for <netdev@vger.kernel.org>; Wed, 17 May 2023 08:52:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HZVNi/DiWxn99F4pi7d3yPC9aH+eFthHqWxC1nEdP60=;
- b=j1GxbATeKnsqIkdztDTKrqxzBTnxNa+9YMb4uLnRLdj8+hKKma7ZvGzcHPvUCaVoNMlvxcpQSQTjOP+xTLt8lyUF4yhgrbxINM8iA5KMcS+jipU3yxsCj45t02/BG0r0wglRYHSQIvO1e8DdNGtOvaihUR5UENHvn/r4+qNQw6E=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB3954.namprd13.prod.outlook.com (2603:10b6:5:2a3::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.33; Wed, 17 May
- 2023 15:34:40 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6387.033; Wed, 17 May 2023
- 15:34:40 +0000
-Date: Wed, 17 May 2023 17:34:32 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Florian Fainelli <florian.fainelli@broadcom.com>
-Cc: netdev@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/3] WAKE_FILTER for Broadcom PHY
-Message-ID: <ZGT0CDSEI3MO5SKa@corigine.com>
-References: <20230516231713.2882879-1-florian.fainelli@broadcom.com>
- <ZGSdMM32YnloAlIf@corigine.com>
- <daff5610-0ad2-9e08-b9cb-dcbc6d7938f6@broadcom.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <daff5610-0ad2-9e08-b9cb-dcbc6d7938f6@broadcom.com>
-X-ClientProxiedBy: AM0PR06CA0130.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::35) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20221208; t=1684338733; x=1686930733;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=jsU1VAHR+IXD6gZ/mAemmtxRbcXW+NWwxeAzIw2BqSo=;
+        b=m/LI/8Y+hB8isgqZuZBpgU2V17KLre4UXIc0rppTJ/mX483YfDSBhogapV89vrgw+K
+         6WTC2lZOORjoiAPGF7bWsF48SD5PlmoSEEB7vWcLs0CKtqgMpQN+2TfOo5GSLpN6Lr0k
+         0bL3o4t/33fQkAgCC4NDcD3WGA7iIA2MmsvH2x1VJi+iRj8n0OQtbwRXmOUnFjb/LB4J
+         9rE9Tm2UD3J07JVN3zAFYBM0ilc8GFgZtRvXFARKBOQMV1FAMspykX2n/Qm5HLnvsAmR
+         4+Np6mqpeMHZkRxfflwtpCsxWqkdUoz/zdgawlZsGmBSYPKu0JfRvSA/2JdMGBGhLkDy
+         loJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684338733; x=1686930733;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jsU1VAHR+IXD6gZ/mAemmtxRbcXW+NWwxeAzIw2BqSo=;
+        b=FAZG1aCKvJkQHYdzfHdqyI6l5D2sijKln8LB28KflapVX8ZijTWyLAiJz1dYCz5ybn
+         HYgoUVbMzi1GwyNMp/axxLgB3uJIGgeMePaB6rF93vBngUBs/VqnX3a4yRuC43KxLoT8
+         WdHwAIMgu+RqFj+D9LvuEW98HUEZtCZLMg0xYLQvVxAJ8GBk34Tu6BUNR7k1/Q0UFc5t
+         0eYnoYPXDzL9YwRNDk6R8RIcqqfEeZC4C4anGmg+qEnOID0cQ+USXLFsjw/bbUJP5YTL
+         Fyo8fOSyOFDv9l/RwIQIM9Z7JgTJKKiYAg+PrYPTiA3R//Qc/1Bn7Oh49erwALzWoYr+
+         k+cw==
+X-Gm-Message-State: AC+VfDw/fNaKlYIK3+NoFUGRCq/azWOGVaxaNj5yE7A0xgrvzAPOdbeE
+	ZBoh0miHC4GT/0vvsubpAVc=
+X-Google-Smtp-Source: ACHHUZ7guQdMWx+dM68JbvWrRSTzVGH8MzX8YOdLu0F2HAATygHAcRmq+S2ndtFBXDCQ0Okc83lpDg==
+X-Received: by 2002:a17:906:5d16:b0:960:f1a6:69df with SMTP id g22-20020a1709065d1600b00960f1a669dfmr46957531ejt.36.1684338731649;
+        Wed, 17 May 2023 08:52:11 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id f25-20020a170906739900b0096b3f72b1a0sm4108538ejl.107.2023.05.17.08.52.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 May 2023 08:52:11 -0700 (PDT)
+Date: Wed, 17 May 2023 18:52:09 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc: Daniel Golle <daniel@makrotopia.org>, DENG Qingfang <dqfext@gmail.com>,
+	Greg Ungerer <gerg@kernel.org>,
+	Richard van Schagen <richard@routerhints.com>,
+	Richard van Schagen <vschagen@cs.com>,
+	Frank Wunderlich <frank-w@public-files.de>, mithat.guner@xeront.com,
+	erkin.bozoglu@xeront.com, bartel.eerdekens@constell8.be,
+	netdev <netdev@vger.kernel.org>
+Subject: Re: MT7530 bug, forward broadcast and unknown frames to the correct
+ CPU port
+Message-ID: <20230517155209.d2twidli4ygj2mhp@skbuf>
+References: <20230429173522.tqd7izelbhr4rvqz@skbuf>
+ <680eea9a-e719-bbb1-0c7c-1b843ed2afcd@arinc9.com>
+ <20230429185657.jrpcxoqwr5tcyt54@skbuf>
+ <d3a73d34-efd7-2f37-1362-9a2fe5a21592@arinc9.com>
+ <20230501100930.eemwoxmwh7oenhvb@skbuf>
+ <ZE-VEuhiPygZYGPe@makrotopia.org>
+ <839003bf-477e-9c91-3a98-08f8ca869276@arinc9.com>
+ <21ce3015-b379-056c-e5ca-8763c58c6553@arinc9.com>
+ <20230510140258.44oobynufb3auzw2@skbuf>
+ <6c83136a-8303-7e3b-9f3f-e214e2bfc66f@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB3954:EE_
-X-MS-Office365-Filtering-Correlation-Id: fecf84bb-cc55-4ab2-b704-08db56ec3aa9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	aKSStlO03Hq2Ga3dxC/iSRNtQ9gDB992E6MqVI3aw4UvI9GZ1mdM0ntDzroSvZ9p6BLWW7showdb4KRBFxeldI8vWX5ND/qOYx9RcFuFbF/vraM1A2UsDUj9YYfGe4KAXheRhgqF9zxJRX7ULGZsz9/Aj49ZDPuWLOEIaM6p/1/3xFHu0mZQTc9eTSBZeoojuX+G7AKrQ9nmQC9tt6MKOKRFyAoIpPr+KVA1rNV5pYHZ3HyePB1Z4drmTA6LWIxf+VrQxndmLQB3Wb9HJ3YU9n8fikB9gbj1Pj1ZiBXtenkH10q3qYCsD4k1fwV00CUibMtI4LdNlYVu3bf9P98j4QvMMkXZRbc5kXVU9EcfgN61WnavOymmvk59JbXUcloUZHYzqube53Jmhiab3jp2933QvMNUah1kCPxe63N9/cwDAbARYMa9yQXbf7Zmlz7E4vkj049MJbaSSGFt/A4V13jQPAnAtUom6okfbgQQ6LgLTCAgXLoHAr95abkQpfkBQ6A0D1Nb5T3Kn1o6LWgs9q0SkouUc/jyEHwyIMNT+MchPnEfvza5GMxkw3PdgJpt
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(366004)(346002)(376002)(396003)(39830400003)(451199021)(41300700001)(54906003)(86362001)(38100700002)(316002)(5660300002)(44832011)(7416002)(2906002)(478600001)(8936002)(4326008)(66556008)(66946007)(6916009)(8676002)(66476007)(6486002)(6666004)(36756003)(6512007)(6506007)(53546011)(186003)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ZQdjuv3Q1l3oPcTdu9a8CocgwGSbKBMzkrNhkoulj13ncgtEOaDbgW0Mafos?=
- =?us-ascii?Q?Ef8V8IqAv1g2YBCgcx8hsWBbzLJ6sv2/uPUgWE73r5bbD1AvVJNKpq3QBQHv?=
- =?us-ascii?Q?uOBKirqjD6IeRM6odbaLjMJZzJDFwBCRZQOElrNi+Al8ZhnMiAnyyyz6cZWo?=
- =?us-ascii?Q?N8V20xAmqeVrwOF3Ph0Gq7pZrgvpSPtb+Yp2laUVmDLCvHHcdesIRFVk2C5O?=
- =?us-ascii?Q?JXLWjy/WKbX8zinItVqYeYMr8iZHpeG8Oknv4xC0/8s4tmLc9GZ7lyJXhd1b?=
- =?us-ascii?Q?5lSYiJPp3li2LSfXRuYB0j2kU+lmZqy+rbigrQfBmQQyuMkB9VpJTXGjBDiU?=
- =?us-ascii?Q?OMG9jdz/lkXHf3a4xGwfP9Pgazxghfk/9TiWb05isI12Kalm58QRFUyBeJXn?=
- =?us-ascii?Q?R0F6dqL31C03ZA2B+BRvM4FaydMFMaROkO2Eby7AXiF7nIcetgDckY8DzLMm?=
- =?us-ascii?Q?sq5q97IT3O6qf12Lqnpz2jp2uWkBUS8b+kU16AELMMTc3aKDVnM55E4liVgD?=
- =?us-ascii?Q?J2GjB+bZpwGCx4skJk6Xm2vRikz/LI67tXcPlJBUWYl6HIoSv5B93Hc/83Xy?=
- =?us-ascii?Q?PGjh5kzGkrpAV+whjh3Bzd7N3o0NHQTH1XI//S2TaafpPHmEI28o4uOw7DO7?=
- =?us-ascii?Q?t5fY2e1OKDg4TmDVw2LNbTroN0KugeCi1bkUPG6lQzln5lU7zsxO6Jcizcbn?=
- =?us-ascii?Q?6NEqZnMap4xTzvRDC8FkHnMvm0bMAmwcSRSEpCMqve8tP7kGNta15oyKGtcH?=
- =?us-ascii?Q?ixx4aVS2yg74+8CIXyvHhftAVg2DOUUUsAENAY++g7D/vZuaT84Y8QYay/Wi?=
- =?us-ascii?Q?JROU8Vi35u4CShwUHZymMkwq4C5pBkzufBLrMEIOXPFErWRfUE5RPNdRi/+b?=
- =?us-ascii?Q?rc7nxDO8qdDzb7+oUPwre4x4ODlpN6QX/HxJ2yb/BZ+OGlcYWfECtIJUu11T?=
- =?us-ascii?Q?eq5PP7jhxHUKQi27DXKeImAysbOXBHtUzWjvE2jCrcskS/vsKF1fpwV/iYlb?=
- =?us-ascii?Q?mV2yxoNWOpm93E8sqcblIXvW1s75NcbTkvSTA1i81QpgdbcUBjWbRkjnK3DB?=
- =?us-ascii?Q?xMxbbAiwLRPlOnKKa86GpK7eH2POCgVrfrqu4ZZ1c/bahup4JaHUHTprKtcS?=
- =?us-ascii?Q?eJ/2d+QC8/9iOl7a3mISaYt87mTy9jd/spxegtoH0H8Bns/VYhcQpjiIZYHh?=
- =?us-ascii?Q?cThakEmdMHNmG/4WA+/flkKCUsOktyaS75yQvOndtdH/bIYa0zo84299eX4s?=
- =?us-ascii?Q?OZBy4jcBwlj3dQg5+rWeRwUo3Wy1V5QNfsHWSHJFoglLsXU61fCr5vHz8u3G?=
- =?us-ascii?Q?20sudIT+1ye8PHXc1euMYBeJ832NI+FcCcZJ6DkOmU7mMgMwzKgpihfI3rea?=
- =?us-ascii?Q?RMI4YiPh+Msuob2py/OiBvXXIiNdEzUfsFAcKWpT/hhNLxm2x5TEmpxrZex5?=
- =?us-ascii?Q?uxVR8bpphijAhaxuCXeAcaJCbI0/aQm40/GV6wAm9h+swjvpt8+b/Btxzy+o?=
- =?us-ascii?Q?/QZQd3blk47sC23Jxa+O4eBeUoAutqUeAsVoUQteHD8WipNENRh2qoQ3aDqO?=
- =?us-ascii?Q?dySjamAOBPZOlQswPI/coQ9miFJh2R4LPqnxY6lqFCY23iUIU3EZtC54aed+?=
- =?us-ascii?Q?aCCYo9cn+cUS9gRBuzHvqlUR8IKj4SKOohEHAOCakPgqQVC3GiUxdCr9WHvF?=
- =?us-ascii?Q?pWC2cQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fecf84bb-cc55-4ab2-b704-08db56ec3aa9
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2023 15:34:40.0940
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4Zay7Qz3/+sDD2jnL8zUMDd3GxdDwrvWLcNDH3eCokR9FbgiIKrbi4Y4PMFxtVKLdXkAu2OmDLFep6heqlaX5kMp32zw1QzeUlR3/P9eV+s=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB3954
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6c83136a-8303-7e3b-9f3f-e214e2bfc66f@arinc9.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 17, 2023 at 08:18:25AM -0700, Florian Fainelli wrote:
+On Tue, May 16, 2023 at 11:01:02PM +0300, Arınç ÜNAL wrote:
+> Without preferring port 6:
 > 
+> [ ID][Role] Interval           Transfer     Bitrate         Retr
+> [  5][TX-C]   0.00-20.00  sec   374 MBytes   157 Mbits/sec  734    sender
+> [  5][TX-C]   0.00-20.00  sec   373 MBytes   156 Mbits/sec    receiver
+> [  7][RX-C]   0.00-20.00  sec  1.81 GBytes   778 Mbits/sec    0    sender
+> [  7][RX-C]   0.00-20.00  sec  1.81 GBytes   777 Mbits/sec    receiver
 > 
-> On 5/17/2023 2:24 AM, Simon Horman wrote:
-> > On Tue, May 16, 2023 at 04:17:10PM -0700, Florian Fainelli wrote:
-> > > This patch series adds support for WAKE_FILTER to the Broadcom PHY with
-> > > the narrow use case of being able to program a custom Ethernet MAC DA to
-> > > be waking up from.
-> > > 
-> > > This is currently useful for Set-top-box applications where we might
-> > > want to wake-up from select multicast MAC DA pertaining to mDNS for
-> > > instance (Wake-on-Cast typically).
-> > > 
-> > > The approach taken here is the same as what has been pioneered and
-> > > proposed before for the GENET and SYSTEMPORT drivers.
-> > > 
-> > > Thanks!
-> > 
-> > Hi Florian,
-> > 
-> > I hate to be a pain.
-> > But this series doesn't apply on net-next.
+> With preferring port 6:
 > 
-> Right, that's because it depends upon "[PATCH net-next] net: phy: broadcom:
-> Register dummy IRQ handler". I did not make that clear in the cover letter
-> but definitively should have.
+> [ ID][Role] Interval           Transfer     Bitrate         Retr
+> [  5][TX-C]   0.00-20.00  sec  1.99 GBytes   856 Mbits/sec  273    sender
+> [  5][TX-C]   0.00-20.00  sec  1.99 GBytes   855 Mbits/sec    receiver
+> [  7][RX-C]   0.00-20.00  sec  1.72 GBytes   737 Mbits/sec   15    sender
+> [  7][RX-C]   0.00-20.00  sec  1.71 GBytes   736 Mbits/sec    receiver
+> 
+> This scenario is quite popular as you would see a lot of people using one
+> port for WAN and the other ports for LAN.
+> 
+> Therefore, the "prefer local CPU port" operation would be useful. If you can
+> introduce the operation to the DSA subsystem, I will make a patch to start
+> using it on the MT7530 DSA subdriver.
 
-Thanks Florian, got it.
-
-Of course review can occur within that context.
-But perhaps it is best to repost once those patches are in,
-so the CI can run.
-
+Patches adding infrastructure will not be accepted without one user of
+that infra, so if you could pick up my patch from the ML, keep my author
+and signed-off-by tag, add yours afterwards, give it a compelling commit
+message backed up by data such as this, and submit it along your mt7530
+user, that would probably be good.
 
