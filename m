@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-3362-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3363-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B9C1C706AA9
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 16:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 95273706AAC
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 16:12:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B0D501C20F2D
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:12:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8B7DB1C20F8A
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:12:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 72C8731102;
-	Wed, 17 May 2023 14:12:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3FEBE31120;
+	Wed, 17 May 2023 14:12:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6688118B16
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 14:12:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3540318B16
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 14:12:21 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3566476AC
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 07:11:59 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E136526B5
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 07:12:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
 	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
 	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=SRhU8XxVYKDym1HmcUgdlrXT4yv+TCCXArbh8Hkv/NM=; b=EM/OU0coejTKD9eQPJ0DZ6A3wU
-	4pQ2PvGD2iTQ7JrFuoTbnuBA5LynpKPcOmRGcT6DKER3f8rGS1X1mi0i6wEflFtBMA0C8vvkeOV+t
-	qZRRgVsZdDoI+dh0wG7kznkYyRAIleYAIfSp4ZXeN4TiO5oxx5UGH6m5UqJCUKpeq6HIz12IYhWE5
-	0bI3KYlvEWDRuU3Bw6zoVpSmTzkQ5noXTrLU/4/CMPcByEHn/N8skqtiUHGV9v9ADLEEaj2gjN819
-	FJLSmBc5fCHaU/vj03Usna5LFvJWB2QyniuhLwHVm1i9+M2rx5B9tF57FzodXMx50mSExPf6DDvHR
-	1v4rTdyw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:44810 helo=rmk-PC.armlinux.org.uk)
+	bh=AfAoRE7B1YlsWTpUK1K0zeqnQkq+6DKJWTBliBVGZlU=; b=UPidS0rOZpRC0RysODSfGLOWnB
+	DU39Kedbc+KPi4pObfsATBeS0BhHtjHrRjDibCtZDc2Nqb1nG19+j9FWwmkltorwtQo/PxkRZEnMs
+	mVH0XLDAoJRiwuAs7g6wioYm+kZHZSRaOIRMFSr2j5NEbJ5F8Ok0zuE/Ut3s6ztOznGbZ6Vap/0Ry
+	Zb/Imk+Km/L36ZJ3DhnvvUtwKEjBjFbOlTE1Qz+d2fG3Q8mK5WHZ2QzqNGP2OfmVsSd5dq6BZaBJ4
+	vBb4Q+4FKDKQ8wRcp2fXNqUYEGTb29FqrLukkM0O5xmu9Dw5oq1B/WjJmw7C7ShZ2cT5CNz3FsQZl
+	ypJoNheA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:56734 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <rmk@armlinux.org.uk>)
-	id 1pzHsg-0007zl-L2; Wed, 17 May 2023 15:11:54 +0100
+	id 1pzHsl-0007zz-OI; Wed, 17 May 2023 15:11:59 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1pzHsg-005sfx-2F; Wed, 17 May 2023 15:11:54 +0100
+	id 1pzHsl-005sg3-5W; Wed, 17 May 2023 15:11:59 +0100
 In-Reply-To: <ZGTglYakbbnWEIkw@shell.armlinux.org.uk>
 References: <ZGTglYakbbnWEIkw@shell.armlinux.org.uk>
 From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -52,8 +52,8 @@ Cc: Andrew Lunn <andrew@lunn.ch>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
 	netdev@vger.kernel.org
-Subject: [PATCH RFC net-next 2/9] net: phylink: remove duplicated linkmode
- pause resolution
+Subject: [PATCH RFC net-next 3/9] net: phylink: add function to resolve clause
+ 73 negotiation
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -63,75 +63,88 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1pzHsg-005sfx-2F@rmk-PC.armlinux.org.uk>
+Message-Id: <E1pzHsl-005sg3-5W@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date: Wed, 17 May 2023 15:11:54 +0100
+Date: Wed, 17 May 2023 15:11:59 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_FILL_THIS_FORM_SHORT,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Phylink had two chunks of code virtually the same for resolving the
-negotiated pause modes. Factor this down to one function.
+Add a function to resolve clause 73 negotiation according to the
+priority resolution function described in clause 73.3.6.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/phylink.c | 15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ drivers/net/phy/phylink.c | 39 +++++++++++++++++++++++++++++++++++++++
+ include/linux/phylink.h   |  2 ++
+ 2 files changed, 41 insertions(+)
 
 diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 7db67ff2812c..9cc152f3506a 100644
+index 9cc152f3506a..bd2d373460dd 100644
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -980,11 +980,10 @@ static void phylink_apply_manual_flow(struct phylink *pl,
- 		state->pause = pl->link_config.pause;
- }
+@@ -3216,6 +3216,45 @@ static const struct sfp_upstream_ops sfp_phylink_ops = {
  
--static void phylink_resolve_flow(struct phylink_link_state *state)
-+static void phylink_resolve_an_pause(struct phylink_link_state *state)
- {
- 	bool tx_pause, rx_pause;
+ /* Helpers for MAC drivers */
  
--	state->pause = MLO_PAUSE_NONE;
- 	if (state->duplex == DUPLEX_FULL) {
- 		linkmode_resolve_pause(state->advertising,
- 				       state->lp_advertising,
-@@ -1196,7 +1195,8 @@ static void phylink_get_fixed_state(struct phylink *pl,
- 	else if (pl->link_gpio)
- 		state->link = !!gpiod_get_value_cansleep(pl->link_gpio);
- 
--	phylink_resolve_flow(state);
-+	state->pause = MLO_PAUSE_NONE;
++static struct {
++	int bit;
++	int speed;
++} phylink_c73_priority_resolution[] = {
++	{ ETHTOOL_LINK_MODE_100000baseCR4_Full_BIT, SPEED_100000 },
++	{ ETHTOOL_LINK_MODE_100000baseKR4_Full_BIT, SPEED_100000 },
++	/* 100GBASE-KP4 and 100GBASE-CR10 not supported */
++	{ ETHTOOL_LINK_MODE_40000baseCR4_Full_BIT, SPEED_40000 },
++	{ ETHTOOL_LINK_MODE_40000baseKR4_Full_BIT, SPEED_40000 },
++	{ ETHTOOL_LINK_MODE_10000baseKR_Full_BIT, SPEED_10000 },
++	{ ETHTOOL_LINK_MODE_10000baseKX4_Full_BIT, SPEED_10000 },
++	/* 5GBASE-KR not supported */
++	{ ETHTOOL_LINK_MODE_2500baseX_Full_BIT, SPEED_2500 },
++	{ ETHTOOL_LINK_MODE_1000baseKX_Full_BIT, SPEED_1000 },
++};
++
++void phylink_resolve_c73(struct phylink_link_state *state)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(phylink_c73_priority_resolution); i++) {
++		int bit = phylink_c73_priority_resolution[i].bit;
++		if (linkmode_test_bit(bit, state->advertising) &&
++		    linkmode_test_bit(bit, state->lp_advertising))
++			break;
++	}
++
++	if (i < ARRAY_SIZE(phylink_c73_priority_resolution)) {
++		state->speed = phylink_c73_priority_resolution[i].speed;
++		state->duplex = DUPLEX_FULL;
++	} else {
++		/* negotiation failure */
++		state->link = false;
++	}
++
 +	phylink_resolve_an_pause(state);
- }
- 
- static void phylink_mac_initial_config(struct phylink *pl, bool force_restart)
-@@ -3219,7 +3219,6 @@ static const struct sfp_upstream_ops sfp_phylink_ops = {
++}
++EXPORT_SYMBOL_GPL(phylink_resolve_c73);
++
  static void phylink_decode_c37_word(struct phylink_link_state *state,
  				    uint16_t config_reg, int speed)
  {
--	bool tx_pause, rx_pause;
- 	int fd_bit;
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index bb782f05ad08..0cf07d7d11b8 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -656,6 +656,8 @@ int phylink_mii_c22_pcs_config(struct mdio_device *pcs, unsigned int mode,
+ 			       const unsigned long *advertising);
+ void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs);
  
- 	if (speed == SPEED_2500)
-@@ -3238,13 +3237,7 @@ static void phylink_decode_c37_word(struct phylink_link_state *state,
- 		state->link = false;
- 	}
++void phylink_resolve_c73(struct phylink_link_state *state);
++
+ void phylink_mii_c45_pcs_get_state(struct mdio_device *pcs,
+ 				   struct phylink_link_state *state);
  
--	linkmode_resolve_pause(state->advertising, state->lp_advertising,
--			       &tx_pause, &rx_pause);
--
--	if (tx_pause)
--		state->pause |= MLO_PAUSE_TX;
--	if (rx_pause)
--		state->pause |= MLO_PAUSE_RX;
-+	phylink_resolve_an_pause(state);
- }
- 
- static void phylink_decode_sgmii_word(struct phylink_link_state *state,
 -- 
 2.30.2
 
