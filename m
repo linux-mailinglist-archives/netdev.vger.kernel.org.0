@@ -1,112 +1,133 @@
-Return-Path: <netdev+bounces-3345-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3346-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7EE05706852
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:39:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5B4FE706866
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:42:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3A2F5281682
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:39:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4A7F21C20E8C
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:42:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED86818B03;
-	Wed, 17 May 2023 12:38:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A009518B0B;
+	Wed, 17 May 2023 12:42:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1D9A18AF7
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 12:38:56 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6771FC4
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 05:38:54 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1pzGQQ-0006A2-A0; Wed, 17 May 2023 14:38:38 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id 1246C1C716F;
-	Wed, 17 May 2023 12:38:37 +0000 (UTC)
-Date: Wed, 17 May 2023 14:38:35 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>, Andrew Lunn <andrew@lunn.ch>,
-	Eric Dumazet <edumazet@google.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	Woojung Huh <woojung.huh@microchip.com>,
-	Arun Ramadoss <arun.ramadoss@microchip.com>,
-	"Russell King (Oracle)" <linux@armlinux.org.uk>,
-	UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
-	kernel@pengutronix.de, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/2] Fine-Tune Flow Control and Speed
- Configurations in Microchip KSZ8xxx DSA Driver
-Message-ID: <20230517-flyer-quiver-79e2f624a460-mkl@pengutronix.de>
-References: <20230517121034.3801640-1-o.rempel@pengutronix.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94E12211C
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 12:42:14 +0000 (UTC)
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDF8211C;
+	Wed, 17 May 2023 05:42:08 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id d2e1a72fcca58-64384274895so497006b3a.2;
+        Wed, 17 May 2023 05:42:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684327328; x=1686919328;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vdNngZhsKhcXNCAWoCajdyQW0IMTNw0nIYVCN7bYTSU=;
+        b=TZQUdKyniQjbEM8cAFb8uyX9CbMNswaIhc51dp0m7XKiPT0Fl6Ik+avjN9tUPoadEF
+         pKenfSIxInRPBretbCTpojzxlaup7EVmiolpppd5MZW3ttsp9X47uAWwW0AIOM6Ki/rn
+         Q8IUtZmPrZhQqHP0G4oQOzzvsJNPs6EcjQ/Gz/YQNfk71Vpcj2vM9zALZ/Q+wK8wBpN2
+         qs3iAlS2fQLJc1UN+epgWSe1ZTC5e4MMyfxQi72GgOuBos2Ms30olwuQKr3W7CCma5Cq
+         J3LifgTvfn4LvOS8E6C+UMUqR/2Vk4oDGL3YDOf/oez/PchSDzXvG3a5yF5addp15beQ
+         Hdlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684327328; x=1686919328;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vdNngZhsKhcXNCAWoCajdyQW0IMTNw0nIYVCN7bYTSU=;
+        b=SuvKh076tr6KJC0nv5UcN1ovzwB7ELaSSk7zYcXIbeOzBqKCaV+D1Yq46ZblGm8RaN
+         6BvzTArStJ1Rf/YiF1ofB845Dn2sg2Zkg0xie7w8TzM+6kbHC+rIl/SGPRNk67lNiPCf
+         4eX3gW27G0mNP/ZH5+E1qcjKMa/lbu4uiZOOzbRcKVp/h4/tLrg4GxUqJaNhADn4SLwC
+         CxjcDpNFmyoi19XBuf1BnyIHUGHDFQ6JtGbHUlTb6TKwBW/im7twE4mVRfXyQ7h5cYvd
+         BR5D04vfws72G0OC4KTKAdI3TIdZCHAJIpUViBbCP0aL4e5TD4TpmIG2v4g9LQRyUtsl
+         Tv3w==
+X-Gm-Message-State: AC+VfDxZ6P1w/uy6Q9uclbgibAlFUr2ggbpeVFy0L78Kg02PTbHj96su
+	h7VgdXEQeABdcsMtXf4qZxk=
+X-Google-Smtp-Source: ACHHUZ4mtDHCwO90lxd6Y56Dyd9JXU+4HwycijJE4OYjx9N5xrIGd+1awQd5cyd0ZV03gPOism++qA==
+X-Received: by 2002:aa7:88d0:0:b0:646:663a:9d60 with SMTP id k16-20020aa788d0000000b00646663a9d60mr994827pff.10.1684327327983;
+        Wed, 17 May 2023 05:42:07 -0700 (PDT)
+Received: from localhost.localdomain ([81.70.217.19])
+        by smtp.gmail.com with ESMTPSA id u23-20020aa78497000000b0064aea45b040sm9244224pfn.168.2023.05.17.05.42.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 May 2023 05:42:07 -0700 (PDT)
+From: menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To: kuba@kernel.org
+Cc: davem@davemloft.net,
+	edumazet@google.com,
+	pabeni@redhat.com,
+	dsahern@kernel.org,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH net-next 0/3] net: tcp: add support of window shrink
+Date: Wed, 17 May 2023 20:41:58 +0800
+Message-Id: <20230517124201.441634-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="t4ca6c4672tg6ybh"
-Content-Disposition: inline
-In-Reply-To: <20230517121034.3801640-1-o.rempel@pengutronix.de>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+From: Menglong Dong <imagedong@tencent.com>
 
---t4ca6c4672tg6ybh
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+For now, skb will be dropped when no memory, which makes client keep
+retrans util timeout and it's not friendly to the users.
 
-On 17.05.2023 14:10:32, Oleksij Rempel wrote:
-> changes v2:
-> - split the patch to upstrean and downstram part
-                       upstream     downstream
+Therefore, now we force to receive one packet on current socket when
+the protocol memory is out of the limitation. Then, this socket will
+stay in 'no mem' status, util protocol memory is available.
 
-In patches please fix spelling, too:
-s/upstram/upstream/
-s/downstram/downstream/
+When a socket is in 'no mem' status, it's receive window will become
+0, which means window shrink happens. For the sender, it need to
+cover this case, and we turn it into zero-window probe status.
 
-Marc
+In the origin logic, 0 probe is triggered only when there is no any
+data in the retrans queue and the receive window can't hold the data
+of the 1th packet in the send queue.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+Now, let's change it and trigger the 0 probe in such cases:
 
---t4ca6c4672tg6ybh
-Content-Type: application/pgp-signature; name="signature.asc"
+- if the retrans queue has data and the 1th packet in it is not within
+  the receive window, which is for window shrink case, as the shrinked
+  window may can't cover the data in retrans queue.
+- no data in the retrans queue and the 1th packet in the send queue is
+  out of the end of the receive window
 
------BEGIN PGP SIGNATURE-----
+And the sysctl 'tcp_wnd_shrink' is also introduced. In order to keep
+safe, we disable this feature by default.
 
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRkyskACgkQvlAcSiqK
-BOj1eAf/bdH8oLih24Q4glFjP7ngLrOfL8iIK2nS2yTsCbqlr6x7wSuy3PxUnPhi
-K+U53oJM152NYO/YTe0yQ7gYmeEibo0yHCauEo6ZoDgnQ8hAtTuyOgVNTeKFeEk9
-cT4f14m6+KhdcttfWvmezO0ZrgeCaO3RrnHlLPOj3sCwk9UqQY0+1KCRKR5xfS8E
-2hOGsTDqMVGG+AIfInh6ACOfTe3VxzGE3gDcBR8s/4d6ZXthiNcCC9zbdyh0uKgQ
-/geD3UpybQRRtNhroMcaZlRSoKto8gyklT1oAdKy3/l2LCELED8XdpOQSheFBlXn
-/l/J5fqqeGJnyxdWtdgBw5gMrfBJRg==
-=1F0K
------END PGP SIGNATURE-----
+*** BLURB HERE ***
 
---t4ca6c4672tg6ybh--
+Menglong Dong (3):
+  net: tcp: add sysctl for controling tcp window shrink
+  net: tcp: send zero-window when no memory
+  net: tcp: handle window shrink properly
+
+ include/net/sock.h         |  1 +
+ include/net/tcp.h          | 22 ++++++++++++++++
+ net/ipv4/sysctl_net_ipv4.c |  9 +++++++
+ net/ipv4/tcp.c             |  3 +++
+ net/ipv4/tcp_input.c       | 53 ++++++++++++++++++++++++++++++++++++++
+ net/ipv4/tcp_output.c      | 10 +++++--
+ net/ipv4/tcp_timer.c       |  4 +--
+ 7 files changed, 97 insertions(+), 5 deletions(-)
+
+-- 
+2.40.1
+
 
