@@ -1,65 +1,65 @@
-Return-Path: <netdev+bounces-3439-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3438-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E25A57071FA
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 21:23:52 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 63C527071F3
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 21:23:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 88784280BE2
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 19:23:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9A7B0281766
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 19:23:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6632931F1D;
-	Wed, 17 May 2023 19:23:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF46734CD9;
+	Wed, 17 May 2023 19:23:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54D2D34CFA
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 19:23:12 +0000 (UTC)
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2092.outbound.protection.outlook.com [40.107.8.92])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C8D55B3;
-	Wed, 17 May 2023 12:23:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB94031F1D
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 19:23:11 +0000 (UTC)
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2130.outbound.protection.outlook.com [40.107.241.130])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583A655A9;
+	Wed, 17 May 2023 12:22:59 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eYzy5kZNLP3m7FuzFjwEiBR1wTbDYT+3tuB86xG2GdBaSRNfNDq3fym6rWScU2yR0Zc/9qfLWp1JJstEgOKX90PMUt3LAOCzowil6GYmKEwLQl5kvZhIwFIVnAEmYp/QjvbkQXkBWUqeGIW1HSvFVOZjeIZYXUnxz9NXHHYNsY2Cyz1t1jucfzObTDYt7CMWE90rxjTsN1CnBrYhcdH/+mTxVBXldNELgX7m7s7h8Dv7YS2KnzKQ3UJMCLeW4Xctkz31czOx+5JxGhdV344Kf3gf7NU3E2DjUlChW4UcGoY9dzfsVd2COd9eiv7VhmWHy2XrhIhp4YhteW8WrIMcgA==
+ b=OU/aGNvbNelVtWUwluaBxNNf3WWB7w7DbUUYSYhF/4vCx4WN9HPOWsUFohlJ9th6pOHUyVyvZgNdeyBcKyxX/rbLJ8j8exr1jHfwT95c2LaI3mwB3sBe4e0wX4LvlXWFX2bdsRRX8kPP213qveAOSN99mL6RyKJBN1j2RYtgp8zGGJlMXStXMlnCBSFzTaeqDLvA6sh5PfveLyVfShbb8lz8OUrCEqhBZ9QogSddC3hmx9KVuA58FglfdOg43I474KoDXN/AP62UqwlBVW7+3MCnWWtyDyFlgq5TVc9kOSat6nWzbXEGmyoQFvFeaL3TQ89EwH5DD+jryx1EBvRe7w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BIBaIuCZHHN+URf33tUXG+aW7GVOm8HnxPLxte2Sxh8=;
- b=R283vVGX6pJbg9scP8Ib9W1gLop5TKFkMnsAJKFM2jXrWxqZwQ5yaphJxGFfdy3YQQTj3OdypgLRwQxxURXawsOif1m/vhRLPKS0fW4oFggcaonJSa6qKaYNLgj2+ZdzUl/Rj0hlsYIqpL+ZKhFSSklSJJ6k54aFxtVDFvHRkk8hsyOJD7lsFHMzSY0mUJY37bJUz3o2R87/MLfXwlaGopuux2DB8derToMw87qn/Hpk7LPbZXdUcW9k4GOJRdJM+U5sLAlZsNfrq9MF29qHd0P6hrFpAAc7ib5xLVAG3Gl84mq2NBzxUQEBgWQ7VOiSHWV+6NukRlEHoqdbrRnDpQ==
+ bh=JQcvexl/oTObPkA5NZsRh+F1iG6lKA3Khz5eprQn41Y=;
+ b=PIOnGCn05L8zndZqyPVlrOGba8fMGcfyOR0N2Zl5l5+tIuHeEJXoRmZO0xQNRqmR7GLTvYMgpa0Snpdr3LknlPa8+/pkeE/6fIe0qijQ9D/6UAtIeiZcPXuvrtRceaHOFh/5Ap7+OeRT7sDdzDaUT9Z2Kwcsud593iotNAMftckRnvMJJrSDQlWg+g99eZ8FtIJ/iZkavsDbfslXHgrliUhoWOhZb1RssrBpDZ8Pw/a8IzuN7Puya43P0R3j/f8av2sqF4uC1hqtg8WBRA6Z6sAMVu0VhuiZpccBbsKu+JbTdjosYsc2Fr8qKuD2jlsSy03zDrAxVaT+IDuqdnl1DA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
  is 80.151.164.27) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu; dmarc=none
  action=none header.from=esd.eu; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BIBaIuCZHHN+URf33tUXG+aW7GVOm8HnxPLxte2Sxh8=;
- b=rLGLXd51an1Qbl4HBi6B1UaokH1XmH4AbzF7z7A+HBkBwFAUHKWt7CqB7z0hHfiUWSK1P7tmhQGjrQ1SjEdtH9ZkXu5RaMxlBM34byQXcOY63Vs6n5OlCqS56E+CPPVqFHmoom+GGilEyX98c/iKBl78YuXiij1MpzB22eIwX7I=
-Received: from AS9PR06CA0012.eurprd06.prod.outlook.com (2603:10a6:20b:462::34)
- by AS8PR03MB7816.eurprd03.prod.outlook.com (2603:10a6:20b:34e::21) with
+ bh=JQcvexl/oTObPkA5NZsRh+F1iG6lKA3Khz5eprQn41Y=;
+ b=FxxlVInNjfzWVpmIdJK0p+DigB39hkMTjZV5W+YRNxQdqA/Yojpog8sH+rj4SkMJnsDCjTJ8ohqVIaH2QXaIJ7vgJ5wipgcc+z1cJFDGGbYOj3QVn+WW0shAON7aSIvlaIY48WPBEzThlw9RgzR7gkC1xJPYdp/gndXPagPEmlI=
+Received: from DB8PR06CA0058.eurprd06.prod.outlook.com (2603:10a6:10:120::32)
+ by DU2PR03MB8123.eurprd03.prod.outlook.com (2603:10a6:10:2f2::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.17; Wed, 17 May
- 2023 19:22:57 +0000
-Received: from AM7EUR06FT010.eop-eur06.prod.protection.outlook.com
- (2603:10a6:20b:462:cafe::45) by AS9PR06CA0012.outlook.office365.com
- (2603:10a6:20b:462::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.17 via Frontend
- Transport; Wed, 17 May 2023 19:22:57 +0000
+ 2023 19:22:56 +0000
+Received: from DB8EUR06FT040.eop-eur06.prod.protection.outlook.com
+ (2603:10a6:10:120:cafe::5b) by DB8PR06CA0058.outlook.office365.com
+ (2603:10a6:10:120::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.34 via Frontend
+ Transport; Wed, 17 May 2023 19:22:56 +0000
 X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
  80.151.164.27) smtp.mailfrom=esd.eu; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=esd.eu;
 Received-SPF: SoftFail (protection.outlook.com: domain of transitioning esd.eu
  discourages use of 80.151.164.27 as permitted sender)
 Received: from esd-s7.esd (80.151.164.27) by
- AM7EUR06FT010.mail.protection.outlook.com (10.233.255.222) with Microsoft
- SMTP Server id 15.20.6411.18 via Frontend Transport; Wed, 17 May 2023
- 19:22:57 +0000
-Received: from esd-s20.esd.local (jenkins.esd [10.0.0.190])
-	by esd-s7.esd (Postfix) with ESMTPS id E1D547C16CD;
+ DB8EUR06FT040.mail.protection.outlook.com (10.233.253.37) with Microsoft SMTP
+ Server id 15.20.6411.17 via Frontend Transport; Wed, 17 May 2023 19:22:56
+ +0000
+Received: from esd-s20.esd.local (debby [10.0.0.190])
+	by esd-s7.esd (Postfix) with ESMTPS id E147C7C16CC;
 	Wed, 17 May 2023 21:22:55 +0200 (CEST)
 Received: by esd-s20.esd.local (Postfix, from userid 2046)
-	id DAD5B2E1806; Wed, 17 May 2023 21:22:55 +0200 (CEST)
+	id DE95D2E1801; Wed, 17 May 2023 21:22:55 +0200 (CEST)
 From: Frank Jungclaus <frank.jungclaus@esd.eu>
 To: linux-can@vger.kernel.org,
 	Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -69,9 +69,9 @@ Cc: =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
 	netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Frank Jungclaus <frank.jungclaus@esd.eu>
-Subject: [PATCH 4/6] can: esd_usb: Prefix all structures with the device name
-Date: Wed, 17 May 2023 21:22:49 +0200
-Message-Id: <20230517192251.2405290-5-frank.jungclaus@esd.eu>
+Subject: [PATCH 5/6] can: esd_usb: Replace hardcoded message length given to USB commands
+Date: Wed, 17 May 2023 21:22:50 +0200
+Message-Id: <20230517192251.2405290-6-frank.jungclaus@esd.eu>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230517192251.2405290-1-frank.jungclaus@esd.eu>
 References: <20230517192251.2405290-1-frank.jungclaus@esd.eu>
@@ -84,175 +84,214 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM7EUR06FT010:EE_|AS8PR03MB7816:EE_
+X-MS-TrafficTypeDiagnostic: DB8EUR06FT040:EE_|DU2PR03MB8123:EE_
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 03e5afbb-336e-40a8-9e24-08db570c1ed7
+X-MS-Office365-Filtering-Correlation-Id: df7e7d4e-bb66-4592-1404-08db570c1e62
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	IGPS6w5hGrJgrkCyJ+0Kp6VUc9ty9jbuMGSbjpf9ZmtYfrOGofv/HUx5PMRvSAqi5comWfoP/af7e4JXhu4mWBQgpIKTW5/WPxuE4NG838+tGB0mvM37yn1bXkxDcQId63jg4KQWlUeLXryMeCdkhAJM4CgRPyT13NEySB+aIDDkhq78/KO3zdt9yvgj/X5LdtNrwzWmoRregJn6W2iqRE6SyiCeoZy2wAvEgdKRZRZzin2MWvDIBV/t0ZgSFL0NeYqwHXKwy4V/nAvbVXe4k8C/49o3WChuaGuYknJkAkKuB28GsvIvpFL+RWkvAnm1Js4zQbAtvQ74SOq9Qbv17IgxI1QkmuAi9Fea0J44dW60a/vdaNv4nZwdd4N9Oe4FoR/I9/sJJE6klZ2+9iSiEGud1LzIC0HWfXSCVqKhYW1AWuOIz9hmRPNb16hxIdjTA0T9QsN12xdvm8tVRnI2EXBgrZVZJyOiINcXQhB8iGlEqGb8GadXViIhcdvRH+KaVNSVTZPF+k40JWhiOEbNDM6Qj2JmXVZy82Go1E0wbBH+Ju5BkDekFMi7e/6ewNPBGP0S5QAh6wbafvGKNs7XfPR9LSq9hX5V/66EFwaRRG5qDcCWHv1r3yIt1Qp9LrI3p3wuWipw1xDddLN0vNikWOn8JtFhu+WpSg/JL/dAJdsa4/OPw99f5b75JjoN4ud1ut2s30+ImI3lgZgBCVcwNH4roYwqLM9jfXJvtx0SpnE=
+	IycrqSvzW/X6R0RL/kIgFOv6KoOvCBT87+awgZ4pIXseC6N4uGM3id5nmJ6tPt3aNzfQ2/B+Yi+GufYLf9n1TFQPfNR+5ZkxDq6XbZrVn/7zh3yty9V5jRWKXkHuFal0h8agfv83Jhr2iv5KQirNX7yvIad80KoztD2ya65eVvQvqTcn+jmJk/LcybkOfRsF/8vEVH898Ht7b7vE9M4IT8tjsfWgHQ8Wps9zhsUTQ7gJLBP7FDoWmfdoY7q84d9QWSI0d9SvLNQx6xl0+9y7LvA07hga66X96prhve8I3x+IsHsbCwCRJaxxp7+dM0UdF0MMqcwU2Jedoi7J9qsfkrwAaorybBgm0gsUWggICpLRqWhH2a94/qVLeslV/SRjn39Z25qZP5gCgoSVQNJUQfP/1sXKsV9XlRnWZ6cBhFgm2yK9Z7Hy3eDqgoDet6RA59fmf2rB5D9mB46RtV8Y3rvN5yOTDf/jEcYzbHrFUwaOso6SNbijK2zACFLdU/VJ/JiLX31cK7pQWDq9S8vua14TVZaQDpNlPy42+1m4ITiIBkG/7gDjKFbeQYeE5QaxKUr2xo77K3v05emJSOCVMxfM7xamWb/CfhfviQdpTAvrwVLvk398zQSWqzC1r+oD2IRKTetXzaDj3jF197T4UmlgzzCpthi2Nvc9FWFcGb0idP9dvx9ACMwtXGbmRdKu7JkGQCChRkgtRdBItrZOD437HxcmRLqkl9wlt8x+nZ4=
 X-Forefront-Antispam-Report:
-	CIP:80.151.164.27;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:p5097a41b.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230028)(4636009)(396003)(39840400004)(136003)(376002)(346002)(451199021)(36840700001)(46966006)(83380400001)(6266002)(186003)(26005)(1076003)(36756003)(40480700001)(6666004)(36860700001)(43170500006)(336012)(966005)(2616005)(4326008)(316002)(47076005)(66574015)(2906002)(70206006)(82310400005)(70586007)(8936002)(8676002)(86362001)(44832011)(5660300002)(41300700001)(54906003)(42186006)(478600001)(110136005)(81166007)(356005);DIR:OUT;SFP:1102;
+	CIP:80.151.164.27;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:p5097a41b.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230028)(4636009)(346002)(39830400003)(136003)(376002)(396003)(451199021)(36840700001)(46966006)(5660300002)(41300700001)(336012)(36756003)(2906002)(47076005)(36860700001)(43170500006)(83380400001)(2616005)(15650500001)(81166007)(86362001)(82310400005)(356005)(1076003)(26005)(186003)(6266002)(44832011)(8676002)(8936002)(40480700001)(70586007)(70206006)(478600001)(6666004)(966005)(42186006)(54906003)(316002)(4326008)(110136005);DIR:OUT;SFP:1102;
 X-OriginatorOrg: esd.eu
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2023 19:22:57.0790
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2023 19:22:56.2931
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 03e5afbb-336e-40a8-9e24-08db570c1ed7
+X-MS-Exchange-CrossTenant-Network-Message-Id: df7e7d4e-bb66-4592-1404-08db570c1e62
 X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[80.151.164.27];Helo=[esd-s7.esd]
 X-MS-Exchange-CrossTenant-AuthSource:
-	AM7EUR06FT010.eop-eur06.prod.protection.outlook.com
+	DB8EUR06FT040.eop-eur06.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB7816
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR03MB8123
 X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR autolearn=no
-	autolearn_force=no version=3.4.6
+	SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-As suggested by Vincent Mailhol prefix all the structures with the
-device name.
-For commonly used structures make use of (the module name) esd_usb_.
-For esd CAN-USB/2 and CAN-USB/Micro specific structures use
-esd_usb_2_ and esd_usb_m.
+Initiated by comments from Vincent Mailhol replace all hardcoded
+values supplied to the len element of esd_usb_msg (and its siblings)
+by more readable expressions, based on sizeof(), offsetof(), etc.
+Also spend documentation / comments that the len element of esd_usb_msg
+is in multiples of 32bit words and not in bytes.
 
 Link: https://lore.kernel.org/all/CAMZ6RqLaDNy-fZ2G0+QMhUEckkXLL+ZyELVSDFmqpd++aBzZQg@mail.gmail.com/
 Suggested-by: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
 ---
- drivers/net/can/usb/esd_usb.c | 42 +++++++++++++++++------------------
- 1 file changed, 21 insertions(+), 21 deletions(-)
+ drivers/net/can/usb/esd_usb.c | 40 ++++++++++++++++++-----------------
+ 1 file changed, 21 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
-index 23a568bfcdc2..1a51a8541bdd 100644
+index 1a51a8541bdd..9053a338eb88 100644
 --- a/drivers/net/can/usb/esd_usb.c
 +++ b/drivers/net/can/usb/esd_usb.c
-@@ -89,13 +89,13 @@ MODULE_LICENSE("GPL v2");
- #define ESD_USB_MAX_RX_URBS		4
+@@ -90,13 +90,13 @@ MODULE_LICENSE("GPL v2");
  #define ESD_USB_MAX_TX_URBS		16 /* must be power of 2 */
  
--struct header_msg {
-+struct esd_usb_header_msg {
- 	u8 len; /* len is always the total message length in 32bit words */
+ struct esd_usb_header_msg {
+-	u8 len; /* len is always the total message length in 32bit words */
++	u8 len; /* total message length in 32bit words */
  	u8 cmd;
  	u8 rsvd[2];
  };
  
--struct version_msg {
-+struct esd_usb_version_msg {
- 	u8 len;
+ struct esd_usb_version_msg {
+-	u8 len;
++	u8 len; /* total message length in 32bit words */
  	u8 cmd;
  	u8 rsvd;
-@@ -103,7 +103,7 @@ struct version_msg {
- 	__le32 drv_version;
+ 	u8 flags;
+@@ -104,7 +104,7 @@ struct esd_usb_version_msg {
  };
  
--struct version_reply_msg {
-+struct esd_usb_version_reply_msg {
- 	u8 len;
+ struct esd_usb_version_reply_msg {
+-	u8 len;
++	u8 len; /* total message length in 32bit words */
  	u8 cmd;
  	u8 nets;
-@@ -114,7 +114,7 @@ struct version_reply_msg {
- 	__le32 ts;
+ 	u8 features;
+@@ -115,7 +115,7 @@ struct esd_usb_version_reply_msg {
  };
  
--struct rx_msg {
-+struct esd_usb_rx_msg {
- 	u8 len;
+ struct esd_usb_rx_msg {
+-	u8 len;
++	u8 len; /* total message length in 32bit words */
  	u8 cmd;
  	u8 net;
-@@ -132,7 +132,7 @@ struct rx_msg {
- 	};
+ 	u8 dlc;
+@@ -133,7 +133,7 @@ struct esd_usb_rx_msg {
  };
  
--struct tx_msg {
-+struct esd_usb_tx_msg {
- 	u8 len;
+ struct esd_usb_tx_msg {
+-	u8 len;
++	u8 len; /* total message length in 32bit words */
  	u8 cmd;
  	u8 net;
-@@ -142,7 +142,7 @@ struct tx_msg {
- 	u8 data[CAN_MAX_DLEN];
+ 	u8 dlc;
+@@ -143,7 +143,7 @@ struct esd_usb_tx_msg {
  };
  
--struct tx_done_msg {
-+struct esd_usb_tx_done_msg {
- 	u8 len;
+ struct esd_usb_tx_done_msg {
+-	u8 len;
++	u8 len; /* total message length in 32bit words */
  	u8 cmd;
  	u8 net;
-@@ -151,7 +151,7 @@ struct tx_done_msg {
- 	__le32 ts;
+ 	u8 status;
+@@ -152,15 +152,15 @@ struct esd_usb_tx_done_msg {
  };
  
--struct id_filter_msg {
-+struct esd_usb_id_filter_msg {
- 	u8 len;
+ struct esd_usb_id_filter_msg {
+-	u8 len;
++	u8 len; /* total message length in 32bit words */
  	u8 cmd;
  	u8 net;
-@@ -159,7 +159,7 @@ struct id_filter_msg {
- 	__le32 mask[ESD_USB_MAX_ID_SEGMENT + 1];
+ 	u8 option;
+-	__le32 mask[ESD_USB_MAX_ID_SEGMENT + 1];
++	__le32 mask[ESD_USB_MAX_ID_SEGMENT + 1]; /* +1 for 29bit extended IDs */
  };
  
--struct set_baudrate_msg {
-+struct esd_usb_set_baudrate_msg {
- 	u8 len;
+ struct esd_usb_set_baudrate_msg {
+-	u8 len;
++	u8 len; /* total message length in 32bit words */
  	u8 cmd;
  	u8 net;
-@@ -169,14 +169,14 @@ struct set_baudrate_msg {
+ 	u8 rsvd;
+@@ -438,7 +438,7 @@ static void esd_usb_read_bulk_callback(struct urb *urb)
+ 			break;
+ 		}
  
- /* Main message type used between library and application */
- union __packed esd_usb_msg {
--	struct header_msg hdr;
--	struct version_msg version;
--	struct version_reply_msg version_reply;
--	struct rx_msg rx;
--	struct tx_msg tx;
--	struct tx_done_msg txdone;
--	struct set_baudrate_msg setbaud;
--	struct id_filter_msg filter;
-+	struct esd_usb_header_msg hdr;
-+	struct esd_usb_version_msg version;
-+	struct esd_usb_version_reply_msg version_reply;
-+	struct esd_usb_rx_msg rx;
-+	struct esd_usb_tx_msg tx;
-+	struct esd_usb_tx_done_msg txdone;
-+	struct esd_usb_set_baudrate_msg setbaud;
-+	struct esd_usb_id_filter_msg filter;
- };
+-		pos += msg->hdr.len << 2;
++		pos += msg->hdr.len * sizeof(u32); /* convert to # of bytes */
  
- static struct usb_device_id esd_usb_table[] = {
-@@ -899,8 +899,8 @@ static const struct ethtool_ops esd_usb_ethtool_ops = {
- 	.get_ts_info = ethtool_op_get_ts_info,
- };
+ 		if (pos > urb->actual_length) {
+ 			dev_err(dev->udev->dev.parent, "format error\n");
+@@ -532,7 +532,7 @@ static int esd_usb_send_msg(struct esd_usb *dev, union esd_usb_msg *msg)
+ 	return usb_bulk_msg(dev->udev,
+ 			    usb_sndbulkpipe(dev->udev, 2),
+ 			    msg,
+-			    msg->hdr.len << 2,
++			    msg->hdr.len * sizeof(u32), /* convert to # of bytes */
+ 			    &actual_length,
+ 			    1000);
+ }
+@@ -648,7 +648,7 @@ static int esd_usb_start(struct esd_usb_net_priv *priv)
+ 	 * field followed by only some bitmasks.
+ 	 */
+ 	msg->hdr.cmd = ESD_USB_CMD_IDADD;
+-	msg->hdr.len = 2 + ESD_USB_MAX_ID_SEGMENT;
++	msg->hdr.len = sizeof(struct esd_usb_id_filter_msg) / sizeof(u32); /* # of 32bit words */
+ 	msg->filter.net = priv->index;
+ 	msg->filter.option = ESD_USB_ID_ENABLE; /* start with segment 0 */
+ 	for (i = 0; i < ESD_USB_MAX_ID_SEGMENT; i++)
+@@ -759,7 +759,8 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
  
--static const struct can_bittiming_const esd_usb2_bittiming_const = {
--	.name = "esd_usb2",
-+static const struct can_bittiming_const esd_usb_2_bittiming_const = {
-+	.name = "esd_usb_2",
- 	.tseg1_min = 1,
- 	.tseg1_max = 16,
- 	.tseg2_min = 1,
-@@ -911,7 +911,7 @@ static const struct can_bittiming_const esd_usb2_bittiming_const = {
- 	.brp_inc = 1,
- };
+ 	msg = (union esd_usb_msg *)buf;
  
--static int esd_usb2_set_bittiming(struct net_device *netdev)
-+static int esd_usb_2_set_bittiming(struct net_device *netdev)
- {
- 	struct esd_usb_net_priv *priv = netdev_priv(netdev);
- 	const struct can_bittiming_const *btc = priv->can.bittiming_const;
-@@ -1026,8 +1026,8 @@ static int esd_usb_probe_one_net(struct usb_interface *intf, int index)
- 		priv->can.ctrlmode_supported |= CAN_CTRLMODE_3_SAMPLES;
- 	}
+-	msg->hdr.len = 3; /* minimal length */
++	/* minimal length as # of 32bit words */
++	msg->hdr.len = offsetof(struct esd_usb_tx_msg, data) / sizeof(u32);
+ 	msg->hdr.cmd = ESD_USB_CMD_CAN_TX;
+ 	msg->tx.net = priv->index;
+ 	msg->tx.dlc = can_get_cc_dlc(cf, priv->can.ctrlmode);
+@@ -774,7 +775,8 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
+ 	for (i = 0; i < cf->len; i++)
+ 		msg->tx.data[i] = cf->data[i];
  
--	priv->can.bittiming_const = &esd_usb2_bittiming_const;
--	priv->can.do_set_bittiming = esd_usb2_set_bittiming;
-+	priv->can.bittiming_const = &esd_usb_2_bittiming_const;
-+	priv->can.do_set_bittiming = esd_usb_2_set_bittiming;
- 	priv->can.do_set_mode = esd_usb_set_mode;
- 	priv->can.do_get_berr_counter = esd_usb_get_berr_counter;
+-	msg->hdr.len += (cf->len + 3) >> 2;
++	/* round up, then divide by 4 to add the payload length as # of 32bit words */
++	msg->hdr.len += DIV_ROUND_UP(cf->len, sizeof(u32));
  
+ 	for (i = 0; i < ESD_USB_MAX_TX_URBS; i++) {
+ 		if (priv->tx_contexts[i].echo_index == ESD_USB_MAX_TX_URBS) {
+@@ -797,7 +799,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
+ 	msg->tx.hnd = 0x80000000 | i; /* returned in TX done message */
+ 
+ 	usb_fill_bulk_urb(urb, dev->udev, usb_sndbulkpipe(dev->udev, 2), buf,
+-			  msg->hdr.len << 2,
++			  msg->hdr.len * sizeof(u32), /* convert to # of bytes */
+ 			  esd_usb_write_bulk_callback, context);
+ 
+ 	urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+@@ -860,7 +862,7 @@ static int esd_usb_close(struct net_device *netdev)
+ 
+ 	/* Disable all IDs (see esd_usb_start()) */
+ 	msg->hdr.cmd = ESD_USB_CMD_IDADD;
+-	msg->hdr.len = 2 + ESD_USB_MAX_ID_SEGMENT;
++	msg->hdr.len = sizeof(struct esd_usb_id_filter_msg) / sizeof(u32);/* # of 32bit words */
+ 	msg->filter.net = priv->index;
+ 	msg->filter.option = ESD_USB_ID_ENABLE; /* start with segment 0 */
+ 	for (i = 0; i <= ESD_USB_MAX_ID_SEGMENT; i++)
+@@ -869,7 +871,7 @@ static int esd_usb_close(struct net_device *netdev)
+ 		netdev_err(netdev, "sending idadd message failed\n");
+ 
+ 	/* set CAN controller to reset mode */
+-	msg->hdr.len = 2;
++	msg->hdr.len = sizeof(struct esd_usb_set_baudrate_msg) / sizeof(u32); /* # of 32bit words */
+ 	msg->hdr.cmd = ESD_USB_CMD_SETBAUD;
+ 	msg->setbaud.net = priv->index;
+ 	msg->setbaud.rsvd = 0;
+@@ -947,7 +949,7 @@ static int esd_usb_2_set_bittiming(struct net_device *netdev)
+ 	if (!msg)
+ 		return -ENOMEM;
+ 
+-	msg->hdr.len = 2;
++	msg->hdr.len = sizeof(struct esd_usb_set_baudrate_msg) / sizeof(u32); /* # of 32bit words */
+ 	msg->hdr.cmd = ESD_USB_CMD_SETBAUD;
+ 	msg->setbaud.net = priv->index;
+ 	msg->setbaud.rsvd = 0;
+@@ -1086,7 +1088,7 @@ static int esd_usb_probe(struct usb_interface *intf,
+ 
+ 	/* query number of CAN interfaces (nets) */
+ 	msg->hdr.cmd = ESD_USB_CMD_VERSION;
+-	msg->hdr.len = 2;
++	msg->hdr.len = sizeof(struct esd_usb_version_msg) / sizeof(u32); /* # of 32bit words */
+ 	msg->version.rsvd = 0;
+ 	msg->version.flags = 0;
+ 	msg->version.drv_version = 0;
 -- 
 2.25.1
 
