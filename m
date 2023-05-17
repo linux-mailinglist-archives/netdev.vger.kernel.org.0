@@ -1,122 +1,119 @@
-Return-Path: <netdev+bounces-3351-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3352-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3CB7D706882
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:46:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 61E5A70689D
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:50:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 342801C20C2F
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:46:00 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 976C1281363
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:50:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F31F18B13;
-	Wed, 17 May 2023 12:46:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 756B718B16;
+	Wed, 17 May 2023 12:50:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32B1D18B0D
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 12:46:00 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0E61BF;
-	Wed, 17 May 2023 05:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=BWYqbwkLKMTrdnMEBJD94Fcz+RfaghXSbYUJZ/5uHgE=; b=Ret9o0w+It8gwyudUkdi3qC1yy
-	xVsJmZenx45/jjMrZnFm91vre2Uj2adrtEDA2C/ZE5SQ6lDjztthyZwo0Epk2Pcl/vhgTNtKHlPqD
-	9NHHb7XXAtB4s2dfkJuzybK9WPyvV8qIG0ddT+uMPw/WKEOCulB41EtZYvONO+q9J2XmQ7SPuU1ZM
-	IBjJYWv7H62HZcd3vCde8xRVZSGCprz+IFdk5nBiAz2Et7jXFrOW/igKYzauY82klvejxjaVftfEG
-	rpnQx6m1kyQiVWTECrMHUCrobhfv8cEn7yZZWfDxqDve1VI/C50zfC88Nn2FCpEl7pHkkmtIgLGTr
-	k2xpra8Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:53524)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1pzGXM-0007oG-6r; Wed, 17 May 2023 13:45:48 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1pzGXK-0001rr-1S; Wed, 17 May 2023 13:45:46 +0100
-Date: Wed, 17 May 2023 13:45:46 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>, Andrew Lunn <andrew@lunn.ch>,
-	Eric Dumazet <edumazet@google.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A30218B13
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 12:50:01 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568B0421D;
+	Wed, 17 May 2023 05:49:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+	Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+	In-Reply-To:References; bh=71V5ReKQHSIVV/dbqK9wwRwpMSrqgG8X/SEPqdAnmzI=; b=Al
+	g1ZzudGHCtG42DL8odktF7HpqU3IfPG7EJazjl9lC5Q4NlplP/ME3lZRgVSz1+lX/Sm7lIm57k0CE
+	6BAW9PN2V2AVtL4TOgDP4VGruJZ9ql9vfdHeWBrvlmG8BKZhQnRlQwogZ/UcxIalFaor3I437vLjl
+	9mmuCUuqUFCULhg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1pzGbF-00D8VZ-Kc; Wed, 17 May 2023 14:49:49 +0200
+Date: Wed, 17 May 2023 14:49:49 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Florian Fainelli <florian.fainelli@broadcom.com>
+Cc: netdev@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
 	Florian Fainelli <f.fainelli@gmail.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	Woojung Huh <woojung.huh@microchip.com>,
-	Arun Ramadoss <arun.ramadoss@microchip.com>, kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v2 1/2] net: dsa: microchip: ksz8: Make flow
- control, speed, and duplex on CPU port configurable
-Message-ID: <ZGTMepjv33bJbck/@shell.armlinux.org.uk>
-References: <20230517121034.3801640-1-o.rempel@pengutronix.de>
- <20230517121034.3801640-2-o.rempel@pengutronix.de>
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/3] net: phy: broadcom: Add support for
+ WAKE_FILTER
+Message-ID: <a47d27e0-a8ef-4df0-aa45-623dda9e6412@lunn.ch>
+References: <20230516231713.2882879-1-florian.fainelli@broadcom.com>
+ <20230516231713.2882879-3-florian.fainelli@broadcom.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230517121034.3801640-2-o.rempel@pengutronix.de>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230516231713.2882879-3-florian.fainelli@broadcom.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 17, 2023 at 02:10:33PM +0200, Oleksij Rempel wrote:
-> +/**
-> + * ksz8_upstram_link_up - Configures the CPU/upstream port of the switch.
-> + * @dev: The KSZ device instance.
-> + * @port: The port number to configure.
-> + * @speed: The desired link speed.
-> + * @duplex: The desired duplex mode.
-> + * @tx_pause: If true, enables transmit pause.
-> + * @rx_pause: If true, enables receive pause.
-> + *
-> + * Description:
-> + * The function configures flow control and speed settings for the CPU/upstream
-> + * port of the switch based on the desired settings, current duplex mode, and
-> + * speed.
-> + */
-> +static void ksz8_upstram_link_up(struct ksz_device *dev, int port, int speed,
-> +				 int duplex, bool tx_pause, bool rx_pause)
-> +{
-> +	u8 ctrl = 0;
-> +
-> +	if (duplex) {
-> +		if (tx_pause || rx_pause)
-> +			ctrl |= SW_FLOW_CTRL;
-> +	} else {
-> +		ctrl |= SW_HALF_DUPLEX;
-> +		if (tx_pause || rx_pause)
-> +			ctrl |= SW_HALF_DUPLEX_FLOW_CTRL;
+On Tue, May 16, 2023 at 04:17:12PM -0700, Florian Fainelli wrote:
+> Since the PHY is capable of matching any arbitrary Ethernet MAC
+> destination as a programmable wake-up pattern, add support for doing
+> that using the WAKE_FILTER and ethtool::rxnfc API.
 
-It's come up before whether the pause settings should be used to control
-half-duplex flow control, and I believe the decision was they shouldn't.
+Are there other actions the PHY can perform?
 
-The other thing I find slightly weird is that this is only being done
-for upstream ports - why would a port that's between switches or the
-switch and the CPU be in half duplex mode?
+For a MAC based filter, i expect there are other actions, like drop,
+queue selection, etc. So using the generic RXNFC API makes some sense.
 
-Also, why would such a port want to use some kind of flow control? If
-the CPU starts sending pause frames because its got stuck, doesn't
-that eventually kill the entire network? Also doesn't it limit the
-network bandwidth to the ability of the host CPU *not* to send
-pause frames?
+> ethtool -N eth0 flow-type ether dst 01:00:5e:00:00:fb loc 0 action -2
+> ethtool -n eth0
+> Total 1 rules
+> 
+> Filter: 0
+>         Flow Type: Raw Ethernet
+>         Src MAC addr: 00:00:00:00:00:00 mask: FF:FF:FF:FF:FF:FF
+>         Dest MAC addr: 01:00:5E:00:00:FB mask: 00:00:00:00:00:00
+>         Ethertype: 0x0 mask: 0xFFFF
+>         Action: Wake-on-LAN
+> ethtool -s eth0 wol f
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+What i don't particularly like about this is its not vary
+discoverable, since it is not part of:
+
+          wol p|u|m|b|a|g|s|f|d...
+                  Sets Wake-on-LAN options.  Not all devices support
+                  this.  The argument to this option is a string of
+                  characters specifying which options to enable.
+
+                  p   Wake on PHY activity
+                  u   Wake on unicast messages
+                  m   Wake on multicast messages
+                  b   Wake on broadcast messages
+                  a   Wake on ARP
+                  g   Wake on MagicPacket™
+                  s   Enable SecureOn™ password for MagicPacket™
+                  f   Wake on filter(s)
+                  d   Disable (wake on  nothing).   This  option
+                      clears all previous options.
+
+If the PHY hardware is not generic, it only has one action, WoL, it
+might be better to have this use the standard wol commands. Can it be
+made to work under the 'f' option?
+
+The API to the PHY driver could then be made much more narrow, and you
+would not need the comment this is supposed to only be used for WoL.
+
+      Andrew
 
