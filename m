@@ -1,82 +1,47 @@
-Return-Path: <netdev+bounces-3357-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3358-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 42DBD706A0E
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 15:38:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 254D4706A15
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 15:42:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 398E21C20DD1
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:38:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C4B101C20F42
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:41:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03FED2C756;
-	Wed, 17 May 2023 13:38:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F01D323D59;
+	Wed, 17 May 2023 13:41:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EADBC18B16
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 13:38:23 +0000 (UTC)
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAF0526E
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 06:38:20 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2ac7462d9f1so7657811fa.2
-        for <netdev@vger.kernel.org>; Wed, 17 May 2023 06:38:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684330698; x=1686922698;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ly7Sv2grDSLouanjUEzIq82Frd3YseMb/l+QstdnfJQ=;
-        b=FVanGQ7UhIPc14wGSoSU9P5nxPegIGBIJGLEQ6HW0kut5U8i5IZKs6x5pa7Ya0T1R1
-         dkB7tS3jVwc8Lnl1YLry5/x/o0JAMCkLbPIdIF8HDlmGUemXlagttlFNWWrdR9XHjyGV
-         tjrOmMcBnO7L1zCobRPnKLGKK4zd1Drx0NFiZY1DxMIbq0hy4ntFBzI8ZmJc81OE+bCY
-         pSIYXWwG0UghjbT37Y1i1UfFy3HhWHu2chb+MUoS9i+wb4DN+MSaUre3DDiLqIOfgH1h
-         HatzUo4nf9krpPHqBpu5JiUnrMv/pAJF2js+GaFKNUr5fiPpH+XK8iplfkT0kGEJe5ns
-         JUqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684330698; x=1686922698;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Ly7Sv2grDSLouanjUEzIq82Frd3YseMb/l+QstdnfJQ=;
-        b=HSOG6hT044vrNwfdPY0m2ukWhftokVaYKzwhLTPtGX7Y50uDRJBCOEabwRQT6obZ00
-         G5K/12yMu7QOHYDJO+ZZoDX4tkngSCYMIGO2fMXW5wzCCG2oiMHVU/oa7zwF/13mAXMk
-         nYm54R9UM5x/Yv/ywoJlAVLzAldLfw1G7W9cC8MhZExJ1R+5ynN/ighOYuYwtiUzmXV1
-         dfGa6GztuaVzY4PAwKfyeJqabSMA+RSUchBQMcPnpuDUMTRkC8ftIeTulodmVGyf2s45
-         f3gsrkqUZBAo8E+il/zbCjKgI4FM9R4k9Q6INJbhvRS2cjyQu1lZKGQ3tZoeDbwdDj6W
-         NnUQ==
-X-Gm-Message-State: AC+VfDwoiYySAGVhVv/6NEpto9T4fgyKwkaiP6MDO03887BiBk85+TEO
-	rdlCABv+PhXS2Vf5So3XOV0uSw==
-X-Google-Smtp-Source: ACHHUZ4Pt8XTxNqNgz54l1AgVbsFbbcC6PgjLhNgPTdYxZrVGR67m+sT8N9rrUZlW7usxz9+f7pesg==
-X-Received: by 2002:a2e:80c6:0:b0:2aa:43cd:57c9 with SMTP id r6-20020a2e80c6000000b002aa43cd57c9mr9471731ljg.36.1684330698554;
-        Wed, 17 May 2023 06:38:18 -0700 (PDT)
-Received: from ta1.c.googlers.com.com (61.215.228.35.bc.googleusercontent.com. [35.228.215.61])
-        by smtp.gmail.com with ESMTPSA id k2-20020a2e8882000000b002addd80bc8csm1784844lji.66.2023.05.17.06.38.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 May 2023 06:38:18 -0700 (PDT)
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-To: bjorn@mork.no,
-	joneslee@google.com,
-	oliver@neukum.org,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com
-Cc: linux-usb@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Tudor Ambarus <tudor.ambarus@linaro.org>,
-	stable@vger.kernel.org,
-	syzbot+9f575a1f15fc0c01ed69@syzkaller.appspotmail.com
-Subject: [PATCH] net: cdc_ncm: Deal with too low values of dwNtbOutMaxSize
-Date: Wed, 17 May 2023 13:38:08 +0000
-Message-ID: <20230517133808.1873695-2-tudor.ambarus@linaro.org>
-X-Mailer: git-send-email 2.40.1.606.ga4b1b128d6-goog
-In-Reply-To: <20230517133808.1873695-1-tudor.ambarus@linaro.org>
-References: <87wnklivun.fsf@miraculix.mork.no>
- <20230517133808.1873695-1-tudor.ambarus@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FF3B18B17;
+	Wed, 17 May 2023 13:41:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB592C433EF;
+	Wed, 17 May 2023 13:41:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684330914;
+	bh=TL5r4qhrusoNkBXego/GgughnB7vFvifa0eMTc124jA=;
+	h=From:To:Cc:Subject:Date:From;
+	b=mthQ3UD5cWdXWSyBCeCh+mZUQdHGsrVDMwELcjoxg0iUDJlq6w7uLOJpRWVbab9Rw
+	 dPE1/lrAbnOAVCRS5GGr2gtKJPz8YR5QIFnz9zljc4dKNQyAf3mM5D7ok0ooioxAWl
+	 yjuD718RN1GREVbqFrvMPf3ncdPAL0XtAdcKNG8sk8W/W4JLjpfu9+ziP3T5hZ4Lps
+	 NtEehgBu4vKlxznQjzVvQQ7nCO0xENXBaahmqASSjtCQtyueMA8yA6cXuJGUDSaT8J
+	 GctYDIFoa0mnHM+qKyEpQzNiqoSeC77n6/8tYg4ykPmgLpSKj79Byyl4Dt612f9hSD
+	 n5hiR6sXErIPg==
+From: Lorenzo Bianconi <lorenzo@kernel.org>
+To: bpf@vger.kernel.org
+Cc: lorenzo.bianconi@redhat.com,
+	ast@kernel.org,
+	daniel@iogearbox.net,
+	andrii@kernel.org,
+	martin.lau@linux.dev,
+	netdev@vger.kernel.org
+Subject: [PATCH bpf-next] selftests/bpf: add xdp_feature selftest for bond device
+Date: Wed, 17 May 2023 15:41:33 +0200
+Message-Id: <64cb8f20e6491f5b971f8d3129335093c359aad7.1684329998.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -84,130 +49,161 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-Currently in cdc_ncm_check_tx_max(), if dwNtbOutMaxSize is lower than
-the calculated "min" value, but greater than zero, the logic sets
-tx_max to dwNtbOutMaxSize. This is then used to allocate a new SKB in
-cdc_ncm_fill_tx_frame() where all the data is handled.
+Introduce selftests to check xdp_feature support for bond driver.
 
-For small values of dwNtbOutMaxSize the memory allocated during
-alloc_skb(dwNtbOutMaxSize, GFP_ATOMIC) will have the same size, due to
-how size is aligned at alloc time:
-	size = SKB_DATA_ALIGN(size);
-        size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-Thus we hit the same bug that we tried to squash with
-commit 2be6d4d16a084 ("net: cdc_ncm: Allow for dwNtbOutMaxSize to be unset or zero")
-
-Low values of dwNtbOutMaxSize do not cause an issue presently because at
-alloc_skb() time more memory (512b) is allocated than required for the
-SKB headers alone (320b), leaving some space (512b - 320b = 192b)
-for CDC data (172b).
-
-However, if more elements (for example 3 x u64 = [24b]) were added to
-one of the SKB header structs, say 'struct skb_shared_info',
-increasing its original size (320b [320b aligned]) to something larger
-(344b [384b aligned]), then suddenly the CDC data (172b) no longer
-fits in the spare SKB data area (512b - 384b = 128b).
-
-Consequently the SKB bounds checking semantics fails and panics:
-
-skbuff: skb_over_panic: text:ffffffff831f755b len:184 put:172 head:ffff88811f1c6c00 data:ffff88811f1c6c00 tail:0xb8 end:0x80 dev:<NULL>
-------------[ cut here ]------------
-kernel BUG at net/core/skbuff.c:113!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 57 Comm: kworker/0:2 Not tainted 5.15.106-syzkaller-00249-g19c0ed55a470 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 04/14/2023
-Workqueue: mld mld_ifc_work
-RIP: 0010:skb_panic net/core/skbuff.c:113 [inline]
-RIP: 0010:skb_over_panic+0x14c/0x150 net/core/skbuff.c:118
-[snip]
-Call Trace:
- <TASK>
- skb_put+0x151/0x210 net/core/skbuff.c:2047
- skb_put_zero include/linux/skbuff.h:2422 [inline]
- cdc_ncm_ndp16 drivers/net/usb/cdc_ncm.c:1131 [inline]
- cdc_ncm_fill_tx_frame+0x11ab/0x3da0 drivers/net/usb/cdc_ncm.c:1308
- cdc_ncm_tx_fixup+0xa3/0x100
-
-Deal with too low values of dwNtbOutMaxSize, clamp it in the range
-[USB_CDC_NCM_NTB_MIN_OUT_SIZE, CDC_NCM_NTB_MAX_SIZE_TX]. We ensure
-enough data space is allocated to handle CDC data by making sure
-dwNtbOutMaxSize is not smaller than USB_CDC_NCM_NTB_MIN_OUT_SIZE.
-
-Fixes: 289507d3364f ("net: cdc_ncm: use sysfs for rx/tx aggregation tuning")
-Cc: stable@vger.kernel.org
-Reported-by: syzbot+9f575a1f15fc0c01ed69@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=b982f1059506db48409d
-Link: https://lore.kernel.org/all/20211202143437.1411410-1-lee.jones@linaro.org/
-Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/usb/cdc_ncm.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ .../selftests/bpf/prog_tests/xdp_bonding.c    | 121 ++++++++++++++++++
+ 1 file changed, 121 insertions(+)
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index 6ce8f4f0c70e..db05622f1f70 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -181,9 +181,12 @@ static u32 cdc_ncm_check_tx_max(struct usbnet *dev, u32 new_tx)
- 	else
- 		min = ctx->max_datagram_size + ctx->max_ndp_size + sizeof(struct usb_cdc_ncm_nth32);
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+index d19f79048ff6..c3b45745cbcc 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+@@ -18,6 +18,7 @@
+ #include <linux/if_bonding.h>
+ #include <linux/limits.h>
+ #include <linux/udp.h>
++#include <uapi/linux/netdev.h>
  
--	max = min_t(u32, CDC_NCM_NTB_MAX_SIZE_TX, le32_to_cpu(ctx->ncm_parm.dwNtbOutMaxSize));
--	if (max == 0)
-+	if (le32_to_cpu(ctx->ncm_parm.dwNtbOutMaxSize) == 0)
- 		max = CDC_NCM_NTB_MAX_SIZE_TX; /* dwNtbOutMaxSize not set */
-+	else
-+		max = clamp_t(u32, le32_to_cpu(ctx->ncm_parm.dwNtbOutMaxSize),
-+			      USB_CDC_NCM_NTB_MIN_OUT_SIZE,
-+			      CDC_NCM_NTB_MAX_SIZE_TX);
+ #include "xdp_dummy.skel.h"
+ #include "xdp_redirect_multi_kern.skel.h"
+@@ -492,6 +493,123 @@ static void test_xdp_bonding_nested(struct skeletons *skeletons)
+ 	system("ip link del bond_nest2");
+ }
  
- 	/* some devices set dwNtbOutMaxSize too low for the above default */
- 	min = min(min, max);
-@@ -1244,6 +1247,9 @@ cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign)
- 			 * further.
- 			 */
- 			if (skb_out == NULL) {
-+				/* If even the smallest allocation fails, abort. */
-+				if (ctx->tx_curr_size == USB_CDC_NCM_NTB_MIN_OUT_SIZE)
-+					goto alloc_failed;
- 				ctx->tx_low_mem_max_cnt = min(ctx->tx_low_mem_max_cnt + 1,
- 							      (unsigned)CDC_NCM_LOW_MEM_MAX_CNT);
- 				ctx->tx_low_mem_val = ctx->tx_low_mem_max_cnt;
-@@ -1262,13 +1268,8 @@ cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign)
- 			skb_out = alloc_skb(ctx->tx_curr_size, GFP_ATOMIC);
++static void test_xdp_bonding_features(struct skeletons *skeletons)
++{
++	LIBBPF_OPTS(bpf_xdp_query_opts, query_opts);
++	int bond_idx, veth1_idx, err;
++	struct bpf_link *link = NULL;
++
++	if (!ASSERT_OK(system("ip link add bond type bond"), "add bond"))
++		goto out;
++
++	bond_idx = if_nametoindex("bond");
++	if (!ASSERT_GE(bond_idx, 0, "if_nametoindex bond"))
++		goto out;
++
++	/* query default xdp-feature for bond device */
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	if (!ASSERT_EQ(query_opts.feature_flags, NETDEV_XDP_ACT_MASK,
++		       "bond query_opts.feature_flags"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link add veth0 type veth peer name veth1"),
++		       "add veth{0,1} pair"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link add veth2 type veth peer name veth3"),
++		       "add veth{2,3} pair"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link set veth0 master bond"),
++		       "add veth0 to master bond"))
++		goto out;
++
++	/* xdp-feature for bond device should be obtained from the single slave
++	 * device (veth0)
++	 */
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	if (!ASSERT_EQ(query_opts.feature_flags,
++		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
++		       NETDEV_XDP_ACT_RX_SG,
++		       "bond query_opts.feature_flags"))
++		goto out;
++
++	veth1_idx = if_nametoindex("veth1");
++	if (!ASSERT_GE(veth1_idx, 0, "if_nametoindex veth1"))
++		goto out;
++
++	link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog,
++				       veth1_idx);
++	if (!ASSERT_OK_PTR(link, "attach program to veth1"))
++		goto out;
++
++	/* xdp-feature for veth0 are changed */
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	if (!ASSERT_EQ(query_opts.feature_flags,
++		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
++		       NETDEV_XDP_ACT_RX_SG | NETDEV_XDP_ACT_NDO_XMIT |
++		       NETDEV_XDP_ACT_NDO_XMIT_SG,
++		       "bond query_opts.feature_flags"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link set veth2 master bond"),
++		       "add veth2 to master bond"))
++		goto out;
++
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	/* xdp-feature for bond device should be set to the most restrict
++	 * value obtained from attached slave devices (veth0 and veth2)
++	 */
++	if (!ASSERT_EQ(query_opts.feature_flags,
++		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
++		       NETDEV_XDP_ACT_RX_SG,
++		       "bond query_opts.feature_flags"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link set veth2 nomaster"),
++		       "del veth2 to master bond"))
++		goto out;
++
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	if (!ASSERT_EQ(query_opts.feature_flags,
++		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
++		       NETDEV_XDP_ACT_RX_SG | NETDEV_XDP_ACT_NDO_XMIT |
++		       NETDEV_XDP_ACT_NDO_XMIT_SG,
++		       "bond query_opts.feature_flags"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link set veth0 nomaster"),
++		       "del veth0 to master bond"))
++		goto out;
++
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	ASSERT_EQ(query_opts.feature_flags, NETDEV_XDP_ACT_MASK,
++		  "bond query_opts.feature_flags");
++out:
++	bpf_link__destroy(link);
++	system("ip link del veth0");
++	system("ip link del veth2");
++	system("ip link del bond");
++}
++
+ static int libbpf_debug_print(enum libbpf_print_level level,
+ 			      const char *format, va_list args)
+ {
+@@ -546,6 +664,9 @@ void serial_test_xdp_bonding(void)
+ 	if (test__start_subtest("xdp_bonding_nested"))
+ 		test_xdp_bonding_nested(&skeletons);
  
- 			/* No allocation possible so we will abort */
--			if (skb_out == NULL) {
--				if (skb != NULL) {
--					dev_kfree_skb_any(skb);
--					dev->net->stats.tx_dropped++;
--				}
--				goto exit_no_skb;
--			}
-+			if (!skb_out)
-+				goto alloc_failed;
- 			ctx->tx_low_mem_val--;
- 		}
- 		if (ctx->is_ndp16) {
-@@ -1461,6 +1462,11 @@ cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign)
++	if (test__start_subtest("xdp_bonding_features"))
++		test_xdp_bonding_features(&skeletons);
++
+ 	for (i = 0; i < ARRAY_SIZE(bond_test_cases); i++) {
+ 		struct bond_test_case *test_case = &bond_test_cases[i];
  
- 	return skb_out;
- 
-+alloc_failed:
-+	if (skb) {
-+		dev_kfree_skb_any(skb);
-+		dev->net->stats.tx_dropped++;
-+	}
- exit_no_skb:
- 	/* Start timer, if there is a remaining non-empty skb */
- 	if (ctx->tx_curr_skb != NULL && n > 0)
 -- 
-2.40.1.606.ga4b1b128d6-goog
+2.40.1
 
 
