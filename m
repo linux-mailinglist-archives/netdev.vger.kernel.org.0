@@ -1,209 +1,110 @@
-Return-Path: <netdev+bounces-3358-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3359-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 254D4706A15
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 15:42:01 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B7B1E706A3B
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 15:54:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C4B101C20F42
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:41:57 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 58A701C20F59
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:54:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F01D323D59;
-	Wed, 17 May 2023 13:41:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F4192C74D;
+	Wed, 17 May 2023 13:54:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FF3B18B17;
-	Wed, 17 May 2023 13:41:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB592C433EF;
-	Wed, 17 May 2023 13:41:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684330914;
-	bh=TL5r4qhrusoNkBXego/GgughnB7vFvifa0eMTc124jA=;
-	h=From:To:Cc:Subject:Date:From;
-	b=mthQ3UD5cWdXWSyBCeCh+mZUQdHGsrVDMwELcjoxg0iUDJlq6w7uLOJpRWVbab9Rw
-	 dPE1/lrAbnOAVCRS5GGr2gtKJPz8YR5QIFnz9zljc4dKNQyAf3mM5D7ok0ooioxAWl
-	 yjuD718RN1GREVbqFrvMPf3ncdPAL0XtAdcKNG8sk8W/W4JLjpfu9+ziP3T5hZ4Lps
-	 NtEehgBu4vKlxznQjzVvQQ7nCO0xENXBaahmqASSjtCQtyueMA8yA6cXuJGUDSaT8J
-	 GctYDIFoa0mnHM+qKyEpQzNiqoSeC77n6/8tYg4ykPmgLpSKj79Byyl4Dt612f9hSD
-	 n5hiR6sXErIPg==
-From: Lorenzo Bianconi <lorenzo@kernel.org>
-To: bpf@vger.kernel.org
-Cc: lorenzo.bianconi@redhat.com,
-	ast@kernel.org,
-	daniel@iogearbox.net,
-	andrii@kernel.org,
-	martin.lau@linux.dev,
-	netdev@vger.kernel.org
-Subject: [PATCH bpf-next] selftests/bpf: add xdp_feature selftest for bond device
-Date: Wed, 17 May 2023 15:41:33 +0200
-Message-Id: <64cb8f20e6491f5b971f8d3129335093c359aad7.1684329998.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.40.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03AC818B16;
+	Wed, 17 May 2023 13:54:32 +0000 (UTC)
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD6B98;
+	Wed, 17 May 2023 06:54:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=3N7Ako0hYBSM2yG/5rBv24VQVMmPl5YZsnA8/YlN3Dc=; b=ZuWRNi8IpKmWOhHrRH6vsvVK6W
+	E2vb9VI8kggsNyaJMZv4O0gq1mXRIc+Wxrp5GwcpK8tfwQ20GquqB6I7F8mNu0BZzAppJPXB/KxxG
+	4Z4W0zHlRvgEdNRd+I4KR3CBCnvXurxfeClBhoNcYfUWewdiABRPxCypynzucTp/jDPYHFPwZM4+s
+	2UYRhdHf38pk/qw/einZhOKjT+qZXoofT1zbZcbGYteDayd9YZGkrH5iat3+01GNMDJ7HrS8d3PT3
+	I/g76hwXg/L/z4CNbn4a5HCgThGfpaHSxt57nyz8YxJ2VemQV+wef8wrRSWFouls9zRO41/j1gj9w
+	0MRWi69g==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1pzHbf-000DCV-VA; Wed, 17 May 2023 15:54:19 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+	by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1pzHbf-000Raa-Cj; Wed, 17 May 2023 15:54:19 +0200
+Subject: Re: [PATCH bpf v8 00/13] bpf sockmap fixes
+To: John Fastabend <john.fastabend@gmail.com>, jakub@cloudflare.com
+Cc: bpf@vger.kernel.org, netdev@vger.kernel.org, edumazet@google.com,
+ ast@kernel.org, andrii@kernel.org, will@isovalent.com
+References: <20230517052244.294755-1-john.fastabend@gmail.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <fba80558-3786-0fc4-b972-a6c2ac49ebce@iogearbox.net>
+Date: Wed, 17 May 2023 15:54:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230517052244.294755-1-john.fastabend@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.8/26910/Wed May 17 09:22:55 2023)
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Introduce selftests to check xdp_feature support for bond driver.
+On 5/17/23 7:22 AM, John Fastabend wrote:
+> This v8 iteration adds another fix suggested by Jakub to always
+> check the enable bit is set before rescheduling to avoid trying
+> to reschedule backlog queue handler while trying to tear down
+> a socket. Also cleaned up one of the tests as suggested by Jakub
+> to avoid creating unused pair of sockets.
+[...]
+> v8: Only schedule backlog when still enabled and cleanup test
+>      to not create unused sockets.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- .../selftests/bpf/prog_tests/xdp_bonding.c    | 121 ++++++++++++++++++
- 1 file changed, 121 insertions(+)
+Looks like this needs a v9 :( The series does not apply to bpf tree,
+see here:
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
-index d19f79048ff6..c3b45745cbcc 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
-@@ -18,6 +18,7 @@
- #include <linux/if_bonding.h>
- #include <linux/limits.h>
- #include <linux/udp.h>
-+#include <uapi/linux/netdev.h>
- 
- #include "xdp_dummy.skel.h"
- #include "xdp_redirect_multi_kern.skel.h"
-@@ -492,6 +493,123 @@ static void test_xdp_bonding_nested(struct skeletons *skeletons)
- 	system("ip link del bond_nest2");
- }
- 
-+static void test_xdp_bonding_features(struct skeletons *skeletons)
-+{
-+	LIBBPF_OPTS(bpf_xdp_query_opts, query_opts);
-+	int bond_idx, veth1_idx, err;
-+	struct bpf_link *link = NULL;
-+
-+	if (!ASSERT_OK(system("ip link add bond type bond"), "add bond"))
-+		goto out;
-+
-+	bond_idx = if_nametoindex("bond");
-+	if (!ASSERT_GE(bond_idx, 0, "if_nametoindex bond"))
-+		goto out;
-+
-+	/* query default xdp-feature for bond device */
-+	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
-+	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
-+		goto out;
-+
-+	if (!ASSERT_EQ(query_opts.feature_flags, NETDEV_XDP_ACT_MASK,
-+		       "bond query_opts.feature_flags"))
-+		goto out;
-+
-+	if (!ASSERT_OK(system("ip link add veth0 type veth peer name veth1"),
-+		       "add veth{0,1} pair"))
-+		goto out;
-+
-+	if (!ASSERT_OK(system("ip link add veth2 type veth peer name veth3"),
-+		       "add veth{2,3} pair"))
-+		goto out;
-+
-+	if (!ASSERT_OK(system("ip link set veth0 master bond"),
-+		       "add veth0 to master bond"))
-+		goto out;
-+
-+	/* xdp-feature for bond device should be obtained from the single slave
-+	 * device (veth0)
-+	 */
-+	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
-+	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
-+		goto out;
-+
-+	if (!ASSERT_EQ(query_opts.feature_flags,
-+		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-+		       NETDEV_XDP_ACT_RX_SG,
-+		       "bond query_opts.feature_flags"))
-+		goto out;
-+
-+	veth1_idx = if_nametoindex("veth1");
-+	if (!ASSERT_GE(veth1_idx, 0, "if_nametoindex veth1"))
-+		goto out;
-+
-+	link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog,
-+				       veth1_idx);
-+	if (!ASSERT_OK_PTR(link, "attach program to veth1"))
-+		goto out;
-+
-+	/* xdp-feature for veth0 are changed */
-+	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
-+	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
-+		goto out;
-+
-+	if (!ASSERT_EQ(query_opts.feature_flags,
-+		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-+		       NETDEV_XDP_ACT_RX_SG | NETDEV_XDP_ACT_NDO_XMIT |
-+		       NETDEV_XDP_ACT_NDO_XMIT_SG,
-+		       "bond query_opts.feature_flags"))
-+		goto out;
-+
-+	if (!ASSERT_OK(system("ip link set veth2 master bond"),
-+		       "add veth2 to master bond"))
-+		goto out;
-+
-+	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
-+	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
-+		goto out;
-+
-+	/* xdp-feature for bond device should be set to the most restrict
-+	 * value obtained from attached slave devices (veth0 and veth2)
-+	 */
-+	if (!ASSERT_EQ(query_opts.feature_flags,
-+		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-+		       NETDEV_XDP_ACT_RX_SG,
-+		       "bond query_opts.feature_flags"))
-+		goto out;
-+
-+	if (!ASSERT_OK(system("ip link set veth2 nomaster"),
-+		       "del veth2 to master bond"))
-+		goto out;
-+
-+	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
-+	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
-+		goto out;
-+
-+	if (!ASSERT_EQ(query_opts.feature_flags,
-+		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-+		       NETDEV_XDP_ACT_RX_SG | NETDEV_XDP_ACT_NDO_XMIT |
-+		       NETDEV_XDP_ACT_NDO_XMIT_SG,
-+		       "bond query_opts.feature_flags"))
-+		goto out;
-+
-+	if (!ASSERT_OK(system("ip link set veth0 nomaster"),
-+		       "del veth0 to master bond"))
-+		goto out;
-+
-+	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
-+	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
-+		goto out;
-+
-+	ASSERT_EQ(query_opts.feature_flags, NETDEV_XDP_ACT_MASK,
-+		  "bond query_opts.feature_flags");
-+out:
-+	bpf_link__destroy(link);
-+	system("ip link del veth0");
-+	system("ip link del veth2");
-+	system("ip link del bond");
-+}
-+
- static int libbpf_debug_print(enum libbpf_print_level level,
- 			      const char *format, va_list args)
- {
-@@ -546,6 +664,9 @@ void serial_test_xdp_bonding(void)
- 	if (test__start_subtest("xdp_bonding_nested"))
- 		test_xdp_bonding_nested(&skeletons);
- 
-+	if (test__start_subtest("xdp_bonding_features"))
-+		test_xdp_bonding_features(&skeletons);
-+
- 	for (i = 0; i < ARRAY_SIZE(bond_test_cases); i++) {
- 		struct bond_test_case *test_case = &bond_test_cases[i];
- 
--- 
-2.40.1
-
+[...]
+Cmd('git') failed due to: exit code(128)
+   cmdline: git am --3way
+   stdout: 'Applying: bpf: sockmap, pass skb ownership through read_skb
+Applying: bpf: sockmap, convert schedule_work into delayed_work
+Applying: bpf: sockmap, reschedule is now done through backlog
+Applying: bpf: sockmap, improved check for empty queue
+Applying: bpf: sockmap, handle fin correctly
+Applying: bpf: sockmap, TCP data stall on recv before accept
+Applying: bpf: sockmap, wake up polling after data copy
+Applying: bpf: sockmap, incorrectly handling copied_seq
+Applying: bpf: sockmap, pull socket helpers out of listen test for general use
+Using index info to reconstruct a base tree...
+M	tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+Falling back to patching base and 3-way merge...
+Auto-merging tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+CONFLICT (content): Merge conflict in tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+Patch failed at 0009 bpf: sockmap, pull socket helpers out of listen test for general use
+When you have resolved this problem, run "git am --continue".
+If you prefer to skip this patch, run "git am --skip" instead.
+To restore the original branch and stop patching, run "git am --abort".'
+   stderr: 'error: Failed to merge in the changes.
+hint: Use 'git am --show-current-patch=diff' to see the failed patch'
 
