@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-3288-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3289-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A309A70660F
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:05:29 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 90139706619
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:05:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5F7A12811E1
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 11:05:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 56CE81C20F33
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 11:05:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BAFF41C76D;
-	Wed, 17 May 2023 11:04:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0AB111E536;
+	Wed, 17 May 2023 11:04:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEBC31DDD2
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 11:04:09 +0000 (UTC)
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4E86186
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004291DDD2
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 11:04:10 +0000 (UTC)
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964D06E91
 	for <netdev@vger.kernel.org>; Wed, 17 May 2023 04:03:34 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id 6a1803df08f44-6216a09ec38so2595206d6.3
+Received: by mail-qv1-xf2d.google.com with SMTP id 6a1803df08f44-6238b15d298so1261226d6.0
         for <netdev@vger.kernel.org>; Wed, 17 May 2023 04:03:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1684321378; x=1686913378;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1684321385; x=1686913385;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=j8rj5+UCTfweWcOpgfYjBAg1E/WAhjyZhZiEuFMhPCM=;
-        b=hvK03K/ZII253uMj4S35YdyFPCJYmmUCMORDySI01hssL1ZMD5QNGCDWBYsFcmI2bH
-         NzWBS/UFn4tIyy+2E2ZeE8gtxYTgUDWO9/6vvoZ7TYxGpE9rCgOv6GuPyJfo5eL/5RIW
-         qBO+c7nE8UAGLIvhmPiAIGLPuNcSA1tAia5YorCsErEqlEjKVUbvdG9qo7QQLv7tHKAg
-         Vp3tS79OCpw2XBVg1WF8eZi8m4XEh2S6ui9Sh+kqt8Gzah2AeKlDIC4CLaGCDRhju0FP
-         C3/L0UUoDB5/8JCo/1LAZOw7uG6NMdYJ1zJ7KFSKDU/wfvuMyaS0O/qJbyA7Y/MRbq5q
-         hOaA==
+        bh=gSwJ90KGk9t7LlTjCVS+Q76hji8RHtbhCmgk4rEJoeU=;
+        b=s9xH/LIb2eH59Ih+TDJkNanq+0DBoUapmqDs+HV/ZBTGKYYVe+PNj9uzy7E9cd3guh
+         DbL3bGr9pcln4y1mAw5k3lAyQ0h9BVuYgRpJif3LbB4G1W7CgwvyP31ZgaPwUtbn54Kv
+         NkvUCuIGibi9eVmFGyCbP+XhOiHTBCuiXHLiADrmNI8IwS9iMIl1ZXMrbtRqbufOot8n
+         P6yFJswC9vT1XSS1Vcm8fN/qtghmLgZnGMPBQHxoLuyLIqmDl4omVVSrtP10sB+H6Dnl
+         A4TSoiwYRTIbBsMnebMinL27a5R73NcBf86u5pdNrwCPAkcNhc7f0LLMcevYSAAAmTI7
+         eMRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684321378; x=1686913378;
+        d=1e100.net; s=20221208; t=1684321385; x=1686913385;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=j8rj5+UCTfweWcOpgfYjBAg1E/WAhjyZhZiEuFMhPCM=;
-        b=k8x9vJznzjjibKJHgDBhcTX4fXCF336sGh+1N1vUbNLxko9cNqzZm3d/tAtnPwFZG5
-         y19GhmvEatrWorBBlUCNBVEY0P55ouJjsTnXUhf2Qa6U8heP0j0eB/AlkR3PAsiEyJhc
-         A2TEDKAgepsyiix3Br4OEEFGlZPqmAs3ReA9DuGQ3FbOTrIiEHx0jWFeN1gpihlV5A8u
-         uxt6wjip5l2nd9L0l3pDT9J7xl5pcF7/7AnoCW1B1XpsEOwSAOPwehY/TDcmcsa6BnwE
-         83olF9Gfv2kmN20YpOGisGw2xPKJG2iK0M+FXUmQNU88BxThhyv8aTG9HQaI2wJlx2kc
-         QSBg==
-X-Gm-Message-State: AC+VfDwAnpkkUDH204bfFiAoD17fm6PUHTCSaBwTp9zUzlMmcWba9UsX
-	giwmv7qngimWubtuWV3J4W9xWYt4bklBuywV/Fo=
-X-Google-Smtp-Source: ACHHUZ5dn1QoZ+RkCBGjnp3LSVDxjgrZ0k9FIxE809OPbIGdHmiQUvXuR3bhWrQ8aWrj6BuT6CwqXg==
-X-Received: by 2002:ad4:5ae9:0:b0:5cd:1adc:30e2 with SMTP id c9-20020ad45ae9000000b005cd1adc30e2mr65442308qvh.11.1684321378100;
-        Wed, 17 May 2023 04:02:58 -0700 (PDT)
+        bh=gSwJ90KGk9t7LlTjCVS+Q76hji8RHtbhCmgk4rEJoeU=;
+        b=bzBXN/BMA21L6NC3VNwNKtOzYeQK9dYkjXy2wm0+7+VKVjyiTK3XfYCT6umCInteSm
+         TkIOO6Ud6YHeOvIKiWjmBYSnXs5/iTa+qLykNZz6maetbs9FG0JEUOhTr4KLun3iD1Y4
+         akf2L4MeIwLWLdAQacan7Fzd9rMEtOJpc8X8+cFKHEBY8sM2lq5R26wDhrVtupia9Lqf
+         AEMETrk3ywc7xFkqbmEB6flV2SmHKma7mLXNihx6iiOk80vCZVX65fFziA0GK2+i3eU9
+         JtxyEhncgbmQ75Q8d5WWSg6d1kOLCdwXTxlCR2C+yjYmfs5qTolWTthWzioFH/uaO3kA
+         NfLg==
+X-Gm-Message-State: AC+VfDz6D0qemXkVBLPc/FX4f7AWwV7bJzn3eJ7s7t8Y1l/2CYFpSuxa
+	BFzfX7YrUSKWZ3o3+fbTIKVYDuF2Lb99adpPbzM=
+X-Google-Smtp-Source: ACHHUZ4vMrtw1oSM54OEhycYaO2j7vDoNGV7WGZfwmbus7ag8J6KsUkOrJNfbmeNc7Xm9I415e0KVg==
+X-Received: by 2002:ad4:5964:0:b0:622:7b7f:ed46 with SMTP id eq4-20020ad45964000000b006227b7fed46mr28143165qvb.7.1684321385010;
+        Wed, 17 May 2023 04:03:05 -0700 (PDT)
 Received: from majuu.waya (cpe688f2e2c8c63-cm688f2e2c8c60.cpe.net.cable.rogers.com. [174.112.105.47])
-        by smtp.gmail.com with ESMTPSA id t9-20020a0cef09000000b0061b2a2f949bsm6212183qvr.61.2023.05.17.04.02.56
+        by smtp.gmail.com with ESMTPSA id w20-20020a0cdf94000000b006237c66ae3dsm933447qvl.62.2023.05.17.04.03.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 May 2023 04:02:57 -0700 (PDT)
+        Wed, 17 May 2023 04:03:04 -0700 (PDT)
 From: Jamal Hadi Salim <jhs@mojatatu.com>
 To: netdev@vger.kernel.org
 Cc: deb.chatterjee@intel.com,
@@ -77,9 +77,9 @@ Cc: deb.chatterjee@intel.com,
 	simon.horman@corigine.com,
 	khalidm@nvidia.com,
 	toke@redhat.com
-Subject: [PATCH RFC v2 net-next 04/28] net/sched: act_api: add init_ops to struct tc_action_op
-Date: Wed, 17 May 2023 07:02:08 -0400
-Message-Id: <20230517110232.29349-4-jhs@mojatatu.com>
+Subject: [PATCH RFC v2 net-next 05/28] net/sched: act_api: introduce tc_lookup_action_byid()
+Date: Wed, 17 May 2023 07:02:09 -0400
+Message-Id: <20230517110232.29349-5-jhs@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230517110232.29349-1-jhs@mojatatu.com>
 References: <20230517110232.29349-1-jhs@mojatatu.com>
@@ -96,17 +96,8 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The initialisation of P4TC action instances require access to a struct p4tc_act
-(which appears in later patches) to help us to retrieve information like the
-dynamic action parameters etc. In order to retrieve struct p4tc_act we need the
-pipeline name or id and the action name or id. Also recall that P4TC
-action IDs are dynamic and  are net namespace specific. The init callback from
-tc_action_ops parameters had no way of supplying us that information. To solve
-this issue, we decided to create a new tc_action_ops callback (init_ops), that
-provides us with the tc_action_ops struct which then provides us with the
-pipeline and action name. In addition we add a new refcount to struct
-tc_action_ops called dyn_ref, which accounts for how many action instances we
-have of a specific dynamic action.
+Introduce a lookup helper to retrieve the tc_action_ops
+instance given its action id.
 
 Co-developed-by: Victor Nogueira <victor@mojatatu.com>
 Signed-off-by: Victor Nogueira <victor@mojatatu.com>
@@ -114,63 +105,68 @@ Co-developed-by: Pedro Tammela <pctammela@mojatatu.com>
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 ---
- include/net/act_api.h |  6 ++++++
- net/sched/act_api.c   | 11 ++++++++---
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ include/net/act_api.h |  1 +
+ net/sched/act_api.c   | 35 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 36 insertions(+)
 
 diff --git a/include/net/act_api.h b/include/net/act_api.h
-index a414c0f94ff1..363f7f8b5586 100644
+index 363f7f8b5586..34b9a9ff05ee 100644
 --- a/include/net/act_api.h
 +++ b/include/net/act_api.h
-@@ -108,6 +108,7 @@ struct tc_action_ops {
- 	char    kind[ACTNAMSIZ];
- 	enum tca_id  id; /* identifier should match kind */
- 	unsigned int	net_id;
-+	refcount_t dyn_ref;
- 	size_t	size;
- 	struct module		*owner;
- 	int     (*act)(struct sk_buff *, const struct tc_action *,
-@@ -119,6 +120,11 @@ struct tc_action_ops {
- 			struct nlattr *est, struct tc_action **act,
- 			struct tcf_proto *tp,
- 			u32 flags, struct netlink_ext_ack *extack);
-+	/* This should be merged with the original init action */
-+	int     (*init_ops)(struct net *net, struct nlattr *nla,
-+			    struct nlattr *est, struct tc_action **act,
-+			   struct tcf_proto *tp, struct tc_action_ops *ops,
-+			   u32 flags, struct netlink_ext_ack *extack);
- 	int     (*walk)(struct net *, struct sk_buff *,
- 			struct netlink_callback *, int,
- 			const struct tc_action_ops *,
+@@ -205,6 +205,7 @@ int tcf_idr_release(struct tc_action *a, bool bind);
+ 
+ int tcf_register_action(struct tc_action_ops *a, struct pernet_operations *ops);
+ int tcf_register_dyn_action(struct net *net, struct tc_action_ops *act);
++struct tc_action_ops *tc_lookup_action_byid(struct net *net, u32 act_id);
+ int tcf_unregister_action(struct tc_action_ops *a,
+ 			  struct pernet_operations *ops);
+ int tcf_unregister_dyn_action(struct net *net, struct tc_action_ops *act);
 diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index bc4e178873e4..0ba5a4b5db6f 100644
+index 0ba5a4b5db6f..101c6debf356 100644
 --- a/net/sched/act_api.c
 +++ b/net/sched/act_api.c
-@@ -1006,7 +1006,7 @@ int tcf_register_action(struct tc_action_ops *act,
- 	struct tc_action_ops *a;
- 	int ret;
+@@ -1084,6 +1084,41 @@ int tcf_unregister_dyn_action(struct net *net, struct tc_action_ops *act)
+ }
+ EXPORT_SYMBOL(tcf_unregister_dyn_action);
  
--	if (!act->act || !act->dump || !act->init)
-+	if (!act->act || !act->dump || (!act->init && !act->init_ops))
- 		return -EINVAL;
- 
- 	/* We have to register pernet ops before making the action ops visible,
-@@ -1494,8 +1494,13 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
- 			}
- 		}
- 
--		err = a_o->init(net, tb[TCA_ACT_OPTIONS], est, &a, tp,
--				userflags.value | flags, extack);
-+		if (a_o->init)
-+			err = a_o->init(net, tb[TCA_ACT_OPTIONS], est, &a, tp,
-+					userflags.value | flags, extack);
-+		else if (a_o->init_ops)
-+			err = a_o->init_ops(net, tb[TCA_ACT_OPTIONS], est, &a,
-+					    tp, a_o, userflags.value | flags,
-+					    extack);
- 	} else {
- 		err = a_o->init(net, nla, est, &a, tp, userflags.value | flags,
- 				extack);
++/* lookup by ID */
++struct tc_action_ops *tc_lookup_action_byid(struct net *net, u32 act_id)
++{
++	struct tcf_dyn_act_net *base_net;
++	struct tc_action_ops *a, *res = NULL;
++
++	if (!act_id)
++		return NULL;
++
++	read_lock(&act_mod_lock);
++
++	list_for_each_entry(a, &act_base, head) {
++		if (a->id == act_id) {
++			if (try_module_get(a->owner)) {
++				read_unlock(&act_mod_lock);
++				return a;
++			}
++			break;
++		}
++	}
++	read_unlock(&act_mod_lock);
++
++	read_lock(&base_net->act_mod_lock);
++
++	base_net = net_generic(net, dyn_act_net_id);
++	a = idr_find(&base_net->act_base, act_id);
++	if (a && try_module_get(a->owner))
++		res = a;
++
++	read_unlock(&base_net->act_mod_lock);
++
++	return res;
++}
++EXPORT_SYMBOL(tc_lookup_action_byid);
++
+ /* lookup by name */
+ static struct tc_action_ops *tc_lookup_action_n(struct net *net, char *kind)
+ {
 -- 
 2.25.1
 
