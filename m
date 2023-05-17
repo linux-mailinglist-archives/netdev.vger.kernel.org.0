@@ -1,80 +1,111 @@
-Return-Path: <netdev+bounces-3443-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3444-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 780D4707201
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 21:24:58 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C4C64707208
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 21:26:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 345BB28166E
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 19:24:57 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8AEB71C20F47
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 19:26:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C3D2B449C3;
-	Wed, 17 May 2023 19:23:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C461D34CD9;
+	Wed, 17 May 2023 19:26:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AED40449BE
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 19:23:15 +0000 (UTC)
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2112.outbound.protection.outlook.com [40.107.8.112])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AA9170E;
-	Wed, 17 May 2023 12:23:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FCfc7hkdBtNRTqXfPSXvWVO2j82omUHa861o+NIR6z4NaJcwx0xMYQDOH+VqxTPBd4NAgG0uPgIrR9U7FXT51A908Gk6glhqrmtzBRJT5t4X80DKTFn8VS7hmySXz7KLJoABG+NJmhw9kcEYM1CobEVcHKvgbKTYXT64fExVjVhnxr6IYz3He6So0qtWdas/YXlTmjf5YEixhwbqaDz3B4a51NfoVO4cEWsXx9Jbm0+rLQibeqs1g+7Npm02KZuvPkR4u6wPa3wcydf9WAMFtqy/V5rhXg85KLcteM6BIhNHQrBkAJl8PNEcGpUlqCJ64fCH5C+I+H9UM+hZmGuN/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1sKspe6hRay20hMky2zp3NpwEURiCoflHTDXOqADBNw=;
- b=llUWfSItqvhIM+bGveqU9anZ5VlrIHdF0X0ouvkJprOYdyUOxaJvKz1ioINXUMb1Q/m4Uxv3mLvpUAxv1H8YNyWqP5a0zBSCg1hTja+RY67PoYMtaWfCnQP4bBa/ZXRLPkxriWOjb0nLNbeKMD9f+ovhmYetN6ke61QDLMVqX/Uj0aqE3oBcx9bR2XDXwAokxvtbIFI3oPcJgegygoL+dizrVzTbduaJnwq4lWcLEgIGVHjauzpMhzQsAHirzZTjkcazoLmYX7uczrNALhSBpq+Afy6xiZ2+/q5gBr8W5Q1fl+lgNVMHku7U2+zqHlB1WFxjcqiZYYrxOWTiW4F2aw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
- is 80.151.164.27) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu; dmarc=none
- action=none header.from=esd.eu; dkim=none (message not signed); arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEA9223D59;
+	Wed, 17 May 2023 19:26:10 +0000 (UTC)
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79708A5D3;
+	Wed, 17 May 2023 12:25:52 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3f450815d0bso11907835e9.0;
+        Wed, 17 May 2023 12:25:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1sKspe6hRay20hMky2zp3NpwEURiCoflHTDXOqADBNw=;
- b=WD98Kg1rUrLp7reEPpz7CVXCdtjIbzQjGKypPWqCZwxpG7UQg0ROcdG16vqQl6HG3EqkN0jOLBRHCktEtmfrvEDF6J41+MBdzVVHGo9qzZeS8qLR9QRamrjLz/8zjbiry06fDnXZXIPyObywjGAxIg2LbH0HOiCNhpJUoP5tNPg=
-Received: from DBBPR09CA0028.eurprd09.prod.outlook.com (2603:10a6:10:d4::16)
- by PAVPR03MB9847.eurprd03.prod.outlook.com (2603:10a6:102:31b::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Wed, 17 May
- 2023 19:22:57 +0000
-Received: from DB8EUR06FT044.eop-eur06.prod.protection.outlook.com
- (2603:10a6:10:d4:cafe::9f) by DBBPR09CA0028.outlook.office365.com
- (2603:10a6:10:d4::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.33 via Frontend
- Transport; Wed, 17 May 2023 19:22:57 +0000
-X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
- 80.151.164.27) smtp.mailfrom=esd.eu; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=esd.eu;
-Received-SPF: SoftFail (protection.outlook.com: domain of transitioning esd.eu
- discourages use of 80.151.164.27 as permitted sender)
-Received: from esd-s7.esd (80.151.164.27) by
- DB8EUR06FT044.mail.protection.outlook.com (10.233.253.24) with Microsoft SMTP
- Server id 15.20.6411.17 via Frontend Transport; Wed, 17 May 2023 19:22:56
- +0000
-Received: from esd-s20.esd.local (jenkins.esd.local [10.0.0.190])
-	by esd-s7.esd (Postfix) with ESMTPS id E59C87C16CE;
-	Wed, 17 May 2023 21:22:55 +0200 (CEST)
-Received: by esd-s20.esd.local (Postfix, from userid 2046)
-	id E2B0E2E1801; Wed, 17 May 2023 21:22:55 +0200 (CEST)
-From: Frank Jungclaus <frank.jungclaus@esd.eu>
-To: linux-can@vger.kernel.org,
-	Marc Kleine-Budde <mkl@pengutronix.de>,
-	Wolfgang Grandegger <wg@grandegger.com>,
-	Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc: =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-	netdev@vger.kernel.org,
+        d=gmail.com; s=20221208; t=1684351549; x=1686943549;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aITIhEgQhOCGEYk6Vp/fZNHOQL457RQtUqwWkpxEXBw=;
+        b=MvsWmjCaNu8eL0xRTmAMzlqLtTWX+wxZX9RFpUjZz79foqQP8CndrImJ0ZFlQA1NkX
+         4urTvyrIEdZy7jwf/D0gaY7BYxFbfWneo4kedH6X7p36EpIokbTjMYg3ajRy6cq2LP0p
+         ZO9FlTqiBXoUM3fIlpuf98gqlRu0Kxxbwjf/Ax2huSGExG1MCuL9a0vKGAmFAzZsTyHy
+         I27LMsy2m6gZPbHWRo9TCYVlkybLeg6dW0Ri3egq0K7kjAsUfUcKLURvCg4RvlKRxSnj
+         r31dJ/LjWH0fYt00dqn9R5+iZVXsZaYmSo57DkWt2/0EzWbSDT2ApAeEB6bW0aP88G2Z
+         HZmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684351549; x=1686943549;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=aITIhEgQhOCGEYk6Vp/fZNHOQL457RQtUqwWkpxEXBw=;
+        b=d3w1a37s4E7NJqnnQ3SKJP5aM4+XzkVQmZw1ZNZOEc+SLUt7jpIa3zCUDxyeQzbyAN
+         NR1xHtvhT9nSfDAMIROsE2ntkmSvOgWzCSebCmuTBCzDcW2zPN8X1a5ufGxrQvIYHvIZ
+         Kg4Imti4SZtsg12MbBElY10amBHMRBufIwkI500TxTzOLB5DdrNZeMv3jYE8TUwm74ts
+         LePfwjLmYGjUsxYpuM4FedvTK29Lk3WiF5wHWEb3J/w8qKc1xWI8n67tSgAfKxFJTDyL
+         c8EVP0Img6PwWwfLy3h4FbBqScfx5aAoSP8T46k0k5C5IBQZnyE+1KQz5sx7uevCZWdv
+         ArmQ==
+X-Gm-Message-State: AC+VfDwrqFOiTEa1qwOT4NKFTz2nLqiuOo5H1pFdfGLFuvdqN883H2r2
+	zKYbg2fDb4KmpW4lavr3X+w=
+X-Google-Smtp-Source: ACHHUZ4vj59CpEBUh+LCGakc9pc+qc/ayE4H4Tx2vR6aYGp/AvSAnn5rVqIlkYwGRVJwjsSCJX9GYA==
+X-Received: by 2002:a7b:c4c3:0:b0:3f3:1cb7:b2a6 with SMTP id g3-20020a7bc4c3000000b003f31cb7b2a6mr29514427wmk.6.1684351548372;
+        Wed, 17 May 2023 12:25:48 -0700 (PDT)
+Received: from lucifer.home (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
+        by smtp.googlemail.com with ESMTPSA id r2-20020a5d4982000000b00306415ac69asm3770139wrq.15.2023.05.17.12.25.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 May 2023 12:25:47 -0700 (PDT)
+From: Lorenzo Stoakes <lstoakes@gmail.com>
+To: linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
-	Frank Jungclaus <frank.jungclaus@esd.eu>
-Subject: [PATCH 6/6] can: esd_usb: Don't bother the user with nonessential log message
-Date: Wed, 17 May 2023 21:22:51 +0200
-Message-Id: <20230517192251.2405290-7-frank.jungclaus@esd.eu>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230517192251.2405290-1-frank.jungclaus@esd.eu>
-References: <20230517192251.2405290-1-frank.jungclaus@esd.eu>
+	Andrew Morton <akpm@linux-foundation.org>
+Cc: Matthew Wilcox <willy@infradead.org>,
+	David Hildenbrand <david@redhat.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Leon Romanovsky <leon@kernel.org>,
+	Christian Benvenuti <benve@cisco.com>,
+	Nelson Escobar <neescoba@cisco.com>,
+	Bernard Metzler <bmt@zurich.ibm.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	"Michael S . Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Jens Axboe <axboe@kernel.dk>,
+	Pavel Begunkov <asml.silence@gmail.com>,
+	Bjorn Topel <bjorn@kernel.org>,
+	Magnus Karlsson <magnus.karlsson@intel.com>,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+	Jonathan Lemon <jonathan.lemon@gmail.com>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-rdma@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	kvm@vger.kernel.org,
+	netdev@vger.kernel.org,
+	io-uring@vger.kernel.org,
+	bpf@vger.kernel.org,
+	John Hubbard <jhubbard@nvidia.com>,
+	Lorenzo Stoakes <lstoakes@gmail.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>
+Subject: [PATCH v6 5/6] mm/gup: remove vmas parameter from pin_user_pages()
+Date: Wed, 17 May 2023 20:25:45 +0100
+Message-Id: <195a99ae949c9f5cb589d2222b736ced96ec199a.1684350871.git.lstoakes@gmail.com>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <cover.1684350871.git.lstoakes@gmail.com>
+References: <cover.1684350871.git.lstoakes@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -82,63 +113,238 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB8EUR06FT044:EE_|PAVPR03MB9847:EE_
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: f6bff02e-5d47-487a-ae22-08db570c1ec5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	+oNUHNtQ08g6Lzd1/mF2yCy+cQXW/8XM1RLYOY4ZD7IcSokNz/gRBDAwvw5UCj+F0/jVVI60MTnwCVwXStz6QXX35b8t8YmpSopvBavEkx3hDQsG6oWvYQLdjPadyoYzBpybgKNrbbk2d/AS5e4ED1F7Yfs4jwPB6N5g1EMs8IwoKsCLbkPuRVSYw7YR3VuCSfEDy+RnhaRq4NZiJUxLxl9oy9cN84asxtka0AxFtc80lc6lVIxtvDgXXxnSECMMe4VXYTnydL+7ZvN6ta5SXXZoS257QFdQU5VEvHCN9RyvDbROKXZL7Y8oXv4QJ0yjxk/zkhN+4Db8shRlFa2kr3QmkyEnND5VQ2WO+GUbUhxhhJyn1r1ygCec6hWqiSLhktPncKCCLMWPTgmyUos1w3JeYiGBGiKiBzzTQWJWxBtfSrF/r1v/+GqOGY51kv8sFlbHfoI6uaUPod+UFrdDevHlevnCmtyPcZaPfmifsGiD6fG3IfxCIN/qrfWGGfuWQOP0Xj/diJmZGA12J7YfEGyULdmkCeZ6lrDGkjzbMPvZfeOHrHPgfR163MnQBX0No3dQa1yylcAh6Pr/hLkSl8D9uxRbqWLPcVXykBrhmsRNXnrBAsZbjYSCNKnXGxzcQggaI4iq0NLsv462Q+cLbB2X67QUU12xH3GvMXkAJbS87dM8/noKiVkrLONqHuF8/cxzN34q2ILHVWtsyFUGxg==
-X-Forefront-Antispam-Report:
-	CIP:80.151.164.27;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:p5097a41b.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(136003)(346002)(376002)(396003)(451199021)(46966006)(36840700001)(36756003)(42186006)(86362001)(70586007)(54906003)(110136005)(316002)(478600001)(70206006)(966005)(4326008)(82310400005)(81166007)(40480700001)(15650500001)(8676002)(8936002)(2906002)(44832011)(2616005)(6666004)(356005)(41300700001)(5660300002)(36860700001)(336012)(186003)(1076003)(26005)(47076005)(6266002)(83380400001);DIR:OUT;SFP:1102;
-X-OriginatorOrg: esd.eu
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2023 19:22:56.9459
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6bff02e-5d47-487a-ae22-08db570c1ec5
-X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[80.151.164.27];Helo=[esd-s7.esd]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DB8EUR06FT044.eop-eur06.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR03MB9847
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR autolearn=no
-	autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Initiated by a comment from Vincent Mailhol and suggested by Marc
-Kleine-Budde replace a netdev_info(), emitting an informational
-message about the BTR value to be send to the controller, with a debug
-message by means of netdev_dbg().
+We are now in a position where no caller of pin_user_pages() requires the
+vmas parameter at all, so eliminate this parameter from the function and
+all callers.
 
-Link: https://lore.kernel.org/all/20230509-superglue-hazy-38108aa66bfa-mkl@pengutronix.de/
-Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Suggested-by: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
+This clears the way to removing the vmas parameter from GUP altogether.
+
+Acked-by: David Hildenbrand <david@redhat.com>
+Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com> (for qib)
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com> (for drivers/media)
+Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
 ---
- drivers/net/can/usb/esd_usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/mm/book3s64/iommu_api.c       | 2 +-
+ drivers/infiniband/hw/qib/qib_user_pages.c | 2 +-
+ drivers/infiniband/hw/usnic/usnic_uiom.c   | 2 +-
+ drivers/infiniband/sw/siw/siw_mem.c        | 2 +-
+ drivers/media/v4l2-core/videobuf-dma-sg.c  | 2 +-
+ drivers/vdpa/vdpa_user/vduse_dev.c         | 2 +-
+ drivers/vhost/vdpa.c                       | 2 +-
+ include/linux/mm.h                         | 3 +--
+ io_uring/rsrc.c                            | 2 +-
+ mm/gup.c                                   | 9 +++------
+ mm/gup_test.c                              | 9 ++++-----
+ net/xdp/xdp_umem.c                         | 2 +-
+ 12 files changed, 17 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
-index 9053a338eb88..38212330cf50 100644
---- a/drivers/net/can/usb/esd_usb.c
-+++ b/drivers/net/can/usb/esd_usb.c
-@@ -955,7 +955,7 @@ static int esd_usb_2_set_bittiming(struct net_device *netdev)
- 	msg->setbaud.rsvd = 0;
- 	msg->setbaud.baud = cpu_to_le32(canbtr);
+diff --git a/arch/powerpc/mm/book3s64/iommu_api.c b/arch/powerpc/mm/book3s64/iommu_api.c
+index 81d7185e2ae8..d19fb1f3007d 100644
+--- a/arch/powerpc/mm/book3s64/iommu_api.c
++++ b/arch/powerpc/mm/book3s64/iommu_api.c
+@@ -105,7 +105,7 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, unsigned long ua,
  
--	netdev_info(netdev, "setting BTR=%#x\n", canbtr);
-+	netdev_dbg(netdev, "setting BTR=%#x\n", canbtr);
+ 		ret = pin_user_pages(ua + (entry << PAGE_SHIFT), n,
+ 				FOLL_WRITE | FOLL_LONGTERM,
+-				mem->hpages + entry, NULL);
++				mem->hpages + entry);
+ 		if (ret == n) {
+ 			pinned += n;
+ 			continue;
+diff --git a/drivers/infiniband/hw/qib/qib_user_pages.c b/drivers/infiniband/hw/qib/qib_user_pages.c
+index f693bc753b6b..1bb7507325bc 100644
+--- a/drivers/infiniband/hw/qib/qib_user_pages.c
++++ b/drivers/infiniband/hw/qib/qib_user_pages.c
+@@ -111,7 +111,7 @@ int qib_get_user_pages(unsigned long start_page, size_t num_pages,
+ 		ret = pin_user_pages(start_page + got * PAGE_SIZE,
+ 				     num_pages - got,
+ 				     FOLL_LONGTERM | FOLL_WRITE,
+-				     p + got, NULL);
++				     p + got);
+ 		if (ret < 0) {
+ 			mmap_read_unlock(current->mm);
+ 			goto bail_release;
+diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/hw/usnic/usnic_uiom.c
+index 2a5cac2658ec..84e0f41e7dfa 100644
+--- a/drivers/infiniband/hw/usnic/usnic_uiom.c
++++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
+@@ -140,7 +140,7 @@ static int usnic_uiom_get_pages(unsigned long addr, size_t size, int writable,
+ 		ret = pin_user_pages(cur_base,
+ 				     min_t(unsigned long, npages,
+ 				     PAGE_SIZE / sizeof(struct page *)),
+-				     gup_flags, page_list, NULL);
++				     gup_flags, page_list);
  
- 	err = esd_usb_send_msg(priv->usb, msg);
+ 		if (ret < 0)
+ 			goto out;
+diff --git a/drivers/infiniband/sw/siw/siw_mem.c b/drivers/infiniband/sw/siw/siw_mem.c
+index f51ab2ccf151..e6e25f15567d 100644
+--- a/drivers/infiniband/sw/siw/siw_mem.c
++++ b/drivers/infiniband/sw/siw/siw_mem.c
+@@ -422,7 +422,7 @@ struct siw_umem *siw_umem_get(u64 start, u64 len, bool writable)
+ 		umem->page_chunk[i].plist = plist;
+ 		while (nents) {
+ 			rv = pin_user_pages(first_page_va, nents, foll_flags,
+-					    plist, NULL);
++					    plist);
+ 			if (rv < 0)
+ 				goto out_sem_up;
  
+diff --git a/drivers/media/v4l2-core/videobuf-dma-sg.c b/drivers/media/v4l2-core/videobuf-dma-sg.c
+index 53001532e8e3..405b89ea1054 100644
+--- a/drivers/media/v4l2-core/videobuf-dma-sg.c
++++ b/drivers/media/v4l2-core/videobuf-dma-sg.c
+@@ -180,7 +180,7 @@ static int videobuf_dma_init_user_locked(struct videobuf_dmabuf *dma,
+ 		data, size, dma->nr_pages);
+ 
+ 	err = pin_user_pages(data & PAGE_MASK, dma->nr_pages, gup_flags,
+-			     dma->pages, NULL);
++			     dma->pages);
+ 
+ 	if (err != dma->nr_pages) {
+ 		dma->nr_pages = (err >= 0) ? err : 0;
+diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
+index de97e38c3b82..4d4405f058e8 100644
+--- a/drivers/vdpa/vdpa_user/vduse_dev.c
++++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+@@ -1052,7 +1052,7 @@ static int vduse_dev_reg_umem(struct vduse_dev *dev,
+ 		goto out;
+ 
+ 	pinned = pin_user_pages(uaddr, npages, FOLL_LONGTERM | FOLL_WRITE,
+-				page_list, NULL);
++				page_list);
+ 	if (pinned != npages) {
+ 		ret = pinned < 0 ? pinned : -ENOMEM;
+ 		goto out;
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 8c1aefc865f0..61223fcbe82b 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -983,7 +983,7 @@ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
+ 	while (npages) {
+ 		sz2pin = min_t(unsigned long, npages, list_size);
+ 		pinned = pin_user_pages(cur_base, sz2pin,
+-					gup_flags, page_list, NULL);
++					gup_flags, page_list);
+ 		if (sz2pin != pinned) {
+ 			if (pinned < 0) {
+ 				ret = pinned;
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 679b41ef7a6d..db09c7062965 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2412,8 +2412,7 @@ static inline struct page *get_user_page_vma_remote(struct mm_struct *mm,
+ long get_user_pages(unsigned long start, unsigned long nr_pages,
+ 		    unsigned int gup_flags, struct page **pages);
+ long pin_user_pages(unsigned long start, unsigned long nr_pages,
+-		    unsigned int gup_flags, struct page **pages,
+-		    struct vm_area_struct **vmas);
++		    unsigned int gup_flags, struct page **pages);
+ long get_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
+ 		    struct page **pages, unsigned int gup_flags);
+ long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
+diff --git a/io_uring/rsrc.c b/io_uring/rsrc.c
+index b6451f8bc5d5..b56bda46a9eb 100644
+--- a/io_uring/rsrc.c
++++ b/io_uring/rsrc.c
+@@ -1044,7 +1044,7 @@ struct page **io_pin_pages(unsigned long ubuf, unsigned long len, int *npages)
+ 	ret = 0;
+ 	mmap_read_lock(current->mm);
+ 	pret = pin_user_pages(ubuf, nr_pages, FOLL_WRITE | FOLL_LONGTERM,
+-			      pages, NULL);
++			      pages);
+ 	if (pret == nr_pages)
+ 		*npages = nr_pages;
+ 	else
+diff --git a/mm/gup.c b/mm/gup.c
+index 1493cc8dd526..36701b5f0123 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -3274,8 +3274,6 @@ EXPORT_SYMBOL(pin_user_pages_remote);
+  * @gup_flags:	flags modifying lookup behaviour
+  * @pages:	array that receives pointers to the pages pinned.
+  *		Should be at least nr_pages long.
+- * @vmas:	array of pointers to vmas corresponding to each page.
+- *		Or NULL if the caller does not require them.
+  *
+  * Nearly the same as get_user_pages(), except that FOLL_TOUCH is not set, and
+  * FOLL_PIN is set.
+@@ -3284,15 +3282,14 @@ EXPORT_SYMBOL(pin_user_pages_remote);
+  * see Documentation/core-api/pin_user_pages.rst for details.
+  */
+ long pin_user_pages(unsigned long start, unsigned long nr_pages,
+-		    unsigned int gup_flags, struct page **pages,
+-		    struct vm_area_struct **vmas)
++		    unsigned int gup_flags, struct page **pages)
+ {
+ 	int locked = 1;
+ 
+-	if (!is_valid_gup_args(pages, vmas, NULL, &gup_flags, FOLL_PIN))
++	if (!is_valid_gup_args(pages, NULL, NULL, &gup_flags, FOLL_PIN))
+ 		return 0;
+ 	return __gup_longterm_locked(current->mm, start, nr_pages,
+-				     pages, vmas, &locked, gup_flags);
++				     pages, NULL, &locked, gup_flags);
+ }
+ EXPORT_SYMBOL(pin_user_pages);
+ 
+diff --git a/mm/gup_test.c b/mm/gup_test.c
+index 9ba8ea23f84e..1668ce0e0783 100644
+--- a/mm/gup_test.c
++++ b/mm/gup_test.c
+@@ -146,18 +146,17 @@ static int __gup_test_ioctl(unsigned int cmd,
+ 						 pages + i);
+ 			break;
+ 		case PIN_BASIC_TEST:
+-			nr = pin_user_pages(addr, nr, gup->gup_flags, pages + i,
+-					    NULL);
++			nr = pin_user_pages(addr, nr, gup->gup_flags, pages + i);
+ 			break;
+ 		case PIN_LONGTERM_BENCHMARK:
+ 			nr = pin_user_pages(addr, nr,
+ 					    gup->gup_flags | FOLL_LONGTERM,
+-					    pages + i, NULL);
++					    pages + i);
+ 			break;
+ 		case DUMP_USER_PAGES_TEST:
+ 			if (gup->test_flags & GUP_TEST_FLAG_DUMP_PAGES_USE_PIN)
+ 				nr = pin_user_pages(addr, nr, gup->gup_flags,
+-						    pages + i, NULL);
++						    pages + i);
+ 			else
+ 				nr = get_user_pages(addr, nr, gup->gup_flags,
+ 						    pages + i);
+@@ -270,7 +269,7 @@ static inline int pin_longterm_test_start(unsigned long arg)
+ 							gup_flags, pages);
+ 		else
+ 			cur_pages = pin_user_pages(addr, remaining_pages,
+-						   gup_flags, pages, NULL);
++						   gup_flags, pages);
+ 		if (cur_pages < 0) {
+ 			pin_longterm_test_stop();
+ 			ret = cur_pages;
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index 02207e852d79..06cead2b8e34 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -103,7 +103,7 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
+ 
+ 	mmap_read_lock(current->mm);
+ 	npgs = pin_user_pages(address, umem->npgs,
+-			      gup_flags | FOLL_LONGTERM, &umem->pgs[0], NULL);
++			      gup_flags | FOLL_LONGTERM, &umem->pgs[0]);
+ 	mmap_read_unlock(current->mm);
+ 
+ 	if (npgs != umem->npgs) {
 -- 
-2.25.1
+2.40.1
 
 
