@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-3276-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3277-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 30F9170656E
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:39:11 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id F041570656F
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:39:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0EB9C1C20B63
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 10:39:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AC2F6280C8F
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 10:39:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7B7E2168A0;
-	Wed, 17 May 2023 10:38:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 889B0156C7;
+	Wed, 17 May 2023 10:38:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71674156FC
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 10:38:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D4A4171B3
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 10:38:20 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4AFE97
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 03:38:12 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DBB3AB0
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 03:38:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
 	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
 	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=xvCWbsCC5HNJR8cm5sOxvv8BcBvEWCs6ek1i9bhY1Nw=; b=sL8FGG/ZjeK7QhepeyEBkJTN8z
-	jvB7dVv7L50IS4JV2VwnDDhOSsstwLVoe4UCFD9hAHEMxnwUvcwxTFdE5yhMLLF6jeGjJHqP7cG7K
-	29+f0hKSJmbp3i7eDSk8TpaGUi5EY5EB+SEy+aMBiL13NbcGG1RQS/ZxezXAX7FYP9Mr2FqAWkiZA
-	WNkKsGObBBTDS9no+0XOtTMyBQcjpCmC7vtzgJQPY0ecbMmNNxxd6bSFrjinSh1d5x9fi98bpBSjm
-	APwV781LpfhC5q6gVLu63fsteQzrlXpEvF5Newl4eqkUh9wD4r1WZqmk029JiR2DYZb4o1NbfQql2
-	RaD2oLDQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:35126 helo=rmk-PC.armlinux.org.uk)
+	bh=WyZ0uE7JZfuxi7PVChqP3Z/tccP+j42m05GwvraIMCc=; b=0JKmqHNamJih2kEXg+y/qthMlC
+	LAZu/E2jktNPPa7vnEDUWWpKpNEX+449pgLxFipNMhsQEqmvZJSjO50JGuf0io8/3iHA2BSops7QK
+	xd04Xx7F4tdZWFMn1GylHrs9lz5oKobUGNjVmBCxDYzrcMzypxogYKrRdOWv/5JTrMC+N/smvQMpk
+	yCXDJpYN7+UCbPIMsKeak+bdUogCBO1zVv8tKT5RU4dGmbcUUG0QnqYdNTWVOlBCC+DqIxePWcV57
+	Fs+/MeCoONXpNnI1DXoVp5OHkjV2VLqFwWeqtdsVcAlHjz11+7xaOjA1s7L/qDEbItnKw7fKiQxIB
+	yCWFYGDg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:35138 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <rmk@armlinux.org.uk>)
-	id 1pzEXo-0007Yz-C9; Wed, 17 May 2023 11:38:08 +0100
+	id 1pzEXt-0007ZC-Fk; Wed, 17 May 2023 11:38:13 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1pzEXn-005jUi-Ok; Wed, 17 May 2023 11:38:07 +0100
+	id 1pzEXs-005jUo-SO; Wed, 17 May 2023 11:38:12 +0100
 In-Reply-To: <ZGSuTY8GqjM+sqta@shell.armlinux.org.uk>
 References: <ZGSuTY8GqjM+sqta@shell.armlinux.org.uk>
 From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -52,7 +52,8 @@ Cc: Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
 	netdev@vger.kernel.org
-Subject: [PATCH net-next 5/7] net: sfp: change st_mutex locking
+Subject: [PATCH net-next 6/7] net: sfp: add support for setting signalling
+ rate
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -62,9 +63,9 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1pzEXn-005jUi-Ok@rmk-PC.armlinux.org.uk>
+Message-Id: <E1pzEXs-005jUo-SO@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date: Wed, 17 May 2023 11:38:07 +0100
+Date: Wed, 17 May 2023 11:38:12 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -72,187 +73,159 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Change st_mutex's use within SFP such that it only protects the various
-state members, as it was originally supposed to, and isn't held while
-making various calls outside the driver.
+Add support to the SFP layer to allow phylink to set the signalling
+rate for a SFP module. The rate given will be in units of kilo-baud
+(1000 baud).
 
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/sfp.c | 56 ++++++++++++++++++++++++++++++++-----------
- 1 file changed, 42 insertions(+), 14 deletions(-)
+ drivers/net/phy/phylink.c | 24 ++++++++++++++++++++++++
+ drivers/net/phy/sfp-bus.c | 20 ++++++++++++++++++++
+ drivers/net/phy/sfp.c     |  5 +++++
+ drivers/net/phy/sfp.h     |  1 +
+ include/linux/sfp.h       |  6 ++++++
+ 5 files changed, 56 insertions(+)
 
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index cf53096047e6..7db67ff2812c 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -156,6 +156,23 @@ static const char *phylink_an_mode_str(unsigned int mode)
+ 	return mode < ARRAY_SIZE(modestr) ? modestr[mode] : "unknown";
+ }
+ 
++static unsigned int phylink_interface_signal_rate(phy_interface_t interface)
++{
++	switch (interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_1000BASEX: /* 1.25Mbd */
++		return 1250;
++	case PHY_INTERFACE_MODE_2500BASEX: /* 3.125Mbd */
++		return 3125;
++	case PHY_INTERFACE_MODE_5GBASER: /* 5.15625Mbd */
++		return 5156;
++	case PHY_INTERFACE_MODE_10GBASER: /* 10.3125Mbd */
++		return 10313;
++	default:
++		return 0;
++	}
++}
++
+ /**
+  * phylink_interface_max_speed() - get the maximum speed of a phy interface
+  * @interface: phy interface mode defined by &typedef phy_interface_t
+@@ -1025,6 +1042,7 @@ static void phylink_major_config(struct phylink *pl, bool restart,
+ {
+ 	struct phylink_pcs *pcs = NULL;
+ 	bool pcs_changed = false;
++	unsigned int rate_kbd;
+ 	int err;
+ 
+ 	phylink_dbg(pl, "major config %s\n", phy_modes(state->interface));
+@@ -1084,6 +1102,12 @@ static void phylink_major_config(struct phylink *pl, bool restart,
+ 				    ERR_PTR(err));
+ 	}
+ 
++	if (pl->sfp_bus) {
++		rate_kbd = phylink_interface_signal_rate(state->interface);
++		if (rate_kbd)
++			sfp_upstream_set_signal_rate(pl->sfp_bus, rate_kbd);
++	}
++
+ 	phylink_pcs_poll_start(pl);
+ }
+ 
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index 9372e5a4cadc..e8dd47bffe43 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -575,6 +575,26 @@ static void sfp_upstream_clear(struct sfp_bus *bus)
+ 	bus->upstream = NULL;
+ }
+ 
++/**
++ * sfp_upstream_set_signal_rate() - set data signalling rate
++ * @bus: a pointer to the &struct sfp_bus structure for the sfp module
++ * @rate_kbd: signalling rate in units of 1000 baud
++ *
++ * Configure the rate select settings on the SFP module for the signalling
++ * rate (not the same as the data rate).
++ *
++ * Locks that may be held:
++ *  Phylink's state_mutex
++ *  rtnl lock
++ *  SFP's sm_mutex
++ */
++void sfp_upstream_set_signal_rate(struct sfp_bus *bus, unsigned int rate_kbd)
++{
++	if (bus->registered)
++		bus->socket_ops->set_signal_rate(bus->sfp, rate_kbd);
++}
++EXPORT_SYMBOL_GPL(sfp_upstream_set_signal_rate);
++
+ /**
+  * sfp_bus_find_fwnode() - parse and locate the SFP bus from fwnode
+  * @fwnode: firmware node for the parent device (MAC or PHY)
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index e5cd36e3a421..bf7dac9977e1 100644
+index bf7dac9977e1..34bf724c00c7 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -242,10 +242,17 @@ struct sfp {
+@@ -2527,6 +2527,10 @@ static void sfp_stop(struct sfp *sfp)
+ 	sfp_sm_event(sfp, SFP_E_DEV_DOWN);
+ }
  
- 	bool need_poll;
- 
-+	/* Access rules:
-+	 * state_hw_drive: st_mutex held
-+	 * state_hw_mask: st_mutex held
-+	 * state_soft_mask: st_mutex held
-+	 * state: st_mutex held unless reading input bits
-+	 */
- 	struct mutex st_mutex;			/* Protects state */
- 	unsigned int state_hw_mask;
- 	unsigned int state_soft_mask;
- 	unsigned int state;
++static void sfp_set_signal_rate(struct sfp *sfp, unsigned int rate_kbd)
++{
++}
 +
- 	struct delayed_work poll;
- 	struct delayed_work timeout;
- 	struct mutex sm_mutex;			/* Protects state machine */
-@@ -692,7 +699,6 @@ static void sfp_soft_start_poll(struct sfp *sfp)
- 	const struct sfp_eeprom_id *id = &sfp->id;
- 	unsigned int mask = 0;
- 
--	sfp->state_soft_mask = 0;
- 	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_TX_DISABLE)
- 		mask |= SFP_F_TX_DISABLE;
- 	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_TX_FAULT)
-@@ -700,19 +706,26 @@ static void sfp_soft_start_poll(struct sfp *sfp)
- 	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_RX_LOS)
- 		mask |= SFP_F_LOS;
- 
-+	mutex_lock(&sfp->st_mutex);
- 	// Poll the soft state for hardware pins we want to ignore
- 	sfp->state_soft_mask = ~sfp->state_hw_mask & mask;
- 
- 	if (sfp->state_soft_mask & (SFP_F_LOS | SFP_F_TX_FAULT) &&
- 	    !sfp->need_poll)
- 		mod_delayed_work(system_wq, &sfp->poll, poll_jiffies);
-+	mutex_unlock(&sfp->st_mutex);
+ static int sfp_module_info(struct sfp *sfp, struct ethtool_modinfo *modinfo)
+ {
+ 	/* locking... and check module is present */
+@@ -2611,6 +2615,7 @@ static const struct sfp_socket_ops sfp_module_ops = {
+ 	.detach = sfp_detach,
+ 	.start = sfp_start,
+ 	.stop = sfp_stop,
++	.set_signal_rate = sfp_set_signal_rate,
+ 	.module_info = sfp_module_info,
+ 	.module_eeprom = sfp_module_eeprom,
+ 	.module_eeprom_by_page = sfp_module_eeprom_by_page,
+diff --git a/drivers/net/phy/sfp.h b/drivers/net/phy/sfp.h
+index 6cf1643214d3..c7cb50d10099 100644
+--- a/drivers/net/phy/sfp.h
++++ b/drivers/net/phy/sfp.h
+@@ -19,6 +19,7 @@ struct sfp_socket_ops {
+ 	void (*detach)(struct sfp *sfp);
+ 	void (*start)(struct sfp *sfp);
+ 	void (*stop)(struct sfp *sfp);
++	void (*set_signal_rate)(struct sfp *sfp, unsigned int rate_kbd);
+ 	int (*module_info)(struct sfp *sfp, struct ethtool_modinfo *modinfo);
+ 	int (*module_eeprom)(struct sfp *sfp, struct ethtool_eeprom *ee,
+ 			     u8 *data);
+diff --git a/include/linux/sfp.h b/include/linux/sfp.h
+index ef06a195b3c2..2f66e03e9dbd 100644
+--- a/include/linux/sfp.h
++++ b/include/linux/sfp.h
+@@ -556,6 +556,7 @@ int sfp_get_module_eeprom_by_page(struct sfp_bus *bus,
+ 				  struct netlink_ext_ack *extack);
+ void sfp_upstream_start(struct sfp_bus *bus);
+ void sfp_upstream_stop(struct sfp_bus *bus);
++void sfp_upstream_set_signal_rate(struct sfp_bus *bus, unsigned int rate_kbd);
+ void sfp_bus_put(struct sfp_bus *bus);
+ struct sfp_bus *sfp_bus_find_fwnode(const struct fwnode_handle *fwnode);
+ int sfp_bus_add_upstream(struct sfp_bus *bus, void *upstream,
+@@ -615,6 +616,11 @@ static inline void sfp_upstream_stop(struct sfp_bus *bus)
+ {
  }
  
- static void sfp_soft_stop_poll(struct sfp *sfp)
- {
-+	mutex_lock(&sfp->st_mutex);
- 	sfp->state_soft_mask = 0;
-+	mutex_unlock(&sfp->st_mutex);
- }
- 
-+/* sfp_get_state() - must be called with st_mutex held, or in the
-+ * initialisation path.
-+ */
- static unsigned int sfp_get_state(struct sfp *sfp)
- {
- 	unsigned int soft = sfp->state_soft_mask & (SFP_F_LOS | SFP_F_TX_FAULT);
-@@ -725,6 +738,9 @@ static unsigned int sfp_get_state(struct sfp *sfp)
- 	return state;
- }
- 
-+/* sfp_set_state() - must be called with st_mutex held, or in the
-+ * initialisation path.
-+ */
- static void sfp_set_state(struct sfp *sfp, unsigned int state)
- {
- 	sfp->set_state(sfp, state);
-@@ -736,8 +752,10 @@ static void sfp_set_state(struct sfp *sfp, unsigned int state)
- 
- static void sfp_mod_state(struct sfp *sfp, unsigned int mask, unsigned int set)
- {
-+	mutex_lock(&sfp->st_mutex);
- 	sfp->state = (sfp->state & ~mask) | set;
- 	sfp_set_state(sfp, sfp->state);
-+	mutex_unlock(&sfp->st_mutex);
- }
- 
- static unsigned int sfp_check(void *buf, size_t len)
-@@ -1603,16 +1621,18 @@ static void sfp_debugfs_exit(struct sfp *sfp)
- 
- static void sfp_module_tx_fault_reset(struct sfp *sfp)
- {
--	unsigned int state = sfp->state;
--
--	if (state & SFP_F_TX_DISABLE)
--		return;
-+	unsigned int state;
- 
--	sfp_set_state(sfp, state | SFP_F_TX_DISABLE);
-+	mutex_lock(&sfp->st_mutex);
-+	state = sfp->state;
-+	if (!(state & SFP_F_TX_DISABLE)) {
-+		sfp_set_state(sfp, state | SFP_F_TX_DISABLE);
- 
--	udelay(T_RESET_US);
-+		udelay(T_RESET_US);
- 
--	sfp_set_state(sfp, state);
-+		sfp_set_state(sfp, state);
-+	}
-+	mutex_unlock(&sfp->st_mutex);
- }
- 
- /* SFP state machine */
-@@ -1957,6 +1977,7 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	/* SFP module inserted - read I2C data */
- 	struct sfp_eeprom_id id;
- 	bool cotsworks_sfbg;
-+	unsigned int mask;
- 	bool cotsworks;
- 	u8 check;
- 	int ret;
-@@ -2096,14 +2117,13 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	if (ret < 0)
- 		return ret;
- 
--	/* Initialise state bits to use from hardware */
--	sfp->state_hw_mask = SFP_F_PRESENT;
-+	mask = SFP_F_PRESENT;
- 	if (sfp->gpio[GPIO_TX_DISABLE])
--		sfp->state_hw_mask |= SFP_F_TX_DISABLE;
-+		mask |= SFP_F_TX_DISABLE;
- 	if (sfp->gpio[GPIO_TX_FAULT])
--		sfp->state_hw_mask |= SFP_F_TX_FAULT;
-+		mask |= SFP_F_TX_FAULT;
- 	if (sfp->gpio[GPIO_LOS])
--		sfp->state_hw_mask |= SFP_F_LOS;
-+		mask |= SFP_F_LOS;
- 
- 	sfp->module_t_start_up = T_START_UP;
- 	sfp->module_t_wait = T_WAIT;
-@@ -2121,8 +2141,14 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 		sfp->mdio_protocol = MDIO_I2C_NONE;
- 
- 	sfp->quirk = sfp_lookup_quirk(&id);
++static inline void sfp_upstream_set_signal_rate(struct sfp_bus *bus,
++						unsigned int rate_kbd)
++{
++}
 +
-+	mutex_lock(&sfp->st_mutex);
-+	/* Initialise state bits to use from hardware */
-+	sfp->state_hw_mask = mask;
-+
- 	if (sfp->quirk && sfp->quirk->fixup)
- 		sfp->quirk->fixup(sfp);
-+	mutex_unlock(&sfp->st_mutex);
- 
- 	return 0;
+ static inline void sfp_bus_put(struct sfp_bus *bus)
+ {
  }
-@@ -2619,6 +2645,7 @@ static void sfp_check_state(struct sfp *sfp)
- 
- 	state |= sfp->state & (SFP_F_TX_DISABLE | SFP_F_RATE_SELECT);
- 	sfp->state = state;
-+	mutex_unlock(&sfp->st_mutex);
- 
- 	mutex_lock(&sfp->sm_mutex);
- 	if (changed & SFP_F_PRESENT)
-@@ -2633,7 +2660,6 @@ static void sfp_check_state(struct sfp *sfp)
- 		__sfp_sm_event(sfp, state & SFP_F_LOS ?
- 				    SFP_E_LOS_HIGH : SFP_E_LOS_LOW);
- 	mutex_unlock(&sfp->sm_mutex);
--	mutex_unlock(&sfp->st_mutex);
- 	rtnl_unlock();
- }
- 
-@@ -2652,6 +2678,8 @@ static void sfp_poll(struct work_struct *work)
- 
- 	sfp_check_state(sfp);
- 
-+	// st_mutex doesn't need to be held here for state_soft_mask,
-+	// it's unimportant if we race while reading this.
- 	if (sfp->state_soft_mask & (SFP_F_LOS | SFP_F_TX_FAULT) ||
- 	    sfp->need_poll)
- 		mod_delayed_work(system_wq, &sfp->poll, poll_jiffies);
 -- 
 2.30.2
 
