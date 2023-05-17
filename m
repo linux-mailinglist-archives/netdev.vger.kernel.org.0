@@ -1,250 +1,125 @@
-Return-Path: <netdev+bounces-3399-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3401-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 159A4706E39
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 18:33:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BF2F9706E7D
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 18:48:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C03F3281799
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 16:33:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B3E1C1C20AB9
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 16:47:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C77F848B;
-	Wed, 17 May 2023 16:33:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 98A431EA65;
+	Wed, 17 May 2023 16:47:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDA2E4421
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 16:33:38 +0000 (UTC)
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D2E8693
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 09:33:36 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id e9e14a558f8ab-33828a86ee2so1295ab.0
-        for <netdev@vger.kernel.org>; Wed, 17 May 2023 09:33:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684341216; x=1686933216;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YGCTJkjb+BkBWhgl9nkCivR/yxXltKo5X5s56+BQds8=;
-        b=ICxeJ4TRj0Aa912CHQqgpNLoLbhTEMQAjIlNLTt0p2NM9VeYmoid36yRYdHRJmkrSV
-         id3QBB4TohYYolGYjdav6TEgp9WRM8G9HcoFmBzh8mDTpkseEIlx3Ue0SCUNZR0hJcKu
-         RDmAHgGZny6lAq6/4J0GIsPcNf7Z6BCrWt2O2T16aUTbsFtPgN54lRb9oIktSbJwdbAZ
-         q0YY5qoO4vRfV5C/f4cPfx2e9TwuktWeDHyXbPjPR6OgY3BEqOXkIpO1WU5fDrcAm8PD
-         tbQuukIo8WN0jofAcuhdtDJScPXXh4puE1NnuUwbBqSWsKOcLFr+TatAOah9SidYGTja
-         cRsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684341216; x=1686933216;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YGCTJkjb+BkBWhgl9nkCivR/yxXltKo5X5s56+BQds8=;
-        b=B/kB3sCuxpPXcFrObFMlhNZtTayKiRqxzj6mkQ3NkwjfIOnHalizry7eC0reUszV6L
-         Dx3hu/sU6eJlzdK4IKpHLbC+RfhEKZpPMJRN9s3vyEEsiQd7CZeLtWqghGcfte/09oI5
-         XfxecTMrwNfRGIY2eyR/wjk9IdgOJGv5sWO1bTC0GHuhQzEfwaw6+slQjrq0665yg+70
-         wm6XPnoRc9hH9Cmj3b6I+nBhdvjB1UiHzAxccN2XLmyArAfchMypKVE9fhdFKIvU7U5t
-         WBQrEBpobL84xeuKWVSvJlLXh1YnaXrqmc0mKkGanbsXgzf3JqpAdxKkI8HggjgMrL/N
-         XrGw==
-X-Gm-Message-State: AC+VfDzO6Wy02/KfCecxRi/BMDQwDlQpWu+kfvpUeImo/0pNLCnoIDK+
-	Tb2tLHegTlP2Stu1OPeWFOdcepPnTvGtEfLBe2ikmw==
-X-Google-Smtp-Source: ACHHUZ55tKP7LoNajakx4E0yARHVP7p25x16TwzLqiz9gUfuRnaj4ppiBBfCnsVdhpZik4FydQALsG+RoaaSSAYkz3g=
-X-Received: by 2002:a05:6e02:20ce:b0:338:13f1:8c0c with SMTP id
- 14-20020a056e0220ce00b0033813f18c0cmr355316ilq.16.1684341216148; Wed, 17 May
- 2023 09:33:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A356111B5
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 16:47:57 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CDE59DC;
+	Wed, 17 May 2023 09:47:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684342076; x=1715878076;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3aGbiMN0V+5yc6Amt+Y7GgCQxqWtHVXzMieUoBpl1Y0=;
+  b=NwujApARbS7z1+LSFfGoME6jThv38EVEpbFbdRsSmpRq/iKKAQs2HeIZ
+   jJlEWubv7r4iGiwuTLAoRvQDvWLxJqRj7o/J9WXzngQy4EoBJsBFjI9fP
+   rjdNxavDWXW5CtSU2AU4CXvE46E1VGSbPUVKcaIhu2AllfO55IQEvDp/c
+   klRU9gK1V50fBPsHNXAkzXK9LcKuGS9MjHnNCNR+7Wku7Z6T6iqyuvMCF
+   kWe+DgG5JMjPI14pnwIsQ3G4My6eP10PKejM0RsYy3mD463l6zeQWwYre
+   5r1AdcPFAxjCiiWSiu3Qu9/g1ujYOThj1fqnHQWKXQuQni50baQfZV707
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="351834340"
+X-IronPort-AV: E=Sophos;i="5.99,282,1677571200"; 
+   d="scan'208";a="351834340"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2023 09:47:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="948338934"
+X-IronPort-AV: E=Sophos;i="5.99,282,1677571200"; 
+   d="scan'208";a="948338934"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006.fm.intel.com with ESMTP; 17 May 2023 09:47:38 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1pzKJL-0008UB-36;
+	Wed, 17 May 2023 19:47:35 +0300
+Date: Wed, 17 May 2023 19:47:35 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+	Daniel Scally <djrscally@gmail.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Andreas Klinger <ak@it-klinger.de>, Marcin Wojtas <mw@semihalf.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Paul Cercueil <paul@crapouillou.net>, Wolfram Sang <wsa@kernel.org>,
+	Akhil R <akhilrajeev@nvidia.com>, linux-acpi@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	netdev@vger.kernel.org, openbmc@lists.ozlabs.org,
+	linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH v4 2/7] iio: mb1232: relax return value check for IRQ get
+Message-ID: <ZGUFJ5LRCzW2V0a1@smile.fi.intel.com>
+References: <cover.1684220962.git.mazziesaccount@gmail.com>
+ <429804dac3b1ea55dd233d1e2fdf94240e2f2b93.1684220962.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CH3PR11MB7345DBA6F79282169AAFE9E0FC759@CH3PR11MB7345.namprd11.prod.outlook.com>
- <20230512171702.923725-1-shakeelb@google.com> <CH3PR11MB7345035086C1661BF5352E6EFC789@CH3PR11MB7345.namprd11.prod.outlook.com>
- <CALvZod7n2yHU8PMn5b39w6E+NhLtBynDKfo1GEfXaa64_tqMWQ@mail.gmail.com>
- <CH3PR11MB7345E9EAC5917338F1C357C0FC789@CH3PR11MB7345.namprd11.prod.outlook.com>
- <CALvZod6txDQ9kOHrNFL64XiKxmbVHqMtWNiptUdGt9UuhQVLOQ@mail.gmail.com>
- <ZGMYz+08I62u+Yeu@xsang-OptiPlex-9020> <20230517162447.dztfzmx3hhetfs2q@google.com>
-In-Reply-To: <20230517162447.dztfzmx3hhetfs2q@google.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 17 May 2023 18:33:24 +0200
-Message-ID: <CANn89iL0SD=F69b=naEmzoKysscnHGX7tP6jF9MOvthSeZ53Pw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper size
-To: Shakeel Butt <shakeelb@google.com>
-Cc: Oliver Sang <oliver.sang@intel.com>, Zhang Cathy <cathy.zhang@intel.com>, 
-	Yin Fengwei <fengwei.yin@intel.com>, Feng Tang <feng.tang@intel.com>, 
-	Linux MM <linux-mm@kvack.org>, Cgroups <cgroups@vger.kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, "davem@davemloft.net" <davem@davemloft.net>, 
-	"kuba@kernel.org" <kuba@kernel.org>, Brandeburg Jesse <jesse.brandeburg@intel.com>, 
-	Srinivas Suresh <suresh.srinivas@intel.com>, Chen Tim C <tim.c.chen@intel.com>, 
-	You Lizhen <lizhen.you@intel.com>, "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>, 
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, philip.li@intel.com, yujie.liu@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <429804dac3b1ea55dd233d1e2fdf94240e2f2b93.1684220962.git.mazziesaccount@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 17, 2023 at 6:24=E2=80=AFPM Shakeel Butt <shakeelb@google.com> =
-wrote:
->
-> On Tue, May 16, 2023 at 01:46:55PM +0800, Oliver Sang wrote:
-> > hi Shakeel,
-> >
-> > On Mon, May 15, 2023 at 12:50:31PM -0700, Shakeel Butt wrote:
-> > > +Feng, Yin and Oliver
-> > >
-> > > >
-> > > > > Thanks a lot Cathy for testing. Do you see any performance improv=
-ement for
-> > > > > the memcached benchmark with the patch?
-> > > >
-> > > > Yep, absolutely :- ) RPS (with/without patch) =3D +1.74
-> > >
-> > > Thanks a lot Cathy.
-> > >
-> > > Feng/Yin/Oliver, can you please test the patch at [1] with other
-> > > workloads used by the test robot? Basically I wanted to know if it ha=
-s
-> > > any positive or negative impact on other perf benchmarks.
-> >
-> > is it possible for you to resend patch with Signed-off-by?
-> > without it, test robot will regard the patch as informal, then it canno=
-t feed
-> > into auto test process.
-> > and could you tell us the base of this patch? it will help us apply it
-> > correctly.
-> >
-> > on the other hand, due to resource restraint, we normally cannot suppor=
-t
-> > this type of on-demand test upon a single patch, patch set, or a branch=
-.
-> > instead, we try to merge them into so-called hourly-kernels, then distr=
-ibute
-> > tests and auto-bisects to various platforms.
-> > after we applying your patch and merging it to hourly-kernels sccussful=
-ly,
-> > if it really causes some performance changes, the test robot could spot=
- out
-> > this patch as 'fbc' and we will send report to you. this could happen w=
-ithin
-> > several weeks after applying.
-> > but due to the complexity of whole process (also limited resourse, such=
- like
-> > we cannot run all tests on all platforms), we cannot guanrantee capture=
- all
-> > possible performance impacts of this patch. and it's hard for us to pro=
-vide
-> > a big picture like what's the general performance impact of this patch.
-> > this maybe is not exactly what you want. is it ok for you?
-> >
-> >
->
-> Yes, that is fine and thanks for the help. The patch is below:
->
->
-> From 93b3b4c5f356a5090551519522cfd5740ae7e774 Mon Sep 17 00:00:00 2001
-> From: Shakeel Butt <shakeelb@google.com>
-> Date: Tue, 16 May 2023 20:30:26 +0000
-> Subject: [PATCH] memcg: skip stock refill in irq context
->
-> The linux kernel processes incoming packets in softirq on a given CPU
-> and those packets may belong to different jobs. This is very normal on
-> large systems running multiple workloads. With memcg enabled, network
-> memory for such packets is charged to the corresponding memcgs of the
-> jobs.
->
-> Memcg charging can be a costly operation and the memcg code implements
-> a per-cpu memcg charge caching optimization to reduce the cost of
-> charging. More specifically, the kernel charges the given memcg for more
-> memory than requested and keep the remaining charge in a local per-cpu
-> cache. The insight behind this heuristic is that there will be more
-> charge requests for that memcg in near future. This optimization works
-> well when a specific job runs on a CPU for long time and majority of the
-> charging requests happen in process context. However the kernel's
-> incoming packet processing does not work well with this optimization.
->
-> Recently Cathy Zhang has shown [1] that memcg charge flushing within the
-> memcg charge path can become a performance bottleneck for the memcg
-> charging of network traffic.
->
-> Perf profile:
->
-> 8.98%  mc-worker        [kernel.vmlinux]          [k] page_counter_cancel
->     |
->      --8.97%--page_counter_cancel
->                |
->                 --8.97%--page_counter_uncharge
->                           drain_stock
->                           __refill_stock
->                           refill_stock
->                           |
->                            --8.91%--try_charge_memcg
->                                      mem_cgroup_charge_skmem
->                                      |
->                                       --8.91%--__sk_mem_raise_allocated
->                                                 __sk_mem_schedule
->                                                 |
->                                                 |--5.41%--tcp_try_rmem_sc=
-hedule
->                                                 |          tcp_data_queue
->                                                 |          tcp_rcv_establ=
-ished
->                                                 |          tcp_v4_do_rcv
->                                                 |          tcp_v4_rcv
->
-> The simplest way to solve this issue is to not refill the memcg charge
-> stock in the irq context. Since networking is the main source of memcg
-> charging in the irq context, other users will not be impacted. In
-> addition, this will preseve the memcg charge cache of the application
-> running on that CPU.
->
-> There are also potential side effects. What if all the packets belong to
-> the same application and memcg? More specifically, users can use Receive
-> Flow Steering (RFS) to make sure the kernel process the packets of the
-> application on the CPU where the application is running. This change may
-> cause the kernel to do slowpath memcg charging more often in irq
-> context.
+On Tue, May 16, 2023 at 10:12:41AM +0300, Matti Vaittinen wrote:
+> fwnode_irq_get() was changed to not return 0 anymore.
+> 
+> Drop check for return value 0.
 
-Could we have per-memcg per-cpu caches, instead of one set of per-cpu cache=
-s
-needing to be drained evertime a cpu deals with 'another memcg' ?
+...
 
->
-> Link: https://lore.kernel.org/all/IA0PR11MB73557DEAB912737FD61D2873FC749@=
-IA0PR11MB7355.namprd11.prod.outlook.com [1]
-> Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> ---
->  mm/memcontrol.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> index 5abffe6f8389..2635aae82b3e 100644
-> --- a/mm/memcontrol.c
-> +++ b/mm/memcontrol.c
-> @@ -2652,6 +2652,14 @@ static int try_charge_memcg(struct mem_cgroup *mem=
-cg, gfp_t gfp_mask,
->         bool raised_max_event =3D false;
->         unsigned long pflags;
->
-> +       /*
-> +        * Skip the refill in irq context as it may flush the charge cach=
-e of
-> +        * the process running on the CPUs or the kernel may have to proc=
-ess
-> +        * incoming packets for different memcgs.
-> +        */
-> +       if (!in_task())
-> +               batch =3D nr_pages;
-> +
->  retry:
->         if (consume_stock(memcg, nr_pages))
->                 return 0;
-> --
-> 2.40.1.606.ga4b1b128d6-goog
->
+> -	if (data->irqnr <= 0) {
+> +	if (data->irqnr < 0) {
+>  		/* usage of interrupt is optional */
+>  		data->irqnr = -1;
+>  	} else {
+
+
+After this change I'm not sure we need this branch at all, I mean that -errn is
+equal to -1 in the code (but needs to be checked for silly checks like == -1).
+
+Hence
+
+Entire excerpt can be replaced with
+
+	if (data->irqnr > 0) {
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
 
