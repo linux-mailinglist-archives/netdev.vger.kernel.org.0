@@ -1,205 +1,104 @@
-Return-Path: <netdev+bounces-3423-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3448-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 531D17070E7
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 20:38:11 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1122F7072B7
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 22:07:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3A2E81C20F9E
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 18:38:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C766E281698
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 20:07:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48D6131EE2;
-	Wed, 17 May 2023 18:38:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CDE1F34CFE;
+	Wed, 17 May 2023 20:07:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A5A14420
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 18:38:08 +0000 (UTC)
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDFB524E;
-	Wed, 17 May 2023 11:38:05 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id 38308e7fff4ca-2ac89e6a5a1so11830611fa.0;
-        Wed, 17 May 2023 11:38:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684348684; x=1686940684;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=FuipT8N9AIZhPuetrFCf6nkInGjCzh1d3K2+VTwrcZI=;
-        b=gC+vtXyeAJ6dSdPO9ckA5gFbeFI6fhGGVE+IeeHLh/LIpDM3DveIKb2PnQypN3RyCI
-         GfrhzjmpK1KfNaTuYgFK0AiYvAeNAQM2tB05rFKDaNFtuS6HyjITY7bNHQkaczRUo10E
-         oSYee6FmENAWY0/rtA93xOVPTLBwIqbm+salh6EXh0oIQqRIlKIFNOrt/3F8+wRTF+9N
-         lyo7L7pIuyoLah1EDY3ZNBdRbOI2jnalHE6bCfmTMzXspCtMt9OkIXr3jERyGocoVZ6Z
-         NPj/L+zzFiprF7/Mq7m2YpzbTh+pRGQ1YAIGKDp1OnV+822undYgBeyjgdWWz2xL2L3r
-         nAXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684348684; x=1686940684;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FuipT8N9AIZhPuetrFCf6nkInGjCzh1d3K2+VTwrcZI=;
-        b=mFa/sx9XQn8Yu2saLDBQ+o12+bfvlJ9fzUOkUBjn5tX9dX6vssqjdgmjkL6zHft1ZN
-         2ujyskQo16xFK+RBtX/EJ/Vi+xAgz5zTqdSeb0k653wmuRtE0S+Ua/7SrEQ5sH7pzBhY
-         l9I7UiQfJ+pXnFafQXzKCJrnt6ekKvH/Co9bUz/zbCndEZkJGcgOiNGeYOL4NnOWCDlP
-         PUSfLw5lkseztgwkFSKqkmmvUL6rBpZLlWe73dyY14K0p8bASqdaUDjlcn+fBeyAa60h
-         vPGQ/Kz57qs0xJiY0C3FtnfdoM8RYvkThn2gDA3jRyIlCXnZUkz/m3Eb4Z76fHPXMj0T
-         oNlQ==
-X-Gm-Message-State: AC+VfDz6AjiSMzdmiJfFGtqixz4j6fp5zHYzjDzpTg7ruDf6zyqE+hRy
-	bbGap5mUDYgt+WVzEFOL4Ag=
-X-Google-Smtp-Source: ACHHUZ6aSd8ko9LwiT1p/Y4sOJtZSnY3Z/munJAXGrvF4WuL83R/fb4/bH+qI5hWg4SkULozraJtkQ==
-X-Received: by 2002:a2e:800a:0:b0:2a7:96bd:9eb3 with SMTP id j10-20020a2e800a000000b002a796bd9eb3mr10581246ljg.3.1684348683477;
-        Wed, 17 May 2023 11:38:03 -0700 (PDT)
-Received: from [100.119.125.242] (95-31-187-187.broadband.corbina.ru. [95.31.187.187])
-        by smtp.gmail.com with ESMTPSA id t20-20020ac25494000000b004db0d26adb4sm3451405lfk.182.2023.05.17.11.38.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 May 2023 11:38:02 -0700 (PDT)
-Message-ID: <5d7421b6a419a9645f97e6240b1dfbf47ffcab4e.camel@gmail.com>
-Subject: Re: [PATCH v2 3/5] dt-bindings: net: add mac-address-increment
- option
-From: Ivan Mikhaylov <fr0st61te@gmail.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Samuel
- Mendoza-Jonas <sam@mendozajonas.com>, "David S . Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
- <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Rob Herring
- <robh+dt@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski+dt@linaro.org>
-Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org, Paul Fertser
-	 <fercerpav@gmail.com>
-Date: Wed, 17 May 2023 21:38:02 +0000
-In-Reply-To: <38ae4ceb-da21-d73e-9625-1918b4ab4e16@linaro.org>
-References: <20230509143504.30382-1-fr0st61te@gmail.com>
-	 <20230509143504.30382-4-fr0st61te@gmail.com>
-	 <6b5be71e-141e-c02a-8cba-a528264b26c2@linaro.org>
-	 <fc3dae42f2dfdf046664d964bae560ff6bb32f69.camel@gmail.com>
-	 <8de01e81-43dc-71af-f56f-4fba957b0b0b@linaro.org>
-	 <be85bef7e144ebe08f422bf53bb81b59a130cb29.camel@gmail.com>
-	 <5b826dc7-2d02-d4ed-3b6a-63737abe732b@linaro.org>
-	 <e6247cb39cc16a9328d9432e0595745b67c0aed5.camel@gmail.com>
-	 <38ae4ceb-da21-d73e-9625-1918b4ab4e16@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.1 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 861CE111AD
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 20:07:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9595C4339C;
+	Wed, 17 May 2023 20:07:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684354028;
+	bh=JngpmkirbQZwwCX9sp2TZtxp6jym5tV7TmhWqWmhpK0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=q5Z2QavG5qpRyKFXmc1tTC2wpk0xOQbZcjOvutV4HYcEyiVduy6TYEX+9MDWg2cxV
+	 Rk78LXfqChgF+cJX5L9YaGwiyq2PqDbJz7vne5uwRVgzPI6JUQ/p96cwFuHZUw1bLe
+	 aijjdIbhQWq3kGRc9zsfdyp7k/lCjfcGHE50ZUk4ynpIKRHXmXtyMGzMZjjes0ZRhl
+	 XD36bdCqSylA/KqVp+U9cPg6meyqYw4PNcI7KEG+twxeMW97WajZpZ8WOKUa99o6mv
+	 7LH/eKbf8T810yvoQ7Ncf36S0zf/KWZBK3p4aht4OreMtCVsQn7PEg8EPlsE38Yf2f
+	 CeMzl6Nwwfwyg==
+Date: Wed, 17 May 2023 13:07:06 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>, "Russell King (Oracle)"
+ <linux@armlinux.org.uk>, =?UTF-8?B?S8O2cnk=?= Maincent
+ <kory.maincent@bootlin.com>, netdev@vger.kernel.org, glipus@gmail.com,
+ maxime.chevallier@bootlin.com, vadim.fedorenko@linux.dev,
+ richardcochran@gmail.com, gerhard@engleder-embedded.com,
+ thomas.petazzoni@bootlin.com, krzysztof.kozlowski+dt@linaro.org,
+ robh+dt@kernel.org
+Subject: Re: [PATCH net-next RFC v4 2/5] net: Expose available time stamping
+ layers to user space.
+Message-ID: <20230517130706.3432203b@kernel.org>
+In-Reply-To: <2f89e35e-b1c9-4e08-9f60-73a96cc6e51a@lunn.ch>
+References: <20230511203646.ihljeknxni77uu5j@skbuf>
+	<54e14000-3fd7-47fa-aec3-ffc2bab2e991@lunn.ch>
+	<ZF1WS4a2bbUiTLA0@shell.armlinux.org.uk>
+	<20230511210237.nmjmcex47xadx6eo@skbuf>
+	<20230511150902.57d9a437@kernel.org>
+	<20230511230717.hg7gtrq5ppvuzmcx@skbuf>
+	<20230511161625.2e3f0161@kernel.org>
+	<20230512102911.qnosuqnzwbmlupg6@skbuf>
+	<20230512103852.64fd608b@kernel.org>
+	<20230517121925.518473aa@kernel.org>
+	<2f89e35e-b1c9-4e08-9f60-73a96cc6e51a@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, 2023-05-17 at 10:36 +0200, Krzysztof Kozlowski wrote:
-> On 16/05/2023 13:47, Ivan Mikhaylov wrote:
-> hy this is property of the hardware. I
-> > > > > understand
-> > > > > that this is something you want Linux to do, but DT is not
-> > > > > for
-> > > > > that
-> > > > > purpose. Do not encode system policies into DT and what above
-> > > > > commit
-> > > > > says is a policy.
-> > > > >=20
-> > > >=20
-> > > > Krzysztof, okay then to which DT subsystem it should belong? To
-> > > > ftgmac100 after conversion?
-> > >=20
-> > > To my understanding, decision to add some numbers to MAC address
-> > > does
-> > > not look like DT property at all. Otherwise please help me to
-> > > understand
-> > > - why different boards with same device should have different
-> > > offset/value?
-> > >=20
-> > > Anyway, commit msg also lacks any justification for this.
-> > >=20
-> > > Best regards,
-> > > Krzysztof
-> > >=20
-> >=20
-> > Krzysztof, essentially some PCIe network cards have like an
-> > additional
-> > *MII interface which connects directly to a BMC (separate SoC for
-> > managing a motherboard) and by sending special ethernet type frames
-> > over that connection (called NC-SI) the BMC can obtain MAC, get
-> > link
-> > parameters etc. So it's natural for a vendor to allocate two MACs
-> > per
-> > such a board with PCIe card intergrated, with one MAC "flashed
-> > into"
-> > the network card, under the assumption that the BMC should
->=20
-> Who makes the assumption that next MAC should differ by 1 or 2?
+On Wed, 17 May 2023 21:46:43 +0200 Andrew Lunn wrote:
+> As i said in an earlier thread, with a bit of a stretch, there could
+> be 7 places to take time stamps in the system. We need some sort of
+> identifier to indicate which of these stampers to use.
+> 
+> Is clock ID unique? In a switch, i think there could be multiple
+> stampers, one per MAC port, sharing one clock? So you actually need
+> more than a clock ID.
 
-Krzysztof, in this above case BMC does, BMC should care about changing
-it and doing it with current codebase without any options just by some
-hardcoded numbers which is wrong.
+Clock ID is a bit vague too, granted, but in practice clock ID should
+correspond to the driver fairly well? My thinking was - use clock ID
+to select the (silicon) device, use a different attribute to select 
+the stamping point.
 
->=20
-> > automatically use the next MAC. So it's the property of the
-> > hardware as
-> > the vendor designs it, not a matter of usage policy.
-> >=20
-> > Also at the nvmem binding tree is "nvmem-cell-cells" which is
-> > literally
-> > the same as what was proposed but on different level.
-> >=20
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/comm=
-it/Documentation/devicetree/bindings/nvmem?id=3D7e2805c203a6c8dc85c1cfda205=
-161ed39ae82d5
->=20
-> How is this similar? This points the location of mac address on some
-> NV
-> storage. You add fixed value which should be added to the Ethernet.
+IOW try to use the existing attribute before inventing a new one.
 
-It's not the points the location, this particular option provides this
-increment for mac addresses to make use of them with multiple
-interfaces. Just part of above commit:
-"It's used as a base for calculating addresses for multiple interfaces.
-It's done by adding proper values. Actual offsets are picked by
-manufacturers and vary across devices."
+> Also, 'By the standard - stamping happens under the MAC'. Which MAC?
+> There can be multple MAC's in the pipeline. MACSEC and rate adaptation
+> in the PHY are often implemented by the PHY having a MAC
+> reconstituting the frame from the bitstream and putting it into a
+> queue. Rate adaptation can then be performed by the PHY by sending
+> pause frames to the 'primary' MAC to slow it down. MACSEC in the PHY
+> takes frames in the queues and if they match a filter they get
+> encrypted. The PHY then takes the frame out of the queue and passes
+> them to a second MAC in the PHY which creates a bitstream and then to
+> a 'PHY' to generate signals for the line.
+> 
+> In this sort of setup, you obviously don't want the 'primary' MAC
+> doing the stamping. You want the MAC nearest to the line, or better
+> still the 'PHY' within the PHY just before the line.
 
-It is same as we talked before about mac-address-increment in openwrt
-project, if you want examples, you can look into their github. And same
-as we trying to achieve here.
+For a PHY "always use the point closest to the wire" makes sense.
 
-https://github.com/openwrt/openwrt/blob/master/target/linux/generic/pending=
--5.15/682-of_net-add-mac-address-increment-support.patch
-
-"Lots of embedded devices use the mac-address of other interface
-extracted from nvmem cells and increments it by one or two. Add two
-bindings to integrate this and directly use the right mac-address for
-the interface. Some example are some routers that use the gmac
-mac-address stored in the art partition and increments it by one for
-the
-wifi. mac-address-increment-byte bindings is used to tell what byte of
-the mac-address has to be increased (if not defined the last byte is
-increased) and mac-address-increment tells how much the byte decided
-early has to be increased."
-
-Don't you see similarity with nvmem commit?
-
->=20
-> I might be missing the context but there is no DTS example nor user
-> of
-> this property, so how can I get such?
->=20
-
-I don't see it either in linux kernel DTS tree but it in DTS doc.
-
-Also, just a little bit history about older propositions
-https://lore.kernel.org/all/?q=3Dmac-address-increment
-https://lore.kernel.org/all/20200919214941.8038-5-ansuelsmth@gmail.com/
-
-
-Thanks.
-
-
+For DMA we'd have a different set of priorities - precision vs
+volume vs 1-step / 2-step; but all from the same clock. I think 
+that we may want to defer figuring out selection within a single
+clock for now, to make some progress.
 
