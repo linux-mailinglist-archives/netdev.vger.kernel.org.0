@@ -1,157 +1,182 @@
-Return-Path: <netdev+bounces-3262-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3263-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8D28C70644E
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 11:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BDC4B706454
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 11:41:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3CDA41C20E8C
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 09:40:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B52E31C20E87
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 09:41:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5ADB41549A;
-	Wed, 17 May 2023 09:40:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2C7F154BD;
+	Wed, 17 May 2023 09:41:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EB5079D5
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 09:40:39 +0000 (UTC)
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B9E3C3B;
-	Wed, 17 May 2023 02:40:37 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id af79cd13be357-7591797c638so32981785a.1;
-        Wed, 17 May 2023 02:40:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684316437; x=1686908437;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bQTixujqPCw/tYDPmFIeEHaqb3XnIBzKysKwZdajktE=;
-        b=B6yUg55Kenf0deuKbSfv3k2ZwhsoVSYQ5mcU5PoHqYjg9miRuTy4dSN305XSRWMav/
-         sQnY1veAD4vWbHfhjpX2Uib8ZtOAuScnwH6uEKXcJRltAQ7yT/cGvm60oqdwI6vigukB
-         RkbBSU7Q7CFXe8nk6DXp1UjkCg3uBLbaX1RhTv/TxWZQNjTMV/mdICiuALAYLfqCJy/P
-         Yjv17JTUHLsLrLrpHWcQOAfejS+6UHUR1lbUABYWQZImZPGNegm9xPMlH8FiQqh2u0uZ
-         Rxa95d620DcE6YyHAY9zGFOzCdtiY7hptH2T+SoRH7D2zUk8TrPz9tHo/76yGFnArjjo
-         b1AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684316437; x=1686908437;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bQTixujqPCw/tYDPmFIeEHaqb3XnIBzKysKwZdajktE=;
-        b=hc+zMPZdh2/R8dPJ+/wPm0G6cH9y1i6fh5Mp+CnHue9PML9IM4rzuPap+K92hCIjZq
-         gaTn2200LXhCojiWIuxz9mWGGI+gStk54ynj18N7+F6mZxvc2xI66Ge6jk8kJTvUInhg
-         UUXEw2XEKCKYG3Njx3z0MQFaTquzhgHVTF5rp9y/1wHhtCFfM1ajkuLm47BZNp7DKADP
-         64LMXypxZ4lZMiEfnX6cU0fUL40VREgN3KR17z4fUFdI2mGa+eDpgwNHXiYMPa5zWkSJ
-         oK1m+S/kK4Bs7OjjPaohoND6tO/2/ClTW92MfJxkMzMGlgN+de4JzNl+n3GhyldiR1Vt
-         023w==
-X-Gm-Message-State: AC+VfDwrMWZ8mMg8GfqdrBsHOn9jThQurOY1NYitzQTdjz3gk7k8SZC7
-	UZmvjYKjpBZCUVZRk6sVO0W+XHKebYbwwa3IIeA=
-X-Google-Smtp-Source: ACHHUZ6vOu6TcYfQCrKrB0vCiSgdmFD/bS6ZZUimdhEXUgrGgywFTtqMOAZblEr8iTv9lThNuyXEtLtS9ImDEed/ozU=
-X-Received: by 2002:ad4:5dec:0:b0:621:41f6:1f7b with SMTP id
- jn12-20020ad45dec000000b0062141f61f7bmr43546737qvb.7.1684316436802; Wed, 17
- May 2023 02:40:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0D265249;
+	Wed, 17 May 2023 09:41:38 +0000 (UTC)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3521540C0;
+	Wed, 17 May 2023 02:41:34 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QLp0l24SqzqSX3;
+	Wed, 17 May 2023 17:37:11 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 17 May
+ 2023 17:41:31 +0800
+Subject: Re: [RFC net-next] net: veth: reduce page_pool memory footprint using
+ half page per-buffer
+To: Lorenzo Bianconi <lorenzo@kernel.org>, Maciej Fijalkowski
+	<maciej.fijalkowski@intel.com>
+CC: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, <netdev@vger.kernel.org>,
+	<bpf@vger.kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
+	<kuba@kernel.org>, <pabeni@redhat.com>, <ast@kernel.org>,
+	<daniel@iogearbox.net>, <hawk@kernel.org>, <john.fastabend@gmail.com>
+References: <d3ae6bd3537fbce379382ac6a42f67e22f27ece2.1683896626.git.lorenzo@kernel.org>
+ <62654fa5-d3a2-4b81-af70-59c9e90db842@huawei.com>
+ <ZGIWZHNRvq5DSmeA@lore-desk> <ZGIvbfPd46EIVZf/@boxer>
+ <ZGQJKRfuf4+av/MD@lore-desk>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <d6348bf0-0da8-c0ae-ce78-7f4620837f66@huawei.com>
+Date: Wed, 17 May 2023 17:41:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230515063200.301026-1-jiawenwu@trustnetic.com>
- <20230515063200.301026-3-jiawenwu@trustnetic.com> <ZGH6TmeiR0icT6Tc@surfacebook>
- <85d058cd-2dd9-2a7b-efd0-e4c8d512ae29@linux.intel.com>
-In-Reply-To: <85d058cd-2dd9-2a7b-efd0-e4c8d512ae29@linux.intel.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 17 May 2023 12:40:00 +0300
-Message-ID: <CAHp75VfsMGfy7y7X79sRhDqTajHsmeDnyUY2YurSvo0=LmxUEg@mail.gmail.com>
-Subject: Re: [PATCH net-next v8 2/9] i2c: designware: Add driver support for
- Wangxun 10Gb NIC
-To: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Cc: Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org, 
-	andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com, 
-	jsd@semihalf.com, Jose.Abreu@synopsys.com, andrew@lunn.ch, 
-	hkallweit1@gmail.com, linux@armlinux.org.uk, linux-i2c@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com, 
-	Piotr Raczynski <piotr.raczynski@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <ZGQJKRfuf4+av/MD@lore-desk>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 17, 2023 at 11:49=E2=80=AFAM Jarkko Nikula
-<jarkko.nikula@linux.intel.com> wrote:
-> On 5/15/23 12:24, andy.shevchenko@gmail.com wrote:
-> > Mon, May 15, 2023 at 02:31:53PM +0800, Jiawen Wu kirjoitti:
-> >> Wangxun 10Gb ethernet chip is connected to Designware I2C, to communic=
-ate
-> >> with SFP.
-> >>
-> >> Introduce the property "snps,i2c-platform" to match device data for Wa=
-ngxun
-> >> in software node case. Since IO resource was mapped on the ethernet dr=
-iver,
-> >> add a model quirk to get regmap from parent device.
-> >>
-> >> The exists IP limitations are dealt as workarounds:
-> >> - IP does not support interrupt mode, it works on polling mode.
-> >> - Additionally set FIFO depth address the chip issue.
-> >
-> > ...
-> >
-> >>      dev->flags =3D (uintptr_t)device_get_match_data(&pdev->dev);
-> >> +    if (device_property_present(&pdev->dev, "snps,i2c-platform"))
-> >> +            dev->flags |=3D MODEL_WANGXUN_SP;
-> >
-> > What I meant here is to use device_property_present() _iff_ you have de=
-cided to
-> > go with the _vendor-specific_ property name.
-> >
-> > Otherwise it should be handled differently, i.e. with reading the actua=
-l value
-> > of that property. Hence it should correspond the model enum, which you =
-need to
-> > declare in the Device Tree bindings before use.
-> >
-> > So, either
-> >
-> >       if (device_property_present(&pdev->dev, "wx,..."))
-> >               dev->flags |=3D MODEL_WANGXUN_SP;
-> >
-> > or
-> >
-> >       if ((dev->flags & MODEL_MASK) =3D=3D MODEL_NONE) {
-> >       // you now have to distinguish that there is no model set in driv=
-er data
-> >               u32 model;
-> >
-> >               ret =3D device_property_read_u32(dev, "snps,i2c-platform"=
-);
-> >               if (ret) {
-> >                       ...handle error...
-> >               }
-> >               dev->flags |=3D model
-> >
-> I'm not a device tree expert
+On 2023/5/17 6:52, Lorenzo Bianconi wrote:
+>> On Mon, May 15, 2023 at 01:24:20PM +0200, Lorenzo Bianconi wrote:
+>>>> On 2023/5/12 21:08, Lorenzo Bianconi wrote:
+>>>>> In order to reduce page_pool memory footprint, rely on
+>>>>> page_pool_dev_alloc_frag routine and reduce buffer size
+>>>>> (VETH_PAGE_POOL_FRAG_SIZE) to PAGE_SIZE / 2 in order to consume one page
+>>>>
+>>>> Is there any performance improvement beside the memory saving? As it
+>>>> should reduce TLB miss, I wonder if the TLB miss reducing can even
+>>>> out the cost of the extra frag reference count handling for the
+>>>> frag support?
+>>>
+>>> reducing the requested headroom to 192 (from 256) we have a nice improvement in
+>>> the 1500B frame case while it is mostly the same in the case of paged skb
+>>> (e.g. MTU 8000B).
+>>
+>> Can you define 'nice improvement' ? ;)
+>> Show us numbers or improvement in %.
+> 
+> I am testing this RFC patch in the scenario reported below:
+> 
+> iperf tcp tx --> veth0 --> veth1 (xdp_pass) --> iperf tcp rx
+> 
+> - 6.4.0-rc1 net-next:
+>   MTU 1500B: ~ 7.07 Gbps
+>   MTU 8000B: ~ 14.7 Gbps
+> 
+> - 6.4.0-rc1 net-next + page_pool frag support in veth:
+>   MTU 1500B: ~ 8.57 Gbps
+>   MTU 8000B: ~ 14.5 Gbps
+> 
 
-Me neither, that's why I replied earlier that this needs to be
-reviewed by DT people.
+Thanks for sharing the data.
+Maybe using the new frag interface introduced in [1] bring
+back the performance for the MTU 8000B case.
 
-> but I wonder would it be possible somehow
-> combine this and compatible properties in dw_i2c_of_match[]? They set
-> model flag for MODEL_MSCC_OCELOT and MODEL_BAIKAL_BT1.
->
-> Then I'm thinking is "snps,i2c-platform" descriptive enough name for a
-> model and does it confuse with "snps,designware-i2c" compatible property?
+1. https://patchwork.kernel.org/project/netdevbpf/cover/20230516124801.2465-1-linyunsheng@huawei.com/
 
 
+I drafted a patch for veth to use the new frag interface, maybe that
+will show how veth can make use of it. Would you give it a try to see
+if there is any performance improvment for MTU 8000B case? Thanks.
 
---=20
-With Best Regards,
-Andy Shevchenko
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -737,8 +737,8 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
+            skb_shinfo(skb)->nr_frags ||
+            skb_headroom(skb) < XDP_PACKET_HEADROOM) {
+                u32 size, len, max_head_size, off;
++               struct page_pool_frag *pp_frag;
+                struct sk_buff *nskb;
+-               struct page *page;
+                int i, head_off;
+
+                /* We need a private copy of the skb and data buffers since
+@@ -752,14 +752,20 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
+                if (skb->len > PAGE_SIZE * MAX_SKB_FRAGS + max_head_size)
+                        goto drop;
+
++               size = min_t(u32, skb->len, max_head_size);
++               size += VETH_XDP_HEADROOM;
++               size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++
+                /* Allocate skb head */
+-               page = page_pool_dev_alloc_pages(rq->page_pool);
+-               if (!page)
++               pp_frag = page_pool_dev_alloc_frag(rq->page_pool, size);
++               if (!pp_frag)
+                        goto drop;
+
+-               nskb = napi_build_skb(page_address(page), PAGE_SIZE);
++               nskb = napi_build_skb(page_address(pp_frag->page) + pp_frag->offset,
++                                     pp_frag->truesize);
+                if (!nskb) {
+-                       page_pool_put_full_page(rq->page_pool, page, true);
++                       page_pool_put_full_page(rq->page_pool, pp_frag->page,
++                                               true);
+                        goto drop;
+                }
+
+@@ -782,16 +788,18 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
+                len = skb->len - off;
+
+                for (i = 0; i < MAX_SKB_FRAGS && off < skb->len; i++) {
+-                       page = page_pool_dev_alloc_pages(rq->page_pool);
+-                       if (!page) {
++                       size = min_t(u32, len, PAGE_SIZE);
++
++                       pp_frag = page_pool_dev_alloc_frag(rq->page_pool, size);
++                       if (!pp_frag) {
+                                consume_skb(nskb);
+                                goto drop;
+                        }
+
+-                       size = min_t(u32, len, PAGE_SIZE);
+-                       skb_add_rx_frag(nskb, i, page, 0, size, PAGE_SIZE);
+-                       if (skb_copy_bits(skb, off, page_address(page),
+-                                         size)) {
++                       skb_add_rx_frag(nskb, i, pp_frag->page, pp_frag->offset,
++                                       size, pp_frag->truesize);
++                       if (skb_copy_bits(skb, off, page_address(pp_frag->page) +
++                                         pp_frag->offset, size)) {
+                                consume_skb(nskb);
+                                goto drop;
+                        }
+@@ -1047,6 +1055,8 @@ static int veth_create_page_pool(struct veth_rq *rq)
+                return err;
+        }
+
++       page_pool_set_max_frag_size(rq->page_pool, PAGE_SIZE / 2);
++
+        return 0;
+ }
+
 
