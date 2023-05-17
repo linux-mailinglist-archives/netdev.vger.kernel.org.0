@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-3307-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3308-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2FF2470663F
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2F9E5706640
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:12:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 097601C20F72
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 11:11:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E27201C20962
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 11:12:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 528C51C76D;
-	Wed, 17 May 2023 11:05:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5AEF11DDD5;
+	Wed, 17 May 2023 11:05:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 378D91DDC6
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 11:05:30 +0000 (UTC)
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA051BE3
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 04:05:14 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id af79cd13be357-75788255892so34917085a.0
-        for <netdev@vger.kernel.org>; Wed, 17 May 2023 04:05:14 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3275E182C3
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 11:05:35 +0000 (UTC)
+Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711D55FE6
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 04:05:23 -0700 (PDT)
+Received: by mail-vk1-xa2d.google.com with SMTP id 71dfb90a1353d-44ff6a049a7so256128e0c.2
+        for <netdev@vger.kernel.org>; Wed, 17 May 2023 04:05:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1684321513; x=1686913513;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1684321522; x=1686913522;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=adIFye+pIPwd8yz03ApDYM1/ixCRHXi7tQYaKa8oWj8=;
-        b=YCP1MwKlpHcSzW9GivtF1gqzs2Ar5ApXRFbMAQnW2zRwL1wnyq0N1gjXYxJS5j8uYm
-         9YuMfbucbKd9V2ZRF8k2qA860PaZa8t6EsYExyUBpxQUPGvuT6VoNC4wq4Ocmc1poCMr
-         UQhQ7/QCdMPRud1gsGGktiujDEAYzpicyU9DPDI7Fjf1p16ScPFrOyWqUtwbfdB0wLmV
-         FPJpdJsxy4xCWEmJ7Y08QKt39xo/zfp5t1q/wbPuIQ86oEBaqFiLEqLv7txezg2a7W1I
-         seEMpEd5qv/oS2xCINuT/S02unchuN+BaRvGKp1E2LThVDlVxfDLfyJ0lJPfqg0EDHFx
-         U95g==
+        bh=/HJE5nqYcaodKpvFGoSIxBUFx2FXa/qRd48fDSg14cM=;
+        b=j5AKA67Awold7PjDZS7b3gKTWH0/5Idi0Xu15qtzh8h3P0irP6uvb6L/oE5d6DA9jH
+         7VvH58GJImVmx1qgyLA9LFM0bLqXRdnrHiS2C50F6vWQXTepe5I+c+1JypwhxKhBWNYy
+         B+6GHeMkI4YhmQ9/nQPgxA7G9pn4el13FS8QZSu7q7DWQhlgGL2xwAOdCnVy55LupYqu
+         hzmjnwiq/mpBUUHG5KK96+COSd3m7eKv/zNYCMkyAGuzk2ahxPUMOosurpKSF8rh1JEM
+         cnEbVCeEyER+dTk2oO4nflkfuFJ4nJBkPVcKZ1CgavH02xdzl4VbLpmXCLTT1EXU+D7l
+         3slA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684321513; x=1686913513;
+        d=1e100.net; s=20221208; t=1684321522; x=1686913522;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=adIFye+pIPwd8yz03ApDYM1/ixCRHXi7tQYaKa8oWj8=;
-        b=iFcHBlqg9TusKpZEPBNXivlWLKA1ETsR/IK+vljf88D9egLNOHGfE6EZ+PW8wQmhce
-         kzPusJ0ls4U28Gw+5Wj+D8RBDSWMVHh2DgP8GmzRJ1vX4CGXQSjaRPoiTeuQQD6zJnDT
-         6kQ35k25T/Jn8vyJsdaT3nL3/ThkgSPjBLgM5w20jZ2r7Mzehq8KA79/qywj6FSpm0Xr
-         rVbhPzMm22kJ8syYsI+VjM2QcVTS95ruYScbWw6KF4x2EPltYTXT9YN7bGChEv3kayAW
-         BOUXaaHj/QV903zvYXysR11EEbz86jfQOYVnoJJQ2iGInhmV7pGFAHuv61j6fLqRukZH
-         ETyg==
-X-Gm-Message-State: AC+VfDyJA8hCTL1Uwy16gcw/09rgsrYhuw5V1qKoHPK9x+yLqByMQtRw
-	Zgs2QZHb6FPu7qf6U7zn13s8Cd56Dvk7he8auWs=
-X-Google-Smtp-Source: ACHHUZ4LVswMQihqM8tC266S3bhkPt3BhFBWYGFnGG+AcY0bW4rCC1oJbY65UOAScpIiM1QrE/hlvQ==
-X-Received: by 2002:ac8:5b86:0:b0:3f3:a0c0:cd6f with SMTP id a6-20020ac85b86000000b003f3a0c0cd6fmr44408133qta.9.1684321511810;
-        Wed, 17 May 2023 04:05:11 -0700 (PDT)
+        bh=/HJE5nqYcaodKpvFGoSIxBUFx2FXa/qRd48fDSg14cM=;
+        b=G2aVVkWVyjR630EJ1HLqa72649ZYDlz2OY+iJzPtIS4TAu3Sz0tgmv0wpFVe1c5loY
+         raI3xO+2wbCR5EXj4XvuAPI5Z/Bb466OHDkAl75T/pGaMm8vcu797WoC+G9lsNAPK0aG
+         3BKkiTOKgosnUXg24DNkVa9dT7yHSw8kN87/fYMkjP7bNCUO+cBQTQWmqpaFbvt4pMOX
+         GPg63ZwIH3CN7WoLodN+9R83/AJ928Z3uVtIXrnHOVnuCTDiORlV9HxbnuTYLAL4nBmT
+         AVuvTzqt8NiZDZfP/kjS5UjUC3Eqss1dLJ96//llTflfUCdjZSprRzytXmpn0rT0RwDK
+         l/Hg==
+X-Gm-Message-State: AC+VfDzXXCF6DtPcO7hW2N8uTQtwckh8hHmJ9jpCWZ8anEvSjs7CYErT
+	DvyusEJP24CZMbKUyZT/mNOZNsGj0Oaay8Vt8Hs=
+X-Google-Smtp-Source: ACHHUZ4yxUApq9QTrnGf66AFni4iPSmiNeAbgqEywKj9+84rcMe/a2kc+ziF/XHWYafJYIYAb3KLaQ==
+X-Received: by 2002:a05:6102:384:b0:430:61bd:283 with SMTP id m4-20020a056102038400b0043061bd0283mr14453033vsq.11.1684321520323;
+        Wed, 17 May 2023 04:05:20 -0700 (PDT)
 Received: from majuu.waya (cpe688f2e2c8c63-cm688f2e2c8c60.cpe.net.cable.rogers.com. [174.112.105.47])
-        by smtp.gmail.com with ESMTPSA id bb13-20020a05622a1b0d00b003f521882bc1sm2773442qtb.7.2023.05.17.04.05.10
+        by smtp.gmail.com with ESMTPSA id c20-20020a05620a165400b0074dfd9283afsm527308qko.79.2023.05.17.04.05.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 May 2023 04:05:11 -0700 (PDT)
+        Wed, 17 May 2023 04:05:19 -0700 (PDT)
 From: Jamal Hadi Salim <jhs@mojatatu.com>
 To: netdev@vger.kernel.org
 Cc: deb.chatterjee@intel.com,
@@ -77,9 +77,9 @@ Cc: deb.chatterjee@intel.com,
 	simon.horman@corigine.com,
 	khalidm@nvidia.com,
 	toke@redhat.com
-Subject: [PATCH RFC v2 net-next 22/28] selftests: tc-testing: add P4TC metadata control path tdc tests
-Date: Wed, 17 May 2023 07:02:26 -0400
-Message-Id: <20230517110232.29349-22-jhs@mojatatu.com>
+Subject: [PATCH RFC v2 net-next 23/28] selftests: tc-testing: add P4TC action templates tdc tests
+Date: Wed, 17 May 2023 07:02:27 -0400
+Message-Id: <20230517110232.29349-23-jhs@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230517110232.29349-1-jhs@mojatatu.com>
 References: <20230517110232.29349-1-jhs@mojatatu.com>
@@ -96,73 +96,79 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Introduce first tdc tests for P4TC metadata, which are focused on the
-control path. We test metadata create, update, delete, flush and dump.
+Introduce tdc tests for P4TC table types, which are focused on the
+control path. We test table type create, update, delete, flush and
+dump.
 
 Here is a basic description of what we test for each operation:
 
 Create:
-    - Create valid metadatum
-    - Try to create metadatum without specifying mandatory arguments
-    - Try to create metadatum passing invalid values for size
-    - Try to create metadatum without specifying pipeline name or id
-    - Try to create metadatum with same name twice
-    - Try to create metadatum with same id twice
-    - Create metadatum without assigning id
-    - Create metadatum with metadatum id == INX_MAX (2147483647) and check
-      for overflow warning when traversing metadata IDR
-    - Try to create metadatum with name length > METANENAMSIZ
-    - Try to exceed max metadata offset on create
+    - Create valid action template
+    - Create action templates with all possible param types
+    - Try to create action template with param of invalid type
+    - Create valid action template and instantiate action of new kind
+    - Try to create action template with name > IFNAMSIZ
+    - Try to create action template with param type > ACTPARAMNAMSIZ
+    - Create action template with more than one param
+    - Create action template with no params
+    - Try to create action template with same ID twice
+    - Try to create action template with same name twice
+    - Try to create action template with two params and one of unknown type
+    - Create valid action template, instantiate it and update the
+      instance
+    - Create valid action template, create two instances of it and dump
+    - Create action template, add instance and bind action to filter
+    - Create action template, add instance, bind action to filter and send
+      packet
 
 Update:
-    - Update metadatum with valid values for size
-    - Try to update metadatum with invalid values for size
-    - Try to update metadatum without specifying pipeline name or id
-    - Try to update metadatum without specifying metadatum name or id
-    - Try to exceed max metadata offset on update
+    - Update action template with actions
+    - Update action template with all param types
+    - Try to add new param during update
+    - Update action template param by id
+    - Try to update inexistent action template by id
+    - Try to update inexistent action template by name
 
 Delete:
-    - Delete metadatum by name
-    - Delete metadatum by id
-    - Delete inexistent metadatum by name
-    - Delete inexistent metadatum by id
-    - Try to delete specific metadatum without supplying pipeline name or
-      id
-
-Flush:
-    - Flush metadata
-    - Flush empty metadata IDR
-    - Try to flush metadata without specifying pipeline name or id
-    - Flush empty metadata list
+    - Delete action template by name
+    - Delete action template by id
+    - Try to delete inexistent action template by name
+    - Try to delete inexistent action template by id
+    - Try to delete action template without supplying pipeline name or id
+    - Flush action templates
+    - Try to flush action templates without supplying pipeline name or id
 
 Dump:
-    - Dump metadata IDR using pname to find pipeline
-    - Dump metadata IDR using pipeid to find pipeline
-    - Try to dump metadata IDR without supplying pipeline name or id
-    - Dump metadatum IDR when amount of metadata > P4TC_MAXMSG_COUNT (16)
+    - Dump action template IDR using pipeline name to find pipeline
+    - Dump action template IDR using pipeline id to find pipeline
+    - Try to dump action templates IDR without specifying pipeline name or
+      id
+    - Dump action templates IDR which has more than P4TC_MAXMSG_COUNT (16)
+      elements
 
+Tested-by: "Khan, Mohd Arif" <mohd.arif.khan@intel.com>
+Tested-by: "Pottimurthy, Sathya Narayana" <sathya.narayana.pottimurthy@intel.com>
 Signed-off-by: Victor Nogueira <victor@mojatatu.com>
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 ---
- .../tc-testing/tc-tests/p4tc/metadata.json    | 2652 +++++++++++++++++
- 1 file changed, 2652 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/p4tc/metadata.json
+ .../tc-tests/p4tc/action_templates.json       | 12332 ++++++++++++++++
+ 1 file changed, 12332 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/p4tc/action_templates.json
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/p4tc/metadata.json b/tools/testing/selftests/tc-testing/tc-tests/p4tc/metadata.json
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/p4tc/action_templates.json b/tools/testing/selftests/tc-testing/tc-tests/p4tc/action_templates.json
 new file mode 100644
-index 000000000000..ceb65a9668e6
+index 000000000000..7b790fbe013f
 --- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/p4tc/metadata.json
-@@ -0,0 +1,2652 @@
++++ b/tools/testing/selftests/tc-testing/tc-tests/p4tc/action_templates.json
+@@ -0,0 +1,12332 @@
 +[
 +    {
-+        "id": "62e5",
-+        "name": "Create valid metadatum",
++        "id": "c494",
++        "name": "Create valid action template with param type bit32",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -194,23 +200,28 @@ index 000000000000..ceb65a9668e6
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname mid 42 type bit8",
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
++                "obj": "action template",
 +                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
++                "pipeid": 22
 +            },
 +            {
 +                "templates": [
 +                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 8
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "id": 1
++                            }
++                        ]
 +                    }
 +                ]
 +            }
@@ -227,12 +238,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "40e3",
-+        "name": "Try to create metadatum without specifying pipeline name or id",
++        "id": "4964",
++        "name": "Create valid action template with param type bit8",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -264,277 +274,28 @@ index 000000000000..ceb65a9668e6
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ mid 42 type bit8",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Metadatum name not found.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "b2e7",
-+        "name": "Try to create metadata without name",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/ mid 42 type bit8",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Metadatum name not found.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "7dbc",
-+        "name": "Try to create metadata without size",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname mid 42",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Metadatum name not found.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "4c52",
-+        "name": "Try to create metadata with size 0",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname mid 42 type bit0",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Metadatum name not found.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "4999",
-+        "name": "Try to create metadata with size > 128",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname mid 42 type bit129",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Metadatum name not found.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "b738",
-+        "name": "Create metadata with size = 128",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/mname mid 42 type bit128",
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit8",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ pipeid 22 mid 42",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
++                "obj": "action template",
 +                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
++                "pipeid": 22
 +            },
 +            {
 +                "templates": [
 +                    {
-+                        "mid": 42,
-+                        "mname": "mname",
-+                        "mtype": "bit",
-+                        "msize": 128
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit8",
++                                "id": 1
++                            }
++                        ]
 +                    }
 +                ]
 +            }
@@ -551,12 +312,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "2deb",
-+        "name": "Create metadata of signed type",
++        "id": "2ed6",
++        "name": "Create valid action template with param type bit16",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -573,34 +333,43 @@ index 000000000000..ceb65a9668e6
 +            ],
 +            [
 +                "$TC actions add action pass index 1",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC actions add action pass index 2",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname mid 42 type int33",
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit16",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ pipeid 22 mid 42",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
++                "obj": "action template",
 +                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
++                "pipeid": 22
 +            },
 +            {
 +                "templates": [
 +                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "int",
-+                        "msize": 33
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit16",
++                                "id": 1
++                            }
++                        ]
 +                    }
 +                ]
 +            }
@@ -617,12 +386,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "0ddc",
-+        "name": "Create metadata of type int128",
++        "id": "ec54",
++        "name": "Create valid action template with param type bit64",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -639,34 +407,43 @@ index 000000000000..ceb65a9668e6
 +            ],
 +            [
 +                "$TC actions add action pass index 1",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC actions add action pass index 2",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname mid 42 type int128",
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit64",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ pipeid 22 mid 42",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
++                "obj": "action template",
 +                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
++                "pipeid": 22
 +            },
 +            {
 +                "templates": [
 +                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "int",
-+                        "msize": 128
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit64",
++                                "id": 1
++                            }
++                        ]
 +                    }
 +                ]
 +            }
@@ -683,12 +460,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "be48",
-+        "name": "Try to create metadata of type int129",
++        "id": "6c74",
++        "name": "Create valid action template with param type mac",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -705,224 +481,43 @@ index 000000000000..ceb65a9668e6
 +            ],
 +            [
 +                "$TC actions add action pass index 1",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC actions add action pass index 2",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname mid 42 type int129",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ pipeid 22 mid 42",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Unable to find metadatum by id.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "054c",
-+        "name": "Try to create metadatum with same name twice",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/mname mid 42 type bit8",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/mname type bit13",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/mname",
-+        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mid": 42,
-+                        "mname": "mname",
-+                        "mtype": "bit",
-+                        "msize": 8
-+                    }
-+                ]
-+            }
-+        ],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "3088",
-+        "name": "Try to create metadatum with same id twice",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 42 type bit8",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname2 mid 42 type bit13",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/ mid 42",
-+        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 8
-+                    }
-+                ]
-+            }
-+        ],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "ad42",
-+        "name": "Create metadatum without assigning mid",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname type bit27",
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type macaddr",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
++                "obj": "action template",
 +                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
++                "pipeid": 22
 +            },
 +            {
 +                "templates": [
 +                    {
-+                        "mid": 1,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 27
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "macaddr",
++                                "id": 1
++                            }
++                        ]
 +                    }
 +                ]
 +            }
@@ -939,12 +534,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "1805",
-+        "name": "Update metadatum's size specifying metadatum name",
++        "id": "bf9c",
++        "name": "Create valid action template with param type ipv4",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -961,38 +555,43 @@ index 000000000000..ceb65a9668e6
 +            ],
 +            [
 +                "$TC actions add action pass index 1",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC actions add action pass index 2",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 42 type bit8",
-+                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template update metadata/ptables/cb/mname type bit13",
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type ipv4",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
++                "obj": "action template",
 +                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
++                "pipeid": 22
 +            },
 +            {
 +                "templates": [
 +                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 13
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "ipv4",
++                                "id": 1
++                            }
++                        ]
 +                    }
 +                ]
 +            }
@@ -1009,12 +608,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "51a3",
-+        "name": "Update metadatum's size specifying metadatum id",
++        "id": "03f3",
++        "name": "Create valid action template with param type bit32 and create an instance of action",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -1031,43 +629,63 @@ index 000000000000..ceb65a9668e6
 +            ],
 +            [
 +                "$TC actions add action pass index 1",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC actions add action pass index 2",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 42 type bit8",
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template update metadata/ptables/ mid 42 type bit13",
++        "cmdUnderTest": "$TC actions add action ptables/test param param1 type bit32 id 1 4294967295",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/ mid 42",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
++                "total acts": 0
 +            },
 +            {
-+                "templates": [
++                "actions": [
 +                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 13
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "value": 4294967295,
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
 +                    }
 +                ]
 +            }
 +        ],
 +        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
 +            [
 +                "$TC p4template del pipeline/ptables",
 +                0
@@ -1079,12 +697,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "db7d",
-+        "name": "Try to update metadatum without specifying pipeline name or id",
++        "id": "80f5",
++        "name": "Create valid action template with param type bit32 and try to bind it to different pipeline",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -1112,36 +729,40 @@ index 000000000000..ceb65a9668e6
 +                255
 +            ],
 +            [
++                "$TC actions add action pass index 3",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 4",
++                0,
++                1,
++                255
++            ],
++            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 42 type bit4",
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template update metadata/ type bit8",
++        "cmdUnderTest": "$TC p4template create pipeline/ptables2 pipeid 23 maxrules 1 numtables 2 preactions action gact index 1 postactions action ptables/test param param1 type bit32 27",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
 +        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 4
-+                    }
-+                ]
-+            }
-+        ],
++        "matchPattern": "Error: TC action with specified index not found.*",
 +        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
 +            [
 +                "$TC p4template del pipeline/ptables",
 +                0
@@ -1153,12 +774,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "d525",
-+        "name": "Try to update metadatum without specifying metadatum name or id",
++        "id": "782e",
++        "name": "Create valid action template with param type bit8 and create an instance of action",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -1190,242 +810,48 @@ index 000000000000..ceb65a9668e6
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 42 type bit4",
++                "$TC p4template create action/ptables/test param param1 type bit8",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template update metadata/ptables/ type bit8",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 4
-+                    }
-+                ]
-+            }
-+        ],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "6853",
-+        "name": "Try to update metadatum's size with zero",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 42 type bit8",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template update metadata/ptables/cb/mname mid 42 type bit0",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 8
-+                    }
-+                ]
-+            }
-+        ],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "514f",
-+        "name": "Try to update metadatum's size with 129",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 42 type bit8",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template update metadata/ptables/cb/mname mid 42 type bit129",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 8
-+                    }
-+                ]
-+            }
-+        ],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "c9d4",
-+        "name": "Update metadata with size = 128",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 42 type bit64",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template update metadata/ pipeid 22 mid 42 type bit128",
++        "cmdUnderTest": "$TC actions add action ptables/test param param1 type bit8 id 1 255",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
++                "total acts": 0
 +            },
 +            {
-+                "templates": [
++                "actions": [
 +                    {
-+                        "mid": 42,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 128
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit8",
++                                "value": 255,
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
 +                    }
 +                ]
 +            }
 +        ],
 +        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
 +            [
 +                "$TC p4template del pipeline/ptables",
 +                0
@@ -1437,12 +863,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "0a2d",
-+        "name": "Dump metadata using pname to find pipeline",
++        "id": "e250",
++        "name": "Create valid action template with param type bit16 and create an instance of action",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -1459,43 +884,2028 @@ index 000000000000..ceb65a9668e6
 +            ],
 +            [
 +                "$TC actions add action pass index 1",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC actions add action pass index 2",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
++                "$TC p4template create action/ptables/test param param1 type bit16",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname2 type bit27",
++        "cmdUnderTest": "$TC actions add action ptables/test param param1 type bit16 id 1 65535",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit16",
++                                "value": 65535,
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "99b7",
++        "name": "Create valid action template with param type bit64 and create an instance of action",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit64",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action ptables/test param param1 type bit64 id 1 4294967295",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit64",
++                                "value": 4294967295,
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "367c",
++        "name": "Create valid action template with param type mac and create an instance of action",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type macaddr",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action ptables/test param param1 type macaddr id 1 AA:BB:CC:DD:EE:FF",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "macaddr",
++                                "value": "aa:bb:cc:dd:ee:ff",
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "315c",
++        "name": "Create valid action template with param type ipv4 and create an instance of action",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type ipv4",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action ptables/test param param1 type ipv4 id 1 10.10.10.0/24",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "ipv4",
++                                "value": "10.10.10.0/24",
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "62b1",
++        "name": "Create valid action template with two params",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 param param2 type bit16",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
 +                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
++                "pipeid": 22
 +            },
 +            {
 +                "templates": [
 +                    {
-+                        "mname": "cb/mname"
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "id": 1
++                            },
++                            {
++                                "name": "param2",
++                                "type": "bit16",
++                                "id": 2
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "73a5",
++        "name": "Create valid action template with no params",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": []
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "c403",
++        "name": "Try to create action template with param of unknown type",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type notvalid",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "d21f",
++        "name": "Try to create action template with two params and one of unknown type",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 param param2 type notvalid",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "164e",
++        "name": "Try to create action template with same name twice",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit64",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "de27",
++        "name": "Try to create action template with same id twice",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 actid 1 param param1 type bit64",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "b711",
++        "name": "Try to create action template with name > IFNAMSIZ",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/CMPCQGOzcLG8HILTQxsQYKfDg4zQQdtmNfosyAhQxhqDTC8cg10QediAAzIMvel2Y actid 1 param param1 type bit32",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchPattern": "Error: Unable to find action by id.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "17f3",
++        "name": "Try to create action template with param name > ACTPARAMNAMSIZ",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test actid 1 param oDXNP48egpqbhrFfRZxEMcJu4p2932zuTVO7ab81kXaYsLfJJWx1qF4QbohzvlLfBgS7j2Xo5wR3jQ9yuRARyFMNvGilXoufpvvwr8Z5bBaD8H80Lav8LleO5Qss5CjmE8l34Vomvn7LEEfeRTAzOCbPew7L2DuoQz2JQtyGFsZ8dEORnjFaZBZ6CGDPh68strQiFwEHUs6lUpbIxhxB6xarZGpwktZOyascnZLbc901mqrx96gnx939LpDkaNLij type bit32",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchPattern": "Error: Unable to find action by id.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "efbf",
++        "name": "Update action template with commands",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test cmd set metadata.kernel.skbpeek metadata.kernel.skbidf",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "id": 1
++                            }
++                        ],
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 4,
++                                        "endbit": 4,
++                                        "pname": "kernel",
++                                        "name": "skbpeek",
++                                        "id": 15
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "5bbe",
++        "name": "Update action template param type to bit16",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test param param1 type bit16",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit16",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "e596",
++        "name": "Update action template param type to bit8",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test param param1 type bit8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit8",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "b74b",
++        "name": "Update action template param type to bit64",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test param param1 type bit64",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit64",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "5d74",
++        "name": "Update action template param type to ipv4",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test param param1 type ipv4",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "ipv4",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "3b81",
++        "name": "Update action template param type to mac",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test param param1 type macaddr",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "macaddr",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "cc31",
++        "name": "Try to add new param during update",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test param param1 type bit16 param param2 type bit8",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "03b7",
++        "name": "Update action template param by id",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32 id 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test param param1 type bit16 id 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit16",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "c695",
++        "name": "Try to update inexistent action template by id",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/ actid 1 param param1 type bit16 id 1",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/ actid 1",
++        "matchCount": "1",
++        "matchPattern": "Error: Unable to find action by id.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "86ef",
++        "name": "Try to update inexistent action template by name",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test param param1 type bit16 id 1",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "636f",
++        "name": "Create valid action template with param type bit32, create an instance of action and update it",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test param param1 type bit32 id 1 4294967295 index 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions replace action ptables/test param param1 type bit32 id 1 22 index 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "value": 22,
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "f13d",
++        "name": "Create valid action template with param type bit32, create an instance of action and delete it",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test param param1 type bit32 id 1 4294967295 index 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions del action ptables/test index 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchPattern": "Error: TC action with specified index not found.*",
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state inactive",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "11f8",
++        "name": "Create valid action template with two params, create an instance of action and delete it",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32 param param2 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test param param1 type bit32 4294967295 param param2 type bit32 22 index 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions del action ptables/test index 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchPattern": "Error: TC action with specified index not found.*",
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state inactive",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "cccb",
++        "name": "Create valid action template with no params, create an instance of action and delete it",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test index 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions del action ptables/test index 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchPattern": "Error: TC action with specified index not found.*",
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state inactive",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8523",
++        "name": "Create valid action template with param type bit32, create two instances of action and dump",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test param param1 type bit32 id 1 4294967295 index 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action ptables/test param param1 type bit32 id 1 42 index 2",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions ls action ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 2
++            },
++            {
++                "actions": [
++                    {
++                        "order": 0,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "value": 4294967295,
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
 +                    },
 +                    {
-+                        "mname": "cb/mname2"
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "value": 42,
++                                "id": 1
++                            }
++                        ],
++                        "index": 2,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
 +                    }
 +                ]
 +            }
 +        ],
 +        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state inactive",
++                0
++            ],
 +            [
 +                "$TC p4template del pipeline/ptables",
 +                0
@@ -1507,12 +2917,95 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "380d",
-+        "name": "Dump metadata using pipeid to find pipeline",
++        "id": "cc14",
++        "name": "Create action template, add instance and try to bind action to filter",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32 id 1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test param param1 type bit32 id 1 4294967295",
++                0
++            ],
++            [
++                "$TC qdisc add dev $DEV1 ingress",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 prio 65535 protocol ip matchall action ptables/test index 1",
++        "expExitCode": "2",
++        "verifyCmd": "$TC -j filter get dev $DEV1 parent ffff: handle 1 prio 65535 protocol ip matchall",
++        "matchCount": "1",
++	"matchPattern": "Error: Cannot find specified filter chain.*",
++        "teardown": [
++            [
++                "$TC qdisc del dev $DEV1 ingress; sleep 1",
++                0
++            ],
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state inactive",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "e3e4",
++        "name": "Dump action templates using pname to find pipeline",
++        "category": [
++            "p4tc",
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -1529,38 +3022,49 @@ index 000000000000..ceb65a9668e6
 +            ],
 +            [
 +                "$TC actions add action pass index 1",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC actions add action pass index 2",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test2 actid 2 param param1 type bit64",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname2 type bit27",
++        "cmdUnderTest": "$TC p4template create action/ptables/test3 param param1 type bit64",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ pipeid 22",
++        "verifyCmd": "$TC -j p4template get action/ptables/",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
 +                "pname": "ptables",
 +                "pipeid": 22,
-+                "obj": "metadata"
++                "obj": "action template"
 +            },
 +            {
 +                "templates": [
 +                    {
-+                        "mname": "cb/mname"
++                        "aname": "ptables/test"
 +                    },
 +                    {
-+                        "mname": "cb/mname2"
++                        "aname": "ptables/test2"
++                    },
++                    {
++                        "aname": "ptables/test3"
 +                    }
 +                ]
 +            }
@@ -1577,12 +3081,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "c0ee",
-+        "name": "Try to dump metadata without supplying pipeline name or id",
++        "id": "25bc",
++        "name": "Dump action templates using pipeid to find pipeline",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -1599,320 +3102,49 @@ index 000000000000..ceb65a9668e6
 +            ],
 +            [
 +                "$TC actions add action pass index 1",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC actions add action pass index 2",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test2 actid 2 param param1 type bit64",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname2 type bit27",
++        "cmdUnderTest": "$TC p4template create action/ptables/test3 param param1 type bit64",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/",
-+        "matchCount": "1",
-+        "matchPattern": "Must specify pipeline name or id.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "a45b",
-+        "name": "Delete specific metadatum by name",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template del metadata/ptables/cb/mname",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Metadatum name not found.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "fe8d",
-+        "name": "Delete specific metadatum by id",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 1 type bit8",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template del metadata/ptables/ mid 1",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/ mid 1",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Unable to find metadatum by id.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "bf02",
-+        "name": "Try to delete inexistent metadatum by name",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template del metadata/ptables/cb/mname",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Metadatum name not found.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "253c",
-+        "name": "Try to delete inexistent metadatum by id",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template del metadata/ptables/ mid 1",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/ mid 1",
-+        "matchCount": "1",
-+        "matchPattern": "Unable to find metadatum by id.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "deca",
-+        "name": "Try to delete specific metadatum without supplying pipeline name or id",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template del metadata/",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
++        "verifyCmd": "$TC -j p4template get action/ pipeid 22",
 +        "matchCount": "1",
 +        "matchJSON": [
 +            {
 +                "pname": "ptables",
 +                "pipeid": 22,
-+                "obj": "metadata"
++                "obj": "action template"
 +            },
 +            {
 +                "templates": [
 +                    {
-+                        "mid": 1,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 8
++                        "aname": "ptables/test"
++                    },
++                    {
++                        "aname": "ptables/test2"
++                    },
++                    {
++                        "aname": "ptables/test3"
 +                    }
 +                ]
 +            }
@@ -1929,12 +3161,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "b331",
-+        "name": "Flush metadata",
++        "id": "f1e1",
++        "name": "Dump action templates without specifying pipeid or pname",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -1966,13 +3197,265 @@ index 000000000000..ceb65a9668e6
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test2 actid 2 param param1 type bit64",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template del metadata/ptables/",
++        "cmdUnderTest": "$TC p4template create action/ptables/test3 param param1 type bit64",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/",
++        "verifyCmd": "$TC -j p4template get action/",
++        "matchCount": "1",
++        "matchPattern": "Error: Must specify pipeline name or id.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "dc67",
++        "name": "Dump action templates IDR with more than P4TC_MAXMSG_COUNT elements",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test2 param param1 type bit64",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test3 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test4 param param1 type bit64",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test5 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test6 param param1 type bit64",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test7 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test8 param param1 type bit64",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test9 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test10 param param1 type bit64",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test11 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test12 param param1 type bit64",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test13 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test14 param param1 type bit64",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test15 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test16 param param1 type bit64",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test17 param param1 type bit64",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ pipeid 22",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "pname": "ptables",
++                "pipeid": 22,
++                "obj": "action template"
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test"
++                    },
++                    {
++                        "aname": "ptables/test2"
++                    },
++                    {
++                        "aname": "ptables/test3"
++                    },
++                    {
++                        "aname": "ptables/test4"
++                    },
++                    {
++                        "aname": "ptables/test5"
++                    },
++                    {
++                        "aname": "ptables/test6"
++                    },
++                    {
++                        "aname": "ptables/test7"
++                    },
++                    {
++                        "aname": "ptables/test8"
++                    },
++                    {
++                        "aname": "ptables/test9"
++                    },
++                    {
++                        "aname": "ptables/test10"
++                    },
++                    {
++                        "aname": "ptables/test11"
++                    },
++                    {
++                        "aname": "ptables/test12"
++                    },
++                    {
++                        "aname": "ptables/test13"
++                    },
++                    {
++                        "aname": "ptables/test14"
++                    },
++                    {
++                        "aname": "ptables/test15"
++                    },
++                    {
++                        "aname": "ptables/test16"
++                    }
++                ]
++            },
++            {
++                "pname": "ptables",
++                "pipeid": 22,
++                "obj": "action template"
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test17"
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "fd55",
++        "name": "Flush action templates using pname to find pipeline",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test2 actid 2 param param1 type bit64",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template del action/ptables/",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/",
 +        "matchCount": "1",
 +        "matchJSON": [],
 +        "teardown": [
@@ -1987,12 +3470,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "1456",
-+        "name": "Try to flush metadata without specifying pipeline name or id",
++        "id": "7e85",
++        "name": "Flush action templates using pipeid to find pipeline",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -2024,501 +3506,17 @@ index 000000000000..ceb65a9668e6
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test2 actid 2 param param1 type bit64",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template del metadata/",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mid": 1,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 8
-+                    }
-+                ]
-+            }
-+        ],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "3a84",
-+        "name": "Try to exceed max metadata offset on create",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit64",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname2 type bit64",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname3 type bit128",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname4 type bit128",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname5 type bit128",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname6 type bit1",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname6",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Metadatum name not found.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "2f62",
-+        "name": "Try to exceed max metadata offset on update",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit64",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname2 mid 22 type bit32",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname3 type bit64",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname4 type bit64",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname5 type bit128",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname6 type bit128",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template update metadata/ptables/cb/mname2 type bit128",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname2",
-+        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mid": 22,
-+                        "mname": "cb/mname2",
-+                        "mtype": "bit",
-+                        "msize": 32
-+                    }
-+                ]
-+            }
-+        ],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "8624",
-+        "name": "Create metadatum with mid of 4 bytes",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname mid 2147483647 type bit128",
++        "cmdUnderTest": "$TC p4template del action/ pipeid 22",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/cb/mname",
-+        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mid": 2147483647,
-+                        "mname": "cb/mname",
-+                        "mtype": "bit",
-+                        "msize": 128
-+                    }
-+                ]
-+            }
-+        ],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "e8ae",
-+        "name": "Dump pipeline with amount of metadata > P4TC_MSGBATCH_SIZE",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname2 type bit4",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname3 type bit4",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname4 type bit8",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname5 type bit4",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname6 type bit4",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname7 type bit8",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname8 type bit4",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname9 type bit4",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname10 type bit8",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname11 type bit4",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname12 type bit4",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname13 type bit3",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname14 type bit8",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname15 type bit1",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname16 mid 2147483647 type bit5",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/",
-+        "matchCount": "1",
-+        "matchJSON": [
-+            {
-+                "pname": "ptables",
-+                "pipeid": 22,
-+                "obj": "metadata"
-+            },
-+            {
-+                "templates": [
-+                    {
-+                        "mname": "cb/mname"
-+                    },
-+                    {
-+                        "mname": "cb/mname2"
-+                    },
-+                    {
-+                        "mname": "cb/mname3"
-+                    },
-+                    {
-+                        "mname": "cb/mname4"
-+                    },
-+                    {
-+                        "mname": "cb/mname5"
-+                    },
-+                    {
-+                        "mname": "cb/mname6"
-+                    },
-+                    {
-+                        "mname": "cb/mname7"
-+                    },
-+                    {
-+                        "mname": "cb/mname8"
-+                    },
-+                    {
-+                        "mname": "cb/mname9"
-+                    },
-+                    {
-+                        "mname": "cb/mname10"
-+                    },
-+                    {
-+                        "mname": "cb/mname11"
-+                    },
-+                    {
-+                        "mname": "cb/mname12"
-+                    },
-+                    {
-+                        "mname": "cb/mname13"
-+                    },
-+                    {
-+                        "mname": "cb/mname14"
-+                    },
-+                    {
-+                        "mname": "cb/mname15"
-+                    },
-+                    {
-+                        "mname": "cb/mname16"
-+                    }
-+                ]
-+            }
-+        ],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "56ef",
-+        "name": "Flush metadata where one metadatum has mid of 4 bytes",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
-+                0
-+            ],
-+            [
-+                "$TC p4template create metadata/ptables/cb/mname2 mid 2147483647 type bit128",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template del metadata/ptables/ ",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/",
++        "verifyCmd": "$TC -j p4template get action/ptables/",
 +        "matchCount": "1",
 +        "matchJSON": [],
 +        "teardown": [
@@ -2533,66 +3531,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "1a02",
-+        "name": "Flush empty metadata list",
++        "id": "f444",
++        "name": "Try to flush action templates without specifying pname or pipeid",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template del metadata/ptables/",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/",
-+        "matchCount": "1",
-+        "matchJSON": [],
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "3a0e",
-+        "name": "Delete specific metadatum by pipelne id and metadatum by id",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -2624,69 +3567,35 @@ index 000000000000..ceb65a9668e6
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname mid 1 type bit8",
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test2 actid 2 param param1 type bit64",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template del metadata/ pipeid 22 mid 1",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/ pipeid 22 mid 1",
-+        "matchCount": "1",
-+        "matchPattern": "Error: Unable to find metadatum by id.*",
-+        "teardown": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0
-+            ]
-+        ]
-+    },
-+    {
-+        "id": "b69c",
-+        "name": "Try to create metadatum without name or id",
-+        "category": [
-+            "p4tc",
-+            "template",
-+            "metadata"
-+        ],
-+        "setup": [
-+            [
-+                "$TC p4template del pipeline/ptables",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions flush action gact",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 1",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions add action pass index 2",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
-+                0
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/ mid 1 type bit8",
++        "cmdUnderTest": "$TC p4template del action/",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ pipeid 22 mid 1",
++        "verifyCmd": "$TC -j p4template get action/ptables/",
 +        "matchCount": "1",
-+        "matchPattern": "Error: Unable to find metadatum by id.*",
++        "matchJSON": [
++            {
++                "pname": "ptables",
++                "pipeid": 22,
++                "obj": "action template"
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test"
++                    },
++                    {
++                        "aname": "ptables/test2"
++                    }
++                ]
++            }
++        ],
 +        "teardown": [
 +            [
 +                "$TC p4template del pipeline/ptables",
@@ -2699,12 +3608,11 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "287c",
-+        "name": "Try to get metadata without supplying pipeline name or id",
++        "id": "fced",
++        "name": "Delete action template using action name",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -2721,26 +3629,30 @@ index 000000000000..ceb65a9668e6
 +            ],
 +            [
 +                "$TC actions add action pass index 1",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC actions add action pass index 2",
-+                0
++                0,
++                1,
++                255
 +            ],
 +            [
 +                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
 +                0
 +            ],
 +            [
-+                "$TC p4template create metadata/ptables/cb/mname type bit8",
++                "$TC p4template create action/ptables/test param param1 type bit32",
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/cb/mname2 type bit8",
++        "cmdUnderTest": "$TC p4template del action/ptables/test",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC -j p4template get metadata/",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
 +        "matchCount": "1",
-+        "matchPattern": "Must specify pipeline name or id.*",
++        "matchPattern": "Error: Action name not found.*",
 +        "teardown": [
 +            [
 +                "$TC p4template del pipeline/ptables",
@@ -2753,12 +3665,68 @@ index 000000000000..ceb65a9668e6
 +        ]
 +    },
 +    {
-+        "id": "528d",
-+        "name": "Try to create metadatum with name length > METANAMSIZ",
++        "id": "049e",
++        "name": "Delete template action by actid",
 +        "category": [
 +            "p4tc",
-+            "template",
-+            "metadata"
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template del action/ pipeid 22 actid 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ pipeid 22 actid 1",
++        "matchCount": "1",
++        "matchPattern": "Error: Unable to find action by id.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "e6e9",
++        "name": "Try to delete inexistent action template",
++        "category": [
++            "p4tc",
++            "template"
 +        ],
 +        "setup": [
 +            [
@@ -2790,11 +3758,11 @@ index 000000000000..ceb65a9668e6
 +                0
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC p4template create metadata/ptables/7eozFYyaqVCD7H0xS3M5sMnluUqPgZewfSLnYPf4s3k0lbx8lKoR32zSqiGsh84qJ32vnLPdl7f2XcUh5yIdEP7uJy2C3iPtyU7159s9CMB0EtTAlWTVz4U1jkQ5h2advwp3KCVsZ1jlGgStoJL2op5ZxoThTSUQLR61a5RNDovoSFcq86Brh6oW9DSmTbN6SYygbG3JLnEHzRC5hh0jGmJKHq5ivBK9Y9FlNZQXC9wVwX4qTFAd8ITUTj2Au2Jg1 mid 42 type bit8",
++        "cmdUnderTest": "$TC p4template del action/ pipeid 22 actid 1",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC -j p4template get metadata/ptables/ mid 42",
++        "verifyCmd": "$TC -j p4template get action/ pipeid 22 actid 1",
 +        "matchCount": "1",
-+        "matchPattern": "Unable to find metadatum by id.*",
++        "matchPattern": "Error: Unable to find action by id.*",
 +        "teardown": [
 +            [
 +                "$TC p4template del pipeline/ptables",
@@ -2805,6 +3773,8725 @@ index 000000000000..ceb65a9668e6
 +                0
 +            ]
 +        ]
++    },
++    {
++        "id": "4817",
++        "name": "Create valid action template with param type bit32, create an instance of action and try to delete action",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test param param1 type bit32 id 1 4294967295",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template del action ptables/test",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "value": 4294967295,
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state inactive",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "4c0f",
++        "name": "Create valid action template and try to instantiate it without making it active",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type macaddr",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action ptables/test param param1 type macaddr id 1 AA:BB:CC:DD:EE:FF",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "macaddr",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "6756",
++        "name": "Create valid action template, make it active and try to update it",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type macaddr",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template update action/ptables/test param param1 type bit64",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "macaddr",
++                                "id": 1
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state inactive",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "a06b",
++        "name": "Create action template, and try to bind action to a filter",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test actid 1 param param1 type bit32 id 1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC qdisc add dev $DEV1 ingress",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 prio 65535 protocol ip matchall action ptables/test param param1 type bit32 id 1 4294967295",
++        "expExitCode": "2",
++        "verifyCmd": "$TC -j filter get dev $DEV1 parent ffff: handle 1 prio 65535 protocol ip matchall",
++        "matchCount": "1",
++	"matchPattern": "Error: Cannot find specified filter chain.*",
++        "teardown": [
++            [
++                "$TC qdisc del dev $DEV1 ingress; sleep 1",
++                0
++            ],
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state inactive",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "3495",
++        "name": "Create valid action template with param type bit32 and create an instance of action with incorrect param type",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action ptables/test param param1 type bit64 id 1 4294967295",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchPattern": "Error: TC action with specified index not found.*",
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "84ee",
++        "name": "Create valid action template with cmd that sets skbmark to 4",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark constant.bit32.4",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 4
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "2fea",
++        "name": "Create valid action template with cmd that sets tcindex to 23",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.tcindex constant.bit16.23",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "container": "bit16",
++                                        "value": 23
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "51b1",
++        "name": "Create valid action template with cmd that sets skbptype to 7",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbptype constant.bit3.7",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 2,
++                                        "pname": "kernel",
++                                        "name": "skbptype",
++                                        "id": 10
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 2,
++                                        "container": "bit8",
++                                        "value": 7
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "eaa2",
++        "name": "Create valid action template with cmd that sets skbqmap to 7000",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbqmap constant.bit16.7000",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "skbqmap",
++                                        "id": 16
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "container": "bit16",
++                                        "value": 7000
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "5565",
++        "name": "Create valid action template with cmd that sets datalen to 80",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.pktlen constant.bit32.80",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "pktlen",
++                                        "id": 1
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 80
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "0536",
++        "name": "Create valid action template with cmd that sets datalen to 8080",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.datalen constant.bit32.8080",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "datalen",
++                                        "id": 2
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 8080
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "f2e0",
++        "name": "Create valid action template with cmd that sets skbhash to 0x1234",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbhash constant.bit32.0x1234",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbhash",
++                                        "id": 5
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 4660
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "49c6",
++        "name": "Create valid action template with cmd that sets iif to dev.lo",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.iif dev.lo",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "426d",
++        "name": "Create valid action template with cmd that sets skbproto to 1234",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbproto constant.be16.1234",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "be16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "skbproto",
++                                        "id": 9
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "container": "be16",
++                                        "value": 1234
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "590a",
++        "name": "Create valid action template with cmd that sets skbpeek to 1",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbpeek constant.bit1.1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 4,
++                                        "endbit": 4,
++                                        "pname": "kernel",
++                                        "name": "skbpeek",
++                                        "id": 15
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "container": "bit8",
++                                        "value": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "59e2",
++        "name": "Try to create action template with cmd that sets skbptype with constant.bit16",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbptype constant.bit16.32",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8a6f",
++        "name": "Try to create action template with cmd that assigns constant.bit3.70",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbptype constant.bit3.70",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "1cfa",
++        "name": "Try to create action template with cmd that assigns constant.bit8[7-9].5",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.ptypeoff[5-7] constant.bit8[7-9].5",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "9dba",
++        "name": "Create valid action template with cmd that sets ptypeoff[5-7] to constant.bit8[3-5].5",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.ptypeoff[5-7] constant.bit8[3-5].5",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 5,
++                                        "endbit": 7,
++                                        "pname": "kernel",
++                                        "name": "ptypeoff",
++                                        "id": 17
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 3,
++                                        "endbit": 5,
++                                        "container": "bit8",
++                                        "value": 5
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8b9c",
++        "name": "Try to create action template with cmd that assigns to ptypeoff[7-9]",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.ptypeoff[7-9] constant.bit8[3-5].5",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8cf7",
++        "name": "Try to create action template with cmd that assigns constant.bit64 to tcindex",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.tcindex constant.bit64.0x5234567890678861",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8598",
++        "name": "Create valid action template with cmd that sets skbmark to ifindex",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark metadata.kernel.ifindex",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "int32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "ifindex",
++                                        "id": 7
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "02e6",
++        "name": "Create valid action template with cmd that sets skbidf to 0",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbidf constant.bit1[0-0].0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "value": 0
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "7e84",
++        "name": "Create valid action template with cmd that sets skbidf to skboook",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skboook metadata.kernel.skbidf",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 7,
++                                        "endbit": 7,
++                                        "pname": "kernel",
++                                        "name": "skboook",
++                                        "id": 13
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "a015",
++        "name": "Create valid action template with cmd that sets skbpeek to skbidf",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbpeek metadata.kernel.skbidf",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 4,
++                                        "endbit": 4,
++                                        "pname": "kernel",
++                                        "name": "skbpeek",
++                                        "id": 15
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "b29e",
++        "name": "Create valid action template with cmd that has two set commands",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark constant.bit32.1234 cmd set metadata.kernel.skbidf constant.bit1.0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "value": 1234
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "value": 0
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "069c",
++        "name": "Try to create action template with cmd that assign to skbmark[16-33]",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark[16-33] constant.bit16.0x5678 index 32",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "07f2",
++        "name": "Create valid action template with cmd that assigns to skbmark[0-15]",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark[0-15] constant.bit16.0x5678",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "value": 22136
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8c4e",
++        "name": "Create valid action template with cmd that assigns to skbmark[0-15] and skbmark[16-31]",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark[0-15] constant.bit16.0x5678 cmd set metadata.kernel.skbmark[16-31] constant.bit16.0x1234",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "value": 22136
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 16,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "value": 4660
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8b01",
++        "name": "Try to create action template with cmd that calls action kernel.foo",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd act kernel.foo.1",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "9cc5",
++        "name": "Try to create action template with cmd that calls instance of drop that doesn't exist",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd act kernel.drop.3",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "2720",
++        "name": "Create valid action template with cmd that calls pipeline action",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test param param1 type bit32 id 1 4294967295 index 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test.1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test2",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test2",
++                        "actid": 2,
++                        "operations": [
++                            {
++                                "instruction": "act",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "pipeid": 22,
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del action/ptables/test2",
++                0
++            ],
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "fe49",
++        "name": "Create valid action template with cmd that calls action ok",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act kernel.ok.1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test2",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test2",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "act",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "pname": "kernel",
++                                        "id": "gact"
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "a79b",
++        "name": "Create valid action template with cmd that sets ptypeoff[0-2] to constant.bit8[1-3].7",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.ptypeoff[0-2] constant.bit8[1-3].7",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 2,
++                                        "pname": "kernel",
++                                        "name": "ptypeoff",
++                                        "id": 17
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 1,
++                                        "endbit": 3,
++                                        "container": "bit8",
++                                        "value": 7
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "d1d6",
++        "name": "Create valid action template with cmd that sets ptypeoff[0-2] to constant.bit3.7",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.ptypeoff[0-2] constant.bit3.7",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 2,
++                                        "pname": "kernel",
++                                        "name": "ptypeoff",
++                                        "id": 17
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 2,
++                                        "container": "bit8",
++                                        "value": 7
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "32e8",
++        "name": "Try to create action template with cmd that assigns ptypeoff[0-2] to constant.bit8.7",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.ptypeoff[0-2] constant.bit8.7",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "b1fd",
++        "name": "Create valid action template with cmd that sets ptypeoff[4-4] to ptypeoff[3-3]",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.ptypeoff[4-4] metadata.kernel.ptypeoff[3-3]",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 4,
++                                        "endbit": 4,
++                                        "pname": "kernel",
++                                        "name": "ptypeoff",
++                                        "id": 17
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "ptypeoff",
++                                        "id": 17
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "2f48",
++        "name": "Create valid action template with cmd that uses beq",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd beq metadata.kernel.skbmark constant.bit32.4 control pipe / jump 1 cmd set metadata.kernel.skbmark constant.bit32.123 control ok cmd set metadata.kernel.skbidf constant.bit1.0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "beq",
++                                "control_action": {
++                                    "type": "jump",
++                                    "jump": 1
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 4
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 123
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "container": "bit8",
++                                        "value": 0
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "d352",
++        "name": "Try to create action template with cmd that uses beq with incorrect jump value",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd beq metadata.kernel.skbmark  constant.bit32.4  control pipe / jump 2 cmd set metadata.kernel.skbmark constant.bit32.123 cmd set metadata.kernel.skbidf constant.bit1.0",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "bf55",
++        "name": "Create valid action template with cmd that uses bne",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd bne  metadata.kernel.skbmark constant.bit32.4 control pipe / jump 1 cmd set metadata.kernel.skbmark constant.bit32.123 control ok cmd set metadata.kernel.skbidf constant.bit1.0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "bne",
++                                "control_action": {
++                                    "type": "jump",
++                                    "jump": 1
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 4
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 123
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "container": "bit8",
++                                        "value": 0
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "5d35",
++        "name": "Create valid action template with cmd that uses blt",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd blt metadata.kernel.skbmark constant.bit32.4 control pipe / jump 1 cmd set metadata.kernel.skbmark constant.bit32.123 control ok cmd set metadata.kernel.skbidf constant.bit1.0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "blt",
++                                "control_action": {
++                                    "type": "jump",
++                                    "jump": 1
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 4
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 123
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "container": "bit8",
++                                        "value": 0
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "20b3",
++        "name": "Create valid action template with cmd that uses bgt",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd bgt metadata.kernel.tcindex constant.bit32[0-15].4 control pipe / jump 1 cmd set metadata.kernel.tcindex constant.bit32[0-15].123 control ok cmd set metadata.kernel.skbidf constant.bit1.0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "bgt",
++                                "control_action": {
++                                    "type": "jump",
++                                    "jump": 1
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "container": "bit32",
++                                        "value": 4
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "container": "bit32",
++                                        "value": 123
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "container": "bit8",
++                                        "value": 0
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "7b3a",
++        "name": "Create valid action template with cmd that uses bge",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd bge metadata.kernel.tcindex constant.bit32[0-15].4 control pipe / jump 1 cmd set metadata.kernel.tcindex constant.bit32[16-31].123 control ok cmd set metadata.kernel.skbidf constant.bit1.0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "bge",
++                                "control_action": {
++                                    "type": "jump",
++                                    "jump": 1
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "container": "bit32",
++                                        "value": 4
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 16,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 123
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "container": "bit8",
++                                        "value": 0
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "cff5",
++        "name": "Create valid action template with cmd that uses ble",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd ble metadata.kernel.tcindex constant.bit32[0-15].4 control pipe / jump 1 cmd set metadata.kernel.tcindex constant.bit32[16-31].123 control ok cmd set metadata.kernel.skbidf constant.bit1.0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "ble",
++                                "control_action": {
++                                    "type": "jump",
++                                    "jump": 1
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "container": "bit32",
++                                        "value": 4
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 16,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 123
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "container": "bit8",
++                                        "value": 0
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "44c7",
++        "name": "Create valid action template with cmd that uses beq preceeded by a a set",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark constant.bit32.4 cmd beq metadata.kernel.skbmark constant.bit32.4 control pipe / jump 1 cmd set metadata.kernel.skbmark constant.bit32.123 control ok cmd set metadata.kernel.skbidf constant.bit1.0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 4
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "beq",
++                                "control_action": {
++                                    "type": "jump",
++                                    "jump": 1
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 4
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 123
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit8",
++                                        "startbit": 3,
++                                        "endbit": 3,
++                                        "pname": "kernel",
++                                        "name": "skbidf",
++                                        "id": 11
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 0,
++                                        "container": "bit8",
++                                        "value": 0
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "0cca",
++        "name": "Create valid action template with cmd that uses print without prefix",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark constant.bit32.0x5678 cmd print metadata.kernel.skbmark",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 22136
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "print",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "6e77",
++        "name": "Create valid action template with cmd that uses print with prefix",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd print prefix before metadata.kernel.skbmark cmd set metadata.kernel.skbmark constant.bit32.0x5678 cmd print prefix after metadata.kernel.skbmark",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "print",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3,
++                                        "prefix": "before"
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 22136
++                                    }
++                                }
++                            },
++                            {
++                                "instruction": "print",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3,
++                                        "prefix": "after"
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "7dbd",
++        "name": "Try to create action template with cmd that prints constant value",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark constant.bit32.0x5678 cmd print constant.bit32.22",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "516e",
++        "name": "Create valid action template with cmd that sets skbmark to ptables.mymd",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark metadata.ptables.mymd",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "a797",
++        "name": "Create valid action template with cmd that sets skbmark to ptables.mytest64[0-31]",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark metadata.ptables.mytest64[0-31]",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit64",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mytest64",
++                                        "id": 3
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "f50f",
++        "name": "Create valid action template with cmd that sets ptables.mytest64[0-31] to skbmark",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.ptables.mytest64[0-31] metadata.kernel.skbmark",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit64",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mytest64",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8631",
++        "name": "Create valid action template with cmd that sets ptables.mytest to constant.bit16.0x1234",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest type bit16 mid 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.ptables.mytest constant.bit16.0x1234",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "ptables",
++                                        "name": "mytest",
++                                        "id": 2
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "value": 4660
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "54b4",
++        "name": "Create valid action template with cmd that sets ptables.mytest to kernel.tcindex",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest type bit16 mid 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd set metadata.ptables.mytest metadata.kernel.tcindex",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "ptables",
++                                        "name": "mytest",
++                                        "id": 2
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "f66e",
++        "name": "Create valid action template with cmd that concats kernel.tcindex with kernel.skbmark and stores the result in ptables.mytest64",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest64 metadata.kernel.tcindex metadata.kernel.skbmark",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit64",
++                                        "startbit": 0,
++                                        "endbit": 63,
++                                        "pname": "ptables",
++                                        "name": "mytest64",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPC": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "5c94",
++        "name": "Try to create action template with cmd that concats constant.bit48.0x12 with kernel.skbmark and stores the result in ptables.mytest64",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest64 metadata.kernel.skbmark constant.bit48.0x12",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "4fdb",
++        "name": "Create valid action template with cmd that concats constant.bit32.0x12 with kernel.skbmark and stores the result in ptables.mytest64",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest64 constant.bit32.0x12 metadata.kernel.skbmark",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit64",
++                                        "startbit": 0,
++                                        "endbit": 63,
++                                        "pname": "ptables",
++                                        "name": "mytest64",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "constant",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "value": 18
++                                    },
++                                    "OPC": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8904",
++        "name": "Create valid action template with cmd that concats 3 operands",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest64 metadata.kernel.tcindex metadata.kernel.skbmark metadata.kernel.skbproto",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit64",
++                                        "startbit": 0,
++                                        "endbit": 63,
++                                        "pname": "ptables",
++                                        "name": "mytest64",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPC": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPD": {
++                                        "type": "metadata",
++                                        "container": "be16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "skbproto",
++                                        "id": 9
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "bc57",
++        "name": "Create valid action template with cmd that concats P4TC_CMD_EXTRA_OPERS_MAX + 3 operands",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest128 type bit128 mid 4",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest128 metadata.kernel.tcindex metadata.kernel.skbproto metadata.kernel.ptclnoff constant.bit8.0x11 constant.bit8.0x12 constant.bit8.0xA constant.bit8.1 constant.bit8.204",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit128",
++                                        "startbit": 0,
++                                        "endbit": 127,
++                                        "pname": "ptables",
++                                        "name": "mytest128",
++                                        "id": 4
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPC": {
++                                        "type": "metadata",
++                                        "container": "be16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "skbproto",
++                                        "id": 9
++                                    },
++                                    "OPD": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "ptclnoff",
++                                        "id": 19
++                                    },
++                                    "OPE": {
++                                        "type": "constant",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 7,
++                                        "value": 17
++                                    },
++                                    "OPF": {
++                                        "type": "constant",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 7,
++                                        "value": 18
++                                    },
++                                    "OPG": {
++                                        "type": "constant",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 7,
++                                        "value": 10
++                                    },
++                                    "OPH": {
++                                        "type": "constant",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 7,
++                                        "value": 1
++                                    },
++                                    "OPI": {
++                                        "type": "constant",
++                                        "container": "bit8",
++                                        "startbit": 0,
++                                        "endbit": 7,
++                                        "value": 204
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "0bd1",
++        "name": "Try to create action template with cmd that concats more than P4TC_CMD_EXTRA_OPERS_MAX + 3 operands",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest128 type bit128 mid 4",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest128 metadata.kernel.tcindex metadata.kernel.skbproto metadata.kernel.ptclnoff constant.bit8.0x11 constant.bit8.0x12 constant.bit8.0xA constant.bit8.1 constant.bit8.204 constant.bit8.205",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "5ad4",
++        "name": "Try to create action template with cmd that concats a bit30 operand",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest64 metadata.kernel.skbmark constant.bit30.0x1234",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "6779",
++        "name": "Create valid action template with concats bitslices",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest64 metadata.kernel.tcindex metadata.ptables.mymd[0-15]",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit64",
++                                        "startbit": 0,
++                                        "endbit": 63,
++                                        "pname": "ptables",
++                                        "name": "mytest64",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit16",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "kernel",
++                                        "name": "tcindex",
++                                        "id": 4
++                                    },
++                                    "OPC": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 15,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "b537",
++        "name": "Create valid action template which concats metadata to itself",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mymd metadata.ptables.mymd[0-7] metadata.ptables.mymd[8-15] metadata.ptables.mymd[16-23] metadata.ptables.mymd[24-31]",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 7,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPC": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 8,
++                                        "endbit": 15,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPD": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 16,
++                                        "endbit": 23,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPE": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 24,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "a517",
++        "name": "Try to create action template which concats bitslice size not multiple of 8",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mymd metadata.ptables.mymd[0-7] metadata.ptables.mymd[8-15] metadata.ptables.mymd[16-24] metadata.ptables.mymd[24-31]",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "0999",
++        "name": "Try to create action template with concat cmd which exceeds opA's size in extra operands",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mymd metadata.ptables.mymd[0-15] metadata.ptables.mymd[16-31] metadata.ptables.mymd[0-7]",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "effd",
++        "name": "Create action template with concat cmd where opA is a bitslice",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mymd[0-23] metadata.ptables.mymd[0-7] metadata.ptables.mymd[8-15] metadata.ptables.mymd[16-23]",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 23,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 7,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPC": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 8,
++                                        "endbit": 15,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPD": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 16,
++                                        "endbit": 23,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "5a3a",
++        "name": "Create action template with concat cmd where opA is a bitslice not multiple of 8",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mymd[0-25] metadata.ptables.mymd[0-7] metadata.ptables.mymd[8-15] metadata.ptables.mymd[16-23]",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 25,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 7,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPC": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 8,
++                                        "endbit": 15,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPD": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 16,
++                                        "endbit": 23,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "b381",
++        "name": "Create valid action template with concat and create an instance of action",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test cmd concat metadata.ptables.mymd[0-25] metadata.ptables.mymd[0-7] metadata.ptables.mymd[8-15] metadata.ptables.mymd[16-23]",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action ptables/test index 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 0,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC actions flush action ptables/test",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "d382",
++        "name": "Try to create action template with cmd concats that's missing operands B and C",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest128 type bit128 mid 4",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest128",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "51ef",
++        "name": "Try to create action template with cmd concats that's missing operand C",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest128 type bit128 mid 4",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest128 constant.bit32.0x42",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "224b",
++        "name": "Try to create action template with cmd concat that's missing all operands",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest128 type bit128 mid 4",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test cmd concat metadata.ptables.mytest128 constant.bit32.0x42",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "0ada",
++        "name": "Create action template with concat cmd where opB is a parameter",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd concat metadata.ptables.mytest64 param.param1 metadata.ptables.mymd",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit64",
++                                        "startbit": 0,
++                                        "endbit": 63,
++                                        "pname": "ptables",
++                                        "name": "mytest64",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "param",
++                                        "pipeid": 22,
++                                        "actid": 1,
++                                        "paramid": 1
++                                    },
++                                    "OPC": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "cca5",
++        "name": "Create action template with concat cmd where opC is a parameter",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd concat metadata.ptables.mytest64 metadata.ptables.mymd param.param1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "concat",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit64",
++                                        "startbit": 0,
++                                        "endbit": 63,
++                                        "pname": "ptables",
++                                        "name": "mytest64",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPC": {
++                                        "type": "param",
++                                        "pipeid": 22,
++                                        "actid": 1,
++                                        "paramid": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8b8c",
++        "name": "Create action template with concat cmd where opA is a parameter",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd concat param.param1 metadata.ptables.mytest64 metadata.ptables.mymd",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8928",
++        "name": "Create action template with concat cmd where opA is a constant",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd concat constant.bit32.0x12 metadata.ptables.mytest64 metadata.ptables.mymd",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "ae2a",
++        "name": "Create action template with concat cmd where opA is a results.hit",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd concat results.hit metadata.ptables.mytest64 metadata.ptables.mymd",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "3cb8",
++        "name": "Create action template with set cmd where opA is a register",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create register/ptables/my_reg type bit32 numelems 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd set register.ptables.my_reg[0] metadata.ptables.mymd",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "id": 1
++                            }
++                        ],
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "register",
++                                        "pid": 22,
++                                        "pname": "ptables",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "idx": 0,
++                                        "regname": "my_reg",
++                                        "regid": 1
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "bb79",
++        "name": "Create action template with set cmd where opA is a register and try to delete register",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create register/ptables/my_reg type bit32 numelems 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32 cmd set register.ptables.my_reg[0] metadata.ptables.mymd",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template del register/ptables/my_reg",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "id": 1
++                            }
++                        ],
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "register",
++                                        "pid": 22,
++                                        "pname": "ptables",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "idx": 0,
++                                        "regname": "my_reg",
++                                        "regid": 1
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "487a",
++        "name": "Create action template with set cmd where opB is a register",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create register/ptables/my_reg type bit32 numelems 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd set metadata.ptables.mymd register.ptables.my_reg[1]",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "id": 1
++                            }
++                        ],
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPB": {
++                                        "type": "register",
++                                        "pid": 22,
++                                        "pname": "ptables",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "idx": 1,
++                                        "regname": "my_reg",
++                                        "regid": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "f46b",
++        "name": "Try to create action template with set cmd where opA is a register smaller than opB",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create register/ptables/my_reg type bit32 numelems 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd set register.ptables.my_reg[1] metadata.ptables.mytest64",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "1748",
++        "name": "Create action template with print cmd where opA is a register out-of-bounds",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create register/ptables/my_reg type bit32 numelems 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd print register.ptables.my_reg[2]",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "b7bf",
++        "name": "Create action template with concat cmd where opC is a register",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create register/ptables/my_reg type bit32 numelems 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd concat metadata.ptables.mytest64 metadata.ptables.mymd register.ptables.my_reg[1]",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "9164",
++        "name": "Try to create action template with concat cmd where opB is a register",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create register/ptables/my_reg type bit32 numelems 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd concat metadata.ptables.mytest64 register.ptables.my_reg[1] metadata.ptables.mymd",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "4c51",
++        "name": "Try to create action template with concat cmd where opA is a register",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mytest64 type bit64 mid 3",
++                0
++            ],
++            [
++                "$TC p4template create register/ptables/my_reg type bit32 numelems 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd concat register.ptables.my_reg[1] metadata.ptables.mytest64 metadata.ptables.mymd",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "e175",
++        "name": "Create act command with runtime params",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32 set metadata.ptables.mymd param.param1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test metadata.simple_l3_pna.mymd ",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test2",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test2",
++                        "actid": 2,
++                        "operations": [
++                            {
++                                "instruction": "act",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "action",
++                                        "pipeid": 22,
++                                        "id": 1
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del action/ptables/test2",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "69bf",
++        "name": "Create act command with runtime params and dump created action instance",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32 set metadata.ptables.mymd param.param1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test metadata.simple_l3_pna.mymd ",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit32",
++                                "value": {
++                                    "type": "metadata",
++                                    "container": "bit32",
++                                    "startbit": 0,
++                                    "endbit": 31,
++                                    "pname": "ptables",
++                                    "name": "mymd",
++                                    "id": 1
++                                },
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 1,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del action/ptables/test2",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "8c97",
++        "name": "Create runtime act command with no params",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test set metadata.ptables.mymd constant.bit32.0x12",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test2",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test2",
++                        "actid": 2,
++                        "operations": [
++                            {
++                                "instruction": "act",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "action",
++                                        "pipeid": 22,
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del action/ptables/test2",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "b745",
++        "name": "Create runtime act command with wrong number of params",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test params param1 type bit32 set metadata.ptables.mymd param.param1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test metadata.ptables.mymd constant.bit32.0x12",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test2",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "979d",
++        "name": "Create act command with P4TC_CMD_OPERS_MAX runtime params",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32 param param2 type bit32 param param3 type bit32 param param4 type bit32 param param5 type bit32 param param6 type bit32 param param7 type bit32 param param8 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test cmd print param.param1 cmd print param.param2 cmd print param.param3 cmd set metadata.ptables.mymd param.param4 cmd set metadata.ptables.mymd param.param5 cmd set metadata.ptables.mymd param.param6 cmd set metadata.ptables.mymd param.param7 cmd set metadata.ptables.mymd param.param8",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test metadata.simple_l3_pna.mymd constant.bit32.0x12 constant.bit32.32 constant.bit32.0x34 constant.bit32.97 metadata.simple_l3_pna.mymd constant.bit32.0x12 constant.bit32.0x34",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j p4template get action/ptables/test2",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test2",
++                        "actid": 2,
++                        "operations": [
++                            {
++                                "instruction": "act",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "action",
++                                        "pipeid": 22,
++                                        "id": 1
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPC": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 18
++                                    },
++                                    "OPD": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 32
++                                    },
++                                    "OPE": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 52
++                                    },
++                                    "OPF": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 97
++                                    },
++                                    "OPG": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    },
++                                    "OPH": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 18
++                                    },
++                                    "OPI": {
++                                        "type": "constant",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "container": "bit32",
++                                        "value": 52
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del action/ptables/test2",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "e0ea",
++        "name": "Create act command with runtime param of type bit64 and dump created action instance",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit64 print param.param1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test constant.bit64.62",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "bit64",
++                                "value": {
++                                    "type": "constant",
++                                    "startbit": 0,
++                                    "endbit": 63,
++                                    "container": "bit64",
++                                    "value": 62
++                                },
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 1,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del action/ptables/test2",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "353d",
++        "name": "Create act command with runtime param of type macaddr and dump created action instance",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type macaddr print param.param1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test constant.macaddr.AA:BB:CC:DD:EE:FF",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "macaddr",
++                                "value": {
++                                    "type": "constant",
++                                    "startbit": 0,
++                                    "endbit": 47,
++                                    "container": "macaddr",
++                                    "value": "aa:bb:cc:dd:ee:ff"
++                                },
++                                "id": 1
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 1,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del action/ptables/test2",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "1e47",
++        "name": "Create act command with 2 runtime params",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type macaddr param param2 type macaddr cmd print param.param1 cmd print param.param2",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test constant.macaddr.AA:BB:CC:DD:EE:FF constant.macaddr.AA:CC:BB:DD:EE:FF",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "macaddr",
++                                "value": {
++                                    "type": "constant",
++                                    "startbit": 0,
++                                    "endbit": 47,
++                                    "container": "macaddr",
++                                    "value": "aa:bb:cc:dd:ee:ff"
++                                },
++                                "id": 1
++                            },
++                            {
++                                "name": "param2",
++                                "type": "macaddr",
++                                "value": {
++                                    "type": "constant",
++                                    "startbit": 0,
++                                    "endbit": 47,
++                                    "container": "macaddr",
++                                    "value": "aa:cc:bb:dd:ee:ff"
++                                },
++                                "id": 2
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 1,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del action/ptables/test2",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "0479",
++        "name": "Create act command with 2 runtime params and one is of type dev",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type macaddr param param2 type dev cmd print param.param1 cmd print param.param2",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test2 cmd act ptables.test constant.macaddr.AA:BB:CC:DD:EE:FF dev.lo",
++        "expExitCode": "0",
++        "verifyCmd": "$TC -j actions get action ptables/test index 1",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "total acts": 0
++            },
++            {
++                "actions": [
++                    {
++                        "order": 1,
++                        "kind": "ptables/test",
++                        "params": [
++                            {
++                                "name": "param1",
++                                "type": "macaddr",
++                                "value": {
++                                    "type": "constant",
++                                    "startbit": 0,
++                                    "endbit": 47,
++                                    "container": "macaddr",
++                                    "value": "aa:bb:cc:dd:ee:ff"
++                                },
++                                "id": 1
++                            },
++                            {
++                                "name": "param2",
++                                "type": "dev",
++                                "value": {
++                                    "type": "dev",
++                                    "dev": "lo"
++                                },
++                                "id": 2
++                            }
++                        ],
++                        "index": 1,
++                        "ref": 1,
++                        "bind": 1,
++                        "not_in_hw": true
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del action/ptables/test2",
++                0
++            ],
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "3845",
++        "name": "Create valid action template with cmd that sets skbmark to ptables.mymd and try to delete ptables.mymd",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create metadata/ptables/mymd type bit32 mid 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test cmd set metadata.kernel.skbmark metadata.ptables.mymd",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template del metadata/ptables/mymd",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test",
++                        "actid": 1,
++                        "operations": [
++                            {
++                                "instruction": "set",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "kernel",
++                                        "name": "skbmark",
++                                        "id": 3
++                                    },
++                                    "OPB": {
++                                        "type": "metadata",
++                                        "container": "bit32",
++                                        "startbit": 0,
++                                        "endbit": 31,
++                                        "pname": "ptables",
++                                        "name": "mymd",
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "62aa",
++        "name": "Create valid action template with cmd that calls pipeline action and try to delete action",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test param param1 type bit32 id 1 4294967295 index 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test2 cmd act ptables.test.1",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template del action/ptables/test",
++        "expExitCode": "255",
++        "verifyCmd": "$TC -j p4template get action/ptables/test2",
++        "matchCount": "1",
++        "matchJSON": [
++            {
++                "obj": "action template",
++                "pname": "ptables",
++                "pipeid": 22
++            },
++            {
++                "templates": [
++                    {
++                        "aname": "ptables/test2",
++                        "actid": 2,
++                        "operations": [
++                            {
++                                "instruction": "act",
++                                "control_action": {
++                                    "type": "pipe"
++                                },
++                                "operands": {
++                                    "OPA": {
++                                        "pipeid": 22,
++                                        "id": 1
++                                    }
++                                }
++                            }
++                        ]
++                    }
++                ]
++            }
++        ],
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "fc32",
++        "name": "Try call unknown pipeline action",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template create action/ptables/test param param1 type bit32 cmd act ptables.test2.1",
++        "expExitCode": "255",
++        "verifyCmd": "$TC p4template get action/ptables/test",
++        "matchCount": "1",
++        "matchPattern": "Error: Action name not found.*",
++        "teardown": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0
++            ],
++            [
++                "$TC actions flush action gact",
++                0
++            ]
++        ]
++    },
++    {
++        "id": "578e",
++        "name": "Try more complex act dependency graph and delete pipeline",
++        "category": [
++            "p4tc",
++            "template"
++        ],
++        "setup": [
++            [
++                "$TC p4template del pipeline/ptables",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions flush action gact",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 1",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC actions add action pass index 2",
++                0,
++                1,
++                255
++            ],
++            [
++                "$TC p4template create pipeline/ptables pipeid 22 maxrules 1 numtables 2 preactions action gact index 1 postactions action gact index 2",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test4 param param1 type bit32",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test4 state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test4 param param1 type bit32 id 1 4294967295 index 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test2 param param1 type bit32 cmd act ptables.test4.1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test2 state active",
++                0
++            ],
++            [
++                "$TC actions add action ptables/test2 param param1 type bit32 id 1 4294967295 index 1",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test3 param param1 type bit32 cmd act ptables.test4.1 cmd act ptables.test2.1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test3 state active",
++                0
++            ],
++            [
++                "$TC p4template create action/ptables/test param param1 type bit32 cmd act ptables.test2.1",
++                0
++            ],
++            [
++                "$TC p4template update action/ptables/test state active",
++                0
++            ]
++        ],
++        "cmdUnderTest": "$TC p4template del pipeline/ptables",
++        "expExitCode": "0",
++        "verifyCmd": "$TC p4template get pipeline/ptables",
++        "matchCount": "1",
++        "matchPattern": "Error: Pipeline name not found.*",
++        "teardown": []
 +    }
 +]
 -- 
