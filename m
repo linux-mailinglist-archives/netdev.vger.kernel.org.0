@@ -1,129 +1,112 @@
-Return-Path: <netdev+bounces-3210-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3211-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0CB6A705F9B
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 07:56:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7D208705FB3
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 08:00:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A81C728146B
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 05:56:52 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2A1321C20D7E
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 06:00:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D128C53BD;
-	Wed, 17 May 2023 05:56:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2DAB85662;
+	Wed, 17 May 2023 06:00:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1E0C5255
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 05:56:50 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED382E4D
-	for <netdev@vger.kernel.org>; Tue, 16 May 2023 22:56:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684303007;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=paowWkASk16hubwATQo3Brz1Kl1HeTMdLB0m2zyw74E=;
-	b=bdvSWKHeNOlIIJ/J6tl+/KPwH1yHn0QfdjYYJvworW22Q+sFX3I+J9O+8Tp0ZeCeOHxjdc
-	jakieHi/okuIg1InoCb7CGVU5mfc06KHipu8ziJ2w4E80GEPWAl+wMYhbWy/6S06JzrMD5
-	qePWxQrig26byjy3xdW6DuzvXy+0u+Y=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-584-_xxic82wNWS3nnAZi78-TQ-1; Wed, 17 May 2023 01:56:45 -0400
-X-MC-Unique: _xxic82wNWS3nnAZi78-TQ-1
-Received: by mail-lf1-f70.google.com with SMTP id 2adb3069b0e04-4ef455ba61cso292618e87.0
-        for <netdev@vger.kernel.org>; Tue, 16 May 2023 22:56:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684303004; x=1686895004;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=paowWkASk16hubwATQo3Brz1Kl1HeTMdLB0m2zyw74E=;
-        b=Sm01pZE9cEFmtHLPM5ZUujVgkGEmRl6IpK3utn0UC5LMsLwSa2noWBlNy5EF7QZPSj
-         1VM+1Rj7irhe5RlqPFwP9ggjmR8kDvcsx1xDS55eJ2+HDwCFdfIi3pWh6cOjrZglf64s
-         IHYxH4sE03OEoFVVOaMBvmHYvfLdpU2w58Cv5xper9pCGY0qicrQRpTfNZs2prrPF4IA
-         vMokCc2PjsfhENt2pPxowLFHSN9Fyz0B1mpjdJovYLDZkc86IIiN8WnVUqgzBvurFUyF
-         hdTZVuPdQ7bDZMqq/BX+loWJ9gbHizrlDuwJnUIuxvBRte6rDptA+BoX0t/saq1SvcNB
-         /wrg==
-X-Gm-Message-State: AC+VfDw4K/2wCNDk++5Ci034rwaswrz97MM14+7HkhtzRCwp20h7RQsf
-	VXfXwUZgKbtiyjs3bs2tYfcLO21LalX41BN3lh2FPTfMwpo5n8TIi61ecGMoovQQf0pedsQda2V
-	7NqyHUVtA4c0E47QfuHtc3rRcwWnVomKD
-X-Received: by 2002:a19:ee0f:0:b0:4f1:1de7:1aaf with SMTP id g15-20020a19ee0f000000b004f11de71aafmr8591205lfb.69.1684303004490;
-        Tue, 16 May 2023 22:56:44 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6c5lVz5bfrEcS2OQVMQdb5WrybHfTwnvBceDooNozxkZdY1qQHR0m0Uhv89nelaL2B6z9XJn/liEVS/bUZXdA=
-X-Received: by 2002:a19:ee0f:0:b0:4f1:1de7:1aaf with SMTP id
- g15-20020a19ee0f000000b004f11de71aafmr8591199lfb.69.1684303004242; Tue, 16
- May 2023 22:56:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC09440A
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 06:00:45 +0000 (UTC)
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 156D126A1;
+	Tue, 16 May 2023 23:00:44 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+	by mailout.nyi.internal (Postfix) with ESMTP id C43D85C01C7;
+	Wed, 17 May 2023 02:00:40 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 17 May 2023 02:00:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1684303240; x=1684389640; bh=b+5PKyknPkYcK
+	IktJykWfMQ2ZNruWkKZ/Da362HiLq4=; b=Jtvf/z12zJDb6on6nsKKmmBiKQYCU
+	nNU9ppaj1CPOFF4USYlfmYG2VIyCjx9n9SPkDAsyvWdf3GuoZYlFd4ySoCdz5lSB
+	aICT6PEKjh6dXBl+bneqo8pSd8ZRdp2f9x32vDzznGfMWRpLC3b9HhacFHIP9JRZ
+	3md7AXmLUmFK1O5HQ+D6f9kGAeTLOHNIojTwWhX02X1jlnJDrNDLL4JOgzop27tw
+	gJDSldHJdaQrbsM7D4bThzx42CHUeZmQk8Wupqy9FNXNqrGntcm0wroJ50g8basa
+	TSrIn2cmHALT1tmeC3DDCWepN3PvgEeUXHwLk3oDCrrxBOeBHPcqjVNmQ==
+X-ME-Sender: <xms:iG1kZH0Tnbe-77abz2dcGS08XOkF1iAQ_HE_DzPkk6gnd2oer3MAVw>
+    <xme:iG1kZGG2lfIcuD4Mufj7JG37MUrej7Dyd4wZ0n_0vpYBO7CBoYunITJzoP999vLan
+    VonVD5AqylvuHg>
+X-ME-Received: <xmr:iG1kZH4lZgJVly8P1GOnoyW44UtDlk2vwqUhYaSVzyn7PstjCD0XYGywaGKPV_ux_7gME_fq98cwUFqbFX4b36j8M4g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeeitddgleeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtuggjsehttd
+    ertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
+    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeehhfdtjedviefffeduuddvffegte
+    eiieeguefgudffvdfftdefheeijedthfejkeenucffohhmrghinhepkhgvrhhnvghlrdho
+    rhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:iG1kZM2WOORpdKZxsXNPo9pfToo8xX2JNm4ctTnAs3I6sM2DxWd0YA>
+    <xmx:iG1kZKEn1AoBp0yjNFts8kaiUUioIhJIfAShWugx_siDtJ540XscSw>
+    <xmx:iG1kZN8hQt-ycQo4TwNFPdr4WPS5RWjC6DfVf7VXChki9YcERGPJ5g>
+    <xmx:iG1kZN2azbljODst3GA4GACfvpbSRXSop0xNU-6sQeJk3USPMH5CPA>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 17 May 2023 02:00:39 -0400 (EDT)
+Date: Wed, 17 May 2023 09:00:37 +0300
+From: Ido Schimmel <idosch@idosch.org>
+To: Po-Hsu Lin <po-hsu.lin@canonical.com>
+Cc: linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	netdev@vger.kernel.org, dsahern@gmail.com, shuah@kernel.org,
+	pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+	davem@davemloft.net
+Subject: Re: [PATCH] selftests: fib_tests: mute cleanup error message
+Message-ID: <ZGRthdt5u88zs6xy@shredder>
+References: <20230517041119.202072-1-po-hsu.lin@canonical.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <29db10bca7e5ef6b1137282292660fc337a4323a.1683907102.git.allen.hubbe@amd.com>
-In-Reply-To: <29db10bca7e5ef6b1137282292660fc337a4323a.1683907102.git.allen.hubbe@amd.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Wed, 17 May 2023 13:56:33 +0800
-Message-ID: <CACGkMEu2d2ap_jzUGH8MpLZvscEPGZLtDxRqM2gjPQ43GS1B1g@mail.gmail.com>
-Subject: Re: [PATCH] vdpa: consume device_features parameter
-To: Shannon Nelson <shannon.nelson@amd.com>
-Cc: dsahern@kernel.org, netdev@vger.kernel.org, 
-	virtualization@lists.linux-foundation.org, mst@redhat.com, 
-	allen.hubbe@amd.com, drivers@pensando.io
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230517041119.202072-1-po-hsu.lin@canonical.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sat, May 13, 2023 at 12:42=E2=80=AFAM Shannon Nelson <shannon.nelson@amd=
-.com> wrote:
->
-> From: Allen Hubbe <allen.hubbe@amd.com>
->
-> Consume the parameter to device_features when parsing command line
-> options.  Otherwise the parameter may be used again as an option name.
->
->  # vdpa dev add ... device_features 0xdeadbeef mac 00:11:22:33:44:55
->  Unknown option "0xdeadbeef"
->
-> Fixes: a4442ce58ebb ("vdpa: allow provisioning device features")
-> Signed-off-by: Allen Hubbe <allen.hubbe@amd.com>
-> Reviewed-by: Shannon Nelson <shannon.nelson@amd.com>
+On Wed, May 17, 2023 at 12:11:19PM +0800, Po-Hsu Lin wrote:
+> In the end of the test, there will be an error message induced by the
+> `ip netns del ns1` command in cleanup()
+> 
+>   Tests passed: 201
+>   Tests failed:   0
+>   Cannot remove namespace file "/run/netns/ns1": No such file or directory
+> 
+> Redirect the error message to /dev/null to mute it.
+> 
+> Fixes: a0e11da78f48 ("fib_tests: Add tests for metrics on routes")
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+I don't think this tag is correct. More likely that this is caused by
+commit b60417a9f2b8 ("selftest: fib_tests: Always cleanup before exit").
 
-Thanks
+You can even reproduce it with '-h':
 
-> ---
->  vdpa/vdpa.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-> index 27647d73d498..8a2fca8647b6 100644
-> --- a/vdpa/vdpa.c
-> +++ b/vdpa/vdpa.c
-> @@ -353,6 +353,8 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int arg=
-c, char **argv,
->                                                 &opts->device_features);
->                         if (err)
->                                 return err;
-> +
-> +                       NEXT_ARG_FWD();
->                         o_found |=3D VDPA_OPT_VDEV_FEATURES;
->                 } else {
->                         fprintf(stderr, "Unknown option \"%s\"\n", *argv)=
-;
-> --
-> 2.17.1
->
+# ./fib_tests.sh -h
+usage: fib_tests.sh OPTS
+[...]
+Cannot remove namespace file "/var/run/netns/ns1": No such file or directory
 
+Reverting the commit I mentioned makes it go away.
+
+Also, please use "PATCH net" prefix:
+https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html#tl-dr
 
