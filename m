@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-3334-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3330-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B798E7067AE
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:11:41 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4987B70679E
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:10:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 244152813DE
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:11:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0FD541C20EAB
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:10:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E2E32C755;
-	Wed, 17 May 2023 12:10:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFFF62C758;
+	Wed, 17 May 2023 12:10:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A5C52C753
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51F312C74F
 	for <netdev@vger.kernel.org>; Wed, 17 May 2023 12:10:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 26563C4339B;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 13809C433D2;
 	Wed, 17 May 2023 12:10:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1684325422;
-	bh=sW0FRrqOmDhG5KmpEjyQNNMkOe9ZvgHDFcIviNx97QQ=;
+	bh=WkffU6QPye9oDs/VVkB255WhFgC/yxBq7R2kpafb9/U=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=Lf+FJa2SwDGMapP1t5rodG6n3R0jzkxyQ8gTeam5haKY3C7eGD3XVtmOzBX3c8tWu
-	 C8+nYkj9PMbr+P2AucXBEWWHWEKsfmlB+PLNXp0iSsv+efW1NBT0ijGaGqp2rWfJCm
-	 uHrvz2bSlpiVyiYBKY4naDI5qxlgbQSooJqrzomRqG5pMlRu1mxVSPZmXYAdsn8A5r
-	 H4SGedo+E0R3Lj0ksnDq8yt428/YcAhILPrytW8LZXZyXy7rAlc9l5xqhWvg89FbXE
-	 kwyLSvRcKITUl3pBnVe+gV+I5BZdb3COFxawWtl7q8AQmt8cuM0IJDZzUGo/TN+VFU
-	 79yougumarNsw==
+	b=ce4sgn2KOIrAGUuiXkwrxDCfxUM12QLBpB3CzdV3rWiwYrq4k728hlB3ZIt5sqY3k
+	 8R4DRW7qZdz9kBHjoCUFen2QB4X2GoMu7JqUm1YQogBjnI4mfUjUzYpbFt+sljJIKu
+	 pnH5sVSLDwzJe9QCN0L54tZ/CsMThoJ5Ec35uFqEiCa1n+0MixP6P8q47hdCTR+wE+
+	 9xgmzB6z67YsFXLvxX0g4Ao6o5VSKKl+GrgW249hxpv1zNJxIT1br22AioLX9xtlra
+	 4GJ9igOJolLpDXBW2BFWGolCe4pzv+1cLuKAyh8iQuutCZRfQZsjiYeNVePXCsKL6v
+	 kOClqhcqZ9H6Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F1EE0E5421C;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E63B4E21EEC;
 	Wed, 17 May 2023 12:10:21 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,41 +41,35 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: wwan: t7xx: Ensure init is completed before system
- sleep
+Subject: Re: [PATCH net] net: selftests: Fix optstring
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168432542198.5953.10423705837174683660.git-patchwork-notify@kernel.org>
+ <168432542193.5953.5435718543306108946.git-patchwork-notify@kernel.org>
 Date: Wed, 17 May 2023 12:10:21 +0000
-References: <20230517052451.398452-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20230517052451.398452-1-kai.heng.feng@canonical.com>
-To: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc: chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
- chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
- m.chetan.kumar@linux.intel.com, ricardo.martinez@linux.intel.com,
- loic.poulain@linaro.org, ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230516184924.153498-1-bpoirier@nvidia.com>
+In-Reply-To: <20230516184924.153498-1-bpoirier@nvidia.com>
+To: Benjamin Poirier <bpoirier@nvidia.com>
+Cc: netdev@vger.kernel.org, amcohen@nvidia.com,
+ linux-kselftest@vger.kernel.org, idosch@nvidia.com
 
 Hello:
 
 This patch was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 17 May 2023 13:24:51 +0800 you wrote:
-> When the system attempts to sleep while mtk_t7xx is not ready, the driver
-> cannot put the device to sleep:
-> [   12.472918] mtk_t7xx 0000:57:00.0: [PM] Exiting suspend, modem in invalid state
-> [   12.472936] mtk_t7xx 0000:57:00.0: PM: pci_pm_suspend(): t7xx_pci_pm_suspend+0x0/0x20 [mtk_t7xx] returns -14
-> [   12.473678] mtk_t7xx 0000:57:00.0: PM: dpm_run_callback(): pci_pm_suspend+0x0/0x1b0 returns -14
-> [   12.473711] mtk_t7xx 0000:57:00.0: PM: failed to suspend async: error -14
-> [   12.764776] PM: Some devices failed to suspend, or early wake event detected
+On Tue, 16 May 2023 14:49:24 -0400 you wrote:
+> The cited commit added a stray colon to the 'v' option. That makes the
+> option work incorrectly.
+> 
+> ex:
+> tools/testing/selftests/net# ./fib_nexthops.sh -v
+> (should enable verbose mode, instead it shows help text due to missing arg)
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] net: wwan: t7xx: Ensure init is completed before system sleep
-    https://git.kernel.org/netdev/net/c/ab87603b2511
+  - [net] net: selftests: Fix optstring
+    https://git.kernel.org/netdev/net/c/9ba9485b87ac
 
 You are awesome, thank you!
 -- 
