@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-3152-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3154-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6AFD5705CA8
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 03:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id AA17D705CAA
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 03:53:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 65A4A1C20D8F
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 01:52:27 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A5C3B1C20D5A
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 01:53:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A471517F6;
-	Wed, 17 May 2023 01:50:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 30ADE5238;
+	Wed, 17 May 2023 01:50:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1381023A3
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 01:50:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61182C4339E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD29A23A4
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 01:50:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7DB5C433EF;
 	Wed, 17 May 2023 01:50:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684288255;
-	bh=8+IICJDjnvvAdgvHZ6THtzmcTnD9T7OFbNs7gEsVo3E=;
+	s=k20201202; t=1684288256;
+	bh=pW1+h4gXVZpDphBC3I2vREw8/FwwlQy1WBIZp69mtq8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=IfRzuUbeGlM3VCdSm74t6gCO7aHhx8UxWJ8ccJB+mojuck4nClaDF8/0aKkpXhaB7
-	 zmtq/a/9VbZY+UW53wuurgc/CoT6TkWtwFj0JkRtCZCQhI5A1r5sdtphNMckEByfDe
-	 M3aXBubmeF97zC6xc+6Vubf1AOClv5AqUIysPYFkeim4+DUTPdZevrcBHVoSO4lXv8
-	 LjhXKeZwVRVfzKe0JBkHr/rDhCsyy4qf4OoXDYOWaAWmjruaX2b23zxayybPE6sBIQ
-	 IUyw9/M2COGzgTe/+WwPvCD6oGAsgVeIEjZc0ErVL8DOzyGRoxP67ur32+re4j8D+u
-	 9ebmwF7Ic3nXg==
+	b=kI/7HQ63HH3WeIxurqWbaQQq/GxeG250Va/1gfIy3zohpNLfku82+vg1o8rKK+Jiv
+	 4oqdqx5CU7fVBD0HMqSig9fVptgeqq50fp3A1kIMv79Ccsz6I1QgsM4SCQw4tgUdfM
+	 oTmf3rj1FDl6kwpJXM2tDn7JmaZaQEVkkUnnvhB7SPl/FQZKAhHrHKME27eH8plw64
+	 eNVR4EcajfPYpbP8kf1FqnH/nbTodCdc28EINYZeeLMYeujkssltPtPqdJDbigF+Aa
+	 KA5eBMztIOQ6r8ypxEIbN7+QrT76XcRTNaS69ZQiFtH7tg0n/KSWZd3Rl5eX4CFvea
+	 nw4LI2mxUp7DA==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -40,9 +40,9 @@ Cc: netdev@vger.kernel.org,
 	tariqt@nvidia.com,
 	Jakub Kicinski <kuba@kernel.org>,
 	Shai Amiram <samiram@nvidia.com>
-Subject: [PATCH net 5/7] tls: rx: strp: factor out copying skb data
-Date: Tue, 16 May 2023 18:50:40 -0700
-Message-Id: <20230517015042.1243644-6-kuba@kernel.org>
+Subject: [PATCH net 6/7] tls: rx: strp: preserve decryption status of skbs when needed
+Date: Tue, 16 May 2023 18:50:41 -0700
+Message-Id: <20230517015042.1243644-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230517015042.1243644-1-kuba@kernel.org>
 References: <20230517015042.1243644-1-kuba@kernel.org>
@@ -54,74 +54,253 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-We'll need to copy input skbs individually in the next patch.
-Factor that code out (without assuming we're copying a full record).
+When receive buffer is small we try to copy out the data from
+TCP into a skb maintained by TLS to prevent connection from
+stalling. Unfortunately if a single record is made up of a mix
+of decrypted and non-decrypted skbs combining them into a single
+skb leads to loss of decryption status, resulting in decryption
+errors or data corruption.
 
+Similarly when trying to use TCP receive queue directly we need
+to make sure that all the skbs within the record have the same
+status. If we don't the mixed status will be detected correctly
+but we'll CoW the anchor, again collapsing it into a single paged
+skb without decrypted status preserved. So the "fixup" code will
+not know which parts of skb to re-encrypt.
+
+Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
 Tested-by: Shai Amiram <samiram@nvidia.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/tls/tls_strp.c | 33 +++++++++++++++++++++++----------
- 1 file changed, 23 insertions(+), 10 deletions(-)
+ include/net/tls.h    |   1 +
+ net/tls/tls.h        |   5 ++
+ net/tls/tls_device.c |  22 +++-----
+ net/tls/tls_strp.c   | 117 ++++++++++++++++++++++++++++++++++++-------
+ 4 files changed, 114 insertions(+), 31 deletions(-)
 
-diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
-index e2e48217e7ac..61fbf84baf9e 100644
---- a/net/tls/tls_strp.c
-+++ b/net/tls/tls_strp.c
-@@ -34,31 +34,44 @@ static void tls_strp_anchor_free(struct tls_strparser *strp)
- 	strp->anchor = NULL;
+diff --git a/include/net/tls.h b/include/net/tls.h
+index 6056ce5a2aa5..596595c4b1af 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -126,6 +126,7 @@ struct tls_strparser {
+ 	u32 mark : 8;
+ 	u32 stopped : 1;
+ 	u32 copy_mode : 1;
++	u32 mixed_decrypted : 1;
+ 	u32 msg_ready : 1;
+ 
+ 	struct strp_msg stm;
+diff --git a/net/tls/tls.h b/net/tls/tls.h
+index 804c3880d028..0672acab2773 100644
+--- a/net/tls/tls.h
++++ b/net/tls/tls.h
+@@ -167,6 +167,11 @@ static inline bool tls_strp_msg_ready(struct tls_sw_context_rx *ctx)
+ 	return ctx->strp.msg_ready;
  }
  
--/* Create a new skb with the contents of input copied to its page frags */
--static struct sk_buff *tls_strp_msg_make_copy(struct tls_strparser *strp)
-+static struct sk_buff *
-+tls_strp_skb_copy(struct tls_strparser *strp, struct sk_buff *in_skb,
-+		  int offset, int len)
- {
--	struct strp_msg *rxm;
- 	struct sk_buff *skb;
--	int i, err, offset;
-+	int i, err;
- 
--	skb = alloc_skb_with_frags(0, strp->stm.full_len, TLS_PAGE_ORDER,
-+	skb = alloc_skb_with_frags(0, len, TLS_PAGE_ORDER,
- 				   &err, strp->sk->sk_allocation);
- 	if (!skb)
- 		return NULL;
- 
--	offset = strp->stm.offset;
- 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
- 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
- 
--		WARN_ON_ONCE(skb_copy_bits(strp->anchor, offset,
-+		WARN_ON_ONCE(skb_copy_bits(in_skb, offset,
- 					   skb_frag_address(frag),
- 					   skb_frag_size(frag)));
- 		offset += skb_frag_size(frag);
- 	}
- 
--	skb->len = strp->stm.full_len;
--	skb->data_len = strp->stm.full_len;
--	skb_copy_header(skb, strp->anchor);
-+	skb->len = len;
-+	skb->data_len = len;
-+	skb_copy_header(skb, in_skb);
-+	return skb;
++static inline bool tls_strp_msg_mixed_decrypted(struct tls_sw_context_rx *ctx)
++{
++	return ctx->strp.mixed_decrypted;
 +}
 +
-+/* Create a new skb with the contents of input copied to its page frags */
-+static struct sk_buff *tls_strp_msg_make_copy(struct tls_strparser *strp)
+ #ifdef CONFIG_TLS_DEVICE
+ int tls_device_init(void);
+ void tls_device_cleanup(void);
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 3b87c7b04ac8..bf69c9d6d06c 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1007,20 +1007,14 @@ int tls_device_decrypted(struct sock *sk, struct tls_context *tls_ctx)
+ 	struct tls_sw_context_rx *sw_ctx = tls_sw_ctx_rx(tls_ctx);
+ 	struct sk_buff *skb = tls_strp_msg(sw_ctx);
+ 	struct strp_msg *rxm = strp_msg(skb);
+-	int is_decrypted = skb->decrypted;
+-	int is_encrypted = !is_decrypted;
+-	struct sk_buff *skb_iter;
+-	int left;
+-
+-	left = rxm->full_len + rxm->offset - skb_pagelen(skb);
+-	/* Check if all the data is decrypted already */
+-	skb_iter = skb_shinfo(skb)->frag_list;
+-	while (skb_iter && left > 0) {
+-		is_decrypted &= skb_iter->decrypted;
+-		is_encrypted &= !skb_iter->decrypted;
+-
+-		left -= skb_iter->len;
+-		skb_iter = skb_iter->next;
++	int is_decrypted, is_encrypted;
++
++	if (!tls_strp_msg_mixed_decrypted(sw_ctx)) {
++		is_decrypted = skb->decrypted;
++		is_encrypted = !is_decrypted;
++	} else {
++		is_decrypted = 0;
++		is_encrypted = 0;
+ 	}
+ 
+ 	trace_tls_device_decrypted(sk, tcp_sk(sk)->copied_seq - rxm->full_len,
+diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
+index 61fbf84baf9e..da95abbb7ea3 100644
+--- a/net/tls/tls_strp.c
++++ b/net/tls/tls_strp.c
+@@ -29,7 +29,8 @@ static void tls_strp_anchor_free(struct tls_strparser *strp)
+ 	struct skb_shared_info *shinfo = skb_shinfo(strp->anchor);
+ 
+ 	DEBUG_NET_WARN_ON_ONCE(atomic_read(&shinfo->dataref) != 1);
+-	shinfo->frag_list = NULL;
++	if (!strp->copy_mode)
++		shinfo->frag_list = NULL;
+ 	consume_skb(strp->anchor);
+ 	strp->anchor = NULL;
+ }
+@@ -195,22 +196,22 @@ static void tls_strp_flush_anchor_copy(struct tls_strparser *strp)
+ 	for (i = 0; i < shinfo->nr_frags; i++)
+ 		__skb_frag_unref(&shinfo->frags[i], false);
+ 	shinfo->nr_frags = 0;
++	if (strp->copy_mode) {
++		kfree_skb_list(shinfo->frag_list);
++		shinfo->frag_list = NULL;
++	}
+ 	strp->copy_mode = 0;
++	strp->mixed_decrypted = 0;
+ }
+ 
+-static int tls_strp_copyin(read_descriptor_t *desc, struct sk_buff *in_skb,
+-			   unsigned int offset, size_t in_len)
++static int tls_strp_copyin_frag(struct tls_strparser *strp, struct sk_buff *skb,
++				struct sk_buff *in_skb, unsigned int offset,
++				size_t in_len)
+ {
+-	struct tls_strparser *strp = (struct tls_strparser *)desc->arg.data;
+-	struct sk_buff *skb;
+-	skb_frag_t *frag;
+ 	size_t len, chunk;
++	skb_frag_t *frag;
+ 	int sz;
+ 
+-	if (strp->msg_ready)
+-		return 0;
+-
+-	skb = strp->anchor;
+ 	frag = &skb_shinfo(skb)->frags[skb->len / PAGE_SIZE];
+ 
+ 	len = in_len;
+@@ -228,10 +229,8 @@ static int tls_strp_copyin(read_descriptor_t *desc, struct sk_buff *in_skb,
+ 		skb_frag_size_add(frag, chunk);
+ 
+ 		sz = tls_rx_msg_size(strp, skb);
+-		if (sz < 0) {
+-			desc->error = sz;
+-			return 0;
+-		}
++		if (sz < 0)
++			return sz;
+ 
+ 		/* We may have over-read, sz == 0 is guaranteed under-read */
+ 		if (unlikely(sz && sz < skb->len)) {
+@@ -271,15 +270,99 @@ static int tls_strp_copyin(read_descriptor_t *desc, struct sk_buff *in_skb,
+ 		offset += chunk;
+ 	}
+ 
+-	if (strp->stm.full_len == skb->len) {
++read_done:
++	return in_len - len;
++}
++
++static int tls_strp_copyin_skb(struct tls_strparser *strp, struct sk_buff *skb,
++			       struct sk_buff *in_skb, unsigned int offset,
++			       size_t in_len)
 +{
-+	struct strp_msg *rxm;
++	struct sk_buff *nskb, *first, *last;
++	struct skb_shared_info *shinfo;
++	size_t chunk;
++	int sz;
++
++	if (strp->stm.full_len)
++		chunk = strp->stm.full_len - skb->len;
++	else
++		chunk = TLS_MAX_PAYLOAD_SIZE + PAGE_SIZE;
++	chunk = min(chunk, in_len);
++
++	nskb = tls_strp_skb_copy(strp, in_skb, offset, chunk);
++	if (!nskb)
++		return -ENOMEM;
++
++	shinfo = skb_shinfo(skb);
++	if (!shinfo->frag_list) {
++		shinfo->frag_list = nskb;
++		nskb->prev = nskb;
++	} else {
++		first = shinfo->frag_list;
++		last = first->prev;
++		last->next = nskb;
++		first->prev = nskb;
++	}
++
++	skb->len += chunk;
++	skb->data_len += chunk;
++
++	if (!strp->stm.full_len) {
++		sz = tls_rx_msg_size(strp, skb);
++		if (sz < 0)
++			return sz;
++
++		/* We may have over-read, sz == 0 is guaranteed under-read */
++		if (unlikely(sz && sz < skb->len)) {
++			int over = skb->len - sz;
++
++			WARN_ON_ONCE(over > chunk);
++			skb->len -= over;
++			skb->data_len -= over;
++			__pskb_trim(nskb, nskb->len - over);
++
++			chunk -= over;
++		}
++
++		strp->stm.full_len = sz;
++	}
++
++	return chunk;
++}
++
++static int tls_strp_copyin(read_descriptor_t *desc, struct sk_buff *in_skb,
++			   unsigned int offset, size_t in_len)
++{
++	struct tls_strparser *strp = (struct tls_strparser *)desc->arg.data;
 +	struct sk_buff *skb;
++	int ret;
 +
-+	skb = tls_strp_skb_copy(strp, strp->anchor, strp->stm.offset,
-+				strp->stm.full_len);
-+	if (!skb)
-+		return NULL;
++	if (strp->msg_ready)
++		return 0;
 +
- 	rxm = strp_msg(skb);
- 	rxm->offset = 0;
- 	return skb;
++	skb = strp->anchor;
++	if (!skb->len)
++		skb_copy_decrypted(skb, in_skb);
++	else
++		strp->mixed_decrypted |= !!skb_cmp_decrypted(skb, in_skb);
++
++	if (IS_ENABLED(CONFIG_TLS_DEVICE) && strp->mixed_decrypted)
++		ret = tls_strp_copyin_skb(strp, skb, in_skb, offset, in_len);
++	else
++		ret = tls_strp_copyin_frag(strp, skb, in_skb, offset, in_len);
++	if (ret < 0) {
++		desc->error = ret;
++		ret = 0;
++	}
++
++	if (strp->stm.full_len && strp->stm.full_len == skb->len) {
+ 		desc->count = 0;
+ 
+ 		strp->msg_ready = 1;
+ 		tls_rx_msg_ready(strp);
+ 	}
+ 
+-read_done:
+-	return in_len - len;
++	return ret;
+ }
+ 
+ static int tls_strp_read_copyin(struct tls_strparser *strp)
 -- 
 2.40.1
 
