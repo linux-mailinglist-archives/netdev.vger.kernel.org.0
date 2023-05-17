@@ -1,63 +1,63 @@
-Return-Path: <netdev+bounces-3248-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3249-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4BEA8706385
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 11:04:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D4FC170638D
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 11:04:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DFD45281481
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 09:04:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8DCB6281509
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 09:04:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6676DA953;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BA34910956;
 	Wed, 17 May 2023 09:04:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55BF9883C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA3711078E
 	for <netdev@vger.kernel.org>; Wed, 17 May 2023 09:04:26 +0000 (UTC)
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CFCFA;
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018BA101;
 	Wed, 17 May 2023 02:04:24 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id d9443c01a7336-1ae51b07338so2833305ad.0;
+Received: by mail-pl1-x629.google.com with SMTP id d9443c01a7336-1ae3ed1b08eso6669545ad.0;
         Wed, 17 May 2023 02:04:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20221208; t=1684314264; x=1686906264;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NkLNdeDn6hMP5F0r+T8wUttQQ19WSpWtWoPCipbjjYk=;
-        b=sX2TRVtxCyE37VlJebGv4kakRzuCKnk3cbla80jLNjqRzQ9Dmq/vrKfyM2u9wYBaNm
-         krCeicswnpCeF/b/D4RvPc9WrnRbsfNQBOtRnOty0qm+W1/iYui1O1E1jEok05OCqb0l
-         jsxWscfC9NjE3Jt8jPeK8W08rXRTQvWOgr9QK7kRwKS4xrAq4JVIHWzdUpi0wOKxTcuT
-         XRRI10XMq81MihVWqlTncEwPq9jrWLBB3MYI2y2tGKxekumTtmh2U5RENiuarO1i2XJW
-         6S7iV2MdKqGD02v8XOkc4jI7kOPPKRIZxah1wHyZt3z4Szh9pM6asOw92neAOL5ENjXn
-         dWGQ==
+        bh=bem8jDoswsIx3LqKUeWVXu4IOKeZhVI23DjbNiD86cQ=;
+        b=bUa21sxL/qPG8OAtSx9823NQZPoNYqheY8NBeZQ+0TXftu+KMZgzltcRAYVbzvB3R+
+         PqoiFe5C3UVlU2BuwjIZqDlQo+HtmtXh14Cb4oilLOzrhbT9XLKM3jdx5nmRNm53bntN
+         OvCQI+1YWTGcd2xzzAJk0nbUb9mOHcEjkU3YGUbUySbX50pZRIr/LscMVSriBoSdFFUN
+         57AmvQSGr1e7HS7HHMy7UHyRDSzL3kqWrwG1E3aV25uiaeqdWn/94Xxjdm4BQVrgzAX8
+         OtHSQXIFUQ+3GvfTscxk6d7P45QeK+5+BbWgnk7CrdeE/XUNxJ85+dqN1+zsPwhRWIgm
+         /PWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20221208; t=1684314264; x=1686906264;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=NkLNdeDn6hMP5F0r+T8wUttQQ19WSpWtWoPCipbjjYk=;
-        b=LOjpV5V7KgyYm7qwelL8GTTQ9ZPOYp5lR7FG35HtPxo3ehtKs9YDI8Dr/26jxRD15f
-         6M4FkLYnbeTBB0/QtU18fA3gT5wy9cCDuK2Y65aAJIAbYL65GTgouAdd/MgBARt6og2p
-         JBBw1L1ZCh4lcGpBQH8Mq1Uiij7vBwavvnuHesTi3Wh88xGrkX9HY2Sfy/u6HPc2PYQQ
-         KoWZiYsodAjxl5w/bTCdaTyQIiDVkNDG3zWJXGguy6Ubzu591XcjV9QHA4h1d3xPGxu8
-         mXkGBErDf/+n3h3NLdAw/VWZFcWLvRtSUm4Pwsgl9+PpNNIzYtot7YssT/W0Nun6T5aJ
-         +gmA==
-X-Gm-Message-State: AC+VfDxR8D7OuN+ClZJZ/6VsrwhtJAwWnAoe/YPHesJyHQi7Luuhv+gV
-	3mIrx0ID9f5G5o5MgUEIwQjUjXjnWAY/Iw==
-X-Google-Smtp-Source: ACHHUZ7hwMokgWaISpXvantDtiRSpqKfnHJ9i0Gs+2Wu7pm5FTQkz7gbL6AErGtCa461zrTPNdbvuA==
-X-Received: by 2002:a17:902:e5c3:b0:1ad:fa2e:17fc with SMTP id u3-20020a170902e5c300b001adfa2e17fcmr19927781plf.2.1684314264094;
+        bh=bem8jDoswsIx3LqKUeWVXu4IOKeZhVI23DjbNiD86cQ=;
+        b=K5N9ywUjV32Y9YggT19CeIOT1XeD917joZoONu2QDeWnS6Cd7TQr9pu7++i914BpRE
+         zdgcTGeFmZ9jZF14kOJ9w2ojgXRpJG3o50dqxcs7fdWyOQeuthxW7u1tYJRLe9IMS6g2
+         ZsD5xIXhdftO6O2TzqkGwmMd87KRIhT3sj1hEpTDKwlQ8wKBGxaV4FOHoLtjFFiXVdeD
+         bF32ZxfPJAilmYSLbpxlKH/3UBF5blMxHdtxcmcyiPzm2892dwBnxeGLZfHd5U5zp49Q
+         Yq+Eq98FpnHLnuUiKZzJhVzYaaBW7eXEAM03/IX37Kkf9qchJ3sgu5ByJHNgOxj4AM5m
+         oujg==
+X-Gm-Message-State: AC+VfDwP8k+Kl/sB1rWsRKprQDkcNUIKBcdnaqt4fTBSgxBGzu460y4w
+	rP8U9WfDZuALoYgftSy7F98=
+X-Google-Smtp-Source: ACHHUZ6xoj43Bwqdpvz0E5AkpQupPNWLxh+qwyX5sE4ek7dlhw7M0aBe7ay5Q5MYoWDeaWB9z8zIdg==
+X-Received: by 2002:a17:903:32cb:b0:1ac:94a9:941a with SMTP id i11-20020a17090332cb00b001ac94a9941amr36129877plr.30.1684314264373;
         Wed, 17 May 2023 02:04:24 -0700 (PDT)
 Received: from debian.me (subs03-180-214-233-22.three.co.id. [180.214.233.22])
-        by smtp.gmail.com with ESMTPSA id jf20-20020a170903269400b001ac69bdc9d1sm1750069plb.156.2023.05.17.02.04.23
+        by smtp.gmail.com with ESMTPSA id r11-20020a1709028bcb00b001a064282b11sm16977290plo.151.2023.05.17.02.04.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 17 May 2023 02:04:23 -0700 (PDT)
 Received: by debian.me (Postfix, from userid 1000)
-	id EE78910627D; Wed, 17 May 2023 16:04:20 +0700 (WIB)
+	id D1CE810621C; Wed, 17 May 2023 16:04:20 +0700 (WIB)
 From: Bagas Sanjaya <bagasdotme@gmail.com>
 To: Linux DRI Development <dri-devel@lists.freedesktop.org>,
 	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -76,10 +76,12 @@ Cc: David Airlie <airlied@redhat.com>,
 	Gaosheng Cui <cuigaosheng1@huawei.com>,
 	Archana <craechal@gmail.com>,
 	Dan Carpenter <error27@gmail.com>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH v3 1/4] agp/amd64: Remove GPL distribution notice
-Date: Wed, 17 May 2023 16:04:15 +0700
-Message-Id: <20230517090418.1093091-2-bagasdotme@gmail.com>
+	Stephen Hemminger <stephen@networkplumber.org>,
+	Andreas Eversberg <jolly@eversberg.eu>,
+	Karsten Keil <keil@isdn4linux.de>
+Subject: [PATCH v3 2/4] mISDN: Replace GPL notice boilerplate with SPDX identifier
+Date: Wed, 17 May 2023 16:04:16 +0700
+Message-Id: <20230517090418.1093091-3-bagasdotme@gmail.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230517090418.1093091-1-bagasdotme@gmail.com>
 References: <20230517090418.1093091-1-bagasdotme@gmail.com>
@@ -89,7 +91,7 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=865; i=bagasdotme@gmail.com; h=from:subject; bh=BnhAyHqAAXZPpElC1S7AamhQL42pHpYqVocWHPx47Os=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDCkpMyZuW/hnt7XbkVcl5v/vLZfM4N4W5XKzeuqjne90W S8sN5Y/3FHKwiDGxSArpsgyKZGv6fQuI5EL7WsdYeawMoEMYeDiFICJzGhgZHhft/DsEsHrZ0qf W27sj6pb+Jzhf2lfTkPflzSb4k2T+nkYfjEb8zg/2/q4qq3k+OaprZ8e3ug/6V7Z5n2+boZ8myf TFh4A
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4211; i=bagasdotme@gmail.com; h=from:subject; bh=gDeWnuEEVweZ2+OADiOaGpHECUxDBZJJ7rTKBKg4aRc=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDCkpMyZ2MQZtTw8QFrhwOub0mS9JDT988h6yblxqKfTwM 8/dbXJWHaUsDGJcDLJiiiyTEvmaTu8yErnQvtYRZg4rE8gQBi5OAZjIE32Gf1aNT3vVv/vcTU97 LBj5fbqJO2PW+/RZG+o2pwQGPOJqj2Rk2D+zgSU2ylHj1iWdVXOlPDa6bH1ZahtkcWDdX8ezNxc JMwMA
 X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -99,28 +101,127 @@ X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-There is already SPDX tag which does the job, so remove the redundant
-notice.
+Replace unversioned GPL notice boilerplate on dsp_* with SPDX identifier
+for GPL 1.0+. These files missed previous SPDX conversion batches
+due to not specifying GPL version.
 
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Andreas Eversberg <jolly@eversberg.eu>
+Cc: Karsten Keil <keil@isdn4linux.de>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
- drivers/char/agp/amd64-agp.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/isdn/mISDN/dsp_audio.c    | 4 +---
+ drivers/isdn/mISDN/dsp_blowfish.c | 4 +---
+ drivers/isdn/mISDN/dsp_cmx.c      | 4 +---
+ drivers/isdn/mISDN/dsp_core.c     | 3 +--
+ drivers/isdn/mISDN/dsp_dtmf.c     | 4 +---
+ drivers/isdn/mISDN/dsp_tones.c    | 4 +---
+ 6 files changed, 6 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/char/agp/amd64-agp.c b/drivers/char/agp/amd64-agp.c
-index ce8651436609fc..b93b0f836e52ba 100644
---- a/drivers/char/agp/amd64-agp.c
-+++ b/drivers/char/agp/amd64-agp.c
-@@ -1,7 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
+diff --git a/drivers/isdn/mISDN/dsp_audio.c b/drivers/isdn/mISDN/dsp_audio.c
+index bbef98e7a16efb..df86c0ce9cd8d1 100644
+--- a/drivers/isdn/mISDN/dsp_audio.c
++++ b/drivers/isdn/mISDN/dsp_audio.c
+@@ -1,12 +1,10 @@
++// SPDX-License-Identifier: GPL-1.0+
  /*
-  * Copyright 2001-2003 SuSE Labs.
-- * Distributed under the GNU public license, v2.
+  * Audio support data for mISDN_dsp.
   *
-  * This is a GART driver for the AMD Opteron/Athlon64 on-CPU northbridge.
-  * It also includes support for the AMD 8151 AGP bridge,
+  * Copyright 2002/2003 by Andreas Eversberg (jolly@eversberg.eu)
+  * Rewritten by Peter
+  *
+- * This software may be used and distributed according to the terms
+- * of the GNU General Public License, incorporated herein by reference.
+- *
+  */
+ 
+ #include <linux/delay.h>
+diff --git a/drivers/isdn/mISDN/dsp_blowfish.c b/drivers/isdn/mISDN/dsp_blowfish.c
+index 0aa572f3858da7..e161c092012653 100644
+--- a/drivers/isdn/mISDN/dsp_blowfish.c
++++ b/drivers/isdn/mISDN/dsp_blowfish.c
+@@ -1,11 +1,9 @@
++// SPDX-License-Identifier: GPL-1.0+
+ /*
+  * Blowfish encryption/decryption for mISDN_dsp.
+  *
+  * Copyright Andreas Eversberg (jolly@eversberg.eu)
+  *
+- * This software may be used and distributed according to the terms
+- * of the GNU General Public License, incorporated herein by reference.
+- *
+  */
+ 
+ #include <linux/mISDNif.h>
+diff --git a/drivers/isdn/mISDN/dsp_cmx.c b/drivers/isdn/mISDN/dsp_cmx.c
+index 357b87592eb48c..c2b24fdf234523 100644
+--- a/drivers/isdn/mISDN/dsp_cmx.c
++++ b/drivers/isdn/mISDN/dsp_cmx.c
+@@ -1,11 +1,9 @@
++// SPDX-License-Identifier: GPL-1.0+
+ /*
+  * Audio crossconnecting/conferrencing (hardware level).
+  *
+  * Copyright 2002 by Andreas Eversberg (jolly@eversberg.eu)
+  *
+- * This software may be used and distributed according to the terms
+- * of the GNU General Public License, incorporated herein by reference.
+- *
+  */
+ 
+ /*
+diff --git a/drivers/isdn/mISDN/dsp_core.c b/drivers/isdn/mISDN/dsp_core.c
+index 386084530c2f85..b9ec8489e690a0 100644
+--- a/drivers/isdn/mISDN/dsp_core.c
++++ b/drivers/isdn/mISDN/dsp_core.c
+@@ -1,10 +1,9 @@
++// SPDX-License-Identifier: GPL-1.0+
+ /*
+  * Author       Andreas Eversberg (jolly@eversberg.eu)
+  * Based on source code structure by
+  *		Karsten Keil (keil@isdn4linux.de)
+  *
+- *		This file is (c) under GNU PUBLIC LICENSE
+- *
+  * Thanks to    Karsten Keil (great drivers)
+  *              Cologne Chip (great chips)
+  *
+diff --git a/drivers/isdn/mISDN/dsp_dtmf.c b/drivers/isdn/mISDN/dsp_dtmf.c
+index 642f30be5ce249..746c210a6d2495 100644
+--- a/drivers/isdn/mISDN/dsp_dtmf.c
++++ b/drivers/isdn/mISDN/dsp_dtmf.c
+@@ -1,12 +1,10 @@
++// SPDX-License-Identifier: GPL-1.0+
+ /*
+  * DTMF decoder.
+  *
+  * Copyright            by Andreas Eversberg (jolly@eversberg.eu)
+  *			based on different decoders such as ISDN4Linux
+  *
+- * This software may be used and distributed according to the terms
+- * of the GNU General Public License, incorporated herein by reference.
+- *
+  */
+ 
+ #include <linux/mISDNif.h>
+diff --git a/drivers/isdn/mISDN/dsp_tones.c b/drivers/isdn/mISDN/dsp_tones.c
+index 8389e2105cdcf6..16a47cc910c585 100644
+--- a/drivers/isdn/mISDN/dsp_tones.c
++++ b/drivers/isdn/mISDN/dsp_tones.c
+@@ -1,11 +1,9 @@
++// SPDX-License-Identifier: GPL-1.0+
+ /*
+  * Audio support data for ISDN4Linux.
+  *
+  * Copyright Andreas Eversberg (jolly@eversberg.eu)
+  *
+- * This software may be used and distributed according to the terms
+- * of the GNU General Public License, incorporated herein by reference.
+- *
+  */
+ 
+ #include <linux/gfp.h>
 -- 
 An old man doll... just what I always wanted! - Clara
 
