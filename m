@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-3330-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3333-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4987B70679E
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:10:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8C3507067A6
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:11:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0FD541C20EAB
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:10:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 834161C20C08
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:10:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFFF62C758;
-	Wed, 17 May 2023 12:10:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 975B03111F;
+	Wed, 17 May 2023 12:10:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51F312C74F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 785AD2C752
 	for <netdev@vger.kernel.org>; Wed, 17 May 2023 12:10:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 13809C433D2;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3058EC433A0;
 	Wed, 17 May 2023 12:10:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1684325422;
-	bh=WkffU6QPye9oDs/VVkB255WhFgC/yxBq7R2kpafb9/U=;
+	bh=R0Q7BVGisysDudrFB+dP4girMOSGzrIFWV+mI23tx2k=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=ce4sgn2KOIrAGUuiXkwrxDCfxUM12QLBpB3CzdV3rWiwYrq4k728hlB3ZIt5sqY3k
-	 8R4DRW7qZdz9kBHjoCUFen2QB4X2GoMu7JqUm1YQogBjnI4mfUjUzYpbFt+sljJIKu
-	 pnH5sVSLDwzJe9QCN0L54tZ/CsMThoJ5Ec35uFqEiCa1n+0MixP6P8q47hdCTR+wE+
-	 9xgmzB6z67YsFXLvxX0g4Ao6o5VSKKl+GrgW249hxpv1zNJxIT1br22AioLX9xtlra
-	 4GJ9igOJolLpDXBW2BFWGolCe4pzv+1cLuKAyh8iQuutCZRfQZsjiYeNVePXCsKL6v
-	 kOClqhcqZ9H6Q==
+	b=nmKMQ17HxrAv6r0gnvM1kSfzFBYOevPezdAro8VS2sZT0u7CmWccNzMvMTaOF8BCZ
+	 7t2M2RJcWNFU6qlOnYpIX8egt+0oYoO81s0qkh16tsJWuD0hxi4jcVBLtljMQqXDOK
+	 6Jxqfj9ATf0J+HncV81PIUYUDHBbz8jYxNDrNjhWTkejSozRpVWDh8RZsXsdXtmoaH
+	 r6lHlIOVeX7a1ylY/mKyaXPrkdsG0Sv7t2c6zwtDkdWOjdwwd7uAthAHNwAs5KfPzk
+	 hL6oboKPNuMtXuj7V92G5RLcoCn9HxEMmzQDk091lmZLPAnt9qYtVpB0Tjk994o0vv
+	 DpkAJEmqkBehA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E63B4E21EEC;
-	Wed, 17 May 2023 12:10:21 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0FD26E21EF6;
+	Wed, 17 May 2023 12:10:22 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -41,35 +41,41 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: selftests: Fix optstring
+Subject: Re: [PATCH net] net: pcs: xpcs: fix C73 AN not getting enabled
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168432542193.5953.5435718543306108946.git-patchwork-notify@kernel.org>
-Date: Wed, 17 May 2023 12:10:21 +0000
-References: <20230516184924.153498-1-bpoirier@nvidia.com>
-In-Reply-To: <20230516184924.153498-1-bpoirier@nvidia.com>
-To: Benjamin Poirier <bpoirier@nvidia.com>
-Cc: netdev@vger.kernel.org, amcohen@nvidia.com,
- linux-kselftest@vger.kernel.org, idosch@nvidia.com
+ <168432542205.5953.12070722335976435657.git-patchwork-notify@kernel.org>
+Date: Wed, 17 May 2023 12:10:22 +0000
+References: <20230516154410.4012337-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230516154410.4012337-1-vladimir.oltean@nxp.com>
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: netdev@vger.kernel.org, Jose.Abreu@synopsys.com, andrew@lunn.ch,
+ hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ linux-kernel@vger.kernel.org
 
 Hello:
 
 This patch was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 16 May 2023 14:49:24 -0400 you wrote:
-> The cited commit added a stray colon to the 'v' option. That makes the
-> option work incorrectly.
+On Tue, 16 May 2023 18:44:10 +0300 you wrote:
+> The XPCS expects clause 73 (copper backplane) autoneg to follow the
+> ethtool autoneg bit. It actually did that until the blamed
+> commit inaptly replaced state->an_enabled (coming from ethtool) with
+> phylink_autoneg_inband() (coming from the device tree or struct
+> phylink_config), as part of an unrelated phylink_pcs API conversion.
 > 
-> ex:
-> tools/testing/selftests/net# ./fib_nexthops.sh -v
-> (should enable verbose mode, instead it shows help text due to missing arg)
+> Russell King suggests that state->an_enabled from the original code was
+> just a proxy for the ethtool Autoneg bit, and that the correct way of
+> restoring the functionality is to check for this bit in the advertising
+> mask.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: selftests: Fix optstring
-    https://git.kernel.org/netdev/net/c/9ba9485b87ac
+  - [net] net: pcs: xpcs: fix C73 AN not getting enabled
+    https://git.kernel.org/netdev/net/c/c46e78ba9a7a
 
 You are awesome, thank you!
 -- 
