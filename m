@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-3464-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3465-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DCC0870744E
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 23:32:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 725D370744F
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 23:32:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 971B22814EB
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 21:32:04 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E93882817A5
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 21:32:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9CEEE10953;
-	Wed, 17 May 2023 21:31:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3551510968;
+	Wed, 17 May 2023 21:31:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 920D310942
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 21:31:27 +0000 (UTC)
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5201987
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 14:31:24 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-ba2526a8918so2180976276.1
-        for <netdev@vger.kernel.org>; Wed, 17 May 2023 14:31:24 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B29B10942
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 21:31:28 +0000 (UTC)
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDFF1732
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 14:31:26 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-56183784dd3so13643647b3.3
+        for <netdev@vger.kernel.org>; Wed, 17 May 2023 14:31:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684359084; x=1686951084;
+        d=google.com; s=20221208; t=1684359085; x=1686951085;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=csAjbYwJu7UYdTj0AOh80duniSMnuTnfbsSOqNb+yb8=;
-        b=PVWUONt37Ie/L7QqPGLnMazin6L1nHfEiD434Hx/xVD39uXRejt2mODaoMerrDYzc/
-         VDT33CvEOGlnZCc32PQeh0U9Ndy5uxXXqR9whRNRMFgF/3v4D+sqZs6onQw2HcqCxZ21
-         OiEAItswAbDJajL/MHJLnn2MgyPK27y9iQWfb/Ro7do26I0k/v4Ys2xgRvUaQPH5NigE
-         f3qfGiLpHS90aR7RP7l8ayKIMn8AHfCi0YFW5hJyCUOcPSK6WT1EBuRv3vmO5AfAcR4b
-         u46Ktmsy0xMx7yc7mgfRsggFzd7XOEFXhrZB8PYje1SKjly8BQlwiqhJ1xHY041LuON3
-         fEuw==
+        bh=irIG8KCUOmzBVDybK28kbexqEPi6/ODq6585bSSKGg0=;
+        b=5rUT6j+BOtp//ggWf1bhEOJCFLklHJAnGgabKbrmezb+vdC2G6qb2FYk+FfcEUtNfX
+         kx/aN6pcsdNRe3X5CD4qdpnybuiPHE7N7BO+1Jc9vz0dMX59bDU8Cagb/o0zE9DQLzVr
+         lTwHGKU3XsCeKN0L8SA+a97nIjfFRBhjxWpZsr6Y6faiXeUzmyYBHz1qZuMaWN8Ey9va
+         dLdntoNiRhUrqzsk2/+13nBExq/uM5G/b/6Kr0WpeuAHrJUxuLlZsLOwJZZGER2xqA+i
+         kRIx5nZNsFnYCZRWTPiQR780JI18L3Vx+02pZUJady0Sk2P41+0ZcqcnJFQKceOYs0RH
+         Ol2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684359084; x=1686951084;
+        d=1e100.net; s=20221208; t=1684359085; x=1686951085;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=csAjbYwJu7UYdTj0AOh80duniSMnuTnfbsSOqNb+yb8=;
-        b=O2puwD/LK6HNgpxk962xJ9rgrQkIhnRnZnI6OMv0A/ls/JDRi7ApUJoTLKdIQi/M4Z
-         csmyuFIx1+xKbJq8Vu4KIQpRvdkdswegQ7vE2QdlmTKM7OQVy+rBWurKfwq1nVBGHVa6
-         tRZ97S+9pTvOb+hQq8bOQrEguOrb5ueXb//BFWvzZORiuC8xSbNganttUFJr8zA/LCVh
-         AsBzwdVBo6sDdJKidz/KzAIJugbbca5KbPtua49FCV8ANvHN6/3gvg+05PTAB5WO97rS
-         4Qs52alfv7VKst1tiU8jzURaNLd6gbvvjedfWbQxPCc6YplaADo++fGKwiWgG1OvEZMu
-         5L0w==
-X-Gm-Message-State: AC+VfDwm4JiapFm4J9iVPAopbjWUr01CQ7iEtBm08GJ1UFJP+s/3jQDB
-	ISz3BCAShqYclwuE1vaFKoyNNBDdTGaicw==
-X-Google-Smtp-Source: ACHHUZ72ocwz0bOOjc186ZJ/ShcIKSrD1+3flWCc32Ta3UGocwbnqxIrBRka0U9d9PqDgcxfIm8GGjxCoUq8jg==
+        bh=irIG8KCUOmzBVDybK28kbexqEPi6/ODq6585bSSKGg0=;
+        b=Rf92QQjkW6lgW5M+QbuTHCdi+XcjOk3457L1Rd4iTbLxcBntKB0vNSx8jgzUUjQ+Sa
+         9BlJJY1NsOCRsFa9z++3mN6DzUqcZKLFOPaVxmsDMxCEm/CXFoeejafy0FkSPSo1nqUB
+         dWdv9y2WKZJLKOa06S34ODJwAkVw9q+e9+YdXlg2/bacRqUCqiN6EROzh7J1LKkara3d
+         FueCLZPisUy+2NtHnTUK9pzijgA3VAVz/M5lXYPMntPsC52uaRj5lJocFzP9G77UZ6r4
+         wspIuyBn/SqDaOz6I9MuDSEa4FVm9jpGv2P3J/DIy7kfT339PDc2M9bfVwygFYps+pB5
+         DBBw==
+X-Gm-Message-State: AC+VfDx60pNHjJwLS3soJmRUCyW1X31f2fGkeV1HwT829bmc9vRTjVBD
+	fi54Zi57l82OyNRGaTaeyz1nymUfAhraiw==
+X-Google-Smtp-Source: ACHHUZ5E3v4u/a3tqWFE4Px3wpDa1TKOGf1O6Fs57F0a9uC+9kxmQJovQjrQM68gAJcSy7yQWmLryWClhzXmUg==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:4e41:0:b0:ba7:3724:37dc with SMTP id
- c62-20020a254e41000000b00ba7372437dcmr7352605ybb.13.1684359083877; Wed, 17
- May 2023 14:31:23 -0700 (PDT)
-Date: Wed, 17 May 2023 21:31:17 +0000
+ (user=edumazet job=sendgmr) by 2002:a81:e703:0:b0:561:c567:c8ff with SMTP id
+ x3-20020a81e703000000b00561c567c8ffmr1873776ywl.4.1684359085554; Wed, 17 May
+ 2023 14:31:25 -0700 (PDT)
+Date: Wed, 17 May 2023 21:31:18 +0000
 In-Reply-To: <20230517213118.3389898-1-edumazet@google.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -62,8 +62,8 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
 References: <20230517213118.3389898-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.1.606.ga4b1b128d6-goog
-Message-ID: <20230517213118.3389898-3-edumazet@google.com>
-Subject: [PATCH net 2/3] ipv6: exthdrs: avoid potential NULL deref in ipv6_srh_rcv()
+Message-ID: <20230517213118.3389898-4-edumazet@google.com>
+Subject: [PATCH net 3/3] ipv6: exthdrs: avoid potential NULL deref in ipv6_rpl_srh_rcv()
 From: Eric Dumazet <edumazet@google.com>
 To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
 	Paolo Abeni <pabeni@redhat.com>
@@ -81,13 +81,10 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 There is some chance __in6_dev_get() returns NULL, we should
 not crash if that happens.
 
-ipv6_srh_rcv() caller (ipv6_rthdr_rcv()) correctly deals with
+ipv6_rpl_srh_rcv() caller (ipv6_rthdr_rcv()) correctly deals with
 a NULL idev, we can use the same idea.
 
-Same problem was later added in ipv6_rpl_srh_rcv(),
-this is handled in a separate patch to ease stable backports.
-
-Fixes: 1ababeba4a21 ("ipv6: implement dataplane support for rthdr type 4 (Segment Routing Header)")
+Fixes: 8610c7c6e3bd ("net: ipv6: add support for rpl sr exthdr")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Cc: David Lebrun <david.lebrun@uclouvain.be>
 Cc: Alexander Aring <alex.aring@gmail.com>
@@ -96,42 +93,44 @@ Cc: Alexander Aring <alex.aring@gmail.com>
  1 file changed, 3 insertions(+), 6 deletions(-)
 
 diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index b129e982205ee43cbf74f4900c3031827d962dc2..4f874f70b3fb1f6b372b937fcfe6ebd1a56b921d 100644
+index 4f874f70b3fb1f6b372b937fcfe6ebd1a56b921d..cf86d07227d0c4fe7081a45a61124f8aaae4ec3a 100644
 --- a/net/ipv6/exthdrs.c
 +++ b/net/ipv6/exthdrs.c
-@@ -366,21 +366,18 @@ static void seg6_update_csum(struct sk_buff *skb)
- 			   (__be32 *)addr);
+@@ -483,12 +483,11 @@ static int ipv6_srh_rcv(struct sk_buff *skb, struct inet6_dev *idev)
+ 	return -1;
  }
  
--static int ipv6_srh_rcv(struct sk_buff *skb)
-+static int ipv6_srh_rcv(struct sk_buff *skb, struct inet6_dev *idev)
+-static int ipv6_rpl_srh_rcv(struct sk_buff *skb)
++static int ipv6_rpl_srh_rcv(struct sk_buff *skb, struct inet6_dev *idev)
  {
+ 	struct ipv6_rpl_sr_hdr *hdr, *ohdr, *chdr;
  	struct inet6_skb_parm *opt = IP6CB(skb);
  	struct net *net = dev_net(skb->dev);
- 	struct ipv6_sr_hdr *hdr;
 -	struct inet6_dev *idev;
- 	struct in6_addr *addr;
- 	int accept_seg6;
- 
- 	hdr = (struct ipv6_sr_hdr *)skb_transport_header(skb);
+ 	struct ipv6hdr *oldhdr;
+ 	unsigned char *buf;
+ 	int accept_rpl_seg;
+@@ -496,10 +495,8 @@ static int ipv6_rpl_srh_rcv(struct sk_buff *skb)
+ 	u64 n = 0;
+ 	u32 r;
  
 -	idev = __in6_dev_get(skb->dev);
 -
- 	accept_seg6 = net->ipv6.devconf_all->seg6_enabled;
--	if (accept_seg6 > idev->cnf.seg6_enabled)
-+	if (idev && accept_seg6 > idev->cnf.seg6_enabled)
- 		accept_seg6 = idev->cnf.seg6_enabled;
+ 	accept_rpl_seg = net->ipv6.devconf_all->rpl_seg_enabled;
+-	if (accept_rpl_seg > idev->cnf.rpl_seg_enabled)
++	if (idev && accept_rpl_seg > idev->cnf.rpl_seg_enabled)
+ 		accept_rpl_seg = idev->cnf.rpl_seg_enabled;
  
- 	if (!accept_seg6) {
+ 	if (!accept_rpl_seg) {
 @@ -711,7 +708,7 @@ static int ipv6_rthdr_rcv(struct sk_buff *skb)
- 	switch (hdr->type) {
- 	case IPV6_SRCRT_TYPE_4:
- 		/* segment routing */
--		return ipv6_srh_rcv(skb);
-+		return ipv6_srh_rcv(skb, idev);
+ 		return ipv6_srh_rcv(skb, idev);
  	case IPV6_SRCRT_TYPE_3:
  		/* rpl segment routing */
- 		return ipv6_rpl_srh_rcv(skb);
+-		return ipv6_rpl_srh_rcv(skb);
++		return ipv6_rpl_srh_rcv(skb, idev);
+ 	default:
+ 		break;
+ 	}
 -- 
 2.40.1.606.ga4b1b128d6-goog
 
