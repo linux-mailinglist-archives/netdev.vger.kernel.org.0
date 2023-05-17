@@ -1,68 +1,58 @@
-Return-Path: <netdev+bounces-3270-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3271-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C63BA70653B
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:29:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 59101706565
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:37:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8AF8928122E
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 10:29:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 13F74281627
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 10:37:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF3D3156FC;
-	Wed, 17 May 2023 10:29:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5CD27154B7;
+	Wed, 17 May 2023 10:37:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4A875258
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 10:29:10 +0000 (UTC)
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDAD93A80;
-	Wed, 17 May 2023 03:29:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684319349; x=1715855349;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=s+Q9MD8MUeL3jqq4EHyk0PRGS6hQxwGEoNlmystB14k=;
-  b=HZf5EORYCAd4Gpzxje6G6gu/k/6yyRtNN7rr4QggBvQGGStWsxtRp1Sn
-   /FOqL+v5G4Ucp4A1Yd4VMUakEe5EnNICp96PQcTqoFAFx+Z2W1FxdRXIF
-   VKkNgbpQvgPvC0QOYbcuBDhymO0JFz/Y1qa6+2s9ilWPCh4RtXO4JXGgd
-   AsMFPSFrK8zSJoMFNlqTWN/YqoPVMMBu1TtDl969b1ryQkkO7w3PkGlsS
-   K8UkVTTSEVQxft6x8FWgMnRCdt2jUqoDouPPOgfdIryQimGsGPHWEL6Jc
-   gM+GtAgEJP0//havY0ZZZxxtEJ2dVhLt/12JuDo/jTi0dVtpstdPBvW6x
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10712"; a="438066579"
-X-IronPort-AV: E=Sophos;i="5.99,281,1677571200"; 
-   d="scan'208";a="438066579"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2023 03:29:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10712"; a="876013032"
-X-IronPort-AV: E=Sophos;i="5.99,281,1677571200"; 
-   d="scan'208";a="876013032"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP; 17 May 2023 03:29:04 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1pzEP0-0008HZ-1H;
-	Wed, 17 May 2023 13:29:02 +0300
-Date: Wed, 17 May 2023 13:29:02 +0300
-From: 'Andy Shevchenko' <andriy.shevchenko@linux.intel.com>
-To: Jiawen Wu <jiawenwu@trustnetic.com>
-Cc: netdev@vger.kernel.org, jarkko.nikula@linux.intel.com,
-	mika.westerberg@linux.intel.com, jsd@semihalf.com,
-	Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
-	linux@armlinux.org.uk, linux-i2c@vger.kernel.org,
-	linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com
-Subject: Re: [PATCH net-next v8 6/9] net: txgbe: Support GPIO to SFP socket
-Message-ID: <ZGSsbr7oPZAZ4U7V@smile.fi.intel.com>
-References: <20230515063200.301026-1-jiawenwu@trustnetic.com>
- <20230515063200.301026-7-jiawenwu@trustnetic.com>
- <ZGKlzFXfqCuq3s8u@smile.fi.intel.com>
- <00c601d9879a$ea72dd90$bf5898b0$@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C7A92CA6
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 10:37:14 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9365540E6
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 03:37:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=vPQuC2Knq+B5VW+FCOV656SyHImAIzJnBAjWotDxk5E=; b=WaJTPvFAfWKpFNyPUqr0LBwBvK
+	671aJ0BzpfxuoqtO75jr+rhx+e62arD2zVGUrh65zEzjEPt2CI10z1cDnNOoLvT4Yma+xLLaGxqDB
+	cQh6ZrzyhoJQxvgXnbNW2O4n+RcY9ixRH7vfthPZTZ8wzF54wi6J2vZD7ykU0bY6xSAOKBBQnFo0j
+	wX4eUl/X2XQCxL7zTAay/jVWxcf/vEVaEglAYnjtfwPXBBOgjEpPBWEP79APdnjo9JwzRVT8jyQsE
+	f+K+0Sgp9AfsiTm+x8jr4Y4+kZagfbBse/58BNOz1niQwrIYEQdbD3jbG8wjwdyozDQz5Q6Ck/Vik
+	s8Il8rXA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42026)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1pzEWn-0007Xs-On; Wed, 17 May 2023 11:37:05 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1pzEWj-0001lJ-2i; Wed, 17 May 2023 11:37:01 +0100
+Date: Wed, 17 May 2023 11:37:01 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>,
+	Daniel Golle <daniel@makrotopia.org>,
+	Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: [PATCH net-next 0/7] net: sfp: add support for control of rate
+ selection
+Message-ID: <ZGSuTY8GqjM+sqta@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -71,35 +61,57 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <00c601d9879a$ea72dd90$bf5898b0$@trustnetic.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 16, 2023 at 10:05:41AM +0800, Jiawen Wu wrote:
-> On Tuesday, May 16, 2023 5:36 AM, Andy Shevchenko wrote:
-> > On Mon, May 15, 2023 at 02:31:57PM +0800, Jiawen Wu wrote:
-> > > Register GPIO chip and handle GPIO IRQ for SFP socket.
+Hi,
 
-...
+This series introduces control of the rate selection SFP pins (or
+their soft state in the I2C diagnostics EEPROM). Several SNIA documents
+(referenced in the commits) describe the various different modes for
+these, and we implement them all for maximum compatibility, but as
+we know, SFP modules tend to do their own thing, so that may not be
+sufficient.
 
-> > > +	spin_lock_init(&wx->gpio_lock);
-> > 
-> > Almost forgot to ask, are you planning to use this GPIO part on PREEMPT_RT
-> > kernels? Currently you will get a splat in case IRQ is fired.
-> 
-> Hmmm, I don't know much about this. Should I use raw_spinlock_t instead of
-> spinlock_t?
+In order to implement this, we need to change the locking arrangement
+in the SFP layer - we need to make st_mutex (state mutex) able to be
+taken from within the rtnl lock and sm_mutex (state machine mutex).
+Essentially, st_mutex protects the hard (gpio) and soft state signals.
 
-If you need support PREEMPT_RT.
+So, patches 2 through 5 rejig the locking so that st_mutex is only
+ever taken when we want to fiddle with the signal state variables,
+read or write the GPIOs, or read or write the soft state.
+
+Patch 1 adds a helper that makes the locking rejig a little easier
+as it combines the update of sfp->state with setting the updated
+control state to the module.
+
+Patch 6 adds code to phylink to give the signalling rate for various
+PHY interface modes that are relevant to SFPs - this is the baud rate
+of the encoded signal, not the data rate, which is what matters for
+SFPs. This rate is passed through the SFP bus layer into the SFP
+socket driver, which initially has a stub sfp_set_signal_rate().
+
+Patch 7 adds the code to the SFP socket driver to parse the rate
+selection data in the EEPROM, configure which RS signals need to be
+driven, and the signalling rate threshold. We fill in 
+sfp_set_signal_rate() to set the rate select pins as appropriate.
+
+Thanks to Simon for reviewing.
+
+ drivers/net/phy/phylink.c |  24 ++++
+ drivers/net/phy/sfp-bus.c |  20 +++
+ drivers/net/phy/sfp.c     | 310 ++++++++++++++++++++++++++++++++++++++--------
+ drivers/net/phy/sfp.h     |   1 +
+ include/linux/sfp.h       |  14 +++
+ 5 files changed, 317 insertions(+), 52 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
