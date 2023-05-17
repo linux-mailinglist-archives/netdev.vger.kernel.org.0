@@ -1,99 +1,129 @@
-Return-Path: <netdev+bounces-3216-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3217-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3FD0E7060AE
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 09:05:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 23EF87060B6
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 09:06:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E31122810ED
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 07:05:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D438A281563
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 07:06:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA1BF6D24;
-	Wed, 17 May 2023 07:05:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3B9936FA2;
+	Wed, 17 May 2023 07:06:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA1A5610B
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 07:05:04 +0000 (UTC)
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D69272C;
-	Wed, 17 May 2023 00:04:43 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-966400ee79aso67832266b.0;
-        Wed, 17 May 2023 00:04:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684307081; x=1686899081;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9Z7Esw8IunM8cZhsfLcsY4KMd9PtL0pvZaKLywfblNc=;
-        b=iDJ0olQPPY0V9Gr0WWmfPlZLcYhXCyupu+V1f6SvEKR4xxA3pFlRAaaFd8lH/ISt34
-         pIY3JX2gGFlAuAJ4yEXx7VuRURf+deollo0fI5ypXV2VRDbbl36Jb+mMRQQdOoD/JPVg
-         mzERLa9r7VQY8EvWwzQhyciNnEY82G0FzG0S5ZBfrRan52DStw/PTDCZGEaJsUGsJBhf
-         s1PZ1WNndFXhq1qO45biB71bzfdY5P8OZ2fuWLdxk5PlO0q3JzvsmKX9jZu1LE3n3jSE
-         q3TlYRT3h0OBaccD3YU2SBbsa4WCZwrmk/P8CWPVkVFuH7DefPiMIrHaa5tXmjzWrnzP
-         7LwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684307081; x=1686899081;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9Z7Esw8IunM8cZhsfLcsY4KMd9PtL0pvZaKLywfblNc=;
-        b=aSvfKXEv9BDIa9z9afTrA4rZyvpS+sYZdHpZjwdkM4gVLa40kgv2TEJJHxKa5JHOCb
-         1kFEgbTvvpBS4KM39Cjnnjfd2Exo1A9e29g0zQczr1iu+bMXodPvMtjMdJAgwSYbwU3Q
-         425x2LLlr7ebMOP9jG74CQ9A43uQM/Q3EmprFA+1q5aUzqipjZnLmprw96ID6eB6isui
-         UXw/9PAB1Bbk/Vb8sE3Z7c2g6oLi26UWseooosptI7SET0MWUQu9hzO271fovtFOP88m
-         pw+G9awltxL0b0OElTmZxyWYxZadFz8//NBLOwhRfzc4WU7ZUyxcXQpUBN/vlU9uGcmr
-         SM4A==
-X-Gm-Message-State: AC+VfDx6iVPnLDnn6KrLA5a8ENFGK1xWgahtvsY3K9bcQ+VGkZDsD5iW
-	UuTvOnzzIK3bP9RxRuh3X4I=
-X-Google-Smtp-Source: ACHHUZ4GCKJ8NGzIEKgVU5XJpLyDXV+CjFOFnzJBOdPV80cbHn7UHnxDzIwplN6K1EFYfgv9qxoErw==
-X-Received: by 2002:a17:907:940c:b0:960:ddba:e5bb with SMTP id dk12-20020a170907940c00b00960ddbae5bbmr37886879ejc.43.1684307080624;
-        Wed, 17 May 2023 00:04:40 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id l2-20020a1709066b8200b00966447c76f3sm11892600ejr.39.2023.05.17.00.04.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 May 2023 00:04:40 -0700 (PDT)
-Date: Wed, 17 May 2023 10:04:37 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30F695684
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 07:06:08 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BC2110
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 00:06:05 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1pzBEI-0003Y1-5h; Wed, 17 May 2023 09:05:46 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	(Authenticated sender: mkl-all@blackshift.org)
+	by smtp.blackshift.org (Postfix) with ESMTPSA id 23D171C6CDD;
+	Wed, 17 May 2023 07:05:44 +0000 (UTC)
+Date: Wed, 17 May 2023 09:05:43 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>, Ondrej Ille <ondrej.ille@gmail.com>,
+	Wolfgang Grandegger <wg@grandegger.com>,
 	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>, netdev@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v5] dt-bindings: net: nxp,sja1105: document spi-cpol/cpha
-Message-ID: <20230517070437.ixgvnru4a2wjgele@skbuf>
-References: <20230515074525.53592-1-krzysztof.kozlowski@linaro.org>
- <20230515074525.53592-1-krzysztof.kozlowski@linaro.org>
- <20230515105035.kzmygf2ru2jhusek@skbuf>
- <20230516201000.49216ca0@kernel.org>
- <124a5697-9bcf-38ec-ca0e-5fbcae069646@linaro.org>
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Martin Jerabek <martin.jerabek01@gmail.com>,
+	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+	linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] can: ctucanfd: Fix an error handling path in
+ ctucan_probe_common()
+Message-ID: <20230517-lugged-wreckage-65f6d28379ac-mkl@pengutronix.de>
+References: <4b78c848826fde1b8a3ccd53f32b80674812cb12.1684182962.git.christophe.jaillet@wanadoo.fr>
+ <20230515-finisher-plating-8ab57747fea5-mkl@pengutronix.de>
+ <86ff131e-c1d2-ca1f-89a4-37cec62877f4@wanadoo.fr>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="cb56oybfxv4tulij"
 Content-Disposition: inline
-In-Reply-To: <124a5697-9bcf-38ec-ca0e-5fbcae069646@linaro.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <86ff131e-c1d2-ca1f-89a4-37cec62877f4@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 17, 2023 at 09:01:38AM +0200, Krzysztof Kozlowski wrote:
-> Yes, apologies, I usually forget the net-next tag.
-> 
-> Shall I resend?
 
-Probably not.
+--cb56oybfxv4tulij
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 16.05.2023 18:47:17, Christophe JAILLET wrote:
+> Le 15/05/2023 =C3=A0 22:51, Marc Kleine-Budde a =C3=A9crit=C2=A0:
+> > On 15.05.2023 22:36:28, Christophe JAILLET wrote:
+> > > If register_candev() fails, a previous netif_napi_add() needs to be u=
+ndone.
+> > > Add the missing netif_napi_del() in the error handling path.
+> >=20
+> > What about this path:
+> > free_candev(ndev) -> free_netdev() -> netif_napi_del()
+> >=20
+> > | https://elixir.bootlin.com/linux/v6.3.2/source/net/core/dev.c#L10714
+> >=20
+> > Marc
+> >=20
+>=20
+> Ok, thanks for the review,
+>=20
+> so in fact this is the netif_napi_del() call in ctucan_platform_remove()
+> that can be removed instead.
+>=20
+> Harmless, but would be more consistent.
+> I'll send a patch for that.
+
+Make it so!
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--cb56oybfxv4tulij
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRkfMQACgkQvlAcSiqK
+BOgosQf/XCnxCLojV+HufFxherLeMBZXjrkGa6+8BZsdUIlbCtcwNnEu9Zg2kSyH
+dz6D/3L9JPbkedMiJvoExn+Rw5vMPmPLR2+uVwvUIppjZcvCXKTwzRfPx2XqeH4h
+zlGG+RziMo+yxWI/zE4DIMfuTzcETxkPsceifGxIdkxKJopdXzkojo6/I2bGtjOg
+ZDbrcrGy7KYHDErY0j0gKgjzsRcR0mP8wrsQJO33VtRuGnUIiOrTWysJlqzU0gt8
+nH8a/Se7jgFJ6mNjGChPykhCASUDKNFxtxrSPW0yb2YIUvE2DnhbpDdkJcOFxdaU
+G/BSiE3NUIIl+xF7oXOAnthhrNCBDQ==
+=YZRf
+-----END PGP SIGNATURE-----
+
+--cb56oybfxv4tulij--
 
