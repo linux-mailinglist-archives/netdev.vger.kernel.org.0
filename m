@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-3356-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3357-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4B342706A09
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 15:38:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 42DBD706A0E
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 15:38:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4F5F82814DD
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:38:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 398E21C20DD1
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 13:38:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4818420997;
-	Wed, 17 May 2023 13:38:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03FED2C756;
+	Wed, 17 May 2023 13:38:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32C9B18B16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EADBC18B16
 	for <netdev@vger.kernel.org>; Wed, 17 May 2023 13:38:23 +0000 (UTC)
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B524E4EC9
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 06:38:19 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id 38308e7fff4ca-2ac8c0fbb16so7237361fa.2
-        for <netdev@vger.kernel.org>; Wed, 17 May 2023 06:38:19 -0700 (PDT)
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAF0526E
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 06:38:20 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2ac7462d9f1so7657811fa.2
+        for <netdev@vger.kernel.org>; Wed, 17 May 2023 06:38:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google; t=1684330698; x=1686922698;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
         bh=Ly7Sv2grDSLouanjUEzIq82Frd3YseMb/l+QstdnfJQ=;
-        b=Dmvjct3gKXrPwPz7AhbdmHWwAuq2Es9vmNFvfxgsoJNv6V9hWhvklATBORJJB5qbJt
-         SV9VuHyHeiRFiMEl95USGDcvXq2EPact/RuQUMxHVytPsTpks6NzwLuxYWb4aojhRIUJ
-         Kd0wr9k/gjJeQS968vAdXqSZXpwdmQ/FQjJ5csPZErJn8sEUa7PCLxVkhNfItBtvLa3u
-         9WNV5VDFJGiNXHII+fxMMk+RvOAk+QFnWFTH5w7+uMwa2BlV9ygrWx16O0jKwHQh0qjw
-         UiSOh2bhAcYqZD1IQ+4AbiseFvrEej/lZ8vhXZqbd+D+hNv1PHkj+7Sf0Xc0vSzC7tdk
-         Wfyg==
+        b=FVanGQ7UhIPc14wGSoSU9P5nxPegIGBIJGLEQ6HW0kut5U8i5IZKs6x5pa7Ya0T1R1
+         dkB7tS3jVwc8Lnl1YLry5/x/o0JAMCkLbPIdIF8HDlmGUemXlagttlFNWWrdR9XHjyGV
+         tjrOmMcBnO7L1zCobRPnKLGKK4zd1Drx0NFiZY1DxMIbq0hy4ntFBzI8ZmJc81OE+bCY
+         pSIYXWwG0UghjbT37Y1i1UfFy3HhWHu2chb+MUoS9i+wb4DN+MSaUre3DDiLqIOfgH1h
+         HatzUo4nf9krpPHqBpu5JiUnrMv/pAJF2js+GaFKNUr5fiPpH+XK8iplfkT0kGEJe5ns
+         JUqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20221208; t=1684330698; x=1686922698;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
         bh=Ly7Sv2grDSLouanjUEzIq82Frd3YseMb/l+QstdnfJQ=;
-        b=iZPXnMVywgcfY0oQWExKiY8ACbTmpU1PHZ12jnXVniMy4jtLwT61u3jTalyQX7c2PQ
-         FoVh87J/SV6hNlR5+oaa2YVTYWNjA3KkudIvJ7PJ5TN74jyK1CP8MQE36/1Xs0rAuEeW
-         RsGwkzStazEqGkmBLmy9j65x23Jh58my2uM7fd9JOY7BQ/aL5fH4SFJzIwFrlWAjR357
-         41tU0aetLM2OoQiEqZ7Bhqnsxuo9b1xRWtnB8uhb0OxM5Dz1KE4GNCvQmOMYKrLaXvCt
-         QBgM9cvP+jNEIoZ4qbIK8WCncdUlnKEG8Ongy5I4Ww+aXABrSdz3b/+/LHmXh/pC2mtq
-         2bag==
-X-Gm-Message-State: AC+VfDzKp/b+M4JjJNC+pZmNXWWi64Q0icKxM+UI4Gve3aMrh6J5FNts
-	W+yI2nfH4luQG5BkX1dsJ1PzKg==
-X-Google-Smtp-Source: ACHHUZ5Zu6JBSjwmINQDKUtIcahDxpmKHXodYC2lqIyuKqZL4e7Pd3b00VZy7nQ5kCBe7qVZ7NygVQ==
-X-Received: by 2002:a2e:780d:0:b0:2a7:8b35:8270 with SMTP id t13-20020a2e780d000000b002a78b358270mr10375545ljc.35.1684330697871;
-        Wed, 17 May 2023 06:38:17 -0700 (PDT)
+        b=HSOG6hT044vrNwfdPY0m2ukWhftokVaYKzwhLTPtGX7Y50uDRJBCOEabwRQT6obZ00
+         G5K/12yMu7QOHYDJO+ZZoDX4tkngSCYMIGO2fMXW5wzCCG2oiMHVU/oa7zwF/13mAXMk
+         nYm54R9UM5x/Yv/ywoJlAVLzAldLfw1G7W9cC8MhZExJ1R+5ynN/ighOYuYwtiUzmXV1
+         dfGa6GztuaVzY4PAwKfyeJqabSMA+RSUchBQMcPnpuDUMTRkC8ftIeTulodmVGyf2s45
+         f3gsrkqUZBAo8E+il/zbCjKgI4FM9R4k9Q6INJbhvRS2cjyQu1lZKGQ3tZoeDbwdDj6W
+         NnUQ==
+X-Gm-Message-State: AC+VfDwoiYySAGVhVv/6NEpto9T4fgyKwkaiP6MDO03887BiBk85+TEO
+	rdlCABv+PhXS2Vf5So3XOV0uSw==
+X-Google-Smtp-Source: ACHHUZ4Pt8XTxNqNgz54l1AgVbsFbbcC6PgjLhNgPTdYxZrVGR67m+sT8N9rrUZlW7usxz9+f7pesg==
+X-Received: by 2002:a2e:80c6:0:b0:2aa:43cd:57c9 with SMTP id r6-20020a2e80c6000000b002aa43cd57c9mr9471731ljg.36.1684330698554;
+        Wed, 17 May 2023 06:38:18 -0700 (PDT)
 Received: from ta1.c.googlers.com.com (61.215.228.35.bc.googleusercontent.com. [35.228.215.61])
         by smtp.gmail.com with ESMTPSA id k2-20020a2e8882000000b002addd80bc8csm1784844lji.66.2023.05.17.06.38.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 May 2023 06:38:17 -0700 (PDT)
+        Wed, 17 May 2023 06:38:18 -0700 (PDT)
 From: Tudor Ambarus <tudor.ambarus@linaro.org>
 To: bjorn@mork.no,
 	joneslee@google.com,
@@ -71,11 +71,12 @@ Cc: linux-usb@vger.kernel.org,
 	stable@vger.kernel.org,
 	syzbot+9f575a1f15fc0c01ed69@syzkaller.appspotmail.com
 Subject: [PATCH] net: cdc_ncm: Deal with too low values of dwNtbOutMaxSize
-Date: Wed, 17 May 2023 13:38:07 +0000
-Message-ID: <20230517133808.1873695-1-tudor.ambarus@linaro.org>
+Date: Wed, 17 May 2023 13:38:08 +0000
+Message-ID: <20230517133808.1873695-2-tudor.ambarus@linaro.org>
 X-Mailer: git-send-email 2.40.1.606.ga4b1b128d6-goog
-In-Reply-To: <87wnklivun.fsf@miraculix.mork.no>
+In-Reply-To: <20230517133808.1873695-1-tudor.ambarus@linaro.org>
 References: <87wnklivun.fsf@miraculix.mork.no>
+ <20230517133808.1873695-1-tudor.ambarus@linaro.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
