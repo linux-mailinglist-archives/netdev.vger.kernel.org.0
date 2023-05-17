@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-3346-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3347-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5B4FE706866
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:42:17 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9B50870686C
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:42:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4A7F21C20E8C
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:42:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 57E3A2811AC
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:42:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A009518B0B;
-	Wed, 17 May 2023 12:42:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1F72018B13;
+	Wed, 17 May 2023 12:42:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94E12211C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14C7D1549B
 	for <netdev@vger.kernel.org>; Wed, 17 May 2023 12:42:14 +0000 (UTC)
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDF8211C;
-	Wed, 17 May 2023 05:42:08 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id d2e1a72fcca58-64384274895so497006b3a.2;
-        Wed, 17 May 2023 05:42:08 -0700 (PDT)
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E462E7A;
+	Wed, 17 May 2023 05:42:11 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id d2e1a72fcca58-643ac91c51fso534320b3a.1;
+        Wed, 17 May 2023 05:42:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684327328; x=1686919328;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vdNngZhsKhcXNCAWoCajdyQW0IMTNw0nIYVCN7bYTSU=;
-        b=TZQUdKyniQjbEM8cAFb8uyX9CbMNswaIhc51dp0m7XKiPT0Fl6Ik+avjN9tUPoadEF
-         pKenfSIxInRPBretbCTpojzxlaup7EVmiolpppd5MZW3ttsp9X47uAWwW0AIOM6Ki/rn
-         Q8IUtZmPrZhQqHP0G4oQOzzvsJNPs6EcjQ/Gz/YQNfk71Vpcj2vM9zALZ/Q+wK8wBpN2
-         qs3iAlS2fQLJc1UN+epgWSe1ZTC5e4MMyfxQi72GgOuBos2Ms30olwuQKr3W7CCma5Cq
-         J3LifgTvfn4LvOS8E6C+UMUqR/2Vk4oDGL3YDOf/oez/PchSDzXvG3a5yF5addp15beQ
-         Hdlg==
+        d=gmail.com; s=20221208; t=1684327331; x=1686919331;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EPpBzc8U46icZRxTtg/C9J0WiKkv45MAA53fWrbYIQ0=;
+        b=O60dhM/uIO2RqpUb7HUDbbNgTo94TW9EJxg6BGTAGlyvmhisydQeE0inp1u2RKYPvi
+         bKCqR1opFS9yNdG42a5ozgD7QJ/s9VklocbsMdwNxDdiezOfaPBLGMoX0bcfofKwqhQQ
+         sjR5ZG3PcopHSV41gHDVuwymYhNagQZQSRUpQ5aZhZiw7uLApDsO4jLVAOPQUKcz+OIh
+         wrdaAxT22GLsKMoI9KTUG6yGNMdNWaYmsMH7lyrBu37rNkyhGm52tonO4O6B7ZRFDK/g
+         IMRe9rJjQaJtjU+KXocNduhoNq9W/+hjKeyc0Ek52dkdRgAc7hwrHdn6aD8lq0U8gxkP
+         qmPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684327328; x=1686919328;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vdNngZhsKhcXNCAWoCajdyQW0IMTNw0nIYVCN7bYTSU=;
-        b=SuvKh076tr6KJC0nv5UcN1ovzwB7ELaSSk7zYcXIbeOzBqKCaV+D1Yq46ZblGm8RaN
-         6BvzTArStJ1Rf/YiF1ofB845Dn2sg2Zkg0xie7w8TzM+6kbHC+rIl/SGPRNk67lNiPCf
-         4eX3gW27G0mNP/ZH5+E1qcjKMa/lbu4uiZOOzbRcKVp/h4/tLrg4GxUqJaNhADn4SLwC
-         CxjcDpNFmyoi19XBuf1BnyIHUGHDFQ6JtGbHUlTb6TKwBW/im7twE4mVRfXyQ7h5cYvd
-         BR5D04vfws72G0OC4KTKAdI3TIdZCHAJIpUViBbCP0aL4e5TD4TpmIG2v4g9LQRyUtsl
-         Tv3w==
-X-Gm-Message-State: AC+VfDxZ6P1w/uy6Q9uclbgibAlFUr2ggbpeVFy0L78Kg02PTbHj96su
-	h7VgdXEQeABdcsMtXf4qZxk=
-X-Google-Smtp-Source: ACHHUZ4mtDHCwO90lxd6Y56Dyd9JXU+4HwycijJE4OYjx9N5xrIGd+1awQd5cyd0ZV03gPOism++qA==
-X-Received: by 2002:aa7:88d0:0:b0:646:663a:9d60 with SMTP id k16-20020aa788d0000000b00646663a9d60mr994827pff.10.1684327327983;
-        Wed, 17 May 2023 05:42:07 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684327331; x=1686919331;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EPpBzc8U46icZRxTtg/C9J0WiKkv45MAA53fWrbYIQ0=;
+        b=N5w7bQeZ0Vqr332K8n7XifxCNg5PECj5OZGaq8HKFtb4YxpcsJ4nzlvCzsE1NsKZ1/
+         vHt7LuareLtI34gS1losRss44+5LiCvvDFj42ueIsUlvhSEQbl/A5tJqCkDxzEWd73JF
+         rOOLaHDoh6meP/rDiKw3vvOv9SWayNJAQfIxLfjhRfsxtb7x+S88NJ5bOzPkrmHyTjJn
+         wXRWQA2NjiQYu9C02NlzOZnshDQutnu+kIVyqokyMvzY0zKxEMen8dOOo/o1imwdinGH
+         KLgBoalzpDsb/InyhivC7EC4NOPA1tI2PBb+KdWLYbiOVesGcfFwQZLMbmeYvlho2avf
+         wP0A==
+X-Gm-Message-State: AC+VfDy0fudbE9CEsyNNUDobSMRB1OH5Hop8/WVAnVVZVKwz4twqMlNm
+	TXsdjBbgJEsLKleoqXS26H4=
+X-Google-Smtp-Source: ACHHUZ5JkhPKg6y+ftOY75hoFRteYiVtRue48NakVXk5fALEe9HQFGwyEqQxmvlxq5iRTDd2mP8uwQ==
+X-Received: by 2002:a05:6a21:6da4:b0:100:8258:169e with SMTP id wl36-20020a056a216da400b001008258169emr45051800pzb.24.1684327331107;
+        Wed, 17 May 2023 05:42:11 -0700 (PDT)
 Received: from localhost.localdomain ([81.70.217.19])
-        by smtp.gmail.com with ESMTPSA id u23-20020aa78497000000b0064aea45b040sm9244224pfn.168.2023.05.17.05.42.05
+        by smtp.gmail.com with ESMTPSA id u23-20020aa78497000000b0064aea45b040sm9244224pfn.168.2023.05.17.05.42.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 May 2023 05:42:07 -0700 (PDT)
+        Wed, 17 May 2023 05:42:10 -0700 (PDT)
 From: menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To: kuba@kernel.org
@@ -65,10 +66,12 @@ Cc: davem@davemloft.net,
 	netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Menglong Dong <imagedong@tencent.com>
-Subject: [PATCH net-next 0/3] net: tcp: add support of window shrink
-Date: Wed, 17 May 2023 20:41:58 +0800
-Message-Id: <20230517124201.441634-1-imagedong@tencent.com>
+Subject: [PATCH net-next 1/3] net: tcp: add sysctl for controling tcp window shrink
+Date: Wed, 17 May 2023 20:41:59 +0800
+Message-Id: <20230517124201.441634-2-imagedong@tencent.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230517124201.441634-1-imagedong@tencent.com>
+References: <20230517124201.441634-1-imagedong@tencent.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -85,48 +88,62 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Menglong Dong <imagedong@tencent.com>
 
-For now, skb will be dropped when no memory, which makes client keep
-retrans util timeout and it's not friendly to the users.
+Introduce the sysctl 'tcp_wnd_shrink', which will be used in the
+following patches.
 
-Therefore, now we force to receive one packet on current socket when
-the protocol memory is out of the limitation. Then, this socket will
-stay in 'no mem' status, util protocol memory is available.
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ include/net/tcp.h          | 1 +
+ net/ipv4/sysctl_net_ipv4.c | 9 +++++++++
+ net/ipv4/tcp.c             | 3 +++
+ 3 files changed, 13 insertions(+)
 
-When a socket is in 'no mem' status, it's receive window will become
-0, which means window shrink happens. For the sender, it need to
-cover this case, and we turn it into zero-window probe status.
-
-In the origin logic, 0 probe is triggered only when there is no any
-data in the retrans queue and the receive window can't hold the data
-of the 1th packet in the send queue.
-
-Now, let's change it and trigger the 0 probe in such cases:
-
-- if the retrans queue has data and the 1th packet in it is not within
-  the receive window, which is for window shrink case, as the shrinked
-  window may can't cover the data in retrans queue.
-- no data in the retrans queue and the 1th packet in the send queue is
-  out of the end of the receive window
-
-And the sysctl 'tcp_wnd_shrink' is also introduced. In order to keep
-safe, we disable this feature by default.
-
-*** BLURB HERE ***
-
-Menglong Dong (3):
-  net: tcp: add sysctl for controling tcp window shrink
-  net: tcp: send zero-window when no memory
-  net: tcp: handle window shrink properly
-
- include/net/sock.h         |  1 +
- include/net/tcp.h          | 22 ++++++++++++++++
- net/ipv4/sysctl_net_ipv4.c |  9 +++++++
- net/ipv4/tcp.c             |  3 +++
- net/ipv4/tcp_input.c       | 53 ++++++++++++++++++++++++++++++++++++++
- net/ipv4/tcp_output.c      | 10 +++++--
- net/ipv4/tcp_timer.c       |  4 +--
- 7 files changed, 97 insertions(+), 5 deletions(-)
-
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index a0a91a988272..a6cf6d823e34 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -247,6 +247,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
+ /* sysctl variables for tcp */
+ extern int sysctl_tcp_max_orphans;
+ extern long sysctl_tcp_mem[3];
++extern int sysctl_tcp_wnd_shrink;
+ 
+ #define TCP_RACK_LOSS_DETECTION  0x1 /* Use RACK to detect losses */
+ #define TCP_RACK_STATIC_REO_WND  0x2 /* Use static RACK reo wnd */
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 0d0cc4ef2b85..fd6cb5a5c2b9 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -577,6 +577,15 @@ static struct ctl_table ipv4_table[] = {
+ 		.extra1		= &sysctl_fib_sync_mem_min,
+ 		.extra2		= &sysctl_fib_sync_mem_max,
+ 	},
++	{
++		.procname       = "tcp_wnd_shrink",
++		.data           = &sysctl_tcp_wnd_shrink,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = proc_dointvec_minmax,
++		.extra1         = SYSCTL_ZERO,
++		.extra2         = SYSCTL_ONE
++	},
+ 	{ }
+ };
+ 
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index fd68d49490f2..db0483b2159f 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -297,6 +297,9 @@ EXPORT_SYMBOL(tcp_memory_allocated);
+ DEFINE_PER_CPU(int, tcp_memory_per_cpu_fw_alloc);
+ EXPORT_PER_CPU_SYMBOL_GPL(tcp_memory_per_cpu_fw_alloc);
+ 
++int sysctl_tcp_wnd_shrink __read_mostly;
++EXPORT_SYMBOL(sysctl_tcp_wnd_shrink);
++
+ #if IS_ENABLED(CONFIG_SMC)
+ DEFINE_STATIC_KEY_FALSE(tcp_have_smc);
+ EXPORT_SYMBOL(tcp_have_smc);
 -- 
 2.40.1
 
