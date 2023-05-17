@@ -1,164 +1,128 @@
-Return-Path: <netdev+bounces-3416-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3417-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E4D9B706F85
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 19:34:45 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id DE019706F97
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 19:37:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 23E2828114D
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 17:34:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7DDD52815AB
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 17:37:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4B4BE31137;
-	Wed, 17 May 2023 17:34:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CD17A31EE4;
+	Wed, 17 May 2023 17:37:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FCAC442F
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 17:34:42 +0000 (UTC)
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC941FFE
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 10:34:40 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id 3f1490d57ef6-b9e6ec482b3so1429699276.3
-        for <netdev@vger.kernel.org>; Wed, 17 May 2023 10:34:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684344879; x=1686936879;
-        h=content-transfer-encoding:in-reply-to:from:cc:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ql8BC1wuvR5d44VGKffkgtVNaL4Zvqgmq6JQdp5Xcyo=;
-        b=Ts5I871f8CDqaKIpSwAivKlE0KqAvCsD9eZepF9T478bEBKo1G9XTQjOfi1hXNrhMd
-         6tO6HzOHcGILpbqcuj8GC2TGH/4cr41Uhhke++dKJOnO1JyQOjkLb6t5rFV8PBLciw4t
-         iBFOZmWTRTUZXd4Y6Kbu9SMHwrR/GyZT3Sd+OyzWKG6xEVwSdWo0Amtp+5sW2q9yFiNn
-         WLA6ZDB/ucsjqmjG5Olg2bQ7MaFkhvpBOl8Whqx8Tqp/m8fWsyKDjsH2FmPJY0uXBlSd
-         dGcq3aiHdLPoxTttbnbUL7uVRnT3pLrx8ht3zvHFM0y+lyppRL1iZQKZLCOA1wnAo+86
-         5/UQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684344879; x=1686936879;
-        h=content-transfer-encoding:in-reply-to:from:cc:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ql8BC1wuvR5d44VGKffkgtVNaL4Zvqgmq6JQdp5Xcyo=;
-        b=I/lq8ghX6ALx0COHH9Ja1rnlE3pE4FYWo2BrjLwIRCN36bxDkurx1GrQ4/t/lZD9kx
-         5uZahRudpTy9PzhLsYxwHkigHpXdNNhXItgniphhxt/54PbKIMA/6eHRGcxv/E5uJuh4
-         BOYp2WIruwEuOk22zScdmO5lRSh8tBT0ZPEtry3rN5n+3fx/6wJF9YLyZVg+tKwxA4mY
-         QynM1NJcVWIC3pnvoWW6XK4L0BzOy+uMEhMoipEMkUceCNkQ/L2yum8bZPTPm5nx7MPx
-         RMKtG3WwemlDb5/1hGb4EP8ZDpzvMHIcv3lVys9zaSYhC9Wz1I7R6o8HhHYoZ0nsENkf
-         aZ2g==
-X-Gm-Message-State: AC+VfDykRw2Zaux9nUV1vWRJNbC99YIRTdtXxxkLpQYcQYRshwlcz5Ej
-	tvA3W2fVxjswgKSHPySb040=
-X-Google-Smtp-Source: ACHHUZ7baHBH06HaX7dF/YOdki1wrSUBxQcMdbVAlLZ27ZI9N86BKMDG5pC2HyflniQWmvz+kRjFJA==
-X-Received: by 2002:a05:6902:1894:b0:ba8:494c:3e9 with SMTP id cj20-20020a056902189400b00ba8494c03e9mr3953707ybb.64.1684344879465;
-        Wed, 17 May 2023 10:34:39 -0700 (PDT)
-Received: from ?IPV6:2600:1700:6cf8:1240:d976:e286:fb8b:a4e3? ([2600:1700:6cf8:1240:d976:e286:fb8b:a4e3])
-        by smtp.gmail.com with ESMTPSA id p205-20020a25d8d6000000b00ba2da98431fsm659316ybg.56.2023.05.17.10.34.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 May 2023 10:34:39 -0700 (PDT)
-Message-ID: <41144311-75ef-850f-6b99-2d19a3e7efb3@gmail.com>
-Date: Wed, 17 May 2023 10:34:37 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1FCF31133
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 17:37:44 +0000 (UTC)
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1F01A7
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 10:37:35 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0ViteIPY_1684345052;
+Received: from smtpclient.apple(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0ViteIPY_1684345052)
+          by smtp.aliyun-inc.com;
+          Thu, 18 May 2023 01:37:33 +0800
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: Fwd: [RFC PATCH net-next 2/2] net: Remove unused code and
- variables.
-Content-Language: en-US
-To: Thinker Li <thinker.li@gmail.com>
-References: <20230517042757.161832-1-kuifeng@meta.com>
- <20230517042757.161832-3-kuifeng@meta.com> <ZGTrOCcP9ITrKLlw@corigine.com>
- <CAFVMQ6SX=CES2EpovCbB5eSZjZuSbxAmoACbNdLCGWdU8kf=PQ@mail.gmail.com>
-Cc: netdev@vger.kernel.org, ast@kernel.org, martin.lau@linux.dev,
- kernel-team@meta.com, Kui-Feng Lee <kuifeng@meta.com>, davem@davemloft.net,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, =?UTF-8?Q?Maciej_=c5=bbenczykowski?=
- <maze@google.com>, Mahesh Bandewar <maheshb@google.com>
-From: Kui-Feng Lee <sinquersw@gmail.com>
-In-Reply-To: <CAFVMQ6SX=CES2EpovCbB5eSZjZuSbxAmoACbNdLCGWdU8kf=PQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.500.231\))
+Subject: Re: net: getsockopt(TCP_MAXSEG) on listen sock returns wrong MSS?
+From: Cambda Zhu <cambda@linux.alibaba.com>
+In-Reply-To: <CANn89i+3kL9pYtkxkwxwNMzvC_w3LNUum_2=3u+UyLBmGmifHA@mail.gmail.com>
+Date: Thu, 18 May 2023 01:37:20 +0800
+Cc: netdev@vger.kernel.org,
+ "David S. Miller" <davem@davemloft.net>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+ Dust Li <dust.li@linux.alibaba.com>,
+ Tony Lu <tonylu@linux.alibaba.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <17B26478-41C0-46BD-B47F-812DA12A3699@linux.alibaba.com>
+References: <34BAAED6-5CD0-42D0-A9FB-82A01962A2D7@linux.alibaba.com>
+ <CANn89i+3kL9pYtkxkwxwNMzvC_w3LNUum_2=3u+UyLBmGmifHA@mail.gmail.com>
+To: Eric Dumazet <edumazet@google.com>
+X-Mailer: Apple Mail (2.3731.500.231)
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+	USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Thank you for comments.
 
-On 5/17/23 10:27, Thinker Li wrote:
-> 
-> 
-> 
-> On Tue, May 16, 2023 at 09:27:57PM -0700, Kui-Feng Lee wrote:
->  > Since GC has been removed, some functions and variables are useless.  
-> That
->  > includes some sysctl variables that control GC.
->  >
->  > Signed-off-by: Kui-Feng Lee <kuifeng@meta.com <mailto:kuifeng@meta.com>>
-> 
-> Hi Kui-Feng,
-> 
-> thanks for your patch.
-> Some initial review from my side.
-> 
->  > -static void fib6_gc_timer_cb(struct timer_list *t)
->  > -{
->  > -     struct net *arg = from_timer(arg, t, ipv6.ip6_fib_timer);
->  > -
->  > -     fib6_run_gc(0, arg, true);
->  > -}
->  > -
-> 
-> There is a forward declaration of fib6_gc_timer_cb around line 80.
-> It should be removed too.
+> On May 17, 2023, at 23:58, Eric Dumazet <edumazet@google.com> wrote:
+>=20
+> On Wed, May 17, 2023 at 1:09=E2=80=AFPM Cambda Zhu =
+<cambda@linux.alibaba.com> wrote:
+>>=20
+>> I want to call setsockopt(TCP_MAXSEG) on a listen sock to let
+>> all child socks have smaller MSS. And I found the child sock
+>> MSS changed but getsockopt(TCP_MAXSEG) on the listen sock
+>> returns 536 always.
+>>=20
+>=20
+> I think TCP_MAXSEG is not like a traditional option you can set and =
+get later,
+> expecting to read back the value you set.
+>=20
+> It is probably a bug.
+>=20
+> Getting tp->mss_cache should have been a separate socket option, but
+> it is too late.
+>=20
 
-Got it!
+I understand now. It seems setting/getting TCP_MAXSEG has different =
+meaning. :)
 
-> 
-> ...
-> 
->  > @@ -3283,28 +3281,6 @@ struct dst_entry *icmp6_dst_alloc(struct 
-> net_device *dev,
->  >       return dst;
->  >  }
->  >
->  > -static void ip6_dst_gc(struct dst_ops *ops)
-> 
-> There is a forward declaration of ip6_dst_gc() around line 94.
-> That should be deleted too.
-> 
-Got it!
+>=20
+>> It seems the tp->mss_cache is initialized with TCP_MSS_DEFAULT,
+>> but getsockopt(TCP_MAXSEG) returns tp->rx_opt.user_mss only when
+>> tp->mss_cache is 0. I don't understand the purpose of the mss_cache
+>> check of TCP_MAXSEG. If getsockopt(TCP_MAXSEG) on listen sock makes
+>> no sense, why does it have a branch for close/listen sock to return
+>> user_mss? If getsockopt(TCP_MAXSEG) on listen sock is ok, why does
+>> it check mss_cache for a listen sock?
+>>=20
+>> I tried to find the commit log about TCP_MAXSEG, and found that
+>> in commit 0c409e85f0ac ("Import 2.3.41pre2"), the mss_cache check
+>> was added. No more detailed information found. Is this a bug or am
+>> I misunderstanding something?
+>=20
+> I wonder if we should simply do:
+>=20
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index =
+4d6392c16b7a5a9a853c27e3a4b258d000738304..cb526257a06a6c7a4e65e710fff1770b=
+d382ed2d
+> 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -4080,9 +4080,10 @@ int do_tcp_getsockopt(struct sock *sk, int =
+level,
+>=20
+>        switch (optname) {
+>        case TCP_MAXSEG:
+> -               val =3D tp->mss_cache;
+> -               if (!val && ((1 << sk->sk_state) & (TCPF_CLOSE | =
+TCPF_LISTEN)))
+> +               if (((1 << sk->sk_state) & (TCPF_CLOSE | =
+TCPF_LISTEN)))
+>                        val =3D tp->rx_opt.user_mss;
+> +               else
+> +                       val =3D tp->mss_cache;
+>                if (tp->repair)
+>                        val =3D tp->rx_opt.mss_clamp;
+>                break;
 
->  > -{
->  > -     struct net *net = container_of(ops, struct net, ipv6.ip6_dst_ops);
->  > -     int rt_min_interval = net->ipv6.sysctl.ip6_rt_gc_min_interval;
->  > -     int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
->  > -     int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
->  > -     unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
->  > -     unsigned int val;
->  > -     int entries;
->  > -
->  > -     if (time_after(rt_last_gc + rt_min_interval, jiffies))
->  > -             goto out;
->  > -
->  > -     fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), 
-> net, true);
->  > -     entries = dst_entries_get_slow(ops);
->  > -     if (entries < ops->gc_thresh)
->  > -             atomic_set(&net->ipv6.ip6_rt_gc_expire, rt_gc_timeout 
->  >> 1);
->  > -out:
->  > -     val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
->  > -     atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> 
-> rt_elasticity));
->  > -}
->  > -
-> 
+This fix is a good solution for me. Will you send a patch later?
+
+Thanks,
+Cambda
 
 
