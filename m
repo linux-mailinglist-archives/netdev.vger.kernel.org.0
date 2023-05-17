@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-3348-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3349-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2DE0C70686E
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:42:54 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 637C070686F
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 14:43:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CE9781C20EF0
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:42:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 18D622816EA
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:43:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 39F3F18B1D;
-	Wed, 17 May 2023 12:42:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 878AB209BF;
+	Wed, 17 May 2023 12:42:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FA84156EA
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 12:42:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7777618B0B
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 12:42:18 +0000 (UTC)
 Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB151BF;
-	Wed, 17 May 2023 05:42:14 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id d2e1a72fcca58-64384274895so497182b3a.2;
-        Wed, 17 May 2023 05:42:14 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1CEE269F;
+	Wed, 17 May 2023 05:42:16 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id d2e1a72fcca58-64359d9c531so517302b3a.3;
+        Wed, 17 May 2023 05:42:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684327334; x=1686919334;
+        d=gmail.com; s=20221208; t=1684327336; x=1686919336;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2/0OAhjGOHrmxWrbN9W3gRqX+XIbc1pmgYwBMpZEkis=;
-        b=Y2JdKOfL1Y+jzb6X3BwIf/rxj42QRt8mwa4OtrOo0pu0hjdph/vy9O7eH+P3bIA/Wu
-         ObzfpTrmVyGvCJORHYgUYs63ox5JQQv/FRwl9SFocNMVExF5lLaAQG9UiPlCG0Jv7s8G
-         6LMlcqfLrmNaXeg0l4kft5e1G1DmFygQR4JE0vv3Dw0/+gu1CJglcwWjV9sAL777wQWF
-         zgr7s1jXiNG48TH1iYBF9fwp0zpib2gLE8KvL3Jfux1bEOuSqajB7oeNgg7YzCJ1ehdo
-         sLmmu6yhcGPYxOvDNgsmSJxp6ej8BVPuFWKC9iNYrKSmZJPY/iNfhZ4KCEtIKCuF6jQH
-         +3FQ==
+        bh=pX2hrFRMTsVQF1+5JbeKRRhV3fvCd61M3POL1LFhKAA=;
+        b=kDUlcJaW77qv2uceQP01whPf+y603pZWGnpjr3X5VKoYFKVAN6D0NRY4f6T6MCq2rh
+         ep/rW4c+eeXIXZULnUI0ht//PM48uzBnwnViUcXEz9K7VDB807FyPRXi1fNsoPggsXhd
+         Qw8zXKiP7ZUxHg0BWtYyH1OLe/YZM6iJEATdlO9UYbuQSlR1sTtScm/Efj5kkySgeJuf
+         ++nVpAlRG9lPVPbSUyMgroB+NqvhtDflxtk8H28X45+vJeK4a+5WX2MyIFmT0M2cVebq
+         USEmEd9DtH9c0sXzZwfDPQng5207kUEhHH/8MrLEDwE2kcbzX6wxedShDdA+5EHLTf26
+         2/Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684327334; x=1686919334;
+        d=1e100.net; s=20221208; t=1684327336; x=1686919336;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=2/0OAhjGOHrmxWrbN9W3gRqX+XIbc1pmgYwBMpZEkis=;
-        b=RmG2sAtCxUGALczBSP0DB/C13TIwPnqdOtcUm2TMBZYVf72Kvb2UfK+sWwT+wMOb3E
-         YDawev2Yq2QOEAGVDUM9VoUHu5YBhLDPOnnSbleximUlvAGJqpEYmfFl9qpVEMoLWdW0
-         Fifc239w3DEjxhJQpYTid/xjwJ8ErfSDIJ2TWvW4eJwD84ttQTq4W7TFZAwfoQhuaEuA
-         3z8kezc2knXTsTPoOjWiJy8pkI9nIZrMunQtqsMTWrd+Nv0oJZaRxOjVWj2brVwL49ns
-         bQXB05QFX4YyEk4R7XiuHSnsp/lvDmA30T9UPGdsFF5hM1zX/2QJFY6vAyl1CGU+VUY2
-         J5pw==
-X-Gm-Message-State: AC+VfDw90wgJerrvxaud1oPY7oUm80haSgOWLCXf0iXtH2rmlcZWF6NF
-	RaWBP7mX8rb4NubmVE1T3DU=
-X-Google-Smtp-Source: ACHHUZ5Xclg3N4WSLv1+naH6PK6QsV3ODhQj3peOYplty+jdFtJZ+SsKXw/ZRTCtlBayT25szg+Dxw==
-X-Received: by 2002:a05:6a00:1308:b0:647:f128:c4f5 with SMTP id j8-20020a056a00130800b00647f128c4f5mr873899pfu.22.1684327333721;
-        Wed, 17 May 2023 05:42:13 -0700 (PDT)
+        bh=pX2hrFRMTsVQF1+5JbeKRRhV3fvCd61M3POL1LFhKAA=;
+        b=LTqlPHajUDQuypc7t+90ZqnZ3eSAWlzSUwYo9PG7dJXuEJboAQAIsdJv8qQOYjpi5X
+         9Zr8Q9jHwfFbeARrq0MEvpps71wSsDDLhwNoX+iC3ar3hFNV3jbORx5NaezZsk8OSdMX
+         Wvhng7Ki3KEQu/bpvVC6PAaRxWRuSdXBuY1fP070twpsWcxbceHU4hMbTOPKgF0We0WP
+         lNex2DuMcuCGsCurrB/YlCqrUVjLK1tJcq0ncOHBHOYpZQfl6CJkL6rhjP1LnNT+BBAE
+         Udcq1r0oaZdjppoAid68ixw6i+Y61BxFn1cp26FxnU1zhC8iyQSo/Mblwre9GfDNYzsu
+         On1g==
+X-Gm-Message-State: AC+VfDzlVA+jNuracUQWRCDBGBzhKwEwQ21bJbGDp79VAjulY116tXNw
+	KoahN2E3PniXkKBfO1bLCNw=
+X-Google-Smtp-Source: ACHHUZ6oGWTq7fjcLMhSu3MHrZzpF6gpIFARGwmwve7ipGe3wMAWwd4V6JtnhedYmomBUE50HgvGxw==
+X-Received: by 2002:a05:6a20:54a8:b0:104:6432:270 with SMTP id i40-20020a056a2054a800b0010464320270mr24929219pzk.46.1684327336317;
+        Wed, 17 May 2023 05:42:16 -0700 (PDT)
 Received: from localhost.localdomain ([81.70.217.19])
-        by smtp.gmail.com with ESMTPSA id u23-20020aa78497000000b0064aea45b040sm9244224pfn.168.2023.05.17.05.42.11
+        by smtp.gmail.com with ESMTPSA id u23-20020aa78497000000b0064aea45b040sm9244224pfn.168.2023.05.17.05.42.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 May 2023 05:42:13 -0700 (PDT)
+        Wed, 17 May 2023 05:42:16 -0700 (PDT)
 From: menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To: kuba@kernel.org
@@ -66,9 +66,9 @@ Cc: davem@davemloft.net,
 	netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Menglong Dong <imagedong@tencent.com>
-Subject: [PATCH net-next 2/3] net: tcp: send zero-window when no memory
-Date: Wed, 17 May 2023 20:42:00 +0800
-Message-Id: <20230517124201.441634-3-imagedong@tencent.com>
+Subject: [PATCH net-next 3/3] net: tcp: handle window shrink properly
+Date: Wed, 17 May 2023 20:42:01 +0800
+Message-Id: <20230517124201.441634-4-imagedong@tencent.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230517124201.441634-1-imagedong@tencent.com>
 References: <20230517124201.441634-1-imagedong@tencent.com>
@@ -88,81 +88,163 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Menglong Dong <imagedong@tencent.com>
 
-For now, skb will be dropped when no memory, which makes client keep
-retrans util timeout and it's not friendly to the users.
+Window shrink is not allowed and also not handled for now, but it's
+needed in some case.
 
-Therefore, now we force to receive one packet on current socket when
-the protocol memory is out of the limitation. Then, this socket will
-stay in 'no mem' status, util protocol memory is available.
+In the origin logic, 0 probe is triggered only when there is no any
+data in the retrans queue and the receive window can't hold the data
+of the 1th packet in the send queue.
 
-When a socket is in 'no mem' status, it's receive window will become
-0, which means window shrink happens. And the sender need to handle
-such window shrink properly, which is done in the next commit.
+Now, let's change it and trigger the 0 probe in such cases:
+
+- if the retrans queue has data and the 1th packet in it is not within
+the receive window
+- no data in the retrans queue and the 1th packet in the send queue is
+out of the end of the receive window
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/net/sock.h    |  1 +
- net/ipv4/tcp_input.c  | 12 ++++++++++++
- net/ipv4/tcp_output.c |  7 +++++++
- 3 files changed, 20 insertions(+)
+ include/net/tcp.h     | 21 +++++++++++++++++++++
+ net/ipv4/tcp_input.c  | 41 +++++++++++++++++++++++++++++++++++++++++
+ net/ipv4/tcp_output.c |  3 +--
+ net/ipv4/tcp_timer.c  |  4 +---
+ 4 files changed, 64 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 5edf0038867c..90db8a1d7f31 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -957,6 +957,7 @@ enum sock_flags {
- 	SOCK_XDP, /* XDP is attached */
- 	SOCK_TSTAMP_NEW, /* Indicates 64 bit timestamps always */
- 	SOCK_RCVMARK, /* Receive SO_MARK  ancillary data with packet */
-+	SOCK_NO_MEM, /* protocol memory limitation happened */
- };
- 
- #define SK_FLAGS_TIMESTAMP ((1UL << SOCK_TIMESTAMP) | (1UL << SOCK_TIMESTAMPING_RX_SOFTWARE))
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index a057330d6f59..56e395cb4554 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5047,10 +5047,22 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
- 		if (skb_queue_len(&sk->sk_receive_queue) == 0)
- 			sk_forced_mem_schedule(sk, skb->truesize);
- 		else if (tcp_try_rmem_schedule(sk, skb, skb->truesize)) {
-+			if (sysctl_tcp_wnd_shrink)
-+				goto do_wnd_shrink;
-+
- 			reason = SKB_DROP_REASON_PROTO_MEM;
- 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPRCVQDROP);
- 			sk->sk_data_ready(sk);
- 			goto drop;
-+do_wnd_shrink:
-+			if (sock_flag(sk, SOCK_NO_MEM)) {
-+				NET_INC_STATS(sock_net(sk),
-+					      LINUX_MIB_TCPRCVQDROP);
-+				sk->sk_data_ready(sk);
-+				goto out_of_window;
-+			}
-+			sk_forced_mem_schedule(sk, skb->truesize);
-+			sock_set_flag(sk, SOCK_NO_MEM);
- 		}
- 
- 		eaten = tcp_queue_rcv(sk, skb, &fragstolen);
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index cfe128b81a01..21dc4f7e0a12 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -300,6 +300,13 @@ static u16 tcp_select_window(struct sock *sk)
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPFROMZEROWINDOWADV);
- 	}
- 
-+	if (sock_flag(sk, SOCK_NO_MEM)) {
-+		if (sk_memory_allocated(sk) < sk_prot_mem_limits(sk, 2))
-+			sock_reset_flag(sk, SOCK_NO_MEM);
-+		else
-+			new_win = 0;
-+	}
-+
- 	return new_win;
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index a6cf6d823e34..9625d0bf00e1 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1910,6 +1910,27 @@ static inline void tcp_add_write_queue_tail(struct sock *sk, struct sk_buff *skb
+ 		tcp_chrono_start(sk, TCP_CHRONO_BUSY);
  }
  
++static inline bool tcp_rtx_overflow(const struct sock *sk)
++{
++	struct sk_buff *rtx_head = tcp_rtx_queue_head(sk);
++
++	return rtx_head && after(TCP_SKB_CB(rtx_head)->end_seq,
++				 tcp_wnd_end(tcp_sk(sk)));
++}
++
++static inline bool tcp_probe0_needed(const struct sock *sk)
++{
++	/* for the normal case */
++	if (!tcp_sk(sk)->packets_out && !tcp_write_queue_empty(sk))
++		return true;
++
++	if (!sysctl_tcp_wnd_shrink)
++		return false;
++
++	/* for the window shrink case */
++	return tcp_rtx_overflow(sk);
++}
++
+ /* Insert new before skb on the write queue of sk.  */
+ static inline void tcp_insert_write_queue_before(struct sk_buff *new,
+ 						  struct sk_buff *skb,
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 56e395cb4554..a9ac295502ee 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3188,6 +3188,14 @@ void tcp_rearm_rto(struct sock *sk)
+ /* Try to schedule a loss probe; if that doesn't work, then schedule an RTO. */
+ static void tcp_set_xmit_timer(struct sock *sk)
+ {
++	/* Check if we are already in probe0 state, which means it's
++	 * not needed to schedule the RTO. The normal probe0 can't reach
++	 * here, so it must be window-shrink probe0 case here.
++	 */
++	if (unlikely(inet_csk(sk)->icsk_pending == ICSK_TIME_PROBE0) &&
++	    sysctl_tcp_wnd_shrink)
++		return;
++
+ 	if (!tcp_schedule_loss_probe(sk, true))
+ 		tcp_rearm_rto(sk);
+ }
+@@ -3465,6 +3473,38 @@ static void tcp_ack_probe(struct sock *sk)
+ 	}
+ }
+ 
++/**
++ * This function is called only when there are packets in the rtx queue,
++ * which means that the packets out is not 0.
++ *
++ * NOTE: we only handle window shrink case in this part.
++ */
++static void tcp_ack_probe_shrink(struct sock *sk)
++{
++	struct inet_connection_sock *icsk = inet_csk(sk);
++	unsigned long when;
++
++	if (!sysctl_tcp_wnd_shrink)
++		return;
++
++	if (tcp_rtx_overflow(sk)) {
++		when = tcp_probe0_when(sk, TCP_RTO_MAX);
++
++		when = tcp_clamp_probe0_to_user_timeout(sk, when);
++		tcp_reset_xmit_timer(sk, ICSK_TIME_PROBE0, when, TCP_RTO_MAX);
++	} else {
++		/* check if recover from window shrink */
++		if (icsk->icsk_pending != ICSK_TIME_PROBE0)
++			return;
++
++		icsk->icsk_backoff = 0;
++		icsk->icsk_probes_tstamp = 0;
++		inet_csk_clear_xmit_timer(sk, ICSK_TIME_PROBE0);
++		if (!tcp_rtx_queue_empty(sk))
++			tcp_retransmit_timer(sk);
++	}
++}
++
+ static inline bool tcp_ack_is_dubious(const struct sock *sk, const int flag)
+ {
+ 	return !(flag & FLAG_NOT_DUP) || (flag & FLAG_CA_ALERT) ||
+@@ -3908,6 +3948,7 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+ 	if ((flag & FLAG_FORWARD_PROGRESS) || !(flag & FLAG_NOT_DUP))
+ 		sk_dst_confirm(sk);
+ 
++	tcp_ack_probe_shrink(sk);
+ 	delivered = tcp_newly_delivered(sk, delivered, flag);
+ 	lost = tp->lost - lost;			/* freshly marked lost */
+ 	rs.is_ack_delayed = !!(flag & FLAG_ACK_MAYBE_DELAYED);
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 21dc4f7e0a12..eac0532edb61 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -4089,14 +4089,13 @@ int tcp_write_wakeup(struct sock *sk, int mib)
+ void tcp_send_probe0(struct sock *sk)
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+-	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct net *net = sock_net(sk);
+ 	unsigned long timeout;
+ 	int err;
+ 
+ 	err = tcp_write_wakeup(sk, LINUX_MIB_TCPWINPROBE);
+ 
+-	if (tp->packets_out || tcp_write_queue_empty(sk)) {
++	if (!tcp_probe0_needed(sk)) {
+ 		/* Cancel probe timer, if it is not required. */
+ 		icsk->icsk_probes_out = 0;
+ 		icsk->icsk_backoff = 0;
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index b839c2f91292..a28606291b7e 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -350,11 +350,9 @@ static void tcp_delack_timer(struct timer_list *t)
+ static void tcp_probe_timer(struct sock *sk)
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+-	struct sk_buff *skb = tcp_send_head(sk);
+-	struct tcp_sock *tp = tcp_sk(sk);
+ 	int max_probes;
+ 
+-	if (tp->packets_out || !skb) {
++	if (!tcp_probe0_needed(sk)) {
+ 		icsk->icsk_probes_out = 0;
+ 		icsk->icsk_probes_tstamp = 0;
+ 		return;
 -- 
 2.40.1
 
