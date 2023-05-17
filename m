@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-3192-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3193-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 01545705F2B
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 07:23:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 16480705F2D
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 07:23:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B1969281479
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 05:23:03 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C46F9281553
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 05:23:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5E985238;
-	Wed, 17 May 2023 05:22:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A519539E;
+	Wed, 17 May 2023 05:23:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A78A3210D;
-	Wed, 17 May 2023 05:22:59 +0000 (UTC)
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B974215;
-	Tue, 16 May 2023 22:22:49 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id 98e67ed59e1d1-24e16918323so341337a91.2;
-        Tue, 16 May 2023 22:22:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1788F538D;
+	Wed, 17 May 2023 05:23:01 +0000 (UTC)
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2720C40D1;
+	Tue, 16 May 2023 22:22:51 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id 98e67ed59e1d1-24e14a24c9dso383282a91.0;
+        Tue, 16 May 2023 22:22:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684300968; x=1686892968;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=BDkJ42HQy5+j1cZC2g7c/JXDUzmvh0G977avAEaYTh0=;
-        b=eQtNpr9ZDYvMtNOnHtImpznC/2tbu/uH2RaKoYI20neadD2PPwQHPyzCYbqw8rMCdt
-         nqGU73yDaTHRKR8kwAWrEbZYkWjHhcgNpwBxi+N05VcYICUee8ylPEY/z9u4RAPHweMC
-         DQgAsbV1lX9lLzEZoaI1KVEfz2FFkXclZQzFctbKjTbTKACh8ymJfPNbMNV+xZJ0GuBw
-         kQUh7+lisdeoQT23DQuS5yVRJrM2IJjkjQ7uoQVyuroxpsTA/902d4rsa/ZGBswRqGn1
-         rF+SjGdAGLx11ZFQhIuyq41aAJc6KgSxsGK/LWj9zh3dSt8QQZ0+xk8itECvjey1QU/H
-         bM6A==
+        d=gmail.com; s=20221208; t=1684300970; x=1686892970;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=huaGQx94IhqjlpBZz9Dh/6dEAcqnZNQFnDotU/ZG3V0=;
+        b=cvypauWx5vBeQkgQvwh0r3V+rU0e6RtAJ5zv+CimzVDoWsgBNFREY/UU+CR8ehDOky
+         zbWE1S/QEjDpdZyhJOvd54v0K3fJQvQCwcMEZb32qOAg4vGscIbdORuNCZp7b0ncwuY6
+         /7qUbz+Jb01S6FLeqLnjRlmFwB7zIY3uy7frKm04OGaorzVJMZBHzoi+JSajzPaGOpkl
+         Gz5VyjIL6lIM9RIRsGvlAQfEVWdk2/1cqU6WJQ/vn1yY6J9fmr8xDpfWEhh1gD967wYQ
+         iUTBzu/gr3t/SzZdIfumwjq7RGcGLXjBNygpDgctsqpSrYqcGM/07Zqd3gaqUNZcJNC4
+         1zhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684300968; x=1686892968;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BDkJ42HQy5+j1cZC2g7c/JXDUzmvh0G977avAEaYTh0=;
-        b=NZzoWTkgdrsT4Bx9IpVZDFPH9TrImyKf5kee2VkhWNUZjYLMd87zXt2/bGpRSFBPao
-         rhB2smuIxv9WjwZoHoXfPo7xKxxfei6kBw4f1v0h1tUk4aGPzTicKRBWmhUdDN5kvJ2S
-         lUgCro8lvFYmae+m2Ew6YJ0B5Evg02DQDk6kjd5rPaH+Mj5SI1ZNMxOWpr2ViMUpnoeL
-         MrQa+aJ99xn7KjV97KhV9ap6TW9yFanGBj7zyqPe/2Tpkl1WAim6PfBNwJUPeXRowCzx
-         z6wwDek3wXi8MB6YnXcGR9rZpVfFoTuIMVMvc4yS9U7EMn/xpHvujcLO0t8HlMcuvPLC
-         KUJg==
-X-Gm-Message-State: AC+VfDywq1WhtHHb5JDf3ylljIiZezKbkN8yFXJxhoTpA2sH0QMVYi7x
-	cjpBmT3mw0SAzTW3Coc/pMc=
-X-Google-Smtp-Source: ACHHUZ4RZHR+Y7u4duFyU3TcT1kuNotP9evHybbvT8vcJv+ArLfEADZyqDSlbNBKV40r+KWMiS01BA==
-X-Received: by 2002:a17:90a:31c6:b0:24d:ec21:b83c with SMTP id j6-20020a17090a31c600b0024dec21b83cmr39407178pjf.16.1684300968385;
-        Tue, 16 May 2023 22:22:48 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684300970; x=1686892970;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=huaGQx94IhqjlpBZz9Dh/6dEAcqnZNQFnDotU/ZG3V0=;
+        b=KYseAo6j90qIasKCqEVt08a8Y3xSYQidt9Aa9EXlt7KexS01jTHAVhVTUXcwxhfV7v
+         z/AF7OKp/5gzy/ZJHwLQLbLGe0/rgj+U7aiZGNwqqsteYrNC2tAzATP+6thkNhGQKZRX
+         Js51YO4tyL+SZ6AqJbqFUamYD78vNpH7sIRTuaLbGyRC9QxHPOWhByaDkOrDuykv0aww
+         SGLRGOeQdGIRy8JIoGqFILeF4PfRtLkEqNasXa2Ee2urUR6x82o0YFaRg6TwzpnYjwWi
+         zYWlLpBYla5Jj0qvBrA8O3/15s6KoCv07pjP74G1JeOgaClviLOgdMbJTUt74SwLs2sf
+         DXEg==
+X-Gm-Message-State: AC+VfDw5worJNG2lbNPHdn4Z9wygCdG0+rm9V1UdmnMbQJxE9AT90gB7
+	iNO0lonhwTn39pdzUzG0O5s=
+X-Google-Smtp-Source: ACHHUZ7SVh07as+YfXygj+qui8XOZsLSUD7puZyrJbMRRgwAZXCZQFl1Mb9au8kji+d9H8STG4heVw==
+X-Received: by 2002:a17:90b:807:b0:252:f526:c0c5 with SMTP id bk7-20020a17090b080700b00252f526c0c5mr9895232pjb.43.1684300970443;
+        Tue, 16 May 2023 22:22:50 -0700 (PDT)
 Received: from john.lan ([98.97.37.198])
-        by smtp.gmail.com with ESMTPSA id n11-20020a17090a2fcb00b0023cfdbb6496sm581779pjm.1.2023.05.16.22.22.46
+        by smtp.gmail.com with ESMTPSA id n11-20020a17090a2fcb00b0023cfdbb6496sm581779pjm.1.2023.05.16.22.22.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 May 2023 22:22:47 -0700 (PDT)
+        Tue, 16 May 2023 22:22:50 -0700 (PDT)
 From: John Fastabend <john.fastabend@gmail.com>
 To: jakub@cloudflare.com,
 	daniel@iogearbox.net
@@ -65,10 +66,12 @@ Cc: john.fastabend@gmail.com,
 	ast@kernel.org,
 	andrii@kernel.org,
 	will@isovalent.com
-Subject: [PATCH bpf v8 00/13] bpf sockmap fixes
-Date: Tue, 16 May 2023 22:22:31 -0700
-Message-Id: <20230517052244.294755-1-john.fastabend@gmail.com>
+Subject: [PATCH bpf v8 01/13] bpf: sockmap, pass skb ownership through read_skb
+Date: Tue, 16 May 2023 22:22:32 -0700
+Message-Id: <20230517052244.294755-2-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20230517052244.294755-1-john.fastabend@gmail.com>
+References: <20230517052244.294755-1-john.fastabend@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -83,100 +86,150 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This v8 iteration adds another fix suggested by Jakub to always
-check the enable bit is set before rescheduling to avoid trying
-to reschedule backlog queue handler while trying to tear down
-a socket. Also cleaned up one of the tests as suggested by Jakub
-to avoid creating unused pair of sockets.
+The read_skb hook calls consume_skb() now, but this means that if the
+recv_actor program wants to use the skb it needs to inc the ref cnt
+so that the consume_skb() doesn't kfree the sk_buff.
 
-Fixes for sockmap running against NGINX TCP tests and also on an
-underprovisioned VM so that we hit error (ENOMEM) cases regularly.
+This is problematic because in some error cases under memory pressure
+we may need to linearize the sk_buff from sk_psock_skb_ingress_enqueue().
+Then we get this,
 
-The first 3 patches fix cases related to ENOMEM that were either
-causing splats or data hangs.
+ skb_linearize()
+   __pskb_pull_tail()
+     pskb_expand_head()
+       BUG_ON(skb_shared(skb))
 
-Then 4-7 resolved cases found when running NGINX with its sockets
-assigned to sockmap. These mostly have to do with handling fin/shutdown
-incorrectly and ensuring epoll_wait works as expected.
+Because we incremented users refcnt from sk_psock_verdict_recv() we
+hit the bug on with refcnt > 1 and trip it.
 
-Patches 8 and 9 extract some of the logic used for sockmap_listen tests
-so that we can use it in other tests because it didn't make much
-sense to me to add tests to the sockmap_listen cases when here we
-are testing send/recv *basic* cases.
+To fix lets simply pass ownership of the sk_buff through the skb_read
+call. Then we can drop the consume from read_skb handlers and assume
+the verdict recv does any required kfree.
 
-Finally patches 10, 11 and 12 add the new tests to ensure we handle
-ioctl(FIONREAD) and shutdown correctly.
+Bug found while testing in our CI which runs in VMs that hit memory
+constraints rather regularly. William tested TCP read_skb handlers.
 
-To test the series I ran the NGINX compliance tests and the sockmap
-selftests. For now our compliance test just runs with SK_PASS.
+[  106.536188] ------------[ cut here ]------------
+[  106.536197] kernel BUG at net/core/skbuff.c:1693!
+[  106.536479] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+[  106.536726] CPU: 3 PID: 1495 Comm: curl Not tainted 5.19.0-rc5 #1
+[  106.537023] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ArchLinux 1.16.0-1 04/01/2014
+[  106.537467] RIP: 0010:pskb_expand_head+0x269/0x330
+[  106.538585] RSP: 0018:ffffc90000138b68 EFLAGS: 00010202
+[  106.538839] RAX: 000000000000003f RBX: ffff8881048940e8 RCX: 0000000000000a20
+[  106.539186] RDX: 0000000000000002 RSI: 0000000000000000 RDI: ffff8881048940e8
+[  106.539529] RBP: ffffc90000138be8 R08: 00000000e161fd1a R09: 0000000000000000
+[  106.539877] R10: 0000000000000018 R11: 0000000000000000 R12: ffff8881048940e8
+[  106.540222] R13: 0000000000000003 R14: 0000000000000000 R15: ffff8881048940e8
+[  106.540568] FS:  00007f277dde9f00(0000) GS:ffff88813bd80000(0000) knlGS:0000000000000000
+[  106.540954] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  106.541227] CR2: 00007f277eeede64 CR3: 000000000ad3e000 CR4: 00000000000006e0
+[  106.541569] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  106.541915] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  106.542255] Call Trace:
+[  106.542383]  <IRQ>
+[  106.542487]  __pskb_pull_tail+0x4b/0x3e0
+[  106.542681]  skb_ensure_writable+0x85/0xa0
+[  106.542882]  sk_skb_pull_data+0x18/0x20
+[  106.543084]  bpf_prog_b517a65a242018b0_bpf_skskb_http_verdict+0x3a9/0x4aa9
+[  106.543536]  ? migrate_disable+0x66/0x80
+[  106.543871]  sk_psock_verdict_recv+0xe2/0x310
+[  106.544258]  ? sk_psock_write_space+0x1f0/0x1f0
+[  106.544561]  tcp_read_skb+0x7b/0x120
+[  106.544740]  tcp_data_queue+0x904/0xee0
+[  106.544931]  tcp_rcv_established+0x212/0x7c0
+[  106.545142]  tcp_v4_do_rcv+0x174/0x2a0
+[  106.545326]  tcp_v4_rcv+0xe70/0xf60
+[  106.545500]  ip_protocol_deliver_rcu+0x48/0x290
+[  106.545744]  ip_local_deliver_finish+0xa7/0x150
 
-There are some more things to be done here, but these 11 patches
-stand on their own in my opionion and fix issues we are having in
-CI now. For bpf-next we can fixup/improve selftests to use the
-ASSERT_* in sockmap_helpers, streamline some of the testing, and
-add more tests. We also still are debugging a few additional flakes
-patches coming soon.
+Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
+Reported-by: William Findlay <will@isovalent.com>
+Tested-by: William Findlay <will@isovalent.com>
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+---
+ net/core/skmsg.c   | 2 --
+ net/ipv4/tcp.c     | 1 -
+ net/ipv4/udp.c     | 7 ++-----
+ net/unix/af_unix.c | 7 ++-----
+ 4 files changed, 4 insertions(+), 13 deletions(-)
 
-v2: use skb_queue_empty instead of *_empty_lockless (Eric)
-    oops incorrectly updated copied_seq on DROP case (Eric)
-    added test for drop case copied_seq update
-
-v3: Fix up comment to use /**/ formatting and update commit
-    message to capture discussion about previous fix attempt
-    for hanging backlog being imcomplete.
-
-v4: build error sockmap things are behind NET_SKMSG not in
-    BPF_SYSCALL otherwise you can build the .c file but not
-    have correct headers.
-
-v5: typo with mispelled SOCKMAP_HELPERS
-
-v6: fix to build without INET enabled for the other sockmap
-    types e.g. af_unix.
-
-v7: We can not protect backlog queue with a mutex because in
-    some cases we call this with sock lock held. Instead do
-    as Jakub suggested and peek the queue and only pop the
-    skb when its been correctly processed.
-
-v8: Only schedule backlog when still enabled and cleanup test
-    to not create unused sockets.
-
-
-John Fastabend (13):
-  bpf: sockmap, pass skb ownership through read_skb
-  bpf: sockmap, convert schedule_work into delayed_work
-  bpf: sockmap, reschedule is now done through backlog
-  bpf: sockmap, improved check for empty queue
-  bpf: sockmap, handle fin correctly
-  bpf: sockmap, TCP data stall on recv before accept
-  bpf: sockmap, wake up polling after data copy
-  bpf: sockmap, incorrectly handling copied_seq
-  bpf: sockmap, pull socket helpers out of listen test for general use
-  bpf: sockmap, build helper to create connected socket pair
-  bpf: sockmap, test shutdown() correctly exits epoll and recv()=0
-  bpf: sockmap, test FIONREAD returns correct bytes in rx buffer
-  bpf: sockmap, test FIONREAD returns correct bytes in rx buffer with
-    drops
-
- include/linux/skmsg.h                         |   3 +-
- include/net/tcp.h                             |  10 +
- net/core/skmsg.c                              |  81 ++--
- net/core/sock_map.c                           |   3 +-
- net/ipv4/tcp.c                                |  11 +-
- net/ipv4/tcp_bpf.c                            |  79 +++-
- net/ipv4/udp.c                                |   7 +-
- net/unix/af_unix.c                            |   7 +-
- .../selftests/bpf/prog_tests/sockmap_basic.c  | 131 +++++++
- .../bpf/prog_tests/sockmap_helpers.h          | 367 ++++++++++++++++++
- .../selftests/bpf/prog_tests/sockmap_listen.c | 352 +----------------
- .../bpf/progs/test_sockmap_drop_prog.c        |  32 ++
- .../bpf/progs/test_sockmap_pass_prog.c        |  32 ++
- 13 files changed, 702 insertions(+), 413 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/sockmap_helpers.h
- create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_drop_prog.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
-
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index f81883759d38..4a3dc8d27295 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -1183,8 +1183,6 @@ static int sk_psock_verdict_recv(struct sock *sk, struct sk_buff *skb)
+ 	int ret = __SK_DROP;
+ 	int len = skb->len;
+ 
+-	skb_get(skb);
+-
+ 	rcu_read_lock();
+ 	psock = sk_psock(sk);
+ 	if (unlikely(!psock)) {
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 288693981b00..1be305e3d3c7 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1770,7 +1770,6 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ 		WARN_ON_ONCE(!skb_set_owner_sk_safe(skb, sk));
+ 		tcp_flags = TCP_SKB_CB(skb)->tcp_flags;
+ 		used = recv_actor(sk, skb);
+-		consume_skb(skb);
+ 		if (used < 0) {
+ 			if (!copied)
+ 				copied = used;
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index c605d171eb2d..8aaae82e78ae 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1813,7 +1813,7 @@ EXPORT_SYMBOL(__skb_recv_udp);
+ int udp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ {
+ 	struct sk_buff *skb;
+-	int err, copied;
++	int err;
+ 
+ try_again:
+ 	skb = skb_recv_udp(sk, MSG_DONTWAIT, &err);
+@@ -1832,10 +1832,7 @@ int udp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ 	}
+ 
+ 	WARN_ON_ONCE(!skb_set_owner_sk_safe(skb, sk));
+-	copied = recv_actor(sk, skb);
+-	kfree_skb(skb);
+-
+-	return copied;
++	return recv_actor(sk, skb);
+ }
+ EXPORT_SYMBOL(udp_read_skb);
+ 
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 0b0f18ecce44..bb34852bf947 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -2553,7 +2553,7 @@ static int unix_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ {
+ 	struct unix_sock *u = unix_sk(sk);
+ 	struct sk_buff *skb;
+-	int err, copied;
++	int err;
+ 
+ 	mutex_lock(&u->iolock);
+ 	skb = skb_recv_datagram(sk, MSG_DONTWAIT, &err);
+@@ -2561,10 +2561,7 @@ static int unix_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ 	if (!skb)
+ 		return err;
+ 
+-	copied = recv_actor(sk, skb);
+-	kfree_skb(skb);
+-
+-	return copied;
++	return recv_actor(sk, skb);
+ }
+ 
+ /*
 -- 
 2.33.0
 
