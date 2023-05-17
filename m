@@ -1,67 +1,70 @@
-Return-Path: <netdev+bounces-3271-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3272-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 59101706565
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BADA9706566
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 12:37:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 13F74281627
-	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 10:37:16 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E5F4628163F
+	for <lists+netdev@lfdr.de>; Wed, 17 May 2023 10:37:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5CD27154B7;
-	Wed, 17 May 2023 10:37:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4653A156C3;
+	Wed, 17 May 2023 10:37:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C7A92CA6
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 10:37:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38FDB2CA6
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 10:37:54 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9365540E6
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 03:37:12 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029F73AA1
+	for <netdev@vger.kernel.org>; Wed, 17 May 2023 03:37:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=vPQuC2Knq+B5VW+FCOV656SyHImAIzJnBAjWotDxk5E=; b=WaJTPvFAfWKpFNyPUqr0LBwBvK
-	671aJ0BzpfxuoqtO75jr+rhx+e62arD2zVGUrh65zEzjEPt2CI10z1cDnNOoLvT4Yma+xLLaGxqDB
-	cQh6ZrzyhoJQxvgXnbNW2O4n+RcY9ixRH7vfthPZTZ8wzF54wi6J2vZD7ykU0bY6xSAOKBBQnFo0j
-	wX4eUl/X2XQCxL7zTAay/jVWxcf/vEVaEglAYnjtfwPXBBOgjEpPBWEP79APdnjo9JwzRVT8jyQsE
-	f+K+0Sgp9AfsiTm+x8jr4Y4+kZagfbBse/58BNOz1niQwrIYEQdbD3jbG8wjwdyozDQz5Q6Ck/Vik
-	s8Il8rXA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42026)
+	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=bFOA3EXkR9/6xPQNNwGnfHDGjSutcSAbzwUI/GipgLs=; b=FUq5YSCv0x1FHjnWXr9jKlOd5s
+	HynIfRZJ7PNRQG0JfURB2X8TWIBIK3hjUKURzEzz0TitGDR8rR271tsntHrgteCwHqBHFTfzR7NZC
+	wHjQ292vHLlw9Dn5Y1RW8UutBPtJ4bfb5f2VHEEzLeBiGPXxvrI2yLX7rQ/UIhrU9UAWMFQfXgNGx
+	GHIWTMz7KQtAFOLmN/mhUNmBeceQKntQNNNyAYUIL4RK1/VhOUFOMWkWTzF1VP6m7uwil4tgsGMTm
+	jvx+J/tvGuIkWvyayEoYIunbflAsnPzfE/bVjQJJ8S6qeLACsRzjIhWLhzJmQCkD3XwEygr+iHNKb
+	yyKCVj5Q==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:35088 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1pzEWn-0007Xs-On; Wed, 17 May 2023 11:37:05 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1pzEWj-0001lJ-2i; Wed, 17 May 2023 11:37:01 +0100
-Date: Wed, 17 May 2023 11:37:01 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
+	(envelope-from <rmk@armlinux.org.uk>)
+	id 1pzEXT-0007Y8-St; Wed, 17 May 2023 11:37:47 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+	id 1pzEXT-005jUJ-94; Wed, 17 May 2023 11:37:47 +0100
+In-Reply-To: <ZGSuTY8GqjM+sqta@shell.armlinux.org.uk>
+References: <ZGSuTY8GqjM+sqta@shell.armlinux.org.uk>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
-	Daniel Golle <daniel@makrotopia.org>,
-	Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: [PATCH net-next 0/7] net: sfp: add support for control of rate
- selection
-Message-ID: <ZGSuTY8GqjM+sqta@shell.armlinux.org.uk>
+	netdev@vger.kernel.org
+Subject: [PATCH net-next 1/7] net: sfp: add helper to modify signal states
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1pzEXT-005jUJ-94@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date: Wed, 17 May 2023 11:37:47 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -69,49 +72,55 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi,
+There are a couple of locations in the code where we modify
+sfp->state, and then call sfp_set_state(, sfp->state) to update
+the outputs/soft state to control the module. Provide a helper
+which takes a mask and new state so that this is encapsulated in
+one location.
 
-This series introduces control of the rate selection SFP pins (or
-their soft state in the I2C diagnostics EEPROM). Several SNIA documents
-(referenced in the commits) describe the various different modes for
-these, and we implement them all for maximum compatibility, but as
-we know, SFP modules tend to do their own thing, so that may not be
-sufficient.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/sfp.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-In order to implement this, we need to change the locking arrangement
-in the SFP layer - we need to make st_mutex (state mutex) able to be
-taken from within the rtnl lock and sm_mutex (state machine mutex).
-Essentially, st_mutex protects the hard (gpio) and soft state signals.
-
-So, patches 2 through 5 rejig the locking so that st_mutex is only
-ever taken when we want to fiddle with the signal state variables,
-read or write the GPIOs, or read or write the soft state.
-
-Patch 1 adds a helper that makes the locking rejig a little easier
-as it combines the update of sfp->state with setting the updated
-control state to the module.
-
-Patch 6 adds code to phylink to give the signalling rate for various
-PHY interface modes that are relevant to SFPs - this is the baud rate
-of the encoded signal, not the data rate, which is what matters for
-SFPs. This rate is passed through the SFP bus layer into the SFP
-socket driver, which initially has a stub sfp_set_signal_rate().
-
-Patch 7 adds the code to the SFP socket driver to parse the rate
-selection data in the EEPROM, configure which RS signals need to be
-driven, and the signalling rate threshold. We fill in 
-sfp_set_signal_rate() to set the rate select pins as appropriate.
-
-Thanks to Simon for reviewing.
-
- drivers/net/phy/phylink.c |  24 ++++
- drivers/net/phy/sfp-bus.c |  20 +++
- drivers/net/phy/sfp.c     | 310 ++++++++++++++++++++++++++++++++++++++--------
- drivers/net/phy/sfp.h     |   1 +
- include/linux/sfp.h       |  14 +++
- 5 files changed, 317 insertions(+), 52 deletions(-)
-
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 89636dc71e48..c97a87393fdb 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -734,6 +734,12 @@ static void sfp_set_state(struct sfp *sfp, unsigned int state)
+ 		sfp_soft_set_state(sfp, state);
+ }
+ 
++static void sfp_mod_state(struct sfp *sfp, unsigned int mask, unsigned int set)
++{
++	sfp->state = (sfp->state & ~mask) | set;
++	sfp_set_state(sfp, sfp->state);
++}
++
+ static unsigned int sfp_check(void *buf, size_t len)
+ {
+ 	u8 *p, check;
+@@ -1537,16 +1543,14 @@ static void sfp_module_tx_disable(struct sfp *sfp)
+ {
+ 	dev_dbg(sfp->dev, "tx disable %u -> %u\n",
+ 		sfp->state & SFP_F_TX_DISABLE ? 1 : 0, 1);
+-	sfp->state |= SFP_F_TX_DISABLE;
+-	sfp_set_state(sfp, sfp->state);
++	sfp_mod_state(sfp, SFP_F_TX_DISABLE, SFP_F_TX_DISABLE);
+ }
+ 
+ static void sfp_module_tx_enable(struct sfp *sfp)
+ {
+ 	dev_dbg(sfp->dev, "tx disable %u -> %u\n",
+ 		sfp->state & SFP_F_TX_DISABLE ? 1 : 0, 0);
+-	sfp->state &= ~SFP_F_TX_DISABLE;
+-	sfp_set_state(sfp, sfp->state);
++	sfp_mod_state(sfp, SFP_F_TX_DISABLE, 0);
+ }
+ 
+ #if IS_ENABLED(CONFIG_DEBUG_FS)
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
 
