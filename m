@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-3591-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3593-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2F1B3707F93
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 13:37:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E4E86707FA5
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 13:37:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CEA65281946
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:37:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7E3B328191D
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:37:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E756B19912;
-	Thu, 18 May 2023 11:35:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3475819916;
+	Thu, 18 May 2023 11:35:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C84991DDC2
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 11:35:16 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE4DB4
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 04:35:08 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28E351EA77
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 11:35:24 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806C8B4
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 04:35:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684409707;
+	s=mimecast20190719; t=1684409716;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=zo53+MxtcExCaAvP1E3d2cbKIX8PzAGUnvJuN4UlUmE=;
-	b=bJxBtKtF+FyWlVLIQaYo5SnmIp0knfvSmXfAPeUPAUQ/cIeiyMqerVAzF/6HJ8bWyToJRq
-	2wcq5dMoK746qyoDavsj5VG0LMhCuSVMKHKKWpyfbWNzkLqvuPcswxTcVrL1wIy4xrpEVH
-	ae8RK+zh0DemSd2ZRxEiv1a221rBy20=
+	bh=Oms7mbQShTpY01zvjwYgDwHWlSZDYU/BDFTf+CWwguM=;
+	b=hsNfBrjipH8bVH1toXL0bbOww5rlEWSK8+C/8WKwfMRKYojS70PYsucRk0ezd/75NFpwcZ
+	Dgd5SlUgonIPHp16sfz1/W6L2rD/8ULkue3CqHtldRo6YuRdnK/00ftpzzHHzsLaRV2WEL
+	Ayk6hhbv4nB1RcPUumCTCY2Xt+A+T+8=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-122-Q1oqsoVdOXek48f82BcBpA-1; Thu, 18 May 2023 07:35:03 -0400
-X-MC-Unique: Q1oqsoVdOXek48f82BcBpA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+ us-mta-61-ELmJWgkyMLiJ2SkyRnHWsQ-1; Thu, 18 May 2023 07:35:13 -0400
+X-MC-Unique: ELmJWgkyMLiJ2SkyRnHWsQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0B82786C60A;
-	Thu, 18 May 2023 11:35:02 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9157910146FC;
+	Thu, 18 May 2023 11:35:12 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.42.28.221])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id A3A93492B01;
-	Thu, 18 May 2023 11:34:58 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id AB5E214171C0;
+	Thu, 18 May 2023 11:35:06 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org
 Cc: David Howells <dhowells@redhat.com>,
@@ -63,12 +63,10 @@ Cc: David Howells <dhowells@redhat.com>,
 	Linus Torvalds <torvalds@linux-foundation.org>,
 	linux-fsdevel@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	Willem de Bruijn <willemb@google.com>,
-	io-uring@vger.kernel.org
-Subject: [PATCH net-next v8 01/16] net: Declare MSG_SPLICE_PAGES internal sendmsg() flag
-Date: Thu, 18 May 2023 12:34:38 +0100
-Message-Id: <20230518113453.1350757-2-dhowells@redhat.com>
+	linux-mm@kvack.org
+Subject: [PATCH net-next v8 02/16] net: Pass max frags into skb_append_pagefrags()
+Date: Thu, 18 May 2023 12:34:39 +0100
+Message-Id: <20230518113453.1350757-3-dhowells@redhat.com>
 In-Reply-To: <20230518113453.1350757-1-dhowells@redhat.com>
 References: <20230518113453.1350757-1-dhowells@redhat.com>
 Precedence: bulk
@@ -78,104 +76,93 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Declare MSG_SPLICE_PAGES, an internal sendmsg() flag, that hints to a
-network protocol that it should splice pages from the source iterator
-rather than copying the data if it can.  This flag is added to a list that
-is cleared by sendmsg syscalls on entry.
-
-This is intended as a replacement for the ->sendpage() op, allowing a way
-to splice in several multipage folios in one go.
+Pass the maximum number of fragments into skb_append_pagefrags() rather
+than using MAX_SKB_FRAGS so that it can be used from code that wants to
+specify sysctl_max_skb_frags.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: David Ahern <dsahern@kernel.org>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
-cc: io-uring@vger.kernel.org
 cc: netdev@vger.kernel.org
 ---
+ include/linux/skbuff.h | 2 +-
+ net/core/skbuff.c      | 4 ++--
+ net/ipv4/ip_output.c   | 3 ++-
+ net/unix/af_unix.c     | 2 +-
+ 4 files changed, 6 insertions(+), 5 deletions(-)
 
-Notes:
-    ver #7)
-     - In ____sys_sendmsg(), clear internal flags before setting msg_flags.
-     - Clear internal flags in uring io_send{,_zc}().
-
- include/linux/socket.h | 3 +++
- io_uring/net.c         | 2 ++
- net/socket.c           | 2 ++
- 3 files changed, 7 insertions(+)
-
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 13c3a237b9c9..bd1cc3238851 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -327,6 +327,7 @@ struct ucred {
- 					  */
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 00e8c435fa1a..4c0ad48e38ca 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1383,7 +1383,7 @@ static inline int skb_pad(struct sk_buff *skb, int pad)
+ #define dev_kfree_skb(a)	consume_skb(a)
  
- #define MSG_ZEROCOPY	0x4000000	/* Use user data in kernel path */
-+#define MSG_SPLICE_PAGES 0x8000000	/* Splice the pages from the iterator in sendmsg() */
- #define MSG_FASTOPEN	0x20000000	/* Send data in TCP SYN */
- #define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exec for file
- 					   descriptor received through
-@@ -337,6 +338,8 @@ struct ucred {
- #define MSG_CMSG_COMPAT	0		/* We never have 32 bit fixups */
- #endif
+ int skb_append_pagefrags(struct sk_buff *skb, struct page *page,
+-			 int offset, size_t size);
++			 int offset, size_t size, size_t max_frags);
  
-+/* Flags to be cleared on entry by sendmsg and sendmmsg syscalls */
-+#define MSG_INTERNAL_SENDMSG_FLAGS (MSG_SPLICE_PAGES)
+ struct skb_seq_state {
+ 	__u32		lower_offset;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 6724a84ebb09..7f53dcb26ad3 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4188,13 +4188,13 @@ unsigned int skb_find_text(struct sk_buff *skb, unsigned int from,
+ EXPORT_SYMBOL(skb_find_text);
  
- /* Setsockoptions(2) level. Thanks to BSD these must match IPPROTO_xxx */
- #define SOL_IP		0
-diff --git a/io_uring/net.c b/io_uring/net.c
-index 89e839013837..f7cbb3c7a575 100644
---- a/io_uring/net.c
-+++ b/io_uring/net.c
-@@ -389,6 +389,7 @@ int io_send(struct io_kiocb *req, unsigned int issue_flags)
- 	if (flags & MSG_WAITALL)
- 		min_ret = iov_iter_count(&msg.msg_iter);
+ int skb_append_pagefrags(struct sk_buff *skb, struct page *page,
+-			 int offset, size_t size)
++			 int offset, size_t size, size_t max_frags)
+ {
+ 	int i = skb_shinfo(skb)->nr_frags;
  
-+	flags &= ~MSG_INTERNAL_SENDMSG_FLAGS;
- 	msg.msg_flags = flags;
- 	ret = sock_sendmsg(sock, &msg);
- 	if (ret < min_ret) {
-@@ -1136,6 +1137,7 @@ int io_send_zc(struct io_kiocb *req, unsigned int issue_flags)
- 		msg_flags |= MSG_DONTWAIT;
- 	if (msg_flags & MSG_WAITALL)
- 		min_ret = iov_iter_count(&msg.msg_iter);
-+	msg_flags &= ~MSG_INTERNAL_SENDMSG_FLAGS;
+ 	if (skb_can_coalesce(skb, i, page, offset)) {
+ 		skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], size);
+-	} else if (i < MAX_SKB_FRAGS) {
++	} else if (i < max_frags) {
+ 		skb_zcopy_downgrade_managed(skb);
+ 		get_page(page);
+ 		skb_fill_page_desc_noacc(skb, i, page, offset, size);
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 61892268e8a6..52fc840898d8 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1450,7 +1450,8 @@ ssize_t	ip_append_page(struct sock *sk, struct flowi4 *fl4, struct page *page,
+ 		if (len > size)
+ 			len = size;
  
- 	msg.msg_flags = msg_flags;
- 	msg.msg_ubuf = &io_notif_to_data(zc->notif)->uarg;
-diff --git a/net/socket.c b/net/socket.c
-index b7e01d0fe082..3df96e9ba4e2 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2138,6 +2138,7 @@ int __sys_sendto(int fd, void __user *buff, size_t len, unsigned int flags,
- 		msg.msg_name = (struct sockaddr *)&address;
- 		msg.msg_namelen = addr_len;
+-		if (skb_append_pagefrags(skb, page, offset, len)) {
++		if (skb_append_pagefrags(skb, page, offset, len,
++					 MAX_SKB_FRAGS)) {
+ 			err = -EMSGSIZE;
+ 			goto error;
+ 		}
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index cc695c9f09ec..dd55506b4632 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -2349,7 +2349,7 @@ static ssize_t unix_stream_sendpage(struct socket *socket, struct page *page,
+ 		newskb = NULL;
  	}
-+	flags &= ~MSG_INTERNAL_SENDMSG_FLAGS;
- 	if (sock->file->f_flags & O_NONBLOCK)
- 		flags |= MSG_DONTWAIT;
- 	msg.msg_flags = flags;
-@@ -2483,6 +2484,7 @@ static int ____sys_sendmsg(struct socket *sock, struct msghdr *msg_sys,
- 		msg_sys->msg_control = ctl_buf;
- 		msg_sys->msg_control_is_user = false;
- 	}
-+	flags &= ~MSG_INTERNAL_SENDMSG_FLAGS;
- 	msg_sys->msg_flags = flags;
  
- 	if (sock->file->f_flags & O_NONBLOCK)
+-	if (skb_append_pagefrags(skb, page, offset, size)) {
++	if (skb_append_pagefrags(skb, page, offset, size, MAX_SKB_FRAGS)) {
+ 		tail = skb;
+ 		goto alloc_skb;
+ 	}
 
 
