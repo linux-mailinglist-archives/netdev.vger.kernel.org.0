@@ -1,165 +1,231 @@
-Return-Path: <netdev+bounces-3669-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3667-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 63750708408
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 16:40:57 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 346A57083F6
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 16:34:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 44AAF1C210EC
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:40:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 44BCE281592
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:34:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 330471E528;
-	Thu, 18 May 2023 14:40:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6788123C9F;
+	Thu, 18 May 2023 14:34:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1393223C65;
-	Thu, 18 May 2023 14:40:54 +0000 (UTC)
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2060.outbound.protection.outlook.com [40.107.20.60])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967BB109;
-	Thu, 18 May 2023 07:40:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VVR10fYUwbZrDGjxms9ohtqgJH+52tAceuajIPYofV4BV0fPO8uUw4bEUEgolsfYbXo8JLnWp7ASQGMEnmgXc57757lbyCqPfEZHaMNV0q0Vd48o413kcfaHrO51xutSYnZlvlhvYNrnyRhdeNI1dqB2gcVx5cDPznSHKMl1b+LEXvMhmw5LsdYIfodEL8Uydx+HbIQJcFTFrje/q86DbTBjDtpUBTG9I15RJLV4fUhBZ022Kd8y5r1gZtLNeC8ZRbv+pov/+HF+bkvIuqEBwdrNigUvZQr760A44fWIlrzZ+MpAmON2RIAOB4skE5XoaPbLJtjd2zhY4isB0tQofg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=36gg+9o/GTQNRHRdnkWrk5k7FxtfQLHBtEqIvtmkm94=;
- b=ENQvCmR/2/PBmppelEjKIsqslQkzLZmkKzH2SrorriqO9VyEBuhs06GEHxE2asK7mPQO3gH8FTvDZFDBSk/f4v/HCVDg1rfUsrhhMN/BEqAHpVoNvAn4LG0gCo1+cUP2EI7nQSdiPXi5tA5HyxPwG3nBySn57l7gZpW4LfYsAD4c7sZEIwz75dGo5SJvIrZLVQGIFqSeV8O88nMVVWeI3W6Sg5WDOfWkfggoanrQBYnRx5U76StGeqGOLZUncdGCgPGrT5dJ0pohur3/fCtMGqoPpiiBCQg2ZZqKoZs2V7NIfX7wWs0VYtvQKYR0dmKZ9PZCBaeMFk5hepBnXPEDzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=36gg+9o/GTQNRHRdnkWrk5k7FxtfQLHBtEqIvtmkm94=;
- b=nE9s1ErUJizxK0HxIo4hjrVfamdokzZQxTCcXbWr3irXnXlFLVzHecuOtLOgVOai/VnrVEK1Fi6wVF31JioT0iYPzZEbmeioj16NpMBuWflkNKtXPdRr6mSsFQLQRrlOPu4u52JnUkUALOzSxQ+fvXDwQq2bU114qQD0P7bfYvo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM5PR04MB3139.eurprd04.prod.outlook.com (2603:10a6:206:8::20)
- by GV1PR04MB9055.eurprd04.prod.outlook.com (2603:10a6:150:1e::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.18; Thu, 18 May
- 2023 14:40:43 +0000
-Received: from AM5PR04MB3139.eurprd04.prod.outlook.com
- ([fe80::682b:185:581f:7ea2]) by AM5PR04MB3139.eurprd04.prod.outlook.com
- ([fe80::682b:185:581f:7ea2%4]) with mapi id 15.20.6387.033; Thu, 18 May 2023
- 14:40:43 +0000
-From: wei.fang@nxp.com
-To: davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	ast@kernel.org,
-	daniel@iogearbox.net,
-	hawk@kernel.org,
-	john.fastabend@gmail.com,
-	shenwei.wang@nxp.com,
-	xiaoning.wang@nxp.com,
-	netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	bpf@vger.kernel.org,
-	linux-imx@nxp.com
-Subject: [PATCH net-next] net: fec: turn on XDP features
-Date: Thu, 18 May 2023 22:32:36 +0800
-Message-Id: <20230518143236.1638914-1-wei.fang@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR03CA0121.apcprd03.prod.outlook.com
- (2603:1096:4:91::25) To AM5PR04MB3139.eurprd04.prod.outlook.com
- (2603:10a6:206:8::20)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59A3423C65
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 14:34:44 +0000 (UTC)
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C520E10E9
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 07:34:41 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-510ede0f20aso645695a12.3
+        for <netdev@vger.kernel.org>; Thu, 18 May 2023 07:34:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1684420480; x=1687012480;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hGuVJGDyUJXoppRxO19U57zqQ8R180tIuC1i2XY1D7Y=;
+        b=DL/8Doq0uyeD+OsBh0RcgR7j0Zbc5M3bQbV5Ej/5FiofKZqpQWCIGt8J3dWm0KL3oM
+         uxNZ9+BnCHBxsPdJsnPOaZSwpe60JqP5XVN7uOAxvj8o0nlB/V4oDfNeIarsqBgI77te
+         JkzhImiM3GTygK8k/lx/cWScVQfgAqLnUn+v2eT78/e+HFvp2nDwHrzrE4m1QfR4l1Xj
+         grI4BvCnb9D+iaXC5ZGOiN4tF+Oyg3fkirHDdjaIIFt50vmgCCAV1Yk9IysDWY4yOBhg
+         3unhKsvr+fvxE8x9eqEP1Reapq2y+XM+QhapV5PMWuZ0KF1/9QeQF8+0W2qLD5iZ6Vt4
+         sGYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684420480; x=1687012480;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hGuVJGDyUJXoppRxO19U57zqQ8R180tIuC1i2XY1D7Y=;
+        b=AtnzFIV4DCbboaqcFOmLRhPmPZlZdoomusVAzcGdC6LhLCCDf+qzVYA/RA9tYKoneq
+         39hlpo9RjXDlt9P2+YNXVFciGcl7FT5EjFRDbu7LdPu9psN9vPxjXCqnn4dhkiA0aSiw
+         Z7Qrzlcx5xgSFOOpe4ceg1tdk7pqyL7GerRz7wZdF9BfkdsizE/n9B5S54Rdha13+DnT
+         khnNUSm6ulWYujthkHujOb07iRQn018iL8d3gigdl2Y8rXGR0/Ae+07e0GYz58I1Q1YV
+         hv9Xpc1w0Eq8GKdZf1lrPuHYfVCQsKCTnUDaZ1W5ohfQDEjqxq8Qttc68iizOyCkEWpy
+         moTw==
+X-Gm-Message-State: AC+VfDwHeQpwriaS8BAfB2n/DPe0GN+EabTRyJVHdiLhw6/XK5EEEHa+
+	xlBoJToM206inbiBQ3musHACxQ==
+X-Google-Smtp-Source: ACHHUZ5G9MyGkK/5LFq43LkHmyyn4r1xGaGdyZNVFZApq0jhDgVEa6qFGGDv5Q+PqgLUJ5hNn5kCwQ==
+X-Received: by 2002:a05:6402:b2f:b0:510:e902:9678 with SMTP id bo15-20020a0564020b2f00b00510e9029678mr1508591edb.8.1684420480248;
+        Thu, 18 May 2023 07:34:40 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:7e24:6d1b:6bf:4249? ([2a02:810d:15c0:828:7e24:6d1b:6bf:4249])
+        by smtp.gmail.com with ESMTPSA id i17-20020a056402055100b0050c524253dasm643254edx.20.2023.05.18.07.34.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 May 2023 07:34:39 -0700 (PDT)
+Message-ID: <e3d09e6a-4e34-30b5-7f6c-3ed275e1d8d1@linaro.org>
+Date: Thu, 18 May 2023 16:34:38 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM5PR04MB3139:EE_|GV1PR04MB9055:EE_
-X-MS-Office365-Filtering-Correlation-Id: a7ad4144-82ef-43fd-a8cb-08db57addb7a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Xnc/ODfFJd+ipaEXlSyN0Sx5S1ZGD7NlBa39/ExN2X+xEMUpX924IA2JBzwgd7V8pWW8n/wbM+81pZo8x+weuweG3ChigVs3eJpSmW/S5jep7CRhgoOLxkyb1m6ZdnUU6Om19jBQPBzjwOOt/A/NtWHStv/VAztMS7O64DlnsLKtvV4oPvqPrM45HoKHKhGcHYe8+H2/4tfKAGn9LskLwIWBPUNUlYgS6dg2tltB0QOQbvpYRy6egNQq9SAHwYbWi7Gp1OxMyUwWzhGuABIYII4xZ9355kC/KMsCwQrxAwrkaakMfZjuO5Ka/6DuPWz1+QlYxtJ7ZlmNSMxRxLUz+F3Nev5AGp3rsp7JSF1aVjX3NgsjmZIwIJhPU3t3XvwynpbM2E3GZ5ZkCkYf7D8KmvZLMMur5t1l+sBTf8yEaF0CvniUCez8YV9AYoZBlPyba60chcOhfCH2hguFC573cVPqEUq4NQxHXBMR/Pu1/yaF5hgGr/wD2WYYGMYnuHkgTms7pJj8lSCBQvETDlGafHBr7yOpdQTZYc6jMJ515t8VTDeu5ZTmhE3vfPmW2geGkqyZUpGSmlHDRgP8uZcxijLK1t3F4z+oeLrBpKmK/9tHoJborEY1buqqlUOlPC+rsFaAtZ0H5mwuKR6WiKnBWQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM5PR04MB3139.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(346002)(376002)(396003)(136003)(451199021)(36756003)(86362001)(6666004)(316002)(4326008)(478600001)(52116002)(66946007)(66556008)(66476007)(8936002)(4744005)(5660300002)(7416002)(2906002)(38100700002)(8676002)(6486002)(41300700001)(921005)(38350700002)(2616005)(186003)(1076003)(26005)(9686003)(6506007)(6512007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?KW0wDiq0fR44JXu1ukZJxqo/Uuw+axPcAzWMhry3nruxYytF7gansAz4ENiG?=
- =?us-ascii?Q?2v7ibaxExbTmHt/IbZL30NVKYKrVemS+CQcCWUx7jIq3LJVzf+8MpEriDMFv?=
- =?us-ascii?Q?KtY3htIV1D3Dsj5RWYGcT8/e79clSz+Pt3+BtRRdIG7D1KHYRdR8Tz/k30Fr?=
- =?us-ascii?Q?zAzAv2wZPowiV2TwsX5Ulbn6dnMKie1LqR4eiwI/Zoe5eP7UxCfRvSIX+KYk?=
- =?us-ascii?Q?nCvoB5EOArhtIv3ppM6mNhG1qdDr2N0qWdnNN9e6TJLRjS3fT+7gm/hmO3fi?=
- =?us-ascii?Q?h3ISj3vN3m9/oQL0J4B0BrARhWmCTw+EOaCE5llhSMXw6tIChAYOs540N+Dx?=
- =?us-ascii?Q?r4vhWRPF9NFufqAvBM+qBthvQTdx3jeXOBY4cUtfp5vzwLUPidAGql3ZclGK?=
- =?us-ascii?Q?LGBrZpWwAZb3vP8zHh9uCk2/Y9wqUzCUrTDUQ/Nv1ncoW6A+SleKJcMkcF9I?=
- =?us-ascii?Q?dHCbxqW/FveXYe0KALjYTo6okkEx0PRkZzko3vtXkNfTBHP5/CSI8Pz4M1yC?=
- =?us-ascii?Q?f4Gd657RzJByQy+SOdiZKzPplnD1bWnud3IyoHY1jyCO3VEYo0jMyvTDNuTn?=
- =?us-ascii?Q?dQ/LHe9fLHTXzj+8K/4IfN6aKKbyPi5vYa8CJhHGc6Ak4ZqGvRBrstSffazA?=
- =?us-ascii?Q?fAoq9jz/06lnl6ZmIW6mMPhsR8pHn4RAlBjtkRyautN6dVV0ZSuRCdfpG9cT?=
- =?us-ascii?Q?X2Q9WOGWa2NSGASK+PpKv8MbglSJRJ0Tmf5pMNwOawUfJAyV6k/97nRvQ1sq?=
- =?us-ascii?Q?sRtPp6d0Ry0qjDqjQxrRPbd5Tva9kN3p+K5xDnvM+fV1UKJyTT320mOLt996?=
- =?us-ascii?Q?MK+rd2LM3fVmXqupOD9P92NcC/Lva4d5g1VPnbMhMky3zetfoVwCsqkLKRgR?=
- =?us-ascii?Q?LqhX9W7Bk/T3liMJLxxH5+A4IVw3d6ZNiUHs/IPe23dV+93UrsVY+rNwHfsf?=
- =?us-ascii?Q?kR77H3QkvQxS5cz/Wrjfw6+Zex6OqyiPoB6lkPBD0dfrmguXzeWC7hqlR3ul?=
- =?us-ascii?Q?9sh9WfphIBOOxxtnLZsfKz9KKPl1UvjvAUj0e6bczVhx2NPrSQ/tH4FABKGF?=
- =?us-ascii?Q?FnB6XWLn2kRIHqPI0+QyAa7RG9c1Q5JdcHEUR7l73AubN2/7s3WEZ0+gVFz6?=
- =?us-ascii?Q?EjhdlI5xqKUviwsJ8NVM52pfG3ifVyqY0UPstEEl6EmcrTDURz8t3ukFURXj?=
- =?us-ascii?Q?+ZnR/cQ+QhJ2m0uqSJkt3w/IUKKU08ZSQc7+GyEMdkgsCftfufjTtxxAiiNb?=
- =?us-ascii?Q?SbBtO07hR/Zoh2F6ezWFTkL3AXrXMzK86j5yQEFqguNZGWIg6kmRa3IgZ/nC?=
- =?us-ascii?Q?JS5rZAH/xZcGixMIO0x3F2/UbKHL54IT+wa4pkM6Bx5Nr0DgcMDVSdZ/dXgt?=
- =?us-ascii?Q?7pC4192Ty34usmFDUb7lCmZb80lUH/kgmQsktjPI2mwefxTA+iFbouybEWBv?=
- =?us-ascii?Q?vCX4ykFM+96fPsAyb/lfWK1vM2yw94QYFWYBlNYLhTNTkxOBvwdDgMsqR+qL?=
- =?us-ascii?Q?HOw/k8KX/456A+k5K4lorHxzRy+v+rmxd/Tm3AZYD2VmhUQvZKgrBv3gu47e?=
- =?us-ascii?Q?HnkNB0EvLA8kFZ6nYJFK2H7Oa1qZF6KhQX3CfPGo?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7ad4144-82ef-43fd-a8cb-08db57addb7a
-X-MS-Exchange-CrossTenant-AuthSource: AM5PR04MB3139.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2023 14:40:43.0133
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zjylfEad/fOph/xgxWsW5SLHRbvti55xXQHBvUNzQS48sn2LxTJOeIu2PjFQ7r9ehlOLacbA5ZE5WlNKgJahwA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB9055
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net-next V7] dt-bindings: net: xlnx,axi-ethernet: convert
+ bindings document to yaml
+Content-Language: en-US
+To: "Gaddam, Sarath Babu Naidu" <sarath.babu.naidu.gaddam@amd.com>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "edumazet@google.com" <edumazet@google.com>,
+ "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
+ <pabeni@redhat.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>,
+ "krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>
+Cc: "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+ "radhey.shyam.pandey@xilinx.com" <radhey.shyam.pandey@xilinx.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "Sarangi, Anirudha" <anirudha.sarangi@amd.com>,
+ "Katakam, Harini" <harini.katakam@amd.com>, "git (AMD-Xilinx)" <git@amd.com>
+References: <20230308061223.1358637-1-sarath.babu.naidu.gaddam@amd.com>
+ <5d074e6b-7fe1-ab7f-8690-cfb1bead6927@linaro.org>
+ <MW5PR12MB559880B0E220BDBD64E06D2487889@MW5PR12MB5598.namprd12.prod.outlook.com>
+ <a5e18c4f-b906-5c9d-ec93-836401dcd3ea@linaro.org>
+ <MW5PR12MB5598ED29E01601585963D5D0876C9@MW5PR12MB5598.namprd12.prod.outlook.com>
+ <MW5PR12MB55984CA9A0C4E87E46C6029D877F9@MW5PR12MB5598.namprd12.prod.outlook.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <MW5PR12MB55984CA9A0C4E87E46C6029D877F9@MW5PR12MB5598.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Wei Fang <wei.fang@nxp.com>
+On 18/05/2023 08:17, Gaddam, Sarath Babu Naidu wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Gaddam, Sarath Babu Naidu
+>> Sent: Wednesday, May 3, 2023 3:01 PM
+>> To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>;
+>> davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+>> pabeni@redhat.com; robh+dt@kernel.org;
+>> krzysztof.kozlowski+dt@linaro.org
+>> Cc: michal.simek@xilinx.com; radhey.shyam.pandey@xilinx.com;
+>> netdev@vger.kernel.org; devicetree@vger.kernel.org; linux-arm-
+>> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Sarangi,
+>> Anirudha <anirudha.sarangi@amd.com>; Katakam, Harini
+>> <harini.katakam@amd.com>; git (AMD-Xilinx) <git@amd.com>
+>> Subject: RE: [PATCH net-next V7] dt-bindings: net: xlnx,axi-ethernet:
+>> convert bindings document to yaml
+>>
+>>
+>>
+>>> -----Original Message-----
+>>> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>> Sent: Tuesday, May 2, 2023 3:56 PM
+>>> To: Gaddam, Sarath Babu Naidu
+>>> <sarath.babu.naidu.gaddam@amd.com>; davem@davemloft.net;
+>>> edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
+>>> robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org
+>>> Cc: michal.simek@xilinx.com; radhey.shyam.pandey@xilinx.com;
+>>> netdev@vger.kernel.org; devicetree@vger.kernel.org; linux-arm-
+>>> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Sarangi,
+>>> Anirudha <anirudha.sarangi@amd.com>; Katakam, Harini
+>>> <harini.katakam@amd.com>; git (AMD-Xilinx) <git@amd.com>
+>>> Subject: Re: [PATCH net-next V7] dt-bindings: net: xlnx,axi-ethernet:
+>>> convert bindings document to yaml
+>>>
+>>> On 28/03/2023 14:52, Gaddam, Sarath Babu Naidu wrote:
+>>>>
+>>>>
+>>>>> -----Original Message-----
+>>>>> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>>>> Sent: Tuesday, March 14, 2023 9:22 PM
+>>>>> To: Gaddam, Sarath Babu Naidu
+>>>>> <sarath.babu.naidu.gaddam@amd.com>; davem@davemloft.net;
+>>>>> edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
+>>>>> robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org
+>>>>> Cc: michal.simek@xilinx.com; radhey.shyam.pandey@xilinx.com;
+>>>>> netdev@vger.kernel.org; devicetree@vger.kernel.org; linux-arm-
+>>>>> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Sarangi,
+>>>>> Anirudha <anirudha.sarangi@amd.com>; Katakam, Harini
+>>>>> <harini.katakam@amd.com>; git (AMD-Xilinx) <git@amd.com>
+>>>>> Subject: Re: [PATCH net-next V7] dt-bindings: net: xlnx,axi-ethernet:
+>>>>> convert bindings document to yaml
+>>>>>
+>>>>> On 08/03/2023 07:12, Sarath Babu Naidu Gaddam wrote:
+>>>>>> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+>>>>>>
+>>>>>> Convert the bindings document for Xilinx AXI Ethernet Subsystem
+>>> from
+>>>>>> txt to yaml. No changes to existing binding description.
+>>>>>>
+>>>>>
+>>>>> (...)
+>>>>>
+>>>>>> +properties:
+>>>>>> +  compatible:
+>>>>>> +    enum:
+>>>>>> +      - xlnx,axi-ethernet-1.00.a
+>>>>>> +      - xlnx,axi-ethernet-1.01.a
+>>>>>> +      - xlnx,axi-ethernet-2.01.a
+>>>>>> +
+>>>>>> +  reg:
+>>>>>> +    description:
+>>>>>> +      Address and length of the IO space, as well as the address
+>>>>>> +      and length of the AXI DMA controller IO space, unless
+>>>>>> +      axistream-connected is specified, in which case the reg
+>>>>>> +      attribute of the node referenced by it is used.
+>>>>>
+>>>>> Did you test it with axistream-connected? The schema and
+>>>>> description feel contradictory and tests would point the issue.
+>>>>
+>>>> Thanks for review comments. We tested with axistream-connected
+>> and
+>>> did
+>>>> not observe any errors. Do you anticipate any issues/errors ?
+>>>
+>>> Yes, I anticipate errors. What you wrote here looks incorrect based on
+>>> the schema.
+>>>
+>>> Also, See also my further comments (or you ignored them?).
+>>>
+>>> You can come many months after my review to ask about details, to be
+>>> sure I will forget the topic.
+>>
+>>
+>> Hi Krzysztof, Apologies for miscommunication. I replied to this thread on
+>> March 28 and said that I would address remaining review comments in
+>> the next version.
+>>
+>> Lore link:
+>> https://lore.kernel.org/all/MW5PR12MB559880B0E220BDBD64E06D24
+>> 87889@MW5PR12MB5598.namprd12.prod.outlook.com/
+>> https://lore.kernel.org/all/MW5PR12MB5598678BB9AB6EC2FFC424F48
+>> 7889@MW5PR12MB5598.namprd12.prod.outlook.com/
+>>
+>> I planned to send next version with phy-mode and pcs-handle maxItems
+>> fixed.but I wanted to close on the axistream-connected discussion before
+>> doing so.
+>>
+>> Related to axistream-connected discussion:
+>> I already ran dt binding check for schema and dts node validation. I
+>> assume this should point any errors on it.
 
-The XDP features are supported since the commit 66c0e13ad236
-("drivers: net: turn on XDP features"). Currently, the fec
-driver supports NETDEV_XDP_ACT_BASIC, NETDEV_XDP_ACT_REDIRECT
-and NETDEV_XDP_ACT_NDO_XMIT. So turn on these XDP features
-for fec driver.
+And how do we know that you tested correct DTS with it?
 
-Signed-off-by: Wei Fang <wei.fang@nxp.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+>>
+> 
+> Hi Krzysztof, Could you please comment on this ? Please let me if I missed
+> any changes or comments.
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index cd215ab20ff9..577affda6efa 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -4030,6 +4030,8 @@ static int fec_enet_init(struct net_device *ndev)
- 	}
- 
- 	ndev->hw_features = ndev->features;
-+	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-+			     NETDEV_XDP_ACT_NDO_XMIT;
- 
- 	fec_restart(ndev);
- 
--- 
-2.25.1
+I don't think anything improved in this patchset. The binding has
+incomplete and I believe incorrect constraints for axistream-connected.
+You did not provide DTS to prove me otherwise. If you are not going to
+fix the issue nor provide DTS, what I can say more? Looks wrong.
+
+Best regards,
+Krzysztof
 
 
