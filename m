@@ -1,362 +1,123 @@
-Return-Path: <netdev+bounces-3671-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3672-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4278B708446
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 16:52:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id A55F6708460
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 16:56:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ED8F72817EC
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:52:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 446461C21083
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:56:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 25801209BC;
-	Thu, 18 May 2023 14:52:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 569D921067;
+	Thu, 18 May 2023 14:56:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 142E223C6A
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 14:52:36 +0000 (UTC)
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00011198
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 07:52:31 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-	by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34IA9SpH012878;
-	Thu, 18 May 2023 07:52:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=6hWc1PI0W5NA7qmEFQQRySx9ZWHjnlXtWR9M/PQiKqM=;
- b=SE/8ijmy1sEeQW75FG+NyhBVISLCnrVasJC86mV0oZ7/gd5IAe2Ws+zA8zMpOOJBg03F
- +W/RRODjNa8ObEOc4sFttJCFNDbdCO8WlnHBrC555ChR1OLYxKylLthK8pfkz8+6nazr
- EMdNMLwBMhBGP2utRHvOQY9nmgJySepc9uoqfNDRge8EV9Td5CWgAMgE37AoBiHVphv5
- aL+PZPIOUOUfbLkX9uTR8oksAuLHFRM72m2oVKdVOvC4C1kugwgjAxgjN8Kd5lIpkc54
- 3iRlWYyjcy2LmP7qbi14bxkHUUaKu6HLeRzBfk3jT+Eusw3aM0q+bneCZ41Y78yUvKfa 7Q== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3qn7jbb9cf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Thu, 18 May 2023 07:52:28 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 18 May
- 2023 07:52:26 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Thu, 18 May 2023 07:52:26 -0700
-Received: from falcon.marvell.com (unknown [10.30.46.95])
-	by maili.marvell.com (Postfix) with ESMTP id 858043F7051;
-	Thu, 18 May 2023 07:52:24 -0700 (PDT)
-From: Manish Chopra <manishc@marvell.com>
-To: <kuba@kernel.org>
-CC: <netdev@vger.kernel.org>, <aelior@marvell.com>, <palok@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        David Miller <davem@davemloft.net>
-Subject: [PATCH v4 net] qede: Fix scheduling while atomic
-Date: Thu, 18 May 2023 20:22:14 +0530
-Message-ID: <20230518145214.570101-1-manishc@marvell.com>
-X-Mailer: git-send-email 2.27.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A06A523C6A
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 14:56:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA7CCC433EF;
+	Thu, 18 May 2023 14:56:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684421805;
+	bh=falOcbL4ZZzvoQbqldjfq18URK37IBRaR29UBqVOjsk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=dDDWYbaKviNkf6e5ZNGk+G/Cbzx/2OiZ2ynEHeldkHvdLZMetuHksyWOJmATx2ysB
+	 uvQfUuFerlLwgNbz+KAD2e/oPzHYgHx/iL58dhb/Hue8WKHacs/NwB6gq7wWqbdT4K
+	 BOyBNHIwj7aYjsMnuoljesAIG4CVio4ZyJZe3LnOYNaegS8PtbAfnljjSGKhVXT41l
+	 BPk87oVE5+9u4zM5U2od2Rkn6oG5S8l+zQzPCDjv75/nB5ZE+wf7vWYlo1Cc47Kz2Q
+	 fUcNN7RSTXcwXNUCajZgIOkEs0RZ34+oLCdsWRz4Y1PDw3emRweMsSqkLL0MJeyDRa
+	 WVHqU0xDpaZeQ==
+Date: Thu, 18 May 2023 07:56:43 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc: Jesper Dangaard Brouer <hawk@kernel.org>, Larysa Zaremba
+ <larysa.zaremba@intel.com>, <netdev@vger.kernel.org>, Ilias Apalodimas
+ <ilias.apalodimas@linaro.org>, <linux-kernel@vger.kernel.org>, "Christoph
+ Hellwig" <hch@lst.de>, Eric Dumazet <edumazet@google.com>, Michal Kubiak
+ <michal.kubiak@intel.com>, <intel-wired-lan@lists.osuosl.org>, Paolo Abeni
+ <pabeni@redhat.com>, "David S. Miller" <davem@davemloft.net>, Magnus
+ Karlsson <magnus.karlsson@intel.com>
+Subject: Re: [Intel-wired-lan] [PATCH net-next 07/11] net: page_pool: add
+ DMA-sync-for-CPU inline helpers
+Message-ID: <20230518075643.3a242837@kernel.org>
+In-Reply-To: <9feef136-7ff3-91a4-4198-237b07a91c0c@intel.com>
+References: <20230516161841.37138-1-aleksander.lobakin@intel.com>
+	<20230516161841.37138-8-aleksander.lobakin@intel.com>
+	<20230517211211.1d1bbd0b@kernel.org>
+	<9feef136-7ff3-91a4-4198-237b07a91c0c@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: N1yCoWnRkqXlL_G7wk-WUM4OvHy0TVN3
-X-Proofpoint-ORIG-GUID: N1yCoWnRkqXlL_G7wk-WUM4OvHy0TVN3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-18_11,2023-05-17_02,2023-02-09_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Bonding module collects the statistics while holding
-the spinlock, beneath that qede->qed driver statistics
-flow gets scheduled out due to usleep_range() used in PTT
-acquire logic which results into below bug and traces -
+On Thu, 18 May 2023 15:45:33 +0200 Alexander Lobakin wrote:
+> >> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> >> index 8435013de06e..f740c50b661f 100644
+> >> --- a/include/net/page_pool.h
+> >> +++ b/include/net/page_pool.h
+> >> @@ -32,7 +32,7 @@
+> >>  
+> >>  #include <linux/mm.h> /* Needed by ptr_ring */
+> >>  #include <linux/ptr_ring.h>
+> >> -#include <linux/dma-direction.h>
+> >> +#include <linux/dma-mapping.h>  
+> > 
+> > highly nit picky - but isn't dma-mapping.h pretty heavy?
+> > And we include page_pool.h in skbuff.h. Not that it matters
+> > today, but maybe one day we'll succeed putting skbuff.h
+> > on a diet -- so perhaps it's better to put "inline helpers
+> > with non-trivial dependencies" into a new header?  
+> 
+> Maybe we could rather stop including page_pool.h into skbuff.h? It's
+> used there only for  1 external, which could be declared directly in
+> skbuff.h. When Matteo was developing PP recycling, he was storing
+> mem_info in skb as well, but then it was optimized and we don't do that
+> anymore.
+> It annoys sometimes to see the whole kernel rebuilt each time I edit
+> pag_pool.h :D In fact, only PP-enabled drivers and core code need it.
 
-[ 3673.988874] Hardware name: HPE ProLiant DL365 Gen10 Plus/ProLiant DL365 Gen10 Plus, BIOS A42 10/29/2021
-[ 3673.988878] Call Trace:
-[ 3673.988891]  dump_stack_lvl+0x34/0x44
-[ 3673.988908]  __schedule_bug.cold+0x47/0x53
-[ 3673.988918]  __schedule+0x3fb/0x560
-[ 3673.988929]  schedule+0x43/0xb0
-[ 3673.988932]  schedule_hrtimeout_range_clock+0xbf/0x1b0
-[ 3673.988937]  ? __hrtimer_init+0xc0/0xc0
-[ 3673.988950]  usleep_range+0x5e/0x80
-[ 3673.988955]  qed_ptt_acquire+0x2b/0xd0 [qed]
-[ 3673.988981]  _qed_get_vport_stats+0x141/0x240 [qed]
-[ 3673.989001]  qed_get_vport_stats+0x18/0x80 [qed]
-[ 3673.989016]  qede_fill_by_demand_stats+0x37/0x400 [qede]
-[ 3673.989028]  qede_get_stats64+0x19/0xe0 [qede]
-[ 3673.989034]  dev_get_stats+0x5c/0xc0
-[ 3673.989045]  netstat_show.constprop.0+0x52/0xb0
-[ 3673.989055]  dev_attr_show+0x19/0x40
-[ 3673.989065]  sysfs_kf_seq_show+0x9b/0xf0
-[ 3673.989076]  seq_read_iter+0x120/0x4b0
-[ 3673.989087]  new_sync_read+0x118/0x1a0
-[ 3673.989095]  vfs_read+0xf3/0x180
-[ 3673.989099]  ksys_read+0x5f/0xe0
-[ 3673.989102]  do_syscall_64+0x3b/0x90
-[ 3673.989109]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 3673.989115] RIP: 0033:0x7f8467d0b082
-[ 3673.989119] Code: c0 e9 b2 fe ff ff 50 48 8d 3d ca 05 08 00 e8 35 e7 01 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24
-[ 3673.989121] RSP: 002b:00007ffffb21fd08 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[ 3673.989127] RAX: ffffffffffffffda RBX: 000000000100eca0 RCX: 00007f8467d0b082
-[ 3673.989128] RDX: 00000000000003ff RSI: 00007ffffb21fdc0 RDI: 0000000000000003
-[ 3673.989130] RBP: 00007f8467b96028 R08: 0000000000000010 R09: 00007ffffb21ec00
-[ 3673.989132] R10: 00007ffffb27b170 R11: 0000000000000246 R12: 00000000000000f0
-[ 3673.989134] R13: 0000000000000003 R14: 00007f8467b92000 R15: 0000000000045a05
-[ 3673.989139] CPU: 30 PID: 285188 Comm: read_all Kdump: loaded Tainted: G        W  OE
+Or maybe we can do both? I think that separating types, defines and
+simple wrappers from helpers should be considered good code hygiene.
 
-Fix this by collecting the statistics asynchronously from a periodic
-delayed work scheduled at default stats coalescing interval and return
-the recent copy of statisitcs from .ndo_get_stats64(), also add ability
-to configure/retrieve stats coalescing interval using below commands -
+> >>  #define PP_FLAG_DMA_MAP		BIT(0) /* Should page_pool do the DMA
+> >>  					* map/unmap  
+> >   
+> >> +/**
+> >> + * page_pool_dma_sync_for_cpu - sync Rx page for CPU after it's written by HW
+> >> + * @pool: page_pool which this page belongs to
+> >> + * @page: page to sync
+> >> + * @dma_sync_size: size of the data written to the page
+> >> + *
+> >> + * Can be used as a shorthand to sync Rx pages before accessing them in the
+> >> + * driver. Caller must ensure the pool was created with %PP_FLAG_DMA_MAP.
+> >> + */
+> >> +static inline void page_pool_dma_sync_for_cpu(const struct page_pool *pool,
+> >> +					      const struct page *page,
+> >> +					      u32 dma_sync_size)
+> >> +{
+> >> +	dma_sync_single_range_for_cpu(pool->p.dev,
+> >> +				      page_pool_get_dma_addr(page),
+> >> +				      pool->p.offset, dma_sync_size,
+> >> +				      page_pool_get_dma_dir(pool));  
+> > 
+> > Likely a dumb question but why does this exist?
+> > Is there a case where the "maybe" version is not safe?  
+> 
+> If the driver doesn't set DMA_SYNC_DEV flag, then the "maybe" version
+> will never do anything. But we may want to use these helpers in such
+> drivers too?
 
-ethtool -C ethx stats-block-usecs <val>
-ethtool -c ethx
-
-Fixes: 133fac0eedc3 ("qede: Add basic ethtool support")
-Cc: Sudarsana Kalluru <skalluru@marvell.com>
-Cc: David Miller <davem@davemloft.net>
-Signed-off-by: Manish Chopra <manishc@marvell.com>
----
-v1->v2:
- - Fixed checkpatch and kdoc warnings.
-v2->v3:
- - Moving the changelog after tags.
-v3->v4:
- - Changes to collect stats periodically using delayed work
-   and add ability to configure/retrieve stats coalescing
-   interval using ethtool
- - Modified commit description to reflect the changes
----
- drivers/net/ethernet/qlogic/qede/qede.h       |  9 +++++
- .../net/ethernet/qlogic/qede/qede_ethtool.c   | 38 ++++++++++++++++++-
- drivers/net/ethernet/qlogic/qede/qede_main.c  | 34 ++++++++++++++++-
- 3 files changed, 78 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index f90dcfe9ee68..7106e29e2c2c 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -32,6 +32,11 @@
- 
- #define DRV_MODULE_SYM		qede
- 
-+#define QEDE_DEF_STATS_COAL_INTERVAL	HZ
-+#define QEDE_DEF_STATS_COAL_TICKS	1000000
-+#define QEDE_MIN_STATS_COAL_TICKS	250000
-+#define QEDE_MAX_STATS_COAL_TICKS	5000000
-+
- struct qede_stats_common {
- 	u64 no_buff_discards;
- 	u64 packet_too_big_discard;
-@@ -271,6 +276,10 @@ struct qede_dev {
- #define QEDE_ERR_WARN			3
- 
- 	struct qede_dump_info		dump_info;
-+	struct delayed_work		periodic_task;
-+	unsigned long			stats_coal_interval;
-+	u32				stats_coal_ticks;
-+	spinlock_t			stats_lock; /* lock for vport stats access */
- };
- 
- enum QEDE_STATE {
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-index 8284c4c1528f..3457f2af4bde 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-@@ -426,6 +426,8 @@ static void qede_get_ethtool_stats(struct net_device *dev,
- 		}
- 	}
- 
-+	spin_lock(&edev->stats_lock);
-+
- 	for (i = 0; i < QEDE_NUM_STATS; i++) {
- 		if (qede_is_irrelevant_stat(edev, i))
- 			continue;
-@@ -435,6 +437,8 @@ static void qede_get_ethtool_stats(struct net_device *dev,
- 		buf++;
- 	}
- 
-+	spin_unlock(&edev->stats_lock);
-+
- 	__qede_unlock(edev);
- }
- 
-@@ -817,6 +821,7 @@ static int qede_get_coalesce(struct net_device *dev,
- 
- 	coal->rx_coalesce_usecs = rx_coal;
- 	coal->tx_coalesce_usecs = tx_coal;
-+	coal->stats_block_coalesce_usecs = edev->stats_coal_ticks;
- 
- 	return rc;
- }
-@@ -830,6 +835,33 @@ int qede_set_coalesce(struct net_device *dev, struct ethtool_coalesce *coal,
- 	int i, rc = 0;
- 	u16 rxc, txc;
- 
-+	if (edev->stats_coal_ticks != coal->stats_block_coalesce_usecs) {
-+		u32 stats_coal_ticks, prev_stats_coal_ticks;
-+
-+		stats_coal_ticks = coal->stats_block_coalesce_usecs;
-+		prev_stats_coal_ticks = edev->stats_coal_ticks;
-+
-+		/* zero coal ticks to disable periodic stats */
-+		if (stats_coal_ticks)
-+			stats_coal_ticks = clamp_t(u32, stats_coal_ticks,
-+						   QEDE_MIN_STATS_COAL_TICKS,
-+						   QEDE_MAX_STATS_COAL_TICKS);
-+
-+		stats_coal_ticks = rounddown(stats_coal_ticks, QEDE_MIN_STATS_COAL_TICKS);
-+		edev->stats_coal_ticks = stats_coal_ticks;
-+
-+		if (edev->stats_coal_ticks) {
-+			edev->stats_coal_interval = (unsigned long)edev->stats_coal_ticks *
-+							HZ / 1000000;
-+
-+			if (prev_stats_coal_ticks == 0)
-+				schedule_delayed_work(&edev->periodic_task, 0);
-+		}
-+
-+		DP_VERBOSE(edev, QED_MSG_DEBUG, "stats coal interval=%lu jiffies\n",
-+			   edev->stats_coal_interval);
-+	}
-+
- 	if (!netif_running(dev)) {
- 		DP_INFO(edev, "Interface is down\n");
- 		return -EINVAL;
-@@ -2236,7 +2268,8 @@ static int qede_get_per_coalesce(struct net_device *dev,
- }
- 
- static const struct ethtool_ops qede_ethtool_ops = {
--	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS,
-+	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS |
-+					  ETHTOOL_COALESCE_STATS_BLOCK_USECS,
- 	.get_link_ksettings		= qede_get_link_ksettings,
- 	.set_link_ksettings		= qede_set_link_ksettings,
- 	.get_drvinfo			= qede_get_drvinfo,
-@@ -2287,7 +2320,8 @@ static const struct ethtool_ops qede_ethtool_ops = {
- };
- 
- static const struct ethtool_ops qede_vf_ethtool_ops = {
--	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS,
-+	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS |
-+					  ETHTOOL_COALESCE_STATS_BLOCK_USECS,
- 	.get_link_ksettings		= qede_get_link_ksettings,
- 	.get_drvinfo			= qede_get_drvinfo,
- 	.get_msglevel			= qede_get_msglevel,
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 06c6a5813606..5aba9c4a759d 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -308,6 +308,8 @@ void qede_fill_by_demand_stats(struct qede_dev *edev)
- 
- 	edev->ops->get_vport_stats(edev->cdev, &stats);
- 
-+	spin_lock(&edev->stats_lock);
-+
- 	p_common->no_buff_discards = stats.common.no_buff_discards;
- 	p_common->packet_too_big_discard = stats.common.packet_too_big_discard;
- 	p_common->ttl0_discard = stats.common.ttl0_discard;
-@@ -405,6 +407,8 @@ void qede_fill_by_demand_stats(struct qede_dev *edev)
- 		p_ah->tx_1519_to_max_byte_packets =
- 		    stats.ah.tx_1519_to_max_byte_packets;
- 	}
-+
-+	spin_unlock(&edev->stats_lock);
- }
- 
- static void qede_get_stats64(struct net_device *dev,
-@@ -413,9 +417,10 @@ static void qede_get_stats64(struct net_device *dev,
- 	struct qede_dev *edev = netdev_priv(dev);
- 	struct qede_stats_common *p_common;
- 
--	qede_fill_by_demand_stats(edev);
- 	p_common = &edev->stats.common;
- 
-+	spin_lock(&edev->stats_lock);
-+
- 	stats->rx_packets = p_common->rx_ucast_pkts + p_common->rx_mcast_pkts +
- 			    p_common->rx_bcast_pkts;
- 	stats->tx_packets = p_common->tx_ucast_pkts + p_common->tx_mcast_pkts +
-@@ -435,6 +440,8 @@ static void qede_get_stats64(struct net_device *dev,
- 		stats->collisions = edev->stats.bb.tx_total_collisions;
- 	stats->rx_crc_errors = p_common->rx_crc_errors;
- 	stats->rx_frame_errors = p_common->rx_align_errors;
-+
-+	spin_unlock(&edev->stats_lock);
- }
- 
- #ifdef CONFIG_QED_SRIOV
-@@ -1000,6 +1007,21 @@ static void qede_unlock(struct qede_dev *edev)
- 	rtnl_unlock();
- }
- 
-+static void qede_periodic_task(struct work_struct *work)
-+{
-+	struct qede_dev *edev = container_of(work, struct qede_dev,
-+					     periodic_task.work);
-+
-+	if (test_bit(QEDE_SP_DISABLE, &edev->sp_flags))
-+		return;
-+
-+	if (edev->stats_coal_ticks) {
-+		qede_fill_by_demand_stats(edev);
-+		schedule_delayed_work(&edev->periodic_task,
-+				      edev->stats_coal_interval);
-+	}
-+}
-+
- static void qede_sp_task(struct work_struct *work)
- {
- 	struct qede_dev *edev = container_of(work, struct qede_dev,
-@@ -1208,7 +1230,9 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
- 		 * from there, although it's unlikely].
- 		 */
- 		INIT_DELAYED_WORK(&edev->sp_task, qede_sp_task);
-+		INIT_DELAYED_WORK(&edev->periodic_task, qede_periodic_task);
- 		mutex_init(&edev->qede_lock);
-+		spin_lock_init(&edev->stats_lock);
- 
- 		rc = register_netdev(edev->ndev);
- 		if (rc) {
-@@ -1233,6 +1257,11 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
- 	edev->rx_copybreak = QEDE_RX_HDR_SIZE;
- 
- 	qede_log_probe(edev);
-+
-+	edev->stats_coal_interval = QEDE_DEF_STATS_COAL_INTERVAL;
-+	edev->stats_coal_ticks = QEDE_DEF_STATS_COAL_TICKS;
-+	schedule_delayed_work(&edev->periodic_task, 0);
-+
- 	return 0;
- 
- err4:
-@@ -1301,6 +1330,7 @@ static void __qede_remove(struct pci_dev *pdev, enum qede_remove_mode mode)
- 		unregister_netdev(ndev);
- 
- 		cancel_delayed_work_sync(&edev->sp_task);
-+		cancel_delayed_work_sync(&edev->periodic_task);
- 
- 		edev->ops->common->set_power_state(cdev, PCI_D0);
- 
-@@ -2571,6 +2601,8 @@ static void qede_recovery_handler(struct qede_dev *edev)
- 
- 	DP_NOTICE(edev, "Starting a recovery process\n");
- 
-+	edev->stats_coal_ticks = 0;
-+
- 	/* No need to acquire first the qede_lock since is done by qede_sp_task
- 	 * before calling this function.
- 	 */
--- 
-2.27.0
-
+Oh, I see, the polarity of the flag is awkward. Hm.
+Maybe just rename things, drop the "maybe_" and prefix the non-checking
+version with __ ? We expect drivers to call the version which check the
+flag mostly (AFAIU), so it should have the most obvious name.
+Plus perhaps a sentence in the kdoc explaining why __ exists would be
+good, if it wasn't obvious to me it may not be obvious to others..
 
