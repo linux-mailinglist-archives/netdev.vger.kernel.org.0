@@ -1,206 +1,186 @@
-Return-Path: <netdev+bounces-3548-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3549-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 41D1B707D73
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:00:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 933BB707D7F
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:02:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CA8DB281899
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:00:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8B6061C21075
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:02:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B33B711CAC;
-	Thu, 18 May 2023 10:00:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87E6111CAD;
+	Thu, 18 May 2023 10:02:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2D2AAD46
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 10:00:09 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5CB1716
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 03:00:07 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1pzaQU-0001ZA-4G; Thu, 18 May 2023 12:00:02 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id 518761C7B79;
-	Thu, 18 May 2023 10:00:01 +0000 (UTC)
-Date: Thu, 18 May 2023 12:00:00 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Frank Jungclaus <frank.jungclaus@esd.eu>
-Cc: linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
-	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-	Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/6] can: esd_usb: Make use of existing kernel macros
-Message-ID: <20230518-grower-film-ea8b5f853f3e-mkl@pengutronix.de>
-References: <20230517192251.2405290-1-frank.jungclaus@esd.eu>
- <20230517192251.2405290-2-frank.jungclaus@esd.eu>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7261811CA0
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 10:02:01 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E538F19A3
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 03:01:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684404118;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Xz4Yzk1FbN4lslQ/05ZU71kF3vRpTJyBu6xKqFUISCQ=;
+	b=LWavSo+epuLjNew6MlSAsUa78iqX11mKB3PXpEP+O9TlZPZtSMA4YwKLJCKNo9idpWrF6Z
+	8bd9OysJLQTJuDvCoKMzZJY+KDarrWC0jpLj/6xPcC2aOd+J1+50IpysY9Cny+lTg+YTYr
+	AzJ4YW1vj+bcCeXTFHEseAajAH11bqY=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-634-24yzOza3NkeOPJlzuhSWwA-1; Thu, 18 May 2023 06:01:57 -0400
+X-MC-Unique: 24yzOza3NkeOPJlzuhSWwA-1
+Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-3f393bf5546so3709041cf.1
+        for <netdev@vger.kernel.org>; Thu, 18 May 2023 03:01:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684404116; x=1686996116;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Xz4Yzk1FbN4lslQ/05ZU71kF3vRpTJyBu6xKqFUISCQ=;
+        b=JiKxXjIlshutZIMQXbk8VvUFGc1rcsRMwyVJ5NX1INtxJ1Kz6VdSn4Wj0QZ0sNjXlx
+         my+byTVyWYkG7jvQzv1IW1nQqjdJ7gooDWo63+08UdD1mOpFpF2z66TkEQk4VpmMVx2Q
+         cPIVxa1jrBcdDS3i/4yZN6bMTMUBgenxO/M5r7OtwbpbrChXuyf7XjAxnOuMLLkj1ydO
+         xQkvEHLVFuxaztA/vUpt0EWAUCwuGILXqCqAi4y+maZOKsiVlWxinwZJsxDqEHiY7Tzl
+         4FcqM6ggBkfl+nesZQUdg47pWotLMRvuYs7p7eq9l/OU3uzYZiVu6yziV6BrIMesQiml
+         LT6A==
+X-Gm-Message-State: AC+VfDwWGbAhQQmzKAx7bByZa1WD8pfKoA6mZPsmmLqjRHGuUkN4ysyj
+	CXDUlnq+2daiTTR7VwWNZjpT5jB11VAecG8pYeugGYFiRnr29HpR76yBY2WEGYhRW+t+H+D/Ger
+	t7Ka0x4DR/PqpTs44
+X-Received: by 2002:a05:622a:189e:b0:3f5:99e:d7d4 with SMTP id v30-20020a05622a189e00b003f5099ed7d4mr9400524qtc.1.1684404116574;
+        Thu, 18 May 2023 03:01:56 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5/bpXzMPMDK+f3opJ5CCYN/HiKqJEukqR71H+bovs37wm592r0+VAIa6EG/igPOZa2glSuZA==
+X-Received: by 2002:a05:622a:189e:b0:3f5:99e:d7d4 with SMTP id v30-20020a05622a189e00b003f5099ed7d4mr9400499qtc.1.1684404116281;
+        Thu, 18 May 2023 03:01:56 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-239-175.dyn.eolo.it. [146.241.239.175])
+        by smtp.gmail.com with ESMTPSA id u5-20020ae9c005000000b0074df51a90b6sm291106qkk.60.2023.05.18.03.01.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 May 2023 03:01:55 -0700 (PDT)
+Message-ID: <0d282eb6626010afa117ca2f4162d2c147746dc1.camel@redhat.com>
+Subject: Re: [PATCH RESEND net] ipv{4,6}/raw: fix output xfrm lookup wrt
+ protocol
+From: Paolo Abeni <pabeni@redhat.com>
+To: Nicolas Dichtel <nicolas.dichtel@6wind.com>, "David S . Miller"
+	 <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Eric Dumazet
+	 <edumazet@google.com>
+Cc: Steffen Klassert <klassert@kernel.org>, netdev@vger.kernel.org, 
+	stable@vger.kernel.org
+Date: Thu, 18 May 2023 12:01:52 +0200
+In-Reply-To: <20230516201542.9086-1-nicolas.dichtel@6wind.com>
+References: <20230516201542.9086-1-nicolas.dichtel@6wind.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="xuxstbtrrmjtjzza"
-Content-Disposition: inline
-In-Reply-To: <20230517192251.2405290-2-frank.jungclaus@esd.eu>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
---xuxstbtrrmjtjzza
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 17.05.2023 21:22:46, Frank Jungclaus wrote:
-> As suggested by Vincent Mailhol make use of existing kernel macros:
-> - Use the unit suffixes from linux/units.h for the controller clock
-> frequencies
-> - Use the BIT() macro to set specific bits in some constants
-> - Use CAN_MAX_DLEN (instead of directly using the value 8) for the
-> maximum CAN payload length
+On Tue, 2023-05-16 at 22:15 +0200, Nicolas Dichtel wrote:
+> With a raw socket bound to IPPROTO_RAW (ie with hdrincl enabled), the
+> protocol field of the flow structure, build by raw_sendmsg() /
+> rawv6_sendmsg()),  is set to IPPROTO_RAW. This breaks the ipsec policy
+> lookup when some policies are defined with a protocol in the selector.
 >=20
-> Additionally:
-> - Spend some commenting for the previously changed constants
-> - Add the current year to the copyright notice
-> - While adding the header linux/units.h to the list of include files
-> also sort that list alphabetically
+> For ipv6, the sin6_port field from 'struct sockaddr_in6' could be used to
+> specify the protocol. Just accept all values for IPPROTO_RAW socket.
 >=20
-> Suggested-by: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-> Link: https://lore.kernel.org/all/CAMZ6RqLaDNy-fZ2G0+QMhUEckkXLL+ZyELVSDF=
-mqpd++aBzZQg@mail.gmail.com/
-> Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
+> For ipv4, the sin_port field of 'struct sockaddr_in' could not be used
+> without breaking backward compatibility (the value of this field was neve=
+r
+> checked). Let's add a new kind of control message, so that the userland
+> could specify which protocol is used.
+>=20
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> CC: stable@vger.kernel.org
+> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 > ---
->  drivers/net/can/usb/esd_usb.c | 38 ++++++++++++++++++-----------------
->  1 file changed, 20 insertions(+), 18 deletions(-)
 >=20
-> diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
-> index d33bac3a6c10..042dda98b3db 100644
-> --- a/drivers/net/can/usb/esd_usb.c
-> +++ b/drivers/net/can/usb/esd_usb.c
-> @@ -3,19 +3,20 @@
->   * CAN driver for esd electronics gmbh CAN-USB/2 and CAN-USB/Micro
->   *
->   * Copyright (C) 2010-2012 esd electronic system design gmbh, Matthias F=
-uchs <socketcan@esd.eu>
-> - * Copyright (C) 2022 esd electronics gmbh, Frank Jungclaus <frank.jungc=
-laus@esd.eu>
-> + * Copyright (C) 2022-2023 esd electronics gmbh, Frank Jungclaus <frank.=
-jungclaus@esd.eu>
->   */
-> +#include <linux/can.h>
-> +#include <linux/can/dev.h>
-> +#include <linux/can/error.h>
-> +
->  #include <linux/ethtool.h>
-> -#include <linux/signal.h>
-> -#include <linux/slab.h>
->  #include <linux/module.h>
->  #include <linux/netdevice.h>
-> +#include <linux/signal.h>
-> +#include <linux/slab.h>
-> +#include <linux/units.h>
->  #include <linux/usb.h>
+> The first version has been marked 'Awaiting Upstream'. Steffen confirmed
+> that the 'net' tree should be the target, thus I resend this patch.
+> I also CC stable@vger.kernel.org.
+>=20
+>  include/net/ip.h        |  2 ++
+>  include/uapi/linux/in.h |  1 +
+>  net/ipv4/ip_sockglue.c  | 15 ++++++++++++++-
+>  net/ipv4/raw.c          |  5 ++++-
+>  net/ipv6/raw.c          |  3 ++-
+>  5 files changed, 23 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/include/net/ip.h b/include/net/ip.h
+> index c3fffaa92d6e..acec504c469a 100644
+> --- a/include/net/ip.h
+> +++ b/include/net/ip.h
+> @@ -76,6 +76,7 @@ struct ipcm_cookie {
+>  	__be32			addr;
+>  	int			oif;
+>  	struct ip_options_rcu	*opt;
+> +	__u8			protocol;
+>  	__u8			ttl;
+>  	__s16			tos;
+>  	char			priority;
+> @@ -96,6 +97,7 @@ static inline void ipcm_init_sk(struct ipcm_cookie *ipc=
+m,
+>  	ipcm->sockc.tsflags =3D inet->sk.sk_tsflags;
+>  	ipcm->oif =3D READ_ONCE(inet->sk.sk_bound_dev_if);
+>  	ipcm->addr =3D inet->inet_saddr;
+> +	ipcm->protocol =3D inet->inet_num;
+>  }
 > =20
-> -#include <linux/can.h>
-> -#include <linux/can/dev.h>
-> -#include <linux/can/error.h>
+>  #define IPCB(skb) ((struct inet_skb_parm*)((skb)->cb))
+> diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+> index 4b7f2df66b99..e682ab628dfa 100644
+> --- a/include/uapi/linux/in.h
+> +++ b/include/uapi/linux/in.h
+> @@ -163,6 +163,7 @@ struct in_addr {
+>  #define IP_MULTICAST_ALL		49
+>  #define IP_UNICAST_IF			50
+>  #define IP_LOCAL_PORT_RANGE		51
+> +#define IP_PROTOCOL			52
+> =20
+>  #define MCAST_EXCLUDE	0
+>  #define MCAST_INCLUDE	1
+> diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+> index b511ff0adc0a..ec0fbe874426 100644
+> --- a/net/ipv4/ip_sockglue.c
+> +++ b/net/ipv4/ip_sockglue.c
+> @@ -317,7 +317,17 @@ int ip_cmsg_send(struct sock *sk, struct msghdr *msg=
+, struct ipcm_cookie *ipc,
+>  			ipc->tos =3D val;
+>  			ipc->priority =3D rt_tos2priority(ipc->tos);
+>  			break;
 > -
->  MODULE_AUTHOR("Matthias Fuchs <socketcan@esd.eu>");
->  MODULE_AUTHOR("Frank Jungclaus <frank.jungclaus@esd.eu>");
->  MODULE_DESCRIPTION("CAN driver for esd electronics gmbh CAN-USB/2 and CA=
-N-USB/Micro interfaces");
-> @@ -27,8 +28,8 @@ MODULE_LICENSE("GPL v2");
->  #define USB_CANUSBM_PRODUCT_ID	0x0011
-> =20
->  /* CAN controller clock frequencies */
-> -#define ESD_USB2_CAN_CLOCK	60000000
-> -#define ESD_USBM_CAN_CLOCK	36000000
-> +#define ESD_USB2_CAN_CLOCK	(60 * MEGA) /* Hz */
-> +#define ESD_USBM_CAN_CLOCK	(36 * MEGA) /* Hz */
-> =20
->  /* Maximum number of CAN nets */
->  #define ESD_USB_MAX_NETS	2
-> @@ -42,20 +43,21 @@ MODULE_LICENSE("GPL v2");
->  #define CMD_IDADD		6 /* also used for IDADD_REPLY */
-> =20
->  /* esd CAN message flags - dlc field */
-> -#define ESD_RTR			0x10
-> +#define ESD_RTR	BIT(4) /* 0x10 */
+> +		case IP_PROTOCOL:
+> +			if (cmsg->cmsg_len =3D=3D CMSG_LEN(sizeof(int)))
+> +				val =3D *(int *)CMSG_DATA(cmsg);
+> +			else if (cmsg->cmsg_len =3D=3D CMSG_LEN(sizeof(u8)))
+> +				val =3D *(u8 *)CMSG_DATA(cmsg);
 
-Nitpick, personal style preference, maintainability: For me the hex
-constant is redundant information, and it's not checked by the compiler,
-please remove it.
+AFAICS the 'dual' u8 support for IP_TOS has been introduce to cope with
+asymmetry WRT recvmsg(). Here we don't have (yet) the recvmsg counter-
+part, and if/when that will be added we can use the correct data type.
 
-> +
-> =20
->  /* esd CAN message flags - id field */
-> -#define ESD_EXTID		0x20000000
-> -#define ESD_EVENT		0x40000000
-> -#define ESD_IDMASK		0x1fffffff
-> +#define ESD_EXTID	BIT(29) /* 0x20000000 */
-> +#define ESD_EVENT	BIT(30) /* 0x40000000 */
-> +#define ESD_IDMASK	0x1fffffff
+I think we are better off supporting only int, as e.g. IP_TTL does.
 
-Please use GEN_MASK.
+Side note, the above code could be factored out in an helper to be used
+both for IP_PROTOCOL and IP_TTL (possibly in a net-next patch).
 
-> =20
->  /* esd CAN event ids */
->  #define ESD_EV_CAN_ERROR_EXT	2 /* CAN controller specific diagnostic dat=
-a */
-> =20
->  /* baudrate message flags */
-> -#define ESD_USB_UBR		0x80000000
-> -#define ESD_USB_LOM		0x40000000
-> -#define ESD_USB_NO_BAUDRATE	0x7fffffff
-> +#define ESD_USB_LOM	BIT(30) /* 0x40000000, Listen Only Mode */
-> +#define ESD_USB_UBR	BIT(31) /* 0x80000000, User Bit Rate (controller BTR=
-) in bits 0..27 */
-> +#define ESD_USB_NO_BAUDRATE	0x7fffffff /* bit rate unconfigured */
+Thanks!
 
-You might use GEN_MASK here, too.
+Paolo
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---xuxstbtrrmjtjzza
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRl9x0ACgkQvlAcSiqK
-BOg+cAf+KzVa9cmUPggy1Tcco5Isoib0g1IdvOmpg9f/yNn8bvRP7hh3eiwkZD8z
-txb3kHedg4loWwnlGnZtjFebuyRPwOVgRnwDoWvHG6rhJ40YSyPHbcGMXl5e+oht
-iAwx+Fd46Bz5WANelqEcGXmnZBix+pKvVhzCeRwhaksf1nE6YfpUNyHguVqiUXul
-N8LuE+eWcG49PbilEJ7xwBY77S5ymnO7giaG/AbA24XZ3aPBwk1E83wkJWmyXYes
-t7NFLaDm5vlhSoOSjfVi74b9FIL9mBVnBbXOKwfXG/MKAAjzJ12RxcffuggPtXrC
-AYwijWBPDmUCWw42kDiO4X6XBYtekw==
-=lOIs
------END PGP SIGNATURE-----
-
---xuxstbtrrmjtjzza--
 
