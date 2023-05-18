@@ -1,56 +1,56 @@
-Return-Path: <netdev+bounces-3624-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3625-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7E68A7081BC
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:49:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 770657081F3
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:58:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 676AB1C2104F
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:49:00 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2F3D5281904
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:58:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 178BA23C73;
-	Thu, 18 May 2023 12:49:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FE6923C77;
+	Thu, 18 May 2023 12:58:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CC5B23C67
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 12:48:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2042D23C67
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 12:58:13 +0000 (UTC)
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531EAC9;
-	Thu, 18 May 2023 05:48:58 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6CA170B;
+	Thu, 18 May 2023 05:58:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
 	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
 	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
 	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=cySFAh0aYuQ0BuYGb6opRZ3asbMe8+yAKXpa7mS2iS0=; b=uyDXyyAi/lUd8mr98dvyu53n40
-	7HCejGP7ecw5aLyPIZ0rfauT0zJj1EdnhMrUSmPVBKOhufklwe7H8J2HCkM8a486Jl7biijALZ8Pw
-	ub+nL4sXGiSUpP+kRnvG+yPNhLzdGLL3isGsdiGJOO03jYvPw2H0dkAiOmxXI27zMoXk=;
+	bh=ornDW2gcGC07DEWBDSLBzCZabH8SWvpEcRaK0EXRMog=; b=Yu2Xq+9dmo4vRz9ArK8Y0aKvaL
+	kOjDPbXmtzz22cUPYu7iZ5LyX7KhUNjJcBTnBkt442tUyL0NNDA+q2nV65MmrEm81gT2gJ8WwoXKO
+	hck1QEukCZESBxrVzW16DLk+8Bdwiy0AcZEq9OElCrqRMXXeOyS8iZXQXqc8O5o1YpxA=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
 	(envelope-from <andrew@lunn.ch>)
-	id 1pzd3b-00DEBk-1q; Thu, 18 May 2023 14:48:35 +0200
-Date: Thu, 18 May 2023 14:48:35 +0200
+	id 1pzdCi-00DEDS-Ix; Thu, 18 May 2023 14:58:00 +0200
+Date: Thu, 18 May 2023 14:58:00 +0200
 From: Andrew Lunn <andrew@lunn.ch>
-To: Jiawen Wu <jiawenwu@trustnetic.com>
-Cc: 'Andy Shevchenko' <andy.shevchenko@gmail.com>, netdev@vger.kernel.org,
-	jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
-	mika.westerberg@linux.intel.com, jsd@semihalf.com,
-	Jose.Abreu@synopsys.com, hkallweit1@gmail.com,
-	linux@armlinux.org.uk, linux-i2c@vger.kernel.org,
-	linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com
-Subject: Re: [PATCH net-next v8 6/9] net: txgbe: Support GPIO to SFP socket
-Message-ID: <1e1615b3-566c-490c-8b1a-78f5521ca0b0@lunn.ch>
-References: <20230515063200.301026-1-jiawenwu@trustnetic.com>
- <20230515063200.301026-7-jiawenwu@trustnetic.com>
- <ZGH-fRzbGd_eCASk@surfacebook>
- <00cd01d9879f$8e444950$aaccdbf0$@trustnetic.com>
- <CAHp75VdthEZL6GvT5Q=f7rbcDfA5XX=7-VLfVz1kZmBFem_eCA@mail.gmail.com>
- <016701d9886a$f9b415a0$ed1c40e0$@trustnetic.com>
- <90ef7fb8-feac-4288-98e9-6e67cd38cdf1@lunn.ch>
- <025b01d9897e$d8894660$899bd320$@trustnetic.com>
+To: Alexis =?iso-8859-1?Q?Lothor=E9?= <alexis.lothore@bootlin.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	thomas.petazzoni@bootlin.com, paul.arola@telus.com,
+	scott.roberts@telus.com
+Subject: Re: [PATCH net-next 2/2] net: dsa: mv88e6xxx: enable support for
+ 88E6361 switch
+Message-ID: <6643e099-7b72-4da2-aba1-521e1a4c961b@lunn.ch>
+References: <20230517203430.448705-1-alexis.lothore@bootlin.com>
+ <20230517203430.448705-3-alexis.lothore@bootlin.com>
+ <9a836863-c279-490f-a49a-de4db5de9fd4@lunn.ch>
+ <ee281c0f-5e8b-8453-08bf-858c5503dc22@bootlin.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -59,65 +59,44 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <025b01d9897e$d8894660$899bd320$@trustnetic.com>
+In-Reply-To: <ee281c0f-5e8b-8453-08bf-858c5503dc22@bootlin.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-> > I _think_ you are mixing upstream IRQs and downstream IRQs.
+> >> +	[MV88E6361] = {
+> >> +		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6361,
+> >> +		.family = MV88E6XXX_FAMILY_6393,
+> >> +		.name = "Marvell 88E6361",
+> >> +		.num_databases = 4096,
+> >> +		.num_macs = 16384,
+> >> +		.num_ports = 11,
+> >> +		/* Ports 1, 2 and 8 are not routed */
+> >> +		.invalid_port_mask = BIT(1) | BIT(2) | BIT(8),
+> >> +		.num_internal_phys = 5,
 > > 
-> > Interrupts are arranged in trees. The CPU itself only has one or two
-> > interrupts. e.g. for ARM you have FIQ and IRQ. When the CPU gets an
-> > interrupt, you look in the interrupt controller to see what external
-> > or internal interrupt triggered the CPU interrupt. And that interrupt
-> > controller might indicate the interrupt came from another interrupt
-> > controller. Hence the tree structure. And each node in the tree is
-> > considered an interrupt domain.
-> > 
-> > A GPIO controller can also be an interrupt controller. It has an
-> > upstream interrupt, going to the controller above it. And it has
-> > downstream interrupts, the GPIO lines coming into it which can cause
-> > an interrupt. And the GPIO interrupt controller is a domain.
-> > 
-> > So what exactly does gpio_regmap_config.irq_domain mean? Is it the
-> > domain of the upstream interrupt controller? Is it an empty domain
-> > structure to be used by the GPIO interrupt controller? It is very
-> > unlikely to have anything to do with the SFP devices below it.
+> > Which ports have internal PHYs? 2, 3, 4, 5, 6, 7 ?  What does
+> > mv88e6xxx_phy_is_internal() return for these ports, and
+> > mv88e6xxx_get_capsmv88e6xxx_get_caps()? I'm wondering if you actually
+> > need to list 8 here?
 > 
-> Sorry, since I don't know much about interrupt,  it is difficult to understand
-> regmap-irq in a short time. There are many questions about regmap-irq.
+> Indeed there is something wrong here too. I need to tune
+> mv88e6393x_phylink_get_caps to reflect 88E6361 differences.
 > 
-> When I want to add an IRQ chip for regmap, for the further irq_domain,
-> I need to pass a parameter of IRQ, and this IRQ will be requested with handler:
-> regmap_irq_thread(). Which IRQ does it mean?
+> As stated above, port 3 to 7 are the ones with internal PHY.
+> For mv88e6xxx_phy_is_internal, I see that it is merely comparing the port index
+> to the number of internal phys, so in this case it would advertise (wrongly)
+> that ports 0 to 4 have internal phys.
 
-That is your upstream IRQ, the interrupt indicating one of your GPIO
-lines has changed state.
+Ports 1 and 2 should hopefully be protected by the
+invalid_port_mask. It should not even be possible to create those
+ports. port 0 is interesting, and possibly currently broken on
+6393. Please take a look at that.
 
-> In the previous code of using
-> devm_gpiochip_add_data(), I set the MSI-X interrupt as gpio-irq's parent, but
-> it was used to set chained handler only. Should the parent be this IRQ? I found
-> the error with irq_free_descs and irq_domain_remove when I remove txgbe.ko.
+    Andrew
 
-Do you have one MSI-X dedicated for GPIOs. Or is it your general MAC
-interrupt, and you need to read an interrupt controller register to
-determine it was GPIOs which triggered the interrupt?
-
-If you are getting errors when removing the driver it means you are
-missing some level of undoing what us done in probe. Are you sure
-regmap_del_irq_chip() is being called on unload?
-
-> As you said, the interrupt of each tree node has its domain. Can I understand
-> that there are two layer in the interrupt tree for MSI-X and GPIOs, and requesting
-> them separately is not conflicting? Although I thought so, but after I implement
-> gpio-regmap, SFP driver even could not find gpio_desc. Maybe I missed something
-> on registering gpio-regmap...
-
-That is probably some sort of naming issue. You might want to add some
-prints in swnode_find_gpio() and gpiochip_find() to see what it is
-looking for vs what the name actually is.
-
-	Andrew
+---
+pw-bot: cr
 
