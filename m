@@ -1,29 +1,29 @@
-Return-Path: <netdev+bounces-3659-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3619-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AA01070836F
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 16:01:44 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AA946708153
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:32:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 47CC31C210AA
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:01:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 612A52818CC
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:32:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3A9B01992D;
-	Thu, 18 May 2023 14:01:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 868C81EA83;
+	Thu, 18 May 2023 12:32:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BDAF23C8A
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 14:01:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B2442099C
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 12:32:01 +0000 (UTC)
 Received: from voilahome.com (167-179-142-54.a7b38e.mel.nbn.aussiebb.net [167.179.142.54])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A28610DC
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 07:01:38 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F9419F
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 05:32:00 -0700 (PDT)
 Received: from [80.94.95.76] (unknown [80.94.95.76])
-	by voilahome.com (Postfix) with ESMTPA id 8EF2032629D
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 02:45:19 +1000 (AEST)
+	by voilahome.com (Postfix) with ESMTPA id 03FC23627B1
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 13:57:50 +1000 (AEST)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -35,17 +35,17 @@ Content-Transfer-Encoding: quoted-printable
 Content-Description: Mail message body
 Subject: You've won the Eurojackpot!
 To: netdev@vger.kernel.org
-From: "Eurojackpot" <draw@euro-millions.com>
-Date: Wed, 17 May 2023 09:45:18 -0700
+From: "Eurojackpo" <won@eurojackpot.net>
+Date: Wed, 17 May 2023 20:57:49 -0700
 Reply-To: jp5017097@gmail.com
 X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_50,
 	FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,KHOP_HELO_FCRDNS,
-	MISSING_MID,RCVD_IN_SBL,RDNS_DYNAMIC,SPF_FAIL,SPF_HELO_NONE,
+	MISSING_MID,RCVD_IN_SBL,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_NONE,
 	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
-Message-Id: <20230518140141.3A9B01992D@smtp.subspace.kernel.org>
+Message-Id: <20230518123201.868C81EA83@smtp.subspace.kernel.org>
 
 
 
