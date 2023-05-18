@@ -1,69 +1,105 @@
-Return-Path: <netdev+bounces-3619-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3613-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AA946708153
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:32:04 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D06517080DF
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:12:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 612A52818CC
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:32:03 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 141E12815A7
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:12:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 868C81EA83;
-	Thu, 18 May 2023 12:32:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 652B619934;
+	Thu, 18 May 2023 12:12:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B2442099C
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 12:32:01 +0000 (UTC)
-Received: from voilahome.com (167-179-142-54.a7b38e.mel.nbn.aussiebb.net [167.179.142.54])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F9419F
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 05:32:00 -0700 (PDT)
-Received: from [80.94.95.76] (unknown [80.94.95.76])
-	by voilahome.com (Postfix) with ESMTPA id 03FC23627B1
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 13:57:50 +1000 (AEST)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6503617AB8
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 12:12:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17CA4C433EF;
+	Thu, 18 May 2023 12:12:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684411959;
+	bh=HQbrGsVEWGpBhnO+Kgnh4OFttxZ6LnaXdPUMdYq0FQE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=TUWMgZFdbGzjVGrh45IXRwY5fY9S25C+cCktX+MQhc9z2Gdb82NKa+siLaasFrQAh
+	 EAjWyKqZygY3e//EKQxNPP/PANdDrwjP5PpU6V0ZE3VH3RyHFAnkR/OdLyL0twtgoX
+	 cvQQ3RMPjPbhd637yWeLZAKwJbjm1tGjobsvkwsAesU7sloVoZDo5AWMP2ri5eHtLD
+	 uh/wgXl3GTty6q7wLW5gAR2LINbwHYyOcVuEtqD+1cMonQNZ7z5GLhImoc49lgcPgN
+	 6+Va9pcqeldMG43kRT5DPhxxkirg7FN+5NPrmhio0atSP11NgsUIplUieTg3MTSYi9
+	 315kjE7Vl/d2Q==
+Date: Thu, 18 May 2023 13:12:32 +0100
+From: Lee Jones <lee@kernel.org>
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Pavel Machek <pavel@ucw.cz>,
+	Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+	Sebastian Reichel <sre@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Michael Grzeschik <m.grzeschik@pengutronix.de>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Pablo Neira Ayuso <pablo@netfilter.org>,
+	Jozsef Kadlecsik <kadlec@netfilter.org>, linux-leds@vger.kernel.org,
+	linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+	netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+	coreteam@netfilter.org, Yauhen Kharuzhy <jekhor@gmail.com>
+Subject: Re: [PATCH RESEND 1/4] leds: Change led_trigger_blink[_oneshot]()
+ delay parameters to pass-by-value
+Message-ID: <20230518121232.GG404509@google.com>
+References: <20230510162234.291439-1-hdegoede@redhat.com>
+ <20230510162234.291439-2-hdegoede@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: You've won the Eurojackpot!
-To: netdev@vger.kernel.org
-From: "Eurojackpo" <won@eurojackpot.net>
-Date: Wed, 17 May 2023 20:57:49 -0700
-Reply-To: jp5017097@gmail.com
-X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_50,
-	FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,KHOP_HELO_FCRDNS,
-	MISSING_MID,RCVD_IN_SBL,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
-Message-Id: <20230518123201.868C81EA83@smtp.subspace.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230510162234.291439-2-hdegoede@redhat.com>
 
+On Wed, 10 May 2023, Hans de Goede wrote:
 
+> led_blink_set[_oneshot]()'s delay_on and delay_off function parameters
+> are pass by reference, so that hw-blink implementations can report
+> back the actual achieved delays when the values have been rounded
+> to something the hw supports.
+> 
+> This is really only interesting for the sysfs API / the timer trigger.
+> Other triggers don't really care about this and none of the callers of
+> led_trigger_blink[_oneshot]() do anything with the returned delay values.
+> 
+> Change the led_trigger_blink[_oneshot]() delay parameters to pass-by-value,
+> there are 2 reasons for this:
+> 
+> 1. led_cdev->blink_set() may sleep, while led_trigger_blink() may not.
+> So on hw where led_cdev->blink_set() sleeps the call needs to be deferred
+> to a workqueue, in which case the actual achieved delays are unknown
+> (this is a preparation patch for the deferring).
+> 
+> 2. Since the callers don't care about the actual achieved delays, allowing
+> callers to directly pass a value leads to simpler code for most callers.
+> 
+> Reviewed-by: Jacek Anaszewski <jacek.anaszewski@gmail.com>
+> Tested-by: Yauhen Kharuzhy <jekhor@gmail.com>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+>  drivers/leds/led-triggers.c              | 16 ++++++++--------
+>  drivers/leds/trigger/ledtrig-disk.c      |  9 +++------
+>  drivers/leds/trigger/ledtrig-mtd.c       |  8 ++------
+>  drivers/net/arcnet/arcnet.c              |  8 ++------
+>  drivers/power/supply/power_supply_leds.c |  5 +----
+>  drivers/usb/common/led.c                 |  4 +---
+>  include/linux/leds.h                     | 16 ++++++++--------
+>  net/mac80211/led.c                       |  2 +-
+>  net/mac80211/led.h                       |  8 ++------
+>  net/netfilter/xt_LED.c                   |  3 +--
+>  10 files changed, 29 insertions(+), 50 deletions(-)
 
-This is a follow up to the letter mailed to your address announcing you the=
- prizewinner of the for the 26th Eurojackpot draw in 2023 that took place o=
-n Friday 31st March at 21:00 CEST (20:00 GMT) were:
+Applied, thanks
 
-You're electronic mail with ascending numbers 10 11 31 37 44 with euro numb=
-ers 5 12 has won you the sum of =E2=82=AC10,000,000 in the 26th Eurojackpot=
- draw.
-
-We had an official letter sent to you but got no feedback. Please confirm r=
-eceipt of this notification by contacting claim director Mr. Peter Jones fo=
-r more details.
-
-Kind regards,
-Customer Support
-EURO-JACKPOT
-
-Material Copyright =C2=A9 2023 Euro-jackpot.net. All rights reserved.
+-- 
+Lee Jones [李琼斯]
 
