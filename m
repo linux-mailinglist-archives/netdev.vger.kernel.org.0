@@ -1,147 +1,184 @@
-Return-Path: <netdev+bounces-3515-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3516-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 90FE6707A6A
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 08:52:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4C0AB707A84
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 09:03:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5CCFC1C2107D
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 06:52:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 08BC62813BE
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 07:03:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7BF02A9CA;
-	Thu, 18 May 2023 06:52:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEAB92A9CA;
+	Thu, 18 May 2023 07:03:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCDAC7E
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 06:52:32 +0000 (UTC)
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6EB2105
-	for <netdev@vger.kernel.org>; Wed, 17 May 2023 23:52:31 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-55db055b412so24013197b3.0
-        for <netdev@vger.kernel.org>; Wed, 17 May 2023 23:52:31 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4CF47E
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 07:03:49 +0000 (UTC)
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE552D64
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 00:03:46 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id ffacd0b85a97d-3093eb8cd1fso1047742f8f.1
+        for <netdev@vger.kernel.org>; Thu, 18 May 2023 00:03:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1684392750; x=1686984750;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LdIUxcLnlvgE1xdJkhW15Ehzq4LjG4WA/TNMayIzpxw=;
-        b=q5XA9FhpvNBTNC8QZpWlvNdstEDv4u9tAn2cMfKO3SS9+deSdLusU09nCoAMRG855Z
-         CWhHJdh+/jsOOcINYcH3npKVjnQWczcFQjUfpzBkevSP26p7C/3N4tWs3M5CwydcSZ1x
-         2qlggBDmHLaeMYFVbnjok4w9h/XkBvQxXEt64=
+        d=linaro.org; s=google; t=1684393425; x=1686985425;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cmE3Hw/g7PPXrHo8vcI6AjK/ohP/P6DVA7E2EEZA5aw=;
+        b=lNypA+WGF2vO1hR7ikW9cji9tuOPvcbtbUBOxHzGqO4xtpMGVB6DkS1/BXmv9xnBAj
+         L4XUoIwAROLoDGxQc7FPnw+nIJnpo0e5vuiaPH3mNf8/Qm9m4WgJUXgFSHOMVqF8kQF0
+         lGq98PFQ6c+vLqDalLC72hlWN0qUAALcjHXfF3pijF/1SVHSRbm3z5gN8zvLEWFu69aR
+         1Gw5PfG+ns+3qIjk+4WbR6QqLMby0ilKS4tz60gv8qfooG6Py867g57LRIEukAXUBzpm
+         D2thI7uvQKTaDqu89O5+AjN7X/RqPl6B4z+gsMxjNPlT9HOo3ORGOIDxnBauldOllBpk
+         vwfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684392750; x=1686984750;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LdIUxcLnlvgE1xdJkhW15Ehzq4LjG4WA/TNMayIzpxw=;
-        b=W8ZZT5FQagfdxqphsHtMSxPqKyEqdc5Kzg81pVnlGApdichreGAa5oNCoVNWEPTAzx
-         JObdLxJdeBZ1bJ5FkYFIP94uxDIo6JMnXbLKdfaotiLda40vxsPiPLT6tMW3Owl5TIVZ
-         jIfenqHXgrZyYeOXftE8Fpr80rntr6o2Voqq0Henmtv/Howv+yT8jLuTIvtP/kYpDZ0d
-         5FdGRONeq4AhS0f29CYkPdQH8OXBEIVU3R0Iss/PJdiUv5z9X+8/Qf//hSl0RTOvTMEK
-         wJQvM3Up1dCW8p3NzKqwrSnVNGZ/Cu5teAdeVXoi92gHNfZc2uu/V13kVm8JA7I+M4P9
-         0V7A==
-X-Gm-Message-State: AC+VfDxo5c3gJz/h17hgeBiTZ1i21KrqrN26OvvVa0b3Am/RlMg6SpfA
-	dHb6W+2Ii1R+huqbqMGHOLQIuleJVE7Uou1w4GzeBw==
-X-Google-Smtp-Source: ACHHUZ6+MKsPKzjNuD6K1Bux0CRgWbd7RBL4vd4g+VtQBA9Y14+wI/UeAIPL2EB9PElAVZoyxQErG8Ygc0cJHucxuzk=
-X-Received: by 2002:a81:5794:0:b0:561:5a0:8141 with SMTP id
- l142-20020a815794000000b0056105a08141mr639218ywb.13.1684392750723; Wed, 17
- May 2023 23:52:30 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684393425; x=1686985425;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cmE3Hw/g7PPXrHo8vcI6AjK/ohP/P6DVA7E2EEZA5aw=;
+        b=IDwBuPX5VgcOTXOLkR1w0PjzdVYFZDDp3x/mtWLLtN3dTl/pd4UitUfuBrPoexDB39
+         90ctRguN3Z60675UmDyTLCTfi5qw3EntSIYmx2+6HwsxyRTgRHO3IRD065fhlSoH7dPj
+         ksJOmQKf21Oho2V+HTkxhCmVfLqyA4dbAGUcR6YENp7EwCOajPg+QIX0wnO/VcqkUHKB
+         A1JfgnvL0aHZuI+R7vw67pZ6NtzAFDBwqbTan4vTLGUSSP/HZ3D+60IIH0ixu+ta9Dfd
+         95c+5DhXDYdDWPpR2F5dlijvpwizpdfditmqJVxIiy1bfxD88zRZLRuHmc6nu1jwtpHE
+         NN3Q==
+X-Gm-Message-State: AC+VfDzJZUBuudKsdqPrm9VmKQlLv1gTg81LyCCkAX8MXEx2OvTgNz1C
+	OPBjZaORfIbec/mWYRiFLfZMJw==
+X-Google-Smtp-Source: ACHHUZ7KA7gW++urZQKvPGWLM/0di9BvXzgoPwnUHrCMESNRXMuASR1PwcyqGPzX8tXB+3miGBskrg==
+X-Received: by 2002:adf:fb08:0:b0:309:3c0c:b2c1 with SMTP id c8-20020adffb08000000b003093c0cb2c1mr572723wrr.23.1684393424852;
+        Thu, 18 May 2023 00:03:44 -0700 (PDT)
+Received: from hera (ppp176092130041.access.hol.gr. [176.92.130.41])
+        by smtp.gmail.com with ESMTPSA id d15-20020a5d644f000000b00307a83ea722sm1110439wrw.58.2023.05.18.00.03.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 May 2023 00:03:44 -0700 (PDT)
+Date: Thu, 18 May 2023 10:03:41 +0300
+From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+	Magnus Karlsson <magnus.karlsson@intel.com>,
+	Michal Kubiak <michal.kubiak@intel.com>,
+	Larysa Zaremba <larysa.zaremba@intel.com>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Christoph Hellwig <hch@lst.de>, netdev@vger.kernel.org,
+	intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 07/11] net: page_pool: add DMA-sync-for-CPU
+ inline helpers
+Message-ID: <ZGXNzX77/5cXqAhe@hera>
+References: <20230516161841.37138-1-aleksander.lobakin@intel.com>
+ <20230516161841.37138-8-aleksander.lobakin@intel.com>
+ <20230517211211.1d1bbd0b@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230518090634.6ec6b1e1@canb.auug.org.au> <20230517214200.33398f82@kernel.org>
- <11ab22ff9ecf7e7a330ac45e9ac08bf04aa7f6df.camel@redhat.com>
-In-Reply-To: <11ab22ff9ecf7e7a330ac45e9ac08bf04aa7f6df.camel@redhat.com>
-From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date: Thu, 18 May 2023 08:52:19 +0200
-Message-ID: <CABGWkvr-LBVA0XehWHnRaVMT5n-m_V91GzqG4R30fj4QYbuV5g@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the net tree
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: Jakub Kicinski <kuba@kernel.org>, Marc Kleine-Budde <mkl@pengutronix.de>, 
-	Stephen Rothwell <sfr@canb.auug.org.au>, David Miller <davem@davemloft.net>, 
-	Networking <netdev@vger.kernel.org>, 
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, 
-	Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230517211211.1d1bbd0b@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 Hi all,
 
-On Thu, May 18, 2023 at 8:47=E2=80=AFAM Paolo Abeni <pabeni@redhat.com> wro=
-te:
+> On Wed, May 17, 2023 at 09:12:11PM -0700, Jakub Kicinski wrote:
+> On Tue, 16 May 2023 18:18:37 +0200 Alexander Lobakin wrote:
+> > Each driver is responsible for syncing buffers written by HW for CPU
+> > before accessing them. Almost each PP-enabled driver uses the same
+> > pattern, which could be shorthanded into a static inline to make driver
+> > code a little bit more compact.
+> > Introduce a couple such functions. The first one takes the actual size
+> > of the data written by HW and is the main one to be used on Rx. The
+> > second does the same, but only if the PP performs DMA synchronizations
+> > at all. The last one picks max_len from the PP params and is designed
+> > for more extreme cases when the size is unknown, but the buffer still
+> > needs to be synced.
+> > Also constify pointer arguments of page_pool_get_dma_dir() and
+> > page_pool_get_dma_addr() to give a bit more room for optimization,
+> > as both of them are read-only.
 >
-> On Wed, 2023-05-17 at 21:42 -0700, Jakub Kicinski wrote:
-> > On Thu, 18 May 2023 09:06:34 +1000 Stephen Rothwell wrote:
-> > > Hi all,
-> > >
-> > > After merging the net tree, today's linux-next build (arm
-> > > multi_v7_defconfig) failed like this:
-> > >
-> > > Error: arch/arm/boot/dts/stm32f746.dtsi:265.20-21 syntax error
-> > > FATAL ERROR: Unable to parse input tree
-> > > make[2]: *** [scripts/Makefile.lib:419: arch/arm/boot/dts/stm32f746-d=
-isco.dtb] Error 1
-> > > Error: arch/arm/boot/dts/stm32f746.dtsi:265.20-21 syntax error
-> > > FATAL ERROR: Unable to parse input tree
-> > > make[2]: *** [scripts/Makefile.lib:419: arch/arm/boot/dts/stm32f769-d=
-isco.dtb] Error 1
-> > > Error: arch/arm/boot/dts/stm32f746.dtsi:265.20-21 syntax error
-> > > FATAL ERROR: Unable to parse input tree
-> > >
-> > > Caused by commit
-> > >
-> > >   0920ccdf41e3 ("ARM: dts: stm32: add CAN support on stm32f746")
-> > >
-> > > I have used the net tree from next-20230517 for today.
+> Very neat.
+>
+> > diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> > index 8435013de06e..f740c50b661f 100644
+> > --- a/include/net/page_pool.h
+> > +++ b/include/net/page_pool.h
+> > @@ -32,7 +32,7 @@
 > >
-> > Dario, Marc, can we get an immediate fix for this?
+> >  #include <linux/mm.h> /* Needed by ptr_ring */
+> >  #include <linux/ptr_ring.h>
+> > -#include <linux/dma-direction.h>
+> > +#include <linux/dma-mapping.h>
 >
-> Dario, Marc: we are supposed to send the net PR to Linus today. Lacking
-> a fix, I'll be forced to revert the mentioned commit in a little time.
+> highly nit picky - but isn't dma-mapping.h pretty heavy?
+> And we include page_pool.h in skbuff.h. Not that it matters
+> today, but maybe one day we'll succeed putting skbuff.h
+> on a diet -- so perhaps it's better to put "inline helpers
+> with non-trivial dependencies" into a new header?
+>
+> >  #define PP_FLAG_DMA_MAP		BIT(0) /* Should page_pool do the DMA
+> >  					* map/unmap
+>
+> > +/**
+> > + * page_pool_dma_sync_for_cpu - sync Rx page for CPU after it's written by HW
+> > + * @pool: page_pool which this page belongs to
+> > + * @page: page to sync
+> > + * @dma_sync_size: size of the data written to the page
+> > + *
+> > + * Can be used as a shorthand to sync Rx pages before accessing them in the
+> > + * driver. Caller must ensure the pool was created with %PP_FLAG_DMA_MAP.
+> > + */
+> > +static inline void page_pool_dma_sync_for_cpu(const struct page_pool *pool,
+> > +					      const struct page *page,
+> > +					      u32 dma_sync_size)
+> > +{
+> > +	dma_sync_single_range_for_cpu(pool->p.dev,
+> > +				      page_pool_get_dma_addr(page),
+> > +				      pool->p.offset, dma_sync_size,
+> > +				      page_pool_get_dma_dir(pool));
+>
+> Likely a dumb question but why does this exist?
+> Is there a case where the "maybe" version is not safe?
 >
 
-Marc reverted the commit:
-https://lore.kernel.org/all/20230517181950.1106697-1-mkl@pengutronix.de/
+I got similar concerns here.  Syncing for the cpu is currently a
+responsibility for the driver.  The reason for having an automated DMA sync
+is that we know when we allocate buffers for the NIC to consume so we can
+safely sync them accordingly.  I am fine having a page pool version for the
+cpu sync, but do we really have to check the pp flags for that?  IOW if you
+are at the point that you need to sync a buffer for the cpu *someone*
+already mapped it for you.  Regardsless of who mapped it the sync is
+identical
 
-Thanks and regards,
-Dario
+> > +}
+> > +
+> > +/**
+> > + * page_pool_dma_maybe_sync_for_cpu - sync Rx page for CPU if needed
+> > + * @pool: page_pool which this page belongs to
+> > + * @page: page to sync
+> > + * @dma_sync_size: size of the data written to the page
+> > + *
+> > + * Performs DMA sync for CPU, but only when required (swiotlb, IOMMU etc.).
+> > + */
+> > +static inline void
+> > +page_pool_dma_maybe_sync_for_cpu(const struct page_pool *pool,
+> > +				 const struct page *page, u32 dma_sync_size)
+> > +{
+> > +	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+> > +		page_pool_dma_sync_for_cpu(pool, page, dma_sync_size);
+> > +}
 
-> Thanks!
->
-> Paolo
->
-
-
---=20
-
-Dario Binacchi
-
-Senior Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
+Thanks
+/Ilias
 
