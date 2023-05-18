@@ -1,216 +1,185 @@
-Return-Path: <netdev+bounces-3661-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3664-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 02FE77083A1
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 16:12:11 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6C2217083DB
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 16:22:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BC4211C20FC5
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:12:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1CEB02818FE
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:22:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6192C209AA;
-	Thu, 18 May 2023 14:12:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E73CD209B2;
+	Thu, 18 May 2023 14:21:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DD4123C69
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 14:12:07 +0000 (UTC)
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34A4DC;
-	Thu, 18 May 2023 07:12:03 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id 3f1490d57ef6-ba6d024a196so1780307276.2;
-        Thu, 18 May 2023 07:12:03 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCAF123C6A
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 14:21:58 +0000 (UTC)
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1031F5
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 07:21:56 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id 4fb4d7f45d1cf-510ea8d0bb5so833581a12.0
+        for <netdev@vger.kernel.org>; Thu, 18 May 2023 07:21:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684419123; x=1687011123;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yZgWXPTe1ZG4Sw/b1mpfq3+D2E79rsdzVUg9Htd0C1I=;
-        b=nQCx1Fb704okQyK869FxXTPFNzbbbeXJPFjY3YNtSJiJ34R7ANcOTfOCBTBxgUz1v/
-         4lgpnWaSBMlfJ6UugEXUL590pNC3ehvBBnc33W9HiUAEw6LtA6ZMx73aQ/8lDU7eA4VK
-         s92KHROyZwH6VM2K34So3/2NIhfg7RJcEeBvDEwrKw3MWognZMwmxWKhmeaWMb+sW1OM
-         2WAyuyD3ma4nv0RENopUIE6qO1Yog3kehphCTKeEqJEtOzllT1ety04HqDyoRp0buMTw
-         N/EVads6jSmThIQxvJHMMcG2a2IdHC1+rQNnuznQjGtY7qVuaHSUokkP0befQc0IAZuL
-         1FRA==
+        d=linaro.org; s=google; t=1684419715; x=1687011715;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GoYD1HeZqxzJnofeUMnEjY7LdMkmo1HYZ+uW66yc8zI=;
+        b=HGV4jjmlsteYJElUtUefnS224Lr+OvMC9jCbexLICYShcmDpIgspCiSW9L3B4wcnqG
+         S14/K4bLbRvOJ0myk0FjPEDsZ+ahgME0WdXiPqDWR5e7OaomNpdfh8WAsQPKQsIPHrc8
+         +Mak7u6GkCmTK64G1EFj1x1QR25nhDgk8Swj8+tBxx3pN8fnKy8izlV2Brg2N+Qd+Znq
+         jGYAUDCwVzonuMxlYhKefH/PrjKztdOOtBBPaqNah5BtMcJ3on8RryvhspF4NckTyPtw
+         IYTHwgQHHMUGedJBIz9icwn1r59Y97Ppy2/8Ub14QbM4bJpUiVqe2H7zKtisfOu+/4qN
+         BV8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684419123; x=1687011123;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yZgWXPTe1ZG4Sw/b1mpfq3+D2E79rsdzVUg9Htd0C1I=;
-        b=M+AOeAjll1MPDSfijaz5CePIepiY+A0JxxwpjubhOoP0kZl/NzxKuGEIlz4WKaC4/Z
-         284Bdk3NRgHLpUCsIM0ScQfilfGtMXwUydUE4CPVw7eVSU4XQfWYhzzmWnWRaDOCq6XU
-         6H7QU9txLgNb0b5ME/LBzb8zMHCEUg2zqSNUDc6pPwOq3AT6f0zuPQg7xJvlXamju9Pb
-         JStU0qSHZCpBMHfZ3vpGn5fYtm/GFeaolB+88H5OuyjKFgA0g3VcVEyJlljZfbYGBczA
-         TfsG4/Q47Uw5uX2uVoJAtI9YdjEzTyqJ9klOsjy7tkSBEyNYH1/59ZqxV+fkXBhLNteu
-         sSwQ==
-X-Gm-Message-State: AC+VfDwiQgRi7OiWX6FXdhkBYz9bQGJmrE9tysK6ksxf5K54TnDOOwj2
-	KmFq9jO6TE6njc5xp5vWsoO6DnfOCswPoMm8QKU=
-X-Google-Smtp-Source: ACHHUZ7Wg8xb1JH8XfeIc9gUmaEmZ1QQYbmXEsgYarNjqa8kvVLA8Lmw4xYSh9xP4U0j3obrgMp+czHwKDBtVv/H2Us=
-X-Received: by 2002:a25:460a:0:b0:b9a:6cb6:b942 with SMTP id
- t10-20020a25460a000000b00b9a6cb6b942mr1368503yba.54.1684419122859; Thu, 18
- May 2023 07:12:02 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684419715; x=1687011715;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GoYD1HeZqxzJnofeUMnEjY7LdMkmo1HYZ+uW66yc8zI=;
+        b=GOdJRnmzjUAinR5h9YG83QetHXuPxhiPaxEd8ImRzrxhjKdbFH4UBOPURJGSeKdg3Q
+         YhpAFFHY+Auah/fEZR5Jb6lr8oMuPK8Q4Q0/6nV+bj0wkhlPJXy8vakHcYQV0irDaDhN
+         abHW3m+ccovr05Bnb3GHYQv7YU8JRIhUeMMeBzi8/jlyOidQ5V1wcvR1qj+CxB0nvKdF
+         SdiZa8TfNrXnHQ33j4W5LiBRehL2hzHgtoliEwX5z1k+UBlv6dYd5ip7wYwPPZRj+fZD
+         jYnAhIGupAwHtNfKGBR+iqvtP/TTcq5TmXSTdr6dV1V9Zu3U6Coe3tgbR0xbqddsJsRL
+         ttjw==
+X-Gm-Message-State: AC+VfDyQ+d4WW8kYwDNTdjUt3JRmyeAG7HJcFlNHJxNyaDIaVMRPKIEj
+	GYY/dw/rvYQyfyaJ0r+lQLxaxw==
+X-Google-Smtp-Source: ACHHUZ6iHTnxiJx111Ry47T9aO/W4rthzy+KJgvfxS5NqxK/2UvO39aB1FU69KaBi5+TDxXx0wSDzQ==
+X-Received: by 2002:a05:6402:516d:b0:50b:c971:c14b with SMTP id d13-20020a056402516d00b0050bc971c14bmr5546801ede.11.1684419715413;
+        Thu, 18 May 2023 07:21:55 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:7e24:6d1b:6bf:4249? ([2a02:810d:15c0:828:7e24:6d1b:6bf:4249])
+        by smtp.gmail.com with ESMTPSA id l16-20020aa7d950000000b0050bc9ffed66sm662448eds.53.2023.05.18.07.21.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 May 2023 07:21:54 -0700 (PDT)
+Message-ID: <5e0276b7-2c16-13a1-29d3-1936ffc52d23@linaro.org>
+Date: Thu, 18 May 2023 16:21:53 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230517124201.441634-1-imagedong@tencent.com>
- <20230517124201.441634-4-imagedong@tencent.com> <CANn89iKLf=V664AsUYC52h_q-xjEq9xC3KqTq8q+t262T91qVQ@mail.gmail.com>
- <CADxym3a0gmzmD3Vwu_shoJnAHm-xjD5tJRuKwTvAXnVk_H55AA@mail.gmail.com> <CADVnQynZ67511+cKF=hyiaLx5-fqPGGmpyJ-5Lk6ge-ivmAf-w@mail.gmail.com>
-In-Reply-To: <CADVnQynZ67511+cKF=hyiaLx5-fqPGGmpyJ-5Lk6ge-ivmAf-w@mail.gmail.com>
-From: Menglong Dong <menglong8.dong@gmail.com>
-Date: Thu, 18 May 2023 22:11:51 +0800
-Message-ID: <CADxym3ZiyYK7Vyz05qLv8jOPmNZXXepCsTbZxdkhSQxRx0cdSA@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/3] net: tcp: handle window shrink properly
-To: Neal Cardwell <ncardwell@google.com>
-Cc: Eric Dumazet <edumazet@google.com>, kuba@kernel.org, davem@davemloft.net, 
-	pabeni@redhat.com, dsahern@kernel.org, netdev@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Menglong Dong <imagedong@tencent.com>, 
-	Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net-next v4 1/2] dt-bindings: arm: mediatek: add
+ mediatek,boottrap binding
+Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To: Daniel Golle <daniel@makrotopia.org>, Marek Vasut <marex@denx.de>
+Cc: Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
+ netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiner Kallweit <hkallweit1@gmail.com>,
+ Russell King <linux@armlinux.org.uk>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Qingfang Deng <dqfext@gmail.com>, SkyLake Huang
+ <SkyLake.Huang@mediatek.com>, Simon Horman <simon.horman@corigine.com>
+References: <cover.1683813687.git.daniel@makrotopia.org>
+ <f2d447d8b836cf9584762465a784185e8fcf651f.1683813687.git.daniel@makrotopia.org>
+ <55f8ac31-d81d-43de-8877-6a7fac2d37b4@lunn.ch>
+ <7e8d0945-dfa9-7f61-b075-679e8a89ded9@linaro.org>
+ <ZGWRHeE3CXeAnQ-5@makrotopia.org>
+ <2048ed2a-ae6f-b425-38e4-4ba973e04398@linaro.org>
+In-Reply-To: <2048ed2a-ae6f-b425-38e4-4ba973e04398@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 18, 2023 at 9:40=E2=80=AFPM Neal Cardwell <ncardwell@google.com=
-> wrote:
->
-> On Wed, May 17, 2023 at 10:35=E2=80=AFPM Menglong Dong <menglong8.dong@gm=
-ail.com> wrote:
-> >
-> > On Wed, May 17, 2023 at 10:47=E2=80=AFPM Eric Dumazet <edumazet@google.=
-com> wrote:
-> > >
-> > > On Wed, May 17, 2023 at 2:42=E2=80=AFPM <menglong8.dong@gmail.com> wr=
-ote:
-> > > >
-> > > > From: Menglong Dong <imagedong@tencent.com>
-> > > >
-> > > > Window shrink is not allowed and also not handled for now, but it's
-> > > > needed in some case.
-> > > >
-> > > > In the origin logic, 0 probe is triggered only when there is no any
-> > > > data in the retrans queue and the receive window can't hold the dat=
-a
-> > > > of the 1th packet in the send queue.
-> > > >
-> > > > Now, let's change it and trigger the 0 probe in such cases:
-> > > >
-> > > > - if the retrans queue has data and the 1th packet in it is not wit=
-hin
-> > > > the receive window
-> > > > - no data in the retrans queue and the 1th packet in the send queue=
- is
-> > > > out of the end of the receive window
-> > >
-> > > Sorry, I do not understand.
-> > >
-> > > Please provide packetdrill tests for new behavior like that.
-> > >
-> >
-> > Yes. The problem can be reproduced easily.
-> >
-> > 1. choose a server machine, decrease it's tcp_mem with:
-> >     echo '1024 1500 2048' > /proc/sys/net/ipv4/tcp_mem
-> > 2. call listen() and accept() on a port, such as 8888. We call
-> >     accept() looply and without call recv() to make the data stay
-> >     in the receive queue.
-> > 3. choose a client machine, and create 100 TCP connection
-> >     to the 8888 port of the server. Then, every connection sends
-> >     data about 1M.
-> > 4. we can see that some of the connection enter the 0-probe
-> >     state, but some of them keep retrans again and again. As
-> >     the server is up to the tcp_mem[2] and skb is dropped before
-> >     the recv_buf full and the connection enter 0-probe state.
-> >     Finially, some of these connection will timeout and break.
-> >
-> > With this series, all the 100 connections will enter 0-probe
-> > status and connection break won't happen. And the data
-> > trans will recover if we increase tcp_mem or call 'recv()'
-> > on the sockets in the server.
-> >
-> > > Also, such fundamental change would need IETF discussion first.
-> > > We do not want linux to cause network collapses just because billions
-> > > of devices send more zero probes.
-> >
-> > I think it maybe a good idea to make the connection enter
-> > 0-probe, rather than drop the skb silently. What 0-probe
-> > meaning is to wait for space available when the buffer of the
-> > receive queue is full. And maybe we can also use 0-probe
-> > when the "buffer" of "TCP protocol" (which means tcp_mem)
-> > is full?
-> >
-> > Am I right?
-> >
-> > Thanks!
-> > Menglong Dong
->
-> Thanks for describing the scenario in more detail. (Some kind of
-> packetdrill script or other program to reproduce this issue would be
-> nice, too, as Eric noted.)
->
-> You mention in step (4.) above that some of the connections keep
-> retransmitting again and again. Are those connections receiving any
-> ACKs in response to their retransmissions? Perhaps they are receiving
-> dupacks?
+On 18/05/2023 09:50, Krzysztof Kozlowski wrote:
+> On 18/05/2023 04:44, Daniel Golle wrote:
+>> On Fri, May 12, 2023 at 08:54:36AM +0200, Krzysztof Kozlowski wrote:
+>>> On 11/05/2023 17:53, Andrew Lunn wrote:
+>>>> On Thu, May 11, 2023 at 04:10:20PM +0200, Daniel Golle wrote:
+>>>>> The boottrap is used to read implementation details from the SoC, such
+>>>>> as the polarity of LED pins. Add bindings for it as we are going to use
+>>>>> it for the LEDs connected to MediaTek built-in 1GE PHYs.
+>>>>
+>>>> What exactly is it? Fuses? Is it memory mapped, or does it need a
+>>>> driver to access it? How is it shared between its different users?
+>>>
+>>> Yes, looks like some efuse/OTP/nvmem, so it should probably use nvmem
+>>> bindings and do not look different than other in such class.
+>>
+>> I've asked MediaTek and they have replied with an elaborate definition.
+>> Summary:
+>> The boottrap is a single 32-bit wide register at 0x1001f6f0 which can
+>> be used to read back the bias of bootstrap pins from the SoC as follows:
+> 
+> Is it within some other address space? Register address suggests that.
+> 
+> In such case you should not create a device in the middle of other
+> device's address space. You punched a hole in uniform address space
+> which prevents creating that other device for entire space.
+> 
+>>
+>> * bit[8]: Reference CLK source && gphy port0's LED
+>> If bit[8] == 0:
+>> - Reference clock source is XTRL && gphy port0's LED is pulled low on board side
+>> If bit[8] == 1:
+>> - Reference clock source is Oscillator && gphy port0's LED is pulled high on board side
+>>
+>> * bit[9]: DDR type && gphy port1's LED
+>> If bit[9] == 0:
+>> - DDR type is DDRx16b x2 && gphy port1's LED is pulled low on board side
+>> If bit[9] == 1:
+>> - DDR type is DDRx16b x1 && gphy port1's LED is pulled high on board side
+>>
+>> * bit[10]: gphy port2's LED
+>> If bit[10] == 0:
+>> - phy port2's LED is pulled low on board side
+>> If bit[10] == 1:
+>> - gphy port2's LED is pulled high on board side
+>>
+>> * bit[11]: gphy port3's LED
+>> If bit[11] == 0:
+>> - phy port3's LED is pulled low on board side
+>> If bit[11] == 1:
+>> - gphy port3's LED is pulled high on board side
+>>
+>> If bit[10] == 0 && bit[11] == 0:
+>> - BROM will boot from SPIM-NOR
+>> If bit[10] == 1 && bit[11] == 0:
+>> - BROM will boot from SPIM-NAND
+>> If bit[10] == 0 && bit[11] == 1:
+>> - BROM will boot from eMMC
+>> If bit[10] == 1 && bit[11] == 1:
+>> - BROM will boot from SNFI-NAND
+>>
+>> The boottrap is present in many MediaTek SoCs, however, support for
+>> reading it is only really needed on MT7988 due to the dual-use of some
+>> bootstrap pins as PHY LEDs.
+>>
+>> We could say this is some kind of read-only 'syscon' node (and hence
+>> use regmap driver to access it), that would make it easy but it's not
+>> very accurate. Also efuse/OTP/nvmem doesn't seem accurate, though in
+>> terms of software it could work just as well.
+>>
+>> I will update DT bindings to contain the gained insights.
+> 
+> If this is separate address space with one register, then boottrap
+> sounds ok. If you have multiple read only registers with fused values,
+> then this is efuse region, so something like nvidia,tegra20-efuse.
 
-Actually, these packets are dropped without any reply, even dupacks.
-skb will be dropped directly when tcp_try_rmem_schedule()
-fails in tcp_data_queue(). That's reasonable, as it's
-useless to reply a ack to the sender, which will cause the sender
-fast retrans the packet, because we are out of memory now, and
-retrans can't solve the problem.
+Please align together on some common solution. It looks like you are
+solving the same problem:
 
-> If so, then perhaps we could solve this problem without
-> depending on a violation of the TCP spec (which says the receive
-> window should not be retracted) in the following way: when a data
-> sender suffers a retransmission timeout, and retransmits the first
-> unacknowledged segment, and receives a dupack for SND.UNA instead of
-> an ACK covering the RTO-retransmitted segment, then the data sender
-> should estimate that the receiver doesn't have enough memory to buffer
-> the retransmitted packet. In that case, the data sender should enter
-> the 0-probe state and repeatedly set the ICSK_TIME_PROBE0 timer to
-> call tcp_probe_timer().
->
-> Basically we could try to enhance the sender-side logic to try to
-> distinguish between two kinds of problems:
->
-> (a) Repeated data packet loss caused by congestion, routing problems,
-> or connectivity problems. In this case, the data sender uses
-> ICSK_TIME_RETRANS and tcp_retransmit_timer(), and backs off and only
-> retries sysctl_tcp_retries2 times before timing out the connection
->
-> (b) A receiver that is repeatedly sending dupacks but not ACKing
-> retransmitted data because it doesn't have any memory. In this case,
-> the data sender uses ICSK_TIME_PROBE0 and tcp_probe_timer(), and backs
-> off but keeps retrying as long as the data sender receives ACKs.
->
+https://lore.kernel.org/all/?q=%22nvmem%3A+syscon%3A+Add+syscon+backed+nvmem+driver%22
 
-I'm not sure if this is an ideal method, as it may be not rigorous
-to conclude that the receiver is oom with dupacks. A packet can
-loss can also cause multi dupacks.
+Best regards,
+Krzysztof
 
-Thanks!
-Menglong Dong
-
-> AFAICT that would be another way to reach the happy state you mention:
-> "all the 100 connections will enter 0-probe status and connection
-> break won't happen", and we could reach that state without violating
-> the TCP protocol spec and without requiring changes on the receiver
-> side (so that this fix could help in scenarios where the
-> memory-constrained receiver is an older stack without special new
-> behavior).
->
-> Eric, Yuchung, Menglong: do you think something like that would work?
->
-> neal
 
