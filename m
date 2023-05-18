@@ -1,196 +1,224 @@
-Return-Path: <netdev+bounces-3576-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3577-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 67A72707E33
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:36:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3ADAA707E35
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:37:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1D1E528193B
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:36:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E9FA9281886
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:37:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 464AF2A9E3;
-	Thu, 18 May 2023 10:36:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10B9F2A9E8;
+	Thu, 18 May 2023 10:37:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AF402A9D4
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 10:36:31 +0000 (UTC)
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9FB1FC2
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 03:36:29 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d9443c01a7336-1ae52ce3205so12652835ad.3
-        for <netdev@vger.kernel.org>; Thu, 18 May 2023 03:36:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1684406189; x=1686998189;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=oVNsmPO4ZO4eauRTG2CxTU+aIJJxIOamwCCiKvVxKhw=;
-        b=S+80RwRGvEdyXbXS2pbFMMrza2iW1maxy9o+DdeNus/8PCr5+4SDrXV34ipSLISFEX
-         fiicFxtI7VUE4aHvKG/kr5gO+WKaoX8j8ohAvqaSS6SlJ+xrtM/ahRLxNo55gOLrNGe6
-         4MVDf35exhZ7HTxchw0ZdQ1RG3krz4kL14CHk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684406189; x=1686998189;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oVNsmPO4ZO4eauRTG2CxTU+aIJJxIOamwCCiKvVxKhw=;
-        b=IrYPzT56yxr20jkn6WFGd5DSOFjeji8zzCaMpMVQ6nlEvs/lyBfW7WojWXH2V0AYqa
-         v5J0ExFVasQ6CchBBIS3vJLIwWd//86zoQEyhHj+pcmjGZmkhHeroQXpNyPq5lllP46B
-         Glv6tkvM6EmK3axyw7JaezzvdKCoLh2LSqk7OVDm3BmWha4qbQBk1uHkhEnl/GV3Mhvk
-         1h6gvJ/2+U5PjwPCVokc/95QcWEatEDKuAlfawg86rg/ByLEwj+5sE8WvvJtzhbTbwOk
-         NWSo7XyE2crAIJKfn3CjnK2xcYtAPTJ7szezm2jsiQZfN9v61nt9n7TqKZCEuw1YRwDp
-         iwOQ==
-X-Gm-Message-State: AC+VfDxPY6kzs/JgVMvN4SNYtX+73ZlWUZEslZdv24zpoRLj5nZa43yd
-	oV2ooOMiOFjU+Z7LTtARI6L66Y2Sz9oQVI5EYtzJmw==
-X-Google-Smtp-Source: ACHHUZ4+U7UM98xR8compfDgcZFQ5vohAqB9buIIqiMeoFiIO+vRbsjxHvweKmcU3XtEU6cuth51fImPYxh9I62zkyg=
-X-Received: by 2002:a17:902:db07:b0:1ae:89a:9e with SMTP id
- m7-20020a170902db0700b001ae089a009emr2103737plx.61.1684406188648; Thu, 18 May
- 2023 03:36:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01CC411C95
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 10:37:27 +0000 (UTC)
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64674EC
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 03:37:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1684406216; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=den1gAErOd2LDH5kLGGIBri2/0Onz65nMKfPha82ETstQmcN3LGCZzftEvpQsHcoTOzahbPW/B72gbB1eg3udEpSnZiyKtMxmm6Er28bLgadFkJv5z9lEuZ9YsL295wLuF8XoGgGfNFsLl/X8uDnwqwP7DM/b8YHqmy8JwxKB/c=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1684406216; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=CFvHjSylmPnL7H52NzUujvp7/2U7c7lsjqvmZbfy+3I=; 
+	b=FBc75W/prE94EaygAiLKzjGW2TanrIyu1ei02+zPTvK+TxNfNozLUH8ZnjIrfnlBe8ClKGzjHBjA9XNLg6w+Vn+3JN/mMfZNtTMortv32BXKmWIg+vzsq7J2VIxCie+xjl4QRAW84ZeW0QRVNTlUCXeTmdVTSPLIzoxTbL26OQE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=arinc9.com;
+	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+	dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1684406216;
+	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=CFvHjSylmPnL7H52NzUujvp7/2U7c7lsjqvmZbfy+3I=;
+	b=E4QJbN7gBAzzx+sZwc76YH9+zGSI/sAs35836XO3oJ3Ttqn9L4XhC4a+C2USVs/A
+	v4Cd8Osb2vt8EMjbZ/tat0t7FfKUVbZzUwKmsdRJqufId5UFas+bid+B2f5IgQ8XaFW
+	inBacHKAYaLlx15r0hwReXuR9VGSfZBdKsvlcAXs=
+Received: from [10.10.10.122] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+	with SMTPS id 1684406214421333.573235803232; Thu, 18 May 2023 03:36:54 -0700 (PDT)
+Message-ID: <d2236430-0303-b74c-2b35-99bef4ac30a1@arinc9.com>
+Date: Thu, 18 May 2023 13:36:42 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230518072657.1.If9539da710217ed92e764cc0ba0f3d2d246a1aee@changeid>
-In-Reply-To: <20230518072657.1.If9539da710217ed92e764cc0ba0f3d2d246a1aee@changeid>
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date: Thu, 18 May 2023 16:06:16 +0530
-Message-ID: <CALs4sv2+Uu=Bry=B3FYzWdNrHjGWDvPCDhTFcNERVpWTjpmEyA@mail.gmail.com>
-Subject: Re: [PATCH] igb: Fix igb_down hung on surprise removal
-To: Ying Hsu <yinghsu@chromium.org>
-Cc: netdev@vger.kernel.org, grundler@chromium.org, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Jesse Brandeburg <jesse.brandeburg@intel.com>, 
-	Paolo Abeni <pabeni@redhat.com>, Tony Nguyen <anthony.l.nguyen@intel.com>, 
-	intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="0000000000008f828c05fbf560c9"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: Choose a default DSA CPU port
+Content-Language: en-US
+To: Vladimir Oltean <olteanv@gmail.com>
+Cc: Frank Wunderlich <frank-w@public-files.de>, Felix Fietkau <nbd@nbd.name>,
+ netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
+ Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
+ John Crispin <john@phrozen.org>, Mark Lee <Mark-MC.Lee@mediatek.com>,
+ Lorenzo Bianconi <lorenzo@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Landen Chao <Landen.Chao@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
+ DENG Qingfang <dqfext@gmail.com>, mithat.guner@xeront.com
+References: <trinity-4ef08653-c2e7-4da8-8572-4081dca0e2f7-1677271483935@3c-app-gmx-bap70>
+ <20230224210852.np3kduoqhrbzuqg3@skbuf>
+ <trinity-5a3fbd85-79ce-4021-957f-aea9617bb320-1677333013552@3c-app-gmx-bap06>
+ <f9fcf74b-7e30-9b51-776b-6a3537236bf6@arinc9.com>
+ <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com>
+ <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15>
+ <20230228115846.4r2wuyhsccmrpdfh@skbuf>
+ <91c90cc5-7971-8a95-fe64-b6e5f53a8246@arinc9.com>
+ <20230517161028.6xmt4dgxtb4optm6@skbuf>
+ <e5f02399-5697-52f8-9388-00fa679bb058@arinc9.com>
+ <20230517161657.a6ej5z53qicqe5aj@skbuf>
+From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20230517161657.a6ej5z53qicqe5aj@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---0000000000008f828c05fbf560c9
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 17.05.2023 19:16, Vladimir Oltean wrote:
+> On Wed, May 17, 2023 at 07:14:01PM +0300, Arınç ÜNAL wrote:
+>> On 17.05.2023 19:10, Vladimir Oltean wrote:
+>>> On Tue, May 16, 2023 at 10:29:27PM +0300, Arınç ÜNAL wrote:
+>>>> For MT7530, the port to trap the frames to is fixed since CPU_PORT is only
+>>>> of 3 bits so only one CPU port can be defined. This means that, in case of
+>>>> multiple ports used as CPU ports, any frames set for trapping to CPU port
+>>>> will be trapped to the numerically greatest CPU port.
+>>>
+>>> *that is up
+>>
+>> Yes, the DSA conduit interface of the CPU port must be up. Otherwise, these
+>> frames won't appear anywhere. I should mention this on my patch, thanks.
+> 
+> Well, mentioning it in the patch or in a comment is likely not going to
+> be enough. You likely have to implement ds->ops->master_state_change()
+> and update the MT7530_MFC register to a value that is always valid when
+> the conduit interfaces come and go.
 
-On Thu, May 18, 2023 at 12:58=E2=80=AFPM Ying Hsu <yinghsu@chromium.org> wr=
-ote:
->
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethe=
-rnet/intel/igb/igb_main.c
-> index 58872a4c2540..a8b217368ca1 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -9581,6 +9581,11 @@ static pci_ers_result_t igb_io_error_detected(stru=
-ct pci_dev *pdev,
->         struct net_device *netdev =3D pci_get_drvdata(pdev);
->         struct igb_adapter *adapter =3D netdev_priv(netdev);
->
-> +       if (state =3D=3D pci_channel_io_normal) {
-> +               dev_warn(&pdev->dev, "Non-correctable non-fatal error rep=
-orted.\n");
-> +               return PCI_ERS_RESULT_CAN_RECOVER;
-> +       }
-> +
+Thanks for pointing this out. I have done this below and confirm frames are
+trapped as expected.
 
-This code may be good to have. But not sure if this should be the fix
-for igb_down() synchronization.
-Intel guys may comment.
+The frames won't necessarily be trapped to the CPU port the user port is
+connected to. This operation is only there to make sure the trapped frames
+always reach the CPU.
 
->         netif_device_detach(netdev);
->
->         if (state =3D=3D pci_channel_io_perm_failure)
-> --
-> 2.40.1.606.ga4b1b128d6-goog
->
->
+I don't (know how to) check for other conduits being up when changing the
+trap port. So if a conduit is set down which results in both conduits being
+down, the trap port will still be changed to the other port which is
+unnecessary but it doesn't break anything.
 
---0000000000008f828c05fbf560c9
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+Looking forward to your comments.
 
-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
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJjBSaXAC1r6dU5Ri9dQRNBZpBUmukbO
-W7ogh6cxwQ3NMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDUx
-ODEwMzYyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCXlgNyXkWT4YAbsCdLIY8NPJgVf/I2RUba6li7aR1Qu47mufv9
-ME6KRDGHOLdxfg+HDGBD15vM5yOVqxsLMQUeGB7SDZzI4nOThxqo99fi6rXAdO54B456JyCGeeQG
-QyHAlI8UTAurvzWjya2dJq1tHFTF1gjdpP9wQ7kzJV+eS3+/bvAMQW3FenCK3suw0Eb1WoKhQTXP
-pbxy8J7Wwa9OLGCEf0jyWXACMNitRAVNAKqnHo/Lj/IJ20faatsg/KpA3h6xeIpenXiOE14Qanm3
-9b92/U6N6hC+oMUhZ/xA1Xo3UoJVDGNR41oO+zjI3PjS/Czg3iJnl7V1i1UocPcP
---0000000000008f828c05fbf560c9--
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index b5c8fdd381e5..55c11633f96f 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -961,11 +961,6 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+  	mt7530_set(priv, MT753X_MFC, MT753X_BC_FFP(BIT(port)) |
+  		   MT753X_UNM_FFP(BIT(port)) | MT753X_UNU_FFP(BIT(port)));
+  
+-	/* Set CPU port number */
+-	if (priv->id == ID_MT7621)
+-		mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_MASK, MT7530_CPU_EN |
+-			   MT7530_CPU_PORT(port));
+-
+  	/* Add the CPU port to the CPU port bitmap for MT7531 and switch on
+  	 * MT7988 SoC. Any frames set for trapping to CPU port will be trapped
+  	 * to the CPU port the user port is connected to.
+@@ -2258,6 +2253,10 @@ mt7530_setup(struct dsa_switch *ds)
+  			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+  	}
+  
++	/* Trap BPDUs to the CPU port */
++	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
++		   MT753X_BPDU_CPU_ONLY);
++
+  	/* Setup VLAN ID 0 for VLAN-unaware bridges */
+  	ret = mt7530_setup_vlan0(priv);
+  	if (ret)
+@@ -2886,6 +2885,50 @@ static const struct phylink_pcs_ops mt7530_pcs_ops = {
+  	.pcs_an_restart = mt7530_pcs_an_restart,
+  };
+  
++static void
++mt753x_master_state_change(struct dsa_switch *ds,
++			   const struct net_device *master,
++			   bool operational)
++{
++	struct mt7530_priv *priv = ds->priv;
++	struct dsa_port *cpu_dp = master->dsa_ptr;
++	unsigned int trap_port;
++
++	/* Set the CPU port to trap frames to for MT7530. There can be only one
++	 * CPU port due to MT7530_CPU_PORT having only 3 bits. Any frames set
++	 * for trapping to CPU port will be trapped to the CPU port connected to
++	 * the most recently set up DSA conduit. If the most recently set up DSA
++	 * conduit is set down, frames will be trapped to the CPU port connected
++	 * to the other DSA conduit.
++	 */
++	if (priv->id == ID_MT7530 || priv->id == ID_MT7621) {
++		trap_port = (mt7530_read(priv, MT753X_MFC) & MT7530_CPU_PORT_MASK) >> 4;
++		dev_info(priv->dev, "trap_port is %d\n", trap_port);
++		if (operational) {
++			dev_info(priv->dev, "the conduit for cpu port %d is up\n", cpu_dp->index);
++
++			/* This check will be unnecessary if we find a way to
++			 * not change the trap port to the other port when a
++			 * conduit is set down which results in both conduits
++			 * being down.
++			 */
++			if (!(cpu_dp->index == trap_port)) {
++				dev_info(priv->dev, "trap to cpu port %d\n", cpu_dp->index);
++				mt7530_set(priv, MT753X_MFC, MT7530_CPU_EN);
++				mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_PORT_MASK, MT7530_CPU_PORT(cpu_dp->index));
++			}
++		} else {
++			if (cpu_dp->index == 5 && trap_port == 5) {
++				dev_info(priv->dev, "the conduit for cpu port 5 is down, trap frames to port 6\n");
++				mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_PORT_MASK, MT7530_CPU_PORT(6));
++			} else if (cpu_dp->index == 6 && trap_port == 6) {
++				dev_info(priv->dev, "the conduit for cpu port 6 is down, trap frames to port 5\n");
++				mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_PORT_MASK, MT7530_CPU_PORT(5));
++			}
++		}
++	}
++}
++
+  static int
+  mt753x_setup(struct dsa_switch *ds)
+  {
+@@ -2999,6 +3042,7 @@ const struct dsa_switch_ops mt7530_switch_ops = {
+  	.phylink_mac_link_up	= mt753x_phylink_mac_link_up,
+  	.get_mac_eee		= mt753x_get_mac_eee,
+  	.set_mac_eee		= mt753x_set_mac_eee,
++	.master_state_change	= mt753x_master_state_change,
+  };
+  EXPORT_SYMBOL_GPL(mt7530_switch_ops);
+  
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index fd2a2f726b8a..2abd3c5ce05a 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -41,8 +41,8 @@ enum mt753x_id {
+  #define  MT753X_UNU_FFP(x)		(((x) & 0xff) << 8)
+  #define  MT753X_UNU_FFP_MASK		MT753X_UNU_FFP(~0)
+  #define  MT7530_CPU_EN			BIT(7)
+-#define  MT7530_CPU_PORT(x)		((x) << 4)
+-#define  MT7530_CPU_MASK		(0xf << 4)
++#define  MT7530_CPU_PORT(x)		(((x) & 0x7) << 4)
++#define  MT7530_CPU_PORT_MASK		MT7530_CPU_PORT(~0)
+  #define  MT7530_MIRROR_EN		BIT(3)
+  #define  MT7530_MIRROR_PORT(x)		((x) & 0x7)
+  #define  MT7530_MIRROR_MASK		0x7
+
+Arınç
 
