@@ -1,114 +1,106 @@
-Return-Path: <netdev+bounces-3537-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3540-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F3457707CC7
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:27:39 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8E6E3707CE1
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:30:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 809431C20F54
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 09:27:36 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7C9CF1C21075
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 09:30:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58AAA11C91;
-	Thu, 18 May 2023 09:27:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9BEAD11CAD;
+	Thu, 18 May 2023 09:29:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A992AD4B
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 09:27:36 +0000 (UTC)
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9869211E;
-	Thu, 18 May 2023 02:27:34 -0700 (PDT)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34I5BRmE023462;
-	Thu, 18 May 2023 09:27:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=J6ZRgZCTa3hC+H6Maw8K9aW1d2MfIdeGlfQUcJff9S4=;
- b=jjGwKYEspycv18WtvmUKKBtPj39h2SjqrecC/wWbwRoBlh9oZEEZdc8jBBdjV1OubakA
- nTGoji2nk9BowR+4YlSBt7EfSPrUZj4fe+oQcU7jiKzDzN47/t1BDwbYTCBhR51pQeNf
- tpDUJdn2yAU42bTUBvR9TsYtuFyW8yX6gtJ1SXPhWH13ZPjTYO8K7X6O8wo0b1fl1RmE
- ppoTqZ8Tfy68FxTI4SIKCSmUg9Kby/enBPH8BBzHOryv7S6ldzJ75km0V/HAcngEhWav
- GGhh4gBQBh3ddlcmR7GHa4fgMl99Jm1QHTCl51veM7szt4r/oaOpkAN2KNa+lvyhHZwu qg== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3qmxyp299j-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 18 May 2023 09:27:32 +0000
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 34I9RUwU022600
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 18 May 2023 09:27:30 GMT
-Received: from tjiang-gv.qualcomm.com (10.80.80.8) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.42; Thu, 18 May 2023 02:27:28 -0700
-From: Tim Jiang <quic_tjiang@quicinc.com>
-To: <krzk@kernel.org>
-CC: <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_bgodavar@quicinc.com>,
-        <quic_hemantg@quicinc.com>, Tim Jiang <quic_tjiang@quicinc.com>
-Subject: [PATCH v2] dt-bindings: net: Add QCA2066 Bluetooth
-Date: Thu, 18 May 2023 17:27:19 +0800
-Message-ID: <20230518092719.11308-1-quic_tjiang@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D8C511C9C
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 09:29:30 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A98C7C7
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 02:29:28 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1pzZwj-00062t-RG; Thu, 18 May 2023 11:29:17 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+	(envelope-from <ore@pengutronix.de>)
+	id 1pzZwh-0013Br-VZ; Thu, 18 May 2023 11:29:15 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+	(envelope-from <ore@pengutronix.de>)
+	id 1pzZwh-0046MK-0M; Thu, 18 May 2023 11:29:15 +0200
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: "David S. Miller" <davem@davemloft.net>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Eric Dumazet <edumazet@google.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	Woojung Huh <woojung.huh@microchip.com>,
+	Arun Ramadoss <arun.ramadoss@microchip.com>,
+	"Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+	kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org,
+	UNGLinuxDriver@microchip.com
+Subject: [PATCH net-next v3 0/2] Fine-Tune Flow Control and Speed Configurations in Microchip KSZ8xxx DSA Driver 
+Date: Thu, 18 May 2023 11:29:11 +0200
+Message-Id: <20230518092913.977705-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: yWV2T3sjvq0Wc8bnS2Y50T-9gZ7SXS3o
-X-Proofpoint-GUID: yWV2T3sjvq0Wc8bnS2Y50T-9gZ7SXS3o
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-18_07,2023-05-17_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=876
- priorityscore=1501 impostorscore=0 suspectscore=0 mlxscore=0 bulkscore=0
- adultscore=0 lowpriorityscore=0 spamscore=0 clxscore=1011 malwarescore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2304280000 definitions=main-2305180071
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add bindings for the QCA2066 chipset.
+changes v3:
+- remove half duplex flow control configuration
+- add comments
+- s/stram/stream
 
-Signed-off-by: Tim Jiang <quic_tjiang@quicinc.com>
----
- .../devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml   | 2 ++
- 1 file changed, 2 insertions(+)
+changes v2:
+- split the patch to upstrean and downstream part
+- add comments
+- fix downstream register offset
+- fix cpu configuration
 
-diff --git a/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml b/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
-index 68f78b90d23a..28296b6d35b2 100644
---- a/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
-+++ b/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
-@@ -16,6 +16,7 @@ description:
- properties:
-   compatible:
-     enum:
-+      - qcom,qca2066-bt
-       - qcom,qca6174-bt
-       - qcom,qca9377-bt
-       - qcom,wcn3990-bt
-@@ -95,6 +96,7 @@ allOf:
-         compatible:
-           contains:
-             enum:
-+              - qcom,qca2066-bt
-               - qcom,qca6174-bt
-     then:
-       required:
+This patch set focuses on enhancing the configurability of flow
+control, speed, and duplex settings in the Microchip KSZ8xxx DSA driver.
+
+The first patch allows more granular control over the CPU port's flow
+control, speed, and duplex settings. The second patch introduces a
+method for downstream port configurations, primarily concerning flow
+control based on duplex mode.
+
+Oleksij Rempel (2):
+  net: dsa: microchip: ksz8: Make flow control, speed, and duplex on CPU
+    port configurable
+  net: dsa: microchip: ksz8: Add function to configure downstream ports
+    for KSZ8xxx
+
+ drivers/net/dsa/microchip/ksz8.h       |   4 +
+ drivers/net/dsa/microchip/ksz8795.c    | 131 ++++++++++++++++++++++++-
+ drivers/net/dsa/microchip/ksz_common.c |   1 +
+ 3 files changed, 134 insertions(+), 2 deletions(-)
+
 -- 
-2.17.1
+2.39.2
 
 
