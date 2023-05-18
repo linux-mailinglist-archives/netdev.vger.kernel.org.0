@@ -1,217 +1,603 @@
-Return-Path: <netdev+bounces-3533-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3534-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9DAC0707C5C
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:51:21 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 537A9707C7C
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:09:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 434161C20D97
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 08:51:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 137232811D6
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 09:09:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBA27AD3C;
-	Thu, 18 May 2023 08:51:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C25A4AD44;
+	Thu, 18 May 2023 09:09:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A99BC2A9E2
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 08:51:17 +0000 (UTC)
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2072.outbound.protection.outlook.com [40.107.237.72])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A128C199F;
-	Thu, 18 May 2023 01:51:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LjxzljbS9syF1yy0FRDAgz5wS2KzUgK039xTeDJ6b5KZA66Mjfoybgvkkqwo1iK0PQE5cH+uZb7WbUY3F4/3blgtbvzxOMQcLRvk8D/GhzutVe1W2dJpdtK17hjDSZiArOVezXTneU+wx20Ji1ouMgSQs35xOrcjSJ+5s2uFNH1j9KFom2okrzkzr/y9BFf6c23YstyrAVOFDsz86HSFsQhB/vFpT6Cap428of/VcTq9fMimQRocKQH5FlFqyINmwEhqv7ejr88Nj9YDEwj4Nqn29LT86fpp3tFa7y+kjYTuRNNv5dblnmLvru8hWPYPJzqt92LWYfo9EG4HNwlHXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/oUNg29OTPM8EXNlejaHCFD94AfgekG6QdDA5ZNo6Ss=;
- b=i4lniio0TT1GoQ/fw1u65Z3LkkoTHkuNBomn7O3aoGZIhB3PQXhFoD4jhCBFpHeCspOcU7ulmtu2/+GKm5XMTvdEFmBm0mdSWOJj+o8J5QDn9YhM8XIFxSelBsfnKECE/n/0YbT4b40QCAQC+mrkh/jFMZkLxc2MN3IU8oyQ/OuL1Sz7ItHltKZuJODbAFVW/nEZTkkpQKJ+YXePATUJs3c7abf77/lpdrHaTt3qP+iD1UgcQvD1XJzXK2KGN6+Oru+9gL1aQYMCutsQ5lfOOQTLyCS9OnWijNreFV2wpQIVqAyldEQY1fI8iZpo/7gSq/jrEgL/D+5OhX/EHUs+6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/oUNg29OTPM8EXNlejaHCFD94AfgekG6QdDA5ZNo6Ss=;
- b=3ONp6kjRTBFzTsA99wjGIe8LTT/y/JI5SPOHZpDw9sCAcTerwgfbN93lUTcTrWJ3BtDV12e/AsrSaQKWtQ7NnQUFrfHxgm8FMReKS0clIH7jtaA71uwYmR5+DTMRT+TN5bFolmNbkC1yAtBXCe1ErAEOGnjG51EVn6yy1qOoa/w=
-Received: from MW5PR12MB5598.namprd12.prod.outlook.com (2603:10b6:303:193::11)
- by MN0PR12MB5762.namprd12.prod.outlook.com (2603:10b6:208:375::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.33; Thu, 18 May
- 2023 08:51:11 +0000
-Received: from MW5PR12MB5598.namprd12.prod.outlook.com
- ([fe80::8a8d:1887:c17e:4e0c]) by MW5PR12MB5598.namprd12.prod.outlook.com
- ([fe80::8a8d:1887:c17e:4e0c%6]) with mapi id 15.20.6411.017; Thu, 18 May 2023
- 08:51:10 +0000
-From: "Gaddam, Sarath Babu Naidu" <sarath.babu.naidu.gaddam@amd.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
-	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, "robh+dt@kernel.org"
-	<robh+dt@kernel.org>, "krzysztof.kozlowski+dt@linaro.org"
-	<krzysztof.kozlowski+dt@linaro.org>
-CC: "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "Simek, Michal"
-	<michal.simek@amd.com>, "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "Sarangi, Anirudha"
-	<anirudha.sarangi@amd.com>, "Katakam, Harini" <harini.katakam@amd.com>, "git
- (AMD-Xilinx)" <git@amd.com>
-Subject: RE: [PATCH net-next V3 1/3] dt-bindings: net: xilinx_axienet:
- Introduce dmaengine binding support
-Thread-Topic: [PATCH net-next V3 1/3] dt-bindings: net: xilinx_axienet:
- Introduce dmaengine binding support
-Thread-Index:
- AQHZgxyMhcxz4C0Hi06uaEd1rO/7na9TSJIAgAGnKOCAAT+aAIAIK2FAgAA8X4CAASz1sA==
-Date: Thu, 18 May 2023 08:51:10 +0000
-Message-ID:
- <MW5PR12MB559898F664A46944FD5CFC9B877F9@MW5PR12MB5598.namprd12.prod.outlook.com>
-References: <20230510085031.1116327-1-sarath.babu.naidu.gaddam@amd.com>
- <20230510085031.1116327-2-sarath.babu.naidu.gaddam@amd.com>
- <95f61847-2ec3-a4e0-d277-5d68836f66cf@linaro.org>
- <MW5PR12MB55986A4865DB56F7F024EA7687749@MW5PR12MB5598.namprd12.prod.outlook.com>
- <fe2989c2-2d90-286f-0492-2b07720afcf9@linaro.org>
- <MW5PR12MB55983A529A1F57A39C7A61B7877E9@MW5PR12MB5598.namprd12.prod.outlook.com>
- <d8af7985-49d7-021c-a51e-271d7b731971@linaro.org>
-In-Reply-To: <d8af7985-49d7-021c-a51e-271d7b731971@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MW5PR12MB5598:EE_|MN0PR12MB5762:EE_
-x-ms-office365-filtering-correlation-id: 024bdb38-9f51-477b-850c-08db577d0748
-x-ld-processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 5NI/NcsbU27sRPS/zpgiAwlHwFVvz/6HOH/M68C4T5xETwn/Y+wU9FN3BIBYdpmTi6hKzh7nKhisJkugb55Om7HtugyINpWrW+SxVQU90xFP+qDvRmE91IvvWPmuzalnOJYdn7W+Pf6TDQZbdRncHvPL3M3TrggRQE1A4kpohJGV3VBXsgkaGMzhkNOnMkV/TpMuNgCTgnBpwszwhw05plBBgfbpcFy6KsC3+JoW/O0h9ts8xRV17nvX6lPx9hxBa5sXq/0q050pZy4MweRBuFtL1GqZsbTcExw4K2d1/ULNCApw7eE9FST+nfpVvA2QWSgcfaZIecLqDGV5zWj6ZlkxdE3/kslzJWEYVkMMYdxQmwBtXuwN8hvbGTwCPQhj3pJ5ON4vZtJxlbJgruWRKhaYJZgvak3qNQYUtWbnodUo11G0zViHnuMZFf6171cOji7/QoFucwOKvLVBcBk5Acy6BeXZlIhZLBaZvrCKBCVWbHqvdJnTYNijMjfbO/XoAxMFJxEWj4DeYHleaPpybrKMzNpMzt26gk7JtbHUQjl5fvqaPc+4AbABAiyuftafp3o9t59kFyYh/03d/6B9IGjkxi+6K1tCNmQTqU03F3XqsmezfeSeJglheam2LZQb
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR12MB5598.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(396003)(346002)(39860400002)(366004)(451199021)(66446008)(66556008)(66946007)(76116006)(66476007)(478600001)(64756008)(4326008)(54906003)(316002)(110136005)(86362001)(33656002)(38070700005)(7696005)(83380400001)(9686003)(53546011)(6506007)(26005)(186003)(52536014)(5660300002)(2906002)(8936002)(7416002)(71200400001)(8676002)(55016003)(41300700001)(38100700002)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?ckNKZGRZS3ZTb1VMK1pwUVdQVnE5d1UvbzQ4MUZwTyt6WHJrZFY3QzdWcW8y?=
- =?utf-8?B?K0RqRTR2WmlPVk16QVM1VE1MWWNxMEtYTW9nWDhobFZ6KzUxUFV0ekovd1Vw?=
- =?utf-8?B?QkU2d3B2SlJ5aTQxWG9BdmhMNnFTekZDcmI1ZDNMWHpvbm9vdFFnQVA5bzY2?=
- =?utf-8?B?cDhKZ090Z1FyQWNqSVBOSVlnNUd4QTFnMHFvVE9qZHBpbkVKOEs0Wlc1RWpv?=
- =?utf-8?B?WlpNWDRRWllnMVc2bElPUmdIRm5QUmJjMytORStlbVE4Rnh4OVMxUVd1VEly?=
- =?utf-8?B?OFBKU0d0MDlvOHd4R1NBcmphbVluWjhhcUt2SmU2MTh2MWdvSjJ1bU80aUJZ?=
- =?utf-8?B?dUt1OXVvWm82aVA1TmRES1FjWnpBMGkxMDlEVGVkKzFScU5UL1F5WGdTUnpJ?=
- =?utf-8?B?QkdZUDhaQVVpUFZVZGMwVWFSTFhQam9aVmtZNTdZd2w2WFJ0V3IwSzB4WEI1?=
- =?utf-8?B?cmdFMWZDb0xNLzU2Q1lLcDk0aEJGbTVRSUZ3K0htN25HK2xtc0ZHVDc3bWZq?=
- =?utf-8?B?dmlwdFRsNDBIY0VxZ2N0WlFSb3FkbHBLdmsvUThtbndXM1NWZ1BpbUxCUFNC?=
- =?utf-8?B?dUlnWDdJTWxYbEZGWVJKanVITlVJVUVPNHFkdUdQTEhMcXZlbUtOQW5XV3hu?=
- =?utf-8?B?TFR0b0daaU4xZ2ZQdjlaU1prVE1HWTcydWtwUjFSYVhub0hWZ040SlNTUlJZ?=
- =?utf-8?B?ZnZJTFpudDR0UkNEaHlDSFE1bEhKeDlacHhYV2swakN2RFlnMC9hMjlLejc4?=
- =?utf-8?B?ZnQ5RVNlR214eGdkc1llYmRMVFo2VlJYZUJwTGlWenQrbUpsdmpiVE9TRUd5?=
- =?utf-8?B?Ty92ZVRqd243Tk1uQVU4ZjJicmh3NEQ4azB1U3FlalZTTTExQVlYMDU2bHlQ?=
- =?utf-8?B?WFBaWTMrVmJkUlBYNUI3MVFIVEF0WUdSUXVRMGR2czBTbkNxWWFTSWMzaTBJ?=
- =?utf-8?B?bitGblh2NEh4OTFzZG9LYlZ4SFFBRGNYNXBnWkNDSVJaU1BWSjRsK3JMR0RR?=
- =?utf-8?B?eWp6RnZqYTFpWkJBeFY2bkZuS0JmL2VvZE5vcXRlWlNjYkRUbWc5ZkRzNkNW?=
- =?utf-8?B?ZVFlWHFMc1RwMFpxZjdWZGoyT1lxaGx6WHRuNWxCYjFqWk1vaXpSZ2R0WWZz?=
- =?utf-8?B?UmYyaHFQcncxTVpRcjAyLzllS1FoNzFvZmpJTXYxTWFvVEJWb3lHSFZXRDVV?=
- =?utf-8?B?UFpZcmcyVExIZUpzR2lwUHBCT1o0TFhrZmkvRDJVTHdtaWd3U2xOU2t1L2Zu?=
- =?utf-8?B?SzUybFVQMHJjZzlwLy9hZDVwTC9mOEJ5aEJFdTdPcjZnQTBzZXd6RDdyY1g5?=
- =?utf-8?B?K3BhSGhydUlTdW5hYk1kRmNlUk1MdjFKODdiWEVlWldRbVAvZUZnOWxsY1ha?=
- =?utf-8?B?L2gxa0UySTVpdFppbldFVTZraHlndjV4SXpJMlkvNCtybUI1am5zV1ZaQ09G?=
- =?utf-8?B?a3Y0UVZOVzJKbnpTbHpURC90dDdmMEFac3VBWlFHSHM1SUdGdVZNV1N5Q2Vl?=
- =?utf-8?B?dzIrRTM5MGphdVB5RWR4SHB4bWhyR3Ayc3hRTzBVak4vM29oWWptUHNPNkNk?=
- =?utf-8?B?dzJUYXdlUEVQTWlucWpuQnQyVllnQWF0VUVhaW81ajRnakUyUm9icHZVenhB?=
- =?utf-8?B?eVBPeWsyaFpFOGJrc0pySW9JWGxYTXFJQVNRTmRsck5SODh5ZmtxTU8zbk1Y?=
- =?utf-8?B?L1RCdmd5UXVObFN2UjlZaEM2eE5wNnRxZndSQy9iaU9ubjU3dlJHcFZzamEy?=
- =?utf-8?B?dlJGaFhERGZlSjVqZ1RybmFDSjFQYW5BRDhxTFFuSE1IdTEvSjVBZVdqSzY2?=
- =?utf-8?B?NDZhNjdkNXVjdGJRSmVRd085U0JUWVZBcE5MZjRTbUVqM0RHR2lNTkowYWlu?=
- =?utf-8?B?Z3JwNE1RckFjRndLYjNadUFCZzNrSWozVFpIWkNnbDlDSEQ3TElQN2N2ci9S?=
- =?utf-8?B?V3B4TkxBSkpid1FsQ3p2c2FDd3pVaFkxZTNIbDBsa2owMFlxNkFnc2Fib3lo?=
- =?utf-8?B?ZEN0QXZwcERCemVQUE50bThyekNjNllzTUNBWEhwaXJQNXhRQzFJZDNJTEp2?=
- =?utf-8?B?REYvc2VwYnBvVVpXMklJSjVGM0tGTS84eFJtVFZHT0dkQ21MbVlKcHo0cCtG?=
- =?utf-8?Q?nTe8=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0B528BE8
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 09:09:16 +0000 (UTC)
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9A01FD8;
+	Thu, 18 May 2023 02:09:13 -0700 (PDT)
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-64a9335a8e7so13934107b3a.0;
+        Thu, 18 May 2023 02:09:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684400953; x=1686992953;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QXwpAXp8JxyXh5HdlW+s9q8xXEvBKKInORpAZEhgCKM=;
+        b=QxXZHBmtWcfFeFzzSyEhLN2/vl+VeszOeyz0jUfHKK2l66RhimONARV4vdzdPBryNG
+         c8mvitzm3Ilr1kZkaEGAnJ08DRBqJnFOMlrXxn75e26Gqh68ZiYbVSZfaHYbSiOgWkg9
+         4M/Ng/Jba+GVGv9J5s3ZkJq3tii+IppYrcRTKuSsVNcGzR9GeF+2qzf6ypA6ZLgL4S/0
+         urlZ102cbnJyy46tA4d31/Tm9iDavo9wxvh1Na7pO8qAl+bVvDyYGJEqH6709ahldc/Y
+         3kMnlsOyE1k8FlbQROGfEGsrtKd9V4b0/M4X7e8JB086zGRO0AdMzAVa8WMgkHQEolzX
+         Ki0w==
+X-Gm-Message-State: AC+VfDwzC/rffXgboXljH1PGTE+P4gZ74SJUDrJ6xFtq3RXRgTToUera
+	XGa0ktilEqiu/L+3dHSZsxjrh8T3xMguth8r/P3TO2rsEYY=
+X-Google-Smtp-Source: ACHHUZ5xWpVqdLgA4Do+c4S3cwr8GZd5ZuRqjdKB3oMZFOfXk9myZzQmYPtvE+eiw3uiYItJcBax5o7lhfWedzvjncQ=
+X-Received: by 2002:a17:902:d2ca:b0:1ae:8fa:cd4c with SMTP id
+ n10-20020a170902d2ca00b001ae08facd4cmr2112618plc.7.1684400952729; Thu, 18 May
+ 2023 02:09:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW5PR12MB5598.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 024bdb38-9f51-477b-850c-08db577d0748
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2023 08:51:10.7771
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YnAFmjOq1mAlFYmvDr8M7iZIZ67wgudiAFCzTOEYFxkTlUGNubmPOHgu7p68InrFIy6EHO+PL/+xpL2/aOB0zA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5762
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+References: <20230517192251.2405290-1-frank.jungclaus@esd.eu> <20230517192251.2405290-4-frank.jungclaus@esd.eu>
+In-Reply-To: <20230517192251.2405290-4-frank.jungclaus@esd.eu>
+From: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date: Thu, 18 May 2023 18:09:01 +0900
+Message-ID: <CAMZ6RqKdg5YBufa0C+ttzJvoG=9yuti-8AmthCi4jBbd08JEtw@mail.gmail.com>
+Subject: Re: [PATCH 3/6] can: esd_usb: Use consistent prefixes for macros
+To: Frank Jungclaus <frank.jungclaus@esd.eu>
+Cc: linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>, 
+	Wolfgang Grandegger <wg@grandegger.com>, =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>, 
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogS3J6eXN6dG9mIEtvemxv
-d3NraSA8a3J6eXN6dG9mLmtvemxvd3NraUBsaW5hcm8ub3JnPg0KPiBTZW50OiBXZWRuZXNkYXks
-IE1heSAxNywgMjAyMyA4OjE5IFBNDQo+IFRvOiBHYWRkYW0sIFNhcmF0aCBCYWJ1IE5haWR1DQo+
-IDxzYXJhdGguYmFidS5uYWlkdS5nYWRkYW1AYW1kLmNvbT47IGRhdmVtQGRhdmVtbG9mdC5uZXQ7
-DQo+IGVkdW1hemV0QGdvb2dsZS5jb207IGt1YmFAa2VybmVsLm9yZzsgcGFiZW5pQHJlZGhhdC5j
-b207DQo+IHJvYmgrZHRAa2VybmVsLm9yZzsga3J6eXN6dG9mLmtvemxvd3NraStkdEBsaW5hcm8u
-b3JnDQo+IENjOiBsaW51eEBhcm1saW51eC5vcmcudWs7IFNpbWVrLCBNaWNoYWwgPG1pY2hhbC5z
-aW1la0BhbWQuY29tPjsNCj4gUGFuZGV5LCBSYWRoZXkgU2h5YW0gPHJhZGhleS5zaHlhbS5wYW5k
-ZXlAYW1kLmNvbT47DQo+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5r
-ZXJuZWwub3JnOyBsaW51eC1hcm0tDQo+IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51
-eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBTYXJhbmdpLA0KPiBBbmlydWRoYSA8YW5pcnVkaGEu
-c2FyYW5naUBhbWQuY29tPjsgS2F0YWthbSwgSGFyaW5pDQo+IDxoYXJpbmkua2F0YWthbUBhbWQu
-Y29tPjsgZ2l0IChBTUQtWGlsaW54KSA8Z2l0QGFtZC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFU
-Q0ggbmV0LW5leHQgVjMgMS8zXSBkdC1iaW5kaW5nczogbmV0OiB4aWxpbnhfYXhpZW5ldDoNCj4g
-SW50cm9kdWNlIGRtYWVuZ2luZSBiaW5kaW5nIHN1cHBvcnQNCj4gDQo+IE9uIDE3LzA1LzIwMjMg
-MTQ6MDYsIEdhZGRhbSwgU2FyYXRoIEJhYnUgTmFpZHUgd3JvdGU6DQo+ID4+Pj4+ICsgIGRtYS1u
-YW1lczoNCj4gPj4+Pj4gKyAgICBpdGVtczoNCj4gPj4+Pj4gKyAgICAgIC0gY29uc3Q6IHR4X2No
-YW4wDQo+ID4+Pj4NCj4gPj4+PiB0eA0KPiA+Pj4+DQo+ID4+Pj4+ICsgICAgICAtIGNvbnN0OiBy
-eF9jaGFuMA0KPiA+Pj4+DQo+ID4+Pj4gcngNCj4gPj4+DQo+ID4+PiBXZSB3YW50IHRvIHN1cHBv
-cnQgbW9yZSBjaGFubmVscyBpbiB0aGUgZnV0dXJlLCBjdXJyZW50bHkgd2UNCj4gc3VwcG9ydA0K
-PiA+Pj4gQVhJIERNQSB3aGljaCBoYXMgb25seSBvbmUgdHggYW5kIHJ4IGNoYW5uZWwuIEluIGZ1
-dHVyZSB3ZSB3YW50IHRvDQo+ID4+PiBleHRlbmQgc3VwcG9ydCBmb3IgbXVsdGljaGFubmVsIERN
-QSAoTUNETUEpIHdoaWNoIGhhcyAxNiBUWCBhbmQNCj4gPj4+IDE2IFJYIGNoYW5uZWxzLiBUbyB1
-bmlxdWVseSBpZGVudGlmeSBlYWNoIGNoYW5uZWwsIHdlIGFyZSB1c2luZyBjaGFuDQo+ID4+PiBz
-dWZmaXguIERlcGVuZGluZyBvbiB0aGUgdXNlY2FzZSBBWEkgZXRoZXJuZXQgZHJpdmVyIGNhbiBy
-ZXF1ZXN0IGFueQ0KPiA+Pj4gY29tYmluYXRpb24gb2YgbXVsdGljaGFubmVsIERNQSAgY2hhbm5l
-bHMuDQo+ID4+Pg0KPiA+Pj4gZG1hLW5hbWVzID0gdHhfY2hhbjAsIHR4X2NoYW4xLCByeF9jaGFu
-MCwgcnhfY2hhbjE7DQo+ID4+Pg0KPiA+Pj4gd2lsbCB1cGRhdGUgdGhlIGNvbW1pdCBtZXNzYWdl
-IHdpdGggc2FtZS4NCj4gPj4NCj4gPj4gSSBleHBlY3QgdGhlIGJpbmRpbmcgdG8gYmUgY29tcGxl
-dGUsIG90aGVyd2lzZSB5b3UgZ2V0IGNvbW1lbnRzIGxpa2UNCj4gdGhpcy4NCj4gPj4gQWRkIG1p
-c3NpbmcgcGFydHMgdG8gdGhlIGJpbmRpbmcgYW5kIHJlc2VuZC4NCj4gPg0KPiA+IEJpbmRpbmcg
-aXMgY29tcGxldGUgZm9yIGN1cnJlbnQgc3VwcG9ydGVkIERNQSAoc2luZ2xlIGNoYW5uZWwpLiAg
-V2UNCj4gPiB3aWxsIGV4dGVuZCB3aGVuIHdlIGFkZCBNQ0RNQS4NCj4gDQo+IFdoYXQgZG9lIHNp
-dCBtZWFuICJjdXJyZW50IHN1cHBvcnRlZCBETUEiPyBCeSBkcml2ZXI/IG9yIGJ5IGhhcmR3YXJl
-Pw0KPiBJZiB0aGUgZm9ybWVyLCB0aGVuIGhvdyBkb2VzIGl0IG1hdHRlciBmb3IgdGhlIGJpbmRp
-bmdzPw0KPiANCj4gSWYgdGhlIGxhdHRlciwgdGhlbiB5b3VyIGhhcmR3YXJlIGlzIGdvaW5nIHRv
-IGNoYW5nZT8gVGhlbiB5b3Ugd2lsbCBoYXZlDQo+IGRpZmZlcmVudCBzZXQgb2YgY29tcGF0aWJs
-ZXMgYW5kIHRoZW4gY2FuIHVzZSBkaWZmZXJlbnQgbmFtZXMuDQo+IA0KPiA+DQo+ID4gV2Ugd2ls
-bCBkZXNjcmliZSB0aGUgcmVhc29uIGZvciB1c2luZyBjaGFubmVsIHN1ZmZpeCBpbiB0aGUNCj4g
-PiBkZXNjcmlwdGlvbiBhcyBiZWxvdy4NCj4gPg0KPiA+ICAgIGRtYS1uYW1lczoNCj4gPiAgICAg
-ICBpdGVtczoNCj4gPiAgICAgICAgIC0gY29uc3Q6IHR4X2NoYW4wDQo+ID4gICAgICAgICAtIGNv
-bnN0OiByeF9jaGFuMA0KPiA+ICAgICAgZGVzY3JpcHRpb246IHwNCj4gPiAgICAgICAgICAgIENo
-YW4gc3VmZml4IGlzIHVzZWQgZm9yIGlkZW50aWZ5aW5nIGVhY2ggY2hhbm5lbCB1bmlxdWVseS4N
-Cj4gPiAgICAgICAgICAgIEN1cnJlbnQgRE1BIGhhcyBvbmx5IG9uZSBUeCBhbmQgUnggY2hhbm5l
-bCBidXQgaXQgd2lsbCBiZQ0KPiA+ICAgICAgICAgICAgZXh0ZW5kZWQgdG8gc3VwcG9ydCBmb3Ig
-bXVsdGljaGFubmVsIERNQSAoTUNETUEpIHdoaWNoDQo+ID4gICAgICAgICAgICBoYXMgMTYgVFgg
-YW5kIDE2IFJYIGNoYW5uZWxzLiBEZXBlbmRpbmcgb24gdGhlIHVzZWNhc2UgQVhJDQo+ID4gICAg
-ICAgICAgICBldGhlcm5ldCBkcml2ZXIgY2FuIHJlcXVlc3QgYW55IGNvbWJpbmF0aW9uIG9mIG11
-bHRpY2hhbm5lbA0KPiA+ICAgICAgICAgICAgRE1BICBjaGFubmVscy4NCj4gDQo+IE5vLCBiZWNh
-dXNlIEkgZG9uJ3QgdW5kZXJzdGFuZCB3aGF0IGlzICJ3aWxsIGJlIGV4dGVuZGVkIi4gQmluZGlu
-Z3MNCj4gc2hvdWxkIGJlIGNvbXBsZXRlLiBJZiB0aGV5IGFyZSBnb2luZyB0byBiZSBleHRlbmRl
-ZCwgaXQgbWVhbnMgdGhleSBhcmUNCj4gbm90IGNvbXBsZXRlLiBJZiB0aGV5IGNhbm5vdCBiZSBj
-b21wbGV0ZSwgd2hpY2ggaGFwcGVucywgcGxlYXNlIHByb3ZpZGUNCj4gYSByZWFzb24uIFRoZXJl
-IHdhcyBubyByZWFzb24gc28gZmFyLCBleGNlcHQgeW91ciBjbGFpbSBpdCBpcyBjb21wbGV0ZS4N
-Cg0KV2Ugd2lsbCByZS1zcGluIGFub3RoZXIgc2VyaWVzIHdpdGggY29tcGxldGUgYmluZGluZ3Mg
-aW5jbHVkaW5nIE1DRE1BDQpzdXBwb3J0Lg0KDQpUaGFua3MsDQpTYXJhdGgNCg0K
+Hi, thanks for the series. I went through it and just have two nitpicks.
+
+On Thu. 18 May 2023 at 04:27, Frank Jungclaus <frank.jungclaus@esd.eu> wrote:
+> Initiated by a comment from Vincent Mailhol add the consistent prefix
+
+No need to start all the series with:
+
+  Initiated by a comment from Vincent Mailhol
+
+while I appreciate the ommage, the Suggested-by tag is sufficient for that.
+
+> ESD_USB_ to all macros defined within esd_usb.c.
+>
+> For macros specific to esd CAN-USB/2 use ESD_USB_2_ as prefix.
+> For macros specific to esd CAN-USB/Micro use ESD_USB_M_ as prefix.
+>
+> Link: https://lore.kernel.org/all/CAMZ6RqLaDNy-fZ2G0+QMhUEckkXLL+ZyELVSDFmqpd++aBzZQg@mail.gmail.com/
+> Suggested-by: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+> Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
+> ---
+>  drivers/net/can/usb/esd_usb.c | 198 +++++++++++++++++-----------------
+>  1 file changed, 99 insertions(+), 99 deletions(-)
+>
+> diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
+> index 194aa1cf37b5..23a568bfcdc2 100644
+> --- a/drivers/net/can/usb/esd_usb.c
+> +++ b/drivers/net/can/usb/esd_usb.c
+> @@ -23,33 +23,33 @@ MODULE_DESCRIPTION("CAN driver for esd electronics gmbh CAN-USB/2 and CAN-USB/Mi
+>  MODULE_LICENSE("GPL v2");
+>
+>  /* USB vendor and product ID */
+> -#define USB_ESDGMBH_VENDOR_ID  0x0ab4
+> -#define USB_CANUSB2_PRODUCT_ID 0x0010
+> -#define USB_CANUSBM_PRODUCT_ID 0x0011
+> +#define ESD_USB_ESDGMBH_VENDOR_ID      0x0ab4
+> +#define ESD_USB_CANUSB2_PRODUCT_ID     0x0010
+> +#define ESD_USB_CANUSBM_PRODUCT_ID     0x0011
+>
+>  /* CAN controller clock frequencies */
+> -#define ESD_USB2_CAN_CLOCK     (60 * MEGA) /* Hz */
+> -#define ESD_USBM_CAN_CLOCK     (36 * MEGA) /* Hz */
+> +#define ESD_USB_2_CAN_CLOCK    (60 * MEGA) /* Hz */
+> +#define ESD_USB_M_CAN_CLOCK    (36 * MEGA) /* Hz */
+>
+>  /* Maximum number of CAN nets */
+>  #define ESD_USB_MAX_NETS       2
+>
+>  /* USB commands */
+> -#define CMD_VERSION            1 /* also used for VERSION_REPLY */
+> -#define CMD_CAN_RX             2 /* device to host only */
+> -#define CMD_CAN_TX             3 /* also used for TX_DONE */
+> -#define CMD_SETBAUD            4 /* also used for SETBAUD_REPLY */
+> -#define CMD_TS                 5 /* also used for TS_REPLY */
+> -#define CMD_IDADD              6 /* also used for IDADD_REPLY */
+> +#define ESD_USB_CMD_VERSION            1 /* also used for VERSION_REPLY */
+> +#define ESD_USB_CMD_CAN_RX             2 /* device to host only */
+> +#define ESD_USB_CMD_CAN_TX             3 /* also used for TX_DONE */
+> +#define ESD_USB_CMD_SETBAUD            4 /* also used for SETBAUD_REPLY */
+> +#define ESD_USB_CMD_TS                 5 /* also used for TS_REPLY */
+> +#define ESD_USB_CMD_IDADD              6 /* also used for IDADD_REPLY */
+>
+>  /* esd CAN message flags - dlc field */
+>  #define ESD_RTR        BIT(4) /* 0x10 */
+>
+>
+>  /* esd CAN message flags - id field */
+> -#define ESD_EXTID      BIT(29) /* 0x20000000 */
+> -#define ESD_EVENT      BIT(30) /* 0x40000000 */
+> -#define ESD_IDMASK     0x1fffffff
+> +#define ESD_USB_EXTID  BIT(29) /* 0x20000000 */
+> +#define ESD_USB_EVENT  BIT(30) /* 0x40000000 */
+> +#define ESD_USB_IDMASK 0x1fffffff
+>
+>  /* esd CAN event ids */
+>  #define ESD_EV_CAN_ERROR_EXT   2 /* CAN controller specific diagnostic data */
+> @@ -59,35 +59,35 @@ MODULE_LICENSE("GPL v2");
+>  #define ESD_USB_UBR    BIT(31) /* 0x80000000, User Bit Rate (controller BTR) in bits 0..27 */
+>  #define ESD_USB_NO_BAUDRATE    0x7fffffff /* bit rate unconfigured */
+>
+> -/* bit timing CAN-USB/2 */
+> -#define ESD_USB2_TSEG1_SHIFT   16
+> -#define ESD_USB2_TSEG2_SHIFT   20
+> -#define ESD_USB2_SJW_SHIFT     14
+> -#define ESD_USBM_SJW_SHIFT     24
+> -#define ESD_USB2_3_SAMPLES     0x00800000
+
+That one should also use the BIT macro.
+
+> +/* bit timing esd CAN-USB */
+> +#define ESD_USB_2_TSEG1_SHIFT  16
+> +#define ESD_USB_2_TSEG2_SHIFT  20
+> +#define ESD_USB_2_SJW_SHIFT    14
+> +#define ESD_USB_M_SJW_SHIFT    24
+> +#define ESD_USB_3_SAMPLES      0x00800000
+>
+>  /* esd IDADD message */
+> -#define ESD_ID_ENABLE          0x80
+> -#define ESD_MAX_ID_SEGMENT     64
+> +#define ESD_USB_ID_ENABLE      0x80
+> +#define ESD_USB_MAX_ID_SEGMENT 64
+>
+>  /* SJA1000 ECC register (emulated by usb firmware) */
+> -#define SJA1000_ECC_SEG                0x1F
+> -#define SJA1000_ECC_DIR                0x20
+> -#define SJA1000_ECC_ERR                0x06
+> -#define SJA1000_ECC_BIT                0x00
+> -#define SJA1000_ECC_FORM       0x40
+> -#define SJA1000_ECC_STUFF      0x80
+> -#define SJA1000_ECC_MASK       0xc0
+> +#define ESD_USB_SJA1000_ECC_SEG                0x1F
+> +#define ESD_USB_SJA1000_ECC_DIR                0x20
+> +#define ESD_USB_SJA1000_ECC_ERR                0x06
+> +#define ESD_USB_SJA1000_ECC_BIT                0x00
+> +#define ESD_USB_SJA1000_ECC_FORM       0x40
+> +#define ESD_USB_SJA1000_ECC_STUFF      0x80
+> +#define ESD_USB_SJA1000_ECC_MASK       0xc0
+>
+>  /* esd bus state event codes */
+> -#define ESD_BUSSTATE_MASK      0xc0
+> -#define ESD_BUSSTATE_WARN      0x40
+> -#define ESD_BUSSTATE_ERRPASSIVE        0x80
+> -#define ESD_BUSSTATE_BUSOFF    0xc0
+> +#define ESD_USB_BUSSTATE_MASK  0xc0
+> +#define ESD_USB_BUSSTATE_WARN  0x40
+> +#define ESD_USB_BUSSTATE_ERRPASSIVE    0x80
+> +#define ESD_USB_BUSSTATE_BUSOFF        0xc0
+>
+> -#define RX_BUFFER_SIZE         1024
+> -#define MAX_RX_URBS            4
+> -#define MAX_TX_URBS            16 /* must be power of 2 */
+> +#define ESD_USB_RX_BUFFER_SIZE         1024
+> +#define ESD_USB_MAX_RX_URBS            4
+> +#define ESD_USB_MAX_TX_URBS            16 /* must be power of 2 */
+>
+>  struct header_msg {
+>         u8 len; /* len is always the total message length in 32bit words */
+> @@ -156,7 +156,7 @@ struct id_filter_msg {
+>         u8 cmd;
+>         u8 net;
+>         u8 option;
+> -       __le32 mask[ESD_MAX_ID_SEGMENT + 1];
+> +       __le32 mask[ESD_USB_MAX_ID_SEGMENT + 1];
+>  };
+>
+>  struct set_baudrate_msg {
+> @@ -180,8 +180,8 @@ union __packed esd_usb_msg {
+>  };
+>
+>  static struct usb_device_id esd_usb_table[] = {
+> -       {USB_DEVICE(USB_ESDGMBH_VENDOR_ID, USB_CANUSB2_PRODUCT_ID)},
+> -       {USB_DEVICE(USB_ESDGMBH_VENDOR_ID, USB_CANUSBM_PRODUCT_ID)},
+> +       {USB_DEVICE(ESD_USB_ESDGMBH_VENDOR_ID, ESD_USB_CANUSB2_PRODUCT_ID)},
+> +       {USB_DEVICE(ESD_USB_ESDGMBH_VENDOR_ID, ESD_USB_CANUSBM_PRODUCT_ID)},
+>         {}
+>  };
+>  MODULE_DEVICE_TABLE(usb, esd_usb_table);
+> @@ -202,8 +202,8 @@ struct esd_usb {
+>         int net_count;
+>         u32 version;
+>         int rxinitdone;
+> -       void *rxbuf[MAX_RX_URBS];
+> -       dma_addr_t rxbuf_dma[MAX_RX_URBS];
+> +       void *rxbuf[ESD_USB_MAX_RX_URBS];
+> +       dma_addr_t rxbuf_dma[ESD_USB_MAX_RX_URBS];
+>  };
+>
+>  struct esd_usb_net_priv {
+> @@ -211,7 +211,7 @@ struct esd_usb_net_priv {
+>
+>         atomic_t active_tx_jobs;
+>         struct usb_anchor tx_submitted;
+> -       struct esd_tx_urb_context tx_contexts[MAX_TX_URBS];
+> +       struct esd_tx_urb_context tx_contexts[ESD_USB_MAX_TX_URBS];
+>
+>         struct esd_usb *usb;
+>         struct net_device *netdev;
+> @@ -226,7 +226,7 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
+>         struct net_device_stats *stats = &priv->netdev->stats;
+>         struct can_frame *cf;
+>         struct sk_buff *skb;
+> -       u32 id = le32_to_cpu(msg->rx.id) & ESD_IDMASK;
+> +       u32 id = le32_to_cpu(msg->rx.id) & ESD_USB_IDMASK;
+>
+>         if (id == ESD_EV_CAN_ERROR_EXT) {
+>                 u8 state = msg->rx.ev_can_err_ext.status;
+> @@ -255,15 +255,15 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
+>
+>                         priv->old_state = state;
+>
+> -                       switch (state & ESD_BUSSTATE_MASK) {
+> -                       case ESD_BUSSTATE_BUSOFF:
+> +                       switch (state & ESD_USB_BUSSTATE_MASK) {
+> +                       case ESD_USB_BUSSTATE_BUSOFF:
+>                                 new_state = CAN_STATE_BUS_OFF;
+>                                 can_bus_off(priv->netdev);
+>                                 break;
+> -                       case ESD_BUSSTATE_WARN:
+> +                       case ESD_USB_BUSSTATE_WARN:
+>                                 new_state = CAN_STATE_ERROR_WARNING;
+>                                 break;
+> -                       case ESD_BUSSTATE_ERRPASSIVE:
+> +                       case ESD_USB_BUSSTATE_ERRPASSIVE:
+>                                 new_state = CAN_STATE_ERROR_PASSIVE;
+>                                 break;
+>                         default:
+> @@ -285,14 +285,14 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
+>
+>                         cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
+>
+> -                       switch (ecc & SJA1000_ECC_MASK) {
+> -                       case SJA1000_ECC_BIT:
+> +                       switch (ecc & ESD_USB_SJA1000_ECC_MASK) {
+> +                       case ESD_USB_SJA1000_ECC_BIT:
+>                                 cf->data[2] |= CAN_ERR_PROT_BIT;
+>                                 break;
+> -                       case SJA1000_ECC_FORM:
+> +                       case ESD_USB_SJA1000_ECC_FORM:
+>                                 cf->data[2] |= CAN_ERR_PROT_FORM;
+>                                 break;
+> -                       case SJA1000_ECC_STUFF:
+> +                       case ESD_USB_SJA1000_ECC_STUFF:
+>                                 cf->data[2] |= CAN_ERR_PROT_STUFF;
+>                                 break;
+>                         default:
+> @@ -300,11 +300,11 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
+>                         }
+>
+>                         /* Error occurred during transmission? */
+> -                       if (!(ecc & SJA1000_ECC_DIR))
+> +                       if (!(ecc & ESD_USB_SJA1000_ECC_DIR))
+>                                 cf->data[2] |= CAN_ERR_PROT_TX;
+>
+>                         /* Bit stream position in CAN frame as the error was detected */
+> -                       cf->data[3] = ecc & SJA1000_ECC_SEG;
+> +                       cf->data[3] = ecc & ESD_USB_SJA1000_ECC_SEG;
+>                 }
+>
+>                 if (skb) {
+> @@ -331,7 +331,7 @@ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
+>
+>         id = le32_to_cpu(msg->rx.id);
+>
+> -       if (id & ESD_EVENT) {
+> +       if (id & ESD_USB_EVENT) {
+>                 esd_usb_rx_event(priv, msg);
+>         } else {
+>                 skb = alloc_can_skb(priv->netdev, &cf);
+> @@ -340,11 +340,11 @@ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
+>                         return;
+>                 }
+>
+> -               cf->can_id = id & ESD_IDMASK;
+> +               cf->can_id = id & ESD_USB_IDMASK;
+>                 can_frame_set_cc_len(cf, msg->rx.dlc & ~ESD_RTR,
+>                                      priv->can.ctrlmode);
+>
+> -               if (id & ESD_EXTID)
+> +               if (id & ESD_USB_EXTID)
+>                         cf->can_id |= CAN_EFF_FLAG;
+>
+>                 if (msg->rx.dlc & ESD_RTR) {
+> @@ -371,7 +371,7 @@ static void esd_usb_tx_done_msg(struct esd_usb_net_priv *priv,
+>         if (!netif_device_present(netdev))
+>                 return;
+>
+> -       context = &priv->tx_contexts[msg->txdone.hnd & (MAX_TX_URBS - 1)];
+> +       context = &priv->tx_contexts[msg->txdone.hnd & (ESD_USB_MAX_TX_URBS - 1)];
+>
+>         if (!msg->txdone.status) {
+>                 stats->tx_packets++;
+> @@ -383,7 +383,7 @@ static void esd_usb_tx_done_msg(struct esd_usb_net_priv *priv,
+>         }
+>
+>         /* Release context */
+> -       context->echo_index = MAX_TX_URBS;
+> +       context->echo_index = ESD_USB_MAX_TX_URBS;
+>         atomic_dec(&priv->active_tx_jobs);
+>
+>         netif_wake_queue(netdev);
+> @@ -418,7 +418,7 @@ static void esd_usb_read_bulk_callback(struct urb *urb)
+>                 msg = (union esd_usb_msg *)(urb->transfer_buffer + pos);
+>
+>                 switch (msg->hdr.cmd) {
+> -               case CMD_CAN_RX:
+> +               case ESD_USB_CMD_CAN_RX:
+>                         if (msg->rx.net >= dev->net_count) {
+>                                 dev_err(dev->udev->dev.parent, "format error\n");
+>                                 break;
+> @@ -427,7 +427,7 @@ static void esd_usb_read_bulk_callback(struct urb *urb)
+>                         esd_usb_rx_can_msg(dev->nets[msg->rx.net], msg);
+>                         break;
+>
+> -               case CMD_CAN_TX:
+> +               case ESD_USB_CMD_CAN_TX:
+>                         if (msg->txdone.net >= dev->net_count) {
+>                                 dev_err(dev->udev->dev.parent, "format error\n");
+>                                 break;
+> @@ -448,7 +448,7 @@ static void esd_usb_read_bulk_callback(struct urb *urb)
+>
+>  resubmit_urb:
+>         usb_fill_bulk_urb(urb, dev->udev, usb_rcvbulkpipe(dev->udev, 1),
+> -                         urb->transfer_buffer, RX_BUFFER_SIZE,
+> +                         urb->transfer_buffer, ESD_USB_RX_BUFFER_SIZE,
+>                           esd_usb_read_bulk_callback, dev);
+>
+>         retval = usb_submit_urb(urb, GFP_ATOMIC);
+> @@ -557,7 +557,7 @@ static int esd_usb_setup_rx_urbs(struct esd_usb *dev)
+>         if (dev->rxinitdone)
+>                 return 0;
+>
+> -       for (i = 0; i < MAX_RX_URBS; i++) {
+> +       for (i = 0; i < ESD_USB_MAX_RX_URBS; i++) {
+>                 struct urb *urb = NULL;
+>                 u8 *buf = NULL;
+>                 dma_addr_t buf_dma;
+> @@ -569,7 +569,7 @@ static int esd_usb_setup_rx_urbs(struct esd_usb *dev)
+>                         break;
+>                 }
+>
+> -               buf = usb_alloc_coherent(dev->udev, RX_BUFFER_SIZE, GFP_KERNEL,
+> +               buf = usb_alloc_coherent(dev->udev, ESD_USB_RX_BUFFER_SIZE, GFP_KERNEL,
+>                                          &buf_dma);
+>                 if (!buf) {
+>                         dev_warn(dev->udev->dev.parent,
+> @@ -582,7 +582,7 @@ static int esd_usb_setup_rx_urbs(struct esd_usb *dev)
+>
+>                 usb_fill_bulk_urb(urb, dev->udev,
+>                                   usb_rcvbulkpipe(dev->udev, 1),
+> -                                 buf, RX_BUFFER_SIZE,
+> +                                 buf, ESD_USB_RX_BUFFER_SIZE,
+>                                   esd_usb_read_bulk_callback, dev);
+>                 urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+>                 usb_anchor_urb(urb, &dev->rx_submitted);
+> @@ -590,7 +590,7 @@ static int esd_usb_setup_rx_urbs(struct esd_usb *dev)
+>                 err = usb_submit_urb(urb, GFP_KERNEL);
+>                 if (err) {
+>                         usb_unanchor_urb(urb);
+> -                       usb_free_coherent(dev->udev, RX_BUFFER_SIZE, buf,
+> +                       usb_free_coherent(dev->udev, ESD_USB_RX_BUFFER_SIZE, buf,
+>                                           urb->transfer_dma);
+>                         goto freeurb;
+>                 }
+> @@ -612,7 +612,7 @@ static int esd_usb_setup_rx_urbs(struct esd_usb *dev)
+>         }
+>
+>         /* Warn if we've couldn't transmit all the URBs */
+> -       if (i < MAX_RX_URBS) {
+> +       if (i < ESD_USB_MAX_RX_URBS) {
+>                 dev_warn(dev->udev->dev.parent,
+>                          "rx performance may be slow\n");
+>         }
+> @@ -647,14 +647,14 @@ static int esd_usb_start(struct esd_usb_net_priv *priv)
+>          * the number of the starting bitmask (0..64) to the filter.option
+>          * field followed by only some bitmasks.
+>          */
+> -       msg->hdr.cmd = CMD_IDADD;
+> -       msg->hdr.len = 2 + ESD_MAX_ID_SEGMENT;
+> +       msg->hdr.cmd = ESD_USB_CMD_IDADD;
+> +       msg->hdr.len = 2 + ESD_USB_MAX_ID_SEGMENT;
+>         msg->filter.net = priv->index;
+> -       msg->filter.option = ESD_ID_ENABLE; /* start with segment 0 */
+> -       for (i = 0; i < ESD_MAX_ID_SEGMENT; i++)
+> +       msg->filter.option = ESD_USB_ID_ENABLE; /* start with segment 0 */
+> +       for (i = 0; i < ESD_USB_MAX_ID_SEGMENT; i++)
+>                 msg->filter.mask[i] = cpu_to_le32(0xffffffff);
+>         /* enable 29bit extended IDs */
+> -       msg->filter.mask[ESD_MAX_ID_SEGMENT] = cpu_to_le32(0x00000001);
+> +       msg->filter.mask[ESD_USB_MAX_ID_SEGMENT] = cpu_to_le32(0x00000001);
+>
+>         err = esd_usb_send_msg(dev, msg);
+>         if (err)
+> @@ -683,8 +683,8 @@ static void unlink_all_urbs(struct esd_usb *dev)
+>
+>         usb_kill_anchored_urbs(&dev->rx_submitted);
+>
+> -       for (i = 0; i < MAX_RX_URBS; ++i)
+> -               usb_free_coherent(dev->udev, RX_BUFFER_SIZE,
+> +       for (i = 0; i < ESD_USB_MAX_RX_URBS; ++i)
+> +               usb_free_coherent(dev->udev, ESD_USB_RX_BUFFER_SIZE,
+>                                   dev->rxbuf[i], dev->rxbuf_dma[i]);
+>
+>         for (i = 0; i < dev->net_count; i++) {
+> @@ -693,8 +693,8 @@ static void unlink_all_urbs(struct esd_usb *dev)
+>                         usb_kill_anchored_urbs(&priv->tx_submitted);
+>                         atomic_set(&priv->active_tx_jobs, 0);
+>
+> -                       for (j = 0; j < MAX_TX_URBS; j++)
+> -                               priv->tx_contexts[j].echo_index = MAX_TX_URBS;
+> +                       for (j = 0; j < ESD_USB_MAX_TX_URBS; j++)
+> +                               priv->tx_contexts[j].echo_index = ESD_USB_MAX_TX_URBS;
+>                 }
+>         }
+>  }
+> @@ -760,7 +760,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
+>         msg = (union esd_usb_msg *)buf;
+>
+>         msg->hdr.len = 3; /* minimal length */
+> -       msg->hdr.cmd = CMD_CAN_TX;
+> +       msg->hdr.cmd = ESD_USB_CMD_CAN_TX;
+>         msg->tx.net = priv->index;
+>         msg->tx.dlc = can_get_cc_dlc(cf, priv->can.ctrlmode);
+>         msg->tx.id = cpu_to_le32(cf->can_id & CAN_ERR_MASK);
+> @@ -769,15 +769,15 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
+>                 msg->tx.dlc |= ESD_RTR;
+>
+>         if (cf->can_id & CAN_EFF_FLAG)
+> -               msg->tx.id |= cpu_to_le32(ESD_EXTID);
+> +               msg->tx.id |= cpu_to_le32(ESD_USB_EXTID);
+>
+>         for (i = 0; i < cf->len; i++)
+>                 msg->tx.data[i] = cf->data[i];
+>
+>         msg->hdr.len += (cf->len + 3) >> 2;
+>
+> -       for (i = 0; i < MAX_TX_URBS; i++) {
+> -               if (priv->tx_contexts[i].echo_index == MAX_TX_URBS) {
+> +       for (i = 0; i < ESD_USB_MAX_TX_URBS; i++) {
+> +               if (priv->tx_contexts[i].echo_index == ESD_USB_MAX_TX_URBS) {
+>                         context = &priv->tx_contexts[i];
+>                         break;
+>                 }
+> @@ -809,7 +809,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
+>         atomic_inc(&priv->active_tx_jobs);
+>
+>         /* Slow down tx path */
+> -       if (atomic_read(&priv->active_tx_jobs) >= MAX_TX_URBS)
+> +       if (atomic_read(&priv->active_tx_jobs) >= ESD_USB_MAX_TX_URBS)
+>                 netif_stop_queue(netdev);
+>
+>         err = usb_submit_urb(urb, GFP_ATOMIC);
+> @@ -859,18 +859,18 @@ static int esd_usb_close(struct net_device *netdev)
+>                 return -ENOMEM;
+>
+>         /* Disable all IDs (see esd_usb_start()) */
+> -       msg->hdr.cmd = CMD_IDADD;
+> -       msg->hdr.len = 2 + ESD_MAX_ID_SEGMENT;
+> +       msg->hdr.cmd = ESD_USB_CMD_IDADD;
+> +       msg->hdr.len = 2 + ESD_USB_MAX_ID_SEGMENT;
+>         msg->filter.net = priv->index;
+> -       msg->filter.option = ESD_ID_ENABLE; /* start with segment 0 */
+> -       for (i = 0; i <= ESD_MAX_ID_SEGMENT; i++)
+> +       msg->filter.option = ESD_USB_ID_ENABLE; /* start with segment 0 */
+> +       for (i = 0; i <= ESD_USB_MAX_ID_SEGMENT; i++)
+>                 msg->filter.mask[i] = 0;
+>         if (esd_usb_send_msg(priv->usb, msg) < 0)
+>                 netdev_err(netdev, "sending idadd message failed\n");
+>
+>         /* set CAN controller to reset mode */
+>         msg->hdr.len = 2;
+> -       msg->hdr.cmd = CMD_SETBAUD;
+> +       msg->hdr.cmd = ESD_USB_CMD_SETBAUD;
+>         msg->setbaud.net = priv->index;
+>         msg->setbaud.rsvd = 0;
+>         msg->setbaud.baud = cpu_to_le32(ESD_USB_NO_BAUDRATE);
+> @@ -928,27 +928,27 @@ static int esd_usb2_set_bittiming(struct net_device *netdev)
+>         canbtr |= (bt->brp - 1) & (btc->brp_max - 1);
+>
+>         if (le16_to_cpu(priv->usb->udev->descriptor.idProduct) ==
+> -           USB_CANUSBM_PRODUCT_ID)
+> -               sjw_shift = ESD_USBM_SJW_SHIFT;
+> +           ESD_USB_CANUSBM_PRODUCT_ID)
+> +               sjw_shift = ESD_USB_M_SJW_SHIFT;
+>         else
+> -               sjw_shift = ESD_USB2_SJW_SHIFT;
+> +               sjw_shift = ESD_USB_2_SJW_SHIFT;
+>
+>         canbtr |= ((bt->sjw - 1) & (btc->sjw_max - 1))
+>                 << sjw_shift;
+>         canbtr |= ((bt->prop_seg + bt->phase_seg1 - 1)
+>                    & (btc->tseg1_max - 1))
+> -               << ESD_USB2_TSEG1_SHIFT;
+> +               << ESD_USB_2_TSEG1_SHIFT;
+>         canbtr |= ((bt->phase_seg2 - 1) & (btc->tseg2_max - 1))
+> -               << ESD_USB2_TSEG2_SHIFT;
+> +               << ESD_USB_2_TSEG2_SHIFT;
+>         if (priv->can.ctrlmode & CAN_CTRLMODE_3_SAMPLES)
+> -               canbtr |= ESD_USB2_3_SAMPLES;
+> +               canbtr |= ESD_USB_3_SAMPLES;
+>
+>         msg = kmalloc(sizeof(*msg), GFP_KERNEL);
+>         if (!msg)
+>                 return -ENOMEM;
+>
+>         msg->hdr.len = 2;
+> -       msg->hdr.cmd = CMD_SETBAUD;
+> +       msg->hdr.cmd = ESD_USB_CMD_SETBAUD;
+>         msg->setbaud.net = priv->index;
+>         msg->setbaud.rsvd = 0;
+>         msg->setbaud.baud = cpu_to_le32(canbtr);
+> @@ -994,7 +994,7 @@ static int esd_usb_probe_one_net(struct usb_interface *intf, int index)
+>         int err = 0;
+>         int i;
+>
+> -       netdev = alloc_candev(sizeof(*priv), MAX_TX_URBS);
+> +       netdev = alloc_candev(sizeof(*priv), ESD_USB_MAX_TX_URBS);
+>         if (!netdev) {
+>                 dev_err(&intf->dev, "couldn't alloc candev\n");
+>                 err = -ENOMEM;
+> @@ -1006,8 +1006,8 @@ static int esd_usb_probe_one_net(struct usb_interface *intf, int index)
+>         init_usb_anchor(&priv->tx_submitted);
+>         atomic_set(&priv->active_tx_jobs, 0);
+>
+> -       for (i = 0; i < MAX_TX_URBS; i++)
+> -               priv->tx_contexts[i].echo_index = MAX_TX_URBS;
+> +       for (i = 0; i < ESD_USB_MAX_TX_URBS; i++)
+> +               priv->tx_contexts[i].echo_index = ESD_USB_MAX_TX_URBS;
+>
+>         priv->usb = dev;
+>         priv->netdev = netdev;
+> @@ -1019,10 +1019,10 @@ static int esd_usb_probe_one_net(struct usb_interface *intf, int index)
+>                 CAN_CTRLMODE_BERR_REPORTING;
+>
+>         if (le16_to_cpu(dev->udev->descriptor.idProduct) ==
+> -           USB_CANUSBM_PRODUCT_ID)
+> -               priv->can.clock.freq = ESD_USBM_CAN_CLOCK;
+> +           ESD_USB_CANUSBM_PRODUCT_ID)
+> +               priv->can.clock.freq = ESD_USB_M_CAN_CLOCK;
+>         else {
+> -               priv->can.clock.freq = ESD_USB2_CAN_CLOCK;
+> +               priv->can.clock.freq = ESD_USB_2_CAN_CLOCK;
+>                 priv->can.ctrlmode_supported |= CAN_CTRLMODE_3_SAMPLES;
+>         }
+>
+> @@ -1085,7 +1085,7 @@ static int esd_usb_probe(struct usb_interface *intf,
+>         }
+>
+>         /* query number of CAN interfaces (nets) */
+> -       msg->hdr.cmd = CMD_VERSION;
+> +       msg->hdr.cmd = ESD_USB_CMD_VERSION;
+>         msg->hdr.len = 2;
+>         msg->version.rsvd = 0;
+>         msg->version.flags = 0;
+> --
+> 2.25.1
+>
 
