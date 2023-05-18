@@ -1,79 +1,101 @@
-Return-Path: <netdev+bounces-3501-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3503-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E541A70794F
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 06:50:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E3F1A707958
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 06:54:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A55DE1C20EBE
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 04:50:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8E1342813B5
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 04:54:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6641644;
-	Thu, 18 May 2023 04:50:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A82E038D;
+	Thu, 18 May 2023 04:54:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A90A038D
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 04:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 62661C4339B;
-	Thu, 18 May 2023 04:50:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684385423;
-	bh=Dx6EnHQo2Yjjh9KrD0mEn6bgue46Bf7wi+SxbOFW2MA=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=euBko7G75JYEBaZV4vf7SOQW71XpzQeeJsAa6zH0/QNjVxq4TC1rRUsSX/rT2xPjX
-	 LFN6MGPeaUxFVViQQSkw9URfE2lBdMr1S++OP5kuk2Es/90oqpl0BzcPuxZguFpY+O
-	 jx+QjOLFJpyPcU8t3m/4nXsTIu92Ylf6hL9xZXIv3eiG2v+CmC5ihNgYNi1sZ7ahcz
-	 zbxrkZMyzkAq2CPCpubdQwbJBObOgzfNvHRqCSxruf5Fmx3KLwvQM4ryrd0vnJcOJm
-	 r/BfU6xMsIiiwkQ9SCqzJNJ9/Nxc0fwyTCJF5lxw+lojC38PgKO0YzWKImFBrYTJQM
-	 DkgKRV5Klm6Iw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 386BDC73FE2;
-	Thu, 18 May 2023 04:50:23 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 974AC631
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 04:54:44 +0000 (UTC)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595B52698;
+	Wed, 17 May 2023 21:54:42 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QMHZh5zsKzTkxf;
+	Thu, 18 May 2023 12:49:48 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Thu, 18 May
+ 2023 12:54:38 +0800
+Subject: Re: [PATCH net-next 06/11] net: page_pool: avoid calling no-op
+ externals when possible
+To: Jakub Kicinski <kuba@kernel.org>, Alexander Lobakin
+	<aleksander.lobakin@intel.com>
+CC: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+	<edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Maciej Fijalkowski
+	<maciej.fijalkowski@intel.com>, Magnus Karlsson <magnus.karlsson@intel.com>,
+	Michal Kubiak <michal.kubiak@intel.com>, Larysa Zaremba
+	<larysa.zaremba@intel.com>, Jesper Dangaard Brouer <hawk@kernel.org>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, Christoph Hellwig <hch@lst.de>,
+	<netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
+	<linux-kernel@vger.kernel.org>
+References: <20230516161841.37138-1-aleksander.lobakin@intel.com>
+ <20230516161841.37138-7-aleksander.lobakin@intel.com>
+ <20230517210804.7de610bd@kernel.org>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <b84ad4ef-a996-4fd7-dc90-3b44f7acaf39@huawei.com>
+Date: Thu, 18 May 2023 12:54:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-2023-05-17
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168438542322.13974.13019571815680311724.git-patchwork-notify@kernel.org>
-Date: Thu, 18 May 2023 04:50:23 +0000
-References: <20230517151914.B0AF6C433EF@smtp.kernel.org>
-In-Reply-To: <20230517151914.B0AF6C433EF@smtp.kernel.org>
-To: Kalle Valo <kvalo@kernel.org>
-Cc: netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+In-Reply-To: <20230517210804.7de610bd@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
-
-This pull request was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 17 May 2023 15:19:14 +0000 (UTC) you wrote:
-> Hi,
+On 2023/5/18 12:08, Jakub Kicinski wrote:
+> On Tue, 16 May 2023 18:18:36 +0200 Alexander Lobakin wrote:
+>> +		/* Try to avoid calling no-op syncs */
+>> +		pool->p.flags |= PP_FLAG_DMA_MAYBE_SYNC;
+>> +		pool->p.flags &= ~PP_FLAG_DMA_SYNC_DEV;
+>>  	}
+>>  
+>>  	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
+>> @@ -323,6 +327,12 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
+>>  
+>>  	page_pool_set_dma_addr(page, dma);
+>>  
+>> +	if ((pool->p.flags & PP_FLAG_DMA_MAYBE_SYNC) &&
+>> +	    dma_need_sync(pool->p.dev, dma)) {
+>> +		pool->p.flags |= PP_FLAG_DMA_SYNC_DEV;
+>> +		pool->p.flags &= ~PP_FLAG_DMA_MAYBE_SYNC;
+>> +	}
 > 
-> here's a pull request to net tree, more info below. Please let me know if there
-> are any problems.
+> is it just me or does it feel cleaner to allocate a page at init,
+> and throw it into the cache, rather than adding a condition to a
+> fast(ish) path?
+
+Is dma_need_sync() not reliable until a dma map is called?
+Is there any reason why not just clear PP_FLAG_DMA_SYNC_DEV if
+dma_need_sync() is false without introducing the PP_FLAG_DMA_MAYBE_SYNC
+flag?
+
 > 
-> Kalle
+> .
 > 
-> [...]
-
-Here is the summary with links:
-  - pull-request: wireless-2023-05-17
-    https://git.kernel.org/netdev/net/c/c259ad11698b
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
 
