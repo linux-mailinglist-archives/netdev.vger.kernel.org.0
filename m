@@ -1,53 +1,53 @@
-Return-Path: <netdev+bounces-3569-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3568-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8468A707E15
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:28:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7BCB7707E14
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:28:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4C0251C2105E
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:28:14 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 58B4D1C20D2F
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:27:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A9C913AC7;
-	Thu, 18 May 2023 10:26:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B922F125DA;
+	Thu, 18 May 2023 10:26:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3802F13AC4
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 10:26:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7F58125A7
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 10:26:41 +0000 (UTC)
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8693B1BE2
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 03:26:39 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028231BF5
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 03:26:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684405599; x=1715941599;
+  t=1684405598; x=1715941598;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mnZ/l3GKqXkbAKCjgkmZmAfjBvGPSqILoKwmIRttiBc=;
-  b=H2FUgjA4B04zyUUENHxNL4VdnusDBdxlxHZ0HlWnMUx48UjpO0+yDsqq
-   QvAaU/J2y1ESAMv208OQBt631xDlnq49hxbWD2qD461FeH5IU19hnWZZ7
-   5MZTL9hNX9SuBKVgNa8SkpOELBkSTp/AE/hnx2g6ufq01mAUwTv3h9V1T
-   zm7P8F9x8ijcRFqabKogmBsmWH2ocn4FyZZ4oNiaZc3rp0EOmDqH4mjZ0
-   ZrZ3xNKCVW1XAQm4wc2fHCXG2fwNcf7H1fi0cB4zQZp5vmaMPDVOEtjFE
-   B70tjTHPGeV2Ukz9u9awmmt/fCHCuOaXL/ixbpj8lGIOW1/JbcWzabIsw
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="438371435"
+  bh=Hacv2fi9e1FSp2ww1DQDntIAcGEWssv2Y3CFVch0QM8=;
+  b=doLNUl8KhYrXnLz2uLjfP3FAHUALKAdL5tuKVT9X5VKvNtunpTWu8y2t
+   nIaWBoMtVHHagk+o1EJfDmV6ckJPyOK0C4FsYMmqgRmzvPtcmjGVT9DUs
+   jaF6jNRhv6QfUBre/ZRBPPA4wCCkwooxRXlyLaxBgz6zMax8JxjydW4nE
+   L4f8QlJjQQwztrQ1U4iyLA/+Gv/CEVNNaTVqDooyTxr9cZG+HC5Lm6/gn
+   dITrhEUzhdvANJX45IIE1kEM6P1Fqcx5VUaRt4lOvtRx6xwTXGE6lBODK
+   1ClsiQ5RD7Eeg6/8KjgQRKsiuzLl5MS6uEDqxKG5GOwqczDDj4FHnM19b
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="438371437"
 X-IronPort-AV: E=Sophos;i="5.99,285,1677571200"; 
-   d="scan'208";a="438371435"
+   d="scan'208";a="438371437"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 03:26:26 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="767143745"
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="767143747"
 X-IronPort-AV: E=Sophos;i="5.99,285,1677571200"; 
-   d="scan'208";a="767143745"
+   d="scan'208";a="767143747"
 Received: from irvmail002.ir.intel.com ([10.43.11.120])
   by fmsmga008.fm.intel.com with ESMTP; 18 May 2023 03:26:22 -0700
 Received: from rozewie.igk.intel.com (rozewie.igk.intel.com [10.211.8.69])
-	by irvmail002.ir.intel.com (Postfix) with ESMTP id EED86365DF;
-	Thu, 18 May 2023 11:26:20 +0100 (IST)
+	by irvmail002.ir.intel.com (Postfix) with ESMTP id AF0AD36C0D;
+	Thu, 18 May 2023 11:26:21 +0100 (IST)
 From: Wojciech Drewek <wojciech.drewek@intel.com>
 To: intel-wired-lan@lists.osuosl.org
 Cc: netdev@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: netdev@vger.kernel.org,
 	marcin.szycik@linux.intel.com,
 	pawel.chmielewski@intel.com,
 	sridhar.samudrala@intel.com
-Subject: [PATCH iwl-next v2 03/10] ice: Implement basic eswitch bridge setup
-Date: Thu, 18 May 2023 12:25:02 +0200
-Message-Id: <20230518102509.20913-4-wojciech.drewek@intel.com>
+Subject: [PATCH iwl-next v2 04/10] ice: Switchdev FDB events support
+Date: Thu, 18 May 2023 12:25:03 +0200
+Message-Id: <20230518102509.20913-5-wojciech.drewek@intel.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230518102509.20913-1-wojciech.drewek@intel.com>
 References: <20230518102509.20913-1-wojciech.drewek@intel.com>
@@ -77,628 +77,632 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-With this patch, ice driver is able to track if the port
-representors or uplink port were added to the linux bridge in
-switchdev mode. Listen for NETDEV_CHANGEUPPER events in order to
-detect this. ice_esw_br data structure reflects the linux bridge
-and stores all the ports of the bridge (ice_esw_br_port) in
-xarray, it's created when the first port is added to the bridge and
-freed once the last port is removed. Note that only one bridge is
-supported per eswitch.
+Listen for SWITCHDEV_FDB_{ADD|DEL}_TO_DEVICE events while in switchdev
+mode. Accept these events on both uplink and VF PR ports. Add HW
+rules in newly created workqueue. FDB entries are stored in rhashtable
+for lookup when removing the entry and in the list for cleanup
+purpose. Direction of the HW rule depends on the type of the ports
+on which the FDB event was received:
 
-Bridge port (ice_esw_br_port) can be either a VF port representor
-port or uplink port (ice_esw_br_port_type). In both cases bridge port
-holds a reference to the VSI, VF's VSI in case of the PR and uplink
-VSI in case of the uplink. VSI's index is used as an index to the
-xarray in which ports are stored.
+ICE_ESWITCH_BR_UPLINK_PORT:
+TX rule that forwards the packet to the LAN (egress).
 
-Add a check which prevents configuring switchdev mode if uplink is
-already added to any bridge. This is needed because we need to listen
-for NETDEV_CHANGEUPPER events to record if the uplink was added to
-the bridge. Netdevice notifier is registered after eswitch mode
-is changed top switchdev.
+ICE_ESWITCH_BR_VF_REPR_PORT:
+RX rule that forwards the packet to the VF associated
+with the port representor.
+
+In both cases the rule matches on the dst mac address.
+All the FDB entries are stored in the bridge structure.
+When the port is removed all the FDB entries associated with
+this port are removed as well. This is achieved thanks to the reference
+to the port that FDB entry holds.
+
+In the fwd rule we use only one lookup type (MAC address)
+but lkups_cnt variable is already introduced because
+we will have more lookups in the subsequent patches.
 
 Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 ---
-v2: fix structure holes, wrapping improvements
+v2: declare-time initialization, code style nitpicks,
+    use typeof instead of full type name in the container_of
+    macro, use PTR_ERR_OR_ZERO in ice_eswitch_br_flow_create
 ---
- drivers/net/ethernet/intel/ice/Makefile       |   2 +-
- drivers/net/ethernet/intel/ice/ice.h          |   4 +-
- drivers/net/ethernet/intel/ice/ice_eswitch.c  |  23 +-
- .../net/ethernet/intel/ice/ice_eswitch_br.c   | 381 ++++++++++++++++++
- .../net/ethernet/intel/ice/ice_eswitch_br.h   |  42 ++
- drivers/net/ethernet/intel/ice/ice_main.c     |   2 +-
- drivers/net/ethernet/intel/ice/ice_repr.c     |   2 +-
- drivers/net/ethernet/intel/ice/ice_repr.h     |   3 +-
- 8 files changed, 450 insertions(+), 9 deletions(-)
- create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch_br.c
- create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch_br.h
+ .../net/ethernet/intel/ice/ice_eswitch_br.c   | 448 +++++++++++++++++-
+ .../net/ethernet/intel/ice/ice_eswitch_br.h   |  46 ++
+ 2 files changed, 493 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
-index 817977e3039d..960277d78e09 100644
---- a/drivers/net/ethernet/intel/ice/Makefile
-+++ b/drivers/net/ethernet/intel/ice/Makefile
-@@ -47,5 +47,5 @@ ice-$(CONFIG_PTP_1588_CLOCK) += ice_ptp.o ice_ptp_hw.o
- ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
- ice-$(CONFIG_RFS_ACCEL) += ice_arfs.o
- ice-$(CONFIG_XDP_SOCKETS) += ice_xsk.o
--ice-$(CONFIG_ICE_SWITCHDEV) += ice_eswitch.o
-+ice-$(CONFIG_ICE_SWITCHDEV) += ice_eswitch.o ice_eswitch_br.o
- ice-$(CONFIG_GNSS) += ice_gnss.o
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index b4bca1d964a9..8876ed8ba268 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -511,6 +511,7 @@ enum ice_pf_flags {
- struct ice_switchdev_info {
- 	struct ice_vsi *control_vsi;
- 	struct ice_vsi *uplink_vsi;
-+	struct ice_esw_br_offloads *br_offloads;
- 	bool is_running;
- };
+diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch_br.c b/drivers/net/ethernet/intel/ice/ice_eswitch_br.c
+index 1e5fd9c5a8b6..0fc4807e1d0c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_eswitch_br.c
++++ b/drivers/net/ethernet/intel/ice/ice_eswitch_br.c
+@@ -4,6 +4,14 @@
+ #include "ice.h"
+ #include "ice_eswitch_br.h"
+ #include "ice_repr.h"
++#include "ice_switch.h"
++
++static const struct rhashtable_params ice_fdb_ht_params = {
++	.key_offset = offsetof(struct ice_esw_br_fdb_entry, data),
++	.key_len = sizeof(struct ice_esw_br_fdb_data),
++	.head_offset = offsetof(struct ice_esw_br_fdb_entry, ht_node),
++	.automatic_shrinking = true,
++};
  
-@@ -619,6 +620,7 @@ struct ice_pf {
- 	struct ice_lag *lag; /* Link Aggregation information */
- 
- 	struct ice_switchdev_info switchdev;
-+	struct ice_esw_br_port *br_port;
- 
- #define ICE_INVALID_AGG_NODE_ID		0
- #define ICE_PF_AGG_NODE_ID_START	1
-@@ -846,7 +848,7 @@ static inline bool ice_is_adq_active(struct ice_pf *pf)
- 	return false;
+ static bool ice_eswitch_br_is_dev_valid(const struct net_device *dev)
+ {
+@@ -27,15 +35,421 @@ ice_eswitch_br_netdev_to_port(struct net_device *dev)
+ 	return NULL;
  }
  
--bool netif_is_ice(struct net_device *dev);
-+bool netif_is_ice(const struct net_device *dev);
- int ice_vsi_setup_tx_rings(struct ice_vsi *vsi);
- int ice_vsi_setup_rx_rings(struct ice_vsi *vsi);
- int ice_vsi_open_ctrl(struct ice_vsi *vsi);
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-index 4fe235da1182..c2e3289a0bb4 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-@@ -4,6 +4,7 @@
- #include "ice.h"
- #include "ice_lib.h"
- #include "ice_eswitch.h"
-+#include "ice_eswitch_br.h"
- #include "ice_fltr.h"
- #include "ice_repr.h"
- #include "ice_devlink.h"
-@@ -474,16 +475,24 @@ static void ice_eswitch_napi_disable(struct ice_pf *pf)
-  */
- static int ice_eswitch_enable_switchdev(struct ice_pf *pf)
- {
--	struct ice_vsi *ctrl_vsi;
-+	struct ice_vsi *ctrl_vsi, *uplink_vsi;
-+
-+	uplink_vsi = ice_get_main_vsi(pf);
-+	if (!uplink_vsi)
-+		return -ENODEV;
-+
-+	if (netif_is_any_bridge_port(uplink_vsi->netdev)) {
-+		dev_err(ice_pf_to_dev(pf),
-+			"Uplink port cannot be a bridge port\n");
-+		return -EINVAL;
-+	}
- 
- 	pf->switchdev.control_vsi = ice_eswitch_vsi_setup(pf, pf->hw.port_info);
- 	if (!pf->switchdev.control_vsi)
- 		return -ENODEV;
- 
- 	ctrl_vsi = pf->switchdev.control_vsi;
--	pf->switchdev.uplink_vsi = ice_get_main_vsi(pf);
--	if (!pf->switchdev.uplink_vsi)
--		goto err_vsi;
-+	pf->switchdev.uplink_vsi = uplink_vsi;
- 
- 	if (ice_eswitch_setup_env(pf))
- 		goto err_vsi;
-@@ -499,10 +508,15 @@ static int ice_eswitch_enable_switchdev(struct ice_pf *pf)
- 	if (ice_vsi_open(ctrl_vsi))
- 		goto err_setup_reprs;
- 
-+	if (ice_eswitch_br_offloads_init(pf))
-+		goto err_br_offloads;
-+
- 	ice_eswitch_napi_enable(pf);
- 
- 	return 0;
- 
-+err_br_offloads:
-+	ice_vsi_close(ctrl_vsi);
- err_setup_reprs:
- 	ice_repr_rem_from_all_vfs(pf);
- err_repr_add:
-@@ -521,6 +535,7 @@ static void ice_eswitch_disable_switchdev(struct ice_pf *pf)
- 	struct ice_vsi *ctrl_vsi = pf->switchdev.control_vsi;
- 
- 	ice_eswitch_napi_disable(pf);
-+	ice_eswitch_br_offloads_deinit(pf);
- 	ice_eswitch_release_env(pf);
- 	ice_eswitch_release_reprs(pf, ctrl_vsi);
- 	ice_vsi_release(ctrl_vsi);
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch_br.c b/drivers/net/ethernet/intel/ice/ice_eswitch_br.c
-new file mode 100644
-index 000000000000..1e5fd9c5a8b6
---- /dev/null
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch_br.c
-@@ -0,0 +1,381 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2023, Intel Corporation. */
-+
-+#include "ice.h"
-+#include "ice_eswitch_br.h"
-+#include "ice_repr.h"
-+
-+static bool ice_eswitch_br_is_dev_valid(const struct net_device *dev)
++static void
++ice_eswitch_br_ingress_rule_setup(struct ice_adv_lkup_elem *list,
++				  struct ice_adv_rule_info *rule_info,
++				  const unsigned char *mac,
++				  u8 pf_id, u16 vf_vsi_idx)
 +{
-+	/* Accept only PF netdev and PRs */
-+	return ice_is_port_repr_netdev(dev) || netif_is_ice(dev);
-+}
++	list[0].type = ICE_MAC_OFOS;
++	ether_addr_copy(list[0].h_u.eth_hdr.dst_addr, mac);
++	eth_broadcast_addr(list[0].m_u.eth_hdr.dst_addr);
 +
-+static struct ice_esw_br_port *
-+ice_eswitch_br_netdev_to_port(struct net_device *dev)
-+{
-+	if (ice_is_port_repr_netdev(dev)) {
-+		struct ice_repr *repr = ice_netdev_to_repr(dev);
-+
-+		return repr->br_port;
-+	} else if (netif_is_ice(dev)) {
-+		struct ice_pf *pf = ice_netdev_to_pf(dev);
-+
-+		return pf->br_port;
-+	}
-+
-+	return NULL;
++	rule_info->sw_act.vsi_handle = vf_vsi_idx;
++	rule_info->sw_act.flag |= ICE_FLTR_RX;
++	rule_info->sw_act.src = pf_id;
++	rule_info->priority = 5;
 +}
 +
 +static void
-+ice_eswitch_br_port_deinit(struct ice_esw_br *bridge,
-+			   struct ice_esw_br_port *br_port)
++ice_eswitch_br_egress_rule_setup(struct ice_adv_lkup_elem *list,
++				 struct ice_adv_rule_info *rule_info,
++				 const unsigned char *mac,
++				 u16 pf_vsi_idx)
 +{
-+	struct ice_vsi *vsi = br_port->vsi;
++	list[0].type = ICE_MAC_OFOS;
++	ether_addr_copy(list[0].h_u.eth_hdr.dst_addr, mac);
++	eth_broadcast_addr(list[0].m_u.eth_hdr.dst_addr);
 +
-+	if (br_port->type == ICE_ESWITCH_BR_UPLINK_PORT && vsi->back)
-+		vsi->back->br_port = NULL;
-+	else if (vsi->vf)
-+		vsi->vf->repr->br_port = NULL;
-+
-+	xa_erase(&bridge->ports, br_port->vsi_idx);
-+	kfree(br_port);
-+}
-+
-+static struct ice_esw_br_port *
-+ice_eswitch_br_port_init(struct ice_esw_br *bridge)
-+{
-+	struct ice_esw_br_port *br_port;
-+
-+	br_port = kzalloc(sizeof(*br_port), GFP_KERNEL);
-+	if (!br_port)
-+		return ERR_PTR(-ENOMEM);
-+
-+	br_port->bridge = bridge;
-+
-+	return br_port;
++	rule_info->sw_act.vsi_handle = pf_vsi_idx;
++	rule_info->sw_act.flag |= ICE_FLTR_TX;
++	rule_info->flags_info.act = ICE_SINGLE_ACT_LAN_ENABLE;
++	rule_info->flags_info.act_valid = true;
++	rule_info->priority = 5;
 +}
 +
 +static int
-+ice_eswitch_br_vf_repr_port_init(struct ice_esw_br *bridge,
-+				 struct ice_repr *repr)
++ice_eswitch_br_rule_delete(struct ice_hw *hw, struct ice_rule_query_data *rule)
 +{
-+	struct ice_esw_br_port *br_port;
 +	int err;
 +
-+	br_port = ice_eswitch_br_port_init(bridge);
-+	if (IS_ERR(br_port))
-+		return PTR_ERR(br_port);
-+
-+	br_port->vsi = repr->src_vsi;
-+	br_port->vsi_idx = br_port->vsi->idx;
-+	br_port->type = ICE_ESWITCH_BR_VF_REPR_PORT;
-+	repr->br_port = br_port;
-+
-+	err = xa_insert(&bridge->ports, br_port->vsi_idx, br_port, GFP_KERNEL);
-+	if (err) {
-+		ice_eswitch_br_port_deinit(bridge, br_port);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+ice_eswitch_br_uplink_port_init(struct ice_esw_br *bridge, struct ice_pf *pf)
-+{
-+	struct ice_vsi *vsi = pf->switchdev.uplink_vsi;
-+	struct ice_esw_br_port *br_port;
-+	int err;
-+
-+	br_port = ice_eswitch_br_port_init(bridge);
-+	if (IS_ERR(br_port))
-+		return PTR_ERR(br_port);
-+
-+	br_port->vsi = vsi;
-+	br_port->vsi_idx = br_port->vsi->idx;
-+	br_port->type = ICE_ESWITCH_BR_UPLINK_PORT;
-+	pf->br_port = br_port;
-+
-+	err = xa_insert(&bridge->ports, br_port->vsi_idx, br_port, GFP_KERNEL);
-+	if (err) {
-+		ice_eswitch_br_port_deinit(bridge, br_port);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static void
-+ice_eswitch_br_ports_flush(struct ice_esw_br *bridge)
-+{
-+	struct ice_esw_br_port *port;
-+	unsigned long i;
-+
-+	xa_for_each(&bridge->ports, i, port)
-+		ice_eswitch_br_port_deinit(bridge, port);
-+}
-+
-+static void
-+ice_eswitch_br_deinit(struct ice_esw_br_offloads *br_offloads,
-+		      struct ice_esw_br *bridge)
-+{
-+	if (!bridge)
-+		return;
-+
-+	/* Cleanup all the ports that were added asynchronously
-+	 * through NETDEV_CHANGEUPPER event.
-+	 */
-+	ice_eswitch_br_ports_flush(bridge);
-+	WARN_ON(!xa_empty(&bridge->ports));
-+	xa_destroy(&bridge->ports);
-+	br_offloads->bridge = NULL;
-+	kfree(bridge);
-+}
-+
-+static struct ice_esw_br *
-+ice_eswitch_br_init(struct ice_esw_br_offloads *br_offloads, int ifindex)
-+{
-+	struct ice_esw_br *bridge;
-+
-+	bridge = kzalloc(sizeof(*bridge), GFP_KERNEL);
-+	if (!bridge)
-+		return ERR_PTR(-ENOMEM);
-+
-+	bridge->br_offloads = br_offloads;
-+	bridge->ifindex = ifindex;
-+	xa_init(&bridge->ports);
-+	br_offloads->bridge = bridge;
-+
-+	return bridge;
-+}
-+
-+static struct ice_esw_br *
-+ice_eswitch_br_get(struct ice_esw_br_offloads *br_offloads, int ifindex,
-+		   struct netlink_ext_ack *extack)
-+{
-+	struct ice_esw_br *bridge = br_offloads->bridge;
-+
-+	if (bridge) {
-+		if (bridge->ifindex != ifindex) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Only one bridge is supported per eswitch");
-+			return ERR_PTR(-EOPNOTSUPP);
-+		}
-+		return bridge;
-+	}
-+
-+	/* Create the bridge if it doesn't exist yet */
-+	bridge = ice_eswitch_br_init(br_offloads, ifindex);
-+	if (IS_ERR(bridge))
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to init the bridge");
-+
-+	return bridge;
-+}
-+
-+static void
-+ice_eswitch_br_verify_deinit(struct ice_esw_br_offloads *br_offloads,
-+			     struct ice_esw_br *bridge)
-+{
-+	/* Remove the bridge if it exists and there are no ports left */
-+	if (!bridge || !xa_empty(&bridge->ports))
-+		return;
-+
-+	ice_eswitch_br_deinit(br_offloads, bridge);
-+}
-+
-+static int
-+ice_eswitch_br_port_unlink(struct ice_esw_br_offloads *br_offloads,
-+			   struct net_device *dev, int ifindex,
-+			   struct netlink_ext_ack *extack)
-+{
-+	struct ice_esw_br_port *br_port = ice_eswitch_br_netdev_to_port(dev);
-+
-+	if (!br_port) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Port representor is not attached to any bridge");
++	if (!rule)
 +		return -EINVAL;
-+	}
 +
-+	if (br_port->bridge->ifindex != ifindex) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Port representor is attached to another bridge");
-+		return -EINVAL;
-+	}
++	err = ice_rem_adv_rule_by_id(hw, rule);
++	kfree(rule);
 +
-+	ice_eswitch_br_port_deinit(br_port->bridge, br_port);
-+	ice_eswitch_br_verify_deinit(br_offloads, br_port->bridge);
-+
-+	return 0;
-+}
-+
-+static int
-+ice_eswitch_br_port_link(struct ice_esw_br_offloads *br_offloads,
-+			 struct net_device *dev, int ifindex,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct ice_esw_br *bridge;
-+	int err;
-+
-+	if (ice_eswitch_br_netdev_to_port(dev)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Port is already attached to the bridge");
-+		return -EINVAL;
-+	}
-+
-+	bridge = ice_eswitch_br_get(br_offloads, ifindex, extack);
-+	if (IS_ERR(bridge))
-+		return PTR_ERR(bridge);
-+
-+	if (ice_is_port_repr_netdev(dev)) {
-+		struct ice_repr *repr = ice_netdev_to_repr(dev);
-+
-+		err = ice_eswitch_br_vf_repr_port_init(bridge, repr);
-+	} else {
-+		struct ice_pf *pf = ice_netdev_to_pf(dev);
-+
-+		err = ice_eswitch_br_uplink_port_init(bridge, pf);
-+	}
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to init bridge port");
-+		goto err_port_init;
-+	}
-+
-+	return 0;
-+
-+err_port_init:
-+	ice_eswitch_br_verify_deinit(br_offloads, bridge);
 +	return err;
 +}
 +
-+static int
-+ice_eswitch_br_port_changeupper(struct notifier_block *nb, void *ptr)
++static struct ice_rule_query_data *
++ice_eswitch_br_fwd_rule_create(struct ice_hw *hw, int vsi_idx, int port_type,
++			       const unsigned char *mac)
 +{
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-+	struct netdev_notifier_changeupper_info *info = ptr;
-+	struct ice_esw_br_offloads *br_offloads;
-+	struct netlink_ext_ack *extack;
-+	struct net_device *upper;
++	struct ice_adv_rule_info rule_info = { 0 };
++	struct ice_rule_query_data *rule;
++	struct ice_adv_lkup_elem *list;
++	u16 lkups_cnt = 1;
++	int err;
 +
-+	br_offloads = ice_nb_to_br_offloads(nb, netdev_nb);
++	rule = kzalloc(sizeof(*rule), GFP_KERNEL);
++	if (!rule)
++		return ERR_PTR(-ENOMEM);
 +
-+	if (!ice_eswitch_br_is_dev_valid(dev))
-+		return 0;
-+
-+	upper = info->upper_dev;
-+	if (!netif_is_bridge_master(upper))
-+		return 0;
-+
-+	extack = netdev_notifier_info_to_extack(&info->info);
-+
-+	if (info->linking)
-+		return ice_eswitch_br_port_link(br_offloads, dev,
-+						upper->ifindex, extack);
-+	else
-+		return ice_eswitch_br_port_unlink(br_offloads, dev,
-+						  upper->ifindex, extack);
-+}
-+
-+static int
-+ice_eswitch_br_port_event(struct notifier_block *nb,
-+			  unsigned long event, void *ptr)
-+{
-+	int err = 0;
-+
-+	switch (event) {
-+	case NETDEV_CHANGEUPPER:
-+		err = ice_eswitch_br_port_changeupper(nb, ptr);
-+		break;
++	list = kcalloc(lkups_cnt, sizeof(*list), GFP_ATOMIC);
++	if (!list) {
++		err = -ENOMEM;
++		goto err_list_alloc;
 +	}
 +
-+	return notifier_from_errno(err);
++	switch (port_type) {
++	case ICE_ESWITCH_BR_UPLINK_PORT:
++		ice_eswitch_br_egress_rule_setup(list, &rule_info, mac,
++						 vsi_idx);
++		break;
++	case ICE_ESWITCH_BR_VF_REPR_PORT:
++		ice_eswitch_br_ingress_rule_setup(list, &rule_info, mac,
++						  hw->pf_id, vsi_idx);
++		break;
++	default:
++		err = -EINVAL;
++		goto err_add_rule;
++	}
++
++	rule_info.sw_act.fltr_act = ICE_FWD_TO_VSI;
++
++	err = ice_add_adv_rule(hw, list, lkups_cnt, &rule_info, rule);
++	if (err)
++		goto err_add_rule;
++
++	kfree(list);
++
++	return rule;
++
++err_add_rule:
++	kfree(list);
++err_list_alloc:
++	kfree(rule);
++
++	return ERR_PTR(err);
++}
++
++static struct ice_esw_br_flow *
++ice_eswitch_br_flow_create(struct device *dev, struct ice_hw *hw, int vsi_idx,
++			   int port_type, const unsigned char *mac)
++{
++	struct ice_rule_query_data *fwd_rule;
++	struct ice_esw_br_flow *flow;
++	int err;
++
++	flow = kzalloc(sizeof(*flow), GFP_KERNEL);
++	if (!flow)
++		return ERR_PTR(-ENOMEM);
++
++	fwd_rule = ice_eswitch_br_fwd_rule_create(hw, vsi_idx, port_type, mac);
++	err = PTR_ERR_OR_ZERO(fwd_rule);
++	if (err) {
++		dev_err(dev, "Failed to create eswitch bridge %sgress forward rule, err: %d\n",
++			port_type == ICE_ESWITCH_BR_UPLINK_PORT ? "e" : "in",
++			err);
++		goto err_fwd_rule;
++	}
++
++	flow->fwd_rule = fwd_rule;
++
++	return flow;
++
++err_fwd_rule:
++	kfree(flow);
++
++	return ERR_PTR(err);
++}
++
++static struct ice_esw_br_fdb_entry *
++ice_eswitch_br_fdb_find(struct ice_esw_br *bridge, const unsigned char *mac,
++			u16 vid)
++{
++	struct ice_esw_br_fdb_data data = {
++		.vid = vid,
++	};
++
++	ether_addr_copy(data.addr, mac);
++	return rhashtable_lookup_fast(&bridge->fdb_ht, &data,
++				      ice_fdb_ht_params);
 +}
 +
 +static void
-+ice_eswitch_br_offloads_dealloc(struct ice_pf *pf)
++ice_eswitch_br_flow_delete(struct ice_pf *pf, struct ice_esw_br_flow *flow)
 +{
-+	struct ice_esw_br_offloads *br_offloads = pf->switchdev.br_offloads;
-+
-+	ASSERT_RTNL();
-+
-+	if (!br_offloads)
-+		return;
-+
-+	ice_eswitch_br_deinit(br_offloads, br_offloads->bridge);
-+
-+	pf->switchdev.br_offloads = NULL;
-+	kfree(br_offloads);
-+}
-+
-+static struct ice_esw_br_offloads *
-+ice_eswitch_br_offloads_alloc(struct ice_pf *pf)
-+{
-+	struct ice_esw_br_offloads *br_offloads;
-+
-+	ASSERT_RTNL();
-+
-+	if (pf->switchdev.br_offloads)
-+		return ERR_PTR(-EEXIST);
-+
-+	br_offloads = kzalloc(sizeof(*br_offloads), GFP_KERNEL);
-+	if (!br_offloads)
-+		return ERR_PTR(-ENOMEM);
-+
-+	pf->switchdev.br_offloads = br_offloads;
-+	br_offloads->pf = pf;
-+
-+	return br_offloads;
-+}
-+
-+void
-+ice_eswitch_br_offloads_deinit(struct ice_pf *pf)
-+{
-+	struct ice_esw_br_offloads *br_offloads;
-+
-+	br_offloads = pf->switchdev.br_offloads;
-+	if (!br_offloads)
-+		return;
-+
-+	unregister_netdevice_notifier(&br_offloads->netdev_nb);
-+	/* Although notifier block is unregistered just before,
-+	 * so we don't get any new events, some events might be
-+	 * already in progress. Hold the rtnl lock and wait for
-+	 * them to finished.
-+	 */
-+	rtnl_lock();
-+	ice_eswitch_br_offloads_dealloc(pf);
-+	rtnl_unlock();
-+}
-+
-+int
-+ice_eswitch_br_offloads_init(struct ice_pf *pf)
-+{
-+	struct ice_esw_br_offloads *br_offloads;
 +	struct device *dev = ice_pf_to_dev(pf);
 +	int err;
 +
-+	rtnl_lock();
-+	br_offloads = ice_eswitch_br_offloads_alloc(pf);
-+	rtnl_unlock();
-+	if (IS_ERR(br_offloads)) {
-+		dev_err(dev, "Failed to init eswitch bridge\n");
-+		return PTR_ERR(br_offloads);
++	err = ice_eswitch_br_rule_delete(&pf->hw, flow->fwd_rule);
++	if (err)
++		dev_err(dev, "Failed to delete FDB forward rule, err: %d\n",
++			err);
++
++	kfree(flow);
++}
++
++static void
++ice_eswitch_br_fdb_entry_delete(struct ice_esw_br *bridge,
++				struct ice_esw_br_fdb_entry *fdb_entry)
++{
++	struct ice_pf *pf = bridge->br_offloads->pf;
++
++	rhashtable_remove_fast(&bridge->fdb_ht, &fdb_entry->ht_node,
++			       ice_fdb_ht_params);
++	list_del(&fdb_entry->list);
++
++	ice_eswitch_br_flow_delete(pf, fdb_entry->flow);
++
++	kfree(fdb_entry);
++}
++
++static void
++ice_eswitch_br_fdb_offload_notify(struct net_device *dev,
++				  const unsigned char *mac, u16 vid,
++				  unsigned long val)
++{
++	struct switchdev_notifier_fdb_info fdb_info = {
++		.addr = mac,
++		.vid = vid,
++		.offloaded = true,
++	};
++
++	call_switchdev_notifiers(val, dev, &fdb_info.info, NULL);
++}
++
++static void
++ice_eswitch_br_fdb_entry_notify_and_cleanup(struct ice_esw_br *bridge,
++					    struct ice_esw_br_fdb_entry *entry)
++{
++	if (!(entry->flags & ICE_ESWITCH_BR_FDB_ADDED_BY_USER))
++		ice_eswitch_br_fdb_offload_notify(entry->dev, entry->data.addr,
++						  entry->data.vid,
++						  SWITCHDEV_FDB_DEL_TO_BRIDGE);
++	ice_eswitch_br_fdb_entry_delete(bridge, entry);
++}
++
++static void
++ice_eswitch_br_fdb_entry_find_and_delete(struct ice_esw_br *bridge,
++					 const unsigned char *mac, u16 vid)
++{
++	struct ice_pf *pf = bridge->br_offloads->pf;
++	struct ice_esw_br_fdb_entry *fdb_entry;
++	struct device *dev = ice_pf_to_dev(pf);
++
++	fdb_entry = ice_eswitch_br_fdb_find(bridge, mac, vid);
++	if (!fdb_entry) {
++		dev_err(dev, "FDB entry with mac: %pM and vid: %u not found\n",
++			mac, vid);
++		return;
 +	}
 +
-+	br_offloads->netdev_nb.notifier_call = ice_eswitch_br_port_event;
-+	err = register_netdevice_notifier(&br_offloads->netdev_nb);
++	ice_eswitch_br_fdb_entry_notify_and_cleanup(bridge, fdb_entry);
++}
++
++static void
++ice_eswitch_br_fdb_entry_create(struct net_device *netdev,
++				struct ice_esw_br_port *br_port,
++				bool added_by_user,
++				const unsigned char *mac, u16 vid)
++{
++	struct ice_esw_br *bridge = br_port->bridge;
++	struct ice_pf *pf = bridge->br_offloads->pf;
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_esw_br_fdb_entry *fdb_entry;
++	struct ice_esw_br_flow *flow;
++	struct ice_hw *hw = &pf->hw;
++	unsigned long event;
++	int err;
++
++	fdb_entry = ice_eswitch_br_fdb_find(bridge, mac, vid);
++	if (fdb_entry)
++		ice_eswitch_br_fdb_entry_notify_and_cleanup(bridge, fdb_entry);
++
++	fdb_entry = kzalloc(sizeof(*fdb_entry), GFP_KERNEL);
++	if (!fdb_entry) {
++		err = -ENOMEM;
++		goto err_exit;
++	}
++
++	flow = ice_eswitch_br_flow_create(dev, hw, br_port->vsi_idx,
++					  br_port->type, mac);
++	if (IS_ERR(flow)) {
++		err = PTR_ERR(flow);
++		goto err_add_flow;
++	}
++
++	ether_addr_copy(fdb_entry->data.addr, mac);
++	fdb_entry->data.vid = vid;
++	fdb_entry->br_port = br_port;
++	fdb_entry->flow = flow;
++	fdb_entry->dev = netdev;
++	event = SWITCHDEV_FDB_ADD_TO_BRIDGE;
++
++	if (added_by_user) {
++		fdb_entry->flags |= ICE_ESWITCH_BR_FDB_ADDED_BY_USER;
++		event = SWITCHDEV_FDB_OFFLOADED;
++	}
++
++	err = rhashtable_insert_fast(&bridge->fdb_ht, &fdb_entry->ht_node,
++				     ice_fdb_ht_params);
++	if (err)
++		goto err_fdb_insert;
++
++	list_add(&fdb_entry->list, &bridge->fdb_list);
++
++	ice_eswitch_br_fdb_offload_notify(netdev, mac, vid, event);
++
++	return;
++
++err_fdb_insert:
++	ice_eswitch_br_flow_delete(pf, flow);
++err_add_flow:
++	kfree(fdb_entry);
++err_exit:
++	dev_err(dev, "Failed to create fdb entry, err: %d\n", err);
++}
++
++static void
++ice_eswitch_br_fdb_work_dealloc(struct ice_esw_br_fdb_work *fdb_work)
++{
++	kfree(fdb_work->fdb_info.addr);
++	kfree(fdb_work);
++}
++
++static void
++ice_eswitch_br_fdb_event_work(struct work_struct *work)
++{
++	struct ice_esw_br_fdb_work *fdb_work = ice_work_to_fdb_work(work);
++	bool added_by_user = fdb_work->fdb_info.added_by_user;
++	struct ice_esw_br_port *br_port = fdb_work->br_port;
++	const unsigned char *mac = fdb_work->fdb_info.addr;
++	u16 vid = fdb_work->fdb_info.vid;
++
++	rtnl_lock();
++
++	if (!br_port || !br_port->bridge)
++		goto err_exit;
++
++	switch (fdb_work->event) {
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++		ice_eswitch_br_fdb_entry_create(fdb_work->dev, br_port,
++						added_by_user, mac, vid);
++		break;
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		ice_eswitch_br_fdb_entry_find_and_delete(br_port->bridge,
++							 mac, vid);
++		break;
++	default:
++		goto err_exit;
++	}
++
++err_exit:
++	rtnl_unlock();
++	dev_put(fdb_work->dev);
++	ice_eswitch_br_fdb_work_dealloc(fdb_work);
++}
++
++static struct ice_esw_br_fdb_work *
++ice_eswitch_br_fdb_work_alloc(struct switchdev_notifier_fdb_info *fdb_info,
++			      struct ice_esw_br_port *br_port,
++			      struct net_device *dev,
++			      unsigned long event)
++{
++	struct ice_esw_br_fdb_work *work;
++	unsigned char *mac;
++
++	work = kzalloc(sizeof(*work), GFP_ATOMIC);
++	if (!work)
++		return ERR_PTR(-ENOMEM);
++
++	INIT_WORK(&work->work, ice_eswitch_br_fdb_event_work);
++	memcpy(&work->fdb_info, fdb_info, sizeof(work->fdb_info));
++
++	mac = kzalloc(ETH_ALEN, GFP_ATOMIC);
++	if (!mac) {
++		kfree(work);
++		return ERR_PTR(-ENOMEM);
++	}
++
++	ether_addr_copy(mac, fdb_info->addr);
++	work->fdb_info.addr = mac;
++	work->br_port = br_port;
++	work->event = event;
++	work->dev = dev;
++
++	return work;
++}
++
++static int
++ice_eswitch_br_switchdev_event(struct notifier_block *nb,
++			       unsigned long event, void *ptr)
++{
++	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
++	struct switchdev_notifier_fdb_info *fdb_info;
++	struct switchdev_notifier_info *info = ptr;
++	struct ice_esw_br_offloads *br_offloads;
++	struct ice_esw_br_fdb_work *work;
++	struct ice_esw_br_port *br_port;
++	struct netlink_ext_ack *extack;
++	struct net_device *upper;
++
++	br_offloads = ice_nb_to_br_offloads(nb, switchdev_nb);
++	extack = switchdev_notifier_info_to_extack(ptr);
++
++	upper = netdev_master_upper_dev_get_rcu(dev);
++	if (!upper)
++		return NOTIFY_DONE;
++
++	if (!netif_is_bridge_master(upper))
++		return NOTIFY_DONE;
++
++	if (!ice_eswitch_br_is_dev_valid(dev))
++		return NOTIFY_DONE;
++
++	br_port = ice_eswitch_br_netdev_to_port(dev);
++	if (!br_port)
++		return NOTIFY_DONE;
++
++	switch (event) {
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		fdb_info = container_of(info, typeof(*fdb_info), info);
++
++		work = ice_eswitch_br_fdb_work_alloc(fdb_info, br_port, dev,
++						     event);
++		if (IS_ERR(work)) {
++			NL_SET_ERR_MSG_MOD(extack, "Failed to init switchdev fdb work");
++			return notifier_from_errno(PTR_ERR(work));
++		}
++		dev_hold(dev);
++
++		queue_work(br_offloads->wq, &work->work);
++		break;
++	default:
++		break;
++	}
++	return NOTIFY_DONE;
++}
++
+ static void
+ ice_eswitch_br_port_deinit(struct ice_esw_br *bridge,
+ 			   struct ice_esw_br_port *br_port)
+ {
++	struct ice_esw_br_fdb_entry *fdb_entry, *tmp;
+ 	struct ice_vsi *vsi = br_port->vsi;
+ 
++	list_for_each_entry_safe(fdb_entry, tmp, &bridge->fdb_list, list) {
++		if (br_port == fdb_entry->br_port)
++			ice_eswitch_br_fdb_entry_delete(bridge, fdb_entry);
++	}
++
+ 	if (br_port->type == ICE_ESWITCH_BR_UPLINK_PORT && vsi->back)
+ 		vsi->back->br_port = NULL;
+-	else if (vsi->vf)
++	else if (vsi->vf && vsi->vf->repr)
+ 		vsi->vf->repr->br_port = NULL;
+ 
+ 	xa_erase(&bridge->ports, br_port->vsi_idx);
+@@ -129,6 +543,8 @@ ice_eswitch_br_deinit(struct ice_esw_br_offloads *br_offloads,
+ 	ice_eswitch_br_ports_flush(bridge);
+ 	WARN_ON(!xa_empty(&bridge->ports));
+ 	xa_destroy(&bridge->ports);
++	rhashtable_destroy(&bridge->fdb_ht);
++
+ 	br_offloads->bridge = NULL;
+ 	kfree(bridge);
+ }
+@@ -137,11 +553,19 @@ static struct ice_esw_br *
+ ice_eswitch_br_init(struct ice_esw_br_offloads *br_offloads, int ifindex)
+ {
+ 	struct ice_esw_br *bridge;
++	int err;
+ 
+ 	bridge = kzalloc(sizeof(*bridge), GFP_KERNEL);
+ 	if (!bridge)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	err = rhashtable_init(&bridge->fdb_ht, &ice_fdb_ht_params);
++	if (err) {
++		kfree(bridge);
++		return ERR_PTR(err);
++	}
++
++	INIT_LIST_HEAD(&bridge->fdb_list);
+ 	bridge->br_offloads = br_offloads;
+ 	bridge->ifindex = ifindex;
+ 	xa_init(&bridge->ports);
+@@ -337,6 +761,8 @@ ice_eswitch_br_offloads_deinit(struct ice_pf *pf)
+ 		return;
+ 
+ 	unregister_netdevice_notifier(&br_offloads->netdev_nb);
++	unregister_switchdev_notifier(&br_offloads->switchdev_nb);
++	destroy_workqueue(br_offloads->wq);
+ 	/* Although notifier block is unregistered just before,
+ 	 * so we don't get any new events, some events might be
+ 	 * already in progress. Hold the rtnl lock and wait for
+@@ -362,6 +788,22 @@ ice_eswitch_br_offloads_init(struct ice_pf *pf)
+ 		return PTR_ERR(br_offloads);
+ 	}
+ 
++	br_offloads->wq = alloc_ordered_workqueue("ice_bridge_wq", 0);
++	if (!br_offloads->wq) {
++		err = -ENOMEM;
++		dev_err(dev, "Failed to allocate bridge workqueue\n");
++		goto err_alloc_wq;
++	}
++
++	br_offloads->switchdev_nb.notifier_call =
++		ice_eswitch_br_switchdev_event;
++	err = register_switchdev_notifier(&br_offloads->switchdev_nb);
 +	if (err) {
 +		dev_err(dev,
-+			"Failed to register bridge port event notifier\n");
-+		goto err_reg_netdev_nb;
++			"Failed to register switchdev notifier\n");
++		goto err_reg_switchdev_nb;
 +	}
 +
-+	return 0;
-+
-+err_reg_netdev_nb:
-+	rtnl_lock();
-+	ice_eswitch_br_offloads_dealloc(pf);
-+	rtnl_unlock();
-+
-+	return err;
-+}
+ 	br_offloads->netdev_nb.notifier_call = ice_eswitch_br_port_event;
+ 	err = register_netdevice_notifier(&br_offloads->netdev_nb);
+ 	if (err) {
+@@ -373,6 +815,10 @@ ice_eswitch_br_offloads_init(struct ice_pf *pf)
+ 	return 0;
+ 
+ err_reg_netdev_nb:
++	unregister_switchdev_notifier(&br_offloads->switchdev_nb);
++err_reg_switchdev_nb:
++	destroy_workqueue(br_offloads->wq);
++err_alloc_wq:
+ 	rtnl_lock();
+ 	ice_eswitch_br_offloads_dealloc(pf);
+ 	rtnl_unlock();
 diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch_br.h b/drivers/net/ethernet/intel/ice/ice_eswitch_br.h
-new file mode 100644
-index 000000000000..3ad28a17298f
---- /dev/null
+index 3ad28a17298f..6fcacf545b98 100644
+--- a/drivers/net/ethernet/intel/ice/ice_eswitch_br.h
 +++ b/drivers/net/ethernet/intel/ice/ice_eswitch_br.h
-@@ -0,0 +1,42 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2023, Intel Corporation. */
-+
-+#ifndef _ICE_ESWITCH_BR_H_
-+#define _ICE_ESWITCH_BR_H_
-+
-+enum ice_esw_br_port_type {
-+	ICE_ESWITCH_BR_UPLINK_PORT = 0,
-+	ICE_ESWITCH_BR_VF_REPR_PORT = 1,
-+};
-+
-+struct ice_esw_br_port {
-+	struct ice_esw_br *bridge;
-+	struct ice_vsi *vsi;
-+	enum ice_esw_br_port_type type;
-+	u16 vsi_idx;
-+};
-+
-+struct ice_esw_br {
-+	struct ice_esw_br_offloads *br_offloads;
-+	struct xarray ports;
-+
-+	int ifindex;
-+};
-+
-+struct ice_esw_br_offloads {
-+	struct ice_pf *pf;
-+	struct ice_esw_br *bridge;
-+	struct notifier_block netdev_nb;
-+};
-+
-+#define ice_nb_to_br_offloads(nb, nb_name) \
-+	container_of(nb, \
-+		     struct ice_esw_br_offloads, \
-+		     nb_name)
-+
-+void
-+ice_eswitch_br_offloads_deinit(struct ice_pf *pf);
-+int
-+ice_eswitch_br_offloads_init(struct ice_pf *pf);
-+
-+#endif /* _ICE_ESWITCH_BR_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 80b2b4d39278..7aa0bec05186 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -80,7 +80,7 @@ ice_indr_setup_tc_cb(struct net_device *netdev, struct Qdisc *sch,
- 		     void *data,
- 		     void (*cleanup)(struct flow_block_cb *block_cb));
+@@ -4,6 +4,33 @@
+ #ifndef _ICE_ESWITCH_BR_H_
+ #define _ICE_ESWITCH_BR_H_
  
--bool netif_is_ice(struct net_device *dev)
-+bool netif_is_ice(const struct net_device *dev)
- {
- 	return dev && (dev->netdev_ops == &ice_netdev_ops);
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
-index e30e12321abd..c686ac0935eb 100644
---- a/drivers/net/ethernet/intel/ice/ice_repr.c
-+++ b/drivers/net/ethernet/intel/ice/ice_repr.c
-@@ -254,7 +254,7 @@ static const struct net_device_ops ice_repr_netdev_ops = {
-  * ice_is_port_repr_netdev - Check if a given netdevice is a port representor netdev
-  * @netdev: pointer to netdev
-  */
--bool ice_is_port_repr_netdev(struct net_device *netdev)
-+bool ice_is_port_repr_netdev(const struct net_device *netdev)
- {
- 	return netdev && (netdev->netdev_ops == &ice_repr_netdev_ops);
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_repr.h b/drivers/net/ethernet/intel/ice/ice_repr.h
-index 9c2a6f496b3b..e1ee2d2c1d2d 100644
---- a/drivers/net/ethernet/intel/ice/ice_repr.h
-+++ b/drivers/net/ethernet/intel/ice/ice_repr.h
-@@ -12,6 +12,7 @@ struct ice_repr {
- 	struct ice_q_vector *q_vector;
- 	struct net_device *netdev;
- 	struct metadata_dst *dst;
++#include <linux/rhashtable.h>
++
++struct ice_esw_br_fdb_data {
++	unsigned char addr[ETH_ALEN];
++	u16 vid;
++};
++
++struct ice_esw_br_flow {
++	struct ice_rule_query_data *fwd_rule;
++};
++
++enum {
++	ICE_ESWITCH_BR_FDB_ADDED_BY_USER = BIT(0),
++};
++
++struct ice_esw_br_fdb_entry {
++	struct ice_esw_br_fdb_data data;
++	struct rhash_head ht_node;
++	struct list_head list;
++
++	int flags;
++
++	struct net_device *dev;
 +	struct ice_esw_br_port *br_port;
- #ifdef CONFIG_ICE_SWITCHDEV
- 	/* info about slow path rule */
- 	struct ice_rule_query_data sp_rule;
-@@ -27,5 +28,5 @@ void ice_repr_stop_tx_queues(struct ice_repr *repr);
- void ice_repr_set_traffic_vsi(struct ice_repr *repr, struct ice_vsi *vsi);
++	struct ice_esw_br_flow *flow;
++};
++
+ enum ice_esw_br_port_type {
+ 	ICE_ESWITCH_BR_UPLINK_PORT = 0,
+ 	ICE_ESWITCH_BR_VF_REPR_PORT = 1,
+@@ -20,6 +47,9 @@ struct ice_esw_br {
+ 	struct ice_esw_br_offloads *br_offloads;
+ 	struct xarray ports;
  
- struct ice_repr *ice_netdev_to_repr(struct net_device *netdev);
--bool ice_is_port_repr_netdev(struct net_device *netdev);
-+bool ice_is_port_repr_netdev(const struct net_device *netdev);
- #endif
++	struct rhashtable fdb_ht;
++	struct list_head fdb_list;
++
+ 	int ifindex;
+ };
+ 
+@@ -27,6 +57,17 @@ struct ice_esw_br_offloads {
+ 	struct ice_pf *pf;
+ 	struct ice_esw_br *bridge;
+ 	struct notifier_block netdev_nb;
++	struct notifier_block switchdev_nb;
++
++	struct workqueue_struct *wq;
++};
++
++struct ice_esw_br_fdb_work {
++	struct work_struct work;
++	struct switchdev_notifier_fdb_info fdb_info;
++	struct ice_esw_br_port *br_port;
++	struct net_device *dev;
++	unsigned long event;
+ };
+ 
+ #define ice_nb_to_br_offloads(nb, nb_name) \
+@@ -34,6 +75,11 @@ struct ice_esw_br_offloads {
+ 		     struct ice_esw_br_offloads, \
+ 		     nb_name)
+ 
++#define ice_work_to_fdb_work(w) \
++	container_of(w, \
++		     struct ice_esw_br_fdb_work, \
++		     work)
++
+ void
+ ice_eswitch_br_offloads_deinit(struct ice_pf *pf);
+ int
 -- 
 2.40.1
 
