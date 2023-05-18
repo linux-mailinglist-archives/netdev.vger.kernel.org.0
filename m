@@ -1,55 +1,48 @@
-Return-Path: <netdev+bounces-3758-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3759-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7EE8770899E
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 22:36:34 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 225D4708A09
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 23:04:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 73A401C211C8
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 20:36:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 27B9028199F
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 21:04:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 462C5134CB;
-	Thu, 18 May 2023 20:36:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 321361EA6E;
+	Thu, 18 May 2023 21:04:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6930729AD
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 20:36:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91A18C433D2;
-	Thu, 18 May 2023 20:36:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30D7B1DDDF
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 21:04:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91402C433EF;
+	Thu, 18 May 2023 21:04:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684442189;
-	bh=gywY8PWGZ7qWr4FaAteCVzU5t3a/2TpXuUzZ7c29shY=;
+	s=k20201202; t=1684443891;
+	bh=WO1/uXc1qhLL3pth/REVtKNVS77zKXLjrxpiV+QO2eI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Br1Udi1ECQB0WIbtiCJSMtyrZ0ZMFtG5MnIzFiC83U6jaNH+WQmSY8dQfH8tL7j8Q
-	 +0jP+65qMGvOW7lyq3wUg7Ji2WecBWrOGFcQSUJZ1GEfYww5ZVUZwDLnUTrwMc6fP2
-	 gzGp6ZPJpizh1bBzEmvKKr6i6zHmy1H6059ZwMLX/IBnjc5Po3kGx41TypwI5GbomU
-	 BqSj57ihQq/jIN4FWXdaEKo6fxDk5jRQpfJ0J72FUWhTRv//5QOEh1F9SdnsTgTxOf
-	 znbu4msMs3yeBVq2ASblyBUHLNTQ209fzRG4urAWuyupdzax7Gzhm5OWwsdeoeGymA
-	 c2csTSZrjFl/w==
-Date: Thu, 18 May 2023 13:36:27 -0700
+	b=ZXv6DNRu4yO34k4t0F53YYl8jm7CeWBYYR88nKMhOBMc3BdxCrd5frnfuyjljAzAv
+	 AlT53Yn+GFRl555U2FfsQ7HmdJEPqivZ90jDQ+SDimP9mtBOq3307saZEloqOc4lS4
+	 /MnxN/tJ/NlJB0+FNqcv/Cb8m7Q9wRGOkSu/3KoWmOw21mn2Y08R/TprHobyk61o28
+	 wp34jW5PLhh+ui96ZVQib3ZMMrsf+1h58tANIYOwJP7FugRj8sbyPH5a6cWzn1iC34
+	 zsvlJpllBXLpRNY0TCcq6k/lycXCohAAcl3DgpQUDgDXLqnSQfC/LPNRfzMWEs3tyg
+	 VFy9TMt1rnf/Q==
+Date: Thu, 18 May 2023 14:04:50 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc: Jesper Dangaard Brouer <hawk@kernel.org>, Larysa Zaremba
- <larysa.zaremba@intel.com>, <netdev@vger.kernel.org>, Ilias Apalodimas
- <ilias.apalodimas@linaro.org>, <linux-kernel@vger.kernel.org>, "Christoph
- Hellwig" <hch@lst.de>, Eric Dumazet <edumazet@google.com>, Michal Kubiak
- <michal.kubiak@intel.com>, <intel-wired-lan@lists.osuosl.org>, Paolo Abeni
- <pabeni@redhat.com>, "David S. Miller" <davem@davemloft.net>, Magnus
- Karlsson <magnus.karlsson@intel.com>
-Subject: Re: [Intel-wired-lan] [PATCH net-next 07/11] net: page_pool: add
- DMA-sync-for-CPU inline helpers
-Message-ID: <20230518133627.72747418@kernel.org>
-In-Reply-To: <0dfa36f1-a847-739e-4557-fc43e2e8c6a7@intel.com>
-References: <20230516161841.37138-1-aleksander.lobakin@intel.com>
-	<20230516161841.37138-8-aleksander.lobakin@intel.com>
-	<20230517211211.1d1bbd0b@kernel.org>
-	<9feef136-7ff3-91a4-4198-237b07a91c0c@intel.com>
-	<20230518075643.3a242837@kernel.org>
-	<0dfa36f1-a847-739e-4557-fc43e2e8c6a7@intel.com>
+To: Florian Westphal <fw@strlen.de>
+Cc: <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>, Paolo
+ Abeni <pabeni@redhat.com>, "David S. Miller" <davem@davemloft.net>,
+ netfilter-devel <netfilter-devel@vger.kernel.org>, Jeremy Sowden
+ <jeremy@azazel.net>
+Subject: Re: [PATCH net-next 3/9] netfilter: nft_exthdr: add boolean DCCP
+ option matching
+Message-ID: <20230518140450.07248e4c@kernel.org>
+In-Reply-To: <20230518100759.84858-4-fw@strlen.de>
+References: <20230518100759.84858-1-fw@strlen.de>
+	<20230518100759.84858-4-fw@strlen.de>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -59,21 +52,12 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 18 May 2023 17:41:52 +0200 Alexander Lobakin wrote:
-> > Or maybe we can do both? I think that separating types, defines and
-> > simple wrappers from helpers should be considered good code hygiene.  
+On Thu, 18 May 2023 12:07:53 +0200 Florian Westphal wrote:
+> From: Jeremy Sowden <jeremy@azazel.net>
 > 
-> I'll definitely take a look, I also like the idea of minimalistic and
-> lightweight headers.
-> page_pool.h and page_pool_drv.h? :D
+> The xt_dccp iptables module supports the matching of DCCP packets based
+> on the presence or absence of DCCP options.  Extend nft_exthdr to add
+> this functionality to nftables.
 
-What I've been doing lately is split like this:
-
-include/net/something.h           (simply includes all other headers)
-include/net/something/types.h     (structs, defines, enums)
-include/net/something/functions.h (inlines and function declarations)
-
-If that's reasonable -- we should put the helpers under
-
-include/net/page_pool/functions.h ?
+Someone is actually using DCCP ? :o
 
