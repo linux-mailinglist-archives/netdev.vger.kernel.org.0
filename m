@@ -1,284 +1,139 @@
-Return-Path: <netdev+bounces-3754-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3755-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 41A7E70886E
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 21:37:31 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D7CDE7088ED
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 22:03:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 76DAE281AC3
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 19:37:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7816A281AA5
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 20:03:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 22629134B7;
-	Thu, 18 May 2023 19:37:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D0F8134C2;
+	Thu, 18 May 2023 20:03:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EA67134B3
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 19:37:03 +0000 (UTC)
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0293E67;
-	Thu, 18 May 2023 12:36:57 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 34IJaExK076173;
-	Thu, 18 May 2023 14:36:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1684438574;
-	bh=UGgsNdGUsEn3N+H5P2e/AnUaG77p3abjt1Oj19bLweM=;
-	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=nrhNCLUpoeLbFfV7tSq1tBP3wRtrHNAe48N0bHtvAj0s3CjM1Bz/KueuaFxQdxef4
-	 2zvEi6yCHJbMwIGzs8wfJ9MK8vAbAz8ovSbCFPB3xXw9IgWNyc6tc3v6mskU2UjhAV
-	 cXQTL63D13k67x1QnGQtbnSROSMSGnfWnwOXV3Bw=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-	by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 34IJaESL021175
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 18 May 2023 14:36:14 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Thu, 18
- May 2023 14:36:13 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Thu, 18 May 2023 14:36:13 -0500
-Received: from a0498204.dal.design.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-	by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 34IJaDvV053146;
-	Thu, 18 May 2023 14:36:13 -0500
-From: Judith Mendez <jm@ti.com>
-To: Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        <linux-can@vger.kernel.org>
-CC: Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde
-	<mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni
-	<pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Schuyler Patton <spatton@ti.com>,
-        Tero Kristo
-	<kristo@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Conor
- Dooley <conor+dt@kernel.org>
-Subject: [PATCH v6 2/2] can: m_can: Add hrtimer to generate software interrupt
-Date: Thu, 18 May 2023 14:36:13 -0500
-Message-ID: <20230518193613.15185-3-jm@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230518193613.15185-1-jm@ti.com>
-References: <20230518193613.15185-1-jm@ti.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EBC03D38D
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 20:03:12 +0000 (UTC)
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F243EE4F;
+	Thu, 18 May 2023 13:03:03 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id af79cd13be357-75764d20db3so223779685a.2;
+        Thu, 18 May 2023 13:03:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684440183; x=1687032183;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=oCb49CNTaq+G5SD/ZC05T5pcG6RWc/US8QVKoq5lEYE=;
+        b=E+q0ARappbP1jof+hcbhGjmXsGYlu2+Ph++HRHF7p3yAjXlmYegSxf31lO5sUDkHMl
+         cxHHRcRBwxe+clpsbaVpkwo16ppv3KmspTYQXoIoViDKiMl+GPd6J6fK15wDzdaQxeo5
+         jvww04haT3D1WSMnJJBx70mIOcBNWsJ8Vsz5THpYiCUob7iBmw/6FyUGAJLm8YT4Apxg
+         k43vE6EWd1rrxrvxOjWVxC84lR6DvLdwyGohqbAp7y0eNfoL+CqiLqdB7D5UcL/qlErg
+         5jw9CtI1lTTUIQyZXbIhAt2exAVqbu+0EvOowGqfDjqg/CpvkAhFHHoPeOnZFijFSeOg
+         3lKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684440183; x=1687032183;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oCb49CNTaq+G5SD/ZC05T5pcG6RWc/US8QVKoq5lEYE=;
+        b=Opf9zWAKUl4Udxe6Wito7pMu1dptkYxCFejtxUUf5tv1sIjamgsyz3v4iGHKUnnwMG
+         50tWVEfnHgkLxe4a9kmnYS+9G6Flyn10b/qlzHx/0//YJDZNyZ+15Znb5mO/QN1eGlbm
+         u9HM5rBpcJRPFjbB4r/w59ucDHNXRSlt5SmfHR1zTfUJwKRtvW+QXznsTxBLTGagv21L
+         mvi1h844K+vGvRUMiuc/PF50EGJz0JdphwMuPY+BTn+4I2EZtW4yhRKcqU0Fj5GkVGSW
+         FGLF9apjFEdYLojVHJH+NznmI3F+wNH0Kbu1OunL/Ib18Ruon9E/EyOzoN1XdQD+IAXQ
+         3sSQ==
+X-Gm-Message-State: AC+VfDzgAxJjiMtiTDkq/f2c+QYAOAeshR1ARMo2T+tK8Lmvs16lHrpf
+	D42iWqlQRqKLn5XRh+WpwLP+ATUo2TnBvw==
+X-Google-Smtp-Source: ACHHUZ7oqwKqLtmWi9l5b+wZfnA+BOM21eaFZIWGSv/qKfGk3OY18DtLlvitnJ83jc22lPnE0x5vgA==
+X-Received: by 2002:ac8:7d0b:0:b0:3f0:a755:61ef with SMTP id g11-20020ac87d0b000000b003f0a75561efmr1808135qtb.0.1684440182728;
+        Thu, 18 May 2023 13:03:02 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id x5-20020a05620a01e500b0074fb15e2319sm610462qkn.122.2023.05.18.13.03.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 May 2023 13:03:02 -0700 (PDT)
+From: Xin Long <lucien.xin@gmail.com>
+To: network dev <netdev@vger.kernel.org>,
+	linux-sctp@vger.kernel.org
+Cc: davem@davemloft.net,
+	kuba@kernel.org,
+	Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: [PATCHv2 net] sctp: fix an issue that plpmtu can never go to complete state
+Date: Thu, 18 May 2023 16:03:00 -0400
+Message-Id: <79f4da2e037fb14258865db606a102bf587404f0.1684440180.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.39.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add an hrtimer to MCAN class device. Each MCAN will have its own
-hrtimer instantiated if there is no hardware interrupt found and
-poll-interval property is defined in device tree M_CAN node.
+When doing plpmtu probe, the probe size is growing every time when it
+receives the ACK during the Search state until the probe fails. When
+the failure occurs, pl.probe_high is set and it goes to the Complete
+state.
 
-The hrtimer will generate a software interrupt every 1 ms. In
-hrtimer callback, we check if there is a transaction pending by
-reading a register, then process by calling the isr if there is.
+However, if the link pmtu is huge, like 65535 in loopback_dev, the probe
+eventually keeps using SCTP_MAX_PLPMTU as the probe size and never fails.
+Because of that, pl.probe_high can not be set, and the plpmtu probe can
+never go to the Complete state.
 
-Signed-off-by: Judith Mendez <jm@ti.com>
+Fix it by setting pl.probe_high to SCTP_MAX_PLPMTU when the probe size
+grows to SCTP_MAX_PLPMTU in sctp_transport_pl_recv(). Also, not allow
+the probe size greater than SCTP_MAX_PLPMTU in the Complete state.
+
+Fixes: b87641aff9e7 ("sctp: do state transition when a probe succeeds on HB ACK recv path")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
-Changelog:
-v6:
-- Move hrtimer stop/start function calls to m_can_open and m_can_close to
-support power suspend/resume
-v5:
-- Change dev_dbg to dev_info if hardware interrupt exists and polling
-is enabled
-v4:
-- No changes
-v3:
-- Create a define for 1 ms polling interval
-- Change plarform_get_irq to optional to not print error msg
 v2:
-- Add functionality to check for 'poll-interval' property in MCAN node 
-- Add 'polling' flag in driver to check if device is using polling method
-- Check for timer polling and hardware interrupt cases, default to
-hardware interrupt method
-- Change ns_to_ktime() to ms_to_ktime()
+- fix the probe size can't reach SCTP_MAX_PLPMTU, as Paolo suggested.
 ---
- drivers/net/can/m_can/m_can.c          | 31 ++++++++++++++++++++++-
- drivers/net/can/m_can/m_can.h          |  4 +++
- drivers/net/can/m_can/m_can_platform.c | 35 +++++++++++++++++++++++---
- 3 files changed, 66 insertions(+), 4 deletions(-)
+ net/sctp/transport.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index a5003435802b..cfb3e433c0dd 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -11,6 +11,7 @@
- #include <linux/bitfield.h>
- #include <linux/can/dev.h>
- #include <linux/ethtool.h>
-+#include <linux/hrtimer.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
-@@ -308,6 +309,9 @@ enum m_can_reg {
- #define TX_EVENT_MM_MASK	GENMASK(31, 24)
- #define TX_EVENT_TXTS_MASK	GENMASK(15, 0)
- 
-+/* Hrtimer polling interval */
-+#define HRTIMER_POLL_INTERVAL		1
-+
- /* The ID and DLC registers are adjacent in M_CAN FIFO memory,
-  * and we can save a (potentially slow) bus round trip by combining
-  * reads and writes to them.
-@@ -1414,6 +1418,12 @@ static int m_can_start(struct net_device *dev)
- 
- 	m_can_enable_all_interrupts(cdev);
- 
-+	if (cdev->polling) {
-+		dev_dbg(cdev->dev, "Start hrtimer\n");
-+		hrtimer_start(&cdev->hrtimer, ms_to_ktime(HRTIMER_POLL_INTERVAL),
-+			      HRTIMER_MODE_REL_PINNED);
-+	}
-+
- 	return 0;
- }
- 
-@@ -1571,6 +1581,11 @@ static void m_can_stop(struct net_device *dev)
- 	/* disable all interrupts */
- 	m_can_disable_all_interrupts(cdev);
- 
-+	if (cdev->polling) {
-+		dev_dbg(cdev->dev, "Disabling the hrtimer\n");
-+		hrtimer_cancel(&cdev->hrtimer);
-+	}
-+
- 	/* Set init mode to disengage from the network */
- 	m_can_config_endisable(cdev, true);
- 
-@@ -1793,6 +1808,18 @@ static netdev_tx_t m_can_start_xmit(struct sk_buff *skb,
- 	return NETDEV_TX_OK;
- }
- 
-+static enum hrtimer_restart hrtimer_callback(struct hrtimer *timer)
-+{
-+	struct m_can_classdev *cdev = container_of(timer, struct
-+						   m_can_classdev, hrtimer);
-+
-+	m_can_isr(0, cdev->net);
-+
-+	hrtimer_forward_now(timer, ms_to_ktime(HRTIMER_POLL_INTERVAL));
-+
-+	return HRTIMER_RESTART;
-+}
-+
- static int m_can_open(struct net_device *dev)
- {
- 	struct m_can_classdev *cdev = netdev_priv(dev);
-@@ -1831,9 +1858,11 @@ static int m_can_open(struct net_device *dev)
- 		err = request_threaded_irq(dev->irq, NULL, m_can_isr,
- 					   IRQF_ONESHOT,
- 					   dev->name, dev);
--	} else {
-+	} else if (!cdev->polling) {
- 		err = request_irq(dev->irq, m_can_isr, IRQF_SHARED, dev->name,
- 				  dev);
-+	} else {
-+		cdev->hrtimer.function = &hrtimer_callback;
+diff --git a/net/sctp/transport.c b/net/sctp/transport.c
+index 2f66a2006517..2abe45af98e7 100644
+--- a/net/sctp/transport.c
++++ b/net/sctp/transport.c
+@@ -324,9 +324,12 @@ bool sctp_transport_pl_recv(struct sctp_transport *t)
+ 		t->pl.probe_size += SCTP_PL_BIG_STEP;
+ 	} else if (t->pl.state == SCTP_PL_SEARCH) {
+ 		if (!t->pl.probe_high) {
+-			t->pl.probe_size = min(t->pl.probe_size + SCTP_PL_BIG_STEP,
+-					       SCTP_MAX_PLPMTU);
+-			return false;
++			if (t->pl.probe_size < SCTP_MAX_PLPMTU) {
++				t->pl.probe_size = min(t->pl.probe_size + SCTP_PL_BIG_STEP,
++						       SCTP_MAX_PLPMTU);
++				return false;
++			}
++			t->pl.probe_high = SCTP_MAX_PLPMTU;
+ 		}
+ 		t->pl.probe_size += SCTP_PL_MIN_STEP;
+ 		if (t->pl.probe_size >= t->pl.probe_high) {
+@@ -341,7 +344,7 @@ bool sctp_transport_pl_recv(struct sctp_transport *t)
+ 	} else if (t->pl.state == SCTP_PL_COMPLETE) {
+ 		/* Raise probe_size again after 30 * interval in Search Complete */
+ 		t->pl.state = SCTP_PL_SEARCH; /* Search Complete -> Search */
+-		t->pl.probe_size += SCTP_PL_MIN_STEP;
++		t->pl.probe_size = min(t->pl.probe_size + SCTP_PL_MIN_STEP, SCTP_MAX_PLPMTU);
  	}
  
- 	if (err < 0) {
-diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index a839dc71dc9b..e9db5cce4e68 100644
---- a/drivers/net/can/m_can/m_can.h
-+++ b/drivers/net/can/m_can/m_can.h
-@@ -15,6 +15,7 @@
- #include <linux/device.h>
- #include <linux/dma-mapping.h>
- #include <linux/freezer.h>
-+#include <linux/hrtimer.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
-@@ -93,6 +94,9 @@ struct m_can_classdev {
- 	int is_peripheral;
- 
- 	struct mram_cfg mcfg[MRAM_CFG_NUM];
-+
-+	struct hrtimer hrtimer;
-+	bool polling;
- };
- 
- struct m_can_classdev *m_can_class_allocate_dev(struct device *dev, int sizeof_priv);
-diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index 94dc82644113..3e60cebd9d12 100644
---- a/drivers/net/can/m_can/m_can_platform.c
-+++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -5,6 +5,7 @@
- //
- // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
- 
-+#include <linux/hrtimer.h>
- #include <linux/phy/phy.h>
- #include <linux/platform_device.h>
- 
-@@ -96,12 +97,40 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 		goto probe_fail;
- 
- 	addr = devm_platform_ioremap_resource_byname(pdev, "m_can");
--	irq = platform_get_irq_byname(pdev, "int0");
--	if (IS_ERR(addr) || irq < 0) {
--		ret = -EINVAL;
-+	if (IS_ERR(addr)) {
-+		ret = PTR_ERR(addr);
- 		goto probe_fail;
- 	}
- 
-+	irq = platform_get_irq_byname_optional(pdev, "int0");
-+	if (irq == -EPROBE_DEFER) {
-+		ret = -EPROBE_DEFER;
-+		goto probe_fail;
-+	}
-+
-+	if (device_property_present(mcan_class->dev, "interrupts") ||
-+	    device_property_present(mcan_class->dev, "interrupt-names"))
-+		mcan_class->polling = false;
-+	else
-+		mcan_class->polling = true;
-+
-+	if (!mcan_class->polling && irq < 0) {
-+		ret = -ENXIO;
-+		dev_err_probe(mcan_class->dev, ret, "IRQ int0 not found, polling not activated\n");
-+		goto probe_fail;
-+	}
-+
-+	if (mcan_class->polling) {
-+		if (irq > 0) {
-+			mcan_class->polling = false;
-+			dev_info(mcan_class->dev, "Polling enabled, using hardware IRQ\n");
-+		} else {
-+			dev_dbg(mcan_class->dev, "Polling enabled, initialize hrtimer");
-+			hrtimer_init(&mcan_class->hrtimer, CLOCK_MONOTONIC,
-+				     HRTIMER_MODE_REL_PINNED);
-+		}
-+	}
-+
- 	/* message ram could be shared */
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "message_ram");
- 	if (!res) {
+ 	return t->pl.state == SCTP_PL_COMPLETE;
 -- 
-2.17.1
+2.39.1
 
 
