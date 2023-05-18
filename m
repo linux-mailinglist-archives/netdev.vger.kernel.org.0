@@ -1,59 +1,54 @@
-Return-Path: <netdev+bounces-3538-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3541-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5172E707CD7
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:29:31 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 77F45707CF9
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:33:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3A3DE1C21036
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 09:29:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A797F28189D
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 09:32:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7995111C98;
-	Thu, 18 May 2023 09:29:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AEA5F11C9B;
+	Thu, 18 May 2023 09:32:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B0FAD44
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 09:29:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2F69AD46
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 09:32:57 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759ED2120
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 02:29:26 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A04F268C
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 02:32:51 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1pzZwj-00062v-RG; Thu, 18 May 2023 11:29:17 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-	(envelope-from <ore@pengutronix.de>)
-	id 1pzZwi-0013Bx-33; Thu, 18 May 2023 11:29:16 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ore@pengutronix.de>)
-	id 1pzZwh-0046Me-1w; Thu, 18 May 2023 11:29:15 +0200
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: "David S. Miller" <davem@davemloft.net>,
-	Andrew Lunn <andrew@lunn.ch>,
+	(envelope-from <mkl@pengutronix.de>)
+	id 1pzZzx-0006ms-R8; Thu, 18 May 2023 11:32:37 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	(Authenticated sender: mkl-all@blackshift.org)
+	by smtp.blackshift.org (Postfix) with ESMTPSA id C14F71C7B3D;
+	Thu, 18 May 2023 09:32:36 +0000 (UTC)
+Date: Thu, 18 May 2023 11:32:36 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>, Andrew Lunn <andrew@lunn.ch>,
 	Eric Dumazet <edumazet@google.com>,
 	Florian Fainelli <f.fainelli@gmail.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
 	Vladimir Oltean <olteanv@gmail.com>,
 	Woojung Huh <woojung.huh@microchip.com>,
 	Arun Ramadoss <arun.ramadoss@microchip.com>,
-	"Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
-	kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org,
-	UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next v3 2/2] net: dsa: microchip: ksz8: Add function to configure downstream ports for KSZ8xxx
-Date: Thu, 18 May 2023 11:29:13 +0200
-Message-Id: <20230518092913.977705-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230518092913.977705-1-o.rempel@pengutronix.de>
+	"Russell King (Oracle)" <linux@armlinux.org.uk>,
+	UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
+	kernel@pengutronix.de, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 0/2] Fine-Tune Flow Control and Speed
+ Configurations in Microchip KSZ8xxx DSA Driver
+Message-ID: <20230518-tutu-wildland-b48f1bd3f79e-mkl@pengutronix.de>
 References: <20230518092913.977705-1-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -61,9 +56,12 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="vumhte6bwemi33ou"
+Content-Disposition: inline
+In-Reply-To: <20230518092913.977705-1-o.rempel@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
@@ -72,133 +70,56 @@ X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This patch introduces the function 'ksz8_downstream_link_up' to the
-Microchip KSZ8xxx driver. This function configures the flow control settings
-for the downstream ports of the switch based on desired settings and the
-current duplex mode.
 
-The KSZ8795 switch, unlike the KSZ8873, supports asynchronous pause control.
-However, a single bit controls both RX and TX pause, so we can't enforce
-asynchronous pause control. The flow control can be set based on the
-auto-negotiation process, depending on the capabilities of both link partners.
+--vumhte6bwemi33ou
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-For the KSZ8873, the PORT_FORCE_FLOW_CTRL bit can be set by the hardware
-bootstrap, ignoring the auto-negotiation result. Therefore, even in
-auto-negotiation mode, we need to ensure that the PORT_FORCE_FLOW_CTRL bit is
-correctly set.
+On 18.05.2023 11:29:11, Oleksij Rempel wrote:
+> changes v3:
+> - remove half duplex flow control configuration
+> - add comments
+> - s/stram/stream
+>=20
+> changes v2:
+> - split the patch to upstrean and downstream part
+                              ^m
+> - add comments
+> - fix downstream register offset
+> - fix cpu configuration
+>=20
+> This patch set focuses on enhancing the configurability of flow
+> control, speed, and duplex settings in the Microchip KSZ8xxx DSA driver.
+>=20
+> The first patch allows more granular control over the CPU port's flow
+> control, speed, and duplex settings. The second patch introduces a
+> method for downstream port configurations, primarily concerning flow
+> control based on duplex mode.
 
-In the absence of auto-negotiation, we will enforce synchronous pause control
-for the KSZ8795 switch.
+regards,
+Marc
 
-Note: It is currently not possible to force disable flow control on a port if
-we still advertise pause support. This configuration is not currently supported
-by Linux, and it may not make practical sense. However, it's essential to
-understand this limitation when working with the KSZ8873 and similar devices.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/microchip/ksz8795.c | 80 +++++++++++++++++++++++++++++
- 1 file changed, 80 insertions(+)
+--vumhte6bwemi33ou
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 9cfe343d2214..6d7b6a337d1c 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1371,6 +1371,84 @@ void ksz8_config_cpu_port(struct dsa_switch *ds)
- 	}
- }
- 
-+/**
-+ * ksz8_downstream_link_up - Configures the downstream port of the switch.
-+ * @dev: The KSZ device instance.
-+ * @port: The port number to configure.
-+ * @duplex: The desired duplex mode.
-+ * @tx_pause: If true, enables transmit pause.
-+ * @rx_pause: If true, enables receive pause.
-+ *
-+ * Description:
-+ * The function configures flow control settings for a given port based on the
-+ * desired settings and current duplex mode.
-+ *
-+ * According to the KSZ8873 datasheet, the PORT_FORCE_FLOW_CTRL bit in the
-+ * Port Control 2 register (0x1A for Port 1, 0x22 for Port 2, 0x32 for Port 3)
-+ * determines how flow control is handled on the port:
-+ *    "1 = will always enable full-duplex flow control on the port, regardless
-+ *         of AN result.
-+ *     0 = full-duplex flow control is enabled based on AN result."
-+ *
-+ * This means that the flow control behavior depends on the state of this bit:
-+ * - If PORT_FORCE_FLOW_CTRL is set to 1, the switch will ignore AN results and
-+ *   force flow control on the port.
-+ * - If PORT_FORCE_FLOW_CTRL is set to 0, the switch will enable or disable
-+ *   flow control based on the AN results.
-+ *
-+ * However, there is a potential limitation in this configuration. It is
-+ * currently not possible to force disable flow control on a port if we still
-+ * advertise pause support. While such a configuration is not currently
-+ * supported by Linux, and may not make practical sense, it's important to be
-+ * aware of this limitation when working with the KSZ8873 and similar devices.
-+ */
-+static void ksz8_downstream_link_up(struct ksz_device *dev, int port,
-+				   int duplex, bool tx_pause, bool rx_pause)
-+{
-+	const u16 *regs = dev->info->regs;
-+	u8 ctrl = 0;
-+	int ret;
-+
-+	/*
-+	 * The KSZ8795 switch differs from the KSZ8873 by supporting
-+	 * asynchronous pause control. However, since a single bit is used to
-+	 * control both RX and TX pause, we can't enforce asynchronous pause
-+	 * control - both TX and RX pause will be either enabled or disabled
-+	 * together.
-+	 *
-+	 * If auto-negotiation is enabled, we usually allow the flow control to
-+	 * be determined by the auto-negotiation process based on the
-+	 * capabilities of both link partners. However, for KSZ8873, the
-+	 * PORT_FORCE_FLOW_CTRL bit may be set by the hardware bootstrap,
-+	 * ignoring the auto-negotiation result. Thus, even in auto-negotiatio
-+	 * mode, we need to ensure that the PORT_FORCE_FLOW_CTRL bit is
-+	 * properly cleared.
-+	 *
-+	 * In the absence of auto-negotiation, we will enforce synchronous
-+	 * pause control for both variants of switches - KSZ8873 and KSZ8795.
-+	 */
-+	if (duplex) {
-+		bool aneg_en = false;
-+
-+		ret = ksz_pread8(dev, port, regs[P_FORCE_CTRL], &ctrl);
-+		if (ret)
-+			return;
-+
-+		if (ksz_is_ksz88x3(dev)) {
-+			if ((ctrl & PORT_AUTO_NEG_ENABLE))
-+				aneg_en = true;
-+		} else {
-+			if (!(ctrl & PORT_AUTO_NEG_DISABLE))
-+				aneg_en = true;
-+		}
-+
-+		if (!aneg_en && (tx_pause || rx_pause))
-+			ctrl |= PORT_FORCE_FLOW_CTRL;
-+	}
-+
-+	ksz_prmw8(dev, port, regs[P_STP_CTRL], PORT_FORCE_FLOW_CTRL, ctrl);
-+}
-+
- /**
-  * ksz8_upstream_link_up - Configures the CPU/upstream port of the switch.
-  * @dev: The KSZ device instance.
-@@ -1418,6 +1496,8 @@ void ksz8_phylink_mac_link_up(struct ksz_device *dev, int port,
- 	if (dsa_is_upstream_port(dev->ds, port))
- 		ksz8_upstream_link_up(dev, port, speed, duplex, tx_pause,
- 				     rx_pause);
-+	else
-+		ksz8_downstream_link_up(dev, port, duplex, tx_pause, rx_pause);
- }
- 
- static int ksz8_handle_global_errata(struct dsa_switch *ds)
--- 
-2.39.2
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRl8LEACgkQvlAcSiqK
+BOi9sAgAhMea8TDC3ZJkou+IQfm0QSmZAshM232Ma/QANCf/GPbaUXJ+u9nBHuHS
+bvZd4jZ3v1mcYdTGoDjAk++lcSDgAMDi3QI7nup2oavzo86PAdFovS26/P/p6XZo
+OUOq2O8jONQkB0KKZ3Oqgg4pd+/6gcl2EZxyu/Gn6zfpNHBw0G6PELsNEEHmbwJF
+FQSkMonZ/iUj+a97mD8YacLHJDScCGCr8+YPGd2OnqB8QGgTmmE194M1gUSbZt6U
+EPlclwzQeHiWwOMkJfh2t1qnS6qloDUNUe+nVBjtL0n/URs4BWvXrYeSxIWNXbcM
+F9/1nKZWk6h9twgLYhu9M6AlcrN8DA==
+=oRYF
+-----END PGP SIGNATURE-----
+
+--vumhte6bwemi33ou--
 
