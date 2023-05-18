@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-3740-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3741-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DC20A70879C
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 20:12:48 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E60C870879E
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 20:13:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 999ED281A80
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 18:12:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C06D01C2114F
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 18:13:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DFD4936D85;
-	Thu, 18 May 2023 18:06:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 73A2E36D95;
+	Thu, 18 May 2023 18:06:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC22536D82;
-	Thu, 18 May 2023 18:06:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60DFF36D82;
+	Thu, 18 May 2023 18:06:58 +0000 (UTC)
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65AAEC2;
-	Thu, 18 May 2023 11:06:55 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6A78F;
+	Thu, 18 May 2023 11:06:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684433215; x=1715969215;
+  t=1684433216; x=1715969216;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=FWkD4MZ6l0DBIbd9/NoNNUfwP1vFzcm+WNjctI/EyMQ=;
-  b=BIYePgU9rJiq7sJazXAjDp6fnbELBehYhI3g/MBnFovsPE9Wv1xc0i2t
-   gSjT3wqEmr7AzkuANijS9ttb4MNUtVwYjDB0rgp7+BDilQhZVw8EPlWAr
-   VoJdBrauQNi4U1uH1ACsixWsZM/Cy+HDaVbNf7pECBPTAvcOXLonQAolv
-   7G37a3MFJUB3t6aMKVA8g1dNX9nfYtBGHvRRhd8FFhpbneJGO2j5Fe1Gl
-   R8M6vNBVe1Z1qWlhREE/oaLlT9C1d4O11RC9jNxXg7dneS0tHfloXNZN9
-   i2fbkMi4tf5MYBs4DTCOKNp1I2qVjOwLlXcqLMvnQEWpme/y6Og/orxyc
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="350985008"
+  bh=JLRI9w7J8tNxgPMgG5VTS8fXd8CXzLu49u53Tfuumb0=;
+  b=ASooOm+DvsGSMhr5wjj8Hdv4Z3niO8mTDVX5MKhRWe9F0NCZMIUh30U4
+   jT57wWwLhMFTK2t2jGKISd1FFtCf0OAZSaAheSTDpckt3orVgCtpNITKw
+   jHgPbvHhI6wtQyJ6dRh6L1gTEdTQSXdtDC7+jRqMHbwvGHZu/BjzqQSRF
+   +sGyLthfFWxbbJ1VrA4UDsV8Au24UW4DzC9G5vd9g065eWj86DKr6fsbV
+   7mNknIXU+I6oBaNp8oDhYVPhvvBcxaC3VJSYo3J/FWmeMNR9B68qWPQk1
+   nhsz8Masnz2MjJ9sOMXCU9oqqSHmUywVoPtVR5Z5JOnDM+je4EA4LkAFX
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="350985025"
 X-IronPort-AV: E=Sophos;i="6.00,174,1681196400"; 
-   d="scan'208";a="350985008"
+   d="scan'208";a="350985025"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 11:06:30 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 11:06:31 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="948780489"
+X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="948780517"
 X-IronPort-AV: E=Sophos;i="6.00,174,1681196400"; 
-   d="scan'208";a="948780489"
+   d="scan'208";a="948780517"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by fmsmga006.fm.intel.com with ESMTP; 18 May 2023 11:06:26 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 18 May 2023 11:06:28 -0700
 From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To: bpf@vger.kernel.org,
 	ast@kernel.org,
@@ -55,9 +55,9 @@ Cc: netdev@vger.kernel.org,
 	tirthendu.sarkar@intel.com,
 	maciej.fijalkowski@intel.com,
 	bjorn@kernel.org
-Subject: [PATCH bpf-next 14/21] ice: xsk: Tx multi-buffer support
-Date: Thu, 18 May 2023 20:05:38 +0200
-Message-Id: <20230518180545.159100-15-maciej.fijalkowski@intel.com>
+Subject: [PATCH bpf-next 15/21] selftests/xsk: transmit and receive multi-buffer packets
+Date: Thu, 18 May 2023 20:05:39 +0200
+Message-Id: <20230518180545.159100-16-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230518180545.159100-1-maciej.fijalkowski@intel.com>
 References: <20230518180545.159100-1-maciej.fijalkowski@intel.com>
@@ -75,176 +75,370 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Most of this patch is about actually supporting XDP_TX action. Pure Tx
-ZC support is only about looking at XDP_PKT_CONTD presence at options
-field and based on that generating EOP bit on Tx HW descriptor. This is
-that simple due to the implementation on
-xsk_tx_peek_release_desc_batch() where we are making sure that last
-produced descriptor is an EOP one.
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Report via xdp_features that this driver is now capable of consuming
-multi-buffer packets on both Rx and Tx sides.
+Add the ability to send and receive packets that are larger than the
+size of a umem frame, using the AF_XDP /XDP multi-buffer
+support. There are three pieces of code that need to be changed to
+achieve this: the Rx path, the Tx path, and the validation logic.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Both the Rx path and Tx could only deal with a single fragment per
+packet. The Tx path is extended with a new function called
+pkt_nb_frags() that can be used to retrieve the number of fragments a
+packet will consume. We then create these many fragments in a loop and
+fill the N-1 first ones to the max size limit to use the buffer space
+efficiently, and the Nth one with whatever data that is left. This
+goes on until we have filled in at the most BATCH_SIZE worth of
+descriptors and fragments. If we detect that the next packet would
+lead to BATCH_SIZE number of fragments sent being exceeded, we do not
+send this packet and finish the batch. This packet is instead sent in
+the next iteration of BATCH_SIZE fragments.
+
+For Rx, we loop over all fragments we receive as usual, but for every
+descriptor that we receive we call a new validation function called
+is_frag_valid() to validate the consistency of this fragment. The code
+then checks if the packet continues in the next frame. If so, it loops
+over the next packet and performs the same validation. once we have
+received the last fragment of the packet we also call the function
+is_pkt_valid() to validate the packet as a whole. If we get to the end
+of the batch and we are not at the end of the current packet, we back
+out the partial packet and end the loop. Once we get into the receive
+loop next time, we start over from the beginning of that packet. This
+so the code becomes simpler at the cost of some performance.
+
+The validation function is_frag_valid() checks that the sequence and
+packet numbers are correct at the start and end of each fragment.
+
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c |  2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c  | 83 ++++++++++++++++-------
- 2 files changed, 61 insertions(+), 24 deletions(-)
+ tools/include/uapi/linux/if_xdp.h        |   3 +
+ tools/testing/selftests/bpf/xskxceiver.c | 167 ++++++++++++++++++-----
+ tools/testing/selftests/bpf/xskxceiver.h |   3 +-
+ 3 files changed, 139 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index a1f7c8edc22f..bd16c9de1153 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3385,7 +3385,7 @@ static void ice_set_ops(struct ice_vsi *vsi)
+diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux/if_xdp.h
+index a78a8096f4ce..80245f5b4dd7 100644
+--- a/tools/include/uapi/linux/if_xdp.h
++++ b/tools/include/uapi/linux/if_xdp.h
+@@ -106,6 +106,9 @@ struct xdp_desc {
+ 	__u32 options;
+ };
  
- 	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
- 			       NETDEV_XDP_ACT_XSK_ZEROCOPY |
--			       NETDEV_XDP_ACT_RX_SG;
-+			       NETDEV_XDP_ACT_RX_SG | NETDEV_XDP_ACT_NDO_ZC_SG;
++/* Flag indicating packet constitutes of multiple buffers*/
++#define XDP_PKT_CONTD (1 << 0)
++
+ /* UMEM descriptor is __u64 */
+ 
+ #endif /* _LINUX_IF_XDP_H */
+diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+index 218d7f694e5c..5e29e8850488 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.c
++++ b/tools/testing/selftests/bpf/xskxceiver.c
+@@ -533,6 +533,11 @@ static struct pkt_stream *__pkt_stream_alloc(u32 nb_pkts)
+ 	return pkt_stream;
  }
  
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 920cf2b16836..d8bf774b5f6d 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -616,7 +616,7 @@ ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
-  * ice_clean_xdp_irq_zc - produce AF_XDP descriptors to CQ
-  * @xdp_ring: XDP Tx ring
-  */
--static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
-+static u32 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
++static bool pkt_continues(const struct xdp_desc *desc)
++{
++	return desc->options & XDP_PKT_CONTD;
++}
++
+ static u32 ceil_u32(u32 a, u32 b)
  {
- 	u16 ntc = xdp_ring->next_to_clean;
- 	struct ice_tx_desc *tx_desc;
-@@ -638,7 +638,7 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
+ 	return (a + b - 1) / b;
+@@ -549,7 +554,7 @@ static void pkt_set(struct xsk_umem_info *umem, struct pkt *pkt, int offset, u32
+ {
+ 	pkt->offset = offset;
+ 	pkt->len = len;
+-	if (len > umem->frame_size - XDP_PACKET_HEADROOM - MIN_PKT_SIZE * 2 - umem->frame_headroom)
++	if (len > MAX_ETH_JUMBO_SIZE)
+ 		pkt->valid = false;
+ 	else
+ 		pkt->valid = true;
+@@ -637,6 +642,11 @@ static u64 pkt_get_addr(struct pkt *pkt, struct xsk_umem_info *umem)
+ 	return pkt->offset + umem_alloc_buffer(umem);
+ }
+ 
++static void pkt_stream_cancel(struct pkt_stream *pkt_stream)
++{
++	pkt_stream->current_pkt_nb--;
++}
++
+ static void pkt_generate(struct ifobject *ifobject, u64 addr, u32 len, u32 pkt_nb,
+ 			 u32 bytes_written)
+ {
+@@ -765,43 +775,81 @@ static bool is_metadata_correct(struct pkt *pkt, void *buffer, u64 addr)
+ 	return true;
+ }
+ 
+-static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
++static bool is_frag_valid(struct xsk_umem_info *umem, u64 addr, u32 len, u32 expected_pkt_nb,
++			  u32 bytes_processed)
+ {
+-	void *data = xsk_umem__get_data(buffer, addr);
+-	u32 seqnum, pkt_data;
++	u32 seqnum, pkt_nb, *pkt_data, words_to_end, expected_seqnum;
++	void *data = xsk_umem__get_data(umem->buffer, addr);
+ 
+-	if (!pkt) {
+-		ksft_print_msg("[%s] too many packets received\n", __func__);
+-		goto error;
++	addr -= umem->base_addr;
++
++	if (addr >= umem->num_frames * umem->frame_size ||
++	    addr + len > umem->num_frames * umem->frame_size) {
++		ksft_print_msg("Frag invalid addr: %llx len: %u\n", addr, len);
++		return false;
++	}
++	if (!umem->unaligned_mode && addr % umem->frame_size + len > umem->frame_size) {
++		ksft_print_msg("Frag crosses frame boundary addr: %llx len: %u\n", addr, len);
++		return false;
  	}
  
- 	if (!completed_frames)
--		return;
-+		return 0;
+-	if (len < MIN_PKT_SIZE || pkt->len < MIN_PKT_SIZE) {
+-		/* Do not try to verify packets that are smaller than minimum size. */
+-		return true;
++	pkt_data = data;
++	if (!bytes_processed) {
++		pkt_data += PKT_HDR_SIZE / sizeof(*pkt_data);
++		len -= PKT_HDR_SIZE;
++	} else {
++		bytes_processed -= PKT_HDR_SIZE;
+ 	}
  
- 	if (likely(!xdp_ring->xdp_tx_active)) {
- 		xsk_frames = completed_frames;
-@@ -668,6 +668,8 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
- 		xdp_ring->next_to_clean -= cnt;
- 	if (xsk_frames)
- 		xsk_tx_completed(xdp_ring->xsk_pool, xsk_frames);
+-	if (pkt->len != len) {
+-		ksft_print_msg("[%s] expected length [%d], got length [%d]\n",
+-			       __func__, pkt->len, len);
++	expected_seqnum = bytes_processed / sizeof(*pkt_data);
++	seqnum = ntohl(*pkt_data) & 0xffff;
++	pkt_nb = ntohl(*pkt_data) >> 16;
 +
-+	return completed_frames;
++	if (expected_pkt_nb != pkt_nb) {
++		ksft_print_msg("[%s] expected pkt_nb [%u], got pkt_nb [%u]\n",
++			       __func__, expected_pkt_nb, pkt_nb);
++		goto error;
++	}
++	if (expected_seqnum != seqnum) {
++		ksft_print_msg("[%s] expected seqnum at start [%u], got seqnum [%u]\n",
++			       __func__, expected_seqnum, seqnum);
+ 		goto error;
+ 	}
+ 
+-	pkt_data = ntohl(*((u32 *)(data + PKT_HDR_SIZE)));
+-	seqnum = pkt_data >> 16;
+-
+-	if (pkt->pkt_nb != seqnum) {
+-		ksft_print_msg("[%s] expected seqnum [%d], got seqnum [%d]\n",
+-			       __func__, pkt->pkt_nb, seqnum);
++	words_to_end = len / sizeof(*pkt_data) - 1;
++	pkt_data += words_to_end;
++	seqnum = ntohl(*pkt_data) & 0xffff;
++	expected_seqnum += words_to_end;
++	if (expected_seqnum != seqnum) {
++		ksft_print_msg("[%s] expected seqnum at end [%u], got seqnum [%u]\n",
++			       __func__, expected_seqnum, seqnum);
+ 		goto error;
+ 	}
+ 
+ 	return true;
+ 
+ error:
+-	pkt_dump(data, len, true);
++	pkt_dump(data, len, !bytes_processed);
+ 	return false;
  }
  
- /**
-@@ -685,37 +687,72 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
- static int ice_xmit_xdp_tx_zc(struct xdp_buff *xdp,
- 			      struct ice_tx_ring *xdp_ring)
++static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
++{
++	if (!pkt) {
++		ksft_print_msg("[%s] too many packets received\n", __func__);
++		return false;
++	}
++
++	if (pkt->len != len) {
++		ksft_print_msg("[%s] expected packet length [%d], got length [%d]\n",
++			       __func__, pkt->len, len);
++		pkt_dump(xsk_umem__get_data(buffer, addr), len, true);
++		return false;
++	}
++
++	return true;
++}
++
+ static void kick_tx(struct xsk_socket_info *xsk)
  {
-+	struct skb_shared_info *sinfo = NULL;
- 	u32 size = xdp->data_end - xdp->data;
- 	u32 ntu = xdp_ring->next_to_use;
- 	struct ice_tx_desc *tx_desc;
- 	struct ice_tx_buf *tx_buf;
--	dma_addr_t dma;
-+	struct xdp_buff *head;
-+	u32 nr_frags = 0;
-+	u32 free_space;
-+	u32 frag = 0;
+ 	int ret;
+@@ -854,8 +902,8 @@ static int receive_pkts(struct test_spec *test, struct pollfd *fds)
+ {
+ 	struct timeval tv_end, tv_now, tv_timeout = {THREAD_TMOUT, 0};
+ 	struct pkt_stream *pkt_stream = test->ifobj_rx->pkt_stream;
+-	u32 idx_rx = 0, idx_fq = 0, rcvd, i, pkts_sent = 0;
+ 	struct xsk_socket_info *xsk = test->ifobj_rx->xsk;
++	u32 idx_rx = 0, idx_fq = 0, rcvd, pkts_sent = 0;
+ 	struct ifobject *ifobj = test->ifobj_rx;
+ 	struct xsk_umem_info *umem = xsk->umem;
+ 	struct pkt *pkt;
+@@ -868,6 +916,9 @@ static int receive_pkts(struct test_spec *test, struct pollfd *fds)
  
--	if (ICE_DESC_UNUSED(xdp_ring) < ICE_RING_QUARTER(xdp_ring)) {
--		ice_clean_xdp_irq_zc(xdp_ring);
--		if (!ICE_DESC_UNUSED(xdp_ring)) {
--			xdp_ring->ring_stats->tx_stats.tx_busy++;
--			return ICE_XDP_CONSUMED;
--		}
--	}
-+	free_space = ICE_DESC_UNUSED(xdp_ring);
-+	if (free_space < ICE_RING_QUARTER(xdp_ring))
-+		free_space += ice_clean_xdp_irq_zc(xdp_ring);
+ 	pkt = pkt_stream_get_next_rx_pkt(pkt_stream, &pkts_sent);
+ 	while (pkt) {
++		u32 frags_processed = 0, nb_frags = 0, pkt_len = 0;
++		u64 first_addr;
++
+ 		ret = gettimeofday(&tv_now, NULL);
+ 		if (ret)
+ 			exit_with_error(errno);
+@@ -913,27 +964,53 @@ static int receive_pkts(struct test_spec *test, struct pollfd *fds)
+ 			}
+ 		}
  
--	dma = xsk_buff_xdp_get_dma(xdp);
--	xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma, size);
-+	if (unlikely(!free_space))
-+		goto busy;
-+
-+	if (unlikely(xdp_buff_has_frags(xdp))) {
-+		sinfo = xdp_get_shared_info_from_buff(xdp);
-+		nr_frags = sinfo->nr_frags;
-+		if (free_space < nr_frags + 1)
-+			goto busy;
-+	}
+-		for (i = 0; i < rcvd; i++) {
++		while (frags_processed < rcvd) {
+ 			const struct xdp_desc *desc = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx++);
+ 			u64 addr = desc->addr, orig;
  
--	tx_buf = &xdp_ring->tx_buf[ntu];
--	tx_buf->xdp = xdp;
--	tx_buf->type = ICE_TX_BUF_XSK_TX;
- 	tx_desc = ICE_TX_DESC(xdp_ring, ntu);
--	tx_desc->buf_addr = cpu_to_le64(dma);
--	tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
--						      0, size, 0);
--	xdp_ring->xdp_tx_active++;
-+	tx_buf = &xdp_ring->tx_buf[ntu];
-+	head = xdp;
+ 			orig = xsk_umem__extract_addr(addr);
+ 			addr = xsk_umem__add_offset_to_addr(addr);
+ 
+-			if (!is_pkt_valid(pkt, umem->buffer, addr, desc->len) ||
++			if (!is_frag_valid(umem, addr, desc->len, pkt->pkt_nb, pkt_len) ||
+ 			    !is_offset_correct(umem, pkt, addr) ||
+ 			    (ifobj->use_metadata && !is_metadata_correct(pkt, umem->buffer, addr)))
+ 				return TEST_FAILURE;
+ 
++			if (!nb_frags++)
++				first_addr = addr;
++			frags_processed++;
++			pkt_len += desc->len;
+ 			if (ifobj->use_fill_ring)
+ 				*xsk_ring_prod__fill_addr(&umem->fq, idx_fq++) = orig;
 +
-+	for (;;) {
-+		dma_addr_t dma;
++			if (pkt_continues(desc))
++				continue;
 +
-+		dma = xsk_buff_xdp_get_dma(xdp);
-+		xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma, size);
++			/* The complete packet has been received */
++			if (!is_pkt_valid(pkt, umem->buffer, first_addr, pkt_len) ||
++			    !is_offset_correct(umem, pkt, addr))
++				return TEST_FAILURE;
 +
-+		tx_buf->xdp = xdp;
-+		tx_buf->type = ICE_TX_BUF_XSK_TX;
-+		tx_desc->buf_addr = cpu_to_le64(dma);
-+		tx_desc->cmd_type_offset_bsz = ice_build_ctob(0, 0, size, 0);
-+		/* account for each xdp_buff from xsk_buff_pool */
-+		xdp_ring->xdp_tx_active++;
+ 			pkt = pkt_stream_get_next_rx_pkt(pkt_stream, &pkts_sent);
++			nb_frags = 0;
++			pkt_len = 0;
++		}
 +
-+		if (++ntu == xdp_ring->count)
-+			ntu = 0;
-+
-+		if (frag == nr_frags)
++		if (nb_frags) {
++			/* In the middle of a packet. Start over from beginning of packet. */
++			idx_rx -= nb_frags;
++			xsk_ring_cons__cancel(&xsk->rx, nb_frags);
++			if (ifobj->use_fill_ring) {
++				idx_fq -= nb_frags;
++				xsk_ring_prod__cancel(&umem->fq, nb_frags);
++			}
++			frags_processed -= nb_frags;
+ 		}
+ 
+ 		if (ifobj->use_fill_ring)
+-			xsk_ring_prod__submit(&umem->fq, rcvd);
++			xsk_ring_prod__submit(&umem->fq, frags_processed);
+ 		if (ifobj->release_rx)
+-			xsk_ring_cons__release(&xsk->rx, rcvd);
++			xsk_ring_cons__release(&xsk->rx, frags_processed);
+ 
+ 		pthread_mutex_lock(&pacing_mutex);
+ 		pkts_in_flight -= pkts_sent;
+@@ -946,13 +1023,14 @@ static int receive_pkts(struct test_spec *test, struct pollfd *fds)
+ 
+ static int __send_pkts(struct ifobject *ifobject, struct pollfd *fds, bool timeout)
+ {
++	u32 i, idx = 0, valid_pkts = 0, valid_frags = 0, buffer_len;
++	struct pkt_stream *pkt_stream = ifobject->pkt_stream;
+ 	struct xsk_socket_info *xsk = ifobject->xsk;
+ 	struct xsk_umem_info *umem = ifobject->umem;
+-	u32 i, idx = 0, valid_pkts = 0, buffer_len;
+ 	bool use_poll = ifobject->use_poll;
+ 	int ret;
+ 
+-	buffer_len = pkt_get_buffer_len(umem, ifobject->pkt_stream->max_pkt_len);
++	buffer_len = pkt_get_buffer_len(umem, pkt_stream->max_pkt_len);
+ 	/* pkts_in_flight might be negative if many invalid packets are sent */
+ 	if (pkts_in_flight >= (int)((umem_size(umem) - BATCH_SIZE * buffer_len) / buffer_len)) {
+ 		kick_tx(xsk);
+@@ -983,17 +1061,40 @@ static int __send_pkts(struct ifobject *ifobject, struct pollfd *fds, bool timeo
+ 	}
+ 
+ 	for (i = 0; i < BATCH_SIZE; i++) {
+-		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
+-		struct pkt *pkt = pkt_stream_get_next_tx_pkt(ifobject->pkt_stream);
++		struct pkt *pkt = pkt_stream_get_next_tx_pkt(pkt_stream);
++		u32 nb_frags, bytes_written = 0;
+ 
+ 		if (!pkt)
+ 			break;
+ 
+-		tx_desc->addr = pkt_get_addr(pkt, umem);
+-		tx_desc->len = pkt->len;
++		nb_frags = pkt_nb_frags(umem->frame_size, pkt);
++		if (nb_frags > BATCH_SIZE - i) {
++			pkt_stream_cancel(pkt_stream);
++			xsk_ring_prod__cancel(&xsk->tx, BATCH_SIZE - i);
 +			break;
++		}
 +
-+		tx_desc = ICE_TX_DESC(xdp_ring, ntu);
-+		tx_buf = &xdp_ring->tx_buf[ntu];
+ 		if (pkt->valid) {
+ 			valid_pkts++;
+-			pkt_generate(ifobject, tx_desc->addr, tx_desc->len, pkt->pkt_nb, 0);
++			valid_frags += nb_frags;
++		}
 +
-+		xdp = xsk_buff_get_frag(head);
-+		size = skb_frag_size(&sinfo->frags[frag]);
-+		frag++;
-+	}
- 
--	if (++ntu == xdp_ring->count)
--		ntu = 0;
- 	xdp_ring->next_to_use = ntu;
-+	/* update last descriptor from a frame with EOP */
-+	tx_desc->cmd_type_offset_bsz |=
-+		cpu_to_le64(ICE_TX_DESC_CMD_EOP << ICE_TXD_QW1_CMD_S);
- 
- 	return ICE_XDP_TX;
++		while (nb_frags--) {
++			struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
 +
-+busy:
-+	xdp_ring->ring_stats->tx_stats.tx_busy++;
-+
-+	return ICE_XDP_CONSUMED;
- }
++			tx_desc->addr = pkt_get_addr(pkt, ifobject->umem);
++			if (nb_frags) {
++				tx_desc->len = umem->frame_size;
++				tx_desc->options = XDP_PKT_CONTD;
++				i++;
++			} else {
++				tx_desc->len = pkt->len - bytes_written;
++				tx_desc->options = 0;
++			}
++			if (pkt->valid)
++				pkt_generate(ifobject, tx_desc->addr, tx_desc->len, pkt->pkt_nb,
++					     bytes_written);
++			bytes_written += tx_desc->len;
+ 		}
+ 	}
  
- /**
-@@ -963,7 +1000,7 @@ static void ice_xmit_pkt(struct ice_tx_ring *xdp_ring, struct xdp_desc *desc,
+@@ -1002,7 +1103,7 @@ static int __send_pkts(struct ifobject *ifobject, struct pollfd *fds, bool timeo
+ 	pthread_mutex_unlock(&pacing_mutex);
  
- 	tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_to_use++);
- 	tx_desc->buf_addr = cpu_to_le64(dma);
--	tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
-+	tx_desc->cmd_type_offset_bsz = ice_build_ctob(xsk_is_eop_desc(desc),
- 						      0, desc->len, 0);
+ 	xsk_ring_prod__submit(&xsk->tx, i);
+-	xsk->outstanding_tx += valid_pkts;
++	xsk->outstanding_tx += valid_frags;
  
- 	*total_bytes += desc->len;
-@@ -990,7 +1027,7 @@ static void ice_xmit_pkt_batch(struct ice_tx_ring *xdp_ring, struct xdp_desc *de
+ 	if (use_poll) {
+ 		ret = poll(fds, 1, POLL_TMOUT);
+diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
+index aaf27e067640..310b48ad8a3a 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.h
++++ b/tools/testing/selftests/bpf/xskxceiver.h
+@@ -38,6 +38,7 @@
+ #define MAX_TEARDOWN_ITER 10
+ #define PKT_HDR_SIZE (sizeof(struct ethhdr) + 2) /* Just to align the data in the packet */
+ #define MIN_PKT_SIZE 64
++#define MAX_ETH_JUMBO_SIZE 9000
+ #define USLEEP_MAX 10000
+ #define SOCK_RECONF_CTR 10
+ #define BATCH_SIZE 64
+@@ -47,7 +48,7 @@
+ #define DEFAULT_UMEM_BUFFERS (DEFAULT_PKT_CNT / 4)
+ #define RX_FULL_RXQSIZE 32
+ #define UMEM_HEADROOM_TEST_SIZE 128
+-#define XSK_UMEM__INVALID_FRAME_SIZE (XSK_UMEM__DEFAULT_FRAME_SIZE + 1)
++#define XSK_UMEM__INVALID_FRAME_SIZE (MAX_ETH_JUMBO_SIZE + 1)
+ #define HUGEPAGE_SIZE (2 * 1024 * 1024)
+ #define PKT_DUMP_NB_TO_PRINT 16
  
- 		tx_desc = ICE_TX_DESC(xdp_ring, ntu++);
- 		tx_desc->buf_addr = cpu_to_le64(dma);
--		tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
-+		tx_desc->cmd_type_offset_bsz = ice_build_ctob(xsk_is_eop_desc(&descs[i]),
- 							      0, descs[i].len, 0);
- 
- 		*total_bytes += descs[i].len;
 -- 
 2.34.1
 
