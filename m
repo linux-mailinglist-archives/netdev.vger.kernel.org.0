@@ -1,187 +1,253 @@
-Return-Path: <netdev+bounces-3626-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3627-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 70729708209
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 15:05:09 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C7E9670820C
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 15:07:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1508E1C210B8
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 13:05:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8D93C2818EB
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 13:07:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 390D623C7B;
-	Thu, 18 May 2023 13:05:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5FD8323C7D;
+	Thu, 18 May 2023 13:07:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28C5223C73
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 13:05:06 +0000 (UTC)
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2075.outbound.protection.outlook.com [40.107.104.75])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722C2170B;
-	Thu, 18 May 2023 06:05:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m4fOrjoh5scaZsxUl5hv/HzZitHwAHf5nLaInaW2b7nPPybZUcZeTygFY0EogyohcUX6OhvzVP8xk6FDNGG3T9QpNxK6PZMBR0b6+kgPXcE5tqiufHp2oB4zKwq2J/8BA0XaBUgU/Fb8q8u3W6Lk9kjiXdScjEMgf+PQf3RYF1ik9fij0zuxPhzFchnw4RH1mvnyEcEoLwhpJWhFreoPTwwbc5J3Hfp6d272dKxgrhCxHAhhQMPCBzOzyHSD6HQss4gmpxh2MbK9LKfDMHi8KBvpEVtJjY/xDEUJSuM8sdGFzqhOWanTZvG9sRPmp/gMOV8K14qkJofkNe/QFE3ySw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SM+x4DRbeqO3O2rDFC7s2xKfvJDdWRgcBJvAAosN2dc=;
- b=TE0ncDEYVzwDl59jajLfNazlrT+ptlGn8vF9Aj5176ZtdCceLCx/O4PnJNED+Q9rLbaJnYRUNKek3kooMskDUvdn+HtTfJNCewyHD4v4iCUndgWz06EsqhAcvseSM1p7JMjBV7tqHHtnHWElppHR/1I5P9aOWMpglq/lFgQX2LY3SpOlwPNV+KxIwmsSmK7QL3qcYlhOC6QZ7972aiNdDyGnjY9gO1Yd8fP7Vd8iz/i2mV6S4IvMPPvnAYYoJ+phve1WIrXaqlP/GQdpZSeI9eGWycAh9hy7K/LnbnbT+wL3yPL8xj0EcrIGOwiIPfUOdAxn1Q/7a3HEzGCDHn8gWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SM+x4DRbeqO3O2rDFC7s2xKfvJDdWRgcBJvAAosN2dc=;
- b=F+wHA1Vh+9d5WY33ehhG2roLvZnODvhucWZsOHr3Kw9/PpxloXd4dHLs5Ejva7k24h7JUOKWykto3kDZ+5teGFdN3OmU5NzNX5u81zuK451uynO2cVSBsuFbe5JRvUVDPo4goR3QtaJeLZhfeJ8yLjVArATki76N2nH21F8Utig=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM5PR04MB3139.eurprd04.prod.outlook.com (2603:10a6:206:8::20)
- by AS8PR04MB7896.eurprd04.prod.outlook.com (2603:10a6:20b:2a2::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.17; Thu, 18 May
- 2023 13:05:00 +0000
-Received: from AM5PR04MB3139.eurprd04.prod.outlook.com
- ([fe80::682b:185:581f:7ea2]) by AM5PR04MB3139.eurprd04.prod.outlook.com
- ([fe80::682b:185:581f:7ea2%4]) with mapi id 15.20.6387.033; Thu, 18 May 2023
- 13:05:00 +0000
-From: wei.fang@nxp.com
-To: davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	Frank.Li@freescale.com,
-	shenwei.wang@nxp.com,
-	xiaoning.wang@nxp.com,
-	netdev@vger.kernel.org
-Cc: linux-imx@nxp.com,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: fec: remove useless fec_enet_reset_skb()
-Date: Thu, 18 May 2023 21:00:16 +0800
-Message-Id: <20230518130016.1615671-1-wei.fang@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG3P274CA0019.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::31)
- To AM5PR04MB3139.eurprd04.prod.outlook.com (2603:10a6:206:8::20)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E85E23C7B
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 13:07:27 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67322DA
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 06:07:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684415243;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=gmChLLTaBmtSZq1ShF8K7UAV7zLX+N6Ybamf0Zveefo=;
+	b=RArmhJuWBMv4FqtJTtXLlm9oLow3CYTpxLXx9n9G1fgKU1Nch/uqzCbcjW8K7m6NMTYynV
+	P/PrQc3LAKCEWWoy3mth6fLrS4SqUP6yISyMe2gqQV+IKHQi9N66ofp+ukZJSFAme7n+z8
+	TtERuRkSSu5coxWyqXZ72Yag9UFkM3A=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-247-4Z1hckUWN-OevcDAT1Ge4w-1; Thu, 18 May 2023 09:07:20 -0400
+X-MC-Unique: 4Z1hckUWN-OevcDAT1Ge4w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4DA2E85C069;
+	Thu, 18 May 2023 13:07:19 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.221])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 2398D40C2063;
+	Thu, 18 May 2023 13:07:16 +0000 (UTC)
+From: David Howells <dhowells@redhat.com>
+To: netdev@vger.kernel.org
+Cc: David Howells <dhowells@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+	David Ahern <dsahern@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Al Viro <viro@zeniv.linux.org.uk>,
+	Christoph Hellwig <hch@infradead.org>,
+	Jens Axboe <axboe@kernel.dk>,
+	Jeff Layton <jlayton@kernel.org>,
+	Christian Brauner <brauner@kernel.org>,
+	Chuck Lever III <chuck.lever@oracle.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	linux-fsdevel@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: [PATCH net-next v9 00/16] splice, net: Replace sendpage with sendmsg(MSG_SPLICE_PAGES), part 1
+Date: Thu, 18 May 2023 14:06:57 +0100
+Message-Id: <20230518130713.1515729-1-dhowells@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM5PR04MB3139:EE_|AS8PR04MB7896:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3fa4401f-c4be-42d0-b612-08db57a07cec
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	aJ9f1peETH+YNuOdTNzNU/402fhUpn/BMFjRa8lzcei1ounOsiFyXj3z781WnnQ+KF0+PiOnc5FmX9S7hKyrHBQDf6uP2fE73Yoib0LHRGTarZwk/ebmiqszC2o2k8pdYOF1ODki/82z/jswGN+PE+jlbfj6EfqZQzrXwZKss7FiE9tialde1WqFcr+HBDnoPnUykVthsgU4N7vpiAsRH/TTfJWlRePnmNfiHl+OwEwzbF0HsWa4LP/LjEPXV6ZpAMoSnrfuL9t5Rn4Dw/nn8O7qyXMaB0Nm/9Gyon4X5yJ30ztWA0ug+Ge5fFfALcgfuZrU5VxU+C8SERKwmleZG2P3KaAj3s3QIIp5JA38QZxGj/4f6Dkm+CywHGx+9saNtKoOYYWf1FJ1P0DTEnO5aSkShDf2lyuqBifMd2vqkLR1hpxgBYs1es/hMs50VqdnLzV8KD02uYf1dWtbtv/dBZtLpfKcKA88mlwRkYoiL8XDkrOXvqjkm4cE39uj9JM791CardMHsoDOcNRSp/DED8hQzqVjkYOutcWtX6djhjej6wbNMTfEqcZPAbFd1H3zNi5BiUEVrOPiXVjesAtnttN9LaTUGu8pc2FlQi5Kuef+Zdf56/NXpifIvdcaWD72
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM5PR04MB3139.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(136003)(376002)(39860400002)(451199021)(4326008)(66556008)(478600001)(66946007)(66476007)(52116002)(316002)(36756003)(83380400001)(1076003)(26005)(2616005)(186003)(6506007)(6486002)(9686003)(6512007)(41300700001)(8676002)(5660300002)(8936002)(2906002)(6666004)(38100700002)(86362001)(38350700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?sqRlZqTmR2Vb7W6WnVHV9uYHmVQBMtzVNAFd0NiBFVcDXhjCV8H8oVNRzQxn?=
- =?us-ascii?Q?6hUUDLBBM6hwxA9dgIs37VxeYzhea7iOGrBKrp2S2m/CvFdWbfiHX+GXk+AG?=
- =?us-ascii?Q?4e0j71AgTMCn96NHNueYCSHY0kqp2vsxR6ufvsBCyt6b9KxX6ZxD1Mb6/U3H?=
- =?us-ascii?Q?niNk/12uii8fQiKuXG53qJHECT3LQc/qprAWnN4iBOd6iMXPKKo09XiT+amm?=
- =?us-ascii?Q?Bs/Ee6iAd3/XMa9c2D46f8YFa6MilMy5lnRx68HTIcIPpQSwPN6zJEl8tdek?=
- =?us-ascii?Q?9Rp5Vy7y4EpvThyHwyE9vfui7OwwATGw9plx/c635dMOVp2Z1ou+raFkV+C6?=
- =?us-ascii?Q?ivPCStbvvXM0jVWARUh8M34ayLN5K61b9lcCQ3cDLfByv7Awz/rrTh+Rc6AL?=
- =?us-ascii?Q?hH1zav35xWxktSlcjNhWEW1UClTmDmWTK7qpd6guFyKJLKS/7cHG6e0+72gz?=
- =?us-ascii?Q?DpMMKX2ltdFSS27SWAkGgyNE3VUXKqqavoaxqOavZfd0lXWYcJL7F6Y0+kH1?=
- =?us-ascii?Q?lZOlMfdFQNH8pxgoLgUyNHYrj1vGf+6H6zGIoO2FuiW3dJ43Pg4O9lJuy2Ce?=
- =?us-ascii?Q?R1O8cSkvcgm2kPELFzFrJgfyNO9FCvbC+1xT67bUrUhKdCSGQ452Hmb0sF0I?=
- =?us-ascii?Q?0b9fTot1fgmwp8eZjVpV4sAgKjKC7Iz+lCVAZQ+OTfUkJn5oQgX9UWKVY8Ir?=
- =?us-ascii?Q?oY2g6bxbQnbnndZ0X/R+Ow490N6s+KJOzf2lP5HCn/7yF6L6s3BwSnwgD7gL?=
- =?us-ascii?Q?XR8rKEwDE71NieHYdwkwD+QmNzG69xZFufyK/sM6sVJxhq63IB3DR5RPxab+?=
- =?us-ascii?Q?CJ7POjAryU/qVHc3oQYouklM1uCJCE1wvLUSOrx1BdfB/epx7E+n6jwGqJMg?=
- =?us-ascii?Q?InWQgG/UzmZm9KMZxIUivFrbWnbQkvtT1axmKQ9vnazSqNlLt3gEwsAjv7HQ?=
- =?us-ascii?Q?ISQsriIbtnOGJvcAyTluBrEuEVH7xJBvyMzPq4CUveQcVYP4qQrora1np2Di?=
- =?us-ascii?Q?/Y6IXjXg1rFe2b0fSZR5sT9atgG5LsdvZ5RF6aBZtYltm1t4PPZOCa0PuYjU?=
- =?us-ascii?Q?M49iThUqJOx0hjp6/lF6DXA1R7uY2YqFIrw5cRPBafEXO5lEUMmkd/UYht7n?=
- =?us-ascii?Q?dD7yleUE97QHFyzDHqyOZPLDbeVnOUiHLmj7nqQkNeeQGN7JgB4WQvU1xT0g?=
- =?us-ascii?Q?XtIycIqKyVfWbrckYrofEmKwxw6JqMux98fcZLmuCQtIzusUU5B7buReJ7Rt?=
- =?us-ascii?Q?GvGTx2Hoy5k+SXqci1716IVsqrrP203OLfhk2QIpdX7StVf/uAkHncGT/Kbu?=
- =?us-ascii?Q?wU+LiiwYT1V78iRyy7f6TKyEg9ueVJWhHXU0hFeZagHircu6DQJB1I1ohhWF?=
- =?us-ascii?Q?3Q2YetY5vhH7TpyPCjktcJIGvBjKI+YF0/Zqon4QuunRluxyI4ez0/vjrdBx?=
- =?us-ascii?Q?6T+jPXdgSGDSqgv7hMsRDC5slcHAhqm28CVQ/9batuyIf4dl534Jlc8TRUvA?=
- =?us-ascii?Q?XBCOaGoB+jZ/Azcypokz5zsb0d+dzKlbQ8JeZ4DDCmnZdlkjfODqEEGJCky6?=
- =?us-ascii?Q?jF0BuN1gPUSYMGAXbm0y1ncvTvENM3JCBTwuMkcl?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3fa4401f-c4be-42d0-b612-08db57a07cec
-X-MS-Exchange-CrossTenant-AuthSource: AM5PR04MB3139.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2023 13:05:00.7304
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HDD828mKiaz807BegjcrnXNh/Wc3jvp571csBKutoJxmdAPZW1gznE1f1ol5wohqfmQqYcuoMnIE/KoGeWGiCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7896
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Wei Fang <wei.fang@nxp.com>
+Here's the first tranche of patches towards providing a MSG_SPLICE_PAGES
+internal sendmsg flag that is intended to replace the ->sendpage() op with
+calls to sendmsg().  MSG_SPLICE_PAGES is a hint that tells the protocol
+that it should splice the pages supplied if it can and copy them if not.
 
-This patch is a cleanup for fec driver. The fec_enet_reset_skb()
-is used to free skb buffers for tx queues and is only invoked in
-fec_restart(). However, fec_enet_bd_init() also resets skb buffers
-and is invoked in fec_restart() too. So fec_enet_reset_skb() is
-redundant and useless.
+This will allow splice to pass multiple pages in a single call and allow
+certain parts of higher protocols (e.g. sunrpc, iwarp) to pass an entire
+message in one go rather than having to send them piecemeal.  This should
+also make it easier to handle the splicing of multipage folios.
 
-Fixes: 59d0f7465644 ("net: fec: init multi queue date structure")
-Signed-off-by: Wei Fang <wei.fang@nxp.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 21 ---------------------
- 1 file changed, 21 deletions(-)
+A helper, skb_splice_from_iter() is provided to do the work of splicing or
+copying data from an iterator.  If a page is determined to be unspliceable
+(such as being in the slab), then the helper will give an error.
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 577d94821b3e..70ef969e6588 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1011,24 +1011,6 @@ static void fec_enet_enable_ring(struct net_device *ndev)
- 	}
- }
- 
--static void fec_enet_reset_skb(struct net_device *ndev)
--{
--	struct fec_enet_private *fep = netdev_priv(ndev);
--	struct fec_enet_priv_tx_q *txq;
--	int i, j;
--
--	for (i = 0; i < fep->num_tx_queues; i++) {
--		txq = fep->tx_queue[i];
--
--		for (j = 0; j < txq->bd.ring_size; j++) {
--			if (txq->tx_skbuff[j]) {
--				dev_kfree_skb_any(txq->tx_skbuff[j]);
--				txq->tx_skbuff[j] = NULL;
--			}
--		}
--	}
--}
--
- /*
-  * This function is called to start or restart the FEC during a link
-  * change, transmit timeout, or to reconfigure the FEC.  The network
-@@ -1071,9 +1053,6 @@ fec_restart(struct net_device *ndev)
- 
- 	fec_enet_enable_ring(ndev);
- 
--	/* Reset tx SKB buffers. */
--	fec_enet_reset_skb(ndev);
--
- 	/* Enable MII mode */
- 	if (fep->full_duplex == DUPLEX_FULL) {
- 		/* FD enable */
--- 
-2.25.1
+Note that this facility is not made available to userspace and does not
+provide any sort of callback.
+
+This set consists of the following parts:
+
+ (1) Define the MSG_SPLICE_PAGES flag and prevent sys_sendmsg() from being
+     able to set it.
+
+ (2) Add an extra argument to skb_append_pagefrags() so that something
+     other than MAX_SKB_FRAGS can be used (sysctl_max_skb_frags for
+     example).
+
+ (3) Add the skb_splice_from_iter() helper to handle splicing pages into
+     skbuffs for MSG_SPLICE_PAGES that can be shared by TCP, IP/UDP and
+     AF_UNIX.
+
+ (4) Implement MSG_SPLICE_PAGES support in TCP.
+
+ (5) Make do_tcp_sendpages() just wrap sendmsg() and then fold it in to its
+     various callers.
+
+ (6) Implement MSG_SPLICE_PAGES support in IP and make udp_sendpage() just
+     a wrapper around sendmsg().
+
+ (7) Implement MSG_SPLICE_PAGES support in IP6/UDP6.
+
+ (8) Implement MSG_SPLICE_PAGES support in AF_UNIX.
+
+ (9) Make AF_UNIX copy unspliceable pages.
+
+I've pushed the patches here also:
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=sendpage-1
+
+The follow-on patches are on branch iov-sendpage on the same tree.
+
+David
+
+Changes
+=======
+ver #9)
+ - Fix a merge conflict with commit eea96a3e2c909.
+
+ver #8)
+ - Order local variables in reverse xmas tree order.
+ - Remove duplicate coalescence check.
+ - Warn if sendpage_ok() fails.
+
+ver #7)
+ - Rebase after merge window.
+ - In ____sys_sendmsg(), clear internal flags before setting msg_flags.
+ - Clear internal flags in uring io_send{,_zc}().
+ - Export skb_splice_from_iter().
+ - Missed changing a "zc = 1" in tcp_sendmsg_locked().
+ - Remove now-unused csum_page() from UDP.
+ - Add a patch to make AF_UNIX sendpage() just a wrapper around sendmsg().
+ - Return an error if !sendpage_ok() rather than copying for now.
+ - Drop the page frag allocator patches for the moment.
+
+ver #6)
+ - Removed a couple of leftover page pointer declarations.
+ - In TCP, set zc to 0/MSG_ZEROCOPY/MSG_SPLICE_PAGES rather than 0/1/2.
+ - Add a max-frags argument to skb_append_pagefrags().
+ - Extract the AF_UNIX helper out into a common helper and use it for
+   IP/UDP and TCP too.
+ - udp_sendpage() shouldn't lock the socket around udp_sendmsg().
+ - udp_sendpage() should only set MSG_MORE if MSG_SENDPAGE_NOTLAST is set.
+ - In siw, don't clear MSG_SPLICE_PAGES on the last page.
+
+ver #5)
+ - Dropped the samples patch as it causes lots of failures in the patchwork
+   32-bit builds due to apparent libc userspace header issues.
+ - Made the pagefrag alloc patches alter the Google gve driver too.
+ - Rearranged the patches to put the support in IP before altering UDP.
+
+ver #4)
+ - Added some sample socket-I/O programs into samples/net/.
+ - Fix a missing page-get in AF_KCM.
+ - Init the sgtable and mark the end in AF_ALG when calling
+   netfs_extract_iter_to_sg().
+ - Add a destructor func for page frag caches prior to generalising it and
+   making it per-cpu.
+
+ver #3)
+ - Dropped the iterator-of-iterators patch.
+ - Only expunge MSG_SPLICE_PAGES in sys_send[m]msg, not sys_recv[m]msg.
+ - Split MSG_SPLICE_PAGES code in __ip_append_data() out into helper
+   functions.
+ - Implement MSG_SPLICE_PAGES support in __ip6_append_data() using the
+   above helper functions.
+ - Rename 'xlength' to 'initial_length'.
+ - Minimise the changes to sunrpc for the moment.
+ - Don't give -EOPNOTSUPP if NETIF_F_SG not available, just copy instead.
+ - Implemented MSG_SPLICE_PAGES support in the TLS, Chelsio-TLS and AF_KCM
+   code.
+
+ver #2)
+ - Overhauled the page_frag_alloc() allocator: large folios and per-cpu.
+   - Got rid of my own zerocopy allocator.
+ - Use iov_iter_extract_pages() rather poking in iter->bvec.
+ - Made page splicing fall back to page copying on a page-by-page basis.
+ - Made splice_to_socket() pass 16 pipe buffers at a time.
+ - Made AF_ALG/hash use finup/digest where possible in sendmsg.
+ - Added an iterator-of-iterators, ITER_ITERLIST.
+ - Made sunrpc use the iterator-of-iterators.
+ - Converted more drivers.
+
+Link: https://lore.kernel.org/r/20230316152618.711970-1-dhowells@redhat.com/ # v1
+Link: https://lore.kernel.org/r/20230329141354.516864-1-dhowells@redhat.com/ # v2
+Link: https://lore.kernel.org/r/20230331160914.1608208-1-dhowells@redhat.com/ # v3
+Link: https://lore.kernel.org/r/20230405165339.3468808-1-dhowells@redhat.com/ # v4
+Link: https://lore.kernel.org/r/20230406094245.3633290-1-dhowells@redhat.com/ # v5
+Link: https://lore.kernel.org/r/20230411160902.4134381-1-dhowells@redhat.com/ # v6
+Link: https://lore.kernel.org/r/20230515093345.396978-1-dhowells@redhat.com/ # v7
+Link: https://lore.kernel.org/r/20230518113453.1350757-1-dhowells@redhat.com/ # v8
+
+David Howells (16):
+  net: Declare MSG_SPLICE_PAGES internal sendmsg() flag
+  net: Pass max frags into skb_append_pagefrags()
+  net: Add a function to splice pages into an skbuff for
+    MSG_SPLICE_PAGES
+  tcp: Support MSG_SPLICE_PAGES
+  tcp: Convert do_tcp_sendpages() to use MSG_SPLICE_PAGES
+  tcp_bpf: Inline do_tcp_sendpages as it's now a wrapper around
+    tcp_sendmsg
+  espintcp: Inline do_tcp_sendpages()
+  tls: Inline do_tcp_sendpages()
+  siw: Inline do_tcp_sendpages()
+  tcp: Fold do_tcp_sendpages() into tcp_sendpage_locked()
+  ip, udp: Support MSG_SPLICE_PAGES
+  ip6, udp6: Support MSG_SPLICE_PAGES
+  udp: Convert udp_sendpage() to use MSG_SPLICE_PAGES
+  ip: Remove ip_append_page()
+  af_unix: Support MSG_SPLICE_PAGES
+  unix: Convert udp_sendpage() to use MSG_SPLICE_PAGES
+
+ drivers/infiniband/sw/siw/siw_qp_tx.c |  17 +-
+ include/linux/skbuff.h                |   5 +-
+ include/linux/socket.h                |   3 +
+ include/net/ip.h                      |   2 -
+ include/net/tcp.h                     |   2 -
+ include/net/tls.h                     |   2 +-
+ io_uring/net.c                        |   2 +
+ net/core/skbuff.c                     |  92 ++++++++++-
+ net/ipv4/ip_output.c                  | 164 +++-----------------
+ net/ipv4/tcp.c                        | 214 ++++++--------------------
+ net/ipv4/tcp_bpf.c                    |  20 ++-
+ net/ipv4/udp.c                        |  51 +-----
+ net/ipv6/ip6_output.c                 |  17 ++
+ net/socket.c                          |   2 +
+ net/tls/tls_main.c                    |  24 +--
+ net/unix/af_unix.c                    | 183 +++++-----------------
+ net/xfrm/espintcp.c                   |  10 +-
+ 17 files changed, 278 insertions(+), 532 deletions(-)
 
 
