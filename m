@@ -1,714 +1,263 @@
-Return-Path: <netdev+bounces-3583-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3586-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E10F3707F52
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 13:31:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 43ECB707F6D
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 13:35:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C13E41C2106D
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:31:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF0C72814A1
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:35:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 518B61951E;
-	Thu, 18 May 2023 11:31:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BADE319900;
+	Thu, 18 May 2023 11:35:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BAB019507
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 11:31:35 +0000 (UTC)
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3806C2105;
-	Thu, 18 May 2023 04:31:13 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 34IBUGc64029551, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-	by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 34IBUGc64029551
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-	Thu, 18 May 2023 19:30:16 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Thu, 18 May 2023 19:30:25 +0800
-Received: from localhost.localdomain (172.21.132.192) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Thu, 18 May 2023 19:30:25 +0800
-From: <hildawu@realtek.com>
-To: <marcel@holtmann.org>
-CC: <johan.hedberg@gmail.com>, <luiz.dentz@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <apusaka@chromium.org>,
-        <mmandlik@google.com>, <yinghsu@chromium.org>,
-        <simon.horman@corigine.com>, <max.chou@realtek.com>,
-        <alex_lu@realsil.com.cn>, <kidman@realtek.com>
-Subject: [PATCH v4] Bluetooth: msft: Extended monitor tracking by address filter
-Date: Thu, 18 May 2023 19:30:21 +0800
-Message-ID: <20230518113021.30431-1-hildawu@realtek.com>
-X-Mailer: git-send-email 2.17.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A520619902
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 11:35:00 +0000 (UTC)
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2045.outbound.protection.outlook.com [40.107.93.45])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E12A199F
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 04:34:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QJONzYtMz5wRjb7+aWYH/nLr2dGmIakv3MdRWruB41AIE5t1lVgEVu9nygZJOS2M0ChsbT5UFDaUTiAYvqmBXIqRNgTX2zxFdKcKylxmOJgYV7TY4whvxs89HTtBzh6Urixc5awyDSi/rshDJFzXSiQE28E2pM5gQblsc+1wU0Ufhl/+9rPojtmtkhPHN73OHXVimsWP38JAhiiUgVXhC6I+lfHsXzIGowC+zuxK7/MflAtKlQln5wLODvcGepw6XXgws9Fzuu+4xi/+ggxyXej0hnkKLISkd0v5Fb7YY2rS8W8TPjE1ImKGKKK+ID/2oV9gwodFGLaoaS8GJZRP6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UHMleX3m93FznwDBF2y4gCuE6x/7s2Xg1JpdqLhsNtY=;
+ b=G3TskeAL0yeoyNzCk3HXvgql44dBeS9d6EKcuGyvKBvKDNvhwEtmXSRuAFQ+Dt85YUoHYGfALysXO9AdRUlDFbEuEy6JCYsR5voU5F19c2Upv7CJCUCMirL4sNNZ7vABBqb45c6kvc54/YIE+8u6i36sVCc7ud4B1Xk4zKU4nk6K++zkEOjSyrmwgtxWiZgRgCWdmwpLQW70cjQwotSUKUJrXox3VHw6TYsv/5DJYorgTZ5MDtKQCJS1ntNaW5iofPhTlkak+XqWithm4Au0+n9SCxIT2Ezr1n6YIbK7rKP8cwcM2BVD0m0tBam+e8rBkEyMxbqHixY98c1/N6OtAQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UHMleX3m93FznwDBF2y4gCuE6x/7s2Xg1JpdqLhsNtY=;
+ b=naST7rBPOuudt4ldSfoKx9yH36EQqP0FKhkd2JrOqxduIlDxJP7NC6NliiWmwqAw2h5fSw2W9cp/4jcR9epySXP9/iv4fic964V/E4VkmmLz/z85gKOPw1UtubuzIbmg/JvefXNI3LC3SN228kCDZCezcPmBsBIzgTz/S3F9ZCT8P1ReeWD1KGvxh5YEpRn0ZGqgdcHKRziS6je0mqZ6qWoyDOVd9rJmsBcKFr/WW2MYEqrkpQ9CeH/BNCP/sBxstRKV6JqFYlFmm8u8ExgqBOJXB/4Zed58OY1x7sWixxPgba3fR36sqSF7UDFsoNuRnCtUvpuiyHWwTQtHtZZpew==
+Received: from MW4PR04CA0058.namprd04.prod.outlook.com (2603:10b6:303:6a::33)
+ by PH7PR12MB6859.namprd12.prod.outlook.com (2603:10b6:510:1b5::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.33; Thu, 18 May
+ 2023 11:34:50 +0000
+Received: from CO1NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6a:cafe::c3) by MW4PR04CA0058.outlook.office365.com
+ (2603:10b6:303:6a::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19 via Frontend
+ Transport; Thu, 18 May 2023 11:34:50 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT010.mail.protection.outlook.com (10.13.175.88) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6411.19 via Frontend Transport; Thu, 18 May 2023 11:34:50 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 18 May 2023
+ 04:34:39 -0700
+Received: from dev-r-vrt-155.mtr.labs.mlnx (10.126.231.35) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Thu, 18 May 2023 04:34:34 -0700
+From: Ido Schimmel <idosch@nvidia.com>
+To: <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+CC: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+	<edumazet@google.com>, <razor@blackwall.org>, <roopa@nvidia.com>,
+	<taras.chornyi@plvision.eu>, <saeedm@nvidia.com>, <leon@kernel.org>,
+	<petrm@nvidia.com>, <vladimir.oltean@nxp.com>, <claudiu.manoil@nxp.com>,
+	<alexandre.belloni@bootlin.com>, <UNGLinuxDriver@microchip.com>,
+	<jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+	<taspelund@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/5] Add layer 2 miss indication and filtering
+Date: Thu, 18 May 2023 14:33:23 +0300
+Message-ID: <20230518113328.1952135-1-idosch@nvidia.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [172.21.132.192]
-X-ClientProxiedBy: RTEXH36506.realtek.com.tw (172.21.6.27) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-Antivirus-Interceptor-Info: fallback
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT010:EE_|PH7PR12MB6859:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9f4bac7d-5690-4e1d-0fc3-08db5793e43d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	t5R0h4q7wFfZaYvL5iaZb5E/2TbV89PFhxGFtcRNZgbpKeYwg1kTv9SArA9zvQAl8cLotaKQFRjX1A7b7lWlFpDUrEBwn20MbwADwGQfDgEIsr1TjnjGcL5ULKIhpiaiMtwLmtz3Lp+LE0URNF7Xld39wnxVDSQjKqE8xBsy1CnZNtEZrCGennXuGDnoRKUFMlsP4B3EUYJuUug9QNT0HJ7nsk4jY8aqFrFjpQ0Bwy5WrABHi9+RT4655+ZXxe1h+yl1phJ1L0sgnBFZwMUmU23TlTJKPXgAnQQHfKdxSfwYB1HMdfe2MmwVeYYysj6rvEwVEaNx9/2J2E1VPGt9enbb/cEebMl3vlmVOJQAIbPiSCskXG5/0GFmHA4GZdw//ctQmIFwYufySlYw4O7/bbYULEH2RtTXO7VDQqFsXjINeVvdSB94v2zVviDOD+iVFi/R8eIeQHipyn3Y8soRrgycEh9c6lQnTG+1iLeVAX3rpd7i6QehGmhXnZz7yfIqGIcBW4QmrpF84F1Z2juKluC2LWZdXb6n+keYlCqieT07OYGX9pzk5TPVSdF428NXp/qLmQLcMpp4Y/6u9jwwmVvvvAof1z88qFST5RVAohpBvQY5fcdPt/l8NDFIet0Xh1CUpi0242szzeAvJG6l+cukSjuLab8M0LQlQzaetQhnDTxEbHtNOEguGgCQmBuTczk5gOmtjVSKqtpt0q6JveqHT/nf7blklXB0klJrdSV/kOyC+AFxj0ELjIW3fBW1q3Mm6Ss9G400kaY5yYLDEMItMlz6dKnK/9Fmo1Q43zP1+p/peFVvmt9DX2P9E5Kx
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(376002)(39860400002)(136003)(451199021)(40470700004)(36840700001)(46966006)(5660300002)(8936002)(7416002)(426003)(336012)(107886003)(36860700001)(966005)(83380400001)(47076005)(82310400005)(26005)(1076003)(7636003)(356005)(2616005)(186003)(8676002)(40460700003)(70586007)(41300700001)(478600001)(110136005)(82740400003)(16526019)(6666004)(54906003)(86362001)(4326008)(316002)(40480700001)(70206006)(36756003)(2906002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2023 11:34:50.2666
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f4bac7d-5690-4e1d-0fc3-08db5793e43d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT010.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6859
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Hilda Wu <hildawu@realtek.com>
+tl;dr
+=====
 
-Since limited tracking device per condition, this feature is to support
-tracking multiple devices concurrently.
-When a pattern monitor detects the device, this feature issues an address
-monitor for tracking that device. Let pattern monitor can keep monitor
-new devices.
-This feature adds an address filter when receiving a LE monitor device
-event which monitor handle is for a pattern, and the controller started
-monitoring the device. And this feature also has cancelled the monitor
-advertisement from address filters when receiving a LE monitor device
-event when the controller stopped monitoring the device specified by an
-address and monitor handle.
+This patchset adds a single bit to the skb to indicate that a packet
+encountered a layer 2 miss in the bridge and extends flower to match on
+this metadata. This is required for non-DF (Designated Forwarder)
+filtering in EVPN multi-homing which prevents decapsulated BUM packets
+from being forwarded multiple times to the same multi-homed host.
 
-Signed-off-by: Alex Lu <alex_lu@realsil.com.cn>
-Signed-off-by: Hilda Wu <hildawu@realtek.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
----
-Changes in v4:
-- Follow suggested, modification include allocate an address_filter
-  cb and pass to hci_cmd_sync_queue, etc.
+Background
+==========
 
-Changes in v3:
-- Added flag for the feature.
-- Modified debug message level.
-- Follow suggested, using reverse xmas tree in new code.
+In a typical EVPN multi-homing setup each host is multi-homed using a
+set of links called ES (Ethernet Segment, i.e., LAG) to multiple leaf
+switches in a rack. These switches act as VTEPs and are not directly
+connected (as opposed to MLAG), but can communicate with each other (as
+well as with VTEPs in remote racks) via spine switches over L3.
 
-Changes in v2:
-- Fixed build bot warning, removed un-used parameter.
-- Follow suggested, adjust for readability and idiomatic, modified
-  error case, etc.
----
----
- drivers/bluetooth/btrtl.c   |   4 +
- include/net/bluetooth/hci.h |   9 +
- net/bluetooth/msft.c        | 412 ++++++++++++++++++++++++++++++++++--
- 3 files changed, 410 insertions(+), 15 deletions(-)
+When a host sends a BUM packet over ES1 to VTEP1, the VTEP will flood it
+to other VTEPs in the network, including those connected to the host
+over ES1. The receiving VTEPs must drop the packet and not forward it
+back to the host. This is called "split-horizon filtering" (SPH) [1].
 
-diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
-index 2915c82d719d..846e0a60cd8d 100644
---- a/drivers/bluetooth/btrtl.c
-+++ b/drivers/bluetooth/btrtl.c
-@@ -1180,6 +1180,10 @@ void btrtl_set_quirks(struct hci_dev *hdev, struct btrtl_device_info *btrtl_dev)
- 		if (btrtl_dev->project_id == CHIP_ID_8852C)
- 			btrealtek_set_flag(hdev, REALTEK_ALT6_CONTINUOUS_TX_CHIP);
- 
-+		if (btrtl_dev->project_id == CHIP_ID_8852A ||
-+		    btrtl_dev->project_id == CHIP_ID_8852C)
-+			set_bit(HCI_QUIRK_MSFT_EXT_MAF_SUPPORTED, &hdev->quirks);
-+
- 		hci_set_aosp_capable(hdev);
- 		break;
- 	default:
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 07df96c47ef4..48d8068a5a18 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -309,6 +309,15 @@ enum {
- 	 * to support it.
- 	 */
- 	HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT,
-+
-+	/* When this quirk is set, extended monitor tracking by address filter
-+	 * (MAF) is supported by the driver since limited tracking device per
-+	 * condition, this feature is to support tracking multiple devices
-+	 * concurrently, a driver flag is use to convey this support.
-+	 *
-+	 * This quirk must be set before hci_register_dev is called.
-+	 */
-+	HCI_QUIRK_MSFT_EXT_MAF_SUPPORTED,
- };
- 
- /* HCI device flags */
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index bf5cee48916c..59a995bd4bcc 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -91,6 +91,33 @@ struct msft_ev_le_monitor_device {
- struct msft_monitor_advertisement_handle_data {
- 	__u8  msft_handle;
- 	__u16 mgmt_handle;
-+	__s8 rssi_high;
-+	__s8 rssi_low;
-+	__u8 rssi_low_interval;
-+	__u8 rssi_sampling_period;
-+	__u8 cond_type;
-+	struct list_head list;
-+};
-+
-+enum monitor_addr_filter_state {
-+	AF_STATE_IDLE,
-+	AF_STATE_ADDING,
-+	AF_STATE_ADDED,
-+	AF_STATE_REMOVING,
-+};
-+
-+#define MSFT_MONITOR_ADVERTISEMENT_TYPE_ADDR	0x04
-+struct msft_monitor_addr_filter_data {
-+	__u8     msft_handle;
-+	__u8     pattern_handle; /* address filters pertain to */
-+	__u16    mgmt_handle;
-+	int      state;
-+	__s8     rssi_high;
-+	__s8     rssi_low;
-+	__u8     rssi_low_interval;
-+	__u8     rssi_sampling_period;
-+	__u8     addr_type;
-+	bdaddr_t bdaddr;
- 	struct list_head list;
- };
- 
-@@ -99,9 +126,12 @@ struct msft_data {
- 	__u8  evt_prefix_len;
- 	__u8  *evt_prefix;
- 	struct list_head handle_map;
-+	struct list_head address_filters;
- 	__u8 resuming;
- 	__u8 suspending;
- 	__u8 filter_enabled;
-+	/* To synchronize add/remove address filter and monitor device event.*/
-+	struct mutex filter_lock;
- };
- 
- bool msft_monitor_supported(struct hci_dev *hdev)
-@@ -180,6 +210,24 @@ static struct msft_monitor_advertisement_handle_data *msft_find_handle_data
- 	return NULL;
- }
- 
-+/* This function requires the caller holds msft->filter_lock */
-+static struct msft_monitor_addr_filter_data *msft_find_address_data
-+			(struct hci_dev *hdev, u8 addr_type, bdaddr_t *addr,
-+			 u8 pattern_handle)
-+{
-+	struct msft_monitor_addr_filter_data *entry;
-+	struct msft_data *msft = hdev->msft_data;
-+
-+	list_for_each_entry(entry, &msft->address_filters, list) {
-+		if (entry->pattern_handle == pattern_handle &&
-+		    addr_type == entry->addr_type &&
-+		    !bacmp(addr, &entry->bdaddr))
-+			return entry;
-+	}
-+
-+	return NULL;
-+}
-+
- /* This function requires the caller holds hdev->lock */
- static int msft_monitor_device_del(struct hci_dev *hdev, __u16 mgmt_handle,
- 				   bdaddr_t *bdaddr, __u8 addr_type,
-@@ -240,6 +288,7 @@ static int msft_le_monitor_advertisement_cb(struct hci_dev *hdev, u16 opcode,
- 
- 	handle_data->mgmt_handle = monitor->handle;
- 	handle_data->msft_handle = rp->handle;
-+	handle_data->cond_type   = MSFT_MONITOR_ADVERTISEMENT_TYPE_PATTERN;
- 	INIT_LIST_HEAD(&handle_data->list);
- 	list_add(&handle_data->list, &msft->handle_map);
- 
-@@ -254,6 +303,70 @@ static int msft_le_monitor_advertisement_cb(struct hci_dev *hdev, u16 opcode,
- 	return status;
- }
- 
-+/* This function requires the caller holds hci_req_sync_lock */
-+static void msft_remove_addr_filters_sync(struct hci_dev *hdev, u8 handle)
-+{
-+	struct msft_monitor_addr_filter_data *address_filter, *n;
-+	struct msft_cp_le_cancel_monitor_advertisement cp;
-+	struct msft_data *msft = hdev->msft_data;
-+	struct list_head head;
-+	struct sk_buff *skb;
-+
-+	INIT_LIST_HEAD(&head);
-+
-+	/* Cancel all corresponding address monitors */
-+	mutex_lock(&msft->filter_lock);
-+
-+	list_for_each_entry_safe(address_filter, n, &msft->address_filters,
-+				 list) {
-+		if (address_filter->pattern_handle != handle)
-+			continue;
-+
-+		list_del(&address_filter->list);
-+
-+		/* Keep the address filter and let
-+		 * msft_add_address_filter_sync() remove and free the address
-+		 * filter.
-+		 */
-+		if (address_filter->state == AF_STATE_ADDING) {
-+			address_filter->state = AF_STATE_REMOVING;
-+			continue;
-+		}
-+
-+		/* Keep the address filter and let
-+		 * msft_cancel_address_filter_sync() remove and free the address
-+		 * filter
-+		 */
-+		if (address_filter->state == AF_STATE_REMOVING)
-+			continue;
-+
-+		list_add_tail(&address_filter->list, &head);
-+	}
-+
-+	mutex_unlock(&msft->filter_lock);
-+
-+	list_for_each_entry_safe(address_filter, n, &head, list) {
-+		list_del(&address_filter->list);
-+
-+		cp.sub_opcode = MSFT_OP_LE_CANCEL_MONITOR_ADVERTISEMENT;
-+		cp.handle = address_filter->msft_handle;
-+
-+		skb = __hci_cmd_sync(hdev, hdev->msft_opcode, sizeof(cp), &cp,
-+				     HCI_CMD_TIMEOUT);
-+		if (IS_ERR_OR_NULL(skb)) {
-+			kfree(address_filter);
-+			continue;
-+		}
-+
-+		kfree_skb(skb);
-+
-+		bt_dev_dbg(hdev, "MSFT: Canceled device %pMR address filter",
-+			   &address_filter->bdaddr);
-+
-+		kfree(address_filter);
-+	}
-+}
-+
- static int msft_le_cancel_monitor_advertisement_cb(struct hci_dev *hdev,
- 						   u16 opcode,
- 						   struct adv_monitor *monitor,
-@@ -263,6 +376,7 @@ static int msft_le_cancel_monitor_advertisement_cb(struct hci_dev *hdev,
- 	struct msft_monitor_advertisement_handle_data *handle_data;
- 	struct msft_data *msft = hdev->msft_data;
- 	int status = 0;
-+	u8 msft_handle;
- 
- 	rp = (struct msft_rp_le_cancel_monitor_advertisement *)skb->data;
- 	if (skb->len < sizeof(*rp)) {
-@@ -293,11 +407,17 @@ static int msft_le_cancel_monitor_advertisement_cb(struct hci_dev *hdev,
- 						NULL, 0, false);
- 		}
- 
-+		msft_handle = handle_data->msft_handle;
-+
- 		list_del(&handle_data->list);
- 		kfree(handle_data);
--	}
- 
--	hci_dev_unlock(hdev);
-+		hci_dev_unlock(hdev);
-+
-+		msft_remove_addr_filters_sync(hdev, msft_handle);
-+	} else {
-+		hci_dev_unlock(hdev);
-+	}
- 
- done:
- 	return status;
-@@ -394,12 +514,14 @@ static int msft_add_monitor_sync(struct hci_dev *hdev,
- {
- 	struct msft_cp_le_monitor_advertisement *cp;
- 	struct msft_le_monitor_advertisement_pattern_data *pattern_data;
-+	struct msft_monitor_advertisement_handle_data *handle_data;
- 	struct msft_le_monitor_advertisement_pattern *pattern;
- 	struct adv_pattern *entry;
- 	size_t total_size = sizeof(*cp) + sizeof(*pattern_data);
- 	ptrdiff_t offset = 0;
- 	u8 pattern_count = 0;
- 	struct sk_buff *skb;
-+	int err;
- 
- 	if (!msft_monitor_pattern_valid(monitor))
- 		return -EINVAL;
-@@ -436,16 +558,31 @@ static int msft_add_monitor_sync(struct hci_dev *hdev,
- 
- 	skb = __hci_cmd_sync(hdev, hdev->msft_opcode, total_size, cp,
- 			     HCI_CMD_TIMEOUT);
--	kfree(cp);
- 
- 	if (IS_ERR_OR_NULL(skb)) {
--		if (!skb)
--			return -EIO;
--		return PTR_ERR(skb);
-+		err = PTR_ERR(skb);
-+		goto out_free;
- 	}
- 
--	return msft_le_monitor_advertisement_cb(hdev, hdev->msft_opcode,
--						monitor, skb);
-+	err = msft_le_monitor_advertisement_cb(hdev, hdev->msft_opcode,
-+					       monitor, skb);
-+	if (err)
-+		goto out_free;
-+
-+	handle_data = msft_find_handle_data(hdev, monitor->handle, true);
-+	if (!handle_data) {
-+		err = -ENODATA;
-+		goto out_free;
-+	}
-+
-+	handle_data->rssi_high	= cp->rssi_high;
-+	handle_data->rssi_low	= cp->rssi_low;
-+	handle_data->rssi_low_interval	  = cp->rssi_low_interval;
-+	handle_data->rssi_sampling_period = cp->rssi_sampling_period;
-+
-+out_free:
-+	kfree(cp);
-+	return err;
- }
- 
- /* This function requires the caller holds hci_req_sync_lock */
-@@ -538,6 +675,7 @@ void msft_do_close(struct hci_dev *hdev)
- {
- 	struct msft_data *msft = hdev->msft_data;
- 	struct msft_monitor_advertisement_handle_data *handle_data, *tmp;
-+	struct msft_monitor_addr_filter_data *address_filter, *n;
- 	struct adv_monitor *monitor;
- 
- 	if (!msft)
-@@ -559,6 +697,14 @@ void msft_do_close(struct hci_dev *hdev)
- 		kfree(handle_data);
- 	}
- 
-+	mutex_lock(&msft->filter_lock);
-+	list_for_each_entry_safe(address_filter, n, &msft->address_filters,
-+				 list) {
-+		list_del(&address_filter->list);
-+		kfree(address_filter);
-+	}
-+	mutex_unlock(&msft->filter_lock);
-+
- 	hci_dev_lock(hdev);
- 
- 	/* Clear any devices that are being monitored and notify device lost */
-@@ -568,6 +714,49 @@ void msft_do_close(struct hci_dev *hdev)
- 	hci_dev_unlock(hdev);
- }
- 
-+static int msft_cancel_address_filter_sync(struct hci_dev *hdev, void *data)
-+{
-+	struct msft_monitor_addr_filter_data *address_filter = data;
-+	struct msft_cp_le_cancel_monitor_advertisement cp;
-+	struct msft_data *msft = hdev->msft_data;
-+	struct sk_buff *skb;
-+	int err = 0;
-+
-+	if (!msft) {
-+		bt_dev_err(hdev, "MSFT: msft data is freed");
-+		return -EINVAL;
-+	}
-+
-+	/* The address filter has been removed by hci dev close */
-+	if (!test_bit(HCI_UP, &hdev->flags))
-+		return 0;
-+
-+	mutex_lock(&msft->filter_lock);
-+	list_del(&address_filter->list);
-+	mutex_unlock(&msft->filter_lock);
-+
-+	cp.sub_opcode = MSFT_OP_LE_CANCEL_MONITOR_ADVERTISEMENT;
-+	cp.handle = address_filter->msft_handle;
-+
-+	skb = __hci_cmd_sync(hdev, hdev->msft_opcode, sizeof(cp), &cp,
-+			     HCI_CMD_TIMEOUT);
-+	if (IS_ERR_OR_NULL(skb)) {
-+		bt_dev_err(hdev, "MSFT: Failed to cancel address (%pMR) filter",
-+			   &address_filter->bdaddr);
-+		err = EIO;
-+		goto done;
-+	}
-+	kfree_skb(skb);
-+
-+	bt_dev_dbg(hdev, "MSFT: Canceled device %pMR address filter",
-+		   &address_filter->bdaddr);
-+
-+done:
-+	kfree(address_filter);
-+
-+	return err;
-+}
-+
- void msft_register(struct hci_dev *hdev)
- {
- 	struct msft_data *msft = NULL;
-@@ -581,7 +770,9 @@ void msft_register(struct hci_dev *hdev)
- 	}
- 
- 	INIT_LIST_HEAD(&msft->handle_map);
-+	INIT_LIST_HEAD(&msft->address_filters);
- 	hdev->msft_data = msft;
-+	mutex_init(&msft->filter_lock);
- }
- 
- void msft_unregister(struct hci_dev *hdev)
-@@ -596,6 +787,7 @@ void msft_unregister(struct hci_dev *hdev)
- 	hdev->msft_data = NULL;
- 
- 	kfree(msft->evt_prefix);
-+	mutex_destroy(&msft->filter_lock);
- 	kfree(msft);
- }
- 
-@@ -645,11 +837,149 @@ static void *msft_skb_pull(struct hci_dev *hdev, struct sk_buff *skb,
- 	return data;
- }
- 
-+static int msft_add_address_filter_sync(struct hci_dev *hdev, void *data)
-+{
-+	struct msft_monitor_addr_filter_data *address_filter = data;
-+	struct msft_rp_le_monitor_advertisement *rp;
-+	struct msft_cp_le_monitor_advertisement *cp;
-+	struct msft_data *msft = hdev->msft_data;
-+	struct sk_buff *skb = NULL;
-+	bool remove = false;
-+	size_t size;
-+
-+	if (!msft) {
-+		bt_dev_err(hdev, "MSFT: msft data is freed");
-+		return -EINVAL;
-+	}
-+
-+	/* The address filter has been removed by hci dev close */
-+	if (!test_bit(HCI_UP, &hdev->flags))
-+		return -ENODEV;
-+
-+	/* We are safe to use the address filter from now on.
-+	 * msft_monitor_device_evt() wouldn't delete this filter because it's
-+	 * not been added by now.
-+	 * And all other functions that requiring hci_req_sync_lock wouldn't
-+	 * touch this filter before this func completes because it's protected
-+	 * by hci_req_sync_lock.
-+	 */
-+
-+	if (address_filter->state == AF_STATE_REMOVING) {
-+		mutex_lock(&msft->filter_lock);
-+		list_del(&address_filter->list);
-+		mutex_unlock(&msft->filter_lock);
-+		kfree(address_filter);
-+		return 0;
-+	}
-+
-+	size = sizeof(*cp) +
-+	       sizeof(address_filter->addr_type) +
-+	       sizeof(address_filter->bdaddr);
-+	cp = kzalloc(size, GFP_KERNEL);
-+	if (!cp) {
-+		bt_dev_err(hdev, "MSFT: Alloc cmd param err");
-+		remove = true;
-+		goto done;
-+	}
-+	cp->sub_opcode           = MSFT_OP_LE_MONITOR_ADVERTISEMENT;
-+	cp->rssi_high		 = address_filter->rssi_high;
-+	cp->rssi_low		 = address_filter->rssi_low;
-+	cp->rssi_low_interval    = address_filter->rssi_low_interval;
-+	cp->rssi_sampling_period = address_filter->rssi_sampling_period;
-+	cp->cond_type            = MSFT_MONITOR_ADVERTISEMENT_TYPE_ADDR;
-+	cp->data[0]              = address_filter->addr_type;
-+	memcpy(&cp->data[1], &address_filter->bdaddr,
-+	       sizeof(address_filter->bdaddr));
-+
-+	skb = __hci_cmd_sync(hdev, hdev->msft_opcode, size, cp,
-+			     HCI_CMD_TIMEOUT);
-+	if (IS_ERR_OR_NULL(skb)) {
-+		bt_dev_err(hdev, "Failed to enable address %pMR filter",
-+			   &address_filter->bdaddr);
-+		skb = NULL;
-+		remove = true;
-+		goto done;
-+	}
-+
-+	rp = skb_pull_data(skb, sizeof(*rp));
-+	if (!rp || rp->sub_opcode != MSFT_OP_LE_MONITOR_ADVERTISEMENT ||
-+	    rp->status)
-+		remove = true;
-+
-+done:
-+	mutex_lock(&msft->filter_lock);
-+
-+	if (remove) {
-+		bt_dev_warn(hdev, "MSFT: Remove address (%pMR) filter",
-+			    &address_filter->bdaddr);
-+		list_del(&address_filter->list);
-+		kfree(address_filter);
-+	} else {
-+		address_filter->state = AF_STATE_ADDED;
-+		address_filter->msft_handle = rp->handle;
-+		bt_dev_dbg(hdev, "MSFT: Address %pMR filter enabled",
-+			   &address_filter->bdaddr);
-+	}
-+	mutex_unlock(&msft->filter_lock);
-+
-+	kfree_skb(skb);
-+
-+	return 0;
-+}
-+
-+/* This function requires the caller holds msft->filter_lock */
-+static struct msft_monitor_addr_filter_data *msft_add_address_filter
-+		(struct hci_dev *hdev, u8 addr_type, bdaddr_t *bdaddr,
-+		 struct msft_monitor_advertisement_handle_data *handle_data)
-+{
-+	struct msft_monitor_addr_filter_data *address_filter = NULL;
-+	struct msft_data *msft = hdev->msft_data;
-+	int err;
-+
-+	address_filter = kzalloc(sizeof(*address_filter), GFP_KERNEL);
-+	if (!address_filter)
-+		return NULL;
-+
-+	address_filter->state             = AF_STATE_ADDING;
-+	address_filter->msft_handle       = 0xff;
-+	address_filter->pattern_handle    = handle_data->msft_handle;
-+	address_filter->mgmt_handle       = handle_data->mgmt_handle;
-+	address_filter->rssi_high         = handle_data->rssi_high;
-+	address_filter->rssi_low          = handle_data->rssi_low;
-+	address_filter->rssi_low_interval = handle_data->rssi_low_interval;
-+	address_filter->rssi_sampling_period = handle_data->rssi_sampling_period;
-+	address_filter->addr_type            = addr_type;
-+	bacpy(&address_filter->bdaddr, bdaddr);
-+
-+	/* With the above AF_STATE_ADDING, duplicated address filter can be
-+	 * avoided when receiving monitor device event (found/lost) frequently
-+	 * for the same device.
-+	 */
-+	list_add_tail(&address_filter->list, &msft->address_filters);
-+
-+	err = hci_cmd_sync_queue(hdev, msft_add_address_filter_sync,
-+				 address_filter, NULL);
-+	if (err < 0) {
-+		bt_dev_err(hdev, "MSFT: Add address %pMR filter err", bdaddr);
-+		list_del(&address_filter->list);
-+		kfree(address_filter);
-+		return NULL;
-+	}
-+
-+	bt_dev_dbg(hdev, "MSFT: Add device %pMR address filter",
-+		   &address_filter->bdaddr);
-+
-+	return address_filter;
-+}
-+
- /* This function requires the caller holds hdev->lock */
- static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
- {
-+	struct msft_monitor_addr_filter_data *n, *address_filter = NULL;
- 	struct msft_ev_le_monitor_device *ev;
- 	struct msft_monitor_advertisement_handle_data *handle_data;
-+	struct msft_data *msft = hdev->msft_data;
-+	u16 mgmt_handle = 0xffff;
- 	u8 addr_type;
- 
- 	ev = msft_skb_pull(hdev, skb, MSFT_EV_LE_MONITOR_DEVICE, sizeof(*ev));
-@@ -662,9 +992,53 @@ static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		   ev->monitor_state, &ev->bdaddr);
- 
- 	handle_data = msft_find_handle_data(hdev, ev->monitor_handle, false);
--	if (!handle_data)
-+
-+	if (!test_bit(HCI_QUIRK_MSFT_EXT_MAF_SUPPORTED, &hdev->quirks)) {
-+		if (!handle_data)
-+			return;
-+		mgmt_handle = handle_data->mgmt_handle;
-+		goto report_state;
-+	}
-+
-+	if (handle_data) {
-+		/* Don't report any device found/lost event from pattern
-+		 * monitors. Pattern monitor always has its address filters for
-+		 * tracking devices.
-+		 */
-+
-+		address_filter = msft_find_address_data(hdev, ev->addr_type,
-+							&ev->bdaddr,
-+							handle_data->msft_handle);
-+		if (address_filter)
-+			return;
-+
-+		if (ev->monitor_state && handle_data->cond_type ==
-+				MSFT_MONITOR_ADVERTISEMENT_TYPE_PATTERN)
-+			msft_add_address_filter(hdev, ev->addr_type,
-+						&ev->bdaddr, handle_data);
-+
- 		return;
-+	}
- 
-+	/* This device event is not from pattern monitor.
-+	 * Report it if there is a corresponding address_filter for it.
-+	 */
-+	list_for_each_entry(n, &msft->address_filters, list) {
-+		if (n->state == AF_STATE_ADDED &&
-+		    n->msft_handle == ev->monitor_handle) {
-+			mgmt_handle = n->mgmt_handle;
-+			address_filter = n;
-+			break;
-+		}
-+	}
-+
-+	if (!address_filter) {
-+		bt_dev_warn(hdev, "MSFT: Unexpected device event %pMR, %u, %u",
-+			    &ev->bdaddr, ev->monitor_handle, ev->monitor_state);
-+		return;
-+	}
-+
-+report_state:
- 	switch (ev->addr_type) {
- 	case ADDR_LE_DEV_PUBLIC:
- 		addr_type = BDADDR_LE_PUBLIC;
-@@ -681,12 +1055,18 @@ static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		return;
- 	}
- 
--	if (ev->monitor_state)
--		msft_device_found(hdev, &ev->bdaddr, addr_type,
--				  handle_data->mgmt_handle);
--	else
--		msft_device_lost(hdev, &ev->bdaddr, addr_type,
--				 handle_data->mgmt_handle);
-+	if (ev->monitor_state) {
-+		msft_device_found(hdev, &ev->bdaddr, addr_type, mgmt_handle);
-+	} else {
-+		if (address_filter && address_filter->state == AF_STATE_ADDED) {
-+			address_filter->state = AF_STATE_REMOVING;
-+			hci_cmd_sync_queue(hdev,
-+					   msft_cancel_address_filter_sync,
-+					   address_filter,
-+					   NULL);
-+		}
-+		msft_device_lost(hdev, &ev->bdaddr, addr_type, mgmt_handle);
-+	}
- }
- 
- void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb)
-@@ -724,7 +1104,9 @@ void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb)
- 
- 	switch (*evt) {
- 	case MSFT_EV_LE_MONITOR_DEVICE:
-+		mutex_lock(&msft->filter_lock);
- 		msft_monitor_device_evt(hdev, skb);
-+		mutex_unlock(&msft->filter_lock);
- 		break;
- 
- 	default:
+FRR configures SPH filtering using two tc filters. The first, an ingress
+filter that matches on packets received from VTEP1 and marks them using
+a fwmark (firewall mark). The second, an egress filter configured on the
+LAG interface connected to the host that matches on the fwmark and drops
+the packets. Example:
+
+ # tc filter add dev vxlan0 ingress pref 1 proto all flower enc_src_ip $VTEP1_IP action skbedit mark 101
+ # tc filter add dev bond0 egress pref 1 handle 101 fw action drop
+
+Motivation
+==========
+
+For each ES, only one VTEP is elected by the control plane as the DF.
+The DF is responsible for forwarding decapsulated BUM traffic to the
+host over the ES. The non-DF VTEPs must drop such traffic as otherwise
+the host will receive multiple copies of BUM traffic. This is called
+"non-DF filtering" [2].
+
+Filtering of multicast and broadcast traffic can be achieved using the
+following flower filter:
+
+ # tc filter add dev bond0 egress pref 1 proto all flower indev vxlan0 dst_mac 01:00:00:00:00:00/01:00:00:00:00:00 action drop
+
+Unlike broadcast and multicast traffic, it is not currently possible to
+filter unknown unicast traffic. The classification into unknown unicast
+is performed by the bridge driver, but is not visible to other layers.
+
+Implementation
+==============
+
+The proposed solution is to add a single bit to the skb that is set by
+the bridge for packets that encountered an FDB/MDB miss. The flower
+classifier is extended to be able to match on this new metadata bit in a
+similar fashion to existing metadata options such as 'indev'.
+
+A bit that is set for every flooded packet would also work, but it does
+not allow us to differentiate between registered and unregistered
+multicast traffic which might be useful in the future.
+
+A relatively generic name is chosen for this bit - 'l2_miss' - to allow
+its use to be extended to other layer 2 devices such as VXLAN, should a
+use case arise.
+
+With the above, the control plane can implement a non-DF filter using
+the following tc filters:
+
+ # tc filter add dev bond0 egress pref 1 proto all flower indev vxlan0 dst_mac 01:00:00:00:00:00/01:00:00:00:00:00 action drop
+ # tc filter add dev bond0 egress pref 2 proto all flower indev vxlan0 l2_miss true action drop
+
+The first drops broadcast and multicast traffic and the second drops
+unknown unicast traffic.
+
+Testing
+=======
+
+A test exercising the different permutations of the 'l2_miss' bit is
+added in patch #5.
+
+Patchset overview
+=================
+
+Patch #1 adds the new bit to the skb and sets it in the bridge driver
+for packets that encountered a miss. The new bit is added in an existing
+hole in the skb in order not to inflate this data structure.
+
+Patch #2 extends the flower classifier to be able to match on the new
+layer 2 miss metadata.
+
+Patch #3 rejects matching on the new metadata in drivers that already
+support the 'FLOW_DISSECTOR_KEY_META' key.
+
+Patch #4 extends mlxsw to be able to match on layer 2 miss.
+
+Patch #5 adds a selftest.
+
+iproute2 patches can be found here [3].
+
+Changelog
+=========
+
+Since RFC [4]:
+
+No changes.
+
+[1] https://datatracker.ietf.org/doc/html/rfc7432#section-8.3
+[2] https://datatracker.ietf.org/doc/html/rfc7432#section-8.5
+[3] https://github.com/idosch/iproute2/tree/submit/non_df_filter_v1
+[4] https://lore.kernel.org/netdev/20230509070446.246088-1-idosch@nvidia.com/
+
+Ido Schimmel (5):
+  skbuff: bridge: Add layer 2 miss indication
+  net/sched: flower: Allow matching on layer 2 miss
+  flow_offload: Reject matching on layer 2 miss
+  mlxsw: spectrum_flower: Add ability to match on layer 2 miss
+  selftests: forwarding: Add layer 2 miss test cases
+
+ .../marvell/prestera/prestera_flower.c        |   6 +
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   6 +
+ .../mellanox/mlxsw/core_acl_flex_keys.c       |   1 +
+ .../mellanox/mlxsw/core_acl_flex_keys.h       |   3 +-
+ .../mellanox/mlxsw/spectrum_acl_flex_keys.c   |   5 +
+ .../ethernet/mellanox/mlxsw/spectrum_flower.c |  16 +
+ drivers/net/ethernet/mscc/ocelot_flower.c     |  10 +
+ include/linux/skbuff.h                        |   4 +
+ include/net/flow_dissector.h                  |   2 +
+ include/uapi/linux/pkt_cls.h                  |   2 +
+ net/bridge/br_device.c                        |   1 +
+ net/bridge/br_forward.c                       |   3 +
+ net/bridge/br_input.c                         |   1 +
+ net/core/flow_dissector.c                     |   3 +
+ net/sched/cls_flower.c                        |  14 +-
+ .../testing/selftests/net/forwarding/Makefile |   1 +
+ .../net/forwarding/tc_flower_l2_miss.sh       | 343 ++++++++++++++++++
+ 17 files changed, 418 insertions(+), 3 deletions(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/tc_flower_l2_miss.sh
+
 -- 
-2.17.1
+2.40.1
 
 
