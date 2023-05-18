@@ -1,29 +1,29 @@
-Return-Path: <netdev+bounces-3550-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3551-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3E479707D89
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 06351707D92
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:08:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BF08528188E
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:08:13 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AA3D62818A9
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:08:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A61A811CB5;
-	Thu, 18 May 2023 10:08:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 60F50125A0;
+	Thu, 18 May 2023 10:08:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B3AD11CA0
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 10:08:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56A6711CA0
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 10:08:12 +0000 (UTC)
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BC91BD6;
-	Thu, 18 May 2023 03:08:09 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8D51BDD;
+	Thu, 18 May 2023 03:08:10 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
 	(envelope-from <fw@breakpoint.cc>)
-	id 1pzaYE-0005ml-AO; Thu, 18 May 2023 12:08:02 +0200
+	id 1pzaYG-0005n3-Om; Thu, 18 May 2023 12:08:04 +0200
 From: Florian Westphal <fw@strlen.de>
 To: <netdev@vger.kernel.org>
 Cc: Jakub Kicinski <kuba@kernel.org>,
@@ -31,10 +31,12 @@ Cc: Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
 	"David S. Miller" <davem@davemloft.net>,
 	netfilter-devel <netfilter-devel@vger.kernel.org>
-Subject: [PATCH net-next 0/9] Netfilter updates for net-next
-Date: Thu, 18 May 2023 12:07:50 +0200
-Message-Id: <20230518100759.84858-1-fw@strlen.de>
+Subject: [PATCH net-next 1/9] netfilter: nf_tables: relax set/map validation checks
+Date: Thu, 18 May 2023 12:07:51 +0200
+Message-Id: <20230518100759.84858-2-fw@strlen.de>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230518100759.84858-1-fw@strlen.de>
+References: <20230518100759.84858-1-fw@strlen.de>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -48,83 +50,107 @@ X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello,
+Its currently not allowed to perform queries on a map, for example:
 
-[ sorry if you get this twice, wrong mail aliases in v1 ]
+table t {
+	map m {
+		typeof ip saddr : meta mark
+		..
 
-this PR contains updates for your *net-next* tree.
+	chain c {
+		ip saddr @m counter
 
-nftables updates:
+will fail, because kernel requires that userspace provides a destination
+register when the referenced set is a map.
 
-1. Allow key existence checks with maps.
-   At the moment the kernel requires userspace to pass a destination
-   register for the associated value, make this optional so userspace
-   can query if the key exists, just like with normal sets.
+However, internally there is no real distinction between sets and maps,
+maps are just sets where each key is associated with a value.
 
-2. nftables maintains a counter per set that holds the number of
-   elements.  This counter gets decremented on element removal,
-   but its only incremented if the set has a upper maximum value.
-   Increment unconditionally, this will allow us to update the
-   maximum value later on.
+Relax this so that maps can be used just like sets.
 
-3. At DCCP option maching, from Jeremy Sowden.
+This allows to have rules that query if a given key exists
+without making use of the associated value.
 
-4. use struct_size macro, from Christophe JAILLET.
+This also permits != checks which don't work for map lookups.
 
-Conntrack:
+When no destination reg is given for a map, then permit this for named
+maps.
 
-5. Squash holes in struct nf_conntrack_expect, also Christophe JAILLET.
+Data and dump paths need to be updated to consider priv->dreg_set
+instead of the 'set-is-a-map' check.
 
-6. Allow clash resolution for GRE Protocol to avoid a packet drop,
-   from Faicker Mo.
+Checks in reduce and validate callbacks are not changed, this
+can be relaxed later if a need arises.
 
-Flowtable:
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/netfilter/nft_lookup.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-Simplify route logic and split large functions into smaller
-chunks, from Pablo Neira Ayuso.
+diff --git a/net/netfilter/nft_lookup.c b/net/netfilter/nft_lookup.c
+index 03ef4fdaa460..29ac48cdd6db 100644
+--- a/net/netfilter/nft_lookup.c
++++ b/net/netfilter/nft_lookup.c
+@@ -19,6 +19,7 @@ struct nft_lookup {
+ 	struct nft_set			*set;
+ 	u8				sreg;
+ 	u8				dreg;
++	bool				dreg_set;
+ 	bool				invert;
+ 	struct nft_set_binding		binding;
+ };
+@@ -75,7 +76,7 @@ void nft_lookup_eval(const struct nft_expr *expr,
+ 	}
+ 
+ 	if (ext) {
+-		if (set->flags & NFT_SET_MAP)
++		if (priv->dreg_set)
+ 			nft_data_copy(&regs->data[priv->dreg],
+ 				      nft_set_ext_data(ext), set->dlen);
+ 
+@@ -122,11 +123,8 @@ static int nft_lookup_init(const struct nft_ctx *ctx,
+ 		if (flags & ~NFT_LOOKUP_F_INV)
+ 			return -EINVAL;
+ 
+-		if (flags & NFT_LOOKUP_F_INV) {
+-			if (set->flags & NFT_SET_MAP)
+-				return -EINVAL;
++		if (flags & NFT_LOOKUP_F_INV)
+ 			priv->invert = true;
+-		}
+ 	}
+ 
+ 	if (tb[NFTA_LOOKUP_DREG] != NULL) {
+@@ -140,8 +138,17 @@ static int nft_lookup_init(const struct nft_ctx *ctx,
+ 					       set->dlen);
+ 		if (err < 0)
+ 			return err;
+-	} else if (set->flags & NFT_SET_MAP)
+-		return -EINVAL;
++		priv->dreg_set = true;
++	} else if (set->flags & NFT_SET_MAP) {
++		/* Map given, but user asks for lookup only (i.e. to
++		 * ignore value assoicated with key).
++		 *
++		 * This makes no sense for anonymous maps since they are
++		 * scoped to the rule, but for named sets this can be useful.
++		 */
++		if (set->flags & NFT_SET_ANONYMOUS)
++			return -EINVAL;
++	}
+ 
+ 	priv->binding.flags = set->flags & NFT_SET_MAP;
+ 
+@@ -188,7 +195,7 @@ static int nft_lookup_dump(struct sk_buff *skb,
+ 		goto nla_put_failure;
+ 	if (nft_dump_register(skb, NFTA_LOOKUP_SREG, priv->sreg))
+ 		goto nla_put_failure;
+-	if (priv->set->flags & NFT_SET_MAP)
++	if (priv->dreg_set)
+ 		if (nft_dump_register(skb, NFTA_LOOKUP_DREG, priv->dreg))
+ 			goto nla_put_failure;
+ 	if (nla_put_be32(skb, NFTA_LOOKUP_FLAGS, htonl(flags)))
+-- 
+2.40.1
 
-The following changes since commit b50a8b0d57ab1ef11492171e98a030f48682eac3:
-
-  net: openvswitch: Use struct_size() (2023-05-17 21:25:46 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git tags/nf-next-2023-05-18
-
-for you to fetch changes up to e05b5362166b18a224c30502e81416e4d622d3e4:
-
-  netfilter: flowtable: split IPv6 datapath in helper functions (2023-05-18 08:48:55 +0200)
-
-----------------------------------------------------------------
-Christophe JAILLET (2):
-      netfilter: Reorder fields in 'struct nf_conntrack_expect'
-      netfilter: nft_set_pipapo: Use struct_size()
-
-Faicker Mo (1):
-      netfilter: conntrack: allow insertion clash of gre protocol
-
-Florian Westphal (2):
-      netfilter: nf_tables: relax set/map validation checks
-      netfilter: nf_tables: always increment set element count
-
-Jeremy Sowden (1):
-      netfilter: nft_exthdr: add boolean DCCP option matching
-
-Pablo Neira Ayuso (3):
-      netfilter: flowtable: simplify route logic
-      netfilter: flowtable: split IPv4 datapath in helper functions
-      netfilter: flowtable: split IPv6 datapath in helper functions
-
- include/net/netfilter/nf_conntrack_expect.h |  18 +--
- include/net/netfilter/nf_flow_table.h       |   4 +-
- include/uapi/linux/netfilter/nf_tables.h    |   2 +
- net/netfilter/nf_conntrack_proto_gre.c      |   1 +
- net/netfilter/nf_flow_table_core.c          |  24 +--
- net/netfilter/nf_flow_table_ip.c            | 231 ++++++++++++++++++----------
- net/netfilter/nf_tables_api.c               |  11 +-
- net/netfilter/nft_exthdr.c                  | 106 +++++++++++++
- net/netfilter/nft_flow_offload.c            |  12 +-
- net/netfilter/nft_lookup.c                  |  23 ++-
- net/netfilter/nft_set_pipapo.c              |   6 +-
- 11 files changed, 303 insertions(+), 135 deletions(-)
 
