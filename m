@@ -1,172 +1,178 @@
-Return-Path: <netdev+bounces-3545-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3546-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id F33DF707D48
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:52:09 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 09725707D4D
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:53:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A3F0B2817E6
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 09:52:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BE85F1C21070
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 09:53:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEB1311CA5;
-	Thu, 18 May 2023 09:52:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 964C711CA6;
+	Thu, 18 May 2023 09:53:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0CCDAD42
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 09:52:06 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03DBC172A
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 02:52:04 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1pzaIW-0000e7-ON; Thu, 18 May 2023 11:51:48 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id CDEF01C7B63;
-	Thu, 18 May 2023 09:51:46 +0000 (UTC)
-Date: Thu, 18 May 2023 11:51:46 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Ondrej Ille <ondrej.ille@gmail.com>,
-	Wolfgang Grandegger <wg@grandegger.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-	linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] can: ctucanfd: Remove a useless netif_napi_del() call
-Message-ID: <20230518-satisfied-smugness-dc5a06faa865-mkl@pengutronix.de>
-References: <58500052a6740806e8af199ece45e97cb5eeb1b8.1684393811.git.christophe.jaillet@wanadoo.fr>
- <202305180932.38815.pisa@cmp.felk.cvut.cz>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 827D811CA5
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 09:53:40 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FBDE4E
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 02:53:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684403618;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7yINWos61yS1/Ae1KTt8I7rV0PBzJ6/BJSLEhV5ATss=;
+	b=NnRD0GTJpEyfEOu+emSUbhT1sQ4+Na2WaV4+DstUJ3q8MA1keR2eXv496nfubJvgmOPvEl
+	kDJNsTCoiJaBsES1Ye5tay677XcUw08duaVY+Agtwo2uy8c3evqrahstMl9ehlipcY20Ac
+	BSuWKY2mSaGUw7CGGUe59g5COYrXrQk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-146-Gbff7KXbNvW9CLicHQ5d5Q-1; Thu, 18 May 2023 05:53:33 -0400
+X-MC-Unique: Gbff7KXbNvW9CLicHQ5d5Q-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E423A3813F37;
+	Thu, 18 May 2023 09:53:32 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.221])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id C1CAA492C13;
+	Thu, 18 May 2023 09:53:29 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <93aba6cc363e94a6efe433b3c77ec1b6b54f2919.camel@redhat.com>
+References: <93aba6cc363e94a6efe433b3c77ec1b6b54f2919.camel@redhat.com> <20230515093345.396978-1-dhowells@redhat.com> <20230515093345.396978-4-dhowells@redhat.com>
+To: Paolo Abeni <pabeni@redhat.com>
+Cc: dhowells@redhat.com, netdev@vger.kernel.org,
+    "David S. Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+    David Ahern <dsahern@kernel.org>,
+    Matthew Wilcox <willy@infradead.org>,
+    Al Viro <viro@zeniv.linux.org.uk>,
+    Christoph Hellwig <hch@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+    Jeff Layton <jlayton@kernel.org>,
+    Christian Brauner <brauner@kernel.org>,
+    Chuck Lever III <chuck.lever@oracle.com>,
+    Linus Torvalds <torvalds@linux-foundation.org>,
+    linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+    linux-mm@kvack.org
+Subject: Re: [PATCH net-next v7 03/16] net: Add a function to splice pages into an skbuff for MSG_SPLICE_PAGES
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="7emi62ptsndis2qr"
-Content-Disposition: inline
-In-Reply-To: <202305180932.38815.pisa@cmp.felk.cvut.cz>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1347186.1684403608.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 18 May 2023 10:53:28 +0100
+Message-ID: <1347187.1684403608@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Paolo Abeni <pabeni@redhat.com> wrote:
 
---7emi62ptsndis2qr
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Minor nit: please respect the reverse x-mas tree order (there are a few
+> other occurrences around)
 
-On 18.05.2023 09:32:38, Pavel Pisa wrote:
-> Dear Christophe,
->=20
-> On Thursday 18 of May 2023 09:10:39 Christophe JAILLET wrote:
-> > free_candev() already calls netif_napi_del(), so there is no need to ca=
-ll
-> > it explicitly. It is harmless, but useless.
-> >
-> > This makes the code mode consistent with the error handling path of
-> > ctucan_probe_common().
->=20
-> OK, but I would suggest to consider to keep sequence in sync with
->=20
-> linux/drivers/net/can/ctucanfd/ctucanfd_pci.c
->=20
-> where is netif_napi_del() used as well
->=20
->         while ((priv =3D list_first_entry_or_null(&bdata->ndev_list_head,=
- struct ctucan_priv,
->                                                 peers_on_pdev)) !=3D NULL=
-) {
->                 ndev =3D priv->can.dev;
->=20
->                 unregister_candev(ndev);
->=20
->                 netif_napi_del(&priv->napi);
->=20
->                 list_del_init(&priv->peers_on_pdev);
->                 free_candev(ndev);
->         }
->=20
-> On the other hand, if interrupt can be called for device between
-> unregister_candev() and free_candev()
+I hadn't come across that.  Normally I only apply that to the types so tha=
+t
+the names aren't all over the place.  But whatever.
 
-At least the case of an "interrupt during ctucan_pci_remove()" is a bug,
-as there is no IRQ handler registered. The IRQ handler is registered in
-ctucan_open() and freed in ctucan_close().
+> > +		if (space =3D=3D 0 &&
+> > +		    !skb_can_coalesce(skb, skb_shinfo(skb)->nr_frags,
+> > +				      pages[0], off)) {
+> > +			iov_iter_revert(iter, len);
+> > +			break;
+> > +		}
+> =
 
-> or some other callback
-> which is prevented by netif_napi_del() now then I would consider
-> to keep explicit netif_napi_del() to ensure that no callback
-> is activated to driver there.
+> It looks like the above condition/checks duplicate what the later
+> skb_append_pagefrags() will perform below. I guess the above chunk
+> could be removed?
 
-Napi itself is shut down, too, as there is a call to napi_disable() in
-ctucan_close().
+Good point.  There used to be an allocation between in the case sendpage_o=
+k()
+failed and we wanted to copy the data.  I've removed that for the moment.
 
-> And for PCI integration it is more
-> critical because list_del_init(&priv->peers_on_pdev); appears in
-> between and I would prefer that no interrupt appears when instance
-> is not on the peers list anymore. Even that would not be a problem
-> for actual CTU CAN FD implementation, peers are accessed only during
-> physical device remove, but I have worked on other controllers
-> in past, which required to coordinate with peers in interrupt
-> handling...
->=20
-> So I would be happy for some feedback what is actual guarantee
-> when device is stopped.
+> > +			ret =3D -EIO;
+> > +			if (!sendpage_ok(page))
+> > +				goto out;
+> =
 
-After a ifup; ifdown;, which corresponds to ctucan_open(),
-ctucan_close() in the driver, the device should be shut down, no
-interrupts active. You might even power down the device, although things
-get a little more complicated with HW timestamping or even PTP enabled.
+> My (limited) understanding is that the current sendpage code assumes
+> that the caller provides/uses pages suitable for such use. The existing
+> sendpage_ok() check is in place as way to try to catch possible code
+> bug - via the WARN_ONCE().
+>
+> I think the same could be done here?
 
-> May it be that it would be even more robust to run removal
-> with two loop where the first one calls unregister_candev()
-> and netif_napi_del() and only the second one removes from peers
-> and call free_candev()... But I am not sure there and it is not
-> problem in actual driver because peers are not used in any
-> other place...
+Yeah.
 
-regards,
-Marc
+Okay, I made the attached changes to this patch.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+David
+---
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 56d629ea2f3d..f4a5b51aed22 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -6923,10 +6923,10 @@ static void skb_splice_csum_page(struct sk_buff *s=
+kb, struct page *page,
+ ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
+ 			     ssize_t maxsize, gfp_t gfp)
+ {
++	size_t frag_limit =3D READ_ONCE(sysctl_max_skb_frags);
+ 	struct page *pages[8], **ppages =3D pages;
+-	unsigned int i;
+ 	ssize_t spliced =3D 0, ret =3D 0;
+-	size_t frag_limit =3D READ_ONCE(sysctl_max_skb_frags);
++	unsigned int i;
+ =
 
---7emi62ptsndis2qr
-Content-Type: application/pgp-signature; name="signature.asc"
+ 	while (iter->count > 0) {
+ 		ssize_t space, nr;
+@@ -6946,20 +6946,13 @@ ssize_t skb_splice_from_iter(struct sk_buff *skb, =
+struct iov_iter *iter,
+ 			break;
+ 		}
+ =
 
------BEGIN PGP SIGNATURE-----
+-		if (space =3D=3D 0 &&
+-		    !skb_can_coalesce(skb, skb_shinfo(skb)->nr_frags,
+-				      pages[0], off)) {
+-			iov_iter_revert(iter, len);
+-			break;
+-		}
+-
+ 		i =3D 0;
+ 		do {
+ 			struct page *page =3D pages[i++];
+ 			size_t part =3D min_t(size_t, PAGE_SIZE - off, len);
+ =
 
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRl9S8ACgkQvlAcSiqK
-BOgDpAgAnI3Osy8Fx5vffOkPSdz+b193idfd/nM1NjJAYnsAaPObGXK3zWGMg58W
-Qhxr3+W28VBJU/ucksBHROZIOiAm1a2Y69y92pChXdZd2+Lrhz2xZhw2aqkwQkn8
-F1tBieRVWy0T0P3BogFsKXwdLCURMBqhSZmmLRptxx6k+H7QlqPRh21tmqun2+Dm
-1KAd4xr97px5EqOha3Jtr3HP4iWiVx7DYS6R7sFRr3ZX7lzu4YkUkO5Xg33R0cwa
-yxMOmXM49IKwr59gxjXydCoD6BwOI39fKbCVHkOtG2XRQapuDCRyyDf+uBelFQeQ
-X0nEPjuBUVtCexN5ArBdnKNxdEW1Ew==
-=rkgc
------END PGP SIGNATURE-----
+ 			ret =3D -EIO;
+-			if (!sendpage_ok(page))
++			if (WARN_ON_ONCE(!sendpage_ok(page)))
+ 				goto out;
+ =
 
---7emi62ptsndis2qr--
+ 			ret =3D skb_append_pagefrags(skb, page, off, part,
+
 
