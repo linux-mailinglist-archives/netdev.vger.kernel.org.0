@@ -1,189 +1,165 @@
-Return-Path: <netdev+bounces-3666-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3669-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 655C07083E5
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 16:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 63750708408
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 16:40:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4759A1C21094
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:25:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 44AAF1C210EC
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 14:40:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7EF83209B4;
-	Thu, 18 May 2023 14:25:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 330471E528;
+	Thu, 18 May 2023 14:40:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CEDE23C6A
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 14:25:32 +0000 (UTC)
-Received: from mail-yw1-x1143.google.com (mail-yw1-x1143.google.com [IPv6:2607:f8b0:4864:20::1143])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB77BE69;
-	Thu, 18 May 2023 07:25:30 -0700 (PDT)
-Received: by mail-yw1-x1143.google.com with SMTP id 00721157ae682-5619032c026so25850897b3.1;
-        Thu, 18 May 2023 07:25:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684419930; x=1687011930;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VTZb9xwEPvqrA/j50VjQvMgiTttO1+oVgLrqOulaWSQ=;
-        b=Cie3DBeRtOyBQRKJgcR50NNynnzE/TEAWOfqObFUR8A2nC4Zw5QkCfWZG69biLFCrY
-         ivdVpj0aOtb0aqPuxEufhKQOOaZ1sjMMXIiRTB1fpZYC0iH+RTBzRgs/Xoh/Ke8MhTyo
-         Wv74c3ed9XnC9vHtxlywqfbIJVqTe4kIMNaB2WpOoZTSKg3pBorrnUGYRxCZ996iTgI4
-         1krAISt0z4/vdsQENQIgJm/JuDp29UDs5rzALcm3fgoOVbU5iTqNhRx3TWfmXi7no2zR
-         K2lBJ3S6xdED996DnHzOJ93yRxT0Wt0HiTfzcoRQd9OkuG6sVGlgJNeta7l4UWPebd8O
-         pLNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684419930; x=1687011930;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VTZb9xwEPvqrA/j50VjQvMgiTttO1+oVgLrqOulaWSQ=;
-        b=Dir7bHwepibQxG5kqf6VkS0PGXuH4CuOBjzYNIuVVSmZakJcPv3PF5sXeMDMdlLohk
-         ZMtqOavKSFSBCBQSrVay3ItIKFhZgqvNwV9rReEqgIVqHAVhWR7OBZ6EX33l0fkYTxNL
-         2AeG4E2aKIHGUZ9Vj3G2zauH7zVVbuV4ub51cl2gbG4y84DooHRRO/19LkNI6UBwnkmQ
-         iwfLm7r9QwfNUuEOYK1TI+o5urncniUyhAFBuGCvFMs6yOUwSr2WIP4svPid0vKaUVgn
-         LzpouVUHsM7IX/cXL09dL3Nkz2SmfpoLxpLG9C3UBQ2TbfeYOCu29lbzFZLRIQ3vlMA2
-         HZLA==
-X-Gm-Message-State: AC+VfDyvb0FoUsQidOsVFg1FzQW7NATDFKOul1ytXkKiCeVpozJmwvss
-	Z7MU7aXUy0TB/TWoNp8E0ZEii1+yWamq3O0JExcLGWHkQiZglJQl
-X-Google-Smtp-Source: ACHHUZ6G8i9qItBqQExzJTxNIJVwXTycXCxHQpLTsllgiBz7A9qD4SLx6IAeUYGjhT9W1MqTe/ZqRevzmTwvfAiO1WQ=
-X-Received: by 2002:a81:4854:0:b0:561:a41d:aabb with SMTP id
- v81-20020a814854000000b00561a41daabbmr1430263ywa.16.1684419929926; Thu, 18
- May 2023 07:25:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1393223C65;
+	Thu, 18 May 2023 14:40:54 +0000 (UTC)
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2060.outbound.protection.outlook.com [40.107.20.60])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967BB109;
+	Thu, 18 May 2023 07:40:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VVR10fYUwbZrDGjxms9ohtqgJH+52tAceuajIPYofV4BV0fPO8uUw4bEUEgolsfYbXo8JLnWp7ASQGMEnmgXc57757lbyCqPfEZHaMNV0q0Vd48o413kcfaHrO51xutSYnZlvlhvYNrnyRhdeNI1dqB2gcVx5cDPznSHKMl1b+LEXvMhmw5LsdYIfodEL8Uydx+HbIQJcFTFrje/q86DbTBjDtpUBTG9I15RJLV4fUhBZ022Kd8y5r1gZtLNeC8ZRbv+pov/+HF+bkvIuqEBwdrNigUvZQr760A44fWIlrzZ+MpAmON2RIAOB4skE5XoaPbLJtjd2zhY4isB0tQofg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=36gg+9o/GTQNRHRdnkWrk5k7FxtfQLHBtEqIvtmkm94=;
+ b=ENQvCmR/2/PBmppelEjKIsqslQkzLZmkKzH2SrorriqO9VyEBuhs06GEHxE2asK7mPQO3gH8FTvDZFDBSk/f4v/HCVDg1rfUsrhhMN/BEqAHpVoNvAn4LG0gCo1+cUP2EI7nQSdiPXi5tA5HyxPwG3nBySn57l7gZpW4LfYsAD4c7sZEIwz75dGo5SJvIrZLVQGIFqSeV8O88nMVVWeI3W6Sg5WDOfWkfggoanrQBYnRx5U76StGeqGOLZUncdGCgPGrT5dJ0pohur3/fCtMGqoPpiiBCQg2ZZqKoZs2V7NIfX7wWs0VYtvQKYR0dmKZ9PZCBaeMFk5hepBnXPEDzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=36gg+9o/GTQNRHRdnkWrk5k7FxtfQLHBtEqIvtmkm94=;
+ b=nE9s1ErUJizxK0HxIo4hjrVfamdokzZQxTCcXbWr3irXnXlFLVzHecuOtLOgVOai/VnrVEK1Fi6wVF31JioT0iYPzZEbmeioj16NpMBuWflkNKtXPdRr6mSsFQLQRrlOPu4u52JnUkUALOzSxQ+fvXDwQq2bU114qQD0P7bfYvo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM5PR04MB3139.eurprd04.prod.outlook.com (2603:10a6:206:8::20)
+ by GV1PR04MB9055.eurprd04.prod.outlook.com (2603:10a6:150:1e::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.18; Thu, 18 May
+ 2023 14:40:43 +0000
+Received: from AM5PR04MB3139.eurprd04.prod.outlook.com
+ ([fe80::682b:185:581f:7ea2]) by AM5PR04MB3139.eurprd04.prod.outlook.com
+ ([fe80::682b:185:581f:7ea2%4]) with mapi id 15.20.6387.033; Thu, 18 May 2023
+ 14:40:43 +0000
+From: wei.fang@nxp.com
+To: davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	ast@kernel.org,
+	daniel@iogearbox.net,
+	hawk@kernel.org,
+	john.fastabend@gmail.com,
+	shenwei.wang@nxp.com,
+	xiaoning.wang@nxp.com,
+	netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	bpf@vger.kernel.org,
+	linux-imx@nxp.com
+Subject: [PATCH net-next] net: fec: turn on XDP features
+Date: Thu, 18 May 2023 22:32:36 +0800
+Message-Id: <20230518143236.1638914-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR03CA0121.apcprd03.prod.outlook.com
+ (2603:1096:4:91::25) To AM5PR04MB3139.eurprd04.prod.outlook.com
+ (2603:10a6:206:8::20)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230517124201.441634-1-imagedong@tencent.com>
- <20230517124201.441634-3-imagedong@tencent.com> <CANn89iKGTPHK5wMyP4oRoAuv8f56VY-RrrMPBSb8jRMJSiL5Qg@mail.gmail.com>
-In-Reply-To: <CANn89iKGTPHK5wMyP4oRoAuv8f56VY-RrrMPBSb8jRMJSiL5Qg@mail.gmail.com>
-From: Menglong Dong <menglong8.dong@gmail.com>
-Date: Thu, 18 May 2023 22:25:18 +0800
-Message-ID: <CADxym3YTpzfsB9JB8qwrm4ffMrXs_+mfe3-oO5=UhivuFXq+4g@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] net: tcp: send zero-window when no memory
-To: Eric Dumazet <edumazet@google.com>
-Cc: kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com, 
-	dsahern@kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM5PR04MB3139:EE_|GV1PR04MB9055:EE_
+X-MS-Office365-Filtering-Correlation-Id: a7ad4144-82ef-43fd-a8cb-08db57addb7a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Xnc/ODfFJd+ipaEXlSyN0Sx5S1ZGD7NlBa39/ExN2X+xEMUpX924IA2JBzwgd7V8pWW8n/wbM+81pZo8x+weuweG3ChigVs3eJpSmW/S5jep7CRhgoOLxkyb1m6ZdnUU6Om19jBQPBzjwOOt/A/NtWHStv/VAztMS7O64DlnsLKtvV4oPvqPrM45HoKHKhGcHYe8+H2/4tfKAGn9LskLwIWBPUNUlYgS6dg2tltB0QOQbvpYRy6egNQq9SAHwYbWi7Gp1OxMyUwWzhGuABIYII4xZ9355kC/KMsCwQrxAwrkaakMfZjuO5Ka/6DuPWz1+QlYxtJ7ZlmNSMxRxLUz+F3Nev5AGp3rsp7JSF1aVjX3NgsjmZIwIJhPU3t3XvwynpbM2E3GZ5ZkCkYf7D8KmvZLMMur5t1l+sBTf8yEaF0CvniUCez8YV9AYoZBlPyba60chcOhfCH2hguFC573cVPqEUq4NQxHXBMR/Pu1/yaF5hgGr/wD2WYYGMYnuHkgTms7pJj8lSCBQvETDlGafHBr7yOpdQTZYc6jMJ515t8VTDeu5ZTmhE3vfPmW2geGkqyZUpGSmlHDRgP8uZcxijLK1t3F4z+oeLrBpKmK/9tHoJborEY1buqqlUOlPC+rsFaAtZ0H5mwuKR6WiKnBWQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM5PR04MB3139.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(346002)(376002)(396003)(136003)(451199021)(36756003)(86362001)(6666004)(316002)(4326008)(478600001)(52116002)(66946007)(66556008)(66476007)(8936002)(4744005)(5660300002)(7416002)(2906002)(38100700002)(8676002)(6486002)(41300700001)(921005)(38350700002)(2616005)(186003)(1076003)(26005)(9686003)(6506007)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?KW0wDiq0fR44JXu1ukZJxqo/Uuw+axPcAzWMhry3nruxYytF7gansAz4ENiG?=
+ =?us-ascii?Q?2v7ibaxExbTmHt/IbZL30NVKYKrVemS+CQcCWUx7jIq3LJVzf+8MpEriDMFv?=
+ =?us-ascii?Q?KtY3htIV1D3Dsj5RWYGcT8/e79clSz+Pt3+BtRRdIG7D1KHYRdR8Tz/k30Fr?=
+ =?us-ascii?Q?zAzAv2wZPowiV2TwsX5Ulbn6dnMKie1LqR4eiwI/Zoe5eP7UxCfRvSIX+KYk?=
+ =?us-ascii?Q?nCvoB5EOArhtIv3ppM6mNhG1qdDr2N0qWdnNN9e6TJLRjS3fT+7gm/hmO3fi?=
+ =?us-ascii?Q?h3ISj3vN3m9/oQL0J4B0BrARhWmCTw+EOaCE5llhSMXw6tIChAYOs540N+Dx?=
+ =?us-ascii?Q?r4vhWRPF9NFufqAvBM+qBthvQTdx3jeXOBY4cUtfp5vzwLUPidAGql3ZclGK?=
+ =?us-ascii?Q?LGBrZpWwAZb3vP8zHh9uCk2/Y9wqUzCUrTDUQ/Nv1ncoW6A+SleKJcMkcF9I?=
+ =?us-ascii?Q?dHCbxqW/FveXYe0KALjYTo6okkEx0PRkZzko3vtXkNfTBHP5/CSI8Pz4M1yC?=
+ =?us-ascii?Q?f4Gd657RzJByQy+SOdiZKzPplnD1bWnud3IyoHY1jyCO3VEYo0jMyvTDNuTn?=
+ =?us-ascii?Q?dQ/LHe9fLHTXzj+8K/4IfN6aKKbyPi5vYa8CJhHGc6Ak4ZqGvRBrstSffazA?=
+ =?us-ascii?Q?fAoq9jz/06lnl6ZmIW6mMPhsR8pHn4RAlBjtkRyautN6dVV0ZSuRCdfpG9cT?=
+ =?us-ascii?Q?X2Q9WOGWa2NSGASK+PpKv8MbglSJRJ0Tmf5pMNwOawUfJAyV6k/97nRvQ1sq?=
+ =?us-ascii?Q?sRtPp6d0Ry0qjDqjQxrRPbd5Tva9kN3p+K5xDnvM+fV1UKJyTT320mOLt996?=
+ =?us-ascii?Q?MK+rd2LM3fVmXqupOD9P92NcC/Lva4d5g1VPnbMhMky3zetfoVwCsqkLKRgR?=
+ =?us-ascii?Q?LqhX9W7Bk/T3liMJLxxH5+A4IVw3d6ZNiUHs/IPe23dV+93UrsVY+rNwHfsf?=
+ =?us-ascii?Q?kR77H3QkvQxS5cz/Wrjfw6+Zex6OqyiPoB6lkPBD0dfrmguXzeWC7hqlR3ul?=
+ =?us-ascii?Q?9sh9WfphIBOOxxtnLZsfKz9KKPl1UvjvAUj0e6bczVhx2NPrSQ/tH4FABKGF?=
+ =?us-ascii?Q?FnB6XWLn2kRIHqPI0+QyAa7RG9c1Q5JdcHEUR7l73AubN2/7s3WEZ0+gVFz6?=
+ =?us-ascii?Q?EjhdlI5xqKUviwsJ8NVM52pfG3ifVyqY0UPstEEl6EmcrTDURz8t3ukFURXj?=
+ =?us-ascii?Q?+ZnR/cQ+QhJ2m0uqSJkt3w/IUKKU08ZSQc7+GyEMdkgsCftfufjTtxxAiiNb?=
+ =?us-ascii?Q?SbBtO07hR/Zoh2F6ezWFTkL3AXrXMzK86j5yQEFqguNZGWIg6kmRa3IgZ/nC?=
+ =?us-ascii?Q?JS5rZAH/xZcGixMIO0x3F2/UbKHL54IT+wa4pkM6Bx5Nr0DgcMDVSdZ/dXgt?=
+ =?us-ascii?Q?7pC4192Ty34usmFDUb7lCmZb80lUH/kgmQsktjPI2mwefxTA+iFbouybEWBv?=
+ =?us-ascii?Q?vCX4ykFM+96fPsAyb/lfWK1vM2yw94QYFWYBlNYLhTNTkxOBvwdDgMsqR+qL?=
+ =?us-ascii?Q?HOw/k8KX/456A+k5K4lorHxzRy+v+rmxd/Tm3AZYD2VmhUQvZKgrBv3gu47e?=
+ =?us-ascii?Q?HnkNB0EvLA8kFZ6nYJFK2H7Oa1qZF6KhQX3CfPGo?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a7ad4144-82ef-43fd-a8cb-08db57addb7a
+X-MS-Exchange-CrossTenant-AuthSource: AM5PR04MB3139.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2023 14:40:43.0133
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zjylfEad/fOph/xgxWsW5SLHRbvti55xXQHBvUNzQS48sn2LxTJOeIu2PjFQ7r9ehlOLacbA5ZE5WlNKgJahwA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB9055
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 17, 2023 at 10:45=E2=80=AFPM Eric Dumazet <edumazet@google.com>=
- wrote:
->
-> On Wed, May 17, 2023 at 2:42=E2=80=AFPM <menglong8.dong@gmail.com> wrote:
-> >
-> > From: Menglong Dong <imagedong@tencent.com>
-> >
-> > For now, skb will be dropped when no memory, which makes client keep
-> > retrans util timeout and it's not friendly to the users.
->
-> Yes, networking needs memory. Trying to deny it is recipe for OOM.
->
-> >
-> > Therefore, now we force to receive one packet on current socket when
-> > the protocol memory is out of the limitation. Then, this socket will
-> > stay in 'no mem' status, util protocol memory is available.
-> >
->
-> I think you missed one old patch.
->
-> commit ba3bb0e76ccd464bb66665a1941fabe55dadb3ba    tcp: fix
-> SO_RCVLOWAT possible hangs under high mem pressure
->
->
->
-> > When a socket is in 'no mem' status, it's receive window will become
-> > 0, which means window shrink happens. And the sender need to handle
-> > such window shrink properly, which is done in the next commit.
-> >
-> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> > ---
-> >  include/net/sock.h    |  1 +
-> >  net/ipv4/tcp_input.c  | 12 ++++++++++++
-> >  net/ipv4/tcp_output.c |  7 +++++++
-> >  3 files changed, 20 insertions(+)
-> >
-> > diff --git a/include/net/sock.h b/include/net/sock.h
-> > index 5edf0038867c..90db8a1d7f31 100644
-> > --- a/include/net/sock.h
-> > +++ b/include/net/sock.h
-> > @@ -957,6 +957,7 @@ enum sock_flags {
-> >         SOCK_XDP, /* XDP is attached */
-> >         SOCK_TSTAMP_NEW, /* Indicates 64 bit timestamps always */
-> >         SOCK_RCVMARK, /* Receive SO_MARK  ancillary data with packet */
-> > +       SOCK_NO_MEM, /* protocol memory limitation happened */
-> >  };
-> >
-> >  #define SK_FLAGS_TIMESTAMP ((1UL << SOCK_TIMESTAMP) | (1UL << SOCK_TIM=
-ESTAMPING_RX_SOFTWARE))
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index a057330d6f59..56e395cb4554 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -5047,10 +5047,22 @@ static void tcp_data_queue(struct sock *sk, str=
-uct sk_buff *skb)
-> >                 if (skb_queue_len(&sk->sk_receive_queue) =3D=3D 0)
-> >                         sk_forced_mem_schedule(sk, skb->truesize);
->
-> I think you missed this part : We accept at least one packet,
-> regardless of memory pressure,
-> if the queue is empty.
->
-> So your changelog is misleading.
->
-> >                 else if (tcp_try_rmem_schedule(sk, skb, skb->truesize))=
- {
-> > +                       if (sysctl_tcp_wnd_shrink)
->
-> We no longer add global sysctls for TCP. All new sysctls must per net-ns.
->
-> > +                               goto do_wnd_shrink;
-> > +
-> >                         reason =3D SKB_DROP_REASON_PROTO_MEM;
-> >                         NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPRCVQDR=
-OP);
-> >                         sk->sk_data_ready(sk);
-> >                         goto drop;
-> > +do_wnd_shrink:
-> > +                       if (sock_flag(sk, SOCK_NO_MEM)) {
-> > +                               NET_INC_STATS(sock_net(sk),
-> > +                                             LINUX_MIB_TCPRCVQDROP);
-> > +                               sk->sk_data_ready(sk);
-> > +                               goto out_of_window;
-> > +                       }
-> > +                       sk_forced_mem_schedule(sk, skb->truesize);
->
-> So now we would accept two packets per TCP socket, and yet EPOLLIN
-> will not be sent in time ?
->
-> packets can consume about 45*4K each, I do not think it is wise to
-> double receive queue sizes.
->
-> What you want instead is simply to send EPOLLIN sooner (when the first
-> packet is queued instead when the second packet is dropped)
-> by changing sk_forced_mem_schedule() a bit.
->
-> This might matter for applications using SO_RCVLOWAT, but not for
-> other applications.
+From: Wei Fang <wei.fang@nxp.com>
 
-To be more clear, what I talk about here is not to send EPOLLIN
-sooner, but try to make the TCP connection, which has a "hang"
-receiver and in TCP protocol memory pressure, entry 0-probe
-state. And this commit is the first step: make the receiver
-shrink the window by sending a zero-window ack.
+The XDP features are supported since the commit 66c0e13ad236
+("drivers: net: turn on XDP features"). Currently, the fec
+driver supports NETDEV_XDP_ACT_BASIC, NETDEV_XDP_ACT_REDIRECT
+and NETDEV_XDP_ACT_NDO_XMIT. So turn on these XDP features
+for fec driver.
 
-Thanks!
-Menglong Dong
+Signed-off-by: Wei Fang <wei.fang@nxp.com>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index cd215ab20ff9..577affda6efa 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -4030,6 +4030,8 @@ static int fec_enet_init(struct net_device *ndev)
+ 	}
+ 
+ 	ndev->hw_features = ndev->features;
++	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
++			     NETDEV_XDP_ACT_NDO_XMIT;
+ 
+ 	fec_restart(ndev);
+ 
+-- 
+2.25.1
+
 
