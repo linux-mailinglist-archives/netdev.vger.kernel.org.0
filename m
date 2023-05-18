@@ -1,236 +1,206 @@
-Return-Path: <netdev+bounces-3547-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3548-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 39C60707D65
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 11:56:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 41D1B707D73
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 12:00:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EA22F28184C
-	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 09:56:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CA8DB281899
+	for <lists+netdev@lfdr.de>; Thu, 18 May 2023 10:00:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1AE511CAB;
-	Thu, 18 May 2023 09:56:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B33B711CAC;
+	Thu, 18 May 2023 10:00:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFF7C11CA7
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 09:56:43 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546B810DC
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 02:56:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684403801;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dazR50SKXuYIFVWThl0nrv2fyFSamN4MkmMLPefBMF0=;
-	b=RbUL0olDUFx7YYSClC6lNrqRlxjzKBmyCh9Y6ObV71uP1ykrNJbcBbf2JArItGFiJBYyXd
-	FEM/xYcjrZhfTxUZq8HKSA2droHO0H1ys1Lnby+K4VKZPu1SITPq3TRzkIy2bZrdDNHTbb
-	5wj7xF4ro1fQHnac4F3h0SOlwEvEkzU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-352-sNI4QCQWN4qCpwaF8aO8pg-1; Thu, 18 May 2023 05:56:35 -0400
-X-MC-Unique: sNI4QCQWN4qCpwaF8aO8pg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 07051800047;
-	Thu, 18 May 2023 09:56:34 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.221])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 66B3640C2063;
-	Thu, 18 May 2023 09:56:31 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <20230515093345.396978-4-dhowells@redhat.com>
-References: <20230515093345.396978-4-dhowells@redhat.com> <20230515093345.396978-1-dhowells@redhat.com>
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: dhowells@redhat.com, netdev@vger.kernel.org,
-    "David S. Miller" <davem@davemloft.net>,
-    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-    David Ahern <dsahern@kernel.org>,
-    Matthew Wilcox <willy@infradead.org>,
-    Al Viro <viro@zeniv.linux.org.uk>,
-    Christoph Hellwig <hch@infradead.org>, Jens Axboe <axboe@kernel.dk>,
-    Jeff Layton <jlayton@kernel.org>,
-    Christian Brauner <brauner@kernel.org>,
-    Chuck Lever III <chuck.lever@oracle.com>,
-    Linus Torvalds <torvalds@linux-foundation.org>,
-    linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-    linux-mm@kvack.org
-Subject: [PATCH net-next v8 03/16] net: Add a function to splice pages into an skbuff for MSG_SPLICE_PAGES
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2D2AAD46
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 10:00:09 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5CB1716
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 03:00:07 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1pzaQU-0001ZA-4G; Thu, 18 May 2023 12:00:02 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	(Authenticated sender: mkl-all@blackshift.org)
+	by smtp.blackshift.org (Postfix) with ESMTPSA id 518761C7B79;
+	Thu, 18 May 2023 10:00:01 +0000 (UTC)
+Date: Thu, 18 May 2023 12:00:00 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Frank Jungclaus <frank.jungclaus@esd.eu>
+Cc: linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+	Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/6] can: esd_usb: Make use of existing kernel macros
+Message-ID: <20230518-grower-film-ea8b5f853f3e-mkl@pengutronix.de>
+References: <20230517192251.2405290-1-frank.jungclaus@esd.eu>
+ <20230517192251.2405290-2-frank.jungclaus@esd.eu>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1347366.1684403790.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 18 May 2023 10:56:30 +0100
-Message-ID: <1347367.1684403790@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="xuxstbtrrmjtjzza"
+Content-Disposition: inline
+In-Reply-To: <20230517192251.2405290-2-frank.jungclaus@esd.eu>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-    =
 
-Add a function to handle MSG_SPLICE_PAGES being passed internally to
-sendmsg().  Pages are spliced into the given socket buffer if possible and
-copied in if not (e.g. they're slab pages or have a zero refcount).
+--xuxstbtrrmjtjzza
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Eric Dumazet <edumazet@google.com>
-cc: "David S. Miller" <davem@davemloft.net>
-cc: David Ahern <dsahern@kernel.org>
-cc: Jakub Kicinski <kuba@kernel.org>
-cc: Paolo Abeni <pabeni@redhat.com>
-cc: Al Viro <viro@zeniv.linux.org.uk>
-cc: Jens Axboe <axboe@kernel.dk>
-cc: Matthew Wilcox <willy@infradead.org>
-cc: netdev@vger.kernel.org
+On 17.05.2023 21:22:46, Frank Jungclaus wrote:
+> As suggested by Vincent Mailhol make use of existing kernel macros:
+> - Use the unit suffixes from linux/units.h for the controller clock
+> frequencies
+> - Use the BIT() macro to set specific bits in some constants
+> - Use CAN_MAX_DLEN (instead of directly using the value 8) for the
+> maximum CAN payload length
+>=20
+> Additionally:
+> - Spend some commenting for the previously changed constants
+> - Add the current year to the copyright notice
+> - While adding the header linux/units.h to the list of include files
+> also sort that list alphabetically
+>=20
+> Suggested-by: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+> Link: https://lore.kernel.org/all/CAMZ6RqLaDNy-fZ2G0+QMhUEckkXLL+ZyELVSDF=
+mqpd++aBzZQg@mail.gmail.com/
+> Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
+> ---
+>  drivers/net/can/usb/esd_usb.c | 38 ++++++++++++++++++-----------------
+>  1 file changed, 20 insertions(+), 18 deletions(-)
+>=20
+> diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
+> index d33bac3a6c10..042dda98b3db 100644
+> --- a/drivers/net/can/usb/esd_usb.c
+> +++ b/drivers/net/can/usb/esd_usb.c
+> @@ -3,19 +3,20 @@
+>   * CAN driver for esd electronics gmbh CAN-USB/2 and CAN-USB/Micro
+>   *
+>   * Copyright (C) 2010-2012 esd electronic system design gmbh, Matthias F=
+uchs <socketcan@esd.eu>
+> - * Copyright (C) 2022 esd electronics gmbh, Frank Jungclaus <frank.jungc=
+laus@esd.eu>
+> + * Copyright (C) 2022-2023 esd electronics gmbh, Frank Jungclaus <frank.=
+jungclaus@esd.eu>
+>   */
+> +#include <linux/can.h>
+> +#include <linux/can/dev.h>
+> +#include <linux/can/error.h>
+> +
+>  #include <linux/ethtool.h>
+> -#include <linux/signal.h>
+> -#include <linux/slab.h>
+>  #include <linux/module.h>
+>  #include <linux/netdevice.h>
+> +#include <linux/signal.h>
+> +#include <linux/slab.h>
+> +#include <linux/units.h>
+>  #include <linux/usb.h>
+> =20
+> -#include <linux/can.h>
+> -#include <linux/can/dev.h>
+> -#include <linux/can/error.h>
+> -
+>  MODULE_AUTHOR("Matthias Fuchs <socketcan@esd.eu>");
+>  MODULE_AUTHOR("Frank Jungclaus <frank.jungclaus@esd.eu>");
+>  MODULE_DESCRIPTION("CAN driver for esd electronics gmbh CAN-USB/2 and CA=
+N-USB/Micro interfaces");
+> @@ -27,8 +28,8 @@ MODULE_LICENSE("GPL v2");
+>  #define USB_CANUSBM_PRODUCT_ID	0x0011
+> =20
+>  /* CAN controller clock frequencies */
+> -#define ESD_USB2_CAN_CLOCK	60000000
+> -#define ESD_USBM_CAN_CLOCK	36000000
+> +#define ESD_USB2_CAN_CLOCK	(60 * MEGA) /* Hz */
+> +#define ESD_USBM_CAN_CLOCK	(36 * MEGA) /* Hz */
+> =20
+>  /* Maximum number of CAN nets */
+>  #define ESD_USB_MAX_NETS	2
+> @@ -42,20 +43,21 @@ MODULE_LICENSE("GPL v2");
+>  #define CMD_IDADD		6 /* also used for IDADD_REPLY */
+> =20
+>  /* esd CAN message flags - dlc field */
+> -#define ESD_RTR			0x10
+> +#define ESD_RTR	BIT(4) /* 0x10 */
 
----
-Notes:
-    ver #8)
-     - Order local variables in reverse xmas tree order.
-     - Remove duplicate coalescence check.
-     - Warn if sendpage_ok() fails.
-    =
+Nitpick, personal style preference, maintainability: For me the hex
+constant is redundant information, and it's not checked by the compiler,
+please remove it.
 
-    ver #7)
-     - Export function.
-     - Never copy data, return -EIO if sendpage_ok() returns false.
+> +
+> =20
+>  /* esd CAN message flags - id field */
+> -#define ESD_EXTID		0x20000000
+> -#define ESD_EVENT		0x40000000
+> -#define ESD_IDMASK		0x1fffffff
+> +#define ESD_EXTID	BIT(29) /* 0x20000000 */
+> +#define ESD_EVENT	BIT(30) /* 0x40000000 */
+> +#define ESD_IDMASK	0x1fffffff
 
- include/linux/skbuff.h |    3 +
- net/core/skbuff.c      |   88 +++++++++++++++++++++++++++++++++++++++++++=
-++++++
- 2 files changed, 91 insertions(+)
+Please use GEN_MASK.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 4c0ad48e38ca..1c5f0ac6f8c3 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -5097,5 +5097,8 @@ static inline void skb_mark_for_recycle(struct sk_bu=
-ff *skb)
- #endif
- }
- =
+> =20
+>  /* esd CAN event ids */
+>  #define ESD_EV_CAN_ERROR_EXT	2 /* CAN controller specific diagnostic dat=
+a */
+> =20
+>  /* baudrate message flags */
+> -#define ESD_USB_UBR		0x80000000
+> -#define ESD_USB_LOM		0x40000000
+> -#define ESD_USB_NO_BAUDRATE	0x7fffffff
+> +#define ESD_USB_LOM	BIT(30) /* 0x40000000, Listen Only Mode */
+> +#define ESD_USB_UBR	BIT(31) /* 0x80000000, User Bit Rate (controller BTR=
+) in bits 0..27 */
+> +#define ESD_USB_NO_BAUDRATE	0x7fffffff /* bit rate unconfigured */
 
-+ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
-+			     ssize_t maxsize, gfp_t gfp);
-+
- #endif	/* __KERNEL__ */
- #endif	/* _LINUX_SKBUFF_H */
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 7f53dcb26ad3..f4a5b51aed22 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -6892,3 +6892,91 @@ nodefer:	__kfree_skb(skb);
- 	if (unlikely(kick) && !cmpxchg(&sd->defer_ipi_scheduled, 0, 1))
- 		smp_call_function_single_async(cpu, &sd->defer_csd);
- }
-+
-+static void skb_splice_csum_page(struct sk_buff *skb, struct page *page,
-+				 size_t offset, size_t len)
-+{
-+	const char *kaddr;
-+	__wsum csum;
-+
-+	kaddr =3D kmap_local_page(page);
-+	csum =3D csum_partial(kaddr + offset, len, 0);
-+	kunmap_local(kaddr);
-+	skb->csum =3D csum_block_add(skb->csum, csum, skb->len);
-+}
-+
-+/**
-+ * skb_splice_from_iter - Splice (or copy) pages to skbuff
-+ * @skb: The buffer to add pages to
-+ * @iter: Iterator representing the pages to be added
-+ * @maxsize: Maximum amount of pages to be added
-+ * @gfp: Allocation flags
-+ *
-+ * This is a common helper function for supporting MSG_SPLICE_PAGES.  It
-+ * extracts pages from an iterator and adds them to the socket buffer if
-+ * possible, copying them to fragments if not possible (such as if they'r=
-e slab
-+ * pages).
-+ *
-+ * Returns the amount of data spliced/copied or -EMSGSIZE if there's
-+ * insufficient space in the buffer to transfer anything.
-+ */
-+ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
-+			     ssize_t maxsize, gfp_t gfp)
-+{
-+	size_t frag_limit =3D READ_ONCE(sysctl_max_skb_frags);
-+	struct page *pages[8], **ppages =3D pages;
-+	ssize_t spliced =3D 0, ret =3D 0;
-+	unsigned int i;
-+
-+	while (iter->count > 0) {
-+		ssize_t space, nr;
-+		size_t off, len;
-+
-+		ret =3D -EMSGSIZE;
-+		space =3D frag_limit - skb_shinfo(skb)->nr_frags;
-+		if (space < 0)
-+			break;
-+
-+		/* We might be able to coalesce without increasing nr_frags */
-+		nr =3D clamp_t(size_t, space, 1, ARRAY_SIZE(pages));
-+
-+		len =3D iov_iter_extract_pages(iter, &ppages, maxsize, nr, 0, &off);
-+		if (len <=3D 0) {
-+			ret =3D len ?: -EIO;
-+			break;
-+		}
-+
-+		i =3D 0;
-+		do {
-+			struct page *page =3D pages[i++];
-+			size_t part =3D min_t(size_t, PAGE_SIZE - off, len);
-+
-+			ret =3D -EIO;
-+			if (WARN_ON_ONCE(!sendpage_ok(page)))
-+				goto out;
-+
-+			ret =3D skb_append_pagefrags(skb, page, off, part,
-+						   frag_limit);
-+			if (ret < 0) {
-+				iov_iter_revert(iter, len);
-+				goto out;
-+			}
-+
-+			if (skb->ip_summed =3D=3D CHECKSUM_NONE)
-+				skb_splice_csum_page(skb, page, off, part);
-+
-+			off =3D 0;
-+			spliced +=3D part;
-+			maxsize -=3D part;
-+			len -=3D part;
-+		} while (len > 0);
-+
-+		if (maxsize <=3D 0)
-+			break;
-+	}
-+
-+out:
-+	skb_len_add(skb, spliced);
-+	return spliced ?: ret;
-+}
-+EXPORT_SYMBOL(skb_splice_from_iter);
+You might use GEN_MASK here, too.
 
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--xuxstbtrrmjtjzza
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRl9x0ACgkQvlAcSiqK
+BOg+cAf+KzVa9cmUPggy1Tcco5Isoib0g1IdvOmpg9f/yNn8bvRP7hh3eiwkZD8z
+txb3kHedg4loWwnlGnZtjFebuyRPwOVgRnwDoWvHG6rhJ40YSyPHbcGMXl5e+oht
+iAwx+Fd46Bz5WANelqEcGXmnZBix+pKvVhzCeRwhaksf1nE6YfpUNyHguVqiUXul
+N8LuE+eWcG49PbilEJ7xwBY77S5ymnO7giaG/AbA24XZ3aPBwk1E83wkJWmyXYes
+t7NFLaDm5vlhSoOSjfVi74b9FIL9mBVnBbXOKwfXG/MKAAjzJ12RxcffuggPtXrC
+AYwijWBPDmUCWw42kDiO4X6XBYtekw==
+=lOIs
+-----END PGP SIGNATURE-----
+
+--xuxstbtrrmjtjzza--
 
