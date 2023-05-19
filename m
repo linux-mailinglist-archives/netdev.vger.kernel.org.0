@@ -1,196 +1,169 @@
-Return-Path: <netdev+bounces-3777-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3778-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id ED539708D31
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 03:13:36 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E2D83708D4B
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 03:26:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 956311C2119E
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 01:13:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 18D9E281A58
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 01:26:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8947E385;
-	Fri, 19 May 2023 01:13:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EAF77385;
+	Fri, 19 May 2023 01:26:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 790E337B
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 01:13:33 +0000 (UTC)
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87934E72
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 18:13:31 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id 98e67ed59e1d1-25377d67da9so114697a91.0
-        for <netdev@vger.kernel.org>; Thu, 18 May 2023 18:13:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20221208.gappssmtp.com; s=20221208; t=1684458811; x=1687050811;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cFsTEa2NdXOwQC3Qij3M9u6qQzHlvyGxvsYKocMSt28=;
-        b=gLl4KRTTR1bq7Cmnzk8NgCFkZBBLVb/3tVRUJb9rbvKgoinTMohG49OguLk1p5iw6a
-         7gC23Et321bxmUUCy03XE7IweGZHsgUREf2NHTeKwaZNaHMT3PIJ/PD1zjX67f4h1CYQ
-         jEwSXZrXyQr6e0QepCNguYh9wODiepM14dnBRqPHr42FVKjSpCMmUFiC2y7J+UtKwrau
-         YUqMp05svHYkdStQnFcqK9H2k/yIhh9dhjBOS4LyS5+CC8579ODPFYoNg+CFpxsnNesG
-         NN0r5lkqKQ5I3MDBLKaB+N/0eAykvNg6Wdg0qx0NcsUO5+UQYSiwUg4rGAK+9+1QFnvg
-         zBaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684458811; x=1687050811;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cFsTEa2NdXOwQC3Qij3M9u6qQzHlvyGxvsYKocMSt28=;
-        b=itjsGG36P0V8YTK60adsuJ4XushrE4K1lC99e7eRDkqvMnwHN093J6UdsL17DCIvi4
-         62U27DtoTRDkvI31HvG7Xqv7lia0ODxO0IYe9v6gHhF0l/Sc8GMJpX39e3HG5b/iIcZM
-         XN0caWCPn7ic1yoOUONTV0RmjDypl4fhRfgholUT2ezvF/HoOxiE4MAlykQoi7svlEVa
-         3ncZ50B2S9br9JRfAaIgbNKhfGHz0c+RBy7wko/WtBhIrpy7YCkp9VU9cwnBdDI7I8xO
-         nfvlEH1z0ozF4pgHxzEUj81Y7d/EhcBKfoOSIgfAy4DsuUN5l9el8fYURQvklEVR3f3H
-         RtTA==
-X-Gm-Message-State: AC+VfDy663kzE5FXrUSmeD9Jk5Zw+BBodu15xPH/Brf3OxhcX4Qtd6EP
-	7diAjqqj0RRvV5AxkOWMlZp7ulZVmtLDF3iiKl8=
-X-Google-Smtp-Source: ACHHUZ6kVKgYIh/PnI1AJuopK51NpX+qT27+ZXgqmsN6HVI/wNdrKF5jVgpya7s8cYRlRVxwPQzyHg==
-X-Received: by 2002:a17:90b:4d8a:b0:250:d8e1:d326 with SMTP id oj10-20020a17090b4d8a00b00250d8e1d326mr718933pjb.0.1684458810815;
-        Thu, 18 May 2023 18:13:30 -0700 (PDT)
-Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id r14-20020a17090a454e00b002528588560fsm292152pjm.13.2023.05.18.18.13.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 May 2023 18:13:30 -0700 (PDT)
-Message-ID: <cf82830e-91fb-3a50-86c4-b57f7f761a80@kernel.dk>
-Date: Thu, 18 May 2023 19:13:28 -0600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D83D7362
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 01:26:09 +0000 (UTC)
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2077.outbound.protection.outlook.com [40.107.15.77])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7E399;
+	Thu, 18 May 2023 18:26:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IFtcnliWGEttobkWOhPILgXOCOBn2FI/jyHjhPjZO7XbGElYqTBEtummb2KPcuFEM2eUQVrBz/pGlHM3INt+wyFyGFlE9giHnKqC08FNUtHbOk/i7KmxZrPg+/S4KqAM4N3UQF7EoJ/05BJ20tL0s6mzglb6nUKTJ3kc8GXKv11UHBBJKsCV63gm87Dr/EU+8XkGprKKJ+SyWh0zXsigUOrY0Zzs6Le2YYJLQjzM+suzFmFJN1/YUYmSytkCMg6Z4qjOA+MeQhblBS+1gW3928rTl9cuwciYytlHkIZSkGk9x4Uk5+2vw3++9HLKIc3wzqCA6R5PEoQHY/dT0E1psQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9Dbf3cOQSnSGypwr95REpK5aIhee2Oe6niM0Oc3NZXY=;
+ b=lppqcMkj1JZPgze3fL6D3quroROgV6H16wPkEV92nNxrIi7aR5gQS+aCMYX6qCy62X4JFuiEydwLane9wldPCf88WHxDp3/15safp44u21+FmZni3KFAgRBmPPnyBZdpOMwm2pRIgY4blLoPjE/sQ9sb+0o6IpQ+6RIJJRoO1arFIeiJxGbV0jpv3wlAU8eZhuOsI9jLEr632nUpr6Ql9XzgC2T5IyLItj4piMOF+Mef/LAJOSKgiIhL8JUb909DuQUEV0Njm8dguPL56dZD9cZ7xoPxk9o6CFXCQ0ELcWYUxN/GbDfLSELR+QrzRNTY5i8ZcbgdRzJUI2KDoV/hGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9Dbf3cOQSnSGypwr95REpK5aIhee2Oe6niM0Oc3NZXY=;
+ b=OY+w22HA5YFfc8NJtfsGhit4vMlA4viMtA2ERBgp5Cmv1yNvD5te7jn/Pcl5ltCoEBbHPeGfxVf+n0th0VM72k+sWHXSJerWMV4tD5UfMhJYB6arzoI/QMuBoPxFpyw1LVZwiBahFbbiXElHhh63GwVRAmaYr2S6FdvteafG3Og=
+Received: from DB6PR04MB3141.eurprd04.prod.outlook.com (2603:10a6:6:c::21) by
+ DUZPR04MB10016.eurprd04.prod.outlook.com (2603:10a6:10:4dd::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6411.21; Fri, 19 May 2023 01:26:04 +0000
+Received: from DB6PR04MB3141.eurprd04.prod.outlook.com
+ ([fe80::4fc7:994a:43c9:7058]) by DB6PR04MB3141.eurprd04.prod.outlook.com
+ ([fe80::4fc7:994a:43c9:7058%7]) with mapi id 15.20.6411.017; Fri, 19 May 2023
+ 01:26:03 +0000
+From: Wei Fang <wei.fang@nxp.com>
+To: Simon Horman <simon.horman@corigine.com>
+CC: "davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "Frank.Li@freescale.com"
+	<Frank.Li@freescale.com>, Shenwei Wang <shenwei.wang@nxp.com>, Clark Wang
+	<xiaoning.wang@nxp.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	dl-linux-imx <linux-imx@nxp.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net] net: fec: remove useless fec_enet_reset_skb()
+Thread-Topic: [PATCH net] net: fec: remove useless fec_enet_reset_skb()
+Thread-Index: AQHZiYla0M3/wuMQfEe0TPDQsIZBYa9gRj+AgACHfgA=
+Date: Fri, 19 May 2023 01:26:03 +0000
+Message-ID:
+ <DB6PR04MB3141A8E6711EF51ABD272FE9887C9@DB6PR04MB3141.eurprd04.prod.outlook.com>
+References: <20230518130016.1615671-1-wei.fang@nxp.com>
+ <ZGZduVeDx9TvlToT@corigine.com>
+In-Reply-To: <ZGZduVeDx9TvlToT@corigine.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DB6PR04MB3141:EE_|DUZPR04MB10016:EE_
+x-ms-office365-filtering-correlation-id: 27640341-ef3d-4671-9e8b-08db58080314
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ GqchgkvKaTh5R4NOUFMsRwcgMn4K2mULvzjL5vy9uSRxzftvQwvwI29UYd0Ti6MltxtPSMQCEsMw6r80MSVVsAEey7+WnLaWLQ8UQAfg4opeixQzwu0is9BNNcJnf+98//HPS5uy93WUsoouMv8kbBB/vZEwUSwVMIffUzrLEnKt6KyqOWlzrcCMTdeY+E3gupQfP/ymSYMYiLAnnY1xBVlXuW8dbuG5V/4Dn1UUUlJdsxt1H1tu2R1hBuNwE5CPWurxFBCSk7IEfGc9SLAco+XHyIvW73BfbI5RJrKFy8yOg3AxqL6J4/ExbdJJRghzis6fZfzKQO+XFzna2Sa1kt0kRSBWaGIE/Wnny4SfLKZJJQS14REcU8RyZeSoKsgGQYm5P1bAGPhFGcjqzBR6aEAJV2xzxwIqFXe/HZ4hPyO9WdpoVw9Id8lm90+f+meealuWczmK4Q8bWCKvSO4OaU36wTsB9asJVKJER5p9dqzOn6xX2GZ3ui441aDJKBqZlU5Y2eotmQOreNTNSZ/ebTZSv2JO/iSSHHMMM2YUDP/quvzPoH0dh2+xPXLG9ADQ0a5b0FoZdGTTDg+pxpU9nEHillzcu+lavYzNPrGIVqioNbtQPxkASyUUA0AMdTf8
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB6PR04MB3141.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(346002)(366004)(39860400002)(451199021)(83380400001)(478600001)(7696005)(71200400001)(54906003)(6506007)(26005)(9686003)(53546011)(186003)(2906002)(5660300002)(8936002)(44832011)(8676002)(52536014)(33656002)(122000001)(6916009)(38100700002)(4326008)(66446008)(66476007)(66556008)(66946007)(76116006)(64756008)(316002)(55016003)(86362001)(41300700001)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?gb2312?B?enVqcUFCN09BQ3JTZ0xlKzhRT1JiRnZGcTFuZ2xCQy9aUm9rWG96NEJCOGVm?=
+ =?gb2312?B?UitSUmFqckNWQWVydFZ3bjNwUHpOQlV0QjdqN2JoOGExKyt6UzBoMFhRN0lG?=
+ =?gb2312?B?MW5WSGwwY0FCVGF6STJnc1owYzlsT2VsMGpOR0dVbVdZaFhIRXBoeUh5elYv?=
+ =?gb2312?B?eUF1TGFsUEI2SzJJRHgzYXJ0RCs1Z1NBbG5CV3ErSmhBcUNlVUdGR2hRZERN?=
+ =?gb2312?B?UzhEUi83Z2owZDZxRCthT2ZYc3pGSHZVY2FPRXR1cE5IdGlSTHJEejFCWGpN?=
+ =?gb2312?B?WHJxMkE1VjJPLzFpK3FkUUpyQWU3OHJtTkNKVm1VanE1eSsrb0MwRTJma0tW?=
+ =?gb2312?B?bFpjRjdvdkc3M0xiNmZQaGRyL2o4SVJ0aVE3anpjM0gweEUvem9pbmJIanYz?=
+ =?gb2312?B?L045NkMyM25vU2VuTlArZG9teXRESS9LeGlMcTBhMTBHUjlyd2NPS3N6S1Jm?=
+ =?gb2312?B?RG5PakFXYzhjUWlOMmcreCtwekpVMWsySzJGZWdCU0VOQ2YwZEk1cTZySnpp?=
+ =?gb2312?B?Ly9ENDZsb3RBL3FmMnp0SmUrc2pBYnBMOUVtVldxdEh1NVh1dFlRWGFnZ2hS?=
+ =?gb2312?B?QkxZRHJKR0ZKclBTWjVKQ2NvdG41V1Z3eDdBMXFiNGxZOU5HeEZiSVlJRTlF?=
+ =?gb2312?B?bkU4VkxkTmkwVm5tKzUyMmJxSjdhaEZEbUMwRFhQTjROaGdFWUtDNGVjWUhK?=
+ =?gb2312?B?N011Ukl1djEyMlc0Zm5GSGpDZUdaQzh4YytJWjltVE9nbWV3cTg4bkZMaHNz?=
+ =?gb2312?B?aUVNeTd6T04rR01WYmpJblJNTmNITDJFZERwbm5pZlJ3ZWo0MUFEZU9CVnVU?=
+ =?gb2312?B?ejlMM1lzaDJzeXZBN0F0ZVBxdmsxbnptV3IxNVRSNFdrbmZMaXBzR1R5T3c2?=
+ =?gb2312?B?bDY5SWpuRTN4ZU9EcmM3TkdoTlpZaUVrUFlKclJDbG9Cd0dtMEpwVHJOb3N0?=
+ =?gb2312?B?SXljdTNNaVQwcGtqY2xRQUc1V0lwUXJoSXd3TEIyL1RDNkVUbnpTQ1VrSUQ4?=
+ =?gb2312?B?ZEREd0IzS2JZV0t3dW44QUU5em03NWNCYTR1Zy9NanViZVplN0Q1N21yOVc2?=
+ =?gb2312?B?Z2hTMDdPU0pSc21nQVlSREd6dS85R2xMMGllakhmalpEcTdNb3hTWHdraE1N?=
+ =?gb2312?B?SlRkMVBkVU03am9CdTBQMnV3VS9ORW80cU9OVjhwbkFleEk4TmloY0prY0pw?=
+ =?gb2312?B?a20wYW1oQUdSRmpNNnFkR0FhSjVxeHFzVmVUSGtkMlJMRlAxSFJTU2Zpd2g1?=
+ =?gb2312?B?b1hFa0FpRUQ3TnY5d0c5SGRKNUpNTis2M0xyYjVxdkxkNUxxUTNHMExzeXEw?=
+ =?gb2312?B?ak9jN1M5VGtpUkgzSjJmTDhKbFUyeHFBZk1Zc1ZzMno2T2hKU1J6QzdVNDA2?=
+ =?gb2312?B?Y2JYbytqSEZQRjcwb3E1RWVaVG4xRi9uTHlQNHJFSFlSVFFlZUVFMlVmY3VG?=
+ =?gb2312?B?SmhidlRxVFN1TUNRc0tIMGVTL1RjTE5walk3RFM1NUc5azU4TXJyMm9xUHhP?=
+ =?gb2312?B?RG1ldDFERWFwK2Q1SjE3bzlQUk1PVUtXYkE2UFFTL1RWVFQvRW5OOFEwaUtY?=
+ =?gb2312?B?WVMydFVSMHc3TUhrQ2xkaHppcnhncVJ6ZCtyZHpid2xiQ1FNWjl4c1dINFI4?=
+ =?gb2312?B?cElyZDlZdW5NRWxmeEk0bTAyU2RuSXNkOFhMOVpXbysyNDNwQjZzS2VqQ3R5?=
+ =?gb2312?B?T1A2N2c4QXg5YXdxSGllODNzV1FFR1BPK1hIZjBKYnIrWDdZUlQ3RDZlWU5N?=
+ =?gb2312?B?a1BWQi9vdlkwOFA4MFlPOUYxMVhzWVlKTFVvL3FHMnI0OTFpY0lhZEpSWnpp?=
+ =?gb2312?B?VEtTbFpZMmxiU0x5ZU1QMVd0N0RmZlJkK0MrYTllN2tkUkpZZ2srWXVyakpl?=
+ =?gb2312?B?NkU3akJ2YkJBV3dpdCtLT3hoTTA2bEZNWXhjbE03cWlZMGJEL1FEVVc2MTYx?=
+ =?gb2312?B?eVoyOWljRkFBSGIzdis4T3EyUHdoQnlkdTg5U3g2aGRtdHlTWHlQdGxGQjVt?=
+ =?gb2312?B?cTI0cXJLM05CVklSNDZobWJ4dnIwOWIzRzNMbG0vcnBzbjJ1dGhXQXNVV0Q2?=
+ =?gb2312?B?L0t0UGZEcTZFYUNJU0xWblZsTUtsb2g3WCswRm02dWVtMEpkSGJKYmxEdUQ4?=
+ =?gb2312?Q?zfRM=3D?=
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v13 5/7] io-uring: add sqpoll support for napi busy poll
-Content-Language: en-US
-To: kernel test robot <lkp@intel.com>, Stefan Roesch <shr@devkernel.io>,
- io-uring@vger.kernel.org, kernel-team@fb.com
-Cc: oe-kbuild-all@lists.linux.dev, ammarfaizi2@gnuweeb.org,
- netdev@vger.kernel.org, kuba@kernel.org, olivier@trillion01.com
-References: <20230518211751.3492982-6-shr@devkernel.io>
- <202305190745.UK8QQ6fw-lkp@intel.com>
-From: Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <202305190745.UK8QQ6fw-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB6PR04MB3141.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27640341-ef3d-4671-9e8b-08db58080314
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2023 01:26:03.7620
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Snff/hmttOw2vklq+NcJ1TUUEOTCb5Ap0m1vv6abXwBHbeRal1JL3boegkpAfVCws+2jObqQ+UmRXSCdLUVHzg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DUZPR04MB10016
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 5/18/23 6:11?PM, kernel test robot wrote:
-> Hi Stefan,
-> 
-> kernel test robot noticed the following build errors:
-> 
-> [auto build test ERROR on d2b7fa6174bc4260e496cbf84375c73636914641]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Stefan-Roesch/net-split-off-__napi_busy_poll-from-napi_busy_poll/20230519-054117
-> base:   d2b7fa6174bc4260e496cbf84375c73636914641
-> patch link:    https://lore.kernel.org/r/20230518211751.3492982-6-shr%40devkernel.io
-> patch subject: [PATCH v13 5/7] io-uring: add sqpoll support for napi busy poll
-> config: powerpc-allnoconfig
-> compiler: powerpc-linux-gcc (GCC) 12.1.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/intel-lab-lkp/linux/commit/8d324fedc325505406b6ea808d5d7a7cacb321a5
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review Stefan-Roesch/net-split-off-__napi_busy_poll-from-napi_busy_poll/20230519-054117
->         git checkout 8d324fedc325505406b6ea808d5d7a7cacb321a5
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc olddefconfig
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag where applicable
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202305190745.UK8QQ6fw-lkp@intel.com/
-> 
-> All errors (new ones prefixed by >>):
-> 
->    In file included from io_uring/sqpoll.c:18:
->    io_uring/sqpoll.c: In function '__io_sq_thread':
->>> io_uring/napi.h:81:39: error: expected expression before 'do'
->       81 | #define io_napi_sqpoll_busy_poll(ctx) do {} while (0)
->          |                                       ^~
->    io_uring/sqpoll.c:198:32: note: in expansion of macro 'io_napi_sqpoll_busy_poll'
->      198 |                         ret += io_napi_sqpoll_busy_poll(ctx);
->          |                                ^~~~~~~~~~~~~~~~~~~~~~~~
-> 
-
-That's my fault, didn't look closely enough. But let's fold this one into
-patch 3, to get proper types for !CONFIG_NET_RX_BUSY_POLL.
-
-
-diff --git a/io_uring/napi.h b/io_uring/napi.h
-index 69c1970cbecc..64d07317866b 100644
---- a/io_uring/napi.h
-+++ b/io_uring/napi.h
-@@ -60,39 +60,43 @@ static inline void io_napi_add(struct io_kiocb *req)
- 	__io_napi_add(ctx, req->file);
- }
- 
--#else
-+#else /* CONFIG_NET_RX_BUSY_POLL */
- 
- static inline void io_napi_init(struct io_ring_ctx *ctx)
- {
- }
--
- static inline void io_napi_free(struct io_ring_ctx *ctx)
- {
- }
--
- static inline int io_register_napi(struct io_ring_ctx *ctx, void __user *arg)
- {
- 	return -EOPNOTSUPP;
- }
--
- static inline int io_unregister_napi(struct io_ring_ctx *ctx, void __user *arg)
- {
- 	return -EOPNOTSUPP;
- }
--
- static inline bool io_napi(struct io_ring_ctx *ctx)
- {
- 	return false;
- }
--
- static inline void io_napi_add(struct io_kiocb *req)
- {
- }
-+static inline void io_napi_adjust_timeout(struct io_ring_ctx *ctx,
-+					  struct io_wait_queue *iowq,
-+					  struct timespec64 *ts)
-+{
-+}
-+static inline void io_napi_busy_loop(struct io_ring_ctx *ctx,
-+				     struct io_wait_queue *iowq)
-+{
-+}
-+static inline int io_napi_sqpoll_busy_poll(struct io_ring_ctx *ctx)
-+{
-+	return 0;
-+}
- 
--#define io_napi_adjust_timeout(ctx, iowq, ts) do {} while (0)
--#define io_napi_busy_loop(ctx, iowq) do {} while (0)
--#define io_napi_sqpoll_busy_poll(ctx) do {} while (0)
--
--#endif
-+#endif /* CONFIG_NET_RX_BUSY_POLL */
- 
- #endif
-
--- 
-Jens Axboe
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBTaW1vbiBIb3JtYW4gPHNpbW9u
+Lmhvcm1hbkBjb3JpZ2luZS5jb20+DQo+IFNlbnQ6IDIwMjPE6jXUwjE5yNUgMToxOA0KPiBUbzog
+V2VpIEZhbmcgPHdlaS5mYW5nQG54cC5jb20+DQo+IENjOiBkYXZlbUBkYXZlbWxvZnQubmV0OyBl
+ZHVtYXpldEBnb29nbGUuY29tOyBrdWJhQGtlcm5lbC5vcmc7DQo+IHBhYmVuaUByZWRoYXQuY29t
+OyBGcmFuay5MaUBmcmVlc2NhbGUuY29tOyBTaGVud2VpIFdhbmcNCj4gPHNoZW53ZWkud2FuZ0Bu
+eHAuY29tPjsgQ2xhcmsgV2FuZyA8eGlhb25pbmcud2FuZ0BueHAuY29tPjsNCj4gbmV0ZGV2QHZn
+ZXIua2VybmVsLm9yZzsgZGwtbGludXgtaW14IDxsaW51eC1pbXhAbnhwLmNvbT47DQo+IGxpbnV4
+LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRDSCBuZXRdIG5ldDog
+ZmVjOiByZW1vdmUgdXNlbGVzcyBmZWNfZW5ldF9yZXNldF9za2IoKQ0KPiANCj4gT24gVGh1LCBN
+YXkgMTgsIDIwMjMgYXQgMDk6MDA6MTZQTSArMDgwMCwgd2VpLmZhbmdAbnhwLmNvbSB3cm90ZToN
+Cj4gPiBGcm9tOiBXZWkgRmFuZyA8d2VpLmZhbmdAbnhwLmNvbT4NCj4gPg0KPiA+IFRoaXMgcGF0
+Y2ggaXMgYSBjbGVhbnVwIGZvciBmZWMgZHJpdmVyLiBUaGUgZmVjX2VuZXRfcmVzZXRfc2tiKCkg
+aXMNCj4gPiB1c2VkIHRvIGZyZWUgc2tiIGJ1ZmZlcnMgZm9yIHR4IHF1ZXVlcyBhbmQgaXMgb25s
+eSBpbnZva2VkIGluDQo+ID4gZmVjX3Jlc3RhcnQoKS4gSG93ZXZlciwgZmVjX2VuZXRfYmRfaW5p
+dCgpIGFsc28gcmVzZXRzIHNrYiBidWZmZXJzIGFuZA0KPiA+IGlzIGludm9rZWQgaW4gZmVjX3Jl
+c3RhcnQoKSB0b28uIFNvIGZlY19lbmV0X3Jlc2V0X3NrYigpIGlzIHJlZHVuZGFudA0KPiA+IGFu
+ZCB1c2VsZXNzLg0KPiA+DQo+ID4gRml4ZXM6IDU5ZDBmNzQ2NTY0NCAoIm5ldDogZmVjOiBpbml0
+IG11bHRpIHF1ZXVlIGRhdGUgc3RydWN0dXJlIikNCj4gPiBTaWduZWQtb2ZmLWJ5OiBXZWkgRmFu
+ZyA8d2VpLmZhbmdAbnhwLmNvbT4NCj4gDQo+IEhpIFdlaSBGYW5nLA0KPiANCj4gdGhpcyBjaGFu
+Z2UgbG9va3MgZmluZSB0byBtZS4NCj4gQnV0IGl0IGZlZWxzIG11Y2ggbW9yZSBsaWtlIGEgY2xl
+YW51cCB0aGFuIGEgZml4IHRvIG1lOg0KPiB3aGF0IHVzZXItdmlzaWJsZSBwcm9ibGVtIGlzIGl0
+IGZpeGluZz8NCj4gDQpUaGVyZSBpcyBubyB1c2VyLXZpc2libGUgcHJvYmxlbSwganVzdCBhIGNs
+ZWFudXAuDQoNCj4gSWYgc28sIEkgc3VnZ2VzdCB0YXJnZXRpbmcgYWdhaW5zdCBuZXQtbmV4dCB3
+aXRob3V0IHRoZSBmaXhlcyB0YWcuDQpPa2F5LCBJJ2xsIGNoYW5nZSB0aGUgdHJlZSB0YWcuIFRo
+YW5rIHlvdSENCg==
 
