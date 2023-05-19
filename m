@@ -1,183 +1,108 @@
-Return-Path: <netdev+bounces-3867-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3868-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 19CCA7094BF
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 12:27:40 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9E8F57094D6
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 12:33:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3CB4E281BC3
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 10:27:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 61A8E281C79
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 10:33:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C9E46FD9;
-	Fri, 19 May 2023 10:27:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0E123D3AA;
+	Fri, 19 May 2023 10:33:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D9726AA4
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 10:27:35 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08D5E6B
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 03:27:30 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1pzxKa-0007jH-Qj; Fri, 19 May 2023 12:27:28 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1pzxKY-0004SC-Tz; Fri, 19 May 2023 12:27:26 +0200
-Date: Fri, 19 May 2023 12:27:26 +0200
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: netdev <netdev@vger.kernel.org>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <rmk+kernel@armlinux.org.uk>,
-	Oleksij Rempel <linux@rempel-privat.de>
-Subject: Re: [RFC/RFTv3 12/24] net: FEC: Fixup EEE
-Message-ID: <20230519102726.GC8586@pengutronix.de>
-References: <20230331005518.2134652-1-andrew@lunn.ch>
- <20230331005518.2134652-13-andrew@lunn.ch>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5CC820EA
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 10:33:19 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9178D10C9
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 03:33:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+	:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+	Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=JxW94pbbU6VDdXwBNAAXOi1JKDDu5tmTHWP0UkOB968=; b=THtDYUPnwJSp3MxntABtObX0Bg
+	fua9tKLULbDOsKc61nAGCboBZ7hQFe+A0X6r9Y9pNeAtUCNfGHE+FwKfvzeBi4FVc+ueCtLYycfO3
+	oyKqZu258+/s9koo7RiHlmNHkOK7dsOGHAWbJVmGJJzTrPo0Eq3UV3Sk8iF0sug5fW9EZE76yNSPT
+	zYE2pOvVgjziOKIZ9pDbCXN4ZX95fX2nAL1YhtOMJRlMIiSNdcGEyEe9FLOXt0aoGKYrnq58spibO
+	Grlf+uOpWufObOUgPjeyffCni5mMTnHq2l/qjLmuLJwZm8PypoIpITIkXBMxPmwdMjuUL6octQNmL
+	tfc6QCVA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:48948 helo=rmk-PC.armlinux.org.uk)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <rmk@armlinux.org.uk>)
+	id 1pzxQ1-0002dz-GW; Fri, 19 May 2023 11:33:05 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+	id 1pzxQ0-0062IU-Ql; Fri, 19 May 2023 11:33:04 +0100
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To: Joyce Ooi <joyce.ooi@intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	netdev@vger.kernel.org
+Subject: [PATCH net-next] net: altera: tse: remove mac_an_restart() function
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230331005518.2134652-13-andrew@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL: http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1pzxQ0-0062IU-Ql@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date: Fri, 19 May 2023 11:33:04 +0100
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Mar 31, 2023 at 02:55:06AM +0200, Andrew Lunn wrote:
-> The enabling/disabling of EEE in the MAC should happen as a result of
-> auto negotiation. So move the enable/disable into
-> fec_enet_adjust_link() which gets called by phylib when there is a
-> change in link status.
-> 
-> fec_enet_set_eee() now just stores away the LTI timer value.
-> Everything else is passed to phylib, so it can correctly setup the
-> PHY.
-> 
-> fec_enet_get_eee() relies on phylib doing most of the work,
-> the MAC driver just adds the LTI timer value.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+The mac_an_restart() method will only be called if the driver sets
+legacy_pre_march2020, which the altera tse driver does not do.
+Therefore, providing a stub is unnecessary.
 
-Tested on imx8mp based debix mode a board.
+Fixes: fef2998203e1 ("net: altera: tse: convert to phylink")
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/ethernet/altera/altera_tse_main.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
-
-> ---
-> v2: Only call fec_enet_eee_mode_set for those that support EEE
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 28 ++++-------------------
->  1 file changed, 4 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index 462755f5d33e..fda1f9ff32b9 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -1930,18 +1930,13 @@ static int fec_enet_us_to_tx_cycle(struct net_device *ndev, int us)
->  	return us * (fep->clk_ref_rate / 1000) / 1000;
->  }
->  
-> -static int fec_enet_eee_mode_set(struct net_device *ndev, bool enable)
-> +static int fec_enet_eee_mode_set(struct net_device *ndev, bool eee_active)
->  {
->  	struct fec_enet_private *fep = netdev_priv(ndev);
->  	struct ethtool_eee *p = &fep->eee;
->  	unsigned int sleep_cycle, wake_cycle;
-> -	int ret = 0;
-> -
-> -	if (enable) {
-> -		ret = phy_init_eee(ndev->phydev, false);
-> -		if (ret)
-> -			return ret;
->  
-> +	if (eee_active) {
->  		sleep_cycle = fec_enet_us_to_tx_cycle(ndev, p->tx_lpi_timer);
->  		wake_cycle = sleep_cycle;
->  	} else {
-> @@ -1949,10 +1944,6 @@ static int fec_enet_eee_mode_set(struct net_device *ndev, bool enable)
->  		wake_cycle = 0;
->  	}
->  
-> -	p->tx_lpi_enabled = enable;
-> -	p->eee_enabled = enable;
-> -	p->eee_active = enable;
-> -
->  	writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
->  	writel(wake_cycle, fep->hwp + FEC_LPI_WAKE);
->  
-> @@ -1997,6 +1988,8 @@ static void fec_enet_adjust_link(struct net_device *ndev)
->  			netif_tx_unlock_bh(ndev);
->  			napi_enable(&fep->napi);
->  		}
-> +		if (fep->quirks & FEC_QUIRK_HAS_EEE)
-> +			fec_enet_eee_mode_set(ndev, phy_dev->eee_active);
->  	} else {
->  		if (fep->link) {
->  			napi_disable(&fep->napi);
-> @@ -3109,10 +3102,7 @@ fec_enet_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
->  	if (!netif_running(ndev))
->  		return -ENETDOWN;
->  
-> -	edata->eee_enabled = p->eee_enabled;
-> -	edata->eee_active = p->eee_active;
->  	edata->tx_lpi_timer = p->tx_lpi_timer;
-> -	edata->tx_lpi_enabled = p->tx_lpi_enabled;
->  
->  	return phy_ethtool_get_eee(ndev->phydev, edata);
->  }
-> @@ -3122,7 +3112,6 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
->  {
->  	struct fec_enet_private *fep = netdev_priv(ndev);
->  	struct ethtool_eee *p = &fep->eee;
-> -	int ret = 0;
->  
->  	if (!(fep->quirks & FEC_QUIRK_HAS_EEE))
->  		return -EOPNOTSUPP;
-> @@ -3132,15 +3121,6 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
->  
->  	p->tx_lpi_timer = edata->tx_lpi_timer;
->  
-> -	if (!edata->eee_enabled || !edata->tx_lpi_enabled ||
-> -	    !edata->tx_lpi_timer)
-> -		ret = fec_enet_eee_mode_set(ndev, false);
-> -	else
-> -		ret = fec_enet_eee_mode_set(ndev, true);
-> -
-> -	if (ret)
-> -		return ret;
-> -
->  	return phy_ethtool_set_eee(ndev->phydev, edata);
->  }
->  
-> -- 
-> 2.40.0
-> 
-> 
-
+diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+index 66e3af73ec41..190ff1bcd94e 100644
+--- a/drivers/net/ethernet/altera/altera_tse_main.c
++++ b/drivers/net/ethernet/altera/altera_tse_main.c
+@@ -1036,10 +1036,6 @@ static struct net_device_ops altera_tse_netdev_ops = {
+ 	.ndo_validate_addr	= eth_validate_addr,
+ };
+ 
+-static void alt_tse_mac_an_restart(struct phylink_config *config)
+-{
+-}
+-
+ static void alt_tse_mac_config(struct phylink_config *config, unsigned int mode,
+ 			       const struct phylink_link_state *state)
+ {
+@@ -1096,7 +1092,6 @@ static struct phylink_pcs *alt_tse_select_pcs(struct phylink_config *config,
+ }
+ 
+ static const struct phylink_mac_ops alt_tse_phylink_ops = {
+-	.mac_an_restart = alt_tse_mac_an_restart,
+ 	.mac_config = alt_tse_mac_config,
+ 	.mac_link_down = alt_tse_mac_link_down,
+ 	.mac_link_up = alt_tse_mac_link_up,
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.30.2
+
 
