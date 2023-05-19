@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-3795-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3796-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A8FCD708E1F
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 05:10:33 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1F3A6708E26
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 05:10:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 549D028186C
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 03:10:32 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 742A5281B35
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 03:10:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 844AC397;
-	Fri, 19 May 2023 03:10:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 875C4395;
+	Fri, 19 May 2023 03:10:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3303B395
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 03:10:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C207AC433D2;
-	Fri, 19 May 2023 03:10:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33DEA643;
+	Fri, 19 May 2023 03:10:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E96D9C433A1;
+	Fri, 19 May 2023 03:10:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684465828;
-	bh=Ql1+SfKvSzalhsD2bM0LltkvnRzf+wo7iv/Lg6dahns=;
+	s=k20201202; t=1684465832;
+	bh=W6R639fXJKKuVSruVJ3DRcbZrpVwnwcW4TEC6fZ4LMg=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=J1veWu/S5UTWy+HD1QIHFL2CyDr7Fdw60lI29KMmp0h6UY06WPEfYADR+bl/7z30M
-	 lqDzXBsvzYGeREHq/HNe3EfZIeQdbXDXKKrERgbOygL9RKr+Xlg+ALBkMtl3NPLzs4
-	 /CH4ZQoNgwh8A13gcGbNMV3mGLHPZhmQOVKhb23KTrSU9Dkcg1mWUx+gUKrZQ+6gLN
-	 D20EupfHMKywLhNxhcf//Wi8JtU+nDniTut35Dv6kYAsykaCmDEq/YU5j1BXIRxYS+
-	 B6TLTCf0VwVxg9rrXWZPe3MyawHIIJ1q5D72z01E4EsR3QIvBsNWU+lFut8Uzw8zpg
-	 +ipoDouKdkOrA==
+	b=SbqJMvIWzRrhdXhue6Y6g06G1y6wOn5QQRDNPLWCjl/aZRPMCWfWXvxcAgrfR9E98
+	 aLyTke7r0DMTOIDfLGp7qWRiuziofnyn3APShsGxdcFuG5jp5LQuedkbGtUIuecQVc
+	 oEmAnKi+u81+NBNlIVCH301zpesa1rh2Bm8eYrOH6YPVhHMwf0Xf2Q9+lF6iEas+vf
+	 mWjNwpGUgcN2nuD3kV+Lk3U/FZTC/JxUJyZ7xyvAbX0sc+gvyBHSMrzpiuZ1B5uovL
+	 4lEGyBW18j8888vSuGdWwtK+6XiZm3ZqyIP6Ldf/Bt7O9SBGn16uiVLOv4vZ1hBvWg
+	 1vfzzXbJ9UDWw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8B27BC3959E;
-	Fri, 19 May 2023 03:10:28 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BD7B9E54223;
+	Fri, 19 May 2023 03:10:31 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -41,44 +41,44 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: cdc_ncm: Deal with too low values of dwNtbOutMaxSize
+Subject: Re: [PATCH net-next 0/5] mptcp: Refactor inet_accept() and MIB updates
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168446582856.25467.9181622347327037026.git-patchwork-notify@kernel.org>
-Date: Fri, 19 May 2023 03:10:28 +0000
-References: <20230517133808.1873695-2-tudor.ambarus@linaro.org>
-In-Reply-To: <20230517133808.1873695-2-tudor.ambarus@linaro.org>
-To: Tudor Ambarus <tudor.ambarus@linaro.org>
-Cc: bjorn@mork.no, joneslee@google.com, oliver@neukum.org,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- linux-usb@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org,
- syzbot+9f575a1f15fc0c01ed69@syzkaller.appspotmail.com
+ <168446583177.25467.315675860296939022.git-patchwork-notify@kernel.org>
+Date: Fri, 19 May 2023 03:10:31 +0000
+References: <20230516-send-net-next-20220516-v1-0-e91822b7b6e0@kernel.org>
+In-Reply-To: <20230516-send-net-next-20220516-v1-0-e91822b7b6e0@kernel.org>
+To: Mat Martineau <martineau@kernel.org>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, matthieu.baerts@tessares.net, netdev@vger.kernel.org,
+ mptcp@lists.linux.dev
 
 Hello:
 
-This patch was applied to netdev/net.git (main)
+This series was applied to netdev/net-next.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 17 May 2023 13:38:08 +0000 you wrote:
-> Currently in cdc_ncm_check_tx_max(), if dwNtbOutMaxSize is lower than
-> the calculated "min" value, but greater than zero, the logic sets
-> tx_max to dwNtbOutMaxSize. This is then used to allocate a new SKB in
-> cdc_ncm_fill_tx_frame() where all the data is handled.
+On Wed, 17 May 2023 12:16:13 -0700 you wrote:
+> Patches 1 and 2 refactor inet_accept() to provide a new __inet_accept()
+> that's usable with locked sockets, and then make use of that helper to
+> simplify mptcp_stream_accept().
 > 
-> For small values of dwNtbOutMaxSize the memory allocated during
-> alloc_skb(dwNtbOutMaxSize, GFP_ATOMIC) will have the same size, due to
-> how size is aligned at alloc time:
-> 	size = SKB_DATA_ALIGN(size);
->         size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> Thus we hit the same bug that we tried to squash with
-> commit 2be6d4d16a084 ("net: cdc_ncm: Allow for dwNtbOutMaxSize to be unset or zero")
+> Patches 3 and 4 add some new MIBS related to MPTCP address advertisement
+> and update related selftest scripts.
 > 
 > [...]
 
 Here is the summary with links:
-  - net: cdc_ncm: Deal with too low values of dwNtbOutMaxSize
-    https://git.kernel.org/netdev/net/c/7e01c7f7046e
+  - [net-next,1/5] inet: factor out locked section of inet_accept() in a new helper
+    https://git.kernel.org/netdev/net-next/c/711bdd5141d8
+  - [net-next,2/5] mptcp: refactor mptcp_stream_accept()
+    https://git.kernel.org/netdev/net-next/c/e76c8ef5cc5b
+  - [net-next,3/5] mptcp: introduces more address related mibs
+    https://git.kernel.org/netdev/net-next/c/45b1a1227a7a
+  - [net-next,4/5] selftests: mptcp: add explicit check for new mibs
+    https://git.kernel.org/netdev/net-next/c/0639fa230a21
+  - [net-next,5/5] selftests: mptcp: centralize stats dumping
+    https://git.kernel.org/netdev/net-next/c/985de45923e2
 
 You are awesome, thank you!
 -- 
