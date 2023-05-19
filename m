@@ -1,159 +1,189 @@
-Return-Path: <netdev+bounces-3798-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3799-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 04756708E75
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 05:54:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D552C708E8A
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 06:07:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EB0331C211D3
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 03:54:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D5E99281B0F
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 04:07:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 04FA9635;
-	Fri, 19 May 2023 03:54:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B438639;
+	Fri, 19 May 2023 04:07:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8480633
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 03:54:11 +0000 (UTC)
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0C510DD
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 20:54:08 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-	by mailout.nyi.internal (Postfix) with ESMTP id 4E90E5C01AE;
-	Thu, 18 May 2023 23:54:07 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Thu, 18 May 2023 23:54:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm1; t=1684468447; x=1684554847; bh=um
-	SjgA4XUoB88WswBJFEy3EA9InqSo7y9pwlJc8Cz04=; b=L14lKNKLrRTbzWwmJ/
-	iYWKHyQ4VvJA0Cn5U8mcLPbygcr0ASqvUhzc2B/YAbMcJKx5Tw3P9f2b8QWZBdED
-	48mJTVSJqpxd5SS32sdbaQcGUQtnPTVYNmj5V8cS6Fu20JbC1xmFrEFjlpYrgz3Z
-	45o/O4CNI9lAcwUDPCYKpxx+qRY1qwPfxXnpl3J0l+3d+0vq3Aq4vEdsFlRACLGZ
-	WhrT3XIctAS/5g1mGWNgOmQVNGEzeTO8NqEq5610Kj1uqrUBPAgHCmeZ0nGsY363
-	62p4MaCc80y3C8SRwXmLJYZzVC7oLBgFWv1EK3OBMcDCF2h/CDETbLUYrcrNKk4X
-	Jg3w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1684468447; x=1684554847; bh=umSjgA4XUoB88
-	WswBJFEy3EA9InqSo7y9pwlJc8Cz04=; b=XzCqp2RKRojbMBhZYnkJbKkMhAWDJ
-	wFubKH8+F9dTpc1/AmU1Ega4VQiwdg77yTBC+C3fA9wtovPTpJrvNLQmDJtrNgRF
-	nRVljaOZ4hPEtjDfWAeFz0hfrwH8vxmYmDfD08/jNtBH8UfbFroUUSmoCyl1Cfc/
-	D0wqgu1+80Vz7F/S7bY4z2R2LZn9Xi1IMr1q6yLK1nuEReleVxn4wMqP3DhXGd7U
-	oK7KvPAfVDgLDc84TnR4zBKf9KfSmygLceEv6iKnZK9b/hjfqupSEl1kGU/zYIJk
-	sp1IlrrihgiOC/6rukkf+TvfI1TWNyoZjmS5pNejPj6Sm8gwc4eZyjJpw==
-X-ME-Sender: <xms:3_JmZOloJDGThTamR2s-k41EalnZBYpMV4qEVBOw6HVnTScxufURFQ>
-    <xme:3_JmZF0dhK9WsSO-fiGDA0YfNboEvbxZWfdGAWyQVcPXGdE6_8MSUvYN0jkHxUo28
-    blpu4X_yeHEbBlWFe0>
-X-ME-Received: <xmr:3_JmZMpmvhw0I2pURc0SY6VvknfscNWGE8cd3JV8Z2XXohSciAlC7VEO95aEaJDGmC86EXnVMrs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeeigedgjeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdluddtmdenucfjughrpehffgfhvfevufffjgfkgggtsehttdertddt
-    redtnecuhfhrohhmpegglhgrughimhhirhcupfhikhhishhhkhhinhcuoehvlhgrughimh
-    hirhesnhhikhhishhhkhhinhdrphifqeenucggtffrrghtthgvrhhnpeeigfdvgeeiieel
-    udehueeuueejieeiheegudevhffggeeguddvveduueehueefgeenucevlhhushhtvghruf
-    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehvlhgrughimhhirhesnhhikhhi
-    shhhkhhinhdrphif
-X-ME-Proxy: <xmx:3_JmZCmshoCau9NK6Q3I1GRFF1TM71WB6CQNVV79pCZ0Ou_y1hIyAw>
-    <xmx:3_JmZM3nEzgmB280f4gsJooZQKkb5I9Eba-qfSKIi2hAKn71-8bQ4g>
-    <xmx:3_JmZJt8nrrUphZiBOYvKssDI683E-aT7DI65yEomscmRTFZuaJc7A>
-    <xmx:3_JmZBvsCHSotkR0gldBvJU9LOU_KblOD7FJ6NYIB2D857CC4eh8GQ>
-Feedback-ID: id3b446c5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 18 May 2023 23:54:03 -0400 (EDT)
-References: <20230518134601.17873-1-vladimir@nikishkin.pw>
- <20230518084908.7c0e14d4@hermes.local>
-User-agent: mu4e 1.8.14; emacs 30.0.50
-From: Vladimir Nikishkin <vladimir@nikishkin.pw>
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
- gnault@redhat.com, razor@blackwall.org, idosch@nvidia.com,
- liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com
-Subject: Re: [PATCH iproute2-next v4] ip-link: add support for nolocalbypass
- in vxlan
-Date: Fri, 19 May 2023 11:50:03 +0800
-In-reply-to: <20230518084908.7c0e14d4@hermes.local>
-Message-ID: <87cz2xt1rb.fsf@laptop.lockywolf.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10889633;
+	Fri, 19 May 2023 04:07:04 +0000 (UTC)
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB4E10CF;
+	Thu, 18 May 2023 21:07:03 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-64d2a613ec4so694280b3a.1;
+        Thu, 18 May 2023 21:07:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684469223; x=1687061223;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Re4+GROEMOOBGWemxWaQLdyEbL6oJm1334MkHSEPjG4=;
+        b=MWkk/VzNUYO2HDUm4PrEL0309HwmB484A0xi/efpDEAYE1II7DYr9j/pPz3+irqQTu
+         8oR0ZXVndEbrUDeI2FYzQbyMx7hft3+bEqQFve5bDo2fgAmy8qFcVbd/ecwb/q8MYhjJ
+         AmCAxeQACSmkHSIx8FdmLP5/6m5FlVriTO/NHmNCXwE7VeCcO9bEu7v/nCqitV7CM4Vp
+         6m4i9gm4jVG2mXi47gA5M2a6ekWJppzAiTgEeEanjj0FI9uQWcKmhUXKlfisvLkmB+sl
+         0kiBqgLInAMNhHBUcgRCAlA0gG4NC74eOsc/A0Dm2Nj2rELcrBPpig9THUR/y9n4KQV6
+         sccQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684469223; x=1687061223;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Re4+GROEMOOBGWemxWaQLdyEbL6oJm1334MkHSEPjG4=;
+        b=MlHAz16YuGWFFCDcnLTKTZYzeh/Tm0CmQl/6/yjm727JBVGaSgJkUzvUecv0lCCOyg
+         VWtvUnnLC7sorTPQpO+riecYyl7htFB4G5DarnxIHQHtIw0qnixwxK4JUIhgCO+Sldrp
+         /VGFMPYPL9OPMO5eWmcxuPd1uCHYmFYJlzehc3L01WJr9AO9/+QSIflm4ka6kHBf7eoS
+         OnbVV4J0enhfHiuRCVfBXI2rqI2j+UxDldhe+vRr0oeUUUKCpVqeww4FFKROonhIMTK7
+         fa5LH8UQTrQF3HsgrDDWsIuM75vE2nFdFv2QOCNsIux4SlMKJSyXZi0Riq820YLHDB0u
+         1WHA==
+X-Gm-Message-State: AC+VfDzbcN1sbhZ9XpYqYAY+p2Al7MbFoDjux5k1MM1FBEJPx2OpyR1w
+	8iP9VT257+iwB3LIl3H7KDc=
+X-Google-Smtp-Source: ACHHUZ5qEbtFVUyuMhwQ/jO/+5oz7ZEY/rWcWGi0CPiZvcZFV4gOOBslZXdJGGRZzmxeD3f9BjJ1zA==
+X-Received: by 2002:a05:6a20:a591:b0:104:98ea:48d5 with SMTP id bc17-20020a056a20a59100b0010498ea48d5mr762179pzb.36.1684469222419;
+        Thu, 18 May 2023 21:07:02 -0700 (PDT)
+Received: from john.lan ([2605:59c8:148:ba10:706:628a:e6ce:c8a9])
+        by smtp.gmail.com with ESMTPSA id x11-20020aa784cb000000b00625d84a0194sm434833pfn.107.2023.05.18.21.07.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 May 2023 21:07:01 -0700 (PDT)
+From: John Fastabend <john.fastabend@gmail.com>
+To: jakub@cloudflare.com,
+	daniel@iogearbox.net
+Cc: john.fastabend@gmail.com,
+	bpf@vger.kernel.org,
+	netdev@vger.kernel.org,
+	edumazet@google.com,
+	ast@kernel.org,
+	andrii@kernel.org,
+	will@isovalent.com
+Subject: [PATCH bpf v9 00/14] bpf sockmap fixes
+Date: Thu, 18 May 2023 21:06:45 -0700
+Message-Id: <20230519040659.670644-1-john.fastabend@gmail.com>
+X-Mailer: git-send-email 2.33.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+v9, rebased which resulted in two additions needed. Patch 14
+to resolve an introduced verifier error. I'll try to dig into
+exactly what happened but the fix was easy to get test_sockmap
+running again. And then in vsock needed similar fix to the
+the protocols so I folded that into the first patch.
 
-Stephen Hemminger <stephen@networkplumber.org> writes:
+Fixes for sockmap running against NGINX TCP tests and also on an
+underprovisioned VM so that we hit error (ENOMEM) cases regularly.
 
-> On Thu, 18 May 2023 21:46:01 +0800
-> Vladimir Nikishkin <vladimir@nikishkin.pw> wrote:
->
->> +	if (tb[IFLA_VXLAN_LOCALBYPASS]) {
->> +		__u8 localbypass = rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS]);
->> +
->> +		print_bool(PRINT_JSON, "localbypass", NULL, localbypass);
->> +		if (localbypass) {
->> +			print_string(PRINT_FP, NULL, "localbypass ", NULL);
->> +		} else {
->> +			print_string(PRINT_FP, NULL, "nolocalbypass ", NULL);
->> +		}
->> +	}
->
-> You don't have to print anything if nolocalbypass.  Use presence as
-> a boolean in JSON.
->
-> I.e.
-> 	if (tb[IFLA_VXLAN_LOCALBYPASS] &&
-> 	   rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS])) {
-> 		print_bool(PRINT_ANY, "localbypass", "localbypass", true);
-> 	}
->
-> That is what other options do.
-> Follows the best practices for changes to existing programs: your
-> new feature should look like all the others.
+The first 3 patches fix cases related to ENOMEM that were either
+causing splats or data hangs.
 
-Sorry, I do not understand. I intended to do exactly that, and I copied
-and adjusted for the option name the code currently used for the
-"udpcsum" option. Which is exactly
+Then 4-7 resolved cases found when running NGINX with its sockets
+assigned to sockmap. These mostly have to do with handling fin/shutdown
+incorrectly and ensuring epoll_wait works as expected.
 
-		if (is_json_context()) {
-			print_bool(PRINT_ANY, "udp_csum", NULL, udp_csum);
-		} else {
-			if (!udp_csum)
-				fputs("no", f);
-			fputs("udpcsum ", f);
-		}
-I just replaced that option name with [no]localbypass. Fairly
-straightforward, prints noudpcsum or udpcsum. Later Andrea C
+Patches 8 and 9 extract some of the logic used for sockmap_listen tests
+so that we can use it in other tests because it didn't make much
+sense to me to add tests to the sockmap_listen cases when here we
+are testing send/recv *basic* cases.
 
-Then Andrea Claudi suggested that print_bool knows about the json
-context itself, so the outer check is not needed, so I removed that.
-But the "model option" I used (really the simplest one), does have
-output both when set to true, and when set to false. I have neither an
-opinion on this nor an understanding what is better for scripting. But I
-do not understand the suggestion "do like the other options do", when
-seemingly, other options do what I suggest in the first place.
+Finally patches 10, 11 and 12 add the new tests to ensure we handle
+ioctl(FIONREAD) and shutdown correctly.
+
+To test the series I ran the NGINX compliance tests and the sockmap
+selftests. For now our compliance test just runs with SK_PASS.
+
+There are some more things to be done here, but these 11 patches
+stand on their own in my opionion and fix issues we are having in
+CI now. For bpf-next we can fixup/improve selftests to use the
+ASSERT_* in sockmap_helpers, streamline some of the testing, and
+add more tests. We also still are debugging a few additional flakes
+patches coming soon.
+
+v2: use skb_queue_empty instead of *_empty_lockless (Eric)
+    oops incorrectly updated copied_seq on DROP case (Eric)
+    added test for drop case copied_seq update
+
+v3: Fix up comment to use /**/ formatting and update commit
+    message to capture discussion about previous fix attempt
+    for hanging backlog being imcomplete.
+
+v4: build error sockmap things are behind NET_SKMSG not in
+    BPF_SYSCALL otherwise you can build the .c file but not
+    have correct headers.
+
+v5: typo with mispelled SOCKMAP_HELPERS
+
+v6: fix to build without INET enabled for the other sockmap
+    types e.g. af_unix.
+
+v7: We can not protect backlog queue with a mutex because in
+    some cases we call this with sock lock held. Instead do
+    as Jakub suggested and peek the queue and only pop the
+    skb when its been correctly processed.
+
+v8: Only schedule backlog when still enabled and cleanup test
+    to not create unused sockets.
+
+v9: rebase and fixup test_sockmap verifier error and vsock
+    that was introduced recently.
+
+
+John Fastabend (14):
+  bpf: sockmap, pass skb ownership through read_skb
+  bpf: sockmap, convert schedule_work into delayed_work
+  bpf: sockmap, reschedule is now done through backlog
+  bpf: sockmap, improved check for empty queue
+  bpf: sockmap, handle fin correctly
+  bpf: sockmap, TCP data stall on recv before accept
+  bpf: sockmap, wake up polling after data copy
+  bpf: sockmap, incorrectly handling copied_seq
+  bpf: sockmap, pull socket helpers out of listen test for general use
+  bpf: sockmap, build helper to create connected socket pair
+  bpf: sockmap, test shutdown() correctly exits epoll and recv()=0
+  bpf: sockmap, test FIONREAD returns correct bytes in rx buffer
+  bpf: sockmap, test FIONREAD returns correct bytes in rx buffer with
+    drops
+  bpf: sockmap, test progs verifier error with latest clang
+
+ include/linux/skmsg.h                         |   3 +-
+ include/net/tcp.h                             |  10 +
+ net/core/skmsg.c                              |  81 ++--
+ net/core/sock_map.c                           |   3 +-
+ net/ipv4/tcp.c                                |  11 +-
+ net/ipv4/tcp_bpf.c                            |  79 +++-
+ net/ipv4/udp.c                                |   7 +-
+ net/unix/af_unix.c                            |   7 +-
+ net/vmw_vsock/virtio_transport_common.c       |   5 +-
+ .../selftests/bpf/prog_tests/sockmap_basic.c  | 131 ++++++
+ .../bpf/prog_tests/sockmap_helpers.h          | 385 ++++++++++++++++++
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 365 +----------------
+ .../bpf/progs/test_sockmap_drop_prog.c        |  32 ++
+ .../selftests/bpf/progs/test_sockmap_kern.h   |  12 +-
+ .../bpf/progs/test_sockmap_pass_prog.c        |  32 ++
+ 15 files changed, 726 insertions(+), 437 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/sockmap_helpers.h
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_drop_prog.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
 
 -- 
-Your sincerely,
-Vladimir Nikishkin (MiEr, lockywolf)
-(Laptop)
---
-Fastmail.
+2.33.0
 
 
