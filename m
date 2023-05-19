@@ -1,232 +1,180 @@
-Return-Path: <netdev+bounces-3853-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3852-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 03E84709262
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 11:01:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2BF5070925F
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 11:01:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A95DB281BD4
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 09:01:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B3BA4281C0A
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 09:01:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C9816116;
-	Fri, 19 May 2023 09:01:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0CF2D5698;
+	Fri, 19 May 2023 09:01:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A0316112
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 09:01:23 +0000 (UTC)
-Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C19BA2
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 02:01:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1684486831; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=fYEAZ8Gp1Hp0qDLdLWLNuxJdMcdp4og0k8UeIyLchBtZFdhKbJ2IFXHl8GCpdmGxmRAuHHnW9/+I/lHtiWgTFQ2FVOJ1ISoqVURgqtCqJQDjGavPEAZQGlz8FQ0Mikv8P4wj/1MNMirY4r3BfljiNSHOKNDyhyP/ekmAaQHWEMk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1684486831; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-	bh=cYqPkDu+17M5eEnoLNpjB6yRRqv056A2dzxMSkkvE3Y=; 
-	b=AV3BJEIX7nlq/cVfWkO9vr68q8zwK9yT+0KkgbVNqAhzhIArhZ77aiqDU8maf7BoorZ9fgHqKwImHSi/GL7wmx0db+vgKGEk4ljRAkU2OnQR0fzpkjfkOwLbtNYtZ4RxM1FznhDTwJqY2dRKW8Cmn5ujdQKVYaF0Xx1tXm8RLd4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=arinc9.com;
-	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-	dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1684486831;
-	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=cYqPkDu+17M5eEnoLNpjB6yRRqv056A2dzxMSkkvE3Y=;
-	b=J7EZEfYxGasTNX87JlwBzDGmBOp6Tar7wN2db44shfPpNplGAhpCH8wMKAzLtFqN
-	+jY0PV8UK/sR8/eOtjs0aT1/Pn0YKgtJaA+JMW5GIheQBa6l9bs2mxLFRQJ86iVQA6r
-	S4SJk6bt6QJMRO2lXetIhQwzvsxkizos3DurTdRU=
-Received: from [10.10.10.122] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-	with SMTPS id 1684486830458825.6932578383346; Fri, 19 May 2023 02:00:30 -0700 (PDT)
-Message-ID: <e140cec6-132c-0e3a-d48a-88cd176b9875@arinc9.com>
-Date: Fri, 19 May 2023 12:00:17 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF2783D388
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 09:01:20 +0000 (UTC)
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2103.outbound.protection.outlook.com [40.107.100.103])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E667E56;
+	Fri, 19 May 2023 02:01:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eaq5QfgqRYmgrt3VJke18xJLg8fDQYyT4Z4mB4n3hSNowdSluKaP3xBshWGXLQK4ESrK93Bw9MQSvg4XGLjzcMbsjzCkgtw/LV+LvYFz7mH7J9xPBlDn2JOeOdnmwv6DmxprLxafx6tPUC29fKaOHT5+vH1zW7xf50evEwgRt8FMujOmbwpmzeV9j1fNK7FjBrSbyGn9XreO4FeGEMRMNQOabnmYqNtu5dD8OHsJSJOi/jKhxpevkl3HKuyLhDo+TjSV8zdSaGKThoWAddfitwztIcWELQtWH/tMY92hiuEV0F4cYzydirk29f1lsEqSD2+vLh/RX+9M8V1jnoE+Tw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9cTXMQjxCbsf8OJ4PdCQtrzXacOYRxjN+ow4tfwd9MI=;
+ b=eZ4quRo3fSjSZSGTZ/VJuUEn2HiZGmUGs4Kg0Pox+hwPDM1wYNxvptq9vou4J+e7Il2/yRf5JkD3od8PG5K+wnaKJdSPev5EzJCRxucrb9wydry0ZmHDddGz+xA0jkb1xbI2d6i+gx6z+1yUMK9l1Lzp4N0HeTySkrKZON+ESxXbMb91Ame8Z5Vi7OZU1tJ79KQMD85zNmME8kn576NptyOTo9jergJD0jfz+bGilD0CemteAa/Y9gYplXokML0NWKv5fy4e6Ehcl7rup98Qcp0VPByxSAzBdxVteLNQ8YjRl+fsUnzqKwn37uAP6BQqCiI3mFZqZLN8wDo+CG8kVA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9cTXMQjxCbsf8OJ4PdCQtrzXacOYRxjN+ow4tfwd9MI=;
+ b=vCHT3Ub/kgzMluAv65m+O4K2kn68neWwahXqusrAosw7PtL89ZsrAJbXTDl7M/H7i+ebVpiH6tFWmQPKvBf71RsoA+JkcEAU02kemyJNicxD7uo0PTjSeFYrKjTEjCTkGahwgOQd81Px0IO5DjPkxLoKsXj8hmHx3pJSB8/7LE8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CH0PR13MB5169.namprd13.prod.outlook.com (2603:10b6:610:ea::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.21; Fri, 19 May
+ 2023 09:01:15 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6411.021; Fri, 19 May 2023
+ 09:01:15 +0000
+Date: Fri, 19 May 2023 11:01:07 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>, Andrew Lunn <andrew@lunn.ch>,
+	Eric Dumazet <edumazet@google.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	Woojung Huh <woojung.huh@microchip.com>,
+	Arun Ramadoss <arun.ramadoss@microchip.com>,
+	"Russell King (Oracle)" <linux@armlinux.org.uk>,
+	kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v3 1/2] net: dsa: microchip: ksz8: Make flow
+ control, speed, and duplex on CPU port configurable
+Message-ID: <ZGc603g8Pjp4Umke@corigine.com>
+References: <20230518092913.977705-1-o.rempel@pengutronix.de>
+ <20230518092913.977705-2-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230518092913.977705-2-o.rempel@pengutronix.de>
+X-ClientProxiedBy: AS4P191CA0015.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d5::12) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: Choose a default DSA CPU port
-To: Vladimir Oltean <olteanv@gmail.com>
-Cc: Frank Wunderlich <frank-w@public-files.de>, Felix Fietkau <nbd@nbd.name>,
- netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
- Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
- John Crispin <john@phrozen.org>, Mark Lee <Mark-MC.Lee@mediatek.com>,
- Lorenzo Bianconi <lorenzo@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Landen Chao <Landen.Chao@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
- DENG Qingfang <dqfext@gmail.com>, mithat.guner@xeront.com
-References: <f9fcf74b-7e30-9b51-776b-6a3537236bf6@arinc9.com>
- <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com>
- <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15>
- <20230228115846.4r2wuyhsccmrpdfh@skbuf>
- <91c90cc5-7971-8a95-fe64-b6e5f53a8246@arinc9.com>
- <20230517161028.6xmt4dgxtb4optm6@skbuf>
- <e5f02399-5697-52f8-9388-00fa679bb058@arinc9.com>
- <20230517161657.a6ej5z53qicqe5aj@skbuf>
- <d2236430-0303-b74c-2b35-99bef4ac30a1@arinc9.com>
- <d2236430-0303-b74c-2b35-99bef4ac30a1@arinc9.com>
- <20230518142422.62hm5d4orvy7nroz@skbuf>
-Content-Language: en-US
-From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230518142422.62hm5d4orvy7nroz@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB5169:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3aa84249-89f7-43e6-b71a-08db5847993a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	6+pR6K7mfH3uEtLU3/zamEy0gjIReyQO/sEoObKS7rqxJQeogKVsGSiOqao/JsyZP+88LRvkhuXWakGg+KjduHhF4wEWJyI0r8SlBqJNDQdBsM7rI+fsUdPwfMre3tEV+AgqtZ9AkwBjm/BlrkYbM5iERaemPKW27jFn9XVZi30rjAXlOeMVikmsHjtzOABmI7Iayv56VnvZhgaIu09Bsgu2ccOYPCfuAzdd0wAxE2ffFWmJ3qUN7oPovUOHVdrFsWdG+U/jLrwEOh6MrU7LEwy+Ci/ZY1UmNFv6eJ7wxIK91tkp2StemuoOtdG3ERWea4rMhNMeJHwa8eLq4QfqX7FTC2VA+/8whvExqvsvfRGoBTY9hYPYh2VAThssWLhbSWhlYk0ZhTJ+Ft3q6rDBvg4nTJ38X0UpF0+vKvy/RXkmMQ5xTBxjaeE0SD0QLCAlB5musDHJRCAurKzaJmjMQwkH1xZ7fbMJARZc/WsaC6BdZVItw9e3iJVdFBJXJuo/n+g7bryfxRfbWOjI6x/QMVmF0c4CvifWmAKwiLzvcsj853Orer6GOmxdY7pmual8
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(366004)(39840400004)(396003)(376002)(451199021)(4326008)(6916009)(66946007)(66556008)(66476007)(478600001)(54906003)(316002)(86362001)(36756003)(83380400001)(6512007)(6506007)(2616005)(186003)(41300700001)(5660300002)(8936002)(8676002)(7416002)(44832011)(6486002)(2906002)(6666004)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?bnaslNdFfxDprebzc/Qc7cy6tcT600XZP4Qqm2k8p9m1Hub05wK55/Dlb3Rn?=
+ =?us-ascii?Q?IywLGlHSOrvoJZYasq9S6SrzK/ZZTcc1hUdztte1boY/+jdlF/Ghq8FaJ4+Q?=
+ =?us-ascii?Q?j4JDbBT3AqriqDF/fynCR7PHYXmpdPT5C93brbfQnV7DMxDg8RI61r0OQx+7?=
+ =?us-ascii?Q?DIYfe0hYer/bcWmKZCtIGsA+RNLn57Zsia7EBCyCAtfnJ6s7JaELUrjzYE2b?=
+ =?us-ascii?Q?UsZaRMSo5TQ2dK88whtXq+E8uufCY2iBPxdRRTmAv5OhlOMWu9G6ZmEoRWeQ?=
+ =?us-ascii?Q?M0tBwEYBgK0PEJT3wJPfFiAe9KfVlSPlmmhKwJjA2LVxD0WaEX0JhueJLf7l?=
+ =?us-ascii?Q?cGdyISCYRBDFgOzxVEpoQ+9ZXh6rHIMx54FJKo9HUG0C2/7MYQEevNy4BoAF?=
+ =?us-ascii?Q?8O4UUHbpVVFsss6YYOmk37cA497xbI0MJretKJHfF6V63Hv+eEnnXpXB98Pb?=
+ =?us-ascii?Q?6kfcLFmbM7FxApPvQpcKUxmeFurB0tDHZFBeQ8/u+vmolbJp2oUVx5LVPwHK?=
+ =?us-ascii?Q?bFkx8Shc6Eaw7NLhv7dsOBuhfqWOiTREnXNrO0e12JGl30sQ8UcVxLdoFiEe?=
+ =?us-ascii?Q?jfY0Du0ECeLxviuU4P9PUsle52xtbbJz947J2MWvULkbZr/S0Fg/J0APj+ST?=
+ =?us-ascii?Q?FzVnqGws4Trf4iNLb7roa5q1NVIbk61fayUlIu28Zu63GZYo46gLGhoTYHzf?=
+ =?us-ascii?Q?9Qo0DmrongXG2mxlOdvK+UuJaMdqEgethQ1dTEfZX9L/a+ECUXnvlW/M7WlJ?=
+ =?us-ascii?Q?RktwHpwmN2WtzxomuM+Ef8jW2eKnI7YgHus0bHM61Bq6n6O2XQyQrPBslE0y?=
+ =?us-ascii?Q?y/0a6+nU3IRa+eYZ3xbkD6Y/F5h4MZ0nTGjWLRX1y+DIJ9QQi83QvGu8RZK9?=
+ =?us-ascii?Q?bXaf4DsZIQhFSLQni3j9f6etD+zX/ke3zNjgemIwsauPKwys9QqWqdS8DgsH?=
+ =?us-ascii?Q?8fj5uhGTvn/KomFgGSh5cO9k4v3bwMzMfNEKyyf5SHI26eIBU1r110X/RxXd?=
+ =?us-ascii?Q?qxiyWhVXNS2/J5BdvQbYxg/9j7YfMaVwu84Q+Z7awxQUgR7Bo2Qhhq8JarnZ?=
+ =?us-ascii?Q?Dw9zjSWIeuxaqh+4MpQ4Et88rTNitBfZ4FCOXuDGY4wsl+HWc/5v2GCNhIvm?=
+ =?us-ascii?Q?8OCsI1cQGjCabBx7HYJytSB7MgKyGppkgNl5ihO4O4HoUpamtdwJDuFQvb5v?=
+ =?us-ascii?Q?ju9A8+5me1YsZwaQ6hTmD91/oaJi2uVnqKWz8kcc/bG4LmjiJBdN8I7tjnj2?=
+ =?us-ascii?Q?eICcM0t0jFsWy92kym1R6py9rIw44QDkGgHY8MRS/9Q/xewUa3TXPSVnrb1w?=
+ =?us-ascii?Q?gd4NOurfJHPMH9DdIEwQx6BjvqSckWgfADgVS2me/eBMk5r1efHdeIZ91ENY?=
+ =?us-ascii?Q?2a5gm4ma1LxaKyWHMRknPVa3kqcf2DrUZYsPBauOL9tyq2PY6I83+ts2vSqC?=
+ =?us-ascii?Q?O2p9kVB9/R0Juqe0VPgySStZsGJCqiYniQGhCkNsKURWZpbA8OqKCavocjB5?=
+ =?us-ascii?Q?zvKRsRzoZkjeeOeKGjSKVIHCKXagLfesr2Fxmz/M4Kv97pC09jvTreuRUGKg?=
+ =?us-ascii?Q?/fmpJNADWJFr3vnSo1H3E2Ut6KwV08byT1jrlS4GPlTzOvZ7Zpl4x7u/VH+a?=
+ =?us-ascii?Q?H+BKVr9R+61PY9zVWv1TuhZfDhsyJpbE7o/vfEdjxNKNmB9RAUMbQAaHbEJb?=
+ =?us-ascii?Q?30rTcg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3aa84249-89f7-43e6-b71a-08db5847993a
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 09:01:15.1876
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IFbRGvRcZbsMMeWN4F0vm5t0mEkCflhH7zkz90TZemPNLKxd4K8KAC4/1EeYpJ/aDIN+JUuyOb6RudvY2S4Kw/7juJJ8wtvDowYQe4co40U=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB5169
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 18.05.2023 17:24, Vladimir Oltean wrote:
-> On Thu, May 18, 2023 at 01:36:42PM +0300, Arınç ÜNAL wrote:
->> The frames won't necessarily be trapped to the CPU port the user port is
->> connected to. This operation is only there to make sure the trapped frames
->> always reach the CPU.
+On Thu, May 18, 2023 at 11:29:12AM +0200, Oleksij Rempel wrote:
+> Allow flow control, speed, and duplex settings on the CPU port to be
+> configurable. Previously, the speed and duplex relied on default switch
+> values, which limited flexibility. Additionally, flow control was
+> hardcoded and only functional in duplex mode. This update enhances the
+> configurability of these parameters.
 > 
-> That's kind of understated and I don't regard that as that big of a deal.
-> Since control packets cannot be guaranteed to be processed by the
-> conduit interface affine to the user port, I would go one step further
-> and say: don't even attempt to keep an affinity, just use for that purpose
-> the numerically first conduit interface that is up.
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Makes sense. Good thing the MT7531 switch is capable of having the control
-packets processed by the DSA conduit interface affine to the user port so
-it's only the MT7530 switch that we need to implement "don't even attempt
-to keep an affinity, just use the numerically first conduit interface that
-is up" for.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-> 
->> I don't (know how to) check for other conduits being up when changing the
->> trap port. So if a conduit is set down which results in both conduits being
->> down, the trap port will still be changed to the other port which is
->> unnecessary but it doesn't break anything.
->>
->> Looking forward to your comments.
->>
->> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
->> index b5c8fdd381e5..55c11633f96f 100644
->> --- a/drivers/net/dsa/mt7530.c
->> +++ b/drivers/net/dsa/mt7530.c
->> @@ -961,11 +961,6 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
->>   	mt7530_set(priv, MT753X_MFC, MT753X_BC_FFP(BIT(port)) |
->>   		   MT753X_UNM_FFP(BIT(port)) | MT753X_UNU_FFP(BIT(port)));
->> -	/* Set CPU port number */
->> -	if (priv->id == ID_MT7621)
->> -		mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_MASK, MT7530_CPU_EN |
->> -			   MT7530_CPU_PORT(port));
->> -
->>   	/* Add the CPU port to the CPU port bitmap for MT7531 and switch on
->>   	 * MT7988 SoC. Any frames set for trapping to CPU port will be trapped
->>   	 * to the CPU port the user port is connected to.
->> @@ -2258,6 +2253,10 @@ mt7530_setup(struct dsa_switch *ds)
->>   			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
->>   	}
->> +	/* Trap BPDUs to the CPU port */
->> +	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
->> +		   MT753X_BPDU_CPU_ONLY);
->> +
-> 
-> This part will need its own patch + explanation
+...
 
-Will split.
+> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+> index f56fca1b1a22..9cfe343d2214 100644
+> --- a/drivers/net/dsa/microchip/ksz8795.c
+> +++ b/drivers/net/dsa/microchip/ksz8795.c
+> @@ -1371,6 +1371,55 @@ void ksz8_config_cpu_port(struct dsa_switch *ds)
+>  	}
+>  }
+>  
+> +/**
+> + * ksz8_upstream_link_up - Configures the CPU/upstream port of the switch.
+> + * @dev: The KSZ device instance.
+> + * @port: The port number to configure.
+> + * @speed: The desired link speed.
+> + * @duplex: The desired duplex mode.
+> + * @tx_pause: If true, enables transmit pause.
+> + * @rx_pause: If true, enables receive pause.
+> + *
+> + * Description:
+> + * The function configures flow control and speed settings for the CPU/upstream
+> + * port of the switch based on the desired settings, current duplex mode, and
+> + * speed.
+> + */
+> +static void ksz8_upstream_link_up(struct ksz_device *dev, int port, int speed,
++				 int duplex, bool tx_pause, bool rx_pause)
 
-> .
->>   	/* Setup VLAN ID 0 for VLAN-unaware bridges */
->>   	ret = mt7530_setup_vlan0(priv);
->>   	if (ret)
->> @@ -2886,6 +2885,50 @@ static const struct phylink_pcs_ops mt7530_pcs_ops = {
->>   	.pcs_an_restart = mt7530_pcs_an_restart,
->>   };
->> +static void
->> +mt753x_master_state_change(struct dsa_switch *ds,
->> +			   const struct net_device *master,
->> +			   bool operational)
->> +{
->> +	struct mt7530_priv *priv = ds->priv;
->> +	struct dsa_port *cpu_dp = master->dsa_ptr;
->> +	unsigned int trap_port;
->> +
->> +	/* Set the CPU port to trap frames to for MT7530. There can be only one
->> +	 * CPU port due to MT7530_CPU_PORT having only 3 bits. Any frames set
->> +	 * for trapping to CPU port will be trapped to the CPU port connected to
->> +	 * the most recently set up DSA conduit. If the most recently set up DSA
->> +	 * conduit is set down, frames will be trapped to the CPU port connected
->> +	 * to the other DSA conduit.
->> +	 */
->> +	if (priv->id == ID_MT7530 || priv->id == ID_MT7621) {
-> 
-> Just return early which saves one level of indentation.
-> 
-> 	if (priv->id != ID_MT7530 && priv->id != ID_MT7621)
-> 		return;
+nit: there seems to be an off-by-one error in the indentation of the line
+     above.
 
-Will do.
-
-> 
->> +		trap_port = (mt7530_read(priv, MT753X_MFC) & MT7530_CPU_PORT_MASK) >> 4;
->> +		dev_info(priv->dev, "trap_port is %d\n", trap_port);
->> +		if (operational) {
->> +			dev_info(priv->dev, "the conduit for cpu port %d is up\n", cpu_dp->index);
->> +
->> +			/* This check will be unnecessary if we find a way to
->> +			 * not change the trap port to the other port when a
->> +			 * conduit is set down which results in both conduits
->> +			 * being down.
->> +			 */
->> +			if (!(cpu_dp->index == trap_port)) {
->> +				dev_info(priv->dev, "trap to cpu port %d\n", cpu_dp->index);
->> +				mt7530_set(priv, MT753X_MFC, MT7530_CPU_EN);
->> +				mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_PORT_MASK, MT7530_CPU_PORT(cpu_dp->index));
->> +			}
->> +		} else {
->> +			if (cpu_dp->index == 5 && trap_port == 5) {
->> +				dev_info(priv->dev, "the conduit for cpu port 5 is down, trap frames to port 6\n");
->> +				mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_PORT_MASK, MT7530_CPU_PORT(6));
->> +			} else if (cpu_dp->index == 6 && trap_port == 6) {
->> +				dev_info(priv->dev, "the conduit for cpu port 6 is down, trap frames to port 5\n");
->> +				mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_PORT_MASK, MT7530_CPU_PORT(5));
->> +			}
->> +		}
-> 
-> I believe that the implementation where you cache the "operational"
-> value of previous calls will be cleaner. Something like this (written in
-> an email client, so take it with a grain of salt):
-> 
-> struct mt7530_priv {
-> 	unsigned long active_cpu_ports;
-> 	...
-> };
-> 
-> 	if (operational)
-> 		priv->active_cpu_ports |= BIT(cpu_dp->index);
-> 	else
-> 		priv->active_cpu_ports &= ~BIT(cpu_dp->index);
-> 
-> 	if (priv->active_cpu_ports) {
-> 		mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_EN | MT7530_CPU_PORT_MASK,
-> 			   MT7530_CPU_EN |
-> 			   MT7530_CPU_PORT(__ffs(priv->active_cpu_ports)));
-
-This is nice and simple, thank you.
-
-> 	} else {
-> 		mt7530_rmw(priv, MT753X_MFC, MT7530_CPU_EN | MT7530_CPU_PORT_MASK,
-> 			   MT7530_CPU_PORT(0));
-
-If I understand correctly, the MT7530_CPU_EN bit here wouldn't be modified
-since it's not on the set parameter. On top of this, I believe we can
-completely get rid of the else case. The MT7530_CPU_PORT bits will be
-overwritten when there's an active CPU port so there's no need to clear
-them when there's no active CPU ports. MT7530_CPU_EN might as well stay
-set.
-
-Arınç
+...
 
