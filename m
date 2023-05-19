@@ -1,117 +1,146 @@
-Return-Path: <netdev+bounces-3995-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3996-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E49C170A00A
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 21:43:21 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2C23A70A020
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 21:56:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8046F1C21187
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 19:43:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 38F872819FE
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 19:56:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 965FF174FE;
-	Fri, 19 May 2023 19:43:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DD3F17AA0;
+	Fri, 19 May 2023 19:56:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 882481119C
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 19:43:18 +0000 (UTC)
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028A4E5A
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 12:43:13 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-3078d1c8828so3444744f8f.3
-        for <netdev@vger.kernel.org>; Fri, 19 May 2023 12:43:13 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27DE8DDD0
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 19:56:10 +0000 (UTC)
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2093.outbound.protection.outlook.com [40.107.21.93])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1408E1B5;
+	Fri, 19 May 2023 12:56:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TPIGaEFoPv/uif1v4Os5KQLM0LYXqsBeoP5l/C0BP284Lqwqbzt+3urWQhJix5uO07tM5Rs7H9qiOiArKZSltMoYJ5+gmGDUhR6j6koCTTGrW25NZllu7IPr3FMAgM5jqMO7ndwDdzukos0ePxPL+7rZRFh8dh4BME/5jTI5sH6pHdW9SzILFWjJHW8aqdARX+gDwDkvgg9jbWci53OB133w9cg9CIF9oRWYL2J/mVFypN9rGEC5rGjzrH31BVoNnK+k05KeCFjlERFvhiFp80gg9hjUH0o0Awk8djn1sVoiGjr5HARxz0bNm6fw41aIa1Vhpu7Z0ApHEROhaJcnZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p+W7p7mTBu1xmJqXr7qzmjCGHn8C/HxLC+oJU8gmOLo=;
+ b=YrXJtYJhVfBqu+4739DTKfjN37i9VbqwIKWyLyItP/xRaeVHddBU9k3tD5/fA7ZQU2lx5D4UwHILBmseB8o+RZ2YUbS58NJOPm06TGqAgKvIckC+8d0e6TsjzxdFV+yGInPVCcxxU/KXHHkdxWoIRkPY5ikiw0Ck1NQB9FlhBoSzvz7V9FqJ5MBqeWA2qjhY39rGGqzoBUB7wPTzOmA80CL65hLgtb0FHkMoNXMMH8LAq5bkoPrBVxS0NtRobRMxbEUDBoHH+6S4xjvlCcRhbz7jd1M5c+6A7it22KfzwcKNTpT+k9LivyIR/zjBS5DGS/ncZ+kd2legczfDz4NSUw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
+ is 80.151.164.27) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu; dmarc=none
+ action=none header.from=esd.eu; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684525392; x=1687117392;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=T7jXzBlv/x7knTLTZdsLaKRxP5YKCfI/UXXz7YCoBcM=;
-        b=AAMELdw1xlnh4GC6SpyFNwIYZQ5R9G3EWmccd9Cxd60tUlESVZ7mnnAstuqu3fSEFl
-         la1heueb27DGnNSC7ZjfouoB5el3sO46TXpJXLE7cV6HCXo3T4HmJa7/Y7IODVpubD3u
-         XcBWObJj/odhut67KgjlDRnVUZEMXSu2iosu4G9oqQQoLdSkgpwVIJCIoPhlQ6ah1LMv
-         cDpD55jSRg+hWivaNtJnYyQwnleuMvxAl4zmuoIYDySUvh8t7p61vZiQ4lyUJJhAf8H0
-         EzA9YnflDWtxhCBk6AkHCfbWV3ISIPoeRpZbmd+XhdgHi3XXnOA0ZL5V2sx7lkCXTsv/
-         dnjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684525392; x=1687117392;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=T7jXzBlv/x7knTLTZdsLaKRxP5YKCfI/UXXz7YCoBcM=;
-        b=Nh6U4ibL+b6Eo1eqeEaKy9IiqKa5d3HRtwfgOeKWZ3UR88410NoMIm0hGtBw2Df7YJ
-         inIVaOTIEGfvcRAfuWn9U2Ja9ePD93BbJq0X2LOdu8oGURG3FjM+ZItn6TII74B8Bs4b
-         ticNiNBY8d9NX2n0KsdGr5qmmRSwd8C3CdApWba4wy6EudAOCnaMVuQQOLoLgZI2/lWG
-         CbV/HRygG5qbfC5WAiditkt2fug7ZyJAHVr0ZZoUEfmdvMguNfaPbiFio2q2SwfskvXP
-         xorgeprMMA2RbdnYZK0Gl5yPc51WIKx1EDktoJn9EYZMbKbh2I0/Xq2pvuH6AU/xoDSm
-         yh3Q==
-X-Gm-Message-State: AC+VfDybP3SYwXk9Sxy84RXWkNGtcSq2Gso6iDfXti3MavVAlYgyooEY
-	0ey0FRCmw5FQCBtPnyVG5TLGrg==
-X-Google-Smtp-Source: ACHHUZ4Dldx3i06cCQyq05HLtiBc9WOfjvyjvCQsAw5LF/bDperqlV+k+zCeVD/Ej7ZkEZzfElsqEw==
-X-Received: by 2002:a5d:6091:0:b0:306:3361:6cbf with SMTP id w17-20020a5d6091000000b0030633616cbfmr2476488wrt.21.1684525392266;
-        Fri, 19 May 2023 12:43:12 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id d2-20020a5d6442000000b002c70ce264bfsm6149863wrw.76.2023.05.19.12.43.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 May 2023 12:43:09 -0700 (PDT)
-Date: Fri, 19 May 2023 22:43:03 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Eli Cohen <elic@nvidia.com>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Jacob Keller <jacob.e.keller@intel.com>,
-	Shay Drory <shayd@nvidia.com>, netdev@vger.kernel.org,
-	linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net RESEND] net/mlx5: Fix check for allocation failure in
- comp_irqs_request_pci()
-Message-ID: <ZGfRR//to6FusOLq@kili>
+ d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p+W7p7mTBu1xmJqXr7qzmjCGHn8C/HxLC+oJU8gmOLo=;
+ b=nnkaGnaAQq8XQlb17XuQCJHB37wuhf2bdonW8n16bCpUnKuslYMofwWM7JP0HfyUHHTtbpsLBV7HMXsLFMuv2OA3XIBlbmQsMZ+1ExOKTU3UhrYMI/Pd8XCONiFse1uN6fj0fW9S9B8jMNSWvw1jdE9x/0U7Uxs1NknvalwfDHk=
+Received: from AM3PR04CA0140.eurprd04.prod.outlook.com (2603:10a6:207::24) by
+ AS2PR03MB9612.eurprd03.prod.outlook.com (2603:10a6:20b:594::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.17; Fri, 19 May
+ 2023 19:56:04 +0000
+Received: from VI1EUR06FT058.eop-eur06.prod.protection.outlook.com
+ (2603:10a6:207:0:cafe::ec) by AM3PR04CA0140.outlook.office365.com
+ (2603:10a6:207::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.21 via Frontend
+ Transport; Fri, 19 May 2023 19:56:04 +0000
+X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
+ 80.151.164.27) smtp.mailfrom=esd.eu; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=esd.eu;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning esd.eu
+ discourages use of 80.151.164.27 as permitted sender)
+Received: from esd-s7.esd (80.151.164.27) by
+ VI1EUR06FT058.mail.protection.outlook.com (10.13.6.196) with Microsoft SMTP
+ Server id 15.20.6411.21 via Frontend Transport; Fri, 19 May 2023 19:56:04
+ +0000
+Received: from esd-s20.esd.local (jenkins.esd [10.0.0.190])
+	by esd-s7.esd (Postfix) with ESMTPS id E28187C162F;
+	Fri, 19 May 2023 21:56:03 +0200 (CEST)
+Received: by esd-s20.esd.local (Postfix, from userid 2046)
+	id CDA5C2E1801; Fri, 19 May 2023 21:56:03 +0200 (CEST)
+From: Frank Jungclaus <frank.jungclaus@esd.eu>
+To: linux-can@vger.kernel.org,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
+	Wolfgang Grandegger <wg@grandegger.com>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc: =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Frank Jungclaus <frank.jungclaus@esd.eu>
+Subject: [PATCH v2 0/6] can: esd_usb: More preparation before supporting esd CAN-USB/3
+Date: Fri, 19 May 2023 21:55:54 +0200
+Message-Id: <20230519195600.420644-1-frank.jungclaus@esd.eu>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1EUR06FT058:EE_|AS2PR03MB9612:EE_
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 43c7ca90-9009-4bfd-f3de-08db58a3140e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	C/mt4doWWi5Kp7sQSowWeeOFNM8eSUhUe6rlrvNelFhqFBBNXxp0X+VqB57I3HMbe9ZxuRub3SwJhGEk3EGNjKOlE8hmi36cfd02/Y1Bkkk/g3RJiPqGOyZCeoAkoBTFwCyPWcsjFfEfiK6GdMy0RE58Td8lXh7E+dFFCP7oFGMumRZ3uPcnlaqp16iCBvCwopQlEG8a477bVXEytwx6ecsN5jcizPDrNuvrQV0zbFG7nA0jPmgMDrlm+czXe3C/GcZGwYTA7iSafVZjswLz5ZDxlIhh7XQOriyJzMGoj4wC+LBqpljGk2EqVFFL2LFzopgTCxpq4Jcps51VM7VJYgPoC7Hh+rxq9RnQzzJCreRaeqWnqifb3urHMVrO+VbxHvtuMHym3RRLdIIiMWDWIjZkDde0+03bCGAXcSGLCCTmYSNj9HGpjh5vz6fr1u98BTiUx9HAJquxp6Tud8gJVQoxOCXR1hL5nlc3qYKdNY5s+lEbBQIXiMdrVL0W71cC+dywhUKrE31TCWEuKmFTYcDQjHqvh6IOgCZFohZBbm4mv+gBZVcFhrCISbVc14cbA2ahxA59gFh0Gt7BpX8ZGaWa41DGpcvxtrVkaaL62Q/BbSJyMRq2RId0JV7DsyLDzsCMoh6jmcY9Wm6dX5gjbvWt3S1x2I1NlE6K6bQrRiTOKEGSNK7I6kzQO9J+eZYQYh5+xehj9I1Tc3SDDp2vzx1MkAhDG1yLIgAdglXMKZA=
+X-Forefront-Antispam-Report:
+	CIP:80.151.164.27;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:p5097a41b.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(376002)(396003)(39840400004)(451199021)(36840700001)(46966006)(36756003)(478600001)(86362001)(6666004)(316002)(54906003)(110136005)(966005)(70586007)(4326008)(70206006)(42186006)(356005)(82310400005)(8936002)(5660300002)(336012)(40480700001)(8676002)(2906002)(41300700001)(44832011)(81166007)(36860700001)(2616005)(26005)(6266002)(47076005)(1076003)(83380400001)(186003)(43170500006);DIR:OUT;SFP:1102;
+X-OriginatorOrg: esd.eu
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 19:56:04.1557
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 43c7ca90-9009-4bfd-f3de-08db58a3140e
+X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[80.151.164.27];Helo=[esd-s7.esd]
+X-MS-Exchange-CrossTenant-AuthSource:
+	VI1EUR06FT058.eop-eur06.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR03MB9612
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This function accidentally dereferences "cpus" instead of returning
-directly.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/r/202305200354.KV3jU94w-lkp@intel.com/
-Fixes: b48a0f72bc3e ("net/mlx5: Refactor completion irq request/release code")
-Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Apply another small batch of patches as preparation for adding support
+of the newly available esd CAN-USB/3 to esd_usb.c.
 ---
-I sent this earlier, but it wasn't applied and the kbuild caught it.
-https://lore.kernel.org/all/6652003b-e89c-4011-9e7d-a730a50bcfce@kili.mountain/
+* Changelog *
 
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v1 -> v2:
+* Make use of GENMASK() macro for ESD_USB_NO_BAUDRATE and
+  ESD_USB_IDMASK
+* Also use the BIT() macro for ESD_USB2_3_SAMPLES
+* Removed comments with redundant hexadecimal values from
+  BIT()-constants
+* Reworded (shortened) the commit messages
+* Changed the macro ESD_USB_3_SAMPLES to ESD_USB_TRIPLE_SAMPLES
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index eb41f0abf798..13491246c9e9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -824,7 +824,7 @@ static int comp_irqs_request_pci(struct mlx5_core_dev *dev)
- 	ncomp_eqs = table->num_comp_eqs;
- 	cpus = kcalloc(ncomp_eqs, sizeof(*cpus), GFP_KERNEL);
- 	if (!cpus)
--		ret = -ENOMEM;
-+		return -ENOMEM;
- 
- 	i = 0;
- 	rcu_read_lock();
+v1:
+* Link: https://lore.kernel.org/all/20230517192251.2405290-1-frank.jungclaus@esd.eu/
+
+Frank Jungclaus (6):
+  can: esd_usb: Make use of existing kernel macros
+  can: esd_usb: Replace initializer macros used for struct
+    can_bittiming_const
+  can: esd_usb: Use consistent prefixes for macros
+  can: esd_usb: Prefix all structures with the device name
+  can: esd_usb: Replace hardcoded message length given to USB commands
+  can: esd_usb: Don't bother the user with nonessential log message
+
+ drivers/net/can/usb/esd_usb.c | 339 +++++++++++++++++-----------------
+ 1 file changed, 168 insertions(+), 171 deletions(-)
+
+
+base-commit: 833e24aeb4d9a4803af3b836464df01293ce9041
 -- 
-2.39.1
+2.25.1
 
 
