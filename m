@@ -1,350 +1,150 @@
-Return-Path: <netdev+bounces-3824-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3825-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8F849708FFD
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 08:47:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 450B770901C
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 09:02:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF9C7281B65
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 06:47:52 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 37FB91C21214
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 07:02:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B873139F;
-	Fri, 19 May 2023 06:47:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4F6807F3;
+	Fri, 19 May 2023 07:02:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5719361
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 06:47:50 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF7AE43
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 23:47:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684478867;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+YqEjo5KOHNsWEJneP5DrW/OFHP4h5hgOMVeUZ2R9GE=;
-	b=HEy+vV8MWDe/bT/Yb4X+Zld0y0mwoLaCP6zNR/lsGExmNVr8cR0E69zrsSc9XzZltCEhGP
-	yClsnsrtCiKw0ApeX/fk1t4zdYgU+QS2vNyFG1XnO8MrM5eSK0miuHpoU7TSx6qkjLlpR9
-	QOdpLa80esFQJV6oZrLvXQ92uGPU4+k=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-395-rzBu6Q_cNYWIrJD7Yx9LZw-1; Fri, 19 May 2023 02:47:46 -0400
-X-MC-Unique: rzBu6Q_cNYWIrJD7Yx9LZw-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f4b96aa44aso4491485e9.1
-        for <netdev@vger.kernel.org>; Thu, 18 May 2023 23:47:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684478865; x=1687070865;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=+YqEjo5KOHNsWEJneP5DrW/OFHP4h5hgOMVeUZ2R9GE=;
-        b=lqzB37fvdwXiEzFlVWN02IBN+0Ge1xUCMr1Yxn1tE9kkYCk9VNnGClHcfbfnjkhBBk
-         SVTqjF7z7ywqgHHfxad1vCO6IjKrjY5Am6SiYneky5jVtvN14Yb13TQXML1VpSaHfNeB
-         4/6mskQYmrvh3uT2set/BN3LgcN4lWAxrTCawG5gC4RqlzlmZEhctD2vscd1YKz4aSAI
-         pjn2w8NEzKYtV+ejfke0/tTjxRpEowZqIo6o5Od2XaYPPNgBG+7csG5+CFSzL78MGn/1
-         QIumG1MSU9um2JoM9eIfoggzgcl/9PthqvuFQWqy7wq70Kljn4TzoKxZYVa6Ob0s7ACj
-         ljLg==
-X-Gm-Message-State: AC+VfDwgP6xlXn1Lg5pcDqfuHgROjYcPiZ6W9CgxYflLoFHePNdWdt3k
-	BdjKFlcLQx+4KWPBFNL8LUkMb8V8ZHefPHSvOPaxb3pp5ZxXjxsTFHkBF0FTg5+b3h6Jh1qzy3v
-	agVTax4S/pj351+VU
-X-Received: by 2002:a1c:ed12:0:b0:3f4:3:4979 with SMTP id l18-20020a1ced12000000b003f400034979mr777003wmh.2.1684478865147;
-        Thu, 18 May 2023 23:47:45 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ57jPanmHQryRzvof8gy+OohfP4mEVfiEjUmcetjwWGfGaI5Hmek0Xj/oMwtuednFE5s62jfA==
-X-Received: by 2002:a1c:ed12:0:b0:3f4:3:4979 with SMTP id l18-20020a1ced12000000b003f400034979mr776990wmh.2.1684478864808;
-        Thu, 18 May 2023 23:47:44 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-235-104.dyn.eolo.it. [146.241.235.104])
-        by smtp.gmail.com with ESMTPSA id c18-20020a7bc852000000b003f42cc3262asm1345094wml.34.2023.05.18.23.47.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 May 2023 23:47:44 -0700 (PDT)
-Message-ID: <d049ebf92a973c0f293e29722959366086ad3c37.camel@redhat.com>
-Subject: Re: [RFC PATCH v7 5/8] ice: implement dpll interface to control cgu
-From: Paolo Abeni <pabeni@redhat.com>
-To: Jiri Pirko <jiri@resnulli.us>, "Kubalewski, Arkadiusz"
-	 <arkadiusz.kubalewski@intel.com>
-Cc: Vadim Fedorenko <vadfed@meta.com>, Jakub Kicinski <kuba@kernel.org>, 
- Jonathan Lemon <jonathan.lemon@gmail.com>, "Olech, Milena"
- <milena.olech@intel.com>, "Michalik, Michal" <michal.michalik@intel.com>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, poros <poros@redhat.com>, mschmidt
- <mschmidt@redhat.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, 
- "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Date: Fri, 19 May 2023 08:47:42 +0200
-In-Reply-To: <ZGMiE1ByArIr8ARB@nanopsycho>
-References: <20230428002009.2948020-1-vadfed@meta.com>
-	 <20230428002009.2948020-6-vadfed@meta.com> <ZFJRIY1HM64gFo3a@nanopsycho>
-	 <DM6PR11MB4657EAF163220617A94154A39B789@DM6PR11MB4657.namprd11.prod.outlook.com>
-	 <ZGMiE1ByArIr8ARB@nanopsycho>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E0CF65F
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 07:02:36 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2125.outbound.protection.outlook.com [40.107.223.125])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C971FE73
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 00:02:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iXaCLnZabrAJxi5qg4OM3He+g6SDKQhDIU4TqfCNGC+XMw6ciCkH1uh+rVV0M7WpNoUTnAfrwT65Xnj5Q32aT3MA8sHS4bvjqHNfckhZKl4dk5PBCA02y1g955uwsQRaPdYQhORFHF6sxJJKK1QC0qETpl4Uo/1Sf9NscGjW12mH7uqL8c8XAZUJv/6n8xqAktalit4XCQLVRqpcSyM8J6w5omvv3NKJ/EULbbDkaGrl1+h4qZ+eGICYa9vPyVHEQYEj2KpgqAqxAkapTajp7+1I4e+RZ4v3Mq45dghfwYkv5ct2ke0W1okOvQPxb7qW00O0awVTHsYNha5NFFPIlw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=f3oiuajF8iYKDJPPn2H2j3ka+QWIPcKK2GZuxZ7Er8Y=;
+ b=C/oDa3nEFNnyhB6wc8pMfdtbhAHIi7SWIJiGB+LwokHQnFnkBepMPm3BYkfhT6SDRAzPnCUypQ7cjrkjyxYz5FwGLe4Q6rEOE3oKOp7d0e0cayVH364LjTYRdzUwczkPx4F+jtpME73GQ9u1P+8Jwu8lqvLfstUj9rJCNOv/8zdzd4ZoIPGAOvUwOVrdH9TqHr+/qzYthwhwYKGHDaYs1vscAL+Qtdnt19f4ujDrfdZ3BuJeWRUSkM8VqgmEGfiezg29XBKahl1QKtdXPadveTxaRSUH5gDWQoDA7MYBojS4FxzfDKm9FQD/vRH/llViK/RvnUGQRTGTGUyENditjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f3oiuajF8iYKDJPPn2H2j3ka+QWIPcKK2GZuxZ7Er8Y=;
+ b=QRxuy7cXZ6ap23vVkF2VL+4sB/rsWT9EuCYCCkkZ8QVxdVuKaoJEdGn3L8Kk9VInrhysS1ZrKkxQl5m+5UyTPlJqat32s8gfqa3/vdr3Cx9g5JTEdxluy0cyFRh/L73J3UltXXDkqY3k9x78ityuxKmby+He8LqCEBOgAp3EDRY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MN2PR13MB3631.namprd13.prod.outlook.com (2603:10b6:208:1ef::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19; Fri, 19 May
+ 2023 07:02:31 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6411.019; Fri, 19 May 2023
+ 07:02:31 +0000
+Date: Fri, 19 May 2023 09:02:11 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Heiko Stuebner <heiko@sntech.de>, netdev@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, kernel@pengutronix.de
+Subject: Re: [PATCH net-next] net: arc: Make arc_emac_remove() return void
+Message-ID: <ZGce81eHtes6CpZ7@corigine.com>
+References: <20230518203049.275805-1-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230518203049.275805-1-u.kleine-koenig@pengutronix.de>
+X-ClientProxiedBy: AM0PR01CA0176.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:aa::45) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3631:EE_
+X-MS-Office365-Filtering-Correlation-Id: da2a8ad4-2141-4208-6159-08db58370368
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	wYWi7+RNukYerNE6ecJA2xSDZQ1SqWVshC6E8s4rbdI1ThOg0I/VSvHDKOUFiHLYNftDu12ATkO+jnGqnRiH+YD9KSxkWxGalmpJOoS8cVD2CFF6clxftC+UlqdpL1PVtH8iCve1dNSo/xGjUeB1LA/BLZZ32QXfwcguF0+D0sJUoFdotWGy4xiaTYkmeBHj0nU+8e0YeKirg+480ufhW/TwXx/Zqcdnzr1eucFHe6CZjd58k7TsSeZqOCa3ZVZiLjhoUQvEFAggQIdSlBhwytHhqbijEG8NpKyQmcqAYB8MAeivllb+B3gZY4dKb6/wW9CfjIgrNIlQ2hgKB06LkNsnsQpXV/uw1wtyNeHIekhixbxN/T5k6EAy9iL+6i4boT02U6loW/ky8cov72xjTxzW91kyHKVrRb4En8jZ7EgT/tm9VUI5ORep2dY/Cz5os5VtxLe81bky67ajXMvjsqEEgcJQreeEO6WalE4ZKxNpauRpJuL4z2Y2HvwCz/xaFseAPvZTcUkSh39DU97jb9nfhwTf1GjAdiU/3OeQpn+GzGH3j8JfUe4tUBFqXEaWMlDHBcWIdpAxj5UIwpQvutqufy8yKKfQPr6GZ1BfPZA=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39840400004)(366004)(376002)(136003)(346002)(451199021)(66476007)(66556008)(66946007)(6666004)(54906003)(6486002)(316002)(4326008)(6916009)(478600001)(41300700001)(5660300002)(4744005)(8936002)(6512007)(44832011)(7416002)(8676002)(186003)(6506007)(2616005)(36756003)(2906002)(38100700002)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?WDEwTEtqR2ZTMlR5RXVxZkltcmRZb3R3QkU2eXpWYyswM3RlL0t2Q0xEMTc0?=
+ =?utf-8?B?ajYzVHVUSGVVTnFEcDFQWWwvZlJwYUZWeEpNeDFCRm0yVFI0TWJtekVZbG5n?=
+ =?utf-8?B?enMwTGZLN1gvOHVRWGREaHUySTNRVlQ3OXpRQzZLOVF3d25EMG5kdDBhYzlV?=
+ =?utf-8?B?WEx1U3FaUFBpb2szcWtDbXNwVU9uRERoQjE3eFBFRmZjVk8wemJhaHFFSzlZ?=
+ =?utf-8?B?Z3RycTdad1hwcGV3Skd3eWlUTWFVejI5UFFNcER4VTVJeEpXaE1CZWVac0VX?=
+ =?utf-8?B?M2VOOU1JaFFwYkxMZHpIY2pQbTFQYyt2azVYTmpua3RZZHZOQkx0bjhJdHBQ?=
+ =?utf-8?B?U3pRVGo2UXYxdmtXQUxRc1BYb1dJc0Q3WkU2SEdVMUNRbGlYaFpvdEtxd2Qr?=
+ =?utf-8?B?NS92TEwxbks5R3R0L0tkZldxVUR2U0YvNjFkSDhoTW1oaXBMNnJtVXRGVXJC?=
+ =?utf-8?B?M2NvOGFXMTZpV0RtdHZtVHprNVpvTEcyUWN5VnY1M1ByeXErVkhRbzFPV3k3?=
+ =?utf-8?B?MjVQUEhMVVA2c3JRU0I5b3lWWWRxbFBNT2tSNU9zNFJzWWs4bnc2MlMrUFBj?=
+ =?utf-8?B?VjBIMHh0UFpsVVpMajBnak53QTZKQWJwSFlFZC9wSWpseU5aQkhrL0cvc1M2?=
+ =?utf-8?B?ZjlIdUY2MWhCelZ1MGZ0YzdMYnRuSGUwNng5bXVMRTJhTUplbytEam40UU0v?=
+ =?utf-8?B?d2dPZ2huQ2M4VmszQmFwNnVqMEplWFNleGV2UUk5ZTZSMFJDd3J4L3VvL2tR?=
+ =?utf-8?B?Qnh6bWQyZnBrRVJiSzhxbmVIVUM5OGVtRXVVZUJGSEdXcDh4S1A3ckptbnhF?=
+ =?utf-8?B?Z2FQNWpaSW1RMmtNSzRwaWJzWVR4TlBLcHBIWkMxR2dReGF2WWRqLzNxYjIr?=
+ =?utf-8?B?QktNd0QrUC9Ja2NiWG5UMFFlM0JEZ1hPOG90OENTanJSd3haYXpwazQvV29v?=
+ =?utf-8?B?eHFFVis0YzlnN3FWSTBOdWNGT3kwY2tUZXJ4RjE0RnVuZGcrNmwyNkVnbDUz?=
+ =?utf-8?B?ekRWMzc0dVF6MFdPWXFnNGlhbkpnc1JuRTlyejNrSjI0aXhzU2hhaTh1NHUw?=
+ =?utf-8?B?RlVwY2JJWnJ4Si9nRnlPT2tSL29lc2RkQURHT3dBL2p1MFdDa3IvSUFrLzdD?=
+ =?utf-8?B?WmFaQ1VQamRoTDFkM1Z1OFRrcDl0MFNzREdLaFFINmw4L2U5Yy9qQ0kwRlY4?=
+ =?utf-8?B?MytObk5aaSsrenpHcjY1bkszRG0wNllQYWY0R3FLY2FqRk5JaUdIR0tYOWEw?=
+ =?utf-8?B?UE03UzkrbzFBK3R1NHhCR005bEQ4TnBoSzkrL3g5V0p5dStpTFc5T2N3U0s0?=
+ =?utf-8?B?c284UklRTkczRDBpL0RMK0trN2ducXU4Mzd6MTRFeCtMUVYvdFh1VWtoQ2hI?=
+ =?utf-8?B?Uml3Smk2eG1idDU0ZmRzMUhCR0IyVW9lTkJUaVpJbEsvSHpMVmFlTXhhMjZN?=
+ =?utf-8?B?c2xXQ2VkMDVlV0FVTnBSRGpIc3c4YVBPWkpLeVhQbmxKRndwM3B6MXQ1ck1U?=
+ =?utf-8?B?YVB3b3hNZVNIMFVPbU8veXh1V1ZKTm51aUFOZllnUVVQN1A4M2tZQ2N5eEx3?=
+ =?utf-8?B?TU9vNlpHLzlKWlQxbm1qODFybDlocDNyTmxDbHhjbGRPWGUvY3dxNlVSNUpN?=
+ =?utf-8?B?aFlpYmhUdDBmSnJSYzJGMmJnVHpMcDNTQS9raWNtR2kwZHI3YWl0WTBRYVl6?=
+ =?utf-8?B?b3pwdVFIbDFaRm5OTHEzOWtmWTd3c3Mvb2dxandIOFlkenZMN2ZmTnozUDU5?=
+ =?utf-8?B?azV0RGk1ZGh3cUFXeG5iY2NqTU9rYitjeUFkMzgvbCt2blZ0OVJYaGtCdFhR?=
+ =?utf-8?B?ZVZDais5VnJSVUlROHFvRlBicWNLRGFWZGFQVmdtTFIvZzFhUkltRHR4L1pZ?=
+ =?utf-8?B?c2lXOUJ4S0d4UGkxLzJuMmZlYUphNTZUZWcwY3A0MzF1dXV0VVhySVFQdkxt?=
+ =?utf-8?B?U2UxSC9ZVlZHemM0L3RpdmFiZmNVWlBpUURQYWNsZ3RmeE5pYnZXR2NjaUZT?=
+ =?utf-8?B?ckFHbEY5cGE3NDV1K1JWQXZLVStpY0pLYWpIL3dmYjRXMzRUc1NnU2ZadkRP?=
+ =?utf-8?B?ckhKZ1Rpc25QYmthR0h0QnNhdGV3MTVXK2ZuNjh1U2tjWDI0Zm9yVWhNcHdW?=
+ =?utf-8?B?RDk5djVNdW1DRkg2Wk5TYkR6Z1ZWdjVmdTJ5aXJCTkNhMFVxK0dLQU16b1Vr?=
+ =?utf-8?B?dk5NSi9iVHpvMVM3Z0REUFZaK0s1TTN0RzZKamRIK3drY1F4TWpSS2tVTkpK?=
+ =?utf-8?B?dDV0cG4raW85N3MvN0lockM4czlRPT0=?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: da2a8ad4-2141-4208-6159-08db58370368
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 07:02:31.0032
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: csQdlbG76mrHfQtWQPaDP0006SBNYz8zyha7Z5FrZwgrx8bszvu2LTc8UfJAFNKOFCwzYEDw3+mzD7Thn9qa9cCYj4feTtII7SMUFZHQ5x0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3631
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 2023-05-16 at 08:26 +0200, Jiri Pirko wrote:
-> Tue, May 16, 2023 at 12:07:57AM CEST, arkadiusz.kubalewski@intel.com wrot=
-e:
-> > > From: Jiri Pirko <jiri@resnulli.us>
-> > > Sent: Wednesday, May 3, 2023 2:19 PM
-> > >=20
-> > > Fri, Apr 28, 2023 at 02:20:06AM CEST, vadfed@meta.com wrote:
-> > > > From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
->=20
-> [...]
->=20
->=20
-> > > > + * ice_dpll_frequency_set - wrapper for pin callback for set frequ=
-ency
-> > > > + * @pin: pointer to a pin
-> > > > + * @pin_priv: private data pointer passed on pin registration
-> > > > + * @dpll: pointer to dpll
-> > > > + * @frequency: frequency to be set
-> > > > + * @extack: error reporting
-> > > > + * @pin_type: type of pin being configured
-> > > > + *
-> > > > + * Wraps internal set frequency command on a pin.
-> > > > + *
-> > > > + * Return:
-> > > > + * * 0 - success
-> > > > + * * negative - error pin not found or couldn't set in hw  */ stat=
-ic
-> > > > +int ice_dpll_frequency_set(const struct dpll_pin *pin, void *pin_p=
-riv,
-> > > > +		       const struct dpll_device *dpll,
-> > > > +		       const u32 frequency,
-> > > > +		       struct netlink_ext_ack *extack,
-> > > > +		       const enum ice_dpll_pin_type pin_type) {
-> > > > +	struct ice_pf *pf =3D pin_priv;
-> > > > +	struct ice_dpll_pin *p;
-> > > > +	int ret =3D -EINVAL;
-> > > > +
-> > > > +	if (!pf)
-> > > > +		return ret;
-> > > > +	if (ice_dpll_cb_lock(pf))
-> > > > +		return -EBUSY;
-> > > > +	p =3D ice_find_pin(pf, pin, pin_type);
-> > >=20
-> > > This does not make any sense to me. You should avoid the lookups and =
-remove
-> > > ice_find_pin() function entirely. The purpose of having pin_priv is t=
-o
-> > > carry the struct ice_dpll_pin * directly. You should pass it down dur=
-ing
-> > > pin register.
-> > >=20
-> > > pf pointer is stored in dpll_priv.
-> > >=20
-> >=20
-> > In this case dpll_priv is not passed, so cannot use it.
->=20
-> It should be passed. In general to every op where *dpll is passed, the
-> dpll_priv pointer should be passed along. Please, fix this.
->=20
->=20
-> > But in general it makes sense I will hold pf inside of ice_dpll_pin
-> > and fix this.
->=20
-> Nope, just use dpll_priv. That's why we have it.
->=20
->=20
-> [...]
->=20
->=20
-> > > > +/**
-> > > > + * ice_dpll_pin_state_set - set pin's state on dpll
-> > > > + * @dpll: dpll being configured
-> > > > + * @pin: pointer to a pin
-> > > > + * @pin_priv: private data pointer passed on pin registration
-> > > > + * @state: state of pin to be set
-> > > > + * @extack: error reporting
-> > > > + * @pin_type: type of a pin
-> > > > + *
-> > > > + * Set pin state on a pin.
-> > > > + *
-> > > > + * Return:
-> > > > + * * 0 - OK or no change required
-> > > > + * * negative - error
-> > > > + */
-> > > > +static int
-> > > > +ice_dpll_pin_state_set(const struct dpll_device *dpll,
-> > > > +		       const struct dpll_pin *pin, void *pin_priv,
-> > > > +		       const enum dpll_pin_state state,
-> > >=20
-> > > Why you use const with enums?
-> > >=20
-> >=20
-> > Just show usage intention explicitly.
->=20
-> Does not make any sense what so ever. Please avoid it.
->=20
->=20
-> > > > +static int ice_dpll_rclk_state_on_pin_get(const struct dpll_pin *p=
-in,
-> > > > +					  void *pin_priv,
-> > > > +					  const struct dpll_pin *parent_pin,
-> > > > +					  enum dpll_pin_state *state,
-> > > > +					  struct netlink_ext_ack *extack) {
-> > > > +	struct ice_pf *pf =3D pin_priv;
-> > > > +	u32 parent_idx, hw_idx =3D ICE_DPLL_PIN_IDX_INVALID, i;
-> > >=20
-> > > Reverse christmas tree ordering please.
-> >=20
-> > Fixed.
-> >=20
-> > >=20
-> > >=20
-> > > > +	struct ice_dpll_pin *p;
-> > > > +	int ret =3D -EFAULT;
-> > > > +
-> > > > +	if (!pf)
-> > >=20
-> > > How exacly this can happen. My wild guess is it can't. Don't do such
-> > > pointless checks please, confuses the reader.
-> > >=20
-> >=20
-> > From driver perspective the pf pointer value is given by external entit=
-y,
-> > why shouldn't it be valdiated?
->=20
-> What? You pass it during register, you get it back here. Nothing to
-> check. Please drop it. Non-sense checks like this have no place in
-> kernel, they only confuse reader as he/she assumes it is a valid case.
->=20
->=20
-> [...]
->=20
->=20
-> > >=20
-> > >=20
-> > > > +			pins[i].pin =3D NULL;
-> > > > +			return -ENOMEM;
-> > > > +		}
-> > > > +		if (cgu) {
-> > > > +			ret =3D dpll_pin_register(pf->dplls.eec.dpll,
-> > > > +						pins[i].pin,
-> > > > +						ops, pf, NULL);
-> > > > +			if (ret)
-> > > > +				return ret;
-> > > > +			ret =3D dpll_pin_register(pf->dplls.pps.dpll,
-> > > > +						pins[i].pin,
-> > > > +						ops, pf, NULL);
-> > > > +			if (ret)
-> > > > +				return ret;
-> > >=20
-> > > You have to call dpll_pin_unregister(pf->dplls.eec.dpll, pins[i].pin,=
- ..)
-> > > here.
-> > >=20
-> >=20
-> > No, in case of error, the caller releases everything ice_dpll_release_a=
-ll(..).
->=20
->=20
-> How does ice_dpll_release_all() where you failed? If you need to
-> unregister one or both or none? I know that in ice you have odd ways to
-> handle error paths in general, but this one clearly seems to be broken.
->=20
->=20
->=20
->=20
->=20
-> >=20
-> > >=20
-> > > > +		}
-> > > > +	}
-> > > > +	if (cgu) {
-> > > > +		ops =3D &ice_dpll_output_ops;
-> > > > +		pins =3D pf->dplls.outputs;
-> > > > +		for (i =3D 0; i < pf->dplls.num_outputs; i++) {
-> > > > +			pins[i].pin =3D dpll_pin_get(pf->dplls.clock_id,
-> > > > +						   i + pf->dplls.num_inputs,
-> > > > +						   THIS_MODULE, &pins[i].prop);
-> > > > +			if (IS_ERR_OR_NULL(pins[i].pin)) {
-> > > > +				pins[i].pin =3D NULL;
-> > > > +				return -ENOMEM;
-> > >=20
-> > > Don't make up error values when you get them from the function you ca=
-ll:
-> > > 	return PTR_ERR(pins[i].pin);
-> >=20
-> > Fixed.
-> >=20
-> > >=20
-> > > > +			}
-> > > > +			ret =3D dpll_pin_register(pf->dplls.eec.dpll, pins[i].pin,
-> > > > +						ops, pf, NULL);
-> > > > +			if (ret)
-> > > > +				return ret;
-> > > > +			ret =3D dpll_pin_register(pf->dplls.pps.dpll, pins[i].pin,
-> > > > +						ops, pf, NULL);
-> > > > +			if (ret)
-> > > > +				return ret;
-> > >=20
-> > > You have to call dpll_pin_unregister(pf->dplls.eec.dpll, pins[i].pin,=
- ..)
-> > > here.
-> > >=20
-> >=20
-> > As above, in case of error, the caller releases everything.
->=20
-> As above, I don't think it works.
->=20
->=20
-> [...]
->=20
->=20
-> > > > +	}
-> > > > +
-> > > > +	if (cgu) {
-> > > > +		ret =3D dpll_device_register(pf->dplls.eec.dpll, DPLL_TYPE_EEC,
-> > > > +					   &ice_dpll_ops, pf, dev);
-> > > > +		if (ret)
-> > > > +			goto put_pps;
-> > > > +		ret =3D dpll_device_register(pf->dplls.pps.dpll, DPLL_TYPE_PPS,
-> > > > +					   &ice_dpll_ops, pf, dev);
-> > > > +		if (ret)
-> > >=20
-> > > You are missing call to dpll_device_unregister(pf->dplls.eec.dpll,
-> > > DPLL_TYPE_EEC here. Fix the error path.
-> > >=20
-> >=20
-> > The caller shall do the clean up, but yeah will fix this as here clean =
-up
-> > is not expected.
->=20
-> :) Just make your error paths obvious and easy to follow to not to
-> confuse anybody, you included.
+On Thu, May 18, 2023 at 10:30:49PM +0200, Uwe Kleine-König wrote:
+> The function returns zero unconditionally. Change it to return void instead
+> which simplifies its callers as error handing becomes unnecessary.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-I agree with Jiri. The error paths here and in ice_dpll_init_info() are
-quite confusing and IMHO error prone.
-
-It will get more easy toread and more consistent if every
-initialization function does return an error code would leave the state
-clean in case of error. That is, in case of error, such function should
-cleanup all the partially allocated/initialized resources.
-
-Note that in ice_dpll_init_info() the situation is more mixed-up as
-ice_dpll_release_info() is called on most error paths, except the last
-one. Memory should not leaked due to later ice_dpll_release_all(), but
-it's really confusing.
-
-Cheers,
-
-Paolo
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
 
