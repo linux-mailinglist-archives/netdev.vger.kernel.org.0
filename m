@@ -1,90 +1,159 @@
-Return-Path: <netdev+bounces-3797-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3798-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D834E708E27
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 05:10:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 04756708E75
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 05:54:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 932B2281B23
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 03:10:53 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EB0331C211D3
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 03:54:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9CF45397;
-	Fri, 19 May 2023 03:10:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 04FA9635;
+	Fri, 19 May 2023 03:54:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BB80648
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 03:10:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DF4A9C433D2;
-	Fri, 19 May 2023 03:10:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684465831;
-	bh=u8kx3LOEbya7T6HyYGJ0EUg0VayTQtg4n2Y5FG2OJeM=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=eH3CeOPN8vRkVDa3n2jolq95YTffykm2BtkvBBsKdh8anOJ2TUQgIwKOFRcVaovhU
-	 pfRTpF3XEeSByAuCZ9hfMj0dorBcuB+QJUITbVy77fywbDZi9W93vCVyEORrjmYsUR
-	 yVQmhh/QsehdHUeL426aCyN612F0OJWfkkW7xl0ErctOHZp2yCyRy5shEkawPECRyu
-	 8HEzKOjYTdbSBdbWQig+GLksYsmDYaQLUX1Fng9BxL8Cdrug3bwVrhcn1yc5xFURci
-	 oFY3yHVi9/biIamMnM5sggWYoz33Zk5sL7PP6gkQ5YzWyHG1XbHU3FZis8NhNrvhBE
-	 VwjTxuNM4yImg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B03E8E21EE0;
-	Fri, 19 May 2023 03:10:31 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8480633
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 03:54:11 +0000 (UTC)
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0C510DD
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 20:54:08 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+	by mailout.nyi.internal (Postfix) with ESMTP id 4E90E5C01AE;
+	Thu, 18 May 2023 23:54:07 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Thu, 18 May 2023 23:54:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
+	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1684468447; x=1684554847; bh=um
+	SjgA4XUoB88WswBJFEy3EA9InqSo7y9pwlJc8Cz04=; b=L14lKNKLrRTbzWwmJ/
+	iYWKHyQ4VvJA0Cn5U8mcLPbygcr0ASqvUhzc2B/YAbMcJKx5Tw3P9f2b8QWZBdED
+	48mJTVSJqpxd5SS32sdbaQcGUQtnPTVYNmj5V8cS6Fu20JbC1xmFrEFjlpYrgz3Z
+	45o/O4CNI9lAcwUDPCYKpxx+qRY1qwPfxXnpl3J0l+3d+0vq3Aq4vEdsFlRACLGZ
+	WhrT3XIctAS/5g1mGWNgOmQVNGEzeTO8NqEq5610Kj1uqrUBPAgHCmeZ0nGsY363
+	62p4MaCc80y3C8SRwXmLJYZzVC7oLBgFWv1EK3OBMcDCF2h/CDETbLUYrcrNKk4X
+	Jg3w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1684468447; x=1684554847; bh=umSjgA4XUoB88
+	WswBJFEy3EA9InqSo7y9pwlJc8Cz04=; b=XzCqp2RKRojbMBhZYnkJbKkMhAWDJ
+	wFubKH8+F9dTpc1/AmU1Ega4VQiwdg77yTBC+C3fA9wtovPTpJrvNLQmDJtrNgRF
+	nRVljaOZ4hPEtjDfWAeFz0hfrwH8vxmYmDfD08/jNtBH8UfbFroUUSmoCyl1Cfc/
+	D0wqgu1+80Vz7F/S7bY4z2R2LZn9Xi1IMr1q6yLK1nuEReleVxn4wMqP3DhXGd7U
+	oK7KvPAfVDgLDc84TnR4zBKf9KfSmygLceEv6iKnZK9b/hjfqupSEl1kGU/zYIJk
+	sp1IlrrihgiOC/6rukkf+TvfI1TWNyoZjmS5pNejPj6Sm8gwc4eZyjJpw==
+X-ME-Sender: <xms:3_JmZOloJDGThTamR2s-k41EalnZBYpMV4qEVBOw6HVnTScxufURFQ>
+    <xme:3_JmZF0dhK9WsSO-fiGDA0YfNboEvbxZWfdGAWyQVcPXGdE6_8MSUvYN0jkHxUo28
+    blpu4X_yeHEbBlWFe0>
+X-ME-Received: <xmr:3_JmZMpmvhw0I2pURc0SY6VvknfscNWGE8cd3JV8Z2XXohSciAlC7VEO95aEaJDGmC86EXnVMrs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeeigedgjeeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    gfrhhlucfvnfffucdluddtmdenucfjughrpehffgfhvfevufffjgfkgggtsehttdertddt
+    redtnecuhfhrohhmpegglhgrughimhhirhcupfhikhhishhhkhhinhcuoehvlhgrughimh
+    hirhesnhhikhhishhhkhhinhdrphifqeenucggtffrrghtthgvrhhnpeeigfdvgeeiieel
+    udehueeuueejieeiheegudevhffggeeguddvveduueehueefgeenucevlhhushhtvghruf
+    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehvlhgrughimhhirhesnhhikhhi
+    shhhkhhinhdrphif
+X-ME-Proxy: <xmx:3_JmZCmshoCau9NK6Q3I1GRFF1TM71WB6CQNVV79pCZ0Ou_y1hIyAw>
+    <xmx:3_JmZM3nEzgmB280f4gsJooZQKkb5I9Eba-qfSKIi2hAKn71-8bQ4g>
+    <xmx:3_JmZJt8nrrUphZiBOYvKssDI683E-aT7DI65yEomscmRTFZuaJc7A>
+    <xmx:3_JmZBvsCHSotkR0gldBvJU9LOU_KblOD7FJ6NYIB2D857CC4eh8GQ>
+Feedback-ID: id3b446c5:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 18 May 2023 23:54:03 -0400 (EDT)
+References: <20230518134601.17873-1-vladimir@nikishkin.pw>
+ <20230518084908.7c0e14d4@hermes.local>
+User-agent: mu4e 1.8.14; emacs 30.0.50
+From: Vladimir Nikishkin <vladimir@nikishkin.pw>
+To: Stephen Hemminger <stephen@networkplumber.org>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
+ gnault@redhat.com, razor@blackwall.org, idosch@nvidia.com,
+ liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com
+Subject: Re: [PATCH iproute2-next v4] ip-link: add support for nolocalbypass
+ in vxlan
+Date: Fri, 19 May 2023 11:50:03 +0800
+In-reply-to: <20230518084908.7c0e14d4@hermes.local>
+Message-ID: <87cz2xt1rb.fsf@laptop.lockywolf.net>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5][pull request] Intel Wired LAN Driver Updates
- 2023-05-17 (ice, MAINTAINERS)
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168446583171.25467.17092070696722040795.git-patchwork-notify@kernel.org>
-Date: Fri, 19 May 2023 03:10:31 +0000
-References: <20230517165530.3179965-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20230517165530.3179965-1-anthony.l.nguyen@intel.com>
-To: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
- edumazet@google.com, netdev@vger.kernel.org
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
 
-This series was applied to netdev/net-next.git (main)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+Stephen Hemminger <stephen@networkplumber.org> writes:
 
-On Wed, 17 May 2023 09:55:25 -0700 you wrote:
-> This series contains updates to ice driver and MAINTAINERS file.
-> 
-> Paul refactors PHY to link mode reporting and updates some PHY types to
-> report more accurate link modes for ice.
-> 
-> Dave removes mutual exclusion policy between LAG and SR-IOV in ice
-> driver.
-> 
-> [...]
+> On Thu, 18 May 2023 21:46:01 +0800
+> Vladimir Nikishkin <vladimir@nikishkin.pw> wrote:
+>
+>> +	if (tb[IFLA_VXLAN_LOCALBYPASS]) {
+>> +		__u8 localbypass = rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS]);
+>> +
+>> +		print_bool(PRINT_JSON, "localbypass", NULL, localbypass);
+>> +		if (localbypass) {
+>> +			print_string(PRINT_FP, NULL, "localbypass ", NULL);
+>> +		} else {
+>> +			print_string(PRINT_FP, NULL, "nolocalbypass ", NULL);
+>> +		}
+>> +	}
+>
+> You don't have to print anything if nolocalbypass.  Use presence as
+> a boolean in JSON.
+>
+> I.e.
+> 	if (tb[IFLA_VXLAN_LOCALBYPASS] &&
+> 	   rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS])) {
+> 		print_bool(PRINT_ANY, "localbypass", "localbypass", true);
+> 	}
+>
+> That is what other options do.
+> Follows the best practices for changes to existing programs: your
+> new feature should look like all the others.
 
-Here is the summary with links:
-  - [net-next,1/5] ice: update ICE_PHY_TYPE_HIGH_MAX_INDEX
-    https://git.kernel.org/netdev/net-next/c/578fb0926c12
-  - [net-next,2/5] ice: refactor PHY type to ethtool link mode
-    https://git.kernel.org/netdev/net-next/c/9136e1f1e5c3
-  - [net-next,3/5] ice: update PHY type to ethtool link mode mapping
-    https://git.kernel.org/netdev/net-next/c/49eb1c1f2f05
-  - [net-next,4/5] ice: Remove LAG+SRIOV mutual exclusion
-    https://git.kernel.org/netdev/net-next/c/1c769b1a303f
-  - [net-next,5/5] MAINTAINERS: update Intel Ethernet links
-    https://git.kernel.org/netdev/net-next/c/ebdf098a0e1b
+Sorry, I do not understand. I intended to do exactly that, and I copied
+and adjusted for the option name the code currently used for the
+"udpcsum" option. Which is exactly
 
-You are awesome, thank you!
+		if (is_json_context()) {
+			print_bool(PRINT_ANY, "udp_csum", NULL, udp_csum);
+		} else {
+			if (!udp_csum)
+				fputs("no", f);
+			fputs("udpcsum ", f);
+		}
+I just replaced that option name with [no]localbypass. Fairly
+straightforward, prints noudpcsum or udpcsum. Later Andrea C
+
+Then Andrea Claudi suggested that print_bool knows about the json
+context itself, so the outer check is not needed, so I removed that.
+But the "model option" I used (really the simplest one), does have
+output both when set to true, and when set to false. I have neither an
+opinion on this nor an understanding what is better for scripting. But I
+do not understand the suggestion "do like the other options do", when
+seemingly, other options do what I suggest in the first place.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Your sincerely,
+Vladimir Nikishkin (MiEr, lockywolf)
+(Laptop)
+--
+Fastmail.
 
 
