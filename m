@@ -1,122 +1,119 @@
-Return-Path: <netdev+bounces-3992-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3993-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D3828709F49
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 20:43:34 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9471C709F6D
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 20:51:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 738BB1C21349
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 18:43:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 511BB281DC3
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 18:51:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8991C12B87;
-	Fri, 19 May 2023 18:43:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6CC4112B95;
+	Fri, 19 May 2023 18:51:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D72211C8F
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 18:43:31 +0000 (UTC)
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93E81A8
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 11:43:29 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-3f4234f67feso8845e9.0
-        for <netdev@vger.kernel.org>; Fri, 19 May 2023 11:43:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684521808; x=1687113808;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=F7ADbMEeGTow7uzHXVJ7EWjekmJRyxwC2hamfTPH2cU=;
-        b=oYh3TklvbclGO8uY7mRfMrlutFD8Zv4Tr94rAoxiRfulYxTEkpTncCbtsHewRrSv8f
-         CMJGjBOFq7LMaPYEGDi4yml/WMODr9buPtIzonh4sOVcV6O1fVhwB7ByjF2jbk/dLJKl
-         Bs9vF5aZmg7qvXp2yWYq3rv3LV1r5aL0hfM9+kydBDluQc9slO18PtCGnLcdXNOK5Vkt
-         92xA/ST/4lI+YEQVcDFEy6RJ2RKWV3SeZpqENqXi5hV7UahFrLx2n8EIrCbLekKYVlZH
-         m+uFf24vy/5TFu6XObP+bV1ppxoULUtVcA32obkezug6vm5qcfcTUUBfdP/9S5EvZj6p
-         hhew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684521808; x=1687113808;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=F7ADbMEeGTow7uzHXVJ7EWjekmJRyxwC2hamfTPH2cU=;
-        b=ICZ7zLUbuNMl0Q5GBamrdna58P/CqIRiyJPgvDDvDb3o1m/feWHT3g8sIxfnLsNvgF
-         1bM85+vUM3ih4u/AGr7ijsvkoJKlVBPc4VcmP11T2roSbxgR8wyv/CfMlgk3RQRzEIim
-         SaI3wEuOfDMoIZ75ImxsIqv0s9d0PXJ4WC/LmBtMJw5k4hG2bobyESgHyPV+kffS/oKy
-         vlMSumMpz7k1g5C3S3koEh3jNgTPU74lXU2gfCpjbJ/ckKnzx9Ckqviyt9BqSCOGi3Rg
-         IdOixUJ+LVp1bhMJr6QhEFc8Lc1urXWri0NsJezrOrW8AdzdQP5SkGmN2gb+gUG0tCGC
-         j82A==
-X-Gm-Message-State: AC+VfDytH0ee9x8s/bTbFpVVrhXXO6Rxj30m8E4aCTfaJXlyjBu237EL
-	IH9rgxIT7t+dUMOeR1TcAEceMAQAzW4lGDbR+co0dg==
-X-Google-Smtp-Source: ACHHUZ7QKdbpc8HDR/3l7hVDAg0UkTZvkwOPqjBlJ16OdxFgA56o4t1zmyGchaccBrevpKy+XCKwv04xozOwhLg798c=
-X-Received: by 2002:a05:600c:6029:b0:3f1:6fe9:4a95 with SMTP id
- az41-20020a05600c602900b003f16fe94a95mr225881wmb.4.1684521808389; Fri, 19 May
- 2023 11:43:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FD8211C8F
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 18:51:05 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D61110C9
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 11:50:46 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1q05BC-0000rT-Ex; Fri, 19 May 2023 20:50:18 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1q05B9-00025q-TE; Fri, 19 May 2023 20:50:15 +0200
+Date: Fri, 19 May 2023 20:50:15 +0200
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: Vladimir Oltean <olteanv@gmail.com>
+Cc: Woojung Huh <woojung.huh@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+	Arun Ramadoss <arun.ramadoss@microchip.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Simon Horman <simon.horman@corigine.com>,
+	"Russell King (Oracle)" <linux@armlinux.org.uk>,
+	linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+	Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
+	netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v4 1/2] net: dsa: microchip: ksz8: Make flow
+ control, speed, and duplex on CPU port configurable
+Message-ID: <20230519185015.GA18246@pengutronix.de>
+References: <20230519124700.635041-1-o.rempel@pengutronix.de>
+ <20230519124700.635041-2-o.rempel@pengutronix.de>
+ <20230519143004.luvz73jiyvnqxk4y@skbuf>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230508194326.482-1-emil.s.tantilov@intel.com>
- <20230512023234-mutt-send-email-mst@kernel.org> <6a900cd7-470a-3611-c88a-9f901c56c97f@intel.com>
- <20230518130452-mutt-send-email-mst@kernel.org> <dba3d773-0834-10fe-01a1-511b4dd263e5@intel.com>
- <20230519013710-mutt-send-email-mst@kernel.org> <bb44cf67-3b8c-7cc2-b48e-438cc9af5fdb@intel.com>
- <52826c35-eba1-40fb-bfa9-23a87400bfa4@lunn.ch>
-In-Reply-To: <52826c35-eba1-40fb-bfa9-23a87400bfa4@lunn.ch>
-From: Willem de Bruijn <willemb@google.com>
-Date: Fri, 19 May 2023 14:42:50 -0400
-Message-ID: <CA+FuTSfJuVGgU6ce_SSErXUYc584OEgwk=PQS7beu2Tj5Wnu-w@mail.gmail.com>
-Subject: Re: [PATCH iwl-next v4 00/15] Introduce Intel IDPF driver
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>, 
-	Emil Tantilov <emil.s.tantilov@intel.com>, intel-wired-lan@lists.osuosl.org, 
-	shannon.nelson@amd.com, simon.horman@corigine.com, leon@kernel.org, 
-	decot@google.com, jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com, 
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
-	netdev@vger.kernel.org, "Singhai, Anjali" <anjali.singhai@intel.com>, 
-	"Orr, Michael" <michael.orr@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230519143004.luvz73jiyvnqxk4y@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL: http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 19, 2023 at 2:22=E2=80=AFPM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > +config IDPF
-> > +     tristate "Intel(R) Infrastructure Data Path Function Support"
-> > +     depends on PCI_MSI
-> > +     select DIMLIB
-> > +     help
-> > +       This driver supports Intel(R) Infrastructure Processing Unit (I=
-PU)
-> > +       devices.
-> >
-> > It can be updated with Intel references removed when the spec becomes
-> > standard and meets the community requirements.
->
-> Is IPU Intels name for the hardware which implements DPF? I assume
-> when 'Intel' is dropped, IPU would also be dropped? Which leaves the
-> help empty.
->
-> And i assume when it is no longer tied to Intel, the Kconfig entry
-> will move somewhere else, because at the moment, it appears to appear
-> under Intel, when it probably should be at a higher level, maybe
-> 'Network device support'? And will the code maybe move to net/idpf?
+Hi Vladimir,
 
-This has come up before.
+On Fri, May 19, 2023 at 05:30:04PM +0300, Vladimir Oltean wrote:
+> On Fri, May 19, 2023 at 02:46:59PM +0200, Oleksij Rempel wrote:
+> > +void ksz8_phylink_mac_link_up(struct ksz_device *dev, int port,
+> > +			      unsigned int mode, phy_interface_t interface,
+> > +			      struct phy_device *phydev, int speed, int duplex,
+> > +			      bool tx_pause, bool rx_pause)
+> > +{
+> > +	/* If the port is the CPU port, apply special handling. Only the CPU
+> > +	 * port is configured via global registers.
+> > +	 */
+> > +	if (dev->cpu_port == port)
+> > +		ksz8_cpu_port_link_up(dev, speed, duplex, tx_pause, rx_pause);
+> > +}
+> 
+> I'm sorry, but this is also baking in assumptions related to the
+> topology of the tree (that the xMII port is used as a CPU port).
+> The ksz8 driver may make this assumption in other places too,
+> but I don't want to make it even worse to fix. Is the
+> !dev->info->internal_phy[port] condition not enough here?
 
-"Drivers are organized by the vendor for better or worse. We have a
-number of drivers under the "wrong directly" already. Companies merge /
-buy each others product lines, there's also some confusion about common
-IP drivers. It's all fine, whatever."
+Thank you for your feedback. I see your point. 
 
+We need to remember that the KSZ switch series has different types of
+ports. Specifically, for the KSZ8 series, there's a unique port. This
+port is unique because it's the only one that can be configured with
+global registers, and it is only one supports tail tagging. This special
+port is already referenced in the driver by "dev->cpu_port", so I continued
+using it in my patch.
 
-https://lore.kernel.org/netdev/20230414152744.4fd219f9@kernel.org/
+It is important to note that while this port has an xMII interface, it
+is not the only port that could have an xMII interface. Therefore, using
+"dev->info->internal_phy" may not be the best way to identify this port,
+because there can be ports that are not global/cpu, have an xMII
+interface, but don't have an internal PHY.
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
