@@ -1,81 +1,188 @@
-Return-Path: <netdev+bounces-3842-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3843-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8E8D0709193
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 10:20:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 69F1C7091A1
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 10:26:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 771491C20A9A
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 08:20:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 53ACB1C2121B
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 08:26:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B904566B;
-	Fri, 19 May 2023 08:20:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 60670566E;
+	Fri, 19 May 2023 08:26:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 311255663
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 08:20:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D8B32C433D2;
-	Fri, 19 May 2023 08:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684484421;
-	bh=cYNsUqwT6Czd7CihswXIkDGRkFsuSYQWgVboqu1K6jA=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=iLAe1xuM9zRLHRQs2u9Yh2Ep0+uBSKH7J+3J1B2F1aOH/s14yG/hy7DV7QZd10HBG
-	 pdNZabSLeGwefTNzy84a+Yv+uGJKhYPiMHT4KbmczYxRkfYQNBu01pqguQ4nS/Rhwu
-	 vZrWgxo8N+KwQzJxopYrT+qGKvQvJnGmbi6DvQi7Tbp0aVk42j9RNBjNEz+lXaIYBF
-	 VchEXOtwfs09I/vrAzoqCz4hIFDvpkprVcQvsFu8I/nK8cKaS5x1sDUok+wOBgTcrV
-	 ggNY6JQLQgImY2741lSEyub80t6ZJj7yd1T+GFLGCQ0Sx0lKwJM1nCnloJ/5yB+1qJ
-	 5zzLjIOAXBKJw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BBDE9C73FE2;
-	Fri, 19 May 2023 08:20:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54D7720F7
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 08:26:48 +0000 (UTC)
+Received: from smtpbgeu2.qq.com (smtpbgeu2.qq.com [18.194.254.142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6623913A
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 01:26:42 -0700 (PDT)
+X-QQ-mid:Yeas54t1684484656t878t52425
+Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [115.200.228.151])
+X-QQ-SSF:00400000000000F0FNF000000000000
+From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
+X-BIZMAIL-ID: 18003444399140416337
+To: "'Andrew Lunn'" <andrew@lunn.ch>
+Cc: "'Andy Shevchenko'" <andy.shevchenko@gmail.com>,
+	<netdev@vger.kernel.org>,
+	<jarkko.nikula@linux.intel.com>,
+	<andriy.shevchenko@linux.intel.com>,
+	<mika.westerberg@linux.intel.com>,
+	<jsd@semihalf.com>,
+	<Jose.Abreu@synopsys.com>,
+	<hkallweit1@gmail.com>,
+	<linux@armlinux.org.uk>,
+	<linux-i2c@vger.kernel.org>,
+	<linux-gpio@vger.kernel.org>,
+	<mengyuanlou@net-swift.com>
+References: <20230515063200.301026-1-jiawenwu@trustnetic.com> <20230515063200.301026-7-jiawenwu@trustnetic.com> <ZGH-fRzbGd_eCASk@surfacebook> <00cd01d9879f$8e444950$aaccdbf0$@trustnetic.com> <CAHp75VdthEZL6GvT5Q=f7rbcDfA5XX=7-VLfVz1kZmBFem_eCA@mail.gmail.com> <016701d9886a$f9b415a0$ed1c40e0$@trustnetic.com> <90ef7fb8-feac-4288-98e9-6e67cd38cdf1@lunn.ch> <025b01d9897e$d8894660$899bd320$@trustnetic.com> <1e1615b3-566c-490c-8b1a-78f5521ca0b0@lunn.ch>
+In-Reply-To: <1e1615b3-566c-490c-8b1a-78f5521ca0b0@lunn.ch>
+Subject: RE: [PATCH net-next v8 6/9] net: txgbe: Support GPIO to SFP socket
+Date: Fri, 19 May 2023 16:24:15 +0800
+Message-ID: <02ad01d98a2b$4cd080e0$e67182a0$@trustnetic.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] MAINTAINERS: add myself as maintainer for enetc
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168448442176.11174.1817196669995161023.git-patchwork-notify@kernel.org>
-Date: Fri, 19 May 2023 08:20:21 +0000
-References: <20230518154146.856687-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20230518154146.856687-1-vladimir.oltean@nxp.com>
-To: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, claudiu.manoil@nxp.com,
- linux-kernel@vger.kernel.org
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: zh-cn
+Thread-Index: AQHvj8QD3pC+6Aq9H9h6P1+q5LrHRgMH5FTyAkITzAABJU2Y7wJ7xjhgAYjDQqsBr+FHUgDJ87o1AYTHtNeuwZQUsA==
+X-QQ-SENDSIZE: 520
+Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	T_SPF_HELO_TEMPERROR,UNPARSEABLE_RELAY autolearn=unavailable
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
-
-This patch was applied to netdev/net.git (main)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu, 18 May 2023 18:41:46 +0300 you wrote:
-> I would like to be copied on new patches submitted on this driver.
-> I am relatively familiar with the code, having practically maintained
-> it for a while.
+On Thursday, May 18, 2023 8:49 PM, Andrew Lunn wrote:
+> > > I _think_ you are mixing upstream IRQs and downstream IRQs.
+> > >
+> > > Interrupts are arranged in trees. The CPU itself only has one or two
+> > > interrupts. e.g. for ARM you have FIQ and IRQ. When the CPU gets an
+> > > interrupt, you look in the interrupt controller to see what external
+> > > or internal interrupt triggered the CPU interrupt. And that interrupt
+> > > controller might indicate the interrupt came from another interrupt
+> > > controller. Hence the tree structure. And each node in the tree is
+> > > considered an interrupt domain.
+> > >
+> > > A GPIO controller can also be an interrupt controller. It has an
+> > > upstream interrupt, going to the controller above it. And it has
+> > > downstream interrupts, the GPIO lines coming into it which can cause
+> > > an interrupt. And the GPIO interrupt controller is a domain.
+> > >
+> > > So what exactly does gpio_regmap_config.irq_domain mean? Is it the
+> > > domain of the upstream interrupt controller? Is it an empty domain
+> > > structure to be used by the GPIO interrupt controller? It is very
+> > > unlikely to have anything to do with the SFP devices below it.
+> >
+> > Sorry, since I don't know much about interrupt,  it is difficult to understand
+> > regmap-irq in a short time. There are many questions about regmap-irq.
+> >
+> > When I want to add an IRQ chip for regmap, for the further irq_domain,
+> > I need to pass a parameter of IRQ, and this IRQ will be requested with handler:
+> > regmap_irq_thread(). Which IRQ does it mean?
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  MAINTAINERS | 1 +
->  1 file changed, 1 insertion(+)
+> That is your upstream IRQ, the interrupt indicating one of your GPIO
+> lines has changed state.
+> 
+> > In the previous code of using
+> > devm_gpiochip_add_data(), I set the MSI-X interrupt as gpio-irq's parent, but
+> > it was used to set chained handler only. Should the parent be this IRQ? I found
+> > the error with irq_free_descs and irq_domain_remove when I remove txgbe.ko.
+> 
+> Do you have one MSI-X dedicated for GPIOs. Or is it your general MAC
+> interrupt, and you need to read an interrupt controller register to
+> determine it was GPIOs which triggered the interrupt?
+> 
+> If you are getting errors when removing the driver it means you are
+> missing some level of undoing what us done in probe. Are you sure
+> regmap_del_irq_chip() is being called on unload?
+> 
+> > As you said, the interrupt of each tree node has its domain. Can I understand
+> > that there are two layer in the interrupt tree for MSI-X and GPIOs, and requesting
+> > them separately is not conflicting? Although I thought so, but after I implement
+> > gpio-regmap, SFP driver even could not find gpio_desc. Maybe I missed something
+> > on registering gpio-regmap...
+> 
+> That is probably some sort of naming issue. You might want to add some
+> prints in swnode_find_gpio() and gpiochip_find() to see what it is
+> looking for vs what the name actually is.
 
-Here is the summary with links:
-  - [net] MAINTAINERS: add myself as maintainer for enetc
-    https://git.kernel.org/netdev/net/c/3be5f6cd4a52
+It's true for the problem of name, but there is another problem. SFP driver has
+successfully got gpio_desc, then it failed to get gpio_irq from gpio_desc (with error
+return -517). I traced the function gpiod_to_irq():
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+	gc = desc->gdev->chip;
+	offset = gpio_chip_hwgpio(desc);
+	if (gc->to_irq) {
+		int retirq = gc->to_irq(gc, offset);
+
+		/* Zero means NO_IRQ */
+		if (!retirq)
+			return -ENXIO;
+
+		return retirq;
+	}
+
+'gc->to_irq = gpiochip_to_irq' was set in [4]gpiochip_irqchip_add_domain().
+So:
+
+	static int gpiochip_to_irq(struct gpio_chip *gc, unsigned int offset)
+	{
+		struct irq_domain *domain = gc->irq.domain;
+
+	#ifdef CONFIG_GPIOLIB_IRQCHIP
+		/*
+		 * Avoid race condition with other code, which tries to lookup
+		 * an IRQ before the irqchip has been properly registered,
+		 * i.e. while gpiochip is still being brought up.
+		 */
+		if (!gc->irq.initialized)
+			return -EPROBE_DEFER;
+	#endif
+
+gc->irq.initialized is set to true at the end of [3]gpiochip_add_irqchip() only.
+Firstly, it checks if irqchip is NULL:
+
+	static int gpiochip_add_irqchip(struct gpio_chip *gc,
+					struct lock_class_key *lock_key,
+					struct lock_class_key *request_key)
+	{
+		struct fwnode_handle *fwnode = dev_fwnode(&gc->gpiodev->dev);
+		struct irq_chip *irqchip = gc->irq.chip;
+		unsigned int type;
+		unsigned int i;
+
+		if (!irqchip)
+			return 0;
+
+The result shows that it was NULL, so gc->irq.initialized = false.
+Above all, return irq = -EPROBE_DEFER.
+
+So let's sort the function calls. In chronological order, [1] calls [2], [2] calls
+[3], then [1] calls [4]. The irq_chip was added to irq_domain->host_data->irq_chip
+before [1]. But I don't find where to convert gpio_chip->irq.domain->host_data->irq_chip
+to gpio_chip->irq.chip, it seems like it should happen after [4] ? But if it wants to use
+'gc->to_irq' successfully, it should happen before [3]?
+
+[1] gpio_regmap_register()
+[2] gpiochip_add_data()
+[3] gpiochip_add_irqchip()
+[4] gpiochip_irqchip_add_domain()
+
+I'm sorry that I described the problem in a confusing way, apologize if I missed
+some code that caused this confusion.
 
 
 
