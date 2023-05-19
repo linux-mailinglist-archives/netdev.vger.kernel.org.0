@@ -1,41 +1,41 @@
-Return-Path: <netdev+bounces-3924-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3925-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8B6AA70992A
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 16:13:25 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DCA55709932
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 16:13:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 73A141C212B1
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 14:13:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 95C0F281CB0
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 14:13:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D929A10958;
-	Fri, 19 May 2023 14:13:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A8FD31096B;
+	Fri, 19 May 2023 14:13:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC81610955
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 14:13:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EB1610955
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 14:13:06 +0000 (UTC)
 Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518FCA3;
-	Fri, 19 May 2023 07:13:03 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D746A192;
+	Fri, 19 May 2023 07:13:04 -0700 (PDT)
 Received: (Authenticated sender: alexis.lothore@bootlin.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id 4BFAAE000B;
-	Fri, 19 May 2023 14:12:59 +0000 (UTC)
+	by mail.gandi.net (Postfix) with ESMTPSA id E1648E0018;
+	Fri, 19 May 2023 14:13:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1684505581;
+	t=1684505583;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=UYUBPw5xIqdXV/lw528bb3qa+8mkxwgbfXhn4XMJacc=;
-	b=jVV/Ch6dFB1gdLZHJ9ZV45WMSRxkP0wwXNOS7CVpM8sAGCvJew8RxuuqU02XNp6cepw+kb
-	UZbJ3pX4Ug7hES3sUZthqN0w9hYuOezsprVZ3EYqROhpK0ExfwcamE5BXfT3tbheVj3nOz
-	W7NqznpP9SWqvZ90bq+n3PHl5ab/CiERhOly6fLbWA7CSRBmFvX+e1gXzrHQE0PejAUhYA
-	l3ocwJf7GvJRXipdALFcnqYwGzyUko6ajX0qcjo38TepUbHKp+sarNrJgXfSxsNogjjRdF
-	hjI7SiV8eooA74ufyQGK2pCCw3WvogJeEBNrNygUuA+QjewRxYvOELfEfVDmww==
+	bh=RbnRwa+V9iC7DR2jK0YOcpyWlvO4fLpqpNlnKGwZALk=;
+	b=ZGm68zV8E4hlpG7EeqdCgsf8/g8ZH4dx0knLP4oAQIkggF7GFrJkjcFBr+aiY3Vjb9jF2X
+	2IttnsEYN0CSB5SNVBVGQdxer0lyJoaWC95EKRXo+FIszaAZRM1nJ0/36I66fsRAiQSsIv
+	RJQNAvwDu3FjCuvdIIimmLSCDvbuGwDSojoTDINtOh833TKxBgqHWjC922WlumBan9Q0um
+	PiphIjaroRsBw90R90UB2kCxz+ceyqC7kNnXnxKQJ+1+wJ28jFddJ0IxJH/dv1HZpbFoSg
+	fux5FEqS/w85dYNLR8cwDoPcQr2WpYOvk1SrnjLEDjr0zuMR/Vlt2alVa4AywQ==
 From: alexis.lothore@bootlin.com
 To: Andrew Lunn <andrew@lunn.ch>,
 	Florian Fainelli <f.fainelli@gmail.com>,
@@ -56,11 +56,10 @@ Cc: netdev@vger.kernel.org,
 	paul.arola@telus.com,
 	scott.roberts@telus.com,
 	=?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-	=?UTF-8?q?Alexis=20Lothor=C3=A9?= <alexis.lothore@bootlin.com>,
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH net-next v2 1/7] dt-bindings: net: dsa: marvell: add MV88E6361 switch to compatibility list
-Date: Fri, 19 May 2023 16:12:57 +0200
-Message-Id: <20230519141303.245235-2-alexis.lothore@bootlin.com>
+	=?UTF-8?q?Alexis=20Lothor=C3=A9?= <alexis.lothore@bootlin.com>
+Subject: [PATCH net-next v2 2/7] net: dsa: mv88e6xxx: pass directly chip structure to mv88e6xxx_phy_is_internal
+Date: Fri, 19 May 2023 16:12:58 +0200
+Message-Id: <20230519141303.245235-3-alexis.lothore@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230519141303.245235-1-alexis.lothore@bootlin.com>
 References: <20230519141303.245235-1-alexis.lothore@bootlin.com>
@@ -81,31 +80,60 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Alexis Lothoré <alexis.lothore@bootlin.com>
 
-Marvell MV88E6361 is an 8-port switch derived from the
-88E6393X/88E9193X/88E6191X switches family. Since its functional behavior
-is very close to switches from this family, it can benefit from existing
-drivers for this family, so add it to the list of compatible switches
+Since this function is a simple helper, we do not need to pass a full
+dsa_switch structure, we can directly pass the mv88e6xxx_chip structure.
+Doing so will allow to share this function with any other function
+not manipulating dsa_switch structure but needing info about number of
+internal phys
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Alexis Lothoré <alexis.lothore@bootlin.com>
 ---
- Documentation/devicetree/bindings/net/dsa/marvell.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/marvell.txt b/Documentation/devicetree/bindings/net/dsa/marvell.txt
-index 2363b412410c..33726134f5c9 100644
---- a/Documentation/devicetree/bindings/net/dsa/marvell.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/marvell.txt
-@@ -20,7 +20,7 @@ which is at a different MDIO base address in different switch families.
- 			  6171, 6172, 6175, 6176, 6185, 6240, 6320, 6321,
- 			  6341, 6350, 6351, 6352
- - "marvell,mv88e6190"	: Switch has base address 0x00. Use with models:
--			  6190, 6190X, 6191, 6290, 6390, 6390X
-+			  6163, 6190, 6190X, 6191, 6290, 6390, 6390X
- - "marvell,mv88e6250"	: Switch has base address 0x08 or 0x18. Use with model:
- 			  6220, 6250
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 64a2f2f83735..93bcfa5c80e1 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -463,10 +463,8 @@ static int mv88e6xxx_port_setup_mac(struct mv88e6xxx_chip *chip, int port,
+ 	return err;
+ }
  
+-static int mv88e6xxx_phy_is_internal(struct dsa_switch *ds, int port)
++static int mv88e6xxx_phy_is_internal(struct mv88e6xxx_chip *chip, int port)
+ {
+-	struct mv88e6xxx_chip *chip = ds->priv;
+-
+ 	return port < chip->info->num_internal_phys;
+ }
+ 
+@@ -584,7 +582,7 @@ static void mv88e6095_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
+ 
+ 	config->mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100;
+ 
+-	if (mv88e6xxx_phy_is_internal(chip->ds, port)) {
++	if (mv88e6xxx_phy_is_internal(chip, port)) {
+ 		__set_bit(PHY_INTERFACE_MODE_MII, config->supported_interfaces);
+ 	} else {
+ 		if (cmode < ARRAY_SIZE(mv88e6185_phy_interface_modes) &&
+@@ -832,7 +830,7 @@ static void mv88e6xxx_get_caps(struct dsa_switch *ds, int port,
+ 	chip->info->ops->phylink_get_caps(chip, port, config);
+ 	mv88e6xxx_reg_unlock(chip);
+ 
+-	if (mv88e6xxx_phy_is_internal(ds, port)) {
++	if (mv88e6xxx_phy_is_internal(chip, port)) {
+ 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+ 			  config->supported_interfaces);
+ 		/* Internal ports with no phy-mode need GMII for PHYLIB */
+@@ -853,7 +851,7 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
+ 
+ 	mv88e6xxx_reg_lock(chip);
+ 
+-	if (mode != MLO_AN_PHY || !mv88e6xxx_phy_is_internal(ds, port)) {
++	if (mode != MLO_AN_PHY || !mv88e6xxx_phy_is_internal(chip, port)) {
+ 		/* In inband mode, the link may come up at any time while the
+ 		 * link is not forced down. Force the link down while we
+ 		 * reconfigure the interface mode.
 -- 
 2.40.1
 
