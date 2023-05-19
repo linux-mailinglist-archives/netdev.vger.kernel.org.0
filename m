@@ -1,61 +1,95 @@
-Return-Path: <netdev+bounces-4031-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4032-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3D29170A2C9
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 00:28:14 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 34C9370A2CE
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 00:29:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 675B6281B87
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 22:28:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 260831C20A66
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 22:29:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B11741800F;
-	Fri, 19 May 2023 22:28:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 581FD18015;
+	Fri, 19 May 2023 22:29:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CFCF18000
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 22:28:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E23F6C433EF;
-	Fri, 19 May 2023 22:28:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684535289;
-	bh=kHtJttk0IvKNpeBTTCun9Kaxe9mpk0uKJbFMu4xbEBo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=fjPLOWfLnh+YUZso0agkMdGAZir6v6nV/SrtAoiIwmSXhkhEz/FeEuTojZV5BbnPM
-	 xCIvyJdayyv8y4OHd1E2WJ46Z4RC9+FGstF2G124fSkQTJhZWetm0hjFjzRXF3V2gt
-	 2BRLX6+LhW1kwD1KTWzkeOxw2fRU1DTSyNRWM7wfV99ZalR8t0B4Cqz+5XOfzOmgfz
-	 NEXnwc7TwkiLmnpM5TIxiH0cgPylLpFcsTbogVuDBsPO73ySzLbgao2cnYIA8mzcvj
-	 a4+G4l6DjOJ6OwrSJ7RbWzd7XyYfgmqTdZQK2p8lRFod49RbJYyKwKIF2sLYn1Y17c
-	 JbJTzMI5Io2bg==
-Date: Fri, 19 May 2023 15:28:07 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Min-Hua Chen <minhuadotchen@gmail.com>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, Claudiu Beznea
- <claudiu.beznea@microchip.com>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: macb: use correct __be32 and __be16 types
-Message-ID: <20230519152807.57d3f4c8@kernel.org>
-In-Reply-To: <20230519221942.53942-1-minhuadotchen@gmail.com>
-References: <20230519221942.53942-1-minhuadotchen@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A28718010
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 22:29:30 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35915EE
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 15:29:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684535368;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LV2zWUpRMCkRWk/OKDiHuSjUMmmu6CWhgyYjMMeuU/w=;
+	b=RGS03/YssaQgeWmZHxAsgumlF0156btvtsMzEdDc1s/2zlQsCcy+iLhF949Pd1srczJwZS
+	++h8Dksx035xBVAE9Ax6xE4AJ1lIHbRSpizUegs4yE5CKR7mEL4M/QgyMlpmE/6WTnReVp
+	tI2XTq8s2znQsQkMfFykEItnWf9/nd4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-372-m82_dub7OUi_y8dC91y0Lw-1; Fri, 19 May 2023 18:29:25 -0400
+X-MC-Unique: m82_dub7OUi_y8dC91y0Lw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5B0313C025B8;
+	Fri, 19 May 2023 22:29:24 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.221])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 40F381121314;
+	Fri, 19 May 2023 22:29:22 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <CAF=yD-J8KGX5gjGBK6OO2SuoVa8s07Cm-oKxwmvBmRXY7XscBQ@mail.gmail.com>
+References: <CAF=yD-J8KGX5gjGBK6OO2SuoVa8s07Cm-oKxwmvBmRXY7XscBQ@mail.gmail.com> <20230518130713.1515729-1-dhowells@redhat.com> <20230518130713.1515729-17-dhowells@redhat.com>
+To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc: dhowells@redhat.com, netdev@vger.kernel.org,
+    "David S. Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+    Paolo Abeni <pabeni@redhat.com>, David Ahern <dsahern@kernel.org>,
+    Matthew Wilcox <willy@infradead.org>,
+    Al Viro <viro@zeniv.linux.org.uk>,
+    Christoph Hellwig <hch@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+    Jeff Layton <jlayton@kernel.org>,
+    Christian Brauner <brauner@kernel.org>,
+    Chuck Lever III <chuck.lever@oracle.com>,
+    Linus Torvalds <torvalds@linux-foundation.org>,
+    linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+    linux-mm@kvack.org, Kuniyuki Iwashima <kuniyu@amazon.com>
+Subject: Re: [PATCH net-next v9 16/16] unix: Convert udp_sendpage() to use MSG_SPLICE_PAGES
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2154599.1684535361.1@warthog.procyon.org.uk>
+Date: Fri, 19 May 2023 23:29:21 +0100
+Message-ID: <2154600.1684535361@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Sat, 20 May 2023 06:19:39 +0800 Min-Hua Chen wrote:
-> This patch fixes the following sparse warnings. No functional changes.
-> 
-> Use cpu_to_be16() and cpu_to_be32() to convert constants before comparing
-> them with __be16 type of psrc/pdst and __be32 type of ip4src/ip4dst.
-> Apply be16_to_cpu() in GEM_BFINS().
+Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
 
-same story as with your stmmac patch, the warning is a false positive
+> tiny nit: subject s/udp_sendpage/unix_stream_sendpage/
+
+Can that be fixed up on application/merging, or do I need to repost the
+series?
+
+David
+
 
