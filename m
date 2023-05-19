@@ -1,313 +1,159 @@
-Return-Path: <netdev+bounces-3819-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3820-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 640F2708F85
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 07:40:04 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BFEA7708F96
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 07:50:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1BBBE281892
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 05:40:03 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AB3491C21208
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 05:50:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 134C2657;
-	Fri, 19 May 2023 05:40:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C94A659;
+	Fri, 19 May 2023 05:50:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F14887C
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 05:40:00 +0000 (UTC)
-Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367B510C3
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 22:39:58 -0700 (PDT)
-Received: by mail-vs1-xe2f.google.com with SMTP id ada2fe7eead31-437e8282c1fso233416137.2
-        for <netdev@vger.kernel.org>; Thu, 18 May 2023 22:39:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684474797; x=1687066797;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=3B42Gi1lK0VMt7Rg2etX15frwNW0h2cgi6yUrv4a9E4=;
-        b=Ed3AudVTxqSKGtFbYSskCYpOnfo6Fd5kH7U4QBfFHB+9e2zMk1GgLqZQtXdJmVEx0m
-         /S39GtfNMeCWZOjnkOqwoWvhDpne2bfbV5jnqd6mDs3JZ8hvDjF1R2QXBt/iASL22fZS
-         QxyuNiSaB4cgY5fEMM1F07PE7VFPbd1oK5jMaxnZXO/8BY469t0u/KwpNQ3d9JjxK7/1
-         OVp1PX4Ds1i0cL8H2z9OwuLp3CIQniMLG0dQDT32VglzXdqQJ+yivM9Kr1q4mN/2U6TV
-         ZXAQzuViy/6XiE/KBz371SrbtyOj2UpoZ3OfW0fY+eNUIBFRxYE/+she14Y4//dmyQ2k
-         2X/g==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 844277C
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 05:50:15 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C01D2
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 22:50:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684475412;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=R2hzrnI5esYTTOUV9jOS70d88iTnE+AXFNmudpYyxXI=;
+	b=SOh+e7KvW9iT0ZHXC0ofQlimmFMGpEeNxNgKkFh9iHS7twP1beXZf8lypz3WZLfvubSD8b
+	pWamibJSR4rDL8pyVzCGT8T80RlK7Uv4H5SrsUvmX7u62txidObkoYoPdNS3DiXoN64TJD
+	45IlYR4n49dMPFu5OzwLjDkkHCE8GI4=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-664-RF0qAMqwPcew5ct-ftQT0w-1; Fri, 19 May 2023 01:50:11 -0400
+X-MC-Unique: RF0qAMqwPcew5ct-ftQT0w-1
+Received: by mail-lj1-f197.google.com with SMTP id 38308e7fff4ca-2acfaf0c1ffso15557381fa.3
+        for <netdev@vger.kernel.org>; Thu, 18 May 2023 22:50:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684474797; x=1687066797;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3B42Gi1lK0VMt7Rg2etX15frwNW0h2cgi6yUrv4a9E4=;
-        b=KBdUTW2+VQU6gUhou89XPnWWRGFv8sGFpgR6k+RtB0HzR+s5DTmujk2jd72UsuARUJ
-         sbGAiiNrNwUFknmQs8VS332cfrJkWU29GuB2Yo/20yDe5pKzxrEh+40+IV5Sh9dJ2m2o
-         1p7HBGeFLBc3r0xv4t9sWm2OUvetUR4qmPxPD+HNyMPDCh2vl4/DUUMCsE3LAmdKITBc
-         HMRoxkGcWtPCbmMVP/XUJ+Lg0QRdixGbWC6berUBbSZCO0/F0JUKz6/jKDTGisRY/HYb
-         4MzE1wwjQkQv1cM3lJRugPC/a/71HnJN0jv4t+8FuiryVVP4MrxKmIH8qi012jj14Vs+
-         RciA==
-X-Gm-Message-State: AC+VfDwXaeXX2ZIj4eFwn5HWBFSqZ/Uz/v4FSOnrHIMkVCFiNnVXh+rg
-	H+C8/xbFonByMLsP7PThk2Ch2jb3ezv6BM5OjBK2Dg==
-X-Google-Smtp-Source: ACHHUZ7xoIQRozNOou/K/L/ALEGzUZLUJumHHMd6mtrugzfaLJ3R/Wj848SKoSHi7xhRgqS6nI75aoWNt5UAqLtEcrI=
-X-Received: by 2002:a67:e955:0:b0:437:dc08:1a84 with SMTP id
- p21-20020a67e955000000b00437dc081a84mr267633vso.3.1684474797080; Thu, 18 May
- 2023 22:39:57 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684475409; x=1687067409;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=R2hzrnI5esYTTOUV9jOS70d88iTnE+AXFNmudpYyxXI=;
+        b=WFuUHaerK43DZFwZ2rPnQjxjR9a/vC4XnaD7kep/QCPkDkqEfiNyo/yDeSONX6XIS4
+         YE5OdyeTnbcr/9D3wvTE1x+7cTMXaTMLLQEbDZx7HCS9UlBXwJq3AowwHpb5fdl8XK/K
+         elcLwVDtAtjuLtla/B3liLgKspEc9fR43Clro+sNtE7iPXGWu+xOBDEsRRYoUHhNMZZf
+         IfcJ7IJqyQgnKL0cbOo2Pjmord036+oaMT0POfTjKFbxl5dCg9YuDarDzuCsBFC4c3Oz
+         1orcmdmuCRvmNWSXaeEr9ISw51ouRXiHST3YCbzyYnD+8Hn0k1+RK1H8o0cjktCs6DAu
+         LxPA==
+X-Gm-Message-State: AC+VfDxUwuFr/pKw0ScbBr96vy1K7zOqZrGX71l7okqLpM5zFBy2hlwL
+	znGXv5wsTEzUQXC6+iNHRHRAgOzuznjYgO9aNzKo9CNoI5/vq+PAQ1ok2hccaqsptz2env3Da/O
+	RKo16dYEdiL1XQfnH
+X-Received: by 2002:ac2:5581:0:b0:4f3:aaf0:f672 with SMTP id v1-20020ac25581000000b004f3aaf0f672mr494256lfg.45.1684475409783;
+        Thu, 18 May 2023 22:50:09 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7niOFPsZwqOneqGIAkM65yM1Ou6ocpJ0Gx3ZF3fF1AMiWM8NU4v0NkXeSdXsR/sV1uYPYNhA==
+X-Received: by 2002:ac2:5581:0:b0:4f3:aaf0:f672 with SMTP id v1-20020ac25581000000b004f3aaf0f672mr494237lfg.45.1684475409450;
+        Thu, 18 May 2023 22:50:09 -0700 (PDT)
+Received: from redhat.com ([2a02:14f:175:3e4d:6703:27b9:6f74:5282])
+        by smtp.gmail.com with ESMTPSA id z17-20020ac24191000000b004eb2f35045bsm470970lfh.269.2023.05.18.22.50.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 May 2023 22:50:08 -0700 (PDT)
+Date: Fri, 19 May 2023 01:49:56 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc: Emil Tantilov <emil.s.tantilov@intel.com>,
+	intel-wired-lan@lists.osuosl.org, shannon.nelson@amd.com,
+	simon.horman@corigine.com, leon@kernel.org, decot@google.com,
+	willemb@google.com, jesse.brandeburg@intel.com,
+	anthony.l.nguyen@intel.com, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	netdev@vger.kernel.org,
+	"Singhai, Anjali" <anjali.singhai@intel.com>,
+	"Orr, Michael" <michael.orr@intel.com>
+Subject: Re: [PATCH iwl-next v4 00/15] Introduce Intel IDPF driver
+Message-ID: <20230519013710-mutt-send-email-mst@kernel.org>
+References: <20230508194326.482-1-emil.s.tantilov@intel.com>
+ <20230512023234-mutt-send-email-mst@kernel.org>
+ <6a900cd7-470a-3611-c88a-9f901c56c97f@intel.com>
+ <20230518130452-mutt-send-email-mst@kernel.org>
+ <dba3d773-0834-10fe-01a1-511b4dd263e5@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CA+G9fYszs5wPp+TWJeVZsdRjnBTXTa8i3YY3qV9SHbB1+R2+4Q@mail.gmail.com>
- <20680bb5-71c0-4945-a058-05f43bbd03f4@kili.mountain>
-In-Reply-To: <20680bb5-71c0-4945-a058-05f43bbd03f4@kili.mountain>
-From: Naresh Kamboju <naresh.kamboju@linaro.org>
-Date: Fri, 19 May 2023 11:09:45 +0530
-Message-ID: <CA+G9fYvY8HZ=F0hQueeX2x2RvP-fJgrDF_7y-Q_yhpVE_8Y9Xg@mail.gmail.com>
-Subject: Re: next: qemu-arm64: kernel BUG at fs/inode.c:1763!
-To: Chuck Lever <chuck.lever@oracle.com>, Dan Carpenter <dan.carpenter@linaro.org>
-Cc: Linux-Next Mailing List <linux-next@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, 
-	linux-fsdevel@vger.kernel.org, linux-mm <linux-mm@kvack.org>, 
-	lkft-triage@lists.linaro.org, Al Viro <viro@zeniv.linux.org.uk>, 
-	Christian Brauner <brauner@kernel.org>, "Paul E. McKenney" <paulmck@kernel.org>, frederic@kernel.org, 
-	Arnd Bergmann <arnd@arndb.de>, Anders Roxell <anders.roxell@linaro.org>, 
-	Jakub Kacinski <kuba@kernel.org>, "David S. Miller" <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dba3d773-0834-10fe-01a1-511b4dd263e5@intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, 17 May 2023 at 20:38, Dan Carpenter <dan.carpenter@linaro.org> wrote:
->
-> The fs/inode.c:1763 bug is more stuff from net/handshake testing, so
-> lets add Chuck to the CC list.
+On Thu, May 18, 2023 at 04:26:24PM -0700, Samudrala, Sridhar wrote:
+> 
+> 
+> On 5/18/2023 10:10 AM, Michael S. Tsirkin wrote:
+> > On Thu, May 18, 2023 at 09:19:31AM -0700, Samudrala, Sridhar wrote:
+> > > 
+> > > 
+> > > On 5/11/2023 11:34 PM, Michael S. Tsirkin wrote:
+> > > > On Mon, May 08, 2023 at 12:43:11PM -0700, Emil Tantilov wrote:
+> > > > > This patch series introduces the Intel Infrastructure Data Path Function
+> > > > > (IDPF) driver. It is used for both physical and virtual functions. Except
+> > > > > for some of the device operations the rest of the functionality is the
+> > > > > same for both PF and VF. IDPF uses virtchnl version2 opcodes and
+> > > > > structures defined in the virtchnl2 header file which helps the driver
+> > > > > to learn the capabilities and register offsets from the device
+> > > > > Control Plane (CP) instead of assuming the default values.
+> > > > 
+> > > > So, is this for merge in the next cycle?  Should this be an RFC rather?
+> > > > It seems unlikely that the IDPF specification will be finalized by that
+> > > > time - how are you going to handle any specification changes?
+> > > 
+> > > Yes. we would like this driver to be merged in the next cycle(6.5).
+> > > Based on the community feedback on v1 version of the driver, we removed all
+> > > references to OASIS standard and at this time this is an intel vendor
+> > > driver.
+> > > 
+> > > Links to v1 and v2 discussion threads
+> > > https://lore.kernel.org/netdev/20230329140404.1647925-1-pavan.kumar.linga@intel.com/
+> > > https://lore.kernel.org/netdev/20230411011354.2619359-1-pavan.kumar.linga@intel.com/
+> > > 
+> > > The v1->v2 change log reflects this update.
+> > > v1 --> v2: link [1]
+> > >   * removed the OASIS reference in the commit message to make it clear
+> > >     that this is an Intel vendor specific driver
+> > 
+> > Yes this makes sense.
+> > 
+> > 
+> > > Any IDPF specification updates would be handled as part of the changes that
+> > > would be required to make this a common standards driver.
+> > 
+> > 
+> > So my question is, would it make sense to update Kconfig and module name
+> > to be "ipu" or if you prefer "intel-idpf" to make it clear this is
+> > currently an Intel vendor specific driver?  And then when you make it a
+> > common standards driver rename it to idpf?  The point being to help make
+> > sure users are not confused about whether they got a driver with
+> > or without IDPF updates. It's not critical I guess but seems like a good
+> > idea. WDYT?
+> 
+> It would be more disruptive to change the name of the driver. We can update
+> the pci device table, module description and possibly driver version when we
+> are ready to make this a standard driver.
+> So we would prefer not changing the driver name.
 
-Anders bisected this problem and found the first bad commit,
+Kconfig entry and description too?
 
----
-commit f921bd41001ccff2249f5f443f2917f7ef937daf
-Author: Chuck Lever <chuck.lever@oracle.com>
-Date:   Thu May 11 11:49:17 2023 -0400
+-- 
+MST
 
-    net/handshake: Unpin sock->file if a handshake is cancelled
-
-    If user space never calls DONE, sock->file's reference count remains
-    elevated. Enable sock->file to be freed eventually in this case.
-
-    Reported-by: Jakub Kacinski <kuba@kernel.org>
-    Fixes: 3b3009ea8abb ("net/handshake: Create a NETLINK service for
-handling handshake requests")
-    Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
- net/handshake/handshake.h | 1 +
- net/handshake/request.c   | 4 ++++
- 2 files changed, 5 insertions(+)
-
-
-
->
-> regards,
-> dan carpenter
->
-> On Wed, May 17, 2023 at 06:39:57PM +0530, Naresh Kamboju wrote:
-> > Following kernel crash noticed while booting qemu-arm64 kunit builds on
-> > Linux next version 6.4.0-rc2-next-20230517.
-> >
-> > WARNING: CPU: 1 PID: 1436 at mm/page_alloc.c:4781 __alloc_pages
-> > kernel BUG at fs/inode.c:1763!
-> > WARNING: CPU: 0 PID: 0 at kernel/context_tracking.c:128
-> > ct_kernel_exit.constprop.0+0xe0/0xe8
-> >
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> >
-> > Detailed Crash log:
-> > =========
-> > <4>[  800.148388] ------------[ cut here ]------------
-> > <4>[  800.150072] WARNING: CPU: 1 PID: 1436 at mm/page_alloc.c:4781
-> > __alloc_pages+0x998/0x13e8
-> > <4>[  800.151978] Modules linked in:
-> > <4>[  800.153337] CPU: 1 PID: 1436 Comm: kunit_try_catch Tainted: G
-> > B            N 6.4.0-rc2-next-20230517 #1
-> > <4>[  800.154662] Hardware name: linux,dummy-virt (DT)
-> > <4>[  800.155921] pstate: 22400005 (nzCv daif +PAN -UAO +TCO -DIT
-> > -SSBS BTYPE=--)
-> > <4>[  800.157079] pc : __alloc_pages+0x998/0x13e8
-> > <4>[  800.158148] lr : __kmalloc_large_node+0xc0/0x1b8
-> > <4>[  800.159238] sp : ffff80000b5e7aa0
-> > <4>[  800.160154] x29: ffff80000b5e7aa0 x28: 0000000000000000 x27:
-> > 0000000000000000
-> > <4>[  800.161762] x26: ffff0000c4509f00 x25: ffff800008087a98 x24:
-> > ffffd0168ffa8460
-> > <4>[  800.163283] x23: 1ffff000016bcf74 x22: 0000000000040dc0 x21:
-> > 0000000000000000
-> > <4>[  800.164813] x20: 0000000000000015 x19: 0000000000000000 x18:
-> > 000000000000000b
-> > <4>[  800.166307] x17: 00000000bd2c963e x16: 00000000a2b18575 x15:
-> > 0000000033b8949b
-> > <4>[  800.167831] x14: 000000006d0ad0a4 x13: 00000000e32f85f5 x12:
-> > ffff7000016bcfa1
-> > <4>[  800.169363] x11: 1ffff000016bcfa0 x10: ffff7000016bcfa0 x9 :
-> > 000000000000f204
-> > <4>[  800.170928] x8 : 00000000f2000000 x7 : 00000000f2f2f2f2 x6 :
-> > 00000000f3f3f3f3
-> > <4>[  800.172467] x5 : 0000000000040dc0 x4 : ffff0000c614e900 x3 :
-> > 0000000000000000
-> > <4>[  800.173976] x2 : 0000000000000000 x1 : 0000000000000001 x0 :
-> > ffffd01696633000
-> > <4>[  800.175603] Call trace:
-> > <4>[  800.176314]  __alloc_pages+0x998/0x13e8
-> > <4>[  800.177355]  __kmalloc_large_node+0xc0/0x1b8
-> > <4>[  800.178401]  __kmalloc+0x158/0x1c0
-> > <4>[  800.179350]  handshake_req_alloc+0x70/0xb8
-> > <4>[  800.180510]  handshake_req_alloc_case+0xa4/0x188
-> > <4>[  800.181598]  kunit_try_run_case+0x88/0x120
-> > <4>[  800.182614]  kunit_generic_run_threadfn_adapter+0x38/0x60
-> > <4>[  800.183809]  kthread+0x194/0x1b0
-> > <4>[  800.184813]  ret_from_fork+0x10/0x20
-> > <4>[  800.185873] ---[ end trace 0000000000000000 ]---
-> > <6>[  800.202972]         ok 6 handshake_req_alloc excessive privsize
-> > <6>[  800.217425]         ok 7 handshake_req_alloc all good
-> > <6>[  800.219182]     # req_alloc API fuzzing: pass:7 fail:0 skip:0 total:7
-> > <6>[  800.222082]     ok 1 req_alloc API fuzzing
-> > <6>[  800.243148]     ok 2 req_submit NULL req arg
-> > <6>[  800.260195]     ok 3 req_submit NULL sock arg
-> > <6>[  800.274397]     ok 4 req_submit NULL sock->file
-> > <6>[  800.294631]     ok 5 req_lookup works
-> > <6>[  800.310289]     ok 6 req_submit max pending
-> > <6>[  800.326669]     ok 7 req_submit multiple
-> > <6>[  800.342645]     ok 8 req_cancel before accept
-> > <4>[  800.359161] ------------[ cut here ]------------
-> > <2>[  800.360659] kernel BUG at fs/inode.c:1763!
-> > <0>[  800.362464] Internal error: Oops - BUG: 00000000f2000800 [#1] PREEMPT SMP
-> > <4>[  800.364079] Modules linked in:
-> > <4>[  800.364978] CPU: 0 PID: 9 Comm: kworker/0:1 Tainted: G    B   W
-> >       N 6.4.0-rc2-next-20230517 #1
-> > <4>[  800.366607] Hardware name: linux,dummy-virt (DT)
-> > <4>[  800.368282] Workqueue: events delayed_fput
-> > <4>[  800.369511] pstate: 62400005 (nZCv daif +PAN -UAO +TCO -DIT
-> > -SSBS BTYPE=--)
-> > <4>[  800.370861] pc : iput+0x2c4/0x328
-> > <4>[  800.371839] lr : iput+0x3c/0x328
-> > <4>[  800.372882] sp : ffff800008107b50
-> > <6>[  800.375744]     ok 9 req_cancel after accept
-> > <4>[  800.376704] x29: ffff800008107b50 x28: ffffd016924f7400 x27:
-> > ffff0000c08d4da0
-> > <4>[  800.379288] x26: ffff0000c042f918 x25: ffff0000cc273918 x24:
-> > ffff0000cc273900
-> > <4>[  800.381160] x23: 0000000000000000 x22: ffff0000c042f9b8 x21:
-> > ffffd016924f7b40
-> > <4>[  800.383408] x20: ffff0000c042f880 x19: ffff0000c042f880 x18:
-> > 000000000000000b
-> > <4>[  800.385535] x17: ffffd0168fb6f094 x16: ffffd0168fb6ee10 x15:
-> > ffffd0168fb6ebd4
-> > <4>[  800.387985] x14: ffffd0168f7d5de8 x13: ffffd0168f617f98 x12:
-> > ffff700001020f53
-> > <4>[  800.389672] x11: 1ffff00001020f52 x10: ffff700001020f52 x9 :
-> > ffffd0168fb67384
-> > <4>[  800.392442] x8 : ffff800008107a98 x7 : 0000000000000000 x6 :
-> > 0000000000000008
-> > <4>[  800.395053] x5 : ffff800008107a58 x4 : 0000000000000001 x3 :
-> > dfff800000000000
-> > <4>[  800.397652] x2 : 0000000000000007 x1 : ffff0000c042f918 x0 :
-> > 0000000000000060
-> > <4>[  800.400110] Call trace:
-> > <4>[  800.401352]  iput+0x2c4/0x328
-> > <4>[  800.402741]  dentry_unlink_inode+0x12c/0x240
-> > <4>[  800.404519]  __dentry_kill+0x16c/0x2b0
-> > <4>[  800.406047]  dput+0x24c/0x438
-> > <4>[  800.407331]  __fput+0x140/0x3b0
-> > <4>[  800.409152]  delayed_fput+0x64/0x80
-> > <4>[  800.410708]  process_one_work+0x3cc/0x7d0
-> > <4>[  800.413032]  worker_thread+0xa4/0x6a0
-> > <4>[  800.415041]  kthread+0x194/0x1b0
-> > <6>[  800.416283]     ok 10 req_cancel after done
-> > <4>[  800.416205]  ret_from_fork+0x10/0x20
-> > <0>[  800.419090] Code: 17ffffc4 97fffb54 17ffffd4 d65f03c0 (d4210000)
-> > <4>[  800.421577] ---[ end trace 0000000000000000 ]---
-> > <6>[  800.424335] note: kworker/0:1[9] exited with irqs disabled
-> > <6>[  800.428252] note: kworker/0:1[9] exited with preempt_count 1
-> > <4>[  800.435635] ------------[ cut here ]------------
-> > <4>[  800.436529] WARNING: CPU: 0 PID: 0 at
-> > kernel/context_tracking.c:128 ct_kernel_exit.constprop.0+0xe0/0xe8
-> > <4>[  800.439070] Modules linked in:
-> > <4>[  800.440326] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G    B D W
-> >     N 6.4.0-rc2-next-20230517 #1
-> > <4>[  800.442196] Hardware name: linux,dummy-virt (DT)
-> > <4>[  800.443408] pstate: 224003c5 (nzCv DAIF +PAN -UAO +TCO -DIT
-> > -SSBS BTYPE=--)
-> > <4>[  800.445031] pc : ct_kernel_exit.constprop.0+0xe0/0xe8
-> > <4>[  800.446629] lr : ct_kernel_exit.constprop.0+0x20/0xe8
-> > <4>[  800.448263] sp : ffffd01694ed7cd0
-> > <4>[  800.449375] x29: ffffd01694ed7cd0 x28: 00000000437e90ac x27:
-> > 0000000000000000
-> > <4>[  800.451354] x26: ffffd01694ef1e40 x25: 0000000000000000 x24:
-> > 0000000000000000
-> > <4>[  800.453397] x23: ffffd01694ee2ba0 x22: 1ffffa02d29dafb4 x21:
-> > 0000000000000000
-> > <4>[  800.455573] x20: ffffd01692f29c20 x19: ffff0000da667c20 x18:
-> > 000000000000000b
-> > <4>[  800.457649] x17: 000000000055a8d0 x16: 000000006cbc159c x15:
-> > ffffd0168fb6865c
-> > <4>[  800.459662] x14: ffffd0168fb680ec x13: ffffd0168fb3b03c x12:
-> > ffff7a02d29daf81
-> > <4>[  800.461787] x11: 1ffffa02d29daf80 x10: ffff7a02d29daf80 x9 :
-> > dfff800000000000
-> > <4>[  800.463827] x8 : ffffd01694ed7c08 x7 : 0000000000000000 x6 :
-> > 0000000000000008
-> > <4>[  800.465864] x5 : ffffd01694ed7bc8 x4 : 0000000000000001 x3 :
-> > dfff800000000000
-> > <4>[  800.467860] x2 : 4000000000000002 x1 : 4000000000000000 x0 :
-> > ffff2fea4773e000
-> > <4>[  800.469981] Call trace:
-> > <4>[  800.470946]  ct_kernel_exit.constprop.0+0xe0/0xe8
-> > <4>[  800.472535]  ct_idle_enter+0x10/0x20
-> > <4>[  800.473923]  default_idle_call+0x58/0x90
-> > <4>[  800.475213]  do_idle+0x304/0x388
-> > <4>[  800.476492]  cpu_startup_entry+0x2c/0x40
-> > <4>[  800.477885]  rest_init+0x120/0x128
-> > <4>[  800.478830]  arch_call_rest_init+0x1c/0x28
-> > <4>[  800.479961]  start_kernel+0x2f8/0x3c0
-> > <4>[  800.482015]  __primary_switched+0xc0/0xd0
-> > <4>[  800.483086] ---[ end trace 0000000000000000 ]---
-> > <6>[  800.487780]     ok 11 req_destroy works
-> > <6>[  800.488283] # Handshake API tests: pass:11 fail:0 skip:0 total:11
-> > <6>[  800.491161] # Totals: pass:17 fail:0 skip:0 total:17
-> > <6>[  800.495059] ok 75 Handshake API tests
-> > <6>[  800.514129] uart-pl011 9000000.pl011: no DMA platform data
-> >
-> > links,
-> >  - https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20230517/testrun/17029810/suite/boot/test/gcc-12-lkftconfig-kunit/log
-> >  - https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20230517/testrun/17029810/suite/boot/test/gcc-12-lkftconfig-kunit/history/
-> >  - https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20230517/testrun/17029810/suite/boot/tests/
-> >
-> > Steps to reproduce:
-> > =================
-> > # To install tuxrun on your system globally:
-> > # sudo pip3 install -U tuxrun==0.42.0
-> > #
-> > # See https://tuxrun.org/ for complete documentation.
-> >
-> > tuxrun   \
-> >  --runtime podman   \
-> >  --device qemu-arm64   \
-> >  --kernel https://storage.tuxsuite.com/public/linaro/lkft/builds/2PtylM1zfMZo4vZUtwFtBJhJRvx/Image.gz
-> >   \
-> >  --modules https://storage.tuxsuite.com/public/linaro/lkft/builds/2PtylM1zfMZo4vZUtwFtBJhJRvx/modules.tar.xz
-> >   \
-> >  --rootfs https://storage.tuxsuite.com/public/linaro/lkft/oebuilds/2PeQhlPkvTmtoQVO1F0CQ7lAsm5/images/juno/lkft-tux-image-juno-20230511150149.rootfs.ext4.gz
-> >   \
-> >  --parameters SKIPFILE=skipfile-lkft.yaml   \
-> >  --image docker.io/lavasoftware/lava-dispatcher:2023.01.0020.gc1598238f   \
-> >  --tests kunit   \
-> >  --timeouts boot=30
-> >
-> > --
-> > Linaro LKFT
-> > https://lkft.linaro.org
-
-- Naresh
 
