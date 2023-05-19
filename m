@@ -1,108 +1,166 @@
-Return-Path: <netdev+bounces-3937-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3938-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9D42E709A41
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 16:44:06 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id CC6B4709A50
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 16:46:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CDA18280FCA
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 14:44:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 95C4C1C20B17
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 14:46:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F0E67C2D8;
-	Fri, 19 May 2023 14:44:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B11F0C2F5;
+	Fri, 19 May 2023 14:46:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E278B5679
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 14:44:02 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855FC1712;
-	Fri, 19 May 2023 07:43:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-	Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=SrYt/TmXcYSZJ0qc+BU3zpQlSOXKm50XV33yjSp/Dhw=; b=VNLQPDrEVMNa2yj65Ly2Lsbf+q
-	SpBw1GZAzHirj99IDNnfNDZdUZfegYrwuWCUxVEtOBDQdYrdAcujm/YJqCWGYVhaeqksCLldNWMo9
-	fm/l8Bx89JscJtEK9UUjeo9dNarhVO4AGVMDcJw5MyEi0ZXHg7K4xMTQaHhk5UIb4qFenYQUurCfT
-	gBXXOj1lm8G3aGYHamkfdLmI/ELAdiIMpocsaafneGR/dIBAvLHLCKe+H6Ancj/X7F3BITxZE+NtJ
-	kjUOCNRudWOV+578xkIwNMwEhBXwv31KKEN06lN0eMnwHd6x5lxq35K8DlKFqdu6+11pe7j3B8+8m
-	KjlO6oSQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41190)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q01KM-00031X-VB; Fri, 19 May 2023 15:43:30 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q01KL-0004hb-EB; Fri, 19 May 2023 15:43:29 +0100
-Date: Fri, 19 May 2023 15:43:29 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: alexis.lothore@bootlin.com
-Cc: Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Richard Cochran <richardcochran@gmail.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>, netdev@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	thomas.petazzoni@bootlin.com, paul.arola@telus.com,
-	scott.roberts@telus.com,
-	Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [PATCH net-next v2 7/7] net: dsa: mv88e6xxx: enable support for
- 88E6361 switch
-Message-ID: <ZGeLEbcCHzOASasC@shell.armlinux.org.uk>
-References: <20230519141303.245235-1-alexis.lothore@bootlin.com>
- <20230519141303.245235-8-alexis.lothore@bootlin.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A26678BE2
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 14:46:49 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC039C9
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 07:46:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684507606;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=mSlH9yed2+egztC1235eRiYpBNaIcoimkdcsVGFGI0o=;
+	b=ORXElE425COH1r8J/0IRwlGRwon6vcnakJzOOHRx1ZMkP5dZFG956pbM4qwd+iLTy68zwC
+	mg5ZXZErDr1U+KHBXPPnEMkxFJsItebJTY4mANgvh1m9OJW03W8cekNEt8FGXt7fXPXRRj
+	MVVz3ktTVkW1zofFAZKtRd5kaCVQX74=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-358-qRtGBcacMLSADPtGZYe3Ig-1; Fri, 19 May 2023 10:46:45 -0400
+X-MC-Unique: qRtGBcacMLSADPtGZYe3Ig-1
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f508c2b301so3470015e9.0
+        for <netdev@vger.kernel.org>; Fri, 19 May 2023 07:46:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684507604; x=1687099604;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mSlH9yed2+egztC1235eRiYpBNaIcoimkdcsVGFGI0o=;
+        b=kDfMhAuA/gzL0/l3b4LK8Xzrk/zS5L+IzesZhXGqf/yTaLZTXnJmQQMIkK5NkAumVr
+         M9QDUux1bOj1MXhwiW4thSS4I6KD6ZQkZbu3Ya512cI1blV8IWFjw6KRN7yvs/GYHWwt
+         Ce9TwKz+3GaDCaP9ibW/+sMLCRnMGBF3m3CMSOALFCROXwPU3htnwyI1zRY+Hx5mLm5D
+         neirF0LpQfgEo6HIRQOG0KflO0VMjtLxIP+7xNh3TluU/CqP/gz5oc/unbVm6jCeLdgt
+         kXCjAA0rZLPQs8+LxwWJYMPympr/19DZ0PbTDaeyf4IzeMjFDsyEFwpdSrEhYD/uCVDZ
+         PNtg==
+X-Gm-Message-State: AC+VfDzz1NB2D8nDU238dljhfH2oFNqLzA4PqDGFFHEBPPRwE+dUURP5
+	9iw4LNpVQSUCbrW1qjUDOcRWtX6RNdSL+PARGHXcf5JrelU6anH01apizEQoda286U11x37dhgZ
+	0DMCmslf8rOJ0T9mLMj0Lelbg
+X-Received: by 2002:a5d:4b4a:0:b0:307:5561:5eec with SMTP id w10-20020a5d4b4a000000b0030755615eecmr1603019wrs.0.1684507604324;
+        Fri, 19 May 2023 07:46:44 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5C903d6ahLAiz8d0kKQA1HiJ8aJs3uxoW70pAdOmb9Ign7FpFP2GnVquoogPSXHNEO9bUbaA==
+X-Received: by 2002:a5d:4b4a:0:b0:307:5561:5eec with SMTP id w10-20020a5d4b4a000000b0030755615eecmr1603008wrs.0.1684507604009;
+        Fri, 19 May 2023 07:46:44 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-235-104.dyn.eolo.it. [146.241.235.104])
+        by smtp.gmail.com with ESMTPSA id n6-20020adff086000000b002f6176cc6desm5423908wro.110.2023.05.19.07.46.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 May 2023 07:46:43 -0700 (PDT)
+Message-ID: <7f189d22226841168eb46b7be8939e2d06fa476c.camel@redhat.com>
+Subject: Re: memory leak in ipv6_sock_ac_join
+From: Paolo Abeni <pabeni@redhat.com>
+To: =?UTF-8?Q?=E8=8C=83=E4=BF=8A=E6=9D=B0?= <junjie2020@iscas.ac.cn>, 
+ davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+ kuba@kernel.org,  netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: syzkaller-bugs@googlegroups.com
+Date: Fri, 19 May 2023 16:46:42 +0200
+In-Reply-To: <13e257b8.6869.18833286427.Coremail.junjie2020@iscas.ac.cn>
+References: <13e257b8.6869.18833286427.Coremail.junjie2020@iscas.ac.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230519141303.245235-8-alexis.lothore@bootlin.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 19, 2023 at 04:13:03PM +0200, alexis.lothore@bootlin.com wrote:
-> From: Alexis Lothoré <alexis.lothore@bootlin.com>
-> 
-> Marvell 88E6361 is an 8-port switch derived from the
-> 88E6393X/88E9193X/88E6191X switches family. It can benefit from the
-> existing mv88e6xxx driver by simply adding the proper switch description in
-> the driver. Main differences with other switches from this
-> family are:
-> - 8 ports exposed (instead of 11): ports 1, 2 and 8 not available
-> - No 5GBase-x nor SFI/USXGMII support
-> 
-> ---
-> Changes since v1:
-> - define internal phys offset
-> - enforce 88e6361 features in mv88e6393x_phylink_get_caps
-> - enforce 88e6361 features in mv88e6393x_port_set_speed_duplex
-> - enforce 88e6361 features in mv88e6393x_port_max_speed_mode
+hi,
 
-Not exactly related to this patch, but please do not rely on this "max
-speed mode" - please always ensure that you specify the phy-mode and
-fixed-link settings for CPU and DSA ports in firmware. Thanks.
+Please use plain-text when sending messages to a kernel devel mailing
+list.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+On Fri, 2023-05-19 at 16:37 +0800, =E8=8C=83=E4=BF=8A=E6=9D=B0 wrote:
+> Our modified=C2=A0tool found a new bug=C2=A0BUG: unable to handle kernel =
+NULL
+> pointer dereference in scsi_queue_rq=C2=A0
+
+What you mention above is different from what you actually reports
+below.
+
+> in=C2=A0Kernel=C2=A0commit v5.14.=C2=A0
+
+That is not exactly new.
+
+> The report is as below and this bug don't have a repro C program
+> until now.=C2=A0Please inform me if you confirm this is a=C2=A0reproducib=
+le
+> bug.
+
+I think the above expectation is quite beyond what you could get. When
+you reports a bug _you_ are supposed to try to reproduce it.
+
+> =C2=A0---
+> =C2=A0BUG: memory leak
+> unreferenced object 0xffff8ad4e16c5760 (size 32):
+> =C2=A0 comm "syz-executor.2", pid 17137, jiffies 4295510146 (age 7.862s)
+> =C2=A0 hex dump (first 32 bytes):
+> =C2=A0 =C2=A0 fe 80 00 00 00 00 00 00 00 00 00 00 00 00 00 bb=C2=A0 .....=
+...........
+> =C2=A0 =C2=A0 01 00 00 00 d4 8a ff ff 00 00 00 00 00 00 00 00=C2=A0 .....=
+...........
+> =C2=A0 backtrace:
+> =C2=A0 =C2=A0 [<00000000033cd1b4>] kmalloc include/linux/slab.h:605 [inli=
+ne]
+> =C2=A0 =C2=A0 [<00000000033cd1b4>] sock_kmalloc+0x48/0x80 net/core/sock.c=
+:2563
+> =C2=A0 =C2=A0 [<00000000724962dc>] ipv6_sock_ac_join+0xf0/0x2d0
+> net/ipv6/anycast.c:86
+> =C2=A0 =C2=A0 [<0000000027291f90>] do_ipv6_setsockopt.isra.14+0x1e23/0x21=
+a0
+> net/ipv6/ipv6_sockglue.c:868
+> =C2=A0 =C2=A0 [<00000000bb6b5160>] ipv6_setsockopt+0xa9/0xf0
+> net/ipv6/ipv6_sockglue.c:1021
+> =C2=A0 =C2=A0 [<0000000057fe6cc3>] udpv6_setsockopt+0x53/0xa0
+> net/ipv6/udp.c:1652
+> =C2=A0 =C2=A0 [<0000000023dcd6bb>] __sys_setsockopt+0xb6/0x160
+> net/socket.c:2259
+> =C2=A0 =C2=A0 [<0000000081a16a2e>] __do_sys_setsockopt net/socket.c:2270
+> [inline]
+> =C2=A0 =C2=A0 [<0000000081a16a2e>] __se_sys_setsockopt net/socket.c:2267
+> [inline]
+> =C2=A0 =C2=A0 [<0000000081a16a2e>] __x64_sys_setsockopt+0x22/0x30
+> net/socket.c:2267
+> =C2=A0 =C2=A0 [<0000000075aec224>] do_syscall_x64 arch/x86/entry/common.c=
+:50
+> [inline]
+> =C2=A0 =C2=A0 [<0000000075aec224>] do_syscall_64+0x37/0x80
+> arch/x86/entry/common.c:80
+> =C2=A0 =C2=A0 [<000000006cd4d12f>] entry_SYSCALL_64_after_hwframe+0x46/0x=
+b0
+>=20
+> BUG: leak checking failed
+
+This was probably addressed by:
+
+8c0de6e96c97 ("ipv6: fix memory leaks on IPV6_ADDRFORM path")=C2=A0
+
+
+Cheers,
+
+Paolo
+
 
