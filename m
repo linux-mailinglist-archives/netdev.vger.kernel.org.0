@@ -1,139 +1,213 @@
-Return-Path: <netdev+bounces-4035-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4036-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B1EB270A33A
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 01:17:33 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4D9C070A355
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 01:28:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3B7871C211CD
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 23:17:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 09C18281C0B
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 23:28:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 62E4B5683;
-	Fri, 19 May 2023 23:17:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0153B568B;
+	Fri, 19 May 2023 23:28:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54B18567E
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 23:17:30 +0000 (UTC)
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293C31B0;
-	Fri, 19 May 2023 16:17:29 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.west.internal (Postfix) with ESMTP id 2CB9F3200928;
-	Fri, 19 May 2023 19:17:28 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Fri, 19 May 2023 19:17:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=devkernel.io; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm2; t=1684538247; x=1684624647; bh=Ly
-	gemaea07HZtQv77fs87uw14qURDTNYWC8SdvMTfdo=; b=a+WV6lWCsY4UtbLskq
-	Oy+k5fNs4pVedKTSeiluLYYvMit4RBAUNVKtqznQ7fBRbXdaDLkJm5IUlSXbVZzA
-	7S8OdvfJhP+trQuaHnwwz4XoCehvuqWtze/ZHZPQXzr7jaf//XccIjW127II4pty
-	jX0hu9nekdgqFX9FSC1Q/3+glfsECugQGnbw6CHvvc4Jpg1DTfDqWfmzGEEHikGr
-	kv2M+0dF9292LCc55Me9AD9M7sHi3sMV3dtKYpnLTP1lPLOg30Y435fICmyYBedh
-	bNvHrtNZ9owEIQ58Et8r1HO/2aNfo5e6BbnSOH/g0xQTiJV6yZFUrgD5I8kw6RrD
-	7afg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1684538247; x=1684624647; bh=Lygemaea07HZt
-	Qv77fs87uw14qURDTNYWC8SdvMTfdo=; b=IB8k+VWI7kdCPtguSl29Vw2uwSCpT
-	5TIEnm4c5kj2+DdruiQTDONflqTafy+B4ml1YBRBc816URF/OLh+qlGJLg2e/yFy
-	WP4DkijhZa7OkyT/TNpecN30KeIXDq3l9mLTf5nJ2mvF0kWZ/M7mVTkT0qn79KQX
-	RB8GM1hs3jSIQL63plluDm1DSkkIq22vOvv7A2+lC3AWd6grDojjSeZ8Nw2PV462
-	GwtB0GzMqTYx5u4nbO+auW8FGszPf2PrHBeC4yHzH8mzirzCjiBu/PNsPknw32VT
-	m+RL3A1IamcZ0Ob8nmJ4wZngOoEKVsK4a8tcrp5VCu85isjYx40XVmEvA==
-X-ME-Sender: <xms:hwNoZBa6df4fWeyfSbcuiwbyWQYfCF5Bsi_1VR9ZVh7CevmNznjEoA>
-    <xme:hwNoZIYbjgWBPH_H95MlE9b1L5TEr2ko2Ik26rRKQPWrCaLDWydrKFy_tUCzGT8Q1
-    U1zygt5Cp-wHbvtNU0>
-X-ME-Received: <xmr:hwNoZD90JJUpSxJ5ZqxVlaz574tUNQ81ajq01Bae6SS05B38GcHEvRzX2vnSiigBVutMsiMp6_vCrHywkmaWzcLce16OL3pHW0E1VNiWQ7Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeeiiedgudelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfhgfhffvvefuffgjkfggtgesthdtredttdertdenucfhrhhomhepufhtvghf
-    rghnucftohgvshgthhcuoehshhhrseguvghvkhgvrhhnvghlrdhioheqnecuggftrfgrth
-    htvghrnhepveelgffghfehudeitdehjeevhedthfetvdfhledutedvgeeikeeggefgudeg
-    uedtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepsh
-    hhrhesuggvvhhkvghrnhgvlhdrihho
-X-ME-Proxy: <xmx:hwNoZPqE7VGQjW2ycS_dAj65G0u5nrVmJM6_dfBznKcDGr80ZhCyEw>
-    <xmx:hwNoZMr-VeaqBN6xVdxZu5awCTppFTIYpHsds6_HYT6uVHLn0l6T7Q>
-    <xmx:hwNoZFSUpeRSrLJnVvijY4-aIN_HR13lil2K9btglYZxlMEdfyb5eA>
-    <xmx:hwNoZNfQvcT_mhA7AbhprmO21v0i94dwPkYiFgnwvWX9AzrVEiFsOg>
-Feedback-ID: i84614614:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 19 May 2023 19:17:26 -0400 (EDT)
-References: <20230518211751.3492982-1-shr@devkernel.io>
- <20230518211751.3492982-5-shr@devkernel.io>
- <ZGdHGXOfbPd+i1qh@corigine.com>
-User-agent: mu4e 1.10.1; emacs 28.2.50
-From: Stefan Roesch <shr@devkernel.io>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: io-uring@vger.kernel.org, kernel-team@fb.com, axboe@kernel.dk,
- ammarfaizi2@gnuweeb.org, netdev@vger.kernel.org, kuba@kernel.org,
- olivier@trillion01.com
-Subject: Re: [PATCH v13 4/7] io-uring: add napi busy poll support
-Date: Fri, 19 May 2023 16:17:11 -0700
-In-reply-to: <ZGdHGXOfbPd+i1qh@corigine.com>
-Message-ID: <qvqwmt1zx662.fsf@devbig1114.prn1.facebook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA5E33D3B1
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 23:28:08 +0000 (UTC)
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80D4E2;
+	Fri, 19 May 2023 16:28:06 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-96f5685f902so254744366b.2;
+        Fri, 19 May 2023 16:28:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684538885; x=1687130885;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FmALGiwKdo85IV/l0yKB8MZ/9Xqr37x53vqm7mgmBgM=;
+        b=FSeQaWvLvlTWLX+Wh59wvsH+HF+fbvpAth0Hn6eOVSj6wIInENUntetyCxaX0m/EFR
+         dtQnrSWzlFHK8vrcFJm0yoHCiL9xfaMeWPoI9ysxyY0BnAHtis7x8E8ZjGKR9Cz9g8s4
+         NPjO5rNRjpkMZnt/AzasKYg5OFWYO28V+r6vIgPB38YAs8VtB42ad9Gm3c7cMO7QE+Mh
+         dL7NZErttetyFbcjvWCDXfCFt+Gu9kwgCytOLfAuHY5bnZGcX8qrxCflaOk1ermJXVCS
+         c/5nVRBh/ZP7YBog8jrszOiH45emtNnrSqV9hsxPvdv0lwCytuSk812LFiI+z76nE3S8
+         A4PQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684538885; x=1687130885;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FmALGiwKdo85IV/l0yKB8MZ/9Xqr37x53vqm7mgmBgM=;
+        b=iCFfsFccSgLwaFfxJdFCii1XuWRhIyImRihHFFrIkTUkGoUraNSrKcl8Z1gcp8bqV4
+         N2kKrrPW7rjaSrtyktjZU63Ux+BsL9r5ll63+jMts3wXdJ4qnTkNMQGTFC0FeF4t56QD
+         1rvu+ij/RF6ptvHV/i8sS6XrS6dTAMG8reqWSSVcB8FZRHOLlpbZv30FqJ9lp0m4Qo0D
+         pvVTjM6g51abb+4APb5gyVjHaDGf11GlOzG0vXEgPZ3+ZE+P0AfEhNcyBJTYyf2V77VO
+         jLrUmcChYoVXW9uDbaB1DpE3ODcFty1PXchECEHcJURVcvSws6lajThx3h5Kjo1/ZHbx
+         kJ3g==
+X-Gm-Message-State: AC+VfDwum2xs+xOhiqh7jNTJpulSk9GUUvjxqTe9R7qLd5DSNhy7gIkK
+	3MdT/FFUZU3KsKeVhHcZOL4=
+X-Google-Smtp-Source: ACHHUZ5lbAwc8qalxxymZAlUqnfwWjFjOOkvfigqS+2G3CMGnmkLoGZZcQ/oOmPRlw5Dvu5Ym3ljkA==
+X-Received: by 2002:a17:907:72c7:b0:96f:6a91:40e3 with SMTP id du7-20020a17090772c700b0096f6a9140e3mr3663113ejc.49.1684538884652;
+        Fri, 19 May 2023 16:28:04 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id w26-20020a170907271a00b0096599bf7029sm157963ejk.145.2023.05.19.16.28.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 May 2023 16:28:04 -0700 (PDT)
+Date: Sat, 20 May 2023 02:28:02 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>, Andrew Lunn <andrew@lunn.ch>,
+	Eric Dumazet <edumazet@google.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Woojung Huh <woojung.huh@microchip.com>,
+	Arun Ramadoss <arun.ramadoss@microchip.com>,
+	"Russell King (Oracle)" <linux@armlinux.org.uk>,
+	Simon Horman <simon.horman@corigine.com>, kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v4 1/2] net: dsa: microchip: ksz8: Make flow
+ control, speed, and duplex on CPU port configurable
+Message-ID: <20230519232802.ae34asc4zgfmv3u4@skbuf>
+References: <20230519124700.635041-1-o.rempel@pengutronix.de>
+ <20230519124700.635041-1-o.rempel@pengutronix.de>
+ <20230519124700.635041-2-o.rempel@pengutronix.de>
+ <20230519124700.635041-2-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230519124700.635041-2-o.rempel@pengutronix.de>
+ <20230519124700.635041-2-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Fri, May 19, 2023 at 02:46:59PM +0200, Oleksij Rempel wrote:
+> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+> index f56fca1b1a22..9eedccbf5b7c 100644
+> --- a/drivers/net/dsa/microchip/ksz8795.c
+> +++ b/drivers/net/dsa/microchip/ksz8795.c
+> @@ -1371,6 +1371,57 @@ void ksz8_config_cpu_port(struct dsa_switch *ds)
+> +/**
+> + * ksz8_cpu_port_link_up - Configures the CPU port of the switch.
+> + * @dev: The KSZ device instance.
+> + * @speed: The desired link speed.
+> + * @duplex: The desired duplex mode.
+> + * @tx_pause: If true, enables transmit pause.
+> + * @rx_pause: If true, enables receive pause.
+> + *
+> + * Description:
+> + * The function configures flow control and speed settings for the CPU
+> + * port of the switch based on the desired settings, current duplex mode, and
+> + * speed.
+> + */
+> +static void ksz8_cpu_port_link_up(struct ksz_device *dev, int speed, int duplex,
+> +				  bool tx_pause, bool rx_pause)
+> +{
+> +	u8 ctrl = 0;
+> +
+> +	/* SW_FLOW_CTRL, SW_HALF_DUPLEX, and SW_10_MBIT bits are bootstrappable
+> +	 * at least on KSZ8873. They can have different values depending on your
+> +	 * board setup.
+> +	 */
+> +	if (duplex) {
+> +		if (tx_pause || rx_pause)
+> +			ctrl |= SW_FLOW_CTRL;
+> +	} else {
+> +		ctrl |= SW_HALF_DUPLEX;
+> +	}
+> +
+> +	/* This hardware only supports SPEED_10 and SPEED_100. For SPEED_10
+> +	 * we need to set the SW_10_MBIT bit. Otherwise, we can leave it 0.
+> +	 */
+> +	if (speed == SPEED_10)
+> +		ctrl |= SW_10_MBIT;
+> +
+> +	ksz_rmw8(dev, REG_SW_CTRL_4, SW_HALF_DUPLEX | SW_FLOW_CTRL |
+> +		 SW_10_MBIT, ctrl);
 
-Simon Horman <simon.horman@corigine.com> writes:
+REG_SW_CTRL_4 ... S_REPLACE_VID_CTRL ... dev->info->regs[P_XMII_CTRL_1] ...
+at some point we will need one more consolidation effort here, since we
+have at least 3 ways of reaching the same register.
 
-> On Thu, May 18, 2023 at 02:17:48PM -0700, Stefan Roesch wrote:
->> This adds the napi busy polling support in io_uring.c. It adds a new
->> napi_list to the io_ring_ctx structure. This list contains the list of
->> napi_id's that are currently enabled for busy polling. The list is
->> synchronized by the new napi_lock spin lock. The current default napi
->> busy polling time is stored in napi_busy_poll_to. If napi busy polling
->> is not enabled, the value is 0.
->>
->> In addition there is also a hash table. The hash table store the napi
->> id ond the pointer to the above list nodes. The hash table is used to
->
-> nit: is 'ond' correct here?
->
->> speed up the lookup to the list elements. The hash table is synchronized
->> with rcu.
->>
->> The NAPI_TIMEOUT is stored as a timeout to make sure that the time a
->> napi entry is stored in the napi list is limited.
->>
->> The busy poll timeout is also stored as part of the io_wait_queue. This
->> is necessary as for sq polling the poll interval needs to be adjusted
->> and the napi callback allows only to pass in one value.
->>
->> This has been tested with two simple programs from the liburing library
->> repository: the napi client and the napi server program. The client
->> sends a request, which has a timestamp in its payload and the server
->> replies with the same payload. The client calculates the roundtrip time
->
-> nit: checkpatch.pl --codespell says:
->
->
-> :636: WARNING: 'calcualte' may be misspelled - perhaps 'calculate'?
-> and stores it to calcualte the results.
->                  ^^^^^^^^^
->
-> ...
+> +}
+> +
+> +void ksz8_phylink_mac_link_up(struct ksz_device *dev, int port,
+> +			      unsigned int mode, phy_interface_t interface,
+> +			      struct phy_device *phydev, int speed, int duplex,
+> +			      bool tx_pause, bool rx_pause)
+> +{
+> +	/* If the port is the CPU port, apply special handling. Only the CPU
+> +	 * port is configured via global registers.
+> +	 */
+> +	if (dev->cpu_port == port)
+> +		ksz8_cpu_port_link_up(dev, speed, duplex, tx_pause, rx_pause);
+> +}
+> +
+>  static int ksz8_handle_global_errata(struct dsa_switch *ds)
+>  {
+>  	struct ksz_device *dev = ds->priv;
+> @@ -1419,8 +1470,6 @@ int ksz8_setup(struct dsa_switch *ds)
+>  	 */
+>  	ds->vlan_filtering_is_global = true;
+>  
+> -	ksz_cfg(dev, S_REPLACE_VID_CTRL, SW_FLOW_CTRL, true);
+> -
+>  	/* Enable automatic fast aging when link changed detected. */
+>  	ksz_cfg(dev, S_LINK_AGING_CTRL, SW_LINK_AUTO_AGING, true);
+>  
+> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+> index a4428be5f483..6e19ad70c671 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.c
+> +++ b/drivers/net/dsa/microchip/ksz_common.c
+> @@ -210,6 +210,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
+>  	.mirror_add = ksz8_port_mirror_add,
+>  	.mirror_del = ksz8_port_mirror_del,
+>  	.get_caps = ksz8_get_caps,
+> +	.phylink_mac_link_up = ksz8_phylink_mac_link_up,
 
-Fixed in the next version.
+Another future consolidation to consider: since all ksz_dev_ops now
+provide .phylink_mac_link_up(), the "if" condition here is no longer
+necessary:
+
+static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
+				    unsigned int mode,
+				    phy_interface_t interface,
+				    struct phy_device *phydev, int speed,
+				    int duplex, bool tx_pause, bool rx_pause)
+{
+	struct ksz_device *dev = ds->priv;
+
+	if (dev->dev_ops->phylink_mac_link_up)
+		dev->dev_ops->phylink_mac_link_up(dev, port, mode, interface,
+						  phydev, speed, duplex,
+						  tx_pause, rx_pause);
+}
+
+which reminds me of the fact that I also had a patch to remove
+dev->dev_ops->phylink_mac_config():
+https://patchwork.kernel.org/project/netdevbpf/patch/20230316161250.3286055-5-vladimir.oltean@nxp.com/
+
+I give up with that patch set now, since there's zero reviewer interest.
+If you want and you think it's useful, you might want to adapt it for
+KSZ8873.
+
+>  	.config_cpu_port = ksz8_config_cpu_port,
+>  	.enable_stp_addr = ksz8_enable_stp_addr,
+>  	.reset = ksz8_reset_switch,
+> -- 
+> 2.39.2
+> 
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
