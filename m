@@ -1,81 +1,81 @@
-Return-Path: <netdev+bounces-3838-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3841-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D397E70911F
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 10:01:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id EC1D0709138
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 10:02:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8B469281B30
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 08:01:01 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A7DB5281BDB
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 08:02:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 852F45667;
-	Fri, 19 May 2023 08:00:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE4F32114;
+	Fri, 19 May 2023 08:02:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 788E42109
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 08:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D569C433AE;
-	Fri, 19 May 2023 08:00:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684483221;
-	bh=TDR/scnjzukq+dLtHX6t1WC2zHG2+M9GmFkzYORuBB0=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=QG1QdB90nnAtdVeZaog2Pf7rW4+4xuI0sH1gCNUWr3sX1dMXMnSoEP7iIDc7HcB/R
-	 LIA7lKP8+WTuRXqcguT+h8Mkzm2RYbqCZCjtjkjXTfL1kJu2FI1MsfdQVkqYslwUKb
-	 /pygi7q71tbBnwKQPHfMIdBrWG6uBmCNyMt4m0c7hnA1qJN88s9+9HPq3QSMLm5d7D
-	 JUBByUFbuCAWSm9VIAgcOTNiRf9KdCQEhsAqvlZ2HlvdFO3QISkIDj0XDd+GDNHAOV
-	 cYUqf5S8dQcwke2BDZKyuhRBWsMP+m+ZAN0vel4iEhX811qCcitvZ2Qw3uX8DLK9t5
-	 zjK6RIg/aub1Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E4CFFE21EFA;
-	Fri, 19 May 2023 08:00:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E29682105
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 08:02:39 +0000 (UTC)
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0E610DC
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 01:02:25 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VizyLYC_1684483342;
+Received: from localhost(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0VizyLYC_1684483342)
+          by smtp.aliyun-inc.com;
+          Fri, 19 May 2023 16:02:23 +0800
+From: Cambda Zhu <cambda@linux.alibaba.com>
+To: netdev@vger.kernel.org
+Cc: Eric Dumazet <edumazet@google.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Dust Li <dust.li@linux.alibaba.com>,
+	Tony Lu <tonylu@linux.alibaba.com>,
+	Cambda Zhu <cambda@linux.alibaba.com>,
+	Jack Yang <mingliang@linux.alibaba.com>
+Subject: [PATCH net-next] net: Return user_mss for TCP_MAXSEG in CLOSE/LISTEN state
+Date: Fri, 19 May 2023 16:01:18 +0800
+Message-Id: <20230519080118.25539-1-cambda@linux.alibaba.com>
+X-Mailer: git-send-email 2.16.6
+In-Reply-To: <34BAAED6-5CD0-42D0-A9FB-82A01962A2D7@linux.alibaba.com>
+References: <34BAAED6-5CD0-42D0-A9FB-82A01962A2D7@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv3 net] selftests: fib_tests: mute cleanup error message
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168448322092.32188.11445831777854335044.git-patchwork-notify@kernel.org>
-Date: Fri, 19 May 2023 08:00:20 +0000
-References: <20230518043759.28477-1-po-hsu.lin@canonical.com>
-In-Reply-To: <20230518043759.28477-1-po-hsu.lin@canonical.com>
-To: Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc: linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
- netdev@vger.kernel.org, roxana.nicolescu@canonical.com, shuah@kernel.org,
- pabeni@redhat.com, kuba@kernel.org, edumazet@google.com, davem@davemloft.net
 
-Hello:
+This patch removes the tp->mss_cache check in getting TCP_MAXSEG of
+CLOSE/LISTEN sock. Checking if tp->mss_cache is zero is probably a bug,
+since tp->mss_cache is initialized with TCP_MSS_DEFAULT. Getting
+TCP_MAXSEG of sock in other state will still return tp->mss_cache.
 
-This patch was applied to netdev/net.git (main)
-by David S. Miller <davem@davemloft.net>:
+Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
+Reported-by: Jack Yang <mingliang@linux.alibaba.com>
+---
+ net/ipv4/tcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Thu, 18 May 2023 12:37:59 +0800 you wrote:
-> In the end of the test, there will be an error message induced by the
-> `ip netns del ns1` command in cleanup()
-> 
->   Tests passed: 201
->   Tests failed:   0
->   Cannot remove namespace file "/run/netns/ns1": No such file or directory
-> 
-> [...]
-
-Here is the summary with links:
-  - [PATCHv3,net] selftests: fib_tests: mute cleanup error message
-    https://git.kernel.org/netdev/net/c/d226b1df3619
-
-You are awesome, thank you!
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 3d18e295bb2f..713854f1f061 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4083,7 +4083,7 @@ int do_tcp_getsockopt(struct sock *sk, int level,
+ 	switch (optname) {
+ 	case TCP_MAXSEG:
+ 		val = tp->mss_cache;
+-		if (!val && ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
++		if ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN))
+ 			val = tp->rx_opt.user_mss;
+ 		if (tp->repair)
+ 			val = tp->rx_opt.mss_clamp;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.16.6
 
 
