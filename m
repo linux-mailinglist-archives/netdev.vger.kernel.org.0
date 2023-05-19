@@ -1,72 +1,57 @@
-Return-Path: <netdev+bounces-4005-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4006-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id AACC570A0FE
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 22:43:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 166AC70A100
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 22:45:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D9354281B5D
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 20:43:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EA87B1C211AF
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 20:45:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23F7017AD4;
-	Fri, 19 May 2023 20:43:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6B6017AD7;
+	Fri, 19 May 2023 20:45:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18A91174F5
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 20:43:22 +0000 (UTC)
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B3B116
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 13:43:20 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-64d3fbb8c1cso705632b3a.3
-        for <netdev@vger.kernel.org>; Fri, 19 May 2023 13:43:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1684529000; x=1687121000;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zP2JiW0s6i7CsnRczgnMBoK2ogXPQTY2MGcULts75HQ=;
-        b=is2BEchmVbWZUPYljUKRqkwul3Udx59yJa8kLGXn1JXLZbeey2LIyZNOmlb07lwHjW
-         d+9oIl7bL1riqaNnxLhRXdCM056p34fb2eGKMRT9NRVh3ZjKedmqmShyiN+MlQNeuFlP
-         vE7UCh7fG0KfBpm2bpJnIWV9MgxVhR+T3+6hxw3MAoNDnUCAIeFKHBVUlCUfap6xz88z
-         tmmTyYxOE0oo3jpSxUgVJESzAB9mF8vkzOM+Ca3fanGc+q7LnW+ccWZG1TreKn/cD6mZ
-         lv6aCTW24rkeWqeS5u7VXZEoZoy7SeDfnzgGz6Zvpv8pLmduZiGQDTIJYsul2h6D27pm
-         bgjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684529000; x=1687121000;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zP2JiW0s6i7CsnRczgnMBoK2ogXPQTY2MGcULts75HQ=;
-        b=WgQX1gYRG6d9PJkCPl//Nsv8FYS7w1PbVycm5txOZsmdNH9E8mM4+lx8Qg04CS9wgO
-         7M8BN5GNDa/3P01qOucV6D379xH/1ISifUo6yrl2Uz/ROH5ZvtclmN0DoM32sCFG/+7w
-         b+gnux7e8KWzxkpjdsWyEUgKc/kRllc7EEpBNIz46cdsREtBGy5QDYamLE3OOT8KfH8B
-         PuOBWNh/UoO0owJW1e6N9otP98KHRbB6MsGo7RAAOrcZoOPmYvtpBR3CdddEc5cJHfI1
-         0P6Tqkv+mknZLO61fHESWYaGxehrMkIKMR/PCibJUNVHN69R8dFkmobkExHkHdz4Gtrl
-         FD9A==
-X-Gm-Message-State: AC+VfDwqzUKwP1t5OKiUlginObUKRguR852adEQQpn5/bKEDwHqRB1vi
-	GllmzMJdFkSjKgbWYEl0DtE51w==
-X-Google-Smtp-Source: ACHHUZ6JUOGmiUq8de/Zny///rS9xp1/hSfqjNB8q5hvzUWlcTXGqfu0vJQYMZ2JXrwDAB+vqE00eg==
-X-Received: by 2002:a05:6a00:98f:b0:645:cfb0:2779 with SMTP id u15-20020a056a00098f00b00645cfb02779mr4852607pfg.26.1684529000445;
-        Fri, 19 May 2023 13:43:20 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id i24-20020aa787d8000000b0064d3e4c7658sm107782pfo.96.2023.05.19.13.43.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 May 2023 13:43:20 -0700 (PDT)
-Date: Fri, 19 May 2023 13:43:18 -0700
-From: Stephen Hemminger <stephen@networkplumber.org>
-To: Xin Long <lucien.xin@gmail.com>
-Cc: network dev <netdev@vger.kernel.org>, davem@davemloft.net,
- kuba@kernel.org, Eric Dumazet <edumazet@google.com>, Paolo Abeni
- <pabeni@redhat.com>, Alexander Duyck <alexanderduyck@fb.com>
-Subject: Re: [PATCH net] rtnetlink: not allow dev gro_max_size to exceed
- GRO_MAX_SIZE
-Message-ID: <20230519134318.6508f057@hermes.local>
-In-Reply-To: <25a7b1b138e5ad3c926afce8cd4e08d8b7ef3af6.1684516568.git.lucien.xin@gmail.com>
-References: <25a7b1b138e5ad3c926afce8cd4e08d8b7ef3af6.1684516568.git.lucien.xin@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B4811119C
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 20:45:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 801C1C433EF;
+	Fri, 19 May 2023 20:45:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684529147;
+	bh=WJO1c4PJ+6qGvmWHyWcDtGHu6W/qtzeSk7We3HLS+0Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=HbWF9ckmO8I/D9tphXQDuU04e1KhWw9QjwvCjln1ZDQ5kccZq5HgTDsM+qmZ3gIss
+	 iGUCUNfPILwV18RVcSig8Uh1m1X+kMUkElsXBXDEeEOxxFx/xQ682X54Z23vSlCKfm
+	 PXRV8QOS99m3hhrGzaHVpe0THU/hAPaUypF/VbVGAMhPToURJJ3DNOk0nyTBhOO3+8
+	 E/rZ+kVzTgat/r8MO7beGku9RaQ0VK5mwbpF8mOqX6Y5SoEtUvPJggbPFHyxA+WBlA
+	 /bEws/nR4a6KWCLU19P//aZSegN7dIqyIj5f8S+S1SRcgO5KHfRMhdznHnCangdM9G
+	 h3QxXRiOtJGoQ==
+Date: Fri, 19 May 2023 13:45:45 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc: Jesper Dangaard Brouer <hawk@kernel.org>, Larysa Zaremba
+ <larysa.zaremba@intel.com>, <netdev@vger.kernel.org>, Ilias Apalodimas
+ <ilias.apalodimas@linaro.org>, <linux-kernel@vger.kernel.org>, "Christoph
+ Hellwig" <hch@lst.de>, Eric Dumazet <edumazet@google.com>, Michal Kubiak
+ <michal.kubiak@intel.com>, <intel-wired-lan@lists.osuosl.org>, Paolo Abeni
+ <pabeni@redhat.com>, "David S. Miller" <davem@davemloft.net>, Magnus
+ Karlsson <magnus.karlsson@intel.com>
+Subject: Re: [Intel-wired-lan] [PATCH net-next 07/11] net: page_pool: add
+ DMA-sync-for-CPU inline helpers
+Message-ID: <20230519134545.5807e1d8@kernel.org>
+In-Reply-To: <77d929b2-c124-d3db-1cd9-8301d1d269d3@intel.com>
+References: <20230516161841.37138-1-aleksander.lobakin@intel.com>
+	<20230516161841.37138-8-aleksander.lobakin@intel.com>
+	<20230517211211.1d1bbd0b@kernel.org>
+	<9feef136-7ff3-91a4-4198-237b07a91c0c@intel.com>
+	<20230518075643.3a242837@kernel.org>
+	<0dfa36f1-a847-739e-4557-fc43e2e8c6a7@intel.com>
+	<20230518133627.72747418@kernel.org>
+	<77d929b2-c124-d3db-1cd9-8301d1d269d3@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -75,45 +60,63 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-On Fri, 19 May 2023 13:16:08 -0400
-Xin Long <lucien.xin@gmail.com> wrote:
+On Fri, 19 May 2023 15:56:40 +0200 Alexander Lobakin wrote:
+> From: Jakub Kicinski <kuba@kernel.org>
+> Date: Thu, 18 May 2023 13:36:27 -0700
+> >> I'll definitely take a look, I also like the idea of minimalistic and
+> >> lightweight headers.
+> >> page_pool.h and page_pool_drv.h? :D  
+> > 
+> > What I've been doing lately is split like this:
+> > 
+> > include/net/something.h           (simply includes all other headers)
+> > include/net/something/types.h     (structs, defines, enums)
+> > include/net/something/functions.h (inlines and function declarations)
+> > 
+> > If that's reasonable -- we should put the helpers under
+> > 
+> > include/net/page_pool/functions.h ?  
+> 
+> Hmm, all files that need something from page_pool.h usually need both
+> types and functions. Not sure we'll benefit anything here.
 
-> In commit 0fe79f28bfaf ("net: allow gro_max_size to exceed 65536"),
-> it limited GRO_MAX_SIZE to (8 * 65535) to avoid overflows, but also
-> deleted the check of GRO_MAX_SIZE when setting the dev gro_max_size.
-> 
-> Currently, dev gro_max_size can be set up to U32_MAX (0xFFFFFFFF),
-> and GRO_MAX_SIZE is not even used anywhere.
-> 
-> This patch brings back the GRO_MAX_SIZE check when setting dev
-> gro_max_size/gro_ipv4_max_size by users.
-> 
-> Fixes: 0fe79f28bfaf ("net: allow gro_max_size to exceed 65536")
-> Reported-by: Xiumei Mu <xmu@redhat.com>
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  net/core/rtnetlink.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index 653901a1bf75..59b24b184cb0 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -2886,6 +2886,11 @@ static int do_setlink(const struct sk_buff *skb,
->  	if (tb[IFLA_GRO_MAX_SIZE]) {
->  		u32 gro_max_size = nla_get_u32(tb[IFLA_GRO_MAX_SIZE]);
->  
-> +		if (gro_max_size > GRO_MAX_SIZE) {
-> +			err = -EINVAL;
-> +			goto errout;
-> +		}
-> +
+Ack, in the scheme above most places (source files) would include
+something.h, the something/types.h is just for other headers.
+something/functions.h is basically never included directly.
 
-Please add extack messages so the error can be reported better.
+> OTOH leaving
+> those sync-for-cpu inlines alone allows to avoid including dma-mapping.h
+> and currently only IAVF needs them. So my idea is:
+> 
+> - you need smth from PP, but not sync-for-cpu -- more lightweight
+>   page_pool.h is for you;
+> - you need sync-for-cpu (or maybe something else with heavy deps in the
+>   future) -- just include page_pool_drv.h.
+
+The idea makes sense in isolation, but I'm trying to figure out
+a convention which would not require case-by-case discussions.
+
+> I tried moving something else, but couldn't find anything that would
+> give any win. <linux/mm.h> and <linux/ptr_ring.h> are needed to define
+> `struct page_pool`, i.e. even being structured like in your example they
+> would've gone into pp/types.h =\
+> `struct ptr_ring` itself doesn't require any MM-related definitions, so
+> would we split it into ptr_ring/{types,functions}.h, we could probably
+> avoid a couple includes :D
+
+Ack, not saying that we need to split now, it's just about the naming
+(everyone's favorite topic).
+
+I think that it's a touch weird to name the header _drv.h and then
+include it in the core in multiple places (*cough* xdp_sock_drv.h). 
+Also If someone needs to add another "heavy" static line for use by 
+the core they will try to put it in page_pool.h rather than _drv.h...
+
+I'd rather split the includes by the basic language-level contents,
+first, then by the intended consumer, only if necessary. Language 
+level sorting require less thinking :)
+
+But none of this is important, if you don't wanna to do it, just keep 
+the new helpers in page_pool.h (let's not do another _drv.h).
 
