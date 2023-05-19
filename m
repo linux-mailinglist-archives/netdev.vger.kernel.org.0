@@ -1,127 +1,109 @@
-Return-Path: <netdev+bounces-3912-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3913-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EDA9F70985C
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 15:32:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id EE99970985E
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 15:32:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AA243281B9F
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 13:32:13 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AA037281B66
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 13:32:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BACAADDBB;
-	Fri, 19 May 2023 13:32:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED2C9DDBE;
+	Fri, 19 May 2023 13:32:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B065C7C
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 13:32:11 +0000 (UTC)
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4548710C0
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 06:31:44 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id a640c23a62f3a-966400ee79aso621452066b.0
-        for <netdev@vger.kernel.org>; Fri, 19 May 2023 06:31:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684503102; x=1687095102;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=iYLjI0uYdREMP4rNfk3sm5VoRCLSWTA2WtCKAtNi7Wk=;
-        b=mZtXP07aPqQW4yNScmsz5AN0KMzBRcrqNfPVwh48g2+a6/q3Zq6FzYMAJSJudm2yKP
-         WF+afmB5F8vYPXaFVdK7r2cv9FcTzKUl2dTomtkLZKjjdnwveyh+XDqwxZxk/yVO//tR
-         adJQ255spiVq61zUEenjx+RFjFD3Bhim3CP8yf31jMonsKAPild7vXBnylqdU2/jnWhG
-         TBoG9/vCwxJtq36GMalV9+JhmrV4oOctO1p5CXFuEbSpUlcG7UQg66mjOWAKoYAFPwlI
-         xfDLT0mAj2rSwzpslVVvqX8KWJdmvxK40GsOy4rYYvmSRPLUyKrj9m2ln/orNYfx3NLq
-         53Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684503102; x=1687095102;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=iYLjI0uYdREMP4rNfk3sm5VoRCLSWTA2WtCKAtNi7Wk=;
-        b=dy4za76gy2IjD8z0QMUn0aKN/xgu7brNdrAcuu6vUFli4SOlDActTmykhj+2ShR8Is
-         pinF1AkMrCqoCT1mbeo7pdCqVdXLzfP4kX1D9nxPDzDDVReW8e1UzAMwan9gqtDTG/qw
-         UqHVJVe8hmxDpFkmaWOwrgr1sEid2tkQohjE7Aft6PWa0yOEey2J2kp8ZAne6OAUgfAM
-         TIiM+6l5PJLz5A7D4KCsgyCNoiPsklGyM7nNF7DBMKNc9Wk8O+1Kd3n9MUr2ZduaZ8rp
-         W3tlMdbvMUrTd/Nm5VzE5DkEk2h6E5BfkoOPkwIHsX8G+HGCfa11Bp8DzLbxRk1zqsHo
-         PqDA==
-X-Gm-Message-State: AC+VfDyCvK6hw2OmPiPn21aH3rF1JdMh7FxxlXy52QBv5pBaobj3pb4v
-	dCkHEHk2iZi6iSVx7AjM3UVi57oEZHI=
-X-Google-Smtp-Source: ACHHUZ4yjNI/I40oaiXu1U5OUy7CEU5fFuUnH7hZdVKY7rdL3XnpXJ+gidaqbk9K7v7/VwrxAlhDeA==
-X-Received: by 2002:a17:906:fd8e:b0:96a:d916:cb31 with SMTP id xa14-20020a170906fd8e00b0096ad916cb31mr1678593ejb.29.1684503101869;
-        Fri, 19 May 2023 06:31:41 -0700 (PDT)
-Received: from 127.com ([2620:10d:c092:600::2:a04d])
-        by smtp.gmail.com with ESMTPSA id d26-20020a170906175a00b0094f410225c7sm2300273eje.169.2023.05.19.06.31.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 May 2023 06:31:41 -0700 (PDT)
-From: Pavel Begunkov <asml.silence@gmail.com>
-To: netdev@vger.kernel.org,
-	edumazet@google.com,
-	davem@davemloft.net,
-	dsahern@kernel.org,
-	pabeni@redhat.com,
-	kuba@kernel.org
-Cc: Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next] net/tcp: refactor tcp_inet6_sk()
-Date: Fri, 19 May 2023 14:30:36 +0100
-Message-Id: <16be6307909b25852744a67b2caf570efbb83c7f.1684502478.git.asml.silence@gmail.com>
-X-Mailer: git-send-email 2.40.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3B0F7C
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 13:32:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91D09C433A0;
+	Fri, 19 May 2023 13:32:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684503162;
+	bh=xr8dnZ6wHe0R/88tYpaF8vOYB3YN3mqfAzD/vFKAR3I=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=bAlM4vAnIqNSVyzHCy1wMsXKO0WGQuBY/9943JUkTLqtq/WxtRzO1TgPh5ntfkchW
+	 7zVNwj7gV0DzvTMc5ipbo2zw5/dAGLauhwY4xtDHRZ3BgaaY8rves8deOV11Mrk7tw
+	 bDYSMlfRRIA3e/rE3tVGAX31fanRplzZm7a0wdp2k2T1EJ/7QfCPiINwvd0CrOfBE/
+	 AwFLOOEb1NXe1p8BnR2Ho61Rr1Xj0CaXtlRjFqolJYpVPId1rUiFTS4ZE71/CDw0Xw
+	 p3B3G0/3KBZrh8aJ18NRDD9X12FQJXuks3qoEmL3pIaaDByjXuS6NF9v2kxu/Hjpm1
+	 Y7SEjXUfmHsng==
+Date: Fri, 19 May 2023 15:32:33 +0200
+From: Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To: Alexis =?UTF-8?B?TG90aG9yw6k=?= <alexis.lothore@bootlin.com>
+Cc: Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
+ Vladimir Oltean <olteanv@gmail.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+ <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Richard Cochran
+ <richardcochran@gmail.com>, netdev@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ thomas.petazzoni@bootlin.com, paul.arola@telus.com, scott.roberts@telus.com
+Subject: Re: [PATCH net-next 2/2] net: dsa: mv88e6xxx: enable support for
+ 88E6361 switch
+Message-ID: <20230519153233.3fb8a4d1@thinkpad>
+In-Reply-To: <7419ffc0-b292-97c4-fee6-610a1a841265@bootlin.com>
+References: <20230517203430.448705-1-alexis.lothore@bootlin.com>
+	<20230517203430.448705-3-alexis.lothore@bootlin.com>
+	<9a836863-c279-490f-a49a-de4db5de9fd4@lunn.ch>
+	<ee281c0f-5e8b-8453-08bf-858c5503dc22@bootlin.com>
+	<6643e099-7b72-4da2-aba1-521e1a4c961b@lunn.ch>
+	<20230519143713.1ac9c7a1@thinkpad>
+	<7419ffc0-b292-97c4-fee6-610a1a841265@bootlin.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.37; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Don't keep hand coded offset caluclations and replace it with
-container_of(). It should be type safer and a bit less confusing.
+On Fri, 19 May 2023 15:16:57 +0200
+Alexis Lothor=C3=A9 <alexis.lothore@bootlin.com> wrote:
 
-It also makes it with a macro instead of inline function to preserve
-constness, which was previously casted out like in case of
-tcp_v6_send_synack().
+> On 5/19/23 14:38, Marek Beh=C3=BAn wrote:
+> > On Thu, 18 May 2023 14:58:00 +0200
+> > Andrew Lunn <andrew@lunn.ch> wrote:
+> >  =20
+> >>>>> +	[MV88E6361] =3D {
+> >>>>> +		.prod_num =3D MV88E6XXX_PORT_SWITCH_ID_PROD_6361,
+> >>>>> +		.family =3D MV88E6XXX_FAMILY_6393,
+> >>>>> +		.name =3D "Marvell 88E6361",
+> >>>>> +		.num_databases =3D 4096,
+> >>>>> +		.num_macs =3D 16384,
+> >>>>> +		.num_ports =3D 11,
+> >>>>> +		/* Ports 1, 2 and 8 are not routed */
+> >>>>> +		.invalid_port_mask =3D BIT(1) | BIT(2) | BIT(8),
+> >>>>> +		.num_internal_phys =3D 5,   =20
+> >>>>
+> >>>> Which ports have internal PHYs? 2, 3, 4, 5, 6, 7 ?  What does
+> >>>> mv88e6xxx_phy_is_internal() return for these ports, and
+> >>>> mv88e6xxx_get_capsmv88e6xxx_get_caps()? I'm wondering if you actually
+> >>>> need to list 8 here?   =20
+> >>>
+> >>> Indeed there is something wrong here too. I need to tune
+> >>> mv88e6393x_phylink_get_caps to reflect 88E6361 differences.
+> >>>
+> >>> As stated above, port 3 to 7 are the ones with internal PHY.
+> >>> For mv88e6xxx_phy_is_internal, I see that it is merely comparing the =
+port index
+> >>> to the number of internal phys, so in this case it would advertise (w=
+rongly)
+> >>> that ports 0 to 4 have internal phys.   =20
+> >>
+> >> Ports 1 and 2 should hopefully be protected by the
+> >> invalid_port_mask. It should not even be possible to create those
+> >> ports. port 0 is interesting, and possibly currently broken on
+> >> 6393. Please take a look at that. =20
+> >=20
+> > Why would port 0 be broken on 6393x ? =20
+> By "broken", I guess Andrew means that if we feed port 0 to
+> mv88e6xxx_phy_is_internal, it will return true, which is wrong since ther=
+e is no
+> internal phy for port 0 on 6393X ?
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
----
- net/ipv6/tcp_ipv6.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
-
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 7132eb213a7a..d657713d1c71 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -93,12 +93,8 @@ static struct tcp_md5sig_key *tcp_v6_md5_do_lookup(const struct sock *sk,
-  * This avoids a dereference and allow compiler optimizations.
-  * It is a specialized version of inet6_sk_generic().
-  */
--static struct ipv6_pinfo *tcp_inet6_sk(const struct sock *sk)
--{
--	unsigned int offset = sizeof(struct tcp6_sock) - sizeof(struct ipv6_pinfo);
--
--	return (struct ipv6_pinfo *)(((u8 *)sk) + offset);
--}
-+#define tcp_inet6_sk(sk) (&container_of_const(tcp_sk(sk), \
-+					      struct tcp6_sock, tcp)->inet6)
- 
- static void inet6_sk_rx_dst_set(struct sock *sk, const struct sk_buff *skb)
- {
-@@ -533,7 +529,7 @@ static int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
- 			      struct sk_buff *syn_skb)
- {
- 	struct inet_request_sock *ireq = inet_rsk(req);
--	struct ipv6_pinfo *np = tcp_inet6_sk(sk);
-+	const struct ipv6_pinfo *np = tcp_inet6_sk(sk);
- 	struct ipv6_txoptions *opt;
- 	struct flowi6 *fl6 = &fl->u.ip6;
- 	struct sk_buff *skb;
--- 
-2.40.0
-
+OK that's true :)
 
