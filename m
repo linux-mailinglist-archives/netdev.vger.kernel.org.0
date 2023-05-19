@@ -1,141 +1,75 @@
-Return-Path: <netdev+bounces-3789-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3790-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 05764708DC6
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 04:27:25 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B971E708DD5
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 04:35:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3EDE8281AF6
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 02:27:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3BFF9281AEE
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 02:35:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E269393;
-	Fri, 19 May 2023 02:27:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FA5A36E;
+	Fri, 19 May 2023 02:35:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E91E362
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 02:27:20 +0000 (UTC)
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941FB186
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 19:27:18 -0700 (PDT)
-X-QQ-mid:Yeas5t1684463112t045t22887
-Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [115.200.228.151])
-X-QQ-SSF:00400000000000F0FNF000000000000
-From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
-X-BIZMAIL-ID: 16046267783000829659
-To: "'Andrew Lunn'" <andrew@lunn.ch>
-Cc: "'Andy Shevchenko'" <andy.shevchenko@gmail.com>,
-	<netdev@vger.kernel.org>,
-	<jarkko.nikula@linux.intel.com>,
-	<andriy.shevchenko@linux.intel.com>,
-	<mika.westerberg@linux.intel.com>,
-	<jsd@semihalf.com>,
-	<Jose.Abreu@synopsys.com>,
-	<hkallweit1@gmail.com>,
-	<linux@armlinux.org.uk>,
-	<linux-i2c@vger.kernel.org>,
-	<linux-gpio@vger.kernel.org>,
-	<mengyuanlou@net-swift.com>
-References: <20230515063200.301026-1-jiawenwu@trustnetic.com> <20230515063200.301026-7-jiawenwu@trustnetic.com> <ZGH-fRzbGd_eCASk@surfacebook> <00cd01d9879f$8e444950$aaccdbf0$@trustnetic.com> <CAHp75VdthEZL6GvT5Q=f7rbcDfA5XX=7-VLfVz1kZmBFem_eCA@mail.gmail.com> <016701d9886a$f9b415a0$ed1c40e0$@trustnetic.com> <90ef7fb8-feac-4288-98e9-6e67cd38cdf1@lunn.ch> <025b01d9897e$d8894660$899bd320$@trustnetic.com> <1e1615b3-566c-490c-8b1a-78f5521ca0b0@lunn.ch>
-In-Reply-To: <1e1615b3-566c-490c-8b1a-78f5521ca0b0@lunn.ch>
-Subject: RE: [PATCH net-next v8 6/9] net: txgbe: Support GPIO to SFP socket
-Date: Fri, 19 May 2023 10:25:11 +0800
-Message-ID: <028601d989f9$230ee120$692ca360$@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2095B190
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 02:35:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AB56C433D2;
+	Fri, 19 May 2023 02:35:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684463703;
+	bh=du0AOTEUxPi+TqqbX9Fy1OdbLVoELH7arYiLp0d/czI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ni6NR5sB5gh3D26HkSY14vcilrJKY/54tRBfPAc8JWcGBOIHM1KOFQXyzlN66CB3T
+	 J1hCtVArtc6o2yNGHopEoqZD3DxbEAsLYip/R4rqDKhNz1xr3w9jwZkoiyVnuv6128
+	 q65NMvyyqY8bUzbh/YxBalovvc2wVbZoFvRNIoWPV5jgt11n5yEf69sYF5jx8cPynQ
+	 nieuNR5afeovQ2if3b4l7J8em9C+s6jZ2gC7Oo5aMjTHBMZNhpzWxImAWS2pHXSRaz
+	 xdckO1y3CDaCWBKQR2RMi/BNynTTGGFUZxbXhhJBKL14YY9I7wr9h/Ru84HL+e2mC0
+	 qHxA778xnylUQ==
+Message-ID: <5b949924-65bb-9b6d-0e7f-252c12476849@kernel.org>
+Date: Thu, 18 May 2023 20:35:02 -0600
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: zh-cn
-Thread-Index: AQHvj8QD3pC+6Aq9H9h6P1+q5LrHRgMH5FTyAkITzAABJU2Y7wJ7xjhgAYjDQqsBr+FHUgDJ87o1AYTHtNeuwTkbsA==
-X-QQ-SENDSIZE: 520
-Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+Subject: Re: [RFC PATCH net-next v2 0/2] Mitigate the Issue of Expired Routes
+ in Linux IPv6 Routing Tables
+Content-Language: en-US
+To: Kui-Feng Lee <sinquersw@gmail.com>, Kui-Feng Lee <thinker.li@gmail.com>,
+ netdev@vger.kernel.org, ast@kernel.org, martin.lau@linux.dev,
+ kernel-team@meta.com, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com
+Cc: Kui-Feng Lee <kuifeng@meta.com>, Ido Schimmel <idosch@idosch.org>
+References: <20230517183337.190591-1-kuifeng@meta.com>
+ <61248e45-c619-d5f2-95a0-5971593fbe8d@kernel.org>
+ <337e31f2-9619-0db5-2782-dea1b0443d97@gmail.com>
+ <15c7358b-ab69-38af-60fc-d6c8778f25e8@kernel.org>
+ <1284f846-f8ed-d95a-4476-40e2de26c092@gmail.com>
+From: David Ahern <dsahern@kernel.org>
+In-Reply-To: <1284f846-f8ed-d95a-4476-40e2de26c092@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+On 5/18/23 12:51 PM, Kui-Feng Lee wrote:
+> This is one of solutions I considered at beginning.
+> With this approach, we can have a maximum
+> number of entries like what neighbor tables do.
+> Remove entries only if the list reach the maximum without running
+> a GC timer.  However, it can be very inefficient to insert a new entry
+> ordered. Stephen mentioned 3 million routes on backbone router
+> in another message.  We may need something more complicated
+> like RB-tree or HEAP to reduce the overhead.
 
+I do not believe so. Not every route will have an expiration timer. Only
+those are added to the new, time ordered list_head.
 
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Thursday, May 18, 2023 8:49 PM
-> To: Jiawen Wu <jiawenwu@trustnetic.com>
-> Cc: 'Andy Shevchenko' <andy.shevchenko@gmail.com>; netdev@vger.kernel.org; jarkko.nikula@linux.intel.com;
-> andriy.shevchenko@linux.intel.com; mika.westerberg@linux.intel.com; jsd@semihalf.com; Jose.Abreu@synopsys.com;
-> hkallweit1@gmail.com; linux@armlinux.org.uk; linux-i2c@vger.kernel.org; linux-gpio@vger.kernel.org; mengyuanlou@net-swift.com
-> Subject: Re: [PATCH net-next v8 6/9] net: txgbe: Support GPIO to SFP socket
-> 
-> > > I _think_ you are mixing upstream IRQs and downstream IRQs.
-> > >
-> > > Interrupts are arranged in trees. The CPU itself only has one or two
-> > > interrupts. e.g. for ARM you have FIQ and IRQ. When the CPU gets an
-> > > interrupt, you look in the interrupt controller to see what external
-> > > or internal interrupt triggered the CPU interrupt. And that interrupt
-> > > controller might indicate the interrupt came from another interrupt
-> > > controller. Hence the tree structure. And each node in the tree is
-> > > considered an interrupt domain.
-> > >
-> > > A GPIO controller can also be an interrupt controller. It has an
-> > > upstream interrupt, going to the controller above it. And it has
-> > > downstream interrupts, the GPIO lines coming into it which can cause
-> > > an interrupt. And the GPIO interrupt controller is a domain.
-> > >
-> > > So what exactly does gpio_regmap_config.irq_domain mean? Is it the
-> > > domain of the upstream interrupt controller? Is it an empty domain
-> > > structure to be used by the GPIO interrupt controller? It is very
-> > > unlikely to have anything to do with the SFP devices below it.
-> >
-> > Sorry, since I don't know much about interrupt,  it is difficult to understand
-> > regmap-irq in a short time. There are many questions about regmap-irq.
-> >
-> > When I want to add an IRQ chip for regmap, for the further irq_domain,
-> > I need to pass a parameter of IRQ, and this IRQ will be requested with handler:
-> > regmap_irq_thread(). Which IRQ does it mean?
-> 
-> That is your upstream IRQ, the interrupt indicating one of your GPIO
-> lines has changed state.
-> 
-> > In the previous code of using
-> > devm_gpiochip_add_data(), I set the MSI-X interrupt as gpio-irq's parent, but
-> > it was used to set chained handler only. Should the parent be this IRQ? I found
-> > the error with irq_free_descs and irq_domain_remove when I remove txgbe.ko.
-> 
-> Do you have one MSI-X dedicated for GPIOs. Or is it your general MAC
-> interrupt, and you need to read an interrupt controller register to
-> determine it was GPIOs which triggered the interrupt?
-
-I have one MSI-X interrupt for all general MAC interrupt (see TXGBE_PX_MISC_IEN_MASK).
-It has 32 bits to indicate various interrupts, GPIOs are the one of them. When GPIO
-interrupt is determined, GPIO_INT_STATUS register should be read to determine
-which GPIO line has changed state.
-
-> If you are getting errors when removing the driver it means you are
-> missing some level of undoing what us done in probe. Are you sure
-> regmap_del_irq_chip() is being called on unload?
-
-I used devm_* all when I registered them.
-
-> > As you said, the interrupt of each tree node has its domain. Can I understand
-> > that there are two layer in the interrupt tree for MSI-X and GPIOs, and requesting
-> > them separately is not conflicting? Although I thought so, but after I implement
-> > gpio-regmap, SFP driver even could not find gpio_desc. Maybe I missed something
-> > on registering gpio-regmap...
-> 
-> That is probably some sort of naming issue. You might want to add some
-> prints in swnode_find_gpio() and gpiochip_find() to see what it is
-> looking for vs what the name actually is.
-
-Thanks for the advice, I'll try again today.
-
+And you can not cap the number of entries in a FIB.
 
