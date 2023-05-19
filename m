@@ -1,116 +1,119 @@
-Return-Path: <netdev+bounces-4004-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4005-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5E27870A0A0
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 22:34:59 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id AACC570A0FE
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 22:43:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1876C1C211BF
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 20:34:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D9354281B5D
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 20:43:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 356EF17AC9;
-	Fri, 19 May 2023 20:34:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23F7017AD4;
+	Fri, 19 May 2023 20:43:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29E4817AC1
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 20:34:56 +0000 (UTC)
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AEFC107;
-	Fri, 19 May 2023 13:34:54 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id a640c23a62f3a-966400ee79aso701925266b.0;
-        Fri, 19 May 2023 13:34:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18A91174F5
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 20:43:22 +0000 (UTC)
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B3B116
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 13:43:20 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-64d3fbb8c1cso705632b3a.3
+        for <netdev@vger.kernel.org>; Fri, 19 May 2023 13:43:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684528493; x=1687120493;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3DYhz4q6r+8hJyhMZr5fo0ENEYzNVGjwRINrf0k6BeU=;
-        b=JczEPQDDUgRxxpDO1Nz8Fqsptg0WMWssCyuRQ+JFFnVmiSt3CZYudNw5WRw85QIN9T
-         r9KbRxt4jT9b9lGagerzf6vDJf+C10HYyIKN83F9o+9rpRi/UBYCcZ4jOqwXdHICFJnc
-         XTrDDxJWxexpVhv52sqzX8yX/WbcBkTFryieiXAwt7M/MvwIpUCZqsm5jGT8/2b91qeS
-         IGMJLIMAJULoBMN/rQbEwqE1KtZ67IbilgUmfNM5R+YcPH016fT0MtpcYTAsW6un3BIK
-         3xiCdx5yTwMwSQRx0SHEf7okS7vGrZr+ZZUfuglVJcUaqbvHLWegH5E6Jj8erRbDN5i6
-         6n3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684528493; x=1687120493;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1684529000; x=1687121000;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3DYhz4q6r+8hJyhMZr5fo0ENEYzNVGjwRINrf0k6BeU=;
-        b=ItXGrKcLkf6zEOj94mdORWjTDBugID9QovMg8ao5ZI736K8SdjIaY8eqKDyBdNQl0r
-         +wBkj44LrQ3hBBb7X4QKjI4qGYcC4vKh0lQGYPWL/Aez7M7VmkjXNvCjUMgaJAWBcNQk
-         1WA4wrLFYR7o6mBI+mge30Puuet9UgfZib+Tfj48rwIxPYUDGPBr7L/vsHO0pDPYqTIO
-         /KWMqAS0FtVMTyAvMJXKR9NH4bmjcWzY3mQsYI7OxBM97uIjWyJEq1onjE5bjpdWKA5U
-         y/9mrOJXRYByfqCQFx1CHgQ+XBewMLcMr6qV2Aq2z/xxLx+Xezjgsv6ajXG8eLbcnQPV
-         yQvA==
-X-Gm-Message-State: AC+VfDx6rzTN7sQBPVjSFWaQnqLAfMsVvRXJmVXXy6hwWb6+Nlgzpbtr
-	oaEKwnYCfhX0uzHUC8VhVEg=
-X-Google-Smtp-Source: ACHHUZ6VIdrbAorwWnn6B35+W1E85vZRDOL6WuFFOWALu7jFm51+UEiQQkQfHTagO8Qz/9Z0HF6TIA==
-X-Received: by 2002:a17:907:3da0:b0:95e:d448:477 with SMTP id he32-20020a1709073da000b0095ed4480477mr3733261ejc.33.1684528492332;
-        Fri, 19 May 2023 13:34:52 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id y2-20020a170906914200b0094e597f0e4dsm22928ejw.121.2023.05.19.13.34.51
+        bh=zP2JiW0s6i7CsnRczgnMBoK2ogXPQTY2MGcULts75HQ=;
+        b=is2BEchmVbWZUPYljUKRqkwul3Udx59yJa8kLGXn1JXLZbeey2LIyZNOmlb07lwHjW
+         d+9oIl7bL1riqaNnxLhRXdCM056p34fb2eGKMRT9NRVh3ZjKedmqmShyiN+MlQNeuFlP
+         vE7UCh7fG0KfBpm2bpJnIWV9MgxVhR+T3+6hxw3MAoNDnUCAIeFKHBVUlCUfap6xz88z
+         tmmTyYxOE0oo3jpSxUgVJESzAB9mF8vkzOM+Ca3fanGc+q7LnW+ccWZG1TreKn/cD6mZ
+         lv6aCTW24rkeWqeS5u7VXZEoZoy7SeDfnzgGz6Zvpv8pLmduZiGQDTIJYsul2h6D27pm
+         bgjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684529000; x=1687121000;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zP2JiW0s6i7CsnRczgnMBoK2ogXPQTY2MGcULts75HQ=;
+        b=WgQX1gYRG6d9PJkCPl//Nsv8FYS7w1PbVycm5txOZsmdNH9E8mM4+lx8Qg04CS9wgO
+         7M8BN5GNDa/3P01qOucV6D379xH/1ISifUo6yrl2Uz/ROH5ZvtclmN0DoM32sCFG/+7w
+         b+gnux7e8KWzxkpjdsWyEUgKc/kRllc7EEpBNIz46cdsREtBGy5QDYamLE3OOT8KfH8B
+         PuOBWNh/UoO0owJW1e6N9otP98KHRbB6MsGo7RAAOrcZoOPmYvtpBR3CdddEc5cJHfI1
+         0P6Tqkv+mknZLO61fHESWYaGxehrMkIKMR/PCibJUNVHN69R8dFkmobkExHkHdz4Gtrl
+         FD9A==
+X-Gm-Message-State: AC+VfDwqzUKwP1t5OKiUlginObUKRguR852adEQQpn5/bKEDwHqRB1vi
+	GllmzMJdFkSjKgbWYEl0DtE51w==
+X-Google-Smtp-Source: ACHHUZ6JUOGmiUq8de/Zny///rS9xp1/hSfqjNB8q5hvzUWlcTXGqfu0vJQYMZ2JXrwDAB+vqE00eg==
+X-Received: by 2002:a05:6a00:98f:b0:645:cfb0:2779 with SMTP id u15-20020a056a00098f00b00645cfb02779mr4852607pfg.26.1684529000445;
+        Fri, 19 May 2023 13:43:20 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id i24-20020aa787d8000000b0064d3e4c7658sm107782pfo.96.2023.05.19.13.43.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 May 2023 13:34:52 -0700 (PDT)
-Date: Fri, 19 May 2023 23:34:49 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Woojung Huh <woojung.huh@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-	Arun Ramadoss <arun.ramadoss@microchip.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Simon Horman <simon.horman@corigine.com>,
-	"Russell King (Oracle)" <linux@armlinux.org.uk>,
-	linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-	Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
-	netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v4 1/2] net: dsa: microchip: ksz8: Make flow
- control, speed, and duplex on CPU port configurable
-Message-ID: <20230519203449.pc5vbfgbfc6rdo6i@skbuf>
-References: <20230519124700.635041-1-o.rempel@pengutronix.de>
- <20230519124700.635041-2-o.rempel@pengutronix.de>
- <20230519143004.luvz73jiyvnqxk4y@skbuf>
- <20230519185015.GA18246@pengutronix.de>
+        Fri, 19 May 2023 13:43:20 -0700 (PDT)
+Date: Fri, 19 May 2023 13:43:18 -0700
+From: Stephen Hemminger <stephen@networkplumber.org>
+To: Xin Long <lucien.xin@gmail.com>
+Cc: network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+ kuba@kernel.org, Eric Dumazet <edumazet@google.com>, Paolo Abeni
+ <pabeni@redhat.com>, Alexander Duyck <alexanderduyck@fb.com>
+Subject: Re: [PATCH net] rtnetlink: not allow dev gro_max_size to exceed
+ GRO_MAX_SIZE
+Message-ID: <20230519134318.6508f057@hermes.local>
+In-Reply-To: <25a7b1b138e5ad3c926afce8cd4e08d8b7ef3af6.1684516568.git.lucien.xin@gmail.com>
+References: <25a7b1b138e5ad3c926afce8cd4e08d8b7ef3af6.1684516568.git.lucien.xin@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230519185015.GA18246@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 19, 2023 at 08:50:15PM +0200, Oleksij Rempel wrote:
-> Thank you for your feedback. I see your point. 
+On Fri, 19 May 2023 13:16:08 -0400
+Xin Long <lucien.xin@gmail.com> wrote:
+
+> In commit 0fe79f28bfaf ("net: allow gro_max_size to exceed 65536"),
+> it limited GRO_MAX_SIZE to (8 * 65535) to avoid overflows, but also
+> deleted the check of GRO_MAX_SIZE when setting the dev gro_max_size.
 > 
-> We need to remember that the KSZ switch series has different types of
-> ports. Specifically, for the KSZ8 series, there's a unique port. This
-> port is unique because it's the only one that can be configured with
-> global registers, and it is only one supports tail tagging. This special
-> port is already referenced in the driver by "dev->cpu_port", so I continued
-> using it in my patch.
+> Currently, dev gro_max_size can be set up to U32_MAX (0xFFFFFFFF),
+> and GRO_MAX_SIZE is not even used anywhere.
+> 
+> This patch brings back the GRO_MAX_SIZE check when setting dev
+> gro_max_size/gro_ipv4_max_size by users.
+> 
+> Fixes: 0fe79f28bfaf ("net: allow gro_max_size to exceed 65536")
+> Reported-by: Xiumei Mu <xmu@redhat.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/core/rtnetlink.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index 653901a1bf75..59b24b184cb0 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -2886,6 +2886,11 @@ static int do_setlink(const struct sk_buff *skb,
+>  	if (tb[IFLA_GRO_MAX_SIZE]) {
+>  		u32 gro_max_size = nla_get_u32(tb[IFLA_GRO_MAX_SIZE]);
+>  
+> +		if (gro_max_size > GRO_MAX_SIZE) {
+> +			err = -EINVAL;
+> +			goto errout;
+> +		}
+> +
 
-Ok, I understand, so for the KSZ8 family, the assumption about which
-port will use tail tagging is baked into the hardware.
-
-> It is important to note that while this port has an xMII interface, it
-> is not the only port that could have an xMII interface. Therefore, using
-> "dev->info->internal_phy" may not be the best way to identify this port,
-> because there can be ports that are not global/cpu, have an xMII
-> interface, but don't have an internal PHY.
-
-Right, but since we're talking about phylink, the goal is to identify
-the xMII ports, not the CPU ports... This is a particularly denatured
-case because the xMII port is global and is also the CPU port.
+Please add extack messages so the error can be reported better.
 
