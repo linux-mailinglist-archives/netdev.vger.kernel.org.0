@@ -1,168 +1,350 @@
-Return-Path: <netdev+bounces-3823-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-3824-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9F7E2708FDF
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 08:25:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8F849708FFD
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 08:47:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DBB5D28186B
-	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 06:25:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF9C7281B65
+	for <lists+netdev@lfdr.de>; Fri, 19 May 2023 06:47:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D73E265D;
-	Fri, 19 May 2023 06:25:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B873139F;
+	Fri, 19 May 2023 06:47:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF62C7C
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 06:25:20 +0000 (UTC)
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618C61A6
-	for <netdev@vger.kernel.org>; Thu, 18 May 2023 23:25:18 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1ae452c2777so3736145ad.0
-        for <netdev@vger.kernel.org>; Thu, 18 May 2023 23:25:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684477518; x=1687069518;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2qte+yLzdGBgNQqllGOcsDFJQTEnZZ08ThkY7gM5Pnc=;
-        b=ETEGU6g9BZ0eYyNJAns5VR1T898YRSVDBaw0pf55fSNFXXIirkRnLevHElOM4w30Th
-         RnuqK/EFc2VOoBQXxvChiFUPEGdzi3ji6uhMDz3rFXYh4hjSTcwky9vOckO6LMHXPP3r
-         +BsEumBj+W7mrh058SljxU/MZyTlxTc6IQPz7ufFFe77e2iCIYaBZPf5OT3C5xJ1bzR3
-         7dKJW02ooQxdcIMPLk+3tVNwMCtzbLoCKCgFrtb855+J/S4KoBQuR5l9JJn/Orz87mrC
-         Ymd+zWsymTtM5MpI9OZXrMKHa3uQObW8RtVs0CdCL1dzbMSu4OkXaFZbXBK6/EI71XQF
-         Oltg==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5719361
+	for <netdev@vger.kernel.org>; Fri, 19 May 2023 06:47:50 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF7AE43
+	for <netdev@vger.kernel.org>; Thu, 18 May 2023 23:47:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684478867;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+YqEjo5KOHNsWEJneP5DrW/OFHP4h5hgOMVeUZ2R9GE=;
+	b=HEy+vV8MWDe/bT/Yb4X+Zld0y0mwoLaCP6zNR/lsGExmNVr8cR0E69zrsSc9XzZltCEhGP
+	yClsnsrtCiKw0ApeX/fk1t4zdYgU+QS2vNyFG1XnO8MrM5eSK0miuHpoU7TSx6qkjLlpR9
+	QOdpLa80esFQJV6oZrLvXQ92uGPU4+k=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-395-rzBu6Q_cNYWIrJD7Yx9LZw-1; Fri, 19 May 2023 02:47:46 -0400
+X-MC-Unique: rzBu6Q_cNYWIrJD7Yx9LZw-1
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f4b96aa44aso4491485e9.1
+        for <netdev@vger.kernel.org>; Thu, 18 May 2023 23:47:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684477518; x=1687069518;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2qte+yLzdGBgNQqllGOcsDFJQTEnZZ08ThkY7gM5Pnc=;
-        b=e4G+vUThDhVUVaTWRRAHsJUURhnZ8d+ql503RKGWjJ5MKp8xxTXgOracsX5ifodie4
-         1kzoyBaS26Vo35poNAEFdT4YSeJEjvcFE833CkUfPA4VXu6iBn4SUc0vsVFn7kWEP3BT
-         1Nqc7bd9hyjSihdj+T4W7KSmf/Zbg44czz5ics8yUCC3cgOXtyk4k0Dg4urQthx0nFH2
-         7YmwsYislq6+HL5EVf8wuVBclCT0SVSqQfzT9x/KyjMWTxsAGeb+k/poo2zibirRiCMv
-         8s2sOntOmKu2NPYJH0Np9UA8ZnJo7olbxH1Rl6lvojV5OQBd70gDiCMnCmnT7lW6tB4r
-         qa3g==
-X-Gm-Message-State: AC+VfDxAGFdjKnSLsbUOT7Qx1+zqjW30mTEBeIGBjcM9jeWgqn3CCQ7d
-	t8TazQXDC5eN+Z6qYjnCGqw=
-X-Google-Smtp-Source: ACHHUZ7rRxqIJnmt4QKzgEJxraU1RCjfC6dpTRcaLlkZJIRp4NE6OSZOvh7GR43B2GQY2Nj5saObfA==
-X-Received: by 2002:a17:903:1d1:b0:1a1:d54b:71df with SMTP id e17-20020a17090301d100b001a1d54b71dfmr1944890plh.0.1684477517643;
-        Thu, 18 May 2023 23:25:17 -0700 (PDT)
-Received: from [192.168.0.4] ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id h5-20020a170902680500b001a245b49731sm2577658plk.128.2023.05.18.23.25.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 May 2023 23:25:16 -0700 (PDT)
-Message-ID: <2ea192a8-b437-86e4-59b3-b4d57117aee1@gmail.com>
-Date: Fri, 19 May 2023 15:25:12 +0900
+        d=1e100.net; s=20221208; t=1684478865; x=1687070865;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+YqEjo5KOHNsWEJneP5DrW/OFHP4h5hgOMVeUZ2R9GE=;
+        b=lqzB37fvdwXiEzFlVWN02IBN+0Ge1xUCMr1Yxn1tE9kkYCk9VNnGClHcfbfnjkhBBk
+         SVTqjF7z7ywqgHHfxad1vCO6IjKrjY5Am6SiYneky5jVtvN14Yb13TQXML1VpSaHfNeB
+         4/6mskQYmrvh3uT2set/BN3LgcN4lWAxrTCawG5gC4RqlzlmZEhctD2vscd1YKz4aSAI
+         pjn2w8NEzKYtV+ejfke0/tTjxRpEowZqIo6o5Od2XaYPPNgBG+7csG5+CFSzL78MGn/1
+         QIumG1MSU9um2JoM9eIfoggzgcl/9PthqvuFQWqy7wq70Kljn4TzoKxZYVa6Ob0s7ACj
+         ljLg==
+X-Gm-Message-State: AC+VfDwgP6xlXn1Lg5pcDqfuHgROjYcPiZ6W9CgxYflLoFHePNdWdt3k
+	BdjKFlcLQx+4KWPBFNL8LUkMb8V8ZHefPHSvOPaxb3pp5ZxXjxsTFHkBF0FTg5+b3h6Jh1qzy3v
+	agVTax4S/pj351+VU
+X-Received: by 2002:a1c:ed12:0:b0:3f4:3:4979 with SMTP id l18-20020a1ced12000000b003f400034979mr777003wmh.2.1684478865147;
+        Thu, 18 May 2023 23:47:45 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ57jPanmHQryRzvof8gy+OohfP4mEVfiEjUmcetjwWGfGaI5Hmek0Xj/oMwtuednFE5s62jfA==
+X-Received: by 2002:a1c:ed12:0:b0:3f4:3:4979 with SMTP id l18-20020a1ced12000000b003f400034979mr776990wmh.2.1684478864808;
+        Thu, 18 May 2023 23:47:44 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-235-104.dyn.eolo.it. [146.241.235.104])
+        by smtp.gmail.com with ESMTPSA id c18-20020a7bc852000000b003f42cc3262asm1345094wml.34.2023.05.18.23.47.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 May 2023 23:47:44 -0700 (PDT)
+Message-ID: <d049ebf92a973c0f293e29722959366086ad3c37.camel@redhat.com>
+Subject: Re: [RFC PATCH v7 5/8] ice: implement dpll interface to control cgu
+From: Paolo Abeni <pabeni@redhat.com>
+To: Jiri Pirko <jiri@resnulli.us>, "Kubalewski, Arkadiusz"
+	 <arkadiusz.kubalewski@intel.com>
+Cc: Vadim Fedorenko <vadfed@meta.com>, Jakub Kicinski <kuba@kernel.org>, 
+ Jonathan Lemon <jonathan.lemon@gmail.com>, "Olech, Milena"
+ <milena.olech@intel.com>, "Michalik, Michal" <michal.michalik@intel.com>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>, poros <poros@redhat.com>, mschmidt
+ <mschmidt@redhat.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, 
+ "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Date: Fri, 19 May 2023 08:47:42 +0200
+In-Reply-To: <ZGMiE1ByArIr8ARB@nanopsycho>
+References: <20230428002009.2948020-1-vadfed@meta.com>
+	 <20230428002009.2948020-6-vadfed@meta.com> <ZFJRIY1HM64gFo3a@nanopsycho>
+	 <DM6PR11MB4657EAF163220617A94154A39B789@DM6PR11MB4657.namprd11.prod.outlook.com>
+	 <ZGMiE1ByArIr8ARB@nanopsycho>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net v2] net: fix stack overflow when LRO is disabled for
- virtual interfaces
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
- jiri@resnulli.us, j.vosburgh@gmail.com, andy@greyhouse.net,
- netdev@vger.kernel.org, jarod@redhat.com, razor@blackwall.org,
- simon.horman@corigine.com, wangyufen@huawei.com,
- syzbot+60748c96cf5c6df8e581@syzkaller.appspotmail.com
-References: <20230517143010.3596250-1-ap420073@gmail.com>
- <20230517091511.30cc0803@kernel.org>
- <6701e21c-a430-6309-bc13-dcff529d8ab5@gmail.com>
- <20230517114552.08c38d4c@kernel.org>
-Content-Language: en-US
-From: Taehee Yoo <ap420073@gmail.com>
-In-Reply-To: <20230517114552.08c38d4c@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Tue, 2023-05-16 at 08:26 +0200, Jiri Pirko wrote:
+> Tue, May 16, 2023 at 12:07:57AM CEST, arkadiusz.kubalewski@intel.com wrot=
+e:
+> > > From: Jiri Pirko <jiri@resnulli.us>
+> > > Sent: Wednesday, May 3, 2023 2:19 PM
+> > >=20
+> > > Fri, Apr 28, 2023 at 02:20:06AM CEST, vadfed@meta.com wrote:
+> > > > From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+>=20
+> [...]
+>=20
+>=20
+> > > > + * ice_dpll_frequency_set - wrapper for pin callback for set frequ=
+ency
+> > > > + * @pin: pointer to a pin
+> > > > + * @pin_priv: private data pointer passed on pin registration
+> > > > + * @dpll: pointer to dpll
+> > > > + * @frequency: frequency to be set
+> > > > + * @extack: error reporting
+> > > > + * @pin_type: type of pin being configured
+> > > > + *
+> > > > + * Wraps internal set frequency command on a pin.
+> > > > + *
+> > > > + * Return:
+> > > > + * * 0 - success
+> > > > + * * negative - error pin not found or couldn't set in hw  */ stat=
+ic
+> > > > +int ice_dpll_frequency_set(const struct dpll_pin *pin, void *pin_p=
+riv,
+> > > > +		       const struct dpll_device *dpll,
+> > > > +		       const u32 frequency,
+> > > > +		       struct netlink_ext_ack *extack,
+> > > > +		       const enum ice_dpll_pin_type pin_type) {
+> > > > +	struct ice_pf *pf =3D pin_priv;
+> > > > +	struct ice_dpll_pin *p;
+> > > > +	int ret =3D -EINVAL;
+> > > > +
+> > > > +	if (!pf)
+> > > > +		return ret;
+> > > > +	if (ice_dpll_cb_lock(pf))
+> > > > +		return -EBUSY;
+> > > > +	p =3D ice_find_pin(pf, pin, pin_type);
+> > >=20
+> > > This does not make any sense to me. You should avoid the lookups and =
+remove
+> > > ice_find_pin() function entirely. The purpose of having pin_priv is t=
+o
+> > > carry the struct ice_dpll_pin * directly. You should pass it down dur=
+ing
+> > > pin register.
+> > >=20
+> > > pf pointer is stored in dpll_priv.
+> > >=20
+> >=20
+> > In this case dpll_priv is not passed, so cannot use it.
+>=20
+> It should be passed. In general to every op where *dpll is passed, the
+> dpll_priv pointer should be passed along. Please, fix this.
+>=20
+>=20
+> > But in general it makes sense I will hold pf inside of ice_dpll_pin
+> > and fix this.
+>=20
+> Nope, just use dpll_priv. That's why we have it.
+>=20
+>=20
+> [...]
+>=20
+>=20
+> > > > +/**
+> > > > + * ice_dpll_pin_state_set - set pin's state on dpll
+> > > > + * @dpll: dpll being configured
+> > > > + * @pin: pointer to a pin
+> > > > + * @pin_priv: private data pointer passed on pin registration
+> > > > + * @state: state of pin to be set
+> > > > + * @extack: error reporting
+> > > > + * @pin_type: type of a pin
+> > > > + *
+> > > > + * Set pin state on a pin.
+> > > > + *
+> > > > + * Return:
+> > > > + * * 0 - OK or no change required
+> > > > + * * negative - error
+> > > > + */
+> > > > +static int
+> > > > +ice_dpll_pin_state_set(const struct dpll_device *dpll,
+> > > > +		       const struct dpll_pin *pin, void *pin_priv,
+> > > > +		       const enum dpll_pin_state state,
+> > >=20
+> > > Why you use const with enums?
+> > >=20
+> >=20
+> > Just show usage intention explicitly.
+>=20
+> Does not make any sense what so ever. Please avoid it.
+>=20
+>=20
+> > > > +static int ice_dpll_rclk_state_on_pin_get(const struct dpll_pin *p=
+in,
+> > > > +					  void *pin_priv,
+> > > > +					  const struct dpll_pin *parent_pin,
+> > > > +					  enum dpll_pin_state *state,
+> > > > +					  struct netlink_ext_ack *extack) {
+> > > > +	struct ice_pf *pf =3D pin_priv;
+> > > > +	u32 parent_idx, hw_idx =3D ICE_DPLL_PIN_IDX_INVALID, i;
+> > >=20
+> > > Reverse christmas tree ordering please.
+> >=20
+> > Fixed.
+> >=20
+> > >=20
+> > >=20
+> > > > +	struct ice_dpll_pin *p;
+> > > > +	int ret =3D -EFAULT;
+> > > > +
+> > > > +	if (!pf)
+> > >=20
+> > > How exacly this can happen. My wild guess is it can't. Don't do such
+> > > pointless checks please, confuses the reader.
+> > >=20
+> >=20
+> > From driver perspective the pf pointer value is given by external entit=
+y,
+> > why shouldn't it be valdiated?
+>=20
+> What? You pass it during register, you get it back here. Nothing to
+> check. Please drop it. Non-sense checks like this have no place in
+> kernel, they only confuse reader as he/she assumes it is a valid case.
+>=20
+>=20
+> [...]
+>=20
+>=20
+> > >=20
+> > >=20
+> > > > +			pins[i].pin =3D NULL;
+> > > > +			return -ENOMEM;
+> > > > +		}
+> > > > +		if (cgu) {
+> > > > +			ret =3D dpll_pin_register(pf->dplls.eec.dpll,
+> > > > +						pins[i].pin,
+> > > > +						ops, pf, NULL);
+> > > > +			if (ret)
+> > > > +				return ret;
+> > > > +			ret =3D dpll_pin_register(pf->dplls.pps.dpll,
+> > > > +						pins[i].pin,
+> > > > +						ops, pf, NULL);
+> > > > +			if (ret)
+> > > > +				return ret;
+> > >=20
+> > > You have to call dpll_pin_unregister(pf->dplls.eec.dpll, pins[i].pin,=
+ ..)
+> > > here.
+> > >=20
+> >=20
+> > No, in case of error, the caller releases everything ice_dpll_release_a=
+ll(..).
+>=20
+>=20
+> How does ice_dpll_release_all() where you failed? If you need to
+> unregister one or both or none? I know that in ice you have odd ways to
+> handle error paths in general, but this one clearly seems to be broken.
+>=20
+>=20
+>=20
+>=20
+>=20
+> >=20
+> > >=20
+> > > > +		}
+> > > > +	}
+> > > > +	if (cgu) {
+> > > > +		ops =3D &ice_dpll_output_ops;
+> > > > +		pins =3D pf->dplls.outputs;
+> > > > +		for (i =3D 0; i < pf->dplls.num_outputs; i++) {
+> > > > +			pins[i].pin =3D dpll_pin_get(pf->dplls.clock_id,
+> > > > +						   i + pf->dplls.num_inputs,
+> > > > +						   THIS_MODULE, &pins[i].prop);
+> > > > +			if (IS_ERR_OR_NULL(pins[i].pin)) {
+> > > > +				pins[i].pin =3D NULL;
+> > > > +				return -ENOMEM;
+> > >=20
+> > > Don't make up error values when you get them from the function you ca=
+ll:
+> > > 	return PTR_ERR(pins[i].pin);
+> >=20
+> > Fixed.
+> >=20
+> > >=20
+> > > > +			}
+> > > > +			ret =3D dpll_pin_register(pf->dplls.eec.dpll, pins[i].pin,
+> > > > +						ops, pf, NULL);
+> > > > +			if (ret)
+> > > > +				return ret;
+> > > > +			ret =3D dpll_pin_register(pf->dplls.pps.dpll, pins[i].pin,
+> > > > +						ops, pf, NULL);
+> > > > +			if (ret)
+> > > > +				return ret;
+> > >=20
+> > > You have to call dpll_pin_unregister(pf->dplls.eec.dpll, pins[i].pin,=
+ ..)
+> > > here.
+> > >=20
+> >=20
+> > As above, in case of error, the caller releases everything.
+>=20
+> As above, I don't think it works.
+>=20
+>=20
+> [...]
+>=20
+>=20
+> > > > +	}
+> > > > +
+> > > > +	if (cgu) {
+> > > > +		ret =3D dpll_device_register(pf->dplls.eec.dpll, DPLL_TYPE_EEC,
+> > > > +					   &ice_dpll_ops, pf, dev);
+> > > > +		if (ret)
+> > > > +			goto put_pps;
+> > > > +		ret =3D dpll_device_register(pf->dplls.pps.dpll, DPLL_TYPE_PPS,
+> > > > +					   &ice_dpll_ops, pf, dev);
+> > > > +		if (ret)
+> > >=20
+> > > You are missing call to dpll_device_unregister(pf->dplls.eec.dpll,
+> > > DPLL_TYPE_EEC here. Fix the error path.
+> > >=20
+> >=20
+> > The caller shall do the clean up, but yeah will fix this as here clean =
+up
+> > is not expected.
+>=20
+> :) Just make your error paths obvious and easy to follow to not to
+> confuse anybody, you included.
 
+I agree with Jiri. The error paths here and in ice_dpll_init_info() are
+quite confusing and IMHO error prone.
 
-On 5/18/23 03:45, Jakub Kicinski wrote:
- > On Thu, 18 May 2023 02:28:29 +0900 Taehee Yoo wrote:
- >>   > Why doesn't the (already synchronized) upper not skip the update?
- >>
- >> The skipping logic of this is existing in the 
-netdev_sync_lower_features().
- >> The purpose of this is to synchronize the lower interfaces, not the
- >> upper interface.
- >> Actually, there is no upper-only synchronization logic.
- >>
- >> Both bonding and team interfaces rely on notification mechanisms to work
- >> their own logic such as synchronization.
- >> The notification is a broadcasting mechanism.
- >> So, both lower and upper receive this event, and it works its own
- >> notification handling.
- >
- > This is all true.
- >
- >> But the notification mechanism currently doesn't have options such as
- >> filtering and these interfaces receive this event with updated feature
- >> flags.
- >
- > We don't have to filter notifications.
- >
- >> So, the upper interface can't distinguish whether the received event is
- >> the first event or duplicated event.
- >
- > What I was thinking was basically why does __netdev_update_features()
- > not return early if it made no changes? Looking thru the history this
- > behavior has been created by commit e7868a85e1b26bcb2e. Can we revert
- > that and fix the problem of syncing features on new ports differently?
+It will get more easy toread and more consistent if every
+initialization function does return an error code would leave the state
+clean in case of error. That is, in case of error, such function should
+cleanup all the partially allocated/initialized resources.
 
-I think this is the best approach so I tried it with existing variables 
-such as dev->features, dev->wanted_features, But I couldn't find to fix it.
-Because the upper interface' feature flag is updated at the end of it.
-So, __netdev_update_features() is called always with the old 
-upper-interface' features flag.
-__netdev_update_features()
-     netdev_sync_lower_features()
-        __netdev_update_features()
-            netdev_sync_lower_features()
-...
-            dev->features = features;
-        dev->features = features;
-     dev->features = features;
-dev->features = features;
+Note that in ice_dpll_init_info() the situation is more mixed-up as
+ice_dpll_release_info() is called on most error paths, except the last
+one. Memory should not leaked due to later ice_dpll_release_all(), but
+it's really confusing.
 
-In order to return __netdev_update_features() early in duplicated call,
-__netdev_update_features() should update dev->features ealier than 
-netdev_sync_lower_features() call.
-So, the current code doesn't update dev->features early so it can't 
-check duplicated calls with dev->features.
+Cheers,
 
-I tested this approach with a revert of e7868a85e1b26bcb2e and the below 
-change.
+Paolo
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6b12d8a9d463..f051c293ffaa 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9758,6 +9758,9 @@ int __netdev_update_features(struct net_device *dev)
-                 return -1;
-         }
-
-+       if (netif_is_bond_master(dev) || netif_is_team_master(dev))
-+               dev->features = features;
-+
-         /* some features must be disabled on lower devices when disabled
-          * on an upper device (think: bonding master or bridge)
-          */
-
-It fixes the stack overflow problem, but I'm not sure whether updating 
-it before netdev_sync_lower_features() is safe or not.
 
