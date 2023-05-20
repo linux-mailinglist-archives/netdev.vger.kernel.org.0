@@ -1,82 +1,59 @@
-Return-Path: <netdev+bounces-4064-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4065-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 85DBB70A62A
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 09:34:38 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id EE8C170A663
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 10:30:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81CC02814C2
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 07:34:36 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 659801C20A8A
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 08:30:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A39FDA4F;
-	Sat, 20 May 2023 07:34:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0284632;
+	Sat, 20 May 2023 08:30:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95ABE624
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 07:34:34 +0000 (UTC)
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD6119F;
-	Sat, 20 May 2023 00:34:33 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id d2e1a72fcca58-64d3578c25bso1609887b3a.3;
-        Sat, 20 May 2023 00:34:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684568073; x=1687160073;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wBXlPJ2WOFDTyTHyLQ9M5/vOMvc7Mykf2q4oVdOVeEg=;
-        b=QN6XoqWxTSy3GlTXwrZ/aRy5SVogCyExaBhpUYS1aG7Mq5WOb3qX89yDQW8ui6jALU
-         bbgFOuA1cNZJjGOuz1NMI+TgiAvv8r+7u4GoJbQ/p40sdOef28WYQn5FJQsFXbtVkGDm
-         SX52G9VZgX+PVbKjFyJ7NzW8uysNXhnSRHv/pWPAGBJcV90ve/ITlbXMgbPfhEEehLdS
-         yOXFaDq9UrMxxK9Ddi4FhGa3KlEDmLTFJGylHHfigZTp9Vtx6Cdn3h8lgnVfIEHEjfIu
-         O/TCrxI/eZzHhH4oqB0CX6HqHyqAINBdChpbtn26Owd3g88VwyG5oE4+njobqdVbxS0v
-         3PsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684568073; x=1687160073;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wBXlPJ2WOFDTyTHyLQ9M5/vOMvc7Mykf2q4oVdOVeEg=;
-        b=HD45ePTKeXE+cSJlRRn1aN1sOsCM7O4cw5X2IVcWgcgtnYe5dQKbFJ5jQFt2uiS2zV
-         ryZ7Kieo5VmgFL0F2U3WlACuoUFt2M+tp7/iRrrPcq8k9Brx9PL93rGlvATASUFlln0h
-         lKlbnjswGOFMRuRTzlSf/jO58JHjRl8y3yzix26z5V3uEjAa/vvodNRlYlvsyik26hz4
-         9vz1iURgU+uBxYpdjjmf4s++d5kRFTW0MThBxnk3cnk17k6HoP1LPfnIb+Qf6BhSbToP
-         n1sgLYN20oYABNaiT9E4Z8izOblilCjATGGl5paE7gsRdKyptIGbfpxi2aH5l7dTImWS
-         WWDw==
-X-Gm-Message-State: AC+VfDzvQiB1adB5Bq4/UmTF0cqq18K/E+JH/80ZXpEvoM0Ql2CBMYbx
-	g1YI4IJd6AHsP5T1wCxOZIc=
-X-Google-Smtp-Source: ACHHUZ5QxeqwpmX+8bEEsL5MfjtiJ1O/rhGic4E6owcjthl0YEtN976ophiU97AJmOE0F6GQ6X+Lyw==
-X-Received: by 2002:a05:6a00:2e87:b0:636:f899:46a0 with SMTP id fd7-20020a056a002e8700b00636f89946a0mr7194401pfb.15.1684568072820;
-        Sat, 20 May 2023 00:34:32 -0700 (PDT)
-Received: from ubuntu777.domain.name (36-228-97-28.dynamic-ip.hinet.net. [36.228.97.28])
-        by smtp.gmail.com with ESMTPSA id fe21-20020a056a002f1500b0064d47cd117esm499146pfb.39.2023.05.20.00.34.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 May 2023 00:34:32 -0700 (PDT)
-From: Min-Hua Chen <minhuadotchen@gmail.com>
-To: kuba@kernel.org
-Cc: alexandre.torgue@foss.st.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	joabreu@synopsys.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	mcoquelin.stm32@gmail.com,
-	minhuadotchen@gmail.com,
-	netdev@vger.kernel.org,
-	pabeni@redhat.com,
-	peppe.cavallaro@st.com,
-	simon.horman@corigine.com
-Subject: Re: [PATCH v3] net: stmmac: compare p->des0 and p->des1 with __le32 type values
-Date: Sat, 20 May 2023 15:34:28 +0800
-Message-Id: <20230520073428.3781-1-minhuadotchen@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C53B5372
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 08:30:23 +0000 (UTC)
+Received: from smtp.smtpout.orange.fr (smtp-28.smtpout.orange.fr [80.12.242.28])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C73CA1
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 01:30:22 -0700 (PDT)
+Received: from pop-os.home ([86.243.2.178])
+	by smtp.orange.fr with ESMTPA
+	id 0Hylq5VzBHWsH0HylqQZQ4; Sat, 20 May 2023 10:30:21 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+	s=t20230301; t=1684571421;
+	bh=oQETDRJrVbTE0ETdYYPnZKcQRoVWgLVTmKiK6jA9rrg=;
+	h=From:To:Cc:Subject:Date;
+	b=fmfKyYeh/B4aI/deh2jAk95LR+ZzeVPc4Ln4zuzzuZFkDAlcfHLp8OTDNASXkHcIV
+	 Ftg2EZf55rTKYNQYyMOHhGb6iYzriNOgnMPrsPtgbexXDDutlsTdqVgXTXCJOTwH3z
+	 iLfYflB2vMl9kNWXBMR72sdVKf+wDpI+xcDcI4fmyN470r7OxoLjXaRW5FunRPHCYM
+	 5yFUiTLe0g6BliVHQPUPpimbXeXzg942AnAX7V+sMjxTIC4jZndhv448LQ6bS+c9cU
+	 +CGc3tVVhRiPVBE1c46aZ5F8ftOUNKK+D8Jb9T0yKeghb7YoHgAh64NL6P3n4rgmbK
+	 Ar4Z68IHOFy5g==
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 20 May 2023 10:30:21 +0200
+X-ME-IP: 86.243.2.178
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: Rain River <rain.1986.08.12@gmail.com>,
+	Zhu Yanjun <zyjzyj2000@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Ayaz Abdulla <aabdulla@nvidia.com>
+Cc: linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	netdev@vger.kernel.org
+Subject: [PATCH net] forcedeth: Fix an error handling path in nv_probe()
+Date: Sat, 20 May 2023 10:30:17 +0200
+Message-Id: <355e9a7d351b32ad897251b6f81b5886fcdc6766.1684571393.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230519210439.4a3bb326@kernel.org>
-References: <20230519210439.4a3bb326@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -85,30 +62,41 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Jakub,
+If an error occures after calling nv_mgmt_acquire_sema(), it should be
+undone with a corresponding nv_mgmt_release_sema() call.
 
->We can make working with sparse easier by making sure it doesn't
->generate false positive warnings :\
+Add it in the error handling path of the probe as already done in the
+remove function.
 
-It will be good if sparse can handle this case correctly.
+Fixes: cac1c52c3621 ("forcedeth: mgmt unit interface")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+I don't think that the Fixes tag is really accurate, but
+nv_mgmt_release_sema() was introduced here. And cac1c52c3621 is already old
+so should be good enough.
+---
+ drivers/net/ethernet/nvidia/forcedeth.c | 1 +
+ 1 file changed, 1 insertion(+)
 
->
->> (There are around 7000 sparse warning in ARCH=arm64 defconfig build and
->> sometimes it is hard to remember all the false alarm cases)
->>
->> Could you consider taking this patch, please?
->
->No. We don't take patches to address false positive static
->checker warnings.
+diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+index 0605d1ee490d..7a549b834e97 100644
+--- a/drivers/net/ethernet/nvidia/forcedeth.c
++++ b/drivers/net/ethernet/nvidia/forcedeth.c
+@@ -6138,6 +6138,7 @@ static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
+ 	return 0;
+ 
+ out_error:
++	nv_mgmt_release_sema(dev);
+ 	if (phystate_orig)
+ 		writel(phystate|NVREG_ADAPTCTL_RUNNING, base + NvRegAdapterControl);
+ out_freering:
+-- 
+2.34.1
 
-No problem.
-
-thanks,
-Min-Hua
 
