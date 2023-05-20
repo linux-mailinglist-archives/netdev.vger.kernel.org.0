@@ -1,117 +1,121 @@
-Return-Path: <netdev+bounces-4075-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4079-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 16A5770A8C2
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 17:16:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 899BF70A904
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 18:14:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 44028281312
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 15:16:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 54D5A280362
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 16:14:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 655F36AD7;
-	Sat, 20 May 2023 15:16:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6BAE98F58;
+	Sat, 20 May 2023 16:13:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB5CC6FA1
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 15:16:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63A72C433EF;
-	Sat, 20 May 2023 15:16:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684595803;
-	bh=UGvLhlhaGVuZ1xNTf9EdfX6bmO7ekWIS/JxQ4csPyO4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Fk8RBRN4CpUt2XfHmROjEBC6rq1EM5kZM+neDoJm+QOW/TFLuzJb+OVPs9Ka546V6
-	 zxjXdoIvK2neuvr77CwHUI8Qs8GDjdCoqO9VUkbXv8qld00GuRL70NfeyyrA8jPvmp
-	 9VPuAgV7/biO6/3p/NI9LQuhgSNercRdPA7WnAClUu31zIB3H9w6hWMl0tLHA+jhsB
-	 GQMHQF9D+Ewv1+JSjD6gG7bgpl/rDOrip1hn7nuQhM0sZsPRqs8bLFTGoBBLi1BS1Z
-	 KTtNUn9fKOJTKYwS1Bdf4FUtRHY647HYY3rLAMopGe4tbdLCwXhNM/hQqDOqwrCwWO
-	 qDFvoT+MzECuQ==
-Date: Sat, 20 May 2023 16:32:49 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Daniel Scally <djrscally@gmail.com>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>, Sakari Ailus
- <sakari.ailus@linux.intel.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Wolfram Sang <wsa@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>, Andreas Klinger
- <ak@it-klinger.de>, Marcin Wojtas <mw@semihalf.com>, Russell King
- <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
- Abeni <pabeni@redhat.com>, Jonathan =?UTF-8?B?TmV1c2Now6RmZXI=?=
- <j.neuschaefer@gmx.net>, Linus Walleij <linus.walleij@linaro.org>, Paul
- Cercueil <paul@crapouillou.net>, Akhil R <akhilrajeev@nvidia.com>,
- linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
- netdev@vger.kernel.org, openbmc@lists.ozlabs.org,
- linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH v5 2/8] iio: mb1232: relax return value check for IRQ
- get
-Message-ID: <20230520163249.56f1e56d@jic23-huawei>
-In-Reply-To: <05636b651b9a3b13aa3a3b7d3faa00f2a8de6bca.1684493615.git.mazziesaccount@gmail.com>
-References: <cover.1684493615.git.mazziesaccount@gmail.com>
-	<05636b651b9a3b13aa3a3b7d3faa00f2a8de6bca.1684493615.git.mazziesaccount@gmail.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61B588F56
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 16:13:39 +0000 (UTC)
+Received: from smtp.missinglinkelectronics.com (smtp.missinglinkelectronics.com [162.55.135.183])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD42118
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 09:13:37 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by smtp.missinglinkelectronics.com (Postfix) with ESMTP id 3F7BA20661;
+	Sat, 20 May 2023 18:07:23 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at missinglinkelectronics.com
+Received: from smtp.missinglinkelectronics.com ([127.0.0.1])
+	by localhost (mail.missinglinkelectronics.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KEUQHyrAvODV; Sat, 20 May 2023 18:07:23 +0200 (CEST)
+Received: from humpen-bionic2.mle (p578c5bfe.dip0.t-ipconnect.de [87.140.91.254])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: david)
+	by smtp.missinglinkelectronics.com (Postfix) with ESMTPSA id 8923E2021B;
+	Sat, 20 May 2023 18:07:22 +0200 (CEST)
+From: David Epping <david.epping@missinglinkelectronics.com>
+To: Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	UNGLinuxDriver@microchip.com,
+	David Epping <david.epping@missinglinkelectronics.com>
+Subject: [PATCH net 0/3] net: phy: mscc: support VSC8501
+Date: Sat, 20 May 2023 18:06:00 +0200
+Message-Id: <20230520160603.32458-1-david.epping@missinglinkelectronics.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-On Fri, 19 May 2023 14:01:23 +0300
-Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+Hello,
 
-> fwnode_irq_get() was changed to not return 0 anymore.
-> 
-> Drop check for return value 0.
-> 
-> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-> 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+this series of patches adds support for the VSC8501 Ethernet PHY and
+fixes support for the VSC8502 PHY in RGMII mode (see below for
+discussion).
 
-> ---
-> Revsion history:
-> v4 => v5:
->  - drop unnecessary data->irqnr = -1 assignment
-> 
-> The first patch of the series changes the fwnode_irq_get() so this depends
-> on the first patch of the series and should not be applied alone.
-> ---
->  drivers/iio/proximity/mb1232.c | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/proximity/mb1232.c b/drivers/iio/proximity/mb1232.c
-> index e70cac8240af..3ae226297a00 100644
-> --- a/drivers/iio/proximity/mb1232.c
-> +++ b/drivers/iio/proximity/mb1232.c
-> @@ -76,7 +76,7 @@ static s16 mb1232_read_distance(struct mb1232_data *data)
->  		goto error_unlock;
->  	}
->  
-> -	if (data->irqnr >= 0) {
-> +	if (data->irqnr > 0) {
->  		/* it cannot take more than 100 ms */
->  		ret = wait_for_completion_killable_timeout(&data->ranging,
->  									HZ/10);
-> @@ -212,10 +212,7 @@ static int mb1232_probe(struct i2c_client *client)
->  	init_completion(&data->ranging);
->  
->  	data->irqnr = fwnode_irq_get(dev_fwnode(&client->dev), 0);
-> -	if (data->irqnr <= 0) {
-> -		/* usage of interrupt is optional */
-> -		data->irqnr = -1;
-> -	} else {
-> +	if (data->irqnr > 0) {
->  		ret = devm_request_irq(dev, data->irqnr, mb1232_handle_irq,
->  				IRQF_TRIGGER_FALLING, id->name, indio_dev);
->  		if (ret < 0) {
+The first patch simply adds the VSC8502 to the MODULE_DEVICE_TABLE,
+where I guess it was unintentionally missing. I have no hardware to
+test my change.
+
+The second patch adds the VSC8501 PHY with exactly the same driver
+implementation as the existing VSC8502. Note that for at least RGMII
+mode this patch is not sufficient to operate the PHY, but likely the
+existing code was not sufficient for VSC8502, either.
+
+The third patch fixes RGMII mode operation for the VSC8501 (I have
+tested this on hardware) and very likely also the VSC8502, which share
+the same description of relevant registers in the datasheet.
+https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/VSC8501-03_Datasheet_60001741A.PDF
+https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/VSC8502-03_Datasheet_60001742B.pdf
+Table 4-42 "RGMII CONTROL, ADDRESS 20E2 (0X14)" Bit 11 for each of
+them.
+
+By default the RX_CLK is disabled in both PHYs. This results in no
+received packets being handed to the MAC. The patch enables this
+clock.
+Since I can only test RGMII mode, and the register is called RGMII,
+my patch is limited to the RGMII mode. However, according to
+Microchip support (case number 01268776) this applies to all modes
+using the RX_CLK (which is all modes?).
+Since the VSC8502 shares the same description, this would however mean
+the existing code for VSC8502 could have never worked.
+Is that possible? Has someone used VSC8502 successfully?
+
+Other PHYs sharing the same basic code, like VSC8530/31/40/41 don't
+have the clock disabled and the bit 11 is reserved for them.
+Hence the check for PHY ID.
+
+Should the uncertainty about GMII and MII modes be a source code
+comment? Or in the commit message? Or not mentioned at all?
+
+Thanks for your feedback,
+David
+
+David Epping (3):
+  net: phy: mscc: add VSC8502 to MODULE_DEVICE_TABLE
+  net: phy: mscc: add support for VSC8501
+  net: phy: mscc: enable VSC8501/2 RGMII RX clock
+
+ drivers/net/phy/mscc/mscc.h      |  2 ++
+ drivers/net/phy/mscc/mscc_main.c | 50 ++++++++++++++++++++++++++++++++
+ 2 files changed, 52 insertions(+)
+
+-- 
+2.17.1
 
 
