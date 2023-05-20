@@ -1,111 +1,85 @@
-Return-Path: <netdev+bounces-4060-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4061-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 90AF270A571
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 07:03:31 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5942070A593
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 07:10:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2D1171C20A56
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 05:03:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CDC3B1C20A60
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 05:10:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 002CF658;
-	Sat, 20 May 2023 05:03:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B29B658;
+	Sat, 20 May 2023 05:10:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E93F5653
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 05:03:27 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C748F1
-	for <netdev@vger.kernel.org>; Fri, 19 May 2023 22:03:25 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1q0EkQ-0007Al-Jq; Sat, 20 May 2023 07:03:18 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1q0EkP-0005ZM-2c; Sat, 20 May 2023 07:03:17 +0200
-Date: Sat, 20 May 2023 07:03:17 +0200
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: Vladimir Oltean <olteanv@gmail.com>
-Cc: Woojung Huh <woojung.huh@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-	Arun Ramadoss <arun.ramadoss@microchip.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Simon Horman <simon.horman@corigine.com>,
-	"Russell King (Oracle)" <linux@armlinux.org.uk>,
-	linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-	netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-	UNGLinuxDriver@microchip.com,
-	"David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v4 1/2] net: dsa: microchip: ksz8: Make flow
- control, speed, and duplex on CPU port configurable
-Message-ID: <20230520050317.GC18246@pengutronix.de>
-References: <20230519124700.635041-1-o.rempel@pengutronix.de>
- <20230519124700.635041-2-o.rempel@pengutronix.de>
- <20230519143004.luvz73jiyvnqxk4y@skbuf>
- <20230519185015.GA18246@pengutronix.de>
- <20230519203449.pc5vbfgbfc6rdo6i@skbuf>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B21B67F2
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 05:10:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4F623C433D2;
+	Sat, 20 May 2023 05:10:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684559420;
+	bh=pe11/h611uMiEGIRHVEtgd9ZrK1W/dQtD15KpW2bbuE=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=V0R2g2IVvqbf9NPo6iIUSFiTqF6YjwI8J48i4gMbJyLi+ble5M7R6+MYe6rjGqDZk
+	 xTECgODKXDEvd0lVz9lwxEd6/KsClWxxp0M1VT/5yWv0opDHsqQ0T8u/Hhs0a/v9rK
+	 d1jwMHcIwQveFLH+cwFbV4XeFVqTEZK8oMLjaAHZ618eGkSRW2tcKTLGLfc4CDrTHy
+	 YO1Y6Rq5tWYCN4x9U7gKaiuXXVNyk0V3jrDQ1/g9GkeISpHmxEirCK4i0hlMMvO0Zd
+	 N5bPsm9SYNlIn3eB7kTDqCPXXriQd61NRgDVhvu7gCRxXgbpYMyEx7D5Np9vOPbG+u
+	 DAE9E4rSlq41Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 30B21E5421C;
+	Sat, 20 May 2023 05:10:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230519203449.pc5vbfgbfc6rdo6i@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL: http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3][pull request] Intel Wired LAN Driver Updates
+ 2023-05-18 (igc, igb, e1000e)
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168455942019.18146.13890177240758141809.git-patchwork-notify@kernel.org>
+Date: Sat, 20 May 2023 05:10:20 +0000
+References: <20230518170942.418109-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20230518170942.418109-1-anthony.l.nguyen@intel.com>
+To: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+ edumazet@google.com, netdev@vger.kernel.org
 
-On Fri, May 19, 2023 at 11:34:49PM +0300, Vladimir Oltean wrote:
-> On Fri, May 19, 2023 at 08:50:15PM +0200, Oleksij Rempel wrote:
-> > Thank you for your feedback. I see your point. 
-> > 
-> > We need to remember that the KSZ switch series has different types of
-> > ports. Specifically, for the KSZ8 series, there's a unique port. This
-> > port is unique because it's the only one that can be configured with
-> > global registers, and it is only one supports tail tagging. This special
-> > port is already referenced in the driver by "dev->cpu_port", so I continued
-> > using it in my patch.
-> 
-> Ok, I understand, so for the KSZ8 family, the assumption about which
-> port will use tail tagging is baked into the hardware.
-> 
-> > It is important to note that while this port has an xMII interface, it
-> > is not the only port that could have an xMII interface. Therefore, using
-> > "dev->info->internal_phy" may not be the best way to identify this port,
-> > because there can be ports that are not global/cpu, have an xMII
-> > interface, but don't have an internal PHY.
-> 
-> Right, but since we're talking about phylink, the goal is to identify
-> the xMII ports, not the CPU ports... This is a particularly denatured
-> case because the xMII port is global and is also the CPU port.
+Hello:
 
-I see. Do you have any suggestions for a better or more suitable
-implementation? I'm open to ideas.
+This series was applied to netdev/net-next.git (main)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-Regards,
-Oleksij
+On Thu, 18 May 2023 10:09:39 -0700 you wrote:
+> This series contains updates to igc, igb, and e1000e drivers.
+> 
+> Kurt Kanzenbach adds calls to txq_trans_cond_update() for XDP transmit
+> on igc.
+> 
+> Tom Rix makes definition of igb_pm_ops conditional on CONFIG_PM for igb.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/3] igc: Avoid transmit queue timeout for XDP
+    https://git.kernel.org/netdev/net-next/c/95b681485563
+  - [net-next,2/3] igb: Define igb_pm_ops conditionally on CONFIG_PM
+    https://git.kernel.org/netdev/net-next/c/7271522b729b
+  - [net-next,3/3] e1000e: Add @adapter description to kdoc
+    https://git.kernel.org/netdev/net-next/c/c4dc8dc32bd1
+
+You are awesome, thank you!
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
 
