@@ -1,155 +1,273 @@
-Return-Path: <netdev+bounces-4082-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4083-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 10B6470AB2D
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 23:52:20 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E113370AB8E
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 00:14:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9D4C11C20984
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 21:52:16 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9C832280DEB
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 22:14:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A91F59449;
-	Sat, 20 May 2023 21:52:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65F4E946B;
+	Sat, 20 May 2023 22:14:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 978543D39B
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 21:52:16 +0000 (UTC)
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B90FD
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 14:52:14 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1ae851f2a7dso12756915ad.0
-        for <netdev@vger.kernel.org>; Sat, 20 May 2023 14:52:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mistywest-com.20221208.gappssmtp.com; s=20221208; t=1684619534; x=1687211534;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=UNaIy/SBdB1toAAOpOLbcw16Mouh3mBEe49+CMx4dn0=;
-        b=KAn0ck7VIW8n0I56cSvPE/DZjf4nG98ZLwiS3r8QqLW/OXt2k7uPQ4ATAVkhRjceC4
-         mRcLbsnNqEwAOl6r1pv4aCErLIIWtuHVLWWdkM1MMsN6/EECNe0A3tTffeSBMY4HoGjX
-         WeNGSMbgLf29brXzPlkQDWdZPWjR/DvyipsfrCAQ8hleJY9od+L+PGl9qHc8GANtSFyf
-         mSwvW20oAnzrgN3uYzi/cUY1cVmAcyW+nY/lhrDo/cVxhwiaKAoc50J8OP+PFfbmWAk9
-         s7HDJOBRfj3yYtYeZG2yTdTt4I/sboYNN/EZi2TgzI5IOHadOtETdMiqXCRRbYk0iJbi
-         0Bvw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 536269469
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 22:14:04 +0000 (UTC)
+Received: from mail-il1-f207.google.com (mail-il1-f207.google.com [209.85.166.207])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E68DD185
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 15:14:00 -0700 (PDT)
+Received: by mail-il1-f207.google.com with SMTP id e9e14a558f8ab-3384bfb39b4so59022375ab.0
+        for <netdev@vger.kernel.org>; Sat, 20 May 2023 15:14:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684619534; x=1687211534;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20221208; t=1684620840; x=1687212840;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UNaIy/SBdB1toAAOpOLbcw16Mouh3mBEe49+CMx4dn0=;
-        b=ga9A9EbpJ47Oy2WcdZVsPtF4EDHmIerCxe2o3PY0pXidRutpB1XjPyDJpdcSxPs/Sj
-         4672/70xInM8XIZU7GJeIZjq4RXChsLP+B2UYzeHj36k5yRKY4zJdib+kyTDvpYHFlK3
-         Cr9fb+vP+Y16iYgvML6ubug0Byb1ft5tW9FO/59TjDBuKdCATngHhRveLrwoHTrov8qo
-         CSg03Ode7D+bA9tPCVt5YlbXJAVcYuQL7/JNrVV/2RHpHDmJsq4PqNt2bro88PQYAyZS
-         tdqiM36lpO38bKWdiBlk9E9CPiy/u9LbGKTCFKTRLQ3FcAImcp7VpAzE8Ssz3HybQAdw
-         B4hA==
-X-Gm-Message-State: AC+VfDxjXqjZHg4+1nD+QYF1YIauoMgC4t3dFtVyqpucHiHe2NzH/agG
-	/k+8XShsHdxkXKqICiyxWG3xK1uCkGIPrCFHkFi4LA==
-X-Google-Smtp-Source: ACHHUZ6GunVNYNa9Isl9/qmRzV4qdNetrOonV86jn4BbQF4KO4TMYLCk/o3ulTIhA4PBofxeqM6vAw==
-X-Received: by 2002:a17:903:2444:b0:1a6:9762:6eed with SMTP id l4-20020a170903244400b001a697626eedmr8354671pls.22.1684619534216;
-        Sat, 20 May 2023 14:52:14 -0700 (PDT)
-Received: from [192.168.98.6] (remote.mistywest.io. [184.68.30.58])
-        by smtp.gmail.com with ESMTPSA id l1-20020a170902ec0100b001ae6948e812sm1709429pld.303.2023.05.20.14.52.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 20 May 2023 14:52:13 -0700 (PDT)
-Message-ID: <b007c778-03ee-23b1-e1b7-106e77819623@mistywest.com>
-Date: Sat, 20 May 2023 14:52:12 -0700
+        bh=phVjbSew9ZM8CBTOL6mgsk8hmTvWd23s0NrgeLLExb8=;
+        b=hYULjXal+bJuuSUgHSpo1yxmSURb9AaXbvKh3PhJlHEy+UEHeHk5kRQv2hXuVDk9Sk
+         ksYK891TSG7djjPZydOd6z7DVe0wxJHaHI/lt7jo/eB/uLkDHl94jyjDgRt+GcR5Fl0a
+         iVI9QBJU2MVFfofByR952TMtOZtO8+6wrjADLh5Th7EqVWZTkJpjxpes81BcAB1mBk8L
+         Ah0W3hZrevZNRkOJAaDN1//lamRrKNgW9bIeB3UJrXibxVLC0W569gbE5yzI8zakxc3W
+         dVtiuenZXVJJg9Y0goT+8izPrzBqlF7VTc43qDuFwBXA+8sDL113VAGFkcVCdQnKutqd
+         ABEA==
+X-Gm-Message-State: AC+VfDwmIxZjZ4l2wjAqJBrmRhfHowVda8+Lpm5U0KnBqIzC9hpGTsTq
+	Oihqg4zj3IcwKa0Yh8Vq1yO7c+m2UZyrGR2e31n5sqbkliHT
+X-Google-Smtp-Source: ACHHUZ79g/TnEGwpYJweg5O7XU1BAFLyCZYzIqHpEWbn3eLfpK0OSceFGzLQU4dwafL9XnPrzN5jtTskVctvMoj6qwD6CTWIMwKj
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: PHY VSC8531 MDIO data not reflected in ethernet/ sub-module
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: netdev@vger.kernel.org
-References: <2cc45d13-78e5-d5c1-3147-1b44efc6a291@mistywest.com>
- <69d0d5d9-5ed0-4254-adaf-cf3f85c103b9@lunn.ch>
- <759ac0e2-9d5e-17ea-83e2-573a762492c2@mistywest.com>
- <9fbcac7f-9d12-4a42-9f2f-345c37585ff4@lunn.ch>
-Content-Language: en-US
-From: Ron Eggler <ron.eggler@mistywest.com>
-In-Reply-To: <9fbcac7f-9d12-4a42-9f2f-345c37585ff4@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-Received: by 2002:a02:9643:0:b0:41a:dd1b:23ca with SMTP id
+ c61-20020a029643000000b0041add1b23camr255641jai.4.1684620839674; Sat, 20 May
+ 2023 15:13:59 -0700 (PDT)
+Date: Sat, 20 May 2023 15:13:59 -0700
+In-Reply-To: <0000000000004f938b05fad48ee6@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000baea9905fc275a49@google.com>
+Subject: Re: [syzbot] [fs?] INFO: task hung in synchronize_rcu (4)
+From: syzbot <syzbot+222aa26d0a5dbc2e84fe@syzkaller.appspotmail.com>
+To: amir73il@gmail.com, bpf@vger.kernel.org, daniel@iogearbox.net, 
+	davem@davemloft.net, edumazet@google.com, hdanton@sina.com, jack@suse.cz, 
+	kafai@fb.com, kuba@kernel.org, linux-fsdevel@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, pabeni@redhat.com, 
+	penguin-kernel@i-love.sakura.ne.jp, peterz@infradead.org, 
+	syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org, 
+	willemdebruijn.kernel@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-I should follow up on this Thread and send out a Thank you for everybody 
-that has pitched in. I've got the two Ethernet interfaces working fine 
-now after I set "phy-mode" to "rgmii-id" and removed the "interrupts" 
-and "interrupt-parent" attributes to trigger the polling of the PHY.
-Both changes were made in the device tree.
+syzbot has found a reproducer for the following issue on:
 
-Thanks again!
-Ron
+HEAD commit:    dcbe4ea1985d Merge branch '1GbE' of git://git.kernel.org/p..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=123ebd91280000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f20b05fe035db814
+dashboard link: https://syzkaller.appspot.com/bug?extid=222aa26d0a5dbc2e84fe
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1495596a280000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1529326a280000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/41b9dda0e686/disk-dcbe4ea1.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/64d9bece8f89/vmlinux-dcbe4ea1.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/42429896dca0/bzImage-dcbe4ea1.xz
+
+The issue was bisected to:
+
+commit 3b5d4ddf8fe1f60082513f94bae586ac80188a03
+Author: Martin KaFai Lau <kafai@fb.com>
+Date:   Wed Mar 9 09:04:50 2022 +0000
+
+    bpf: net: Remove TC_AT_INGRESS_OFFSET and SKB_MONO_DELIVERY_TIME_OFFSET macro
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=153459d7c80000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=173459d7c80000
+console output: https://syzkaller.appspot.com/x/log.txt?x=133459d7c80000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+222aa26d0a5dbc2e84fe@syzkaller.appspotmail.com
+Fixes: 3b5d4ddf8fe1 ("bpf: net: Remove TC_AT_INGRESS_OFFSET and SKB_MONO_DELIVERY_TIME_OFFSET macro")
+
+INFO: task dhcpcd:10860 blocked for more than 143 seconds.
+      Not tainted 6.4.0-rc2-syzkaller-00481-gdcbe4ea1985d #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:dhcpcd          state:D stack:29024 pid:10860 ppid:4670   flags:0x00000002
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5343 [inline]
+ __schedule+0xc9a/0x5880 kernel/sched/core.c:6669
+ schedule+0xde/0x1a0 kernel/sched/core.c:6745
+ exp_funnel_lock kernel/rcu/tree_exp.h:316 [inline]
+ synchronize_rcu_expedited+0x6f8/0x770 kernel/rcu/tree_exp.h:992
+ synchronize_rcu+0x2f1/0x3a0 kernel/rcu/tree.c:3499
+ synchronize_net+0x4e/0x60 net/core/dev.c:10791
+ __unregister_prot_hook+0x4b3/0x5c0 net/packet/af_packet.c:380
+ packet_do_bind+0x93f/0xe30 net/packet/af_packet.c:3235
+ packet_bind+0x15f/0x1c0 net/packet/af_packet.c:3319
+ __sys_bind+0x1ed/0x260 net/socket.c:1803
+ __do_sys_bind net/socket.c:1814 [inline]
+ __se_sys_bind net/socket.c:1812 [inline]
+ __x64_sys_bind+0x73/0xb0 net/socket.c:1812
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f522deb3677
+RSP: 002b:00007ffec7fc94f8 EFLAGS: 00000217 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 000055e71e865ca3 RCX: 00007f522deb3677
+RDX: 0000000000000014 RSI: 00007ffec7fc9508 RDI: 0000000000000005
+RBP: 0000000000000000 R08: 000055e7200048a0 R09: 0000000000000004
+R10: 000000000000006d R11: 0000000000000217 R12: 000055e71ffff250
+R13: 000055e720004788 R14: 00007ffec7fe9dec R15: 000055e720004754
+ </TASK>
+INFO: task dhcpcd:10906 blocked for more than 145 seconds.
+      Not tainted 6.4.0-rc2-syzkaller-00481-gdcbe4ea1985d #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:dhcpcd          state:D stack:28864 pid:10906 ppid:4670   flags:0x00000002
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5343 [inline]
+ __schedule+0xc9a/0x5880 kernel/sched/core.c:6669
+ schedule+0xde/0x1a0 kernel/sched/core.c:6745
+ exp_funnel_lock kernel/rcu/tree_exp.h:316 [inline]
+ synchronize_rcu_expedited+0x6f8/0x770 kernel/rcu/tree_exp.h:992
+ synchronize_rcu+0x2f1/0x3a0 kernel/rcu/tree.c:3499
+ synchronize_net+0x4e/0x60 net/core/dev.c:10791
+ __unregister_prot_hook+0x4b3/0x5c0 net/packet/af_packet.c:380
+ packet_do_bind+0x93f/0xe30 net/packet/af_packet.c:3235
+ packet_bind+0x15f/0x1c0 net/packet/af_packet.c:3319
+ __sys_bind+0x1ed/0x260 net/socket.c:1803
+ __do_sys_bind net/socket.c:1814 [inline]
+ __se_sys_bind net/socket.c:1812 [inline]
+ __x64_sys_bind+0x73/0xb0 net/socket.c:1812
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f522deb3677
+RSP: 002b:00007ffec7fc94f8 EFLAGS: 00000217 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 000055e71e865ca3 RCX: 00007f522deb3677
+RDX: 0000000000000014 RSI: 00007ffec7fc9508 RDI: 0000000000000005
+RBP: 0000000000000000 R08: 000055e720004a20 R09: 0000000000000004
+R10: 000000000000006d R11: 0000000000000217 R12: 000055e71ffff250
+R13: 000055e720004908 R14: 00007ffec7fe9dec R15: 000055e7200048d4
+ </TASK>
+INFO: task dhcpcd:11298 blocked for more than 147 seconds.
+      Not tainted 6.4.0-rc2-syzkaller-00481-gdcbe4ea1985d #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:dhcpcd          state:D stack:29008 pid:11298 ppid:4670   flags:0x00000002
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5343 [inline]
+ __schedule+0xc9a/0x5880 kernel/sched/core.c:6669
+ schedule+0xde/0x1a0 kernel/sched/core.c:6745
+ exp_funnel_lock kernel/rcu/tree_exp.h:316 [inline]
+ synchronize_rcu_expedited+0x6f8/0x770 kernel/rcu/tree_exp.h:992
+ synchronize_rcu+0x2f1/0x3a0 kernel/rcu/tree.c:3499
+ synchronize_net+0x4e/0x60 net/core/dev.c:10791
+ __unregister_prot_hook+0x4b3/0x5c0 net/packet/af_packet.c:380
+ packet_do_bind+0x93f/0xe30 net/packet/af_packet.c:3235
+ packet_bind+0x15f/0x1c0 net/packet/af_packet.c:3319
+ __sys_bind+0x1ed/0x260 net/socket.c:1803
+ __do_sys_bind net/socket.c:1814 [inline]
+ __se_sys_bind net/socket.c:1812 [inline]
+ __x64_sys_bind+0x73/0xb0 net/socket.c:1812
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f522deb3677
+RSP: 002b:00007ffec7fc94f8 EFLAGS: 00000217
+ ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 000055e71e865ca3 RCX: 00007f522deb3677
+RDX: 0000000000000014 RSI: 00007ffec7fc9508 RDI: 0000000000000005
+RBP: 0000000000000000 R08: 000055e720004420 R09: 0000000000000004
+R10: 000000000000006d R11: 0000000000000217 R12: 000055e71ffff250
+R13: 000055e720004a88 R14: 00007ffec7fe9dec R15: 000055e720004a54
+ </TASK>
+INFO: task dhcpcd:11328 blocked for more than 149 seconds.
+      Not tainted 6.4.0-rc2-syzkaller-00481-gdcbe4ea1985d #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:dhcpcd          state:D stack:28320 pid:11328 ppid:4670   flags:0x00000002
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5343 [inline]
+ __schedule+0xc9a/0x5880 kernel/sched/core.c:6669
+ schedule+0xde/0x1a0 kernel/sched/core.c:6745
+ exp_funnel_lock kernel/rcu/tree_exp.h:316 [inline]
+ synchronize_rcu_expedited+0x6f8/0x770 kernel/rcu/tree_exp.h:992
+ synchronize_rcu+0x2f1/0x3a0 kernel/rcu/tree.c:3499
+ synchronize_net+0x4e/0x60 net/core/dev.c:10791
+ __unregister_prot_hook+0x4b3/0x5c0 net/packet/af_packet.c:380
+ packet_do_bind+0x93f/0xe30 net/packet/af_packet.c:3235
+ packet_bind+0x15f/0x1c0 net/packet/af_packet.c:3319
+ __sys_bind+0x1ed/0x260 net/socket.c:1803
+ __do_sys_bind net/socket.c:1814 [inline]
+ __se_sys_bind net/socket.c:1812 [inline]
+ __x64_sys_bind+0x73/0xb0 net/socket.c:1812
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f522deb3677
+RSP: 002b:00007ffec7fc94f8 EFLAGS: 00000217 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 000055e71e865ca3 RCX: 00007f522deb3677
+RDX: 0000000000000014 RSI: 00007ffec7fc9508 RDI: 0000000000000005
+RBP: 0000000000000000 R08: 000055e720004420 R09: 0000000000000004
+R10: 000000000000006d R11: 0000000000000217 R12: 000055e71ffff250
+R13: 000055e720004c08 R14: 00007ffec7fe9dec R15: 000055e720004bd4
+ </TASK>
+
+Showing all locks held in the system:
+1 lock held by rcu_tasks_kthre/13:
+ #0: ffffffff8c798430 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x31/0xd80 kernel/rcu/tasks.h:518
+1 lock held by rcu_tasks_trace/14:
+ #0: ffffffff8c798130 (rcu_tasks_trace.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x31/0xd80 kernel/rcu/tasks.h:518
+1 lock held by khungtaskd/28:
+ #0: ffffffff8c799040 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x55/0x340 kernel/locking/lockdep.c:6545
+1 lock held by kswapd0/84:
+2 locks held by kswapd1/85:
+3 locks held by kworker/0:2/760:
+3 locks held by kworker/1:2/1126:
+1 lock held by syslogd/4438:
+2 locks held by klogd/4445:
+1 lock held by dhcpcd/4669:
+2 locks held by getty/4756:
+ #0: ffff8880286bf098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x26/0x80 drivers/tty/tty_ldisc.c:243
+ #1: ffffc900015902f0 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xef4/0x13e0 drivers/tty/n_tty.c:2176
+2 locks held by sshd/5018:
+2 locks held by syz-executor300/5025:
+2 locks held by dhcpcd/10797:
+ #0: ffff8880734ebe10 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:775 [inline]
+ #0: ffff8880734ebe10 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: __sock_release+0x86/0x290 net/socket.c:652
+ #1: ffffffff8c7a44b8 (rcu_state.exp_mutex){+.+.}-{3:3}, at: exp_funnel_lock kernel/rcu/tree_exp.h:325 [inline]
+ #1: ffffffff8c7a44b8 (rcu_state.exp_mutex){+.+.}-{3:3}, at: synchronize_rcu_expedited+0x3e8/0x770 kernel/rcu/tree_exp.h:992
+2 locks held by dhcpcd/10818:
+ #0: ffff8880217f2130 (sk_lock-AF_PACKET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1697 [inline]
+ #0: ffff8880217f2130 (sk_lock-AF_PACKET){+.+.}-{0:0}, at: packet_do_bind+0x2f/0xe30 net/packet/af_packet.c:3202
+ #1: ffffffff8c7a44b8 (rcu_state.exp_mutex){+.+.}-{3:3}, at: exp_funnel_lock kernel/rcu/tree_exp.h:325 [inline]
+ #1: ffffffff8c7a44b8 (rcu_state.exp_mutex){+.+.}-{3:3}, at: synchronize_rcu_expedited+0x3e8/0x770 kernel/rcu/tree_exp.h:992
+1 lock held by dhcpcd/10860:
+ #0: ffff88807b95c130 (sk_lock-AF_PACKET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1697 [inline]
+ #0: ffff88807b95c130 (sk_lock-AF_PACKET){+.+.}-{0:0}, at: packet_do_bind+0x2f/0xe30 net/packet/af_packet.c:3202
+1 lock held by dhcpcd/10906:
+ #0: ffff888076080130 (sk_lock-AF_PACKET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1697 [inline]
+ #0: ffff888076080130 (sk_lock-AF_PACKET){+.+.}-{0:0}, at: packet_do_bind+0x2f/0xe30 net/packet/af_packet.c:3202
+1 lock held by dhcpcd/11298:
+ #0: ffff888027a66130 (sk_lock-AF_PACKET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1697 [inline]
+ #0: ffff888027a66130 (sk_lock-AF_PACKET){+.+.}-{0:0}, at: packet_do_bind+0x2f/0xe30 net/packet/af_packet.c:3202
 
 
-On 2023-05-11 19:47, Andrew Lunn wrote:
->> I don't see it being invoked every Seconds but it gets invoked on boot, I
->> added debug logs and see the following:
-> What should happen is when the MAC driver call phy_start(), it either
-> starts polling the PHY or it enabled interrupts. If it is not polling,
-> then is sounds like you have interrupts setup for the PHY. Scatter
-> some more debug prints around and about and see which is true.
->
->> state = UP which means it's ready to start auto negotiation(in
->> phy_state_machine())  but instead in phy_check_link_status(), phydev->state
->> should be set to  PHY_RUNNING but it only can get set to PHY_RUNNING when
->> phydev->link is 1 (in phy_check_link_status()):
-> Yep. Either via polling, or interrupts, the state machine will change
-> to state RUNNING.
->
->>>     phy_read_status()->
->>>       phydev->drv->read_status()
->>> or
->>>       genphy_read_status()
->>>
->>> Check what these are doing, why do they think the link is down.
->> Yes, so in phy_read_status, phydev->drv->read_status appears to be set but I
->> cannot figure out where it gets set. (I obviously need to find the function
->> to find why the link isn't read correctly).
-> Since this is a microchip PHY, i would expect vsc85xx_read_status().
->
->> I temporarily set phydev->drv->read_status to 0 to force invocation of
->> genphy_read_status() function to see how that would work.
->>
->> genphy_update_link(0 is called from genphy_read_status() and I get the below
->> data:
->>
->> [    6.795480] DEBUG: in genphy_update_link(), after phy_read() bmcr 4160
->> [    6.805225] DEBUG: in genphy_update_link(), bmcr 0x1040 & 0x200
->> [    6.815730] DEBUG: in genphy_read_status(), genphy_update_link() 0
->> phydev->autoneg 1, phydev->link 0
->>
->>
->> Could it be that the link needs a second to come up when when the network
->> drivers get started and hence I should make sure that the polling once a
->> second works (which currently doesn't appear to be the case)? Am I missing a
->> configuration option?
-> auto-neg takes a little over 1 second. Polling does not care, if it is
-> not up this time, it might be the next. If you are using interrupts,
-> then you need to ensure the interrupt actually fires when auto-neg is
-> complete.
->
-> 	Andrew
--- 
-Ron -- Ron Eggler Senior Firmware Developer 778 230 9442 
-www.mistywest.com __________________________________________________ 
-About MistyWest We are a Research & Engineering firm composed of 
-engineers and physicists with a focus on solving hard problems across a 
-number of technology verticals. We specifically target projects that 
-have the potential for high-impact, whether it's improving the human 
-condition, impacting sustainability in a positive way, or otherwise 
-moving us collectively to an inclusively abundant future.
+---
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
 
