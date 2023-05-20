@@ -1,92 +1,110 @@
-Return-Path: <netdev+bounces-4052-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4053-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 96FCE70A50F
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 06:04:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5859F70A553
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 06:30:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 135211C20BF2
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 04:04:43 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6CBBC281B41
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 04:30:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF514647;
-	Sat, 20 May 2023 04:04:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4727363;
+	Sat, 20 May 2023 04:30:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9234645
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 04:04:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAB6DC433D2;
-	Sat, 20 May 2023 04:04:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D15A64D
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 04:30:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD5EFC433EF;
+	Sat, 20 May 2023 04:30:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684555481;
-	bh=fnCGmrlOBLhvjGa9MX2iGqRuD5qwQrNA9llxmcNiWZc=;
+	s=k20201202; t=1684557042;
+	bh=vk1WpJSGWERPP8ZVYUIJeoVorXzoNuk7QboDjtn3nR8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=BhrPR3KrvQdQnMKffMFNgQhQ27pfjXggtfsY+d9Ade5exLY+0dUgwY+pE39sRisyS
-	 qgKsQeShHclHx2qV+K5hAwLUpMd03ZsZTu/WANBWrLCS6WzaJRb/QFzbsNRs6NpiNF
-	 FbBy8sgzlC3AMCE6cGYesoVAP+QGgUOrBIfAMJEcfex0ROUoxIFDCtnLvkh5A/TQIK
-	 5zsY8gQpOv/9F+sMQ2Gszv7sshkP3BhJi3mDK0VevxHB0GTIn9Vxy2FHKZMGEPyE1X
-	 46VG2Swu+SNm53LYbipi7/zBHDbClK+SVCBHwXSGnEXIsQ97oztBIx/Ps0wIkDkF/7
-	 2zDbZkTzrD1bg==
-Date: Fri, 19 May 2023 21:04:39 -0700
+	b=hXiKDUYkyXGdmOmUcxFusHKrbC7WSJWkQy943yq4YkJ7X85yx1h+0sewANQpEgRWJ
+	 5RLVFIWYZ0yfANTFSIEILDm9VUP9V64GCRFE7vYdVs/6twLZkAShP/uAh0vbXdSPre
+	 nMsIe4o+gd3usFD92Ni9IkKV79ZIAjd+hPnFLQObEZivy02p09toBeIxD7Qq5ZHksf
+	 d/iSLptwAsSocydZjogV6ufEKB3Ct6Q0N1NW0HZq/URtWOYVZ9xCSSfB61zuUvati5
+	 uIRnfh93ealqmY710WfsuH761tI7E9lKKeEjtq5h/7Vo3CLLtBMv5RVCitZqIRV6c7
+	 bWlB9v1WD+Ywg==
+Date: Fri, 19 May 2023 21:30:40 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Min-Hua Chen <minhuadotchen@gmail.com>
-Cc: alexandre.torgue@foss.st.com, davem@davemloft.net, edumazet@google.com,
- joabreu@synopsys.com, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
- mcoquelin.stm32@gmail.com, netdev@vger.kernel.org, pabeni@redhat.com,
- peppe.cavallaro@st.com, simon.horman@corigine.com
-Subject: Re: [PATCH v3] net: stmmac: compare p->des0 and p->des1 with __le32
- type values
-Message-ID: <20230519210439.4a3bb326@kernel.org>
-In-Reply-To: <20230520015527.215952-1-minhuadotchen@gmail.com>
-References: <20230519152715.7d1c3a49@kernel.org>
-	<20230520015527.215952-1-minhuadotchen@gmail.com>
+To: Manish Chopra <manishc@marvell.com>
+Cc: <netdev@vger.kernel.org>, <aelior@marvell.com>, <palok@marvell.com>,
+ Sudarsana Kalluru <skalluru@marvell.com>, David Miller
+ <davem@davemloft.net>
+Subject: Re: [PATCH v4 net] qede: Fix scheduling while atomic
+Message-ID: <20230519213040.0ff30813@kernel.org>
+In-Reply-To: <20230518145214.570101-1-manishc@marvell.com>
+References: <20230518145214.570101-1-manishc@marvell.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, 20 May 2023 09:55:27 +0800 Min-Hua Chen wrote:
-> >Can you try to fix the sparse tool instead? I believe it already
-> >ignores such errors for the constant of 0, maybe it can be taught=20
-> >to ignore all "isomorphic" values?
-> > =20
->=20
-> I downloaded the source code of sparse and I'm afraid that I cannot make
-> 0xFFFFFFFF ignored easily. I've tried ~0 instead of 0xFFFFFF,
-> but it did not work with current sparse.
->=20
-> 0 is a special case mentioned in [1].
->=20
-> """
-> One small note: the constant integer =E2=80=9C0=E2=80=9D is special.=20
-> You can use a constant zero as a bitwise integer type without
-> sparse ever complaining. This is because =E2=80=9Cbitwise=E2=80=9D (as th=
-e name
-> implies) was designed for making sure that bitwise types don=E2=80=99t
-> get mixed up (little-endian vs big-endian vs cpu-endian vs whatever),
-> and there the constant =E2=80=9C0=E2=80=9D really _is_ special.
-> """
->=20
-> For 0xFFFFFFFF, it may look like a false alarm, but we can silence the
-> sparse warning by taking a fix like mine and people can keep working on
-> other sparse warnings easier.
+On Thu, 18 May 2023 20:22:14 +0530 Manish Chopra wrote:
+> Bonding module collects the statistics while holding
+> the spinlock, beneath that qede->qed driver statistics
+> flow gets scheduled out due to usleep_range() used in PTT
+> acquire logic which results into below bug and traces -
 
-We can make working with sparse easier by making sure it doesn't
-generate false positive warnings :\
+>  	struct qede_dump_info		dump_info;
+> +	struct delayed_work		periodic_task;
+> +	unsigned long			stats_coal_interval;
+> +	u32				stats_coal_ticks;
 
-> (There are around 7000 sparse warning in ARCH=3Darm64 defconfig build and
-> sometimes it is hard to remember all the false alarm cases)
->=20
-> Could you consider taking this patch, please?
+It's a bit odd to make _interval ulong and ticks u32 when _ticks will
+obviously be much larger..
 
-No. We don't take patches to address false positive static=20
-checker warnings.
+Also - s/ticks/usecs/ ? I'd have guessed interval == usecs, ticks ==
+jiffies without reading the code, and the inverse is true.
+
+> +	spinlock_t			stats_lock; /* lock for vport stats access */
+>  };
+
+> +	if (edev->stats_coal_ticks != coal->stats_block_coalesce_usecs) {
+> +		u32 stats_coal_ticks, prev_stats_coal_ticks;
+> +
+> +		stats_coal_ticks = coal->stats_block_coalesce_usecs;
+> +		prev_stats_coal_ticks = edev->stats_coal_ticks;
+> +
+> +		/* zero coal ticks to disable periodic stats */
+> +		if (stats_coal_ticks)
+> +			stats_coal_ticks = clamp_t(u32, stats_coal_ticks,
+> +						   QEDE_MIN_STATS_COAL_TICKS,
+> +						   QEDE_MAX_STATS_COAL_TICKS);
+> +
+> +		stats_coal_ticks = rounddown(stats_coal_ticks, QEDE_MIN_STATS_COAL_TICKS);
+> +		edev->stats_coal_ticks = stats_coal_ticks;
+
+Why round down the usecs?  Don't you want to return to the user on get
+exactly what set specified?  Otherwise I wouldn't bother saving the
+usecs at all, just convert back from jiffies.
+
+> +		if (edev->stats_coal_ticks) {
+> +			edev->stats_coal_interval = (unsigned long)edev->stats_coal_ticks *
+> +							HZ / 1000000;
+
+usecs_to_jiffies()
+
+> +			if (prev_stats_coal_ticks == 0)
+> +				schedule_delayed_work(&edev->periodic_task, 0);
+> +		}
+> +
+> +		DP_VERBOSE(edev, QED_MSG_DEBUG, "stats coal interval=%lu jiffies\n",
+> +			   edev->stats_coal_interval);
+> +	}
+> +
+>  	if (!netif_running(dev)) {
+>  		DP_INFO(edev, "Interface is down\n");
+>  		return -EINVAL;
+-- 
+pw-bot: cr
 
