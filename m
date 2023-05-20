@@ -1,46 +1,49 @@
-Return-Path: <netdev+bounces-4057-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4058-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B258470A562
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 06:46:10 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 60CA170A567
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 06:51:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 20063281B43
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 04:46:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 87D2D281A3B
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 04:51:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC5C164D;
-	Sat, 20 May 2023 04:46:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A793E652;
+	Sat, 20 May 2023 04:51:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF535363
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 04:46:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C3AEC433D2;
-	Sat, 20 May 2023 04:46:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D470363;
+	Sat, 20 May 2023 04:51:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C7CBC433D2;
+	Sat, 20 May 2023 04:51:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684557964;
-	bh=HQs9oX3Z7y5AdWiC72yxeuSHc4uWNpff3HLclY1Fb6Q=;
+	s=k20201202; t=1684558287;
+	bh=VmdDGzzgUgkYiZG4TzyLb4L00axWz377Vxh71RqYFCY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Y3F27g4Wa1yQOKb9gK3sjOAwU9kPX/hDiTXoPp4pe1vt397MxAs40ua/2lY5LxYy0
-	 lf4dPi2IJpA3Z8WakasN3jYsDoKrrp4JshzAF8tqh80M6zU66ikLt2bR/W3fOJvfA/
-	 T43x+RfeVRlDTq7IF4ZLmAazE3WC5Qz4CWQL1GDiCogEX5ZwhPgEFJ4hixyO7uWdPp
-	 Kc1WJV5CO5iIrFHlvqr11ix2Pn9Z/nGwmkNmYvpIigf3TCnsOnczFmg9TiXMBBxobY
-	 Bi8shFilqQdGgM8k9jX5Sg6i18e9CVhNt9oB3Hg7gO2DI2zRpWmxJeyJc9x5RqiOy7
-	 BY4JwoHiz9ukg==
-Date: Fri, 19 May 2023 21:46:03 -0700
+	b=gKNmvtsg03Bdu7j5YgpWq7uIEhf8VBVkyz/88FzqdVrHp995IJB5yhDpkJp6TQSRg
+	 6QbkKmB0oNtGNFAcCj2598vlwZTuyz0Yl+tozh8zlC6PuAqhonK/WaC5HOB44FYBk+
+	 RFATiz3i4UucevkyWnBjDJvnfqlmqu5bRzIWy3bbAA5496jlqHD11Opjc0l9K3sFiz
+	 Yjar5izy/vlFmSGRS6f0TKC+UEx9hvg4Pne1+pdAeHTuV7FnNJBbhcpSQXtn74+cP6
+	 nIuUaznVs6R2rdVGk7qkytUTS9vOth+jGm7yVEp9JQTOueprZ5FFPlqa/jIfvxelWP
+	 9+8z/fGKl//ew==
+Date: Fri, 19 May 2023 21:51:26 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Saeed Mahameed <saeed@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>, Paolo Abeni
- <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>, Saeed Mahameed
- <saeedm@nvidia.com>, netdev@vger.kernel.org, Tariq Toukan
- <tariqt@nvidia.com>
-Subject: Re: [pull request][net-next 00/15] mlx5 updates 2023-05-19
-Message-ID: <20230519214603.15bfac84@kernel.org>
-In-Reply-To: <20230519175557.15683-1-saeed@kernel.org>
-References: <20230519175557.15683-1-saeed@kernel.org>
+To: Shenwei Wang <shenwei.wang@nxp.com>
+Cc: Wei Fang <wei.fang@nxp.com>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Simon
+ Horman <horms@kernel.org>, Horatiu Vultur <horatiu.vultur@microchip.com>,
+ Heiner Kallweit <hkallweit1@gmail.com>, Clark Wang <xiaoning.wang@nxp.com>,
+ NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
+ imx@lists.linux.dev
+Subject: Re: [PATCH v3 net] net: fec: add dma_wmb to ensure correct
+ descriptor values
+Message-ID: <20230519215126.4ecc695b@kernel.org>
+In-Reply-To: <20230518150202.1920375-1-shenwei.wang@nxp.com>
+References: <20230518150202.1920375-1-shenwei.wang@nxp.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -50,18 +53,19 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 19 May 2023 10:55:42 -0700 Saeed Mahameed wrote:
-> mlx5 misc changes and code clean up:
+On Thu, 18 May 2023 10:02:02 -0500 Shenwei Wang wrote:
+> Two dma_wmb() are added in the XDP TX path to ensure proper ordering of
+> descriptor and buffer updates:
+> 1. A dma_wmb() is added after updating the last BD to make sure
+>    the updates to rest of the descriptor are visible before
+>    transferring ownership to FEC.
+> 2. A dma_wmb() is also added after updating the bdp to ensure these
+>    updates are visible before updating txq->bd.cur.
+> 3. Start the xmit of the frame immediately right after configuring the
+>    tx descriptor.
 > 
-> The following series contains general changes for improving
-> E-Switch driver behavior.
-> 
-> 1) improving condition checking
-> 2) Code clean up
-> 3) Using metadata matching on send-to-vport rules.
-> 4) Using RoCE v2 instead of v1 for loopback rules.
+> Fixes: 6d6b39f180b8 ("net: fec: add initial XDP support")
+> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
-
-FWIW..
+Applied, thanks (commit 9025944fddfed).
 
