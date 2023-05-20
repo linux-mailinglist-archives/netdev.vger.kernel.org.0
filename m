@@ -1,139 +1,243 @@
-Return-Path: <netdev+bounces-4077-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4081-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3A55C70A902
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 18:13:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0475A70A971
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 19:22:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7E64B2811C2
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 16:13:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D73ED1C20974
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 17:22:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BCBC06FC5;
-	Sat, 20 May 2023 16:13:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E4D378C0F;
+	Sat, 20 May 2023 17:22:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF47A2C9A
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 16:13:38 +0000 (UTC)
-X-Greylist: delayed 373 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 20 May 2023 09:13:37 PDT
-Received: from smtp.missinglinkelectronics.com (smtp.missinglinkelectronics.com [162.55.135.183])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7650BC4
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 09:13:37 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-	by smtp.missinglinkelectronics.com (Postfix) with ESMTP id ECE4D206AF;
-	Sat, 20 May 2023 18:07:25 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at missinglinkelectronics.com
-Received: from smtp.missinglinkelectronics.com ([127.0.0.1])
-	by localhost (mail.missinglinkelectronics.com [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nJO6GcfklEPP; Sat, 20 May 2023 18:07:25 +0200 (CEST)
-Received: from humpen-bionic2.mle (p578c5bfe.dip0.t-ipconnect.de [87.140.91.254])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: david)
-	by smtp.missinglinkelectronics.com (Postfix) with ESMTPSA id 6D8AA2061D;
-	Sat, 20 May 2023 18:07:25 +0200 (CEST)
-From: David Epping <david.epping@missinglinkelectronics.com>
-To: Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D38DA33EE
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 17:22:08 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1867ADF
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 10:22:07 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1q0QGl-0007uj-BA; Sat, 20 May 2023 19:21:27 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1q0QGY-001aYA-Rt; Sat, 20 May 2023 19:21:14 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1q0QGY-006L8N-3j; Sat, 20 May 2023 19:21:14 +0200
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Corey Minyard <cminyard@mvista.com>,
+	Peter Senna Tschudin <peter.senna@gmail.com>,
+	Kang Chen <void0red@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
+	Shang XiaoJing <shangxiaojing@huawei.com>,
+	Rob Herring <robh@kernel.org>,
+	Michael Walle <michael@walle.cc>,
+	Benjamin Mugnier <benjamin.mugnier@foss.st.com>,
+	=?utf-8?q?Marek_Beh=C3=BAn?= <kabel@kernel.org>,
+	Petr Machata <petrm@nvidia.com>,
+	Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+	Luca Ceresoli <luca.ceresoli@bootlin.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Jean Delvare <jdelvare@suse.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jeremy Kerr <jk@codeconstruct.com.au>,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	Adrien Grassein <adrien.grassein@gmail.com>,
+	Javier Martinez Canillas <javierm@redhat.com>
 Cc: netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	UNGLinuxDriver@microchip.com,
-	David Epping <david.epping@missinglinkelectronics.com>
-Subject: [PATCH net 3/3] net: phy: mscc: enable VSC8501/2 RGMII RX clock
-Date: Sat, 20 May 2023 18:06:03 +0200
-Message-Id: <20230520160603.32458-4-david.epping@missinglinkelectronics.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230520160603.32458-1-david.epping@missinglinkelectronics.com>
-References: <20230520160603.32458-1-david.epping@missinglinkelectronics.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+	kernel@pengutronix.de
+Subject: [PATCH net-next] nfc: Switch i2c drivers back to use .probe()
+Date: Sat, 20 May 2023 19:21:04 +0200
+Message-Id: <20230520172104.359597-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5777; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=xU9nqhYFOnd/5F9QNv0QPxuFWzfiN5PdPWUqJuv7OLU=; b=owGbwMvMwMXY3/A7olbonx/jabUkhpRMxprutnbRuDsJzwK8RL2qNjnEBf38slnS4fI0Yf2/g itnBCl0MhqzMDByMciKKbLYN67JtKqSi+xc++8yzCBWJpApDFycAjARYQ/2/w7cASKZigdO+cx/ HBqRbV4Qd4PZ1lrvRaX7x+IljX9aPcK7ph1XcIr/1865Im3Xt/Bjp3PN1m3KY3Ze78a8U+Dd1v1 XTuuc41/Bu9CzfP26V5XNCtVGT5qZk575pIZ+L9J/H80tX8GUkiTup7Pn/bejQt93S/52rw0V9Q 8/cD/b1iylxXQn89L064818wIMfzt8PhK70+n6sjNHjbqkr3kIVX//NWG3jlq5V9DrMl6VO0kSH N97vu6TqolY4fu4rkzJKW+Kk3/Hce6/rr1CKnMX8y35GK9svUDtu98KV9WapyUSr/YcbU6srZl0 fRrniojnzy7Ol5i7PajvRPkV86LTKw6crVURc+1YdGsVAA==
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-By default the VSC8501 and VSC8502 RGMII RX clock output is disabled.
-To allow packet forwarding towards the MAC it needs to be enabled.
-The same may be necessary for GMII and MII modes, but that's currently
-unclear.
+After commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
+call-back type"), all drivers being converted to .probe_new() and then
+03c835f498b5 ("i2c: Switch .probe() to not take an id parameter")
+convert back to (the new) .probe() to be able to eventually drop
+.probe_new() from struct i2c_driver.
 
-For VSC853x and VSC854x the respective disable bit is reserved and the
-clock output is enabled by default.
-
-Signed-off-by: David Epping <david.epping@missinglinkelectronics.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/net/phy/mscc/mscc.h      |  1 +
- drivers/net/phy/mscc/mscc_main.c | 24 ++++++++++++++++++++++++
- 2 files changed, 25 insertions(+)
+Hello,
 
-diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-index 79cbb2418664..defe5cc6d4fc 100644
---- a/drivers/net/phy/mscc/mscc.h
-+++ b/drivers/net/phy/mscc/mscc.h
-@@ -179,6 +179,7 @@ enum rgmii_clock_delay {
- #define VSC8502_RGMII_CNTL		  20
- #define VSC8502_RGMII_RX_DELAY_MASK	  0x0070
- #define VSC8502_RGMII_TX_DELAY_MASK	  0x0007
-+#define VSC8502_RGMII_RX_CLK_DISABLE	  0x0800
+this patch was generated using coccinelle, but I aligned the result to
+the per-file indention.
+
+This is one patch for the whole iio subsystem. if you want it split per
+driver for improved patch count numbers, please tell me.
+
+This currently fits on top of 6.4-rc1 and next/master. If you apply it
+somewhere else and get conflicts, feel free to just drop the files with
+conflicts from this patch and apply anyhow. I'll care about the fallout
+later then.
+
+Best regards
+Uwe
+
+ drivers/nfc/fdp/i2c.c       | 2 +-
+ drivers/nfc/microread/i2c.c | 2 +-
+ drivers/nfc/nfcmrvl/i2c.c   | 2 +-
+ drivers/nfc/nxp-nci/i2c.c   | 2 +-
+ drivers/nfc/pn533/i2c.c     | 2 +-
+ drivers/nfc/pn544/i2c.c     | 2 +-
+ drivers/nfc/s3fwrn5/i2c.c   | 2 +-
+ drivers/nfc/st-nci/i2c.c    | 2 +-
+ drivers/nfc/st21nfca/i2c.c  | 2 +-
+ 9 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/nfc/fdp/i2c.c b/drivers/nfc/fdp/i2c.c
+index 1e0f2297f9c6..c1896a1d978c 100644
+--- a/drivers/nfc/fdp/i2c.c
++++ b/drivers/nfc/fdp/i2c.c
+@@ -359,7 +359,7 @@ static struct i2c_driver fdp_nci_i2c_driver = {
+ 		   .name = FDP_I2C_DRIVER_NAME,
+ 		   .acpi_match_table = fdp_nci_i2c_acpi_match,
+ 		  },
+-	.probe_new = fdp_nci_i2c_probe,
++	.probe = fdp_nci_i2c_probe,
+ 	.remove = fdp_nci_i2c_remove,
+ };
+ module_i2c_driver(fdp_nci_i2c_driver);
+diff --git a/drivers/nfc/microread/i2c.c b/drivers/nfc/microread/i2c.c
+index e72b358a2a12..642df4e0ce24 100644
+--- a/drivers/nfc/microread/i2c.c
++++ b/drivers/nfc/microread/i2c.c
+@@ -286,7 +286,7 @@ static struct i2c_driver microread_i2c_driver = {
+ 	.driver = {
+ 		.name = MICROREAD_I2C_DRIVER_NAME,
+ 	},
+-	.probe_new	= microread_i2c_probe,
++	.probe		= microread_i2c_probe,
+ 	.remove		= microread_i2c_remove,
+ 	.id_table	= microread_i2c_id,
+ };
+diff --git a/drivers/nfc/nfcmrvl/i2c.c b/drivers/nfc/nfcmrvl/i2c.c
+index 164e2ab859fd..74553134c1b1 100644
+--- a/drivers/nfc/nfcmrvl/i2c.c
++++ b/drivers/nfc/nfcmrvl/i2c.c
+@@ -258,7 +258,7 @@ static const struct i2c_device_id nfcmrvl_i2c_id_table[] = {
+ MODULE_DEVICE_TABLE(i2c, nfcmrvl_i2c_id_table);
  
- #define MSCC_PHY_WOL_LOWER_MAC_ADDR	  21
- #define MSCC_PHY_WOL_MID_MAC_ADDR	  22
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 29fc27a16805..c7a8f5561c66 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -547,6 +547,26 @@ static int vsc85xx_rgmii_set_skews(struct phy_device *phydev, u32 rgmii_cntl,
- 	return rc;
- }
- 
-+/* For VSC8501 and VSC8502 the RGMII RX clock output is disabled by default. */
-+static int vsc85xx_rgmii_enable_rx_clk(struct phy_device *phydev,
-+				       u32 rgmii_cntl)
-+{
-+	int rc, phy_id;
-+
-+	phy_id = phydev->drv->phy_id & phydev->drv->phy_id_mask;
-+	if (PHY_ID_VSC8501 != phy_id && PHY_ID_VSC8502 != phy_id)
-+		return 0;
-+
-+	mutex_lock(&phydev->lock);
-+
-+	rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2, rgmii_cntl,
-+			      VSC8502_RGMII_RX_CLK_DISABLE, 0);
-+
-+	mutex_unlock(&phydev->lock);
-+
-+	return rc;
-+}
-+
- static int vsc85xx_default_config(struct phy_device *phydev)
- {
- 	int rc;
-@@ -559,6 +579,10 @@ static int vsc85xx_default_config(struct phy_device *phydev)
- 					     VSC8502_RGMII_TX_DELAY_MASK);
- 		if (rc)
- 			return rc;
-+
-+		rc = vsc85xx_rgmii_enable_rx_clk(phydev, VSC8502_RGMII_CNTL);
-+		if (rc)
-+			return rc;
- 	}
- 
- 	return 0;
+ static struct i2c_driver nfcmrvl_i2c_driver = {
+-	.probe_new = nfcmrvl_i2c_probe,
++	.probe = nfcmrvl_i2c_probe,
+ 	.id_table = nfcmrvl_i2c_id_table,
+ 	.remove = nfcmrvl_i2c_remove,
+ 	.driver = {
+diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
+index d4c299be7949..baddaf242d18 100644
+--- a/drivers/nfc/nxp-nci/i2c.c
++++ b/drivers/nfc/nxp-nci/i2c.c
+@@ -348,7 +348,7 @@ static struct i2c_driver nxp_nci_i2c_driver = {
+ 		   .acpi_match_table = ACPI_PTR(acpi_id),
+ 		   .of_match_table = of_nxp_nci_i2c_match,
+ 		  },
+-	.probe_new = nxp_nci_i2c_probe,
++	.probe = nxp_nci_i2c_probe,
+ 	.id_table = nxp_nci_i2c_id_table,
+ 	.remove = nxp_nci_i2c_remove,
+ };
+diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
+index 1503a98f0405..438ab9553f7a 100644
+--- a/drivers/nfc/pn533/i2c.c
++++ b/drivers/nfc/pn533/i2c.c
+@@ -259,7 +259,7 @@ static struct i2c_driver pn533_i2c_driver = {
+ 		   .name = PN533_I2C_DRIVER_NAME,
+ 		   .of_match_table = of_match_ptr(of_pn533_i2c_match),
+ 		  },
+-	.probe_new = pn533_i2c_probe,
++	.probe = pn533_i2c_probe,
+ 	.id_table = pn533_i2c_id_table,
+ 	.remove = pn533_i2c_remove,
+ };
+diff --git a/drivers/nfc/pn544/i2c.c b/drivers/nfc/pn544/i2c.c
+index 8b0d910bee06..3f6d74832bac 100644
+--- a/drivers/nfc/pn544/i2c.c
++++ b/drivers/nfc/pn544/i2c.c
+@@ -953,7 +953,7 @@ static struct i2c_driver pn544_hci_i2c_driver = {
+ 		   .of_match_table = of_match_ptr(of_pn544_i2c_match),
+ 		   .acpi_match_table = ACPI_PTR(pn544_hci_i2c_acpi_match),
+ 		  },
+-	.probe_new = pn544_hci_i2c_probe,
++	.probe = pn544_hci_i2c_probe,
+ 	.id_table = pn544_hci_i2c_id_table,
+ 	.remove = pn544_hci_i2c_remove,
+ };
+diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
+index 2517ae71f9a4..720d4a72493c 100644
+--- a/drivers/nfc/s3fwrn5/i2c.c
++++ b/drivers/nfc/s3fwrn5/i2c.c
+@@ -261,7 +261,7 @@ static struct i2c_driver s3fwrn5_i2c_driver = {
+ 		.name = S3FWRN5_I2C_DRIVER_NAME,
+ 		.of_match_table = of_match_ptr(of_s3fwrn5_i2c_match),
+ 	},
+-	.probe_new = s3fwrn5_i2c_probe,
++	.probe = s3fwrn5_i2c_probe,
+ 	.remove = s3fwrn5_i2c_remove,
+ 	.id_table = s3fwrn5_i2c_id_table,
+ };
+diff --git a/drivers/nfc/st-nci/i2c.c b/drivers/nfc/st-nci/i2c.c
+index 6b5eed8a1fbe..d20a337e90b4 100644
+--- a/drivers/nfc/st-nci/i2c.c
++++ b/drivers/nfc/st-nci/i2c.c
+@@ -283,7 +283,7 @@ static struct i2c_driver st_nci_i2c_driver = {
+ 		.of_match_table = of_match_ptr(of_st_nci_i2c_match),
+ 		.acpi_match_table = ACPI_PTR(st_nci_i2c_acpi_match),
+ 	},
+-	.probe_new = st_nci_i2c_probe,
++	.probe = st_nci_i2c_probe,
+ 	.id_table = st_nci_i2c_id_table,
+ 	.remove = st_nci_i2c_remove,
+ };
+diff --git a/drivers/nfc/st21nfca/i2c.c b/drivers/nfc/st21nfca/i2c.c
+index 55f7a2391bb1..064a63db288b 100644
+--- a/drivers/nfc/st21nfca/i2c.c
++++ b/drivers/nfc/st21nfca/i2c.c
+@@ -597,7 +597,7 @@ static struct i2c_driver st21nfca_hci_i2c_driver = {
+ 		.of_match_table = of_match_ptr(of_st21nfca_i2c_match),
+ 		.acpi_match_table = ACPI_PTR(st21nfca_hci_i2c_acpi_match),
+ 	},
+-	.probe_new = st21nfca_hci_i2c_probe,
++	.probe = st21nfca_hci_i2c_probe,
+ 	.id_table = st21nfca_hci_i2c_id_table,
+ 	.remove = st21nfca_hci_i2c_remove,
+ };
+
+base-commit: ac9a78681b921877518763ba0e89202254349d1b
 -- 
-2.17.1
+2.39.2
 
 
