@@ -1,243 +1,155 @@
-Return-Path: <netdev+bounces-4081-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4082-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0475A70A971
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 19:22:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 10B6470AB2D
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 23:52:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D73ED1C20974
-	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 17:22:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9D4C11C20984
+	for <lists+netdev@lfdr.de>; Sat, 20 May 2023 21:52:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E4D378C0F;
-	Sat, 20 May 2023 17:22:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A91F59449;
+	Sat, 20 May 2023 21:52:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D38DA33EE
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 17:22:08 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1867ADF
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 10:22:07 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q0QGl-0007uj-BA; Sat, 20 May 2023 19:21:27 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q0QGY-001aYA-Rt; Sat, 20 May 2023 19:21:14 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q0QGY-006L8N-3j; Sat, 20 May 2023 19:21:14 +0200
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Corey Minyard <cminyard@mvista.com>,
-	Peter Senna Tschudin <peter.senna@gmail.com>,
-	Kang Chen <void0red@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Shang XiaoJing <shangxiaojing@huawei.com>,
-	Rob Herring <robh@kernel.org>,
-	Michael Walle <michael@walle.cc>,
-	Benjamin Mugnier <benjamin.mugnier@foss.st.com>,
-	=?utf-8?q?Marek_Beh=C3=BAn?= <kabel@kernel.org>,
-	Petr Machata <petrm@nvidia.com>,
-	Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-	Luca Ceresoli <luca.ceresoli@bootlin.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Jean Delvare <jdelvare@suse.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jeremy Kerr <jk@codeconstruct.com.au>,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	Adrien Grassein <adrien.grassein@gmail.com>,
-	Javier Martinez Canillas <javierm@redhat.com>
-Cc: netdev@vger.kernel.org,
-	kernel@pengutronix.de
-Subject: [PATCH net-next] nfc: Switch i2c drivers back to use .probe()
-Date: Sat, 20 May 2023 19:21:04 +0200
-Message-Id: <20230520172104.359597-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 978543D39B
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 21:52:16 +0000 (UTC)
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B90FD
+	for <netdev@vger.kernel.org>; Sat, 20 May 2023 14:52:14 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1ae851f2a7dso12756915ad.0
+        for <netdev@vger.kernel.org>; Sat, 20 May 2023 14:52:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mistywest-com.20221208.gappssmtp.com; s=20221208; t=1684619534; x=1687211534;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UNaIy/SBdB1toAAOpOLbcw16Mouh3mBEe49+CMx4dn0=;
+        b=KAn0ck7VIW8n0I56cSvPE/DZjf4nG98ZLwiS3r8QqLW/OXt2k7uPQ4ATAVkhRjceC4
+         mRcLbsnNqEwAOl6r1pv4aCErLIIWtuHVLWWdkM1MMsN6/EECNe0A3tTffeSBMY4HoGjX
+         WeNGSMbgLf29brXzPlkQDWdZPWjR/DvyipsfrCAQ8hleJY9od+L+PGl9qHc8GANtSFyf
+         mSwvW20oAnzrgN3uYzi/cUY1cVmAcyW+nY/lhrDo/cVxhwiaKAoc50J8OP+PFfbmWAk9
+         s7HDJOBRfj3yYtYeZG2yTdTt4I/sboYNN/EZi2TgzI5IOHadOtETdMiqXCRRbYk0iJbi
+         0Bvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684619534; x=1687211534;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UNaIy/SBdB1toAAOpOLbcw16Mouh3mBEe49+CMx4dn0=;
+        b=ga9A9EbpJ47Oy2WcdZVsPtF4EDHmIerCxe2o3PY0pXidRutpB1XjPyDJpdcSxPs/Sj
+         4672/70xInM8XIZU7GJeIZjq4RXChsLP+B2UYzeHj36k5yRKY4zJdib+kyTDvpYHFlK3
+         Cr9fb+vP+Y16iYgvML6ubug0Byb1ft5tW9FO/59TjDBuKdCATngHhRveLrwoHTrov8qo
+         CSg03Ode7D+bA9tPCVt5YlbXJAVcYuQL7/JNrVV/2RHpHDmJsq4PqNt2bro88PQYAyZS
+         tdqiM36lpO38bKWdiBlk9E9CPiy/u9LbGKTCFKTRLQ3FcAImcp7VpAzE8Ssz3HybQAdw
+         B4hA==
+X-Gm-Message-State: AC+VfDxjXqjZHg4+1nD+QYF1YIauoMgC4t3dFtVyqpucHiHe2NzH/agG
+	/k+8XShsHdxkXKqICiyxWG3xK1uCkGIPrCFHkFi4LA==
+X-Google-Smtp-Source: ACHHUZ6GunVNYNa9Isl9/qmRzV4qdNetrOonV86jn4BbQF4KO4TMYLCk/o3ulTIhA4PBofxeqM6vAw==
+X-Received: by 2002:a17:903:2444:b0:1a6:9762:6eed with SMTP id l4-20020a170903244400b001a697626eedmr8354671pls.22.1684619534216;
+        Sat, 20 May 2023 14:52:14 -0700 (PDT)
+Received: from [192.168.98.6] (remote.mistywest.io. [184.68.30.58])
+        by smtp.gmail.com with ESMTPSA id l1-20020a170902ec0100b001ae6948e812sm1709429pld.303.2023.05.20.14.52.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 May 2023 14:52:13 -0700 (PDT)
+Message-ID: <b007c778-03ee-23b1-e1b7-106e77819623@mistywest.com>
+Date: Sat, 20 May 2023 14:52:12 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5777; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=xU9nqhYFOnd/5F9QNv0QPxuFWzfiN5PdPWUqJuv7OLU=; b=owGbwMvMwMXY3/A7olbonx/jabUkhpRMxprutnbRuDsJzwK8RL2qNjnEBf38slnS4fI0Yf2/g itnBCl0MhqzMDByMciKKbLYN67JtKqSi+xc++8yzCBWJpApDFycAjARYQ/2/w7cASKZigdO+cx/ HBqRbV4Qd4PZ1lrvRaX7x+IljX9aPcK7ph1XcIr/1865Im3Xt/Bjp3PN1m3KY3Ze78a8U+Dd1v1 XTuuc41/Bu9CzfP26V5XNCtVGT5qZk575pIZ+L9J/H80tX8GUkiTup7Pn/bejQt93S/52rw0V9Q 8/cD/b1iylxXQn89L064818wIMfzt8PhK70+n6sjNHjbqkr3kIVX//NWG3jlq5V9DrMl6VO0kSH N97vu6TqolY4fu4rkzJKW+Kk3/Hce6/rr1CKnMX8y35GK9svUDtu98KV9WapyUSr/YcbU6srZl0 fRrniojnzy7Ol5i7PajvRPkV86LTKw6crVURc+1YdGsVAA==
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: PHY VSC8531 MDIO data not reflected in ethernet/ sub-module
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: netdev@vger.kernel.org
+References: <2cc45d13-78e5-d5c1-3147-1b44efc6a291@mistywest.com>
+ <69d0d5d9-5ed0-4254-adaf-cf3f85c103b9@lunn.ch>
+ <759ac0e2-9d5e-17ea-83e2-573a762492c2@mistywest.com>
+ <9fbcac7f-9d12-4a42-9f2f-345c37585ff4@lunn.ch>
+Content-Language: en-US
+From: Ron Eggler <ron.eggler@mistywest.com>
+In-Reply-To: <9fbcac7f-9d12-4a42-9f2f-345c37585ff4@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-After commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
-call-back type"), all drivers being converted to .probe_new() and then
-03c835f498b5 ("i2c: Switch .probe() to not take an id parameter")
-convert back to (the new) .probe() to be able to eventually drop
-.probe_new() from struct i2c_driver.
+I should follow up on this Thread and send out a Thank you for everybody 
+that has pitched in. I've got the two Ethernet interfaces working fine 
+now after I set "phy-mode" to "rgmii-id" and removed the "interrupts" 
+and "interrupt-parent" attributes to trigger the polling of the PHY.
+Both changes were made in the device tree.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Hello,
+Thanks again!
+Ron
 
-this patch was generated using coccinelle, but I aligned the result to
-the per-file indention.
 
-This is one patch for the whole iio subsystem. if you want it split per
-driver for improved patch count numbers, please tell me.
-
-This currently fits on top of 6.4-rc1 and next/master. If you apply it
-somewhere else and get conflicts, feel free to just drop the files with
-conflicts from this patch and apply anyhow. I'll care about the fallout
-later then.
-
-Best regards
-Uwe
-
- drivers/nfc/fdp/i2c.c       | 2 +-
- drivers/nfc/microread/i2c.c | 2 +-
- drivers/nfc/nfcmrvl/i2c.c   | 2 +-
- drivers/nfc/nxp-nci/i2c.c   | 2 +-
- drivers/nfc/pn533/i2c.c     | 2 +-
- drivers/nfc/pn544/i2c.c     | 2 +-
- drivers/nfc/s3fwrn5/i2c.c   | 2 +-
- drivers/nfc/st-nci/i2c.c    | 2 +-
- drivers/nfc/st21nfca/i2c.c  | 2 +-
- 9 files changed, 9 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/nfc/fdp/i2c.c b/drivers/nfc/fdp/i2c.c
-index 1e0f2297f9c6..c1896a1d978c 100644
---- a/drivers/nfc/fdp/i2c.c
-+++ b/drivers/nfc/fdp/i2c.c
-@@ -359,7 +359,7 @@ static struct i2c_driver fdp_nci_i2c_driver = {
- 		   .name = FDP_I2C_DRIVER_NAME,
- 		   .acpi_match_table = fdp_nci_i2c_acpi_match,
- 		  },
--	.probe_new = fdp_nci_i2c_probe,
-+	.probe = fdp_nci_i2c_probe,
- 	.remove = fdp_nci_i2c_remove,
- };
- module_i2c_driver(fdp_nci_i2c_driver);
-diff --git a/drivers/nfc/microread/i2c.c b/drivers/nfc/microread/i2c.c
-index e72b358a2a12..642df4e0ce24 100644
---- a/drivers/nfc/microread/i2c.c
-+++ b/drivers/nfc/microread/i2c.c
-@@ -286,7 +286,7 @@ static struct i2c_driver microread_i2c_driver = {
- 	.driver = {
- 		.name = MICROREAD_I2C_DRIVER_NAME,
- 	},
--	.probe_new	= microread_i2c_probe,
-+	.probe		= microread_i2c_probe,
- 	.remove		= microread_i2c_remove,
- 	.id_table	= microread_i2c_id,
- };
-diff --git a/drivers/nfc/nfcmrvl/i2c.c b/drivers/nfc/nfcmrvl/i2c.c
-index 164e2ab859fd..74553134c1b1 100644
---- a/drivers/nfc/nfcmrvl/i2c.c
-+++ b/drivers/nfc/nfcmrvl/i2c.c
-@@ -258,7 +258,7 @@ static const struct i2c_device_id nfcmrvl_i2c_id_table[] = {
- MODULE_DEVICE_TABLE(i2c, nfcmrvl_i2c_id_table);
- 
- static struct i2c_driver nfcmrvl_i2c_driver = {
--	.probe_new = nfcmrvl_i2c_probe,
-+	.probe = nfcmrvl_i2c_probe,
- 	.id_table = nfcmrvl_i2c_id_table,
- 	.remove = nfcmrvl_i2c_remove,
- 	.driver = {
-diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index d4c299be7949..baddaf242d18 100644
---- a/drivers/nfc/nxp-nci/i2c.c
-+++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -348,7 +348,7 @@ static struct i2c_driver nxp_nci_i2c_driver = {
- 		   .acpi_match_table = ACPI_PTR(acpi_id),
- 		   .of_match_table = of_nxp_nci_i2c_match,
- 		  },
--	.probe_new = nxp_nci_i2c_probe,
-+	.probe = nxp_nci_i2c_probe,
- 	.id_table = nxp_nci_i2c_id_table,
- 	.remove = nxp_nci_i2c_remove,
- };
-diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
-index 1503a98f0405..438ab9553f7a 100644
---- a/drivers/nfc/pn533/i2c.c
-+++ b/drivers/nfc/pn533/i2c.c
-@@ -259,7 +259,7 @@ static struct i2c_driver pn533_i2c_driver = {
- 		   .name = PN533_I2C_DRIVER_NAME,
- 		   .of_match_table = of_match_ptr(of_pn533_i2c_match),
- 		  },
--	.probe_new = pn533_i2c_probe,
-+	.probe = pn533_i2c_probe,
- 	.id_table = pn533_i2c_id_table,
- 	.remove = pn533_i2c_remove,
- };
-diff --git a/drivers/nfc/pn544/i2c.c b/drivers/nfc/pn544/i2c.c
-index 8b0d910bee06..3f6d74832bac 100644
---- a/drivers/nfc/pn544/i2c.c
-+++ b/drivers/nfc/pn544/i2c.c
-@@ -953,7 +953,7 @@ static struct i2c_driver pn544_hci_i2c_driver = {
- 		   .of_match_table = of_match_ptr(of_pn544_i2c_match),
- 		   .acpi_match_table = ACPI_PTR(pn544_hci_i2c_acpi_match),
- 		  },
--	.probe_new = pn544_hci_i2c_probe,
-+	.probe = pn544_hci_i2c_probe,
- 	.id_table = pn544_hci_i2c_id_table,
- 	.remove = pn544_hci_i2c_remove,
- };
-diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
-index 2517ae71f9a4..720d4a72493c 100644
---- a/drivers/nfc/s3fwrn5/i2c.c
-+++ b/drivers/nfc/s3fwrn5/i2c.c
-@@ -261,7 +261,7 @@ static struct i2c_driver s3fwrn5_i2c_driver = {
- 		.name = S3FWRN5_I2C_DRIVER_NAME,
- 		.of_match_table = of_match_ptr(of_s3fwrn5_i2c_match),
- 	},
--	.probe_new = s3fwrn5_i2c_probe,
-+	.probe = s3fwrn5_i2c_probe,
- 	.remove = s3fwrn5_i2c_remove,
- 	.id_table = s3fwrn5_i2c_id_table,
- };
-diff --git a/drivers/nfc/st-nci/i2c.c b/drivers/nfc/st-nci/i2c.c
-index 6b5eed8a1fbe..d20a337e90b4 100644
---- a/drivers/nfc/st-nci/i2c.c
-+++ b/drivers/nfc/st-nci/i2c.c
-@@ -283,7 +283,7 @@ static struct i2c_driver st_nci_i2c_driver = {
- 		.of_match_table = of_match_ptr(of_st_nci_i2c_match),
- 		.acpi_match_table = ACPI_PTR(st_nci_i2c_acpi_match),
- 	},
--	.probe_new = st_nci_i2c_probe,
-+	.probe = st_nci_i2c_probe,
- 	.id_table = st_nci_i2c_id_table,
- 	.remove = st_nci_i2c_remove,
- };
-diff --git a/drivers/nfc/st21nfca/i2c.c b/drivers/nfc/st21nfca/i2c.c
-index 55f7a2391bb1..064a63db288b 100644
---- a/drivers/nfc/st21nfca/i2c.c
-+++ b/drivers/nfc/st21nfca/i2c.c
-@@ -597,7 +597,7 @@ static struct i2c_driver st21nfca_hci_i2c_driver = {
- 		.of_match_table = of_match_ptr(of_st21nfca_i2c_match),
- 		.acpi_match_table = ACPI_PTR(st21nfca_hci_i2c_acpi_match),
- 	},
--	.probe_new = st21nfca_hci_i2c_probe,
-+	.probe = st21nfca_hci_i2c_probe,
- 	.id_table = st21nfca_hci_i2c_id_table,
- 	.remove = st21nfca_hci_i2c_remove,
- };
-
-base-commit: ac9a78681b921877518763ba0e89202254349d1b
+On 2023-05-11 19:47, Andrew Lunn wrote:
+>> I don't see it being invoked every Seconds but it gets invoked on boot, I
+>> added debug logs and see the following:
+> What should happen is when the MAC driver call phy_start(), it either
+> starts polling the PHY or it enabled interrupts. If it is not polling,
+> then is sounds like you have interrupts setup for the PHY. Scatter
+> some more debug prints around and about and see which is true.
+>
+>> state = UP which means it's ready to start auto negotiation(in
+>> phy_state_machine())  but instead in phy_check_link_status(), phydev->state
+>> should be set to  PHY_RUNNING but it only can get set to PHY_RUNNING when
+>> phydev->link is 1 (in phy_check_link_status()):
+> Yep. Either via polling, or interrupts, the state machine will change
+> to state RUNNING.
+>
+>>>     phy_read_status()->
+>>>       phydev->drv->read_status()
+>>> or
+>>>       genphy_read_status()
+>>>
+>>> Check what these are doing, why do they think the link is down.
+>> Yes, so in phy_read_status, phydev->drv->read_status appears to be set but I
+>> cannot figure out where it gets set. (I obviously need to find the function
+>> to find why the link isn't read correctly).
+> Since this is a microchip PHY, i would expect vsc85xx_read_status().
+>
+>> I temporarily set phydev->drv->read_status to 0 to force invocation of
+>> genphy_read_status() function to see how that would work.
+>>
+>> genphy_update_link(0 is called from genphy_read_status() and I get the below
+>> data:
+>>
+>> [    6.795480] DEBUG: in genphy_update_link(), after phy_read() bmcr 4160
+>> [    6.805225] DEBUG: in genphy_update_link(), bmcr 0x1040 & 0x200
+>> [    6.815730] DEBUG: in genphy_read_status(), genphy_update_link() 0
+>> phydev->autoneg 1, phydev->link 0
+>>
+>>
+>> Could it be that the link needs a second to come up when when the network
+>> drivers get started and hence I should make sure that the polling once a
+>> second works (which currently doesn't appear to be the case)? Am I missing a
+>> configuration option?
+> auto-neg takes a little over 1 second. Polling does not care, if it is
+> not up this time, it might be the next. If you are using interrupts,
+> then you need to ensure the interrupt actually fires when auto-neg is
+> complete.
+>
+> 	Andrew
 -- 
-2.39.2
-
+Ron -- Ron Eggler Senior Firmware Developer 778 230 9442 
+www.mistywest.com __________________________________________________ 
+About MistyWest We are a Research & Engineering firm composed of 
+engineers and physicists with a focus on solving hard problems across a 
+number of technology verticals. We specifically target projects that 
+have the potential for high-impact, whether it's improving the human 
+condition, impacting sustainability in a positive way, or otherwise 
+moving us collectively to an inclusively abundant future.
 
