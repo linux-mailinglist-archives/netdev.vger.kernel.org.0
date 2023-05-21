@@ -1,145 +1,132 @@
-Return-Path: <netdev+bounces-4088-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4089-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 27FDA70AC5D
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 06:39:01 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id CEA6970AC6F
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 07:05:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 46382281071
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 04:38:59 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AE0541C209AD
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 05:05:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 514B57EF;
-	Sun, 21 May 2023 04:38:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7042A3D;
+	Sun, 21 May 2023 05:05:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43F61A29
-	for <netdev@vger.kernel.org>; Sun, 21 May 2023 04:38:56 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F6510D
-	for <netdev@vger.kernel.org>; Sat, 20 May 2023 21:38:55 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1q0aqD-0005hY-W3; Sun, 21 May 2023 06:38:46 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1q0aq9-0000RO-Na; Sun, 21 May 2023 06:38:41 +0200
-Date: Sun, 21 May 2023 06:38:41 +0200
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: Vladimir Oltean <olteanv@gmail.com>
-Cc: Woojung Huh <woojung.huh@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-	Arun Ramadoss <arun.ramadoss@microchip.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Simon Horman <simon.horman@corigine.com>,
-	"Russell King (Oracle)" <linux@armlinux.org.uk>,
-	linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-	netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-	UNGLinuxDriver@microchip.com,
-	"David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v4 1/2] net: dsa: microchip: ksz8: Make flow
- control, speed, and duplex on CPU port configurable
-Message-ID: <20230521043841.GA22442@pengutronix.de>
-References: <20230519124700.635041-1-o.rempel@pengutronix.de>
- <20230519124700.635041-2-o.rempel@pengutronix.de>
- <20230519143004.luvz73jiyvnqxk4y@skbuf>
- <20230519185015.GA18246@pengutronix.de>
- <20230519203449.pc5vbfgbfc6rdo6i@skbuf>
- <20230520050317.GC18246@pengutronix.de>
- <20230520151708.24duenxufth4xsh5@skbuf>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAA9AA29
+	for <netdev@vger.kernel.org>; Sun, 21 May 2023 05:05:14 +0000 (UTC)
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1069A116;
+	Sat, 20 May 2023 22:05:11 -0700 (PDT)
+Received: from fsav412.sakura.ne.jp (fsav412.sakura.ne.jp [133.242.250.111])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 34L545Vo045924;
+	Sun, 21 May 2023 14:04:05 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav412.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav412.sakura.ne.jp);
+ Sun, 21 May 2023 14:04:05 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav412.sakura.ne.jp)
+Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 34L545uK045921
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Sun, 21 May 2023 14:04:05 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <680fe81d-6d33-ef0a-95d2-0bb79430019d@I-love.SAKURA.ne.jp>
+Date: Sun, 21 May 2023 14:04:03 +0900
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230520151708.24duenxufth4xsh5@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL: http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [syzbot] [fs?] INFO: task hung in synchronize_rcu (4)
+Content-Language: en-US
+To: Martin KaFai Lau <martin.lau@linux.dev>,
+        syzbot <syzbot+222aa26d0a5dbc2e84fe@syzkaller.appspotmail.com>,
+        syzkaller-bugs@googlegroups.com
+Cc: amir73il@gmail.com, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, edumazet@google.com, hdanton@sina.com,
+        jack@suse.cz, kuba@kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, peterz@infradead.org, torvalds@linux-foundation.org,
+        willemdebruijn.kernel@gmail.com
+References: <000000000000baea9905fc275a49@google.com>
+ <048219d7-2403-b898-129f-a0f85512cdf5@linux.dev>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <048219d7-2403-b898-129f-a0f85512cdf5@linux.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sat, May 20, 2023 at 06:17:08PM +0300, Vladimir Oltean wrote:
-> On Sat, May 20, 2023 at 07:03:17AM +0200, Oleksij Rempel wrote:
-> > On Fri, May 19, 2023 at 11:34:49PM +0300, Vladimir Oltean wrote:
-> > > On Fri, May 19, 2023 at 08:50:15PM +0200, Oleksij Rempel wrote:
-> > > > Thank you for your feedback. I see your point. 
-> > > > 
-> > > > We need to remember that the KSZ switch series has different types of
-> > > > ports. Specifically, for the KSZ8 series, there's a unique port. This
-> > > > port is unique because it's the only one that can be configured with
-> > > > global registers, and it is only one supports tail tagging. This special
-> > > > port is already referenced in the driver by "dev->cpu_port", so I continued
-> > > > using it in my patch.
-> > > 
-> > > Ok, I understand, so for the KSZ8 family, the assumption about which
-> > > port will use tail tagging is baked into the hardware.
-> > > 
-> > > > It is important to note that while this port has an xMII interface, it
-> > > > is not the only port that could have an xMII interface. Therefore, using
-> > > > "dev->info->internal_phy" may not be the best way to identify this port,
-> > > > because there can be ports that are not global/cpu, have an xMII
-> > > > interface, but don't have an internal PHY.
-> > > 
-> > > Right, but since we're talking about phylink, the goal is to identify
-> > > the xMII ports, not the CPU ports... This is a particularly denatured
-> > > case because the xMII port is global and is also the CPU port.
-> > 
-> > I see. Do you have any suggestions for a better or more suitable
-> > implementation? I'm open to ideas.
+On 2023/05/21 11:26, Martin KaFai Lau wrote:
+> On 5/20/23 3:13 PM, syzbot wrote:
+>> syzbot has found a reproducer for the following issue on:
+>>
+>> HEAD commit:    dcbe4ea1985d Merge branch '1GbE' of git://git.kernel.org/p..
+>> git tree:       net-next
+>> console output: https://syzkaller.appspot.com/x/log.txt?x=123ebd91280000
+>> kernel config:  https://syzkaller.appspot.com/x/.config?x=f20b05fe035db814
+>> dashboard link: https://syzkaller.appspot.com/bug?extid=222aa26d0a5dbc2e84fe
+>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1495596a280000
+>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1529326a280000
+>>
+>> Downloadable assets:
+>> disk image: https://storage.googleapis.com/syzbot-assets/41b9dda0e686/disk-dcbe4ea1.raw.xz
+>> vmlinux: https://storage.googleapis.com/syzbot-assets/64d9bece8f89/vmlinux-dcbe4ea1.xz
+>> kernel image: https://storage.googleapis.com/syzbot-assets/42429896dca0/bzImage-dcbe4ea1.xz
+>>
+>> The issue was bisected to:
+>>
+>> commit 3b5d4ddf8fe1f60082513f94bae586ac80188a03
+>> Author: Martin KaFai Lau <kafai@fb.com>
+>> Date:   Wed Mar 9 09:04:50 2022 +0000
+>>
+>>      bpf: net: Remove TC_AT_INGRESS_OFFSET and SKB_MONO_DELIVERY_TIME_OFFSET macro
 > 
-> Trying to answer here for both questions. In the RFC/RFT patch set I had
-> posted, I introduced the concept of "wacky" registers, which are registers
-> which should be per port (and are accessed as per-port by the driver),
-> but because there is a single such port in the switch, the hardware
-> design degenerated into moving them in the global area. Nonetheless,
-> treating the xMII global registers as per-port makes it possible for the
-> common driver to share more code between KSZ8 and others.
+> I am afraid this bisect is incorrect. The commit removed a redundant macro and is a no-op change.
 > 
-> If you look at ksz9477_phylink_mac_link_up() - renamed to just
-> ksz_phylink_mac_link_up() in my patch set - hard enough, you can see
-> that it makes an attempt to generalize the "link up" procedure for all
-> switch families, via these regs and fields. At the end of that regfield
-> series, I theoretically converted KSZ8765/KSZ8794/KSZ8795 to reuse
-> ksz9477_phylink_mac_link_up(). Theoretically because no one commented
-> on whether the result still worked.
-> 
-> I think that regfields and that KSZ_WACKY_REG_FIELD_8() are an avenue
-> worth exploring here.
 > 
 
-Looks good, I like the idea with "wacky" registers!
+But the reproducer is heavily calling bpf() syscall.
 
-Would you prefer that I start working on adapting your patch set to the
-KSZ8873? Or should I make a review to move forward the existing patch set?
+void execute_call(int call)
+{
+  switch (call) {
+  case 0:
+    NONFAILING(*(uint32_t*)0x200027c0 = 3);
+    NONFAILING(*(uint32_t*)0x200027c4 = 4);
+    NONFAILING(*(uint32_t*)0x200027c8 = 4);
+    NONFAILING(*(uint32_t*)0x200027cc = 0x10001);
+    NONFAILING(*(uint32_t*)0x200027d0 = 0);
+    NONFAILING(*(uint32_t*)0x200027d4 = -1);
+    NONFAILING(*(uint32_t*)0x200027d8 = 0);
+    NONFAILING(memset((void*)0x200027dc, 0, 16));
+    NONFAILING(*(uint32_t*)0x200027ec = 0);
+    NONFAILING(*(uint32_t*)0x200027f0 = -1);
+    NONFAILING(*(uint32_t*)0x200027f4 = 0);
+    NONFAILING(*(uint32_t*)0x200027f8 = 0);
+    NONFAILING(*(uint32_t*)0x200027fc = 0);
+    NONFAILING(*(uint64_t*)0x20002800 = 0);
+    syscall(__NR_bpf, 0ul, 0x200027c0ul, 0x48ul);
+    break;
+  }
+}
 
-Just a heads up, I don't have access to the KSZ87xx series switches, so
-I won't be able to test the changes on these models.
+Something caused infinite loop or too heavy stress to survive?
+The first report was 7d31677bb7b1.
+Rechecking or running the reproducer on commits shown by
+"git log 7d31677bb7b1 net/bpf" might help.
 
-Let me know what you think and how we should proceed.
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
