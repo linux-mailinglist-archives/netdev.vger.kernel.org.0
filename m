@@ -1,112 +1,128 @@
-Return-Path: <netdev+bounces-4109-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4110-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AC9B270AE6F
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 17:10:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B099370AE72
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 17:11:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id ECD731C20935
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 15:10:35 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 16C40280EDE
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 15:11:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DD4746B4;
-	Sun, 21 May 2023 15:10:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36AD046B4;
+	Sun, 21 May 2023 15:10:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A3C46AC;
-	Sun, 21 May 2023 15:10:34 +0000 (UTC)
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA61FBD;
-	Sun, 21 May 2023 08:10:29 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id 4fb4d7f45d1cf-510d6b939bfso8668510a12.0;
-        Sun, 21 May 2023 08:10:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684681828; x=1687273828;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=RWRScIQ7TtRSX51KwV4NjzRGVME0l4RZnUO62hqp1V8=;
-        b=PGlJRxqT3caE+l7AfDazwuZcJn6LcttOZoEzrlwEObi2GHWp0ABdUopFQpNGFeKoW0
-         wqBz6ACTLsTw6QXHXxBYtRc0q8NylXPUPLsJzMrgRehGzMbOoPAMOun4gDX/CRrNfwgH
-         CWt19nJrBW/6f1sgLf0bpwUgJY+0oR70J3STiFRWtG2Nl99mB2HEvjA/mxht/g68PHVo
-         KsrMs31jXEAM+/duPlWz3XuAsUin+7WJDTymcG6OhfmENSHJ2Hlasstykt/JmFUOvOtp
-         g9qDvLzBucL0aiSyVl9JW7l/AHn63s8aRFocVwYt7WUhBXHhk6NaOEyBnfCgLw5SOiWH
-         U9Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684681828; x=1687273828;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=RWRScIQ7TtRSX51KwV4NjzRGVME0l4RZnUO62hqp1V8=;
-        b=B2LbQpJDlhs6KSQph5LEbqoWq785q2acEO172pn1Cq94bd9dahQX1ot34HUjE5A71g
-         rxeFZe2yKBSgVvor+Uc8q7L+sSU9O7+nz1hxBFDspEWL0bVw2vgWnxQyb8MRtgBRhVux
-         ctpNZKESKgGeBvpamDSlfkiF3GQBjFrnN8M8QCpo8/r4v2GVyvYNZsVPEMeEBrNj7Lt9
-         uPMTNNbiLJ4sDipAQpvqEo0Q4hw0QzteTwRSqhCTgklxKBgw9OgdvDfGcRybAM7H7oEa
-         2zN/vPuswWRw3+49VEiMuN1Ew7VVGYJHaJWjZ88MPIiIJVDSW3ZB20uSp+Zt+TAfPzSl
-         F2PQ==
-X-Gm-Message-State: AC+VfDy3e69N+1WsCpUN5mOZQVquTZQLuSv3eQeLo6VVh46zuQS0ko4M
-	1iRzVcT/O9RPL8z7Ry7eIy8siD+bVvF0u7CIHZs=
-X-Google-Smtp-Source: ACHHUZ6dbu1B0FaRBW/nKEH9yrfQk+Hr45en4wmrqOwMF22vlPKinBGqYRGOOUNTh2sTkmhlNE0BfVlmEP67wx/Y3I8=
-X-Received: by 2002:aa7:d0c7:0:b0:50b:caae:784 with SMTP id
- u7-20020aa7d0c7000000b0050bcaae0784mr6408547edo.20.1684681827923; Sun, 21 May
- 2023 08:10:27 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27CA046AC
+	for <netdev@vger.kernel.org>; Sun, 21 May 2023 15:10:44 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC14E1;
+	Sun, 21 May 2023 08:10:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1684681842; x=1716217842;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MQFK43OnzuPwcmRa8kbMKCTdWnWcoVZv3AtoiXcB18k=;
+  b=Kpq/mWQPkE7jbRka7CBEdC0psx4wVDwrOxrUzQbuanlHm6DnIcrB8Ndz
+   RFLM4MON0qlkSejdb4HWr3jF6xKs/2U2OqfjGm1787WUi91DWeIabdT7h
+   8RsCaGJry4vwywfXSnNu2e03Uf5pvFTPR0C4Pt6FtdUGD8HqpmIxmSYum
+   FvYBBedENofxldgAw3fZ5oiw3fO35TvI8zPwjy21CfsyITxbfoFD6owGB
+   Eui4MOn7pM/830QHka8Ln8Z5FPtDCkU+ijSCUf6H+gt0pXskw7+Sui9Dx
+   5fNwFoJxLZ2EiRfUFgk1U/Z2ClCUQunWZzKvNFoWMgTi7S0q8dpFqoONu
+   w==;
+X-IronPort-AV: E=Sophos;i="6.00,182,1681196400"; 
+   d="scan'208";a="214216229"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 May 2023 08:10:41 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Sun, 21 May 2023 08:10:41 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Sun, 21 May 2023 08:10:40 -0700
+Date: Sun, 21 May 2023 17:10:40 +0200
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+To: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<netdev@vger.kernel.org>
+CC: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+	<richardcochran@gmail.com>, <nicolas.ferre@microchip.com>,
+	<claudiu.beznea@microchip.com>
+Subject: Re: [PATCH] ARM: dts: lan966x: Add support for SMA connectors
+Message-ID: <20230521151040.nvurjgukigiqohhx@soft-dev3-1>
+References: <20230421113758.3465678-1-horatiu.vultur@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20220515203653.4039075-1-jolsa@kernel.org> <20230520094722.5393-1-zegao@tencent.com>
- <b4f66729-90ab-080a-51ec-bf435ad6199d@meta.com>
-In-Reply-To: <b4f66729-90ab-080a-51ec-bf435ad6199d@meta.com>
-From: Ze Gao <zegao2021@gmail.com>
-Date: Sun, 21 May 2023 23:10:16 +0800
-Message-ID: <CAD8CoPAXse1GKAb15O5tZJwBqMt1N_btH+qRe7c_a-ryUMjx7A@mail.gmail.com>
-Subject: Re:
-To: Yonghong Song <yhs@meta.com>
-Cc: jolsa@kernel.org, Alexei Starovoitov <ast@kernel.org>, Andrii Nakryiko <andrii@kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, Hao Luo <haoluo@google.com>, 
-	John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, 
-	Martin KaFai Lau <martin.lau@linux.dev>, Masami Hiramatsu <mhiramat@kernel.org>, Song Liu <song@kernel.org>, 
-	Stanislav Fomichev <sdf@google.com>, Steven Rostedt <rostedt@goodmis.org>, Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	kafai@fb.com, kpsingh@chromium.org, netdev@vger.kernel.org, 
-	paulmck@kernel.org, songliubraving@fb.com, Ze Gao <zegao@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20230421113758.3465678-1-horatiu.vultur@microchip.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-> kprobe_multi/fprobe share the same set of attachments with fentry.
-> Currently, fentry does not filter with !rcu_is_watching, maybe
-> because this is an extreme corner case. Not sure whether it is
-> worthwhile or not.
+The 04/21/2023 13:37, Horatiu Vultur wrote:
 
-Agreed, it's rare, especially after Peter's patches which push narrow
-down rcu eqs regions
-in the idle path and reduce the chance of any traceable functions
-happening in between.
+Hi,
 
-However, from RCU's perspective, we ought to check if rcu_is_watching
-theoretically
-when there's a chance our code will run in the idle path and also we
-need rcu to be alive,
-And also we cannot simply make assumptions for any future changes in
-the idle path.
-You know, just like what was hit in the thread.
+> The pcb8309 has 2 SMA connectors which are connected to the lan966x
+> chip. The lan966x can generate 1PPS output on one of them and it can
+> receive 1PPS input on the other one.
 
-> Maybe if you can give a concrete example (e.g., attachment point)
-> with current code base to show what the issue you encountered and
-> it will make it easier to judge whether adding !rcu_is_watching()
-> is necessary or not.
+Just a gentle ping. Thanks.
 
-I can reproduce likely warnings on v6.1.18 where arch_cpu_idle is
-traceable but not on the latest version
-so far. But as I state above, in theory we need it. So here is a
-gentle ping :) .
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
+>  arch/arm/boot/dts/lan966x-pcb8309.dts | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/lan966x-pcb8309.dts b/arch/arm/boot/dts/lan966x-pcb8309.dts
+> index c436cd20d4b4c..0cb505f79ba1a 100644
+> --- a/arch/arm/boot/dts/lan966x-pcb8309.dts
+> +++ b/arch/arm/boot/dts/lan966x-pcb8309.dts
+> @@ -144,6 +144,18 @@ fc4_b_pins: fc4-b-pins {
+>  		function = "fc4_b";
+>  	};
+>  
+> +	pps_out_pins: pps-out-pins {
+> +		/* 1pps output */
+> +		pins = "GPIO_38";
+> +		function = "ptpsync_3";
+> +	};
+> +
+> +	ptp_ext_pins: ptp-ext-pins {
+> +		/* 1pps input */
+> +		pins = "GPIO_39";
+> +		function = "ptpsync_4";
+> +	};
+> +
+>  	sgpio_a_pins: sgpio-a-pins {
+>  		/* SCK, D0, D1, LD */
+>  		pins = "GPIO_32", "GPIO_33", "GPIO_34", "GPIO_35";
+> @@ -212,5 +224,7 @@ gpio@1 {
+>  };
+>  
+>  &switch {
+> +	pinctrl-0 = <&pps_out_pins>, <&ptp_ext_pins>;
+> +	pinctrl-names = "default";
+>  	status = "okay";
+>  };
+> -- 
+> 2.38.0
+> 
+
+-- 
+/Horatiu
 
