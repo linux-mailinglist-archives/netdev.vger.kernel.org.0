@@ -1,118 +1,123 @@
-Return-Path: <netdev+bounces-4122-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4123-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 42EDA70AF3F
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 19:21:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id AD4B670AF44
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 19:25:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CF0871C20924
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 17:21:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3171E1C208F4
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 17:25:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4474E7475;
-	Sun, 21 May 2023 17:21:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3FD3F747F;
+	Sun, 21 May 2023 17:25:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 330236FDC
-	for <netdev@vger.kernel.org>; Sun, 21 May 2023 17:21:05 +0000 (UTC)
-Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93531FA
-	for <netdev@vger.kernel.org>; Sun, 21 May 2023 10:21:03 -0700 (PDT)
-Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
-	by fgw23.mail.saunalahti.fi (Halon) with ESMTP
-	id dacd9c49-f7fb-11ed-b972-005056bdfda7;
-	Sun, 21 May 2023 20:21:00 +0300 (EEST)
-From: andy.shevchenko@gmail.com
-Date: Sun, 21 May 2023 20:20:59 +0300
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Daniel Scally <djrscally@gmail.com>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Wolfram Sang <wsa@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Andreas Klinger <ak@it-klinger.de>, Marcin Wojtas <mw@semihalf.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Paul Cercueil <paul@crapouillou.net>,
-	Akhil R <akhilrajeev@nvidia.com>, linux-acpi@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-iio@vger.kernel.org, netdev@vger.kernel.org,
-	openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
-	linux-mips@vger.kernel.org
-Subject: Re: [PATCH v5 4/8] pinctrl: wpcm450: relax return value check for
- IRQ get
-Message-ID: <ZGpS-13CozLp-p4f@surfacebook>
-References: <cover.1684493615.git.mazziesaccount@gmail.com>
- <42264f1b12a91e415ffa47ff9adb53f02a6aa3ea.1684493615.git.mazziesaccount@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FA736AD8
+	for <netdev@vger.kernel.org>; Sun, 21 May 2023 17:25:35 +0000 (UTC)
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E1210E
+	for <netdev@vger.kernel.org>; Sun, 21 May 2023 10:25:33 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-3f5dbd8f677so27595e9.1
+        for <netdev@vger.kernel.org>; Sun, 21 May 2023 10:25:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1684689932; x=1687281932;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lEKfaW0N+DHBog7/ho2Kgeox+l8bp0SvW0U65XKoLcc=;
+        b=63wq+ZPE3FvpW0kO+V6sZ8bPYsjvGB57wXW9LiZiiFrfyepJdWN8Jts9tmvJs7/DWm
+         nlphAHGNr1RV6WuBIZ+AlHleXJqIBxZbKfgFVh/tmdGmcuU1tvKHj14yiIM6stpxUihq
+         WVRlIDSIOpI+PYNd7kGOQp6o+JJxr77z4hTLSgrra/5qoxSbUrN9HVe1g5GemPZuQ9uI
+         obwfgxtNuWbFBeNwQTZM/Fjv5TZBCH2gqgOtOinBsnjjU2XLbiBMlSuttMDHFMZHrQOr
+         BNHF+afrmRGLsJvEHC6hfzrEteD46CxGNsdR5X3amSheYw2uvuro8IkL8xg5olilH7u+
+         zaHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684689932; x=1687281932;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lEKfaW0N+DHBog7/ho2Kgeox+l8bp0SvW0U65XKoLcc=;
+        b=EVsXnUFJBChvIDOSTEtZsBhG00V5kt0LmDHqeADEJXq8znfEnwJi8ALphU3c7k+aps
+         A6w4QMdtf/Smza1yD6xxAKDlBSHyLRMTUuDlZjk7nDwjIO1H2GxQ8fWdXi9tKqrxgvfB
+         n1sT5b1/bau10OfU0xyORiHnOKeYGVmNU54NQ/amNYUkBYYnjdceqqyP0Hl6xFeZITXo
+         d++AhCmmG55Gk2LUHlfgwzbTVD6exT7T9/MlawFbNgeFjkKYQlzNnNa82BS/pGuTsXjv
+         Qs52XlfvEfBn4gf+fE7hf+lu9gUbK5PmilFju/HQvJFWUDm2r4mHu8dzuyWhvINWU4eM
+         XBMA==
+X-Gm-Message-State: AC+VfDxr+tik7iJbnFZRV0Oalm+k9XdeYHREiAsSMNcm/fZRzVA0AdlS
+	kIA7JmkPqgPyuHYJUOOvfm13NiCx9DrfpZgTgfWMjA==
+X-Google-Smtp-Source: ACHHUZ45CPreZ4pI6imWE1WSy+Ged4g9qgetdw2sP3gCSWTos0d3fUsTJfX4MlUBg8CzsTwEDyoS3Ti1SXv2Mr0yAwg=
+X-Received: by 2002:a05:600c:5117:b0:3f4:fb7:48d4 with SMTP id
+ o23-20020a05600c511700b003f40fb748d4mr560972wms.3.1684689931795; Sun, 21 May
+ 2023 10:25:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <42264f1b12a91e415ffa47ff9adb53f02a6aa3ea.1684493615.git.mazziesaccount@gmail.com>
-X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
-	SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
+References: <25a7b1b138e5ad3c926afce8cd4e08d8b7ef3af6.1684516568.git.lucien.xin@gmail.com>
+ <20230519134318.6508f057@hermes.local>
+In-Reply-To: <20230519134318.6508f057@hermes.local>
+From: Eric Dumazet <edumazet@google.com>
+Date: Sun, 21 May 2023 19:25:20 +0200
+Message-ID: <CANn89iLkzO0py2N5TZAFWvcMjidd6R1URh0+D6Xr1enVNp8Sew@mail.gmail.com>
+Subject: Re: [PATCH net] rtnetlink: not allow dev gro_max_size to exceed GRO_MAX_SIZE
+To: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Xin Long <lucien.xin@gmail.com>, network dev <netdev@vger.kernel.org>, davem@davemloft.net, 
+	kuba@kernel.org, Paolo Abeni <pabeni@redhat.com>, 
+	Alexander Duyck <alexanderduyck@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Fri, May 19, 2023 at 02:02:16PM +0300, Matti Vaittinen kirjoitti:
-> fwnode_irq_get[_byname]() were changed to not return 0 anymore. The
-> special error case where device-tree based IRQ mapping fails can't no
-> longer be reliably detected from this return value. This yields a
-> functional change in the driver where the mapping failure is treated as
-> an error.
-> 
-> The mapping failure can occur for example when the device-tree IRQ
-> information translation call-back(s) (xlate) fail, IRQ domain is not
-> found, IRQ type conflicts, etc. In most cases this indicates an error in
-> the device-tree and special handling is not really required.
-> 
-> One more thing to note is that ACPI APIs do not return zero for any
-> failures so this special handling did only apply on device-tree based
-> systems.
-> 
-> Drop the special (no error, just skip the IRQ) handling for DT mapping
-> failures as these can no longer be separated from other errors at driver
-> side.
+On Fri, May 19, 2023 at 10:43=E2=80=AFPM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Fri, 19 May 2023 13:16:08 -0400
+> Xin Long <lucien.xin@gmail.com> wrote:
+>
+> > In commit 0fe79f28bfaf ("net: allow gro_max_size to exceed 65536"),
+> > it limited GRO_MAX_SIZE to (8 * 65535) to avoid overflows, but also
+> > deleted the check of GRO_MAX_SIZE when setting the dev gro_max_size.
+> >
+> > Currently, dev gro_max_size can be set up to U32_MAX (0xFFFFFFFF),
+> > and GRO_MAX_SIZE is not even used anywhere.
+> >
+> > This patch brings back the GRO_MAX_SIZE check when setting dev
+> > gro_max_size/gro_ipv4_max_size by users.
+> >
+> > Fixes: 0fe79f28bfaf ("net: allow gro_max_size to exceed 65536")
+> > Reported-by: Xiumei Mu <xmu@redhat.com>
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  net/core/rtnetlink.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> >
+> > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> > index 653901a1bf75..59b24b184cb0 100644
+> > --- a/net/core/rtnetlink.c
+> > +++ b/net/core/rtnetlink.c
+> > @@ -2886,6 +2886,11 @@ static int do_setlink(const struct sk_buff *skb,
+> >       if (tb[IFLA_GRO_MAX_SIZE]) {
+> >               u32 gro_max_size =3D nla_get_u32(tb[IFLA_GRO_MAX_SIZE]);
+> >
+> > +             if (gro_max_size > GRO_MAX_SIZE) {
+> > +                     err =3D -EINVAL;
+> > +                     goto errout;
+> > +             }
+> > +
+>
+> Please add extack messages so the error can be reported better.
 
-...
-
-> The commit message does not mention if choosing not to abort the probe
-> on device-tree mapping failure (as is done on other errors) was chosen
-> because: a) Abort would have broken some existing setup. b) Because skipping
-> an IRQ on failure is "the right thing to do", or c) because it sounded like
-> a way to minimize risk of breaking something.
-> 
-> If the reason is a) - then I'd appreciate receiving some more
-> information and a suggestion how to proceed (if possible). If the reason
-> is b), then it might be best to just skip the IRQ instead of aborting
-> the probe for all errors on IRQ getting. Finally, in case of c), well,
-> by acking this change you will now accept the risk :)
-
-No need to repeat this. As I answered the case c) was in my mind when I made
-that change.
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Also, what is the reason for not changing rtnl_create_link() ?
 
