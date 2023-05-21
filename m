@@ -1,144 +1,144 @@
-Return-Path: <netdev+bounces-4098-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4099-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3BBA970AD64
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 12:09:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 48D0270AD76
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 12:31:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E664B28101B
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 10:09:20 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 06A0C281024
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 10:31:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2DA00111B;
-	Sun, 21 May 2023 10:09:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C323A59;
+	Sun, 21 May 2023 10:31:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34BD110E8;
-	Sun, 21 May 2023 10:09:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE2D0C433D2;
-	Sun, 21 May 2023 10:09:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684663754;
-	bh=YiYXte2Ov4q718ZuslBI02BeUfZ/XQCo7cBMxKqJ824=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=mw9Q3VHP/cRbht7elt1Q233Yql9KvZxMyXfDt1dD+6cvrhNc5lTYS3OfVB0K8R60a
-	 Xcc+J5kO0F+PwLqOAd8PUXF2VGC4oQ7wi9loy0w87My9nrYDicgJjSSq4KX/gddgb4
-	 WfW/JRp7Ced9irmKomN/XnWrVjC57qgQApmT5m3av1cPpWjLLpQq8JEiCrlak2imze
-	 C1hd+kD9GUgNM1bKru4dcv6f680I8r9BgSeXoZUMPt2EtD8FWs1Ks4RzsiFHni8mvK
-	 dso6QAPza3HG+m391BBBpAlHQd+PQaVqkvtWCELH+gzaDCHpZen9+bKbQOpDjl0rwb
-	 Xm+THbVEhlM2w==
-Date: Sun, 21 May 2023 19:09:07 +0900
-From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To: Jiri Olsa <olsajiri@gmail.com>
-Cc: Ze Gao <zegao2021@gmail.com>, Alexei Starovoitov <ast@kernel.org>,
- Andrii Nakryiko <andrii@kernel.org>, Daniel Borkmann
- <daniel@iogearbox.net>, Hao Luo <haoluo@google.com>, John Fastabend
- <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, Martin KaFai Lau
- <martin.lau@linux.dev>, Masami Hiramatsu <mhiramat@kernel.org>, Song Liu
- <song@kernel.org>, Stanislav Fomichev <sdf@google.com>, Steven Rostedt
- <rostedt@goodmis.org>, Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- kafai@fb.com, kpsingh@chromium.org, netdev@vger.kernel.org,
- paulmck@kernel.org, songliubraving@fb.com, Ze Gao <zegao@tencent.com>
-Subject: Re:
-Message-Id: <20230521190907.e4104a653583dfac785e379a@kernel.org>
-In-Reply-To: <ZGnRjkjxWrK8HzNm@krava>
-References: <20220515203653.4039075-1-jolsa@kernel.org>
-	<20230520094722.5393-1-zegao@tencent.com>
-	<ZGnRjkjxWrK8HzNm@krava>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 500DBA29
+	for <netdev@vger.kernel.org>; Sun, 21 May 2023 10:31:14 +0000 (UTC)
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5BEE7A;
+	Sun, 21 May 2023 03:28:14 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3f41d087b3bso49835875e9.0;
+        Sun, 21 May 2023 03:28:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684664893; x=1687256893;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EDi/bV4t8FuHg0kLhL6xrOY9UnW1rRP8TKkwFlbWsok=;
+        b=WGEiRTS0hwmpHaG4o6Qd+CjuRerdMAMZCmtvy+JKDEX51m7rMBkqEybPP1OkUyRpry
+         rrpQwhrW1DmXyj+bNT6LP2ZtMfj+kgERp1HRbnOB83XR9mrrPJ8WYVsMUm65BOyqZSmA
+         gAMXDDbceLKcAMkIvkphCUjUi4n9xkQPgTKbj/XnjXwsvxTvghHT0m/ZqA1PRqAkM17b
+         ix/giuz9empZ5F+c3TZ1xM7+fMhJC8KuotY5Ujg+Qpty3Q5wKRk2DW2+O6KKjTfYkHhU
+         nvsm264cRKutBCXMR0KbMcfAziHwR+r4n1GSo1RLjOSoeKRNSLsNeuJ0U2OjY+TSORFT
+         mogA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684664893; x=1687256893;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EDi/bV4t8FuHg0kLhL6xrOY9UnW1rRP8TKkwFlbWsok=;
+        b=QAGLnvKl+LXCWWlx2hoygasuWhm1wcz2FUTX3OOYcF3fJxbYXFFw5UIuswYWU3lQ1U
+         FuSwM8spUJQi6ZUswXesQrc0R1iERAGoeWLvv0azaf4PXZqOz7qpdpzJNIaOsrgoGEnu
+         iNBkssfhpWeDMWUe/J8v9tNJC2VqTzwzNhOopwaDuy8zDO11UOI/mfcfgYQt0Ic+NdDV
+         gIuCPJygf8WHbaWiakW6Gof3xgDJWv8S0/ERXKdtSlKUPr9zGpPy0GqME6o2r2r2H3Fn
+         07v7+5ShXO879HLj6BhAmvi4am9KvMWfVpAa4h19eevde4YLUxTe2Himd2tN3j0b9rt/
+         EQsA==
+X-Gm-Message-State: AC+VfDyYKsuTiu809ia5dZa5cHPeT55M56xLwmGwSkyhMvltH0FK4aqa
+	vqNBMp4i8oyQs2ijS5VhInA=
+X-Google-Smtp-Source: ACHHUZ5+rx9X9ugCqBQMsdH8+Y+g0erFQZ4tqSfXn10BM4X5Xjd6W89H6Vc4p7ud3qN1lcPDY+YAPQ==
+X-Received: by 2002:a7b:cb91:0:b0:3f6:1a9:b9db with SMTP id m17-20020a7bcb91000000b003f601a9b9dbmr1289831wmi.21.1684664892392;
+        Sun, 21 May 2023 03:28:12 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id y21-20020a7bcd95000000b003f4e8530696sm4740414wmj.46.2023.05.21.03.28.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 May 2023 03:28:11 -0700 (PDT)
+Date: Sun, 21 May 2023 13:28:09 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Woojung Huh <woojung.huh@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+	Arun Ramadoss <arun.ramadoss@microchip.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Simon Horman <simon.horman@corigine.com>,
+	"Russell King (Oracle)" <linux@armlinux.org.uk>,
+	linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+	netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+	UNGLinuxDriver@microchip.com,
+	"David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v4 1/2] net: dsa: microchip: ksz8: Make flow
+ control, speed, and duplex on CPU port configurable
+Message-ID: <20230521102809.i3o55e4nuuy7dtdu@skbuf>
+References: <20230519124700.635041-1-o.rempel@pengutronix.de>
+ <20230519124700.635041-2-o.rempel@pengutronix.de>
+ <20230519143004.luvz73jiyvnqxk4y@skbuf>
+ <20230519185015.GA18246@pengutronix.de>
+ <20230519203449.pc5vbfgbfc6rdo6i@skbuf>
+ <20230520050317.GC18246@pengutronix.de>
+ <20230520151708.24duenxufth4xsh5@skbuf>
+ <20230521043841.GA22442@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230521043841.GA22442@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Sun, 21 May 2023 10:08:46 +0200
-Jiri Olsa <olsajiri@gmail.com> wrote:
+On Sun, May 21, 2023 at 06:38:41AM +0200, Oleksij Rempel wrote:
+> Looks good, I like the idea with "wacky" registers!
+> 
+> Would you prefer that I start working on adapting your patch set to the
+> KSZ8873? Or should I make a review to move forward the existing patch set?
+> 
+> Just a heads up, I don't have access to the KSZ87xx series switches, so
+> I won't be able to test the changes on these models.
+> 
+> Let me know what you think and how we should proceed.
 
-> On Sat, May 20, 2023 at 05:47:24PM +0800, Ze Gao wrote:
-> > 
-> > Hi Jiri,
-> > 
-> > Would you like to consider to add rcu_is_watching check in
-> > to solve this from the viewpoint of kprobe_multi_link_prog_run
-> 
-> I think this was discussed in here:
->   https://lore.kernel.org/bpf/20230321020103.13494-1-laoar.shao@gmail.com/
-> 
-> and was considered a bug, there's fix mentioned later in the thread
-> 
-> there's also this recent patchset:
->   https://lore.kernel.org/bpf/20230517034510.15639-3-zegao@tencent.com/
-> 
-> that solves related problems
+If we convert to regfields, the entire driver will need to be converted
+(all switch families). I'd say make a best effort full conversion, and
+if something breaks on the families which you could not test, surely
+someone will jump to correct it. Since your KSZ8873 also has wacky registers
+(btw, feel free to rename the concept to something more serious), I think
+that not a lot can go wrong with a blind conversion as long as it's tested
+on other hardware.
 
-I think this rcu_is_watching() is a bit different issue. This rcu_is_watching()
-check is required if the kprobe_multi_link_prog_run() uses any RCU API.
-E.g. rethook_try_get() is also checks rcu_is_watching() because it uses
-call_rcu().
+BTW, revisiting, I already found a bug in the conversion (patch 2/4):
 
-Thank you,
-
-> 
-> > itself? And accounting of missed runs can be added as well
-> > to imporve observability.
-> 
-> right, we count fprobe->nmissed but it's not exposed, we should allow
-> to get 'missed' stats from both fprobe and kprobe_multi later, which
-> is missing now, will check
-> 
-> thanks,
-> jirka
-> 
-> > 
-> > Regards,
-> > Ze
-> > 
-> > 
-> > -----------------
-> > From 29fd3cd713e65461325c2703cf5246a6fae5d4fe Mon Sep 17 00:00:00 2001
-> > From: Ze Gao <zegao@tencent.com>
-> > Date: Sat, 20 May 2023 17:32:05 +0800
-> > Subject: [PATCH] bpf: kprobe_multi runs bpf progs only when rcu_is_watching
-> > 
-> > From the perspective of kprobe_multi_link_prog_run, any traceable
-> > functions can be attached while bpf progs need specical care and
-> > ought to be under rcu protection. To solve the likely rcu lockdep
-> > warns once for good, when (future) functions in idle path were
-> > attached accidentally, we better paying some cost to check at least
-> > in kernel-side, and return when rcu is not watching, which helps
-> > to avoid any unpredictable results.
-> > 
-> > Signed-off-by: Ze Gao <zegao@tencent.com>
-> > ---
-> >  kernel/trace/bpf_trace.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index 9a050e36dc6c..3e6ea7274765 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -2622,7 +2622,7 @@ kprobe_multi_link_prog_run(struct bpf_kprobe_multi_link *link,
-> >  	struct bpf_run_ctx *old_run_ctx;
-> >  	int err;
-> >  
-> > -	if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
-> > +	if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1 || !rcu_is_watching())) {
-> >  		err = 0;
-> >  		goto out;
-> >  	}
-> > -- 
-> > 2.40.1
-> > 
-
-
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
++	} else if (mii_sel == bitval[P_RMII_SEL]) {
+ 		interface = PHY_INTERFACE_MODE_RGMII;
+ 	} else {
++		ret = ksz_regfields_read(dev, port, RF_RGMII_ID_IG_ENABLE, &ig);
++		if (WARN_ON(ret))
++			return PHY_INTERFACE_MODE_NA;
++
++		ret = ksz_regfields_read(dev, port, RF_RGMII_ID_IG_ENABLE, &eg);
+						    ~~~~~~~~~~~~~~~~~~~~~
+						    should have been RF_RGMII_ID_EG_ENABLE
++		if (WARN_ON(ret))
++			return PHY_INTERFACE_MODE_NA;
++
+ 		interface = PHY_INTERFACE_MODE_RGMII;
+-		if (data8 & P_RGMII_ID_EG_ENABLE)
++		if (eg)
+ 			interface = PHY_INTERFACE_MODE_RGMII_TXID;
+-		if (data8 & P_RGMII_ID_IG_ENABLE) {
++		if (ig) {
+ 			interface = PHY_INTERFACE_MODE_RGMII_RXID;
+-			if (data8 & P_RGMII_ID_EG_ENABLE)
++			if (eg)
+ 				interface = PHY_INTERFACE_MODE_RGMII_ID;
+ 		}
+ 	}
 
