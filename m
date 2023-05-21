@@ -1,113 +1,182 @@
-Return-Path: <netdev+bounces-4106-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4107-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id F06CB70AE3F
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 15:44:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B60EF70AE4F
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 16:19:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A7DD3280F0C
-	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 13:44:04 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C8B8F280E38
+	for <lists+netdev@lfdr.de>; Sun, 21 May 2023 14:19:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A1ADB3D76;
-	Sun, 21 May 2023 13:44:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A2BA946AB;
+	Sun, 21 May 2023 14:19:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9457F33FB
-	for <netdev@vger.kernel.org>; Sun, 21 May 2023 13:44:02 +0000 (UTC)
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7B7AA;
-	Sun, 21 May 2023 06:44:01 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-510e90d785fso5509312a12.2;
-        Sun, 21 May 2023 06:44:01 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 843B5259A;
+	Sun, 21 May 2023 14:19:49 +0000 (UTC)
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F49BE;
+	Sun, 21 May 2023 07:19:48 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id 4fb4d7f45d1cf-510d8ead2f1so7163501a12.3;
+        Sun, 21 May 2023 07:19:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684676639; x=1687268639;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sZpvyR57mXeFP0Qm641psPJxyuo/h1ZNJwmOyidkJfY=;
-        b=dtajUC7PCeAXr0i98qEMgbSbvz9+wLFlJmCSyIjzkoKKqbQWGVCSdDqQ02Tf9ZMo9X
-         SjvQyT+rcpG2A0JMQCBCHCjQrkwGnVhXjWBu4/0bQK0C+WUrdd/Jcnk25qZVNzbcVJaY
-         uOT2SvrnMM377XU39AC+GtJk4t8Gslcxxmp+vB+Sekg0MbWUf+0eVlI8jE0Mjt16opss
-         up8AYRk8G9CIFr7qk23BbG6uydqnNS7uEMJoLX2juXKPSxCuhIaLlZuMBdDUpLAIe/8P
-         sS2wThyIssKp1s8Jnm8xzSqe7z5GIK67MCMYL/R95nmYiMDzIb0JadJq6tGEznk2swF5
-         jlyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684676639; x=1687268639;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1684678786; x=1687270786;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sZpvyR57mXeFP0Qm641psPJxyuo/h1ZNJwmOyidkJfY=;
-        b=Qo67RR5/Nm6UlH9Mnb95EaYpAx7bTZmc7MfEiJutk+kPW79+Tabkb2MyOwTvUWOOOy
-         xjf2/uX61gPSOY3Ts3gUB2keaje+gtTzMvSuE4lGUNGO7smBnmn+hTTBF3Ms/jXH4+Ej
-         oVA1ssmso/E65xBdWSrIOBjU/StSowPl15KxN16Dn2O0CoOPoGEpSwyGO4h198A8uUqS
-         +r+zAvFwecFgfdSXNDezwU1qvI0qckNxakT/I2iHpHgsauA1E+m/SukVPHbvmQePczOs
-         yUIPf+tq5f6JywD3enY1UfD5J1Lq+IqqnhuEcTt0/H9KltWXRzJ6kG8UJMZlCNn2iAAF
-         nAaA==
-X-Gm-Message-State: AC+VfDy/w5VcE6DCWEL1fABZROxon+LDCSGugVbaU/1FgOV2+k+hPJL/
-	1UBJ8aes0ivA0PzpmU3bOrzdm+QDMbc=
-X-Google-Smtp-Source: ACHHUZ6s8i/nz0kHAigbvf8YrctI31S/v/qbPm9d7o6kBKJDLRrNaZVogWmEF2pFxyMFalKjd/4G2Q==
-X-Received: by 2002:a17:907:7b98:b0:965:ff38:2fb3 with SMTP id ne24-20020a1709077b9800b00965ff382fb3mr7715778ejc.74.1684676639346;
-        Sun, 21 May 2023 06:43:59 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id sb8-20020a170906edc800b0096f6e2f4d9esm1875140ejb.83.2023.05.21.06.43.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 May 2023 06:43:58 -0700 (PDT)
-Date: Sun, 21 May 2023 16:43:56 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: David Epping <david.epping@missinglinkelectronics.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net 3/3] net: phy: mscc: enable VSC8501/2 RGMII RX clock
-Message-ID: <20230521134356.ar3itavhdypnvasc@skbuf>
-References: <20230520160603.32458-1-david.epping@missinglinkelectronics.com>
- <20230520160603.32458-4-david.epping@missinglinkelectronics.com>
+        bh=g7nc8IQP1+x6u9N7+EYfITX13eAIkcVj3K/FpgMBq4Y=;
+        b=hMI+YQvgIwZ0nFTrph18YPJAPJ/xqRvgbwDk0QNL7DpOR3z2xwQQZ09Y5ZB6aKwQ1N
+         vAgB18wD4Uz/K3EB1WkMeoAAQj9DLgB56nJjPbLccvgfFoiQI74WddeHk+E7C8SRYSYL
+         HrpQLEY5WuXmBoxwAPjftuOppi/LU8kC/KLqRKQJB6t4mwXSTDzGCa2Z9HHBVeihFInM
+         +j+n2WojQy5OP7ATXwgbIfOAdr8sCKWQNah5J28W/WJwcBBQ+MvXxi6K+vUpN5+DCuKe
+         CWg64ghMVjzIgCBe5FnaHQziqCCEr23LlqmF/i8RfrDYQrd5B/cL7jrk1CAmHsXdoFvc
+         681A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684678786; x=1687270786;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=g7nc8IQP1+x6u9N7+EYfITX13eAIkcVj3K/FpgMBq4Y=;
+        b=SFn5N4Zxm4F1FlfFFlNPK7n2xD4j56CUwEgjU5Yedq16qYyXoOyMqrpOdCQ6usMGcX
+         q3SaCqkRbADGozd/zb34GjJnx0lU8mkr9v4GnFOOmEDh2gmFXlrcL4v1l35ZdCrlRViv
+         rjRfXtrFtGD/kxnUgzXV0HXNl2+1o2S76TA1VwYwzcF09Q+br0mxmTk6t2R2vHfgBlS4
+         5FTuW+8rXYyLJ93+r3vThzycC9sQ4xOvoiffxg5icHWUuSvgKk2WSdB4UmkxeMJ31OaZ
+         PKs696XuY4fwCtKeJVZ6nxS9lb6rE2wIAYBGOCZ/B4i4vM2s6WW4rexSc/qYwRijVnLe
+         EsXg==
+X-Gm-Message-State: AC+VfDy+NxOJGF7mQ9HyZWIJOYKFT1fEaw0gOgfdEGvTed7FmLS67RxW
+	rBQm2GQhCD1Y9GTDDWVHhxB18Pwy3w71aW37v1k=
+X-Google-Smtp-Source: ACHHUZ4BVlr3vRVhKVcq01bQhG1RUX5SPWxkcsAY6aiBTMuFu3CQVjxEKjSI3NraOjSXw4ScmEjdwc7YjUWWZs4ifb0=
+X-Received: by 2002:a05:6402:1217:b0:50b:faa1:e1d5 with SMTP id
+ c23-20020a056402121700b0050bfaa1e1d5mr5627068edw.39.1684678786185; Sun, 21
+ May 2023 07:19:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230520160603.32458-4-david.epping@missinglinkelectronics.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+References: <20220515203653.4039075-1-jolsa@kernel.org> <20230520094722.5393-1-zegao@tencent.com>
+ <ZGnRjkjxWrK8HzNm@krava> <20230521190907.e4104a653583dfac785e379a@kernel.org>
+In-Reply-To: <20230521190907.e4104a653583dfac785e379a@kernel.org>
+From: Ze Gao <zegao2021@gmail.com>
+Date: Sun, 21 May 2023 22:19:34 +0800
+Message-ID: <CAD8CoPCNNh4_vtTQVGeoN7t7TcN9w60Fw6=r7yKwvxBSr_ZJ3Q@mail.gmail.com>
+Subject: Re:
+To: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Jiri Olsa <olsajiri@gmail.com>, Alexei Starovoitov <ast@kernel.org>, 
+	Andrii Nakryiko <andrii@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, Hao Luo <haoluo@google.com>, 
+	John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, 
+	Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, 
+	Stanislav Fomichev <sdf@google.com>, Steven Rostedt <rostedt@goodmis.org>, Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+	kafai@fb.com, kpsingh@chromium.org, netdev@vger.kernel.org, 
+	paulmck@kernel.org, songliubraving@fb.com, Ze Gao <zegao@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sat, May 20, 2023 at 06:06:03PM +0200, David Epping wrote:
-> +/* For VSC8501 and VSC8502 the RGMII RX clock output is disabled by default. */
-> +static int vsc85xx_rgmii_enable_rx_clk(struct phy_device *phydev,
-> +				       u32 rgmii_cntl)
-> +{
-> +	int rc, phy_id;
-> +
-> +	phy_id = phydev->drv->phy_id & phydev->drv->phy_id_mask;
-> +	if (PHY_ID_VSC8501 != phy_id && PHY_ID_VSC8502 != phy_id)
-> +		return 0;
+On Sun, May 21, 2023 at 6:09=E2=80=AFPM Masami Hiramatsu <mhiramat@kernel.o=
+rg> wrote:
+>
+> On Sun, 21 May 2023 10:08:46 +0200
+> Jiri Olsa <olsajiri@gmail.com> wrote:
+>
+> > On Sat, May 20, 2023 at 05:47:24PM +0800, Ze Gao wrote:
+> > >
+> > > Hi Jiri,
+> > >
+> > > Would you like to consider to add rcu_is_watching check in
+> > > to solve this from the viewpoint of kprobe_multi_link_prog_run
+> >
+> > I think this was discussed in here:
+> >   https://lore.kernel.org/bpf/20230321020103.13494-1-laoar.shao@gmail.c=
+om/
+> >
+> > and was considered a bug, there's fix mentioned later in the thread
+> >
+> > there's also this recent patchset:
+> >   https://lore.kernel.org/bpf/20230517034510.15639-3-zegao@tencent.com/
+> >
+> > that solves related problems
+>
+> I think this rcu_is_watching() is a bit different issue. This rcu_is_watc=
+hing()
+> check is required if the kprobe_multi_link_prog_run() uses any RCU API.
+> E.g. rethook_try_get() is also checks rcu_is_watching() because it uses
+> call_rcu().
 
-Not only bit 11 is reserved for VSC8530, but it's also read-only, so it
-should not matter what is written there.
+Yes, that's my point!
 
-Since vsc85xx_rgmii_enable_rx_clk() and vsc85xx_rgmii_set_skews() write
-to the same register, would it not make sense to combine the two into a
-single phy_modify_paged() call, and to zeroize bit 11 as part of that?
+Regards,
+Ze
 
-The other caller of vsc85xx_rgmii_set_skews(), VSC8572, unfortunately
-does not document bit 11 at all - it doesn't say if it's read-only or not.
-We could conditionally include the VSC8502_RGMII_RX_CLK_DISABLE bit in the
-"mask" argument of phy_modify_paged() based on rgmii_cntl == VSC8502_RGMII_CNTL,
-such as to exclude VSC8572.
-
-What do you think?
+>
+> >
+> > > itself? And accounting of missed runs can be added as well
+> > > to imporve observability.
+> >
+> > right, we count fprobe->nmissed but it's not exposed, we should allow
+> > to get 'missed' stats from both fprobe and kprobe_multi later, which
+> > is missing now, will check
+> >
+> > thanks,
+> > jirka
+> >
+> > >
+> > > Regards,
+> > > Ze
+> > >
+> > >
+> > > -----------------
+> > > From 29fd3cd713e65461325c2703cf5246a6fae5d4fe Mon Sep 17 00:00:00 200=
+1
+> > > From: Ze Gao <zegao@tencent.com>
+> > > Date: Sat, 20 May 2023 17:32:05 +0800
+> > > Subject: [PATCH] bpf: kprobe_multi runs bpf progs only when rcu_is_wa=
+tching
+> > >
+> > > From the perspective of kprobe_multi_link_prog_run, any traceable
+> > > functions can be attached while bpf progs need specical care and
+> > > ought to be under rcu protection. To solve the likely rcu lockdep
+> > > warns once for good, when (future) functions in idle path were
+> > > attached accidentally, we better paying some cost to check at least
+> > > in kernel-side, and return when rcu is not watching, which helps
+> > > to avoid any unpredictable results.
+> > >
+> > > Signed-off-by: Ze Gao <zegao@tencent.com>
+> > > ---
+> > >  kernel/trace/bpf_trace.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > > index 9a050e36dc6c..3e6ea7274765 100644
+> > > --- a/kernel/trace/bpf_trace.c
+> > > +++ b/kernel/trace/bpf_trace.c
+> > > @@ -2622,7 +2622,7 @@ kprobe_multi_link_prog_run(struct bpf_kprobe_mu=
+lti_link *link,
+> > >     struct bpf_run_ctx *old_run_ctx;
+> > >     int err;
+> > >
+> > > -   if (unlikely(__this_cpu_inc_return(bpf_prog_active) !=3D 1)) {
+> > > +   if (unlikely(__this_cpu_inc_return(bpf_prog_active) !=3D 1 || !rc=
+u_is_watching())) {
+> > >             err =3D 0;
+> > >             goto out;
+> > >     }
+> > > --
+> > > 2.40.1
+> > >
+>
+>
+> --
+> Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
