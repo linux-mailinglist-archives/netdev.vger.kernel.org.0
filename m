@@ -1,32 +1,32 @@
-Return-Path: <netdev+bounces-4415-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4413-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id C796E70C8B0
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 21:40:59 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BC72270C713
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 21:25:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 06285281075
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 19:40:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 464C41C20BA7
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 19:25:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41C23171B7;
-	Mon, 22 May 2023 19:40:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E50B171A9;
+	Mon, 22 May 2023 19:25:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4688171A9;
-	Mon, 22 May 2023 19:40:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E77FAC433D2;
-	Mon, 22 May 2023 19:40:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07999171A1;
+	Mon, 22 May 2023 19:25:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28DBFC4339B;
+	Mon, 22 May 2023 19:25:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1684784454;
+	s=korg; t=1684783526;
 	bh=Wn4gTbf57LwpDRCHeR+QJZofpS9uoSncq21OSvW/Kd4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=tHEH9taE3lJmhj9U0bSKgsT5arEEFbtaSyZ1W8xhjlo1iMHWbEyTUVvctp6sd1afY
-	 YnR8Dpnvt/3qviHjDVRLsAUk41tPUPJB6jdM98PuWHn9DbmgaAMUEw0MlryWQWqgdB
-	 MPsBRbpJwhq9q/wCtXdrS6hj1LPbE344MeceZdcY=
+	b=ttF/mOc/2/gduVi81V7Qxm6TSm+KfHHa/bzs5woCrV1OOukTxNoa1DyRH0rEa9L2D
+	 DdQIKEom5W5YuvOqmvafszFYIk6YM3WhNHxiUp6g7pa7lUCKSnGdF6lHHeOiL5PbfW
+	 y181k//AtWWRsuNeZyHPBQDHy1vT634389Kp4sjM=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: stable@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -41,12 +41,12 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Kees Cook <keescook@chromium.org>,
 	Kalle Valo <quic_kvalo@quicinc.com>,
 	Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 6.3 088/364] wifi: ath: Silence memcpy run-time false positive warning
-Date: Mon, 22 May 2023 20:06:33 +0100
-Message-Id: <20230522190414.956248682@linuxfoundation.org>
+Subject: [PATCH 6.1 073/292] wifi: ath: Silence memcpy run-time false positive warning
+Date: Mon, 22 May 2023 20:07:10 +0100
+Message-Id: <20230522190407.788501941@linuxfoundation.org>
 X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230522190412.801391872@linuxfoundation.org>
-References: <20230522190412.801391872@linuxfoundation.org>
+In-Reply-To: <20230522190405.880733338@linuxfoundation.org>
+References: <20230522190405.880733338@linuxfoundation.org>
 User-Agent: quilt/0.67
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
