@@ -1,116 +1,141 @@
-Return-Path: <netdev+bounces-4412-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4385-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B661170C659
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 21:17:15 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3844570C4FF
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 20:14:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 55576281072
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 19:17:14 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0012E1C20B4D
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 18:14:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB45D171B7;
-	Mon, 22 May 2023 19:17:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 26C8B16438;
+	Mon, 22 May 2023 18:14:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F701171A1
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 19:17:12 +0000 (UTC)
-X-Greylist: delayed 4201 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 May 2023 12:17:10 PDT
-Received: from mail.8bytes.org (mail.8bytes.org [IPv6:2a01:238:42d9:3f00:e505:6202:4f0c:f051])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA8FDE9;
-	Mon, 22 May 2023 12:17:09 -0700 (PDT)
-Received: from 8bytes.org (p200300c2773e310086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:773e:3100:86ad:4f9d:2505:dd0d])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 0771D2434D7;
-	Mon, 22 May 2023 18:10:03 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1684771803;
-	bh=IEYacWChjS8pqW2eXYZUvSMLj48VE4JauxQLZBxYtqA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=dsW1m+Y4pRxReMA3YAV1dR7xSpCrEFNRWPSoWZvvgL9y9t+B8nkXGdS5pIZgE/Mxc
-	 jDkmtQgdl3dVqv6n3e4yCwCoQwKfP4wgVU7uooQ8pyt47lwv0bvnKcPDbqciBPuGzz
-	 QflQuvzLHWoxNs4RdcEri8p72xuZLmU5YY/fJNWHmC0sEkQSGm+KOysLl+ctiUYkJ4
-	 7Qlh+elGqPq5y9QZv4ABmp2fOJsDSjiUh+6IV6ASZ54RN9zWxU/tU36JULF7zRzETM
-	 EVBM6Dq0OgEW2aYEblrwJsY5LuCTfZP55UCddCCkbSfFJKvpE/vQhuL22KcZwPL64w
-	 mMOPCB+3NQIhg==
-Date: Mon, 22 May 2023 18:10:01 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
-	Wenjia Zhang <wenjia@linux.ibm.com>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Gerd Bayer <gbayer@linux.ibm.com>,
-	Julian Ruess <julianr@linux.ibm.com>,
-	Pierre Morel <pmorel@linux.ibm.com>,
-	Alexandra Winter <wintera@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Yong Wu <yong.wu@mediatek.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19F9616414
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 18:14:07 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621AFC6;
+	Mon, 22 May 2023 11:14:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+	Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=xMDWNdtDyX2oslr/W+4USsKREfXUGofI9zp56SMdPdE=; b=gS1aYzGLL9GL7wcQZdImWvvfx6
+	5hL51LptKMQj6jIj8fRcKt1cjpOI66ZtPT29tPsEQIjfZCh/coNN6OaFeM/DK0xgGmrLs2OEX7Syt
+	MsEsrCO8NimtuR9XptngCd9yUY1FWlE+/OvGIyYF1gNEemLzc1tpP30crcrMUk3b56npFpW4nyKcD
+	nAekpw9AcYmlJ7mvA8eUh5/G3jdYrl6k2Z0D6Va5AuFeVQNBDEHYJsiaiMdGxB7qGgBHZCV7PtYBC
+	FpyrYF1tVY6U7+GuK4OXweUyznNtHaoInIYI7tAAP6dCSif83xJBB702Zj/U0zA72OwbY/mK+CiNV
+	GYXQyvvA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38236)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q1A2P-0007Im-0M; Mon, 22 May 2023 19:13:41 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q1A2F-0008AI-3m; Mon, 22 May 2023 19:13:31 +0100
+Date: Mon, 22 May 2023 19:13:31 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc: arinc9.unal@gmail.com, Sean Wang <sean.wang@mediatek.com>,
+	Landen Chao <Landen.Chao@mediatek.com>,
+	DENG Qingfang <dqfext@gmail.com>,
+	Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
 	Matthias Brugger <matthias.bgg@gmail.com>,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+	Richard van Schagen <richard@routerhints.com>,
+	Richard van Schagen <vschagen@cs.com>,
+	Frank Wunderlich <frank-w@public-files.de>,
+	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+	erkin.bozoglu@xeront.com, mithat.guner@xeront.com,
+	=?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
 	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v9 6/6] iommu/dma: Make flush queue sizes and timeout
- driver configurable
-Message-ID: <ZGuT2R42SWFHmklu@8bytes.org>
-References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
- <20230310-dma_iommu-v9-6-65bb8edd2beb@linux.ibm.com>
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next 00/30] net: dsa: mt7530: improve, trap BPDU &
+ LLDP, and prefer CPU port
+Message-ID: <ZGuwy/0FGh0c4wXk@shell.armlinux.org.uk>
+References: <20230522121532.86610-1-arinc.unal@arinc9.com>
+ <20230522140917.er7f5ws24b2eeyvs@soft-dev3-1>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230310-dma_iommu-v9-6-65bb8edd2beb@linux.ibm.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230522140917.er7f5ws24b2eeyvs@soft-dev3-1>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 15, 2023 at 11:15:56AM +0200, Niklas Schnelle wrote:
-> In the s390 IOMMU driver a large fixed queue size and timeout is then
-> set together with single queue mode bringing its performance on s390
-> paged memory guests on par with the previous s390 specific DMA API
-> implementation.
+On Mon, May 22, 2023 at 04:09:17PM +0200, Horatiu Vultur wrote:
+> The 05/22/2023 15:15, arinc9.unal@gmail.com wrote:
+> 
+> Hi,
+> 
+> > 
+> > Hello!
+> > 
+> > This patch series simplifies the code, improves the logic of the switch
+> > hardware support, traps LLDP frames and BPDUs for MT7530, MT7531, and
+> > MT7988 SoC switches, and introduces the preferring local CPU port
+> > operation.
+> > 
+> > There's also a patch for fixing the port capabilities of the switch on the
+> > MT7988 SoC.
+> > 
+> 
+> I have noticed that in many patches of the series you have:
+> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> 
+> Where you also have:
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> 
+> I think you can drop Tested-by as the SoB will imply that. I think you
+> got a similar comment some time ago to a different patch series.
 
-Hmm, the right flush-queue size and timeout settings are more a function
-of the endpoint device and device driver than of the iommu driver, no? I
-think something like this could also help solving the recently reported
-scalability problems in the fq-code, if done right.
+Signed-off-by in no way implies a tested-by. Signed-off-by has a very
+distinct definition that is in submitting-patches.rst.
 
-Regards,
+Clearly, if one is working on infrastructure where there are numerous
+drivers involved, one probably doesn't have all the hardware, and one
+may have to send patches that have only been build tested, but never
+tested against real hardware.
 
-	Joerg
+While we may attempt to elicit testing, most of the time this seems
+to be a waste of time and effort - or at least that's my experience.
+Even if you Cc people who have recently been active with hardware,
+that is no guarantee that there will be any reaction.
 
+That has got to the point now where I just don't bother trying to
+elicit help from others to test driver changes. If people want to
+test, they need to do so when they see a patch on the mailing list,
+preferably before it gets applied. If not, and if it breaks something,
+then we'll have to generate a patch to fix the breakage.
+
+So no, please stop thinking that SoB implies that the patch has been
+tested.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
