@@ -1,157 +1,93 @@
-Return-Path: <netdev+bounces-4331-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4332-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id EC70070C187
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 16:53:58 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3BF4470C1A5
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 16:59:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BFEC71C20AD5
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:53:55 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A76371C20AD5
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:59:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2578A1429E;
-	Mon, 22 May 2023 14:53:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D64A81428D;
+	Mon, 22 May 2023 14:59:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CF8A14278;
-	Mon, 22 May 2023 14:53:28 +0000 (UTC)
-Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F47ABB;
-	Mon, 22 May 2023 07:53:27 -0700 (PDT)
-Received: by mail-vk1-xa31.google.com with SMTP id 71dfb90a1353d-4572fc781daso601219e0c.2;
-        Mon, 22 May 2023 07:53:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684767206; x=1687359206;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9odVnjjoR+4AuNw6ksnagpqi3r+RrcYNLrZWenZLiqg=;
-        b=BmDabCZP63yATPO3XTiegoftHUu9QDq5tUiWk9D2y5meNYS71L2+1QqBnzNqGAW0Kv
-         1a3mvYpDCSEQeZOhOynLeIHLkpkoNMgcNPBA/0kb6ZJ82jRLgvXYDfPvU1QJ9hlXfVej
-         EIV2LHLSbXfJIcp6rmNKIjLR+21txsxlBNLBZ8SaSbNMwI5Q7xzu7RVBd32UZoNHcQnA
-         mCzpFCYnkbnwxLv0fP+4KZeTfiDQAMwjLgb5qaw1/r3fE9UOGIMKrQotlQ5iXSVZN/rw
-         +cHtNUQtGBzbT6+VKET+/tqfJbXmhb/hv/ckaKtSMSHwX5u0hnPZWf5ejpHH4phQXn/v
-         +ZVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684767206; x=1687359206;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9odVnjjoR+4AuNw6ksnagpqi3r+RrcYNLrZWenZLiqg=;
-        b=Y7zZMtqnvS3MngCmJ3ChUQ1q0q3AFYVokGTT0BgNFQagVGiRAhqd8lczVWEuP5C+BK
-         420B99i+FoSUQF+V1Xp85tgvOfn/teeB35DH6QSVzGPMtuKZpDaIrXLrdqXECDszquZ9
-         jaXkF5m6pSZinra3TZjInFsaCJ/LeoqyRtln3sxcI5ZRC158fNvI/ps2XWfdJDzl9DwG
-         XwhtL3JjXQdA+ALKGHCPX4JaZFs9naJpXWgI3LFcIV5EvdHSptWS6zB+vTvNQDsShgS8
-         cYKW6uDn82sg5czWUj/iW637cJr3ZAvAJsqtoDdLAtsg2S/Hi2fS2gE2ve1RuqcrvFRo
-         Y6Kg==
-X-Gm-Message-State: AC+VfDwfcUmmWJfkKawoRHBVoUwKJ/Nl0Og/3Z04f5FwociC/IAN+9SL
-	Sul+LVbrtnC2k6Y2GUEXDRZBCG2oEtqQ1ihLlOQ=
-X-Google-Smtp-Source: ACHHUZ5YGXAvxeJfZofHQqhHemSuYJRUrF5dA75oZkpfK7uqtzBcrKqf4fZ0R1FfwZPq2zhdo+nmrksQb6SqxEWqbDY=
-X-Received: by 2002:a1f:3f88:0:b0:457:1a8:9ea4 with SMTP id
- m130-20020a1f3f88000000b0045701a89ea4mr3819909vka.3.1684767206566; Mon, 22
- May 2023 07:53:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C65DE13AF8
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 14:59:07 +0000 (UTC)
+Received: from mail11.truemail.it (mail11.truemail.it [IPv6:2001:4b7e:0:8::81])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75220FD;
+	Mon, 22 May 2023 07:58:57 -0700 (PDT)
+Received: from francesco-nb.int.toradex.com (31-10-206-125.static.upc.ch [31.10.206.125])
+	by mail11.truemail.it (Postfix) with ESMTPA id 15EA921332;
+	Mon, 22 May 2023 16:58:51 +0200 (CEST)
+Date: Mon, 22 May 2023 16:58:46 +0200
+From: Francesco Dolcini <francesco@dolcini.it>
+To: Andrew Lunn <andrew@lunn.ch>, Praneeth Bajjuri <praneeth@ti.com>,
+	Geet Modi <geet.modi@ti.com>,
+	"David S. Miller" <davem@davemloft.net>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Grygorii Strashko <grygorii.strashko@ti.com>,
+	Dan Murphy <dmurphy@ti.com>
+Subject: DP83867 ethernet PHY regression
+Message-ID: <ZGuDJos8D7N0J6Z2@francesco-nb.int.toradex.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <00000000000037341d05fc460fa6@google.com>
-In-Reply-To: <00000000000037341d05fc460fa6@google.com>
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date: Mon, 22 May 2023 10:52:49 -0400
-Message-ID: <CAF=yD-JpUc3SLtd7MtULmKOcERf6EJZ0rPc7WmJB2nUNUQRBjA@mail.gmail.com>
-Subject: Re: [syzbot] [net?] KASAN: invalid-access Read in __packet_get_status
-To: syzbot <syzbot+64b0f633159fde08e1f1@syzkaller.appspotmail.com>
-Cc: bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com, 
-	kuba@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023 at 6:51=E2=80=AFAM syzbot
-<syzbot+64b0f633159fde08e1f1@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    2d1bcbc6cd70 Merge tag 'probes-fixes-v6.4-rc1' of git://g=
-i..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D154b8fa128000=
-0
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D51dd28037b2a5=
-5f
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3D64b0f633159fde0=
-8e1f1
-> compiler:       aarch64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, =
-GNU ld (GNU Binutils for Debian) 2.35.2
-> userspace arch: arm64
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D12b6382e280=
-000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D17fd0aee28000=
-0
->
-> Downloadable assets:
-> disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/3=
-84ffdcca292/non_bootable_disk-2d1bcbc6.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/d2e21a43e11e/vmlinu=
-x-2d1bcbc6.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/49e0b029f9af/I=
-mage-2d1bcbc6.gz.xz
->
-> IMPORTANT: if you fix the issue, please add the following tag to the comm=
-it:
-> Reported-by: syzbot+64b0f633159fde08e1f1@syzkaller.appspotmail.com
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> BUG: KASAN: invalid-access in __packet_get_status+0x70/0xe0 net/packet/af=
-_packet.c:438
+Hello all,
+commit da9ef50f545f ("net: phy: dp83867: perform soft reset and retain
+established link") introduces a regression on my TI AM62 based board.
 
-The offending line is the last one in
+I have a working DTS with Linux TI 5.10 downstream kernel branch, while
+testing the DTS with v6.4-rc in preparation of sending it to the mailing
+list I noticed that ethernet is working only on a cold poweron.
 
-"
-static int __packet_get_status(const struct packet_sock *po, void *frame)
-{
-        union tpacket_uhdr h;
+With da9ef50f545f reverted it always works.
 
-        smp_rmb();
+Here the DTS snippet for reference:
 
-        h.raw =3D frame;
-        switch (po->tp_version) {
-        case TPACKET_V1:
-                flush_dcache_page(pgv_to_page(&h.h1->tp_status));
-                return h.h1->tp_status;
-        case TPACKET_V2:
-                flush_dcache_page(pgv_to_page(&h.h2->tp_status));
-"
+&cpsw_port1 {
+	phy-handle = <&cpsw3g_phy0>;
+	phy-mode = "rgmii-rxid";
+};
 
-The reproducer is very small:
+&cpsw3g_mdio {
+	assigned-clocks = <&k3_clks 157 20>;
+	assigned-clock-parents = <&k3_clks 157 22>;
+	assigned-clock-rates = <25000000>;
 
-"
-// socket(PF_PACKET, SOCK_DGRAM, htons(ETH_P_ALL);
-r0 =3D socket$packet(0x11, 0x2, 0x300)
+	cpsw3g_phy0: ethernet-phy@0 {
+		compatible = "ethernet-phy-id2000.a231";
+		reg = <0>;
+		interrupt-parent = <&main_gpio0>;
+		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
+		reset-gpios = <&main_gpio0 17 GPIO_ACTIVE_LOW>;
+		reset-assert-us = <10>;
+		reset-deassert-us = <1000>;
+		ti,fifo-depth = <DP83867_PHYCR_FIFO_DEPTH_4_B_NIB>;
+		ti,rx-internal-delay = <DP83867_RGMIIDCTL_2_00_NS>;
+	};
+};
 
-// setsockopt PACKET_RX_RING with same block and frame sizes and counts
-setsockopt$packet_rx_ring(r0, 0x107, 0x5,
-&(0x7f0000000040)=3D@req3=3D{0x8000, 0x200, 0x80, 0x20000}, 0x1c)
+Any suggestion?
+Francesco
 
-// excessive length, too many bits in prot, MAP_SHARED | MAP_ANONYMOUS
-mmap(&(0x7f0000568000/0x2000)=3Dnil, 0x1000000, 0x20567fff, 0x11, r0, 0x0)
-"
-
-What is odd here is that the program never sets packet version
-explicitly, and the default is TPACKET_V1.
 
