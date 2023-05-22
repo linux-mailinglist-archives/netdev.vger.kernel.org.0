@@ -1,277 +1,366 @@
-Return-Path: <netdev+bounces-4134-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4135-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9AC1E70B363
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 04:55:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C86E170B366
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 04:55:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3E5B8280E16
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 02:55:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7E9E7280E5C
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 02:55:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2316EA49;
-	Mon, 22 May 2023 02:55:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C3A67A4C;
+	Mon, 22 May 2023 02:55:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B253A2C
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 02:55:04 +0000 (UTC)
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348BDA0
-	for <netdev@vger.kernel.org>; Sun, 21 May 2023 19:55:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684724102; x=1716260102;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=i/h2X6n5zmcSGdR4Ip2RdQtAdltRsscE/+niCj+LASg=;
-  b=YoE1jfK8VoO0Z9wkbIsJHFcBanR006PwZTFAloMuUkVwEP+sEaydmvkf
-   ttp4IkT8iQduom2Cu6L8FCPhWzSLSOQCDXIcJjcUuaf4bZnT9TF5B+OIp
-   sq+3bNXGaUGTxzCtUitLCkeUGjJu4Yd15oN9HrVOJEQ1QRnV8U6B+Gyqi
-   XGx/vMzuEi/b6EIluCZP7YH6Ft81Gs6z1iIgDZ6YJ/kCFGiclHld5Ke+/
-   KbMJ9Kn0onywULMk6WI8WfUpTPqXvFQVjRY0kL4ykfHq/dknRr8kcFIs3
-   2hmDSm3Hzz9J/hDHv1yoXtf15U5L4Ug/dea268U2lFic7D+3Gi+OB1wLR
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10717"; a="350320794"
-X-IronPort-AV: E=Sophos;i="6.00,183,1681196400"; 
-   d="scan'208";a="350320794"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2023 19:55:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10717"; a="768344651"
-X-IronPort-AV: E=Sophos;i="6.00,183,1681196400"; 
-   d="scan'208";a="768344651"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga008.fm.intel.com with ESMTP; 21 May 2023 19:55:01 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Sun, 21 May 2023 19:55:00 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Sun, 21 May 2023 19:55:00 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Sun, 21 May 2023 19:55:00 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LzNfZ/izn5Lkps5opE9ZT/KChpIc8dX1T7DS2YytQHJq1/R8tId7dAyz4Rj3R0VwF18O/JNnRebl015wsg/Z/araxvJ9pVHjAalC4RWpjNPD98ER+FPpdxKAsyT0GWf0T+Rhsw5yyDESzS+5sNwZK9HAoohN+kupgC8KQ69f5Eun4r+7zZm3+af67+CRLBPH50rdFf26U+6NE1972Cuz0K6hhq5W4VOUnhK6GnnilHj1D2HPNfx3SIlTPYGffOoaKPn4v2RH8/ul6bYLrkuxmEd3xh9Gouua3vvkiW0fuFOcesdRW0YT8Rq3O49eODxuhypsbLe7uBX3i382UvZFuA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=q284aBZ/Uiklf7MMXzReokfHA4AcGhBD7k+n6UeVbCI=;
- b=Pgp0xnL4621LV44L9O3TpbJ2XiaFNC4uN8BJwx4C7lz/qae7E819oN+Hmyu/dxbFqayNxM0eJ+k353SWdf5DEDxV9v5rO52MqTWEQps/OWSwPJY/sIz3CZfJkiMdCADj7MZzmR5CQDgTv4Td09YCtBIF1DRwlf/QGxV6hDhXgEdcOOL6MNdW91T8sYJicUqqYJRNJ6wGMG0URgsKCEnX2KHbO2w22sIqIgQBbAhZHG46HCtdjYau0bED/S5Sb+gZSrHWur6p0mnCJneTq5FJInKp/XvFlfzzKiZDVNrhk2gbcQSJRTJB9gilJAHIYvj1BZLpQsWqCLoIIcXTtz1XGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com (2603:10b6:510:33::22)
- by DS0PR11MB6328.namprd11.prod.outlook.com (2603:10b6:8:cc::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6411.28; Mon, 22 May 2023 02:54:58 +0000
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::bc17:d050:e04d:f740]) by PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::bc17:d050:e04d:f740%4]) with mapi id 15.20.6411.028; Mon, 22 May 2023
- 02:54:58 +0000
-Message-ID: <50c01916-4da5-82bf-04b1-496be065224d@intel.com>
-Date: Sun, 21 May 2023 19:54:55 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH iwl-next v4 00/15] Introduce Intel IDPF driver
-To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: Emil Tantilov <emil.s.tantilov@intel.com>,
-	<intel-wired-lan@lists.osuosl.org>, <shannon.nelson@amd.com>,
-	<simon.horman@corigine.com>, <leon@kernel.org>, <decot@google.com>,
-	<willemb@google.com>, <jesse.brandeburg@intel.com>,
-	<anthony.l.nguyen@intel.com>, <davem@davemloft.net>, <edumazet@google.com>,
-	<kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>, "Singhai,
- Anjali" <anjali.singhai@intel.com>, "Orr, Michael" <michael.orr@intel.com>
-References: <20230508194326.482-1-emil.s.tantilov@intel.com>
- <20230512023234-mutt-send-email-mst@kernel.org>
- <6a900cd7-470a-3611-c88a-9f901c56c97f@intel.com>
- <20230518130452-mutt-send-email-mst@kernel.org>
- <dba3d773-0834-10fe-01a1-511b4dd263e5@intel.com>
- <20230519013710-mutt-send-email-mst@kernel.org>
- <bb44cf67-3b8c-7cc2-b48e-438cc9af5fdb@intel.com>
- <20230521051826-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-In-Reply-To: <20230521051826-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR01CA0018.prod.exchangelabs.com (2603:10b6:a02:80::31)
- To PH0PR11MB4886.namprd11.prod.outlook.com (2603:10b6:510:33::22)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3EE2A2C
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 02:55:24 +0000 (UTC)
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A00A0;
+	Sun, 21 May 2023 19:55:22 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id 3f1490d57ef6-bab8f66d3a2so3613614276.3;
+        Sun, 21 May 2023 19:55:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684724122; x=1687316122;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3EByqJK3fZFvbzEbYq4Gg3GsKIQs2/LZcmxocyBfm1M=;
+        b=Hkhc3HRvoYOAWEVUYll8PBl5bCKP68JgnaMlGbsDE8kg++B7VjTKp6nuiTPHiw+NML
+         0TKBqcnhkbF8Kt90Rb37BLPMQ6musDH0odrq3SkI4dcRUJrFDyVOfnHYJNessycRessL
+         Ut7MFhSxqogMQavuYvtqs/SiHWxCDI0B/9HdPozIcjeBGgsAx/hvEAASg3HS971oiwEk
+         1+Tgj1rNa6RfOh74ZPZLvRrEM1KExeV8KzkOnzYMpquwn6m1Lu2X4vhNhTlISPllvRYf
+         Yn+IgI7WBddDUNsQsSxQdnMXY+2kZrz1rFXgMMYM2nKpf5pgXAlKQ72/lWpWtPyc3IE+
+         5/EA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684724122; x=1687316122;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3EByqJK3fZFvbzEbYq4Gg3GsKIQs2/LZcmxocyBfm1M=;
+        b=IM48WEFGV8qelGj0vxdizM/E03ERc37SPJlqX+DxrIna2RJ50VAjkX685pLfQ5w7Na
+         IBTROwuC2KMY7TIoUSSsjkIjWYDd2bd9wWxeYECxeG7AtMF1C9WAKLz8V42m6+Qia8TZ
+         iAMAUpO8JpEbWIwc4yPgoDgerft+qvsAtwTvDwKOljxug1Bf/ZS6nXguruzyR+c0F2mB
+         /x8IPexJWsjQe2d/XIMBF43jtxFUWW4fc1M0BdMiUPqXkvNdXLzENLyeP9IdGKVUqAMQ
+         Pd79Kl7WdMn0e8eZeGkfc/KziaMFQ0eL8AtPf9VXvunKT9eJ0/o+O+Yk+j5alfn0CI7h
+         hgKQ==
+X-Gm-Message-State: AC+VfDyHcPyVPGYX7/bz+VAocBm0FLOGtdgVM2+HSr9xJFtems+m+PBl
+	0pxq/PP8/WrT/nriXBJGd7GroUfIPBod9QdURQuresoaWtcm7mAQ
+X-Google-Smtp-Source: ACHHUZ4UzbXkCAOOAkEwwHp2luGgipD7y+kJJYReGvIO6TXtEZKqEhNHXf4UUtxXzPGvEPDUwa9nmv/WIACjmP06reI=
+X-Received: by 2002:a81:54d4:0:b0:55a:5b19:ca9 with SMTP id
+ i203-20020a8154d4000000b0055a5b190ca9mr9994933ywb.36.1684724121787; Sun, 21
+ May 2023 19:55:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB4886:EE_|DS0PR11MB6328:EE_
-X-MS-Office365-Filtering-Correlation-Id: 490c43b6-9cd7-44d9-db5f-08db5a6fedd0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AKOpyNIR0XIM9plLLd3TjV9yylNzJzu6Ad6kKplt6CErBASIN7pjrq3Z44YfQpd6MwCvzUyVoa02BM9aPWmLabmFpZk+RQNBLkrkh+YjVSmfRdNVlRHJkGwsLyYnYc/YPxOmtQZ/s6M2aZUKRuNvp+xQd55X3Gq0FcKYo9Ap0NA8aDlZb/H85kgfGOyrx6fcscf/K4YrasdVfCWish32R91cr+NlNcZMjkuK17vhr60zCuNMYePXyuOknpZUOYI/A6VWgiGjq5i0Sywswsc9BpqJuZodAla2mQFZvgxHMts2ZGmgo0up41jQwUXYh5uBWBCrbzgN05nkf+sZ8euHlHeCJv5uj2nVlsJSacoCQ+VaaHJ1O2KJ7i+bFem8oPuztVM9xJmZn92/u2wxInl9DbFofx97HJEFXZ7yC8wYoOn0XllasJGKTmE+XoOSDHgqdkVqBzHPkzF9vXeADEnqNx8zr1FlxvGC+e+5MJ4ZH5nIF7OQOHpsp0rvHut+LQIe2JuujamEXyjuv74QoREwIujcwxRhWLB/moQwniWyJtG7We2tqPSpfXuhdS3BZb9goqR3/KKZnZW9usjPxzTA3PYc6i2jqZ7Ls797XpFY9tb2rbrIGtx4LxtCQ+jEzVeea+WRhRyA3ATIFWnTBW4kKHob1oiHAlU3Wy1LuFe1bio=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4886.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(396003)(346002)(376002)(366004)(136003)(451199021)(7416002)(5660300002)(8936002)(8676002)(83380400001)(2906002)(186003)(36756003)(2616005)(82960400001)(38100700002)(31696002)(86362001)(107886003)(6512007)(6506007)(26005)(53546011)(966005)(54906003)(31686004)(316002)(6666004)(478600001)(66556008)(66476007)(6916009)(4326008)(66946007)(6486002)(41300700001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MFd6NzVDakRvREVOL1V6OWVveVJwZXVMSlY2V3Jra0ZwVm9JWmt6Z2FWUHox?=
- =?utf-8?B?U1c4eGZJSy9xZW1MY3EvNEdzd1BlVjFPSnJUVVF2TnZBbE93T3JnQzR6bVd6?=
- =?utf-8?B?dWpkcGxNeHBXaktUczJzQjdVMk1UcktmUWkrcTRVMy9mWHJiRHFlMGxRaVdW?=
- =?utf-8?B?SitETy9IWGR2d1N4UWdzRitEQThBZGxKUThNcWlUQW9zK091dnB2eTh0QldC?=
- =?utf-8?B?ZCtyRjc5cDF6VjhXTndweGhseVRqMVJPVXFVcFplRm4yTUFsWmlDUUtQVUhK?=
- =?utf-8?B?T3NCbXRXajhUbGlNTDJIK0dDZ2dBOTNlMGJ5VlZJNUs5ZFBhRVlkTGZDc0pT?=
- =?utf-8?B?OGExOTU2NXlBQkxIZWpqUlExUFhFNStkNURIemp5ZVFVRUtjNmUwLzlaQVpT?=
- =?utf-8?B?Rkc5dmpBbU5NUi9OWHBIZzZnWC80VnBIbVlrdnFXUTdqZWhMenJ3eTAyamMr?=
- =?utf-8?B?MldsQ3AzeXo5emhTbm00MyszSm9Kd0QwQjBzRDRzMU9VS3BSaWEzQ1JYUTBN?=
- =?utf-8?B?c1UvUHBJTlNxdWJOVG0yR1htMWhMeWVhYm8rKzlCNmdVVUF5aWJOSFVFcWs1?=
- =?utf-8?B?aUduc2JOSHo0a0ZMdXFrMjI2Vi8relFNUWR2cU1IcGkrbzBGendvZVVTQUdL?=
- =?utf-8?B?U2lTbnZDdWVHSm4ybGE5YU4rWFMycHB0T3h3emZKUW5JUTYrOWsvekdSUjlF?=
- =?utf-8?B?T05ZWlQwd2RQcVdmb2pvT25MVTBrMmYwM3dkeGVrL0w5WUlmWVg1SXA2eXlE?=
- =?utf-8?B?dFdBRkdqN2kya3R4OGpiN1BZOVhCRFFlbHF1ZFRFQ2J4Vi9sRWdtUCt3UlR6?=
- =?utf-8?B?aXRRYldUUzYwRlkwNHVKaHhkN2tLYmFvY0U4dlZ0b1FBR3diS1Z1Z3pITmxu?=
- =?utf-8?B?Zm5kRmlTMjhWRGJYVmRRdlhBODMwMDhXNEpCdGcwdHZEUExvZXFUN1lEMGMy?=
- =?utf-8?B?R0QrWHBUTFhyMDRSL2NjZ3FMWnRVcjlyb0t6TE45ZlJOK3pQbnpkQkQ3R2Fr?=
- =?utf-8?B?ZnNOY1pMSXBrZTg0Z2pUL0RMMzRLRWVMN29YOEJ0Y0tvSzF5QnQxTXk1Q1cv?=
- =?utf-8?B?MVJtN3FJeUQyT3VFUUsxTW5FS01SSlpFZlZ0bFkyajJpcHJsQWJhZjlmSm9q?=
- =?utf-8?B?RlprYnBDOWo5K2dmTXUwNm1mKzQydkdFVHZKOGtoQmpvU2FXZ1NLSVVySWdG?=
- =?utf-8?B?MUdkcDhCaTRZdEhRVC96cTNBR3BNSWZGOEFBSHdPL2lXWnJVY3B5ZE9ncVgr?=
- =?utf-8?B?NWt6QTVWbnh6Z3BZdnJqbFhQTGhYUnFiL0VzaVFjN3UwaU5tQU8yVDRlVVRr?=
- =?utf-8?B?bHRpQm03SUlaNVJvdHZLN1Vncm1FYm1kbVhLZlZxK0hWWDY4WDV5elZlbVhx?=
- =?utf-8?B?QitOWVFpN0E2WmpYS1puQUU0VVpmQTdaSk5DbnpuQkZLdktranEzZStEbEZv?=
- =?utf-8?B?UkhTcmZIUTZkbk10UXFLWUNjdDQ5eGliUzFkOGN2eWRUMnBzNGx4ZTMvbjhr?=
- =?utf-8?B?SVFyd05Ra2JEQ3JzckVhUkZQaC91UWJveW5GTzNJb1ZqNnR0ei95cXpaTDB3?=
- =?utf-8?B?OHlVZm1pWGlJMWFsYWR3a2ltQ3k1L09IQ0J3cXN1TzdnT2tuL2JqVjh6Vmda?=
- =?utf-8?B?cnlTaHdCRXhTTmxadlRUallZWWF0L2RSa2d1MVVwaFBaaFdMclk4SnRYcDA5?=
- =?utf-8?B?NC9XSGo3d0trbGpFN0RpaCtXZGVwcE8yZXczejNqTm5pV3hXQlZBWmJlUSsw?=
- =?utf-8?B?TklocVlTdFUxU2FES1QvcUJ1VHhVdVZFTkZLd2xUdldaVTdWRTV3dmRRajdh?=
- =?utf-8?B?YXBST2o3d0h0cTVZdmVhNUZ0dUg1V0dDM1BJbllYc21SYlV4a0VkZzVFaEg5?=
- =?utf-8?B?eWsvcDVJUnZUeEgzYWxIdVVsbFRXMUJaMzZxd1lHYUdWZ0lhekp2V2tKOHg4?=
- =?utf-8?B?dVhqSkdYSDh0Y3dXZkRTVDZIYVFQTjd2R2FVWmVXTUNuZ0hMci9lalQ1OW96?=
- =?utf-8?B?eFZKbDZPWk1XSTNHTGluTGhaMFhhNEpON3dhd2kzMUg0VHJJUGVIRTBMUXBN?=
- =?utf-8?B?VG56UVhhcDR6ODIxS2R0UkNFOHYvd1FZUi9EUHBpUGVpOTJBSFJpejFrWmFx?=
- =?utf-8?B?Nmd3bGYyd0hWVktoUDZnVm5LRTVQak9hYVFaTmhYSDRaZVk2NkVOOHY1emEr?=
- =?utf-8?B?Nnc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 490c43b6-9cd7-44d9-db5f-08db5a6fedd0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4886.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2023 02:54:58.4051
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0QVsAzOaCr6YY0wa49YB991e74Qw9GP9aG9PLrTh4SLDjVE3ct9AN5LG5vRjM3B9l3FpNf8ft9nRPgO9TsWAlxSyus4OA54lA+gAB4Iqh5M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6328
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+References: <20230517124201.441634-1-imagedong@tencent.com>
+ <20230517124201.441634-4-imagedong@tencent.com> <CANn89iKLf=V664AsUYC52h_q-xjEq9xC3KqTq8q+t262T91qVQ@mail.gmail.com>
+ <CADxym3a0gmzmD3Vwu_shoJnAHm-xjD5tJRuKwTvAXnVk_H55AA@mail.gmail.com>
+ <CADVnQynZ67511+cKF=hyiaLx5-fqPGGmpyJ-5Lk6ge-ivmAf-w@mail.gmail.com>
+ <CADxym3ZiyYK7Vyz05qLv8jOPmNZXXepCsTbZxdkhSQxRx0cdSA@mail.gmail.com>
+ <CADVnQy=JQkVGRsbL0u=-oZSpdaFBpz907yX24p3uUu2pMhUjGg@mail.gmail.com>
+ <CADxym3awe-c29C-e1Y+efepLdpFWrG520ezJO1EjJ5C3arq6Eg@mail.gmail.com> <CADVnQyk2y68HKScad4W2jOy9uqe7TTCyY-StwdLWFPJhXU+CUA@mail.gmail.com>
+In-Reply-To: <CADVnQyk2y68HKScad4W2jOy9uqe7TTCyY-StwdLWFPJhXU+CUA@mail.gmail.com>
+From: Menglong Dong <menglong8.dong@gmail.com>
+Date: Mon, 22 May 2023 10:55:10 +0800
+Message-ID: <CADxym3bbGkOv4dwATp6wT0KA4ZPiPGfxvqvYtEzF45GJDe=RXQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/3] net: tcp: handle window shrink properly
+To: Neal Cardwell <ncardwell@google.com>
+Cc: Eric Dumazet <edumazet@google.com>, kuba@kernel.org, davem@davemloft.net, 
+	pabeni@redhat.com, dsahern@kernel.org, netdev@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Menglong Dong <imagedong@tencent.com>, 
+	Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Sat, May 20, 2023 at 10:28=E2=80=AFPM Neal Cardwell <ncardwell@google.co=
+m> wrote:
+>
+> On Sat, May 20, 2023 at 5:08=E2=80=AFAM Menglong Dong <menglong8.dong@gma=
+il.com> wrote:
+> >
+> > On Fri, May 19, 2023 at 12:03=E2=80=AFAM Neal Cardwell <ncardwell@googl=
+e.com> wrote:
+> > >
+> > > On Thu, May 18, 2023 at 10:12=E2=80=AFAM Menglong Dong <menglong8.don=
+g@gmail.com> wrote:
+> > > >
+> > > > On Thu, May 18, 2023 at 9:40=E2=80=AFPM Neal Cardwell <ncardwell@go=
+ogle.com> wrote:
+> > > > >
+> > > > > On Wed, May 17, 2023 at 10:35=E2=80=AFPM Menglong Dong <menglong8=
+.dong@gmail.com> wrote:
+> > > > > >
+> > > > > > On Wed, May 17, 2023 at 10:47=E2=80=AFPM Eric Dumazet <edumazet=
+@google.com> wrote:
+> > > > > > >
+> > > > > > > On Wed, May 17, 2023 at 2:42=E2=80=AFPM <menglong8.dong@gmail=
+.com> wrote:
+> > > > > > > >
+> > > > > > > > From: Menglong Dong <imagedong@tencent.com>
+> > > > > > > >
+> > > > > > > > Window shrink is not allowed and also not handled for now, =
+but it's
+> > > > > > > > needed in some case.
+> > > > > > > >
+> > > > > > > > In the origin logic, 0 probe is triggered only when there i=
+s no any
+> > > > > > > > data in the retrans queue and the receive window can't hold=
+ the data
+> > > > > > > > of the 1th packet in the send queue.
+> > > > > > > >
+> > > > > > > > Now, let's change it and trigger the 0 probe in such cases:
+> > > > > > > >
+> > > > > > > > - if the retrans queue has data and the 1th packet in it is=
+ not within
+> > > > > > > > the receive window
+> > > > > > > > - no data in the retrans queue and the 1th packet in the se=
+nd queue is
+> > > > > > > > out of the end of the receive window
+> > > > > > >
+> > > > > > > Sorry, I do not understand.
+> > > > > > >
+> > > > > > > Please provide packetdrill tests for new behavior like that.
+> > > > > > >
+> > > > > >
+> > > > > > Yes. The problem can be reproduced easily.
+> > > > > >
+> > > > > > 1. choose a server machine, decrease it's tcp_mem with:
+> > > > > >     echo '1024 1500 2048' > /proc/sys/net/ipv4/tcp_mem
+> > > > > > 2. call listen() and accept() on a port, such as 8888. We call
+> > > > > >     accept() looply and without call recv() to make the data st=
+ay
+> > > > > >     in the receive queue.
+> > > > > > 3. choose a client machine, and create 100 TCP connection
+> > > > > >     to the 8888 port of the server. Then, every connection send=
+s
+> > > > > >     data about 1M.
+> > > > > > 4. we can see that some of the connection enter the 0-probe
+> > > > > >     state, but some of them keep retrans again and again. As
+> > > > > >     the server is up to the tcp_mem[2] and skb is dropped befor=
+e
+> > > > > >     the recv_buf full and the connection enter 0-probe state.
+> > > > > >     Finially, some of these connection will timeout and break.
+> > > > > >
+> > > > > > With this series, all the 100 connections will enter 0-probe
+> > > > > > status and connection break won't happen. And the data
+> > > > > > trans will recover if we increase tcp_mem or call 'recv()'
+> > > > > > on the sockets in the server.
+> > > > > >
+> > > > > > > Also, such fundamental change would need IETF discussion firs=
+t.
+> > > > > > > We do not want linux to cause network collapses just because =
+billions
+> > > > > > > of devices send more zero probes.
+> > > > > >
+> > > > > > I think it maybe a good idea to make the connection enter
+> > > > > > 0-probe, rather than drop the skb silently. What 0-probe
+> > > > > > meaning is to wait for space available when the buffer of the
+> > > > > > receive queue is full. And maybe we can also use 0-probe
+> > > > > > when the "buffer" of "TCP protocol" (which means tcp_mem)
+> > > > > > is full?
+> > > > > >
+> > > > > > Am I right?
+> > > > > >
+> > > > > > Thanks!
+> > > > > > Menglong Dong
+> > > > >
+> > > > > Thanks for describing the scenario in more detail. (Some kind of
+> > > > > packetdrill script or other program to reproduce this issue would=
+ be
+> > > > > nice, too, as Eric noted.)
+> > > > >
+> > > > > You mention in step (4.) above that some of the connections keep
+> > > > > retransmitting again and again. Are those connections receiving a=
+ny
+> > > > > ACKs in response to their retransmissions? Perhaps they are recei=
+ving
+> > > > > dupacks?
+> > > >
+> > > > Actually, these packets are dropped without any reply, even dupacks=
+.
+> > > > skb will be dropped directly when tcp_try_rmem_schedule()
+> > > > fails in tcp_data_queue(). That's reasonable, as it's
+> > > > useless to reply a ack to the sender, which will cause the sender
+> > > > fast retrans the packet, because we are out of memory now, and
+> > > > retrans can't solve the problem.
+> > >
+> > > I'm not sure I see the problem. If retransmits can't solve the
+> > > problem, then why are you proposing that data senders keep
+> > > retransmitting forever (via 0-window-probes) in this kind of scenario=
+?
+> > >
+> >
+> > Because the connection will break if the count of
+> > retransmits up to tcp_retires2, but probe-0 can keep
+> > for a long time.
+>
+> I see. So it sounds like you agree that retransmits can solve the
+> problem, as long as the retransmits are using the zero-window probe
+> state machine (ICSK_TIME_PROBE0, tcp_probe_timer()), which continues
+> as long as the receiver is sending ACKs. And it sounds like when you
+> said "retrans can't solve the problem" you didn't literally mean that
+> retransmits can't solve the problem, but rather you meant that the RTO
+> state machine, specifically (ICSK_TIME_RETRANS,
+> tcp_retransmit_timer(), etc) can't solve the problem. I agree with
+> that assessment that in this scenario tcp_probe_timer() seems like a
+> solution but tcp_retransmit_timer() does not.
+>
 
+Yes, that is indeed what I want to express.
 
-On 5/21/2023 2:21 AM, Michael S. Tsirkin wrote:
-> On Fri, May 19, 2023 at 10:36:00AM -0700, Samudrala, Sridhar wrote:
->>
->>
->> On 5/18/2023 10:49 PM, Michael S. Tsirkin wrote:
->>> On Thu, May 18, 2023 at 04:26:24PM -0700, Samudrala, Sridhar wrote:
->>>>
->>>>
->>>> On 5/18/2023 10:10 AM, Michael S. Tsirkin wrote:
->>>>> On Thu, May 18, 2023 at 09:19:31AM -0700, Samudrala, Sridhar wrote:
->>>>>>
->>>>>>
->>>>>> On 5/11/2023 11:34 PM, Michael S. Tsirkin wrote:
->>>>>>> On Mon, May 08, 2023 at 12:43:11PM -0700, Emil Tantilov wrote:
->>>>>>>> This patch series introduces the Intel Infrastructure Data Path Function
->>>>>>>> (IDPF) driver. It is used for both physical and virtual functions. Except
->>>>>>>> for some of the device operations the rest of the functionality is the
->>>>>>>> same for both PF and VF. IDPF uses virtchnl version2 opcodes and
->>>>>>>> structures defined in the virtchnl2 header file which helps the driver
->>>>>>>> to learn the capabilities and register offsets from the device
->>>>>>>> Control Plane (CP) instead of assuming the default values.
->>>>>>>
->>>>>>> So, is this for merge in the next cycle?  Should this be an RFC rather?
->>>>>>> It seems unlikely that the IDPF specification will be finalized by that
->>>>>>> time - how are you going to handle any specification changes?
->>>>>>
->>>>>> Yes. we would like this driver to be merged in the next cycle(6.5).
->>>>>> Based on the community feedback on v1 version of the driver, we removed all
->>>>>> references to OASIS standard and at this time this is an intel vendor
->>>>>> driver.
->>>>>>
->>>>>> Links to v1 and v2 discussion threads
->>>>>> https://lore.kernel.org/netdev/20230329140404.1647925-1-pavan.kumar.linga@intel.com/
->>>>>> https://lore.kernel.org/netdev/20230411011354.2619359-1-pavan.kumar.linga@intel.com/
->>>>>>
->>>>>> The v1->v2 change log reflects this update.
->>>>>> v1 --> v2: link [1]
->>>>>>     * removed the OASIS reference in the commit message to make it clear
->>>>>>       that this is an Intel vendor specific driver
->>>>>
->>>>> Yes this makes sense.
->>>>>
->>>>>
->>>>>> Any IDPF specification updates would be handled as part of the changes that
->>>>>> would be required to make this a common standards driver.
->>>>>
->>>>>
->>>>> So my question is, would it make sense to update Kconfig and module name
->>>>> to be "ipu" or if you prefer "intel-idpf" to make it clear this is
->>>>> currently an Intel vendor specific driver?  And then when you make it a
->>>>> common standards driver rename it to idpf?  The point being to help make
->>>>> sure users are not confused about whether they got a driver with
->>>>> or without IDPF updates. It's not critical I guess but seems like a good
->>>>> idea. WDYT?
->>>>
->>>> It would be more disruptive to change the name of the driver. We can update
->>>> the pci device table, module description and possibly driver version when we
->>>> are ready to make this a standard driver.
->>>> So we would prefer not changing the driver name.
->>>
->>> Kconfig entry and description too?
->>>
->>
->> The current Kconfig entry has Intel references.
->>
->> +config IDPF
->> +	tristate "Intel(R) Infrastructure Data Path Function Support"
->> +	depends on PCI_MSI
->> +	select DIMLIB
->> +	help
->> +	  This driver supports Intel(R) Infrastructure Processing Unit (IPU)
->> +	  devices.
->>
->> It can be updated with Intel references removed when the spec becomes
->> standard and meets the community requirements.
-> 
-> Right, name says IDPF support help says IPU support.
-> Also config does not match name.
-> 
-> Do you want:
-> 
-> 
-> config INTEL_IDPF
-> 	tristate "Intel(R) Infrastructure Data Path Function Support"
-> 
-> and should help say
-> 
-> 	  This driver supports Intel(R) Infrastructure Data Path Function
-> 	  devices.
-> ?
+> > > A single dupack without SACK blocks will not cause the sender to fast
+> > > retransmit. (Only 3 dupacks would trigger fast retransmit.)
+> > >
+> > > Three or more dupacks without SACK blocks will cause the sender to
+> > > fast retransmit the segment above SND.UNA once if the sender doesn't
+> > > have SACK support. But in this case AFAICT fast-retransmitting once i=
+s
+> > > a fine strategy, since the sender should keep retrying transmits (wit=
+h
+> > > backoff) until the receiver potentially has memory available to
+> > > receive the packet.
+> > >
+> > > >
+> > > > > If so, then perhaps we could solve this problem without
+> > > > > depending on a violation of the TCP spec (which says the receive
+> > > > > window should not be retracted) in the following way: when a data
+> > > > > sender suffers a retransmission timeout, and retransmits the firs=
+t
+> > > > > unacknowledged segment, and receives a dupack for SND.UNA instead=
+ of
+> > > > > an ACK covering the RTO-retransmitted segment, then the data send=
+er
+> > > > > should estimate that the receiver doesn't have enough memory to b=
+uffer
+> > > > > the retransmitted packet. In that case, the data sender should en=
+ter
+> > > > > the 0-probe state and repeatedly set the ICSK_TIME_PROBE0 timer t=
+o
+> > > > > call tcp_probe_timer().
+> > > > >
+> > > > > Basically we could try to enhance the sender-side logic to try to
+> > > > > distinguish between two kinds of problems:
+> > > > >
+> > > > > (a) Repeated data packet loss caused by congestion, routing probl=
+ems,
+> > > > > or connectivity problems. In this case, the data sender uses
+> > > > > ICSK_TIME_RETRANS and tcp_retransmit_timer(), and backs off and o=
+nly
+> > > > > retries sysctl_tcp_retries2 times before timing out the connectio=
+n
+> > > > >
+> > > > > (b) A receiver that is repeatedly sending dupacks but not ACKing
+> > > > > retransmitted data because it doesn't have any memory. In this ca=
+se,
+> > > > > the data sender uses ICSK_TIME_PROBE0 and tcp_probe_timer(), and =
+backs
+> > > > > off but keeps retrying as long as the data sender receives ACKs.
+> > > > >
+> > > >
+> > > > I'm not sure if this is an ideal method, as it may be not rigorous
+> > > > to conclude that the receiver is oom with dupacks. A packet can
+> > > > loss can also cause multi dupacks.
+> > >
+> > > When a data sender suffers an RTO and retransmits a single data
+> > > packet, it would be very rare for the data sender to receive multiple
+> > > pure dupacks without SACKs. This would only happen in the rare case
+> > > where (a) the connection did not have SACK enabled, and (b) there was
+> > > a hole in the received sequence space and there were still packets in
+> > > flight when the (spurioius) RTO fired.
+> > >
+> > > But if we want to be paranoid, then this new response could be writte=
+n
+> > > to only trigger if SACK is enabled (the vast, vast majority of cases)=
+.
+> > > If SACK is enabled, and an RTO of a data packet starting at sequence
+> > > S1 results in the receiver sending only a dupack for S1 without SACK
+> > > blocks, then this clearly shows the issue is not packet loss but
+> > > suggests a receiver unable to buffer the given data packet, AFAICT.
+> > >
+> >
+> > Yeah, you are right on this point, multi pure dupacks can
+> > mean out of memory of the receiver. But we still need to
+> > know if the receiver recovers from OOM. Without window
+> > shrink, the window in the ack of zero-window probe packet
+> > is not zero on OOM.
+>
+> But do we need a protocol-violating zero-window in this case? Why not
+> use my approach suggested above: conveying the OOM condition by
+> sending an ACK but not ACKing the retransmitted packet?
+>
 
-IDPF Kconfig entry is listed only when CONFIG_NET_VENDOR_INTEL is 
-selected. So I think adding INTEL_ prefix to the config entry under 
-Intel devices sounds redundant.
+I agree with you about the approach you mentioned
+about conveying the OOM condition. But that approach
+can't convey the recovery from OOM, can it?
 
-But we can definitely update the help section as you suggested to match 
-with the name.
+Let's see the process. With 3 pure dupack for SND.UNA,
+we deem the OOM of the receiver and make the sender
+enter zero-window probe state.
+
+The sender will keep sending probe0 packets, and the
+receiver will reply an ack. However, as we don't
+shrink the window actually, the window in the ack is
+not zero on OOM, so we can't know if the receiver has
+recovered from OOM and retransmit the data in retransmit
+queue.
+
+BTW, the probe0 will send the last byte that was already
+acked, so the ack of the probe0 will be a pure dupack.
+
+Did I miss something?
+
+BTW, a previous patch has explained the need to
+support window shrink, which should satisfy the RFC
+of TCP protocol:
+
+https://lore.kernel.org/netdev/20230308053353.675086-1-mfreemon@cloudflare.=
+com/
+
+Thanks!
+Menglong Dong
+
+> Thanks,
+> neal
+>
+> > Hi, Eric and kuba, do you have any comments on this
+> > case?
+> >
+> > Thanks!
+> > Menglong Dong
+> >
+> > > thanks,
+> > > neal
+> > >
+> > > >
+> > > > Thanks!
+> > > > Menglong Dong
+> > > >
+> > > > > AFAICT that would be another way to reach the happy state you men=
+tion:
+> > > > > "all the 100 connections will enter 0-probe status and connection
+> > > > > break won't happen", and we could reach that state without violat=
+ing
+> > > > > the TCP protocol spec and without requiring changes on the receiv=
+er
+> > > > > side (so that this fix could help in scenarios where the
+> > > > > memory-constrained receiver is an older stack without special new
+> > > > > behavior).
+> > > > >
+> > > > > Eric, Yuchung, Menglong: do you think something like that would w=
+ork?
+> > > > >
+> > > > > neal
 
