@@ -1,124 +1,157 @@
-Return-Path: <netdev+bounces-4374-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4375-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 116A670C40C
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 19:12:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7B18D70C413
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 19:14:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B3FD9281233
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 17:12:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 36744280EC6
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 17:14:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6C201640F;
-	Mon, 22 May 2023 17:12:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8630516414;
+	Mon, 22 May 2023 17:14:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D746A16404
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 17:12:20 +0000 (UTC)
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A65EE9
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 10:12:19 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id 41be03b00d2f7-52caed90d17so4409770a12.0
-        for <netdev@vger.kernel.org>; Mon, 22 May 2023 10:12:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684775538; x=1687367538;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Kzg7DZdO+Fx5NTiphKDonLYUjRG7pPKdcN8BEiK0Q5Q=;
-        b=liZNMPYz6Ln/UbX2RbKFz0oKNJCytFelVboUK2d9pq1Y84i8RFQpYQjlP1tpDjbwtG
-         h+PuxWrI8JmIt9bLqHcjaXSoC01beyn56d7PYV6kfkcZXX+dNaDxc5MqhKqplkaFc3Ky
-         Mm7GY4hQNOIhEo5YH9cviKJyc1FPDurYBFeVDxop1BiOGzacOpknf3S16eYWA5fiXBxB
-         ee84pIPucMWp1WvXAXGE6I11PVbjAytgbV8Sq7gmLB7KQSWatcM/fJutZwgkaEEdZmPg
-         0H8v5syw/rOVZOfK3XL5/jVXjEaM/2GcW5olGc3dDHiw6lU0FhKyNpQfTACCPr5K1yDn
-         12aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684775538; x=1687367538;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Kzg7DZdO+Fx5NTiphKDonLYUjRG7pPKdcN8BEiK0Q5Q=;
-        b=ckqHiAuXAbWhfL7hZLK2jRw1NJBf5u39FZG4bjVeOI9UiVi/Pf/KIQIvvx/XAP9gs4
-         REF7AapMhnuH07eA0GQ+7ClMp6ICnPKUpceRiD2yovfeaPhasXBOybfU97m6Azkb+R2S
-         K5el9DdL0jj1ZCuGJ2oKOq/VZYBufkmj22HNGuNeovPkefn5e59w/Q1zx+L0WCYc8rPn
-         bj/qcA1shl26we4DR1RVprUGZ7So+Bnb9hnbbMGi0RFyzZk9/+pobXfrkIYkfsFWDU7d
-         wWGH7pBgN+hVjMGwOBMbO39DDF6ohzyxYv+F3JpxKwXbGAnhw0oeVm+OBal+I93DHD2B
-         6/YA==
-X-Gm-Message-State: AC+VfDyelQmY6F/p+xI88K3Y4z5eIp2WLy/g1XY4RBdtrNjheB9we1uL
-	XUSw6KJ/Bo+0XEbxYpg2sBrAcZjaTheeIodoZC/PiQ==
-X-Google-Smtp-Source: ACHHUZ42u+20u8Yh+qsy7h0iK2LWRoxiLcZjWSqhvAWKesEjBSGBFLI5AiStgbrXNeg38Rsxmoklpxsg6/IlOq1/Yxg=
-X-Received: by 2002:a17:90a:70cf:b0:253:266a:3b00 with SMTP id
- a15-20020a17090a70cf00b00253266a3b00mr10614041pjm.37.1684775538452; Mon, 22
- May 2023 10:12:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B0F979D2
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 17:14:01 +0000 (UTC)
+Received: from smtp.smtpout.orange.fr (smtp-28.smtpout.orange.fr [80.12.242.28])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB83B120
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 10:13:53 -0700 (PDT)
+Received: from [192.168.1.18] ([86.243.2.178])
+	by smtp.orange.fr with ESMTPA
+	id 196NqhcLAr2Gz196NqoYOC; Mon, 22 May 2023 19:13:46 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+	s=t20230301; t=1684775626;
+	bh=cGy6oFFLYzBpOT3LT4xtm7V7n2XyhA3gSVOtW4fFuNU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=odtf7rUDDm/H+U5gEcs4tUKVR+fXrqEezUjRHAHR+9tXsyX4+B6PwwMyFzcSbxn76
+	 PfYzmPQCUKIoeqgkRRanLywuInoIa2uNXZmaDcEB2qTAHhzeheynow7cOgj9k3iU4G
+	 5c3R3LsjGvpUUiha1zgN3lBNVko4ff1V7gORdkQRCmp90CjWb3+egEblELsFuaMrmy
+	 6Q60hFKJ2lZiGpwkIIeEjw43wRq7o3XWGfuiAW4Y4+cxvBl44dxDrBQcaXc1UrabW6
+	 tmZh9RRfWtEaj+Aa1eQQVfHl/egA1koS3Fj1DWSc1E2Sdqlox+ATU5BtL3arBUvAH2
+	 ZbQQV3jiN03uA==
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 22 May 2023 19:13:46 +0200
+X-ME-IP: 86.243.2.178
+Message-ID: <8dbb4087-db01-fbbf-4e96-a5b0e170249a@wanadoo.fr>
+Date: Mon, 22 May 2023 19:13:43 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230517113351.308771-1-aleksandr.mikhalitsyn@canonical.com>
- <20230517113351.308771-3-aleksandr.mikhalitsyn@canonical.com> <20230519-zielbereich-inkompatibel-79e1a910e3f9@brauner>
-In-Reply-To: <20230519-zielbereich-inkompatibel-79e1a910e3f9@brauner>
-From: Stanislav Fomichev <sdf@google.com>
-Date: Mon, 22 May 2023 10:12:07 -0700
-Message-ID: <CAKH8qBsYWzh0ZYOdYcYYpMeB-2hhOjLzh7EBXbQpGpC3O=R3OQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 2/3] net: core: add getsockopt SO_PEERPIDFD
-To: Christian Brauner <brauner@kernel.org>
-Cc: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>, davem@davemloft.net, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Leon Romanovsky <leon@kernel.org>, David Ahern <dsahern@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Kees Cook <keescook@chromium.org>, Kuniyuki Iwashima <kuniyu@amazon.com>, 
-	Lennart Poettering <mzxreary@0pointer.de>, Luca Boccassi <bluca@debian.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org, linux-arch@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net] forcedeth: Fix an error handling path in nv_probe()
+Content-Language: fr, en-US
+To: Simon Horman <simon.horman@corigine.com>,
+ Dan Carpenter <dan.carpenter@linaro.org>
+Cc: Rain River <rain.1986.08.12@gmail.com>, Zhu Yanjun
+ <zyjzyj2000@gmail.com>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Ayaz Abdulla <aabdulla@nvidia.com>,
+ linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+ netdev@vger.kernel.org
+References: <355e9a7d351b32ad897251b6f81b5886fcdc6766.1684571393.git.christophe.jaillet@wanadoo.fr>
+ <ZGtAIJZ3QzkBJgHI@corigine.com>
+ <f4296d23-83ce-4147-894a-3e5640cdf87c@kili.mountain>
+ <ZGtNwCc8ogSlwtYV@corigine.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <ZGtNwCc8ogSlwtYV@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 19, 2023 at 4:03=E2=80=AFAM Christian Brauner <brauner@kernel.o=
-rg> wrote:
->
-> On Wed, May 17, 2023 at 01:33:50PM +0200, Alexander Mikhalitsyn wrote:
-> > Add SO_PEERPIDFD which allows to get pidfd of peer socket holder pidfd.
-> > This thing is direct analog of SO_PEERCRED which allows to get plain PI=
-D.
-> >
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Paolo Abeni <pabeni@redhat.com>
-> > Cc: Leon Romanovsky <leon@kernel.org>
-> > Cc: David Ahern <dsahern@kernel.org>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Christian Brauner <brauner@kernel.org>
-> > Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > Cc: Lennart Poettering <mzxreary@0pointer.de>
-> > Cc: Luca Boccassi <bluca@debian.org>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Stanislav Fomichev <sdf@google.com>
-> > Cc: bpf@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-arch@vger.kernel.org
-> > Tested-by: Luca Boccassi <bluca@debian.org>
-> > Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.c=
-om>
-> > ---
-> > v5:
-> >       - started using (struct proto)->bpf_bypass_getsockopt hook
->
-> Looks good to me,
-> Reviewed-by: Christian Brauner <brauner@kernel.org>
+Le 22/05/2023 à 13:10, Simon Horman a écrit :
+> On Mon, May 22, 2023 at 01:35:38PM +0300, Dan Carpenter wrote:
+>> On Mon, May 22, 2023 at 12:12:48PM +0200, Simon Horman wrote:
+>>> On Sat, May 20, 2023 at 10:30:17AM +0200, Christophe JAILLET wrote:
+>>>> If an error occures after calling nv_mgmt_acquire_sema(), it should be
+>>>> undone with a corresponding nv_mgmt_release_sema() call.
+>>>
+>>> nit: s/occures/occurs/
+>>>
+>>>>
+>>>> Add it in the error handling path of the probe as already done in the
+>>>> remove function.
+>>>
+>>> I was going to ask what happens if nv_mgmt_acquire_sema() fails.
+>>> Then I realised that it always returns 0.
+>>>
+>>> Perhaps it would be worth changing it's return type to void at some point.
+>>>
+>>
+>> What? No?  It returns true on success and false on failure.
+>>
+>> drivers/net/ethernet/nvidia/forcedeth.c
+>>    5377  static int nv_mgmt_acquire_sema(struct net_device *dev)
+>>    5378  {
+>>    5379          struct fe_priv *np = netdev_priv(dev);
+>>    5380          u8 __iomem *base = get_hwbase(dev);
+>>    5381          int i;
+>>    5382          u32 tx_ctrl, mgmt_sema;
+>>    5383
+>>    5384          for (i = 0; i < 10; i++) {
+>>    5385                  mgmt_sema = readl(base + NvRegTransmitterControl) & NVREG_XMITCTL_MGMT_SEMA_MASK;
+>>    5386                  if (mgmt_sema == NVREG_XMITCTL_MGMT_SEMA_FREE)
+>>    5387                          break;
+>>    5388                  msleep(500);
+>>    5389          }
+>>    5390
+>>    5391          if (mgmt_sema != NVREG_XMITCTL_MGMT_SEMA_FREE)
+>>    5392                  return 0;
+>>    5393
+>>    5394          for (i = 0; i < 2; i++) {
+>>    5395                  tx_ctrl = readl(base + NvRegTransmitterControl);
+>>    5396                  tx_ctrl |= NVREG_XMITCTL_HOST_SEMA_ACQ;
+>>    5397                  writel(tx_ctrl, base + NvRegTransmitterControl);
+>>    5398
+>>    5399                  /* verify that semaphore was acquired */
+>>    5400                  tx_ctrl = readl(base + NvRegTransmitterControl);
+>>    5401                  if (((tx_ctrl & NVREG_XMITCTL_HOST_SEMA_MASK) == NVREG_XMITCTL_HOST_SEMA_ACQ) &&
+>>    5402                      ((tx_ctrl & NVREG_XMITCTL_MGMT_SEMA_MASK) == NVREG_XMITCTL_MGMT_SEMA_FREE)) {
+>>    5403                          np->mgmt_sema = 1;
+>>    5404                          return 1;
+>>                                  ^^^^^^^^^
+>> Success path.
+>>
+>>    5405                  } else
+>>    5406                          udelay(50);
+>>    5407          }
+>>    5408
+>>    5409          return 0;
+>>    5410  }
+> 
+> Thanks Dan,
+> 
+> my eyes deceived me.
+> 
+> In that case, my question is: what if nv_mgmt_acquire_sema() fails?
+> But I think the answer is that nv_mgmt_release_sema() will do
+> nothing because mgmt_sema is not set.
 
-Acked-by: Stanislav Fomichev <sdf@google.com>
+At least, it is my understanding.
+
+Can you fix the typo s/occures/occurs/ when applying the patch, or do 
+you really need a v2 only for that?
+
+CJ.
+
+> 
+> So I think we are good.
+> 
+> 
+> 
+
 
