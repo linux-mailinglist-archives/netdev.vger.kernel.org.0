@@ -1,80 +1,71 @@
-Return-Path: <netdev+bounces-4233-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4234-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 75AB870BCF5
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:08:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D4CEF70BD01
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:11:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E47241C20A24
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:08:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3A2331C20A08
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:11:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7A20D30E;
-	Mon, 22 May 2023 12:08:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6128CD313;
+	Mon, 22 May 2023 12:11:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D02A9D30B
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:08:39 +0000 (UTC)
-Received: from mail-ej1-x663.google.com (mail-ej1-x663.google.com [IPv6:2a00:1450:4864:20::663])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A92B3
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 05:08:25 -0700 (PDT)
-Received: by mail-ej1-x663.google.com with SMTP id a640c23a62f3a-96f818c48fbso555331666b.0
-        for <netdev@vger.kernel.org>; Mon, 22 May 2023 05:08:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google; t=1684757303; x=1687349303;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=gZQANtnYzYVh9bLE6o/zHcuLfWgH/zMHwwYGn/d3H40=;
-        b=g5f3E9N8Xyga3zVJEohWNmVS3D89svqtP359KOi7he7s3NyCMgeZg2uic69TNJuzvS
-         nbeOXM5VffRNvtQIg2YFOGBLxQgch7Pbr3UvFWMOV2SQKPDPbC/K8T08MeU7WQ83HUQU
-         /5ZtGgTARgtSRcYCXbZA1CSAtsrvgQM6RRI+Jp/2177qyoOodS6KlSWigNlYiPyVLbUF
-         EGdGNSLnbv+M33nPWqHL1UOVPBERbwBHhF6Qnh1c9Mi0xYUgAeDrN4SgU5uckS2sQrP/
-         /32iykU8bbOFy/e7sjdgvs5Zdbjvl7/0aZXMFjfJ85eQPim6GbMjY2RARAaNJ3xhnLDd
-         GKLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684757303; x=1687349303;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gZQANtnYzYVh9bLE6o/zHcuLfWgH/zMHwwYGn/d3H40=;
-        b=iSEx3543nhjg48RS+2njrojia8K4aqyVO9xD7CnVFxP2KSku7xvT6Q+Z/2DQuL13rI
-         6cJEOTXgHG+ekj2KmT66XsPOhR9zdoITE1dYhsvJy32RV66jh2fhOYqI6JG/XNqzlYLw
-         ezR+wRdAuDPOxieFcrX3/iR08IMpyHHOJpbvrBiQ+lHMTGrpbLFMKXCDtOCI2hvwxnuL
-         DnTMBTqDnpReiaTrT+eu31d6DmjM+e9yhoQC9rpSFNYkinu8nLVFZD374rIEB1BW5A/P
-         Sg2LW6F+aAZBlS/JQAsuJUnjfr4fic3W74Phkqcm+qAfktyVsf18CGz+7hDfXriXkfHP
-         72LQ==
-X-Gm-Message-State: AC+VfDzKkGOtJCN7c3aPFNg8ZW8NR0/zKyyMnqQbxvuRHF5JGUvRaDBa
-	WulrG3SNbQRWNgFXUBYv1bcO/LTmkYn6TQFOEstwVXNZs4KzCg==
-X-Google-Smtp-Source: ACHHUZ4CQO8et14Y4Zk3ZBuYVEojUVYHEfqtzRRn5Vfzpoizo05yYezy/8U9DJcwvi4dsELQIETkkz+DEkxJ
-X-Received: by 2002:a17:907:1607:b0:966:5912:c4b with SMTP id hb7-20020a170907160700b0096659120c4bmr10032375ejc.76.1684757303545;
-        Mon, 22 May 2023 05:08:23 -0700 (PDT)
-Received: from smtpservice.6wind.com ([185.13.181.2])
-        by smtp-relay.gmail.com with ESMTP id gh14-20020a170906e08e00b0096647f95cc2sm758300ejb.291.2023.05.22.05.08.23;
-        Mon, 22 May 2023 05:08:23 -0700 (PDT)
-X-Relaying-Domain: 6wind.com
-Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
-	by smtpservice.6wind.com (Postfix) with ESMTPS id 42CA760115;
-	Mon, 22 May 2023 14:08:23 +0200 (CEST)
-Received: from dichtel by bretzel with local (Exim 4.94.2)
-	(envelope-from <nicolas.dichtel@6wind.com>)
-	id 1q14Ks-005XEv-V8; Mon, 22 May 2023 14:08:22 +0200
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To: "David S . Miller" <davem@davemloft.net>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 557B9D306
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:11:37 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC519B
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 05:11:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684757494;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=3Cqemb3sh6CmCU4tuJXJe3ivYAUlX2TSQCzMKlQ7oO8=;
+	b=QX9/jTx56K0G3aT9h13JtyRq7zgRZyyy4FyJsdDJZmoPtAS25u93pCRtoj7KTs6OjB978h
+	0/QorKKs5bvFcWGIxjbQM/SXFGmh+jpHeQFX+v9ZdADHYiuCEtS7mOSW5JxjTnrhgryvEf
+	hy94mdU9YD7yABJM8iOzHuvmIZi34RQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-601-AFy67lC1MdStPbQPwqGb9A-1; Mon, 22 May 2023 08:11:30 -0400
+X-MC-Unique: AFy67lC1MdStPbQPwqGb9A-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E50B8185A792;
+	Mon, 22 May 2023 12:11:29 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 5CDEA140E961;
+	Mon, 22 May 2023 12:11:27 +0000 (UTC)
+From: David Howells <dhowells@redhat.com>
+To: netdev@vger.kernel.org
+Cc: David Howells <dhowells@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Paolo Abeni <pabeni@redhat.com>,
-	Eric Dumazet <edumazet@google.com>,
-	David Ahern <dsahern@kernel.org>
-Cc: Steffen Klassert <klassert@kernel.org>,
-	netdev@vger.kernel.org,
-	Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-	stable@vger.kernel.org
-Subject: [PATCH net v2] ipv{4,6}/raw: fix output xfrm lookup wrt protocol
-Date: Mon, 22 May 2023 14:08:20 +0200
-Message-Id: <20230522120820.1319391-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.39.2
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+	David Ahern <dsahern@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Al Viro <viro@zeniv.linux.org.uk>,
+	Christoph Hellwig <hch@infradead.org>,
+	Jens Axboe <axboe@kernel.dk>,
+	Jeff Layton <jlayton@kernel.org>,
+	Christian Brauner <brauner@kernel.org>,
+	Chuck Lever III <chuck.lever@oracle.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	linux-fsdevel@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: [PATCH net-next v10 00/16] splice, net: Replace sendpage with sendmsg(MSG_SPLICE_PAGES), part 1
+Date: Mon, 22 May 2023 13:11:09 +0100
+Message-Id: <20230522121125.2595254-1-dhowells@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -82,141 +73,185 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-With a raw socket bound to IPPROTO_RAW (ie with hdrincl enabled), the
-protocol field of the flow structure, build by raw_sendmsg() /
-rawv6_sendmsg()),  is set to IPPROTO_RAW. This breaks the ipsec policy
-lookup when some policies are defined with a protocol in the selector.
+Here's the first tranche of patches towards providing a MSG_SPLICE_PAGES
+internal sendmsg flag that is intended to replace the ->sendpage() op with
+calls to sendmsg().  MSG_SPLICE_PAGES is a hint that tells the protocol
+that it should splice the pages supplied if it can and copy them if not.
 
-For ipv6, the sin6_port field from 'struct sockaddr_in6' could be used to
-specify the protocol. Just accept all values for IPPROTO_RAW socket.
+This will allow splice to pass multiple pages in a single call and allow
+certain parts of higher protocols (e.g. sunrpc, iwarp) to pass an entire
+message in one go rather than having to send them piecemeal.  This should
+also make it easier to handle the splicing of multipage folios.
 
-For ipv4, the sin_port field of 'struct sockaddr_in' could not be used
-without breaking backward compatibility (the value of this field was never
-checked). Let's add a new kind of control message, so that the userland
-could specify which protocol is used.
+A helper, skb_splice_from_iter() is provided to do the work of splicing or
+copying data from an iterator.  If a page is determined to be unspliceable
+(such as being in the slab), then the helper will give an error.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-CC: stable@vger.kernel.org
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
+Note that this facility is not made available to userspace and does not
+provide any sort of callback.
 
-v1 -> v2:
- - accept only int in cmsg for IP_PROTOCOL
+This set consists of the following parts:
 
- include/net/ip.h        |  2 ++
- include/uapi/linux/in.h |  1 +
- net/ipv4/ip_sockglue.c  | 12 +++++++++++-
- net/ipv4/raw.c          |  5 ++++-
- net/ipv6/raw.c          |  3 ++-
- 5 files changed, 20 insertions(+), 3 deletions(-)
+ (1) Define the MSG_SPLICE_PAGES flag and prevent sys_sendmsg() from being
+     able to set it.
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index c3fffaa92d6e..acec504c469a 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -76,6 +76,7 @@ struct ipcm_cookie {
- 	__be32			addr;
- 	int			oif;
- 	struct ip_options_rcu	*opt;
-+	__u8			protocol;
- 	__u8			ttl;
- 	__s16			tos;
- 	char			priority;
-@@ -96,6 +97,7 @@ static inline void ipcm_init_sk(struct ipcm_cookie *ipcm,
- 	ipcm->sockc.tsflags = inet->sk.sk_tsflags;
- 	ipcm->oif = READ_ONCE(inet->sk.sk_bound_dev_if);
- 	ipcm->addr = inet->inet_saddr;
-+	ipcm->protocol = inet->inet_num;
- }
- 
- #define IPCB(skb) ((struct inet_skb_parm*)((skb)->cb))
-diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
-index 4b7f2df66b99..e682ab628dfa 100644
---- a/include/uapi/linux/in.h
-+++ b/include/uapi/linux/in.h
-@@ -163,6 +163,7 @@ struct in_addr {
- #define IP_MULTICAST_ALL		49
- #define IP_UNICAST_IF			50
- #define IP_LOCAL_PORT_RANGE		51
-+#define IP_PROTOCOL			52
- 
- #define MCAST_EXCLUDE	0
- #define MCAST_INCLUDE	1
-diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index b511ff0adc0a..8e97d8d4cc9d 100644
---- a/net/ipv4/ip_sockglue.c
-+++ b/net/ipv4/ip_sockglue.c
-@@ -317,7 +317,14 @@ int ip_cmsg_send(struct sock *sk, struct msghdr *msg, struct ipcm_cookie *ipc,
- 			ipc->tos = val;
- 			ipc->priority = rt_tos2priority(ipc->tos);
- 			break;
--
-+		case IP_PROTOCOL:
-+			if (cmsg->cmsg_len != CMSG_LEN(sizeof(int)))
-+				return -EINVAL;
-+			val = *(int *)CMSG_DATA(cmsg);
-+			if (val < 1 || val > 255)
-+				return -EINVAL;
-+			ipc->protocol = val;
-+			break;
- 		default:
- 			return -EINVAL;
- 		}
-@@ -1761,6 +1768,9 @@ int do_ip_getsockopt(struct sock *sk, int level, int optname,
- 	case IP_LOCAL_PORT_RANGE:
- 		val = inet->local_port_range.hi << 16 | inet->local_port_range.lo;
- 		break;
-+	case IP_PROTOCOL:
-+		val = inet_sk(sk)->inet_num;
-+		break;
- 	default:
- 		sockopt_release_sock(sk);
- 		return -ENOPROTOOPT;
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index ff712bf2a98d..eadf1c9ef7e4 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -532,6 +532,9 @@ static int raw_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	}
- 
- 	ipcm_init_sk(&ipc, inet);
-+	/* Keep backward compat */
-+	if (hdrincl)
-+		ipc.protocol = IPPROTO_RAW;
- 
- 	if (msg->msg_controllen) {
- 		err = ip_cmsg_send(sk, msg, &ipc, false);
-@@ -599,7 +602,7 @@ static int raw_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 
- 	flowi4_init_output(&fl4, ipc.oif, ipc.sockc.mark, tos,
- 			   RT_SCOPE_UNIVERSE,
--			   hdrincl ? IPPROTO_RAW : sk->sk_protocol,
-+			   hdrincl ? ipc.protocol : sk->sk_protocol,
- 			   inet_sk_flowi_flags(sk) |
- 			    (hdrincl ? FLOWI_FLAG_KNOWN_NH : 0),
- 			   daddr, saddr, 0, 0, sk->sk_uid);
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 7d0adb612bdd..44ee7a2e72ac 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -793,7 +793,8 @@ static int rawv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 
- 		if (!proto)
- 			proto = inet->inet_num;
--		else if (proto != inet->inet_num)
-+		else if (proto != inet->inet_num &&
-+			 inet->inet_num != IPPROTO_RAW)
- 			return -EINVAL;
- 
- 		if (proto > 255)
--- 
-2.39.2
+ (2) Add an extra argument to skb_append_pagefrags() so that something
+     other than MAX_SKB_FRAGS can be used (sysctl_max_skb_frags for
+     example).
+
+ (3) Add the skb_splice_from_iter() helper to handle splicing pages into
+     skbuffs for MSG_SPLICE_PAGES that can be shared by TCP, IP/UDP and
+     AF_UNIX.
+
+ (4) Implement MSG_SPLICE_PAGES support in TCP.
+
+ (5) Make do_tcp_sendpages() just wrap sendmsg() and then fold it in to its
+     various callers.
+
+ (6) Implement MSG_SPLICE_PAGES support in IP and make udp_sendpage() just
+     a wrapper around sendmsg().
+
+ (7) Implement MSG_SPLICE_PAGES support in IP6/UDP6.
+
+ (8) Implement MSG_SPLICE_PAGES support in AF_UNIX.
+
+ (9) Make AF_UNIX copy unspliceable pages.
+
+I've pushed the patches here also:
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=sendpage-1
+
+The follow-on patches are on branch iov-sendpage on the same tree.
+
+David
+
+Changes
+=======
+ver #10)
+ - Rebase.
+ - Fix patch subject to refer to unix_stream_sendpage() not udp_sendpage().
+
+ver #9)
+ - Fix a merge conflict with commit eea96a3e2c909.
+
+ver #8)
+ - Order local variables in reverse xmas tree order.
+ - Remove duplicate coalescence check.
+ - Warn if sendpage_ok() fails.
+
+ver #7)
+ - Rebase after merge window.
+ - In ____sys_sendmsg(), clear internal flags before setting msg_flags.
+ - Clear internal flags in uring io_send{,_zc}().
+ - Export skb_splice_from_iter().
+ - Missed changing a "zc = 1" in tcp_sendmsg_locked().
+ - Remove now-unused csum_page() from UDP.
+ - Add a patch to make AF_UNIX sendpage() just a wrapper around sendmsg().
+ - Return an error if !sendpage_ok() rather than copying for now.
+ - Drop the page frag allocator patches for the moment.
+
+ver #6)
+ - Removed a couple of leftover page pointer declarations.
+ - In TCP, set zc to 0/MSG_ZEROCOPY/MSG_SPLICE_PAGES rather than 0/1/2.
+ - Add a max-frags argument to skb_append_pagefrags().
+ - Extract the AF_UNIX helper out into a common helper and use it for
+   IP/UDP and TCP too.
+ - udp_sendpage() shouldn't lock the socket around udp_sendmsg().
+ - udp_sendpage() should only set MSG_MORE if MSG_SENDPAGE_NOTLAST is set.
+ - In siw, don't clear MSG_SPLICE_PAGES on the last page.
+
+ver #5)
+ - Dropped the samples patch as it causes lots of failures in the patchwork
+   32-bit builds due to apparent libc userspace header issues.
+ - Made the pagefrag alloc patches alter the Google gve driver too.
+ - Rearranged the patches to put the support in IP before altering UDP.
+
+ver #4)
+ - Added some sample socket-I/O programs into samples/net/.
+ - Fix a missing page-get in AF_KCM.
+ - Init the sgtable and mark the end in AF_ALG when calling
+   netfs_extract_iter_to_sg().
+ - Add a destructor func for page frag caches prior to generalising it and
+   making it per-cpu.
+
+ver #3)
+ - Dropped the iterator-of-iterators patch.
+ - Only expunge MSG_SPLICE_PAGES in sys_send[m]msg, not sys_recv[m]msg.
+ - Split MSG_SPLICE_PAGES code in __ip_append_data() out into helper
+   functions.
+ - Implement MSG_SPLICE_PAGES support in __ip6_append_data() using the
+   above helper functions.
+ - Rename 'xlength' to 'initial_length'.
+ - Minimise the changes to sunrpc for the moment.
+ - Don't give -EOPNOTSUPP if NETIF_F_SG not available, just copy instead.
+ - Implemented MSG_SPLICE_PAGES support in the TLS, Chelsio-TLS and AF_KCM
+   code.
+
+ver #2)
+ - Overhauled the page_frag_alloc() allocator: large folios and per-cpu.
+   - Got rid of my own zerocopy allocator.
+ - Use iov_iter_extract_pages() rather poking in iter->bvec.
+ - Made page splicing fall back to page copying on a page-by-page basis.
+ - Made splice_to_socket() pass 16 pipe buffers at a time.
+ - Made AF_ALG/hash use finup/digest where possible in sendmsg.
+ - Added an iterator-of-iterators, ITER_ITERLIST.
+ - Made sunrpc use the iterator-of-iterators.
+ - Converted more drivers.
+
+Link: https://lore.kernel.org/r/20230316152618.711970-1-dhowells@redhat.com/ # v1
+Link: https://lore.kernel.org/r/20230329141354.516864-1-dhowells@redhat.com/ # v2
+Link: https://lore.kernel.org/r/20230331160914.1608208-1-dhowells@redhat.com/ # v3
+Link: https://lore.kernel.org/r/20230405165339.3468808-1-dhowells@redhat.com/ # v4
+Link: https://lore.kernel.org/r/20230406094245.3633290-1-dhowells@redhat.com/ # v5
+Link: https://lore.kernel.org/r/20230411160902.4134381-1-dhowells@redhat.com/ # v6
+Link: https://lore.kernel.org/r/20230515093345.396978-1-dhowells@redhat.com/ # v7
+Link: https://lore.kernel.org/r/20230518113453.1350757-1-dhowells@redhat.com/ # v8
+
+David Howells (16):
+  net: Declare MSG_SPLICE_PAGES internal sendmsg() flag
+  net: Pass max frags into skb_append_pagefrags()
+  net: Add a function to splice pages into an skbuff for
+    MSG_SPLICE_PAGES
+  tcp: Support MSG_SPLICE_PAGES
+  tcp: Convert do_tcp_sendpages() to use MSG_SPLICE_PAGES
+  tcp_bpf: Inline do_tcp_sendpages as it's now a wrapper around
+    tcp_sendmsg
+  espintcp: Inline do_tcp_sendpages()
+  tls: Inline do_tcp_sendpages()
+  siw: Inline do_tcp_sendpages()
+  tcp: Fold do_tcp_sendpages() into tcp_sendpage_locked()
+  ip, udp: Support MSG_SPLICE_PAGES
+  ip6, udp6: Support MSG_SPLICE_PAGES
+  udp: Convert udp_sendpage() to use MSG_SPLICE_PAGES
+  ip: Remove ip_append_page()
+  af_unix: Support MSG_SPLICE_PAGES
+  unix: Convert unix_stream_sendpage() to use MSG_SPLICE_PAGES
+
+ drivers/infiniband/sw/siw/siw_qp_tx.c |  17 +-
+ include/linux/skbuff.h                |   5 +-
+ include/linux/socket.h                |   3 +
+ include/net/ip.h                      |   2 -
+ include/net/tcp.h                     |   2 -
+ include/net/tls.h                     |   2 +-
+ io_uring/net.c                        |   2 +
+ net/core/skbuff.c                     |  92 ++++++++++-
+ net/ipv4/ip_output.c                  | 164 +++-----------------
+ net/ipv4/tcp.c                        | 214 ++++++--------------------
+ net/ipv4/tcp_bpf.c                    |  20 ++-
+ net/ipv4/udp.c                        |  51 +-----
+ net/ipv6/ip6_output.c                 |  17 ++
+ net/socket.c                          |   2 +
+ net/tls/tls_main.c                    |  24 +--
+ net/unix/af_unix.c                    | 183 +++++-----------------
+ net/xfrm/espintcp.c                   |  10 +-
+ 17 files changed, 278 insertions(+), 532 deletions(-)
 
 
