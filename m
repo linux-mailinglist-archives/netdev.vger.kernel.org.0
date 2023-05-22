@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-4251-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4252-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8252570BD4A
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:17:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8B68F70BD4B
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:17:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 491D81C20AA6
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:17:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 18F7A280F1F
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:17:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 32B6ED517;
-	Mon, 22 May 2023 12:16:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1834A10781;
+	Mon, 22 May 2023 12:16:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 223574408
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:16:33 +0000 (UTC)
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A900DE43;
-	Mon, 22 May 2023 05:16:07 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-510b869fe0dso10633976a12.3;
-        Mon, 22 May 2023 05:16:07 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C691D30F
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:16:38 +0000 (UTC)
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D34BE42;
+	Mon, 22 May 2023 05:16:09 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-96fa4a6a79bso309122666b.3;
+        Mon, 22 May 2023 05:16:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684757746; x=1687349746;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Pq2o/rMDZcveu6CBIBMiqQbVdifVenwYFNXXMqMRjP0=;
-        b=aQV+uq9SLVhx0nJCHct8trarx9Dq54SBVdoWRvsuUTTaAnagYq1jKKdRWhzRdICwCT
-         7aRHHO0ugQDaIMQ9HZm05aSqhn8hRhtdSuxbozAOw/qQfVSmg+5Du+Wk9hkJ+Bz5coSv
-         EkaGK8iVyauuODWx5MPHbpum5+hrbUQ/KdVkrtW4CGQeHB20BeRYtqIf7IBLi1Qj3YhD
-         Yzj5y9XTDHwRvRLjC1rSC3vTyDLZd5KbkjU860F0eu9Dn4SyGMXoR8b8T1vsUrsKeLTG
-         1lZwICVLVobeoQR5RMcskfakhJDj7w9BfGhGJxPUpVYN9R7U9aBtPibNPRYzl/LcERGK
-         M6lA==
+        d=gmail.com; s=20221208; t=1684757749; x=1687349749;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=W605wLVAjZcYJ+UbvgGvWkHLkMFaiTir5YrRz0YtXmg=;
+        b=qcQP4Hsv2zkuBD1rc5sn1VmOnLPTnpkC36ZpIoFX5g5+/8j6+xMkWXmdl783YhkydI
+         ouC3vQqGioYtYax5t3LtbhBLe89V6Vvcmvy6iY6tJGf3cATIWqmoIzc8TEzKggVb2nNf
+         GtFBJF02BH88duMq9StIDqPSSWlOF3alAjJwZ+mHLGBnoavDEgukeXWGeSSZ8lWKS7oW
+         R8Xux7ZtyV7n5PbQzbK+ftm9MkcnStykJc9U/2OKQ5iEnYgLYFG3y7QQBOVhTSmk9ktu
+         MN9iT30TXuPt820WSkRz5zuN1Y7nkwixR8RfmWTuHdSKTECqM5eYkVaMiQywohNStgNc
+         qaxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684757746; x=1687349746;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Pq2o/rMDZcveu6CBIBMiqQbVdifVenwYFNXXMqMRjP0=;
-        b=e1WckEpm1CbER7C9UCi0mN7gg/hXUNuh1rbDHpg9jSlMjH1MFsHqy2PjBwlE5e+1/M
-         ATHXoYAPOInZD1eIXrTzaJ/CSKdUprIP07K8eNqJkU241EWJCXDBRpyxIo0chlkGMoMZ
-         N87IczFLRpmAvnn14UW6gTAcHBwxY0xhQ9Wm4S7lqdfxCqDpgkflDFg97qahzTI0PsuB
-         lsJN+/WKTJgr5gzOkW1PspP3gv9ZAj7vaUOrFuLlCHCS4+NMK/3LvwddHabSRiYITjMk
-         eq1UeGZclOoaC9pdg/8DNQj7OpS2pnA8YhqJQLM+z8g1peiLqlUNoIqWPpU8QJ2hjKVU
-         iycA==
-X-Gm-Message-State: AC+VfDy56WPazjBaqjLNP4xv4j2oPx/z0vHXnmmNdcyEO12cfkrbwHp7
-	ir6GGFFvC9R4EhNpByvg2ec=
-X-Google-Smtp-Source: ACHHUZ44vhIRy0pCs3PauqSUYry3wOlKBzkbAJKp64q8ULc9bXdwGlhNnnOC2BplkNluNqyP2qH/Bw==
-X-Received: by 2002:a17:907:97c4:b0:956:fbd7:bc5e with SMTP id js4-20020a17090797c400b00956fbd7bc5emr9630657ejc.64.1684757745526;
-        Mon, 22 May 2023 05:15:45 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684757749; x=1687349749;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=W605wLVAjZcYJ+UbvgGvWkHLkMFaiTir5YrRz0YtXmg=;
+        b=Q0hts1ZqmWLQbX0Y+V6rALGaD5ZBvdDD4mtwd0JxwgvT2/YFXA0TN11mFVLBxUtWbo
+         4RyXw1nyAZZNj7f9K/Q2Rjp6/JS9mQyBUQ35quvLa8KcfLXasC2rTUESwFd/F6arDKMS
+         3OPSoAU9+Iz5U/H47vpon6a8kq0yuuHHmt2w1eyK8hWndaXIBaCjCTClP4je7ga8NOid
+         Ks4ATEyVPiYrTkgKcJ9jjd+Sfxl7VKSR2DyymiQy0EG0tli+MlckON+GLz6rdHsY00Ef
+         uD1Fwq9eY6xwmYpjF4uJcoKzRq2WvlPkIJNrKXYnK0svEDjl61iyXC0Ju15H8nQTbZm2
+         TYEQ==
+X-Gm-Message-State: AC+VfDzM6rCqH5wBVIBUDa0LuuQ3Sybgct+/Ft7Uq1+EwKfsSExMz9FM
+	B08UcNHLC3Pgj87/itq/InU=
+X-Google-Smtp-Source: ACHHUZ5udgAI9lXoymHWuGkdojdDxgLRZXFK1CAl38y/EIjRGn7RvR87DFYBmjpyu6txHt2HTifOGQ==
+X-Received: by 2002:a17:907:da8:b0:96f:8666:5fc4 with SMTP id go40-20020a1709070da800b0096f86665fc4mr9492508ejc.50.1684757748618;
+        Mon, 22 May 2023 05:15:48 -0700 (PDT)
 Received: from arinc9-PC.. ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.15.42
+        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.15.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 05:15:45 -0700 (PDT)
+        Mon, 22 May 2023 05:15:48 -0700 (PDT)
 From: arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To: Sean Wang <sean.wang@mediatek.com>,
@@ -71,21 +72,23 @@ To: Sean Wang <sean.wang@mediatek.com>,
 	Matthias Brugger <matthias.bgg@gmail.com>,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
 	Russell King <linux@armlinux.org.uk>
-Cc: Richard van Schagen <richard@routerhints.com>,
+Cc: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+	Richard van Schagen <richard@routerhints.com>,
 	Richard van Schagen <vschagen@cs.com>,
 	Frank Wunderlich <frank-w@public-files.de>,
 	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
 	erkin.bozoglu@xeront.com,
 	mithat.guner@xeront.com,
-	=?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
 	netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 00/30] net: dsa: mt7530: improve, trap BPDU & LLDP, and prefer CPU port
-Date: Mon, 22 May 2023 15:15:02 +0300
-Message-Id: <20230522121532.86610-1-arinc.unal@arinc9.com>
+Subject: [PATCH net-next 01/30] net: dsa: mt7530: add missing @p5_interface to mt7530_priv description
+Date: Mon, 22 May 2023 15:15:03 +0300
+Message-Id: <20230522121532.86610-2-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230522121532.86610-1-arinc.unal@arinc9.com>
+References: <20230522121532.86610-1-arinc.unal@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -101,94 +104,32 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello!
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-This patch series simplifies the code, improves the logic of the switch
-hardware support, traps LLDP frames and BPDUs for MT7530, MT7531, and
-MT7988 SoC switches, and introduces the preferring local CPU port
-operation.
+Add the missing p5_interface field to the mt7530_priv description. Sort out
+the description in the process.
 
-There's also a patch for fixing the port capabilities of the switch on the
-MT7988 SoC.
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Acked-by: Daniel Golle <daniel@makrotopia.org>
+---
+ drivers/net/dsa/mt7530.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I have done a bidirectional speed test using iperf3 on all ports of the
-MT7530 and MT7531 switches with this patch series applied. I have tested
-every possible configuration on the MCM and standalone MT7530 and MT7531
-switch. I'll let the name of the dtb files speak for themselves.
-
-MT7621 Unielec:
-
-only-gmac0-mt7621-unielec-u7621-06-16m.dtb
-rgmii-only-gmac0-mt7621-unielec-u7621-06-16m.dtb
-only-gmac1-mt7621-unielec-u7621-06-16m.dtb
-gmac0-and-gmac1-mt7621-unielec-u7621-06-16m.dtb
-phy0-muxing-mt7621-unielec-u7621-06-16m.dtb
-phy4-muxing-mt7621-unielec-u7621-06-16m.dtb
-port5-as-user-mt7621-unielec-u7621-06-16m.dtb
-
-tftpboot 0x80008000 mips-uzImage-next-20230519.bin; tftpboot 0x83000000 mips-rootfs.cpio.uboot; tftpboot 0x83f00000 $dtb; bootm 0x80008000 0x83000000 0x83f00000
-
-MT7622 Bananapi:
-
-only-gmac0-mt7622-bananapi-bpi-r64.dtb
-gmac0-and-gmac1-mt7622-bananapi-bpi-r64.dtb
-port5-as-user-mt7622-bananapi-bpi-r64.dtb
-
-tftpboot 0x40000000 arm64-Image-next-20230519; tftpboot 0x45000000 arm64-rootfs.cpio.uboot; tftpboot 0x4a000000 $dtb; booti 0x40000000 0x45000000 0x4a000000
-
-MT7623 Bananapi:
-
-only-gmac0-mt7623n-bananapi-bpi-r2.dtb
-rgmii-only-gmac0-mt7623n-bananapi-bpi-r2.dtb
-only-gmac1-mt7623n-bananapi-bpi-r2.dtb
-gmac0-and-gmac1-mt7623n-bananapi-bpi-r2.dtb
-phy0-muxing-mt7623n-bananapi-bpi-r2.dtb
-phy4-muxing-mt7623n-bananapi-bpi-r2.dtb
-port5-as-user-mt7623n-bananapi-bpi-r2.dtb
-
-tftpboot 0x80008000 arm-zImage-next-20230519; tftpboot 0x83000000 arm-rootfs.cpio.uboot; tftpboot 0x83f00000 $dtb; bootz 0x80008000 0x83000000 0x83f00000
-
-Arınç
-
-Arınç ÜNAL (30):
-  net: dsa: mt7530: add missing @p5_interface to mt7530_priv description
-  net: dsa: mt7530: use p5_interface_select as data type for p5_intf_sel
-  net: dsa: mt7530: properly support MT7531AE and MT7531BE
-  net: dsa: mt7530: improve comments regarding port 5 and 6
-  net: dsa: mt7530: read XTAL value from correct register
-  net: dsa: mt7530: improve code path for setting up port 5
-  net: dsa: mt7530: do not run mt7530_setup_port5() if port 5 is disabled
-  net: dsa: mt7530: change p{5,6}_interface to p{5,6}_configured
-  net: dsa: mt7530: empty default case on mt7530_setup_port5()
-  net: dsa: mt7530: call port 6 setup from mt7530_mac_config()
-  net: dsa: mt7530: remove pad_setup function pointer
-  net: dsa: mt7530: move XTAL check to mt7530_setup()
-  net: dsa: mt7530: move enabling port 6 to mt7530_setup_port6()
-  net: dsa: mt7530: switch to if/else statements on mt7530_setup_port6()
-  net: dsa: mt7530: set TRGMII RD TAP if trgmii is being used
-  net: dsa: mt7530: move lowering port 5 RGMII driving to mt7530_setup()
-  net: dsa: mt7530: fix port capabilities for MT7988
-  net: dsa: mt7530: remove .mac_port_config for MT7988 and make it optional
-  net: dsa: mt7530: set interrupt register only for MT7530
-  net: dsa: mt7530: properly reset MT7531 switch
-  net: dsa: mt7530: get rid of useless error returns on phylink code path
-  net: dsa: mt7530: rename p5_intf_sel and use only for MT7530 switch
-  net: dsa: mt7530: run mt7530_pll_setup() only with 40 MHz XTAL
-  net: dsa: mt7530: rename MT7530_MFC to MT753X_MFC
-  net: dsa: mt7530: properly set MT7531_CPU_PMAP
-  net: dsa: mt7530: properly set MT7530_CPU_PORT
-  net: dsa: mt7530: introduce BPDU trapping for MT7530 switch
-  net: dsa: mt7530: introduce LLDP frame trapping
-  net: dsa: introduce preferred_default_local_cpu_port and use on MT7530
-  MAINTAINERS: add me as maintainer of MEDIATEK SWITCH DRIVER
-
- MAINTAINERS                   |   5 +-
- drivers/net/dsa/mt7530-mdio.c |   7 +-
- drivers/net/dsa/mt7530.c      | 470 ++++++++++++++++---------------------
- drivers/net/dsa/mt7530.h      | 107 +++++----
- include/net/dsa.h             |   8 +
- net/dsa/dsa.c                 |  24 +-
- 6 files changed, 289 insertions(+), 332 deletions(-)
-
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 5084f48a8869..845f5dd16d83 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -746,7 +746,8 @@ struct mt753x_info {
+  * @ports:		Holding the state among ports
+  * @reg_mutex:		The lock for protecting among process accessing
+  *			registers
+- * @p6_interface	Holding the current port 6 interface
++ * @p6_interface:	Holding the current port 6 interface
++ * @p5_interface:	Holding the current port 5 interface
+  * @p5_intf_sel:	Holding the current port 5 interface select
+  * @irq:		IRQ number of the switch
+  * @irq_domain:		IRQ domain of the switch irq_chip
+-- 
+2.39.2
 
 
