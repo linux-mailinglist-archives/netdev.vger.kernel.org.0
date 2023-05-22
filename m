@@ -1,147 +1,171 @@
-Return-Path: <netdev+bounces-4179-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4180-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 61F8D70B856
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:03:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0E4B470B879
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:07:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E46FE1C20A04
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 09:02:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D87841C209E0
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 09:06:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1BAE079EA;
-	Mon, 22 May 2023 09:02:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 034EB79F5;
+	Mon, 22 May 2023 09:06:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EA7663CB
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 09:02:56 +0000 (UTC)
-Received: from smtpbgau2.qq.com (smtpbgau2.qq.com [54.206.34.216])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24A4FF
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 02:02:54 -0700 (PDT)
-X-QQ-mid:Yeas47t1684746045t472t60201
-Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [122.235.247.1])
-X-QQ-SSF:00400000000000F0FNF000000000000
-From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
-X-BIZMAIL-ID: 9655095480155216521
-To: "'Andrew Lunn'" <andrew@lunn.ch>,
-	"'Michael Walle'" <michael@walle.cc>
-Cc: "'Andy Shevchenko'" <andy.shevchenko@gmail.com>,
-	<netdev@vger.kernel.org>,
-	<jarkko.nikula@linux.intel.com>,
-	<andriy.shevchenko@linux.intel.com>,
-	<mika.westerberg@linux.intel.com>,
-	<jsd@semihalf.com>,
-	<Jose.Abreu@synopsys.com>,
-	<hkallweit1@gmail.com>,
-	<linux@armlinux.org.uk>,
-	<linux-i2c@vger.kernel.org>,
-	<linux-gpio@vger.kernel.org>,
-	<mengyuanlou@net-swift.com>
-References: <20230515063200.301026-1-jiawenwu@trustnetic.com> <20230515063200.301026-7-jiawenwu@trustnetic.com> <ZGH-fRzbGd_eCASk@surfacebook> <00cd01d9879f$8e444950$aaccdbf0$@trustnetic.com> <CAHp75VdthEZL6GvT5Q=f7rbcDfA5XX=7-VLfVz1kZmBFem_eCA@mail.gmail.com> <016701d9886a$f9b415a0$ed1c40e0$@trustnetic.com> <90ef7fb8-feac-4288-98e9-6e67cd38cdf1@lunn.ch> <025b01d9897e$d8894660$899bd320$@trustnetic.com> <1e1615b3-566c-490c-8b1a-78f5521ca0b0@lunn.ch> <028601d989f9$230ee120$692ca360$@trustnetic.com> <f0b571ab-544b-49c3-948f-d592f931673b@lunn.ch>
-In-Reply-To: <f0b571ab-544b-49c3-948f-d592f931673b@lunn.ch>
-Subject: RE: [PATCH net-next v8 6/9] net: txgbe: Support GPIO to SFP socket
-Date: Mon, 22 May 2023 17:00:44 +0800
-Message-ID: <005a01d98c8b$e48d2b60$ada78220$@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB2FA1115
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 09:06:57 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED74410FC
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 02:06:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684746411; x=1716282411;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1FQoGNDpARgeG1EPEIPg2rtBEXs/uG1DPbQvKEjpTCk=;
+  b=ms2aXx8sspXEM7HY/7xWy1NeLU6W8AWB64qIRfGdDfjLJ3vqMowkRxvP
+   feuZFUiZKErzQI+5EgJPdJtbh7Hjhrdj2jIx4WkpejpYnDp6PvY4ML1xI
+   DR85WYeydHTRPMA2IO6C6n87g9rYapVyu61WsatTgvtte2Smjl/SENuJE
+   ni5h0Rg5fHy2+qquU+VvFGjp+xt8a+q8zKvtF+TSXG2B+VP4HnbpsKx9G
+   0nVb9ph8sihbEp9vwfpGJqeLZm7Ia6pGIlcBHD93tgGh9r+LMLB+eTpcs
+   m8TsJJX+fllHZzOVSk+8nfkj4aAcvn2b1D62q0ltlnCRGizKoFWZDcXPC
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10717"; a="352892165"
+X-IronPort-AV: E=Sophos;i="6.00,183,1681196400"; 
+   d="scan'208";a="352892165"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2023 02:06:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10717"; a="815601784"
+X-IronPort-AV: E=Sophos;i="6.00,183,1681196400"; 
+   d="scan'208";a="815601784"
+Received: from irvmail002.ir.intel.com ([10.43.11.120])
+  by fmsmga002.fm.intel.com with ESMTP; 22 May 2023 02:06:49 -0700
+Received: from rozewie.igk.intel.com (rozewie.igk.intel.com [10.211.8.69])
+	by irvmail002.ir.intel.com (Postfix) with ESMTP id 864AB3372E;
+	Mon, 22 May 2023 10:06:48 +0100 (IST)
+From: Wojciech Drewek <wojciech.drewek@intel.com>
+To: intel-wired-lan@lists.osuosl.org
+Cc: netdev@vger.kernel.org,
+	alexandr.lobakin@intel.com,
+	david.m.ertman@intel.com,
+	michal.swiatkowski@linux.intel.com,
+	marcin.szycik@linux.intel.com,
+	pawel.chmielewski@intel.com,
+	sridhar.samudrala@intel.com
+Subject: [PATCH iwl-next v3 00/10] ice: switchdev bridge offload
+Date: Mon, 22 May 2023 11:05:32 +0200
+Message-Id: <20230522090542.45679-1-wojciech.drewek@intel.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQHvj8QD3pC+6Aq9H9h6P1+q5LrHRgMH5FTyAkITzAABJU2Y7wJ7xjhgAYjDQqsBr+FHUgDJ87o1AYTHtNcC/cxtnwIXsv+Orp2toMA=
-Content-Language: zh-cn
-X-QQ-SENDSIZE: 520
-Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Friday, May 19, 2023 9:13 PM, Andrew Lunn wrote:
-> > I have one MSI-X interrupt for all general MAC interrupt (see TXGBE_PX_MISC_IEN_MASK).
-> > It has 32 bits to indicate various interrupts, GPIOs are the one of them. When GPIO
-> > interrupt is determined, GPIO_INT_STATUS register should be read to determine
-> > which GPIO line has changed state.
-> 
-> So you have another interrupt controller above the GPIO interrupt
-> controller. regmap-gpio is pushing you towards describing this
-> interrupt controller as a Linux interrupt controller.
-> 
-> When you look at drivers handling interrupts, most leaf interrupt
-> controllers are not described as Linux interrupt controllers. The
-> driver interrupt handler reads the interrupt status register and
-> internally dispatches to the needed handler. This works well when
-> everything is internal to one driver.
-> 
-> However, here, you have two drivers involved, your MAC driver and a
-> GPIO driver instantiated by the MAC driver. So i think you are going
-> to need to described the MAC interrupt controller as a Linux interrupt
-> controller.
-> 
-> Take a look at the mv88e6xxx driver, which does this. It has two
-> interrupt controller embedded within it, and they are chained.
+Linux bridge provides ability to learn MAC addresses and vlans
+detected on bridge's ports. As a result of this, FDB (forward data base)
+entries are created and they can be offloaded to the HW. By adding
+VF's port representors to the bridge together with the uplink netdev,
+we can learn VF's and link partner's MAC addresses. This is achieved
+by slow/exception-path, where packets that do not match any filters
+(FDB entries in this case) are send to the bridge ports.
 
-Now I add two interrupt controllers, the first one for the MAC interrupt,
-and the second one for regmap-gpio. In the second adding flow,
+Driver keeps track of the netdevs added to the bridge
+by listening for NETDEV_CHANGEUPPER event. We distinguish two types
+of bridge ports: uplink port and VF's representor port. Linux
+bridge always learns src MAC of the packet on rx path. With the
+current slow-path implementation, it means that we will learn
+VF's MAC on port repr (when the VF transmits the packet) and
+link partner's MAC on uplink (when we receive it on uplink from LAN).
 
-	irq = irq_find_mapping(txgbe->misc.domain, TXGBE_PX_MISC_GPIO_OFFSET);
-	err = regmap_add_irq_chip_fwnode(fwnode, regmap, irq, 0, 0,
-					 chip, &chip_data);
+The driver is notified about learning of the MAC/VLAN by
+SWITCHDEV_FDB_{ADD|DEL}_TO_DEVICE events. This is followed by creation
+of the HW filter. The direction of the filter is based on port
+type (uplink or VF repr). In case of the uplink, rule forwards
+the packets to the LAN (matching on link partner's MAC). When the
+notification is received on VF repr then the rule forwards the
+packets to the associated VF (matching on VF's MAC).
 
-and then,
+This approach would not work on its own however. This is because if
+one of the directions is offloaded, then the bridge would not be able
+to learn the other one. If the egress rule is added (learned on uplink)
+then the response from the VF will be sent directly to the LAN.
+The packet will not got through slow-path, it would not be seen on
+VF's port repr. Because of that, the bridge would not learn VF's MAC.
 
-	config.irq_domain = regmap_irq_get_domain(chip_data);
-	gpio_regmap = gpio_regmap_register(&config);
+This is solved by introducing guard rule. It prevents forward rule from
+working until the opposite direction is offloaded.
 
-"txgbe->misc.domain" is the MAC interrupt domain. I think this flow should
-be correct, but still failed to get gpio_irq from gpio_desc with err -517.
+Aging is not fully supported yet, aging time is static for now. The
+follow up submissions will introduce counters that will allow us to
+keep track if the rule is actually being used or not.
 
-And I still have doubts about what I said earlier:
-https://lore.kernel.org/netdev/20230515063200.301026-1-jiawenwu@trustnetic.com/T/#me1be68e1a1e44426ecc0dd8edf0f6b224e50630d
+A few fixes/changes are needed for this feature to work with ice driver.
+These are introduced in first 3 patches.
+---
+v2: two patches were droped from the series:
+    - "ice: Remove exclusion code for RDMA+SRIOV" was sent as separate
+      patch: https://lore.kernel.org/netdev/20230516113055.7336-1-wojciech.drewek@intel.com/
+    - "ice: Ethtool fdb_cnt stats" was dropped because of the comments
+      suggesting that ethtool is not a good option for such statistic.
+      An alternative will be send as a separate patch.
+v3: small changes in patch 5, 7 and 8 including kdoc, style fixes.
 
-There really is nothing wrong with gpiochip_to_irq()??
+Marcin Szycik (2):
+  ice: Add guard rule when creating FDB in switchdev
+  ice: Add VLAN FDB support in switchdev mode
 
-> > > If you are getting errors when removing the driver it means you are
-> > > missing some level of undoing what us done in probe. Are you sure
-> > > regmap_del_irq_chip() is being called on unload?
-> >
-> > I used devm_* all when I registered them.
-> 
-> Look at the ordering. Is regmap_del_irq_chip() being called too late?
-> I've had problems like this with the mv88e6xxx driver and its
-> interrupt controllers. I ended up not using devm_ so i had full
-> control over the order things got undone. In that case, the external
-> devices was PHYs, with the PHY interrupt being inside the Ethernet
-> switch, which i exposed using a Linux interrupt controller.
+Michal Swiatkowski (2):
+  ice: implement bridge port vlan
+  ice: implement static version of ageing
 
-I use no devm_ functions to add regmap irq chip, register gpio regmap,
-and call their del/unregister functions at the position corresponding to
-release. irq_domain_remove() call trace still exist.
+Pawel Chmielewski (1):
+  ice: add tracepoints for the switchdev bridge
 
-[  104.553182] Call Trace:
-[  104.553184]  <TASK>
-[  104.553185]  irq_domain_remove+0x2b/0xe0
-[  104.553190]  regmap_del_irq_chip.part.0+0x8a/0x160
-[  104.553196]  txgbe_remove_phy+0x57/0x80 [txgbe]
-[  104.553201]  txgbe_remove+0x2a/0x90 [txgbe]
-[  104.553205]  pci_device_remove+0x36/0xa0
-[  104.553208]  device_release_driver_internal+0xaa/0x140
-[  104.553213]  driver_detach+0x44/0x90
-[  104.553215]  bus_remove_driver+0x69/0xf0
-[  104.553217]  pci_unregister_driver+0x29/0xb0
-[  104.553220]  __x64_sys_delete_module+0x145/0x240
-[  104.553223]  ? exit_to_user_mode_prepare+0x3c/0x1a0
-[  104.553226]  do_syscall_64+0x3b/0x90
-[  104.553230]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
+Wojciech Drewek (5):
+  ice: Minor switchdev fixes
+  ice: Unset src prune on uplink VSI
+  ice: Implement basic eswitch bridge setup
+  ice: Switchdev FDB events support
+  ice: Accept LAG netdevs in bridge offloads
 
+ drivers/net/ethernet/intel/ice/Makefile       |    2 +-
+ drivers/net/ethernet/intel/ice/ice.h          |    5 +-
+ drivers/net/ethernet/intel/ice/ice_eswitch.c  |   43 +-
+ .../net/ethernet/intel/ice/ice_eswitch_br.c   | 1346 +++++++++++++++++
+ .../net/ethernet/intel/ice/ice_eswitch_br.h   |  121 ++
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   25 +
+ drivers/net/ethernet/intel/ice/ice_lib.h      |    1 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |    6 +-
+ drivers/net/ethernet/intel/ice/ice_repr.c     |    2 +-
+ drivers/net/ethernet/intel/ice/ice_repr.h     |    3 +-
+ drivers/net/ethernet/intel/ice/ice_switch.c   |   97 +-
+ drivers/net/ethernet/intel/ice/ice_switch.h   |    5 +
+ drivers/net/ethernet/intel/ice/ice_trace.h    |   90 ++
+ drivers/net/ethernet/intel/ice/ice_type.h     |    1 +
+ .../ethernet/intel/ice/ice_vf_vsi_vlan_ops.c  |  186 ++-
+ .../ethernet/intel/ice/ice_vf_vsi_vlan_ops.h  |    3 +
+ .../net/ethernet/intel/ice/ice_vsi_vlan_lib.c |   84 +-
+ .../net/ethernet/intel/ice/ice_vsi_vlan_lib.h |    8 +
+ .../net/ethernet/intel/ice/ice_vsi_vlan_ops.h |    1 +
+ 19 files changed, 1896 insertions(+), 133 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch_br.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch_br.h
+
+-- 
+2.40.1
 
 
