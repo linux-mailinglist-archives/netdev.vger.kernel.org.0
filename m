@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4269-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4270-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5D22570BDBD
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:22:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BBD3D70BDBE
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:23:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 18547280CCB
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:22:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7711C281019
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:23:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD66814AAE;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DDBF314AB4;
 	Mon, 22 May 2023 12:17:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C5B214280
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF2CC14AB1
 	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:17:07 +0000 (UTC)
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A8A1BFB;
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4139E1BFC;
 	Mon, 22 May 2023 05:16:49 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id a640c23a62f3a-96652cb7673so945803366b.0;
+Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-96f50e26b8bso750867466b.2;
         Mon, 22 May 2023 05:16:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684757800; x=1687349800;
+        d=gmail.com; s=20221208; t=1684757803; x=1687349803;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7tJgSrsfJjBPduQ55oOsMul7hMtXzANzGQOA9D+BS4Q=;
-        b=ZIVjXqZm2HxwrcjR1rFQj37pSDw/EAe2pmr8IgX7/oRVAdO9D5Mbtu3SPqksLMkREh
-         T9xTkPJ2DH2L0Bm2ImuoBgnY8/k0+e8W9VyG5EHAm1KPXNqJyHAHBcCbCjcRC279kXWE
-         Hwv1G68hkvXY2wx0dvWAg9806gcUAxWQFqrn0WKD4bJ14M8AwDRSaNdVCfY7B+psbCDh
-         T775ROUERYrZTumv4F3HNyvUOp58lEMr0ZMUb2d7H9XQlGDCKoszmThhYdkotT184POj
-         UV8UG5Y/cD/bzTDgSRiUpaY3kc8tSagfqHUSERWDR9NYGfNkbJPw4aDw7Pxr1ncazO4A
-         95vg==
+        bh=oOz3FMLGe/kTMEltMrvKqCCw9Yz4vcJ+Yr7EPAljZ3I=;
+        b=fuq5xMh5QeKKUpQOPlVevL5RMj4Mdz0Tk5r/V+Yu3p+xhEmUXAbcglm14LFiiF9VlS
+         S8kjR8VPmtEjfEZuv2ABY/Cn1QBNbs0pmScOZRUoUkY5bL3jc9EIW97xNRwrdv2e3IZh
+         C+1GKM1j59M8cTCOLX5xnIm3V01MVJ86dxgj+t0daNrMcr0MfFD6hLcdqxp0wv8waVwx
+         xqGzWNFwug5vjs4zIdeqAPPIYL+Z+vj37Q+Tqtaw9kd2t314MoyTxwtbtDH1r2AHyt4s
+         Gl8gpcg+p+JD1dbJgx5Oc9vpulqPvih5H/D2gy8Ld/Gxz6OnUKycO7JBzzgD8aHvIoq8
+         hrsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684757800; x=1687349800;
+        d=1e100.net; s=20221208; t=1684757803; x=1687349803;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7tJgSrsfJjBPduQ55oOsMul7hMtXzANzGQOA9D+BS4Q=;
-        b=XnrvT0+R7C+WnHdD7yuH2mudO81I4jXJiPvuPIEHMbGBfR2KrpthNteJhpHKXHal0v
-         GDlig7/yFmil9d8Z7JQAgXZUbeeAVxj6GuhxjybZWZ6o4jJCAuN8IOn4fWEr88vtXbKS
-         xHZfb56H31snT2Qoc0zD04kIhAngw3K7vWCG8q3eJ5rPNcmAS6dAbLHY7wO/5W/3aK/P
-         6b0Lzm1VluhBz857/tP7BGGDlF4mWQlJiiu2wJMNbUI/KguSRIUp1yVbS4ZF+vFkxBwD
-         oNXdtuSi2tVJPz19eXdiahNS6n2nUuWBMKLQDJQ2gp3DxN/FRHKyZcLV2sG/uuTAnQ/D
-         UJLA==
-X-Gm-Message-State: AC+VfDwzPCkY4usZdh1pqj7Z5AaD/ncJHzuU3fVGrzy9DnVC8guC/uuE
-	GRnXCHv9wl0eMMhE2J8i4SI=
-X-Google-Smtp-Source: ACHHUZ72VmGhmmYTe0AopjokPSVMzaGVY/fJu0fyOgd/aAvX2GqtNUrGr+ViNueHkprxGWrI+408+w==
-X-Received: by 2002:a17:907:7f8c:b0:96a:5e38:ba49 with SMTP id qk12-20020a1709077f8c00b0096a5e38ba49mr10976896ejc.2.1684757799838;
-        Mon, 22 May 2023 05:16:39 -0700 (PDT)
+        bh=oOz3FMLGe/kTMEltMrvKqCCw9Yz4vcJ+Yr7EPAljZ3I=;
+        b=G7IDO29YMOmB8N4y0pNEp2f6luPslhjZAN7jDYM9Aeb8Xs3TA9204dEepPRtIJUihq
+         w0lLHNjKxTrnF8E29iAsHEa9VJAIyksznNcMzHhqLai9SC2t683EpX9RTwcI502Gf/Og
+         1TQj+hwut47XL75zNFMzkv6sNg9jVMN2LVL9+qUrhzzNXMjCtdAE06HeaR8a/R+U9xDx
+         Jbq+lx57BNBFCpjAcJWur8Xe5KIWtL5riIwZSibDgbhkST88Z+6HCfJ6ZMCAxe4oVTnU
+         j+TRNrQMGSt+PuRB2MC1/YemU6S6uJwoZWCYinuA5s065dIviOn8nnu2ACKJbjgF1ULx
+         F+Yw==
+X-Gm-Message-State: AC+VfDyrxEtZQlR+eSnUTNqhrxXpR0xTrC2V++dSptO3AVk/esuJLNEs
+	R+PfNGtIP+QQRKB7JiPEBWlIfR2f1XzAq1Bv
+X-Google-Smtp-Source: ACHHUZ7axMa1F5LzzMgJRwk3Tc7YfoPBpyFJ6l9vcFkJW1FELcAvedTGajpVnr2j57Ka8knzp60tYw==
+X-Received: by 2002:a17:907:3604:b0:94f:6d10:ad9f with SMTP id bk4-20020a170907360400b0094f6d10ad9fmr9384418ejc.42.1684757802926;
+        Mon, 22 May 2023 05:16:42 -0700 (PDT)
 Received: from arinc9-PC.. ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.16.37
+        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.16.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 05:16:39 -0700 (PDT)
+        Mon, 22 May 2023 05:16:42 -0700 (PDT)
 From: arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To: Sean Wang <sean.wang@mediatek.com>,
@@ -83,9 +83,9 @@ Cc: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 18/30] net: dsa: mt7530: remove .mac_port_config for MT7988 and make it optional
-Date: Mon, 22 May 2023 15:15:20 +0300
-Message-Id: <20230522121532.86610-19-arinc.unal@arinc9.com>
+Subject: [PATCH net-next 19/30] net: dsa: mt7530: set interrupt register only for MT7530
+Date: Mon, 22 May 2023 15:15:21 +0300
+Message-Id: <20230522121532.86610-20-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230522121532.86610-1-arinc.unal@arinc9.com>
 References: <20230522121532.86610-1-arinc.unal@arinc9.com>
@@ -106,75 +106,29 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-For the switch on the MT7988 SoC, the code in mac_port_config for MT7988 is
-not needed as the interface of the CPU port is already handled on
-mt7988_mac_port_get_caps().
+Setting this register related to interrupts is only needed for the MT7530
+switch. Make an exclusive check to ensure this.
 
-Make .mac_port_config optional. Before calling
-priv->info->mac_port_config(), if there's no mac_port_config member in the
-priv->info table, exit mt753x_mac_config() successfully.
-
-Remove mac_port_config from the sanity check as the sanity check requires a
-pointer to a mac_port_config function to be non-NULL. This will fail for
-MT7988 as mac_port_config won't be a member of its info table.
-
-Co-developed-by: Daniel Golle <daniel@makrotopia.org>
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Acked-by: Daniel Golle <daniel@makrotopia.org>
+Tested-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/dsa/mt7530.c | 18 ++++--------------
- 1 file changed, 4 insertions(+), 14 deletions(-)
+ drivers/net/dsa/mt7530.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index f017cc028183..99f5da8b27be 100644
+index 99f5da8b27be..0c261ef87bee 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2614,17 +2614,6 @@ static bool mt753x_is_mac_port(u32 port)
- 	return (port == 5 || port == 6);
- }
+@@ -2029,7 +2029,7 @@ mt7530_setup_irq(struct mt7530_priv *priv)
+ 	}
  
--static int
--mt7988_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
--		  phy_interface_t interface)
--{
--	if (dsa_is_cpu_port(ds, port) &&
--	    interface == PHY_INTERFACE_MODE_INTERNAL)
--		return 0;
--
--	return -EINVAL;
--}
--
- static int
- mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		  phy_interface_t interface)
-@@ -2665,6 +2654,9 @@ mt753x_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- {
- 	struct mt7530_priv *priv = ds->priv;
+ 	/* This register must be set for MT7530 to properly fire interrupts */
+-	if (priv->id != ID_MT7531)
++	if (priv->id == ID_MT7530 || priv->id == ID_MT7621)
+ 		mt7530_set(priv, MT7530_TOP_SIG_CTRL, TOP_SIG_CTRL_NORMAL);
  
-+	if (!priv->info->mac_port_config)
-+		return 0;
-+
- 	return priv->info->mac_port_config(ds, port, mode, state->interface);
- }
- 
-@@ -3108,7 +3100,6 @@ const struct mt753x_info mt753x_table[] = {
- 		.phy_write_c45 = mt7531_ind_c45_phy_write,
- 		.cpu_port_config = mt7988_cpu_port_config,
- 		.mac_port_get_caps = mt7988_mac_port_get_caps,
--		.mac_port_config = mt7988_mac_config,
- 	},
- };
- EXPORT_SYMBOL_GPL(mt753x_table);
-@@ -3136,8 +3127,7 @@ mt7530_probe_common(struct mt7530_priv *priv)
- 	 * properly.
- 	 */
- 	if (!priv->info->sw_setup || !priv->info->phy_read_c22 ||
--	    !priv->info->phy_write_c22 || !priv->info->mac_port_get_caps ||
--	    !priv->info->mac_port_config)
-+	    !priv->info->phy_write_c22 || !priv->info->mac_port_get_caps)
- 		return -EINVAL;
- 
- 	priv->id = priv->info->id;
+ 	ret = request_threaded_irq(priv->irq, NULL, mt7530_irq_thread_fn,
 -- 
 2.39.2
 
