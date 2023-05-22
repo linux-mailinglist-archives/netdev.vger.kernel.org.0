@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-4237-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4238-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4D46470BD06
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:12:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 361EA70BD0E
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:12:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0860F280F3F
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:12:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EE35D280E25
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:12:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C3F7D529;
-	Mon, 22 May 2023 12:11:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D671AD506;
+	Mon, 22 May 2023 12:11:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47095D519
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:11:45 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C110AC
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 05:11:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9B6A10798
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:11:51 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4742BBB
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 05:11:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684757502;
+	s=mimecast20190719; t=1684757509;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=Fl+2zC2cOWTcM7FjMckfIDo5NeTUJ6H1d1XKuMzp1Mk=;
-	b=hCdxWYvMDHswpr+Xopn36wMPo8+PC2xmNW5Unz0JvSQvoOi8k0mo8XUhBueLq1XV2egsSS
-	KNhfGOI9KquZszPbmJeOjS5KOB+8gTYheY1f7VDay/e2lt84i1vlSlQDA2L1RlJRib0aXG
-	9jzd8pIpU9W5oeP7mkMWHBo0Nb+MOEM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=CbEUQCnChP/PzTidzzQWL6iO0yyE2e0IQp2l4Z4U9vY=;
+	b=NFnR58PXh8J8WJM+cE4sCMP22Gg/MVfgMuk8pWCUmmYzTG4l11KgxgSfuyn9frfsdD/U/0
+	QuVRZi3C0+2jHb0LwOJFND569SJyDiwfuzLwuycdlylYmESpkXJQxHI1dQmN4A6ICVOcyL
+	maH2lLv9XsxpiNs5HS/X9tHzTAu+Yt4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-569-AAbKytGoOYy6qpGKlO0Rjg-1; Mon, 22 May 2023 08:11:41 -0400
-X-MC-Unique: AAbKytGoOYy6qpGKlO0Rjg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+ us-mta-316-9JSwXOCGNNaJscCJXa4Eqg-1; Mon, 22 May 2023 08:11:44 -0400
+X-MC-Unique: 9JSwXOCGNNaJscCJXa4Eqg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 12CA4185A78F;
-	Mon, 22 May 2023 12:11:40 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5FC812A5956E;
+	Mon, 22 May 2023 12:11:43 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 90F96140E95D;
-	Mon, 22 May 2023 12:11:37 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id C96347B7C;
+	Mon, 22 May 2023 12:11:40 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org
 Cc: David Howells <dhowells@redhat.com>,
@@ -64,9 +64,9 @@ Cc: David Howells <dhowells@redhat.com>,
 	linux-fsdevel@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-mm@kvack.org
-Subject: [PATCH net-next v10 03/16] net: Add a function to splice pages into an skbuff for MSG_SPLICE_PAGES
-Date: Mon, 22 May 2023 13:11:12 +0100
-Message-Id: <20230522121125.2595254-4-dhowells@redhat.com>
+Subject: [PATCH net-next v10 04/16] tcp: Support MSG_SPLICE_PAGES
+Date: Mon, 22 May 2023 13:11:13 +0100
+Message-Id: <20230522121125.2595254-5-dhowells@redhat.com>
 In-Reply-To: <20230522121125.2595254-1-dhowells@redhat.com>
 References: <20230522121125.2595254-1-dhowells@redhat.com>
 Precedence: bulk
@@ -76,17 +76,19 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add a function to handle MSG_SPLICE_PAGES being passed internally to
-sendmsg().  Pages are spliced into the given socket buffer if possible and
-copied in if not (e.g. they're slab pages or have a zero refcount).
+Make TCP's sendmsg() support MSG_SPLICE_PAGES.  This causes pages to be
+spliced or copied (if it cannot be spliced) from the source iterator.
+
+This allows ->sendpage() to be replaced by something that can handle
+multiple multipage folios in a single transaction.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Eric Dumazet <edumazet@google.com>
@@ -94,134 +96,122 @@ cc: "David S. Miller" <davem@davemloft.net>
 cc: David Ahern <dsahern@kernel.org>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
-cc: Al Viro <viro@zeniv.linux.org.uk>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
 cc: netdev@vger.kernel.org
 ---
 
 Notes:
-    ver #8)
-     - Order local variables in reverse xmas tree order.
-     - Remove duplicate coalescence check.
-     - Warn if sendpage_ok() fails.
+    ver #9)
+     - Fix a merge conflict with commit eea96a3e2c909.
     
     ver #7)
-     - Export function.
-     - Never copy data, return -EIO if sendpage_ok() returns false.
+     - Missed a "zc = 1" in tcp_sendmsg_locked().
+    
+    ver #6)
+     - Set zc to 0/MSG_ZEROCOPY/MSG_SPLICE_PAGES rather than 0/1/2.
+     - Use common helper.
 
- include/linux/skbuff.h |  3 ++
- net/core/skbuff.c      | 88 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 91 insertions(+)
+ net/ipv4/tcp.c | 43 ++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 36 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 15011408c47c..1b2ebf6113e0 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -5097,5 +5097,8 @@ static inline void skb_mark_for_recycle(struct sk_buff *skb)
- #endif
- }
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 3d18e295bb2f..2d61150d01f1 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1223,7 +1223,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 	int flags, err, copied = 0;
+ 	int mss_now = 0, size_goal, copied_syn = 0;
+ 	int process_backlog = 0;
+-	bool zc = false;
++	int zc = 0;
+ 	long timeo;
  
-+ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
-+			     ssize_t maxsize, gfp_t gfp);
+ 	flags = msg->msg_flags;
+@@ -1231,7 +1231,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 	if ((flags & MSG_ZEROCOPY) && size) {
+ 		if (msg->msg_ubuf) {
+ 			uarg = msg->msg_ubuf;
+-			zc = sk->sk_route_caps & NETIF_F_SG;
++			if (sk->sk_route_caps & NETIF_F_SG)
++				zc = MSG_ZEROCOPY;
+ 		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
+ 			skb = tcp_write_queue_tail(sk);
+ 			uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
+@@ -1239,10 +1240,14 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 				err = -ENOBUFS;
+ 				goto out_err;
+ 			}
+-			zc = sk->sk_route_caps & NETIF_F_SG;
+-			if (!zc)
++			if (sk->sk_route_caps & NETIF_F_SG)
++				zc = MSG_ZEROCOPY;
++			else
+ 				uarg_to_msgzc(uarg)->zerocopy = 0;
+ 		}
++	} else if (unlikely(msg->msg_flags & MSG_SPLICE_PAGES) && size) {
++		if (sk->sk_route_caps & NETIF_F_SG)
++			zc = MSG_SPLICE_PAGES;
+ 	}
+ 
+ 	if (unlikely(flags & MSG_FASTOPEN || inet_sk(sk)->defer_connect) &&
+@@ -1305,7 +1310,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 		goto do_error;
+ 
+ 	while (msg_data_left(msg)) {
+-		int copy = 0;
++		ssize_t copy = 0;
+ 
+ 		skb = tcp_write_queue_tail(sk);
+ 		if (skb)
+@@ -1346,7 +1351,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 		if (copy > msg_data_left(msg))
+ 			copy = msg_data_left(msg);
+ 
+-		if (!zc) {
++		if (zc == 0) {
+ 			bool merge = true;
+ 			int i = skb_shinfo(skb)->nr_frags;
+ 			struct page_frag *pfrag = sk_page_frag(sk);
+@@ -1391,7 +1396,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 				page_ref_inc(pfrag->page);
+ 			}
+ 			pfrag->offset += copy;
+-		} else {
++		} else if (zc == MSG_ZEROCOPY)  {
+ 			/* First append to a fragless skb builds initial
+ 			 * pure zerocopy skb
+ 			 */
+@@ -1412,6 +1417,30 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 			if (err < 0)
+ 				goto do_error;
+ 			copy = err;
++		} else if (zc == MSG_SPLICE_PAGES) {
++			/* Splice in data if we can; copy if we can't. */
++			if (tcp_downgrade_zcopy_pure(sk, skb))
++				goto wait_for_space;
++			copy = tcp_wmem_schedule(sk, copy);
++			if (!copy)
++				goto wait_for_space;
 +
- #endif	/* __KERNEL__ */
- #endif	/* _LINUX_SKBUFF_H */
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 7f53dcb26ad3..f4a5b51aed22 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -6892,3 +6892,91 @@ nodefer:	__kfree_skb(skb);
- 	if (unlikely(kick) && !cmpxchg(&sd->defer_ipi_scheduled, 0, 1))
- 		smp_call_function_single_async(cpu, &sd->defer_csd);
- }
-+
-+static void skb_splice_csum_page(struct sk_buff *skb, struct page *page,
-+				 size_t offset, size_t len)
-+{
-+	const char *kaddr;
-+	__wsum csum;
-+
-+	kaddr = kmap_local_page(page);
-+	csum = csum_partial(kaddr + offset, len, 0);
-+	kunmap_local(kaddr);
-+	skb->csum = csum_block_add(skb->csum, csum, skb->len);
-+}
-+
-+/**
-+ * skb_splice_from_iter - Splice (or copy) pages to skbuff
-+ * @skb: The buffer to add pages to
-+ * @iter: Iterator representing the pages to be added
-+ * @maxsize: Maximum amount of pages to be added
-+ * @gfp: Allocation flags
-+ *
-+ * This is a common helper function for supporting MSG_SPLICE_PAGES.  It
-+ * extracts pages from an iterator and adds them to the socket buffer if
-+ * possible, copying them to fragments if not possible (such as if they're slab
-+ * pages).
-+ *
-+ * Returns the amount of data spliced/copied or -EMSGSIZE if there's
-+ * insufficient space in the buffer to transfer anything.
-+ */
-+ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
-+			     ssize_t maxsize, gfp_t gfp)
-+{
-+	size_t frag_limit = READ_ONCE(sysctl_max_skb_frags);
-+	struct page *pages[8], **ppages = pages;
-+	ssize_t spliced = 0, ret = 0;
-+	unsigned int i;
-+
-+	while (iter->count > 0) {
-+		ssize_t space, nr;
-+		size_t off, len;
-+
-+		ret = -EMSGSIZE;
-+		space = frag_limit - skb_shinfo(skb)->nr_frags;
-+		if (space < 0)
-+			break;
-+
-+		/* We might be able to coalesce without increasing nr_frags */
-+		nr = clamp_t(size_t, space, 1, ARRAY_SIZE(pages));
-+
-+		len = iov_iter_extract_pages(iter, &ppages, maxsize, nr, 0, &off);
-+		if (len <= 0) {
-+			ret = len ?: -EIO;
-+			break;
-+		}
-+
-+		i = 0;
-+		do {
-+			struct page *page = pages[i++];
-+			size_t part = min_t(size_t, PAGE_SIZE - off, len);
-+
-+			ret = -EIO;
-+			if (WARN_ON_ONCE(!sendpage_ok(page)))
-+				goto out;
-+
-+			ret = skb_append_pagefrags(skb, page, off, part,
-+						   frag_limit);
-+			if (ret < 0) {
-+				iov_iter_revert(iter, len);
-+				goto out;
++			err = skb_splice_from_iter(skb, &msg->msg_iter, copy,
++						   sk->sk_allocation);
++			if (err < 0) {
++				if (err == -EMSGSIZE) {
++					tcp_mark_push(tp, skb);
++					goto new_segment;
++				}
++				goto do_error;
 +			}
++			copy = err;
 +
-+			if (skb->ip_summed == CHECKSUM_NONE)
-+				skb_splice_csum_page(skb, page, off, part);
++			if (!(flags & MSG_NO_SHARED_FRAGS))
++				skb_shinfo(skb)->flags |= SKBFL_SHARED_FRAG;
 +
-+			off = 0;
-+			spliced += part;
-+			maxsize -= part;
-+			len -= part;
-+		} while (len > 0);
-+
-+		if (maxsize <= 0)
-+			break;
-+	}
-+
-+out:
-+	skb_len_add(skb, spliced);
-+	return spliced ?: ret;
-+}
-+EXPORT_SYMBOL(skb_splice_from_iter);
++			sk_wmem_queued_add(sk, copy);
++			sk_mem_charge(sk, copy);
+ 		}
+ 
+ 		if (!copied)
 
 
