@@ -1,72 +1,68 @@
-Return-Path: <netdev+bounces-4283-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4285-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4E58C70BE47
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:29:19 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4A60170BE51
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:29:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DF7C6280F62
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:29:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 00012281023
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:29:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D6DC512B68;
-	Mon, 22 May 2023 12:29:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D7739134AF;
+	Mon, 22 May 2023 12:29:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C51D74408
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:29:15 +0000 (UTC)
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on20602.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::602])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC5130DD;
-	Mon, 22 May 2023 05:28:59 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C273012B98
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:29:37 +0000 (UTC)
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2047.outbound.protection.outlook.com [40.107.95.47])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DBC3A84;
+	Mon, 22 May 2023 05:29:21 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SZJmbhzffQd9NjlKb6HsuwotfwwYgiBJqq1squoZM/2By8VryNuXa2lhS/xO94vx/SSF62G2d4jKkYROfHYwZrE+2i/KgCZeFdQEXSnFo4k2UAE4h+e27fCrqEfcfsG6FycFOxCbVhIkmESFRkDat7umoSR/6aaNBB6qPhT1/snx0roPBsyuma403JFqs8PngRM7IG14ltvLLsOF+7bhYWwzN+UAf5/y0rthEoHMrYVsDZ+tDHJVNJGKckg7ZtOg2TggUmgkJRv1zsC+aohlxCBRLOk1v9ONTT4gCGmpk5zmpjYJgn8AHxg1Dph/dj4jl+HniB5Mb/Yitn30ogWqmA==
+ b=cWecK0T7ziFkCDkGw+wxVp/AqLIkFB0NMCDg+DKRZnn08XhXrKZH39PhUlU6N4/dGBzkKvcP4stdNcyC9NEBCQJ0c3q4eoQ5Z86zoQNN2kDcI1jcFSIoo1Vt8EqcdOs5oj5oIMweeWCCY1sReS0YyzQD90AO/4En2w1vtic+PO5lHds5eJ9GSByGltW2zFP27m86oC07++bC5/RnLdGyBX+rjs9bZo9GTc6mhdtir7KHkYK18QXXdgKuE5Dg8SL1db7TOawVPDRh1bNUuAS+Allf7eOOiLNTqUqhSXnjgbTN9s3UpA2v9T2AYtKKvxllxNLch09L4mISCxo8ANj8dQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X7r/kjK4NRKOVUW/2dCy/XmqFpNCgUrBXxtbeQJXiRc=;
- b=TvtSMIkObbP3tw/Pg+2GI57CS63PsgcJ2N9VoK1C6oFL61Xz324Vq0GlvzyevafRPLMcSJIP6kRSF6wmSrbwiB5pnM21q+2OyLnOK3rucirAPtfrGaxQwuGpixtLiI3NDZT9UHxFKTZfOItkG0iH2hWGiTRDNPDb+u9ifb1TE7HwX75CzTFmRByt5/JLiAvu3CACN2a6/24RGlC2+TJ7APHsfrZ/lMYXrqKkeQwUH5DTRQBGObL7IvAK2fdzhocxdjwk/IB1gycAMojXeoZS3bKxTaPcUjnabEc2K4UVQ+WdmGLt+vKqyesh1bUXsieoTPSJmrGR+Zl4a/Th3d0elA==
+ bh=xjWvhhOpIvwNON+JrXCbekbx9u1vYsFFzdO3lBlfwJU=;
+ b=Qk0zfuqxw1nD7mA0o1IQWTCO/s2kyg183vswoDrPJG2TaeF5CNZjXYu36mIeglSiX+UtNuvMTFT+GKVbT5hndsiH/m9a4zc1k8TN4/4sJg/ljMSuNGPPGpI40CRYxnGh4tCSGfEe2ZaGcsrOFFZGhOu5FAmRVLEEIM/kKWpMnnrAE5lkHcTum1qIzhZey+Iwx1T9pvaNQ2++ct6obFsX6A5CjVybWG1b2dRutUKu85KSKJ+kvZTBe8EG6BEyIjHWTTw5DEgxj02CNnIXKQytf2LCtwUOraEGxYq2trgxFnHOHOItoKxtDldfOrSf5hFCg2PCDJBsWgXcddKrXGdPTQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lunn.ch smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X7r/kjK4NRKOVUW/2dCy/XmqFpNCgUrBXxtbeQJXiRc=;
- b=hgjMu+IJYk+ng4HnWhOTJo2ljMKb/xbmfOgqjvkpy/1Uh6AwmvkdifPnEIbX7nm4fIktKLb9BwgfXBSBibpVhd84x9kbAKXuXWm4BSIrZdtyqQU0JdPqLUrxVbCJz5+A6dKcP2umaYC11cNdiEONEH+41XGuMBz9bEWmZ9r3EvI=
-Received: from DM6PR18CA0004.namprd18.prod.outlook.com (2603:10b6:5:15b::17)
- by PH7PR12MB7819.namprd12.prod.outlook.com (2603:10b6:510:27f::5) with
+ bh=xjWvhhOpIvwNON+JrXCbekbx9u1vYsFFzdO3lBlfwJU=;
+ b=SylCXFVcR7DlTKVTIX1AVPnxDCifhKxygtow/F+SsviSZjvo3cyALpRAX35jFQ6jW/jL4tzRqjtS2uyuIACwC9coR/QI3x+Oh+AWGsY+tBAlL12IQVVxbE/D38sC5munlGFN32hUNJvUhPNIAY3ptNsn/hlQItaleCs+IrTX5DY=
+Received: from BYAPR02CA0012.namprd02.prod.outlook.com (2603:10b6:a02:ee::25)
+ by DM8PR12MB5480.namprd12.prod.outlook.com (2603:10b6:8:24::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Mon, 22 May
- 2023 12:28:40 +0000
-Received: from DS1PEPF0000E639.namprd02.prod.outlook.com
- (2603:10b6:5:15b:cafe::8c) by DM6PR18CA0004.outlook.office365.com
- (2603:10b6:5:15b::17) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 12:28:46 +0000
+Received: from DM6NAM11FT018.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:a02:ee:cafe::3d) by BYAPR02CA0012.outlook.office365.com
+ (2603:10b6:a02:ee::25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28 via Frontend
- Transport; Mon, 22 May 2023 12:28:39 +0000
+ Transport; Mon, 22 May 2023 12:28:45 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DS1PEPF0000E639.mail.protection.outlook.com (10.167.17.71) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6433.12 via Frontend Transport; Mon, 22 May 2023 12:28:39 +0000
-Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ DM6NAM11FT018.mail.protection.outlook.com (10.13.172.110) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6411.28 via Frontend Transport; Mon, 22 May 2023 12:28:45 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 22 May
- 2023 07:28:39 -0500
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB06.amd.com
- (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 22 May
- 2023 07:28:38 -0500
+ 2023 07:28:43 -0500
 Received: from xhdharinik40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
  (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Mon, 22 May 2023 07:28:34 -0500
+ Transport; Mon, 22 May 2023 07:28:39 -0500
 From: Harini Katakam <harini.katakam@amd.com>
 To: <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
 	<davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
@@ -75,9 +71,9 @@ To: <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
 CC: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<harinikatakamlinux@gmail.com>, <michal.simek@amd.com>,
 	<harini.katakam@amd.com>, <radhey.shyam.pandey@amd.com>
-Subject: [PATCH net-next v4 1/2] phy: mscc: Use PHY_ID_MATCH_VENDOR to minimize PHY ID table
-Date: Mon, 22 May 2023 17:58:28 +0530
-Message-ID: <20230522122829.24945-2-harini.katakam@amd.com>
+Subject: [PATCH net-next v4 2/2] phy: mscc: Add support for RGMII delay configuration
+Date: Mon, 22 May 2023 17:58:29 +0530
+Message-ID: <20230522122829.24945-3-harini.katakam@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230522122829.24945-1-harini.katakam@amd.com>
 References: <20230522122829.24945-1-harini.katakam@amd.com>
@@ -90,88 +86,129 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E639:EE_|PH7PR12MB7819:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5125cf15-5dc7-473a-cca1-08db5ac012b9
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT018:EE_|DM8PR12MB5480:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0577aaf5-bab9-4261-909d-08db5ac0163a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	64FT0+rNetagS4n5bg6tY4BJn8G+ZqLGOuzKnU4ePpu6+zxE8yAPHwgBS89P9WFr9Dxx8TZMA/I3X23mUYnN0ufqZknDC8xQpF5m1Z9HWvpH04j6rh2G1sDrtvyeCJkjFmWXiMjcNsj+jA+0PZDqgO7xtdeS7XNfWfsqOTbZhHGWasU39HaSzI8J3w8asVnSh30NPDbjcyIBFMDj2Q6gFa/vsGaJ2XtzmtHZhDuGteC6t8OR5MKnAxY/sp9jgoYOZuUw59PSi64hq2gEf/H0mEZ5X/9Xf4yXsUjvseUmX1TfWVVU/qDHSjf9WASAmAFUcITASNuyK/ibzuF5yKZYvb+qFoOEj53zVHtnmGQasro0HoNR/VuHRWQYvb7mZQCt9gDYEBmcGX3uKjQeLwtkJqAvJTVGics+gSPsp6d85kiaWx4aKY0pwId0e8Zhc97r+/EmUZoczrrCqCkAcVAdbK+2tUlBT5s++T1HeZ1vBCP8zhLXZ+TAiRBxXdnedhcosggZFIrs3ueKWDAJBEAtYoirhJlf2deBFBYKs4rjTaZH+CY/XFRt1VgObC3Zlq8qJ8syOCLRRqBmPCSg2h1fWvGq3xkVQWiRA8S2AkivpzmeFdk2KLBNrnWSVcoQYIm34EhGDWR60iWm1dHe6SmmLpjoD2LaNmpOQg/ubnTeP7GMV1uamrWwfgwdCasAteSzzs2yVqpRRvhCf9RaZF+W/MdeOvHqO4OVelRypkJ0GQsZLyfURFKZ+XhmYI+lerk3BoRX8qV0bEsmcmn//fVaqfu/pgVeHwon9HkqUa0TDJY=
+	YqgzBupBGL6SoZHLYpFbHALynBB4Q16ecpfcE3R/PYH9RCcfVifRe7ZK1w7R6HYHP0O8zADkNv/VX5q4k/u0Nzx83bWNgo0w2s9A+a8r16D68/8enwf+FwScSO8HbB3py+FzxOqOZWRT39mjcICtwrOKJ1clHZQfgbVsVofzV1NXBlEmeinJYedjJdMwAv7/1oP6eF58BPPtMfyYofaMnzF6MpUxRVvWT2bBWJp2fmOg/+v2A5kFifnsNjZPAWzIl1GxXJDkA+txD/NlH3IwHEaELzsAh3MOl4I/Bx73UbroGvcxRpBv4A7GS03/OnyzQzsNTJVivV4+MYeVrv0ydjDWPUpcgaU1v/nTqq0HmpRWPtZHbmuiZEjY+HjYG9q45uShXMvoLSyPmGvyeyLgW38xxED8G/XZrI0LlU6Mjwvbk71TtRHWHDNa9cJp1qIQ0bUL8LsvhpPDJ6gpG9JEOwNcXaPAoWq3SHdFKzjXT5m7hSHrflXnJetnJzx4ES/1Fbit7FSku71DQlFcjhoj4KmEzXLtSjDl311egMFoZhNlFbEKDQ7tM5EEcfx9mAwX8h9O3TjYm/Q9WCSdIcmRIbmY2tgdRCZX/YBiUcUZQpTYs0D2SAQPdUwtwnRykpJWEurCekqR9guGrCTBud86BM5XsWmYIxewxDXXkOz3HC40LDhePU/E59K6fbEhCXdAoCvLIz9ILhtvDhowBAywbGiyjTaTw2W2QtBhYsuU7b6/zYE9VwF5iBgC0zBhp2WPLmwJ3eF9h0KYxJq917cnHg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(396003)(136003)(376002)(451199021)(36840700001)(46966006)(40470700004)(478600001)(54906003)(110136005)(5660300002)(26005)(41300700001)(6666004)(186003)(316002)(4326008)(44832011)(1076003)(7416002)(336012)(8936002)(8676002)(426003)(2906002)(47076005)(2616005)(36860700001)(83380400001)(70206006)(70586007)(82740400003)(356005)(921005)(81166007)(36756003)(82310400005)(40460700003)(86362001)(40480700001)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(376002)(396003)(346002)(451199021)(36840700001)(40470700004)(46966006)(2906002)(110136005)(54906003)(5660300002)(44832011)(7416002)(36860700001)(82310400005)(47076005)(8676002)(8936002)(40460700003)(41300700001)(316002)(70206006)(70586007)(478600001)(4326008)(36756003)(40480700001)(40140700001)(6666004)(966005)(336012)(1076003)(81166007)(86362001)(2616005)(26005)(186003)(83380400001)(82740400003)(921005)(356005)(426003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2023 12:28:39.6662
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2023 12:28:45.5277
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5125cf15-5dc7-473a-cca1-08db5ac012b9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0577aaf5-bab9-4261-909d-08db5ac0163a
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF0000E639.namprd02.prod.outlook.com
+	DM6NAM11FT018.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7819
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5480
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-All the PHY devices variants specified have the same mask and
-hence can be simplified to one vendor look up for 0x00070400.
-Any individual config can be identified by PHY_ID_MATCH_EXACT
-in the respective structure.
+Add support for optional rx/tx-internal-delay-ps from devicetree.
+- When rx/tx-internal-delay-ps is/are specified, these take priority
+- When either is absent,
+1) use 2ns for respective settings if rgmii-id/rxid/txid is/are present
+2) use 0.2ns for respective settings if mode is rgmii
 
 Signed-off-by: Harini Katakam <harini.katakam@amd.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
 v4:
-Added Andrew's tag
-v3:
-Correct vendor ID
-v2:
-New patch
- drivers/net/phy/mscc/mscc.h      |  1 +
- drivers/net/phy/mscc/mscc_main.c | 14 +-------------
- 2 files changed, 2 insertions(+), 13 deletions(-)
+Fix type of rx_delay and tx_delay
+Reported by Simon Horman and
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202305140248.lh4LUw2j-lkp@intel.com/
+v3 - Patch split:
+- Use rx/tx-internal-delay-ps with phy_get_internal_delay
+- Change RGMII delay selection precedence
+- Update commit description and subject everywhere to say RGMII delays
+instead of RGMII tuning.
+ drivers/net/phy/mscc/mscc.h      |  2 ++
+ drivers/net/phy/mscc/mscc_main.c | 35 +++++++++++++++++++++++++-------
+ 2 files changed, 30 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-index a50235fdf7d9..9acee8759105 100644
+index 9acee8759105..900bf37db9de 100644
 --- a/drivers/net/phy/mscc/mscc.h
 +++ b/drivers/net/phy/mscc/mscc.h
-@@ -290,6 +290,7 @@ enum rgmii_clock_delay {
- #define PHY_ID_VSC8575			  0x000707d0
- #define PHY_ID_VSC8582			  0x000707b0
- #define PHY_ID_VSC8584			  0x000707c0
-+#define PHY_VENDOR_MSCC			0x00070400
+@@ -374,6 +374,8 @@ struct vsc8531_private {
+ 	 * package.
+ 	 */
+ 	unsigned int base_addr;
++	s32 rx_delay;
++	s32 tx_delay;
  
- #define MSCC_VDDMAC_1500		  1500
- #define MSCC_VDDMAC_1800		  1800
+ #if IS_ENABLED(CONFIG_MACSEC)
+ 	/* MACsec fields:
 diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 62bf99e45af1..91010524e03d 100644
+index 91010524e03d..9e856231e464 100644
 --- a/drivers/net/phy/mscc/mscc_main.c
 +++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -2656,19 +2656,7 @@ static struct phy_driver vsc85xx_driver[] = {
- module_phy_driver(vsc85xx_driver);
+@@ -525,17 +525,14 @@ static int vsc85xx_rgmii_set_skews(struct phy_device *phydev, u32 rgmii_cntl,
+ {
+ 	u16 rgmii_rx_delay_pos = ffs(rgmii_rx_delay_mask) - 1;
+ 	u16 rgmii_tx_delay_pos = ffs(rgmii_tx_delay_mask) - 1;
++	struct vsc8531_private *vsc8531 = phydev->priv;
+ 	u16 reg_val = 0;
+ 	int rc;
  
- static struct mdio_device_id __maybe_unused vsc85xx_tbl[] = {
--	{ PHY_ID_VSC8504, 0xfffffff0, },
--	{ PHY_ID_VSC8514, 0xfffffff0, },
--	{ PHY_ID_VSC8530, 0xfffffff0, },
--	{ PHY_ID_VSC8531, 0xfffffff0, },
--	{ PHY_ID_VSC8540, 0xfffffff0, },
--	{ PHY_ID_VSC8541, 0xfffffff0, },
--	{ PHY_ID_VSC8552, 0xfffffff0, },
--	{ PHY_ID_VSC856X, 0xfffffff0, },
--	{ PHY_ID_VSC8572, 0xfffffff0, },
--	{ PHY_ID_VSC8574, 0xfffffff0, },
--	{ PHY_ID_VSC8575, 0xfffffff0, },
--	{ PHY_ID_VSC8582, 0xfffffff0, },
--	{ PHY_ID_VSC8584, 0xfffffff0, },
-+	{ PHY_ID_MATCH_VENDOR(PHY_VENDOR_MSCC) },
- 	{ }
- };
+ 	mutex_lock(&phydev->lock);
  
+-	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
+-	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+-		reg_val |= RGMII_CLK_DELAY_2_0_NS << rgmii_rx_delay_pos;
+-	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
+-	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+-		reg_val |= RGMII_CLK_DELAY_2_0_NS << rgmii_tx_delay_pos;
++	reg_val |= vsc8531->rx_delay << rgmii_rx_delay_pos;
++	reg_val |= vsc8531->tx_delay << rgmii_tx_delay_pos;
+ 
+ 	rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
+ 			      rgmii_cntl,
+@@ -1808,10 +1805,34 @@ static irqreturn_t vsc8584_handle_interrupt(struct phy_device *phydev)
+ 	return IRQ_HANDLED;
+ }
+ 
++static const int vsc8531_internal_delay[] = {200, 800, 1100, 1700, 2000, 2300,
++					     2600, 3400};
+ static int vsc85xx_config_init(struct phy_device *phydev)
+ {
+-	int rc, i, phy_id;
++	int delay_size = ARRAY_SIZE(vsc8531_internal_delay);
+ 	struct vsc8531_private *vsc8531 = phydev->priv;
++	struct device *dev = &phydev->mdio.dev;
++	int rc, i, phy_id;
++
++	vsc8531->rx_delay = phy_get_internal_delay(phydev, dev, &vsc8531_internal_delay[0],
++						   delay_size, true);
++	if (vsc8531->rx_delay < 0) {
++		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
++		    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
++			vsc8531->rx_delay = RGMII_CLK_DELAY_2_0_NS;
++		else
++			vsc8531->rx_delay = RGMII_CLK_DELAY_0_2_NS;
++	}
++
++	vsc8531->tx_delay = phy_get_internal_delay(phydev, dev, &vsc8531_internal_delay[0],
++						   delay_size, false);
++	if (vsc8531->tx_delay < 0) {
++		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
++		    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
++			vsc8531->rx_delay = RGMII_CLK_DELAY_2_0_NS;
++		else
++			vsc8531->rx_delay = RGMII_CLK_DELAY_0_2_NS;
++	}
+ 
+ 	rc = vsc85xx_default_config(phydev);
+ 	if (rc)
 -- 
 2.17.1
 
