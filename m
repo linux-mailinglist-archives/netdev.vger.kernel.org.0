@@ -1,163 +1,157 @@
-Return-Path: <netdev+bounces-4330-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4331-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4865370C185
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 16:53:38 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id EC70070C187
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 16:53:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1BD511C20B2F
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:53:35 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BFEC71C20AD5
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:53:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7EB111427D;
-	Mon, 22 May 2023 14:53:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2578A1429E;
+	Mon, 22 May 2023 14:53:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C3DC14278
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 14:53:23 +0000 (UTC)
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2055.outbound.protection.outlook.com [40.107.22.55])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F018DC
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 07:53:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NKiB4XUKRAB1whtQGp8w4XM9N7tPkMTDTkx9c+Wo/tVDNJ4n92xad8+leJokb8VrsuRMvIK1AR6ncK6+1b9PH16e1QgBhTiX2ACeaBbzsE1MyyBGymatcutV+qGKka2v94tUnmmaso1go+ntgQ30B7T5QnZK3tt2Kfv9zJNI523CK0qoa4cASaYJP+P299RAr72VSV226GOQcc2nyRAq0lKDdn+p0Klbr2hCpn+lpf4Elj2IsiUrGrY8A5nm4t52z11zkEzT99eDb+6th2EhMt7aqIZc7KUpCr/o8LEYQSweMS5+xs+9pe7n/JNNCZyQKAW2pbMTXt1qr8OmO7VA6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NTYrJAyZ54kc6EPGXTtoxs2xf1isxV0olABI3DzLqVs=;
- b=ErZVGAU2ubgt8RlkPGx9gqxCJ88FaHrn0Mw7O5i3ota5TpAxGsmwh2oSDyyoLzKl3AmwBBWdXpGAnKC27QJi7+jZ+zfwu+ps/VGh1yHCNKD0f1950AA/XY115B/j0ttQ/O+s3PG3KcTrHsM9xFCd8vu6WWpw7Pp3gbSuWcRRcq7fVrtG8N7EQ+t3rofH9dYQdA7URrp4tvs0YG/q+Ud5afYVrLmwW3eJMcf11/d36wDPboD6u8ZZa7WsaU8XrTaA16Jx/T9YxP0vMeEcSZZ71FUAm9ZxdL8tbgzeeMg+FUGsMNkAdRl2EKVeKXjVSAmuQYH1YluoephCT1DeAwoVDw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=solid-run.com; dmarc=pass action=none
- header.from=solid-run.com; dkim=pass header.d=solid-run.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CF8A14278;
+	Mon, 22 May 2023 14:53:28 +0000 (UTC)
+Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F47ABB;
+	Mon, 22 May 2023 07:53:27 -0700 (PDT)
+Received: by mail-vk1-xa31.google.com with SMTP id 71dfb90a1353d-4572fc781daso601219e0c.2;
+        Mon, 22 May 2023 07:53:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=solidrn.onmicrosoft.com; s=selector1-solidrn-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NTYrJAyZ54kc6EPGXTtoxs2xf1isxV0olABI3DzLqVs=;
- b=hdIfM2UDDhV/YBgGE4/S6vjKv0mU8bsjv8knSnWpEWegVIP9+OAAFH4EtNpbhWyE751xwSTeJsIOp6Gq3vuzprStn5174vPgOg59bQw/7zHw2El5ofqSq/pKw4o2wuh20ihAkVs5pAe7vc5F6ReoP1rrG9776UoOdRTxJtAcpek=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=solid-run.com;
-Received: from AS8PR04MB8963.eurprd04.prod.outlook.com (2603:10a6:20b:42e::18)
- by PA4PR04MB7856.eurprd04.prod.outlook.com (2603:10a6:102:cc::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Mon, 22 May
- 2023 14:53:20 +0000
-Received: from AS8PR04MB8963.eurprd04.prod.outlook.com
- ([fe80::9e27:8c41:a8d:938e]) by AS8PR04MB8963.eurprd04.prod.outlook.com
- ([fe80::9e27:8c41:a8d:938e%6]) with mapi id 15.20.6411.028; Mon, 22 May 2023
- 14:53:20 +0000
-From: Josua Mayer <josua@solid-run.com>
-To: netdev@vger.kernel.org
-Cc: Josua Mayer <josua@solid-run.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 1/1] net: sfp: add support for HXSX-ATRI-1 copper SFP+ module
-Date: Mon, 22 May 2023 17:52:42 +0300
-Message-Id: <20230522145242.30192-2-josua@solid-run.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20230522145242.30192-1-josua@solid-run.com>
-References: <20230522145242.30192-1-josua@solid-run.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MR1P264CA0199.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:57::10) To AS8PR04MB8963.eurprd04.prod.outlook.com
- (2603:10a6:20b:42e::18)
+        d=gmail.com; s=20221208; t=1684767206; x=1687359206;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9odVnjjoR+4AuNw6ksnagpqi3r+RrcYNLrZWenZLiqg=;
+        b=BmDabCZP63yATPO3XTiegoftHUu9QDq5tUiWk9D2y5meNYS71L2+1QqBnzNqGAW0Kv
+         1a3mvYpDCSEQeZOhOynLeIHLkpkoNMgcNPBA/0kb6ZJ82jRLgvXYDfPvU1QJ9hlXfVej
+         EIV2LHLSbXfJIcp6rmNKIjLR+21txsxlBNLBZ8SaSbNMwI5Q7xzu7RVBd32UZoNHcQnA
+         mCzpFCYnkbnwxLv0fP+4KZeTfiDQAMwjLgb5qaw1/r3fE9UOGIMKrQotlQ5iXSVZN/rw
+         +cHtNUQtGBzbT6+VKET+/tqfJbXmhb/hv/ckaKtSMSHwX5u0hnPZWf5ejpHH4phQXn/v
+         +ZVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684767206; x=1687359206;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9odVnjjoR+4AuNw6ksnagpqi3r+RrcYNLrZWenZLiqg=;
+        b=Y7zZMtqnvS3MngCmJ3ChUQ1q0q3AFYVokGTT0BgNFQagVGiRAhqd8lczVWEuP5C+BK
+         420B99i+FoSUQF+V1Xp85tgvOfn/teeB35DH6QSVzGPMtuKZpDaIrXLrdqXECDszquZ9
+         jaXkF5m6pSZinra3TZjInFsaCJ/LeoqyRtln3sxcI5ZRC158fNvI/ps2XWfdJDzl9DwG
+         XwhtL3JjXQdA+ALKGHCPX4JaZFs9naJpXWgI3LFcIV5EvdHSptWS6zB+vTvNQDsShgS8
+         cYKW6uDn82sg5czWUj/iW637cJr3ZAvAJsqtoDdLAtsg2S/Hi2fS2gE2ve1RuqcrvFRo
+         Y6Kg==
+X-Gm-Message-State: AC+VfDwfcUmmWJfkKawoRHBVoUwKJ/Nl0Og/3Z04f5FwociC/IAN+9SL
+	Sul+LVbrtnC2k6Y2GUEXDRZBCG2oEtqQ1ihLlOQ=
+X-Google-Smtp-Source: ACHHUZ5YGXAvxeJfZofHQqhHemSuYJRUrF5dA75oZkpfK7uqtzBcrKqf4fZ0R1FfwZPq2zhdo+nmrksQb6SqxEWqbDY=
+X-Received: by 2002:a1f:3f88:0:b0:457:1a8:9ea4 with SMTP id
+ m130-20020a1f3f88000000b0045701a89ea4mr3819909vka.3.1684767206566; Mon, 22
+ May 2023 07:53:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8963:EE_|PA4PR04MB7856:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6a0c8736-5083-4d69-abfb-08db5ad44879
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	w5XmR0C6s54W/4uYs3kRHw6tzIUvTpQhtrRyUocU2NqXl+oTpZ2RVzk1wpISvXnheo9wswsa3BWsoarSMco0+Pcvif8pnjKM27FNwI+k5EEEz8yB9Fzf72sYrgneSAzPARkL5Oba6ICtvhbEqMEHsXwUxOBMtx0DipaEQBDdDdtEo844OvRhFl4Umbwd6CELA7+8vBAIZ/EQ4fvjiRHQGr4QqO6aPFbq5JhYmsp4guCZjMhSZX1oS/mtN3iEbKaC3NMrpZU2pENgBdANAT/SaNSzdnjNDkq8nOPFvgIFMdyfp8n+EHRe+rjRHCWDHxUaU2TZE4n8UAMkZe2UJ+/GSc4kXQf/HJIliKSDE9C+jloh3H1/3yZTlEYtFQjYqvFIRFpeRtRUBaF6Rtc4QWpFEapKFdHFRhYhRPAmp7AXFIKIoF0XNo6ab9icrdoMP9FW7EJvqTJ44dzwd2ubMy10HvpCIng4pOwYzPqT4oq7Hj2oeN7Nn4GP3lEYwGzW9gvpvVweKNgrhLAqCh5uLQLG4kAr0aEvR6ZIkfGDQrVQ6AwgmqNciaoyjkP8lrgTLyXFxt0KGzH+53qCzzu10+/vFhTD6rR+XQDDeVPiuSBEw/qaR00RWZY0UIkIWlONdXWz
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8963.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(366004)(396003)(39840400004)(376002)(136003)(451199021)(8936002)(8676002)(5660300002)(83380400001)(186003)(6506007)(6512007)(1076003)(86362001)(2616005)(26005)(38100700002)(38350700002)(41300700001)(6666004)(6486002)(52116002)(66476007)(66556008)(66946007)(316002)(6916009)(4326008)(36756003)(478600001)(54906003)(2906002)(66899021);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?OvQcowo1Irwnu8MrPT5uZD+cNxmRxbPVHvml7HD+3cetbMlzFzE5XizY9GsH?=
- =?us-ascii?Q?639tS4Ku8TLxuIw1vJRRusyfPfajvO5IPegKUH6MFJM1kFE11GAsqMAmbkfv?=
- =?us-ascii?Q?329iGfZ5sXC+maTbL3rcpi4eouzF4IVDchR2ptyqifGIEOigNl+h5/DbTLap?=
- =?us-ascii?Q?j4oSpMYLuAliSefUt+4VJIp5yTyhDwq3PRSmxC7uieGthTXeNGsEUQsQ+uuF?=
- =?us-ascii?Q?GJYTC3uERLYpl0UXEGyGbyfxESD9PUXCurLkzZOQyLCieZQdbshufCD6PfGj?=
- =?us-ascii?Q?ZsTTIkby6Dv6pdtzDn/myRH3tyjTdrCvLp2Fsv9QQ+N331MuHf5ZUTeBT2tz?=
- =?us-ascii?Q?kvf7E0OgW9k/E8OyvTjcQgURjZKRUtohJW5Qtvd75YK9bxftb69626vezBm9?=
- =?us-ascii?Q?hgc1vuthdwpHDtZCqMJ+WUpEtp2Qf6O4tUiY76x4SKMh51a+3x6U4EAeSBH/?=
- =?us-ascii?Q?45ERNVFIWM+3m2DoCkKuWIBP8EARgXqArCPQW6BqP6noIP10OVZP4DBQa2xX?=
- =?us-ascii?Q?luNCm00X2rEfZvHm+txIwgUpxdS0M4KssKPqGhBl8ewi8RlpFQGL+Ia1F/Ah?=
- =?us-ascii?Q?wzuNrBoOKfs7XJs3WCVBbBFAqgywzncIHgnRARP5v6qZSDdl8chp9HHJb7H6?=
- =?us-ascii?Q?u3kjFBQBrp1GR3bx9kIepqIGMBne+mx05SS3gSVzgzeApc8kYm0lyF+qTRN8?=
- =?us-ascii?Q?bcnNCIm4WNCwe7LnODYyFJfsNP0ioinI1gfvTv+r59lJTMhRY/ceMvcndpa4?=
- =?us-ascii?Q?5HZRT8xBQXxguC2hPt2DladXEZRcsRq5mH/Z9O7a7YUrV2Fv4bA1YsWihFYf?=
- =?us-ascii?Q?qrB/4fmq2MCyikZwi9q0QKh/Ujg5C4AaclWlKpXSJ8NhYUMxTfWbJ7rpaXWY?=
- =?us-ascii?Q?tFq7RRiUfZVXm3J0jxbpYgkBXL6iLxbxTBpHcq14jx8KROMSmL7x0r5DXqjP?=
- =?us-ascii?Q?ZjrcxAeA7LjQvFfyYqddpkpt8P8ymv6Ttpq//hzV5dAv/6qg26q0oRW59hYB?=
- =?us-ascii?Q?WL69JORucKUjKGMmW5KhzTDp4wE54F/9KRLxmgSkv3ZZlatOmuNGaxlKjT10?=
- =?us-ascii?Q?WhLRb0/3lrtMGuld6om21NoazEtJYWizmRbag9lfPnu34mY4vnggdBRbOOIy?=
- =?us-ascii?Q?0g106gs6DIujczcHo8vWbhx3BkokarCUzMGApHHaRRbng/bYv1OkpK9iSu7v?=
- =?us-ascii?Q?bbnRJ9G/jl+4o2tRNsApX4pdIa8zX0lF4eIVnBuQRYUky33SdW6wouJRsw2Q?=
- =?us-ascii?Q?QA9PP4nNgyusVWmHtUGpr7pM8MzInzFV641omJYDOhRyVhJOMWVU81p4881w?=
- =?us-ascii?Q?Et+Wje4Tk56ewyOGBDH23+CwEht8x4zsd+dOVVu6PjNsOMw9NyaxslH/EJAC?=
- =?us-ascii?Q?eQeDNm8nB/uKIBSZ/1ePqdtPrmKEipXNsQhZEHAWfQPl3qxchLLOcvYlJ+O8?=
- =?us-ascii?Q?4duumpqTnKhavGGJQztbX1pwOojbsmB+n2ZgWdaE/wkgNNLyS6PSwJYyDWqf?=
- =?us-ascii?Q?vm27rZxvA2FOaoD1bghrUs2FoNEqsguAwahIGjY3umuzY7r6DHfzK7QZIKLt?=
- =?us-ascii?Q?iocp39oKpZYjw7dPnylRkc1VMnJCjAjQoVmaNdFK?=
-X-OriginatorOrg: solid-run.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a0c8736-5083-4d69-abfb-08db5ad44879
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8963.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2023 14:53:20.0153
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a4a8aaf3-fd27-4e27-add2-604707ce5b82
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ggkJFgokgD9ujFuuKxapcr0TJrHkN9y0QoBeYFtXfUDGuUjJb8hCduWIFLR0nCRTGXX7DZtLRsfnIaj56HIJcA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7856
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <00000000000037341d05fc460fa6@google.com>
+In-Reply-To: <00000000000037341d05fc460fa6@google.com>
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Mon, 22 May 2023 10:52:49 -0400
+Message-ID: <CAF=yD-JpUc3SLtd7MtULmKOcERf6EJZ0rPc7WmJB2nUNUQRBjA@mail.gmail.com>
+Subject: Re: [syzbot] [net?] KASAN: invalid-access Read in __packet_get_status
+To: syzbot <syzbot+64b0f633159fde08e1f1@syzkaller.appspotmail.com>
+Cc: bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com, 
+	kuba@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Walsun offers commercial ("C") and industrial ("I") variants of
-multi-rate copper SFP+ modules.
+On Mon, May 22, 2023 at 6:51=E2=80=AFAM syzbot
+<syzbot+64b0f633159fde08e1f1@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    2d1bcbc6cd70 Merge tag 'probes-fixes-v6.4-rc1' of git://g=
+i..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=3D154b8fa128000=
+0
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D51dd28037b2a5=
+5f
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3D64b0f633159fde0=
+8e1f1
+> compiler:       aarch64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, =
+GNU ld (GNU Binutils for Debian) 2.35.2
+> userspace arch: arm64
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D12b6382e280=
+000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D17fd0aee28000=
+0
+>
+> Downloadable assets:
+> disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/3=
+84ffdcca292/non_bootable_disk-2d1bcbc6.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/d2e21a43e11e/vmlinu=
+x-2d1bcbc6.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/49e0b029f9af/I=
+mage-2d1bcbc6.gz.xz
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the comm=
+it:
+> Reported-by: syzbot+64b0f633159fde08e1f1@syzkaller.appspotmail.com
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: invalid-access in __packet_get_status+0x70/0xe0 net/packet/af=
+_packet.c:438
 
-Add quirk for HXSX-ATRI-1 using same parameters as the already supported
-commercial variant HXSX-ATRC-1.
+The offending line is the last one in
 
-Signed-off-by: Josua Mayer <josua@solid-run.com>
----
- drivers/net/phy/sfp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+"
+static int __packet_get_status(const struct packet_sock *po, void *frame)
+{
+        union tpacket_uhdr h;
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index ce9693f9f488..2592ff08c783 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -451,9 +451,10 @@ static const struct sfp_quirk sfp_quirks[] = {
- 
- 	SFP_QUIRK_M("UBNT", "UF-INSTANT", sfp_quirk_ubnt_uf_instant),
- 
--	// Walsun HXSX-ATRC-1 doesn't identify as copper, and uses the
-+	// Walsun HXSX-ATR[CI]-1 don't identify as copper, and use the
- 	// Rollball protocol to talk to the PHY.
- 	SFP_QUIRK_F("Walsun", "HXSX-ATRC-1", sfp_fixup_fs_10gt),
-+	SFP_QUIRK_F("Walsun", "HXSX-ATRI-1", sfp_fixup_fs_10gt),
- 
- 	SFP_QUIRK_F("OEM", "SFP-10G-T", sfp_fixup_rollball_cc),
- 	SFP_QUIRK_M("OEM", "SFP-2.5G-T", sfp_quirk_oem_2_5g),
--- 
-2.35.3
+        smp_rmb();
 
+        h.raw =3D frame;
+        switch (po->tp_version) {
+        case TPACKET_V1:
+                flush_dcache_page(pgv_to_page(&h.h1->tp_status));
+                return h.h1->tp_status;
+        case TPACKET_V2:
+                flush_dcache_page(pgv_to_page(&h.h2->tp_status));
+"
+
+The reproducer is very small:
+
+"
+// socket(PF_PACKET, SOCK_DGRAM, htons(ETH_P_ALL);
+r0 =3D socket$packet(0x11, 0x2, 0x300)
+
+// setsockopt PACKET_RX_RING with same block and frame sizes and counts
+setsockopt$packet_rx_ring(r0, 0x107, 0x5,
+&(0x7f0000000040)=3D@req3=3D{0x8000, 0x200, 0x80, 0x20000}, 0x1c)
+
+// excessive length, too many bits in prot, MAP_SHARED | MAP_ANONYMOUS
+mmap(&(0x7f0000568000/0x2000)=3Dnil, 0x1000000, 0x20567fff, 0x11, r0, 0x0)
+"
+
+What is odd here is that the program never sets packet version
+explicitly, and the default is TPACKET_V1.
 
