@@ -1,93 +1,223 @@
-Return-Path: <netdev+bounces-4406-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4407-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4CF8170C595
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 20:57:37 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A2C4070C59C
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 21:00:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF131281072
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 18:57:35 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 55FED280FAF
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 19:00:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50E25168B9;
-	Mon, 22 May 2023 18:57:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67839168BF;
+	Mon, 22 May 2023 19:00:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F7DF13AE5
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 18:57:34 +0000 (UTC)
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42428E6
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:57:30 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3f600a6a890so11815e9.0
-        for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:57:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684781849; x=1687373849;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5K2vQzMv9RNitauKRDQ5JPQe/7PjWZsdmCRNjoMZRJg=;
-        b=SXJRNOYPjzr9Ao5h26jhABB5UH2RlO9zeCrZbkYsqlfWRTd1E5vELd4VYgm71YlYyo
-         5pgpR0GH6ccC9IRxq+4ruCAmPQX/yLJnka4hD5KAPgAl+tP5fXUBQtRp3ARHgPpMEFJq
-         6RptLOauChgR8ovFIS9J0rs12cLFnRxblqH3z068hAsOxs1Exr1rZ/c9YAtTwUaQMzcW
-         gQjxwN8Ctnun+miyMIsA85gj8zgjUt2nsvP1k+q9aSQ4Qm0wk3Ux3vaJjOdKcDzrB2wF
-         Db24ZCr7BL2rPnlYQDNl8x4yUIjIQM6YAFxIap92Hzwfua8e9iQWZKupSU4ftFQTI4pi
-         bnug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684781849; x=1687373849;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=5K2vQzMv9RNitauKRDQ5JPQe/7PjWZsdmCRNjoMZRJg=;
-        b=f6Iaq0yReDq9QsmegPkPUM/AYNlR7AJ+U5CnEoi1QApcWFDaNYdEYC4re21KsesN3B
-         DYY/+D879hMEl1MS4g994zTB1EBh+Qt/ZlXuCx9R1twalq3oi2US88IV6hZPhB8zsZeN
-         wEbL+UnU6/t9LIvx8BpvHukEFFJAGLoTfudtn8zr533T4y/f6ApLFBRZFzHeenVChwrf
-         B1kkrie8bdA30qHXfvXDpk+JVrnKOx2eyLX1X0NLQ2XbThwhfn/nxSnpmsw5Eh0k8e/8
-         HDGK1P2jxRdUAIJNok15EjMmDssZEl/uHOL8hnGf6T6ruQV5e/XCbDEcyDkSmK14Am9f
-         tNEg==
-X-Gm-Message-State: AC+VfDwd9DA+pbfqbZDYzGw6Ti3dEaNDu/ESrvOK0BNf/3ON0NCbQZSB
-	fhCi0gyWMJ7cJNAu1Toc4RJPnjOXKbeRUjsXRUzWWw==
-X-Google-Smtp-Source: ACHHUZ4b5kqNOwcZl03+RjJg0TP/fVR93h6Y+uu9Tv9TAjDKByd/wIHDDcoG8eaFRD9UtdmVPsA2LhR0U3rMlwebSgU=
-X-Received: by 2002:a05:600c:4e02:b0:3f4:2594:118a with SMTP id
- b2-20020a05600c4e0200b003f42594118amr27609wmq.2.1684781848555; Mon, 22 May
- 2023 11:57:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57F12168AF
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 19:00:47 +0000 (UTC)
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1D8FE;
+	Mon, 22 May 2023 12:00:45 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 34MJ062m122270;
+	Mon, 22 May 2023 14:00:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1684782006;
+	bh=u0kzNDOOGbGz18201uqKyKCn8aM34jRLRTzxtQalNhA=;
+	h=Date:Subject:To:CC:References:From:In-Reply-To;
+	b=rcqg8sD/AXsQbbITTBfWVQRSoXotFNmdekksmpeHKcwyOWWm/sWzF9iVeKk8RoYoK
+	 0B1VgMAusETjmNUwOgYt7MaP//na8mNxdeFZltbU4owLwdPfuXIxDmICDYfi17J96i
+	 56P3imKEaXBJ/c5VStki+WaC7fVriRhZNd0F70TE=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 34MJ036R028442
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 22 May 2023 14:00:06 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 22
+ May 2023 14:00:04 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Mon, 22 May 2023 14:00:04 -0500
+Received: from [128.247.81.105] (ileaxei01-snat.itg.ti.com [10.180.69.5])
+	by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 34MJ04lW119935;
+	Mon, 22 May 2023 14:00:04 -0500
+Message-ID: <31925752-8028-98fc-b6a4-9b8fe8a3ce0b@ti.com>
+Date: Mon, 22 May 2023 14:00:04 -0500
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230522172302.90235-1-sj@kernel.org> <20230522173351.90497-1-sj@kernel.org>
-In-Reply-To: <20230522173351.90497-1-sj@kernel.org>
-From: Eric Dumazet <edumazet@google.com>
-Date: Mon, 22 May 2023 20:57:16 +0200
-Message-ID: <CANn89iJ7JZp2mtcL912SGzq90wKH0rR=X+2vPuinTnMdTsMvQA@mail.gmail.com>
-Subject: Re: [PATCH net] net: fix skb leak in __skb_tstamp_tx()
-To: SeongJae Park <sj@kernel.org>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.com>, davem@davemloft.net, kuba@kernel.org, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, nmanthey@amazon.de, 
-	pabeni@redhat.com, ptyadav@amazon.de, willemb@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v6 2/2] can: m_can: Add hrtimer to generate software
+ interrupt
+To: Marc Kleine-Budde <mkl@pengutronix.de>
+CC: Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        <linux-can@vger.kernel.org>, Wolfgang Grandegger <wg@grandegger.com>,
+        "David
+ S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, Jakub
+ Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Schuyler Patton
+	<spatton@ti.com>,
+        Tero Kristo <kristo@kernel.org>, Rob Herring
+	<robh+dt@kernel.org>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Conor
+ Dooley <conor+dt@kernel.org>
+References: <20230518193613.15185-1-jm@ti.com>
+ <20230518193613.15185-3-jm@ti.com>
+ <20230519-morbidity-directory-dbe704584aa3-mkl@pengutronix.de>
+ <3859166d-fc78-f42d-1553-282e4140325a@ti.com>
+ <20230522-manhunt-smooth-442d9d864f04-mkl@pengutronix.de>
+Content-Language: en-US
+From: Judith Mendez <jm@ti.com>
+In-Reply-To: <20230522-manhunt-smooth-442d9d864f04-mkl@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023 at 7:33=E2=80=AFPM SeongJae Park <sj@kernel.org> wrote=
-:
+Hello,
 
-> Sorry for continuing adding noises, but seems the process is, or will be,
-> changed by to the mainline commit dbbe7c962c3a8 ("docs: networking: drop
-> special stable handling").
+On 5/22/23 1:37 PM, Marc Kleine-Budde wrote:
+> On 22.05.2023 10:17:38, Judith Mendez wrote:
+>>>> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
+>>>> index 94dc82644113..3e60cebd9d12 100644
+>>>> --- a/drivers/net/can/m_can/m_can_platform.c
+>>>> +++ b/drivers/net/can/m_can/m_can_platform.c
+>>>> @@ -5,6 +5,7 @@
+>>>>    //
+>>>>    // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
+>>>> +#include <linux/hrtimer.h>
+>>>>    #include <linux/phy/phy.h>
+>>>>    #include <linux/platform_device.h>
+>>>> @@ -96,12 +97,40 @@ static int m_can_plat_probe(struct platform_device *pdev)
+>>>>    		goto probe_fail;
+>>>>    	addr = devm_platform_ioremap_resource_byname(pdev, "m_can");
+>>>> -	irq = platform_get_irq_byname(pdev, "int0");
+>>>> -	if (IS_ERR(addr) || irq < 0) {
+>>>> -		ret = -EINVAL;
+>>>> +	if (IS_ERR(addr)) {
+>>>> +		ret = PTR_ERR(addr);
+>>>>    		goto probe_fail;
+>>>>    	}
+>>>
+>>> As we don't use an explicit "poll-interval" anymore, this needs some
+>>> cleanup. The flow should be (pseudo code, error handling omitted):
+>>>
+>>> if (device_property_present("interrupts") {
+>>>           platform_get_irq_byname();
+>>>           polling = false;
+>>> } else {
+>>>           hrtimer_init();
+>>>           polling = true;
+>>> }
+>>
+>> Ok.
+>>
+>>>
+>>>> +	irq = platform_get_irq_byname_optional(pdev, "int0");
+>>>
+>>> Remove the "_optional" and....
+>>
+>> On V2, you asked to add the _optional?.....
+>>
+>>>   	irq = platform_get_irq_byname(pdev, "int0");
+>>
+>> use platform_get_irq_byname_optional(), it doesn't print an error
+>> message.
+> 
+> ACK - I said that back in v2, when there was "poll-interval". But now we
+> don't use "poll-interval" anymore, but test if interrupt properties are
+> present.
+> 
+> See again pseudo-code I posted in my last mail:
+> 
+> | if (device_property_present("interrupts") {
+> |          platform_get_irq_byname();
+> 
+> If this throws an error, it's fatal, bail out.
+> 
+> |          polling = false;
+> | } else {
+> |          hrtimer_init();
+> |          polling = true;
+> | }
+> 
 
-Whoever backported the patch because it had a Fixes: tag will do the
-same if another patch also has a Fixes: tag.
+Ok, will add this then..
 
-I personally prefer Fixes: very precise tags to weak ones.
+
+>>
+>>>
+>>>> +	if (irq == -EPROBE_DEFER) {
+>>>> +		ret = -EPROBE_DEFER;
+>>>> +		goto probe_fail;
+>>>> +	}
+>>>> +
+>>>> +	if (device_property_present(mcan_class->dev, "interrupts") ||
+>>>> +	    device_property_present(mcan_class->dev, "interrupt-names"))
+>>>> +		mcan_class->polling = false;
+>>>
+>>> ...move the platform_get_irq_byname() here
+>>
+>> ok,
+>>
+>>>
+>>>> +	else
+>>>> +		mcan_class->polling = true;
+>>>> +
+>>>> +	if (!mcan_class->polling && irq < 0) {
+>>>> +		ret = -ENXIO;
+>>>> +		dev_err_probe(mcan_class->dev, ret, "IRQ int0 not found, polling not activated\n");
+>>>> +		goto probe_fail;
+>>>> +	}
+>>>
+>>> Remove this check.
+>>
+>> Should we not go to 'probe fail' if polling is not activated and irq is not
+>> found?
+> 
+> If an interrupt property is present in the DT, we use it - if request
+> IRQ fails, something is broken and we've already bailed out. See above.
+> If there is no interrupt property we use polling.
+
+Got it, thanks.
+
+>>
+>>>
+>>>> +
+>>>> +	if (mcan_class->polling) {
+>>>> +		if (irq > 0) {
+>>>> +			mcan_class->polling = false;
+>>>> +			dev_info(mcan_class->dev, "Polling enabled, using hardware IRQ\n");
+>>>
+>>> Remove this.
+>>
+>> Remove the dev_info?
+> 
+> ACK, this is not possible anymore - we cannot have polling enabled and
+> HW IRQs configured.
+
+Sounds good, will submit a v7 with these cleanup changes.
+
+regards,
+Judith
 
