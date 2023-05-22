@@ -1,105 +1,101 @@
-Return-Path: <netdev+bounces-4376-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4377-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 741D870C419
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 19:18:38 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 08B8B70C41B
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 19:19:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0FF2E1C20B6C
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 17:18:35 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B7529280D84
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 17:18:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3270216415;
-	Mon, 22 May 2023 17:18:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2ECD316416;
+	Mon, 22 May 2023 17:18:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24D191640F
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 17:18:35 +0000 (UTC)
-Received: from smtp.smtpout.orange.fr (smtp-25.smtpout.orange.fr [80.12.242.25])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5B5D2
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 10:18:33 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.2.178])
-	by smtp.orange.fr with ESMTPA
-	id 19Azq1MIc0h9k19AzqvahE; Mon, 22 May 2023 19:18:32 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-	s=t20230301; t=1684775912;
-	bh=RACWwSG+Hb9eOENQpBti3yzC14aelYWu586byj6TxBM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=a55CHq6gXnelkrtko2pskwk2BzcGk8HFsYmXYYrewWPHJ9FmxUM+ZpgWQ6yzods6A
-	 BEuGjnaLFF1Sa7QvRUD/rb55TxY/BRTJKpy2QKdptb6EBx2R7J9f9+mSwJjWwL6zgH
-	 BcubzWufdl/IscEzx5iLKm4vY2pAsdtQt9NIF9OLG6xS1W8vOKbvuuSqoIgsOCBjKr
-	 snVA/owi1puimyOKc7xYxOmvZXoHtMa3KtayKKYiIYl6Ene3wMwM/+0hHcnmAJv5f3
-	 7fsra+9oLsX0DPOq2hXPRjuahYXL5jy7ArdHLjXvmj3yz6dHwGbXcsL3GeqkGe7DYq
-	 Gq669Z/75CFeg==
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 22 May 2023 19:18:32 +0200
-X-ME-IP: 86.243.2.178
-Message-ID: <59ca8e12-a4ab-7f5b-68ba-fe04683b3cf5@wanadoo.fr>
-Date: Mon, 22 May 2023 19:18:29 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB09A1640F
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 17:18:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B724EC433D2;
+	Mon, 22 May 2023 17:18:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684775935;
+	bh=EJh81ERAwI1/1H4wTCD01XYRNVo9bAe3cDknyW2xH9Q=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=HsPYkJrrb00WygdzSGGqtiVtGAn1oMi/G1qP3qQyRL+2G1KOu5RW4jt6IHOfm9i7N
+	 PrfqyAnCMp+22ZrwjcWXCJ1RFiY9t7uHVLT4C9f6Kz+IRe7v8w86HOIqsNMlYO1EZr
+	 k04m5zjmtCQ5d+a85q0mGNnSWNQ6SZY8/WxP2Qa4NkmjMT7gtTBsorVK2QYELM011e
+	 yH+Zrnn506u5EaEx2D2ORb2Cf7sSbPtJyClUkXYhMMjRtLw92ZOZZrqK1SV7psLc+V
+	 YCY9iVotoOM3+pKePw5DtzW3KCipseBTX4vzdQHMOTTXwWH8jBiRJbznwphiY4nqFi
+	 KRRt5+zB3YN3A==
+From: SeongJae Park <sj@kernel.org>
+To: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: sj@kernel.org,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org,
+	nmanthey@amazon.de,
+	pabeni@redhat.com,
+	ptyadav@amazon.de,
+	willemb@google.com
+Subject: Re: [PATCH net] net: fix skb leak in __skb_tstamp_tx()
+Date: Mon, 22 May 2023 17:18:53 +0000
+Message-Id: <20230522171853.90173-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230522170430.56198-1-kuniyu@amazon.com>
+References: 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net] 3c589_cs: Fix an error handling path in tc589_probe()
-Content-Language: fr, en-GB
-To: Simon Horman <simon.horman@corigine.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>,
- Dominik Brodowski <linux@dominikbrodowski.net>,
- linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
- netdev@vger.kernel.org
-References: <d8593ae867b24c79063646e36f9b18b0790107cb.1684575975.git.christophe.jaillet@wanadoo.fr>
- <ZGthVr9FppjWDA9F@corigine.com>
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <ZGthVr9FppjWDA9F@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-Le 22/05/2023 à 14:34, Simon Horman a écrit :
-> On Sat, May 20, 2023 at 11:48:55AM +0200, Christophe JAILLET wrote:
->> Should tc589_config() fail, some resources need to be released as already
->> done in the remove function.
->>
->> Fixes: 15b99ac17295 ("[PATCH] pcmcia: add return value to _config() functions")
+On Mon, 22 May 2023 10:04:30 -0700 Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+
+> From: SeongJae Park <sj@kernel.org>
+> Date: Mon, 22 May 2023 16:55:05 +0000
+> > Hi Pratyush,
+> > 
+> > On Mon, 22 May 2023 17:30:20 +0200 Pratyush Yadav <ptyadav@amazon.de> wrote:
+> > 
+> > > Commit 50749f2dd685 ("tcp/udp: Fix memleaks of sk and zerocopy skbs with
+> > > TX timestamp.") added a call to skb_orphan_frags_rx() to fix leaks with
+> > > zerocopy skbs. But it ended up adding a leak of its own. When
+> > > skb_orphan_frags_rx() fails, the function just returns, leaking the skb
+> > > it just cloned. Free it before returning.
+> > > 
+> > > This bug was discovered and resolved using Coverity Static Analysis
+> > > Security Testing (SAST) by Synopsys, Inc.
+> > > 
+> > > Fixes: 50749f2dd685 ("tcp/udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.")
+> > 
+> > Seems the commit has merged in several stable kernels.  Is the bug also
+> > affecting those?  If so, would it be better to Cc stable@vger.kernel.org?
 > 
-> That commit is probably going back far enough, but I actually
-> suspect the problem has been there since the beginning of git history.
+> In netdev, we add 'net' in Subject for bugfix, then netdev maintainers
+> send a pull request weekly, and stable maintainers backport the fixes to
+> affected trees.
+> 
+> So we usually need not CC stable for netdev patches.
 
-In fact, before that commit, the probe was always returning 0, so there 
-was no need for an error handling path.
+Thank you for the nice explanation!  Seems it is also well documented at
+https://www.kernel.org/doc/html/v5.10/networking/netdev-FAQ.html#q-i-see-a-network-patch-and-i-think-it-should-be-backported-to-stable
 
-FYI, commit 15b99ac17295 ("[PATCH] pcmcia: add return value to _config() 
-functions") messed up many drivers for the same reason.
-I sent a few patches to see if there was an interest to fix these 
-(really) old drivers, most linked with pcmcia which seems to slowly be 
-removed from the kernel.
+However, I don't show the 'net' subject rule on the document.  Is it documented
+somewhere else?
 
-So I'm a bit unsure if fixing it really matters.
-Let see if I collect some other R-b tags for the other patches.
 
-CJ
+Thanks,
+SJ
 
 > 
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Thanks,
+> Kuniyuki
 > 
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> 
-> 
-> 
-
 
