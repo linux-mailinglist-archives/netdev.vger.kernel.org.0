@@ -1,73 +1,70 @@
-Return-Path: <netdev+bounces-4216-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4217-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0107770BB3B
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 13:11:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 65E0070BBAA
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 13:23:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B986B280F53
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:11:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 346491C20A2D
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:23:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49FCCBE57;
-	Mon, 22 May 2023 11:11:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 74C21BE5B;
+	Mon, 22 May 2023 11:23:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35808BE4E
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:11:10 +0000 (UTC)
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F4D268A;
-	Mon, 22 May 2023 04:11:06 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64F9879E1
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:23:00 +0000 (UTC)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2108.outbound.protection.outlook.com [40.107.92.108])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1FC269E
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 04:22:56 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WH6twpsz55igOizEQGC/q3TdO18dgzbkFWOKday3u4nzh60e1+pqaM/7EyMBn4pLcJLduoOTDMmLhRho6SQ1neLXjpZMfrRssV1hzTTp2OvjdbypAajYQKLM/4JQf4lm5MN5GMK3wMwF9EPKJ5AejrF6i/WOUxgRzTNbYkki3un+qjp5OcwhnyUMXsEwHbNKwtkXumjmu+ws31418uFFdTQ6T6KmJWeR40VcTyUSt+2cQ03d/FQqYA9GYojj5MTONAmOD2w2RKsFSvayk3pBxbqjGHYEloyASYqsPFXJ1WB9HFLH4nNoDU/utFX4/WUA8FfiAzQC6WTj+pEHDCjPYA==
+ b=Lw0gOusQltDiA78vtwIkhiwWK/wXtyCgNq9ovaWeQdH4H4Sk3+wHe5a6aHVziQ2TE51UPsFyGQlErRf7zkmW1UIvEPd3sMQfEnt5JHhL609tr1VMki31fnb9641b2tOrhvO3qaWJIcNS04UrUkhCja9D64qYttd1aXKQcdNBQZTgKaxuFmsaJKCAUBPCEzJcPiBmeMM4MT302Tjx8fbz79nBM+tpYtp3bS12jXb8NWtXQiOxYZlYRwsBg8xlPe9kj+9Bplzprzyp5IlxBubeigzxyIfHeNSYusgjkBcicr9yEg6hk9k3R9WdjSsu4DbybugYFuWz3XVej95SPL0acQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5yk1GrI3tu9pj4L7Lu+3JkZc2w7wCCW+Wj///DxtWro=;
- b=IUOaN6lIJ+P3WqodVwNDRyJx9qAjwrQtT2s82SXqVil6tGHCYmXk1FGNeEZ96jtdRwB/8RAuIylgUUoqKuIKaOepUEU+oy/QHlLH3W3H2ftAzJ+3u+BBRIbwaVUhXXMDNbNF56sB/HccMd22cSYv5oBYfaKvvD9ZX8ORUOddT3kZBs+h0nIPy367Yvri84oZ8L5IzSsvS138R8Jt1NJFJQzg6m5eOIuksqVwLr0uJDurdHH689m3i+1Wwa9gfG0yg5P6HaSrYARPDqAbhfnMYL7Ggm7BTKD9XvQNtCHcxqeKIkkOOwBsgALBF1n9HS77d3gFdFbn+jGz7Bs0YdLqPg==
+ bh=qdhXRfcmHVKGQ7yW/Lza8+UXupmzSuA20nQsbWKEAco=;
+ b=cqhNKLvJFg676GXW3mcqzmDNU8PS7+Oa9IdyF4TKsQ3f3vcbWrDBfH5h9FnJiRM7/T4lv1IGXlNw+zma7cqTEZpg/6W6BddyqUFSvyLFZMeTmJmt8fbtO3QySMnFYFPv1YYiOgXu4v82AdsCvGa6SCr5X6oAs8NBCDbUEaxVVGU9tBsyaquK4UG1YTbuEQRAwTQtXcXF67J5tEYKnMdhFN8hHf+X4mdI2f1ArvLu1BS0B2VDV0PzKj/3s3wyeEpN5JyhndGUSCWMk1GF7/lrbaJCeaD5pBpujIwLtJneLDIUE6KGxgK5xneS8bycj3Kcyrj16LQ+xmWAX303W8SolQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5yk1GrI3tu9pj4L7Lu+3JkZc2w7wCCW+Wj///DxtWro=;
- b=bFXsLvh407nYoEpHi21AZAqVmHc58Dt29vFP2DnYj7sNhj4DgLAASEVGfcvgXtDcVXx/+S5T03nLAdgJ8d5rgEojSmo0pa67rp/fW65RVziu/RzEGAW5myXV62LipXj/4w+izllDL1ghHzbipkeUNUHcfY+GlAKGqwjce+fDbEE=
+ bh=qdhXRfcmHVKGQ7yW/Lza8+UXupmzSuA20nQsbWKEAco=;
+ b=Uk44f6pTpZkAuj79/XqLwg7Km/O1CYD9uVaLvnjo30arxq1co3WSMSU6eDoCh7hnVo4Q/ddKDkCkhJbrDqWDeVnF3ZF0C0LNc8ej5IE9rk0xJ7KEIxR+l5PqPNtfZDt99Xsp3xnhFj5TQ/THCErFUUJw34xn57oQCxAK2h/uW98=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SJ0PR13MB5965.namprd13.prod.outlook.com (2603:10b6:a03:43d::10) with
+ by SJ2PR13MB6143.namprd13.prod.outlook.com (2603:10b6:a03:4f5::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.27; Mon, 22 May
- 2023 11:11:03 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Mon, 22 May
+ 2023 11:22:51 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6411.028; Mon, 22 May 2023
- 11:11:02 +0000
-Date: Mon, 22 May 2023 13:10:56 +0200
+ 11:22:51 +0000
+Date: Mon, 22 May 2023 13:22:37 +0200
 From: Simon Horman <simon.horman@corigine.com>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Rain River <rain.1986.08.12@gmail.com>,
-	Zhu Yanjun <zyjzyj2000@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Ayaz Abdulla <aabdulla@nvidia.com>, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net] forcedeth: Fix an error handling path in nv_probe()
-Message-ID: <ZGtNwCc8ogSlwtYV@corigine.com>
-References: <355e9a7d351b32ad897251b6f81b5886fcdc6766.1684571393.git.christophe.jaillet@wanadoo.fr>
- <ZGtAIJZ3QzkBJgHI@corigine.com>
- <f4296d23-83ce-4147-894a-3e5640cdf87c@kili.mountain>
+To: Wojciech Drewek <wojciech.drewek@intel.com>
+Cc: intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+	alexandr.lobakin@intel.com, david.m.ertman@intel.com,
+	michal.swiatkowski@linux.intel.com, marcin.szycik@linux.intel.com,
+	pawel.chmielewski@intel.com, sridhar.samudrala@intel.com,
+	Dan Carpenter <dan.carpenter@linaro.org>
+Subject: Re: [PATCH iwl-next v3 03/10] ice: Implement basic eswitch bridge
+ setup
+Message-ID: <ZGtQffLjYdt14Lpg@corigine.com>
+References: <20230522090542.45679-1-wojciech.drewek@intel.com>
+ <20230522090542.45679-4-wojciech.drewek@intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f4296d23-83ce-4147-894a-3e5640cdf87c@kili.mountain>
-X-ClientProxiedBy: AS4P190CA0048.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:656::21) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <20230522090542.45679-4-wojciech.drewek@intel.com>
+X-ClientProxiedBy: AS4P251CA0016.EURP251.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d3::8) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -76,130 +73,146 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5965:EE_
-X-MS-Office365-Filtering-Correlation-Id: e4c28aa5-58d6-4063-8bd8-08db5ab53ae4
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ2PR13MB6143:EE_
+X-MS-Office365-Filtering-Correlation-Id: a71ae47e-e342-4a79-204d-08db5ab6e14b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	8zTy6ptM2s0OnoM+ukudaZLhkh3theM38PULfkXY1/0ilMJy+LTx6ZmyVpY4v9D6YptmE7SW24Kv/PtwuzvRjv4oZSL5356Njwyoax9OH5Jkil4mxKQ5Sm59ZVPCQDAXIRzfZE8t7MLVg16HRj3/yGNGIaVnld4Zm/ujdD2AvGqB+Mbznp4vvd8CUOlfwZvZ00ToEl5O3Z7I13Mtd9yNaGUYlTUv77I4vmG4X88wCuCAVnAJ/h6t3bX0Xh4MnTcdu0PE+2+gByDyD8Dki1MZ/8VpL1sWWUFjFPz6Mc6ZF2Xl8Mx0SlI5JcHo6w/d8d1VR3r33aeYtUMck5vcsIl1yHwT6Ju/DfTXUszMlJ6orn4rg1iPERvKX7vBEWzsGLoLTPqArXGWyRhwscCuMl0bpOfAC3AV9IOFJ1TGkI3EaZkK/bWgys68IXdb9wo5bb+hA4xG8oCj3nsxFP8bBc3uEU/M8hDZALynqTO8HIhtBlgdKsT2lpNoXlir+z9dM3JEuYE4w8GBlFvm/Nb+RubIFM10HXqI0z6zbuYHn1FiDKj5Z3q5K1fQKV/hkKxRtHIv
+	GcjHxB27johDUikKtcHDE9VFT9OLKv+y6zwLwiqnysmijz1CfXl4pUr/yNFVTRLPp+gljY43iZbw8pPwM3S9N11CsaLCO9buUvRUow/EyTN7CyFIEEIuHCNj60bzvVYFj83R3bVMRKSwboRGVPpaGMk4iwgiJRM3k2+5t8yT1KbmNucbywQCqtCpsgGTICAh74t+UNkGYNlKLzDKDMmGXhJ8B3ZN+EhVrtxC4kN+FAtPHE3leNtw5kafFS8ALpR5i19waa2GpDRZgCG6U8jWeNXXrC1wOi5J+Rfcobroi/Z4+Agxf1R9KSGABnToVBUSnzt5qRcFXptuKab9pPmJiZNuR4IWQDY9wS2YQoikrkTlYa1fWHNKYCGjIkQhuWx/ncYhWfhcDH6jLnfrqcLZg/kJxa99rsY71YzqpeGcY9I265D0xuWwmGeax87xgcifcplHWGfS4uu1NL73fNGIH/9lGUSRq3juqyVmdaAqhStSwPuOYduOZjSx9zyae+crqIlgcAX+HRxXlb3MX0XOVJLnc2xPErj9AV2n126VoK1goRuT9cA+Au/g0rHsULDF
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39830400003)(136003)(346002)(366004)(376002)(396003)(451199021)(6486002)(6666004)(86362001)(316002)(54906003)(41300700001)(66946007)(4326008)(66476007)(66556008)(6916009)(478600001)(8676002)(8936002)(5660300002)(38100700002)(7416002)(83380400001)(36756003)(44832011)(2616005)(2906002)(186003)(6512007)(6506007);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(396003)(366004)(346002)(39830400003)(451199021)(2906002)(5660300002)(44832011)(7416002)(8936002)(8676002)(41300700001)(316002)(66476007)(66556008)(66946007)(478600001)(36756003)(6916009)(4326008)(6666004)(6486002)(6512007)(6506007)(38100700002)(2616005)(86362001)(186003)(83380400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?z5xbgIPO2ZzGTM8bfqj3zR116YajwvtqTX/clkVtAsAlPFVHHYSLbRXKYcNh?=
- =?us-ascii?Q?K65qZ6xfycmO+D5/8+PxVrrMt4hrPTkXUQkGIs3InXfq7N1qI2YvfYkilDrd?=
- =?us-ascii?Q?hMe9god/F2GUZAQa1n1pgOF4I0jeGIWR28eWDqD62+ThF+ADnMbLxDmNi1R7?=
- =?us-ascii?Q?s+11NZ14qQupyi4yzjKukEOutnHFquddFXTPMbcnAQ9awdL0ZjwlE6mSPHLt?=
- =?us-ascii?Q?+/7lN/upo6OCA6kUcFUlP52uOHOWQlvL4t5Iizx+EpFKZuWKL4XhyKV8KSfY?=
- =?us-ascii?Q?NH2LA85vOlri9x8twLUjQ0xeVSu+qebeSiQxvWfXukvPFshB6wZkKR86YMfQ?=
- =?us-ascii?Q?JKZuQTgmRFigzmGqtnBoBHGiJVe3ayEWi/x9M4220urZMufOsRhMiv0Qx/Sp?=
- =?us-ascii?Q?kK2BVZGdvWi7TWrFKvQ8GIt7AB6Sf3U05xMMzRyoGRoGCGERPsBG1yQ3xAzN?=
- =?us-ascii?Q?tUJvK4FQZM4hNoGJdaNJWEXITekcJw1odSIQ/WC/1fIgoOVMq2STaA21W1KC?=
- =?us-ascii?Q?diLviblinHL+N/+8jNpqh8BBCuzpJI69UnDXZjoNj43Y+BhRqYgi3lZhtv9R?=
- =?us-ascii?Q?XtsYEubngyeiVyk9JWffqHhhbyGHjnOcXpDOoCAbd1CvwOlkUBWv1uapjIws?=
- =?us-ascii?Q?IEuPq1lKIcjwfp1P8GOvnSZsuS1qB/PYnO1ScxOjgT3piBZ7UxZIDr9VJEp/?=
- =?us-ascii?Q?3+tiPm1SqsodCQP9t3c5zfnxzaxtiQk8TERdFR4Wn5o7TP7CtCdSxkSggsql?=
- =?us-ascii?Q?DG0B33MLSGQlHmsVxFJMirG4rkQ+KMw8oK5W5Yq9Mv2hpCcR0LdMXlIDLpBC?=
- =?us-ascii?Q?MiDWTqJZ0PZCV95yZa7zKiCkv+BYQ+h0FjtVQLF4AwyhrLqIwcHlZaKFRy4a?=
- =?us-ascii?Q?YAphRfOaMhWb9URQ+1pvSIvDf2fJZvCvJcNIl5JZrmlyYccaAUB/jlCuuPvX?=
- =?us-ascii?Q?uWCdHM+5LbWxnLJxBAtZ4qDgOVOEkEFAHejnIUnoU/5aiOtmsHMggc8C9Y5H?=
- =?us-ascii?Q?ET4WcHmLImNAG8am86RthtI0G+fPbbhMJWIMRBS3G0MivNlSzminxuXFJRYH?=
- =?us-ascii?Q?wcfmrdOJSLcDjPkxj+7g7CKmNa/xCskargNQ6yAJFnw2UPuFIvnDhgKAc5ls?=
- =?us-ascii?Q?9U/Ozl4ilZNS5/RnlFGYw8gByHWMujrXor/o4uqw4z/mOHp3grUc8BP0IUrm?=
- =?us-ascii?Q?H4f7Ug5mX5bYla2N1xtQ638/FoVCGNY724MOc0tdl20mp1fgueOaDNbbjDTh?=
- =?us-ascii?Q?5jELLXELx6Hl6vdJ858Mm9F45Xd0MKlf3Yz/MmU/bthmV1COMMD1scEwl1Ex?=
- =?us-ascii?Q?8r3FAoZ8WJZkolh5o6n1hJxc1VNTBsKaa9guwG1HY+/eCYhPJ0IVcdVLdccN?=
- =?us-ascii?Q?DwYFaidzqS7Nd2Xrtd7wkoqIfH8uBdv34qVj4GRHLUr1ZrO9PzJcJjUePTzB?=
- =?us-ascii?Q?QsYnZF9aq0MANFN9kWx7VNVg4nPHRdQR9JrM4qqYtrXQNOe/UrcWwV7TawAT?=
- =?us-ascii?Q?mXXT77oPjHhnaYHkQgD70V3OO4AupllH8Wo3MhFhMtS/Un34YNZBrDJ1sNEG?=
- =?us-ascii?Q?mpGNijeXCkrDi/3QRbiBlE9iz2lNCiEuEILGqscFh7IDFmVikcAVctjqygQJ?=
- =?us-ascii?Q?cVLcD0jodStYv4/xPjhpCBbDCt9n6oMkaVZfXYBcU8lksawj2uM1niP8J2ao?=
- =?us-ascii?Q?RkxwKQ=3D=3D?=
+	=?us-ascii?Q?q3OnXFAbyDGg9qIDavbbSSebhgWf/yLgIYy6YE1uTW5ovMFqdCd9VNgYdW0Z?=
+ =?us-ascii?Q?2DNSegPEGZBQbKbyQvQALUJtmj7LIBPiN9MUIpbcNdhCP7lXOeFsGtFrWxYw?=
+ =?us-ascii?Q?2GjGHt3o2rG7Zi1JX80SJkXE93ZOwhKgeT7XvOFZ/EgI1XxneLih2WKTm1Hx?=
+ =?us-ascii?Q?ylToqeprC+dd41YEZHmsW1H0LwhxzgchIO6TpbGLRxVuVO/Qj9zdE2mlw4hJ?=
+ =?us-ascii?Q?noC/KAYnWD6IV2HETr1jYrAuZPqw7BZfEMyQl2P0j5R5OGConLmZ/egBsrC/?=
+ =?us-ascii?Q?WYJJWFgDs7WS9Oqy1gYBJxlRO+sOUZTQ4kV3M+xgDRB+AKsjRroOfthf55Hl?=
+ =?us-ascii?Q?0XWoJ4JN+9tlMeXUWpiKBguPMlG5yDL9x4qjrBkTUj7ifEMG2JwLCyVz3cb9?=
+ =?us-ascii?Q?j5tyFlLh0aOMNet4QfBRnVvJJCMbRwptT11MKjQJWGwwJMem14XnyMaZ5MhZ?=
+ =?us-ascii?Q?dxCnJ3MVF+n0s7HZqE+mbPn6X1IHGBWflmRxiyANgM0S8Uwm6onZVoT8wgbn?=
+ =?us-ascii?Q?Pzr2dKawyMaMwV/BnkZvVid7rHS2bjVtrUl9hvsKnOJVo+kCYspVnnMc5KMd?=
+ =?us-ascii?Q?10q143Ex5Xm8tvdfEb9OMgCrGtWeOwm73cIgsoMyJnTJm7XsgeK4GBk51adY?=
+ =?us-ascii?Q?es8eJHXJVuww1/L8L46EXTgiZtf1NrbFn+4mLb2xvXVthQo3SUprofjfV7xk?=
+ =?us-ascii?Q?QlUlyWFj0U//aUM/hxFUjlfibASzXpgQ99mHULcE88BsWbW/fyy+ipf3HXwc?=
+ =?us-ascii?Q?3ftEkjjP5NQ/gRmtDe3o10hOTabiiEH12funFMj/LFMHcrTrJztwD1LCqmk3?=
+ =?us-ascii?Q?/ec357//mIFS1JI5/WThmiYAtbNxzOrInIDlrymk3S4C5YghvYf9bJWeVVD5?=
+ =?us-ascii?Q?aYoeIki2BW0IOLV5u42ppv3njQMIX/PmJj0YJcZqCl3xv+qtP8aFqSO+Xh48?=
+ =?us-ascii?Q?u2hPIzLKb4h3ymtX764XrgsQ2tGHGZalWTYUzZ+aJms3Z3URntw/jp7Ul1jU?=
+ =?us-ascii?Q?QyY0uhmKbidJqnPBswmGHov34RqOTtSrGMvzvmvdunSanfFHV3guSnQVzVbx?=
+ =?us-ascii?Q?WFt6T3r1X+0ZEcu/QqEvNpW21db6Z115JztufefA34CzpwQRnmzJ1bGHoocp?=
+ =?us-ascii?Q?3bQhEoRkFitsnsAKxv3+udgEh0FAaWpNCvQbAk0ltJ7euoBp4b2f+uhmo0Qv?=
+ =?us-ascii?Q?TeHBL4Fa+AjXSAoMGj/VoxF4LWUPgzdlKE8tM5cnefIdeddRZIxmH39tX9XK?=
+ =?us-ascii?Q?xJv9yVxW+D2KR+7t5qzT2uRAMFl+D5nFltoLwjLsJouR5ENQRrjQgSySEOtV?=
+ =?us-ascii?Q?HHt4vbjmKkZHkaDHQ23lpxoMpBilgw+QFW3Dd7iWOnpFw9DvKojXCH+fJBrF?=
+ =?us-ascii?Q?/Fdyx+dz7Zjf9Dn+wDhI4RcXCmkk079fUpj6juQK685cKwIWKp+5REyml48B?=
+ =?us-ascii?Q?p7gpd0U9h7Obx/RKK8+4JtfL46ou1P3OtJXuqTbnLMYxCS09vJYsp/tUp+4w?=
+ =?us-ascii?Q?5W01wqJpkrRjky7IDEmLfBrou7BRK9Get93bD7WTOWhZwlrEjAeOh2Csc81p?=
+ =?us-ascii?Q?fpJ8c3csV9JptdMfcOIfyhe5ThCeiVBB6gRrWdtWa9iwgDxgKJWcdXQnk+ZT?=
+ =?us-ascii?Q?AUberYzWPKa1zMEwrQJ1dswWVv3k8ojDyCMSiQafg2hU5oP1XJ3AYBOR8teZ?=
+ =?us-ascii?Q?fwtjxw=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e4c28aa5-58d6-4063-8bd8-08db5ab53ae4
+X-MS-Exchange-CrossTenant-Network-Message-Id: a71ae47e-e342-4a79-204d-08db5ab6e14b
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2023 11:11:02.8209
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2023 11:22:51.4650
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ooOHL3Bt6KkU1yHOJV8+l5rO1UVmuR/W9RU7lZkGJi6wy62nkFwxYQI2neuwCyl4kWon5Prg5fsK8VPDiSugcHobK5a6Px8CriGPRxIwYYE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5965
+X-MS-Exchange-CrossTenant-UserPrincipalName: znTR9tvLa0QKNk7ABUqTYmnN/znPk8JlpBMhFgHVWZl95kksIQyKUQzmna50ixLSUfRoSW552ifq/Sug00iy2BeOkpXH9Ei4WscYc2xaWiM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR13MB6143
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023 at 01:35:38PM +0300, Dan Carpenter wrote:
-> On Mon, May 22, 2023 at 12:12:48PM +0200, Simon Horman wrote:
-> > On Sat, May 20, 2023 at 10:30:17AM +0200, Christophe JAILLET wrote:
-> > > If an error occures after calling nv_mgmt_acquire_sema(), it should be
-> > > undone with a corresponding nv_mgmt_release_sema() call.
-> > 
-> > nit: s/occures/occurs/
-> > 
-> > > 
-> > > Add it in the error handling path of the probe as already done in the
-> > > remove function.
-> > 
-> > I was going to ask what happens if nv_mgmt_acquire_sema() fails.
-> > Then I realised that it always returns 0.
-> > 
-> > Perhaps it would be worth changing it's return type to void at some point.
-> >
++Dan Carpenter
+
+On Mon, May 22, 2023 at 11:05:35AM +0200, Wojciech Drewek wrote:
+> With this patch, ice driver is able to track if the port
+> representors or uplink port were added to the linux bridge in
+> switchdev mode. Listen for NETDEV_CHANGEUPPER events in order to
+> detect this. ice_esw_br data structure reflects the linux bridge
+> and stores all the ports of the bridge (ice_esw_br_port) in
+> xarray, it's created when the first port is added to the bridge and
+> freed once the last port is removed. Note that only one bridge is
+> supported per eswitch.
 > 
-> What? No?  It returns true on success and false on failure.
+> Bridge port (ice_esw_br_port) can be either a VF port representor
+> port or uplink port (ice_esw_br_port_type). In both cases bridge port
+> holds a reference to the VSI, VF's VSI in case of the PR and uplink
+> VSI in case of the uplink. VSI's index is used as an index to the
+> xarray in which ports are stored.
 > 
-> drivers/net/ethernet/nvidia/forcedeth.c
->   5377  static int nv_mgmt_acquire_sema(struct net_device *dev)
->   5378  {
->   5379          struct fe_priv *np = netdev_priv(dev);
->   5380          u8 __iomem *base = get_hwbase(dev);
->   5381          int i;
->   5382          u32 tx_ctrl, mgmt_sema;
->   5383  
->   5384          for (i = 0; i < 10; i++) {
->   5385                  mgmt_sema = readl(base + NvRegTransmitterControl) & NVREG_XMITCTL_MGMT_SEMA_MASK;
->   5386                  if (mgmt_sema == NVREG_XMITCTL_MGMT_SEMA_FREE)
->   5387                          break;
->   5388                  msleep(500);
->   5389          }
->   5390  
->   5391          if (mgmt_sema != NVREG_XMITCTL_MGMT_SEMA_FREE)
->   5392                  return 0;
->   5393  
->   5394          for (i = 0; i < 2; i++) {
->   5395                  tx_ctrl = readl(base + NvRegTransmitterControl);
->   5396                  tx_ctrl |= NVREG_XMITCTL_HOST_SEMA_ACQ;
->   5397                  writel(tx_ctrl, base + NvRegTransmitterControl);
->   5398  
->   5399                  /* verify that semaphore was acquired */
->   5400                  tx_ctrl = readl(base + NvRegTransmitterControl);
->   5401                  if (((tx_ctrl & NVREG_XMITCTL_HOST_SEMA_MASK) == NVREG_XMITCTL_HOST_SEMA_ACQ) &&
->   5402                      ((tx_ctrl & NVREG_XMITCTL_MGMT_SEMA_MASK) == NVREG_XMITCTL_MGMT_SEMA_FREE)) {
->   5403                          np->mgmt_sema = 1;
->   5404                          return 1;
->                                 ^^^^^^^^^
-> Success path.
+> Add a check which prevents configuring switchdev mode if uplink is
+> already added to any bridge. This is needed because we need to listen
+> for NETDEV_CHANGEUPPER events to record if the uplink was added to
+> the bridge. Netdevice notifier is registered after eswitch mode
+> is changed top switchdev.
 > 
->   5405                  } else
->   5406                          udelay(50);
->   5407          }
->   5408  
->   5409          return 0;
->   5410  }
+> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 
-Thanks Dan,
+...
 
-my eyes deceived me.
+> +static void
+> +ice_eswitch_br_port_deinit(struct ice_esw_br *bridge,
+> +			   struct ice_esw_br_port *br_port)
+> +{
+> +	struct ice_vsi *vsi = br_port->vsi;
+> +
+> +	if (br_port->type == ICE_ESWITCH_BR_UPLINK_PORT && vsi->back)
+> +		vsi->back->br_port = NULL;
+> +	else if (vsi->vf)
+> +		vsi->vf->repr->br_port = NULL;
+> +
+> +	xa_erase(&bridge->ports, br_port->vsi_idx);
+> +	kfree(br_port);
+> +}
 
-In that case, my question is: what if nv_mgmt_acquire_sema() fails?
-But I think the answer is that nv_mgmt_release_sema() will do
-nothing because mgmt_sema is not set.
+...
 
-So I think we are good.
+> +static int
+> +ice_eswitch_br_port_unlink(struct ice_esw_br_offloads *br_offloads,
+> +			   struct net_device *dev, int ifindex,
+> +			   struct netlink_ext_ack *extack)
+> +{
+> +	struct ice_esw_br_port *br_port = ice_eswitch_br_netdev_to_port(dev);
+> +
+> +	if (!br_port) {
+> +		NL_SET_ERR_MSG_MOD(extack,
+> +				   "Port representor is not attached to any bridge");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (br_port->bridge->ifindex != ifindex) {
+> +		NL_SET_ERR_MSG_MOD(extack,
+> +				   "Port representor is attached to another bridge");
+> +		return -EINVAL;
+> +	}
+> +
+> +	ice_eswitch_br_port_deinit(br_port->bridge, br_port);
+
+Hi Wojciech,
+
+According to Smatch, ice_eswitch_br_port_deinit() will free br_port.
+
+> +	ice_eswitch_br_verify_deinit(br_offloads, br_port->bridge);
+
+But br_port is dereferenced here.
+
+.../ice_eswitch_br.c:207 ice_eswitch_br_port_unlink() error: dereferencing freed memory 'br_port'
+
+> +
+> +	return 0;
+> +}
+
+...
+
+--
+pw-bot: cr
 
 
