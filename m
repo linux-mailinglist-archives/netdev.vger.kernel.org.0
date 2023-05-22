@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4278-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4279-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id AEC6F70BDE7
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:25:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8E80670BDF2
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:26:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 69AD6280E25
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:25:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4B4181C20A86
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:26:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A08C16428;
-	Mon, 22 May 2023 12:17:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C19EE16433;
+	Mon, 22 May 2023 12:17:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D4ED1640D
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:17:22 +0000 (UTC)
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF3C1703;
-	Mon, 22 May 2023 05:17:09 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-96f5d651170so717215666b.1;
-        Mon, 22 May 2023 05:17:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B064F1640D
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:17:23 +0000 (UTC)
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFE9170E;
+	Mon, 22 May 2023 05:17:10 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id a640c23a62f3a-96f6e83e12fso489794466b.1;
+        Mon, 22 May 2023 05:17:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684757827; x=1687349827;
+        d=gmail.com; s=20221208; t=1684757830; x=1687349830;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BR4WaMfs6beJCKcHWOQHHYOIrYTJQ7SOSyqfSGCZK48=;
-        b=nwiwhL23+3X1oPllcBS1eFqvx6YOW0qrnjo6coLOpG+/Db0N6PmxOO20Bgw4/Ko7jC
-         NNQFp+/ri7bHwwBz1/mJDxdeV7ipq02QonFCuub9e8XWjjowcJenASuiwMeUCw7AmKBq
-         ZTd7O2Nbd9X1aRA1nGMwka7Cu/XaR7hXZxF4WzI+1gTuK3kFppDxa5C+QUxNnmp8L49h
-         ZRJepRgXz5UXIkIh9T2ToZJIfwb5dZYtSxMf994Xd1X2OO6S6XpTcyUS7S7P1o5LreyU
-         Nv87UeNeTA4S9RSGc5qa8+EULyB46WbQOvE5VuO5jQuqp7gNlsRVEegDRBiChqB+ds3h
-         IhlQ==
+        bh=HqRoVOW5ATPKkmSDchjmJB2cTgfNIDW4SGp9tBnvP0Q=;
+        b=pUw4uKIUNJh5QEQn8is2R/h6lUbhpzqig1b4ddexVTPPD9XVIqJ9g/wMetQyRjn/s7
+         iyIKR2mc40MhSUcoC26nUXn9ZJgchgDimE5YicIDCx2k72qNqSvIfXw8XSbIm0nZjI/2
+         ZNKZvbWbdT7tUqstSqQQuknQZ+KQVxgJljPqP8DsyHGp00yDl/FmeJ2tOO0QVn8LfqJ8
+         cqNZjEBvuMLPRx7VkW9vxZESHTDhL0JR4mrys+CwGHuaM5WfD4PDegQPyLj2RuAJ7gEi
+         DDtuYHcfsS9wxf8QoW7c3BS6C0EvcavSrBErQHu0xHwiqKp/M7qqwKR5whWOaTBjpIav
+         mMWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684757827; x=1687349827;
+        d=1e100.net; s=20221208; t=1684757830; x=1687349830;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=BR4WaMfs6beJCKcHWOQHHYOIrYTJQ7SOSyqfSGCZK48=;
-        b=Wk88Isiivb+N5CnrhVjc5D3RWdK0vQn3ZYyVUtCLQ7xbmZpBTkdACZSkJSC7Dzxf0h
-         //oNQnEyHs6jNb7M9u/9QxOP+maL4z0qXWy9OzHM/5lVrNAGOdqKxxnXcW0jsvUBrVuW
-         guElToUQBQ9yCSLcJ3r2FFkIESxYS3sQeRrLTHGxPjGlH0VX8KB5wBuG3u5/ZsvgBL3w
-         psKlEnejZh8stISxq80gxfFCnl7pK4Bc9bYKA68njkm0JbGSy9zEPSRFFQnEK3hc9dJF
-         GC9NAqab1Lq625/KHlCV8ELnEpzA3gg7rgmkLueZF3EahyUwj0VRczx3CAz9fVgwdEtC
-         YpTA==
-X-Gm-Message-State: AC+VfDzK/aLNkopz1biCb1NipLknuhZfbguHOA6wZBJGSmBi+2yvmJ8/
-	4gQqM9kk4Z+RfIDULLO0bpg=
-X-Google-Smtp-Source: ACHHUZ56qzah9yxHVqSw1YLNAtp+w9qL77H/bmaw8t3TgdQHUL42y3kfN0W7hPVk5MauUttl9OVMrA==
-X-Received: by 2002:a17:907:7211:b0:96f:8afc:b310 with SMTP id dr17-20020a170907721100b0096f8afcb310mr6981274ejc.3.1684757827140;
-        Mon, 22 May 2023 05:17:07 -0700 (PDT)
+        bh=HqRoVOW5ATPKkmSDchjmJB2cTgfNIDW4SGp9tBnvP0Q=;
+        b=JYvSQoeJaF5xismkStu+24We8S7Z4j8kAWCLCE/rt39gtgqYAllnXg/Ll9NGPA+WQM
+         euqgUMtAL72AcGA60jSeylaSJk6k4WFE1Q5X5LsyNgBPFmOkJHHHfrYpXjr1WVNHs/TR
+         WEUBGnPkvRazRFy4wXARb+lTi/HAjEsOy0VjAq/1W1nNo1gEfDKBn+2G4ChS98lcRX40
+         dWa8gHdStfLiE+JII9LRoVAfkyDrlLZOayfI+ysiaekLPrZT7PrQxPGJbX5iNPaDV5r6
+         7UfNWgvJ3N5f5PgoDNWD1z5gMeX+rN2eTvTA8xgdj4nfXocCgvRARa99UTs6CmEJrUWQ
+         5gvg==
+X-Gm-Message-State: AC+VfDzspjaMGd4wpfXww6p25Ma8KvUrtOuKW9qVT3pqxNpSRlO+2I0S
+	x37zDW81wpfbsEcANLUCQnE=
+X-Google-Smtp-Source: ACHHUZ7S5doXEQbzc7jj+Nwm/KeUfeIBOBxtvMLCkdUE7EEsyV+Swmuat4wLSM2bpWQovi+wxudbjQ==
+X-Received: by 2002:a17:907:25c2:b0:96f:8439:6143 with SMTP id ae2-20020a17090725c200b0096f84396143mr7741710ejc.40.1684757830174;
+        Mon, 22 May 2023 05:17:10 -0700 (PDT)
 Received: from arinc9-PC.. ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.17.04
+        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.17.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 05:17:06 -0700 (PDT)
+        Mon, 22 May 2023 05:17:09 -0700 (PDT)
 From: arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To: Sean Wang <sean.wang@mediatek.com>,
@@ -83,9 +83,9 @@ Cc: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 27/30] net: dsa: mt7530: introduce BPDU trapping for MT7530 switch
-Date: Mon, 22 May 2023 15:15:29 +0300
-Message-Id: <20230522121532.86610-28-arinc.unal@arinc9.com>
+Subject: [PATCH net-next 28/30] net: dsa: mt7530: introduce LLDP frame trapping
+Date: Mon, 22 May 2023 15:15:30 +0300
+Message-Id: <20230522121532.86610-29-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230522121532.86610-1-arinc.unal@arinc9.com>
 References: <20230522121532.86610-1-arinc.unal@arinc9.com>
@@ -107,34 +107,110 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
 The MT753X switches are capable of trapping certain frames. Introduce
-trapping BPDUs to the CPU port for the MT7530 switch.
+trapping LLDP frames to the CPU port(s) for the MT753X switches.
 
-BPDUs will be trapped to the numerically smallest CPU port which is affine
-to the DSA conduit interface that is set up. The BPDUs won't necessarily be
-trapped to the CPU port the user port, which these BPDUs are received from,
-is affine to.
+For MT7530, LLDP frames will be trapped to the numerically smallest CPU
+port which is affine to the DSA conduit interface that is set up. The LLDP
+frames won't necessarily be trapped to the CPU port the user port, which
+these LLDP frames are received from, is affine to.
+
+For MT7531 and the switch on the MT7988 SoC, LLDP frames will be trapped to
+the CPU port the user port is affine to.
+
+The bit for R0E_MANG_FR is 27. When set, the switch regards the frames with
+:0E MAC DA as management (LLDP) frames. This bit is set to 1 after reset on
+MT7530 and MT7531 according to the documents MT7620 Programming Guide v1.0
+and MT7531 Reference Manual for Development Board v1.0, so there's no need
+to deal with this bit. Since there's currently no public document for the
+switch on the MT7988 SoC, I assume this is also the case for this switch.
+
+Remove the ETHSYS_CLKCFG0 register which doesn't exist on the said
+documents, and conflicts with the MT753X_RGAC2 register.
+
+The mt753x_bpdu_port_fw enum is universally used for trapping frames,
+therefore rename it and the values in it to mt753x_port_fw.
 
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/dsa/mt7530.c | 12 ++++++++++--
+ drivers/net/dsa/mt7530.h | 23 ++++++++++++-----------
+ 2 files changed, 22 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index cd16911fcb01..2fb4b0bc6335 100644
+index 2fb4b0bc6335..8f5a8803cb33 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2223,6 +2223,10 @@ mt7530_setup(struct dsa_switch *ds)
- 	val |= MHWTRAP_MANUAL;
- 	mt7530_write(priv, MT7530_MHWTRAP, val);
+@@ -2225,7 +2225,11 @@ mt7530_setup(struct dsa_switch *ds)
  
-+	/* Trap BPDUs to the CPU port */
-+	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
-+		   MT753X_BPDU_CPU_ONLY);
+ 	/* Trap BPDUs to the CPU port */
+ 	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
+-		   MT753X_BPDU_CPU_ONLY);
++		   MT753X_PORT_FW_CPU_ONLY);
 +
++	/* Trap LLDP frames with :0E MAC DA to the CPU port */
++	mt7530_rmw(priv, MT753X_RGAC2, MT753X_R0E_PORT_FW_MASK,
++		   MT753X_R0E_PORT_FW(MT753X_PORT_FW_CPU_ONLY));
+ 
  	/* Enable and reset MIB counters */
  	mt7530_mib_reset(ds);
+@@ -2325,7 +2329,11 @@ mt7531_setup_common(struct dsa_switch *ds)
  
+ 	/* Trap BPDUs to the CPU port(s) */
+ 	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
+-		   MT753X_BPDU_CPU_ONLY);
++		   MT753X_PORT_FW_CPU_ONLY);
++
++	/* Trap LLDP frames with :0E MAC DA to the CPU port(s) */
++	mt7530_rmw(priv, MT753X_RGAC2, MT753X_R0E_PORT_FW_MASK,
++		   MT753X_R0E_PORT_FW(MT753X_PORT_FW_CPU_ONLY));
+ 
+ 	/* Enable and reset MIB counters */
+ 	mt7530_mib_reset(ds);
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 52e5d71a04d3..2664057b3cd2 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -25,10 +25,6 @@ enum mt753x_id {
+ 
+ #define TRGMII_BASE(x)			(0x10000 + (x))
+ 
+-/* Registers to ethsys access */
+-#define ETHSYS_CLKCFG0			0x2c
+-#define  ETHSYS_TRGMII_CLK_SEL362_5	BIT(11)
+-
+ #define SYSC_REG_RSTCTRL		0x34
+ #define  RESET_MCM			BIT(2)
+ 
+@@ -63,16 +59,21 @@ enum mt753x_id {
+ #define MT753X_MIRROR_MASK(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
+ 					 MT7531_MIRROR_MASK : MT7530_MIRROR_MASK)
+ 
+-/* Registers for BPDU and PAE frame control*/
++/* Register for BPDU and PAE frame control */
+ #define MT753X_BPC			0x24
+ #define  MT753X_BPDU_PORT_FW_MASK	GENMASK(2, 0)
+ 
+-enum mt753x_bpdu_port_fw {
+-	MT753X_BPDU_FOLLOW_MFC,
+-	MT753X_BPDU_CPU_EXCLUDE = 4,
+-	MT753X_BPDU_CPU_INCLUDE = 5,
+-	MT753X_BPDU_CPU_ONLY = 6,
+-	MT753X_BPDU_DROP = 7,
++/* Register for :03 and :0E MAC DA frame control */
++#define MT753X_RGAC2			0x2c
++#define  MT753X_R0E_PORT_FW(x)		(((x) & 0x7) << 16)
++#define  MT753X_R0E_PORT_FW_MASK	MT753X_R0E_PORT_FW(~0)
++
++enum mt753x_port_fw {
++	MT753X_PORT_FW_FOLLOW_MFC,
++	MT753X_PORT_FW_CPU_EXCLUDE = 4,
++	MT753X_PORT_FW_CPU_INCLUDE = 5,
++	MT753X_PORT_FW_CPU_ONLY = 6,
++	MT753X_PORT_FW_DROP = 7,
+ };
+ 
+ /* Registers for address table access */
 -- 
 2.39.2
 
