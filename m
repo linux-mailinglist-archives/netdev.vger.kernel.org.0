@@ -1,111 +1,73 @@
-Return-Path: <netdev+bounces-4282-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4287-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5D42970BE07
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:27:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 17A9670BE76
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:37:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 188AF28104C
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:27:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C2D35281062
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:37:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 603F312B71;
-	Mon, 22 May 2023 12:26:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1CF09BE71;
+	Mon, 22 May 2023 12:37:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 555654408
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:26:36 +0000 (UTC)
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FACA9;
-	Mon, 22 May 2023 05:26:33 -0700 (PDT)
-Received: (Authenticated sender: alexis.lothore@bootlin.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id B0691C0004;
-	Mon, 22 May 2023 12:26:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1684758392;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=LmOknkiGbwRWi05gBEVUbhKWKgcpIrXBPCzL78lpEGw=;
-	b=KJYXKaU5T0YwZvWBpn0vwwU7ANrv67sjH7nSzG1MQfrq9UEAMIttP39vWyaT3HdcAKjomH
-	g/qV6CvC8Rx9QMJAUf/z41PtN9/Vc0Rw/1REVVTP9ouPMfWj/jpNU/5LApgDBZ78ObwwE3
-	WcecZtw6sZGxONJD85smgMi5tkmAenLw4yK+a3TC9Vq0gMmeoQM7RNU/kztNBUnyyq3FaD
-	iUJmVFLsUmtLN9Q885rGIPX2jU0at9awrIyGbzEG3mjpG4ejk4vbw144QHBtb9D7nmk0ZT
-	ZiLLqPOylo8rLIL6TSvUnXjEZF1n6YOi/W6uCDaQ6TIarNkAAuw+IeOswkzMWw==
-Message-ID: <aed51991-7f4f-b8c5-e899-48e8f23075fb@bootlin.com>
-Date: Mon, 22 May 2023 14:26:50 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E4A72113
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:37:44 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E6BB7;
+	Mon, 22 May 2023 05:37:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=xkaPtlTgqvEeSiVHwmeNstaQ9zvrokv0EzKlnbw/1M4=; b=DSxGh5bZZwT3LssGXY55ZZPoSE
+	NKGoLoSHWc1lApfXPsirHx8Ae02X2P3eqy9HyK6NTfgfPFxRMUo4nuBuVZOFwmZ86ZjVLIDj3rrGW
+	6vCsqV4WIz/iW606JS05Z9+nVvHw2acAIQG0mS75GVTPasraDeH/1fp83rdEQfC3eS/c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q14d3-00DXZp-2T; Mon, 22 May 2023 14:27:09 +0200
+Date: Mon, 22 May 2023 14:27:09 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+Cc: hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	ramon.nordin.rodriguez@ferroamp.se, horatiu.vultur@microchip.com,
+	Woojung.Huh@microchip.com, Nicolas.Ferre@microchip.com,
+	Thorsten.Kummermehr@microchip.com
+Subject: Re: [PATCH net-next v2 1/6] net: phy: microchip_t1s: modify driver
+ description to be more generic
+Message-ID: <d1f91b64-6138-4027-93d2-ad4ffb02ffb3@lunn.ch>
+References: <20230522113331.36872-1-Parthiban.Veerasooran@microchip.com>
+ <20230522113331.36872-2-Parthiban.Veerasooran@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH net-next v2 7/7] net: dsa: mv88e6xxx: enable support for
- 88E6361 switch
-Content-Language: en-US
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: "Russell King (Oracle)" <linux@armlinux.org.uk>,
- Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean
- <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Richard Cochran <richardcochran@gmail.com>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, netdev@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- thomas.petazzoni@bootlin.com, paul.arola@telus.com, scott.roberts@telus.com,
- =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>
-References: <20230519141303.245235-1-alexis.lothore@bootlin.com>
- <20230519141303.245235-8-alexis.lothore@bootlin.com>
- <ZGeLEbcCHzOASasC@shell.armlinux.org.uk>
- <1c104034-b61f-5242-40fa-339de59ac9c9@bootlin.com>
- <237dbb7f-8979-4435-a099-95bb5d093910@lunn.ch>
-From: =?UTF-8?Q?Alexis_Lothor=c3=a9?= <alexis.lothore@bootlin.com>
-In-Reply-To: <237dbb7f-8979-4435-a099-95bb5d093910@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230522113331.36872-2-Parthiban.Veerasooran@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello Andrew,
-On 5/22/23 14:19, Andrew Lunn wrote:
->>> Not exactly related to this patch, but please do not rely on this "max
->>> speed mode" - please always ensure that you specify the phy-mode and
->>> fixed-link settings for CPU and DSA ports in firmware. Thanks.
->>
->> I would like to make sure to fully understand your point:
->> - when telling so specify phy-mode and fixed-link in firmware, you mean
->> device-tree, right ?
->> - when checking for code and execution flow, I observe that port_max_speed is
->> always called and its output is always used to configure shared ports mode in
->> mv88e6xxx driver. Are you telling that eventually, the whole mv88e6xxx driver
->> should stop relying on port_max_speed_mode for shared ports ?
+On Mon, May 22, 2023 at 05:03:26PM +0530, Parthiban Veerasooran wrote:
+> Remove LAN867X from the driver description as this driver is common for
+> all the Microchip 10BASE-T1S PHYs.
 > 
-> Yes, the concept of port_max_speed_mode causes problems for PHYLINK,
-> and we want to remove it. Russell and i have been updating DT
-> descriptions adding fixed-link and phy-mode properties to all
-> mv88e6xxx systems so that it is not needed. Either at the end of this
-> cycle, or the beginning of the next we will change the code to
-> actually enforce this.
+> Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
 
-Understood, thanks for clarification
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-> 
-> 	 Andrew
-
--- 
-Alexis Lothoré, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
+    Andrew
 
