@@ -1,116 +1,147 @@
-Return-Path: <netdev+bounces-4178-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4179-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1A2F470B805
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 10:50:37 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 61F8D70B856
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:03:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EEC2E1C209A7
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 08:50:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E46FE1C20A04
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 09:02:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 544FD79C5;
-	Mon, 22 May 2023 08:50:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1BAE079EA;
+	Mon, 22 May 2023 09:02:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45EC94408
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 08:50:34 +0000 (UTC)
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC75ACE;
-	Mon, 22 May 2023 01:50:32 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id d2e1a72fcca58-64d18d772bdso4961341b3a.3;
-        Mon, 22 May 2023 01:50:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684745432; x=1687337432;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=NJhELKwtMjd03gNF7KmpEmVCJma8B6XT7EEG5otj68M=;
-        b=ApcHDbXTiygQvtexd+vH27HcMnwm6bAyv7n6XhOBgE++bWis9vPRqHRS0W6qj5V7DR
-         mL5tEC5V7b7/FTroGNrJMazKDOznlB5qH/axuJJeAgq8MC0+ykmqNx5K8iUbqTN3wuRq
-         PPSaBggEStKjiLJP/tUl1j7ogRWr0hYF3m9KDRsVamU7UsFj8kaAeBVE09hT6s7x43is
-         HqyQ5pfLphm3MK2dL6jdmiGUxET985tsdSBN/vCXQmh8NGz7pIXzdj10SBZ5Y0R4J5gB
-         X84ThREsJJGV8FfhQQjm4sVUphClHcb+Edgn7WKcbhuDILxuGPF8UtoSSov/vwb79hvQ
-         haDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684745432; x=1687337432;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NJhELKwtMjd03gNF7KmpEmVCJma8B6XT7EEG5otj68M=;
-        b=U7ZUpx3/MTHXGDCOli6HWhaAQ3XD+hm00wI935krr5Qyq7xHPT44EPCq8sRSWTq2rO
-         Zj2DgZT/B9ntvD17QIXCZ/VvQVakpXa5U5nkyJaHZ5xF/QVy4cjcwemxRkLsBKcJbjXq
-         fVvAzm1Rtsi6CrfCgVmguVkCGDrAEGCiVafvLKb/73IF6ZdbyMw+zP/xLyzWEIqepL+G
-         d6xoJ0cxc85JUfbo13doOJhkkE+5uXjquInBFDk2EJ2yRVjoJAT0e3dHeGiFozb2iNIx
-         /DtDOfgI2eJugdu2p7ZCjeRKvO0L/CEfm9p8TzpbV7xL15+6/vWYkZnpIIiNYEQdNn22
-         kPvg==
-X-Gm-Message-State: AC+VfDygYMabSxt09wJZBAvdvg7T7ZJh9JVlQ+67ypCk2jH+hJip3XGv
-	//N0UARjhbFCnBOWQ3AM+rw=
-X-Google-Smtp-Source: ACHHUZ524pmmQh/7hgo03RLWHzP+ui6VLuXisoysGbVKTbXezkSO3sbxAKJtkMiccFEkQI5HkBBPnA==
-X-Received: by 2002:a17:902:e5ce:b0:1ac:b449:352d with SMTP id u14-20020a170902e5ce00b001acb449352dmr12242806plf.61.1684745432206;
-        Mon, 22 May 2023 01:50:32 -0700 (PDT)
-Received: from redkillpc.. ([49.207.202.99])
-        by smtp.gmail.com with ESMTPSA id d20-20020a170902c19400b001ab01598f40sm4319367pld.173.2023.05.22.01.50.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 01:50:31 -0700 (PDT)
-From: Prathu Baronia <prathubaronia2011@gmail.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	kvm@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Prathu Baronia <prathubaronia2011@gmail.com>
-Subject: [PATCH] vhost: use kzalloc() instead of kmalloc() followed by memset()
-Date: Mon, 22 May 2023 14:20:19 +0530
-Message-Id: <20230522085019.42914-1-prathubaronia2011@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EA7663CB
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 09:02:56 +0000 (UTC)
+Received: from smtpbgau2.qq.com (smtpbgau2.qq.com [54.206.34.216])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24A4FF
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 02:02:54 -0700 (PDT)
+X-QQ-mid:Yeas47t1684746045t472t60201
+Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [122.235.247.1])
+X-QQ-SSF:00400000000000F0FNF000000000000
+From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
+X-BIZMAIL-ID: 9655095480155216521
+To: "'Andrew Lunn'" <andrew@lunn.ch>,
+	"'Michael Walle'" <michael@walle.cc>
+Cc: "'Andy Shevchenko'" <andy.shevchenko@gmail.com>,
+	<netdev@vger.kernel.org>,
+	<jarkko.nikula@linux.intel.com>,
+	<andriy.shevchenko@linux.intel.com>,
+	<mika.westerberg@linux.intel.com>,
+	<jsd@semihalf.com>,
+	<Jose.Abreu@synopsys.com>,
+	<hkallweit1@gmail.com>,
+	<linux@armlinux.org.uk>,
+	<linux-i2c@vger.kernel.org>,
+	<linux-gpio@vger.kernel.org>,
+	<mengyuanlou@net-swift.com>
+References: <20230515063200.301026-1-jiawenwu@trustnetic.com> <20230515063200.301026-7-jiawenwu@trustnetic.com> <ZGH-fRzbGd_eCASk@surfacebook> <00cd01d9879f$8e444950$aaccdbf0$@trustnetic.com> <CAHp75VdthEZL6GvT5Q=f7rbcDfA5XX=7-VLfVz1kZmBFem_eCA@mail.gmail.com> <016701d9886a$f9b415a0$ed1c40e0$@trustnetic.com> <90ef7fb8-feac-4288-98e9-6e67cd38cdf1@lunn.ch> <025b01d9897e$d8894660$899bd320$@trustnetic.com> <1e1615b3-566c-490c-8b1a-78f5521ca0b0@lunn.ch> <028601d989f9$230ee120$692ca360$@trustnetic.com> <f0b571ab-544b-49c3-948f-d592f931673b@lunn.ch>
+In-Reply-To: <f0b571ab-544b-49c3-948f-d592f931673b@lunn.ch>
+Subject: RE: [PATCH net-next v8 6/9] net: txgbe: Support GPIO to SFP socket
+Date: Mon, 22 May 2023 17:00:44 +0800
+Message-ID: <005a01d98c8b$e48d2b60$ada78220$@trustnetic.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHvj8QD3pC+6Aq9H9h6P1+q5LrHRgMH5FTyAkITzAABJU2Y7wJ7xjhgAYjDQqsBr+FHUgDJ87o1AYTHtNcC/cxtnwIXsv+Orp2toMA=
+Content-Language: zh-cn
+X-QQ-SENDSIZE: 520
+Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use kzalloc() to allocate new zeroed out msg node instead of
-memsetting a node allocated with kmalloc().
+On Friday, May 19, 2023 9:13 PM, Andrew Lunn wrote:
+> > I have one MSI-X interrupt for all general MAC interrupt (see TXGBE_PX_MISC_IEN_MASK).
+> > It has 32 bits to indicate various interrupts, GPIOs are the one of them. When GPIO
+> > interrupt is determined, GPIO_INT_STATUS register should be read to determine
+> > which GPIO line has changed state.
+> 
+> So you have another interrupt controller above the GPIO interrupt
+> controller. regmap-gpio is pushing you towards describing this
+> interrupt controller as a Linux interrupt controller.
+> 
+> When you look at drivers handling interrupts, most leaf interrupt
+> controllers are not described as Linux interrupt controllers. The
+> driver interrupt handler reads the interrupt status register and
+> internally dispatches to the needed handler. This works well when
+> everything is internal to one driver.
+> 
+> However, here, you have two drivers involved, your MAC driver and a
+> GPIO driver instantiated by the MAC driver. So i think you are going
+> to need to described the MAC interrupt controller as a Linux interrupt
+> controller.
+> 
+> Take a look at the mv88e6xxx driver, which does this. It has two
+> interrupt controller embedded within it, and they are chained.
 
-Signed-off-by: Prathu Baronia <prathubaronia2011@gmail.com>
----
- drivers/vhost/vhost.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Now I add two interrupt controllers, the first one for the MAC interrupt,
+and the second one for regmap-gpio. In the second adding flow,
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index a92af08e7864..579ecb4ee4d2 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -2575,12 +2575,11 @@ EXPORT_SYMBOL_GPL(vhost_disable_notify);
- /* Create a new message. */
- struct vhost_msg_node *vhost_new_msg(struct vhost_virtqueue *vq, int type)
- {
--	struct vhost_msg_node *node = kmalloc(sizeof *node, GFP_KERNEL);
-+	/* Make sure all padding within the structure is initialized. */
-+	struct vhost_msg_node *node = kzalloc(sizeof(*node), GFP_KERNEL);
- 	if (!node)
- 		return NULL;
- 
--	/* Make sure all padding within the structure is initialized. */
--	memset(&node->msg, 0, sizeof node->msg);
- 	node->vq = vq;
- 	node->msg.type = type;
- 	return node;
+	irq = irq_find_mapping(txgbe->misc.domain, TXGBE_PX_MISC_GPIO_OFFSET);
+	err = regmap_add_irq_chip_fwnode(fwnode, regmap, irq, 0, 0,
+					 chip, &chip_data);
 
-base-commit: 4d6d4c7f541d7027beed4fb86eb2c451bd8d6fff
--- 
-2.34.1
+and then,
+
+	config.irq_domain = regmap_irq_get_domain(chip_data);
+	gpio_regmap = gpio_regmap_register(&config);
+
+"txgbe->misc.domain" is the MAC interrupt domain. I think this flow should
+be correct, but still failed to get gpio_irq from gpio_desc with err -517.
+
+And I still have doubts about what I said earlier:
+https://lore.kernel.org/netdev/20230515063200.301026-1-jiawenwu@trustnetic.com/T/#me1be68e1a1e44426ecc0dd8edf0f6b224e50630d
+
+There really is nothing wrong with gpiochip_to_irq()??
+
+> > > If you are getting errors when removing the driver it means you are
+> > > missing some level of undoing what us done in probe. Are you sure
+> > > regmap_del_irq_chip() is being called on unload?
+> >
+> > I used devm_* all when I registered them.
+> 
+> Look at the ordering. Is regmap_del_irq_chip() being called too late?
+> I've had problems like this with the mv88e6xxx driver and its
+> interrupt controllers. I ended up not using devm_ so i had full
+> control over the order things got undone. In that case, the external
+> devices was PHYs, with the PHY interrupt being inside the Ethernet
+> switch, which i exposed using a Linux interrupt controller.
+
+I use no devm_ functions to add regmap irq chip, register gpio regmap,
+and call their del/unregister functions at the position corresponding to
+release. irq_domain_remove() call trace still exist.
+
+[  104.553182] Call Trace:
+[  104.553184]  <TASK>
+[  104.553185]  irq_domain_remove+0x2b/0xe0
+[  104.553190]  regmap_del_irq_chip.part.0+0x8a/0x160
+[  104.553196]  txgbe_remove_phy+0x57/0x80 [txgbe]
+[  104.553201]  txgbe_remove+0x2a/0x90 [txgbe]
+[  104.553205]  pci_device_remove+0x36/0xa0
+[  104.553208]  device_release_driver_internal+0xaa/0x140
+[  104.553213]  driver_detach+0x44/0x90
+[  104.553215]  bus_remove_driver+0x69/0xf0
+[  104.553217]  pci_unregister_driver+0x29/0xb0
+[  104.553220]  __x64_sys_delete_module+0x145/0x240
+[  104.553223]  ? exit_to_user_mode_prepare+0x3c/0x1a0
+[  104.553226]  do_syscall_64+0x3b/0x90
+[  104.553230]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
+
 
 
