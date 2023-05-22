@@ -1,98 +1,103 @@
-Return-Path: <netdev+bounces-4359-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4361-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 43A2170C2FA
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 18:06:57 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A683370C30D
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 18:12:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 160351C20B34
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 16:06:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D629F280FFC
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 16:12:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69BA8154AD;
-	Mon, 22 May 2023 16:06:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C2C6C154BB;
+	Mon, 22 May 2023 16:12:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6CF13AE7
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 16:06:54 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09613B6
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 09:06:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=Og4lodhFKpW1QN60YIe1CtLOG3awZ87wIG7sXlLotYo=; b=Xfirz69TGExCYr9f2iQCHVLjAV
-	PpO2GOYTxHH+J3wh+kH2M4Lixi7O8FzYr1pbkDnMuuTDzzXFnwqeJIOdOM6zbO7Ra8f1nnFqiUUjL
-	ejNOh+nnkOlui61gFcBWLNYFO3vQtMcD6FJ7S2rQB7V0uF3QNkJ1o+cSS3Yz+hBzr21tQXVb9fQGg
-	VS135om3G6KNhz7tEMMan/MF/biPgp7K2eF0S4FdNIyYiy7NK5U0GBsQHrrrB2lQaZodwmzR2bEI1
-	ipIFt3n5djEs+aDEM+K/58FkSTDN3lLb8N+4BvmDPekCQfKM3O/4CzIEsOkDMGuAcW2b5sjCP0gpa
-	iZF+cKZA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43442)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q183d-00077q-5A; Mon, 22 May 2023 17:06:49 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q183b-00084P-VO; Mon, 22 May 2023 17:06:47 +0100
-Date: Mon, 22 May 2023 17:06:47 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phy: avoid kernel warning dump when
- stopping an errored PHY
-Message-ID: <ZGuTF6rNEYBOUFCG@shell.armlinux.org.uk>
-References: <E1q17vE-007Baz-8c@rmk-PC.armlinux.org.uk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B33E51427A
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 16:12:08 +0000 (UTC)
+Received: from mail-ua1-x92e.google.com (mail-ua1-x92e.google.com [IPv6:2607:f8b0:4864:20::92e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076A510D;
+	Mon, 22 May 2023 09:12:06 -0700 (PDT)
+Received: by mail-ua1-x92e.google.com with SMTP id a1e0cc1a2514c-784f7f7deddso1096457241.3;
+        Mon, 22 May 2023 09:12:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684771925; x=1687363925;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=N1Kq2pTQzRPtKnP1nHWXlWj/vVcufb0P5WbmZ2JJgU4=;
+        b=gR3o4xstXYZQqMVIrRTrV5ICd6gg6cxe8qaElDJZADmQNfQiVs0rXaNapNPzxI0D69
+         GxSzwwl8DO9b23+3Pn22f2smLn7GKE4wPKWzyZeCkSjFfC9kjw/l7b0sI/2RMdwTOkPN
+         eciOs9jzsvwsCaYXDaFayjCwDFnEFSxh8PB8BrNt7X9+7zdAofqzrDKMeOiblcDHmZ9J
+         3LE+sGrrCAXJSm8dvwgk+Ji1qLyPSHv/jRuCvCuS2GRVhjNmR3QT6DN805SdhPmZwSYB
+         nzH26lAePUj6vQF4jWIRg0AhxyF7wsElxw2LvO7oloZMe7YzcArElfvcBm1fHu6irR5i
+         NpMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684771925; x=1687363925;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=N1Kq2pTQzRPtKnP1nHWXlWj/vVcufb0P5WbmZ2JJgU4=;
+        b=Bkbug7okkcejyRL/YmBLikTyP+Z7sqECNDQuxfq9nezvum2mrMc5wSYriNC9V7Bj+m
+         8V8jJvjCmj13xVm70nE0t7kR6Iaj5JwiHaFW5OF54Ia2vwL8CmTG/QDZn4ycyAN9nBXh
+         hRPXmwox5zkuRRbTQLSnuhDGGdkjkV2qN5T//6GHoqga9cnB+A9/3msR9fS18lvSbKQq
+         MLRrjZUm06kdP5lwlsGzg2LJYQjr/hqkUtEIhdBFnMh8tTQlnEv6ntpg7GEyjDjknlLE
+         M/Hd37VbbDeWH7Sa1+cWG6+mzpoFVtcb+2ju00q8as5dRenldb9omogqDHS80sahE9h4
+         Nazw==
+X-Gm-Message-State: AC+VfDytiAstR3AVXFjTVcdyOTp3DFvxi4oWn7GIFJovqgkHf8Psth+D
+	WYEgN1guu8OopxAWBlYYja5u6GKYYtCZMpOku1I=
+X-Google-Smtp-Source: ACHHUZ4TT4FQFXoEJ7KP1GN7aOF/n6thjTDb3gwc8Ze2Z+V3ftIPBbSC0drnY7ett+wQrvhSder9nkPprGcvvfFYSJw=
+X-Received: by 2002:a67:e294:0:b0:42c:922e:65dd with SMTP id
+ g20-20020a67e294000000b0042c922e65ddmr2718260vsf.23.1684771925014; Mon, 22
+ May 2023 09:12:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1q17vE-007Baz-8c@rmk-PC.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+References: <20230522153020.32422-1-ptyadav@amazon.de> <20230522154554.44836-1-kuniyu@amazon.com>
+In-Reply-To: <20230522154554.44836-1-kuniyu@amazon.com>
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Mon, 22 May 2023 12:11:28 -0400
+Message-ID: <CAF=yD-KWV-Zc4O4OfztBEHwGgEfJsr-usut3ki=nA5mX8sfRpA@mail.gmail.com>
+Subject: Re: [PATCH net] net: fix skb leak in __skb_tstamp_tx()
+To: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: ptyadav@amazon.de, davem@davemloft.net, edumazet@google.com, 
+	kuba@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	nmanthey@amazon.de, pabeni@redhat.com, willemb@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023 at 04:58:08PM +0100, Russell King (Oracle) wrote:
-> When taking a network interface down (or removing a SFP module) after
-> the PHY has encountered an error, phy_stop() complains incorrectly
-> that it was called from HALTED state.
-> 
-> The reason this is incorrect is that the network driver will have
-> called phy_start() when the interface was brought up, and the fact
-> that the PHY has a problem bears no relationship to the administrative
-> state of the interface. Taking the interface administratively down
-> (which calls phy_stop()) is always the right thing to do after a
-> successful phy_start() call, whether or not the PHY has encountered
-> an error.
+On Mon, May 22, 2023 at 11:46=E2=80=AFAM Kuniyuki Iwashima <kuniyu@amazon.c=
+om> wrote:
+>
+> From: Pratyush Yadav <ptyadav@amazon.de>
+> Date: Mon, 22 May 2023 17:30:20 +0200
+> > Commit 50749f2dd685 ("tcp/udp: Fix memleaks of sk and zerocopy skbs wit=
+h
+> > TX timestamp.") added a call to skb_orphan_frags_rx() to fix leaks with
+> > zerocopy skbs. But it ended up adding a leak of its own. When
+> > skb_orphan_frags_rx() fails, the function just returns, leaking the skb
+> > it just cloned. Free it before returning.
+> >
+> > This bug was discovered and resolved using Coverity Static Analysis
+> > Security Testing (SAST) by Synopsys, Inc.
+> >
+> > Fixes: 50749f2dd685 ("tcp/udp: Fix memleaks of sk and zerocopy skbs wit=
+h TX timestamp.")
+> > Signed-off-by: Pratyush Yadav <ptyadav@amazon.de>
+>
+> Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Note that I can reproduce this by repeatedly plugging and unplugging any
-SFP with a PHY that we access - if one unplugs it while the PHY is being
-accessed, phylib logs an error, and then the unplug event happens which
-ends up correctly calling phy_stop(), which then spits out a kernel
-warning.
-
-One may suggest that this is an unlikely event, but any SFP using the
-Rollball I2C protocol to access the PHY, each access can take tens of
-milliseconds, which is more than enough time to hit this.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Reviewed-by: Willem de Bruijn <willemb@google.com>
 
