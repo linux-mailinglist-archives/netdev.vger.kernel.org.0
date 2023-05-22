@@ -1,159 +1,125 @@
-Return-Path: <netdev+bounces-4349-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4350-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id ABA7E70C284
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 17:35:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7D0FC70C28B
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 17:36:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 880531C20B5A
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 15:35:48 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0F2391C20AAB
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 15:36:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F58214AB4;
-	Mon, 22 May 2023 15:35:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C6EC14AB5;
+	Mon, 22 May 2023 15:36:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6368514AB3
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 15:35:38 +0000 (UTC)
-X-Greylist: delayed 2201 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 May 2023 08:35:37 PDT
-Received: from mail11.truemail.it (mail11.truemail.it [217.194.8.81])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0170CD;
-	Mon, 22 May 2023 08:35:36 -0700 (PDT)
-Received: from francesco-nb.int.toradex.com (31-10-206-125.static.upc.ch [31.10.206.125])
-	by mail11.truemail.it (Postfix) with ESMTPA id 044E721334;
-	Mon, 22 May 2023 17:35:34 +0200 (CEST)
-Date: Mon, 22 May 2023 17:35:33 +0200
-From: Francesco Dolcini <francesco@dolcini.it>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: Francesco Dolcini <francesco@dolcini.it>,
-	Praneeth Bajjuri <praneeth@ti.com>, Geet Modi <geet.modi@ti.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Grygorii Strashko <grygorii.strashko@ti.com>,
-	Dan Murphy <dmurphy@ti.com>
-Subject: Re: DP83867 ethernet PHY regression
-Message-ID: <ZGuLxSJwXbSE/Rbb@francesco-nb.int.toradex.com>
-References: <ZGuDJos8D7N0J6Z2@francesco-nb.int.toradex.com>
- <e0d4b397-a8d9-4546-a8a2-14cf07914e64@lunn.ch>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CF1F14AAD
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 15:36:22 +0000 (UTC)
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0770ABB;
+	Mon, 22 May 2023 08:36:21 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id d2e1a72fcca58-64d604cc0aaso1223482b3a.2;
+        Mon, 22 May 2023 08:36:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684769780; x=1687361780;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DenES0KQSjrCWYfYQgXjcF0k/ImoCZJgCineCmXx+NE=;
+        b=jASfy9rNHOxQwklay2dl4HeJfqhrXM71IqRNK25gCbRc8zhxHX1xrhfX0geOpAgTJq
+         XyeDtcJk8UZYGfNrZqN3ijB11s5Bs3QsX5Cv7MfFgQfd+ZVuVwIaAgVpxGwwMRyxMW8F
+         oADHQ2s5A/1zr8r6IibKMoSQcwpoNg269LCdwzHdvFaG5qGo2tlwycSFg5f5ru/NQpOb
+         /XYub7ZNNyeD3mRl9rob1nesDHRLBnbOA3qJ9aid+EX9zCmLJCpjYAyGpI2FquCdRra0
+         24IZnWPrM6RzIpBfsgga0JOYD7LoBkVv2dTgyP9TUXgKVpbUTYOpnXmhYjI8NIO1Gsv3
+         Gjpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684769780; x=1687361780;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DenES0KQSjrCWYfYQgXjcF0k/ImoCZJgCineCmXx+NE=;
+        b=Ur2Ft1EZHT8KN14d9iGOo7XlLchzMuD1i9RKkDK2ZLbGQcIqyr/yssSslLqERQ53hX
+         WBd6JHixU4YNSA+Of2V2dQ/pvNNi7nyX/uGqkoaBjzAKZ28vkAXq84ouwhj6J6fjmZiR
+         7C0A08lAgzEkNrkNZjU0GoHog0RZ2yS1U2btn/N/6aoMJFAnpxsVVv+7T0UOiEtW5hTi
+         nF30WjIr9L2bx325C0uDo8y3IgbJzfLCLNnSecuMob6tkWZ4vZf64tfKa4JrUYmKpl1u
+         eRK9pU91XOWW6vhGzuixTbTIj8vmicnJHU+RJjf7q36da0fKRju+5nghnsJvtLh/Jtg6
+         tPuw==
+X-Gm-Message-State: AC+VfDy+S9EgwBR5JjovDIW6DCHkGsVTANmUes2ZbcDs07UB9hLQjnXv
+	wriJJmRW/l6D7kEXoVL3eX4=
+X-Google-Smtp-Source: ACHHUZ5kMw3+1b6tLTszJJvFqHHI3vChTGvGuyKIosGush/AiROF93kKWL+uNb5ZHIVOgEby3Ng5/A==
+X-Received: by 2002:a05:6a00:248a:b0:64d:5b4b:8429 with SMTP id c10-20020a056a00248a00b0064d5b4b8429mr8042391pfv.18.1684769780446;
+        Mon, 22 May 2023 08:36:20 -0700 (PDT)
+Received: from ubuntu777.domain.name (36-228-81-153.dynamic-ip.hinet.net. [36.228.81.153])
+        by smtp.gmail.com with ESMTPSA id w17-20020aa78591000000b006414c3ba8a3sm4447849pfn.177.2023.05.22.08.36.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 May 2023 08:36:19 -0700 (PDT)
+From: Min-Hua Chen <minhuadotchen@gmail.com>
+To: ecree.xilinx@gmail.com
+Cc: alexandre.torgue@foss.st.com,
+	davem@davemloft.net,
+	edumazet@google.com,
+	joabreu@synopsys.com,
+	kuba@kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	mcoquelin.stm32@gmail.com,
+	minhuadotchen@gmail.com,
+	netdev@vger.kernel.org,
+	pabeni@redhat.com,
+	peppe.cavallaro@st.com,
+	simon.horman@corigine.com
+Subject: Re: [PATCH v3] net: stmmac: compare p->des0 and p->des1 with __le32 type values
+Date: Mon, 22 May 2023 23:36:15 +0800
+Message-Id: <20230522153615.247577-1-minhuadotchen@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <9e6b813a-bc1a-6a39-904d-5c45f983cd23@gmail.com>
+References: <9e6b813a-bc1a-6a39-904d-5c45f983cd23@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="/zTa0TOsm9Yb+E2A"
-Content-Disposition: inline
-In-Reply-To: <e0d4b397-a8d9-4546-a8a2-14cf07914e64@lunn.ch>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+hi Edward,
 
---/zTa0TOsm9Yb+E2A
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+>>> On Fri, 19 May 2023 19:50:28 +0800 Min-Hua Chen wrote:
+>>>> -		if ((p->des0 == 0xffffffff) && (p->des1 == 0xffffffff))
+>>>> +		if (p->des0 == cpu_to_le32(0xffffffff) &&
+>>>> +		    p->des1 == cpu_to_le32(0xffffffff))
+>>>
+>>> Can you try to fix the sparse tool instead? I believe it already
+>>> ignores such errors for the constant of 0, maybe it can be taught 
+>>> to ignore all "isomorphic" values?
+>>>
+>> 
+>> I downloaded the source code of sparse and I'm afraid that I cannot make
+>> 0xFFFFFFFF ignored easily. I've tried ~0 instead of 0xFFFFFF,
+>> but it did not work with current sparse.
+>> 
+>> 0 is a special case mentioned in [1].
+>
+>I believe you can do something like
+>    if ((p->des0 == ~(__le32)0) && (p->des1 == ~(__le32)0))
+> and sparse will accept that, because the cast is allowed under the
+> special case.
+>HTH,
+>-ed
 
-On Mon, May 22, 2023 at 05:15:56PM +0200, Andrew Lunn wrote:
-> On Mon, May 22, 2023 at 04:58:46PM +0200, Francesco Dolcini wrote:
-> > Hello all,
-> > commit da9ef50f545f ("net: phy: dp83867: perform soft reset and retain
-> > established link") introduces a regression on my TI AM62 based board.
-> > 
-> > I have a working DTS with Linux TI 5.10 downstream kernel branch, while
-> > testing the DTS with v6.4-rc in preparation of sending it to the mailing
-> > list I noticed that ethernet is working only on a cold poweron.
-> 
-> Do you have more details about how it does not work.
-> 
-> Please could you use:
-> 
-> mii-tool -vvv ethX
+I tested ~(__le32)0 and it worked: sparse accpets this.
+Thanks for sharing this.
 
-please see the attached files:
-
-working_da9ef50f545f_reverted.txt
-  this is on a v6.4-rc, with da9ef50f545f reverted
-
-not_working.txt
-  v6.4-rc not working
-
-working.txt
-  v6.4-rc working
-
-
-It looks like, even on cold boot, it's not working in a reliable way.
-Not sure the exact difference when it's working and when it's not.
-
-> in both the good and bad state. The register values might give us a
-> clue.
-
-Thanks for your help,
-Francesco
-
-
---/zTa0TOsm9Yb+E2A
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="not_working.txt"
-
-Using SIOCGMIIPHY=0x8947
-eth0: negotiated 1000baseT-FD flow-control, link ok
-  registers for MII PHY 0: 
-    1140 796d 2000 a231 05e1 c5e1 006f 2001
-    5806 0200 3800 0000 0000 4007 0000 3000
-    5048 ac02 ec10 0004 2bc7 0000 0000 0040
-    6150 4444 0002 0000 0000 0000 0282 0000
-  product info: vendor 08:00:28, model 35 rev 1
-  basic mode:   autonegotiation enabled
-  basic status: autonegotiation complete, link ok
-  capabilities: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
-  advertising:  1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
-  link partner: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
-
---/zTa0TOsm9Yb+E2A
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment;
-	filename="working_da9ef50f545f_reverted.txt"
-
-Using SIOCGMIIPHY=0x8947
-eth0: negotiated 1000baseT-FD flow-control, link ok
-  registers for MII PHY 0: 
-    1140 796d 2000 a231 05e1 c5e1 006d 2001
-    5806 0200 3800 0000 0000 4007 0000 3000
-    5048 af02 ec10 0000 2bc7 0000 0000 0040
-    6150 4444 0002 0000 0000 0000 0282 0000
-  product info: vendor 08:00:28, model 35 rev 1
-  basic mode:   autonegotiation enabled
-  basic status: autonegotiation complete, link ok
-  capabilities: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
-  advertising:  1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
-  link partner: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
-
---/zTa0TOsm9Yb+E2A
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="working.txt"
-
-Using SIOCGMIIPHY=0x8947
-eth0: negotiated 1000baseT-FD flow-control, link ok
-  registers for MII PHY 0: 
-    1140 796d 2000 a231 05e1 c5e1 006f 2001
-    5806 0200 3800 0000 0000 4007 0000 3000
-    5048 ac02 ec10 0000 2bc7 0000 0000 0040
-    6150 4444 0002 0000 0000 0000 0282 0000
-  product info: vendor 08:00:28, model 35 rev 1
-  basic mode:   autonegotiation enabled
-  basic status: autonegotiation complete, link ok
-  capabilities: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
-  advertising:  1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
-  link partner: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
-
---/zTa0TOsm9Yb+E2A--
+cheers,
+Min-Hua
 
