@@ -1,135 +1,126 @@
-Return-Path: <netdev+bounces-4219-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4220-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 42BAB70BBD1
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 13:30:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 23D9770BBDE
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 13:32:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ECD97280F22
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:30:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4727E280F02
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:32:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C89ABE6D;
-	Mon, 22 May 2023 11:30:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BBA6BE72;
+	Mon, 22 May 2023 11:32:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F38B7BE59
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:30:05 +0000 (UTC)
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E61BF;
-	Mon, 22 May 2023 04:30:02 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-	by mailout.west.internal (Postfix) with ESMTP id E43463200893;
-	Mon, 22 May 2023 07:30:00 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Mon, 22 May 2023 07:30:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm3; t=1684755000; x=1684841400; bh=I0
-	ZUnK8Op8CDDPBL/yAYTQUqi/o9g4TW10EzMTLXfoE=; b=JrfcKAS3g1/MlJ/TTG
-	p1TlzSJzmscQRtD492EcrEi4L2I357wGZhHjkk4lcdB5RF82tv1BXWNPtCyeWAs6
-	uWxJEwWThmebIidKlPkuzV3ZIxaPKlUoapZ62RULygBOk3VfOCifYuXyNgID1CrP
-	0WmKtVMdlmDcsKxQYF2VfrJvqVKwn2LroEmcubIMYPNiR9RwT1fQkq8JhTKlaqsT
-	o28vY8fpAkzM2/jclDwgclzSsk40FVTudetkG/ACb/ARaMAJidON7CBin8/xtawd
-	smEHnv/g2P8Ad6OvTrGhs49Hf7ph12Q02uTrMd9l8qHlhjNMbmvSw6yqckqd4NhY
-	3i2g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1684755000; x=1684841400; bh=I0ZUnK8Op8CDD
-	PBL/yAYTQUqi/o9g4TW10EzMTLXfoE=; b=pbbdIOoJCIJmUbj0noPpve1ynfD7M
-	3tkh/4PFf6bnVetmhnINEiBY+kE5G9WcBOB9/m6403vpVg8+F+14KXnhZ0P9PSWC
-	8ATNjuWqyCPFjShDkPQbTm2daCxV9QQyEaBlnhHPM3dBDAGw+4aww452hnfjrKfD
-	LZ5XKLHZ1oI8VBQyqkmhJAQ7hVOnl2anNl2cRcWZa+ZEcZK4ELgUiDM4U0Dp1YfB
-	HYhn0cqWGnKzRPRe8cb8gDtPIshiVl9o53WGM4RAEJ0VkpNq3MLEEUeVSHbZKg8G
-	OsAQuBDiQopcbP9Ou04y4oAf8NRoY6x0qAtMlmIfP7X6I3jiFZk/SNbsg==
-X-ME-Sender: <xms:N1JrZPD-xQcG3Qk-fMmqY-uElwqU8b8nwl1pnONzdbtBQ7QwerD7Ww>
-    <xme:N1JrZFhIj5_AY1N-m-hPsfiQWwOqHhcd_9QcpA3kU6zzY3TWFJwPLoJ4oxi8J1hmb
-    prqOKjtiMmNjv3rx-U>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeejuddgfeejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepvefhffeltdegheeffffhtdegvdehjedtgfekueevgfduffettedtkeekueef
-    hedunecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:N1JrZKk1gaOfBgUq-41z42gjF28SibhfhCAn3GcHCT98XWnE2CkHlw>
-    <xmx:N1JrZBwb6f4BF97gPVu2JpfgdT_2_g96CQU7pN_RqMCOiVVOZQkbnA>
-    <xmx:N1JrZER3r3k5WK6Oz2U9NMwi6cbPc_k6HBTai-8jjcB1Zrpmds6-hg>
-    <xmx:OFJrZGBf4TQHGnLaaXI0u0JMCZUrL0qhyM45i4Tlqr6ss-FU5eI6Hw>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 9559DB60086; Mon, 22 May 2023 07:29:59 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-431-g1d6a3ebb56-fm-20230511.001-g1d6a3ebb
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C383BE6D
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:32:49 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF92121;
+	Mon, 22 May 2023 04:32:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1684755151; x=1716291151;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HJfIo4BRTfyETRDgW53kRF/axEHFA4oO/GuuKmnwGmU=;
+  b=zIofe9erFwJwhqNYb4qwzxrfDaDQAL/5kpHrc+gORLEnlNdbuKUYWo3W
+   eOocp58DFOnyQgC6xt0k4YuMUvumrbvqmiXEPkQKV1g5gkAxBrlQNxw3w
+   rSa4ecG75Hgqla/1jRyGx84Ra2C3mIOsoaukGpfNJK8ATu+rcJcZuGh5f
+   uOhS6kyJEkn/14H6rMeOuSSosVss8RR77SM2N7OTfEa86T7ZItOsiiNPc
+   0mF+j5jESWL2RWFYPSyO0RB5ZThwNuJgww+Y0eT0hXYWtYGjG2PePSCra
+   VyVD+DVK+0udL7uSShTmTwEJRux0j9IzrL7HJ3nyIoyVyrdatU8hYcqKt
+   Q==;
+X-IronPort-AV: E=Sophos;i="6.00,184,1681196400"; 
+   d="scan'208";a="153287665"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 May 2023 04:32:30 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 22 May 2023 04:32:28 -0700
+Received: from CHE-LT-I17164LX.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Mon, 22 May 2023 04:32:23 -0700
+From: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+To: <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <ramon.nordin.rodriguez@ferroamp.se>
+CC: <horatiu.vultur@microchip.com>, <Woojung.Huh@microchip.com>,
+	<Nicolas.Ferre@microchip.com>, <Thorsten.Kummermehr@microchip.com>,
+	"Parthiban Veerasooran" <Parthiban.Veerasooran@microchip.com>
+Subject: [PATCH net-next v2 0/6] microchip_t1s: Update on Microchip 10BASE-T1S PHY driver
+Date: Mon, 22 May 2023 17:03:25 +0530
+Message-ID: <20230522113331.36872-1-Parthiban.Veerasooran@microchip.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Message-Id: <7b5c40f3-d25b-4082-807d-4d75dc38886d@app.fastmail.com>
-In-Reply-To: <20230522105049.1467313-1-schnelle@linux.ibm.com>
-References: <20230522105049.1467313-1-schnelle@linux.ibm.com>
-Date: Mon, 22 May 2023 13:29:39 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Niklas Schnelle" <schnelle@linux.ibm.com>,
- "Richard Cochran" <richardcochran@gmail.com>
-Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Bjorn Helgaas" <bhelgaas@google.com>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
- "Mauro Carvalho Chehab" <mchehab@kernel.org>,
- "Alan Stern" <stern@rowland.harvard.edu>,
- "Rafael J . Wysocki" <rafael@kernel.org>,
- "Geert Uytterhoeven" <geert@linux-m68k.org>,
- "Paul Walmsley" <paul.walmsley@sifive.com>,
- "Palmer Dabbelt" <palmer@dabbelt.com>, "Albert Ou" <aou@eecs.berkeley.edu>,
- linux-kernel@vger.kernel.org, Linux-Arch <linux-arch@vger.kernel.org>,
- linux-pci@vger.kernel.org, Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v5 00/44] treewide: Remove I/O port accessors for HAS_IOPORT=n
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023, at 12:50, Niklas Schnelle wrote:
+This patch series contain the below updates,
+- Fixes on the Microchip LAN8670/1/2 10BASE-T1S PHYs support in the
+  net/phy/microchip_t1s.c driver.
+- Adds support for the Microchip LAN8650/1 Rev.B0 10BASE-T1S Internal
+  PHYs in the net/phy/microchip_t1s.c driver.
 
-> A few patches have already been applied but I've kept those which are not yet
-> in v6.4-rc3.
->
-> This version is based on v6.4-rc3 and is also available on my kernel.org tree
-> in the has_ioport_v5:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git
+Changes:
+v2:
+- Updated cover letter contents.
+- Modified driver description is more generic as it is common for all the
+  Microchip 10BASE-T1S PHYs.
+- Replaced read-modify-write code with phy_modify_mmd function.
+- Moved */ to the same line for the single line comments.
+- Changed the type int to u16 for LAN865X Rev.B0 fixup registers
+  declaration.
+- Changed all the comments starting letter to upper case for the
+  consistency.
+- Removed return value check of phy_read_mmd and returned directly in the
+  last line of the function lan865x_revb0_indirect_read.
+- Used reverse christmas notation wherever is possible.
+- Used FIELD_PREP instead of << in all the places.
+- Used 4 byte representation for all the register addresses and values
+  for consistency.
+- Comment for indirect read is modified.
+- Implemented "Reset Complete" status polling in config_init.
+- Function lan865x_setup_cfgparam is split into multiple functions for
+  readability.
+- Reference to AN1760 document is added in the comment.
+- Removed interrupt disabling code as it is not needed.
+- Provided meaningful macros for the LAN865X Rev.B0 indirect read
+  registers and control.
+- Replaced 0x10 with BIT(4).
+- Removed collision detection disable/enable code as it can be done with
+  a separate patch later.
 
-I think it would be best if as many patches as possible get merged
-into v6.5 through the individidual subsystems, though I can take
-whatever is left through the asm-generic tree.
+Parthiban Veerasooran (6):
+  net: phy: microchip_t1s: modify driver description to be more generic
+  net: phy: microchip_t1s: replace read-modify-write code with
+    phy_modify_mmd
+  net: phy: microchip_t1s: update LAN867x PHY supported revision number
+  net: phy: microchip_t1s: fix reset complete status handling
+  net: phy: microchip_t1s: remove unnecessary interrupts disabling code
+  net: phy: microchip_t1s: add support for Microchip LAN865x Rev.B0 PHYs
 
-Since the goal is to have maintainers pick up part of this, I would
-recommend splitting the series per subsystem, having either a
-separate patch or a small series for each maintainer that should
-pick them up.
+ drivers/net/phy/microchip_t1s.c | 265 +++++++++++++++++++++++++++-----
+ 1 file changed, 226 insertions(+), 39 deletions(-)
 
-More importantly, I think you should rebase the series against
-linux-next in order to find and drop the patches that are queued
-up for 6.5 already. The patches will be applied into branches
-that are based on 6.4-rc of course, but basing on linux-next
-is usually the easiest when targeting multiple maintainer
-trees.
+-- 
+2.34.1
 
-Maybe let's give it another week to have more maintainers pick
-up stuff from v5, and then send out a v6 as separate submissions.
-
-    Arnd
 
