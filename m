@@ -1,139 +1,94 @@
-Return-Path: <netdev+bounces-4281-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4290-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 762A570BDFD
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:26:50 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1669F70BE84
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:38:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 31BBE280F1F
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:26:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DF2951C20911
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:38:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 93AA010780;
-	Mon, 22 May 2023 12:17:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3E12D53B;
+	Mon, 22 May 2023 12:38:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8931D168AB
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:17:38 +0000 (UTC)
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E38D1FEC;
-	Mon, 22 May 2023 05:17:18 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id a640c23a62f3a-96f588bc322so587774666b.1;
-        Mon, 22 May 2023 05:17:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684757836; x=1687349836;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SG7TaztQuB5xH4PvogAkuq91yKarYjtMle5JWo2W3pY=;
-        b=EO7b3IAzP1SXc9MmJGIcSSe7861+cIi3CHEghbiJcKaGzWX+L98AMOPbdutsRySWL5
-         EJrXsEovtZWyh9eA1nnQk0qsqqPN1J3Xuw8I6LdGVAXKfjyBlTmJEgH6zVShFDGmpRZn
-         XkOx+uWN50aPNXztlw8xmKqXj0XhEju7M2jefqZiSvvu0iLYoZD26BzrDluKb95vmhLp
-         amdPqR5k6kucItLpP2MP+QGqJGz2lNC5A5f2rUs3pnyPLRVqsXU7wOZJaaUNBSUK9MPw
-         PQXBHyWWhrTJ7AMsZx/eAJT4OWw4BPQ9X8ZSt38Dr66aw+A/LIAmG4Jv72WN0UNf7d0G
-         Mk1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684757836; x=1687349836;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SG7TaztQuB5xH4PvogAkuq91yKarYjtMle5JWo2W3pY=;
-        b=T29EEf7LmCyre83Ld/47Bj7guxdHYWMIIx4RxnZZGBHl8MgTHXnUW27WO6mgCZ6Xek
-         m5YZ8Ggk7f5QwpEJ552W7swzhMQu/uU46Fwzvy/ItgL5WMv1xrHyhoiKYPpdv6be7USv
-         rfWy3D2uhi0pVF1W5q3DlI0OiASVZutBiz1b54myZ17uQMjkTqJdZCm+7rmgSLthMJeA
-         wJULiO36jXybULGNASqaVkT8HGf2W6pxdHWW4RpM78RCvztPE19faJ2pP11h4hmwmRuj
-         ZgRYTcD9tiy/bcPro3+x+UuBjr5cDKoumHVo8WIRru8tnUSZ1CezL5qYPC5Mwfh2rIFH
-         PR9w==
-X-Gm-Message-State: AC+VfDw+GiASgJBvCefjBtc+dg0cjgX/q8LTZrYrcKxNeEO1K8gopdmI
-	YPKO7J3VDyF/GVtLeq1QTuU=
-X-Google-Smtp-Source: ACHHUZ6ILsyx6GlzQ/rNkEbarGHyNFwGSGGr3EMybRgtPQv7aSowIU1Ar1v0dmHaogkEZpVZCkAldw==
-X-Received: by 2002:a17:907:3f1c:b0:96f:c46f:d8fa with SMTP id hq28-20020a1709073f1c00b0096fc46fd8famr4292186ejc.1.1684757836353;
-        Mon, 22 May 2023 05:17:16 -0700 (PDT)
-Received: from arinc9-PC.. ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.17.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 05:17:15 -0700 (PDT)
-From: arinc9.unal@gmail.com
-X-Google-Original-From: arinc.unal@arinc9.com
-To: Sean Wang <sean.wang@mediatek.com>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	DENG Qingfang <dqfext@gmail.com>,
-	Daniel Golle <daniel@makrotopia.org>,
-	Andrew Lunn <andrew@lunn.ch>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D90FB12B70
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:38:55 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A58CE41;
+	Mon, 22 May 2023 05:38:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=hPu/AazTv/w0F2gJ1g4NuU0UDYvLNu6oyiHlrR50Mkk=; b=qe6mf5vUlwVjFJV9D5vtSUnTk1
+	nca5JvSV1SUqZ18V0lTp3xbqGrmpElOUrzTJZ2ypwc+n0BKpF0PWI9/MV/lvm22Aed5w0sHpYiAgV
+	u68YGunI90U+Oyjr5S94dnx5a7WSzNSG3jygwcqanIs4Mqb7g7yCo1f4looQ8cu/n5h8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q14Vm-00DXQ1-MQ; Mon, 22 May 2023 14:19:38 +0200
+Date: Mon, 22 May 2023 14:19:38 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Alexis =?iso-8859-1?Q?Lothor=E9?= <alexis.lothore@bootlin.com>
+Cc: "Russell King (Oracle)" <linux@armlinux.org.uk>,
 	Florian Fainelli <f.fainelli@gmail.com>,
 	Vladimir Oltean <olteanv@gmail.com>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Russell King <linux@armlinux.org.uk>
-Cc: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-	Richard van Schagen <richard@routerhints.com>,
-	Richard van Schagen <vschagen@cs.com>,
-	Frank Wunderlich <frank-w@public-files.de>,
-	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-	erkin.bozoglu@xeront.com,
-	mithat.guner@xeront.com,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 30/30] MAINTAINERS: add me as maintainer of MEDIATEK SWITCH DRIVER
-Date: Mon, 22 May 2023 15:15:32 +0300
-Message-Id: <20230522121532.86610-31-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230522121532.86610-1-arinc.unal@arinc9.com>
-References: <20230522121532.86610-1-arinc.unal@arinc9.com>
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Richard Cochran <richardcochran@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, netdev@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	thomas.petazzoni@bootlin.com, paul.arola@telus.com,
+	scott.roberts@telus.com,
+	Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next v2 7/7] net: dsa: mv88e6xxx: enable support for
+ 88E6361 switch
+Message-ID: <237dbb7f-8979-4435-a099-95bb5d093910@lunn.ch>
+References: <20230519141303.245235-1-alexis.lothore@bootlin.com>
+ <20230519141303.245235-8-alexis.lothore@bootlin.com>
+ <ZGeLEbcCHzOASasC@shell.armlinux.org.uk>
+ <1c104034-b61f-5242-40fa-339de59ac9c9@bootlin.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1c104034-b61f-5242-40fa-339de59ac9c9@bootlin.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > Not exactly related to this patch, but please do not rely on this "max
+> > speed mode" - please always ensure that you specify the phy-mode and
+> > fixed-link settings for CPU and DSA ports in firmware. Thanks.
+> 
+> I would like to make sure to fully understand your point:
+> - when telling so specify phy-mode and fixed-link in firmware, you mean
+> device-tree, right ?
+> - when checking for code and execution flow, I observe that port_max_speed is
+> always called and its output is always used to configure shared ports mode in
+> mv88e6xxx driver. Are you telling that eventually, the whole mv88e6xxx driver
+> should stop relying on port_max_speed_mode for shared ports ?
 
-Add me as a maintainer of the MediaTek MT7530 DSA subdriver.
+Yes, the concept of port_max_speed_mode causes problems for PHYLINK,
+and we want to remove it. Russell and i have been updating DT
+descriptions adding fixed-link and phy-mode properties to all
+mv88e6xxx systems so that it is not needed. Either at the end of this
+cycle, or the beginning of the next we will change the code to
+actually enforce this.
 
-List maintainers in alphabetical order by first name.
-
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
- MAINTAINERS | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e2fd64c2ebdc..51e8d30651a8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13254,10 +13254,11 @@ F:	drivers/memory/mtk-smi.c
- F:	include/soc/mediatek/smi.h
- 
- MEDIATEK SWITCH DRIVER
--M:	Sean Wang <sean.wang@mediatek.com>
-+M:	Arınç ÜNAL <arinc.unal@arinc9.com>
-+M:	Daniel Golle <daniel@makrotopia.org>
- M:	Landen Chao <Landen.Chao@mediatek.com>
- M:	DENG Qingfang <dqfext@gmail.com>
--M:	Daniel Golle <daniel@makrotopia.org>
-+M:	Sean Wang <sean.wang@mediatek.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/dsa/mt7530-mdio.c
--- 
-2.39.2
-
+	 Andrew
 
