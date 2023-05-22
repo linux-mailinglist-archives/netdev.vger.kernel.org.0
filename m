@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4252-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4253-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8B68F70BD4B
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:17:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B061B70BD4F
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:17:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 18F7A280F1F
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:17:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 855A41C20AC8
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:17:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1834A10781;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A536712B64;
 	Mon, 22 May 2023 12:16:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C691D30F
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:16:38 +0000 (UTC)
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D34BE42;
-	Mon, 22 May 2023 05:16:09 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-96fa4a6a79bso309122666b.3;
-        Mon, 22 May 2023 05:16:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 979C1125DD
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:16:39 +0000 (UTC)
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8424AE56;
+	Mon, 22 May 2023 05:16:13 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id a640c23a62f3a-96fffe11714so109776566b.0;
+        Mon, 22 May 2023 05:16:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684757749; x=1687349749;
+        d=gmail.com; s=20221208; t=1684757752; x=1687349752;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=W605wLVAjZcYJ+UbvgGvWkHLkMFaiTir5YrRz0YtXmg=;
-        b=qcQP4Hsv2zkuBD1rc5sn1VmOnLPTnpkC36ZpIoFX5g5+/8j6+xMkWXmdl783YhkydI
-         ouC3vQqGioYtYax5t3LtbhBLe89V6Vvcmvy6iY6tJGf3cATIWqmoIzc8TEzKggVb2nNf
-         GtFBJF02BH88duMq9StIDqPSSWlOF3alAjJwZ+mHLGBnoavDEgukeXWGeSSZ8lWKS7oW
-         R8Xux7ZtyV7n5PbQzbK+ftm9MkcnStykJc9U/2OKQ5iEnYgLYFG3y7QQBOVhTSmk9ktu
-         MN9iT30TXuPt820WSkRz5zuN1Y7nkwixR8RfmWTuHdSKTECqM5eYkVaMiQywohNStgNc
-         qaxg==
+        bh=3GlYa/gtfioHyiBI/gLtS8VjxT1YVLAproZrb+Hou0E=;
+        b=BgHNA/IgLsWdLuIeKOa8zdj4FeAFmGxSiYseC398PviO1oB4odqcU/Fy6xwJz6Z+xe
+         QkjbiKKEogz0fAmjMPXXTbJlYwq9tsk33H/ouTCFbp2kQ2b5WCY+bB+CPyM4UOWf3E/3
+         VZzR3UYCSFAAugbKGJgcNmUzz8sZLkVz03gOb7NqrvwJE7QhVGS4X3mi3y/cXJXtn3KK
+         tu3fN7K9Nqw/XcA/4dCvTz1gR7yO/o/mr4SYMqROKTdTr9K5HoOCdgmfClfySWYtowsr
+         e4N96toLkYBKv64gc3foWTYSGC5ICtn0EoUIQZNzU+SmjVK9t6rRUBrWtD7LYnH5kA8Q
+         MpXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684757749; x=1687349749;
+        d=1e100.net; s=20221208; t=1684757752; x=1687349752;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=W605wLVAjZcYJ+UbvgGvWkHLkMFaiTir5YrRz0YtXmg=;
-        b=Q0hts1ZqmWLQbX0Y+V6rALGaD5ZBvdDD4mtwd0JxwgvT2/YFXA0TN11mFVLBxUtWbo
-         4RyXw1nyAZZNj7f9K/Q2Rjp6/JS9mQyBUQ35quvLa8KcfLXasC2rTUESwFd/F6arDKMS
-         3OPSoAU9+Iz5U/H47vpon6a8kq0yuuHHmt2w1eyK8hWndaXIBaCjCTClP4je7ga8NOid
-         Ks4ATEyVPiYrTkgKcJ9jjd+Sfxl7VKSR2DyymiQy0EG0tli+MlckON+GLz6rdHsY00Ef
-         uD1Fwq9eY6xwmYpjF4uJcoKzRq2WvlPkIJNrKXYnK0svEDjl61iyXC0Ju15H8nQTbZm2
-         TYEQ==
-X-Gm-Message-State: AC+VfDzM6rCqH5wBVIBUDa0LuuQ3Sybgct+/Ft7Uq1+EwKfsSExMz9FM
-	B08UcNHLC3Pgj87/itq/InU=
-X-Google-Smtp-Source: ACHHUZ5udgAI9lXoymHWuGkdojdDxgLRZXFK1CAl38y/EIjRGn7RvR87DFYBmjpyu6txHt2HTifOGQ==
-X-Received: by 2002:a17:907:da8:b0:96f:8666:5fc4 with SMTP id go40-20020a1709070da800b0096f86665fc4mr9492508ejc.50.1684757748618;
-        Mon, 22 May 2023 05:15:48 -0700 (PDT)
+        bh=3GlYa/gtfioHyiBI/gLtS8VjxT1YVLAproZrb+Hou0E=;
+        b=Wl1n6AMGC8AcKsRe6ErNWuUtLY5wiDgB9b5Htz7NVr3FE4uCHjOdsnnhE146Mvdgmq
+         hudiBCuxSP0klpY8Wi6RI+B+9zX6/GNYcjaCrv1iXGMnppPDVjtS9eu1cmjS4qgMJsYA
+         hlj6qY+gVRXxADgBoyQIS1qMKv9iZGDbIUBBWan02Gc9inWAq/264juG+ZYFr9Xm4Pqr
+         zCF9OGNGHRD+4otOao/Po7MwJXiBWnRPGLANYBH2591rc1FmGRms5S4hFuZSotffvhII
+         HFYCHKR5bDiOWJSoVwLaxfu0oWMw1Snk9+Y6nJuE/TuBCDjzBe0HMIYXphb8Lkcul7bj
+         01HQ==
+X-Gm-Message-State: AC+VfDxJofA09jCbLViezCQhqq9hvfKr/cUE0X9DMkKPjeVcjBvy77TQ
+	TN3WHW/upz4WtW6uwpvmB80=
+X-Google-Smtp-Source: ACHHUZ5ALSJj0jSyx6S9HSdgBAy7lcuTZBOXYIWapLqX0i4YXHmwid/evs1keI+Wl2F7gyxCa8wGXA==
+X-Received: by 2002:a17:907:d1c:b0:96f:df95:28a0 with SMTP id gn28-20020a1709070d1c00b0096fdf9528a0mr3477558ejc.55.1684757751614;
+        Mon, 22 May 2023 05:15:51 -0700 (PDT)
 Received: from arinc9-PC.. ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.15.45
+        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.15.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 05:15:48 -0700 (PDT)
+        Mon, 22 May 2023 05:15:51 -0700 (PDT)
 From: arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To: Sean Wang <sean.wang@mediatek.com>,
@@ -83,9 +83,9 @@ Cc: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 01/30] net: dsa: mt7530: add missing @p5_interface to mt7530_priv description
-Date: Mon, 22 May 2023 15:15:03 +0300
-Message-Id: <20230522121532.86610-2-arinc.unal@arinc9.com>
+Subject: [PATCH net-next 02/30] net: dsa: mt7530: use p5_interface_select as data type for p5_intf_sel
+Date: Mon, 22 May 2023 15:15:04 +0300
+Message-Id: <20230522121532.86610-3-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230522121532.86610-1-arinc.unal@arinc9.com>
 References: <20230522121532.86610-1-arinc.unal@arinc9.com>
@@ -106,29 +106,38 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Add the missing p5_interface field to the mt7530_priv description. Sort out
-the description in the process.
+Use the p5_interface_select enumeration as the data type for the
+p5_intf_sel field. This ensures p5_intf_sel can only take the values
+defined in the p5_interface_select enumeration.
 
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Acked-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/dsa/mt7530.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/mt7530.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 5084f48a8869..845f5dd16d83 100644
+index 845f5dd16d83..415d8ea07472 100644
 --- a/drivers/net/dsa/mt7530.h
 +++ b/drivers/net/dsa/mt7530.h
-@@ -746,7 +746,8 @@ struct mt753x_info {
-  * @ports:		Holding the state among ports
-  * @reg_mutex:		The lock for protecting among process accessing
-  *			registers
-- * @p6_interface	Holding the current port 6 interface
-+ * @p6_interface:	Holding the current port 6 interface
-+ * @p5_interface:	Holding the current port 5 interface
-  * @p5_intf_sel:	Holding the current port 5 interface select
-  * @irq:		IRQ number of the switch
-  * @irq_domain:		IRQ domain of the switch irq_chip
+@@ -675,7 +675,7 @@ struct mt7530_port {
+ 
+ /* Port 5 interface select definitions */
+ enum p5_interface_select {
+-	P5_DISABLED = 0,
++	P5_DISABLED,
+ 	P5_INTF_SEL_PHY_P0,
+ 	P5_INTF_SEL_PHY_P4,
+ 	P5_INTF_SEL_GMAC5,
+@@ -768,7 +768,7 @@ struct mt7530_priv {
+ 	bool			mcm;
+ 	phy_interface_t		p6_interface;
+ 	phy_interface_t		p5_interface;
+-	unsigned int		p5_intf_sel;
++	enum p5_interface_select p5_intf_sel;
+ 	u8			mirror_rx;
+ 	u8			mirror_tx;
+ 	struct mt7530_port	ports[MT7530_NUM_PORTS];
 -- 
 2.39.2
 
