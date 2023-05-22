@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-4243-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4244-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9FC1F70BD30
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:14:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id EAC5A70BD38
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:14:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5AAB9280E3A
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:14:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BF7351C208CA
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:14:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 25EAF13AD1;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1F5D13ADF;
 	Mon, 22 May 2023 12:12:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5CAD523
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4E5213ADE
 	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:12:12 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8980103
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 05:12:10 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C73BDFF
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 05:12:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684757530;
+	s=mimecast20190719; t=1684757531;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=tEe6KsGIUg5Ug9eymZUK4cq5L1lxhWlwpIXxPsGo3ck=;
-	b=KwKKKy6U+sxRtifrn3L35NmiXmZkRwgp99pBUdzik/FCbQgG85bb6TrQPpo50a8hv7Vecm
-	W4AuFIsCXZTeDXI+d0EB+Nq8FLkNVQIJut4oh6dWbrCH7FKK1ZnjC7oCRH+0CKIlriWZIX
-	aqj7bI6p31hKDni/OyR0f23alpEeKsk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=FkLIsuWcxLdm5m/RLKw/6bFEvudw3Dbf8/jbJKlIa0s=;
+	b=E9McnsqJDqMq3GFSeMOZZ5MImB1i409AA4xnGszNzlEkXAYad5XP6nU09j1bM6LjVqxKQI
+	htLdxNODiRjr8tG5o7PR1Gokx5CySpy07M3dn4O18uSgQ5QKWgYF6qza9WCc33SLFXLA0+
+	9i6JtPbwl6LgkmdetT48WFFQ1Pi5GQM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-474-MWYfU8vlNOi-xXlJkHtgaw-1; Mon, 22 May 2023 08:12:04 -0400
-X-MC-Unique: MWYfU8vlNOi-xXlJkHtgaw-1
+ us-mta-54-cIwQpXAwOju38rvcwCBp5g-1; Mon, 22 May 2023 08:12:07 -0400
+X-MC-Unique: cIwQpXAwOju38rvcwCBp5g-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6F58E858F14;
-	Mon, 22 May 2023 12:12:03 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CCA9C3800E8C;
+	Mon, 22 May 2023 12:12:06 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 2BC277B7C;
-	Mon, 22 May 2023 12:12:00 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 57ECF7B7C;
+	Mon, 22 May 2023 12:12:04 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org
 Cc: David Howells <dhowells@redhat.com>,
@@ -63,15 +63,10 @@ Cc: David Howells <dhowells@redhat.com>,
 	Linus Torvalds <torvalds@linux-foundation.org>,
 	linux-fsdevel@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	Bernard Metzler <bmt@zurich.ibm.com>,
-	Tom Talpey <tom@talpey.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Leon Romanovsky <leon@kernel.org>,
-	linux-rdma@vger.kernel.org
-Subject: [PATCH net-next v10 09/16] siw: Inline do_tcp_sendpages()
-Date: Mon, 22 May 2023 13:11:18 +0100
-Message-Id: <20230522121125.2595254-10-dhowells@redhat.com>
+	linux-mm@kvack.org
+Subject: [PATCH net-next v10 10/16] tcp: Fold do_tcp_sendpages() into tcp_sendpage_locked()
+Date: Mon, 22 May 2023 13:11:19 +0100
+Message-Id: <20230522121125.2595254-11-dhowells@redhat.com>
 In-Reply-To: <20230522121125.2595254-1-dhowells@redhat.com>
 References: <20230522121125.2595254-1-dhowells@redhat.com>
 Precedence: bulk
@@ -89,76 +84,78 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-do_tcp_sendpages() is now just a small wrapper around tcp_sendmsg_locked(),
-so inline it, allowing do_tcp_sendpages() to be removed.  This is part of
-replacing ->sendpage() with a call to sendmsg() with MSG_SPLICE_PAGES set.
+Fold do_tcp_sendpages() into its last remaining caller,
+tcp_sendpage_locked().
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Bernard Metzler <bmt@zurich.ibm.com>
-Reviewed-by: Tom Talpey <tom@talpey.com>
-cc: Jason Gunthorpe <jgg@ziepe.ca>
-cc: Leon Romanovsky <leon@kernel.org>
-cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
+cc: David Ahern <dsahern@kernel.org>
+cc: "David S. Miller" <davem@davemloft.net>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
-cc: linux-rdma@vger.kernel.org
 cc: netdev@vger.kernel.org
 ---
+ include/net/tcp.h |  2 --
+ net/ipv4/tcp.c    | 21 +++++++--------------
+ 2 files changed, 7 insertions(+), 16 deletions(-)
 
-Notes:
-    ver #6)
-     - Don't clear MSG_SPLICE_PAGES on the last page.
-
- drivers/infiniband/sw/siw/siw_qp_tx.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/infiniband/sw/siw/siw_qp_tx.c b/drivers/infiniband/sw/siw/siw_qp_tx.c
-index 4b292e0504f1..ffb16beb6c30 100644
---- a/drivers/infiniband/sw/siw/siw_qp_tx.c
-+++ b/drivers/infiniband/sw/siw/siw_qp_tx.c
-@@ -312,7 +312,7 @@ static int siw_tx_ctrl(struct siw_iwarp_tx *c_tx, struct socket *s,
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 04a31643cda3..02a6cff1827e 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -333,8 +333,6 @@ int tcp_sendpage(struct sock *sk, struct page *page, int offset, size_t size,
+ 		 int flags);
+ int tcp_sendpage_locked(struct sock *sk, struct page *page, int offset,
+ 			size_t size, int flags);
+-ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+-		 size_t size, int flags);
+ int tcp_send_mss(struct sock *sk, int *size_goal, int flags);
+ void tcp_push(struct sock *sk, int flags, int mss_now, int nonagle,
+ 	      int size_goal);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index f3a0c02678e0..e9506cebecce 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -974,12 +974,17 @@ static int tcp_wmem_schedule(struct sock *sk, int copy)
+ 	return min(copy, sk->sk_forward_alloc);
  }
  
- /*
-- * 0copy TCP transmit interface: Use do_tcp_sendpages.
-+ * 0copy TCP transmit interface: Use MSG_SPLICE_PAGES.
-  *
-  * Using sendpage to push page by page appears to be less efficient
-  * than using sendmsg, even if data are copied.
-@@ -323,20 +323,27 @@ static int siw_tx_ctrl(struct siw_iwarp_tx *c_tx, struct socket *s,
- static int siw_tcp_sendpages(struct socket *s, struct page **page, int offset,
- 			     size_t size)
+-ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+-			 size_t size, int flags)
++int tcp_sendpage_locked(struct sock *sk, struct page *page, int offset,
++			size_t size, int flags)
  {
-+	struct bio_vec bvec;
-+	struct msghdr msg = {
-+		.msg_flags = (MSG_MORE | MSG_DONTWAIT | MSG_SENDPAGE_NOTLAST |
-+			      MSG_SPLICE_PAGES),
-+	};
- 	struct sock *sk = s->sk;
--	int i = 0, rv = 0, sent = 0,
--	    flags = MSG_MORE | MSG_DONTWAIT | MSG_SENDPAGE_NOTLAST;
-+	int i = 0, rv = 0, sent = 0;
+ 	struct bio_vec bvec;
+ 	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES, };
  
- 	while (size) {
- 		size_t bytes = min_t(size_t, PAGE_SIZE - offset, size);
- 
- 		if (size + offset <= PAGE_SIZE)
--			flags = MSG_MORE | MSG_DONTWAIT;
-+			msg.msg_flags &= ~MSG_SENDPAGE_NOTLAST;
- 
- 		tcp_rate_check_app_limited(sk);
-+		bvec_set_page(&bvec, page[i], bytes, offset);
-+		iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
++	if (!(sk->sk_route_caps & NETIF_F_SG))
++		return sock_no_sendpage_locked(sk, page, offset, size, flags);
 +
- try_page_again:
- 		lock_sock(sk);
--		rv = do_tcp_sendpages(sk, page[i], offset, bytes, flags);
-+		rv = tcp_sendmsg_locked(sk, &msg, size);
- 		release_sock(sk);
++	tcp_rate_check_app_limited(sk);  /* is sending application-limited? */
++
+ 	bvec_set_page(&bvec, page, size, offset);
+ 	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
  
- 		if (rv > 0) {
+@@ -988,18 +993,6 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+ 
+ 	return tcp_sendmsg_locked(sk, &msg, size);
+ }
+-EXPORT_SYMBOL_GPL(do_tcp_sendpages);
+-
+-int tcp_sendpage_locked(struct sock *sk, struct page *page, int offset,
+-			size_t size, int flags)
+-{
+-	if (!(sk->sk_route_caps & NETIF_F_SG))
+-		return sock_no_sendpage_locked(sk, page, offset, size, flags);
+-
+-	tcp_rate_check_app_limited(sk);  /* is sending application-limited? */
+-
+-	return do_tcp_sendpages(sk, page, offset, size, flags);
+-}
+ EXPORT_SYMBOL_GPL(tcp_sendpage_locked);
+ 
+ int tcp_sendpage(struct sock *sk, struct page *page, int offset,
 
 
