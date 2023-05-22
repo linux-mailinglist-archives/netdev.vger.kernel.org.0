@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4258-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4259-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 80A5270BD64
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 54B7F70BD6E
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:19:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 538AD1C209A0
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:19:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2981E1C20A92
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:19:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C954A13AE7;
-	Mon, 22 May 2023 12:16:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7DD0813AFB;
+	Mon, 22 May 2023 12:16:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD60A13ACC
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:16:52 +0000 (UTC)
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BBFE7B;
-	Mon, 22 May 2023 05:16:29 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-969f90d71d4so899898366b.3;
-        Mon, 22 May 2023 05:16:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C4F813ACC
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:16:54 +0000 (UTC)
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C08AE7F;
+	Mon, 22 May 2023 05:16:30 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id a640c23a62f3a-96f683e8855so500888466b.2;
+        Mon, 22 May 2023 05:16:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684757767; x=1687349767;
+        d=gmail.com; s=20221208; t=1684757770; x=1687349770;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wn2mhEGH9uSsWYt0IDE04ECLf6CmZ7rlTUGMQ0klVZI=;
-        b=grVTVpbbAcn9i9tzer/Hhyb4oNJujAtO5z3JCzf25YBi1o17XTLsveA2xSkhm86GmL
-         PfzVa/wiVvVYo70qik+FWTWUp58R1ANSICt/zHTdBA5bRiTZxk6/tn27aWfM/BJ+PKRF
-         cfsdfLmuhcwxr+CaZgUju7xlg1HavSi9agaUVatCzMBMqyXXpbIuWCXLZjLh1/zs5xCy
-         9bqTLmKEjXE2bB18DrdvYsCAB4VVkU8KlCFbzXOqXDQKt7Sbf6xfDmOuLNDLvfbJHco/
-         FYhCluYVWAbRdHMXjetgEY5dqqaeQfxR6yjJG6UMMraor/qiFWozHyr8YU/lJZ2x4G3F
-         5loA==
+        bh=09nd6fTFveBIw7H/yL3o+Sjulkglg9M/F+8IUrvwpII=;
+        b=EnpEKFtOllWOIegh28dhFbPOFH/HrmzaHge/LOuCS9HUToi39rBRx2FNGrAZcvXM+T
+         AZlW3o1QfFyb6Clgw1RJYXfBrM/2yqMfVl9DG6qebBEI4sSdIEhb1rcYxRvMiakpB4q4
+         z07RkUSOb45BSrnYSg9fCLSyXOMFCykMXAvVb07Evbl7MkutAW3kWDtvUvo2mfC+yzht
+         HyMDIGKR8mlinmJYbV9bxGWQki9RmN9IvFKg3V3i3dRhOEoNoetIJJddkAxA2svnfG5O
+         FPWs7km3YkEBZqSg/eNKj4NChquNnmOsaiQ/3+dZfAZkM9crRMBhqymCeYX4APL7opEK
+         HBBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684757767; x=1687349767;
+        d=1e100.net; s=20221208; t=1684757770; x=1687349770;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wn2mhEGH9uSsWYt0IDE04ECLf6CmZ7rlTUGMQ0klVZI=;
-        b=aMbc1uLpMq38dZoY6ZlfafjbGbmciraetGX28LNtqnNODXYfnN1AISAEWJ2pZqyQLG
-         b42eUoDZYb9izKEgx7LQC1ptJAKa4nC+CkwTHi9bw4RrnXyFYZ4zNkZ3TS//R4pOVSod
-         DnZ83q486J++zMmcR40ZnCCU93f+4RtRNT6z1e22Pfmh4X6rUFQXUYWsgsyuFSpCvPeJ
-         bV4/YQwcGu+6nrFDHzBmng4J342ecYk+j7viRoaHu2ry/fBqIwE2QT9bOvQ829hiQEy7
-         2Aoi/jrUFURdeqypE9to9ZxXRYM6k6DkNsiJgHgJgmr/E8ys7bVBtznBAlYYLybSgzr+
-         nRoQ==
-X-Gm-Message-State: AC+VfDxTkGCnm9q3r8FBOWaGHHvKJirNWCb0Xa8mvtOLL3zy6OOQVqOJ
-	KUT80ie7H0yyrjeWCfMdd+k=
-X-Google-Smtp-Source: ACHHUZ6fvbfhJF4Z2fVXL4PBY3Bkq5p8IxPW8S31fGnhpc3IX2FCvH9KpW5KVg5srUK4wri4CsIx/A==
-X-Received: by 2002:a17:906:6a0d:b0:96a:9c44:86d9 with SMTP id qw13-20020a1709066a0d00b0096a9c4486d9mr10488875ejc.12.1684757766853;
-        Mon, 22 May 2023 05:16:06 -0700 (PDT)
+        bh=09nd6fTFveBIw7H/yL3o+Sjulkglg9M/F+8IUrvwpII=;
+        b=FIIfxHkTwY56vmYcOxiHqaEyOQH7aWcwkpUTIqNtRtmxqR7AizAqOQU4hCUbCfmUSQ
+         hgq2b6bb65FN9KurYW7xUvkoZhvRlb2LTqoFIdp9P5UNwcDaHEfDnl5m7Lmfb0sE/8rY
+         h0tnxXY6gQrSLzOc+bcp1VYCp+ZLV+iwcjgrwi8US+tEAWZvJwLuKyqLrzfELE675k1Y
+         mR7cu2z4pjK0RLyIf3VerqUplrtvQkHzx4fHTQ0VOsSaBL0Ol/1vuTabXCrOm8NzJIE+
+         AwxzEhgAsIi69mSVCSAJjNjm1prjYoXHOHtsgb+IKa/ZuQw5dr7U08EVGziGI3bSFUBC
+         ygUA==
+X-Gm-Message-State: AC+VfDzO7oFJnGW5qeXwTRB3bXmvtNS99/9KRxJUPUMPnQBPo0M0JKuZ
+	Yi4QiwzfmNaB7e+pDIs71Es=
+X-Google-Smtp-Source: ACHHUZ5hU+NOmEAdAFMlajNG3Yg1qbkVUC8BFFF3ClhNmgfBkSGyllIYy5W5FEVql6P6xiR8IV0xfA==
+X-Received: by 2002:a17:907:7252:b0:970:c9f:2db3 with SMTP id ds18-20020a170907725200b009700c9f2db3mr1169157ejc.5.1684757769819;
+        Mon, 22 May 2023 05:16:09 -0700 (PDT)
 Received: from arinc9-PC.. ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.16.03
+        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.16.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 05:16:06 -0700 (PDT)
+        Mon, 22 May 2023 05:16:09 -0700 (PDT)
 From: arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To: Sean Wang <sean.wang@mediatek.com>,
@@ -83,9 +83,9 @@ Cc: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 07/30] net: dsa: mt7530: do not run mt7530_setup_port5() if port 5 is disabled
-Date: Mon, 22 May 2023 15:15:09 +0300
-Message-Id: <20230522121532.86610-8-arinc.unal@arinc9.com>
+Subject: [PATCH net-next 08/30] net: dsa: mt7530: change p{5,6}_interface to p{5,6}_configured
+Date: Mon, 22 May 2023 15:15:10 +0300
+Message-Id: <20230522121532.86610-9-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230522121532.86610-1-arinc.unal@arinc9.com>
 References: <20230522121532.86610-1-arinc.unal@arinc9.com>
@@ -106,59 +106,129 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-There's no need to run all the code on mt7530_setup_port5() if port 5 is
-disabled. The only case for calling mt7530_setup_port5() from
-mt7530_setup() is when PHY muxing is enabled. That is because port 5 is not
-defined as a port on the devicetree, therefore, it cannot be controlled by
-phylink.
+The idea of p5_interface and p6_interface pointers is to prevent
+mt753x_mac_config() from running twice for MT7531, as it's already run with
+mt753x_cpu_port_enable() from mt7531_setup_common(), if the port is used as
+a CPU port.
 
-Because of this, run mt7530_setup_port5() if priv->p5_intf_sel is
-P5_INTF_SEL_PHY_P0 or P5_INTF_SEL_PHY_P4. Remove the P5_DISABLED case from
-mt7530_setup_port5().
+Change p5_interface and p6_interface to p5_configured and p6_configured.
+Make them boolean.
 
-Stop initialising the interface variable as the remaining cases will always
-call mt7530_setup_port5() with it initialised.
+Do not set them for any other reason.
+
+The priv->p5_intf_sel check is useless as in this code path, it will always
+be P5_INTF_SEL_GMAC5.
+
+There was also no need to set priv->p5_interface and priv->p6_interface to
+PHY_INTERFACE_MODE_NA on mt7530_setup() and mt7531_setup() as they would
+already be set to that when "priv" is allocated. The pointers were of the
+phy_interface_t enumeration type, and the first element of the enum is
+PHY_INTERFACE_MODE_NA. There was nothing in between that would change this
+beforehand.
 
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Acked-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/dsa/mt7530.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mt7530.c | 19 ++++---------------
+ drivers/net/dsa/mt7530.h | 10 ++++++----
+ 2 files changed, 10 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index b8f159afcd45..710c6622d648 100644
+index 710c6622d648..d837aa20968c 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -929,9 +929,6 @@ static void mt7530_setup_port5(struct dsa_switch *ds, phy_interface_t interface)
- 		/* MT7530_P5_MODE_GMAC: P5 -> External phy or 2nd GMAC */
- 		val &= ~MHWTRAP_P5_DIS;
- 		break;
--	case P5_DISABLED:
--		interface = PHY_INTERFACE_MODE_NA;
--		break;
- 	default:
- 		dev_err(ds->dev, "Unsupported p5_intf_sel %d\n",
- 			priv->p5_intf_sel);
-@@ -2279,8 +2276,6 @@ mt7530_setup(struct dsa_switch *ds)
- 		 * Set priv->p5_intf_sel to the appropriate value if PHY muxing
- 		 * is detected.
- 		 */
--		interface = PHY_INTERFACE_MODE_NA;
+@@ -2234,8 +2234,6 @@ mt7530_setup(struct dsa_switch *ds)
+ 	val |= MHWTRAP_MANUAL;
+ 	mt7530_write(priv, MT7530_MHWTRAP, val);
+ 
+-	priv->p6_interface = PHY_INTERFACE_MODE_NA;
 -
- 		for_each_child_of_node(dn, mac_np) {
- 			if (!of_device_is_compatible(mac_np,
- 						     "mediatek,eth-mac"))
-@@ -2312,7 +2307,9 @@ mt7530_setup(struct dsa_switch *ds)
+ 	/* Enable and reset MIB counters */
+ 	mt7530_mib_reset(ds);
+ 
+@@ -2455,10 +2453,6 @@ mt7531_setup(struct dsa_switch *ds)
+ 	mt7530_rmw(priv, MT7531_GPIO_MODE0, MT7531_GPIO0_MASK,
+ 		   MT7531_GPIO0_INTERRUPT);
+ 
+-	/* Let phylink decide the interface later. */
+-	priv->p5_interface = PHY_INTERFACE_MODE_NA;
+-	priv->p6_interface = PHY_INTERFACE_MODE_NA;
+-
+ 	/* Enable PHY core PLL, since phy_device has not yet been created
+ 	 * provided for phy_[read,write]_mmd_indirect is called, we provide
+ 	 * our own mt7531_ind_mmd_phy_[read,write] to complete this
+@@ -2728,25 +2722,20 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 			goto unsupported;
+ 		break;
+ 	case 5: /* Port 5, can be used as a CPU port. */
+-		if (priv->p5_interface == state->interface)
++		if (priv->p5_configured)
  			break;
- 		}
  
--		mt7530_setup_port5(ds, interface);
-+		if (priv->p5_intf_sel == P5_INTF_SEL_PHY_P0 ||
-+		    priv->p5_intf_sel == P5_INTF_SEL_PHY_P4)
-+			mt7530_setup_port5(ds, interface);
- 	}
+ 		if (mt753x_mac_config(ds, port, mode, state) < 0)
+ 			goto unsupported;
+-
+-		if (priv->p5_intf_sel != P5_DISABLED)
+-			priv->p5_interface = state->interface;
+ 		break;
+ 	case 6: /* Port 6, can be used as a CPU port. */
+-		if (priv->p6_interface == state->interface)
++		if (priv->p6_configured)
+ 			break;
  
- #ifdef CONFIG_GPIOLIB
+ 		mt753x_pad_setup(ds, state);
+ 
+ 		if (mt753x_mac_config(ds, port, mode, state) < 0)
+ 			goto unsupported;
+-
+-		priv->p6_interface = state->interface;
+ 		break;
+ 	default:
+ unsupported:
+@@ -2854,12 +2843,12 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+ 		else
+ 			interface = PHY_INTERFACE_MODE_2500BASEX;
+ 
+-		priv->p5_interface = interface;
++		priv->p5_configured = true;
+ 		break;
+ 	case 6:
+ 		interface = PHY_INTERFACE_MODE_2500BASEX;
+ 
+-		priv->p6_interface = interface;
++		priv->p6_configured = true;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 2602c95fd3a5..06037be5882c 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -745,8 +745,10 @@ struct mt753x_info {
+  * @ports:		Holding the state among ports
+  * @reg_mutex:		The lock for protecting among process accessing
+  *			registers
+- * @p6_interface:	Holding the current port 6 interface
+- * @p5_interface:	Holding the current port 5 interface
++ * @p6_configured:	Flag for distinguishing if port 6 of the MT7531 switch
++ *			is already configured
++ * @p5_configured:	Flag for distinguishing if port 5 of the MT7531 switch
++ *			is already configured
+  * @p5_intf_sel:	Holding the current port 5 interface select
+  * @p5_sgmii:		Flag for distinguishing if port 5 of the MT7531 switch
+  *			has got SGMII
+@@ -767,8 +769,8 @@ struct mt7530_priv {
+ 	const struct mt753x_info *info;
+ 	unsigned int		id;
+ 	bool			mcm;
+-	phy_interface_t		p6_interface;
+-	phy_interface_t		p5_interface;
++	bool			p6_configured;
++	bool			p5_configured;
+ 	enum p5_interface_select p5_intf_sel;
+ 	bool			p5_sgmii;
+ 	u8			mirror_rx;
 -- 
 2.39.2
 
