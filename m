@@ -1,137 +1,130 @@
-Return-Path: <netdev+bounces-4386-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4387-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6867E70C505
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 20:18:04 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4B88670C517
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 20:24:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0ABF12810A6
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 18:18:02 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7636B1C20A58
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 18:24:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBB201643A;
-	Mon, 22 May 2023 18:17:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7FE151643C;
+	Mon, 22 May 2023 18:24:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5C0B16435
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 18:17:59 +0000 (UTC)
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D484AF1
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:17:57 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-3f423521b10so42021755e9.0
-        for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:17:57 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7313A1642C
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 18:24:03 +0000 (UTC)
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5C2189
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:24:02 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id 98e67ed59e1d1-2536b4b3398so4075308a91.3
+        for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:24:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google; t=1684779476; x=1687371476;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=q7P+DBBi+Cpf56qPunfuWd9Z9zfzbOV/OEECAbDuPS8=;
-        b=Ee4VTVCP4jy7R9WxX+j5tVAlpJhGMDBcv3CT1skxCdyzrPx62chpLscHjIMwYGAJB3
-         wrwqvGxMJxaiPopuXUboolfovc0wzwa9hIbBATh/w0XiFbWT80cyGwNdtz6kHMUgwrB3
-         UCxYnUsrsMHDDh7w2nU0SViJ6AqMwoDptIpKL4tlqOt7dFHCT91TMgbe9pVqmWWbAnkR
-         zPxUf05MRoTgoiuF29tk1G25LCaUWGTqIDPoqCNywD9HjyvnJGwxzczqodsYkEx9iETM
-         NZXvj0d+vAjDz+Uun5iNHtViO4mQimTebuoca2g+rr+7YXdIm3nkCKke7or0VHuxRgxx
-         7JfQ==
+        d=linaro.org; s=google; t=1684779841; x=1687371841;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=msgMReVyIvBu/bwIUP7X7q2ZMnoRqp8LGJXsMcFUvcs=;
+        b=aHRH/zKGBDEc02+tUp4uzQfBwuRMYKhtH/VSuyaJ+fL4LRwlVratK6g5Ty0wfGlV/7
+         Y/VyfeULzj3JpgHIQBBrC9MtY/lF88HAZ0kM+hRL8Yte8RRWf4oSdlYRF/XqpF2XA2Vg
+         Y/TBhVrCE5UVfu/3DPCR/eGCu5HHdDIPvWJbwZoG6y01qPt/jfHqLq2YSEyrxZgpYPOZ
+         5TeWBF8wX2Hl7c/4w4Wjfe9Y/AHiyPIm2pHjBcmDKl/I63SEPBuRujPlyBZmGp/Eq4q5
+         sv5hd33nwR1BM9jefCd6kQ+ZNnJaSfCWvqDe+M0wEL70LWLYrdvJ409IFNQvdJFQXqdp
+         h0hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684779476; x=1687371476;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=q7P+DBBi+Cpf56qPunfuWd9Z9zfzbOV/OEECAbDuPS8=;
-        b=iGkGAFQcJQ5DiSIBSXiGx2KNFkOPzinxMnDDZt/D4POmhfiM5gbs6S8SayHQKwTZeO
-         hI6Q+F12aamkzgGyvxo7bU/3ZY0rD1NwzAY/u9C9HJ1uvsCC42iX7e5nITUyffeHiU5M
-         zSy891Oh87Sax4398TOlMtSU7bzOj34NqAJBPguQDBRgedlkODe8DxB6mmZVRuC4N8tk
-         K5CY7unoWUsM4k72gFUH8feUBHHNzPAd1qgPviLYkmJApwfPfKqwMG8ALLpZRDptpezt
-         Ek+mP63I0eJCiLo9gYeVLfnSHo+MSDYxVlNfnOtorNCkVlH10YiotSFwoRHCBLGJMOm3
-         +bVA==
-X-Gm-Message-State: AC+VfDz2sf8Vok0Nh3x5O0bass9dDOVNbW+34KrlcZKsvqagW/NULkFM
-	WhNbkzFwJSUn6vYhd03UxOAM4GPNZP3aeUqhmCQ=
-X-Google-Smtp-Source: ACHHUZ5b3fcaOykV0SCUoXoLnAw7b7jZX2zv8R6gkhGbukcjSahYAvAxwwOdzoAPXg6RYwfEJecFKw==
-X-Received: by 2002:adf:e409:0:b0:2d5:39d:514f with SMTP id g9-20020adfe409000000b002d5039d514fmr9646442wrm.65.1684779476291;
-        Mon, 22 May 2023 11:17:56 -0700 (PDT)
-Received: from [192.168.2.9] ([51.37.135.152])
-        by smtp.gmail.com with ESMTPSA id j18-20020adff012000000b00304adbeeabbsm8470252wro.99.2023.05.22.11.17.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 May 2023 11:17:55 -0700 (PDT)
-Message-ID: <2be2af5e-d117-fa2c-f960-e7f0c3ca3d0b@conchuod.ie>
-Date: Mon, 22 May 2023 19:17:54 +0100
+        d=1e100.net; s=20221208; t=1684779841; x=1687371841;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=msgMReVyIvBu/bwIUP7X7q2ZMnoRqp8LGJXsMcFUvcs=;
+        b=VxhwWeS0fadzsmXdVzG0DebQ4Nd/kTNvS2BHyDXAtl6Y8GdW2BUtUtH8hXhvVdknaf
+         pvS46AQTnmc0EY8dKy/lZzgFaCC8F+O9IWhorfey+uY4ShHgbDfJk5s/0/++9wIO45Os
+         0otyn3ZGyK5qzAj+Y+t+Y0RH/BIXkP1Apsgf3QOwW5hOrmc+57twd0bH09rjt4ZDR5NW
+         KLIu41MosccGLlBfPTj01pss2SpDLJwwX2kwHlGMwj6SFWjZAdxO2GZsFsXuhzIoi+5u
+         opqqGKTiaxU9N+7M576tNVThQQ6DNyclKmfeWYATNA3h8xv4re/6P7w2htWFjdqzm2Ep
+         Mz/w==
+X-Gm-Message-State: AC+VfDwqJKgju3mWDiKpd/rKgplb4ZJ3HsXLURLRDFsAVYHOnm9VZfo/
+	5XgBVX90zQPyxwv5odfdRlCB42uJRo9KBytVCL6C+g==
+X-Google-Smtp-Source: ACHHUZ6kdZR7qEFCbldz7uvdvDR5AlZ74YO/t4UiDPEmkgkrjjjgqDRSNzOgFw8RL8QhF7CCiVwX7Jzh4v1RebH6w3M=
+X-Received: by 2002:a17:90a:b292:b0:255:4b79:1ef9 with SMTP id
+ c18-20020a17090ab29200b002554b791ef9mr6188889pjr.16.1684779841457; Mon, 22
+ May 2023 11:24:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next v3 1/6] dt-bindings: net: brcm,unimac-mdio: Add
- asp-v2.0
-Content-Language: en-US
-To: Justin Chen <justin.chen@broadcom.com>, netdev@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- bcm-kernel-feedback-list@broadcom.com
-Cc: justinpopo6@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
- florian.fainelli@broadcom.com, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- opendmb@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
- linux@armlinux.org.uk, richardcochran@gmail.com, sumit.semwal@linaro.org,
- christian.koenig@amd.com
-References: <1684531184-14009-1-git-send-email-justin.chen@broadcom.com>
- <1684531184-14009-2-git-send-email-justin.chen@broadcom.com>
-From: Conor Dooley <mail@conchuod.ie>
-In-Reply-To: <1684531184-14009-2-git-send-email-justin.chen@broadcom.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+From: =?UTF-8?B?RGFuaWVsIETDrWF6?= <daniel.diaz@linaro.org>
+Date: Mon, 22 May 2023 12:23:50 -0600
+Message-ID: <CAEUSe78ip=wkHUSz3mBFMcd-LjQAnByuJm1Oids5GSRm-J-dzA@mail.gmail.com>
+Subject: Stable backport request: skbuff: Proactively round up to kmalloc
+ bucket size
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, 
+	linux- stable <stable@vger.kernel.org>
+Cc: open list <linux-kernel@vger.kernel.org>, Kees Cook <keescook@chromium.org>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	"open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>, ndesaulniers@google.com, rientjes@google.com, 
+	vbabka@suse.cz, Sumit Semwal <sumit.semwal@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 19, 2023 at 02:19:39PM -0700, Justin Chen wrote:
- > The ASP 2.0 Ethernet controller uses a brcm unimac.
- >
- > Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
- > Signed-off-by: Justin Chen <justin.chen@broadcom.com>
- > ---
- >  Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml | 2 ++
- >  1 file changed, 2 insertions(+)
- >
- > diff --git 
-a/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml 
-b/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
- > index 0be426ee1e44..6684810fcbf0 100644
- > --- a/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
- > +++ b/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
- > @@ -22,6 +22,8 @@ properties:
- >        - brcm,genet-mdio-v3
- >        - brcm,genet-mdio-v4
- >        - brcm,genet-mdio-v5
- > +      - brcm,asp-v2.0-mdio
- > +      - brcm,asp-v2.1-mdio
- >        - brcm,unimac-mdio
+Hello!
+
+Would the stable maintainers please consider backporting the following
+commit to the 6.1? We are trying to build gki_defconfig (plus a few
+extras) on Arm64 and test it under Qemu-arm64, but it fails to boot.
+Bisection has pointed here.
+
+We have verified that cherry-picking this patch on top of v6.1.29
+applies cleanly and allows the kernel to boot.
+
+commit 12d6c1d3a2ad0c199ec57c201cdc71e8e157a232
+Author: Kees Cook <keescook@chromium.org>
+Date:   Tue Oct 25 15:39:35 2022 -0700
+
+    skbuff: Proactively round up to kmalloc bucket size
+
+    Instead of discovering the kmalloc bucket size _after_ allocation, roun=
+d
+    up proactively so the allocation is explicitly made for the full size,
+    allowing the compiler to correctly reason about the resulting size of
+    the buffer through the existing __alloc_size() hint.
+
+    This will allow for kernels built with CONFIG_UBSAN_BOUNDS or the
+    coming dynamic bounds checking under CONFIG_FORTIFY_SOURCE to gain
+    back the __alloc_size() hints that were temporarily reverted in commit
+    93dd04ab0b2b ("slab: remove __alloc_size attribute from
+__kmalloc_track_caller")
+
+    Cc: "David S. Miller" <davem@davemloft.net>
+    Cc: Eric Dumazet <edumazet@google.com>
+    Cc: Jakub Kicinski <kuba@kernel.org>
+    Cc: Paolo Abeni <pabeni@redhat.com>
+    Cc: netdev@vger.kernel.org
+    Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Cc: Nick Desaulniers <ndesaulniers@google.com>
+    Cc: David Rientjes <rientjes@google.com>
+    Acked-by: Vlastimil Babka <vbabka@suse.cz>
+    Link: https://patchwork.kernel.org/project/netdevbpf/patch/202210212347=
+13.you.031-kees@kernel.org/
+    Signed-off-by: Kees Cook <keescook@chromium.org>
+    Link: https://lore.kernel.org/r/20221025223811.up.360-kees@kernel.org
+    Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
 
- From V(N-1), there was some discussion between Rob & Florian:
- > > How many SoCs does each of these correspond to? SoC specific 
-compatibles
- > > are preferred to version numbers (because few vendors are disciplined
- > > at versioning and also not changing versions with every Soc).
- >
- > So far there is a 1:1 mapping between the number of versions and the
- > number of SoCs, and the older SoC uses v2.0, while the newer one uses 
-v2.1.
+Thanks and greetings!
 
-Rob's not around right now, but I don't really get why if there is a 1:1
-mapping you don't just name these things after the SoCs?
-
-Also, my mailer **refused** to let me reply to you because of something
-to do with a garbage S/MIME signature? Dunno wtf is happening there.
-
-Cheers,
-Conor.
+Daniel D=C3=ADaz
+daniel.diaz@linaro.org
 
