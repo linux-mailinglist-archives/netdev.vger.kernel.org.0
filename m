@@ -1,142 +1,170 @@
-Return-Path: <netdev+bounces-4357-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4358-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AC36570C2CC
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 17:55:31 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 03A6F70C2D5
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 17:58:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6797A280FEB
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 15:55:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CB1BB1C20B3E
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 15:58:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D228154A9;
-	Mon, 22 May 2023 15:55:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 17E7C154AA;
+	Mon, 22 May 2023 15:58:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6728014286;
-	Mon, 22 May 2023 15:55:28 +0000 (UTC)
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2948A107;
-	Mon, 22 May 2023 08:55:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07C5F14AB3
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 15:58:14 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42798B3
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 08:58:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=3XGsqEuFdWjxpRIwiAwzbMYLJommpBUmf64o8Q70T54=; b=T3DhWwZvaaFpz7BUKGUYfo2SjO
-	mnHOu0gFWqbJdNvvfVMzsr7HWt0aV5MpevFsuyJDWdKAo8zr+5Rr3x+VXBd7yRgncbklJv2GjuJE3
-	t2VSzBIMvOhxun/YpvaQFaAGsDsRp6wyc394DMMtDoEB8tgIWkvIcOAgv4NdzapSXJ0iQCe54RrPd
-	0zPEZgqJx3JbokWMmV+2Ogv8aCbxI9qghhH2GTaSbJzclGz2cCUQYjURJYo+VbsDvxjitAIFTXL5r
-	6iyrrvcncV1twi+CoqplMGnBBFpIZ34k0ah6ZLAyhs3Hzf4qz8B01wfMdibZXOOQCYQn9Jyzya9HV
-	lJdNJQmw==;
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+	:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+	Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=ACbFlJxVJN2RlR0ive3SrvviXhTP8XJYvV0ieJtYqkc=; b=xXsPZ0zVSRF3V+koRCvInxxwRg
+	A6lsSchldT8J6coq0SJfvUR96jI1pMPrPex6z52y+dzrnhbuRadoXnjHcaAOs8B+KrMQA+hwN5Fg6
+	CHZbVColy/mfu0Abf9mv98Slpq7UZ6BGSOkfZoIqSKepQy9WTHTLEYlRF+8EcEF2LnXdwIK31KJUF
+	hl3V2iE/5nj1t4/ksHEfylTf24s+f5ydJpQ6nmERir96S05DnPMlaRIKxOds7nD9OFjkxERlD3MNn
+	YLOOOv6l0ULGR1ulBrY4ziCdGLBlFeb9V8MaQqs7nlism4aRA4Nt28pgHY+DGn4JcJU0ewIp3h1gk
+	iaoySnVA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:33634 helo=rmk-PC.armlinux.org.uk)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
-	(envelope-from <daniel@iogearbox.net>)
-	id 1q17sN-000HgE-IO; Mon, 22 May 2023 17:55:11 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-	by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <daniel@iogearbox.net>)
-	id 1q17sM-000UFQ-IZ; Mon, 22 May 2023 17:55:10 +0200
-Subject: Re: [PATCH RESEND bpf-next 14/15] net, xdp: allow metadata > 32
-To: Alexander Lobakin <aleksander.lobakin@intel.com>,
- Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc: brouer@redhat.com, Larysa Zaremba <larysa.zaremba@intel.com>,
- bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>,
- Alexei Starovoitov <ast@kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
- Jakub Kicinski <kuba@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>,
- Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
- John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
- Jiri Olsa <jolsa@kernel.org>, Jesse Brandeburg <jesse.brandeburg@intel.com>,
- Tony Nguyen <anthony.l.nguyen@intel.com>,
- Anatoly Burakov <anatoly.burakov@intel.com>,
- Alexander Lobakin <alexandr.lobakin@intel.com>,
- Magnus Karlsson <magnus.karlsson@gmail.com>,
- Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
- netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
- linux-kernel@vger.kernel.org
-References: <20230512152607.992209-1-larysa.zaremba@intel.com>
- <20230512152607.992209-15-larysa.zaremba@intel.com>
- <ee1ad4f2-34ab-4377-14d5-532cb0687180@redhat.com> <ZGJnFxzDTV2qE4zZ@lincoln>
- <b9a879b2-bb62-ba18-0bdd-5c126a1086a9@intel.com>
- <a37db72f-2e83-c838-7c81-8f01a5a0df32@redhat.com>
- <5b817d49-eefa-51c9-3b51-01f1dba17d42@intel.com>
- <fed6ef09-0f5b-8c3d-0484-bb0995d09282@redhat.com>
- <d53f0150-d74b-7cf6-8fe7-324131b43982@intel.com>
-From: Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <106900e6-ab94-b37f-dc9d-f0a4242bb90f@iogearbox.net>
-Date: Mon, 22 May 2023 17:55:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+	(envelope-from <rmk@armlinux.org.uk>)
+	id 1q17vE-00076T-VJ; Mon, 22 May 2023 16:58:08 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+	id 1q17vE-007Baz-8c; Mon, 22 May 2023 16:58:08 +0100
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org
+Subject: [PATCH net-next] net: phy: avoid kernel warning dump when stopping an
+ errored PHY
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <d53f0150-d74b-7cf6-8fe7-324131b43982@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26915/Mon May 22 09:23:18 2023)
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1q17vE-007Baz-8c@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date: Mon, 22 May 2023 16:58:08 +0100
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 5/22/23 5:28 PM, Alexander Lobakin wrote:
-> From: Jesper Dangaard Brouer <jbrouer@redhat.com>
-> Date: Mon, 22 May 2023 13:41:43 +0200
->> On 19/05/2023 18.35, Alexander Lobakin wrote:
->>> From: Jesper Dangaard Brouer <jbrouer@redhat.com>
->>> Date: Tue, 16 May 2023 17:35:27 +0200
-> 
-> [...]
-> 
->> Not talking about your changes (in this patch).
->>
->> I'm realizing that SKBs using metadata area will have a performance hit
->> due to accessing another cacheline (the meta_len in skb_shared_info).
->>
->> IIRC Daniel complained about this performance hit (in the past), I guess
->> this explains it.  IIRC Cilium changed to use percpu variables/datastore
->> to workaround this.
-> 
-> Why should we compare metadata of skbs on GRO anyway? I was disabling it
-> the old hints series (conditionally, if driver asks), moreover...
-> ...if metadata contains full checksum, GRO will be broken completely due
-> to this comparison (or any other frame-unique fields. VLAN tags and
-> hashes are okay).
+When taking a network interface down (or removing a SFP module) after
+the PHY has encountered an error, phy_stop() complains incorrectly
+that it was called from HALTED state.
 
-This is when BPF prog on XDP populates metadata with custom data when it
-wants to transfer information from XDP to skb aka tc BPF prog side. percpu
-data store may not work here as it is not guaranteed that skb might end up
-on same CPU.
+The reason this is incorrect is that the network driver will have
+called phy_start() when the interface was brought up, and the fact
+that the PHY has a problem bears no relationship to the administrative
+state of the interface. Taking the interface administratively down
+(which calls phy_stop()) is always the right thing to do after a
+successful phy_start() call, whether or not the PHY has encountered
+an error.
 
->>> The whole xdp_metalen_invalid() gets expanded into:
->>>
->>>      return (metalen % 4) || metalen > 255;
->>>
->>> at compile-time. All those typeof shenanigans are only to not open-code
->>> meta_len's type/size/max.
->>>
->>>>
->>>> But only use for SKBs that gets created from xdp with metadata, right?
->>>>
->>
->> Normal netstack processing actually access this skb_shinfo->meta_len in
->> gro_list_prepare().  As the caller dev_gro_receive() later access other
->> memory in skb_shared_info, then the GRO code path already takes this hit
->> to begin with.
-> 
-> You access skb_shinfo() often even before running XDP program, for
-> example, when a frame is multi-buffer. Plus HW timestamps are also
-> there, and so on.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phy.c | 11 +++++++----
+ include/linux/phy.h   |  7 +++++--
+ 2 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 0c0df38cd1ab..bdf00b2b2c1d 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -52,6 +52,7 @@ static const char *phy_state_to_str(enum phy_state st)
+ 	PHY_STATE_STR(NOLINK)
+ 	PHY_STATE_STR(CABLETEST)
+ 	PHY_STATE_STR(HALTED)
++	PHY_STATE_STR(ERROR)
+ 	}
+ 
+ 	return NULL;
+@@ -1184,7 +1185,7 @@ void phy_stop_machine(struct phy_device *phydev)
+ static void phy_process_error(struct phy_device *phydev)
+ {
+ 	mutex_lock(&phydev->lock);
+-	phydev->state = PHY_HALTED;
++	phydev->state = PHY_ERROR;
+ 	mutex_unlock(&phydev->lock);
+ 
+ 	phy_trigger_machine(phydev);
+@@ -1198,10 +1199,10 @@ static void phy_error_precise(struct phy_device *phydev,
+ }
+ 
+ /**
+- * phy_error - enter HALTED state for this PHY device
++ * phy_error - enter ERROR state for this PHY device
+  * @phydev: target phy_device struct
+  *
+- * Moves the PHY to the HALTED state in response to a read
++ * Moves the PHY to the ERROR state in response to a read
+  * or write error, and tells the controller the link is down.
+  * Must not be called from interrupt context, or while the
+  * phydev->lock is held.
+@@ -1326,7 +1327,8 @@ void phy_stop(struct phy_device *phydev)
+ 	struct net_device *dev = phydev->attached_dev;
+ 	enum phy_state old_state;
+ 
+-	if (!phy_is_started(phydev) && phydev->state != PHY_DOWN) {
++	if (!phy_is_started(phydev) && phydev->state != PHY_DOWN &&
++	    phydev->state != PHY_ERROR) {
+ 		WARN(1, "called from state %s\n",
+ 		     phy_state_to_str(phydev->state));
+ 		return;
+@@ -1443,6 +1445,7 @@ void phy_state_machine(struct work_struct *work)
+ 		}
+ 		break;
+ 	case PHY_HALTED:
++	case PHY_ERROR:
+ 		if (phydev->link) {
+ 			phydev->link = 0;
+ 			phy_link_down(phydev);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 2da87a36200d..7addde5d14c0 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -497,14 +497,17 @@ struct phy_device *mdiobus_scan_c22(struct mii_bus *bus, int addr);
+  * Once complete, move to UP to restart the PHY.
+  * - phy_stop aborts the running test and moves to @PHY_HALTED
+  *
+- * @PHY_HALTED: PHY is up, but no polling or interrupts are done. Or
+- * PHY is in an error state.
++ * @PHY_HALTED: PHY is up, but no polling or interrupts are done.
+  * - phy_start moves to @PHY_UP
++ *
++ * @PHY_ERROR: PHY is up, but is in an error state.
++ * - phy_stop moves to @PHY_HALTED
+  */
+ enum phy_state {
+ 	PHY_DOWN = 0,
+ 	PHY_READY,
+ 	PHY_HALTED,
++	PHY_ERROR,
+ 	PHY_UP,
+ 	PHY_RUNNING,
+ 	PHY_NOLINK,
+-- 
+2.30.2
+
 
