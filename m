@@ -1,51 +1,51 @@
-Return-Path: <netdev+bounces-4221-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4222-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E173670BBE3
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 13:33:10 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3137A70BBE7
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 13:33:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A6040280F0C
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:33:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DFC49280F5B
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:33:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 179C3D2F2;
-	Mon, 22 May 2023 11:32:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 42480D30B;
+	Mon, 22 May 2023 11:32:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F25D2F1
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:32:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33ED7D2F1
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:32:51 +0000 (UTC)
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BAF8E;
-	Mon, 22 May 2023 04:32:36 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B308ABB;
+	Mon, 22 May 2023 04:32:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1684755156; x=1716291156;
+  t=1684755160; x=1716291160;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=p1YzrIY2xM8tw0Xs6tuE2UXhuLXSFNV7QfVqo2c4pbc=;
-  b=vB/u7qeoxeRZJu+QL98kMrwFLlQ3oQ68ezd2TeY5snQ0MGpLvMd8pS2S
-   /8YreqT6KrldRKPAzY9sAvUGYTyYLk4tHFoeUfFRba1FCCtMiAoE5Q2en
-   XHQdqDwwpL5pkKrvOYDoxOQxhUqyzRLdx5gTM/8y1av3/cS6Pv4sAUbx1
-   MYKltPe4pwpVegfhPBRLwngjj2KMH6YbAfeCIGWW7z0W1mP65LspGVZgk
-   HyAJ8xuMc72l2qI7MiYdxW5EyPGbbzkpirX6OPM713RVUt9r3piwW50Tj
-   yXIGqXaWxW0GLY1xIVmBC+5Gsj8t0i514UARMnIF/nrzacxkwIHPUey5C
+  bh=GsuBZcasl8sgSNzixS2gOiiY1ioqkDcpYlCuGBXnRyo=;
+  b=gqX0EBpvEuRToAmejaYPMixciBJJEO0ufMqXgcnVMDT5yVgUyrNz+PG+
+   MqRVeFfBGmVxBsJ1QecsfiFcMdJAEYcXSxzqEywyi28XDTc0U5fhq0yOL
+   ci0xsYjdm7/SU3KAjSuZ3R7Dnu0zxH+8oWRrI2i0R2m2Smljjj/PYHMy5
+   xlFlTeLmUwa0RwV08Knxym/G8W6cxFjl5HyqPv78byn42fIPF/QvEHGwx
+   qoq3r1H6JvZ5olnf6mnvxbk56xrPykkHFXuetDTSqHY6vKuUDZsr4BOmx
+   u3ZP4b8qUu/duNlcjTizHJEIILDehQHTpRkag94lrYJjFCr60c0nVgQAX
    Q==;
 X-IronPort-AV: E=Sophos;i="6.00,184,1681196400"; 
-   d="scan'208";a="216630564"
+   d="scan'208";a="153287684"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 May 2023 04:32:35 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 May 2023 04:32:39 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 22 May 2023 04:32:33 -0700
+ 15.1.2507.21; Mon, 22 May 2023 04:32:38 -0700
 Received: from CHE-LT-I17164LX.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Mon, 22 May 2023 04:32:28 -0700
+ 15.1.2507.21 via Frontend Transport; Mon, 22 May 2023 04:32:33 -0700
 From: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
 To: <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
 	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
@@ -54,9 +54,9 @@ To: <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
 CC: <horatiu.vultur@microchip.com>, <Woojung.Huh@microchip.com>,
 	<Nicolas.Ferre@microchip.com>, <Thorsten.Kummermehr@microchip.com>,
 	"Parthiban Veerasooran" <Parthiban.Veerasooran@microchip.com>
-Subject: [PATCH net-next v2 1/6] net: phy: microchip_t1s: modify driver description to be more generic
-Date: Mon, 22 May 2023 17:03:26 +0530
-Message-ID: <20230522113331.36872-2-Parthiban.Veerasooran@microchip.com>
+Subject: [PATCH net-next v2 2/6] net: phy: microchip_t1s: replace read-modify-write code with phy_modify_mmd
+Date: Mon, 22 May 2023 17:03:27 +0530
+Message-ID: <20230522113331.36872-3-Parthiban.Veerasooran@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230522113331.36872-1-Parthiban.Veerasooran@microchip.com>
 References: <20230522113331.36872-1-Parthiban.Veerasooran@microchip.com>
@@ -66,8 +66,8 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
 	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
@@ -75,52 +75,69 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Remove LAN867X from the driver description as this driver is common for
-all the Microchip 10BASE-T1S PHYs.
+Replace read-modify-write code in the lan867x_config_init function to
+avoid handling data type mismatch and to simplify the code.
 
 Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
 ---
- drivers/net/phy/microchip_t1s.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/phy/microchip_t1s.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/phy/microchip_t1s.c b/drivers/net/phy/microchip_t1s.c
-index 094967b3c111..a42a6bb6e3bd 100644
+index a42a6bb6e3bd..534d9faf8475 100644
 --- a/drivers/net/phy/microchip_t1s.c
 +++ b/drivers/net/phy/microchip_t1s.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-- * Driver for Microchip 10BASE-T1S LAN867X PHY
-+ * Driver for Microchip 10BASE-T1S PHYs
-  *
-  * Support: Microchip Phys:
-  *  lan8670, lan8671, lan8672
-@@ -111,7 +111,7 @@ static int lan867x_read_status(struct phy_device *phydev)
- 	return 0;
- }
+@@ -31,19 +31,19 @@
+  * W   0x1F 0x0099 0x7F80 ------
+  */
  
--static struct phy_driver lan867x_driver[] = {
-+static struct phy_driver microchip_t1s_driver[] = {
- 	{
- 		PHY_ID_MATCH_MODEL(PHY_ID_LAN867X),
- 		.name               = "LAN867X",
-@@ -124,7 +124,7 @@ static struct phy_driver lan867x_driver[] = {
- 	}
+-static const int lan867x_fixup_registers[12] = {
++static const u32 lan867x_fixup_registers[12] = {
+ 	0x00D0, 0x00D1, 0x0084, 0x0085,
+ 	0x008A, 0x0087, 0x0088, 0x008B,
+ 	0x0080, 0x00F1, 0x0096, 0x0099,
  };
  
--module_phy_driver(lan867x_driver);
-+module_phy_driver(microchip_t1s_driver);
+-static const int lan867x_fixup_values[12] = {
++static const u16 lan867x_fixup_values[12] = {
+ 	0x0002, 0x0000, 0x3380, 0x0006,
+ 	0xC000, 0x801C, 0x033F, 0x0404,
+ 	0x0600, 0x2400, 0x2000, 0x7F80,
+ };
  
- static struct mdio_device_id __maybe_unused tbl[] = {
- 	{ PHY_ID_MATCH_MODEL(PHY_ID_LAN867X) },
-@@ -133,6 +133,6 @@ static struct mdio_device_id __maybe_unused tbl[] = {
+-static const int lan867x_fixup_masks[12] = {
++static const u16 lan867x_fixup_masks[12] = {
+ 	0x0E03, 0x0300, 0xFFC0, 0x000F,
+ 	0xF800, 0x801C, 0x1FFF, 0xFFFF,
+ 	0x0600, 0x7F00, 0x2000, 0xFFFF,
+@@ -63,9 +63,7 @@ static int lan867x_config_init(struct phy_device *phydev)
+ 	 * used, which might then write the same value back as read + modified.
+ 	 */
  
- MODULE_DEVICE_TABLE(mdio, tbl);
+-	int reg_value;
+ 	int err;
+-	int reg;
  
--MODULE_DESCRIPTION("Microchip 10BASE-T1S lan867x Phy driver");
-+MODULE_DESCRIPTION("Microchip 10BASE-T1S PHYs driver");
- MODULE_AUTHOR("Ramón Nordin Rodriguez");
- MODULE_LICENSE("GPL");
+ 	/* Read-Modified Write Pseudocode (from AN1699)
+ 	 * current_val = read_register(mmd, addr) // Read current register value
+@@ -74,12 +72,11 @@ static int lan867x_config_init(struct phy_device *phydev)
+ 	 * write_register(mmd, addr, new_val) // Write back updated register value
+ 	 */
+ 	for (int i = 0; i < ARRAY_SIZE(lan867x_fixup_registers); i++) {
+-		reg = lan867x_fixup_registers[i];
+-		reg_value = phy_read_mmd(phydev, MDIO_MMD_VEND2, reg);
+-		reg_value &= ~lan867x_fixup_masks[i];
+-		reg_value |= lan867x_fixup_values[i];
+-		err = phy_write_mmd(phydev, MDIO_MMD_VEND2, reg, reg_value);
+-		if (err != 0)
++		err = phy_modify_mmd(phydev, MDIO_MMD_VEND2,
++				     lan867x_fixup_registers[i],
++				     lan867x_fixup_masks[i],
++				     lan867x_fixup_values[i]);
++		if (err)
+ 			return err;
+ 	}
+ 
 -- 
 2.34.1
 
