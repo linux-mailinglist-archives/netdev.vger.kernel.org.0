@@ -1,536 +1,259 @@
-Return-Path: <netdev+bounces-4365-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4366-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 342F370C344
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 18:26:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 982CD70C34E
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 18:29:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B56DC1C20B6B
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 16:26:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4D7BF281074
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 16:29:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 459AF16411;
-	Mon, 22 May 2023 16:26:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4DF411640D;
+	Mon, 22 May 2023 16:29:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34178154AA
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 16:26:21 +0000 (UTC)
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC404F1;
-	Mon, 22 May 2023 09:26:16 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B316139F;
-	Mon, 22 May 2023 09:27:01 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4399F3F762;
-	Mon, 22 May 2023 09:26:09 -0700 (PDT)
-Message-ID: <b1e53f39-5e0b-a09d-2954-cdc9e8592b67@arm.com>
-Date: Mon, 22 May 2023 17:26:03 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 425DE154AA
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 16:29:12 +0000 (UTC)
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017A1BF;
+	Mon, 22 May 2023 09:29:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1684772950; x=1716308950;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=StoaUf4MTFj8hPRC2I4MEUwAB5OXpi+q278AO8q0Ss8=;
+  b=fZmzZakn6cPplV4ln7YC6DiKCrXXwtQVYIolohm8WijlzRRCNaYie47V
+   N1Hr1LtFH05s9Elir2nhaZAZxdyHX/1bxBitKKDit7ayC2l8oDvUETfVS
+   BGmuGx09Oxs1r0gw1dNd3GgMbK3AHwzhS1cAwPPAylRPx9M99Rc3FHYdy
+   o=;
+X-IronPort-AV: E=Sophos;i="6.00,184,1681171200"; 
+   d="scan'208";a="327665802"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-529f0975.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2023 16:29:05 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+	by email-inbound-relay-iad-1e-m6i4x-529f0975.us-east-1.amazon.com (Postfix) with ESMTPS id B47C744088;
+	Mon, 22 May 2023 16:29:02 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 22 May 2023 16:28:54 +0000
+Received: from 88665a182662.ant.amazon.com (10.119.123.82) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 22 May 2023 16:28:51 +0000
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+To: <mirsad.todorovac@alu.unizg.hr>
+CC: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<kuniyu@amazon.com>, <linux-kernel@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
+	<pabeni@redhat.com>, <shuah@kernel.org>
+Subject: Re: [BUG] selftests: af_unix: unix:diag.c does not compile on AlmaLinux 8.7
+Date: Mon, 22 May 2023 09:28:43 -0700
+Message-ID: <20230522162843.49731-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <edac34c9-190c-0d80-8d95-2f42971cc870@alu.unizg.hr>
+References: <edac34c9-190c-0d80-8d95-2f42971cc870@alu.unizg.hr>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v9 5/6] iommu/dma: Allow a single FQ in addition to
- per-CPU FQs
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
- Wenjia Zhang <wenjia@linux.ibm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
- Pierre Morel <pmorel@linux.ibm.com>, Alexandra Winter
- <wintera@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
- Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev
- <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>,
- Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- linux-doc@vger.kernel.org
-References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
- <20230310-dma_iommu-v9-5-65bb8edd2beb@linux.ibm.com>
-Content-Language: en-GB
-In-Reply-To: <20230310-dma_iommu-v9-5-65bb8edd2beb@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.119.123.82]
+X-ClientProxiedBy: EX19D041UWA002.ant.amazon.com (10.13.139.121) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+Precedence: Bulk
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+	T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 2023-05-15 10:15, Niklas Schnelle wrote:
-> In some virtualized environments, including s390 paged memory guests,
-> IOTLB flushes are used to update IOMMU shadow tables. Due to this, they
-> are much more expensive than in typical bare metal environments or
-> non-paged s390 guests. In addition they may parallelize more poorly in
-> virtualized environments. This changes the trade off for flushing IOVAs
-> such that minimizing the number of IOTLB flushes trumps any benefit of
-> cheaper queuing operations or increased paralellism.
+From: Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>
+Date: Mon, 22 May 2023 17:32:11 +0200
+> Hi,
 > 
-> In this scenario per-CPU flush queues pose several problems. Firstly
-> per-CPU memory is often quite limited prohibiting larger queues.
-> Secondly collecting IOVAs per-CPU but flushing via a global timeout
-> reduces the number of IOVAs flushed for each timeout especially on s390
-> where PCI interrupts may not be bound to a specific CPU.
+> On vanilla AlmaLinux 8.7 (CentOS fork) selftests/net/af_unix/diag_uid.c doesn't
+> compile out of the box, giving the errors:
 > 
-> Let's introduce a single flush queue mode that reuses the same queue
-> logic but only allocates a single global queue. This mode can be
-> selected as a flag bit in a new dma_iommu_options struct which can be
-> modified from its defaults by IOMMU drivers implementing a new
-> ops.tune_dma_iommu() callback. As a first user the s390 IOMMU driver
-> selects the single queue mode if IOTLB flushes are needed on map which
-> indicates shadow table use. With the unchanged small FQ size and
-> timeouts this setting is worse than per-CPU queues but a follow up patch
-> will make the FQ size and timeout variable. Together this allows the
-> common IOVA flushing code to more closely resemble the global flush
-> behavior used on s390's previous internal DMA API implementation.
+> make[2]: Entering directory '/home/marvin/linux/kernel/linux_torvalds/tools/testing/selftests/net/af_unix'
+> gcc     diag_uid.c  -o /home/marvin/linux/kernel/linux_torvalds/tools/testing/selftests/net/af_unix/diag_uid
+> diag_uid.c:36:16: error: ‘UDIAG_SHOW_UID’ undeclared here (not in a function); did you mean ‘UDIAG_SHOW_VFS’?
+>    .udiag_show = UDIAG_SHOW_UID
+>                  ^~~~~~~~~~~~~~
+>                  UDIAG_SHOW_VFS
+> In file included from diag_uid.c:17:
+> diag_uid.c: In function ‘render_response’:
+> diag_uid.c:128:28: error: ‘UNIX_DIAG_UID’ undeclared (first use in this function); did you mean ‘UNIX_DIAG_VFS’?
+>    ASSERT_EQ(attr->rta_type, UNIX_DIAG_UID);
+>                              ^~~~~~~~~~~~~
+> ../../kselftest_harness.h:707:13: note: in definition of macro ‘__EXPECT’
+>    __typeof__(_seen) __seen = (_seen); \
+>               ^~~~~
+> diag_uid.c:128:2: note: in expansion of macro ‘ASSERT_EQ’
+>    ASSERT_EQ(attr->rta_type, UNIX_DIAG_UID);
+>    ^~~~~~~~~
+> diag_uid.c:128:28: note: each undeclared identifier is reported only once for each function it appears in
+>    ASSERT_EQ(attr->rta_type, UNIX_DIAG_UID);
+>                              ^~~~~~~~~~~~~
+> ../../kselftest_harness.h:707:13: note: in definition of macro ‘__EXPECT’
+>    __typeof__(_seen) __seen = (_seen); \
+>               ^~~~~
+> diag_uid.c:128:2: note: in expansion of macro ‘ASSERT_EQ’
+>    ASSERT_EQ(attr->rta_type, UNIX_DIAG_UID);
+>    ^~~~~~~~~
+> make[2]: *** [../../lib.mk:147: /home/marvin/linux/kernel/linux_torvalds/tools/testing/selftests/net/af_unix/diag_uid] Error 1
 > 
-> Link: https://lore.kernel.org/linux-iommu/3e402947-61f9-b7e8-1414-fde006257b6f@arm.com/
-> Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com> #s390
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> The correct value is in <uapi/linux/unix_diag.h>:
+> 
+> include/uapi/linux/unix_diag.h:23:#define UDIAG_SHOW_UID		0x00000040	/* show socket's UID */
+> 
+> The fix is as follows:
+> 
 > ---
->   drivers/iommu/dma-iommu.c  | 163 ++++++++++++++++++++++++++++++++++-----------
->   drivers/iommu/dma-iommu.h  |   4 +-
->   drivers/iommu/iommu.c      |  18 +++--
->   drivers/iommu/s390-iommu.c |  10 +++
->   include/linux/iommu.h      |  21 ++++++
->   5 files changed, 169 insertions(+), 47 deletions(-)
+>   tools/testing/selftests/net/af_unix/diag_uid.c | 4 ++++
+>   1 file changed, 4 insertions(+)
 > 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 7a9f0b0bddbd..be4cab6b4fe4 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -49,8 +49,11 @@ struct iommu_dma_cookie {
->   		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
->   		struct {
->   			struct iova_domain	iovad;
-> -
-> -			struct iova_fq __percpu *fq;	/* Flush queue */
-> +			/* Flush queue */
-> +			union {
-> +				struct iova_fq	*single_fq;
-> +				struct iova_fq	__percpu *percpu_fq;
-> +			};
->   			/* Number of TLB flushes that have been started */
->   			atomic64_t		fq_flush_start_cnt;
->   			/* Number of TLB flushes that have been finished */
-> @@ -67,6 +70,8 @@ struct iommu_dma_cookie {
->   
->   	/* Domain for flush queue callback; NULL if flush queue not in use */
->   	struct iommu_domain		*fq_domain;
-> +	/* Options for dma-iommu use */
-> +	struct dma_iommu_options	options;
->   	struct mutex			mutex;
+> diff --git a/tools/testing/selftests/net/af_unix/diag_uid.c b/tools/testing/selftests/net/af_unix/diag_uid.c
+> index 5b88f7129fea..66d75b646d35 100644
+> --- a/tools/testing/selftests/net/af_unix/diag_uid.c
+> +++ b/tools/testing/selftests/net/af_unix/diag_uid.c
+> @@ -16,6 +16,10 @@
+> 
+>   #include "../../kselftest_harness.h"
+> 
+> +#ifndef UDIAG_SHOW_UID
+> +#define UDIAG_SHOW_UID         0x00000040      /* show socket's UID */
+> +#endif
+> +
+>   FIXTURE(diag_uid)
+>   {
+>          int netlink_fd;
+> 
+> --
+> 
+> However, this patch reveals another undefined value:
+> 
+> make[2]: Entering directory '/home/marvin/linux/kernel/linux_torvalds/tools/testing/selftests/net/af_unix'
+> gcc     diag_uid.c  -o /home/marvin/linux/kernel/linux_torvalds/tools/testing/selftests/net/af_unix/diag_uid
+> In file included from diag_uid.c:17:
+> diag_uid.c: In function ‘render_response’:
+> diag_uid.c:132:28: error: ‘UNIX_DIAG_UID’ undeclared (first use in this function); did you mean ‘UNIX_DIAG_VFS’?
+>    ASSERT_EQ(attr->rta_type, UNIX_DIAG_UID);
+>                              ^~~~~~~~~~~~~
+> ../../kselftest_harness.h:707:13: note: in definition of macro ‘__EXPECT’
+>    __typeof__(_seen) __seen = (_seen); \
+>               ^~~~~
+> diag_uid.c:132:2: note: in expansion of macro ‘ASSERT_EQ’
+>    ASSERT_EQ(attr->rta_type, UNIX_DIAG_UID);
+>    ^~~~~~~~~
+> diag_uid.c:132:28: note: each undeclared identifier is reported only once for each function it appears in
+>    ASSERT_EQ(attr->rta_type, UNIX_DIAG_UID);
+>                              ^~~~~~~~~~~~~
+> ../../kselftest_harness.h:707:13: note: in definition of macro ‘__EXPECT’
+>    __typeof__(_seen) __seen = (_seen); \
+>               ^~~~~
+> diag_uid.c:132:2: note: in expansion of macro ‘ASSERT_EQ’
+>    ASSERT_EQ(attr->rta_type, UNIX_DIAG_UID);
+>    ^~~~~~~~~
+> make[2]: *** [../../lib.mk:147: /home/marvin/linux/kernel/linux_torvalds/tools/testing/selftests/net/af_unix/diag_uid] Error 1
+> 
+> Apparently, AlmaLinux 8.7 lacks this enum UNIX_DIAG_UID:
+> 
+> diff -u /usr/include/linux/unix_diag.h include/uapi/linux/unix_diag.h
+> --- /usr/include/linux/unix_diag.h	2023-05-16 13:47:51.000000000 +0200
+> +++ include/uapi/linux/unix_diag.h	2022-10-12 07:35:58.253481367 +0200
+> @@ -20,6 +20,7 @@
+>   #define UDIAG_SHOW_ICONS	0x00000008	/* show pending connections */
+>   #define UDIAG_SHOW_RQLEN	0x00000010	/* show skb receive queue len */
+>   #define UDIAG_SHOW_MEMINFO	0x00000020	/* show memory info of a socket */
+> +#define UDIAG_SHOW_UID		0x00000040	/* show socket's UID */
+> 
+>   struct unix_diag_msg {
+>   	__u8	udiag_family;
+> @@ -40,6 +41,7 @@
+>   	UNIX_DIAG_RQLEN,
+>   	UNIX_DIAG_MEMINFO,
+>   	UNIX_DIAG_SHUTDOWN,
+> +	UNIX_DIAG_UID,
+> 
+>   	__UNIX_DIAG_MAX,
 >   };
->   
-> @@ -152,25 +157,44 @@ static void fq_flush_iotlb(struct iommu_dma_cookie *cookie)
->   	atomic64_inc(&cookie->fq_flush_finish_cnt);
->   }
->   
-> -static void fq_flush_timeout(struct timer_list *t)
-> +static void fq_flush_percpu(struct iommu_dma_cookie *cookie)
->   {
-> -	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
->   	int cpu;
->   
-> -	atomic_set(&cookie->fq_timer_on, 0);
-> -	fq_flush_iotlb(cookie);
-> -
->   	for_each_possible_cpu(cpu) {
->   		unsigned long flags;
->   		struct iova_fq *fq;
->   
-> -		fq = per_cpu_ptr(cookie->fq, cpu);
-> +		fq = per_cpu_ptr(cookie->percpu_fq, cpu);
->   		spin_lock_irqsave(&fq->lock, flags);
->   		fq_ring_free(cookie, fq);
->   		spin_unlock_irqrestore(&fq->lock, flags);
->   	}
->   }
->   
-> +static void fq_flush_single(struct iommu_dma_cookie *cookie)
-> +{
-> +	struct iova_fq *fq = cookie->single_fq;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&fq->lock, flags);
-> +	fq_ring_free(cookie, fq);
-> +	spin_unlock_irqrestore(&fq->lock, flags)
+> 
+> Now, this is a change in enums and there doesn't seem to an easy way out
+> here. (I think I saw an example, but I cannot recall which thread. I will do
+> more research.)
+> 
+> When I included
+> 
+> # gcc -I ../../../../include diag_uid.c
+> 
+> I've got the following error:
+> 
+> [marvin@pc-mtodorov linux_torvalds]$ cd tools/testing/selftests/net/af_unix/
+> [marvin@pc-mtodorov af_unix]$ gcc  -I ../../../../../include   diag_uid.c  -o 
+> /home/marvin/linux/kernel/linux_torvalds/tools/testing/selftests/net/af_unix/diag_uid
+> In file included from ../../../../../include/linux/build_bug.h:5,
+>                   from ../../../../../include/linux/bits.h:21,
+>                   from ../../../../../include/linux/capability.h:18,
+>                   from ../../../../../include/linux/netlink.h:6,
+>                   from diag_uid.c:8:
+> ../../../../../include/linux/compiler.h:246:10: fatal error: asm/rwonce.h: No such file or directory
+>   #include <asm/rwonce.h>
+>            ^~~~~~~~~~~~~~
+> compilation terminated.
+> [marvin@pc-mtodorov af_unix]$
+> 
+> At this point I gave up, as it would be an overkill to change kernel system
+> header to make a test pass, and this probably wouldn't be accepted upsteam?
+> 
+> Hope this helps. (If we still want to build on CentOS/AlmaLinux/Rocky 8?)
 
-Nit: this should clearly just be a self-locked version of fq_ring_free() 
-that takes fq as an argument, then both the new case and the existing 
-loop body become trivial one-line calls.
+I launched AlmaLinux/RockyLinux 8.7 and 9.2 with images listed in the pages
+below.
 
-> +}
-> +
-> +static void fq_flush_timeout(struct timer_list *t)
-> +{
-> +	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
-> +
-> +	atomic_set(&cookie->fq_timer_on, 0);
-> +	fq_flush_iotlb(cookie);
-> +
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		fq_flush_single(cookie);
-> +	else
-> +		fq_flush_percpu(cookie);
-> +}
-> +
->   static void queue_iova(struct iommu_dma_cookie *cookie,
->   		unsigned long pfn, unsigned long pages,
->   		struct list_head *freelist)
-> @@ -188,7 +212,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
->   	 */
->   	smp_mb();
->   
-> -	fq = raw_cpu_ptr(cookie->fq);
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		fq = cookie->single_fq;
-> +	else
-> +		fq = raw_cpu_ptr(cookie->percpu_fq);
-> +
->   	spin_lock_irqsave(&fq->lock, flags);
->   
->   	/*
-> @@ -219,58 +247,114 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
->   			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
->   }
->   
-> -static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
-> +static void iommu_dma_free_fq_single(struct iova_fq *fq)
-> +{
-> +	int idx;
-> +
-> +	if (!fq)
-> +		return;
-> +	fq_ring_for_each(idx, fq)
-> +		put_pages_list(&fq->entries[idx].freelist);
-> +	vfree(fq);
-> +}
-> +
-> +static void iommu_dma_free_fq_percpu(struct iova_fq __percpu *percpu_fq)
->   {
->   	int cpu, idx;
->   
-> -	if (!cookie->fq)
-> -		return;
-> -
-> -	del_timer_sync(&cookie->fq_timer);
->   	/* The IOVAs will be torn down separately, so just free our queued pages */
->   	for_each_possible_cpu(cpu) {
-> -		struct iova_fq *fq = per_cpu_ptr(cookie->fq, cpu);
-> +		struct iova_fq *fq = per_cpu_ptr(percpu_fq, cpu);
->   
->   		fq_ring_for_each(idx, fq)
->   			put_pages_list(&fq->entries[idx].freelist);
->   	}
->   
-> -	free_percpu(cookie->fq);
-> +	free_percpu(percpu_fq);
-> +}
-> +
-> +static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
-> +{
-> +	if (!cookie->fq_domain)
-> +		return;
-> +
-> +	del_timer_sync(&cookie->fq_timer);
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		iommu_dma_free_fq_single(cookie->single_fq);
-> +	else
-> +		iommu_dma_free_fq_percpu(cookie->percpu_fq);
-> +}
-> +
-> +
-> +static void iommu_dma_init_one_fq(struct iova_fq *fq)
-> +{
-> +	int i;
-> +
-> +	fq->head = 0;
-> +	fq->tail = 0;
-> +
-> +	spin_lock_init(&fq->lock);
-> +
-> +	for (i = 0; i < IOVA_FQ_SIZE; i++)
-> +		INIT_LIST_HEAD(&fq->entries[i].freelist);
-> +}
-> +
-> +static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
-> +{
-> +	struct iova_fq *queue;
-> +
-> +	queue = vzalloc(sizeof(*queue));
-> +	if (!queue)
-> +		return -ENOMEM;
-> +	iommu_dma_init_one_fq(queue);
-> +	cookie->single_fq = queue;
-> +
-> +	return 0;
-> +}
-> +
-> +static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
-> +{
-> +	struct iova_fq __percpu *queue;
-> +	int cpu;
-> +
-> +	queue = alloc_percpu(struct iova_fq);
-> +	if (!queue)
-> +		return -ENOMEM;
-> +
-> +	for_each_possible_cpu(cpu)
-> +		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu));
-> +	cookie->percpu_fq = queue;
-> +	return 0;
->   }
->   
->   /* sysfs updates are serialised by the mutex of the group owning @domain */
-> -int iommu_dma_init_fq(struct iommu_domain *domain)
-> +int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain)
->   {
->   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> -	struct iova_fq __percpu *queue;
-> -	int i, cpu;
-> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> +	int rc;
->   
->   	if (cookie->fq_domain)
->   		return 0;
->   
-> +	if (ops->tune_dma_iommu)
-> +		ops->tune_dma_iommu(dev, &cookie->options);
-> +
->   	atomic64_set(&cookie->fq_flush_start_cnt,  0);
->   	atomic64_set(&cookie->fq_flush_finish_cnt, 0);
->   
-> -	queue = alloc_percpu(struct iova_fq);
-> -	if (!queue) {
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		rc = iommu_dma_init_fq_single(cookie);
-> +	else
-> +		rc = iommu_dma_init_fq_percpu(cookie);
-> +
-> +	if (rc) {
->   		pr_warn("iova flush queue initialization failed\n");
-> -		return -ENOMEM;
-> +		/* fall back to strict mode */
-> +		domain->type = IOMMU_DOMAIN_DMA;
+  https://wiki.almalinux.org/cloud/AWS.html#community-amis
+  https://rockylinux.org/cloud-images/
 
-Why move this? It doesn't logically belong to FQ initialisation itself.
+The kernel versions in each image were :
 
-> +		return rc;
->   	}
->   
-> -	for_each_possible_cpu(cpu) {
-> -		struct iova_fq *fq = per_cpu_ptr(queue, cpu);
-> -
-> -		fq->head = 0;
-> -		fq->tail = 0;
-> -
-> -		spin_lock_init(&fq->lock);
-> -
-> -		for (i = 0; i < IOVA_FQ_SIZE; i++)
-> -			INIT_LIST_HEAD(&fq->entries[i].freelist);
-> -	}
-> -
-> -	cookie->fq = queue;
-> -
->   	timer_setup(&cookie->fq_timer, fq_flush_timeout, 0);
->   	atomic_set(&cookie->fq_timer_on, 0);
->   	/*
-> @@ -297,6 +381,7 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
->   	if (cookie) {
->   		INIT_LIST_HEAD(&cookie->msi_page_list);
->   		cookie->type = type;
-> +		cookie->options.flags = IOMMU_DMA_OPTS_PER_CPU_QUEUE;
->   	}
->   	return cookie;
->   }
-> @@ -585,9 +670,9 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->   	if (ret)
->   		goto done_unlock;
->   
-> -	/* If the FQ fails we can simply fall back to strict mode */
-> -	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
-> -		domain->type = IOMMU_DOMAIN_DMA;
-> +	/* If the FQ fails we fall back to strict mode */
-> +	if (domain->type == IOMMU_DOMAIN_DMA_FQ)
-> +		iommu_dma_init_fq(dev, domain);
->   
->   	ret = iova_reserve_iommu_regions(dev, domain);
->   
-> diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-> index 942790009292..4f727ab56d3c 100644
-> --- a/drivers/iommu/dma-iommu.h
-> +++ b/drivers/iommu/dma-iommu.h
-> @@ -12,7 +12,7 @@
->   int iommu_get_dma_cookie(struct iommu_domain *domain);
->   void iommu_put_dma_cookie(struct iommu_domain *domain);
->   
-> -int iommu_dma_init_fq(struct iommu_domain *domain);
-> +int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain);
->   
->   void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
->   
-> @@ -20,7 +20,7 @@ extern bool iommu_dma_forcedac;
->   
->   #else /* CONFIG_IOMMU_DMA */
->   
-> -static inline int iommu_dma_init_fq(struct iommu_domain *domain)
-> +static inline int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain)
->   {
->   	return -EINVAL;
->   }
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 51f816367205..e2334ca480dd 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2967,10 +2967,19 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
->   		return -EINVAL;
->   
->   	mutex_lock(&group->mutex);
-> +	/* Ensure that device exists. */
-> +	if (list_empty(&group->devices)) {
-> +		mutex_unlock(&group->mutex);
-> +		return -EPERM;
-> +	}
-> +
-> +	grp_dev = list_first_entry(&group->devices, struct group_device, list);
-> +	dev = grp_dev->dev;
-> +
->   	/* We can bring up a flush queue without tearing down the domain. */
->   	if (req_type == IOMMU_DOMAIN_DMA_FQ &&
->   	    group->default_domain->type == IOMMU_DOMAIN_DMA) {
-> -		ret = iommu_dma_init_fq(group->default_domain);
-> +		ret = iommu_dma_init_fq(dev, group->default_domain);
->   		if (!ret)
->   			group->default_domain->type = IOMMU_DOMAIN_DMA_FQ;
->   		mutex_unlock(&group->mutex);
-> @@ -2978,15 +2987,12 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
->   		return ret ?: count;
->   	}
->   
-> -	/* Otherwise, ensure that device exists and no driver is bound. */
-> -	if (list_empty(&group->devices) || group->owner_cnt) {
-> +	/* Otherwise, ensure that no driver is bound. */
-> +	if (group->owner_cnt) {
->   		mutex_unlock(&group->mutex);
->   		return -EPERM;
->   	}
->   
-> -	grp_dev = list_first_entry(&group->devices, struct group_device, list);
-> -	dev = grp_dev->dev;
-> -
->   	ret = iommu_change_dev_def_domain(group, dev, req_type);
->   
->   	/*
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 161b0be5aba6..65dd469ad524 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -451,6 +451,15 @@ static void s390_iommu_get_resv_regions(struct device *dev,
->   	}
->   }
->   
-> +static void s390_iommu_tune_dma_iommu(struct device *dev,
-> +					     struct dma_iommu_options *options)
-> +{
-> +	struct zpci_dev *zdev = to_zpci_dev(dev);
-> +
-> +	if (zdev->tlb_refresh)
-> +		options->flags |= IOMMU_DMA_OPTS_SINGLE_QUEUE;
-> +}
-> +
->   static struct iommu_device *s390_iommu_probe_device(struct device *dev)
->   {
->   	struct zpci_dev *zdev;
-> @@ -793,6 +802,7 @@ static const struct iommu_ops s390_iommu_ops = {
->   	.device_group = generic_device_group,
->   	.pgsize_bitmap = SZ_4K,
->   	.get_resv_regions = s390_iommu_get_resv_regions,
-> +	.tune_dma_iommu = s390_iommu_tune_dma_iommu,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= s390_iommu_attach_device,
->   		.map_pages	= s390_iommu_map_pages,
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 58891eddc2c4..3649a17256a5 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -219,6 +219,21 @@ struct iommu_iotlb_gather {
->   	bool			queued;
->   };
->   
-> +/**
-> + * struct dma_iommu_options - Options for dma-iommu
-> + *
-> + * @flags: Flag bits for enabling/disabling dma-iommu settings
-> + *
-> + * This structure is intended to provide IOMMU drivers a way to influence the
-> + * behavior of the dma-iommu DMA API implementation. This allows optimizing for
-> + * example for a virtualized environment with slow IOTLB flushes.
-> + */
-> +struct dma_iommu_options {
-> +#define IOMMU_DMA_OPTS_PER_CPU_QUEUE	(0L << 0)
-> +#define IOMMU_DMA_OPTS_SINGLE_QUEUE	(1L << 0)
-> +	u64	flags;
-> +};
+  8.7:
+  Alma  : 4.18.0-425.3.1.el8.x86_64
+  Rocky : 4.18.0-425.10.1.el8_7.x86_64
 
-I think for now this can just use a bit in dev_iommu to indicate that 
-the device will prefer a global flush queue; s390 can set that in 
-.probe_device, then iommu_dma_init_domain() can propagate it to an 
-equivalent flag in the cookie (possibly even a new cookie type?) that 
-iommu_dma_init_fq() can then consume. Then just make the s390 parameters 
-from patch #6 the standard parameters for a global queue.
+  9.2:
+  Alma  : 5.14.0-284.11.1.el9_2.x86_64
+  Rocky : 5.14.0-284.11.1.el9_2.x86_64
+
+So, this is not a bug.  It's just because v4.18 does not support
+UNIX_DIAG_UID, which was introduced in v5.3.
+
+You should install 5.3+ kernel if you want to build the test.
 
 Thanks,
-Robin.
+Kuniyuki
 
-> +
->   /**
->    * struct iommu_ops - iommu ops and capabilities
->    * @capable: check capability
-> @@ -242,6 +257,9 @@ struct iommu_iotlb_gather {
->    *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
->    *		- IOMMU_DOMAIN_DMA: must use a dma domain
->    *		- 0: use the default setting
-> + * @tune_dma_iommu: Allows the IOMMU driver to modify the default
-> + *		    options of the dma-iommu layer for a specific
-> + *		    device.
->    * @default_domain_ops: the default ops for domains
->    * @remove_dev_pasid: Remove any translation configurations of a specific
->    *                    pasid, so that any DMA transactions with this pasid
-> @@ -278,6 +296,9 @@ struct iommu_ops {
->   	int (*def_domain_type)(struct device *dev);
->   	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
->   
-> +	void (*tune_dma_iommu)(struct device *dev,
-> +			       struct dma_iommu_options *options);
-> +
->   	const struct iommu_domain_ops *default_domain_ops;
->   	unsigned long pgsize_bitmap;
->   	struct module *owner;
+
 > 
+> Best regards,
+> Mirsad
+> 
+> -- 
+> Mirsad Goran Todorovac
+> Sistem inženjer
+> Grafički fakultet | Akademija likovnih umjetnosti
+> Sveučilište u Zagrebu
+> 
+> System engineer
+> Faculty of Graphic Arts | Academy of Fine Arts
+> University of Zagreb, Republic of Croatia
 
