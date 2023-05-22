@@ -1,184 +1,115 @@
-Return-Path: <netdev+bounces-4229-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4230-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1033870BC08
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 13:41:54 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 301F370BC22
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 13:46:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D94841C208EB
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:41:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AE260280EDD
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 11:45:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A1CED2F1;
-	Mon, 22 May 2023 11:41:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B6E06D2F9;
+	Mon, 22 May 2023 11:45:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09743BA27
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:41:50 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D3391
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 04:41:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684755708;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XCoVn7ppCsfW0w+/vJ+0bLvd9vkfTR1n6Nckl2ntEFY=;
-	b=SbWRYfGiYC9J5SfGc9zj54tIiE17JCzi2cAcdDQ59iAxu6JN1yLlWNG0SncU0yInX111Nk
-	R4bViAmHbq+MB7pt3K9ryuZGWmfqUIKwK85+VmFv7s7zlyWgckgQJIxfNYvSXNwJfM8dhb
-	Yr/VrvomBmeWG/O6ob+EvZ2MKYRXqYo=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-662-_uGi8rphOrySi215ax8SeQ-1; Mon, 22 May 2023 07:41:47 -0400
-X-MC-Unique: _uGi8rphOrySi215ax8SeQ-1
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-96fd3757c1dso133510666b.1
-        for <netdev@vger.kernel.org>; Mon, 22 May 2023 04:41:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6127BA27
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 11:45:57 +0000 (UTC)
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F171AC
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 04:45:55 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id 2adb3069b0e04-4f3edc05aa5so1631126e87.3
+        for <netdev@vger.kernel.org>; Mon, 22 May 2023 04:45:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1684755954; x=1687347954;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=FV8sCT8BFyA8deJYHWz/IM3mCVuJ3I9ttJCLsYuNvvw=;
+        b=ncnBE9tQNvkUvX0r4gvHMz688irtuvfbMmzx6VHQYyXOKJkl/kA7MdBVfLDbDJm+rI
+         AtB4AsiOidEBoeLiVNHYW0U8mOKjJd48xn/+qCUThICZF0yr0Y/zvo7L/xZjmTNCrp+r
+         9a3NmZ9sMUFgg3d4at/mqkLF+eieu6SU1AoNE/RWTYwVjWwok6L7KYceQ87dJTUlBUEw
+         XvrzT317ubgjXX2hh7/+6vRlC+Frw79HoyCQ4Z2lK0bMjfytE5+U4N7CtnD96RhgOOJE
+         0J0ZYjDR1w4PflsJ1voB+nOO7S3KPofeWVjt0vGGQYdzUUgkCVfAPlksO+tY0IrjZEnm
+         KZ7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684755706; x=1687347706;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XCoVn7ppCsfW0w+/vJ+0bLvd9vkfTR1n6Nckl2ntEFY=;
-        b=Ar2B5x1fVJe0lpoehKMl2gimdn5sdxObq9ZjziIgp9wbKyW+vvXjIQ3uDK5TtZiFzU
-         Xw272BXZF19B0jqT7gx2GxKfY0ELctqzzFsC8VEU76B2SN1swgOAq1hkMUCf7BBB+NaI
-         5fwVo0PcMNuLacZt9deMiNcFiwG6e2+WKb/RK3kENKdY8c/Plial69lrf0lGZPst8iuN
-         /dKBRkI/XOmLstKp4YMn/xF1XDfbjvP+ZpA470Y6Y1wAjrPsWaFNQjCn2Qvu7VwW2xcy
-         /kLfnZCiYQLeLfg7aFXvNnPnRJQy4xGoaZX9jCyNAVIFuyXVRMzfQdAk3ECuNW5ZRLmA
-         uupg==
-X-Gm-Message-State: AC+VfDxVy8teLPZIM+pPVZKn1WoOdQYdDnBFLD24cXwzOr7vqSxcNWbe
-	2vqYNjAXDXLgtJDFnwuUo7t2snx9MbptzK8V2sYoT66WV2jZHZPPgC9uQsl35qEwGohuuEhRR5S
-	7UXFLUZjDRtZish2b
-X-Received: by 2002:a17:906:db0d:b0:94f:1a23:2f1b with SMTP id xj13-20020a170906db0d00b0094f1a232f1bmr8806483ejb.24.1684755706362;
-        Mon, 22 May 2023 04:41:46 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7kEr9SuDqWiEbnZsnBzZAAHBZaLG94azZPqviwtKlo0EM0qZLnGpvhLrmWW6uacj8eI75lGg==
-X-Received: by 2002:a17:906:db0d:b0:94f:1a23:2f1b with SMTP id xj13-20020a170906db0d00b0094f1a232f1bmr8806456ejb.24.1684755706071;
-        Mon, 22 May 2023 04:41:46 -0700 (PDT)
-Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id lx19-20020a170906af1300b0094f07545d40sm2980019ejb.220.2023.05.22.04.41.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 May 2023 04:41:45 -0700 (PDT)
-From: Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <fed6ef09-0f5b-8c3d-0484-bb0995d09282@redhat.com>
-Date: Mon, 22 May 2023 13:41:43 +0200
+        d=1e100.net; s=20221208; t=1684755954; x=1687347954;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FV8sCT8BFyA8deJYHWz/IM3mCVuJ3I9ttJCLsYuNvvw=;
+        b=Or44NW6E4ZREUQuMy/fUaGemKft2tLEiokZLfBXP7DptIYWad7djxM5JT2sge8Xadu
+         81jCit4Zt/Fjtel3YCp+oV7kaoI5ri6lRnr7DO0pHUnYqoSfOKcBaP8klO/XlVlan4T3
+         WjYz+N/9dAna13tjRXMb7D/aybwqD5eXjGpQ7BoHrpmDLpmyIp7QvHiz7av4T3eoJht0
+         yhyyiu2HGfiZr1tTqvyMiBraVEwjS3wKVpt4QenJvPHhO2PcmypfSkU2W6vWHk67IoHJ
+         EAKvw6VgYVZngsuEdw1uKvOleZkgOorBVVXEorSQuq1nw8z3NOADE+/wmJe7IiBx1eB+
+         9X5A==
+X-Gm-Message-State: AC+VfDyZy7po6e+HdF+OTQYZlg4LdnKFowSn+6rw7EgkLgSsptqO9AD5
+	hviPAOy9JknHl98F/WMOboFdkwwL3LaRhI//b+8SAA==
+X-Google-Smtp-Source: ACHHUZ6Arb3e86WPLu+kbk3kF3wfmSodwf5+FCkwRV6f1KpcCpFXAAZjz973i1vwCX8k4GFJPOYyd7DyVdEctcGZ77s=
+X-Received: by 2002:ac2:4428:0:b0:4f1:3b59:44cc with SMTP id
+ w8-20020ac24428000000b004f13b5944ccmr3201723lfl.57.1684755953816; Mon, 22 May
+ 2023 04:45:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Cc: brouer@redhat.com, Larysa Zaremba <larysa.zaremba@intel.com>,
- bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>,
- Alexei Starovoitov <ast@kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
- Jakub Kicinski <kuba@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>,
- Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
- John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
- Jiri Olsa <jolsa@kernel.org>, Jesse Brandeburg <jesse.brandeburg@intel.com>,
- Tony Nguyen <anthony.l.nguyen@intel.com>,
- Anatoly Burakov <anatoly.burakov@intel.com>,
- Alexander Lobakin <alexandr.lobakin@intel.com>,
- Magnus Karlsson <magnus.karlsson@gmail.com>,
- Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
- netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND bpf-next 14/15] net, xdp: allow metadata > 32
-Content-Language: en-US
-To: Alexander Lobakin <aleksander.lobakin@intel.com>,
- Jesper Dangaard Brouer <jbrouer@redhat.com>,
- Daniel Borkmann <daniel@iogearbox.net>
-References: <20230512152607.992209-1-larysa.zaremba@intel.com>
- <20230512152607.992209-15-larysa.zaremba@intel.com>
- <ee1ad4f2-34ab-4377-14d5-532cb0687180@redhat.com> <ZGJnFxzDTV2qE4zZ@lincoln>
- <b9a879b2-bb62-ba18-0bdd-5c126a1086a9@intel.com>
- <a37db72f-2e83-c838-7c81-8f01a5a0df32@redhat.com>
- <5b817d49-eefa-51c9-3b51-01f1dba17d42@intel.com>
-In-Reply-To: <5b817d49-eefa-51c9-3b51-01f1dba17d42@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230522031714.5089-1-linyunsheng@huawei.com> <1fc46094-a72a-f7e4-ef18-15edb0d56233@redhat.com>
+In-Reply-To: <1fc46094-a72a-f7e4-ef18-15edb0d56233@redhat.com>
+From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date: Mon, 22 May 2023 14:45:17 +0300
+Message-ID: <CAC_iWjJaNuDFZuv1Rv4Yr5Kaj1Wq69txAoLGepvnJT=pY1gaRw@mail.gmail.com>
+Subject: Re: [PATCH net] page_pool: fix inconsistency for page_pool_ring_[un]lock()
+To: Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net, kuba@kernel.org, 
+	pabeni@redhat.com, brouer@redhat.com, netdev@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	Eric Dumazet <edumazet@google.com>, Lorenzo Bianconi <lorenzo@kernel.org>, 
+	Daniel Borkmann <daniel@iogearbox.net>, John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Thanks Yunsheng
 
+On Mon, 22 May 2023 at 14:08, Jesper Dangaard Brouer <jbrouer@redhat.com> wrote:
+>
+>
+>
+> On 22/05/2023 05.17, Yunsheng Lin wrote:
+> > page_pool_ring_[un]lock() use in_softirq() to decide which
+> > spin lock variant to use, and when they are called in the
+> > context with in_softirq() being false, spin_lock_bh() is
+> > called in page_pool_ring_lock() while spin_unlock() is
+> > called in page_pool_ring_unlock(), because spin_lock_bh()
+> > has disabled the softirq in page_pool_ring_lock(), which
+> > causes inconsistency for spin lock pair calling.
+> >
+> > This patch fixes it by returning in_softirq state from
+> > page_pool_producer_lock(), and use it to decide which
+> > spin lock variant to use in page_pool_producer_unlock().
+> >
+> > As pool->ring has both producer and consumer lock, so
+> > rename it to page_pool_producer_[un]lock() to reflect
+> > the actual usage. Also move them to page_pool.c as they
+> > are only used there, and remove the 'inline' as the
+> > compiler may have better idea to do inlining or not.
+> >
+> > Fixes: 7886244736a4 ("net: page_pool: Add bulk support for ptr_ring")
+> > Signed-off-by: Yunsheng Lin<linyunsheng@huawei.com>
+>
+> Thanks for spotting and fixing this! :-)
+>
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>
 
-On 19/05/2023 18.35, Alexander Lobakin wrote:
-> From: Jesper Dangaard Brouer <jbrouer@redhat.com>
-> Date: Tue, 16 May 2023 17:35:27 +0200
-> 
->>
->> On 16/05/2023 14.37, Alexander Lobakin wrote:
->>> From: Larysa Zaremba<larysa.zaremba@intel.com>
->>> Date: Mon, 15 May 2023 19:08:39 +0200
->>>
->>>> On Mon, May 15, 2023 at 06:17:02PM +0200, Jesper Dangaard Brouer wrote:
->>>>>
->>>>> On 12/05/2023 17.26, Larysa Zaremba wrote:
->>>>>> From: Aleksander Lobakin<aleksander.lobakin@intel.com>
->>>>>>
->>>>>> When using XDP hints, metadata sometimes has to be much bigger
->>>>>> than 32 bytes. Relax the restriction, allow metadata larger than 32
->>>>>> bytes
->>>>>> and make __skb_metadata_differs() work with bigger lengths.
->>>>>>
->>>>>> Now size of metadata is only limited by the fact it is stored as u8
->>>>>> in skb_shared_info, so maximum possible value is 255.
->>>>>
->>>>> I'm confused, IIRC the metadata area isn't stored "in skb_shared_info".
->>>>> The maximum possible size is limited by the XDP headroom, which is also
->>>>> shared/limited with/by xdp_frame.  I must be reading the sentence
->>>>> wrong,
->>>>> somehow.
->>>
->>> skb_shared_info::meta_size  is u8. Since metadata gets carried from
->>> xdp_buff to skb, this check is needed (it's compile-time constant
->>> anyway).
->>> Check for headroom is done separately already (two sentences below).
->>>
->>
->> Damn, argh, for SKBs the "meta_len" is stored in skb_shared_info, which
->> is located on another cacheline.
->> That is a sure way to KILL performance! :-(
-> 
-> Have you read the code? I use type_max(typeof_member(shinfo, meta_len)),
-> what performance are you talking about?
-> 
-
-Not talking about your changes (in this patch).
-
-I'm realizing that SKBs using metadata area will have a performance hit
-due to accessing another cacheline (the meta_len in skb_shared_info).
-
-IIRC Daniel complained about this performance hit (in the past), I guess
-this explains it.  IIRC Cilium changed to use percpu variables/datastore
-to workaround this.
-
-
-> The whole xdp_metalen_invalid() gets expanded into:
-> 
-> 	return (metalen % 4) || metalen > 255;
-> 
-> at compile-time. All those typeof shenanigans are only to not open-code
-> meta_len's type/size/max.
-> 
->>
->> But only use for SKBs that gets created from xdp with metadata, right?
->>
-
-Normal netstack processing actually access this skb_shinfo->meta_len in
-gro_list_prepare().  As the caller dev_gro_receive() later access other
-memory in skb_shared_info, then the GRO code path already takes this hit
-to begin with.
-
---Jesper
-
+Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
