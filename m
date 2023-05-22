@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4270-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4271-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BBD3D70BDBE
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 44BBD70BDC0
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 14:23:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7711C281019
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:23:04 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F2B7E28100F
+	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 12:23:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DDBF314AB4;
-	Mon, 22 May 2023 12:17:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8290514281;
+	Mon, 22 May 2023 12:17:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF2CC14AB1
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:17:07 +0000 (UTC)
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4139E1BFC;
-	Mon, 22 May 2023 05:16:49 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-96f50e26b8bso750867466b.2;
-        Mon, 22 May 2023 05:16:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77C5115485
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 12:17:09 +0000 (UTC)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22951FCC;
+	Mon, 22 May 2023 05:16:51 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-96fd3a658eeso186902566b.1;
+        Mon, 22 May 2023 05:16:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684757803; x=1687349803;
+        d=gmail.com; s=20221208; t=1684757806; x=1687349806;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=oOz3FMLGe/kTMEltMrvKqCCw9Yz4vcJ+Yr7EPAljZ3I=;
-        b=fuq5xMh5QeKKUpQOPlVevL5RMj4Mdz0Tk5r/V+Yu3p+xhEmUXAbcglm14LFiiF9VlS
-         S8kjR8VPmtEjfEZuv2ABY/Cn1QBNbs0pmScOZRUoUkY5bL3jc9EIW97xNRwrdv2e3IZh
-         C+1GKM1j59M8cTCOLX5xnIm3V01MVJ86dxgj+t0daNrMcr0MfFD6hLcdqxp0wv8waVwx
-         xqGzWNFwug5vjs4zIdeqAPPIYL+Z+vj37Q+Tqtaw9kd2t314MoyTxwtbtDH1r2AHyt4s
-         Gl8gpcg+p+JD1dbJgx5Oc9vpulqPvih5H/D2gy8Ld/Gxz6OnUKycO7JBzzgD8aHvIoq8
-         hrsg==
+        bh=50+e+zsfVv5J1BqpAiWf9C7KcKligVVxQwX0YPFvKBI=;
+        b=sjnpuNcMC4vPuNPM5W8qAKHq8laEr0IiAs8Yv8iF7D6XCl2l39DG4sCvemNN4DXMs3
+         ygsXI11bEbL4/sQHwESDh5EijbGBg0RFP7Bgk80DGY4cAwRo2iK+FiCX/ApZ+Pp5xjIH
+         PoXGQ/fNfKgDR0sfgxwy/1E++kxv7CmxHSTppQ/sSAD/si0gUa4LHUf/78iNajzyzreo
+         aRCWFhGX1GF6TLN/e+8vq6PeNM81ysMzgguyezsQRJ1g6kPblL8ZxH8mzUeRSvOUlbWP
+         et0xQ/W7NAx3eCpXY2a52dWtedYRdKGxpOrP4dt1+TzYuTNxIoDpLv5/aKY8yyldcukJ
+         ZHsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684757803; x=1687349803;
+        d=1e100.net; s=20221208; t=1684757806; x=1687349806;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=oOz3FMLGe/kTMEltMrvKqCCw9Yz4vcJ+Yr7EPAljZ3I=;
-        b=G7IDO29YMOmB8N4y0pNEp2f6luPslhjZAN7jDYM9Aeb8Xs3TA9204dEepPRtIJUihq
-         w0lLHNjKxTrnF8E29iAsHEa9VJAIyksznNcMzHhqLai9SC2t683EpX9RTwcI502Gf/Og
-         1TQj+hwut47XL75zNFMzkv6sNg9jVMN2LVL9+qUrhzzNXMjCtdAE06HeaR8a/R+U9xDx
-         Jbq+lx57BNBFCpjAcJWur8Xe5KIWtL5riIwZSibDgbhkST88Z+6HCfJ6ZMCAxe4oVTnU
-         j+TRNrQMGSt+PuRB2MC1/YemU6S6uJwoZWCYinuA5s065dIviOn8nnu2ACKJbjgF1ULx
-         F+Yw==
-X-Gm-Message-State: AC+VfDyrxEtZQlR+eSnUTNqhrxXpR0xTrC2V++dSptO3AVk/esuJLNEs
-	R+PfNGtIP+QQRKB7JiPEBWlIfR2f1XzAq1Bv
-X-Google-Smtp-Source: ACHHUZ7axMa1F5LzzMgJRwk3Tc7YfoPBpyFJ6l9vcFkJW1FELcAvedTGajpVnr2j57Ka8knzp60tYw==
-X-Received: by 2002:a17:907:3604:b0:94f:6d10:ad9f with SMTP id bk4-20020a170907360400b0094f6d10ad9fmr9384418ejc.42.1684757802926;
-        Mon, 22 May 2023 05:16:42 -0700 (PDT)
+        bh=50+e+zsfVv5J1BqpAiWf9C7KcKligVVxQwX0YPFvKBI=;
+        b=RSwFH6BSD0flXgrcsVlVJ7eL7t1s/xe0M8Yaw7NqzKnOR+NENHL+8izlqPrnIj2XJp
+         FsXWRepKoVsAt7NEY3BdCm0Mlr9TL/gS/g8C/7xPccTaGI1uOfZUzxbM9UFrNSGQZ3hD
+         XTlhlj87XIwjd0DJhPM6q30jJTGDUBtqxlRBCDaQffEXcq1XBJLh6QmqitzYf4bHRLod
+         9l6Qh2FRH9naoSx5UefTwxlM0wcfkedfUa0sN2f3MYzC1mjZPMs+X8MlJDOEYpQacmuK
+         LliEn/s59wXOXtMGYIsY9YKrxfo8o9a0x7/JpmgNbrQJVd+wEsipsars0YGy7warPMwL
+         /bdA==
+X-Gm-Message-State: AC+VfDyu+8cQvc3bHeBk+HyTp0v32Nq7KVrWQ7HRJEcITfHTcjQXzxKm
+	HXBm2cYQrXeAHBIJDO7BzVM=
+X-Google-Smtp-Source: ACHHUZ4M8Me0lXeuQHSHRWp3YouOQ/LLClhxE/remDAZsXN4DblDXCqROAKiLf/beTuFQ7E/eEU2Qw==
+X-Received: by 2002:a17:907:60ce:b0:96a:f21f:ab64 with SMTP id hv14-20020a17090760ce00b0096af21fab64mr8346390ejc.49.1684757806185;
+        Mon, 22 May 2023 05:16:46 -0700 (PDT)
 Received: from arinc9-PC.. ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.16.40
+        by smtp.gmail.com with ESMTPSA id y26-20020a17090614da00b009659fed3612sm2999950ejc.24.2023.05.22.05.16.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 05:16:42 -0700 (PDT)
+        Mon, 22 May 2023 05:16:45 -0700 (PDT)
 From: arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To: Sean Wang <sean.wang@mediatek.com>,
@@ -83,9 +83,9 @@ Cc: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 19/30] net: dsa: mt7530: set interrupt register only for MT7530
-Date: Mon, 22 May 2023 15:15:21 +0300
-Message-Id: <20230522121532.86610-20-arinc.unal@arinc9.com>
+Subject: [PATCH net-next 20/30] net: dsa: mt7530: properly reset MT7531 switch
+Date: Mon, 22 May 2023 15:15:22 +0300
+Message-Id: <20230522121532.86610-21-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230522121532.86610-1-arinc.unal@arinc9.com>
 References: <20230522121532.86610-1-arinc.unal@arinc9.com>
@@ -106,29 +106,40 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Setting this register related to interrupts is only needed for the MT7530
-switch. Make an exclusive check to ensure this.
+According to the document MT7531 Reference Manual for Development Board
+v1.0, the SW_PHY_RST bit on the SYS_CTRL register doesn't exist for
+MT7531. This is likely why forcing link-down on the MACs is necessary for
+MT7531.
 
+Therefore, do not set SW_PHY_RST on mt7531_setup().
+
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Acked-by: Daniel Golle <daniel@makrotopia.org>
-Tested-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/dsa/mt7530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mt7530.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 99f5da8b27be..0c261ef87bee 100644
+index 0c261ef87bee..aafb7415e2ce 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2029,7 +2029,7 @@ mt7530_setup_irq(struct mt7530_priv *priv)
- 	}
+@@ -2416,14 +2416,12 @@ mt7531_setup(struct dsa_switch *ds)
+ 	val = mt7530_read(priv, MT7531_TOP_SIG_SR);
+ 	priv->p5_sgmii = !!(val & PAD_DUAL_SGMII_EN);
  
- 	/* This register must be set for MT7530 to properly fire interrupts */
--	if (priv->id != ID_MT7531)
-+	if (priv->id == ID_MT7530 || priv->id == ID_MT7621)
- 		mt7530_set(priv, MT7530_TOP_SIG_CTRL, TOP_SIG_CTRL_NORMAL);
+-	/* all MACs must be forced link-down before sw reset */
++	/* Force link-down on all MACs before internal reset */
+ 	for (i = 0; i < MT7530_NUM_PORTS; i++)
+ 		mt7530_write(priv, MT7530_PMCR_P(i), MT7531_FORCE_LNK);
  
- 	ret = request_threaded_irq(priv->irq, NULL, mt7530_irq_thread_fn,
+ 	/* Reset the switch through internal reset */
+-	mt7530_write(priv, MT7530_SYS_CTRL,
+-		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
+-		     SYS_CTRL_REG_RST);
++	mt7530_write(priv, MT7530_SYS_CTRL, SYS_CTRL_SW_RST | SYS_CTRL_REG_RST);
+ 
+ 	if (!priv->p5_sgmii) {
+ 		mt7531_pll_setup(priv);
 -- 
 2.39.2
 
