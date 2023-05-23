@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4494-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4496-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B78E670D1ED
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:58:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 87D6170D1F3
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:59:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8863E1C20C6E
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:58:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 497F61C20C10
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:59:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35F6FBA3E;
-	Tue, 23 May 2023 02:56:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A130BE51;
+	Tue, 23 May 2023 02:56:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2188CBA3A;
-	Tue, 23 May 2023 02:56:32 +0000 (UTC)
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C72CA;
-	Mon, 22 May 2023 19:56:30 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id 41be03b00d2f7-51f1b6e8179so4800846a12.3;
-        Mon, 22 May 2023 19:56:30 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49CD5C129;
+	Tue, 23 May 2023 02:56:37 +0000 (UTC)
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157B2E0;
+	Mon, 22 May 2023 19:56:32 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id d9443c01a7336-1ae85b71141so36219375ad.0;
+        Mon, 22 May 2023 19:56:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684810589; x=1687402589;
+        d=gmail.com; s=20221208; t=1684810591; x=1687402591;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1X8MavyMxt9ea7RvB7abRtbZx5QchGwJbc+sm6sp6gI=;
-        b=fbcv3eWbWfOQ8G2DHCfVDBgYgHhv+c8mVnUevD0YHwHDoQ11EbCpWoKK3zsjSGLg+o
-         RjNlJ8qXfiiBo8h5CpmqlZ6qqnOHEzdmCYNsYevU0JlHNR8SDgyVJ8It+aWrZob/cHcv
-         RKLMVo6aa/yTqdiyzl3ajuozwuEDn4Go7EHYcOHuiIezkT8p0g73gNSzd/keIiNwcRrY
-         MVzTIKJWBg4MUyvyWkfVf6485ehv/9J57MTpNtWXC9SZQ7sGRw4Vs9kjfdgeR1vabz+d
-         G7Tjhix1HoBVoEz6xmZVhFdVVLxMf/Af5cEKiR/sxqkkGOxpwFyUczb3F+oKhlbnocBd
-         SRsA==
+        bh=xp4LbGPkNU6EN2wBzfXws+yiU1Dph6UgcZtiAxf5AYY=;
+        b=X1roESqs+aWMANqz1vyFLX4+kbHYcXYHRClEtYho7oy+mcxCEkqf7pC2+ZmX7Rz/BY
+         6nORmVlqsgy+lHoCny/EMFxFN9X1/9hwEqK9PB1xyA5XaIJiDFdR3EVlvmmGeUiKeNzA
+         fmzmzvw7c9nUu2leiJPCJ6EKPdQ9oOh9qjgRgbwAcpvConhYYLBDqptNcY0e1068tw4C
+         a8OMRD+0fWCScej2NBAsuOME7bOOYS+VVwPC+lYrNhV6USMDy77WZNf5IzDYtkofEUyE
+         JYQ+AhSoCDxF6BzHWnweXTcOnzZGP8e5EVnPyzczZzs2w6NFqiOMrUePJAH86TDewZap
+         Dssg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684810589; x=1687402589;
+        d=1e100.net; s=20221208; t=1684810591; x=1687402591;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1X8MavyMxt9ea7RvB7abRtbZx5QchGwJbc+sm6sp6gI=;
-        b=FcLClSlGPS8/Yon/yzgJY97etyEUE8SO/sS9/OgFWMoBe0/vVB0UprCs5NC6q1X28L
-         9RH4e2vrU5HX9mCGVwvL9Y5JCL0okkb1pfPSZr8b95Te3oTRTUrW9cR8QX8hEy0rVwHB
-         nHbFd3LJEXWVTRUXLvNsziQhp+mznsZMspYxcePpAjuzzcIXAvBS+p+/GeMmnBbj0K/X
-         w0r4eN0yosz0pZ/YqnnMtVF9h8SbhfJaD9LH7OVf6HnLamhR5pGrfgoZuFqT3qIfJLHa
-         X7FPlLJr+GIFYqB8em8/jQLK0pyUMkP+6Hx4OS61zue6KCcqzPLqB+lUWLs6U5jbLpCL
-         rUeg==
-X-Gm-Message-State: AC+VfDyEqY6+uEUbdVSXZV7WLqXOWwyqlElRmAAPtZJ8H8HuQ2f/VWlT
-	HtJTNqLzjqHqrM4EC2ERqho=
-X-Google-Smtp-Source: ACHHUZ4t5bPlcj8XxkeuxCbbb5+12p5YVwFNrXDzn2il+ZyWPtQfnpAc5aYUNUeghGqFaVNH2ouG4w==
-X-Received: by 2002:a17:903:24c:b0:1ac:3ddf:2299 with SMTP id j12-20020a170903024c00b001ac3ddf2299mr14341990plh.44.1684810589656;
-        Mon, 22 May 2023 19:56:29 -0700 (PDT)
+        bh=xp4LbGPkNU6EN2wBzfXws+yiU1Dph6UgcZtiAxf5AYY=;
+        b=jttjE+NtLxUWNKojQemkgs+47XWJ20r9cANFt/S94vWottM8mreXZvtcR6Pvc/4X7g
+         Uw8sMsUzLvYNoeUPBVZVIfWNZ3rdcZouOqYkl8kCzyrA8T9mKoLUzI3lM7mwPbwQ2h2k
+         IyVnc6vBM1thuJkm40sZ9OvYsSTxDHoIH8anq7XY/RgfCrveHNmvIbhNTid7FEED2rtz
+         SougUB87DJil464lMIIAW/cZz6OSeB8cHxT/1/QfgK1i+UQ9n+lKlViohXxoz8+AT45/
+         GWSuyf9qwU4duCyeVuxooQBvThu8c57TjAmbSIJl+/OUwj7nM4wwVU7cSlGsmgLXM/yG
+         hbvw==
+X-Gm-Message-State: AC+VfDy6lezS/fmy094PA67y1REKRHbko9EeT8YbwHVf9e5+iCRtRa3a
+	xMd9nqG+GpU3s46rRF1iKsc=
+X-Google-Smtp-Source: ACHHUZ7F/yWscFhYJQUQm7JAA5B7V0yzQuX3UbtOpBWYHP8R7lvZlQoMzbjzN6zCN4FqFa1aXMZ35Q==
+X-Received: by 2002:a17:902:f2cc:b0:1ac:72ff:9853 with SMTP id h12-20020a170902f2cc00b001ac72ff9853mr10480838plc.30.1684810591274;
+        Mon, 22 May 2023 19:56:31 -0700 (PDT)
 Received: from john.lan ([2605:59c8:148:ba10:82a6:5b19:9c99:3aad])
-        by smtp.gmail.com with ESMTPSA id h10-20020a170902748a00b001a67759f9f8sm5508285pll.106.2023.05.22.19.56.28
+        by smtp.gmail.com with ESMTPSA id h10-20020a170902748a00b001a67759f9f8sm5508285pll.106.2023.05.22.19.56.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 19:56:29 -0700 (PDT)
+        Mon, 22 May 2023 19:56:30 -0700 (PDT)
 From: John Fastabend <john.fastabend@gmail.com>
 To: jakub@cloudflare.com,
 	daniel@iogearbox.net
@@ -66,9 +66,9 @@ Cc: john.fastabend@gmail.com,
 	ast@kernel.org,
 	andrii@kernel.org,
 	will@isovalent.com
-Subject: [PATCH bpf v10 05/14] bpf: sockmap, handle fin correctly
-Date: Mon, 22 May 2023 19:56:09 -0700
-Message-Id: <20230523025618.113937-6-john.fastabend@gmail.com>
+Subject: [PATCH bpf v10 06/14] bpf: sockmap, TCP data stall on recv before accept
+Date: Mon, 22 May 2023 19:56:10 -0700
+Message-Id: <20230523025618.113937-7-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20230523025618.113937-1-john.fastabend@gmail.com>
 References: <20230523025618.113937-1-john.fastabend@gmail.com>
@@ -86,74 +86,87 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The sockmap code is returning EAGAIN after a FIN packet is received and no
-more data is on the receive queue. Correct behavior is to return 0 to the
-user and the user can then close the socket. The EAGAIN causes many apps
-to retry which masks the problem. Eventually the socket is evicted from
-the sockmap because its released from sockmap sock free handling. The
-issue creates a delay and can cause some errors on application side.
+A common mechanism to put a TCP socket into the sockmap is to hook the
+BPF_SOCK_OPS_{ACTIVE_PASSIVE}_ESTABLISHED_CB event with a BPF program
+that can map the socket info to the correct BPF verdict parser. When
+the user adds the socket to the map the psock is created and the new
+ops are assigned to ensure the verdict program will 'see' the sk_buffs
+as they arrive.
 
-To fix this check on sk_msg_recvmsg side if length is zero and FIN flag
-is set then set return to zero. A selftest will be added to check this
-condition.
+Part of this process hooks the sk_data_ready op with a BPF specific
+handler to wake up the BPF verdict program when data is ready to read.
+The logic is simple enough (posted here for easy reading)
+
+ static void sk_psock_verdict_data_ready(struct sock *sk)
+ {
+	struct socket *sock = sk->sk_socket;
+
+	if (unlikely(!sock || !sock->ops || !sock->ops->read_skb))
+		return;
+	sock->ops->read_skb(sk, sk_psock_verdict_recv);
+ }
+
+The oversight here is sk->sk_socket is not assigned until the application
+accepts() the new socket. However, its entirely ok for the peer application
+to do a connect() followed immediately by sends. The socket on the receiver
+is sitting on the backlog queue of the listening socket until its accepted
+and the data is queued up. If the peer never accepts the socket or is slow
+it will eventually hit data limits and rate limit the session. But,
+important for BPF sockmap hooks when this data is received TCP stack does
+the sk_data_ready() call but the read_skb() for this data is never called
+because sk_socket is missing. The data sits on the sk_receive_queue.
+
+Then once the socket is accepted if we never receive more data from the
+peer there will be no further sk_data_ready calls and all the data
+is still on the sk_receive_queue(). Then user calls recvmsg after accept()
+and for TCP sockets in sockmap we use the tcp_bpf_recvmsg_parser() handler.
+The handler checks for data in the sk_msg ingress queue expecting that
+the BPF program has already run from the sk_data_ready hook and enqueued
+the data as needed. So we are stuck.
+
+To fix do an unlikely check in recvmsg handler for data on the
+sk_receive_queue and if it exists wake up data_ready. We have the sock
+locked in both read_skb and recvmsg so should avoid having multiple
+runners.
 
 Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
-Tested-by: William Findlay <will@isovalent.com>
 Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/ipv4/tcp_bpf.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ net/ipv4/tcp_bpf.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 2e9547467edb..73c13642d47f 100644
+index 73c13642d47f..01dd76be1a58 100644
 --- a/net/ipv4/tcp_bpf.c
 +++ b/net/ipv4/tcp_bpf.c
-@@ -174,6 +174,24 @@ static int tcp_msg_wait_data(struct sock *sk, struct sk_psock *psock,
- 	return ret;
- }
+@@ -212,6 +212,26 @@ static int tcp_bpf_recvmsg_parser(struct sock *sk,
+ 		return tcp_recvmsg(sk, msg, len, flags, addr_len);
  
-+static bool is_next_msg_fin(struct sk_psock *psock)
-+{
-+	struct scatterlist *sge;
-+	struct sk_msg *msg_rx;
-+	int i;
-+
-+	msg_rx = sk_psock_peek_msg(psock);
-+	i = msg_rx->sg.start;
-+	sge = sk_msg_elem(msg_rx, i);
-+	if (!sge->length) {
-+		struct sk_buff *skb = msg_rx->skb;
-+
-+		if (skb && TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN)
-+			return true;
-+	}
-+	return false;
-+}
-+
- static int tcp_bpf_recvmsg_parser(struct sock *sk,
- 				  struct msghdr *msg,
- 				  size_t len,
-@@ -196,6 +214,19 @@ static int tcp_bpf_recvmsg_parser(struct sock *sk,
  	lock_sock(sk);
- msg_bytes_ready:
- 	copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
-+	/* The typical case for EFAULT is the socket was gracefully
-+	 * shutdown with a FIN pkt. So check here the other case is
-+	 * some error on copy_page_to_iter which would be unexpected.
-+	 * On fin return correct return code to zero.
-+	 */
-+	if (copied == -EFAULT) {
-+		bool is_fin = is_next_msg_fin(psock);
 +
-+		if (is_fin) {
-+			copied = 0;
++	/* We may have received data on the sk_receive_queue pre-accept and
++	 * then we can not use read_skb in this context because we haven't
++	 * assigned a sk_socket yet so have no link to the ops. The work-around
++	 * is to check the sk_receive_queue and in these cases read skbs off
++	 * queue again. The read_skb hook is not running at this point because
++	 * of lock_sock so we avoid having multiple runners in read_skb.
++	 */
++	if (unlikely(!skb_queue_empty(&sk->sk_receive_queue))) {
++		tcp_data_ready(sk);
++		/* This handles the ENOMEM errors if we both receive data
++		 * pre accept and are already under memory pressure. At least
++		 * let user know to retry.
++		 */
++		if (unlikely(!skb_queue_empty(&sk->sk_receive_queue))) {
++			copied = -EAGAIN;
 +			goto out;
 +		}
 +	}
- 	if (!copied) {
- 		long timeo;
- 		int data;
++
+ msg_bytes_ready:
+ 	copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
+ 	/* The typical case for EFAULT is the socket was gracefully
 -- 
 2.33.0
 
