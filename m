@@ -1,91 +1,92 @@
-Return-Path: <netdev+bounces-4721-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4722-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id E5CC870E02A
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:16:47 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1510470E04D
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:21:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A13F3281300
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:16:46 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D43C21C20D7A
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:21:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A7AD1F940;
-	Tue, 23 May 2023 15:16:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 326681F947;
+	Tue, 23 May 2023 15:21:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4581F922
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:16:44 +0000 (UTC)
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E746010D5
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:16:14 -0700 (PDT)
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-1afa6afcf4fso27904995ad.0
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:16:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684854953; x=1687446953;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZJeGQEMrpM8eeqfU3xH3VNZZx7eme2tUb730Gdj7mkI=;
-        b=KyIi31O/Owy3g843BEza62p3uTnMJH27d+iHDycD2Zy1NgPs/zwBwOdzcs4waW5TBI
-         V5V4h/psU5uzOX52s6uhJ3XKm/glhHBO0djG+wa2kPd+nEHQhoPZ4xjDpiCEo3dFfwEA
-         Io3aoqMfcqDCQo5kyaZ5ekgA2QakZay0sudY4dzOLEguMxfvKvgeEA4SHu269EhHbTz1
-         L8FE3i3y61Lk9LGXY25KZDEdRxMxTV7jDEPrs1+lXjF4o6YiRtJ+N8+Ke7y8wQUA0cdd
-         d9yU3jPMZyeOGXOBC8CBdejJEnlfE3u66akUchGjeFRNxDS32FxjrBeJGO8SL+bCCv3X
-         zO/g==
-X-Gm-Message-State: AC+VfDyzw99vX3hiXY/FBaAU919RyDxLNndYIKdT99DPkKWylCNiyy0e
-	aoG5F7rPykQRVZwXAjCAooE=
-X-Google-Smtp-Source: ACHHUZ4xFXkiB/BvdLUoKTFRgeVpyuCwCMcGSxWP57ZlD0BqfYdE3+H9GMSiNjXnpz2La8kYeQDaNQ==
-X-Received: by 2002:a17:902:7683:b0:1ac:637d:5888 with SMTP id m3-20020a170902768300b001ac637d5888mr13387115pll.43.1684854952831;
-        Tue, 23 May 2023 08:15:52 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([20.69.120.36])
-        by smtp.gmail.com with ESMTPSA id x4-20020a170902ea8400b001ac40488620sm6955882plb.92.2023.05.23.08.15.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 May 2023 08:15:52 -0700 (PDT)
-Date: Tue, 23 May 2023 15:15:50 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
-	xen-devel@lists.xenproject.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] xen/netback: Pass (void *) to virt_to_page()
-Message-ID: <ZGzYpm/Vs+TfSBMR@liuwe-devbox-debian-v2>
-References: <20230523140342.2672713-1-linus.walleij@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D4441F922
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:21:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 952D5C4339B;
+	Tue, 23 May 2023 15:21:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684855303;
+	bh=z4Tb9HwQR3qu2omMR1+2EyzzwcS65O49EGKOPEOuCM4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=XsThTIi8BWp8lNdnvT18YqAX/fGTxOCWVb8v3c86j5cKKoWj5a/wP47vngNKqufLn
+	 dFZpTM1bcNipiqo2qyFTGJMCqeFH4ZQX9JQQrUcwYop3FILkDgULwSmX1YZ8Yxn5h/
+	 9ttEEadjLSHkwAVbo8T3tiBpqO3RaqU3smuf2uzoSSAhIAMJFm+CN0drF6UiOaMVSb
+	 Tor1w7YCo7PVCB6d+Hz1nMK84IRi399puEeKt7EVmG4YVAgk8pG86t6QIOu3AqvsMP
+	 qq3/7wQdyetbhtQcByRIee07RvsDTXuoR0XEdl6TkrT5gCUCY65qhQw4Y63aQ2B6uA
+	 c1RGeSpMst60A==
+Message-ID: <36eea968-d3e8-fc1e-6d88-0f19fce130d8@kernel.org>
+Date: Tue, 23 May 2023 09:21:41 -0600
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230523140342.2672713-1-linus.walleij@linaro.org>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+Subject: Re: [PATCH net] ipv6: Fix out-of-bounds access in ipv6_find_tlv()
+Content-Language: en-US
+To: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>,
+ "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Vlad Yasevich <vyasevic@redhat.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
+References: <20230523082903.117626-1-Ilia.Gavrilov@infotecs.ru>
+From: David Ahern <dsahern@kernel.org>
+In-Reply-To: <20230523082903.117626-1-Ilia.Gavrilov@infotecs.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 23, 2023 at 04:03:42PM +0200, Linus Walleij wrote:
-> virt_to_page() takes a virtual address as argument but
-> the driver passes an unsigned long, which works because
-> the target platform(s) uses polymorphic macros to calculate
-> the page.
+On 5/23/23 2:29 AM, Gavrilov Ilia wrote:
+> optlen is fetched without checking whether there is more than one byte to parse.
+> It can lead to out-of-bounds access.
 > 
-> Since many architectures implement virt_to_pfn() as
-> a macro, this function becomes polymorphic and accepts both a
-> (unsigned long) and a (void *).
+> Found by InfoTeCS on behalf of Linux Verification Center
+> (linuxtesting.org) with SVACE.
 > 
-> Fix this up by an explicit (void *) cast.
-> 
-> Cc: Wei Liu <wei.liu@kernel.org>
-> Cc: Paul Durrant <paul@xen.org>
-> Cc: xen-devel@lists.xenproject.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Fixes: 3c73a0368e99 ("ipv6: Update ipv6 static library with newly needed functions")
 
-Acked-by: Wei Liu <wei.liu@kernel.org>
+That is not the right Fixes tag; that commit only moved the code.
+
+Fixes: c61a40432509 ("[IPV6]: Find option offset by type.")
+
+> Signed-off-by: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
+> ---
+>  net/ipv6/exthdrs_core.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/ipv6/exthdrs_core.c b/net/ipv6/exthdrs_core.c
+> index da46c4284676..49e31e4ae7b7 100644
+> --- a/net/ipv6/exthdrs_core.c
+> +++ b/net/ipv6/exthdrs_core.c
+> @@ -143,6 +143,8 @@ int ipv6_find_tlv(const struct sk_buff *skb, int offset, int type)
+>  			optlen = 1;
+>  			break;
+>  		default:
+> +			if (len < 2)
+> +				goto bad;
+>  			optlen = nh[offset + 1] + 2;
+>  			if (optlen > len)
+>  				goto bad;
+
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
 
