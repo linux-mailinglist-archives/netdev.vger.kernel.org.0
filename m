@@ -1,428 +1,543 @@
-Return-Path: <netdev+bounces-4676-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4664-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5C18570DD4E
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:16:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5A79770DC03
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:09:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4A0E81C20D30
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 13:16:15 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9B2C61C20D0A
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:09:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58F121D2D3;
-	Tue, 23 May 2023 13:16:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A25744A875;
+	Tue, 23 May 2023 12:09:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4516B4A84C
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 13:16:15 +0000 (UTC)
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2077.outbound.protection.outlook.com [40.107.102.77])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302AAFF
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 06:16:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zymp2Eobzp8EGTokris8iqQw4Gz7t5Y/DqWXVjf1/I65Q5DIMpkMRAgTYWd8fWNGhcc2XdoAJJPf7lpZtKfXkEV/x+LHwlrYvC99Mp30AQPkxqdMwv+yhfBsEy60bTgY2qQIAC0MoKLrkQhYrtK+8MV1UC29lfyYWSWgrNqEHu4zEpX4KYhfvj8IU83P69fXs4WYzKvMOyUdCtRT7mJiA81sU11KQIskDBhHVUxdU6xTmTLubZBtI7ZxQPYRKLQevH0Fl2VYeWNrX4z1xfkiTJm1ESjhWqiOkCB/1n10nRCIv4Mcpe0BcStf2tOXWEE2nBsHBjPB0T5bh/82M9Gclg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uQ0TgP6PGUJjub0/oMBSKzyZS/J7EEKku38/qVYY8fY=;
- b=Ko7a9oAeQHdFPfmIl2UlTcptv6uzWTsHsYb5xEsw1ak1efNWDCTMhVT6g6WdoNyTPM55A+kV7KOb5w8gxAM3/uUBn214lUy6j6Q2KOI8TbKybKF2ICfx8g8Iva1nBwjXhXBHgq9TsTzou1C5Vq1sMwY/rLY9/dQsap11kYMj2TO99T9c3qv/6DgeIiMwvS0NdF/B8YSF/I2DLY1IZP+7BeBQOH8NZZoDqBpsPwrkyT6yjVww3qKgTNmJTOjlEgbZU5jBBmiqyEi3HtG1QgID3xifnkpVX4x9wPDWujmjnMSYMUCZFkJDpYmeosbcPzzhIlSxITUOddQse08xgqOv9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uQ0TgP6PGUJjub0/oMBSKzyZS/J7EEKku38/qVYY8fY=;
- b=WTHzSeOj/N8in2HuoKVgDVGK8RAipREvh/FeOeDS3u+IIeoVHZobHHwxsbMxlUS2ArljB9zevhEmu4Pb2PNTjOU6RalLDaHjhbGNy5Y3SdR8MMxqZz1OC7/e0kX4t4oNVka65DIXWZbIlT+Gjx6Tdh7sCOCEBWz24onVWDyrRtkBiJNL6NueSN2SZFxc2Qf74nowKU5AV98bitlUltHaV57o606Sk2VmJwK+11Pr+Ur9rX/oJBliyal5p21NlGJTf81tutW1+dJF4i6Nndp6XUzW2LBdZl49VT/xCtit4XImIo2ZIl1d/opr6R3rXfleK5CB+p3GEAzDr1u10LymsQ==
-Received: from DS7PR03CA0180.namprd03.prod.outlook.com (2603:10b6:5:3b2::35)
- by PH7PR12MB5878.namprd12.prod.outlook.com (2603:10b6:510:1d6::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Tue, 23 May
- 2023 13:16:10 +0000
-Received: from DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b2:cafe::c4) by DS7PR03CA0180.outlook.office365.com
- (2603:10b6:5:3b2::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28 via Frontend
- Transport; Tue, 23 May 2023 13:16:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT060.mail.protection.outlook.com (10.13.173.63) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6411.29 via Frontend Transport; Tue, 23 May 2023 13:16:10 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 23 May 2023
- 06:15:54 -0700
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 23 May
- 2023 06:15:53 -0700
-References: <20230510-dcb-rewr-v1-0-83adc1f93356@microchip.com>
- <20230510-dcb-rewr-v1-1-83adc1f93356@microchip.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Petr Machata <petrm@nvidia.com>
-To: Daniel Machon <daniel.machon@microchip.com>
-CC: <netdev@vger.kernel.org>, <dsahern@kernel.org>,
-	<stephen@networkplumber.org>, <petrm@nvidia.com>,
-	<UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH iproute2-next 1/9] dcb: app: expose dcb-app functions in
- new header
-Date: Tue, 23 May 2023 13:18:40 +0200
-In-Reply-To: <20230510-dcb-rewr-v1-1-83adc1f93356@microchip.com>
-Message-ID: <87lehf5gu1.fsf@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90B7E4A85F
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 12:09:46 +0000 (UTC)
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0964818E;
+	Tue, 23 May 2023 05:09:36 -0700 (PDT)
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34NBu59s011498;
+	Tue, 23 May 2023 12:03:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=GKYjosqXXClUpptGSo+WqClf2Qp4Kx9XS8p1Izd85Ck=;
+ b=euoa/AzC8tQz0kG2m/kUYwiBGNBVXfQVZvP4AxrxL9ylnsBel++r9O3mJd0UMZWgh+on
+ fagwfdO7lRBgDIf39dH6nKbIfQvD6StBUAaJfsVPji4fDsb4DGJ49CKEHgKOEHXFy6AE
+ 1NqN29WnK63ZEJUB9mfC8nwX8x5rGqd6CNFgBt1+zb8Hb23nOUoaFN9VlBOCP6h5XF/S
+ hyqIjr2vUWnv4tHQ5nbYWlajAA/XkXCFoghD1k2Z5/lJ6p3XyEt12MD7wpcmOoe+IRL0
+ z7zE6jQYGeLtnzn7ZajbepPZ82DogIu8knyeNWytT5tyV/pasyThcZDm+C1Go1R2Gt4s nw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qrw2488jv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 May 2023 12:03:21 +0000
+Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34NBuYuI013546;
+	Tue, 23 May 2023 12:03:07 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qrw2487u7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 May 2023 12:03:06 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+	by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34N309RA030369;
+	Tue, 23 May 2023 12:02:54 GMT
+Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
+	by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3qppcf170c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 May 2023 12:02:54 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34NC2ojO13500984
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 23 May 2023 12:02:50 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 91C2320043;
+	Tue, 23 May 2023 12:02:50 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E8AC420040;
+	Tue, 23 May 2023 12:02:47 +0000 (GMT)
+Received: from [9.171.22.235] (unknown [9.171.22.235])
+	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 23 May 2023 12:02:47 +0000 (GMT)
+Message-ID: <0d9e3f86cf9a1a3d69e650fb631809498c2cd01e.camel@linux.ibm.com>
+Subject: Re: [PATCH v9 5/6] iommu/dma: Allow a single FQ in addition to
+ per-CPU FQs
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
+        Wenjia Zhang <wenjia@linux.ibm.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Alexandra Winter
+ <wintera@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik
+ <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian
+ Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle
+ <svens@linux.ibm.com>,
+        Suravee Suthikulpanit
+ <suravee.suthikulpanit@amd.com>,
+        Hector Martin <marcan@marcan.st>, Sven
+ Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        David
+ Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Andy
+ Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad
+ Dybcio <konrad.dybcio@linaro.org>,
+        Yong Wu <yong.wu@mediatek.com>,
+        Matthias
+ Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>,
+        Gerald Schaefer
+ <gerald.schaefer@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin
+ Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding
+ <thierry.reding@gmail.com>,
+        Krishna Reddy <vdumpa@nvidia.com>,
+        Jonathan
+ Hunter <jonathanh@nvidia.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+Date: Tue, 23 May 2023 14:02:47 +0200
+In-Reply-To: <b1e53f39-5e0b-a09d-2954-cdc9e8592b67@arm.com>
+References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
+	 <20230310-dma_iommu-v9-5-65bb8edd2beb@linux.ibm.com>
+	 <b1e53f39-5e0b-a09d-2954-cdc9e8592b67@arm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.48.1 (3.48.1-1.fc38) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: CX4CMTbjS9rN7JA4wHUdJpnk4TEt6Js2
+X-Proofpoint-ORIG-GUID: vQuNIviFptwQDoD71zzcOEgdj_w8Gdy7
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT060:EE_|PH7PR12MB5878:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9d4b3a12-4de0-4743-1905-08db5b8fe033
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	mToj92YvMoWuY4ixkKFhhDJWQa3H0ISTUDQmaXCq7U6cps06/XzUOOWeGc63A650V8m507c1fVcOWRZQO6hGaCkP2+MJtsRDKyjb7WKqYZ+etkDUvxN6ERnOL4pi8WAeqJ0hSpmnLNGqZ+hWsP8jT/Wf19UgAKPo06ZoZwMLw2rCiFWvuCa15mGF4dJsDo68luLAg3evjNX4M4i8LPPddyzLFPyRBLnXYHYh1gxkyDDoCKhf4sFjXBVu130IWHp+MUNttXFCqhz2Ug1Z1s89vbEQAPZf+5kVvQTE68KdAdPjisnjynbNql4IvRb1eLdxtMhz6Z51gYZAwzBcnwAGJS7G1Hvt4Lts5qaSG16R2RRNP/pgGSkDPpgXOmZbwsUHOCc6USfy+bAEk7glCGFfONdXT2Mkvokdg0wEWfRPfFsVAiZR+bnkm6SdyyAkDN3JY6c+2/WeZ48TsGxkpG9uhtXZ52FKj+va8s7yQP+yAmpAoct0WS84M8nnR5F9CvXnJ4bw9ZlSSRgYa1yE8TRModZg242g279RQNzB6O7k3XV67atbUrJ94HpB64zK792qo8mOebwfm8es0SY1JkRgSqB0SIZCZR4qrsMNA+snPAftnFexI3CSAt/V06Oz/4ZoAx3cwjUNhcZnIWdueCitv9q/bd43ghreubOfxDT/8Ac+18VBCFa5SlHj19VltXQ36d+uswtz2tQgWfAnWCrKB4ZjCXXST7BWsW9/qJ4P+zU=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39860400002)(396003)(136003)(451199021)(36840700001)(46966006)(40470700004)(356005)(7636003)(8676002)(8936002)(5660300002)(82740400003)(40460700003)(47076005)(16526019)(40480700001)(26005)(186003)(2906002)(2616005)(36756003)(336012)(426003)(83380400001)(82310400005)(36860700001)(86362001)(54906003)(316002)(6666004)(6916009)(4326008)(478600001)(70206006)(70586007)(41300700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 13:16:10.1547
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9d4b3a12-4de0-4743-1905-08db5b8fe033
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5878
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-23_08,2023-05-23_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
+ bulkscore=0 lowpriorityscore=0 mlxlogscore=999 adultscore=0
+ impostorscore=0 priorityscore=1501 spamscore=0 phishscore=0 malwarescore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2305230095
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Mon, 2023-05-22 at 17:26 +0100, Robin Murphy wrote:
+> On 2023-05-15 10:15, Niklas Schnelle wrote:
+> > In some virtualized environments, including s390 paged memory guests,
+> > IOTLB flushes are used to update IOMMU shadow tables. Due to this, they
+> > are much more expensive than in typical bare metal environments or
+> > non-paged s390 guests. In addition they may parallelize more poorly in
+> > virtualized environments. This changes the trade off for flushing IOVAs
+> > such that minimizing the number of IOTLB flushes trumps any benefit of
+> > cheaper queuing operations or increased paralellism.
+> >=20
+> > In this scenario per-CPU flush queues pose several problems. Firstly
+> > per-CPU memory is often quite limited prohibiting larger queues.
+> > Secondly collecting IOVAs per-CPU but flushing via a global timeout
+> > reduces the number of IOVAs flushed for each timeout especially on s390
+> > where PCI interrupts may not be bound to a specific CPU.
+> >=20
+> > Let's introduce a single flush queue mode that reuses the same queue
+> > logic but only allocates a single global queue. This mode can be
+> > selected as a flag bit in a new dma_iommu_options struct which can be
+> > modified from its defaults by IOMMU drivers implementing a new
+> > ops.tune_dma_iommu() callback. As a first user the s390 IOMMU driver
+> > selects the single queue mode if IOTLB flushes are needed on map which
+> > indicates shadow table use. With the unchanged small FQ size and
+> > timeouts this setting is worse than per-CPU queues but a follow up patch
+> > will make the FQ size and timeout variable. Together this allows the
+> > common IOVA flushing code to more closely resemble the global flush
+> > behavior used on s390's previous internal DMA API implementation.
+> >=20
+> > Link: https://lore.kernel.org/linux-iommu/3e402947-61f9-b7e8-1414-fde00=
+6257b6f@arm.com/
+> > Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com> #s390
+> > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> > ---
+> >   drivers/iommu/dma-iommu.c  | 163 ++++++++++++++++++++++++++++++++++--=
+---------
+> >   drivers/iommu/dma-iommu.h  |   4 +-
+> >   drivers/iommu/iommu.c      |  18 +++--
+> >   drivers/iommu/s390-iommu.c |  10 +++
+> >   include/linux/iommu.h      |  21 ++++++
+> >   5 files changed, 169 insertions(+), 47 deletions(-)
+> >=20
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index 7a9f0b0bddbd..be4cab6b4fe4 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -49,8 +49,11 @@ struct iommu_dma_cookie {
+> >   		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
+> >   		struct {
+> >   			struct iova_domain	iovad;
+> > -
+> > -			struct iova_fq __percpu *fq;	/* Flush queue */
+> > +			/* Flush queue */
+> > +			union {
+> > +				struct iova_fq	*single_fq;
+> > +				struct iova_fq	__percpu *percpu_fq;
+> > +			};
+> >   			/* Number of TLB flushes that have been started */
+> >   			atomic64_t		fq_flush_start_cnt;
+> >   			/* Number of TLB flushes that have been finished */
+> > @@ -67,6 +70,8 @@ struct iommu_dma_cookie {
+> >=20=20=20
+> >   	/* Domain for flush queue callback; NULL if flush queue not in use */
+> >   	struct iommu_domain		*fq_domain;
+> > +	/* Options for dma-iommu use */
+> > +	struct dma_iommu_options	options;
+> >   	struct mutex			mutex;
+> >   };
+> >=20=20=20
+> > @@ -152,25 +157,44 @@ static void fq_flush_iotlb(struct iommu_dma_cooki=
+e *cookie)
+> >   	atomic64_inc(&cookie->fq_flush_finish_cnt);
+> >   }
+> >=20=20=20
+> > -static void fq_flush_timeout(struct timer_list *t)
+> > +static void fq_flush_percpu(struct iommu_dma_cookie *cookie)
+> >   {
+> > -	struct iommu_dma_cookie *cookie =3D from_timer(cookie, t, fq_timer);
+> >   	int cpu;
+> >=20=20=20
+> > -	atomic_set(&cookie->fq_timer_on, 0);
+> > -	fq_flush_iotlb(cookie);
+> > -
+> >   	for_each_possible_cpu(cpu) {
+> >   		unsigned long flags;
+> >   		struct iova_fq *fq;
+> >=20=20=20
+> > -		fq =3D per_cpu_ptr(cookie->fq, cpu);
+> > +		fq =3D per_cpu_ptr(cookie->percpu_fq, cpu);
+> >   		spin_lock_irqsave(&fq->lock, flags);
+> >   		fq_ring_free(cookie, fq);
+> >   		spin_unlock_irqrestore(&fq->lock, flags);
+> >   	}
+> >   }
+> >=20=20=20
+> > +static void fq_flush_single(struct iommu_dma_cookie *cookie)
+> > +{
+> > +	struct iova_fq *fq =3D cookie->single_fq;
+> > +	unsigned long flags;
+> > +
+> > +	spin_lock_irqsave(&fq->lock, flags);
+> > +	fq_ring_free(cookie, fq);
+> > +	spin_unlock_irqrestore(&fq->lock, flags)
+>=20
+> Nit: this should clearly just be a self-locked version of fq_ring_free()=
+=20
+> that takes fq as an argument, then both the new case and the existing=20
+> loop body become trivial one-line calls.
 
-Daniel Machon <daniel.machon@microchip.com> writes:
+Sure will do. Just one question about names. As an example
+pci_reset_function_locked() means that the relevant lock is already
+taken with pci_reset_function() adding the lock/unlock. In your wording
+the implied function names sound the other way around. I can't find
+anything similar in drivers/iommu so would you mind going the PCI way
+and having:
 
-> Add new headerfile dcb-app.h that exposes the functions required later
-> by dcb-rewr. The new dcb-rewr implementation will reuse much of the
-> existing dcb-app code.
->
-> I thought this called for a separate header file, instead of polluting
-> the existing dcb.h file.
->
-> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
-> ---
->  dcb/dcb.h     |  9 ++-------
->  dcb/dcb_app.c | 54 ++++++++++++++++++------------------------------------
->  dcb/dcb_app.h | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 75 insertions(+), 43 deletions(-)
->
-> diff --git a/dcb/dcb.h b/dcb/dcb.h
-> index d40664f29dad..4c8a4aa25e0c 100644
-> --- a/dcb/dcb.h
-> +++ b/dcb/dcb.h
-> @@ -6,6 +6,8 @@
->  #include <stdbool.h>
->  #include <stddef.h>
->  
-> +#include "dcb_app.h"
-> +
->  /* dcb.c */
->  
->  struct dcb {
-> @@ -54,13 +56,6 @@ void dcb_print_array_on_off(const __u8 *array, size_t size);
->  void dcb_print_array_kw(const __u8 *array, size_t array_size,
->  			const char *const kw[], size_t kw_size);
->  
-> -/* dcb_app.c */
-> -
-> -int dcb_cmd_app(struct dcb *dcb, int argc, char **argv);
-> -enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
-> -bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
-> -bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
-> -
+fq_ring_free_locked(): Called in queue_iova() with the lock held
+fr_ring_free(): Called in fq_flush_timeout() takes the lock itself
 
-Why the move to a dedicated header? dcb.h ends up being the only client
-and everybody consumes the prototypes through that file anyway. I don't
-fine it necessary.
+Or maybe I'm just biased because I've used the PCI ..locked() functions
+before and there is a better convention.
 
->  /* dcb_apptrust.c */
->  
->  int dcb_cmd_apptrust(struct dcb *dcb, int argc, char **argv);
-> diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
-> index eeb78e70f63f..df339babd8e6 100644
-> --- a/dcb/dcb_app.c
-> +++ b/dcb/dcb_app.c
-> @@ -10,8 +10,6 @@
->  #include "utils.h"
->  #include "rt_names.h"
->  
-> -#define DCB_APP_PCP_MAX 15
-> -
->  static const char *const pcp_names[DCB_APP_PCP_MAX + 1] = {
->  	"0nd", "1nd", "2nd", "3nd", "4nd", "5nd", "6nd", "7nd",
->  	"0de", "1de", "2de", "3de", "4de", "5de", "6de", "7de"
-> @@ -22,6 +20,7 @@ static const char *const ieee_attrs_app_names[__DCB_ATTR_IEEE_APP_MAX] = {
->  	[DCB_ATTR_DCB_APP] = "DCB_ATTR_DCB_APP"
->  };
->  
-> +
+>=20
+> > +}
+> > +
+> > +static void fq_flush_timeout(struct timer_list *t)
+> > +{
+> > +	struct iommu_dma_cookie *cookie =3D from_timer(cookie, t, fq_timer);
+> > +
+> > +	atomic_set(&cookie->fq_timer_on, 0);
+> > +	fq_flush_iotlb(cookie);
+> > +
+> > +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
+> > +		fq_flush_single(cookie);
+> > +	else
+> > +		fq_flush_percpu(cookie);
+> > +}
+> > +
+> >   static void queue_iova(struct iommu_dma_cookie *cookie,
+> >   		unsigned long pfn, unsigned long pages,
+> >   		struct list_head *freelist)
+> > @@ -188,7 +212,11 @@ static void queue_iova(struct iommu_dma_cookie *co=
+okie,
+> >   	 */
+> >   	smp_mb();
+> >=20=20=20
+> > -	fq =3D raw_cpu_ptr(cookie->fq);
+> > +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
+> > +		fq =3D cookie->single_fq;
+> > +	else
+> > +		fq =3D raw_cpu_ptr(cookie->percpu_fq);
+> > +
+> >   	spin_lock_irqsave(&fq->lock, flags);
+> >=20=20=20
+> >   	/*
+> > @@ -219,58 +247,114 @@ static void queue_iova(struct iommu_dma_cookie *=
+cookie,
+> >   			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
+> >   }
+> >=20=20=20
+> > -static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
+> > +static void iommu_dma_free_fq_single(struct iova_fq *fq)
+> > +{
+> > +	int idx;
+> > +
+> > +	if (!fq)
+> > +		return;
+> > +	fq_ring_for_each(idx, fq)
+> > +		put_pages_list(&fq->entries[idx].freelist);
+> > +	vfree(fq);
+> > +}
+> > +
+> > +static void iommu_dma_free_fq_percpu(struct iova_fq __percpu *percpu_f=
+q)
+> >   {
+> >   	int cpu, idx;
+> >=20=20=20
+> > -	if (!cookie->fq)
+> > -		return;
+> > -
+> > -	del_timer_sync(&cookie->fq_timer);
+> >   	/* The IOVAs will be torn down separately, so just free our queued p=
+ages */
+> >   	for_each_possible_cpu(cpu) {
+> > -		struct iova_fq *fq =3D per_cpu_ptr(cookie->fq, cpu);
+> > +		struct iova_fq *fq =3D per_cpu_ptr(percpu_fq, cpu);
+> >=20=20=20
+> >   		fq_ring_for_each(idx, fq)
+> >   			put_pages_list(&fq->entries[idx].freelist);
+> >   	}
+> >=20=20=20
+> > -	free_percpu(cookie->fq);
+> > +	free_percpu(percpu_fq);
+> > +}
+> > +
+> > +static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
+> > +{
+> > +	if (!cookie->fq_domain)
+> > +		return;
+> > +
+> > +	del_timer_sync(&cookie->fq_timer);
+> > +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
+> > +		iommu_dma_free_fq_single(cookie->single_fq);
+> > +	else
+> > +		iommu_dma_free_fq_percpu(cookie->percpu_fq);
+> > +}
+> > +
+> > +
+> > +static void iommu_dma_init_one_fq(struct iova_fq *fq)
+> > +{
+> > +	int i;
+> > +
+> > +	fq->head =3D 0;
+> > +	fq->tail =3D 0;
+> > +
+> > +	spin_lock_init(&fq->lock);
+> > +
+> > +	for (i =3D 0; i < IOVA_FQ_SIZE; i++)
+> > +		INIT_LIST_HEAD(&fq->entries[i].freelist);
+> > +}
+> > +
+> > +static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
+> > +{
+> > +	struct iova_fq *queue;
+> > +
+> > +	queue =3D vzalloc(sizeof(*queue));
+> > +	if (!queue)
+> > +		return -ENOMEM;
+> > +	iommu_dma_init_one_fq(queue);
+> > +	cookie->single_fq =3D queue;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
+> > +{
+> > +	struct iova_fq __percpu *queue;
+> > +	int cpu;
+> > +
+> > +	queue =3D alloc_percpu(struct iova_fq);
+> > +	if (!queue)
+> > +		return -ENOMEM;
+> > +
+> > +	for_each_possible_cpu(cpu)
+> > +		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu));
+> > +	cookie->percpu_fq =3D queue;
+> > +	return 0;
+> >   }
+> >=20=20=20
+> >   /* sysfs updates are serialised by the mutex of the group owning @dom=
+ain */
+> > -int iommu_dma_init_fq(struct iommu_domain *domain)
+> > +int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain)
+> >   {
+> >   	struct iommu_dma_cookie *cookie =3D domain->iova_cookie;
+> > -	struct iova_fq __percpu *queue;
+> > -	int i, cpu;
+> > +	const struct iommu_ops *ops =3D dev_iommu_ops(dev);
+> > +	int rc;
+> >=20=20=20
+> >   	if (cookie->fq_domain)
+> >   		return 0;
+> >=20=20=20
+> > +	if (ops->tune_dma_iommu)
+> > +		ops->tune_dma_iommu(dev, &cookie->options);
+> > +
+> >   	atomic64_set(&cookie->fq_flush_start_cnt,  0);
+> >   	atomic64_set(&cookie->fq_flush_finish_cnt, 0);
+> >=20=20=20
+> > -	queue =3D alloc_percpu(struct iova_fq);
+> > -	if (!queue) {
+> > +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
+> > +		rc =3D iommu_dma_init_fq_single(cookie);
+> > +	else
+> > +		rc =3D iommu_dma_init_fq_percpu(cookie);
+> > +
+> > +	if (rc) {
+> >   		pr_warn("iova flush queue initialization failed\n");
+> > -		return -ENOMEM;
+> > +		/* fall back to strict mode */
+> > +		domain->type =3D IOMMU_DOMAIN_DMA;
+>=20
+> Why move this? It doesn't logically belong to FQ initialisation itself.
 
-This looks like a leftover.
+Ah yes this is not needed anymore. Previously when I had a new domain
+type I think I needed to set domain->type in here and moved the
+fallback for consistency. Will remove that change.
 
->  static void dcb_app_help_add(void)
->  {
->  	fprintf(stderr,
-> @@ -68,11 +67,6 @@ static void dcb_app_help(void)
->  	dcb_app_help_add();
->  }
->  
-> -struct dcb_app_table {
-> -	struct dcb_app *apps;
-> -	size_t n_apps;
-> -};
-> -
->  enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector)
->  {
->  	switch (selector) {
-> @@ -105,7 +99,7 @@ bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector)
->  	return dcb_app_attr_type_get(selector) == type;
->  }
->  
-> -static void dcb_app_table_fini(struct dcb_app_table *tab)
-> +void dcb_app_table_fini(struct dcb_app_table *tab)
->  {
->  	free(tab->apps);
->  }
-> @@ -124,8 +118,8 @@ static int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app)
->  	return 0;
->  }
->  
-> -static void dcb_app_table_remove_existing(struct dcb_app_table *a,
-> -					  const struct dcb_app_table *b)
-> +void dcb_app_table_remove_existing(struct dcb_app_table *a,
-> +				   const struct dcb_app_table *b)
->  {
->  	size_t ia, ja;
->  	size_t ib;
-> @@ -152,8 +146,8 @@ static void dcb_app_table_remove_existing(struct dcb_app_table *a,
->  	a->n_apps = ja;
->  }
->  
-> -static void dcb_app_table_remove_replaced(struct dcb_app_table *a,
-> -					  const struct dcb_app_table *b)
-> +void dcb_app_table_remove_replaced(struct dcb_app_table *a,
-> +				   const struct dcb_app_table *b)
->  {
->  	size_t ia, ja;
->  	size_t ib;
-> @@ -189,8 +183,7 @@ static void dcb_app_table_remove_replaced(struct dcb_app_table *a,
->  	a->n_apps = ja;
->  }
->  
-> -static int dcb_app_table_copy(struct dcb_app_table *a,
-> -			      const struct dcb_app_table *b)
-> +int dcb_app_table_copy(struct dcb_app_table *a, const struct dcb_app_table *b)
->  {
->  	size_t i;
->  	int ret;
-> @@ -217,18 +210,12 @@ static int dcb_app_cmp_cb(const void *a, const void *b)
->  	return dcb_app_cmp(a, b);
->  }
->  
-> -static void dcb_app_table_sort(struct dcb_app_table *tab)
-> +void dcb_app_table_sort(struct dcb_app_table *tab)
->  {
->  	qsort(tab->apps, tab->n_apps, sizeof(*tab->apps), dcb_app_cmp_cb);
->  }
->  
-> -struct dcb_app_parse_mapping {
-> -	__u8 selector;
-> -	struct dcb_app_table *tab;
-> -	int err;
-> -};
-> -
-> -static void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data)
-> +void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data)
->  {
->  	struct dcb_app_parse_mapping *pm = data;
->  	struct dcb_app app = {
-> @@ -260,7 +247,7 @@ static int dcb_app_parse_mapping_ethtype_prio(__u32 key, char *value, void *data
->  				 dcb_app_parse_mapping_cb, data);
->  }
->  
-> -static int dcb_app_parse_pcp(__u32 *key, const char *arg)
-> +int dcb_app_parse_pcp(__u32 *key, const char *arg)
->  {
->  	int i;
->  
-> @@ -286,7 +273,7 @@ static int dcb_app_parse_mapping_pcp_prio(__u32 key, char *value, void *data)
->  				 dcb_app_parse_mapping_cb, data);
->  }
->  
-> -static int dcb_app_parse_dscp(__u32 *key, const char *arg)
-> +int dcb_app_parse_dscp(__u32 *key, const char *arg)
->  {
->  	if (parse_mapping_num_all(key, arg) == 0)
->  		return 0;
-> @@ -377,12 +364,12 @@ static bool dcb_app_is_default(const struct dcb_app *app)
->  	       app->protocol == 0;
->  }
->  
-> -static bool dcb_app_is_dscp(const struct dcb_app *app)
-> +bool dcb_app_is_dscp(const struct dcb_app *app)
->  {
->  	return app->selector == IEEE_8021QAZ_APP_SEL_DSCP;
->  }
->  
-> -static bool dcb_app_is_pcp(const struct dcb_app *app)
-> +bool dcb_app_is_pcp(const struct dcb_app *app)
->  {
->  	return app->selector == DCB_APP_SEL_PCP;
->  }
-> @@ -402,7 +389,7 @@ static bool dcb_app_is_port(const struct dcb_app *app)
->  	return app->selector == IEEE_8021QAZ_APP_SEL_ANY;
->  }
->  
-> -static int dcb_app_print_key_dec(__u16 protocol)
-> +int dcb_app_print_key_dec(__u16 protocol)
->  {
->  	return print_uint(PRINT_ANY, NULL, "%d:", protocol);
->  }
-> @@ -412,7 +399,7 @@ static int dcb_app_print_key_hex(__u16 protocol)
->  	return print_uint(PRINT_ANY, NULL, "%x:", protocol);
->  }
->  
-> -static int dcb_app_print_key_dscp(__u16 protocol)
-> +int dcb_app_print_key_dscp(__u16 protocol)
->  {
->  	const char *name = rtnl_dsfield_get_name(protocol << 2);
->  
-> @@ -422,7 +409,7 @@ static int dcb_app_print_key_dscp(__u16 protocol)
->  	return print_uint(PRINT_ANY, NULL, "%d:", protocol);
->  }
->  
-> -static int dcb_app_print_key_pcp(__u16 protocol)
-> +int dcb_app_print_key_pcp(__u16 protocol)
->  {
->  	/* Print in numerical form, if protocol value is out-of-range */
->  	if (protocol > DCB_APP_PCP_MAX)
-> @@ -577,7 +564,7 @@ static int dcb_app_get_table_attr_cb(const struct nlattr *attr, void *data)
->  	return MNL_CB_OK;
->  }
->  
-> -static int dcb_app_get(struct dcb *dcb, const char *dev, struct dcb_app_table *tab)
-> +int dcb_app_get(struct dcb *dcb, const char *dev, struct dcb_app_table *tab)
->  {
->  	uint16_t payload_len;
->  	void *payload;
-> @@ -594,11 +581,6 @@ static int dcb_app_get(struct dcb *dcb, const char *dev, struct dcb_app_table *t
->  	return 0;
->  }
->  
-> -struct dcb_app_add_del {
-> -	const struct dcb_app_table *tab;
-> -	bool (*filter)(const struct dcb_app *app);
-> -};
-> -
+>=20
+> > +		return rc;
+> >   	}
+> >=20=20=20
+> > -	for_each_possible_cpu(cpu) {
+> > -		struct iova_fq *fq =3D per_cpu_ptr(queue, cpu);
+> > -
+> > -		fq->head =3D 0;
+> > -		fq->tail =3D 0;
+> > -
+> > -		spin_lock_init(&fq->lock);
+> > -
+> > -		for (i =3D 0; i < IOVA_FQ_SIZE; i++)
+> > -			INIT_LIST_HEAD(&fq->entries[i].freelist);
+> > -	}
+> > -
+> > -	cookie->fq =3D queue;
+> > -
+> >   	timer_setup(&cookie->fq_timer, fq_flush_timeout, 0);
+> >   	atomic_set(&cookie->fq_timer_on, 0);
+> >   	/*
+> >=20
+---8<---
+> >   static struct iommu_device *s390_iommu_probe_device(struct device *de=
+v)
+> >   {
+> >   	struct zpci_dev *zdev;
+> > @@ -793,6 +802,7 @@ static const struct iommu_ops s390_iommu_ops =3D {
+> >   	.device_group =3D generic_device_group,
+> >   	.pgsize_bitmap =3D SZ_4K,
+> >   	.get_resv_regions =3D s390_iommu_get_resv_regions,
+> > +	.tune_dma_iommu =3D s390_iommu_tune_dma_iommu,
+> >   	.default_domain_ops =3D &(const struct iommu_domain_ops) {
+> >   		.attach_dev	=3D s390_iommu_attach_device,
+> >   		.map_pages	=3D s390_iommu_map_pages,
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 58891eddc2c4..3649a17256a5 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -219,6 +219,21 @@ struct iommu_iotlb_gather {
+> >   	bool			queued;
+> >   };
+> >=20=20=20
+> > +/**
+> > + * struct dma_iommu_options - Options for dma-iommu
+> > + *
+> > + * @flags: Flag bits for enabling/disabling dma-iommu settings
+> > + *
+> > + * This structure is intended to provide IOMMU drivers a way to influe=
+nce the
+> > + * behavior of the dma-iommu DMA API implementation. This allows optim=
+izing for
+> > + * example for a virtualized environment with slow IOTLB flushes.
+> > + */
+> > +struct dma_iommu_options {
+> > +#define IOMMU_DMA_OPTS_PER_CPU_QUEUE	(0L << 0)
+> > +#define IOMMU_DMA_OPTS_SINGLE_QUEUE	(1L << 0)
+> > +	u64	flags;
+> > +};
+>=20
+> I think for now this can just use a bit in dev_iommu to indicate that=20
+> the device will prefer a global flush queue; s390 can set that in=20
+> .probe_device, then iommu_dma_init_domain() can propagate it to an=20
+> equivalent flag in the cookie (possibly even a new cookie type?) that=20
+> iommu_dma_init_fq() can then consume. Then just make the s390 parameters=
+=20
+> from patch #6 the standard parameters for a global queue.
+>=20
+> Thanks,
+> Robin.
 
-This structure is a protocol between dcb_app_add_del() and
-dcb_app_add_del_cb(). I don't think your patchset uses it elsewhere, so
-it can be kept private.
+Sounds good.
 
->  static int dcb_app_add_del_cb(struct dcb *dcb, struct nlmsghdr *nlh, void *data)
->  {
->  	struct dcb_app_add_del *add_del = data;
-> @@ -620,7 +602,7 @@ static int dcb_app_add_del_cb(struct dcb *dcb, struct nlmsghdr *nlh, void *data)
->  	return 0;
->  }
->  
-> -static int dcb_app_add_del(struct dcb *dcb, const char *dev, int command,
-> +int dcb_app_add_del(struct dcb *dcb, const char *dev, int command,
->  			   const struct dcb_app_table *tab,
->  			   bool (*filter)(const struct dcb_app *))
-
-This has wrong indentation.
-
->  {
-> diff --git a/dcb/dcb_app.h b/dcb/dcb_app.h
-> new file mode 100644
-> index 000000000000..8e7b010dcf75
-> --- /dev/null
-> +++ b/dcb/dcb_app.h
-> @@ -0,0 +1,55 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef __DCB_APP_H_
-> +#define __DCB_APP_H_
-> +
-> +struct dcb;
-> +
-> +struct dcb_app_table {
-> +	struct dcb_app *apps;
-> +	size_t n_apps;
-> +};
-> +
-> +struct dcb_app_add_del {
-> +	const struct dcb_app_table *tab;
-> +	bool (*filter)(const struct dcb_app *app);
-> +};
-> +
-> +struct dcb_app_parse_mapping {
-> +	__u8 selector;
-> +	struct dcb_app_table *tab;
-> +	int err;
-> +};
-> +
-> +#define DCB_APP_PCP_MAX 15
-> +
-> +int dcb_cmd_app(struct dcb *dcb, int argc, char **argv);
-> +
-> +int dcb_app_get(struct dcb *dcb, const char *dev, struct dcb_app_table *tab);
-> +int dcb_app_add_del(struct dcb *dcb, const char *dev, int command,
-> +		    const struct dcb_app_table *tab,
-> +		    bool (*filter)(const struct dcb_app *));
-> +
-> +void dcb_app_table_sort(struct dcb_app_table *tab);
-> +void dcb_app_table_fini(struct dcb_app_table *tab);
-> +int dcb_app_table_copy(struct dcb_app_table *a, const struct dcb_app_table *b);
-> +void dcb_app_table_remove_replaced(struct dcb_app_table *a,
-> +				   const struct dcb_app_table *b);
-> +void dcb_app_table_remove_existing(struct dcb_app_table *a,
-> +				   const struct dcb_app_table *b);
-> +
-> +bool dcb_app_is_pcp(const struct dcb_app *app);
-> +bool dcb_app_is_dscp(const struct dcb_app *app);
-> +
-> +int dcb_app_print_key_dec(__u16 protocol);
-> +int dcb_app_print_key_dscp(__u16 protocol);
-> +int dcb_app_print_key_pcp(__u16 protocol);
-> +
-> +int dcb_app_parse_pcp(__u32 *key, const char *arg);
-> +int dcb_app_parse_dscp(__u32 *key, const char *arg);
-> +void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data);
-> +
-> +bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
-> +bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
-> +enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
-> +
-> +#endif
+>=20
+> > +
+> >   /**
+> >    * struct iommu_ops - iommu ops and capabilities
+> >    * @capable: check capability
+> > @@ -242,6 +257,9 @@ struct iommu_iotlb_gather {
+> >    *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
+> >    *		- IOMMU_DOMAIN_DMA: must use a dma domain
+> >    *		- 0: use the default setting
+> > + * @tune_dma_iommu: Allows the IOMMU driver to modify the default
+> > + *		    options of the dma-iommu layer for a specific
+> > + *		    device.
+> >    * @default_domain_ops: the default ops for domains
+> >    * @remove_dev_pasid: Remove any translation configurations of a spec=
+ific
+> >    *                    pasid, so that any DMA transactions with this p=
+asid
+> > @@ -278,6 +296,9 @@ struct iommu_ops {
+> >   	int (*def_domain_type)(struct device *dev);
+> >   	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
+> >=20=20=20
+> > +	void (*tune_dma_iommu)(struct device *dev,
+> > +			       struct dma_iommu_options *options);
+> > +
+> >   	const struct iommu_domain_ops *default_domain_ops;
+> >   	unsigned long pgsize_bitmap;
+> >   	struct module *owner;
+> >=20
+>=20
 
 
