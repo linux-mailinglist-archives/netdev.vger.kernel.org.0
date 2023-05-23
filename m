@@ -1,40 +1,40 @@
-Return-Path: <netdev+bounces-4607-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4606-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 55E9070D85E
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 11:05:35 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0B49070D85D
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 11:05:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 117CB281299
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 09:05:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CA8601C20D32
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 09:05:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 98A6B1E520;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 943231E51E;
 	Tue, 23 May 2023 09:04:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 862951E51A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85CCF1E518
 	for <netdev@vger.kernel.org>; Tue, 23 May 2023 09:04:44 +0000 (UTC)
 Received: from smtp.missinglinkelectronics.com (smtp.missinglinkelectronics.com [162.55.135.183])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 647C0FF;
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CAB119;
 	Tue, 23 May 2023 02:04:42 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp.missinglinkelectronics.com (Postfix) with ESMTP id D3ADB206F6;
-	Tue, 23 May 2023 11:04:40 +0200 (CEST)
+	by smtp.missinglinkelectronics.com (Postfix) with ESMTP id 471212045B;
+	Tue, 23 May 2023 11:04:41 +0200 (CEST)
 X-Virus-Scanned: Debian amavisd-new at missinglinkelectronics.com
 Received: from smtp.missinglinkelectronics.com ([127.0.0.1])
 	by localhost (mail.missinglinkelectronics.com [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oEivK3jJoJPw; Tue, 23 May 2023 11:04:40 +0200 (CEST)
+	with ESMTP id aR_MD1budl8V; Tue, 23 May 2023 11:04:41 +0200 (CEST)
 Received: from humpen-bionic2.mle (p578c5bfe.dip0.t-ipconnect.de [87.140.91.254])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: david)
-	by smtp.missinglinkelectronics.com (Postfix) with ESMTPSA id 00FE72045B;
-	Tue, 23 May 2023 11:04:39 +0200 (CEST)
+	by smtp.missinglinkelectronics.com (Postfix) with ESMTPSA id AFACE206DA;
+	Tue, 23 May 2023 11:04:40 +0200 (CEST)
 From: David Epping <david.epping@missinglinkelectronics.com>
 To: Vladimir Oltean <olteanv@gmail.com>,
 	Russell King <linux@armlinux.org.uk>
@@ -48,9 +48,9 @@ Cc: Andrew Lunn <andrew@lunn.ch>,
 	linux-kernel@vger.kernel.org,
 	UNGLinuxDriver@microchip.com,
 	David Epping <david.epping@missinglinkelectronics.com>
-Subject: [PATCH net v2 2/3] net: phy: mscc: add support for VSC8501
-Date: Tue, 23 May 2023 11:04:04 +0200
-Message-Id: <20230523090405.10655-3-david.epping@missinglinkelectronics.com>
+Subject: [PATCH net v2 3/3] net: phy: mscc: enable VSC8501/2 RGMII RX clock
+Date: Tue, 23 May 2023 11:04:05 +0200
+Message-Id: <20230523090405.10655-4-david.epping@missinglinkelectronics.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230523090405.10655-1-david.epping@missinglinkelectronics.com>
 References: <20230523090405.10655-1-david.epping@missinglinkelectronics.com>
@@ -65,72 +65,126 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 
-The VSC8501 PHY can use the same driver implementation as the VSC8502.
-Adding the PHY ID and copying the handler functions of VSC8502 is
-sufficient to operate it.
+By default the VSC8501 and VSC8502 RGMII/GMII/MII RX_CLK output is
+disabled. To allow packet forwarding towards the MAC it needs to be
+enabled.
+
+For other PHYs supported by this driver the clock output is enabled
+by default.
 
 Signed-off-by: David Epping <david.epping@missinglinkelectronics.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
  drivers/net/phy/mscc/mscc.h      |  1 +
- drivers/net/phy/mscc/mscc_main.c | 25 +++++++++++++++++++++++++
- 2 files changed, 26 insertions(+)
+ drivers/net/phy/mscc/mscc_main.c | 54 +++++++++++++++++---------------
+ 2 files changed, 29 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-index a50235fdf7d9..79cbb2418664 100644
+index 79cbb2418664..defe5cc6d4fc 100644
 --- a/drivers/net/phy/mscc/mscc.h
 +++ b/drivers/net/phy/mscc/mscc.h
-@@ -276,6 +276,7 @@ enum rgmii_clock_delay {
- /* Microsemi PHY ID's
-  *   Code assumes lowest nibble is 0
-  */
-+#define PHY_ID_VSC8501			  0x00070530
- #define PHY_ID_VSC8502			  0x00070630
- #define PHY_ID_VSC8504			  0x000704c0
- #define PHY_ID_VSC8514			  0x00070670
+@@ -179,6 +179,7 @@ enum rgmii_clock_delay {
+ #define VSC8502_RGMII_CNTL		  20
+ #define VSC8502_RGMII_RX_DELAY_MASK	  0x0070
+ #define VSC8502_RGMII_TX_DELAY_MASK	  0x0007
++#define VSC8502_RGMII_RX_CLK_DISABLE	  0x0800
+ 
+ #define MSCC_PHY_WOL_LOWER_MAC_ADDR	  21
+ #define MSCC_PHY_WOL_MID_MAC_ADDR	  22
 diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index bd81a4b041e5..29fc27a16805 100644
+index 29fc27a16805..3bd24520b2d9 100644
 --- a/drivers/net/phy/mscc/mscc_main.c
 +++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -2316,6 +2316,30 @@ static int vsc85xx_probe(struct phy_device *phydev)
- 
- /* Microsemi VSC85xx PHYs */
- static struct phy_driver vsc85xx_driver[] = {
-+{
-+	.phy_id		= PHY_ID_VSC8501,
-+	.name		= "Microsemi GE VSC8501 SyncE",
-+	.phy_id_mask	= 0xfffffff0,
-+	/* PHY_BASIC_FEATURES */
-+	.soft_reset	= &genphy_soft_reset,
-+	.config_init	= &vsc85xx_config_init,
-+	.config_aneg    = &vsc85xx_config_aneg,
-+	.read_status	= &vsc85xx_read_status,
-+	.handle_interrupt = vsc85xx_handle_interrupt,
-+	.config_intr	= &vsc85xx_config_intr,
-+	.suspend	= &genphy_suspend,
-+	.resume		= &genphy_resume,
-+	.probe		= &vsc85xx_probe,
-+	.set_wol	= &vsc85xx_wol_set,
-+	.get_wol	= &vsc85xx_wol_get,
-+	.get_tunable	= &vsc85xx_get_tunable,
-+	.set_tunable	= &vsc85xx_set_tunable,
-+	.read_page	= &vsc85xx_phy_read_page,
-+	.write_page	= &vsc85xx_phy_write_page,
-+	.get_sset_count = &vsc85xx_get_sset_count,
-+	.get_strings    = &vsc85xx_get_strings,
-+	.get_stats      = &vsc85xx_get_stats,
-+},
+@@ -519,17 +519,30 @@ static int vsc85xx_mac_if_set(struct phy_device *phydev,
+  *  * 2.0 ns (which causes the data to be sampled at exactly half way between
+  *    clock transitions at 1000 Mbps) if delays should be enabled
+  */
+-static int vsc85xx_rgmii_set_skews(struct phy_device *phydev, u32 rgmii_cntl,
+-				   u16 rgmii_rx_delay_mask,
+-				   u16 rgmii_tx_delay_mask)
++static int vsc85xx_update_rgmii_cntl(struct phy_device *phydev, u32 rgmii_cntl,
++				     u16 rgmii_rx_delay_mask,
++				     u16 rgmii_tx_delay_mask)
  {
- 	.phy_id		= PHY_ID_VSC8502,
- 	.name		= "Microsemi GE VSC8502 SyncE",
-@@ -2656,6 +2680,7 @@ static struct phy_driver vsc85xx_driver[] = {
- module_phy_driver(vsc85xx_driver);
+ 	u16 rgmii_rx_delay_pos = ffs(rgmii_rx_delay_mask) - 1;
+ 	u16 rgmii_tx_delay_pos = ffs(rgmii_tx_delay_mask) - 1;
+ 	u16 reg_val = 0;
+-	int rc;
++	u16 mask = 0;
++	int rc = 0;
++
++	/* For traffic to pass, the VSC8502 family needs the RX_CLK disable bit
++	 * to be unset for all PHY modes, so do that as part of the paged
++	 * register modification.
++	 * For some family members (like VSC8530/31/40/41) this bit is reserved
++	 * and read-only, and the RX clock is enabled by default.
++	 */
++	if (rgmii_cntl == VSC8502_RGMII_CNTL)
++		mask |= VSC8502_RGMII_RX_CLK_DISABLE;
  
- static struct mdio_device_id __maybe_unused vsc85xx_tbl[] = {
-+	{ PHY_ID_VSC8501, 0xfffffff0, },
- 	{ PHY_ID_VSC8502, 0xfffffff0, },
- 	{ PHY_ID_VSC8504, 0xfffffff0, },
- 	{ PHY_ID_VSC8514, 0xfffffff0, },
+ 	mutex_lock(&phydev->lock);
+ 
++	if (phy_interface_is_rgmii(phydev))
++		mask |= rgmii_rx_delay_mask | rgmii_tx_delay_mask;
++
+ 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
+ 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+ 		reg_val |= RGMII_CLK_DELAY_2_0_NS << rgmii_rx_delay_pos;
+@@ -537,10 +550,9 @@ static int vsc85xx_rgmii_set_skews(struct phy_device *phydev, u32 rgmii_cntl,
+ 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+ 		reg_val |= RGMII_CLK_DELAY_2_0_NS << rgmii_tx_delay_pos;
+ 
+-	rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
+-			      rgmii_cntl,
+-			      rgmii_rx_delay_mask | rgmii_tx_delay_mask,
+-			      reg_val);
++	if (mask)
++		rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
++				      rgmii_cntl, mask, reg_val);
+ 
+ 	mutex_unlock(&phydev->lock);
+ 
+@@ -549,19 +561,11 @@ static int vsc85xx_rgmii_set_skews(struct phy_device *phydev, u32 rgmii_cntl,
+ 
+ static int vsc85xx_default_config(struct phy_device *phydev)
+ {
+-	int rc;
+-
+ 	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
+ 
+-	if (phy_interface_mode_is_rgmii(phydev->interface)) {
+-		rc = vsc85xx_rgmii_set_skews(phydev, VSC8502_RGMII_CNTL,
+-					     VSC8502_RGMII_RX_DELAY_MASK,
+-					     VSC8502_RGMII_TX_DELAY_MASK);
+-		if (rc)
+-			return rc;
+-	}
+-
+-	return 0;
++	return vsc85xx_update_rgmii_cntl(phydev, VSC8502_RGMII_CNTL,
++					 VSC8502_RGMII_RX_DELAY_MASK,
++					 VSC8502_RGMII_TX_DELAY_MASK);
+ }
+ 
+ static int vsc85xx_get_tunable(struct phy_device *phydev,
+@@ -1758,13 +1762,11 @@ static int vsc8584_config_init(struct phy_device *phydev)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (phy_interface_is_rgmii(phydev)) {
+-		ret = vsc85xx_rgmii_set_skews(phydev, VSC8572_RGMII_CNTL,
+-					      VSC8572_RGMII_RX_DELAY_MASK,
+-					      VSC8572_RGMII_TX_DELAY_MASK);
+-		if (ret)
+-			return ret;
+-	}
++	ret = vsc85xx_update_rgmii_cntl(phydev, VSC8572_RGMII_CNTL,
++					VSC8572_RGMII_RX_DELAY_MASK,
++					VSC8572_RGMII_TX_DELAY_MASK);
++	if (ret)
++		return ret;
+ 
+ 	ret = genphy_soft_reset(phydev);
+ 	if (ret)
 -- 
 2.17.1
 
