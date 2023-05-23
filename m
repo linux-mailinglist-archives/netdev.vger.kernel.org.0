@@ -1,200 +1,186 @@
-Return-Path: <netdev+bounces-4754-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4756-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1599D70E1D5
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 18:33:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8672270E1DA
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 18:35:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C4C561C20E33
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:33:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AF8201C20E43
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:35:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB2E41F18C;
-	Tue, 23 May 2023 16:33:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 088D620682;
+	Tue, 23 May 2023 16:35:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9A9620689
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 16:33:38 +0000 (UTC)
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B5213E
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 09:33:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1684859607; x=1716395607;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fVs8NjXE/3MUlhA+HqQbMd0Y7H3/OcHzm+O07zUYP8o=;
-  b=REDICSO0qhh+pFB18WQkC3mA95ZUYOHgAJXK7ZDg1Pv2FTUMKjDmrncc
-   wbfwYPG6tKRPM50SvizXR6DhQGBsAoLqvIY4KYIEouWcYXDAVP2cLyCxJ
-   UNZA9h22yNTd4mcHZUEkgghP/dNEQNjOaREPDQ5LU+dm1xNdNtwiIPt2f
-   I=;
-X-IronPort-AV: E=Sophos;i="6.00,186,1681171200"; 
-   d="scan'208";a="332720396"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2023 16:33:24 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-	by email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com (Postfix) with ESMTPS id 3E0BC80EF0;
-	Tue, 23 May 2023 16:33:22 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 23 May 2023 16:33:21 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.142.178.37) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 23 May 2023 16:33:18 +0000
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>
-CC: Kuniyuki Iwashima <kuniyu@amazon.com>, Kuniyuki Iwashima
-	<kuni1840@gmail.com>, <netdev@vger.kernel.org>,
-	<syzbot+444ca0907e96f7c5e48b@syzkaller.appspotmail.com>
-Subject: [PATCH v1 net] udplite: Fix NULL pointer dereference in __sk_mem_raise_allocated().
-Date: Tue, 23 May 2023 09:33:05 -0700
-Message-ID: <20230523163305.66466-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA7411F18C;
+	Tue, 23 May 2023 16:35:35 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2046.outbound.protection.outlook.com [40.107.220.46])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12341A8;
+	Tue, 23 May 2023 09:35:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hedC9pp+ZHiou2SSg4wehsYr8bQ+41eK3m1Ruhp0Bd/Cod5mE3C6tRBI5JqK5EAt8sIi+53iY+ZYhYntrCBVJ48v/UF21TCtIY/xPX+HD36Y8ZuAns+9QeX5SUAOi/Z2gHUSTSbQrPstF2nk1TCo8MAU8PZsQ2SRqPfeQ1tswEINXALVzQJF961rzjGHLlLknYwg83ZgJOAv9rKVax5/9X62aaUHSzI3XTt+pjqflF8/mCUEEU9hCGQAMbifg+smsDnFjymfsMWBsK1PAQB3jsMZF7NAxWx4ffYkqE2DDjJ7oSMcptbtiddgKPttukYOG9zqA63MXRQFnNtGTmASiQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ByXLCCMgpa+Ghj7i2jJLqjRoXdlekfGvNqlxmIItCZk=;
+ b=IBLjsz1pBocHa9U7S8N6u7O8DyIIWnfH9SERceVGOPBxi5k1FfY7JYPUTu73P1UvvWuyh9bIj7AMFgM1vp3REOmN7JhrqN1JYHzCs1ixWdNyVxggfuTNTiAnoXWameQxiOnfA1sOEhAUWj+bgq60SFVAtdJOlDHLTFFfxM1AIXU0F0JyGnSx+DtuEsDcHMQ8/WpkWCsNiohhiCuW5uy2N7Jg3EqoMvgGd+bMd0GpXbPsmakBAvF7ZKHCTk1XdGP8u0lFLkJsCRY2rmNFqCk4N9BuEFYTwnDIHqDep/gMjeJwnjFwF4LWXa/So/aI2HWLNiB2asHfPHakMtUhcp2KBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ByXLCCMgpa+Ghj7i2jJLqjRoXdlekfGvNqlxmIItCZk=;
+ b=W/Sp5gRcpIduDbVl15Gx0F7o+8fF/VnuB7bTXDlhaJbarPq2hI3Q5YfEoUO5S/JMK5MT7d4jetCsMpt6V1St11P+BudHLeOwpMCwaV2ZPvOsT0A9kVAGWJeMjwfqc6IogsOEIVSvwtTeUonXkxdRueR+tZSOQBxoGb6RYfxzOj9Bp2maxOFgYImimrT8Eegf6v9ixBxvN7oaRf36HSlC56YZFhpg1dHxF5/iPt1S/76pkhXS2+NM4V1EnsWEK+R3uMCnqBEfZv+B5Zw45PQ/snqSr2HnAGC7g8uYWzQD+OcB/ChudDZpIp8rJre5n4wvDrKYqxfzS/ec0tyo0qqiQg==
+Received: from DM6PR12MB5565.namprd12.prod.outlook.com (2603:10b6:5:1b6::13)
+ by PH7PR12MB7116.namprd12.prod.outlook.com (2603:10b6:510:1ef::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.14; Tue, 23 May
+ 2023 16:35:16 +0000
+Received: from DM6PR12MB5565.namprd12.prod.outlook.com
+ ([fe80::9e8a:eef5:eb8a:4a02]) by DM6PR12MB5565.namprd12.prod.outlook.com
+ ([fe80::9e8a:eef5:eb8a:4a02%6]) with mapi id 15.20.6411.028; Tue, 23 May 2023
+ 16:35:16 +0000
+From: Dragos Tatulea <dtatulea@nvidia.com>
+To: Tariq Toukan <tariqt@nvidia.com>, "ttoukan.linux@gmail.com"
+	<ttoukan.linux@gmail.com>, "jbrouer@redhat.com" <jbrouer@redhat.com>, Saeed
+ Mahameed <saeedm@nvidia.com>, "saeed@kernel.org" <saeed@kernel.org>,
+	"linyunsheng@huawei.com" <linyunsheng@huawei.com>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>
+CC: "maxtram95@gmail.com" <maxtram95@gmail.com>, "lorenzo@kernel.org"
+	<lorenzo@kernel.org>, "alexander.duyck@gmail.com"
+	<alexander.duyck@gmail.com>, "kheib@redhat.com" <kheib@redhat.com>,
+	"ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+	"mkabat@redhat.com" <mkabat@redhat.com>, "brouer@redhat.com"
+	<brouer@redhat.com>, "atzin@redhat.com" <atzin@redhat.com>,
+	"fmaurer@redhat.com" <fmaurer@redhat.com>, "bpf@vger.kernel.org"
+	<bpf@vger.kernel.org>, "jbenc@redhat.com" <jbenc@redhat.com>
+Subject: Re: mlx5 XDP redirect leaking memory on kernel 6.3
+Thread-Topic: mlx5 XDP redirect leaking memory on kernel 6.3
+Thread-Index: AQHZjY743nR7ST598kifD6Q1M3DiL69oDfyA
+Date: Tue, 23 May 2023 16:35:16 +0000
+Message-ID: <00ca7beb7fe054a3ba1a36c61c1e3b1314369f11.camel@nvidia.com>
+References: <d862a131-5e31-bd26-84f7-fd8764ca9d48@redhat.com>
+In-Reply-To: <d862a131-5e31-bd26-84f7-fd8764ca9d48@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+user-agent: Evolution 3.48.1 (3.48.1-1.fc38) 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR12MB5565:EE_|PH7PR12MB7116:EE_
+x-ms-office365-filtering-correlation-id: deeb8079-b407-4406-1e8e-08db5babb090
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ TE1rSC3zxdIC7GfSAU9m8Wi+sE6oSeXZLZWkEPKCzdCv1ahiJ0cjbw0fUUkRDuEXjzQM+hDaqcuAMh2vpuVqTUitdooaRs8m/0EgNzuXTmlnrMztyxUb+6HdeJu5O5vXAnqD5v4O8aNdZTgluXAtzAEhTj6T9PwUkNs+IXeMK/Vt+JzdQrbolZ5KgdVWEVBiMTBauAEuyUncn8t9w2wnll+qBznuwwsb5v+/VFFfAOM4aCR37lXaUEJ+o3KovwGF292EphG4nxiLw0WQDT5/F0L6faRZoQo6rxbvpj7itvvaLXNXBST1cMAUR3SmJkGvsCmebeWM3ULfbqFoGs7p3HBMyfQURmNWhXPHZH8GsHXKcioHs1LnDVd4aZpGOwyCXi7WbbYHZOr5k/GMNWySLaGU4uvfl83D1kkeg+gffMaxp1hNeGkUn1q942yVuEOEDdmj/40N/uBFZOtod/kY3G/aM7hhB86RBgvUc6rOfC03SGWaRGhCpCXxWo3rYKcGTXVJphI150nao0R26BfwrPlp9RkSMZ2DDrv94MfX+FBvBhGQrvBs3h66aIN8EgIiOqBMGdxyg/g4MEWJV1ZVeuKIPoZjrdCBk8NCrY7vVeXS93oWuXY693CUV9GdiGi2sGnAEvksX24MZLD0iPOO5smqMgUFk868cwsyrM0+7+05HbCueNgUuzYplnMe9O8UUvxo6bAwKS/oSk8oUF/6Yw==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB5565.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(136003)(346002)(376002)(396003)(451199021)(2906002)(2616005)(186003)(83380400001)(6486002)(66476007)(64756008)(66446008)(76116006)(66946007)(41300700001)(66556008)(91956017)(316002)(71200400001)(4326008)(110136005)(54906003)(478600001)(7416002)(5660300002)(6512007)(6506007)(966005)(8676002)(8936002)(38100700002)(122000001)(36756003)(86362001)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?SEFHd0ZpbWVYUG9TRC8zc1ZxY0twUWZNdmU3ZDZjc2RDMkI5cTJnWHFCMFg4?=
+ =?utf-8?B?SWF6cysySjBpNkFWS0lZcSs3U25LQ0NXbWRaMHpMdm1ZbVQ4YjJocHpuRTh1?=
+ =?utf-8?B?YlN0MnM0bkdickdMbXJxTElkRm1OY0xQYWtMOVhvY3JsaE1VanFFYXBTWmho?=
+ =?utf-8?B?MUpuVk13Z1ErMDBySkdyVUx1OEpBNmJKUldxOXd5dmFFdmhKdFgzeHlRTmxB?=
+ =?utf-8?B?a2xuNnppUmVuSFVKaTBRWjNMaHd2TUJRSXl6WGxoU21aU2ZXd1VCKzFiZEVv?=
+ =?utf-8?B?Vkd2cFR5Um12OFM2U1htTVBxd3JjdStMYnA3bWt0OG5RSEVFVjJRc2IzRW0z?=
+ =?utf-8?B?dUY0b2hNb20rcU9RWkVXbk1FV0UxTmRhQkh0MER1VE1EZjFkNWNncmk2ZHlD?=
+ =?utf-8?B?aW1BR3VydVJOMlFRd3ZkU3RtTERLU1Q4eG5NeFp2TmJOU2tVVUdJNUlsS1dE?=
+ =?utf-8?B?UTZNclBTZVk0ckpuZld0MU9yRjFlQjVUMVp4RXgrbHFPdFY4OHkxc3VyZENn?=
+ =?utf-8?B?bEQ4azdXc1VRY0FrMXJjOWFEaDhDVUFaTmg2MjJvRU1aMCs0TWxPQUx5d05k?=
+ =?utf-8?B?a01iTmNSeCtmUmlsTnNXdjdXdFhiUDl0MTh0WDFEL2k3YkVxbTkzeUVRZzRq?=
+ =?utf-8?B?YzU5SEJrU3lRNnI5eERXWTkwcHpxdVJQcG0xSjlwcGkvamZYTGxHQjU0dThK?=
+ =?utf-8?B?aUR6MVB3RjhlT2ZDOEt5Z3EzckllMkpuZkF6RnFhTmNvNlUvNGNjSUE1aWJT?=
+ =?utf-8?B?VC9MdGV5RmwreFlUU0o3VFJibWp1Q0JvV0NpZ2tzZGFwUEp2eUF2SS82Z0Zx?=
+ =?utf-8?B?bk9rUWg4czlTdkJ5YVl4WVZDdkZINjhMTWY5RHg3MFFyaHFUbWhQYy9kT1NZ?=
+ =?utf-8?B?V1RYNWdzTEhDS0dkK2RTbUNzeldIZG5BNjFqVFMxRGEyQ3k1V0duU1JlSUpE?=
+ =?utf-8?B?MEpIeUluTFVnWGNNb0xNVjIySHVhNXRuTTkwZWlNZk85clhqdjJQYVVQWnN3?=
+ =?utf-8?B?NzFwdWYrallvOVhOS1h0SUhKb1RxekMvYkd1MVprbjVxd0FzRzI0VlI1bko1?=
+ =?utf-8?B?QlBrWXp5YTRTdTIxc2Rua3Z0SGxHSUtJVU1qd25ST3NXQzdYYVZDUlhONVI3?=
+ =?utf-8?B?L2FqdC9uMkovZHc5bytUa0xzcU1JVTN3Wk81MUJvNlBhSTFyZS9VbGttV0hp?=
+ =?utf-8?B?WGtHQlE3Nks5ZWdYd1MySHFsWmxZSll3bXFxUUtzMTZ5anFUNkN6VEZzMDB3?=
+ =?utf-8?B?WW5ZalA2MHJwU2d3RS84NDIyc0dqU1BmWU96dFhyMHNnZ1B1eThUZ1VHSjdq?=
+ =?utf-8?B?RkJmR0RZTGRoTkZld2szMy9xWm5sNVVmYS94bnVMdFZKWDh3Skg0T2lNYzJO?=
+ =?utf-8?B?VjhxQ0VQdmlpaGhpeHZBSytINVdjSGxBTldXdlRoYzU2M2x5THAvRWFVMTFZ?=
+ =?utf-8?B?T0dMcFBkMndpT2haRnY0czhoOVRxaStpQzNLNkoyYVh2S2VDZjJueE1PYXVH?=
+ =?utf-8?B?djVDOFc3aXZ3TkNjZVM5Qld0aG95c0x6c05SamcyL2tOQlJNR0lUb0JKWnBU?=
+ =?utf-8?B?bUM1QWlBd09FVzVNTG4rcG5ublRFamN6ckl0ZmxFcXg2anBQYnFEZE81UTVz?=
+ =?utf-8?B?enNTOVYrS1ArYlFpa2l0bEJIcWRtb2hCQkxuWDZjWk4wbklGUHNhSTJvRlJl?=
+ =?utf-8?B?Q2hhNllzRlhRWUp2dHZpT3E5a0ZONm5nWW5tWG8wZDZsTUFuSHg3QnIvOUxP?=
+ =?utf-8?B?NEUvUHBZSk02VS9Wck9ZZ2RjZys1VURuQzY5SW1UczdqMjh6ZnRJc0JVWnRp?=
+ =?utf-8?B?ZkxPNFozK09SQUdmZEZvVThOU2hnNXk0U0gzZzRFaWRqTkJMeFpidm01YStX?=
+ =?utf-8?B?bHl3dy9BSWIrZ0YxZjVYamZyRUVQdnZuQUZsVWEwWUxqQ3NtQU9GNGlnMXJx?=
+ =?utf-8?B?cmRBS3BobFlENTB5K1l2bVpEOGMzUXlvK3VCSU9XWiszS2JsSU1CUm5ZL1Fj?=
+ =?utf-8?B?aTZIb3NpbVg5NWpzTEtDbmxYTkVyM3graGFoRTB4MXlwNllNTkFzWnNQYkNJ?=
+ =?utf-8?B?M3ZIeEwvSm1qZTZJYmtIZ1F0M2Y0M29xQUduMWdaRDZpeWdsaVIvVXZkMnpw?=
+ =?utf-8?B?eGRuWkVud3d2Zk9zdTU1YnNoMmhDOFpnWlljbWkvaG11OUtPYmtuUG9lNjlT?=
+ =?utf-8?Q?rrbil2A+twkIdDVPwaPSqf1WrExskLwHzU0xY3oqkZkK?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5AD61064CA361948B13B111EC993BAC2@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.142.178.37]
-X-ClientProxiedBy: EX19D046UWA002.ant.amazon.com (10.13.139.39) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-Precedence: Bulk
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-	T_SPF_PERMERROR,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB5565.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: deeb8079-b407-4406-1e8e-08db5babb090
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2023 16:35:16.2622
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mjc7vD/1NZ5iAKHZ9E7M7bXMf7eEUG1tDqOILidZsxzzz2iZjcQv4WmrzgLXRpBQKU4BmRV18Cz7YOk/YVci7Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7116
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-syzbot reported [0] a null-ptr-deref in sk_get_rmem0() while using
-IPPROTO_UDPLITE (0x88):
-
-  14:25:52 executing program 1:
-  r0 = socket$inet6(0xa, 0x80002, 0x88)
-
-We had a similar report [1] for probably sk_memory_allocated_add()
-in __sk_mem_raise_allocated(), and commit c915fe13cbaa ("udplite: fix
-NULL pointer dereference") fixed it by setting .memory_allocated for
-udplite_prot and udplitev6_prot.
-
-To fix the variant, we need to set either .sysctl_wmem_offset or
-.sysctl_rmem.
-
-Now UDP and UDPLITE share the same value for .memory_allocated, so we
-use the same .sysctl_wmem_offset for UDP and UDPLITE.
-
-[0]:
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 0 PID: 6829 Comm: syz-executor.1 Not tainted 6.4.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 04/28/2023
-RIP: 0010:sk_get_rmem0 include/net/sock.h:2907 [inline]
-RIP: 0010:__sk_mem_raise_allocated+0x806/0x17a0 net/core/sock.c:3006
-Code: c1 ea 03 80 3c 02 00 0f 85 23 0f 00 00 48 8b 44 24 08 48 8b 98 38 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <0f> b6 14 02 48 89 d8 83 e0 07 83 c0 03 38 d0 0f 8d 6f 0a 00 00 8b
-RSP: 0018:ffffc90005d7f450 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc90004d92000
-RDX: 0000000000000000 RSI: ffffffff88066482 RDI: ffffffff8e2ccbb8
-RBP: ffff8880173f7000 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000030000
-R13: 0000000000000001 R14: 0000000000000340 R15: 0000000000000001
-FS:  0000000000000000(0000) GS:ffff8880b9800000(0063) knlGS:00000000f7f1cb40
-CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-CR2: 000000002e82f000 CR3: 0000000034ff0000 CR4: 00000000003506f0
-Call Trace:
- <TASK>
- __sk_mem_schedule+0x6c/0xe0 net/core/sock.c:3077
- udp_rmem_schedule net/ipv4/udp.c:1539 [inline]
- __udp_enqueue_schedule_skb+0x776/0xb30 net/ipv4/udp.c:1581
- __udpv6_queue_rcv_skb net/ipv6/udp.c:666 [inline]
- udpv6_queue_rcv_one_skb+0xc39/0x16c0 net/ipv6/udp.c:775
- udpv6_queue_rcv_skb+0x194/0xa10 net/ipv6/udp.c:793
- __udp6_lib_mcast_deliver net/ipv6/udp.c:906 [inline]
- __udp6_lib_rcv+0x1bda/0x2bd0 net/ipv6/udp.c:1013
- ip6_protocol_deliver_rcu+0x2e7/0x1250 net/ipv6/ip6_input.c:437
- ip6_input_finish+0x150/0x2f0 net/ipv6/ip6_input.c:482
- NF_HOOK include/linux/netfilter.h:303 [inline]
- NF_HOOK include/linux/netfilter.h:297 [inline]
- ip6_input+0xa0/0xd0 net/ipv6/ip6_input.c:491
- ip6_mc_input+0x40b/0xf50 net/ipv6/ip6_input.c:585
- dst_input include/net/dst.h:468 [inline]
- ip6_rcv_finish net/ipv6/ip6_input.c:79 [inline]
- NF_HOOK include/linux/netfilter.h:303 [inline]
- NF_HOOK include/linux/netfilter.h:297 [inline]
- ipv6_rcv+0x250/0x380 net/ipv6/ip6_input.c:309
- __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5491
- __netif_receive_skb+0x1f/0x1c0 net/core/dev.c:5605
- netif_receive_skb_internal net/core/dev.c:5691 [inline]
- netif_receive_skb+0x133/0x7a0 net/core/dev.c:5750
- tun_rx_batched+0x4b3/0x7a0 drivers/net/tun.c:1553
- tun_get_user+0x2452/0x39c0 drivers/net/tun.c:1989
- tun_chr_write_iter+0xdf/0x200 drivers/net/tun.c:2035
- call_write_iter include/linux/fs.h:1868 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x945/0xd50 fs/read_write.c:584
- ksys_write+0x12b/0x250 fs/read_write.c:637
- do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
- __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
- do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x70/0x82
-RIP: 0023:0xf7f21579
-Code: b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 00 00 00 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-RSP: 002b:00000000f7f1c590 EFLAGS: 00000282 ORIG_RAX: 0000000000000004
-RAX: ffffffffffffffda RBX: 00000000000000c8 RCX: 0000000020000040
-RDX: 0000000000000083 RSI: 00000000f734e000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000296 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
-
-Link: https://lore.kernel.org/netdev/CANaxB-yCk8hhP68L4Q2nFOJht8sqgXGGQO2AftpHs0u1xyGG5A@mail.gmail.com/ [1]
-Fixes: 850cbaddb52d ("udp: use it's own memory accounting schema")
-Reported-by: syzbot+444ca0907e96f7c5e48b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=444ca0907e96f7c5e48b
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- net/ipv4/udplite.c | 2 ++
- net/ipv6/udplite.c | 2 ++
- 2 files changed, 4 insertions(+)
-
-diff --git a/net/ipv4/udplite.c b/net/ipv4/udplite.c
-index e0c9cc39b81e..56d94d23b9e0 100644
---- a/net/ipv4/udplite.c
-+++ b/net/ipv4/udplite.c
-@@ -64,6 +64,8 @@ struct proto 	udplite_prot = {
- 	.per_cpu_fw_alloc  = &udp_memory_per_cpu_fw_alloc,
- 
- 	.sysctl_mem	   = sysctl_udp_mem,
-+	.sysctl_wmem_offset = offsetof(struct net, ipv4.sysctl_udp_wmem_min),
-+	.sysctl_rmem_offset = offsetof(struct net, ipv4.sysctl_udp_rmem_min),
- 	.obj_size	   = sizeof(struct udp_sock),
- 	.h.udp_table	   = &udplite_table,
- };
-diff --git a/net/ipv6/udplite.c b/net/ipv6/udplite.c
-index 67eaf3ca14ce..3bab0cc13697 100644
---- a/net/ipv6/udplite.c
-+++ b/net/ipv6/udplite.c
-@@ -60,6 +60,8 @@ struct proto udplitev6_prot = {
- 	.per_cpu_fw_alloc  = &udp_memory_per_cpu_fw_alloc,
- 
- 	.sysctl_mem	   = sysctl_udp_mem,
-+	.sysctl_wmem_offset = offsetof(struct net, ipv4.sysctl_udp_wmem_min),
-+	.sysctl_rmem_offset = offsetof(struct net, ipv4.sysctl_udp_rmem_min),
- 	.obj_size	   = sizeof(struct udp6_sock),
- 	.h.udp_table	   = &udplite_table,
- };
--- 
-2.30.2
-
+DQpPbiBUdWUsIDIwMjMtMDUtMjMgYXQgMTc6NTUgKzAyMDAsIEplc3BlciBEYW5nYWFyZCBCcm91
+ZXIgd3JvdGU6DQo+IA0KPiBXaGVuIHRoZSBtbHg1IGRyaXZlciBydW5zIGFuIFhEUCBwcm9ncmFt
+IGRvaW5nIFhEUF9SRURJUkVDVCwgdGhlbiBtZW1vcnkNCj4gaXMgZ2V0dGluZyBsZWFrZWQuIE90
+aGVyIFhEUCBhY3Rpb25zLCBsaWtlIFhEUF9EUk9QLCBYRFBfUEFTUyBhbmQgWERQX1RYDQo+IHdv
+cmtzIGNvcnJlY3RseS4gSSB0ZXN0ZWQgYm90aCByZWRpcmVjdGluZyBiYWNrIG91dCBzYW1lIG1s
+eDUgZGV2aWNlIGFuZA0KPiBjcHVtYXAgcmVkaXJlY3QgKHdpdGggWERQX1BBU1MpLCB3aGljaCBi
+b3RoIGNhdXNlIGxlYWtpbmcuDQo+IA0KPiBBZnRlciByZW1vdmluZyB0aGUgWERQIHByb2csIHdo
+aWNoIGFsc28gY2F1c2UgdGhlIHBhZ2VfcG9vbCB0byBiZQ0KPiByZWxlYXNlZCBieSBtbHg1LCB0
+aGVuIHRoZSBsZWFrcyBhcmUgdmlzaWJsZSB2aWEgdGhlIHBhZ2VfcG9vbCBwZXJpb2RpYw0KPiBp
+bmZsaWdodCByZXBvcnRzLiBJIGhhdmUgdGhpcyBicGZ0cmFjZVsxXSB0b29sIHRoYXQgSSBhbHNv
+IHVzZSB0byBkZXRlY3QNCj4gdGhlIHByb2JsZW0gZmFzdGVyIChub3Qgd2FpdGluZyA2MCBzZWMg
+Zm9yIGEgcmVwb3J0KS4NCj4gDQo+IMKgIFsxXSANCj4gaHR0cHM6Ly9naXRodWIuY29tL3hkcC1w
+cm9qZWN0L3hkcC1wcm9qZWN0L2Jsb2IvbWFzdGVyL2FyZWFzL21lbS9icGZ0cmFjZS9wYWdlX3Bv
+b2xfdHJhY2tfc2h1dGRvd24wMS5idA0KPiANCj4gSSd2ZSBiZWVuIGRlYnVnZ2luZyBhbmQgcmVh
+ZGluZyB0aHJvdWdoIHRoZSBjb2RlIGZvciBhIGNvdXBsZSBvZiBkYXlzLA0KPiBidXQgSSd2ZSBu
+b3QgZm91bmQgdGhlIHJvb3QtY2F1c2UsIHlldC4gSSB3b3VsZCBhcHByZWNpYXRlIG5ldyBpZGVh
+cw0KPiB3aGVyZSB0byBsb29rIGFuZCBmcmVzaCBleWVzIG9uIHRoZSBpc3N1ZS4NCj4gDQo+DQo+
+IFRvIExpbiwgaXQgbG9va3MgbGlrZSBtbHg1IHVzZXMgUFBfRkxBR19QQUdFX0ZSQUcsIGFuZCBt
+eSBjdXJyZW50DQo+IHN1c3BpY2lvbiBpcyB0aGF0IG1seDUgZHJpdmVyIGRvZXNuJ3QgZnVsbHkg
+cmVsZWFzZSB0aGUgYmlhcyBjb3VudCAoaGludA0KPiBzZWUgTUxYNUVfUEFHRUNOVF9CSUFTX01B
+WCkuDQo+IA0KDQpUaGFua3MgZm9yIHRoZSByZXBvcnQgSmVzcGVyLiBJbmNpZGVudGFsbHkgSSd2
+ZSBqdXN0IHBpY2tlZCB1cCB0aGlzIGlzc3VlIHRvZGF5DQphcyB3ZWxsLg0KDQpPbiBYRFAgcmVk
+aXJlY3QgYW5kIHR4LCB0aGUgcGFnZSBpcyBzZXQgdG8gc2tpcCB0aGUgYmlhcyBjb3VudGVyIHJl
+bGVhc2Ugd2l0aA0KdGhlIGV4cGVjdGF0aW9uIHRoYXQgcGFnZV9wb29sX3B1dF9kZWZyYWdnZWRf
+cGFnZSB3aWxsIGJlIGNhbGxlZCBmcm9tIFsxXS4gQnV0LA0KYXMgSSBmb3VuZCBvdXQgbm93LCBk
+dXJpbmcgWERQIHJlZGlyZWN0IG9ubHkgb25lIGZyYWdtZW50IG9mIHRoZSBwYWdlIGlzDQpyZWxl
+YXNlZCBpbiB4ZHAgY29yZSBbMl0uIFRoaXMgaXMgd2hlcmUgdGhlIGxlYWsgaXMgY29taW5nIGZy
+b20uDQoNCldlJ2xsIHByb3ZpZGUgYSBmaXggc29vbi4NCg0KWzFdDQpodHRwczovL2dpdC5rZXJu
+ZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9uZXRkZXYvbmV0LW5leHQuZ2l0L3RyZWUv
+ZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuL3hkcC5jI242NjUNCg0K
+WzJdDQpodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9uZXRk
+ZXYvbmV0LW5leHQuZ2l0L3RyZWUvbmV0L2NvcmUveGRwLmMjbjM5MA0KDQpUaGFua3MsDQpEcmFn
+b3MNCg0KDQo=
 
