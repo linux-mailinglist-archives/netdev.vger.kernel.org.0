@@ -1,76 +1,117 @@
-Return-Path: <netdev+bounces-4474-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4477-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E7EE670D124
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:22:44 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 388D070D146
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:32:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B8EEE1C20C1C
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:22:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 992AD281173
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:32:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C0521FD7;
-	Tue, 23 May 2023 02:22:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D2901108;
+	Tue, 23 May 2023 02:32:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA7401C35
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:22:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 010B8C433EF;
-	Tue, 23 May 2023 02:22:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684808560;
-	bh=t0TlqsrPLQ6kKMAcLnggv9TuJqf5UkByaXm7KfZhjRI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=DkMJiMeRwvfJV9cWmQamBI3hShalVJfH72gipXuYRYCiiUD0OYqBxy94BfTkfkqoY
-	 gKynJOdROCrShe7FWNRxQNQT4b7YAPyKonMHGB/50xjAYMOU5gTFNIP9BmfLuWVUjL
-	 +acBqGp6Wl0VsJMdZphRNFul+k7KbZgq7JN+z2Jez3O+TM6SSFDHUDUS0qZsdHwPuR
-	 wmYdTvhjWpR2B0K2wiK8QKsK1T13rqjFDeXXhzMqV/Fhb04/QbN+caUhvDnhnLlEN7
-	 /+I8CxqkJTpTeSHbVP6TP1WAcEsTFMKd6j29DDmmO+5iRBVGiSkSL5NTBex+WZ742+
-	 gEqUMuPS5YHvA==
-Date: Mon, 22 May 2023 19:22:38 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>, Jesper Dangaard Brouer
- <jbrouer@redhat.com>, <davem@davemloft.net>, <pabeni@redhat.com>,
- <brouer@redhat.com>, <netdev@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>,
- Eric Dumazet <edumazet@google.com>, Lorenzo Bianconi <lorenzo@kernel.org>,
- Daniel Borkmann <daniel@iogearbox.net>, John Fastabend
- <john.fastabend@gmail.com>
-Subject: Re: [PATCH net] page_pool: fix inconsistency for
- page_pool_ring_[un]lock()
-Message-ID: <20230522192238.28837d1d@kernel.org>
-In-Reply-To: <cc64a349-aaf4-9d80-3653-75eeb3032baf@huawei.com>
-References: <20230522031714.5089-1-linyunsheng@huawei.com>
-	<1fc46094-a72a-f7e4-ef18-15edb0d56233@redhat.com>
-	<CAC_iWjJaNuDFZuv1Rv4Yr5Kaj1Wq69txAoLGepvnJT=pY1gaRw@mail.gmail.com>
-	<cc64a349-aaf4-9d80-3653-75eeb3032baf@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E125EA1
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:32:22 +0000 (UTC)
+X-Greylist: delayed 377 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 May 2023 19:32:19 PDT
+Received: from out-14.mta1.migadu.com (out-14.mta1.migadu.com [95.215.58.14])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39C9F4
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 19:32:19 -0700 (PDT)
+Content-Type: multipart/mixed; boundary="------------GFfthMi5biGdyduudWrWSocw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1684808760;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=kTp1df867SFJXxt8IIrlaAxbSGmv+ncI2619R+e48qY=;
+	b=pCtEX+HUv0p8zw0D/4QLs5MPjgjOX7COq5yVCNmOZ+QOyAzvWD5DPN4EMDvqJxeMqbrUhq
+	xLdrolGrolE0PIQEopduFKSy6sEQx8zouRh7DueS8DdFzejqDH5FSBZCo2qR13bEKidGZF
+	vISxA3q4WHy+p0du4Qls43zpJrjqHWI=
+Message-ID: <13528f21-0f36-4fa2-d34f-eecee6720bc1@linux.dev>
+Date: Tue, 23 May 2023 10:25:56 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Subject: Re: [syzbot] [rdma?] INFO: trying to register non-static key in
+ skb_dequeue (2)
+Content-Language: en-US
+To: syzbot <syzbot+eba589d8f49c73d356da@syzkaller.appspotmail.com>,
+ jgg@ziepe.ca, leon@kernel.org, linux-kernel@vger.kernel.org,
+ linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+ syzkaller-bugs@googlegroups.com, zyjzyj2000@gmail.com
+References: <000000000000a589d005fc52ee2d@google.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Guoqing Jiang <guoqing.jiang@linux.dev>
+In-Reply-To: <000000000000a589d005fc52ee2d@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SORTED_RECIPS,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
+
+This is a multi-part message in MIME format.
+--------------GFfthMi5biGdyduudWrWSocw
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Tue, 23 May 2023 10:13:14 +0800 Yunsheng Lin wrote:
-> On 2023/5/22 19:45, Ilias Apalodimas wrote:
-> >> Thanks for spotting and fixing this! :-)  
-> 
-> It was spotted when implementing the below patch:)
-> 
-> https://patchwork.kernel.org/project/netdevbpf/patch/168269857929.2191653.13267688321246766547.stgit@firesoul/#25325801
-> 
-> Do you still working on optimizing the page_pool destroy
-> process? If not, do you mind if I carry it on based on
-> that?
 
-Not sure what you mean, this patch is a fix and the destroy
-optimizations where targeted at net-next. Fix goes in first,
-and then after the tree merge on Thu the work in net-next can 
-progress.
+
+On 5/23/23 10:13, syzbot wrote:
+> Hello,
+>
+> syzbot tried to test the proposed patch but the build/boot failed:
+>
+> failed to apply patch:
+> checking file drivers/infiniband/sw/rxe/rxe_qp.c
+> patch: **** unexpected end of file in patch
+>
+>
+>
+> Tested on:
+>
+> commit:         56518a60 RDMA/hns: Modify the value of long message lo..
+> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git for-rc
+> dashboard link: https://syzkaller.appspot.com/bug?extid=eba589d8f49c73d356da
+> compiler:
+> patch:          https://syzkaller.appspot.com/x/patch.diff?x=132bea5a280000
+>
+
+Sorry, let me attach the temp patch.
+
+#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git 
+for-rc
+--------------GFfthMi5biGdyduudWrWSocw
+Content-Type: text/x-patch; charset=UTF-8; name="temp-rxe.patch"
+Content-Disposition: attachment; filename="temp-rxe.patch"
+Content-Transfer-Encoding: base64
+
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW5maW5pYmFuZC9zdy9yeGUvcnhlX3FwLmMgYi9kcml2
+ZXJzL2luZmluaWJhbmQvc3cvcnhlL3J4ZV9xcC5jCmluZGV4IDYxYTJlYjc3ZDk5OS4uMTdl
+ZDQxMzA5NzU2IDEwMDY0NAotLS0gYS9kcml2ZXJzL2luZmluaWJhbmQvc3cvcnhlL3J4ZV9x
+cC5jCisrKyBiL2RyaXZlcnMvaW5maW5pYmFuZC9zdy9yeGUvcnhlX3FwLmMKQEAgLTc1OCwx
+OSArNzU4LDIxIEBAIHN0YXRpYyB2b2lkIHJ4ZV9xcF9kb19jbGVhbnVwKHN0cnVjdCB3b3Jr
+X3N0cnVjdCAqd29yaykKIAkJZGVsX3RpbWVyX3N5bmMoJnFwLT5ybnJfbmFrX3RpbWVyKTsK
+IAl9CiAKLQlpZiAocXAtPnJlc3AudGFzay5mdW5jKQorCS8qIGZsdXNoIG91dCBhbnkgcmVj
+ZWl2ZSB3cidzIG9yIHBlbmRpbmcgcmVxdWVzdHMgKi8KKwlpZiAocXAtPnJlc3AudGFzay5m
+dW5jKSB7CiAJCXJ4ZV9jbGVhbnVwX3Rhc2soJnFwLT5yZXNwLnRhc2spOworCQlyeGVfcmVz
+cG9uZGVyKHFwKTsKKwl9CiAKLQlpZiAocXAtPnJlcS50YXNrLmZ1bmMpCisJaWYgKHFwLT5y
+ZXEudGFzay5mdW5jKSB7CiAJCXJ4ZV9jbGVhbnVwX3Rhc2soJnFwLT5yZXEudGFzayk7CisJ
+CXJ4ZV9yZXF1ZXN0ZXIocXApOworCX0KIAotCWlmIChxcC0+Y29tcC50YXNrLmZ1bmMpCisJ
+aWYgKHFwLT5jb21wLnRhc2suZnVuYykgewogCQlyeGVfY2xlYW51cF90YXNrKCZxcC0+Y29t
+cC50YXNrKTsKLQotCS8qIGZsdXNoIG91dCBhbnkgcmVjZWl2ZSB3cidzIG9yIHBlbmRpbmcg
+cmVxdWVzdHMgKi8KLQlyeGVfcmVxdWVzdGVyKHFwKTsKLQlyeGVfY29tcGxldGVyKHFwKTsK
+LQlyeGVfcmVzcG9uZGVyKHFwKTsKKwkJcnhlX2NvbXBsZXRlcihxcCk7CisJfQogCiAJaWYg
+KHFwLT5zcS5xdWV1ZSkKIAkJcnhlX3F1ZXVlX2NsZWFudXAocXAtPnNxLnF1ZXVlKTsK
+
+--------------GFfthMi5biGdyduudWrWSocw--
 
