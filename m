@@ -1,272 +1,161 @@
-Return-Path: <netdev+bounces-4636-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4637-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id EA75C70DA15
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:16:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0350C70DA58
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:22:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 40AB5281328
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:16:57 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 36D7028135C
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:22:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 447461EA70;
-	Tue, 23 May 2023 10:16:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 80EA71EA82;
+	Tue, 23 May 2023 10:22:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 325EC1E501
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:16:55 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C83AFD
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:16:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684837012;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SQHqTwIHdnGAuCc0miU9eDOkQpjo2/mk/8AwQvJchQc=;
-	b=UB3UCMZEBx11i4AAMCJM5McDS/Qsg1rBZW9k79NtaUEpj4l+t0jM36ADIHnFvdf15HiDVO
-	Hdkf4G/T1xrI0weLHxlo5HhaFqAdPzCG6qss23nOf4XQB9IQs9MLIP8ryY+BmWZ3/XSwPG
-	72Ijo8r839Y5kOapQPzpvCl9q7uzi24=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-54-YsQBcqv5NcaRAsaowuPojg-1; Tue, 23 May 2023 06:16:51 -0400
-X-MC-Unique: YsQBcqv5NcaRAsaowuPojg-1
-Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-9715654aba1so80921966b.0
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:16:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684837010; x=1687429010;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SQHqTwIHdnGAuCc0miU9eDOkQpjo2/mk/8AwQvJchQc=;
-        b=Gybqqa0uxcU0sk5vCYhg3L6H0jZlDbfB+zLfOryXyaZ6n8D2flMmGoG0lzsjhVSbi3
-         MAQFDTtEhSJeekafH7ZDWxEWUF7ezxwQz99Es6g/BktHkTkqA/cDrT3f5EqgoS9DJF1F
-         WT7b+vm3b0jEXQItwKMnhOgGZ/AiK4KHh5F9JFv8VtZ09T1jXFWvfUNDByh5H1kfkUZt
-         c2NnMn7qPXbwUQUB3ydG/SWyTcHJ1UhpWxBIVr0AhuIaI6GlqK2JKZl880HQYbef8s78
-         PHMjCMajSOloSbg+5by8faakDCQQ/4/KI7wjqLnb9R4wcFhWI71XOBAxLLHRM3S/e+7v
-         fWoA==
-X-Gm-Message-State: AC+VfDzYenvyKDnoiGU9mOrdObv0hAG72HwX212B/ZSqima/BuY2Jvxw
-	fdZ8ujZp12w9Yq+Q+p8TP7dqojd0LBoWbRUB8OXCBfHuTgVyOkagEa4+pkOTshoFnogAh6LfaTE
-	BEg89nFSFBuwIQWJP
-X-Received: by 2002:a17:907:ea9:b0:96a:2b4:eb69 with SMTP id ho41-20020a1709070ea900b0096a02b4eb69mr13393997ejc.31.1684837009827;
-        Tue, 23 May 2023 03:16:49 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ49yhK/BvmMprUo2opyxIyuZkHK27opbVXPXsLNZq65QZvQ3zkJiQT66NAQMp6+0niQu0jLDQ==
-X-Received: by 2002:a17:907:ea9:b0:96a:2b4:eb69 with SMTP id ho41-20020a1709070ea900b0096a02b4eb69mr13393965ejc.31.1684837009526;
-        Tue, 23 May 2023 03:16:49 -0700 (PDT)
-Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id s22-20020a170906961600b0096f89c8a2f7sm4209255ejx.90.2023.05.23.03.16.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 May 2023 03:16:48 -0700 (PDT)
-From: Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <1693e3e3-c486-80c8-aec0-cca0c9080c34@redhat.com>
-Date: Tue, 23 May 2023 12:16:46 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E1F41EA7C
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:22:31 +0000 (UTC)
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2112.outbound.protection.outlook.com [40.107.244.112])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCAA109
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:22:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jkI7j9B+d7bpr5NBB7S2hFRlYa7ShDoDmlskFm0PcioClzq4b+5dVpUhQTE10FbSNDl1WDV/Gr647bUS3GUYBct7YkZxOTC63E0EoFYjDJID3CmKrFIw/DQ2vXeT+mLYOBnSCaYmg3QJd8TGmdNVU7ktxgU0CNO5rR0lAfrRJXMr/07YGjAht0QN9hXyUjspQmcpCI6UAIig3c0pK1ktV5jAYcbMdWRfyGoEB4rz8aIDjRZkIQjzzB6faAJziSCQqLUqhG1Yfhtjseqc6acJm22aFJGjiyP8GvhujkFeEV+gI7Rtfn41A0KU8RstjXBuZLbby48/cYSkjYcqj+D2Cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EkyYzBLVYodcTWha/fBRBd30NewaVLy7UYg8YNOjNsY=;
+ b=ng4alHbCydNEM/ovxx0v0G3eV0NpfEVDSpyRUgI3G1Q7LPaiTjTnjmHy9zOtkltUhF21Hmonelu7ToaHPODR6SV9tu5fkFsHtqQiL+YovdQJzhAKxvarKvfPPknQEFwrMIR1UbZFxX5F5nDf9YDDcaF8VfhYA1M5tHnyRg4jB/KSgghargUYFPnxWfoj0Bf0vHOvIf4iX7CBCETYJ/GQmLcbappy3q8cijXmt0wQ2eYFMCbb9sPRF28Jb/YGK/a9nE3JGrezzVgzdvjOhqf8+acFuRQoTV5VeAETN44jeEcEJrNlo7NpzUzJCzzmMz2C+YK6HLfDYV0B62UFf5IfZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EkyYzBLVYodcTWha/fBRBd30NewaVLy7UYg8YNOjNsY=;
+ b=g8MUh0MlFZlQ0J/9TpIuiStI/3I9wXqnflLIMu6q0KC2CCKnuyZVIcWYCPLbS3BAWPFGSgUR6bXVDBVjtMMjrpiZzk7w467Fh1c8CIH13hW9CSVu0mIffl5RziDnfaSO6T+vkBam6JbTjCWgM/ZwmqGux8iqYpNGG/rWdF3TALY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO1PR13MB4775.namprd13.prod.outlook.com (2603:10b6:303:d8::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Tue, 23 May
+ 2023 10:21:23 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6411.029; Tue, 23 May 2023
+ 10:21:22 +0000
+Date: Tue, 23 May 2023 12:21:06 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Ziwei Xiao <ziweixiao@google.com>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+	Coco Li <lixiaoyan@google.com>
+Subject: Re: [PATCH net-next] gve: Support IPv6 Big TCP on DQ
+Message-ID: <ZGyTkjrvCIQozPUj@corigine.com>
+References: <20230522201552.3585421-1-ziweixiao@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230522201552.3585421-1-ziweixiao@google.com>
+X-ClientProxiedBy: AM3PR03CA0072.eurprd03.prod.outlook.com
+ (2603:10a6:207:5::30) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Cc: brouer@redhat.com, bpf@vger.kernel.org,
- Stanislav Fomichev <sdf@google.com>, Alexei Starovoitov <ast@kernel.org>,
- Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
- Jakub Kicinski <kuba@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>,
- Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
- John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
- Jiri Olsa <jolsa@kernel.org>, Jesse Brandeburg <jesse.brandeburg@intel.com>,
- Tony Nguyen <anthony.l.nguyen@intel.com>,
- Anatoly Burakov <anatoly.burakov@intel.com>,
- Alexander Lobakin <alexandr.lobakin@intel.com>,
- Magnus Karlsson <magnus.karlsson@gmail.com>,
- Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
- netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND bpf-next 09/15] xdp: Add VLAN tag hint
-Content-Language: en-US
-To: Larysa Zaremba <larysa.zaremba@intel.com>,
- Jesper Dangaard Brouer <jbrouer@redhat.com>
-References: <20230512152607.992209-1-larysa.zaremba@intel.com>
- <20230512152607.992209-10-larysa.zaremba@intel.com>
- <b0694577-e2b3-f6de-cf85-aed99fdf2496@redhat.com> <ZGJZU89AK/3mFZXW@lincoln>
- <094f3178-2797-e297-64f8-aa0f7ef16b5f@redhat.com> <ZGuO6Hk+NcdL9iwi@lincoln>
-In-Reply-To: <ZGuO6Hk+NcdL9iwi@lincoln>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO1PR13MB4775:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7ed2207c-a4b9-466b-aec4-08db5b7774bd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	9bRUbp0ixAncrFsNsUnfOelWkXzOlmY0U62k1gtx8AkYg/88N4YstP2IlDUwmRBmOG2rp0pntYSXo/1sZ9tNg4KtKEZVDG7DYwEqzaOzzA47Vj3Dr0MiGA1l2J1zVztComPqWs4+kRlaICi94ltS9aRqKCQpPqWUAfVos8CaMuN4A/5ldUQa1bl79Fg1P0oiu2PbX7bWhPDFdGSSTtP1+oHmoc2xlw100FTVIhL+jBcwda0VFydtbXmkUP5m7iv74oEiYCSxgiT1SHOKi7dS0dL+DJMHso3Pi39JwYy7X7FTvb/Rw6+6MzBPc7xH3rW9z989H8gxXW6NwYsZsCAVChF21OO+v+IrAbYvmy1MDP8xZAoblEKm80fypPgSzBgRTTfTydf2mMqEvrZ3bEPZGEO/V+sKKwVlVhhQ3OGbyeZKY4e8uxAXgGbrSILKKwBH+k0SNKanWJEf7yPDfH2+Yq2r5/1x9TluC+o2YGSdYKASckofWlDKxKtdyDjQxPOlWuMUF0aURDNqADiPrON4z3nnmfsPYUj5y3Jiry27sGU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(39840400004)(366004)(346002)(451199021)(6916009)(4326008)(66946007)(66556008)(66476007)(478600001)(86362001)(6666004)(41300700001)(6486002)(966005)(316002)(5660300002)(8936002)(8676002)(44832011)(38100700002)(6512007)(6506007)(186003)(2906002)(36756003)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?0Zx26zK6qEhOBheSuKVinm8TGTFX3+Ilfyat0rok7Y4qio6ElcKZSw7DVw7a?=
+ =?us-ascii?Q?3XXtmU8B/6VxBiu8MDnu2MWy+YE3qcITz+lHFyjWhlnZQNiEIeGVOE0A7alJ?=
+ =?us-ascii?Q?aeYxdZuD5ZWp3EQGI7Y9Cs+oXK5vgMqIiLEQ1ZJ/0fZ7vea9EnyIbXc55pmV?=
+ =?us-ascii?Q?XgAgAv4IiWyOzHidys1fjJFwg2xIySvCrR1Vz4oPBMA1KIvAEb4LL2KqPNYv?=
+ =?us-ascii?Q?FXKrSTHmEep7/TrRnz+lYz9Oqv8RcR6FLUx0DXDqCrDsR3rP2r9m3fUOO0TP?=
+ =?us-ascii?Q?Djxsdpz/MN86DY8VAv/aJKZXqZGgEVmuW0avGFa7cN0egAdmbkhBcGXEn4gy?=
+ =?us-ascii?Q?QOutSj3ZXbz0n0XXwtEmrWar0CicEBPbA+gcqHEXDRe/y+U7+FtGoJy3owxv?=
+ =?us-ascii?Q?5KIbxq5jr2K8IoNyMEQ1vfonOhEcpJwWwtt160vEiVPn15GmJw5Q77bbS3uj?=
+ =?us-ascii?Q?YBL/+z4ehjhahc8qVfMl6P73ffc6R8OGBM6P69aWCFwZJoqpJHe5qRIHHWUS?=
+ =?us-ascii?Q?IJhCl9qLLOoTQxjRolmHY+2ZM5fpyRBA0npezxbAdQtRYUMxQ2LYekGmrYI/?=
+ =?us-ascii?Q?V2T34kXXnMXUcr7ZaHOfkl18859eAN+2Y6dqfKGNZAlVUa+bWIusFErenK1F?=
+ =?us-ascii?Q?5YkSFqyuXmRI+cnrlsoY8Otk9sxeLwM8Pn8afTa1l1P945D9I0PpqxK7lpxw?=
+ =?us-ascii?Q?BLwwpB9Wi7LA2bR3BBmZUbtc5M7i6iIMDRvw/JjHBOqOcbN404MWHBNMRR9l?=
+ =?us-ascii?Q?slt54ICF1MVXrhr7wjbjwPorIPIDuXowfX9MgggiZEPN2c1Bua5NAUoIXUWV?=
+ =?us-ascii?Q?1kRnctlr/dhXhuaK7aXNV23ireAJbG2Bl2yra7Fnj1XRqam3cIvfNWZ6XB6B?=
+ =?us-ascii?Q?3PQBBfG3tminxD3/UREW/Cvq7xuzQd3IMupfrUylHot8J5fVIEabASQp1C/c?=
+ =?us-ascii?Q?STD3OUKZuT3ktqBuw5DP6n63g3x29elAmRJTTJ4Z54cTvjw/gSmF+yAqboHz?=
+ =?us-ascii?Q?LN/sTuVkP1ycBrRGs3Oawo9wd/m/aDCst1/yTClH/VBSTKudAfBr6bAwpYjF?=
+ =?us-ascii?Q?e5nKcvbaly6yDAMjG82AMyGTl7L1SOyCq6VgXd1ZQYEbAa8w3E0wtZvHmjPm?=
+ =?us-ascii?Q?uO9/oto0z5Ma2QROiy6Z1RdKAhl1X/YJqAooBuvGTulxHbvYdQTHGkzBuv3u?=
+ =?us-ascii?Q?77A9IqRXTI4SZia7v3XP/BBMCw85X91EMMKW1rgTVk6L9S4n6b4SLGd/CPZQ?=
+ =?us-ascii?Q?Cm1UD71C5+IxxqtP4IdZmPQt9ahO6e8Y0ciJRTpvTG1IPpOoCr0g2lk6l/gU?=
+ =?us-ascii?Q?F3G+pJUt+KgiCOxRZBDVe1wrZLy4JYrV5Cmg3x6DkojIstrPySb2YbUrUmaf?=
+ =?us-ascii?Q?F3QWIH84Eez69cBPDcL40wtAbThCOyX4pjz0p/6vUZ5PJi23J2oVsUymhVKl?=
+ =?us-ascii?Q?Ed02dIU45KdIgADI5BcseIyNhGkvz0WZ0Jsrf8bX38zzcaeT02Z0CjdVu5im?=
+ =?us-ascii?Q?/4VSrzqDCiGMji6WCzjQt/VpSplwzvFMgtLdjn1QYu1ArnjmdSIOP+zGORo6?=
+ =?us-ascii?Q?TKlur8wP2ZbOnjin9xSw+tuszdaY9iksqdwEM3Et+SO9LuxTjqVHV6ny8grz?=
+ =?us-ascii?Q?cZPXSKXz536jzFzedXiWEpxlrnKrTrMUwa5Jg1BYP9Qh68QWy9iHUbnMocXC?=
+ =?us-ascii?Q?Ty3Wng=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ed2207c-a4b9-466b-aec4-08db5b7774bd
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 10:21:22.2332
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gNYsz2G+vL1NVVL6SKctzkNSyiyiU2/v+nSUL+rvOhAYmIBpoiVwVqZRKX/QdNcK1BLpuVNRx2dwAR/vwauxF8ynuQYXwEv2Rb3vcL1qGDw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4775
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
-
-On 22/05/2023 17.48, Larysa Zaremba wrote:
-> On Mon, May 22, 2023 at 10:37:33AM +0200, Jesper Dangaard Brouer wrote:
->>
->>
->> On 15/05/2023 18.09, Larysa Zaremba wrote:
->>> On Mon, May 15, 2023 at 05:36:12PM +0200, Jesper Dangaard Brouer wrote:
->>>>
->>>>
->>>> On 12/05/2023 17.26, Larysa Zaremba wrote:
->>>>> Implement functionality that enables drivers to expose VLAN tag
->>>>> to XDP code.
->>>>>
->>>>> Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
->>>>> ---
->>>> [...]
->>>>
->>>>> diff --git a/net/core/xdp.c b/net/core/xdp.c
->>>>> index 41e5ca8643ec..eff21501609f 100644
->>>>> --- a/net/core/xdp.c
->>>>> +++ b/net/core/xdp.c
->>>>> @@ -738,6 +738,30 @@ __bpf_kfunc int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32 *hash,
->>>>>     	return -EOPNOTSUPP;
->>>>>     }
->>>>
->>>> Remember below becomes part of main documentation on HW metadata hints:
->>>>    - https://kernel.org/doc/html/latest/networking/xdp-rx-metadata.html
->>>>
->>>> Hint compiling locally I use:
->>>>    make SPHINXDIRS="networking" htmldocs
->>>>
->>>>> +/**
->>>>> + * bpf_xdp_metadata_rx_ctag - Read XDP packet inner vlan tag.
->>>>
->>>> Is bpf_xdp_metadata_rx_ctag a good function name for the inner vlan tag?
->>>> Like wise below "stag".
->>>>
->>>> I cannot remember if the C-tag or S-tag is the inner or outer vlan tag.
->>>>
->>>> When reading BPF code that use these function names, then I would have
->>>> to ask Google for help, or find-and-read this doc.
->>>>
->>>> Can we come-up with a more intuitive name, that e.g. helps when reading
->>>> the BPF-prog code?
->>>
->>> Well, my reasoning for such naming is that if someone can configure s-tag
->>> stripping in ethtool with 'rx-vlan-stag-hw-parse', they shouldn't have any
->>> problem with understanding those function names.
->>>
->>
->> Naming is hard.  My perspective is conveying the meaning without having
->> to be knowledgeable about ethtool VLAN commands.  My perspective is a
->> casual BPF-programmer that reads "bpf_xdp_metadata_rx_stag()".
->> Hopefully we can choose a name that says "vlan" somewhere, such that the
->> person reading this doesn't have to lookup and find the documentation to
->> deduct this code is related to VLANs.
->>
->>> One possible improvement that comes to mind is maybe (similarly ethtool) calling
->>> c-tag just 'tag' and letting s-tag stay 'stag'. Because c-tag is this default
->>> 802.1q tag, which is supported by various hardware, while s-tag is significantly
->>> less widespread.
->>>
->>> But there are many options, really.
->>>
->>> What are your suggestions?
->>>
->>
->> One suggestion is (the symmetrical):
->>   * bpf_xdp_metadata_rx_vlan_inner_tag
->>   * bpf_xdp_metadata_rx_vlan_outer_tag
->>
->> As you say above the first "inner" VLAN tag is just the regular 802.1Q
->> VLAN tag.  The concept of C-tag and S-tag is from 802.1ad that
->> introduced the concept of double tagging.
->>
->> Thus one could argue for shorter names like:
->>   * bpf_xdp_metadata_rx_vlan_tag
->>   * bpf_xdp_metadata_rx_vlan_outer_tag
->>
+On Mon, May 22, 2023 at 01:15:52PM -0700, Ziwei Xiao wrote:
+> From: Coco Li <lixiaoyan@google.com>
 > 
-> AFAIK, outer tag is a broader term, it's pretty often used for stacked 802.1Q
-> headers. I can't find what exactly is an expected behavior for rxvlan and
-> rx-vlan-stag-hw-parse in ethtool, but iavf documentation states that rxvlan
-> "enables outer or single 802.1Q VLAN stripping" and rx-vlan-stag-hw-parse
-> "enables outer or single 802.1ad VLAN stripping". This is in consistent with how
-> ice hardware behaves. More credible sources would be welcome.
+> Add support for using IPv6 Big TCP on DQ which can handle large TSO/GRO
+> packets. See https://lwn.net/Articles/895398/. This can improve the
+> throughput and CPU usage.
 > 
-
-It would be good to figure out how other hardware behaves.
-
-The iavf doc sounds like very similar behavior from both functions, just 
-802.1Q vs 802.1ad.
-Sounds like both will just pop/strip the outer vlan tag.
-I have seen Ethertype 802.1Q being used (in practice) for double tagged
-packets, even-though 802.1ad should have been used to comply with the
-standard.
-
-> What about:
->    * bpf_xdp_metadata_rx_vlan_tag
->    * bpf_xdp_metadata_rx_vlan_qinq_tag
+> Perf test result:
+> ip -d link show $DEV
+> gso_max_size 185000 gso_max_segs 65535 tso_max_size 262143 tso_max_segs 65535 gro_max_size 185000
 > 
+> For performance, tested with neper using 9k MTU on hardware that supports 200Gb/s line rate.
+> 
+> In single streams when line rate is not saturated, we expect throughput improvements.
+> When the networking is performing at line rate, we expect cpu usage improvements.
+> 
+> Tcp_stream (unidirectional stream test, T=thread, F=flow):
+> skb=180kb, T=1, F=1, no zerocopy: throughput average=64576.88 Mb/s, sender stime=8.3, receiver stime=10.68
+> skb=64kb,  T=1, F=1, no zerocopy: throughput average=64862.54 Mb/s, sender stime=9.96, receiver stime=12.67
+> skb=180kb, T=1, F=1, yes zerocopy:  throughput average=146604.97 Mb/s, sender stime=10.61, receiver stime=5.52
+> skb=64kb,  T=1, F=1, yes zerocopy:  throughput average=131357.78 Mb/s, sender stime=12.11, receiver stime=12.25
+> 
+> skb=180kb, T=20, F=100, no zerocopy:  throughput average=182411.37 Mb/s, sender stime=41.62, receiver stime=79.4
+> skb=64kb,  T=20, F=100, no zerocopy:  throughput average=182892.02 Mb/s, sender stime=57.39, receiver stime=72.69
+> skb=180kb, T=20, F=100, yes zerocopy: throughput average=182337.65 Mb/s, sender stime=27.94, receiver stime=39.7
+> skb=64kb,  T=20, F=100, yes zerocopy: throughput average=182144.20 Mb/s, sender stime=47.06, receiver stime=39.01
+> 
+> Signed-off-by: Ziwei Xiao <ziweixiao@google.com>
+> Signed-off-by: Coco Li <lixiaoyan@google.com>
 
-This sounds good to me.
-
-I do wonder if we really need two functions for this?
-Would one function be enough?
-
-Given the (iavf) description, the functions basically does the same.
-Looking at your ice driver implementation, they could be merged into one
-function, as it is the same location in the descriptor.
-
->>
->>>>
->>>>> + * @ctx: XDP context pointer.
->>>>> + * @vlan_tag: Return value pointer.
->>>>> + *
->>>>
->>>> IMHO right here, there should be a description.
->>>>
->>>> E.g. for what a VLAN "tag" means.  I assume a "tag" isn't the VLAN id,
->>>> but the raw VLAN tag that also contains the prio numbers etc.
->>>>
->>>> It this VLAN tag expected to be in network-byte-order ?
->>>> IMHO this doc should define what is expected (and driver devel must
->>>> follow this).
->>>
->>> Will specify that.
->>>
->>>>
->>>>> + * Returns 0 on success or ``-errno`` on error.
->>>>> + */
->>>>> +__bpf_kfunc int bpf_xdp_metadata_rx_ctag(const struct xdp_md *ctx, u16 *vlan_tag)
->>>>> +{
->>>>> +	return -EOPNOTSUPP;
->>>>> +}
->>>>> +
->>>>> +/**
->>>>> + * bpf_xdp_metadata_rx_stag - Read XDP packet outer vlan tag.
->>>>> + * @ctx: XDP context pointer.
->>>>> + * @vlan_tag: Return value pointer.
->>>>> + *
->>
->> (p.s. Googling I find multiple definitions of what the "S" in S-tag
->> means. The most reliable or statistically consistent seems to be
->> "Service tag", or "Service provider tag".)
->>
->> The description for the renamed "bpf_xdp_metadata_rx_vlan_outer_tag"
->> should IMHO explain that the outer VLAN tag is often refered to as the S-tag
->> (or Service-tag) in Q-in-Q (802.1ad) terminology.  Perhaps we can even spell
->> out that some hardware support (and must be configured via ethtool) to
->> extract this stag.
->>
->> A dump of the tool rx-vlan related commands:
->>
->>    $ ethtool -k i40e2 | grep rx-vlan
->>    rx-vlan-offload: on
->>    rx-vlan-filter: on [fixed]
->>    rx-vlan-stag-hw-parse: off [fixed]
->>    rx-vlan-stag-filter: off [fixed]
->>
-[...]
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
 
