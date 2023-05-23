@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-4741-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4742-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D139070E133
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:57:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F3EDD70E13A
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:58:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8BCD4281405
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:57:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BEDB01C20846
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:58:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DFF2200BF;
-	Tue, 23 May 2023 15:55:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7A1D200C0;
+	Tue, 23 May 2023 15:55:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 628FE1F92A
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:55:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD0941F92A
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:55:53 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0774491
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:55:47 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBE78E
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:55:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
 	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
 	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=nAKHJkTbZDzNX1B/hzv5a6k8k/EBeltxSBdWV5zZtJk=; b=j1NEbFSBxJKiqxyUzC2eun3Bo3
-	xzoKeuaiWYvvd8CDzPnhunoNYdhmyNCHfsRzbvkIgL1/LaxlSm1ZmrNNRBJsBdK2p0kAEDcqEE9nh
-	9xqGPIQPlQlcOI5o/pQyrpU5UD1X/qZGRJ8e6SyieSzgrlXhcl4xO+sRHZJ7tUw5ozGpw1AC528H1
-	CAm8pUbPwKTQlGuP/eZ+/k9u9Fq+rMIsWk9JEm+ENU5t8uMHr90fwGwIy5afz4JNVFNUK1omGSjLY
-	QI/I1A92Zgcmk3SGY/nQRoulSrr0pJAR/BZgmBHpAeFRx+lbl+/iUFRW0zw2UoBPfe4KG2w4iXEep
-	xCI9z3ag==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46878 helo=rmk-PC.armlinux.org.uk)
+	bh=FVOoKlcE9wbWI4c+QH+jePyQLl9O41VBGHtZioJCPsQ=; b=wizhLKf3/3+tPK6Z1OYi84b2os
+	DQSOPSSfBjUj8bwXwofOD7sa6gRLE8yxSvG+KKgp3Nc8Rs7nXXzUrOJljvjC2vBFkofPnNCkor97E
+	LAbSdHkM6rsMeXWQut/kLsSl3aSLDtu1vb0Xk4G0Afsx/O8Smwy4vMEv2NnWpjkAvdWQzdWvNyWly
+	sgAsP/87ADszKiRMgusL76iQaihboqkDGtdc1iKexFRLFDhrlxZNzl1eYRwyBvcoHCOHYhqc7AuIE
+	NyYSAk+WglhO6x9nPr8LygscAE5PSFG2deJlQtT8BNcRvBUwEFMuh7HQZPOc5QbGjQBJ6IX8XtUzV
+	HydRRHGg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:51716 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <rmk@armlinux.org.uk>)
-	id 1q1UMP-0000ky-9E; Tue, 23 May 2023 16:55:41 +0100
+	id 1q1UMU-0000lT-LD; Tue, 23 May 2023 16:55:46 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1q1UMO-007FTD-Kv; Tue, 23 May 2023 16:55:40 +0100
+	id 1q1UMT-007FTJ-Ov; Tue, 23 May 2023 16:55:45 +0100
 In-Reply-To: <ZGzhvePzPjJ0v2En@shell.armlinux.org.uk>
 References: <ZGzhvePzPjJ0v2En@shell.armlinux.org.uk>
 From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -67,7 +67,7 @@ Cc: Daniel Machon <daniel.machon@microchip.com>,
 	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
 	UNGLinuxDriver@microchip.com,
 	Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH RFC net-next 7/9] net: prestera: switch PCS driver to use
+Subject: [PATCH RFC net-next 8/9] net: lan966x: switch PCS driver to use
  phylink_pcs_neg_mode()
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -78,9 +78,9 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1q1UMO-007FTD-Kv@rmk-PC.armlinux.org.uk>
+Message-Id: <E1q1UMT-007FTJ-Ov@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date: Tue, 23 May 2023 16:55:40 +0100
+Date: Tue, 23 May 2023 16:55:45 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -93,56 +93,32 @@ inband-AN should be used.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/ethernet/marvell/prestera/prestera_main.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-index 9d504142e51a..2a26f96fbed2 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-@@ -308,38 +308,36 @@ static int prestera_pcs_config(struct phylink_pcs *pcs,
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+index c5f9803e6e63..29bbd642cec8 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+@@ -103,12 +103,16 @@ static int lan966x_pcs_config(struct phylink_pcs *pcs,
  {
- 	struct prestera_port *port = prestera_pcs_to_port(pcs);
- 	struct prestera_port_mac_config cfg_mac;
+ 	struct lan966x_port *port = lan966x_pcs_to_port(pcs);
+ 	struct lan966x_port_config config;
 +	unsigned int neg_mode;
- 	int err;
+ 	int ret;
  
 +	neg_mode = phylink_pcs_neg_mode(mode, interface, advertising);
 +
- 	err = prestera_port_cfg_mac_read(port, &cfg_mac);
- 	if (err)
- 		return err;
+ 	config = port->config;
+ 	config.portmode = interface;
+-	config.inband = phylink_autoneg_inband(mode);
+-	config.autoneg = phylink_test(advertising, Autoneg);
++	config.inband = neg_mode == PHYLINK_PCS_NEG_INBAND_DISABLED ||
++			neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED;
++	config.autoneg = neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED;
+ 	config.advertising = advertising;
  
- 	cfg_mac.admin = true;
- 	cfg_mac.fec = PRESTERA_PORT_FEC_OFF;
-+	cfg_mac.inband = neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED;
- 
- 	switch (interface) {
- 	case PHY_INTERFACE_MODE_10GBASER:
- 		cfg_mac.speed = SPEED_10000;
--		cfg_mac.inband = 0;
- 		cfg_mac.mode = PRESTERA_MAC_MODE_SR_LR;
- 		break;
- 	case PHY_INTERFACE_MODE_2500BASEX:
- 		cfg_mac.speed = SPEED_2500;
- 		cfg_mac.duplex = DUPLEX_FULL;
--		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
--					  advertising);
- 		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
- 		break;
- 	case PHY_INTERFACE_MODE_SGMII:
--		cfg_mac.inband = 1;
- 		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
- 		break;
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 	default:
- 		cfg_mac.speed = SPEED_1000;
- 		cfg_mac.duplex = DUPLEX_FULL;
--		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
--					  advertising);
- 		cfg_mac.mode = PRESTERA_MAC_MODE_1000BASE_X;
- 		break;
- 	}
+ 	ret = lan966x_port_pcs_set(port, &config);
 -- 
 2.30.2
 
