@@ -1,52 +1,52 @@
-Return-Path: <netdev+bounces-4807-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4809-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7DDD870E6FD
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 22:57:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 18F8770E702
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 22:57:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E54C01C20A68
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 20:57:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C7FBB28135D
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 20:57:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE280BA3E;
-	Tue, 23 May 2023 20:56:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D12E2AD57;
+	Tue, 23 May 2023 20:56:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9B15A958
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 20:56:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C38AB947F
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 20:56:47 +0000 (UTC)
 Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2068.outbound.protection.outlook.com [40.107.94.68])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F590186
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 13:55:58 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7982EE42
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 13:56:27 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D8+s654KYOjySusDJ73UM7DQ6afYG32Gcwu/AzXbqJO3Ao/7JMVHsOTczxjmR/vstVDAdBIeuuetcnmZmmG+9q7Fr8x3fElOF19voFBWHSDpi7K+EAPQod6ImeY0kxvLotjqbjtbjWec/zAVQPz4J6/ZMmZ9n6OSafD/Rd08t9+8BI+mKMYOgUoNJX9oUA1fllNIs3s1VNk9Z7CjDEamz024zz685g7+xpD6ZnvwfPQF4KUOTXLhZVD/hEbBEtYokQWj3Igayr1bUxOzhVSounnb+JkzgqS3p9IgvYuQDjdQjUFGSvv++fuDtNzqegWKA6C7Tp/Mv4rbNbsrD0wKAQ==
+ b=JAke74a/QzPL/3uHa+XQuG2hD1YyLoJOHBVPaIfrE8OPuY7crd6aXVVYU/95FakbrR1iYx7BjdnaLdqplbFDvRQL+TClOuSKOMss3UUU+NG3yfi3sdOmb/PZkOw/dj9gPWP1wiuE0ARYjMXZT2R/t2bLBSrpmLrCV5Plq4u/Bg3wSDYiFd3yywp+a19i/8Geyfek30jkHTTg52q5TFln52Wm5BLwYDWKYjIAgZ0Brmx3RPcgCvwvUXGIX2oHNCg3sEN+CJ+4Z8sSbQICrZMj1pm76VsQDUpcKS808kOHcPtN3s6TuxIv9SKfuIBVovPtXCFeZlPG5DbsJ/BBl0Hyzw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5HJp3wiVtMq4ICjqFWFw/dI7l939iD/xx5s18c8SOg0=;
- b=YU4PNW3AqNkNn40CLy5Ztn1TA0fAdhBgzSYymPj5QgDfVknkia8RjXsk8u+orNGlsUhkFW6cUUTjkvcIT22DDIgFNRCbB8d5TN3Xk9+eqnb/X27x3mbneTQoCO8zmw08KPbyDWmcs0u/HLygDHfi2lpvbfL2QlxZXuglisdpjKMTZyGnbuk5okvi8yxvunor34lmx9pw/PJvNOzzki0S+YXGVTe6e8SGJnD9e2HkS5tLPLO5RcVKwDI8YQh1cGTDUHsZDd6mvklis9xHum2C1xAxBYnFsYlxzK9+MkInk8AyLyPwPJzUFLnURdBOOVeKAI2V1A15gDuSrlw/VnCZug==
+ bh=CIz6FjYJvU9aKk1zEaIYCJqwEg84tC/Okf7qwQ8z/oI=;
+ b=HM2w6yiQy9bEdgeEB6Ybt98Jtqdk3ZvSF20+URtNKEaaSHuBegTB6kFcWpkR2a/sZJa+RDyEplameg0+S8Z5RuUoQcRDxdnTxHiUNvTAvu4N0EHTAz84hwIRXkPC1wMW8DuZ9duYJEorst/cGf7nNqYqhrjHLsVUCmaNLrd/EoOK3oM9jPq94Sl/lEqVAfjND4SJ4fnAXsN0IIbYVwPa3Otk4sJi2yMRS5mI85+WzOQfvL+NLfsOcFrfFJ2x/9ffwRQcwZ3/1j9eph6kdANvqjnv1aJdjdZc5LGB/H+a0rZEp5fLZ8A3CwyeGlOh1u4zKtfHxBIs/QF5hF18hgbZFA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5HJp3wiVtMq4ICjqFWFw/dI7l939iD/xx5s18c8SOg0=;
- b=aihNk0nnMoC1EvUk+sKtASjneV2xx57ZUMTtuDk3VYUsGSevfQuHseV/W4Ovo/R88kMEXWHjPAn94T5QFahNCU5lNkrnJg8FfKmfmkIY65lR6GbPRkgo0447xkkZ7uONlZZck+OaRUIv3W5hA0pv+T3Hd8YES6ERR2Fvj3g6CTgExzcLMp5ymNe+qRNpU6TISk3NI+4aUzTx+eW6CwfZbZAOMYS4BQj1dB1bHl98vbl3pbVmoCF7OZT293wYEKCQ9mwYDiBlkwCSLm9wgR75OkFO8w8GMP9llxUXwT1lw3pQzNkQGWYaTUdXQrHeVYUBPl1CdfbLVdSQgODJmVi/hA==
+ bh=CIz6FjYJvU9aKk1zEaIYCJqwEg84tC/Okf7qwQ8z/oI=;
+ b=XMDui4oQNZ+Owpd9DUGC3JuOkFh4SAxowLk2X9R2BzZQlKWESdT4UWcaL6KI2A5Ue2Qrb8JW5DksQXT4NOdkFuUy5rIzCW/AdM+FXdz/BH089peUE5WA4cM4p3+VC2UmVxOJR8sl8f/iWffURTkhN313o+w8Vnen0UQUwwC/CJBw8Aimj6CP+XLkYO1FpcGNcezXmh1LKTSAx8T19qedoTRnAMs4nfUQktMMR52YnwM2epzyqlpfrrYInpuvlqZm2meJii2t0MhxOpOSjFWdo8GrhXjGNpHL7yG82O7lC4mUGkNVr5kwqHNEmI0IeSQYTHli886zNRxqaQrqW+G1xQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
  by DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.29; Tue, 23 May
- 2023 20:55:48 +0000
+ 2023 20:55:55 +0000
 Received: from BYAPR12MB2743.namprd12.prod.outlook.com
  ([fe80::f3d4:f48a:1bfc:dbf1]) by BYAPR12MB2743.namprd12.prod.outlook.com
  ([fe80::f3d4:f48a:1bfc:dbf1%5]) with mapi id 15.20.6411.019; Tue, 23 May 2023
- 20:55:48 +0000
+ 20:55:55 +0000
 From: Rahul Rameshbabu <rrameshbabu@nvidia.com>
 To: netdev@vger.kernel.org
 Cc: "David S. Miller" <davem@davemloft.net>,
@@ -55,18 +55,18 @@ Cc: "David S. Miller" <davem@davemloft.net>,
 	Tariq Toukan <tariqt@nvidia.com>,
 	Saeed Mahameed <saeed@kernel.org>,
 	Rahul Rameshbabu <rrameshbabu@nvidia.com>,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH net-next v2 6/9] net/mlx5: Add .getmaxphase ptp_clock_info callback
-Date: Tue, 23 May 2023 13:54:37 -0700
-Message-Id: <20230523205440.326934-7-rrameshbabu@nvidia.com>
+	Richard Cochran <richardcochran@gmail.com>,
+	Vincent Cheng <vincent.cheng.xh@renesas.com>
+Subject: [PATCH net-next v2 7/9] ptp: ptp_clockmatrix: Add .getmaxphase ptp_clock_info callback
+Date: Tue, 23 May 2023 13:54:38 -0700
+Message-Id: <20230523205440.326934-8-rrameshbabu@nvidia.com>
 X-Mailer: git-send-email 2.38.4
 In-Reply-To: <20230523205440.326934-1-rrameshbabu@nvidia.com>
 References: <20230523205440.326934-1-rrameshbabu@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BYAPR02CA0041.namprd02.prod.outlook.com
- (2603:10b6:a03:54::18) To BYAPR12MB2743.namprd12.prod.outlook.com
+X-ClientProxiedBy: BYAPR07CA0036.namprd07.prod.outlook.com
+ (2603:10b6:a02:bc::49) To BYAPR12MB2743.namprd12.prod.outlook.com
  (2603:10b6:a03:61::28)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -76,54 +76,54 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|DM6PR12MB4337:EE_
-X-MS-Office365-Filtering-Correlation-Id: c225432a-4cb1-4796-d5a7-08db5bd015b7
+X-MS-Office365-Filtering-Correlation-Id: 206c38b3-6e8f-4ca8-2f9b-08db5bd019d3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	Hy5ZmWlmzYAyHhZg8QD9gb9xK6BHR6nz3BVK+8Ch9ZQej6ctUNTIWBzlU9RSduu2LbNlLGKZ8jZT8SWj9OFAekr4TA+mswnBg/1iX8UK6BEgbfp/debDGmYs6bsF/ktAL1oHejp/MYk0poXKWNUc8yB48Q19rKWsJkbReO8SDFiLdoIPWRckzndP04HE0VrcgDVz3+CEU8DC4y+5zWnEZ4CAIAdhYz+3Vidtrb8vnutoZ1zw4u65a0QT9OhF/GeWlm0qqTQt1lORnWaM2SL0v9wBIHUvrpw3prgEOLNSBX1SLWIEwSx9dvEUL77ibsdi6l3PZME364Pn5ha3W6m8ddjAIUabGwp6J6ttPv+FOS63JgHBue4oD9UejZ9RsBPdE90jk3vvxVZYrtNsd5L9pyyVtdRZu1rBih7gBF3NSiL2VpDwLHLznJSaKZUoyHB5UzAcFTwIFWbQza5XyPjNfN6fWNalCrWbDfEKOt/qlrXzbqlvha2q30bZTwuvZ2IEPF761TMw2YoaDiGQSWRSvCiegx8u+7S/v1mPJhzI/WJkeCEAUH11DQPFfb/5FeFeMNtOgrLEGNpUFK4wk3Am0ndz/ue/SM9FJjYiECZ8WEo=
+	vhbM8+exY3LDsi/XKF5tu1Jodahn6huAFQFAeOpZwb5e+30UGG+ZknH15oevGimMt7x18J7Y4llS1eK4qZBiJDua88cUILWzbkIehIcSyVyGJzpHuEHr63FOg9xCePYYftwWPvK5Sq165dF0BLVaC9qaPQbc48HP7r+04F2sEtLX7PyBPKIXkeXdNXSD2NPXMBDhl2x3O3ztEvJhR5oNisAL5sVGyHaMyFyRJ4NysrVEQd224LgzmO/WurNuygB/W0y6/QqdkZFEl+WatZjTIUP0XvuB2W/YkoYYIOhpJvIKBo7DkBAmdjPkCbd0G9lEUxu/WFaNg9vYNo4bEoIZI7Uv9dATiNVtWfIV/lrX4CFzA5jZGvPUzU3cgN8Day9xn2Q9QmzAmzQlLiS9Wq+c/PgFs7itOQ0E9wJM3oWgycXkza+aGeqLRtV9dfT1FuVOlsx1ria6IvjvZFzu7mIPuAyO2piuvlZbzL9yXH4S4dwJANjEvXB4ers1FciEJuZYXkqmlIb1Wz8HBvrXZ34UnWHQ9B3r33zSaMvwY6lkT2SPxxb1b/WMc5h7Apmb0ImhuSs9ESJo4xAyyf5+jtdCFhNTCnOT/rRljCbVSSrx26Izo/ftLhFzIrPsHemEj6/M
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(366004)(396003)(136003)(39860400002)(451199021)(26005)(186003)(1076003)(6512007)(6506007)(2616005)(36756003)(83380400001)(2906002)(41300700001)(6486002)(316002)(54906003)(6666004)(38100700002)(478600001)(66476007)(66946007)(66556008)(6916009)(4326008)(86362001)(8936002)(8676002)(5660300002)(142923001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?mcg30WVo2F7gPsd7no9WVoeyjX5RaL15HnZJmUBdyABbUSx9XAgtC7ll5dnE?=
- =?us-ascii?Q?ZNjfZp+bTMJqQ5wQ1rn9M4Xjc2XgSdk/yuea+mn+1gRhhJOC4JqbSd229Sa8?=
- =?us-ascii?Q?QVPp7cK3Xbq8LKnnSCgw+wmVakjLt7/FRx0R40wQLYpQTQBnv+KIrMtUEW5+?=
- =?us-ascii?Q?gg1kiveOqBwrT+OPQCc6f+fqCeZop2VQ/ee+XybiuNxLDah5GZHyYPPUBywA?=
- =?us-ascii?Q?YW6dawogJY412ItRg3IWhpIYlxbFKjaHzSepVKD86g5YFfrKkr3HzTjdYIxj?=
- =?us-ascii?Q?bgp/1d2nMwnm4LQ2l3FIi6UUvNu2NnxDUlgQgHVKz6aO66q8byrO5+KweT4W?=
- =?us-ascii?Q?iZemE0SrM8IUCoGYFOKER/LZftMtsb6xSHp3wAqJ8dzlWCUnIkwrJKHnx3oe?=
- =?us-ascii?Q?TOK9u/ZnkWhLQi45ETfD3YkczWYZe3zVIViUn3+3AozWK7eiPj4chHhdqUFX?=
- =?us-ascii?Q?YSwqYHdR4Wwpy6JIOuTYhNulJMQTRgCZ/RENWQ9YxnnaZFV4ctl/DzyXKFZr?=
- =?us-ascii?Q?qCiPJ2WUxdf3DffRSaWSk1xFdvwlk1X88xwiyA4XEicT6HTr0rH5XlIWk2fI?=
- =?us-ascii?Q?y4neCWd5CUSW+E+XDpxdtigyerab5EuQu3VgHxkUjyFN50mWIttqNj/rtm6t?=
- =?us-ascii?Q?qE7/sWZ9Cnz4p0EnQsr+ow6ivxdDfggWmT4zojDrQkxIGd1FZm9jC6SIjQWE?=
- =?us-ascii?Q?CIzMgXIO59W3AmCkjC2ZjpawSI39i25CqkhHtVh7KJ2xn3izFMHv0puHasDN?=
- =?us-ascii?Q?AOaGVWDH1W5u87vPClmp0k6IL2Uc0CJkAIkeTOKCNOno9A/USMw29+JQhARC?=
- =?us-ascii?Q?qncGKrn6BhZy4eO9zdNh9Xo3Cnjs3h6ndmwlbseEBQ3ElpsQgnAQudjzS9g8?=
- =?us-ascii?Q?rHTEjSgXx07gI/sAAJzWuiJ1Qe5vYMlkTzp60QaAD1+tumpxGutGYtHlDDqw?=
- =?us-ascii?Q?HwkjV0AM6W3i8tj2uvBrrKHaa8dAhyArsV8Fs93uDb3LpF5HPg9jVM3Cjbg5?=
- =?us-ascii?Q?c79mLKXbeWjkPw80R9XiiHirjvmYrTFySdXxuDRPNlXq1BkUcexdMaFZo5mJ?=
- =?us-ascii?Q?5wi0n24LRX/xdjuGgxILkAZ4N8BTOAPCnF31kRw+51u9XgynHgZEXuJus24q?=
- =?us-ascii?Q?Yx2a4w1saZd83vxpTeSapYfrcG6Dl13nD1VUiT1ylIIc73KtPgOXoO4tYHS8?=
- =?us-ascii?Q?3GWSV3irLfU3UzPlZbsoPwC4kAwGVNDidJmg9C9L8Fp9/ww2KGoYaittHW3F?=
- =?us-ascii?Q?BBLO+nZd2s7RlsFyCnpnuiilADiTDW9KzXKoR0zof9ZtejERoL4dVNeprZnu?=
- =?us-ascii?Q?n1l3YVv/u+7J2czBlqJK3BDZboLwokxBu8VDRS95fRdJnNa0rCE+UPZ19Htp?=
- =?us-ascii?Q?fQe0F1doPZmCxgxs3NWNtJP3+OBLd1twX/vQ+cvXXVkvKI4+ua+WvDBEZr/l?=
- =?us-ascii?Q?5MigjdTafLfkPpMJpXZshOnET6yKDEVuylfq86rYEsqxML6GyTwu3LC+Fw+s?=
- =?us-ascii?Q?UnWq/cYQSPDjetG7OuC/8DNaqZAd/v9dCyLcD7OSnhE2n0IDFqt3hVDY+yOj?=
- =?us-ascii?Q?kFPQDc/k1WcmvunTG6bsetDCGFAbM6D8PyDlJ4tcE5N/sS8QKy8VJwhleOoL?=
- =?us-ascii?Q?VA=3D=3D?=
+	=?us-ascii?Q?EY8hPDZf6DliRpvRodulP69xPFde2eB6hGwjM1Jt/N6eEoP9qR0Tb+9hOkIe?=
+ =?us-ascii?Q?9WZiBa3Obs9Jz6Pxs6DCTWRX9t7TQ12B+tSmL5hYJQD0nZ0qXY4+lKkWFbiD?=
+ =?us-ascii?Q?u5X0myVGOHjrzEawYAUYqgOYthKkoO0p5HLdVqh/nKaYyflrRP3xgqhReRcB?=
+ =?us-ascii?Q?6H72NZEO6ZvnFHDZ3qextHXyRnGpbq4ZzRgzyEY/dhBir6D1D0aDysi0Df0X?=
+ =?us-ascii?Q?FMqKnl86e/vqLN4L20rn3ULIloAFVJO+41kVdIYIz1GNWV1tsiQF4XATARxD?=
+ =?us-ascii?Q?ImaJ1ujWKAulzAjWMibNfAekWuZ7uJoMUS3NekxFbkQDg8XHJl/b0Utacs0y?=
+ =?us-ascii?Q?fgvFGLdS5I1ybeowEP2HApl89+mL0R8Qi80iSWZ8MXXikrvNyOGyrCfMT0s9?=
+ =?us-ascii?Q?qUq+h07qfJwucUyQuu0LBNJYe5lA4wGjjKwbtm0lt3EJ9zzdq31yAp6t67he?=
+ =?us-ascii?Q?DvfVEPUu3CJxoIkQmXz77xa1XgpzM6ayj4YlKF97RPZgrsOsXO1qDa/oTpt1?=
+ =?us-ascii?Q?CI1AMffCjw7KFWbS8fqH5M3+wIoXA9Wf0Mckrf0JOSTTAQ9OuSgdUp965mbP?=
+ =?us-ascii?Q?WBs+mltFw4Bf/TXKwalLEaPw0ZB147iPVnCG8mVPJ8HijW3NjWko7yX5ZSlb?=
+ =?us-ascii?Q?NfUAxj8nYSKUDBVCMfI6PbYfO5N/DkK+tS9EECsVNcxbZ7mznyOulcAaw1WA?=
+ =?us-ascii?Q?hyVXL91YsTvZHbeDnbTVeg5ukM+r2rvR4lNnzC2izRAH2hwAVV0/LxMUprxD?=
+ =?us-ascii?Q?Am6ftDOmXl31MjKxILLTqcnOfAFchXPgTywk5Ov54ePTAC03YlBCm408aElp?=
+ =?us-ascii?Q?GgI2WWMko9vkOIsEpCSw89LZRNNM+46HmcveQzG/MnTqdVV+VzKcNEmsv3pM?=
+ =?us-ascii?Q?+8eMYDhiXbhcnU5Ui6++bizQC71/7VRC3Ag47na2vsLATwIJI1n9pnuw1/vA?=
+ =?us-ascii?Q?M09/1n3aENuhgBCyG7MJA8AxjFnj33wb9Ol6lYVwzDAv0/5qDSSGwcBzUXFE?=
+ =?us-ascii?Q?4Cd52srMFpqJIVU/aU9q6mEOROXL76kWjWnd8sq6w6FIp2RyBOACgVnNVx3B?=
+ =?us-ascii?Q?xpi9eVt59RTY3d0K0VvpRHiZrSkF2JB/HdIiaZBBIDdCd6D68chdDQ+ut34Q?=
+ =?us-ascii?Q?jwJroANJJoVrMd9DAyJdBaxcw2ss6oHgxO5Tj2Lc+I3UiwP+ByK9xnfo5tTK?=
+ =?us-ascii?Q?8nFS8I5xl/H2afcw4QUky5w+T0IA2EgHiisS0t3pYALd+NzJnJTCH38tuxI9?=
+ =?us-ascii?Q?1AgAr19SzmgUb6ZvHUWdlmoQRoMoo1inT+YHc7eaKSjLrmCiCLDu5PSQ0XUH?=
+ =?us-ascii?Q?OX2kcevK9ZzBoNf2/dVzqVpm6CqkzePac5fx74YtQ+H98+c9Z3we94G0FHII?=
+ =?us-ascii?Q?COE//ciSib0WV8ODh4twBS1GybWYFzC5k4n/n2Q3GyCC8WFxdpbIflG2FyhW?=
+ =?us-ascii?Q?SqjDk9cn2omS/WEKisUqr5WbabJ0t3IHxLwH7gp+pn3XYFtleEKRllpGdBr9?=
+ =?us-ascii?Q?i7DUSYqqPwg1gR+90DiFjStnGyFRfGId2YZIbfTBlIiQxiVbbTPvXvvYVbBy?=
+ =?us-ascii?Q?Kea9Urx9TF95sNrFAU3EShoimldBfCo8JiBOi03IxN/adflYREly8vxSHxy4?=
+ =?us-ascii?Q?7w=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c225432a-4cb1-4796-d5a7-08db5bd015b7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 206c38b3-6e8f-4ca8-2f9b-08db5bd019d3
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 20:55:48.0434
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 20:55:54.9222
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IcROGRs+k426nV4kyfJhPeGYRrdixueJZoPrxksFQC7MusjyhGv9LFIf/4Th7S6StIlTCZ27Zv5qqDaPar5/IA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: M7dliFVLI89DRU5dDsIZ+TgqeaQM8135j6GtFQV7fkizDSMvF1ts/DAfmJZ1ekYJYIiMAhHMjIBLViQhd/CWug==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4337
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -133,76 +133,108 @@ X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Implement .getmaxphase callback of ptp_clock_info in mlx5 driver. No longer
-do a range check in .adjphase callback implementation. Handled by the ptp
-stack.
+Advertise the maximum offset the .adjphase callback is capable of
+supporting in nanoseconds for IDT ClockMatrix devices.
 
-Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Vincent Cheng <vincent.cheng.xh@renesas.com>
 Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
 ---
- .../ethernet/mellanox/mlx5/core/lib/clock.c   | 31 +++++++++----------
- 1 file changed, 15 insertions(+), 16 deletions(-)
+ drivers/ptp/ptp_clockmatrix.c | 36 +++++++++++++++++------------------
+ drivers/ptp/ptp_clockmatrix.h |  2 +-
+ 2 files changed, 18 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-index 932fbc843c69..973babfaff25 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-@@ -93,17 +93,23 @@ static bool mlx5_modify_mtutc_allowed(struct mlx5_core_dev *mdev)
- 	return MLX5_CAP_MCAM_FEATURE(mdev, ptpcyc2realtime_modify);
- }
+diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+index c9d451bf89e2..f6f9d4adce04 100644
+--- a/drivers/ptp/ptp_clockmatrix.c
++++ b/drivers/ptp/ptp_clockmatrix.c
+@@ -1692,14 +1692,23 @@ static int initialize_dco_operating_mode(struct idtcm_channel *channel)
+ /* PTP Hardware Clock interface */
  
--static bool mlx5_is_mtutc_time_adj_cap(struct mlx5_core_dev *mdev, s64 delta)
-+static s32 mlx5_ptp_getmaxphase(struct ptp_clock_info *ptp)
- {
--	s64 min = MLX5_MTUTC_OPERATION_ADJUST_TIME_MIN;
--	s64 max = MLX5_MTUTC_OPERATION_ADJUST_TIME_MAX;
-+	struct mlx5_clock *clock = container_of(ptp, struct mlx5_clock, ptp_info);
-+	struct mlx5_core_dev *mdev;
- 
--	if (MLX5_CAP_MCAM_FEATURE(mdev, mtutc_time_adjustment_extended_range)) {
--		min = MLX5_MTUTC_OPERATION_ADJUST_TIME_EXTENDED_MIN;
--		max = MLX5_MTUTC_OPERATION_ADJUST_TIME_EXTENDED_MAX;
--	}
-+	mdev = container_of(clock, struct mlx5_core_dev, clock);
-+
-+	return MLX5_CAP_MCAM_FEATURE(mdev, mtutc_time_adjustment_extended_range) ?
-+		       MLX5_MTUTC_OPERATION_ADJUST_TIME_EXTENDED_MAX :
-+			     MLX5_MTUTC_OPERATION_ADJUST_TIME_MAX;
+ /*
+- * Maximum absolute value for write phase offset in picoseconds
+- *
+- * @channel:  channel
+- * @delta_ns: delta in nanoseconds
++ * Maximum absolute value for write phase offset in nanoseconds
+  *
+  * Destination signed register is 32-bit register in resolution of 50ps
+  *
+- * 0x7fffffff * 50 =  2147483647 * 50 = 107374182350
++ * 0x7fffffff * 50 =  2147483647 * 50 = 107374182350 ps
++ * Represent 107374182350 ps as 107374182 ns
++ */
++static s32 idtcm_getmaxphase(struct ptp_clock_info *ptp __always_unused)
++{
++	return MAX_ABS_WRITE_PHASE_NANOSECONDS;
 +}
 +
-+static bool mlx5_is_mtutc_time_adj_cap(struct mlx5_core_dev *mdev, s64 delta)
-+{
-+	s64 max = mlx5_ptp_getmaxphase(&mdev->clock.ptp_info);
- 
--	if (delta < min || delta > max)
-+	if (delta < -max || delta > max)
- 		return false;
- 
- 	return true;
-@@ -351,14 +357,6 @@ static int mlx5_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 
- static int mlx5_ptp_adjphase(struct ptp_clock_info *ptp, s32 delta)
++/*
++ * Internal function for implementing support for write phase offset
++ *
++ * @channel:  channel
++ * @delta_ns: delta in nanoseconds
+  */
+ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
  {
--	struct mlx5_clock *clock = container_of(ptp, struct mlx5_clock, ptp_info);
--	struct mlx5_core_dev *mdev;
--
--	mdev = container_of(clock, struct mlx5_core_dev, clock);
--
--	if (!mlx5_is_mtutc_time_adj_cap(mdev, delta))
--		return -ERANGE;
--
- 	return mlx5_ptp_adjtime(ptp, delta);
- }
+@@ -1708,7 +1717,6 @@ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
+ 	u8 i;
+ 	u8 buf[4] = {0};
+ 	s32 phase_50ps;
+-	s64 offset_ps;
  
-@@ -734,6 +732,7 @@ static const struct ptp_clock_info mlx5_ptp_clock_info = {
- 	.pps		= 0,
- 	.adjfine	= mlx5_ptp_adjfine,
- 	.adjphase	= mlx5_ptp_adjphase,
-+	.getmaxphase    = mlx5_ptp_getmaxphase,
- 	.adjtime	= mlx5_ptp_adjtime,
- 	.gettimex64	= mlx5_ptp_gettimex,
- 	.settime64	= mlx5_ptp_settime,
+ 	if (channel->mode != PTP_PLL_MODE_WRITE_PHASE) {
+ 		err = channel->configure_write_phase(channel);
+@@ -1716,19 +1724,7 @@ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
+ 			return err;
+ 	}
+ 
+-	offset_ps = (s64)delta_ns * 1000;
+-
+-	/*
+-	 * Check for 32-bit signed max * 50:
+-	 *
+-	 * 0x7fffffff * 50 =  2147483647 * 50 = 107374182350
+-	 */
+-	if (offset_ps > MAX_ABS_WRITE_PHASE_PICOSECONDS)
+-		offset_ps = MAX_ABS_WRITE_PHASE_PICOSECONDS;
+-	else if (offset_ps < -MAX_ABS_WRITE_PHASE_PICOSECONDS)
+-		offset_ps = -MAX_ABS_WRITE_PHASE_PICOSECONDS;
+-
+-	phase_50ps = div_s64(offset_ps, 50);
++	phase_50ps = div_s64((s64)delta_ns * 1000, 50);
+ 
+ 	for (i = 0; i < 4; i++) {
+ 		buf[i] = phase_50ps & 0xff;
+@@ -2048,6 +2044,7 @@ static const struct ptp_clock_info idtcm_caps = {
+ 	.n_ext_ts	= MAX_TOD,
+ 	.n_pins		= MAX_REF_CLK,
+ 	.adjphase	= &idtcm_adjphase,
++	.getmaxphase	= &idtcm_getmaxphase,
+ 	.adjfine	= &idtcm_adjfine,
+ 	.adjtime	= &idtcm_adjtime,
+ 	.gettime64	= &idtcm_gettime,
+@@ -2064,6 +2061,7 @@ static const struct ptp_clock_info idtcm_caps_deprecated = {
+ 	.n_ext_ts	= MAX_TOD,
+ 	.n_pins		= MAX_REF_CLK,
+ 	.adjphase	= &idtcm_adjphase,
++	.getmaxphase    = &idtcm_getmaxphase,
+ 	.adjfine	= &idtcm_adjfine,
+ 	.adjtime	= &idtcm_adjtime_deprecated,
+ 	.gettime64	= &idtcm_gettime,
+diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
+index bf1e49409844..7c17c4f7f573 100644
+--- a/drivers/ptp/ptp_clockmatrix.h
++++ b/drivers/ptp/ptp_clockmatrix.h
+@@ -18,7 +18,7 @@
+ #define MAX_PLL		(8)
+ #define MAX_REF_CLK	(16)
+ 
+-#define MAX_ABS_WRITE_PHASE_PICOSECONDS (107374182350LL)
++#define MAX_ABS_WRITE_PHASE_NANOSECONDS (107374182L)
+ 
+ #define TOD_MASK_ADDR		(0xFFA5)
+ #define DEFAULT_TOD_MASK	(0x04)
 -- 
 2.38.4
 
