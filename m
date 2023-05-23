@@ -1,151 +1,244 @@
-Return-Path: <netdev+bounces-4550-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4552-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A105770D353
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:48:03 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E78F670D35F
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:50:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6F2A91C20C87
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:48:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C15361C20CD8
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:50:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18D061B90A;
-	Tue, 23 May 2023 05:44:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9840A1B916;
+	Tue, 23 May 2023 05:50:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E104EEDD
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:44:15 +0000 (UTC)
-Received: from out-39.mta0.migadu.com (out-39.mta0.migadu.com [IPv6:2001:41d0:1004:224b::27])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A31D10C
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 22:44:13 -0700 (PDT)
-Message-ID: <5b6b8431-92c7-62df-299b-28f3a5f61d5f@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1684820650;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IGxV7bRUi/GE13J/Uz6qtwRCl5Pm9NfAa4wWpSscMSs=;
-	b=Nqx7uUOyUbn/ufMtUEQdd97JrXB+qKHU5OFZtzCCUCCn6fguKzx2BtSlvQ+p/gMRn4ODyg
-	cMJq7Qv/wdkE4lDTXamqyuhMDatIAwhOT4BbKZl0I4EgCXPCpjsXWfwRfRB2G90+xlft6g
-	GORT1nL91ifw7T9oUb402mlPC9rSBCU=
-Date: Tue, 23 May 2023 13:44:06 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4451B915
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:50:38 +0000 (UTC)
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59239119;
+	Mon, 22 May 2023 22:50:35 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+	by mx.sberdevices.ru (Postfix) with ESMTP id 33EF55FD29;
+	Tue, 23 May 2023 08:50:32 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+	s=mail; t=1684821032;
+	bh=9+wsTQnGJ8GmIVjwudDTHD1ZbkCaDVjLvF5QC9OWKyM=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Content-Type;
+	b=TpdFHEq9GZuhh0zDOhKKyT4tprXHPsThKBSgfzh6QANzI7dQ1WieAeRdNU8J5rwBS
+	 Hwgd8a7iO+ouh/d5SKr7NfrRK4v1lIBp4jWOePbLSEZFv+1P9tEapph6yITlS5M4tl
+	 VXk7+S8N4eHykCBo0ZXW2QVp/tGrV73/YMHffV7ow7RMxSzLwi3A2KIzOCQ5BUmOf4
+	 IQZ29Lv4hFcAUbDn56+U8WBIJm/LtXMtsmRJSl257V0a7D5aenepSDqCIgnD3ttv5/
+	 uPOrp61uIiJZhtkOMwQTb5jM00eVMuNAeoCebSMfPJvQ0Asr5InogGEW9ChEABbJAY
+	 WveoYicKmLJdg==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+	by mx.sberdevices.ru (Postfix) with ESMTP;
+	Tue, 23 May 2023 08:50:27 +0300 (MSK)
+Message-ID: <ed2b7314-8d0b-f17f-f188-a7d018520ecc@sberdevices.ru>
+Date: Tue, 23 May 2023 08:46:06 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Subject: Re: [syzbot] [rdma?] INFO: trying to register non-static key in
- skb_dequeue (2)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [RFC PATCH v3 05/17] vsock/virtio: MSG_ZEROCOPY flag support
 Content-Language: en-US
-To: Zhu Yanjun <zyjzyj2000@gmail.com>
-Cc: syzbot <syzbot+eba589d8f49c73d356da@syzkaller.appspotmail.com>,
- jgg@ziepe.ca, leon@kernel.org, linux-kernel@vger.kernel.org,
- linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
- syzkaller-bugs@googlegroups.com
-References: <000000000000a589d005fc52ee2d@google.com>
- <13528f21-0f36-4fa2-d34f-eecee6720bc1@linux.dev>
- <CAD=hENeCo=-Pk9TWnqxOWP9Pg-JXWk6n6J19gvPo9_h7drROGg@mail.gmail.com>
- <CAD=hENdoyBZaRz7aTy4mX5Kq1OYmWabx2vx8vPH0gQfHO1grzw@mail.gmail.com>
- <0d515e17-5386-61ba-8278-500620969497@linux.dev>
- <CAD=hENcqa0jQvLjuXw9bMtivCkKpQ9=1e0-y-1oxL23OLjutuw@mail.gmail.com>
- <CAD=hENdXdqfcxjNrNnP8CoaDy6sUJ4g5uxcWE0mj3HtNohDUzw@mail.gmail.com>
- <CAD=hENda4MxgEsgT-GUhYHH66m79wi8yxBQS8CYnxc_DsQKGwg@mail.gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Guoqing Jiang <guoqing.jiang@linux.dev>
-In-Reply-To: <CAD=hENda4MxgEsgT-GUhYHH66m79wi8yxBQS8CYnxc_DsQKGwg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+From: Arseniy Krasnov <avkrasnov@sberdevices.ru>
+To: Simon Horman <simon.horman@corigine.com>
+CC: Stefan Hajnoczi <stefanha@redhat.com>, Stefano Garzarella
+	<sgarzare@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang
+	<jasowang@redhat.com>, Bobby Eshleman <bobby.eshleman@bytedance.com>,
+	<kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<kernel@sberdevices.ru>, <oxffffaa@gmail.com>
+References: <20230522073950.3574171-1-AVKrasnov@sberdevices.ru>
+ <20230522073950.3574171-6-AVKrasnov@sberdevices.ru>
+ <ZGtqEghjjiBnvEBW@corigine.com>
+ <7c0a4203-b0bf-1963-14c1-d7c664946d5e@sberdevices.ru>
+In-Reply-To: <7c0a4203-b0bf-1963-14c1-d7c664946d5e@sberdevices.ru>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/05/23 01:22:00 #21370342
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
 
-On 5/23/23 13:18, Zhu Yanjun wrote:
-> On Tue, May 23, 2023 at 1:08 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
->> On Tue, May 23, 2023 at 12:29 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
->>> On Tue, May 23, 2023 at 12:10 PM Guoqing Jiang <guoqing.jiang@linux.dev> wrote:
->>>>
->>>>
->>>> On 5/23/23 12:02, Zhu Yanjun wrote:
->>>>> On Tue, May 23, 2023 at 11:47 AM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
->>>>>> On Tue, May 23, 2023 at 10:26 AM Guoqing Jiang <guoqing.jiang@linux.dev> wrote:
->>>>>>>
->>>>>>> On 5/23/23 10:13, syzbot wrote:
->>>>>>>> Hello,
->>>>>>>>
->>>>>>>> syzbot tried to test the proposed patch but the build/boot failed:
->>>>>>>>
->>>>>>>> failed to apply patch:
->>>>>>>> checking file drivers/infiniband/sw/rxe/rxe_qp.c
->>>>>>>> patch: **** unexpected end of file in patch
->>>>>> This is not the root cause. The fix is not good.
->>>>> This problem is about "INFO: trying to register non-static key. The
->>>>> code is fine but needs lockdep annotation, or maybe"
->>> This warning is from "lock is not initialized". This is a
->>> use-before-initialized problem.
->>> The correct fix is to initialize the lock that is complained before it is used.
+On 22.05.2023 16:09, Arseniy Krasnov wrote:
+> 
+> 
+> On 22.05.2023 16:11, Simon Horman wrote:
+>> On Mon, May 22, 2023 at 10:39:38AM +0300, Arseniy Krasnov wrote:
+>>> This adds handling of MSG_ZEROCOPY flag on transmission path: if this
+>>> flag is set and zerocopy transmission is possible, then non-linear skb
+>>> will be created and filled with the pages of user's buffer. Pages of
+>>> user's buffer are locked in memory by 'get_user_pages()'.
 >>>
->>> Zhu Yanjun
->> Based on the call trace, the followings are the order of this call trace.
->>
->> 291 /* called by the create qp verb */
->> 292 int rxe_qp_from_init(struct rxe_dev *rxe, struct rxe_qp *qp,
->> struct rxe_pd *pd,
->> 297 {
->>              ...
->> 317         rxe_qp_init_misc(rxe, qp, init);
->>              ...
->> 322
->> 323         err = rxe_qp_init_resp(rxe, qp, init, udata, uresp);
->> 324         if (err)
->> 325                 goto err2;   <--- error
->>
->>              ...
->>
->> 334 err2:
->> 335         rxe_queue_cleanup(qp->sq.queue); <--- Goto here
->> 336         qp->sq.queue = NULL;
->>
->> In rxe_qp_init_resp, the error occurs before skb_queue_head_init.
->> So this call trace appeared.
-> 250 static int rxe_qp_init_resp(struct rxe_dev *rxe, struct rxe_qp *qp,
-> 254 {
->                          ...
-> 264
-> 265                 type = QUEUE_TYPE_FROM_CLIENT;
-> 266                 qp->rq.queue = rxe_queue_init(rxe, &qp->rq.max_wr,
-> 267                                         wqe_size, type);
-> 268                 if (!qp->rq.queue)
-> 269                         return -ENOMEM;    <---Error here
-> 270
->
-> ...
->
-> 282         skb_queue_head_init(&qp->resp_pkts); <-this is not called.
-> ...
-> This will make spin_lock of resp_pkts is used before initialized.
+>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>>> ---
+>>>  net/vmw_vsock/virtio_transport_common.c | 305 +++++++++++++++++++-----
+>>>  1 file changed, 243 insertions(+), 62 deletions(-)
+>>>
+>>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>>> index 9854f48a0544..5acf824afe41 100644
+>>> --- a/net/vmw_vsock/virtio_transport_common.c
+>>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>>> @@ -37,73 +37,161 @@ virtio_transport_get_ops(struct vsock_sock *vsk)
+>>>  	return container_of(t, struct virtio_transport, transport);
+>>>  }
+>>>  
+>>> -/* Returns a new packet on success, otherwise returns NULL.
+>>> - *
+>>> - * If NULL is returned, errp is set to a negative errno.
+>>> - */
+>>> -static struct sk_buff *
+>>> -virtio_transport_alloc_skb(struct virtio_vsock_pkt_info *info,
+>>> -			   size_t len,
+>>> -			   u32 src_cid,
+>>> -			   u32 src_port,
+>>> -			   u32 dst_cid,
+>>> -			   u32 dst_port)
+>>> -{
+>>> -	const size_t skb_len = VIRTIO_VSOCK_SKB_HEADROOM + len;
+>>> -	struct virtio_vsock_hdr *hdr;
+>>> -	struct sk_buff *skb;
+>>> -	void *payload;
+>>> -	int err;
+>>> +static bool virtio_transport_can_zcopy(struct virtio_vsock_pkt_info *info,
+>>> +				       size_t max_to_send)
+>>> +{
+>>> +	struct iov_iter *iov_iter;
+>>> +	size_t max_skb_cap;
+>>> +	size_t bytes;
+>>> +	int i;
+>>>  
+>>> -	skb = virtio_vsock_alloc_skb(skb_len, GFP_KERNEL);
+>>> -	if (!skb)
+>>> -		return NULL;
+>>> +	if (!info->msg)
+>>> +		return false;
+>>>  
+>>> -	hdr = virtio_vsock_hdr(skb);
+>>> -	hdr->type	= cpu_to_le16(info->type);
+>>> -	hdr->op		= cpu_to_le16(info->op);
+>>> -	hdr->src_cid	= cpu_to_le64(src_cid);
+>>> -	hdr->dst_cid	= cpu_to_le64(dst_cid);
+>>> -	hdr->src_port	= cpu_to_le32(src_port);
+>>> -	hdr->dst_port	= cpu_to_le32(dst_port);
+>>> -	hdr->flags	= cpu_to_le32(info->flags);
+>>> -	hdr->len	= cpu_to_le32(len);
+>>> +	if (!(info->flags & MSG_ZEROCOPY) && !info->msg->msg_ubuf)
+>>> +		return false;
+>>>  
+>>> -	if (info->msg && len > 0) {
+>>> -		payload = skb_put(skb, len);
+>>> -		err = memcpy_from_msg(payload, info->msg, len);
+>>> -		if (err)
+>>> -			goto out;
+>>> +	iov_iter = &info->msg->msg_iter;
+>>> +
+>>> +	if (iter_is_ubuf(iov_iter)) {
+>>> +		if (offset_in_page(iov_iter->ubuf))
+>>> +			return false;
+>>> +
+>>> +		return true;
+>>> +	}
+>>> +
+>>> +	if (!iter_is_iovec(iov_iter))
+>>> +		return false;
+>>> +
+>>> +	if (iov_iter->iov_offset)
+>>> +		return false;
+>>> +
+>>> +	/* We can't send whole iov. */
+>>> +	if (iov_iter->count > max_to_send)
+>>> +		return false;
+>>> +
+>>> +	for (bytes = 0, i = 0; i < iov_iter->nr_segs; i++) {
+>>> +		const struct iovec *iovec;
+>>> +		int pages_in_elem;
+>>> +
+>>> +		iovec = &iov_iter->__iov[i];
+>>> +
+>>> +		/* Base must be page aligned. */
+>>> +		if (offset_in_page(iovec->iov_base))
+>>> +			return false;
+>>>  
+>>> -		if (msg_data_left(info->msg) == 0 &&
+>>> -		    info->type == VIRTIO_VSOCK_TYPE_SEQPACKET) {
+>>> -			hdr->flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
+>>> +		/* Only last element could have non page aligned size. */
+>>> +		if (i != (iov_iter->nr_segs - 1)) {
+>>> +			if (offset_in_page(iovec->iov_len))
+>>> +				return false;
+>>>  
+>>> -			if (info->msg->msg_flags & MSG_EOR)
+>>> -				hdr->flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
+>>> +			pages_in_elem = iovec->iov_len >> PAGE_SHIFT;
+>>> +		} else {
+>>> +			pages_in_elem = round_up(iovec->iov_len, PAGE_SIZE);
+>>> +			pages_in_elem >>= PAGE_SHIFT;
+>>>  		}
+>>> +
+>>> +		bytes += (pages_in_elem * PAGE_SIZE);
 
-IMHO, the above is same as
+^^^
+This alignment (base and length) checks are not needed, because virtio supports unaligned buffers. I'll remove
+it in v4.
 
-> Which is caused by  "skb_queue_head_init(&qp->resp_pkts)" is not called
-> given rxe_qp_init_resp returns error, but the cleanup still trigger the
-> chain.
->
-> rxe_qp_do_cleanup -> rxe_completer -> drain_resp_pkts ->
-> skb_dequeue(&qp->resp_pkts)
+Thanks, Arseniy
 
-my previous analysis. If not, could you provide another better way to 
-fix it?
-
-Guoqing
+>>>  	}
+>>
+>> Hi Arseniy,
+>>
+>> bytes is set but the loop above, but seems otherwise unused in this function.
+>>
+>>>  
+>>> -	if (info->reply)
+>>> -		virtio_vsock_skb_set_reply(skb);
+>>> +	/* How many bytes we can pack to single skb. Maximum packet
+>>> +	 * buffer size is needed to allow vhost handle such packets,
+>>> +	 * otherwise they will be dropped.
+>>> +	 */
+>>> +	max_skb_cap = min((unsigned int)(MAX_SKB_FRAGS * PAGE_SIZE),
+>>> +			  (unsigned int)VIRTIO_VSOCK_MAX_PKT_BUF_SIZE);
+>>
+>> Likewise, max_skb_cap seems to be set but unused in this function.
+>>
+> 
+> Exactly! Seems I forgot to remove it since v2. Thanks for this and above!
+> 
+>>>  
+>>> -	trace_virtio_transport_alloc_pkt(src_cid, src_port,
+>>> -					 dst_cid, dst_port,
+>>> -					 len,
+>>> -					 info->type,
+>>> -					 info->op,
+>>> -					 info->flags);
+>>> +	return true;
+>>> +}
+>>
+>> ...
 
