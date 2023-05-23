@@ -1,74 +1,91 @@
-Return-Path: <netdev+bounces-4720-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4721-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B516570E016
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:14:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E5CC870E02A
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:16:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8A41D1C20D96
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:14:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A13F3281300
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:16:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1AE91F93B;
-	Tue, 23 May 2023 15:14:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A7AD1F940;
+	Tue, 23 May 2023 15:16:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E23CC1F922
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 587BCC433EF;
-	Tue, 23 May 2023 15:14:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684854847;
-	bh=Sty+pfhmLmM2kIuCzfnd947lu1RITsEpVCdIUrHG8jg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=WXZ/9HqHEfQIZhlMbEJQpjbxQiN8PIar6A1iZ7K6fOyHGFA+qAcwnbK4rs+iRBv9B
-	 qoORNRcTpaXTB+8aq/Qt+ZhqNcA5y4xulusyujhiV/H9fV0AWewdKOuInn9mp+LmQs
-	 CzNgXcmkXc27HteundQObXdbalOJXhaqWkembP+788NH5uxlixNyRl151NZs3Dl8zv
-	 4C/tOBc24ytesre9xSj9Qp+fPr7jyHH/96LrfQLFkdy5ztzvH41iF6YjOpLSJEEBMn
-	 QidQFm4w7+HN5NZogkemS5bbQdIk4Dyb3iFhP92+8FR3NXUV7EgMjXeMVYnoBtd2qC
-	 Ohr0Ino4ie+gQ==
-Message-ID: <a9dec8d0-9485-e044-5954-54d6e7f55685@kernel.org>
-Date: Tue, 23 May 2023 09:14:06 -0600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4581F922
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:16:44 +0000 (UTC)
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E746010D5
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:16:14 -0700 (PDT)
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-1afa6afcf4fso27904995ad.0
+        for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:16:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684854953; x=1687446953;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZJeGQEMrpM8eeqfU3xH3VNZZx7eme2tUb730Gdj7mkI=;
+        b=KyIi31O/Owy3g843BEza62p3uTnMJH27d+iHDycD2Zy1NgPs/zwBwOdzcs4waW5TBI
+         V5V4h/psU5uzOX52s6uhJ3XKm/glhHBO0djG+wa2kPd+nEHQhoPZ4xjDpiCEo3dFfwEA
+         Io3aoqMfcqDCQo5kyaZ5ekgA2QakZay0sudY4dzOLEguMxfvKvgeEA4SHu269EhHbTz1
+         L8FE3i3y61Lk9LGXY25KZDEdRxMxTV7jDEPrs1+lXjF4o6YiRtJ+N8+Ke7y8wQUA0cdd
+         d9yU3jPMZyeOGXOBC8CBdejJEnlfE3u66akUchGjeFRNxDS32FxjrBeJGO8SL+bCCv3X
+         zO/g==
+X-Gm-Message-State: AC+VfDyzw99vX3hiXY/FBaAU919RyDxLNndYIKdT99DPkKWylCNiyy0e
+	aoG5F7rPykQRVZwXAjCAooE=
+X-Google-Smtp-Source: ACHHUZ4xFXkiB/BvdLUoKTFRgeVpyuCwCMcGSxWP57ZlD0BqfYdE3+H9GMSiNjXnpz2La8kYeQDaNQ==
+X-Received: by 2002:a17:902:7683:b0:1ac:637d:5888 with SMTP id m3-20020a170902768300b001ac637d5888mr13387115pll.43.1684854952831;
+        Tue, 23 May 2023 08:15:52 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([20.69.120.36])
+        by smtp.gmail.com with ESMTPSA id x4-20020a170902ea8400b001ac40488620sm6955882plb.92.2023.05.23.08.15.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 May 2023 08:15:52 -0700 (PDT)
+Date: Tue, 23 May 2023 15:15:50 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+	xen-devel@lists.xenproject.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] xen/netback: Pass (void *) to virt_to_page()
+Message-ID: <ZGzYpm/Vs+TfSBMR@liuwe-devbox-debian-v2>
+References: <20230523140342.2672713-1-linus.walleij@linaro.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-Subject: Re: [PATCH net-next 3/3] udp: Stop using RTO_ONLINK.
-Content-Language: en-US
-To: Guillaume Nault <gnault@redhat.com>, David Miller <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Eric Dumazet <edumazet@google.com>
-Cc: netdev@vger.kernel.org, Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-References: <cover.1684764727.git.gnault@redhat.com>
- <abc28174280c6947ab78ce77772df695b812843c.1684764727.git.gnault@redhat.com>
-From: David Ahern <dsahern@kernel.org>
-In-Reply-To: <abc28174280c6947ab78ce77772df695b812843c.1684764727.git.gnault@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230523140342.2672713-1-linus.walleij@linaro.org>
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On 5/22/23 8:38 AM, Guillaume Nault wrote:
-> Use ip_sendmsg_scope() to properly initialise the scope in
-> flowi4_init_output(), instead of overriding tos with the RTO_ONLINK
-> flag. The objective is to eventually remove RTO_ONLINK, which will
-> allow converting .flowi4_tos to dscp_t.
+On Tue, May 23, 2023 at 04:03:42PM +0200, Linus Walleij wrote:
+> virt_to_page() takes a virtual address as argument but
+> the driver passes an unsigned long, which works because
+> the target platform(s) uses polymorphic macros to calculate
+> the page.
 > 
-> Now that the scope is determined by ip_sendmsg_scope(), we need to
-> check its result to set the 'connected' variable.
+> Since many architectures implement virt_to_pfn() as
+> a macro, this function becomes polymorphic and accepts both a
+> (unsigned long) and a (void *).
 > 
-> Signed-off-by: Guillaume Nault <gnault@redhat.com>
-> ---
->  net/ipv4/udp.c | 17 ++++++-----------
->  1 file changed, 6 insertions(+), 11 deletions(-)
+> Fix this up by an explicit (void *) cast.
 > 
+> Cc: Wei Liu <wei.liu@kernel.org>
+> Cc: Paul Durrant <paul@xen.org>
+> Cc: xen-devel@lists.xenproject.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
-
+Acked-by: Wei Liu <wei.liu@kernel.org>
 
