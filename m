@@ -1,88 +1,107 @@
-Return-Path: <netdev+bounces-4463-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4464-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 250D170D0A4
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 03:47:05 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 796AD70D0B3
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 03:54:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0EE2328112C
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 01:47:03 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1B0631C20BE5
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 01:54:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 026751877;
-	Tue, 23 May 2023 01:47:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 25F061C29;
+	Tue, 23 May 2023 01:54:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E73791859
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 01:47:00 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E989A90;
-	Mon, 22 May 2023 18:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=YIMkffsXkgXdfOfA9ikOVYM3BgfZkI7WyagD+RJ4C+8=; b=O493woKucAM758iB7TGdAwbef9
-	+cPsKK9ZrzO2OagXMv58IKzFdixCa5NPu6zTSZbtoebD2WGRWhWMJJ5qrzG+h7bulbqUQN+tqh4hk
-	P+z7Eevm65zmzeLrSowvF3/XJOoonIOgSl3XB7loaLLUgSpVil5lugGjCmUByZ8yBn3w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q1H6s-00DbGI-Ok; Tue, 23 May 2023 03:46:46 +0200
-Date: Tue, 23 May 2023 03:46:46 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-	pabeni@redhat.com, corbet@lwn.net, linux-doc@vger.kernel.org
-Subject: Re: [PATCH net] docs: netdev: document the existence of the mail bot
-Message-ID: <043df418-28f0-49e5-bff0-2ea511148bb6@lunn.ch>
-References: <20230522230903.1853151-1-kuba@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C170D1C16
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 01:54:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C548C433D2;
+	Tue, 23 May 2023 01:54:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684806877;
+	bh=o2ebCMeC0Gg/ghiaUxjGr45XpfzvcXPIaHpwpcgIJfo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=lPbDVLevbzTScK5ZPAqhHvPw/7A0H3fmSJL/niJYQgy+Fb63BDQbBtpHumQDTeWvi
+	 cqoAbvXaGVSR20Kk8iAYHYT1Vt3bIEMHSWTZaX46VDezfz6X/8KjObGuU1xwC0xazD
+	 uDSkNsyl5Xf3qyBzbjPOeObg7tmsHUezd4DVXBgkZFkOYiaQY6Zo+WPBUSAhPRKk+d
+	 JK+Yl07hQA3Bwh3BkG5stLSKENFGK1i32uokDksxExsex1/4yascF0E2GiJXD0v3jC
+	 gNERi78lPoKqCp331mZkHW6Y8vraLfj6VW9Gct69VvfvodyB6U61elq8jyQu4nXJ1Z
+	 NbUZpSEZMFe/g==
+Date: Mon, 22 May 2023 18:54:35 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Horatiu Vultur <horatiu.vultur@microchip.com>, arinc9.unal@gmail.com,
+ Sean Wang <sean.wang@mediatek.com>, Landen Chao <Landen.Chao@mediatek.com>,
+ DENG Qingfang <dqfext@gmail.com>, Daniel Golle <daniel@makrotopia.org>,
+ Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
+ Vladimir Oltean <olteanv@gmail.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
+ <pabeni@redhat.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Richard van Schagen <richard@routerhints.com>, Richard van Schagen
+ <vschagen@cs.com>, Frank Wunderlich <frank-w@public-files.de>, Bartel
+ Eerdekens <bartel.eerdekens@constell8.be>, erkin.bozoglu@xeront.com,
+ mithat.guner@xeront.com, =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?=
+ <arinc.unal@arinc9.com>, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next 00/30] net: dsa: mt7530: improve, trap BPDU &
+ LLDP, and prefer CPU port
+Message-ID: <20230522185435.3b2a8d07@kernel.org>
+In-Reply-To: <ZGuwy/0FGh0c4wXk@shell.armlinux.org.uk>
+References: <20230522121532.86610-1-arinc.unal@arinc9.com>
+	<20230522140917.er7f5ws24b2eeyvs@soft-dev3-1>
+	<ZGuwy/0FGh0c4wXk@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230522230903.1853151-1-kuba@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 22, 2023 at 04:09:03PM -0700, Jakub Kicinski wrote:
-> We had a good run, but after 4 weeks of use we heard someone
-> asking about pw-bot commands. Let's explain its existence
-> in the docs. It's not a complete documentation but hopefully
-> it's enough for the casual contributor. The project and scope
-> are in flux so the details would likely become out of date,
-> if we were to document more in depth.
-> 
-> Link: https://lore.kernel.org/all/20230522140057.GB18381@nucnuc.mle/
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+On Mon, 22 May 2023 19:13:31 +0100 Russell King (Oracle) wrote:
+> > I have noticed that in many patches of the series you have:
+> > Tested-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+> >=20
+> > Where you also have:
+> > Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+> >=20
+> > I think you can drop Tested-by as the SoB will imply that. I think you
+> > got a similar comment some time ago to a different patch series. =20
+>=20
+> Signed-off-by in no way implies a tested-by. Signed-off-by has a very
+> distinct definition that is in submitting-patches.rst.
+>=20
+> Clearly, if one is working on infrastructure where there are numerous
+> drivers involved, one probably doesn't have all the hardware, and one
+> may have to send patches that have only been build tested, but never
+> tested against real hardware.
+>=20
+> While we may attempt to elicit testing, most of the time this seems
+> to be a waste of time and effort - or at least that's my experience.
+> Even if you Cc people who have recently been active with hardware,
+> that is no guarantee that there will be any reaction.
+>=20
+> That has got to the point now where I just don't bother trying to
+> elicit help from others to test driver changes. If people want to
+> test, they need to do so when they see a patch on the mailing list,
+> preferably before it gets applied. If not, and if it breaks something,
+> then we'll have to generate a patch to fix the breakage.
+>=20
+> So no, please stop thinking that SoB implies that the patch has been
+> tested.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Dunno, I had the same reaction as Horatiu. Adding "Compile tested only"
+in the commit messages of patches which author wasn't able to test seems
+more natural than assuming that nothing is tested by default.
 
-> +Instead of delegating patchwork permissions netdev uses a simple mail
-> +bot which looks for special commands/lines within the emails sent to
-> +the mailing list. For example to mark a series as Changes Requested
-> +one needs to send the following line anywhere in the email thread::
-> +
-> +  pw-bot: changes-requested
-
-...
-
-> +  https://patchwork.hopto.org/pw-bot.html
-
-[Evil grin]
-So your patch did not trigger the bot. Lets see if my reply does?
-[/Evil grin]
-
-   Andrew
+It's not a hard requirement, e.g. seems fairly common sense that cross-
+-driver work comes with limited testing coverage. But for someone
+working on a single driver, assuming not tested by default, again,=20
+to me - feels odd.
 
