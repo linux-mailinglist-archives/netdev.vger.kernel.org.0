@@ -1,112 +1,169 @@
-Return-Path: <netdev+bounces-4633-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4643-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 12B2270DA0E
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:14:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1F35D70DA88
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:29:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3F23E280CB5
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:14:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DF5411C20D4D
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:29:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13FDD1EA6A;
-	Tue, 23 May 2023 10:14:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9847A1F187;
+	Tue, 23 May 2023 10:28:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0888E1E501
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:14:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 849FC1E53D
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:28:37 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E4B94
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:14:35 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1D9186
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:28:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=f28b+xUwA9hJRC1pS+78VwurkiLlxsYKeOgJyMWJ+wg=; b=CEgvPcOej7iXOJvxqT0rwmiLdU
-	NyLjqOqG9jAZXYPQj3qz459t8QN0WvsenW01fieDT0HGSU7RD9H3l3qdL9rprK4FqEuugGp01GLYu
-	deHAxYi1dpaFxD0NjYLdmU2GZDwBfkGjCG0ptj2n4hvmbwnG8W/OgxXP6hvQlYDFyGCNjSsbyoKxm
-	RFRntxuQK/qwAw0Drhi/GkLJzz2Ki/IOJdk4KbWV2tqV8s+vZgmKGVGrngn6ity6FuyFtq4MYnPch
-	Sln7PqFuXeImtUXYRI0Hy2wPqec06+jsDAV/UXAnvYdLRbIhRVJEhAYnvU5aiZRLl9bYqa8F10e3g
-	KHj17NSQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56970)
+	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=wpzDxGFtOwVLolmb6TB31ZWWQz60u0sCm09L9jCR6Jo=; b=L1z6hiJ6QgndPCITTzoDFX4o4j
+	/mPXsdftVahZ/XbOt8txsisY8mR+xuwsxGZybDZ/h0d4vXpx2wr63G1ijdh49Ip4vIX5kuIOYJvZD
+	I5Q6Ngax+h8blu1nzOFKb+hz/ZNys0A8SM5SlrZmi8p/7qiImlI4BVHoHU0LobD+gKF648YQw0Q+O
+	kDL8iiR9vlHKrdom2nPWxl6q7hwWqGaeAG537MgtxLyAFGO8Q66+8OXvcxtgyfb1BsxjDBNk7tXkB
+	rsG0zrBnuLsByt0oAzlOvwq7y3j3UgVExH68DvdANfp2ebWTNOmK1UC42qEQl75V6cEEY55PiLQXl
+	OvBwK0zQ==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:52356 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q1P2B-00005r-6S; Tue, 23 May 2023 11:14:27 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q1P26-0000UT-Dg; Tue, 23 May 2023 11:14:22 +0100
-Date: Tue, 23 May 2023 11:14:22 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+	(envelope-from <rmk@armlinux.org.uk>)
+	id 1q1P3U-000069-Nz; Tue, 23 May 2023 11:15:48 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+	id 1q1P3U-007E8V-5D; Tue, 23 May 2023 11:15:48 +0100
+In-Reply-To: <ZGyR/jDyYTYzRklg@shell.armlinux.org.uk>
+References: <ZGyR/jDyYTYzRklg@shell.armlinux.org.uk>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 To: Jose Abreu <Jose.Abreu@synopsys.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
+Cc: Andrew Lunn <andrew@lunn.ch>,
 	Heiner Kallweit <hkallweit1@gmail.com>,
-	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next 0/9] net: pcs: xpcs: cleanups for clause 73 support
-Message-ID: <ZGyR/jDyYTYzRklg@shell.armlinux.org.uk>
+	netdev@vger.kernel.org
+Subject: [PATCH net-next 1/9] net: mdio: add clause 73 to ethtool conversion
+ helper
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SORTED_RECIPS,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1q1P3U-007E8V-5D@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date: Tue, 23 May 2023 11:15:48 +0100
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi,
+Add a helper to convert a clause 73 advertisement to an ethtool bitmap.
 
-This series cleans up xpcs code, moving much of the clause 73 code
-out of the driver into places where others can make use of it.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ include/linux/mdio.h      | 39 +++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/mdio.h | 24 ++++++++++++++++++++++++
+ 2 files changed, 63 insertions(+)
 
-Specifically, we add a helper to convert a clause 73 advertisement
-to ethtool link modes to mdio.h, and a helper to resolve the clause
-73 negotiation state to phylink, which includes the pause modes.
-
-In doing this cleanup, several issues were identified with the
-original xpcs implementation:
-
-1) it masks the link partner advertisement with its own advertisement
-   so userspace can't see what the full link partner advertisement
-   was.
-2) it was always setting pause modes irrespective of the advertisements
-   on either end of the link.
-3) it was reading the STAT1 registers multiple times. Reading STAT1
-   has the side effect of unlatching the link-down status, so
-   multiple reads should be avoided.
-
-This patch series addresses the first two first by addressing the
-issues, and then by moving over to the new helpers. The third issue
-is solved by restructuring the xpcs code.
-
-Changes since RFC v2: None
-v2: add attributations, fix spelling mistake in patch 8, fix build
-error in patch 9.
-Testing status: build tested only. Request for testing in RFC series
- yet again fell on deaf ears.
-
- drivers/net/pcs/pcs-xpcs.c | 159 ++++++++++++++++++---------------------------
- drivers/net/pcs/pcs-xpcs.h |   3 -
- drivers/net/phy/phylink.c  |  54 +++++++++++----
- include/linux/mdio.h       |  39 +++++++++++
- include/linux/phylink.h    |   2 +
- include/uapi/linux/mdio.h  |  24 +++++++
- 6 files changed, 170 insertions(+), 111 deletions(-)
-
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index 27013d6bf24a..0670cc6e067c 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -486,6 +486,45 @@ static inline u32 linkmode_adv_to_mii_10base_t1_t(unsigned long *adv)
+ 	return result;
+ }
+ 
++/**
++ * mii_c73_mod_linkmode - convert a Clause 73 advertisement to linkmodes
++ * @adv: linkmode advertisement setting
++ * @lpa: array of three u16s containing the advertisement
++ *
++ * Convert an IEEE 802.3 Clause 73 advertisement to ethtool link modes.
++ */
++static inline void mii_c73_mod_linkmode(unsigned long *adv, u16 *lpa)
++{
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT,
++			 adv, lpa[0] & MDIO_AN_C73_0_PAUSE);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
++			 adv, lpa[0] & MDIO_AN_C73_0_ASM_DIR);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
++			 adv, lpa[1] & MDIO_AN_C73_1_1000BASE_KX);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_10000baseKX4_Full_BIT,
++			 adv, lpa[1] & MDIO_AN_C73_1_10GBASE_KX4);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_40000baseKR4_Full_BIT,
++			 adv, lpa[1] & MDIO_AN_C73_1_40GBASE_KR4);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_40000baseCR4_Full_BIT,
++			 adv, lpa[1] & MDIO_AN_C73_1_40GBASE_CR4);
++	/* 100GBASE_CR10 and 100GBASE_KP4 not implemented */
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_100000baseKR4_Full_BIT,
++			 adv, lpa[1] & MDIO_AN_C73_1_100GBASE_KR4);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_100000baseCR4_Full_BIT,
++			 adv, lpa[1] & MDIO_AN_C73_1_100GBASE_CR4);
++	/* 25GBASE_R_S not implemented */
++	/* The 25GBASE_R bit can be used for 25Gbase KR or CR modes */
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_25000baseKR_Full_BIT,
++			 adv, lpa[1] & MDIO_AN_C73_1_25GBASE_R);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_25000baseCR_Full_BIT,
++			 adv, lpa[1] & MDIO_AN_C73_1_25GBASE_R);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
++			 adv, lpa[1] & MDIO_AN_C73_1_10GBASE_KR);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
++			 adv, lpa[2] & MDIO_AN_C73_2_2500BASE_KX);
++	/* 5GBASE_KR not implemented */
++}
++
+ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum);
+ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val);
+ int __mdiobus_modify_changed(struct mii_bus *bus, int addr, u32 regnum,
+diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+index 256b463e47a6..b826598d1e94 100644
+--- a/include/uapi/linux/mdio.h
++++ b/include/uapi/linux/mdio.h
+@@ -231,6 +231,30 @@
+ #define MDIO_PMA_EXTABLE_BT1		0x0800	/* BASE-T1 ability */
+ #define MDIO_PMA_EXTABLE_NBT		0x4000  /* 2.5/5GBASE-T ability */
+ 
++/* AN Clause 73 linkword */
++#define MDIO_AN_C73_0_S_MASK		GENMASK(4, 0)
++#define MDIO_AN_C73_0_E_MASK		GENMASK(9, 5)
++#define MDIO_AN_C73_0_PAUSE		BIT(10)
++#define MDIO_AN_C73_0_ASM_DIR		BIT(11)
++#define MDIO_AN_C73_0_C2		BIT(12)
++#define MDIO_AN_C73_0_RF		BIT(13)
++#define MDIO_AN_C73_0_ACK		BIT(14)
++#define MDIO_AN_C73_0_NP		BIT(15)
++#define MDIO_AN_C73_1_T_MASK		GENMASK(4, 0)
++#define MDIO_AN_C73_1_1000BASE_KX	BIT(5)
++#define MDIO_AN_C73_1_10GBASE_KX4	BIT(6)
++#define MDIO_AN_C73_1_10GBASE_KR	BIT(7)
++#define MDIO_AN_C73_1_40GBASE_KR4	BIT(8)
++#define MDIO_AN_C73_1_40GBASE_CR4	BIT(9)
++#define MDIO_AN_C73_1_100GBASE_CR10	BIT(10)
++#define MDIO_AN_C73_1_100GBASE_KP4	BIT(11)
++#define MDIO_AN_C73_1_100GBASE_KR4	BIT(12)
++#define MDIO_AN_C73_1_100GBASE_CR4	BIT(13)
++#define MDIO_AN_C73_1_25GBASE_R_S	BIT(14)
++#define MDIO_AN_C73_1_25GBASE_R		BIT(15)
++#define MDIO_AN_C73_2_2500BASE_KX	BIT(0)
++#define MDIO_AN_C73_2_5GBASE_KR		BIT(1)
++
+ /* PHY XGXS lane state register. */
+ #define MDIO_PHYXS_LNSTAT_SYNC0		0x0001
+ #define MDIO_PHYXS_LNSTAT_SYNC1		0x0002
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
 
