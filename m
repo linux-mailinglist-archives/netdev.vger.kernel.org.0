@@ -1,259 +1,346 @@
-Return-Path: <netdev+bounces-4716-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4707-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D937370DFD7
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:02:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0554970DF8D
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:42:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 941B328136C
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:02:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AEEEB28137D
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:42:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D85761F92C;
-	Tue, 23 May 2023 15:02:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D59011F189;
+	Tue, 23 May 2023 14:42:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C17CB1E524
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:02:21 +0000 (UTC)
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2052.outbound.protection.outlook.com [40.107.237.52])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062C011A
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:02:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZNOu9mOisglDxQ0fIr4SgseQsAEzYlB7XzCzfTrVmqLh2IDk3G3uapLKZUv7vks+l6t6bqNBOpu60CNAVq5e+NBcTWi5dSUv//K368aTtSB+wrs/6IUJZH3hnX3o0R7XHmBzgdJzThnSpi1z5gB+SJkKol74jz5PazmpKh3S8xFYh7HgTT/GD2Iz/xYIozzQRc1rVaXUCd4Is9squssoVLgoe5UFinXGwFji0y7+HwoZjafwOMc6E+xcFKf17/6fiiY9F/8zDIX1AVZFAqYTVBv7ljSQ508mvMVf6yc6I8BLRNjR/vUhrUEewo0z7OHvwxNT7Cl4yYBa5JWdeEn+uQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ymMrrHekSvoKTeREa0kJCsnwTxEn4WE5DBnzVBtblms=;
- b=EvWSuqZ6wIhm5KXdlK/aonCVDqFITkVy2NmUJ8l+OnVYKbGhGwv0QUdU9NTnS9wqtJqtRSk4GnxD7lOdT94JyH57/Oytdi94mRe3R0Lm3f8X2w0rYb8ptO/roQRJa2DN3VJdXc2hF1lATyLdz34vUyhXwFbR79NdA8zqU0w6T14qHl1yCHS409QNAH2iHOR4R73WpXeNee8eKU6MJfyBSvkGGhyjI6FZ/ylwu61zdyfe7a0C0zQrFIjt8li2AAKJfE/VhdDau2qz2+yI25sIwrQP+N0FALHIsrmn0CvltMPi4bit5s+ludjglSYxBT4F+imEJOTbHCiwlZsHSlLB+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ymMrrHekSvoKTeREa0kJCsnwTxEn4WE5DBnzVBtblms=;
- b=n0N0FC0O+c/IqIwMHzc60qlYkDyOHcaezZ8QPTjgqvgFiu2KwpGgfAeUATkZKAs2thTmBykbu8DDG19wyMw7qqPjcJHA6UPYTXmXiVRC+lrPaDcBxj+weowP+mkG3BPktnCSyVghaBIgj/bWEiLvzYM86QJ5gMSH6kkeaRw0rmcpKL3f8flGnsHrvUuxVai1u1KpLxrdHkTXMaiUO3WZpXLNhsFfGZm2OYJpNiM+N4y6NLkR6HYuzw/YH+wMuhWIUeOnV0Gpi50of5evuH0gKjRlAQq8bvsXk2QfgYG8sIha2HPIKBCHwxYozfonz+O+LZ2j4xcEzKXpaUoX1kgzpg==
-Received: from MW4PR03CA0156.namprd03.prod.outlook.com (2603:10b6:303:8d::11)
- by BL0PR12MB4930.namprd12.prod.outlook.com (2603:10b6:208:1c8::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.14; Tue, 23 May
- 2023 15:02:18 +0000
-Received: from CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8d:cafe::e0) by MW4PR03CA0156.outlook.office365.com
- (2603:10b6:303:8d::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28 via Frontend
- Transport; Tue, 23 May 2023 15:02:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CO1NAM11FT007.mail.protection.outlook.com (10.13.174.131) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6411.30 via Frontend Transport; Tue, 23 May 2023 15:02:17 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 23 May 2023
- 08:02:06 -0700
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 23 May
- 2023 08:02:04 -0700
-References: <20230510-dcb-rewr-v1-0-83adc1f93356@microchip.com>
- <20230510-dcb-rewr-v1-4-83adc1f93356@microchip.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Petr Machata <petrm@nvidia.com>
-To: Daniel Machon <daniel.machon@microchip.com>
-CC: <netdev@vger.kernel.org>, <dsahern@kernel.org>,
-	<stephen@networkplumber.org>, <petrm@nvidia.com>,
-	<UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH iproute2-next 4/9] dcb: app: modify
- dcb_app_table_remove_replaced() for dcb-rewr reuse
-Date: Tue, 23 May 2023 16:42:16 +0200
-In-Reply-To: <20230510-dcb-rewr-v1-4-83adc1f93356@microchip.com>
-Message-ID: <87cz2r5bx1.fsf@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C59B61F183
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 14:42:55 +0000 (UTC)
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A36E9
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 07:42:51 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+	by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34NBkCX0029572;
+	Tue, 23 May 2023 07:42:42 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=99eyv8CE7SX9Cg8+kZkx7RC+58duW+DZXPVbH10r3sk=;
+ b=OPJchz/TxKn98B4aa2g82g1Jgi45Lw20sgPBTriDbbNCZs2oXwz29i4FIiIc2BzR3FLX
+ S97L9QyzOqh+oN9/fg/yGbDV2J2SwPbP3kSb17ybibUmwCBVfLqZTwFZE4ftmQS3JtIE
+ ReGNub5VZ7ghtDnDhsx1vB6IDKcFjd4MBZ67/on61mGky/GrSvSHboTtrA55UcFwHFjV
+ gXaFIVjmW7/3Mh2mS4RWn/bncceXo55r727cTGPoMzndpHw2hSGX0IHAVz7VKsCbPWDf
+ XRZ99pmTiX6gn68XM+hpts3NyCbVfwyfSTBOdqEkAPLy1sFjpsggRJmN1h4I1Qgg0obB Wg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3qrm46jscg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+	Tue, 23 May 2023 07:42:42 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Tue, 23 May
+ 2023 07:42:40 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Tue, 23 May 2023 07:42:40 -0700
+Received: from falcon.marvell.com (unknown [10.30.46.95])
+	by maili.marvell.com (Postfix) with ESMTP id DE1E53F7074;
+	Tue, 23 May 2023 07:42:38 -0700 (PDT)
+From: Manish Chopra <manishc@marvell.com>
+To: <kuba@kernel.org>
+CC: <netdev@vger.kernel.org>, <aelior@marvell.com>, <palok@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        David Miller <davem@davemloft.net>
+Subject: [PATCH v5 net] qede: Fix scheduling while atomic
+Date: Tue, 23 May 2023 20:12:35 +0530
+Message-ID: <20230523144235.672290-1-manishc@marvell.com>
+X-Mailer: git-send-email 2.27.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT007:EE_|BL0PR12MB4930:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9408fc44-6ba7-43b9-b4f9-08db5b9eb355
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	M+PqCJ6aXdHrovCGifhh8sFpsfl++u+8U5UoGjbtaFDnsbajOqnDWnCDH1OU4vxHF8+Usn/Zneo6qtbTMfXflJWcn6vZJO02Ih3OIY38sIhMAipuLsyrC9ea4KOKhpCLLQtk3XWvUU5wTci0xLKDk4bOzn34M4WJivwAmHPTuipByuL3GSnu/1lCbuNd4LM/vzaj5aBbXD4nYkg+PqzeiaSoxWagku/RVKopmuz1f2W5Umi8fexEq6jXu1WJrCZVK4IBP/JlcfdmTawhkXESadufPk4h+T8o8tX8euahn76mDhB52ZzyVr12+tFCE6lWUYNgMYMrLEAxFibUNlF5k/QPkck2ezxQCYQzeq8IJ0YCE1d2qnro/EIWjYXafQxaEyfeAZ4GgQ/M3PT/xUbmXh1spRkwz/GD/5OJobYaRaSbYcSkmQ8MYobdxLN+8WgkIBLLhf9/CUzpqoCU6JrfnbreXmSkQSa4pvaYviMl6oHISIK4rLb8F+G5Oicmb+A8mgVPs73Y164tN6yTiposZhCgI3tjux2A/v76QkBYosjiFtkF5xuPTykVU9F5U/aUHRZrdvyFc7lVF3KH3BMrtI48j1G2xWVJNvKPKlpK4JmVw95EM566OZ0VZ4QY+IoHmiPWxyNg39MQ5OYlx2BWGCg3oDO8Hn8B2KIYOuC4NIWOQ3MIO5hCaZLcHy0+g0CEN5QvuMK5uMLWHgos4yUwY/2D0w9AyHiDeHDzAN/ptcJvGnzvQminkVyB/01Vppqd
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(39860400002)(346002)(376002)(451199021)(40470700004)(46966006)(36840700001)(8676002)(8936002)(5660300002)(36860700001)(82310400005)(47076005)(83380400001)(16526019)(186003)(7636003)(26005)(336012)(426003)(86362001)(2616005)(356005)(82740400003)(40460700003)(41300700001)(40480700001)(6666004)(70586007)(70206006)(6916009)(4326008)(316002)(36756003)(478600001)(54906003)(2906002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 15:02:17.3662
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9408fc44-6ba7-43b9-b4f9-08db5b9eb355
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4930
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+X-Proofpoint-ORIG-GUID: zWRlYDDEQiWOccWtgyUyoGalKzlwzY42
+X-Proofpoint-GUID: zWRlYDDEQiWOccWtgyUyoGalKzlwzY42
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-23_10,2023-05-23_02,2023-05-22_02
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Bonding module collects the statistics while holding
+the spinlock, beneath that qede->qed driver statistics
+flow gets scheduled out due to usleep_range() used in PTT
+acquire logic which results into below bug and traces -
 
-Daniel Machon <daniel.machon@microchip.com> writes:
+[ 3673.988874] Hardware name: HPE ProLiant DL365 Gen10 Plus/ProLiant DL365 Gen10 Plus, BIOS A42 10/29/2021
+[ 3673.988878] Call Trace:
+[ 3673.988891]  dump_stack_lvl+0x34/0x44
+[ 3673.988908]  __schedule_bug.cold+0x47/0x53
+[ 3673.988918]  __schedule+0x3fb/0x560
+[ 3673.988929]  schedule+0x43/0xb0
+[ 3673.988932]  schedule_hrtimeout_range_clock+0xbf/0x1b0
+[ 3673.988937]  ? __hrtimer_init+0xc0/0xc0
+[ 3673.988950]  usleep_range+0x5e/0x80
+[ 3673.988955]  qed_ptt_acquire+0x2b/0xd0 [qed]
+[ 3673.988981]  _qed_get_vport_stats+0x141/0x240 [qed]
+[ 3673.989001]  qed_get_vport_stats+0x18/0x80 [qed]
+[ 3673.989016]  qede_fill_by_demand_stats+0x37/0x400 [qede]
+[ 3673.989028]  qede_get_stats64+0x19/0xe0 [qede]
+[ 3673.989034]  dev_get_stats+0x5c/0xc0
+[ 3673.989045]  netstat_show.constprop.0+0x52/0xb0
+[ 3673.989055]  dev_attr_show+0x19/0x40
+[ 3673.989065]  sysfs_kf_seq_show+0x9b/0xf0
+[ 3673.989076]  seq_read_iter+0x120/0x4b0
+[ 3673.989087]  new_sync_read+0x118/0x1a0
+[ 3673.989095]  vfs_read+0xf3/0x180
+[ 3673.989099]  ksys_read+0x5f/0xe0
+[ 3673.989102]  do_syscall_64+0x3b/0x90
+[ 3673.989109]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[ 3673.989115] RIP: 0033:0x7f8467d0b082
+[ 3673.989119] Code: c0 e9 b2 fe ff ff 50 48 8d 3d ca 05 08 00 e8 35 e7 01 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24
+[ 3673.989121] RSP: 002b:00007ffffb21fd08 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+[ 3673.989127] RAX: ffffffffffffffda RBX: 000000000100eca0 RCX: 00007f8467d0b082
+[ 3673.989128] RDX: 00000000000003ff RSI: 00007ffffb21fdc0 RDI: 0000000000000003
+[ 3673.989130] RBP: 00007f8467b96028 R08: 0000000000000010 R09: 00007ffffb21ec00
+[ 3673.989132] R10: 00007ffffb27b170 R11: 0000000000000246 R12: 00000000000000f0
+[ 3673.989134] R13: 0000000000000003 R14: 00007f8467b92000 R15: 0000000000045a05
+[ 3673.989139] CPU: 30 PID: 285188 Comm: read_all Kdump: loaded Tainted: G        W  OE
 
-> When doing a replace command, entries are checked against selector and
-> protocol. Rewrite requires the check to be against selector and
-> priority.
->
-> Modify the existing dcb_app_table_remove_replace function for dcb-rewr
-> reuse, by using the newly introduced dcbnl attribute in the
-> dcb_app_table struct.
->
-> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
-> ---
->  dcb/dcb_app.c | 26 +++++++++++++++++++-------
->  1 file changed, 19 insertions(+), 7 deletions(-)
->
-> diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
-> index 9bb64f32e12e..23d6bb2a0013 100644
-> --- a/dcb/dcb_app.c
-> +++ b/dcb/dcb_app.c
-> @@ -160,15 +160,27 @@ void dcb_app_table_remove_replaced(struct dcb_app_table *a,
->  		for (ib = 0; ib < b->n_apps; ib++) {
->  			const struct dcb_app *ab = &b->apps[ib];
->  
-> -			if (aa->selector == ab->selector &&
-> -			    aa->protocol == ab->protocol)
-> -				present = true;
-> -			else
-> +			if (aa->selector != ab->selector)
->  				continue;
->  
-> -			if (aa->priority == ab->priority) {
-> -				found = true;
-> -				break;
-> +			if (a->attr == DCB_ATTR_IEEE_APP_TABLE) {
-> +				if (aa->protocol == ab->protocol)
-> +					present = true;
-> +				else
-> +					continue;
-> +				if (aa->priority == ab->priority) {
-> +					found = true;
-> +					break;
-> +				}
-> +			} else {
-> +				if (aa->priority == ab->priority)
-> +					present = true;
-> +				else
-> +					continue;
-> +				if (aa->protocol == ab->protocol) {
-> +					found = true;
-> +					break;
-> +				}
->  			}
->  		}
+Fix this by collecting the statistics asynchronously from a periodic
+delayed work scheduled at default stats coalescing interval and return
+the recent copy of statisitcs from .ndo_get_stats64(), also add ability
+to configure/retrieve stats coalescing interval using below commands -
 
-Same point about the attribute dispatch. How about this? (Not tested
-though.)
+ethtool -C ethx stats-block-usecs <val>
+ethtool -c ethx
 
-	static bool dcb_app_pid_eq(const struct dcb_app *aa, const struct dcb_app *ab)
-	{
-		return aa->selector == ab->selector &&
-		       aa->protocol == ab->protocol;
-	}
+Fixes: 133fac0eedc3 ("qede: Add basic ethtool support")
+Cc: Sudarsana Kalluru <skalluru@marvell.com>
+Cc: David Miller <davem@davemloft.net>
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+---
+v1->v2:
+ - Fixed checkpatch and kdoc warnings.
+v2->v3:
+ - Moving the changelog after tags.
+v3->v4:
+ - Changes to collect stats periodically using delayed work
+   and add ability to configure/retrieve stats coalescing
+   interval using ethtool
+ - Modified commit description to reflect the changes
+v4->v5:
+ - Renamed the variables (s/ticks/usecs and s/interval/ticks)
+ - Relaxed the stats usecs coalescing configuration to allow
+   user to set any range of values and also while getting return
+   the exact value configured
+ - Usage of usecs_to_jiffies() wherever applicable
+ - Cosmetic change for logs/comments
+---
+ drivers/net/ethernet/qlogic/qede/qede.h       |  4 +++
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   | 26 ++++++++++++--
+ drivers/net/ethernet/qlogic/qede/qede_main.c  | 35 ++++++++++++++++++-
+ 3 files changed, 62 insertions(+), 3 deletions(-)
 
-	static bool dcb_app_prio_eq(const struct dcb_app *aa, const struct dcb_app *ab)
-	{
-		return aa->selector == ab->selector &&
-		       aa->priority == ab->priority;
-	}
+diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
+index f90dcfe9ee68..8a63f99d499c 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede.h
++++ b/drivers/net/ethernet/qlogic/qede/qede.h
+@@ -271,6 +271,10 @@ struct qede_dev {
+ #define QEDE_ERR_WARN			3
+ 
+ 	struct qede_dump_info		dump_info;
++	struct delayed_work		periodic_task;
++	unsigned long			stats_coal_ticks;
++	u32				stats_coal_usecs;
++	spinlock_t			stats_lock; /* lock for vport stats access */
+ };
+ 
+ enum QEDE_STATE {
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+index 8284c4c1528f..a6498eb7cbd7 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+@@ -426,6 +426,8 @@ static void qede_get_ethtool_stats(struct net_device *dev,
+ 		}
+ 	}
+ 
++	spin_lock(&edev->stats_lock);
++
+ 	for (i = 0; i < QEDE_NUM_STATS; i++) {
+ 		if (qede_is_irrelevant_stat(edev, i))
+ 			continue;
+@@ -435,6 +437,8 @@ static void qede_get_ethtool_stats(struct net_device *dev,
+ 		buf++;
+ 	}
+ 
++	spin_unlock(&edev->stats_lock);
++
+ 	__qede_unlock(edev);
+ }
+ 
+@@ -817,6 +821,7 @@ static int qede_get_coalesce(struct net_device *dev,
+ 
+ 	coal->rx_coalesce_usecs = rx_coal;
+ 	coal->tx_coalesce_usecs = tx_coal;
++	coal->stats_block_coalesce_usecs = edev->stats_coal_usecs;
+ 
+ 	return rc;
+ }
+@@ -830,6 +835,21 @@ int qede_set_coalesce(struct net_device *dev, struct ethtool_coalesce *coal,
+ 	int i, rc = 0;
+ 	u16 rxc, txc;
+ 
++	if (edev->stats_coal_usecs != coal->stats_block_coalesce_usecs) {
++		bool stats_coal_enabled;
++
++		stats_coal_enabled = edev->stats_coal_usecs ? true : false;
++
++		edev->stats_coal_usecs = coal->stats_block_coalesce_usecs;
++		edev->stats_coal_ticks = usecs_to_jiffies(coal->stats_block_coalesce_usecs);
++
++		if (!stats_coal_enabled)
++			schedule_delayed_work(&edev->periodic_task, 0);
++
++		DP_INFO(edev, "Configured stats coal ticks=%lu jiffies\n",
++			edev->stats_coal_ticks);
++	}
++
+ 	if (!netif_running(dev)) {
+ 		DP_INFO(edev, "Interface is down\n");
+ 		return -EINVAL;
+@@ -2236,7 +2256,8 @@ static int qede_get_per_coalesce(struct net_device *dev,
+ }
+ 
+ static const struct ethtool_ops qede_ethtool_ops = {
+-	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS,
++	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS |
++					  ETHTOOL_COALESCE_STATS_BLOCK_USECS,
+ 	.get_link_ksettings		= qede_get_link_ksettings,
+ 	.set_link_ksettings		= qede_set_link_ksettings,
+ 	.get_drvinfo			= qede_get_drvinfo,
+@@ -2287,7 +2308,8 @@ static const struct ethtool_ops qede_ethtool_ops = {
+ };
+ 
+ static const struct ethtool_ops qede_vf_ethtool_ops = {
+-	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS,
++	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS |
++					  ETHTOOL_COALESCE_STATS_BLOCK_USECS,
+ 	.get_link_ksettings		= qede_get_link_ksettings,
+ 	.get_drvinfo			= qede_get_drvinfo,
+ 	.get_msglevel			= qede_get_msglevel,
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index 06c6a5813606..61cc10968988 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -308,6 +308,8 @@ void qede_fill_by_demand_stats(struct qede_dev *edev)
+ 
+ 	edev->ops->get_vport_stats(edev->cdev, &stats);
+ 
++	spin_lock(&edev->stats_lock);
++
+ 	p_common->no_buff_discards = stats.common.no_buff_discards;
+ 	p_common->packet_too_big_discard = stats.common.packet_too_big_discard;
+ 	p_common->ttl0_discard = stats.common.ttl0_discard;
+@@ -405,6 +407,8 @@ void qede_fill_by_demand_stats(struct qede_dev *edev)
+ 		p_ah->tx_1519_to_max_byte_packets =
+ 		    stats.ah.tx_1519_to_max_byte_packets;
+ 	}
++
++	spin_unlock(&edev->stats_lock);
+ }
+ 
+ static void qede_get_stats64(struct net_device *dev,
+@@ -413,9 +417,10 @@ static void qede_get_stats64(struct net_device *dev,
+ 	struct qede_dev *edev = netdev_priv(dev);
+ 	struct qede_stats_common *p_common;
+ 
+-	qede_fill_by_demand_stats(edev);
+ 	p_common = &edev->stats.common;
+ 
++	spin_lock(&edev->stats_lock);
++
+ 	stats->rx_packets = p_common->rx_ucast_pkts + p_common->rx_mcast_pkts +
+ 			    p_common->rx_bcast_pkts;
+ 	stats->tx_packets = p_common->tx_ucast_pkts + p_common->tx_mcast_pkts +
+@@ -435,6 +440,8 @@ static void qede_get_stats64(struct net_device *dev,
+ 		stats->collisions = edev->stats.bb.tx_total_collisions;
+ 	stats->rx_crc_errors = p_common->rx_crc_errors;
+ 	stats->rx_frame_errors = p_common->rx_align_errors;
++
++	spin_unlock(&edev->stats_lock);
+ }
+ 
+ #ifdef CONFIG_QED_SRIOV
+@@ -1000,6 +1007,21 @@ static void qede_unlock(struct qede_dev *edev)
+ 	rtnl_unlock();
+ }
+ 
++static void qede_periodic_task(struct work_struct *work)
++{
++	struct qede_dev *edev = container_of(work, struct qede_dev,
++					     periodic_task.work);
++
++	if (test_bit(QEDE_SP_DISABLE, &edev->sp_flags))
++		return;
++
++	if (edev->stats_coal_usecs) {
++		qede_fill_by_demand_stats(edev);
++		schedule_delayed_work(&edev->periodic_task,
++				      edev->stats_coal_ticks);
++	}
++}
++
+ static void qede_sp_task(struct work_struct *work)
+ {
+ 	struct qede_dev *edev = container_of(work, struct qede_dev,
+@@ -1208,7 +1230,9 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
+ 		 * from there, although it's unlikely].
+ 		 */
+ 		INIT_DELAYED_WORK(&edev->sp_task, qede_sp_task);
++		INIT_DELAYED_WORK(&edev->periodic_task, qede_periodic_task);
+ 		mutex_init(&edev->qede_lock);
++		spin_lock_init(&edev->stats_lock);
+ 
+ 		rc = register_netdev(edev->ndev);
+ 		if (rc) {
+@@ -1233,6 +1257,11 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
+ 	edev->rx_copybreak = QEDE_RX_HDR_SIZE;
+ 
+ 	qede_log_probe(edev);
++
++	edev->stats_coal_usecs = USEC_PER_SEC;
++	edev->stats_coal_ticks = usecs_to_jiffies(USEC_PER_SEC);
++	schedule_delayed_work(&edev->periodic_task, 0);
++
+ 	return 0;
+ 
+ err4:
+@@ -1301,6 +1330,7 @@ static void __qede_remove(struct pci_dev *pdev, enum qede_remove_mode mode)
+ 		unregister_netdev(ndev);
+ 
+ 		cancel_delayed_work_sync(&edev->sp_task);
++		cancel_delayed_work_sync(&edev->periodic_task);
+ 
+ 		edev->ops->common->set_power_state(cdev, PCI_D0);
+ 
+@@ -2571,6 +2601,9 @@ static void qede_recovery_handler(struct qede_dev *edev)
+ 
+ 	DP_NOTICE(edev, "Starting a recovery process\n");
+ 
++	/* disable periodic stats */
++	edev->stats_coal_usecs = 0;
++
+ 	/* No need to acquire first the qede_lock since is done by qede_sp_task
+ 	 * before calling this function.
+ 	 */
+-- 
+2.27.0
 
-	static void __dcb_app_table_remove_replaced(struct dcb_app_table *a,
-						    const struct dcb_app_table *b,
-						    bool (*key_eq)(const struct dcb_app *aa,
-								const struct dcb_app *ab),
-						    bool (*val_eq)(const struct dcb_app *aa,
-								const struct dcb_app *ab))
-	{
-		size_t ia, ja;
-		size_t ib;
-
-		for (ia = 0, ja = 0; ia < a->n_apps; ia++) {
-			struct dcb_app *aa = &a->apps[ia];
-			bool present = false;
-			bool found = false;
-
-			for (ib = 0; ib < b->n_apps; ib++) {
-				const struct dcb_app *ab = &b->apps[ib];
-
-				if (key_eq(aa, ab))
-					present = true;
-				else
-					continue;
-
-				if (val_eq(aa, ab)) {
-					found = true;
-					break;
-				}
-			}
-
-			/* Entries that remain in A will be removed, so keep in the
-                         * table only APP entries whose sel/pid is mentioned in B,
-			 * but that do not have the full sel/pid/prio match.
-			 */
-			if (present && !found)
-				a->apps[ja++] = *aa;
-		}
-
-		a->n_apps = ja;
-	}
-
-	void dcb_app_table_remove_replaced(struct dcb_app_table *a,
-					const struct dcb_app_table *b)
-	{
-		__dcb_app_table_remove_replaced(a, b, dcb_app_pid_eq, dcb_app_prio_eq);
-	}
-
-	void dcb_rwr_table_remove_replaced(struct dcb_app_table *a,
-					const struct dcb_app_table *b)
-	{
-		__dcb_app_table_remove_replaced(a, b, dcb_app_prio_eq, dcb_app_pid_eq);
-	}
-
-Alternatively have key / value extractor callbacks and compare those
-instead of directly priority and protocol.
-
-And actually now that I think about it more, a key_eq / get_key callback
-is all we need. Instead of val_eq / get_val, we can just compare the
-full app. We know the key matches already, so whatever it actually is,
-it will not prevent the second match.
-
-Dunno. I just don't want the attribute field become a polymorphic type
-tag of the structure. DCB is using these callbacks quite a bit all over
-the place, so code like this will be right at home.
-
-I was actually looking at dcb_app_table_remove_existing(), which is
-tantalizingly close to being a special case of the above where key_eq
-just always returns true and val_eq compares all fields. But alas for
-empty tables it would do the wrong thing.
 
