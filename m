@@ -1,84 +1,91 @@
-Return-Path: <netdev+bounces-4476-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4478-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2BFF070D13F
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:30:29 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id DF18370D14E
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:34:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F06A31C20C33
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:30:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 84254281093
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:34:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 160284C60;
-	Tue, 23 May 2023 02:30:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C8A7E1FA3;
+	Tue, 23 May 2023 02:34:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 637B94C95
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0F6E4C4339B;
-	Tue, 23 May 2023 02:30:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684809019;
-	bh=mOgu4frtqhI9N4mfSs5wP3YED0cc9Wfb878RmgNMcYg=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=gLgKIiN+VcizpntoNUUhH3yKv6jVNzYxnvXcRyhXqEiiwo1DaZcNa3taEuO3+0lt6
-	 1nmqTj/SOcmuGJ3xsbcu+UAy0mFrcW9TmuJodj4cgD4WfvGIO6GZlhEJgxz1vsP5Ir
-	 Dd19ymE03d3a5LamXMv5MJgfv3aHlJgdNMNiXGB1lfNtFxL4+qjkHcoMjmKz4nlIWl
-	 yjrwZPLq7Vc3rxnxveEeJUr7V1kjyxdK4syFusvNglxJOwuEVTPecypygZCY7aowkX
-	 DRskeWIy0/KBcx7XZaoTa6Y2nwOgyl9E+3jmcTw0gwXtz2nVfcjA+EDfzrZeMwyeOM
-	 mLDVWasb9RDmA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E7CF0E22AEC;
-	Tue, 23 May 2023 02:30:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA4851108
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:34:27 +0000 (UTC)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222D4CA;
+	Mon, 22 May 2023 19:34:26 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QQJDz4mTWzqTNG;
+	Tue, 23 May 2023 10:29:55 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Tue, 23 May
+ 2023 10:34:23 +0800
+Subject: Re: [PATCH net] page_pool: fix inconsistency for
+ page_pool_ring_[un]lock()
+To: Jakub Kicinski <kuba@kernel.org>
+CC: Ilias Apalodimas <ilias.apalodimas@linaro.org>, Jesper Dangaard Brouer
+	<jbrouer@redhat.com>, <davem@davemloft.net>, <pabeni@redhat.com>,
+	<brouer@redhat.com>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>,
+	Eric Dumazet <edumazet@google.com>, Lorenzo Bianconi <lorenzo@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>, John Fastabend
+	<john.fastabend@gmail.com>
+References: <20230522031714.5089-1-linyunsheng@huawei.com>
+ <1fc46094-a72a-f7e4-ef18-15edb0d56233@redhat.com>
+ <CAC_iWjJaNuDFZuv1Rv4Yr5Kaj1Wq69txAoLGepvnJT=pY1gaRw@mail.gmail.com>
+ <cc64a349-aaf4-9d80-3653-75eeb3032baf@huawei.com>
+ <20230522192238.28837d1d@kernel.org>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <e36a2091-82be-6071-245e-0cdd068ff857@huawei.com>
+Date: Tue, 23 May 2023 10:34:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] forcedeth: Fix an error handling path in nv_probe()
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168480901894.21333.17606928497234759231.git-patchwork-notify@kernel.org>
-Date: Tue, 23 May 2023 02:30:18 +0000
-References: <355e9a7d351b32ad897251b6f81b5886fcdc6766.1684571393.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <355e9a7d351b32ad897251b6f81b5886fcdc6766.1684571393.git.christophe.jaillet@wanadoo.fr>
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: rain.1986.08.12@gmail.com, zyjzyj2000@gmail.com, davem@davemloft.net,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, aabdulla@nvidia.com,
- linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
- netdev@vger.kernel.org
+In-Reply-To: <20230522192238.28837d1d@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
-
-This patch was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat, 20 May 2023 10:30:17 +0200 you wrote:
-> If an error occures after calling nv_mgmt_acquire_sema(), it should be
-> undone with a corresponding nv_mgmt_release_sema() call.
+On 2023/5/23 10:22, Jakub Kicinski wrote:
+> On Tue, 23 May 2023 10:13:14 +0800 Yunsheng Lin wrote:
+>> On 2023/5/22 19:45, Ilias Apalodimas wrote:
+>>>> Thanks for spotting and fixing this! :-)  
+>>
+>> It was spotted when implementing the below patch:)
+>>
+>> https://patchwork.kernel.org/project/netdevbpf/patch/168269857929.2191653.13267688321246766547.stgit@firesoul/#25325801
+>>
+>> Do you still working on optimizing the page_pool destroy
+>> process? If not, do you mind if I carry it on based on
+>> that?
 > 
-> Add it in the error handling path of the probe as already done in the
-> remove function.
-> 
-> Fixes: cac1c52c3621 ("forcedeth: mgmt unit interface")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> 
-> [...]
+> Not sure what you mean, this patch is a fix and the destroy
+> optimizations where targeted at net-next. Fix goes in first,
+> and then after the tree merge on Thu the work in net-next can 
+> progress.
 
-Here is the summary with links:
-  - [net] forcedeth: Fix an error handling path in nv_probe()
-    https://git.kernel.org/netdev/net/c/5b17a4971d3b
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Sure, it will be sent as RFC if this patch is not merged to
+net-next yet:)
 
