@@ -1,81 +1,147 @@
-Return-Path: <netdev+bounces-4723-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4724-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DE6CD70E061
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:26:02 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 56F4370E077
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:31:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 96BFD281366
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:26:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 224151C20D58
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:31:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BEE071F94E;
-	Tue, 23 May 2023 15:25:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 750B31F950;
+	Tue, 23 May 2023 15:31:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA7D31F922
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:25:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 198D2C433D2;
-	Tue, 23 May 2023 15:25:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684855557;
-	bh=36KGEMb1FrX6jTbn6n21r/JBWGn+BlZrYT1/+x1nW+U=;
-	h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-	b=H2+mATCuF5vPDTaTCcuoC/81ZJGHXGMTQLBPhLUPIeOItb9tcHmYtOEcPrhOm4dQy
-	 AvedWUBUZ9ZZpQ9rhX1CewPTBD28EH9UF2xVOp0m3kxBJ81bEnkuURCV/LgZguW8v1
-	 VmEm2kRzoEnyzZ+rsQ8IBWG9J2o2nD5n2oATWsv0sc9rExlKEvXu7fc/xyXWJGIAcC
-	 4M1M0dK/mZDLeq9/C/bGi/ZQrce/frLd8JGcP8bPR3mB1k9xobYx6txN+EfIwAXcVq
-	 VO1bAL8AKf60BQXUeWvqYSiSQGPMUG8LJ1PW/yhd//dMftsev2mWtyHRa3VPFNRsON
-	 4IQTzmvSx4uQQ==
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 670F01F168
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:31:31 +0000 (UTC)
+Received: from smtp.missinglinkelectronics.com (smtp.missinglinkelectronics.com [162.55.135.183])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D38139;
+	Tue, 23 May 2023 08:31:27 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by smtp.missinglinkelectronics.com (Postfix) with ESMTP id C66E8206DA;
+	Tue, 23 May 2023 17:31:25 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at missinglinkelectronics.com
+Received: from smtp.missinglinkelectronics.com ([127.0.0.1])
+	by localhost (mail.missinglinkelectronics.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5wuDeN9folHb; Tue, 23 May 2023 17:31:25 +0200 (CEST)
+Received: from humpen-bionic2.mle (p578c5bfe.dip0.t-ipconnect.de [87.140.91.254])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: david)
+	by smtp.missinglinkelectronics.com (Postfix) with ESMTPSA id 10DD720484;
+	Tue, 23 May 2023 17:31:25 +0200 (CEST)
+From: David Epping <david.epping@missinglinkelectronics.com>
+To: Vladimir Oltean <olteanv@gmail.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Russell King <linux@armlinux.org.uk>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	UNGLinuxDriver@microchip.com,
+	David Epping <david.epping@missinglinkelectronics.com>
+Subject: [PATCH net v3 0/4] net: phy: mscc: support VSC8501
+Date: Tue, 23 May 2023 17:31:04 +0200
+Message-Id: <20230523153108.18548-1-david.epping@missinglinkelectronics.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <5f1ef3e1-be8f-4bbc-a877-ec13cdc9254a@ovn.org>
-References: <20230511093456.672221-1-atenart@kernel.org> <2d54b3f5-d8c6-6009-a05a-e5bb2deafeda@redhat.com> <e45f3257-dc5c-3bcd-2de4-64f478ebb470@ovn.org> <11ece947-a839-0026-b272-7fb07bcaf1bb@redhat.com> <168413833063.4854.12088632353537054947@kwain> <7c7fc244-012c-7760-a62e-7c31242d489a@ovn.org> <168422260272.35976.12561298456115365259@kwain> <485035ec-90f2-77fe-a3c5-21a0a40b111e@ovn.org> <168432511934.5394.6542526478980736820@kwain> <5f1ef3e1-be8f-4bbc-a877-ec13cdc9254a@ovn.org>
-Subject: Re: [PATCH net-next 4/4] net: skbuff: fix l4_hash comment
-From: Antoine Tenart <atenart@kernel.org>
-Cc: i.maximets@ovn.org, davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-To: Dumitru Ceara <dceara@redhat.com>, Eric Dumazet <edumazet@google.com>, Ilya Maximets <i.maximets@ovn.org>
-Date: Tue, 23 May 2023 17:25:54 +0200
-Message-ID: <168485555448.4954.15925446882328637898@kwain>
 
-Quoting Ilya Maximets (2023-05-18 01:00:40)
-> On 5/17/23 14:05, Antoine Tenart wrote:
-> >=20
-> > Even l4_hash w/o taking the rnd case into account does not guarantee a
-> > stable hash for the lifetime of a flow; what happens if packets from the
-> > same flow are received on two NICs using different keys and/or algs?
->=20
-> Following the same logic we can't really say that it "provides a uniform
-> distribution over L4 flows" either.  The fact that L4 fields were used
-> to calculate the hash, doesn't mean the hash function is any good.
+Hello,
 
-Well drivers need to either trust the h/w in some ways or not use what
-is provided if it's broken; or we can't be sure of anything. It's not
-the same as an example where a valid setup can't guarantee a property by
-design.
+this updated series of patches adds support for the VSC8501 Ethernet
+PHY and fixes support for the VSC8502 PHY in cases where no other
+software (like U-Boot) has initialized the PHY after power up.
 
-> > Now, I'll let some time to give a chance for others to chime in.
->=20
-> Sure.
+The first patch simply adds the VSC8502 to the MODULE_DEVICE_TABLE,
+where I guess it was unintentionally missing. I have no hardware to
+test my change.
 
-I don't think we'll get more guidance and we failed to come to an
-agreement so let's keep this as-is for now; I'll send a v2 w/o this
-documentation change.
+The second patch adds the VSC8501 PHY with exactly the same driver
+implementation as the existing VSC8502.
 
-As for a way forward and the stability need, IMHO the hash needs to be
-computed where it is used (with potential cache, not reusing skb->hash)
-but if you feel this should be addressed at this level a patch doing so
-might at least get others to comment (both ways).
+The (new) third patch removes phydev locking from
+vsc85xx_rgmii_set_skews(), as discussed for v2 of the patch set.
 
-Thanks,
-Antoine
+The (now) fourth patch fixes the initialization for VSC8501 and VSC8502.
+I have tested this patch with VSC8501 on hardware in RGMII mode only.
+https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/VSC8501-03_Datasheet_60001741A.PDF
+https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/VSC8502-03_Datasheet_60001742B.pdf
+Table 4-42 "RGMII CONTROL, ADDRESS 20E2 (0X14)" Bit 11 for each of
+them.
+By default the RX_CLK is disabled for these PHYs. In cases where no
+other software, like U-Boot, enabled the clock, this results in no
+received packets being handed to the MAC.
+The patch enables this clock output.
+According to Microchip support (case number 01268776) this applies
+to all modes (RGMII, GMII, and MII).
+
+Other PHYs sharing the same register map and code, like
+VSC8530/31/40/41 have the clock enabled and the relevant bit 11 is
+reserved and read-only for them. As per previous discussion the
+patch still clears the bit on these PHYs, too, possibly more easily
+supporting other future PHYs implementing this functionality.
+
+For the VSC8572 family of PHYs, having a different register map,
+no such changes are applied.
+
+Thanks for your feedback,
+David
+
+--
+
+Changes in v3:
+- adjust cover letter and "additional notes"
+- insert new patch to remove phydev locks from set_skews()
+
+Changes in v2:
+- adjust cover letter (U-Boot, PHY families)
+- add reviewed-by tags to patch 1/3 and 2/3
+- patch 3/3: combine vsc85xx_rgmii_set_skews() and
+  vsc85xx_rgmii_enable_rx_clk() into vsc85xx_update_rgmii_cntl()
+  for fewer MDIO accesses
+- patch 3/3: treat all VSC8502 family PHYs the same (regardless of
+  bit 11 reserved status)
+
+Additional notes:
+- If you want to, feel free to add something like
+  Co developed by ...  I did not do that, because the Kernel
+  documentation requires a signed off by to go with it.
+  Significant parts of the new patch are from your emails.
+- For cases of not RGMII mode and not VSC8502 family there is no
+  MDIO access. Same as with the current mainline code.
+
+--
+
+David Epping (4):
+  net: phy: mscc: add VSC8502 to MODULE_DEVICE_TABLE
+  net: phy: mscc: add support for VSC8501
+  net: phy: mscc: remove unnecessary phydev locking
+  net: phy: mscc: enable VSC8501/2 RGMII RX clock
+
+ drivers/net/phy/mscc/mscc.h      |  2 +
+ drivers/net/phy/mscc/mscc_main.c | 82 +++++++++++++++++++++-----------
+ 2 files changed, 55 insertions(+), 29 deletions(-)
+
+
+base-commit: 3632679d9e4f879f49949bb5b050e0de553e4739
+-- 
+2.17.1
+
 
