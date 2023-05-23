@@ -1,219 +1,118 @@
-Return-Path: <netdev+bounces-4688-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4689-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8D21A70DE56
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:59:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B2C5270DE70
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:04:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 450C21C20C10
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 13:59:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6BA38280F53
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:04:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A95A1F163;
-	Tue, 23 May 2023 13:59:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5322F1F173;
+	Tue, 23 May 2023 14:04:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45E7A6FC7
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 13:59:23 +0000 (UTC)
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA16188
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 06:58:57 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id ffacd0b85a97d-3093a7b71fbso7151030f8f.2
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 06:58:57 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 421986FC7
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 14:04:49 +0000 (UTC)
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E7AE9
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 07:04:47 -0700 (PDT)
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-4f3baf04f0cso3441353e87.1
+        for <netdev@vger.kernel.org>; Tue, 23 May 2023 07:04:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684850336; x=1687442336;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=eTG4I00OdncI2kO0+vNFZ+PMlNcgn2Bgm1t3CtdI79Q=;
-        b=FY/5hp8ttXqdjlq76LG/8o4j7v3V5OUE5Uwh+RpTBGZLI//3ovWTM/Q42N1uPebLMx
-         iU6Uo5Nll7bQuKbECIyikf7IKarmPFz29TlUynyHjcnxPaVA19XjzrM91ANEUpYE2KoS
-         7YRCxy7Lw3vW94LBfN+88jMkd3CJDv2adWE9MnhpyRAIDGERGEB4OQE5JVpEjXBV9bWt
-         JZjEmpxIGEdS/6fC36Pain5vZaklMx8zKMuMQPtGwfKV80jIch/Vxxwk3D0TQ4KPbD+Q
-         HG93SPlGiKwljpY4C+1SHOsqk8BjkRK4ru7Lu1Ga7PfYFf77romlZrOoHiPPmZgJZlSU
-         S2IQ==
+        d=linaro.org; s=google; t=1684850625; x=1687442625;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vPsiQpeoZd8UCXYzsHHeRCuEWCzprLDI2K1UxMG1vNw=;
+        b=x+MCP6RIfgrhP/C4vp/VF513UZfXgcHOXjt39EnZYcgmTNS9SmK6xTyRxymm3cAXhy
+         /LaZFhOURjsNJOM6lIY9MwAVxzXsmMIWE8DLJaBbKJFE4kIQ0kHMc3SxPyVh6uSwrtk+
+         wNU2s2zwxen1OqwemfuCkOAFnIWaN+GP7UW62vDuVvYvmriGIigLWe6Gni7csFiLWmIh
+         jchR1tkEcWwy7Bb8Twqgp8qV4sQVPq4jMfbrSvauaswEagc8MJQP8ZxgMukHJvIdRfW4
+         SeSUkwhQub6h3PdQEBdBn9B6wSPsBeZUjcBXyY2tNf52dtUjqpcdqhVQtWybc8ItqCU5
+         4xkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684850336; x=1687442336;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eTG4I00OdncI2kO0+vNFZ+PMlNcgn2Bgm1t3CtdI79Q=;
-        b=VsxlCOcgcuLXNQqTNy8eeX9pjiz9laRTpt/UVMfTR8NKEWFiCJhwiADZEqojTpZS+U
-         O7BfpcbUAuvFrLJ9WnAg+OtwsH8/GG/1frRDC7aysCyCFA40v3geaJ+aPyy4hEpSD4Qe
-         F3yOnaRz3A27LyibESEiepQ99JB/CXSI+16sGEFnXOdhywXtiLB/0OlnVHtMvDpKuM5b
-         vaKGvy4TwIEZ/eU+whnbmh/b9A+OIgCd7sbMch8kDMhXNbIiBhSfFgN0U6pl/mzFqGub
-         0WulQ57yzY67dh55E3ecsTGyzVu9cMPqnF55Nu5XiFd+vKfdDv4jrQDW2bHPNgzTqb41
-         W85w==
-X-Gm-Message-State: AC+VfDy7arlXBz5xoljrm2/jwKANUug7slL/jhJAW0z7yxf6ihpwfdsl
-	144RiMFtWMW7Ej9u1E9xE2xuB7/y9IQ=
-X-Google-Smtp-Source: ACHHUZ6I2xk+pFTxHpVm+QAytNVg/Xvn+uuJ3VfHJfZKB2i+fNAo0NpyilG+nKE+W0ViSpYeHv1qpQ==
-X-Received: by 2002:a5d:564a:0:b0:306:2fd3:2edb with SMTP id j10-20020a5d564a000000b003062fd32edbmr9209716wrw.61.1684850335733;
-        Tue, 23 May 2023 06:58:55 -0700 (PDT)
-Received: from localhost (2a01cb008a61c2011e062e3ebf80f2e8.ipv6.abo.wanadoo.fr. [2a01:cb00:8a61:c201:1e06:2e3e:bf80:f2e8])
-        by smtp.gmail.com with ESMTPSA id x2-20020adfdcc2000000b003077f3dfcc8sm11084792wrm.32.2023.05.23.06.58.55
-        for <netdev@vger.kernel.org>
+        d=1e100.net; s=20221208; t=1684850625; x=1687442625;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vPsiQpeoZd8UCXYzsHHeRCuEWCzprLDI2K1UxMG1vNw=;
+        b=dLlOH+Ys8E0IIEwlj9puqgXvDUjh9eO84mJTXq1mfBAd2prYJLnn8I0iyvWXUzRK3B
+         XfHyGkdxOMsdZmeO5kMbKQny4I1dF4uDUH2kU3oRqyF1/foAJWJmSJDDUxbaaHcJ2NYc
+         Hxpw3apPHV+GC0XgV0o785iIHzu9OpByHPDKNzXdmyZvGGUNmNumISoOx/DYWxGGsFsm
+         o4XfHnyXO9D8ExAInEEpRhaKiVE9jiWlr7oFippbjtQ/y043urRyjTertx2r588lF0VU
+         L0vXi/xXJUBYqqlVsax8OzP/h2t/8n/TR2QiTId2FN+2ynoOPaUv7peiHIznJ+Al+b0a
+         6ZEw==
+X-Gm-Message-State: AC+VfDyrp++lcTImWTtMzpxa9TXZ41nvJyR7Tgag4pe7zCX9jqwBnWoR
+	qp0uVM/bFoj1o/fxxd4KWSJJ8Q==
+X-Google-Smtp-Source: ACHHUZ4e1X4jxIZwXl+y72sLOP3yazcOb2+MopQ9WDQmhL++ViPZczhGjjS6itrmgC5AhktkZRl30w==
+X-Received: by 2002:ac2:5de8:0:b0:4f1:3bd7:e53a with SMTP id z8-20020ac25de8000000b004f13bd7e53amr4566812lfq.49.1684850625594;
+        Tue, 23 May 2023 07:03:45 -0700 (PDT)
+Received: from Fecusia.lan (c-05d8225c.014-348-6c756e10.bbcust.telenor.se. [92.34.216.5])
+        by smtp.gmail.com with ESMTPSA id w16-20020ac254b0000000b004f01ae1e63esm1338341lfk.272.2023.05.23.07.03.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 May 2023 06:58:55 -0700 (PDT)
-Date: Tue, 23 May 2023 15:58:54 +0200
-From: Moviuro <moviuro@gmail.com>
-To: netdev@vger.kernel.org
-Subject: Secondary bond slave receiving packets when preferred is up
-Message-ID: <ZGzGngNhahy6kGBG@toxoplasmosis>
+        Tue, 23 May 2023 07:03:45 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Wei Liu <wei.liu@kernel.org>,
+	Paul Durrant <paul@xen.org>
+Cc: xen-devel@lists.xenproject.org,
+	netdev@vger.kernel.org,
+	Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] xen/netback: Pass (void *) to virt_to_page()
+Date: Tue, 23 May 2023 16:03:42 +0200
+Message-Id: <20230523140342.2672713-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi there,
+virt_to_page() takes a virtual address as argument but
+the driver passes an unsigned long, which works because
+the target platform(s) uses polymorphic macros to calculate
+the page.
 
-On 2 similar machines, some (random?) packets are received on a wireless
-bond slave when the preferred eth interface is connected: this causes
-local packet loss and at worst, disconnects (e.g. SSH and KDEConnect).
+Since many architectures implement virt_to_pfn() as
+a macro, this function becomes polymorphic and accepts both a
+(unsigned long) and a (void *).
 
-My setup looks fine, inspired by the Arch wiki[0], see
-/proc/net/bonding/bond0 below. The archlinux community has not been able
-to help so far[1].
+Fix this up by an explicit (void *) cast.
 
-     +-----------+                
-     |Router .1  |                
-     +-----+-----+                
-           |                      
-     +-----+-----+                
-     |Switch .30 +---------------+
-     +--+--------+-------------+ |
-        |                      | |
-        |                      | |
- +------+--+    +-----------+  | |
- | WAP .21 +~~~~+Client .111+--+ |
- +------+--+    +-----------+    |
-        |                        |
-        |       +-----------+    |
-        +~~~~~~~+Client .149-----+
-                +-----------+     
+Cc: Wei Liu <wei.liu@kernel.org>
+Cc: Paul Durrant <paul@xen.org>
+Cc: xen-devel@lists.xenproject.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/net/xen-netback/netback.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Running ping(8) for a few hours, there's nothing much going on, packet
-loss is really because ICMP packets end up on the WiFi interface:
+diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
+index c1501f41e2d8..caf0c815436c 100644
+--- a/drivers/net/xen-netback/netback.c
++++ b/drivers/net/xen-netback/netback.c
+@@ -689,7 +689,7 @@ static void xenvif_fill_frags(struct xenvif_queue *queue, struct sk_buff *skb)
+ 		prev_pending_idx = pending_idx;
+ 
+ 		txp = &queue->pending_tx_info[pending_idx].req;
+-		page = virt_to_page(idx_to_kaddr(queue, pending_idx));
++		page = virt_to_page((void *)idx_to_kaddr(queue, pending_idx));
+ 		__skb_fill_page_desc(skb, i, page, txp->offset, txp->size);
+ 		skb->len += txp->size;
+ 		skb->data_len += txp->size;
+-- 
+2.34.1
 
-* .1 -> .149: 56436 sent, 56405 replies
-* .1 -> .111: 20643 sent, 20640 replies
-* .111 -> .149: 7682/7702 packets
-* .149 -> .111: 14791/14792 packets
-
-Sure enough, there's some noise on the WiFi interface:
-
-root@149 # tcpdump -ttttnei wlp3s0 host 192.168.1.149 and not arp
-2023-05-23 09:29:46.771535 11:11:11:11:11:74 > BB:BB:BB:BB:BB:33, ethertype IPv4 (0x0800), length 98: 192.168.1.1 > 192.168.1.149: ICMP echo request , id 64306, seq 53425, length 64
-2023-05-23 09:36:04.710859 bb:bb:bb:bb:bb:32 > BB:BB:BB:BB:BB:33, ethertype IPv4 (0x0800), length 98: 192.168.1.111 > 192.168.1.149: ICMP echo reque st, id 1, seq 2390, length 64
-
-root@111 # tcpdump -ttttnei wlp5s0 not arp and host 192.168.1.111
-2023-05-23 09:28:33.367805 pp:pp:pp:pp:pp:af > bb:bb:bb:bb:bb:32, ethertype IPv4 (0x0800), length 457: 192.168.1.173 > 192.168.1.111: ip-proto-17
-2023-05-23 09:32:29.727948 21:21:21:21:21:ec > bb:bb:bb:bb:bb:32, ethertype IPv4 (0x0800), length 74: 192.168.1.21.45194 > 192.168.1.111.8080: Flags [S], seq 519821669, win 29200, options [mss 1460,sackOK,TS val 490237620 ecr 0,nop,wscale 5], length 0
-[...]
-2023-05-23 10:02:36.431322 11:11:11:11:11:74 > bb:bb:bb:bb:bb:32, ethertype IPv4 (0x0800), length 758: 192.168.1.1.22 > 192.168.1.111.44028: Flags [P.], seq 2394290223:2394290915, ack 741416096, win 271, options [nop,nop,TS val 1797716987 ecr 1795972790], length 692
-
-I have also checked that there are not ARP messages from .111 or .149 on
-their WiFi interfaces:
-
-root@111 # tcpdump -ttttnei wlp5s0 arp
-2023-05-23 11:29:16.487822 00:00:00:00:00:54 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.26 tell 192.168.1.100, length 46
-2023-05-23 11:29:17.300904 00:00:00:00:00:54 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.26 tell 192.168.1.100, length 46
-2023-05-23 11:29:18.904718 00:00:00:00:00:54 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.26 tell 192.168.1.100, length 46
-2023-05-23 11:29:20.945890 30:30:30:30:30:d4 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.1 (ff:ff:ff:ff:ff:ff) tell 192.168.1.30, length 46
-2023-05-23 11:29:26.986234 30:30:30:30:30:d4 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.1 (ff:ff:ff:ff:ff:ff) tell 192.168.1.30, length 46
-
-After removing the .111 ARP entry from the router, no ARP reply on WiFi:
-(it does show up when tcpdump(8)ing on the ethernet iface)
-
-2023-05-23 11:31:28.986766 11:11:11:11:11:74 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.111 tell 192.168.1.1, length 46
-# no reply! it happened on the eth iface
-2023-05-23 11:31:33.925495 30:30:30:30:30:d4 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.1 (ff:ff:ff:ff:ff:ff) tell 192.168.1.30, length 46
-
-I connect to the WiFi network using wpa_supplicant(8). Launching
-wpa_supplicant in debug mode (-dd) yields some additional messages but
-they never coincide with packets getting received on the WiFi interface.
-
-So I'm at a loss here. The bonding documentation doesn't say anything
-about needing special networking hardware (on the clients or on the
-network).
-
-[0] https://wiki.archlinux.org/title/systemd-networkd#Bonding_a_wired_and_wireless_interface
-[1] https://bbs.archlinux.org/viewtopic.php?id=285633
-
-user@111 % cat /proc/net/bonding/bond0 
-Ethernet Channel Bonding Driver: v6.3.2-1-clear
-
-Bonding Mode: fault-tolerance (active-backup)
-Primary Slave: enp4s0 (primary_reselect always)
-Currently Active Slave: enp4s0
-MII Status: up
-MII Polling Interval (ms): 1000
-Up Delay (ms): 0
-Down Delay (ms): 0
-Peer Notification Delay (ms): 0
-
-Slave Interface: wlp5s0
-MII Status: up
-Speed: Unknown
-Duplex: Unknown
-Link Failure Count: 0
-Permanent HW addr: ww:ww:ww:ww:ww:c8
-Slave queue ID: 0
-
-Slave Interface: enp4s0
-MII Status: up
-Speed: 1000 Mbps
-Duplex: full
-Link Failure Count: 0
-Permanent HW addr: ee:ee:ee:ee:ee:ac
-Slave queue ID: 0
-
-user@149 % cat /proc/net/bonding/bond0
-Ethernet Channel Bonding Driver: v6.3.2-zen1-1.1-zen
-
-Bonding Mode: fault-tolerance (active-backup)
-Primary Slave: enp0s31f6 (primary_reselect always)
-Currently Active Slave: enp0s31f6
-MII Status: up
-MII Polling Interval (ms): 1000
-Up Delay (ms): 0
-Down Delay (ms): 0
-Peer Notification Delay (ms): 0
-
-Slave Interface: wlp3s0
-MII Status: up
-Speed: Unknown
-Duplex: Unknown
-Link Failure Count: 0
-Permanent HW addr: WW:WW:WW:WW:WW:70
-Slave queue ID: 0
-
-Slave Interface: enp0s31f6
-MII Status: up
-Speed: 1000 Mbps
-Duplex: full
-Link Failure Count: 1
-Permanent HW addr: EE:EE:EE:EE:EE:4f
-Slave queue ID: 0
-
-Networking hardware list:
-
-* Switch https://eu.store.ui.com/eu/en/collections/unifi-switching-standard-power-over-ethernet/products/usw-24-poe
-* WAP https://eu.store.ui.com/eu/en/collections/unifi-wifi-flagship-compact/products/u6-lite
-
-Client hardware:
-
-* 111: AsRock B550 Phantom Gaming-ITX/ax: https://pg.asrock.com/mb/AMD/B550%20Phantom%20Gaming-ITXax/index.asp#Specification
-* 149: MSI Z170A SLI Plus: https://www.msi.com/Motherboard/Z170A-SLI-PLUS/Specification
-* 149: Intel Corporation Dual Band Wireless-AC 7260 [Wilkins Peak 2]: https://ark.intel.com/content/www/us/en/ark/products/75439/intel-dual-band-wirelessac-7260.html
 
