@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-4482-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4481-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 50C9A70D163
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:39:00 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A22FA70D15F
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:38:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0CDC02811D7
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:38:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 589DB281199
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:38:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F209B4C83;
-	Tue, 23 May 2023 02:38:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67CBB4C8E;
+	Tue, 23 May 2023 02:38:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A365390
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:38:20 +0000 (UTC)
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE39CA;
-	Mon, 22 May 2023 19:38:19 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 34N2bpRA096282;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EC5F4C83
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:38:19 +0000 (UTC)
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15071CD;
+	Mon, 22 May 2023 19:38:16 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 34N2bptl096314;
 	Mon, 22 May 2023 21:37:51 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
 	s=ti-com-17Q1; t=1684809471;
-	bh=JBfvNxVE/qLOsGVroHH8hujUwwjvB38Vr4pscuPer/w=;
+	bh=7l7cQhrcqsgAZL1hoc0yJDiHaFynHHWNyFJyaX2v5AY=;
 	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=UlgxJ4uKQvMbVMQIh3SJ7PFtesixKtB69F1O7CED/FPkreOyS+h43Htv+pqmTHxpY
-	 7wfWDTBHVBqRJ/L+LLIzM95Y97rAU1UTFIhwbPSt9h7yqsmVguQmrbdaJsg7tqB89s
-	 9bwgYxt0wW6RQKqjVn55iI9kaq10OvZSgVFP8MsA=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-	by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 34N2bo5O074799
+	b=y42NXt/yPed4Uu+iTH2fK6KzJWmnfSIqPJQUOotS2nBRqL3Mc+YQMl8DMY1HkDNin
+	 qWBMapsbs+incyMl4pveb+s/+oeoeEM89VhUHJ4fJoiqoH3YCK9jMBwSfCmkG2GX0b
+	 vAlhuOntdPxCBgOwXYBEJyYY+9ZAj3sKWc1dajok=
+Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
+	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 34N2bpcZ011805
 	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 22 May 2023 21:37:50 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+	Mon, 22 May 2023 21:37:51 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 22
  May 2023 21:37:50 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
  Frontend Transport; Mon, 22 May 2023 21:37:50 -0500
 Received: from a0498204.dal.design.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-	by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 34N2bnsX031957;
+	by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 34N2bnsY031957;
 	Mon, 22 May 2023 21:37:50 -0500
 From: Judith Mendez <jm@ti.com>
 To: Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
@@ -66,9 +66,9 @@ CC: Wolfgang Grandegger <wg@grandegger.com>,
         Oliver Hartkopp <socketcan@hartkopp.net>,
         Tony
  Lindgren <tony@atomide.com>
-Subject: [PATCH v7 1/2] dt-bindings: net: can: Remove interrupt properties for MCAN
-Date: Mon, 22 May 2023 21:37:48 -0500
-Message-ID: <20230523023749.4526-2-jm@ti.com>
+Subject: [PATCH v7 2/2] can: m_can: Add hrtimer to generate software interrupt
+Date: Mon, 22 May 2023 21:37:49 -0500
+Message-ID: <20230523023749.4526-3-jm@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230523023749.4526-1-jm@ti.com>
 References: <20230523023749.4526-1-jm@ti.com>
@@ -87,77 +87,199 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On AM62x SoC, MCANs on MCU domain do not have hardware interrupt
-routed to A53 Linux, instead they will use software interrupt by
-timer polling.
+Add an hrtimer to MCAN class device. Each MCAN will have its own
+hrtimer instantiated if there is no hardware interrupt found in
+device tree M_CAN node.
 
-To enable timer polling method, interrupts should be
-optional so remove interrupts property from required section and
-add an example for MCAN node with timer polling enabled.
+The hrtimer will generate a software interrupt every 1 ms. In
+hrtimer callback, we check if there is a transaction pending by
+reading a register, then process by calling the isr if there is.
 
 Signed-off-by: Judith Mendez <jm@ti.com>
 ---
 Changelog:
 v7:
-   1. No changes
+- Clean up m_can_platform.c if/else section after removing poll-interval
+- Remove poll-interval from patch description
 v6:
-   1. No changes
+- Move hrtimer stop/start function calls to m_can_open and m_can_close to
+support power suspend/resume
 v5:
-   1. Remove poll-interval
-   2. Remove oneOf that selects interrupts/interrupt-names or poll-interval
+- Change dev_dbg to dev_info if hardware interrupt exists and polling
+is enabled
+v4:
+- No changes
 v3:
-   1. Update binding poll-interval description
-   2. Add oneOf to select interrupts/interrupt-names or poll-interval
+- Create a define for 1 ms polling interval
+- Change plarform_get_irq to optional to not print error msg
 v2:
-   1. Add poll-interval property to enable timer polling method
-   2. Add example using poll-interval property
+- Add functionality to check for 'poll-interval' property in MCAN node 
+- Add 'polling' flag in driver to check if device is using polling method
+- Check for timer polling and hardware interrupt cases, default to
+hardware interrupt method
+- Change ns_to_ktime() to ms_to_ktime()
 ---
- .../bindings/net/can/bosch,m_can.yaml         | 20 +++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ drivers/net/can/m_can/m_can.c          | 33 ++++++++++++++++++++++++--
+ drivers/net/can/m_can/m_can.h          |  4 ++++
+ drivers/net/can/m_can/m_can_platform.c | 25 ++++++++++++++++---
+ 3 files changed, 57 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-index 67879aab623b..bb518c831f7b 100644
---- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-+++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-@@ -122,8 +122,6 @@ required:
-   - compatible
-   - reg
-   - reg-names
--  - interrupts
--  - interrupt-names
-   - clocks
-   - clock-names
-   - bosch,mram-cfg
-@@ -132,6 +130,7 @@ additionalProperties: false
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index a5003435802b..f273d989bdff 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -11,6 +11,7 @@
+ #include <linux/bitfield.h>
+ #include <linux/can/dev.h>
+ #include <linux/ethtool.h>
++#include <linux/hrtimer.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+@@ -308,6 +309,9 @@ enum m_can_reg {
+ #define TX_EVENT_MM_MASK	GENMASK(31, 24)
+ #define TX_EVENT_TXTS_MASK	GENMASK(15, 0)
  
- examples:
-   - |
-+    // Example with interrupts
-     #include <dt-bindings/clock/imx6sx-clock.h>
-     can@20e8000 {
-       compatible = "bosch,m_can";
-@@ -149,4 +148,21 @@ examples:
-       };
-     };
++/* Hrtimer polling interval */
++#define HRTIMER_POLL_INTERVAL		1
++
+ /* The ID and DLC registers are adjacent in M_CAN FIFO memory,
+  * and we can save a (potentially slow) bus round trip by combining
+  * reads and writes to them.
+@@ -895,7 +899,7 @@ static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstatus,
+ 			netdev_dbg(dev, "Arbitration phase error detected\n");
+ 			work_done += m_can_handle_lec_err(dev, lec);
+ 		}
+-		
++
+ 		if (is_lec_err(dlec)) {
+ 			netdev_dbg(dev, "Data phase error detected\n");
+ 			work_done += m_can_handle_lec_err(dev, dlec);
+@@ -1414,6 +1418,12 @@ static int m_can_start(struct net_device *dev)
  
-+  - |
-+    // Example with timer polling
-+    #include <dt-bindings/clock/imx6sx-clock.h>
-+    can@20e8000 {
-+      compatible = "bosch,m_can";
-+      reg = <0x020e8000 0x4000>, <0x02298000 0x4000>;
-+      reg-names = "m_can", "message_ram";
-+      clocks = <&clks IMX6SX_CLK_CANFD>,
-+               <&clks IMX6SX_CLK_CANFD>;
-+      clock-names = "hclk", "cclk";
-+      bosch,mram-cfg = <0x0 0 0 32 0 0 0 1>;
+ 	m_can_enable_all_interrupts(cdev);
+ 
++	if (cdev->polling) {
++		dev_dbg(cdev->dev, "Start hrtimer\n");
++		hrtimer_start(&cdev->hrtimer, ms_to_ktime(HRTIMER_POLL_INTERVAL),
++			      HRTIMER_MODE_REL_PINNED);
++	}
 +
-+      can-transceiver {
-+        max-bitrate = <5000000>;
-+      };
-+    };
+ 	return 0;
+ }
+ 
+@@ -1571,6 +1581,11 @@ static void m_can_stop(struct net_device *dev)
+ 	/* disable all interrupts */
+ 	m_can_disable_all_interrupts(cdev);
+ 
++	if (cdev->polling) {
++		dev_dbg(cdev->dev, "Disabling the hrtimer\n");
++		hrtimer_cancel(&cdev->hrtimer);
++	}
 +
- ...
+ 	/* Set init mode to disengage from the network */
+ 	m_can_config_endisable(cdev, true);
+ 
+@@ -1793,6 +1808,18 @@ static netdev_tx_t m_can_start_xmit(struct sk_buff *skb,
+ 	return NETDEV_TX_OK;
+ }
+ 
++static enum hrtimer_restart hrtimer_callback(struct hrtimer *timer)
++{
++	struct m_can_classdev *cdev = container_of(timer, struct
++						   m_can_classdev, hrtimer);
++
++	m_can_isr(0, cdev->net);
++
++	hrtimer_forward_now(timer, ms_to_ktime(HRTIMER_POLL_INTERVAL));
++
++	return HRTIMER_RESTART;
++}
++
+ static int m_can_open(struct net_device *dev)
+ {
+ 	struct m_can_classdev *cdev = netdev_priv(dev);
+@@ -1831,9 +1858,11 @@ static int m_can_open(struct net_device *dev)
+ 		err = request_threaded_irq(dev->irq, NULL, m_can_isr,
+ 					   IRQF_ONESHOT,
+ 					   dev->name, dev);
+-	} else {
++	} else if (!cdev->polling) {
+ 		err = request_irq(dev->irq, m_can_isr, IRQF_SHARED, dev->name,
+ 				  dev);
++	} else {
++		cdev->hrtimer.function = &hrtimer_callback;
+ 	}
+ 
+ 	if (err < 0) {
+diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
+index a839dc71dc9b..e9db5cce4e68 100644
+--- a/drivers/net/can/m_can/m_can.h
++++ b/drivers/net/can/m_can/m_can.h
+@@ -15,6 +15,7 @@
+ #include <linux/device.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/freezer.h>
++#include <linux/hrtimer.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+@@ -93,6 +94,9 @@ struct m_can_classdev {
+ 	int is_peripheral;
+ 
+ 	struct mram_cfg mcfg[MRAM_CFG_NUM];
++
++	struct hrtimer hrtimer;
++	bool polling;
+ };
+ 
+ struct m_can_classdev *m_can_class_allocate_dev(struct device *dev, int sizeof_priv);
+diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
+index 94dc82644113..b639c9e645d3 100644
+--- a/drivers/net/can/m_can/m_can_platform.c
++++ b/drivers/net/can/m_can/m_can_platform.c
+@@ -5,6 +5,7 @@
+ //
+ // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
+ 
++#include <linux/hrtimer.h>
+ #include <linux/phy/phy.h>
+ #include <linux/platform_device.h>
+ 
+@@ -96,12 +97,30 @@ static int m_can_plat_probe(struct platform_device *pdev)
+ 		goto probe_fail;
+ 
+ 	addr = devm_platform_ioremap_resource_byname(pdev, "m_can");
+-	irq = platform_get_irq_byname(pdev, "int0");
+-	if (IS_ERR(addr) || irq < 0) {
+-		ret = -EINVAL;
++	if (IS_ERR(addr)) {
++		ret = PTR_ERR(addr);
+ 		goto probe_fail;
+ 	}
+ 
++	if (device_property_present(mcan_class->dev, "interrupts") ||
++	    device_property_present(mcan_class->dev, "interrupt-names")) {
++		irq = platform_get_irq_byname(pdev, "int0");
++		mcan_class->polling = false;
++		if (irq == -EPROBE_DEFER) {
++			ret = -EPROBE_DEFER;
++			goto probe_fail;
++		}
++		if (irq < 0) {
++			ret = -ENXIO;
++			goto probe_fail;
++		}
++	} else {
++		mcan_class->polling = true;
++		dev_dbg(mcan_class->dev, "Polling enabled, initialize hrtimer");
++		hrtimer_init(&mcan_class->hrtimer, CLOCK_MONOTONIC,
++			     HRTIMER_MODE_REL_PINNED);
++	}
++
+ 	/* message ram could be shared */
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "message_ram");
+ 	if (!res) {
 -- 
 2.17.1
 
