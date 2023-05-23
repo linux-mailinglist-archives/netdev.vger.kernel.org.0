@@ -1,126 +1,156 @@
-Return-Path: <netdev+bounces-4528-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4529-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7E76270D310
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:06:18 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 135E770D316
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:09:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 13597281221
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:06:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9CCDF281212
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:09:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2D2A11B8EB;
-	Tue, 23 May 2023 05:06:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A2F8C1B8ED;
+	Tue, 23 May 2023 05:08:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C69A4C60
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:06:14 +0000 (UTC)
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B9CFA
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 22:06:06 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-	by smtp-out1.suse.de (Postfix) with ESMTP id 049C82260A;
-	Tue, 23 May 2023 05:06:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1684818365; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=qTLHhloMeb95WCMRCmZC5Fp92/vwLvcD+OdiaC9COZE=;
-	b=trbd1JU/QZrtIGQfxOIl3HEnbNpTcIr/DIOY+P++DSYyB1eg0oLciVze0CbA75EA+6/Rej
-	zGbI3mSK06CPgJAK/RuwO5fxWIIpi8dnytmjpZEDgqAotIVqyV76UFWqgH4O5gZ2OLrozU
-	fSZS/v78s5Mh51upwLULLDRzmmyy370=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1684818365;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=qTLHhloMeb95WCMRCmZC5Fp92/vwLvcD+OdiaC9COZE=;
-	b=VGNbj8cTRioz1xwzER21FEDIJ+pjHVVPjUVlS8IrHJ3j7+X763zQt0+Van0oU78BMU/w8F
-	d3JJF8WKVgPAc6Bw==
-Received: from lion.mk-sys.cz (unknown [10.163.44.94])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by relay2.suse.de (Postfix) with ESMTPS id A886F2C141;
-	Tue, 23 May 2023 05:06:04 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-	id 7829460410; Tue, 23 May 2023 07:06:04 +0200 (CEST)
-Date: Tue, 23 May 2023 07:06:04 +0200
-From: Michal Kubecek <mkubecek@suse.cz>
-To: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc: netdev@vger.kernel.org,
-	Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-Subject: Re: [PATCH ethtool v2, 1/1] netlink/rss: move variable declaration
- out of the for loop
-Message-ID: <20230523050604.h7qlqdop2fxxcejy@lion.mk-sys.cz>
-References: <20230522175401.1232921-1-dario.binacchi@amarulasolutions.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 968AC1B8EB
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:08:58 +0000 (UTC)
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8756B10D;
+	Mon, 22 May 2023 22:08:56 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id a640c23a62f3a-96fb1642b09so406698566b.0;
+        Mon, 22 May 2023 22:08:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684818535; x=1687410535;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ccUpSo5CJAHGMjq9I+q+FKG1cRoF/TWQPS+NnY32hvg=;
+        b=izycGQWkeUhiWfSgorIn5e1mas9O/zMUpTM17nQ8thg7m7+QuGie0sd4fADKgZcJyn
+         525jELK4O6Tj1ve6ppeULuzhi3GtpSrdDWA3Zct1vhrWkw2fuxJKRhu5yXARhv071LFs
+         vGN+mC3izAjeZKf0sgRlr5gVU4NKzj3zk5IFGqdE4FHiWuWs0ISB2jgA6wUdSZV+NL9G
+         rqELbz/5ly8lzd1UZwhk0rsvmiha7zUOCKefp/UcVHcduQbS4WxGX4uBSGkEOQhhdwIu
+         JN9vg1rkxYGTYDhl8HhIRgFELN2hxTl0wcMPph1N77Bwp/AzPiZmlArPEzsq/iz+j+oy
+         0Lqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684818535; x=1687410535;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ccUpSo5CJAHGMjq9I+q+FKG1cRoF/TWQPS+NnY32hvg=;
+        b=BeDx6VshojgO864H6v+I70R2aO4rd90RwzysQ+0qDG65R66tyCighPypAwQ7N4Ibh3
+         2u5syGc9UGSw0K+uQqbUfcsiQ6h4VUPYSc+LgTZRL12xOlGyEc/rSLAK+eKWcIu7LczW
+         LzPOIm6xMZlyr6s21XUWscbGx9n4XqI8HnlSgdDmWRaQ+SRXk6yx9jtTFXrENc3wKyiL
+         +totGdDwJqsf2fB9VqQr36aCxlGFA+/DKWM7f0sMyW0hYYFxUvRbfhjFuufN61NYd1v8
+         BJp88hqc7OmzsNp5z+KDQRjhvI+ZqZbD/JD78Kh4Tcr8zRYkFmuGCg+4ZG+aVd7RT9ps
+         bDfg==
+X-Gm-Message-State: AC+VfDyZiUG5ZCimTM+1RTn41skXkrJHnYZ0nceKtEQyFQIBuTVxOvjW
+	ETLoi6X3g6Kzyr9T+v9LzkRjhlBqxLw6PYE3LE8=
+X-Google-Smtp-Source: ACHHUZ6XHKU72z3WljTmZesf+gXwAZI4Empvl3Z/a7PiHx/1F5556xWlM9IOvPybp+8vJaXhP69qGhPOZkkhA9q2Eug=
+X-Received: by 2002:a17:907:784:b0:96b:4ed5:a1c9 with SMTP id
+ xd4-20020a170907078400b0096b4ed5a1c9mr11535364ejb.51.1684818534857; Mon, 22
+ May 2023 22:08:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ac7j2y6yursv73xw"
-Content-Disposition: inline
-In-Reply-To: <20230522175401.1232921-1-dario.binacchi@amarulasolutions.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <000000000000a589d005fc52ee2d@google.com> <13528f21-0f36-4fa2-d34f-eecee6720bc1@linux.dev>
+ <CAD=hENeCo=-Pk9TWnqxOWP9Pg-JXWk6n6J19gvPo9_h7drROGg@mail.gmail.com>
+ <CAD=hENdoyBZaRz7aTy4mX5Kq1OYmWabx2vx8vPH0gQfHO1grzw@mail.gmail.com>
+ <0d515e17-5386-61ba-8278-500620969497@linux.dev> <CAD=hENcqa0jQvLjuXw9bMtivCkKpQ9=1e0-y-1oxL23OLjutuw@mail.gmail.com>
+In-Reply-To: <CAD=hENcqa0jQvLjuXw9bMtivCkKpQ9=1e0-y-1oxL23OLjutuw@mail.gmail.com>
+From: Zhu Yanjun <zyjzyj2000@gmail.com>
+Date: Tue, 23 May 2023 13:08:42 +0800
+Message-ID: <CAD=hENdXdqfcxjNrNnP8CoaDy6sUJ4g5uxcWE0mj3HtNohDUzw@mail.gmail.com>
+Subject: Re: [syzbot] [rdma?] INFO: trying to register non-static key in
+ skb_dequeue (2)
+To: Guoqing Jiang <guoqing.jiang@linux.dev>
+Cc: syzbot <syzbot+eba589d8f49c73d356da@syzkaller.appspotmail.com>, jgg@ziepe.ca, 
+	leon@kernel.org, linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org, 
+	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Tue, May 23, 2023 at 12:29=E2=80=AFPM Zhu Yanjun <zyjzyj2000@gmail.com> =
+wrote:
+>
+> On Tue, May 23, 2023 at 12:10=E2=80=AFPM Guoqing Jiang <guoqing.jiang@lin=
+ux.dev> wrote:
+> >
+> >
+> >
+> > On 5/23/23 12:02, Zhu Yanjun wrote:
+> > > On Tue, May 23, 2023 at 11:47=E2=80=AFAM Zhu Yanjun <zyjzyj2000@gmail=
+.com> wrote:
+> > >> On Tue, May 23, 2023 at 10:26=E2=80=AFAM Guoqing Jiang <guoqing.jian=
+g@linux.dev> wrote:
+> > >>>
+> > >>>
+> > >>> On 5/23/23 10:13, syzbot wrote:
+> > >>>> Hello,
+> > >>>>
+> > >>>> syzbot tried to test the proposed patch but the build/boot failed:
+> > >>>>
+> > >>>> failed to apply patch:
+> > >>>> checking file drivers/infiniband/sw/rxe/rxe_qp.c
+> > >>>> patch: **** unexpected end of file in patch
+> > >> This is not the root cause. The fix is not good.
+> > > This problem is about "INFO: trying to register non-static key. The
+> > > code is fine but needs lockdep annotation, or maybe"
+>
+> This warning is from "lock is not initialized". This is a
+> use-before-initialized problem.
+> The correct fix is to initialize the lock that is complained before it is=
+ used.
+>
+> Zhu Yanjun
 
---ac7j2y6yursv73xw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Based on the call trace, the followings are the order of this call trace.
 
-On Mon, May 22, 2023 at 07:54:01PM +0200, Dario Binacchi wrote:
-> The patch fixes this compilation error:
->=20
-> netlink/rss.c: In function 'rss_reply_cb':
-> netlink/rss.c:166:3: error: 'for' loop initial declarations are only allo=
-wed in C99 mode
->    for (unsigned int i =3D 0; i < get_count(hash_funcs); i++) {
->    ^
-> netlink/rss.c:166:3: note: use option -std=3Dc99 or -std=3Dgnu99 to compi=
-le your code
->=20
-> The project doesn't really need a C99 compiler, so let's move the variable
-> declaration outside the for loop.
->=20
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> ---
+291 /* called by the create qp verb */
+292 int rxe_qp_from_init(struct rxe_dev *rxe, struct rxe_qp *qp,
+struct rxe_pd *pd,
+297 {
+            ...
+317         rxe_qp_init_misc(rxe, qp, init);
+            ...
+322
+323         err =3D rxe_qp_init_resp(rxe, qp, init, udata, uresp);
+324         if (err)
+325                 goto err2;   <--- error
 
-To be honest, I'm rather surprised that this would be the only C99
-feature in ethtool code, I thought that e.g. the named struct
-initializers also require C99.
+            ...
 
-Anyway, with kernel explicitly declaring C11 as the standard to use
-since 5.18, it would IMHO make more sense to do the same in ethtool so
-that developers do not need to keep in mind that they cannot use
-language features they are used to from kernel. What do you think?
+334 err2:
+335         rxe_queue_cleanup(qp->sq.queue); <--- Goto here
+336         qp->sq.queue =3D NULL;
 
-Michal
+In rxe_qp_init_resp, the error occurs before skb_queue_head_init.
+So this call trace appeared.
 
---ac7j2y6yursv73xw
-Content-Type: application/pgp-signature; name="signature.asc"
+Zhu Yanjun
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmRsSbcACgkQ538sG/LR
-dpU1kAgAldmWxh2F4wO8GEAj5qClJud65COrN2gP2ffV+DIOtMSJN7+efkDArFxR
-3k/8YEA80i70D36yribxZFabcUR317LV4jYoTbNzMNYb1lT5vHbnaju4/rc1+NwR
-sM29CTtttXj3WQKj9qP3q9kOUDTB+kgcTkokh/YtqEM5WaeyS9JUDEyO8zK58WAM
-Sccge9Dnzo9OhIem5RWuISr5FSyL/7KQiYYtDUmfAdjcXvEc6f17Jm9W7M4mY4il
-Wq3Y/yxV7JAM8TMTl69okHgk5Lx6h8+ns1c1mmOmG1InJNrFLbwuBtWDo546/qTM
-CyTH/ytPAgVIDEwn9WgfQ0IEkN5g2w==
-=uKlK
------END PGP SIGNATURE-----
-
---ac7j2y6yursv73xw--
+> >
+> > Which is caused by  "skb_queue_head_init(&qp->resp_pkts)" is not called
+> > given rxe_qp_init_resp returns error, but the cleanup still trigger the
+> > chain.
+> >
+> > rxe_qp_do_cleanup -> rxe_completer -> drain_resp_pkts ->
+> > skb_dequeue(&qp->resp_pkts)
+> >
+> > But I might misunderstood it ...
+> >
+> > Thanks,
+> > Guoqing
 
