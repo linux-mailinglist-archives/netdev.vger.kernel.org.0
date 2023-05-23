@@ -1,137 +1,157 @@
-Return-Path: <netdev+bounces-4649-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4650-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D33B970DAC5
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:44:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4681E70DAC9
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:45:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 77D461C20D24
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:44:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0A18328124E
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:45:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9609B4A846;
-	Tue, 23 May 2023 10:44:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 32CB34A849;
+	Tue, 23 May 2023 10:45:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84C0A4A842
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:44:21 +0000 (UTC)
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9272C119;
-	Tue, 23 May 2023 03:44:16 -0700 (PDT)
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-562108900acso67007487b3.2;
-        Tue, 23 May 2023 03:44:16 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 200DC4A842
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:45:49 +0000 (UTC)
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE16CFF
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:45:47 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3f601283b36so53045e9.0
+        for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:45:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1684838746; x=1687430746;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gKNB1PLPgA6/NfqEcw/wRUenyADMemNCEiwXNXVdVwg=;
+        b=vIRA/pelpgmEOaoX6n3KDWb3xEUs+cL8p0+juaU0x68+goWyZ3RT+WgxfBVgOjgt72
+         Y+s9fTgzqxg1iSBcqJOzKY8iRZ/rCkBSnNVkjL3ws7Dnp2jsuVeHNKO4X7m/EIXr3xoh
+         v2U4N+GbvQO52t+4ENmbQtxYYTxR248QupGvp3J79dpbPCjHmiHFMf2T9jtaGGP91rG/
+         rrw03KrgbI1aTDm3XAr8xb8cC0uxnnLjsh5IBUFQ1BX5o/5CLQCeMzPXENBL54csCvAP
+         54J9bQLiOBUJxDL6NrPJgF/eunB/Vak010TRW0EF4o5lYfGAE4f96k/juS25fwCP0V8a
+         RLKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684838655; x=1687430655;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wAGJ7K0eTZatSWk95P2dmmFxGdpx5RiAx15TGeRGBa0=;
-        b=FMRb7F2wf/7W58fsIYB46aD0jdmmCDrPqyyaWOFxdwwRyqahxxaNCKzpT80e5SURNQ
-         klZU5fa16Isidz8x3vNPWVPgy0mO34i1fxus7ZHgV8E1v42UGSA3VyqDFbOQA97WMdat
-         azp3XfE8P3CwajWf4F/BMl30/6gT8Qn9IequFLjyqesnc3WKgDE42iAm0g53T47nTvQa
-         sXKU0AiJmlncjP6apVbmtjHvjZvegPpWocJN+UQpdbWzjgwTDz20fQwAWO+BQ4nwqIzi
-         qomjM3UqwG70pWAew5WjWaoifAmqskTQxSif76FmOWQ2Sm6A4cGvxOqX9gVdbcnTyAHK
-         mWJQ==
-X-Gm-Message-State: AC+VfDxFFTC+Zyo2pxtR1h0TQvItSUiSpVzuYCCOJpn0tEitNLDCfeUh
-	/FnvO49VHlTTiHrZrPzvC2dWX7udZNvqFg==
-X-Google-Smtp-Source: ACHHUZ6YJ9zJvN0qE9S2BBzG8oNGio26IxwbglPykZdld8mltIWkKyzmWudRDShNKc3aUAXo7iiOsA==
-X-Received: by 2002:a81:8283:0:b0:565:310:f615 with SMTP id s125-20020a818283000000b005650310f615mr6461794ywf.32.1684838654814;
-        Tue, 23 May 2023 03:44:14 -0700 (PDT)
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
-        by smtp.gmail.com with ESMTPSA id n14-20020a819e4e000000b00552ccda9bb3sm2704819ywj.92.2023.05.23.03.44.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 May 2023 03:44:13 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-565014fc2faso25513187b3.1;
-        Tue, 23 May 2023 03:44:13 -0700 (PDT)
-X-Received: by 2002:a81:4603:0:b0:55a:7d83:7488 with SMTP id
- t3-20020a814603000000b0055a7d837488mr13085744ywa.9.1684838652890; Tue, 23 May
- 2023 03:44:12 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684838746; x=1687430746;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gKNB1PLPgA6/NfqEcw/wRUenyADMemNCEiwXNXVdVwg=;
+        b=GOBBuNofYYpO/fa+B9pl9h2vKORaBl9rs02u5iF41mHBkuOPARkqpvdVgOA58+LvKA
+         lo3dIzK9DSamRigyvUC6I3cPamVMbR5ipXH+t1r+Ug6f3xPGLtyHxqSvlb6//RDY8TtA
+         D/AoGRgNREMdvzXP/eo5m+8gM5y22PEZrUS8aUnKKz54/zPF6hcgpJQflFnEnebYThK4
+         /V7vzCHeBnr2ZpLTcVSW9AnP/oqBSjm4XREVZTHQYM6iz5Dcd81/gPV2W6MsldufPQDn
+         T2EupF47yF286wy2m5v7ZiU6xgwtysoXSvBwBfKshhx9Nj9/AhHh+Q/TlnPtTwvu4htH
+         wLMw==
+X-Gm-Message-State: AC+VfDzvYwPPJ7+CnVQlNgZmYN8pxPHkY9AXZ11IVRx591R8IDUVBtIH
+	CnIbQbB5RHDgS5H1GgFvnslveyUISougQ2OtnEml2Q==
+X-Google-Smtp-Source: ACHHUZ69E5H24+BvxB5jBxTA6gQnLO5PpdEETUPHHxi7rasjX30GtwLzzx9rixjSWILEE3hdMxNqfjHyketujC8YHlg=
+X-Received: by 2002:a05:600c:5118:b0:3f6:f4b:d4a6 with SMTP id
+ o24-20020a05600c511800b003f60f4bd4a6mr2611wms.7.1684838745997; Tue, 23 May
+ 2023 03:45:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230522132439.634031-1-aleksandr.mikhalitsyn@canonical.com>
- <20230522132439.634031-2-aleksandr.mikhalitsyn@canonical.com>
- <20230522133409.5c6e839a@kernel.org> <20230523-flechten-ortsschild-e5724ecc4ed0@brauner>
-In-Reply-To: <20230523-flechten-ortsschild-e5724ecc4ed0@brauner>
-From: Luca Boccassi <bluca@debian.org>
-Date: Tue, 23 May 2023 11:44:01 +0100
-X-Gmail-Original-Message-ID: <CAMw=ZnS8GBTDV0rw+Dh6hPv3uLXJVwapRFQHLMYEYGZHNoLNOw@mail.gmail.com>
-Message-ID: <CAMw=ZnS8GBTDV0rw+Dh6hPv3uLXJVwapRFQHLMYEYGZHNoLNOw@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 1/3] scm: add SO_PASSPIDFD and SCM_PIDFD
-To: Christian Brauner <brauner@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>, 
-	Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>, davem@davemloft.net, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
-	Leon Romanovsky <leon@kernel.org>, David Ahern <dsahern@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Kees Cook <keescook@chromium.org>, Kuniyuki Iwashima <kuniyu@amazon.com>, 
-	Lennart Poettering <mzxreary@0pointer.de>, linux-arch@vger.kernel.org
+References: <20230517213118.3389898-1-edumazet@google.com> <20230517213118.3389898-2-edumazet@google.com>
+ <ZGZavH7hxiq/pkF8@corigine.com> <CANn89iJofjC=aqSu6X9itW8VQXTSFUOiAmBB2Zzuw-6kqTnwzA@mail.gmail.com>
+ <20230522130050.6fa160f6@kernel.org> <ZGx9k6m6r7blT2B+@corigine.com>
+In-Reply-To: <ZGx9k6m6r7blT2B+@corigine.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 23 May 2023 12:45:34 +0200
+Message-ID: <CANn89iJ0Sdy5o8WHdTygE3UwUgHpJkdxKfeYXMN0DZBKs_f6AA@mail.gmail.com>
+Subject: Re: [PATCH net 1/3] ipv6: exthdrs: fix potential use-after-free in ipv6_rpl_srh_rcv()
+To: Simon Horman <simon.horman@corigine.com>
+Cc: Jakub Kicinski <kuba@kernel.org>, "David S . Miller" <davem@davemloft.net>, 
+	Paolo Abeni <pabeni@redhat.com>, Alexander Aring <alex.aring@gmail.com>, netdev@vger.kernel.org, 
+	eric.dumazet@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 23 May 2023 at 10:49, Christian Brauner <brauner@kernel.org> wrote:
+On Tue, May 23, 2023 at 10:47=E2=80=AFAM Simon Horman <simon.horman@corigin=
+e.com> wrote:
 >
-> On Mon, May 22, 2023 at 01:34:09PM -0700, Jakub Kicinski wrote:
-> > On Mon, 22 May 2023 15:24:37 +0200 Alexander Mikhalitsyn wrote:
-> > > v6:
-> > >     - disable feature when CONFIG_UNIX=n/m (pidfd_prepare API is not exported to modules)
+> On Mon, May 22, 2023 at 01:00:50PM -0700, Jakub Kicinski wrote:
+> > On Sun, 21 May 2023 20:22:16 +0200 Eric Dumazet wrote:
+> > > On Thu, May 18, 2023 at 7:05=E2=80=AFPM Simon Horman <simon.horman@co=
+rigine.com> wrote:
+> > > > Not far below this line there is a call to pskb_pull():
+> > > >
+> > > >                 if (hdr->nexthdr =3D=3D NEXTHDR_IPV6) {
+> > > >                         int offset =3D (hdr->hdrlen + 1) << 3;
+> > > >
+> > > >                         skb_postpull_rcsum(skb, skb_network_header(=
+skb),
+> > > >                                            skb_network_header_len(s=
+kb));
+> > > >
+> > > >                         if (!pskb_pull(skb, offset)) {
+> > > >                                 kfree_skb(skb);
+> > > >                                 return -1;
+> > > >                         }
+> > > >                         skb_postpull_rcsum(skb, skb_transport_heade=
+r(skb),
+> > > >                                            offset);
+> > > >
+> > > > Should hdr be reloaded after the call to pskb_pull() too?
+> > >
+> > > I do not think so, because @hdr is not used between this pskb_pull()
+> > > and the return -1:
+> > >
+> > >        if (hdr->nexthdr =3D=3D NEXTHDR_IPV6) {
+> > >             int offset =3D (hdr->hdrlen + 1) << 3;
+> > >
+> > >             skb_postpull_rcsum(skb, skb_network_header(skb),
+> > >                        skb_network_header_len(skb));
+> > >
+> > >             if (!pskb_pull(skb, offset)) {
+> > >                 kfree_skb(skb);
+> > >                 return -1;
+> > >             }
+> > >             skb_postpull_rcsum(skb, skb_transport_header(skb),
+> > >                        offset);
+> > >
+> > >             skb_reset_network_header(skb);
+> > >             skb_reset_transport_header(skb);
+> > >             skb->encapsulation =3D 0;
+> > >
+> > >             __skb_tunnel_rx(skb, skb->dev, net);
+> > >
+> > >             netif_rx(skb);
+> > >             return -1;
+> > >         }
 > >
-> > IMHO hiding the code under #if IS_BUILTIN(CONFIG_UNRELATED) is
-> > surprising to the user and.. ugly?
-> >
-> > Can we move scm_pidfd_recv() into a C source and export that?
-> > That should be less controversial than exporting pidfd_prepare()
-> > directly?
+> > Hum, there's very similar code in ipv6_srh_rcv() (a different function
+> > but with a very similar name) which calls pskb_pull() and then checks
+> > if hdr->nexthdr is v4. I'm guessing that's the one Simon was referring
+> > to.
 >
-> I really would like to avoid that because it will just mean that someone
-> else will abuse that function and then make an argument why we should
-> export the other function.
->
-> I think it would be ok if we required that unix support is built in
-> because it's not unprecedented either and we're not breaking anything.
-> Bpf has the same requirement:
->
->   #if IS_BUILTIN(CONFIG_UNIX) && defined(CONFIG_BPF_SYSCALL)
->   struct bpf_unix_iter_state {
->           struct seq_net_private p;
->           unsigned int cur_sk;
->           unsigned int end_sk;
->           unsigned int max_sk;
->           struct sock **batch;
->           bool st_bucket_done;
->   };
->
-> and
->
->   #if IS_BUILTIN(CONFIG_UNIX) && defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
->   DEFINE_BPF_ITER_FUNC(unix, struct bpf_iter_meta *meta,
->                        struct unix_sock *unix_sk, uid_t uid)
+> Yes, that does seem to be the case.
 
-Some data points: Debian, Ubuntu, Fedora, RHEL, CentOS, Archlinux all
-ship with CONFIG_UNIX=y, so a missing SCM_PIDFD in unlikely to have a
-widespread impact, and if it does, it might encourage someone to
-review their kconfig.
+I think ipv6_srh_rcv() is fine.
 
-As mentioned on the v5 thread, we are waiting for this API to get the
-userspace side sorted (systemd/dbus/dbus-broker/polkit), so I'd be
-really grateful if we could start with the simplest and most
-conservative approach (which seems to be the current one in v6 to me),
-and then eventually later decide whether to export more functions, or
-to deprecate CONFIG_UNIX=m, or something else entirely, as that
-doesn't really affect the shape of the UAPI, just the details of its
-availability. Thank you.
+The "goto looped_back" does not need to reload hdr.
 
-Kind regards,
-Luca Boccassi
+The only point where skb->head can change is at the pskb_expand_head() call=
+,
+which is properly followed by:
+
+hdr =3D (struct ipv6_sr_hdr *)skb_transport_header(skb);
+
+I will send a V2, because this first patch in the series can also make
+ipv6_rpl_srh_rcv() similar.
+(No need to move around the pskb_may_pull(skb, sizeof(*hdr)
 
