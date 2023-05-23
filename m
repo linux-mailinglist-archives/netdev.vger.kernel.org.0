@@ -1,94 +1,120 @@
-Return-Path: <netdev+bounces-4745-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4746-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C6D4570E16E
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 18:05:18 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 419A770E177
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 18:11:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81BD6281364
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:05:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B84411C20BE5
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:11:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB842200CD;
-	Tue, 23 May 2023 16:05:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 86972200D0;
+	Tue, 23 May 2023 16:11:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59EC51F954
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 16:05:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF066C4339B;
-	Tue, 23 May 2023 16:05:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684857914;
-	bh=dXkfpSXsBDC6nkGoXQeMfCAXVHWe5mwMnoyvyR0I+A8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=FbPrT+KN+UEE9xj3n22Er0WmT2EWvwa4CzHRH5e+emfau0GCz7Yq2U6S6PdXw9L6r
-	 30KdM6/cQvSPEGRMRwVMgAQw+CjWPGOxVOCd0K/+ANvtGZDX79BlR9wMnnStTgAPi4
-	 6t0G1vQ1tq9YkqojC64LWVoUlfEutWL6BNqtmyPxgQ/zwGXQkTFfEdO9E7z+P67hpZ
-	 2gTkK737pS6fNSnP+/1N0UWUEm1boaEliTHcmajosxRlvvv/cJVDKSqyh2z4nIuCsv
-	 QnYhSNUZKJ6TzJwElAAjZOFElbiYMJ4aWyFur0x+0noY5slky5VgDatMo7P3UWBVOg
-	 w+C4E9ZWbAMfw==
-Date: Tue, 23 May 2023 09:05:12 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: "Jason A. Donenfeld" <Jason@zx2c4.com>, edumazet@google.com
-Cc: syzbot <syzbot+c2775460db0e1c70018e@syzkaller.appspotmail.com>,
- netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
- davem@davemloft.net, linux-kernel@vger.kernel.org, pabeni@redhat.com,
- wireguard@lists.zx2c4.com, jann@thejh.net
-Subject: Re: [syzbot] [wireguard?] KASAN: slab-use-after-free Write in
- enqueue_timer
-Message-ID: <20230523090512.19ca60b6@kernel.org>
-In-Reply-To: <ZGzfzEs-vJcZAySI@zx2c4.com>
-References: <000000000000c0b11d05fa917fe3@google.com>
-	<ZGzfzEs-vJcZAySI@zx2c4.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7632D1F954
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 16:11:48 +0000 (UTC)
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED668E
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 09:11:46 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+	by mailout.west.internal (Postfix) with ESMTP id 886BA32005B5;
+	Tue, 23 May 2023 12:11:45 -0400 (EDT)
+Received: from imap45 ([10.202.2.95])
+  by compute2.internal (MEProxy); Tue, 23 May 2023 12:11:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
+	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1684858305; x=1684944705; bh=uX
+	2gKKHfgdWuzdVfzoFZaXjkPBhT8PmbCGcHSKBRlS0=; b=efk5ia5Q5qONcCeQwb
+	RZTnAuEYD3/i27j+L4jD73SNl7LPhXHd3CPbwt+/7V+qqAmenik16iJR2BO2JNZM
+	Ox7BsWXuIKQjORuG2RK9/aLrtIF3qFIzwo5PG9p78Y7K9RI76uN5aRfSbaLLtsuM
+	UQocdBssNr3WfqirzBvo0e4/4dtmBcCqFuf6SBqjUEiTiAaPQDVjNrgeBq0n4QlZ
+	HEktPkcz7gDlmTCAr66SGxT11VnvCwp/loyyqA0xlrta9TzCyT+K2FeKEFWD3YiE
+	+oFZjGZBLSsfL0k3clb7RbtloIkhFeNs4aoQ3tEn96cuUQhZbRaz5079U2V/qnGV
+	uEPw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1684858305; x=1684944705; bh=uX2gKKHfgdWuz
+	dVfzoFZaXjkPBhT8PmbCGcHSKBRlS0=; b=H3LLbxywRskAQpMVK3NZkZ4hRdhPa
+	Xg7OOM6jnRR8UbQJQDc718WDQl8/Ljad2u5WUrlHiRBuBP7sPeci3HqOUOadA4c4
+	2MLTmG1u/D1AvG5po3mma1HcdxhYQbGTlePi7fDnWMuI4br4c9AGhdKqXvKGpDot
+	VTdb8wfFRYE1EYPhjCatux+dMZGWSwvm4lipyxRKc5dUWOiRwYZysWo/6kkN5J0L
+	m17nH9knMpZ+EyXY7qw6Z22mqXFJjwy364Jb1C35/3ohykpqTHMRTfu27Wl1D8s7
+	HUePRfTsPz05OcBEUzHxt8kfSWj41pOJagMogHpB2PJdUaRwe6T7nsGuA==
+X-ME-Sender: <xms:wOVsZDbFOn7dwPRd9_XUKoaDJnGoT4X81e8a978-CtD4ubXOQzz4Iw>
+    <xme:wOVsZCaY8nXGcdL4djm-lQFohmuP341l0m8oX4KuZrUP-9k5gsWD86cbg4LsECXfM
+    WOgGXu0MDdTwBVujR8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeejfedgleehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    gfrhhlucfvnfffucdludehmdenucfjughrpefofgggkfgjfhffhffvvefutgesthdtredt
+    reertdenucfhrhhomhepfdgglhgrughimhhirhcupfhikhhishhhkhhinhdfuceovhhlrg
+    guihhmihhrsehnihhkihhshhhkihhnrdhpfieqnecuggftrfgrthhtvghrnhepteelvddv
+    udetveelvdffhfehueekueeuffefhfehjeevteehkefgheevgeeiudfhnecuvehluhhsth
+    gvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepvhhlrgguihhmihhrsehn
+    ihhkihhshhhkihhnrdhpfi
+X-ME-Proxy: <xmx:wOVsZF9EZVuN8nHYyWZJT9xzMMBrwPzuX-KvJBpDNMxUB47EdFu-Ww>
+    <xmx:wOVsZJriApT-D6QTF0WYu1nTHGEiPRg-EaP0p6NLQ4BnePJFg1uxgA>
+    <xmx:wOVsZOqbDEs4fOXjUA2p-A2ydwHYCESosorBa2ZC851OuiIOhLLQiQ>
+    <xmx:weVsZLj82R1xTx9zDr7VokhVm2y7TDtcVEntrX3CO78Jm4-9VGL2zQ>
+Feedback-ID: id3b446c5:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 68CA1272007A; Tue, 23 May 2023 12:11:44 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-441-ga3ab13cd6d-fm-20230517.001-ga3ab13cd
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Message-Id: <68f22fdf-8157-4eb9-a658-9962befab54c@app.fastmail.com>
+In-Reply-To: <20230523090441.5a68d0db@hermes.local>
+References: <20230523044805.22211-1-vladimir@nikishkin.pw>
+ <20230523090441.5a68d0db@hermes.local>
+Date: Wed, 24 May 2023 00:11:22 +0800
+From: "Vladimir Nikishkin" <vladimir@nikishkin.pw>
+To: "Stephen Hemminger" <stephen@networkplumber.org>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
+ gnault@redhat.com, razor@blackwall.org, idosch@nvidia.com,
+ liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com
+Subject: Re: [PATCH iproute2-next v6] ip-link: add support for nolocalbypass in vxlan
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, 23 May 2023 17:46:20 +0200 Jason A. Donenfeld wrote:
-> > Freed by task 41:
-> >  __kmem_cache_free+0x264/0x3c0 mm/slub.c:3799
-> >  device_release+0x95/0x1c0
-> >  kobject_cleanup lib/kobject.c:683 [inline]
-> >  kobject_release lib/kobject.c:714 [inline]
-> >  kref_put include/linux/kref.h:65 [inline]
-> >  kobject_put+0x228/0x470 lib/kobject.c:731
-> >  netdev_run_todo+0xe5a/0xf50 net/core/dev.c:10400  
-> 
-> So that means the memory in question is actually the one that's
-> allocated and freed by the networking stack. Specifically, dev.c:10626
-> is allocating a struct net_device with a trailing struct wg_device (its
-> priv_data). However, wg_device does not have any struct timer_lists in
-> it, and I don't see how net_device's watchdog_timer would be related to
-> the stacktrace which is clearly operating over a wg_peer timer.
-> 
-> So what on earth is going on here?
 
-Your timer had the pleasure of getting queued _after_ a dead watchdog
-timer, no? IOW it tries to update the ->next pointer of a queued
-watchdog timer. We should probably do:
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 374d38fb8b9d..f3ed20ebcf5a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10389,6 +10389,8 @@ void netdev_run_todo(void)
-                WARN_ON(rcu_access_pointer(dev->ip_ptr));
-                WARN_ON(rcu_access_pointer(dev->ip6_ptr));
- 
-+               WARN_ON(timer_shutdown_sync(&dev->watchdog_timer));
-+
-                if (dev->priv_destructor)
-                        dev->priv_destructor(dev);
-                if (dev->needs_free_netdev)
+On Wed, May 24, 2023, at 00:04, Stephen Hemminger wrote:
+> On Tue, 23 May 2023 12:48:05 +0800
+> Vladimir Nikishkin <vladimir@nikishkin.pw> wrote:
+>
+>> +	if (tb[IFLA_VXLAN_LOCALBYPASS]) {
+>> +		__u8 localbypass = rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS]);
+>> +
+>> +		print_bool(PRINT_JSON, "localbypass", NULL, localbypass);
+>> +		if (!localbypass)
+>> +			print_bool(PRINT_FP, NULL, "nolocalbypass ", true);
+>> +	}
+>
+> This is backwards since nolocalbypass is the default.
 
-to catch how that watchdog_timer is getting queued. Would that make
-sense, Eric?
+localbypass is (or should) be the default, because it is how everything used to work in the past. nolocalbypass is the new feature.
+
+--
+Fastmail.
+
 
