@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-4534-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4535-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2806370D33D
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:42:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 46A7A70D33E
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:43:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B099B1C20C53
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:42:54 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 121301C20C20
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:43:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A94651B8FE;
-	Tue, 23 May 2023 05:42:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 213E41B90A;
+	Tue, 23 May 2023 05:42:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5E8719914
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:42:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A4D7C433EF;
-	Tue, 23 May 2023 05:42:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B45011B8FB
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 522CEC433D2;
+	Tue, 23 May 2023 05:42:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684820572;
-	bh=r8FS+dpRfIIux0IhLlLJsWdFapYY0G3tat5xPtKD7Vg=;
-	h=From:To:Cc:Subject:Date:From;
-	b=AjvELoaaXYqbUVcMo5RslwOtMNhWiQ8g54Pl+w0+MrEgObip1Yqowr0R89dWg4Zmd
-	 2JuuCgnNMjv+J2zKqpK01njyA5Q0nTDaEkuinsUHyvw/DlDYV5iBNyzse/rvfSzK2X
-	 gnifL3Z9Lw4R9sYOVpmIRkU5yNdWVUGvjI3PmcvXHY2rZi3C9RP3tcvcvkB9bEmkQ/
-	 pOw847x4U/cPcUfXJ8fOABK2SQ4DM02fbOi1ieCbOpkcpKf/z0DiFNnMUJb4/GEFgx
-	 aoAO5qvgKJCRUSONuSdxg7/pLeEhEyIxrgLFBSxyxu2vJuHg5Q3cOiiPggAAN1BNGy
-	 cqz25UqPikN3g==
+	s=k20201202; t=1684820573;
+	bh=Xmmck3pjuqH/xGIlsZmDzwm296kW5zNTXc+J06C6pfs=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=tWrcU8TVnv0AJADYrUlv29zc4XNjhvgXGYRod1TbI6L7Umdk3JGAcN5N3nWiEz1ul
+	 nR+QeifgjdAPVksaG+sdHcTHH3zqFShvkZ5HJmdITMXQVe27xCXIICTPSGo3usBiJh
+	 w9Y6rXy7KU2tABne3/6XnpSuPWEu5vt/uA2beila2d4q0JTr2xT5ziPFLWL/fp3NsC
+	 M3YVp4eDhMILAXpVKQ+mk5Sra5CqhJ8Nd0Y78L/DxQ5b5VCHdN19XlaTv89vta+esJ
+	 bnps8Fz8JY42LRohn3b6ATZ6fjEEGDtPnMday1h/XAsVOunxbdQwGaRn58Fp3/IqfL
+	 mpNRcEYfxUqSA==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -37,11 +37,14 @@ To: "David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>
 Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	netdev@vger.kernel.org,
-	Tariq Toukan <tariqt@nvidia.com>
-Subject: [pull request][net 00/15] mlx5 fixes 2023-05-22
-Date: Mon, 22 May 2023 22:42:27 -0700
-Message-Id: <20230523054242.21596-1-saeed@kernel.org>
+	Tariq Toukan <tariqt@nvidia.com>,
+	Shay Drory <shayd@nvidia.com>
+Subject: [net 01/15] net/mlx5: Collect command failures data only for known commands
+Date: Mon, 22 May 2023 22:42:28 -0700
+Message-Id: <20230523054242.21596-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230523054242.21596-1-saeed@kernel.org>
+References: <20230523054242.21596-1-saeed@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -50,76 +53,40 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-This series provides bug fixes for the mlx5 driver.
-Please pull and let me know if there is any problem.
+DEVX can issue a general command, which is not used by mlx5 driver.
+In case such command is failed, mlx5 is trying to collect the failure
+data, However, mlx5 doesn't create a storage for this command, since
+mlx5 doesn't use it. This lead to array-index-out-of-bounds error.
 
-Thanks,
-Saeed.
+Fix it by checking whether the command is known before collecting the
+failure data.
 
+Fixes: 34f46ae0d4b3 ("net/mlx5: Add command failures data to debugfs")
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-The following changes since commit 18c40a1cc1d990c51381ef48cd93fdb31d5cd903:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+index d53de39539a8..d532883b42d7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -1920,9 +1920,10 @@ static void mlx5_cmd_err_trace(struct mlx5_core_dev *dev, u16 opcode, u16 op_mod
+ static void cmd_status_log(struct mlx5_core_dev *dev, u16 opcode, u8 status,
+ 			   u32 syndrome, int err)
+ {
++	const char *namep = mlx5_command_str(opcode);
+ 	struct mlx5_cmd_stats *stats;
+ 
+-	if (!err)
++	if (!err || !(strcmp(namep, "unknown command opcode")))
+ 		return;
+ 
+ 	stats = &dev->cmd.stats[opcode];
+-- 
+2.40.1
 
-  net/handshake: Fix sock->file allocation (2023-05-22 19:25:24 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2023-05-22
-
-for you to fetch changes up to 1da438c0ae02396dc5018b63237492cb5908608d:
-
-  net/mlx5: Fix indexing of mlx5_irq (2023-05-22 22:38:06 -0700)
-
-----------------------------------------------------------------
-mlx5-fixes-2023-05-22
-
-----------------------------------------------------------------
-Erez Shitrit (1):
-      net/mlx5: DR, Fix crc32 calculation to work on big-endian (BE) CPUs
-
-Paul Blakey (1):
-      net/mlx5e: TC, Fix using eswitch mapping in nic mode
-
-Rahul Rameshbabu (1):
-      net/mlx5e: Fix SQ wake logic in ptp napi_poll context
-
-Roi Dayan (1):
-      net/mlx5: Fix error message when failing to allocate device memory
-
-Shay Drory (8):
-      net/mlx5: Collect command failures data only for known commands
-      net/mlx5: Handle pairing of E-switch via uplink un/load APIs
-      net/mlx5: E-switch, Devcom, sync devcom events and devcom comp register
-      net/mlx5: Devcom, fix error flow in mlx5_devcom_register_device
-      net/mlx5: Devcom, serialize devcom registration
-      net/mlx5: Free irqs only on shutdown callback
-      net/mlx5: Fix irq affinity management
-      net/mlx5: Fix indexing of mlx5_irq
-
-Vlad Buslov (2):
-      net/mlx5e: Use correct encap attribute during invalidation
-      net/mlx5e: Fix deadlock in tc route query code
-
-Yevgeny Kliteynik (1):
-      net/mlx5: DR, Check force-loopback RC QP capability independently from RoCE
-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |  3 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   |  2 +
- .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  |  4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  2 +
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 57 ++++++++++++------
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    | 19 +++---
- drivers/net/ethernet/mellanox/mlx5/core/eq.c       |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  5 ++
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 16 +++--
- .../net/ethernet/mellanox/mlx5/core/lib/devcom.c   | 70 ++++++++++++++++------
- .../net/ethernet/mellanox/mlx5/core/lib/devcom.h   |  1 +
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h |  1 +
- drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  | 40 +++++++++++--
- .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |  4 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  |  3 +-
- include/linux/mlx5/mlx5_ifc.h                      |  4 +-
- 17 files changed, 176 insertions(+), 59 deletions(-)
 
