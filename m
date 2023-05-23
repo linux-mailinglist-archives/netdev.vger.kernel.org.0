@@ -1,79 +1,81 @@
-Return-Path: <netdev+bounces-4792-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4793-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 77EFA70E4CC
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 20:37:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id E105770E4EB
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 20:53:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 306272814E3
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 18:37:40 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C35C1281362
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 18:53:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FF4C1F957;
-	Tue, 23 May 2023 18:37:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D9BCE20685;
+	Tue, 23 May 2023 18:52:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 385711F93C
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 18:37:38 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF2A121
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 11:37:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684867037;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ne4lI3XBOfn/dU70cqrJB1YITpsxLYLGq04RDFg9HVs=;
-	b=aab5m+Qj2a6Rfja05VsdRHHtgiBWM3QsncmQ28lMgzOatcPwqmI1joCYjDgrtxtB86dnNk
-	YROGO7ltWqu65m0lBDoDMo63cFxham5ujmRktnKgCS5JRKp8pWHY+Q81+5twERVxWRVGkd
-	4wXmxSL+k5GOBvHvzsbXANmthDETcgU=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-315-kTtGeXteMZ2zoZQvw6WWLw-1; Tue, 23 May 2023 14:37:13 -0400
-X-MC-Unique: kTtGeXteMZ2zoZQvw6WWLw-1
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-751409fae81so29329185a.1
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 11:37:11 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C66041F93C
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 18:52:59 +0000 (UTC)
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A138191;
+	Tue, 23 May 2023 11:52:57 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id 6a1803df08f44-62382e86f81so32748066d6.2;
+        Tue, 23 May 2023 11:52:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684867976; x=1687459976;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rWn2MIKjUVOy+G+HIOvINhREydSAiCGuFlv2fGYs64o=;
+        b=AHu218kDLLmj5B9inD98p0ijdWxsVzotJoiFBu7VYMbOBxwClSKDrm9NIa+Gf/7Yb3
+         M9eyEnLGkUac6u+bNwVOFN3szjB9xDIWkdVnwR4+ETtvBp3JkBhn/xV59A3QdlfZeulA
+         gJnoNuum4Nn12d+oF5/+XZDnpuwv5CAc2KtPxI+VxUnrhfxO7qKMuy8RKc7/XAHi3rXd
+         Pp2ysJftfHMjKaNUFUWlIP66u6tR9/L4iTD7+t06d+Y3Uxhcs53t29mWItjTZJiI08eP
+         VAqAHPc0967s5GmblTQfSvu+vWiingIRBNQEWJ/FS2/z/r1UDfJbmwcxKKM0xkTzE2Os
+         URsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684867031; x=1687459031;
+        d=1e100.net; s=20221208; t=1684867976; x=1687459976;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ne4lI3XBOfn/dU70cqrJB1YITpsxLYLGq04RDFg9HVs=;
-        b=cZ15+Gn7s8PT08XZoO35n6n3WLzxMvrvbRbn4ip8sxtJcw5rRACyHKtoDnsMyktysc
-         ixmKFosIn7raWrZpOhX7z1cSoMFafSPk1ptZr1PRLZEyNUtCerzJ1/k51dmVXTDsnrPC
-         CzdawQRcfVHM4afc4xMshR6Z95jbCqsjk1Rxlvn4PyGsukrfnHoqwT+3z8CHb+XwxYGj
-         bTThmIYey1AmQ7eW6YEujRZwIqyychGrl26VfmtelG0+tE9qwiEPGDnjpZSwvQXhUYHH
-         DnEl2+wCqSsND4ZycKGc9Wrr0MNFRVqmX4KR3oY5tx10krAwdGq6zlSRHV/dr3j1LV2p
-         zTfw==
-X-Gm-Message-State: AC+VfDyE5Et4HWG6qAaendTsWbqqq85fXVqSGOgG7Mbx1pnh1NOlSTY1
-	c7Ivbq1gyNp1ljwzZ3DJ5ufFIH6GT1fszrpUavOTBsdGtTydChhoU5DbcMcaL4c5963NEu+fIe9
-	riXqFCt0EM4iVos+f
-X-Received: by 2002:a05:620a:25a:b0:75b:23a1:47c with SMTP id q26-20020a05620a025a00b0075b23a1047cmr5399071qkn.66.1684867030825;
-        Tue, 23 May 2023 11:37:10 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4vKKkkQhDC5kjthEgm3oez1SkLO6FNrU8QgU5tlWWSYzEfoJ+DRMy6HY3ELLAHWXBiul/TJw==
-X-Received: by 2002:a05:620a:25a:b0:75b:23a1:47c with SMTP id q26-20020a05620a025a00b0075b23a1047cmr5399055qkn.66.1684867030576;
-        Tue, 23 May 2023 11:37:10 -0700 (PDT)
-Received: from localhost ([37.163.86.172])
-        by smtp.gmail.com with ESMTPSA id a19-20020a05620a103300b007576f08d3afsm2704662qkk.111.2023.05.23.11.37.09
+        bh=rWn2MIKjUVOy+G+HIOvINhREydSAiCGuFlv2fGYs64o=;
+        b=e2GMAK3G7LmzldEwUH52F3XASF64KO35wNJ9oU2M0gVI7hy40D/0kpiiZzz0UJNL6m
+         1uY4d5jTansoNjohvQhmpti2pP2Fgh64xR7SscoTeYwUAP7Lprt7L7IHVR2pIfoa52ir
+         T+/6WRuEamNLrMHZ3VnLdNS0dJCXfhlHZghw7hAxJ+ZGF7q4eNxSCqwD5Y9R0SfPpuwn
+         vZEGJGSG9wclBjMtzGmULGoZLIAJtSiVHIwfu/S8APedC75wemldfg6oaO2joPg+DpKE
+         /lFzdqnRVS3fGFcyqA8AiEGOB1QVhEjCBZhh753Vzeb1ThxMNwwjLlKaOk7fi6Gvj6un
+         DHBA==
+X-Gm-Message-State: AC+VfDyuCD78HH9hEu71WPyBxr4WKUeNzbbaeESavhc2X9lXxSyVeJVU
+	Gv7dhK5siz2jo1vYV9eIhA==
+X-Google-Smtp-Source: ACHHUZ41XhXT0087V4u7c4h9ZtuUk0wwdyR0WPz5F5FFh5ElEJXfHBqz4o9qAwjwBelPkWBPo7ftXA==
+X-Received: by 2002:a05:6214:410d:b0:619:ff0c:9246 with SMTP id kc13-20020a056214410d00b00619ff0c9246mr8059323qvb.34.1684867976633;
+        Tue, 23 May 2023 11:52:56 -0700 (PDT)
+Received: from C02FL77VMD6R.googleapis.com ([2600:1700:d860:12b0:c32:b55:eaec:a556])
+        by smtp.gmail.com with ESMTPSA id mm19-20020a0562145e9300b00623927281c2sm2974588qvb.40.2023.05.23.11.52.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 May 2023 11:37:10 -0700 (PDT)
-Date: Tue, 23 May 2023 20:37:04 +0200
-From: Andrea Claudi <aclaudi@redhat.com>
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: Vladimir Nikishkin <vladimir@nikishkin.pw>, netdev@vger.kernel.org,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
-	gnault@redhat.com, razor@blackwall.org, idosch@nvidia.com,
-	liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com
-Subject: Re: [PATCH iproute2-next v6] ip-link: add support for nolocalbypass
- in vxlan
-Message-ID: <ZG0H0OYaKlni3Je9@renaissance-vector>
-References: <20230523044805.22211-1-vladimir@nikishkin.pw>
- <20230523090441.5a68d0db@hermes.local>
+        Tue, 23 May 2023 11:52:56 -0700 (PDT)
+Date: Tue, 23 May 2023 11:52:48 -0700
+From: Peilin Ye <yepeilin.cs@gmail.com>
+To: Vlad Buslov <vladbu@nvidia.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Jamal Hadi Salim <jhs@mojatatu.com>,
+	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
+	Peilin Ye <peilin.ye@bytedance.com>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	John Fastabend <john.fastabend@gmail.com>,
+	Vlad Buslov <vladbu@mellanox.com>,
+	Pedro Tammela <pctammela@mojatatu.com>,
+	Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Subject: Re: [PATCH v2 net 6/6] net/sched: qdisc_destroy() old ingress and
+ clsact Qdiscs before grafting
+Message-ID: <ZG0LgCGLAKOV82YN@C02FL77VMD6R.googleapis.com>
+References: <cover.1684796705.git.peilin.ye@bytedance.com>
+ <8e3383d0bacd084f0e33d9158d24bd411f1bf6ba.1684796705.git.peilin.ye@bytedance.com>
+ <87sfbnxhg7.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -82,55 +84,33 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230523090441.5a68d0db@hermes.local>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <87sfbnxhg7.fsf@nvidia.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 23, 2023 at 09:04:41AM -0700, Stephen Hemminger wrote:
-> On Tue, 23 May 2023 12:48:05 +0800
-> Vladimir Nikishkin <vladimir@nikishkin.pw> wrote:
-> 
-> > +	if (tb[IFLA_VXLAN_LOCALBYPASS]) {
-> > +		__u8 localbypass = rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS]);
-> > +
-> > +		print_bool(PRINT_JSON, "localbypass", NULL, localbypass);
-> > +		if (!localbypass)
-> > +			print_bool(PRINT_FP, NULL, "nolocalbypass ", true);
-> > +	}
-> 
-> This is backwards since nolocalbypass is the default.
+Hi Vlad,
+
+On Tue, May 23, 2023 at 05:04:40PM +0300, Vlad Buslov wrote:
+> > @@ -1458,6 +1472,7 @@ static int tc_get_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
+> >     struct Qdisc *p = NULL;
+> >     int err;
+> >
+> > +replay:
 >
+> Perhaps also set q and p to NULL here? Even though on cursory look you
+> should get the same lookup result since the function is called under
+> rtnl_lock, tc_modify_qdisc() does this on replay ("Reinit, just in case
+> something touches this.") and tc_new_tfilter() got some non-obvious bugs
+> after I introduced replay there without re-setting some of the required
+> variables.
 
-Stephen, I'll try to summarize the discussion we had in v5 here.
+Sure, I'll reinitialize tcm, q and p after "replay:" in next version, just
+like tc_modify_qdisc().  Thanks for the suggestion!
 
-- We agree that it's a good idea to have JSON attributes printed both
-  when 'true' and 'false'. As Petr said, this makes the code less error
-  prone and makes it clear attribute is supported.
-- I have some concerns about printing options only when non-default
-  values are set. Non-JSON output is mostly consumed by humans, that
-  usually expects something to be visible if present/true/enabled. I
-  know I'm advocating for a change in the iproute output here, and we
-  usually don't do that, but I argue there's value in having a less
-  cluttered and confusing output.
-
-  For example, let's take what you see with a default vxlan:
-  $ ip link add type vxlan id 12
-  $ ip -j link show vxlan0
-  [...] udpcsum noudp6zerocsumtx noudp6zerocsumrx [...]
-
-  IMHO printing only "udpcsum" is enough to make the user aware that
-  the "udpcsum" feature is enabled and the rest is off.
-
-I'm not against Vladimir's change, of course. But I would be very happy
-if we can agree on a direction for the output from now on, and try to
-enforce it, maybe deprecating the "old way" to print out stuff step by
-step, if we find it useful.
-
-What do you think?
-Andrea
+Peilin Ye
 
 
