@@ -1,150 +1,71 @@
-Return-Path: <netdev+bounces-4465-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4466-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E040F70D0C5
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:01:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8CE9770D0CB
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 04:05:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AAD061C20C1A
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:01:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 95D2228113C
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:05:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF9D21C30;
-	Tue, 23 May 2023 02:01:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A1C371C35;
+	Tue, 23 May 2023 02:05:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DD351C16
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:01:53 +0000 (UTC)
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E33DCD
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 19:01:51 -0700 (PDT)
-Received: from kwepemm600017.china.huawei.com (unknown [172.30.72.53])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QQHWN4Kv1zqTKZ;
-	Tue, 23 May 2023 09:57:20 +0800 (CST)
-Received: from dggpeml500021.china.huawei.com (7.185.36.21) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 23 May 2023 10:01:48 +0800
-Received: from dggpeml500021.china.huawei.com ([7.185.36.21]) by
- dggpeml500021.china.huawei.com ([7.185.36.21]) with mapi id 15.01.2507.023;
- Tue, 23 May 2023 10:01:48 +0800
-From: hanhuihui <hanhuihui5@huawei.com>
-To: "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "davem@davemloft.net"
-	<davem@davemloft.net>, "dsahern@kernel.org" <dsahern@kernel.org>,
-	"pablo@netfilter.org" <pablo@netfilter.org>
-CC: Caowangbao <caowangbao@huawei.com>, liaichun <liaichun@huawei.com>, "Yanan
- (Euler)" <yanan@huawei.com>, "Fengtao (fengtao, Euler)"
-	<fengtao40@huawei.com>, yujiaying <yujiaying@huawei.com>
-Subject: =?utf-8?B?562U5aSNOiBQZXJmb3JtYW5jZSBkZWNyZWFzZSBpbiBpcHRfZG9fdGFibGU=?=
-Thread-Topic: Performance decrease in ipt_do_table
-Thread-Index: AdlyoO0hIXO08gX0T9SB/n7Dh2bGWgadKdtgAAAQrqA=
-Date: Tue, 23 May 2023 02:01:48 +0000
-Message-ID: <f07361c42288407b99371bf4502ffaa7@huawei.com>
-References: <9352237640d747bbaa7584f30161417e@huawei.com>
-In-Reply-To: <9352237640d747bbaa7584f30161417e@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.136.114.92]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BBD01C08
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:05:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E6CC433EF;
+	Tue, 23 May 2023 02:05:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684807516;
+	bh=98O7VgNuMGNSu4HhCRX9uBBylnf5BFeRBBwKmuvbrT0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=YAI5QUiwwA/PgrlJUpl86lTlACOL6WjXMe5NPCtPARbqkscHf9GEMlPS8q6yqY9Kh
+	 GTw5qKJiEQdNvlL2jaO9SZEyNXWfizze5SrahuzRpjjXP2ixScBlnPhZjPAweQM20u
+	 2+7wKlJshdrlqUndHVflQ+DCMzJfpIqmhVLEN6ohRki0PWQQE7vtCcz6KLjsmLFo70
+	 09oW/1C5fPUGK9xuanYa5SHyqctgjTd7iw5AF0Sb/6H3pjiyVelBIJWTuuStv2lve8
+	 OfVlX5MZooOEJ5YnVay0Fy+bSb9rDYAgP/uho4WQ0ZYcwfae2VlJwGqZAU7mr9RKyh
+	 5RR39aM0AzlHg==
+Date: Mon, 22 May 2023 19:05:15 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+ pabeni@redhat.com, corbet@lwn.net, linux-doc@vger.kernel.org
+Subject: Re: [PATCH net] docs: netdev: document the existence of the mail
+ bot
+Message-ID: <20230522190515.2793193f@kernel.org>
+In-Reply-To: <043df418-28f0-49e5-bff0-2ea511148bb6@lunn.ch>
+References: <20230522230903.1853151-1-kuba@kernel.org>
+	<043df418-28f0-49e5-bff0-2ea511148bb6@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-QWZ0ZXIgZDQzYjc1ZmJjMjNmIGFuZCA4YzljMjk2YWRmYWUsIHRoZSB2cmYgcGVyZm9ybWFuY2Ug
-ZGlkIGluZGVlZCBkZWNyZWFzZSBieSA3JS4gQ2FuIHlvdSBoZWxwIG1lIHRha2UgYSBsb29rIGF0
-IHRoaXMuIE9yIGhvdyB0byBjb25maWd1cmUgcWRpc2MgdG8gbWFpbnRhaW4gcGVyZm9ybWFuY2Ug
-d2l0aG91dCBkZWdyYWRhdGlvbg0KDQoNCi0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCuWPkeS7tuS6
-ujogcGVuZ3lpIChNKSANCuWPkemAgeaXtumXtDogMjAyM+W5tDXmnIgyM+aXpSA5OjI3DQrmlLbk
-u7bkuro6IGhhbmh1aWh1aSA8aGFuaHVpaHVpNUBodWF3ZWkuY29tPg0K5Li76aKYOiDovazlj5E6
-IFBlcmZvcm1hbmNlIGRlY3JlYXNlIGluIGlwdF9kb190YWJsZQ0KDQoNCg0KLS0tLS3pgq7ku7bl
-jp/ku7YtLS0tLQ0K5Y+R5Lu25Lq6OiBwZW5neWkgKE0pIA0K5Y+R6YCB5pe26Ze0OiAyMDIz5bm0
-NOaciDE55pelIDE3OjI2DQrmlLbku7bkuro6IENhb3dhbmdiYW8gPGNhb3dhbmdiYW9AaHVhd2Vp
-LmNvbT47IGxpYWljaHVuIDxsaWFpY2h1bkBodWF3ZWkuY29tPjsgWWFuYW4gKEV1bGVyKSA8eWFu
-YW5AaHVhd2VpLmNvbT47IEZlbmd0YW8gKGZlbmd0YW8sIEV1bGVyKSA8ZmVuZ3RhbzQwQGh1YXdl
-aS5jb20+OyB5dWppYXlpbmcgPHl1amlheWluZ0BodWF3ZWkuY29tPg0K5Li76aKYOiBSZTogUGVy
-Zm9ybWFuY2UgZGVjcmVhc2UgaW4gaXB0X2RvX3RhYmxlDQoNClRoYW5rIHlvdSBmb3IgdGhlIHJl
-cGx5LCBJIGhhdmUgYW5vdGhlciBxdWVzdGlvbiBhYm91dCB0aGUgZml4ZWQgcGF0Y2ggbWVudGlv
-bmVkIGluIGNvbW1pdCBkNDNiNzVmYmMyM2YuIFRoZSBjb21taXQgOGM5YzI5NmFkZmFlKHZyZjog
-cnVuIGNvbm50cmFjayBvbmx5IGluIGNvbnRleHQgb2YgbG93ZXIvcGh5c2RldiBmb3IgbG9jYWxs
-eSBnZW5lcmF0ZWQgcGFja2V0cykgYWRkZWQgdGhlIGZ1bmN0aW9uIHZyZl9uZl9zZXRfdW50cmFj
-a2VkKCkgYW5kIHdhcyBjYWxsZWQgaW4gdnJmX2lwX291dF9kaXJlY3QoKSwgdG8gbWFya2luZyB0
-aGUgcGFja2V0cyBhcyB1bnRyYWNrLiBJIHdhcyB3b25kZXJpbmcgd2h5IHdlIHNob3VsZCBjbGVh
-ciB0aGUgcGFja2V0cyBvdXQgb2YgdGhlIGNvbm50cmFjayBpZiB0aGUgcGFja2V0IHdvdWxkIGJl
-IHNlbnQgb3V0IGRpcmVjdGx5LCBpcyBpdCBiZW5lZmljaWFsIHRvIHRoZSBuZXR3b3JrIHBlcmZv
-cm1hbmNlPyANCg0KQW5vdGhlciBpc3N1ZSBpcyB0aGF0IGlmIHRoZSBwYWNrZXQgd2FzIG1hcmtl
-ZCBhcyAidW50cmFjayIsIHRoZSBpcHRfZG9fdGFibGUoKSB3b3VsZCBzcGVuZCBtb3JlIHRpbWUg
-YmVjYXVzZSB3ZSBkaWRuJ3QgcmVjb3JkIGl0IGluIHRoZSBjb25udHJhY2sgYW5kIGhhZCB0byBh
-bmFseXNpemUgaXQuIEkgZGVsZXRlZCB0aGUgInZyZl9uZl9zZXRfdW50cmFja2VkKHNrYik7ImFu
-ZCBjb21wYXJlZCB0aGUgdHdvIHN0YWNrcy4gV2UgY291bGQgZmluZCB0aGUgdGNwX210KCkgd291
-bGQgYmUgY2FsbGVkIGFmdGVyIHRoZSBjb25udHJhY2tfbXRfdjMgYW5kIHRoZSBwZXJmb3JtYW5j
-ZSBpbmNyZWFzZWQuIEFueSB0aG91Z2h0cyBhYm91dCB0aGlzIGNvbW1pdCB3b3VsZCBiZSB2ZXJ5
-IHRoYW5rZnVsIQ0KDQpIZXJlIGF0dGFjaGVkIHRoZSBzdGFja3MgYmVmb3JlIGFuZCBhZnRlciB0
-aGUgY29tbWl0Og0KIyBOb3QgZGVsZXRpbmcgdnJmX25mX3NldF91bnRyYWNrZWQoc2tiKQ0KIyBD
-UFUgIERVUkFUSU9OICAgICAgICAgICAgICAgICAgRlVOQ1RJT04gQ0FMTFMgICAgICAgICAgICAg
-ICAgICAgIA0KIyB8ICAgICB8ICAgfCAgICAgICAgICAgICAgICAgICAgIHwgICB8ICAgfCAgIHwN
-CiAgMCkgICAgICAgICAgICAgICB8ICBpcHRfZG9fdGFibGUgW2lwX3RhYmxlc10oKSB7DQogIDAp
-ICAgICAgICAgICAgICAgfCAgICBjb25udHJhY2tfbXRfdjMgW3h0X2Nvbm50cmFja10oKSB7DQog
-IDApICAgMC4zNjAgdXMgICAgfCAgICAgIGNvbm50cmFja19tdC5pc3JhLjAgW3h0X2Nvbm50cmFj
-a10oKTsNCiAgMCkgICAxLjA5MCB1cyAgICB8ICAgIH0NCiAgMCkgICAwLjM3MCB1cyAgICB8ICAg
-IHRjcF9tdCgpOw0KICAwKSAgIDAuMzAwIHVzICAgIHwgICAgdGNwX210KCk7DQogIDApICAgMC4z
-MDAgdXMgICAgfCAgICB0Y3BfbXQoKTsNCiAgMCkgICAwLjI5MCB1cyAgICB8ICAgIHRjcF9tdCgp
-Ow0KICAwKSAgIDAuMzEwIHVzICAgIHwgICAgdGNwX210KCk7DQogIDApICAgMC4zMDAgdXMgICAg
-fCAgICB0Y3BfbXQoKTsNCg0KIyBEZWxldGluZyB2cmZfbmZfc2V0X3VudHJhY2tlZChza2IpDQoj
-IENQVSAgRFVSQVRJT04gICAgICAgICAgICAgICAgICBGVU5DVElPTiBDQUxMUw0KIyB8ICAgICB8
-ICAgfCAgICAgICAgICAgICAgICAgICAgIHwgICB8ICAgfCAgIHwNCjE3KSAgICAgICAgICAgICAg
-IHwgIGlwdF9kb190YWJsZSBbaXBfdGFibGVzXSgpIHsNCjE3KSAgICAgICAgICAgICAgIHwgICAg
-Y29ubnRyYWNrX210X3YzIFt4dF9jb25udHJhY2tdKCkgew0KMTcpICAgMC44MjAgdXMgICAgfCAg
-ICAgIGNvbm50cmFja19tdC5pc3JhLjEgW3h0X2Nvbm50cmFja10oKTsNCjE3KSAgIDEuNjkwIHVz
-ICAgIHwgICAgfQ0KMTcpICAgMC4zNDAgdXMgICAgfCAgICBfX2xvY2FsX2JoX2VuYWJsZV9pcCgp
-Ow0KMTcpICAgNS40NjAgdXMgICAgfCAgfQ0KMTcpICAgICAgICAgICAgICAgfCAgaXB0X2RvX3Rh
-YmxlIFtpcF90YWJsZXNdKCkgew0KMTcpICAgICAgICAgICAgICAgfCAgICBjb25udHJhY2tfbXRf
-djMgW3h0X2Nvbm50cmFja10oKSB7DQoxNykgICAwLjcyMCB1cyAgICB8ICAgICAgY29ubnRyYWNr
-X210LmlzcmEuMSBbeHRfY29ubnRyYWNrXSgpOw0KMTcpICAgMS42NDAgdXMgICAgfCAgICB9DQox
-NykgICAwLjMzMCB1cyAgICB8ICAgIF9fbG9jYWxfYmhfZW5hYmxlX2lwKCk7DQoxNykgICA0LjQ3
-MCB1cyAgICB8ICB9DQoNCkJlc3Qgd2lzaGVzDQpZaSBQZW5nDQoNCi0tLS0t6YKu5Lu25Y6f5Lu2
-LS0tLS0NCuWPkeS7tuS6ujogTmljb2xhcyBEaWNodGVsIDxuaWNvbGFzLmRpY2h0ZWxANndpbmQu
-Y29tPiANCuWPkemAgeaXtumXtDogMjAyM+W5tDTmnIgxOeaXpSAwOjI4DQrmlLbku7bkuro6IHBl
-bmd5aSAoTSkgPHBlbmd5aTM3QGh1YXdlaS5jb20+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBk
-YXZlbUBkYXZlbWxvZnQubmV0OyBkc2FoZXJuQGtlcm5lbC5vcmc7IHBhYmxvQG5ldGZpbHRlci5v
-cmcNCuaKhOmAgTogQ2Fvd2FuZ2JhbyA8Y2Fvd2FuZ2Jhb0BodWF3ZWkuY29tPjsgbGlhaWNodW4g
-PGxpYWljaHVuQGh1YXdlaS5jb20+OyBZYW5hbiAoRXVsZXIpIDx5YW5hbkBodWF3ZWkuY29tPg0K
-5Li76aKYOiBSZTogUGVyZm9ybWFuY2UgZGVjcmVhc2UgaW4gaXB0X2RvX3RhYmxlDQoNCkxlIDE4
-LzA0LzIwMjMgw6AgMTY6MzcsIHBlbmd5aSAoTSkgYSDDqWNyaXTCoDoNCj4gSGksIEkgZm91bmQg
-YWZ0ZXIgdGhlIGNvbW1pdCBkNDNiNzVmYmMyM2YgW3ZyZjogZG9uJ3QgcnVuIGNvbm50cmFjayBv
-biB2cmYgd2l0aCAhZGZsdCBxZGlzY10gaW4gdnJmLmMgLCB0aGUgcGVyZm9ybWFuY2Ugb2YgaXB0
-X2RvX3RhYmxlIGRlY3JlYXNlZC4gSW4gdnJmLmMsIHRoZSBsb2NhbGx5IGdlbmVyYXRlZCBwYWNr
-ZXQgd2FzIG1hcmtlZCBhcyAidW50cmFja2VkIiBpbiB2cmZfaXBfb3V0LCBiZWNhdXNlIGl0IHdv
-bid0IGJlIHByb2Nlc3NlZCBieSB0aGUgcm91dGVyKGFsc28gbWVudGlvbmVkIGluIGNvbW1pdC4g
-ZDQzYjc1ZmJjMjNmKS4gQW5kIGl0IHdpbGwgYWxzbyBtYWRlIHRoZSBzdGF0ZWJpdCB3YXMgc2V0
-IHRvIFhUX0NPTk5UUkFDS19TVEFURV9VTlRSQUNLRUQgaW4gY29ubnRyYWNrX210LCB3aGljaCBt
-ZWFucyB3ZSBkaWRuJ3QgaGFkIHRoZSBpbmZvcm1hdGlvbiBhYm91dCBpbiBjb25udHJhY2sgc28g
-d2UgaGFkIHRvIHJlLWFuYWx5c2l6ZSB0aGUgcGFja2V0IGJ5IGNhbGxpbmcgdGNwX210KCkuDQo+
-IA0KPiBIb3dldmVyLCBhZnRlciB0aGUgY29tbWl0IGQ0M2I3NWZiYzIzZiAsIGFsbCBwYWNrZXRz
-IGluIHZyZl9pcF9vdXQgd2FzIG1hcmtlZCBhcyAidW50cmFja2VkIiwgd2hpY2ggbWFkZSBtb3Jl
-IHRpbWVzIG9mIGNhbGxpbmcgdGNwX210KCkuIEhlbmNlIHRoZSB0aW1lIG9mIHByb2Nlc3Npbmcg
-YWxsIHBhY2tldHMgYmVjYW1lIGxvbmdlciBhbmQgaXQgYWZmZWN0ZWQgdGhlIHBlcmZvcm1hbmNl
-IG9mIGlwdF9kb190YWJsZSgpIGluIHRvdGFsLiBJIHdvbmRlciBpcyBpdCBhbiBleHBlY3RlZCBi
-ZWhhdmlvciB0byBzZWUgdGhlIHBlcmZvcm1hbmNlIGRlY3JlYXNlIGFmdGVyIHRoZSBjb21taXQg
-ZDQzYjc1ZmJjMjNmID8NCkl0IHdhcyBub3QgdGhlIGdvYWwgb2YgdGhpcyBjb21taXQgOikNClRo
-ZSBwZXJmb3JtYW5jZSByZWdyZXNzaW9uIHNlZW1zIHRvIGJlIHNwZWNpZmljIHRvIHlvdXIgcnVs
-ZSBzZXQuDQpBcyBleHBsYWluZWQgaW4gdGhlIGNvbW1pdCBsb2csIHRoZSBnb2FsIHdhcyB0byBo
-YXZlIHRoZSBzYW1lIHBhY2tldCBwcm9jZXNzaW5nLCB3aGF0ZXZlciBxZGlzYyBpcyBjb25maWd1
-cmVkIG9uIHRoZSB2cmYgaW50ZXJmYWNlLg0KQmVmb3JlIHRoaXMgcGF0Y2gsIHlvdSBzaG91bGQg
-aGF2ZSB0aGUgc2FtZSBwZXJmb3JtYW5jZSBsZXZlbCAoYXMgbm93KSBpZiBhIHFkaXNjIGlzIGNv
-bmZpZ3VyZWQuDQoNCg0KUmVnYXJkcywNCk5pY29sYXMNCg==
+On Tue, 23 May 2023 03:46:46 +0200 Andrew Lunn wrote:
+> > +Instead of delegating patchwork permissions netdev uses a simple mail
+> > +bot which looks for special commands/lines within the emails sent to
+> > +the mailing list. For example to mark a series as Changes Requested
+> > +one needs to send the following line anywhere in the email thread::
+> > +
+> > +  pw-bot: changes-requested  
+> 
+> ...
+> 
+> > +  https://patchwork.hopto.org/pw-bot.html  
+> 
+> [Evil grin]
+> So your patch did not trigger the bot. Lets see if my reply does?
+> [/Evil grin]
+
+Commands must be on separate lines, with no extra white space.
+I wonder if that proves the documentation is insufficient :)
 
