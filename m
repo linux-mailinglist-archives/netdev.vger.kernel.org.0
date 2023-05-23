@@ -1,201 +1,113 @@
-Return-Path: <netdev+bounces-4671-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4672-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 514B970DCBF
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:40:16 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7C31970DCE2
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:47:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 77220281273
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:40:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 241AC281399
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:47:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5AB131E50A;
-	Tue, 23 May 2023 12:39:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 12DA74A23;
+	Tue, 23 May 2023 12:47:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48E8B1EA69
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 12:39:15 +0000 (UTC)
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 416D8118
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:39:13 -0700 (PDT)
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2af2c7f2883so42524881fa.3
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:39:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684845491; x=1687437491;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uXc2tgHtY8JsvHvYi5Y3WaNSHc2OvVQzrpUhvy+ObpU=;
-        b=1ZsYizzZALjXrgL5hAm6Jftznrsf2J1WC7xUcpPuY179tT+3wzLENH8dBfLvaq4YxX
-         CVlmUEz20kBKtc2PLwtIC463XcKMZS4cyxKp0JJVSflXGMPtUqMjVNBYczByyS4hn1od
-         m9XawRaYvnCJXMjF6hybldeMsd9gJhFm0Bzvn2H/xoBypuRzLRo+Vg0hMg/D3hZdOOfq
-         vInA495EcOjmh0PPcXufkRhB7u5hySQJHpuM+MdWHmA98p+ziGNYfwNPSiRH//Cqh68k
-         TFNKWRDJQVIdZlFJQ62wK29Ef4y3EYwzsef1+VYWX8l/qM56+wlgB3UmWRs1i+DxmfVf
-         WyHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684845491; x=1687437491;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uXc2tgHtY8JsvHvYi5Y3WaNSHc2OvVQzrpUhvy+ObpU=;
-        b=d6NXZE9OaCgvmDVXrnjYzq4qjfuYgUz2ZuruZdj6xzRqrZcf97JaB9BkUaxjgz4VrQ
-         tTlQgqxqR44Ok/NTVheemHTAHEyK8m57DM6KE7JWhjKzkAdk/x6Oa7Rj+QNOwBu6jQXj
-         WGTuLjdQBIOjT/paAR/UHYt9qgbVEsoSQ4tzSdXXxIJ40CV2+wdmREtpTA8K96g0TczQ
-         Nn9jQrAmX9EwDAeMLCovUARX9WT0hgIoqsIdPGUg4zRN9kCc5wEfci4ED416JVykeSf9
-         dQjjG5Cy1lXFaj2kX9Kz7oTbJSIEzMuPEVV+H9QjExu/Q21lyg4IJZ/PoBV5675mCXEc
-         g2/w==
-X-Gm-Message-State: AC+VfDwkgnE985Ch/az8Ho9zcnMGg1O/5U34kpbMpYjMBNLo217p0qV2
-	rjQoYPpKFAwWMh+By5B5WeYUTnaNEAOrmV+8Rhg=
-X-Google-Smtp-Source: ACHHUZ6tvorTVdyguFLqKXgTRxKAu5+VBK/FRYO2PhZOtvB1jUf1O6i0rDtEKB1mB3TeJfPikr+OSQ==
-X-Received: by 2002:a2e:8659:0:b0:2a8:ac5c:d8f1 with SMTP id i25-20020a2e8659000000b002a8ac5cd8f1mr5364974ljj.1.1684845491287;
-        Tue, 23 May 2023 05:38:11 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id z19-20020a2e8853000000b002a8ecae9567sm1605937ljj.84.2023.05.23.05.38.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 May 2023 05:38:10 -0700 (PDT)
-From: Jiri Pirko <jiri@resnulli.us>
-To: netdev@vger.kernel.org
-Cc: kuba@kernel.org,
-	pabeni@redhat.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	leon@kernel.org,
-	saeedm@nvidia.com,
-	moshe@nvidia.com
-Subject: [patch net-next 3/3] devlink: pass devlink_port pointer to ops->port_del() instead of index
-Date: Tue, 23 May 2023 14:38:01 +0200
-Message-Id: <20230523123801.2007784-4-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230523123801.2007784-1-jiri@resnulli.us>
-References: <20230523123801.2007784-1-jiri@resnulli.us>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03D6A4A850
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 12:47:49 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EED2FF;
+	Tue, 23 May 2023 05:47:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=7Z5/Y4r+BnXvM9EvnVMv2yccz262/5dSGN6oq/NUoxE=; b=NszfJ/oaMuYP47fUZKY/NBRRg2
+	9sUgmfsPvhMGkwlaWmT/k/w5e/lr1GyMQIL+V7Ml2NQ8ZmJnip2iECh7rUBZVT8HYBozK+x6p3tV0
+	+3ck2QLhLV0xIdzcHzs746qdHqC3r7mz4aETh5mgB5JMSHF6VGJ0RmTx1qhHMM/wbrEA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q1RQL-00Dgbo-LT; Tue, 23 May 2023 14:47:33 +0200
+Date: Tue, 23 May 2023 14:47:33 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Gan Yi Fang <yi.fang.gan@intel.com>
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Alexandre Torgue <alexandre.torgue@st.com>,
+	Jose Abreu <joabreu@synopsys.com>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, netdev@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Looi Hong Aun <hong.aun.looi@intel.com>,
+	Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Subject: Re: [PATCH net-next 1/1] net: stmmac: Remove redundant checking for
+ rx_coalesce_usecs
+Message-ID: <436aced8-f7c4-4ecb-96f9-25ab707e95af@lunn.ch>
+References: <20230523061952.204537-1-yi.fang.gan@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230523061952.204537-1-yi.fang.gan@intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Jiri Pirko <jiri@nvidia.com>
+On Tue, May 23, 2023 at 02:19:52AM -0400, Gan Yi Fang wrote:
+> The datatype of rx_coalesce_usecs is u32, always larger or equal to zero.
+> Previous checking does not include value 0, this patch removes the
+> checking to handle the value 0.
+> 
+> Signed-off-by: Gan Yi Fang <yi.fang.gan@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+> index 35c8dd92d369..6ed0e683b5e0 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+> @@ -917,7 +917,7 @@ static int __stmmac_set_coalesce(struct net_device *dev,
+>  	else if (queue >= max_cnt)
+>  		return -EINVAL;
+>  
+> -	if (priv->use_riwt && (ec->rx_coalesce_usecs > 0)) {
+> +	if (priv->use_riwt) {
+>  		rx_riwt = stmmac_usec2riwt(ec->rx_coalesce_usecs, priv);
+>  
+>  		if ((rx_riwt > MAX_DMA_RIWT) || (rx_riwt < MIN_DMA_RIWT))
 
-Historically there was a reason why port_dev() along with for example
-port_split() did get port_index instead of the devlink_port pointer.
-With the locking changes that were done which ensured devlink instance
-mutex is hold for every command, the port ops could get devlink_port
-pointer directly. Change the forgotten port_dev() op to be as others
-and pass devlink_port pointer instead of port_index.
+This appears to be a user visible ABI change. For the current code, a
+value of zero here is ignored, and 0 is returned. With this change, 0
+will result in rx_riwt being calculated as 0, which is less than
+MIN_DMA_RIWT, so you get -EINVAL returned.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+I don't know this uAPI too well. What values are passed to this
+function for:
+
+ethtool -C eth24 tx-usecs 42
+
+where you only want to change transmit coalesce? Is rx_usecs 0?
+
+At minimum you need to explain in the commit message: "This change in
+behaviour making the value of 0 cause an error is not a problem
+because...."
+
+    Andrew
+
 ---
- drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c |  5 +++--
- drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h      |  3 ++-
- include/net/devlink.h                                |  4 ++--
- net/devlink/leftover.c                               | 11 +++--------
- 4 files changed, 10 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-index de15b9c85e1b..c7d4691cb65a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-@@ -376,7 +376,8 @@ static void mlx5_sf_dealloc(struct mlx5_sf_table *table, struct mlx5_sf *sf)
- 	}
- }
- 
--int mlx5_devlink_sf_port_del(struct devlink *devlink, unsigned int port_index,
-+int mlx5_devlink_sf_port_del(struct devlink *devlink,
-+			     struct devlink_port *dl_port,
- 			     struct netlink_ext_ack *extack)
- {
- 	struct mlx5_core_dev *dev = devlink_priv(devlink);
-@@ -391,7 +392,7 @@ int mlx5_devlink_sf_port_del(struct devlink *devlink, unsigned int port_index,
- 				   "Port del is only supported in eswitch switchdev mode or SF ports are disabled.");
- 		return -EOPNOTSUPP;
- 	}
--	sf = mlx5_sf_lookup_by_index(table, port_index);
-+	sf = mlx5_sf_lookup_by_index(table, dl_port->index);
- 	if (!sf) {
- 		err = -ENODEV;
- 		goto sf_err;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h b/drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h
-index 1f7d8cbd72e8..c5430b8dcdf6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h
-@@ -21,7 +21,8 @@ void mlx5_sf_table_cleanup(struct mlx5_core_dev *dev);
- int mlx5_devlink_sf_port_new(struct devlink *devlink,
- 			     const struct devlink_port_new_attrs *add_attr,
- 			     struct netlink_ext_ack *extack);
--int mlx5_devlink_sf_port_del(struct devlink *devlink, unsigned int port_index,
-+int mlx5_devlink_sf_port_del(struct devlink *devlink,
-+			     struct devlink_port *dl_port,
- 			     struct netlink_ext_ack *extack);
- int mlx5_devlink_sf_port_fn_state_get(struct devlink_port *dl_port,
- 				      enum devlink_port_fn_state *state,
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 24a48f3d4c35..1bd56c8d6f3c 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1516,7 +1516,7 @@ struct devlink_ops {
- 	/**
- 	 * port_del() - Delete a port function
- 	 * @devlink: Devlink instance
--	 * @port_index: port function index to delete
-+	 * @port: The devlink port
- 	 * @extack: extack for reporting error messages
- 	 *
- 	 * Devlink core will call this device driver function upon user request
-@@ -1528,7 +1528,7 @@ struct devlink_ops {
- 	 *
- 	 * Return: 0 on success, negative value otherwise.
- 	 */
--	int (*port_del)(struct devlink *devlink, unsigned int port_index,
-+	int (*port_del)(struct devlink *devlink, struct devlink_port *port,
- 			struct netlink_ext_ack *extack);
- 	/**
- 	 * port_fn_state_get() - Get the state of a port function
-diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index cb60e42b2761..0410137a4a31 100644
---- a/net/devlink/leftover.c
-+++ b/net/devlink/leftover.c
-@@ -1396,20 +1396,14 @@ static int devlink_nl_cmd_port_new_doit(struct sk_buff *skb,
- static int devlink_nl_cmd_port_del_doit(struct sk_buff *skb,
- 					struct genl_info *info)
- {
-+	struct devlink_port *devlink_port = info->user_ptr[1];
- 	struct netlink_ext_ack *extack = info->extack;
- 	struct devlink *devlink = info->user_ptr[0];
--	unsigned int port_index;
- 
- 	if (!devlink->ops->port_del)
- 		return -EOPNOTSUPP;
- 
--	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_PORT_INDEX)) {
--		NL_SET_ERR_MSG(extack, "Port index is not specified");
--		return -EINVAL;
--	}
--	port_index = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
--
--	return devlink->ops->port_del(devlink, port_index, extack);
-+	return devlink->ops->port_del(devlink, devlink_port, extack);
- }
- 
- static int
-@@ -6341,6 +6335,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 		.cmd = DEVLINK_CMD_PORT_DEL,
- 		.doit = devlink_nl_cmd_port_del_doit,
- 		.flags = GENL_ADMIN_PERM,
-+		.internal_flags = DEVLINK_NL_FLAG_NEED_PORT,
- 	},
- 	{
- 		.cmd = DEVLINK_CMD_LINECARD_GET,
--- 
-2.39.2
-
+pw-bot: cr
 
