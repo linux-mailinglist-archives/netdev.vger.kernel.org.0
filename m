@@ -1,74 +1,98 @@
-Return-Path: <netdev+bounces-4690-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4692-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 35DEF70DECA
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:10:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C2E8E70DF06
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:17:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B7C381C20D76
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:10:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7CF46281352
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:17:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48AFF1F176;
-	Tue, 23 May 2023 14:10:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 129711F17A;
+	Tue, 23 May 2023 14:17:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F14831EA9E;
-	Tue, 23 May 2023 14:10:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 095CFC433D2;
-	Tue, 23 May 2023 14:10:42 +0000 (UTC)
-Date: Tue, 23 May 2023 10:10:41 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Ze Gao <zegao2021@gmail.com>
-Cc: Jiri Olsa <olsajiri@gmail.com>, Yonghong Song <yhs@meta.com>, Alexei
- Starovoitov <ast@kernel.org>, Andrii Nakryiko <andrii@kernel.org>, Daniel
- Borkmann <daniel@iogearbox.net>, Hao Luo <haoluo@google.com>, John
- Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, Martin
- KaFai Lau <martin.lau@linux.dev>, Masami Hiramatsu <mhiramat@kernel.org>,
- Song Liu <song@kernel.org>, Stanislav Fomichev <sdf@google.com>, Yonghong
- Song <yhs@fb.com>, bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-trace-kernel@vger.kernel.org, kafai@fb.com, kpsingh@chromium.org,
- netdev@vger.kernel.org, paulmck@kernel.org, songliubraving@fb.com, Ze Gao
- <zegao@tencent.com>
-Subject: Re: kprobes and rcu_is_watching()
-Message-ID: <20230523101041.23ca7cc8@rorschach.local.home>
-In-Reply-To: <CAD8CoPDASe7hpkFbK+UzJats7j4sbgsCh_P4zaQYVuKD7jWu2w@mail.gmail.com>
-References: <20220515203653.4039075-1-jolsa@kernel.org>
-	<20230520094722.5393-1-zegao@tencent.com>
-	<b4f66729-90ab-080a-51ec-bf435ad6199d@meta.com>
-	<CAD8CoPAXse1GKAb15O5tZJwBqMt1N_btH+qRe7c_a-ryUMjx7A@mail.gmail.com>
-	<ZGp+fW855gmWuh9W@krava>
-	<CAD8CoPDASe7hpkFbK+UzJats7j4sbgsCh_P4zaQYVuKD7jWu2w@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA3391F177;
+	Tue, 23 May 2023 14:17:35 +0000 (UTC)
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCC0E9;
+	Tue, 23 May 2023 07:17:34 -0700 (PDT)
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2af2c35fb85so44291051fa.3;
+        Tue, 23 May 2023 07:17:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684851393; x=1687443393;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2x0J40jVoPlEDJ92hmP4ooz3zQmmJDfgf/IWZhxOlAo=;
+        b=CrJyFN7Yh/XNTnmJ9jt4hYCmkhJJmHtn1cLqv380B97qIFUkcb4gchhaA9g0ddBREx
+         JwdxstRDIgJ+5u/OtZLgO1ziFmRiQWbro1LXn+6+NXyjwR1wcuacduc4en6EkGuTtDBq
+         lSD+OCfTlJbhDLZD25orC7raqICKbIf69mg4wS9tJ+YL19HNZTfUBoMUtfABmKYfspg3
+         KafBgbpROfAbLPSmr6nXgmU57n0u5T02DSpIUXTlcioIoh0h8ZCYDqJxJTiKqj22zbTq
+         zNM5BScTAGzoAA25GkmYuZOs0/Kiw8a7I2QiMpaK7EtPsTWGHzIm35emu99IsZZJCALJ
+         Pziw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684851393; x=1687443393;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2x0J40jVoPlEDJ92hmP4ooz3zQmmJDfgf/IWZhxOlAo=;
+        b=UIsY1arsYjdLN7Zx+Dn6O3++QbOQ/+3B431GVlNVId0F2jglJoB7HHpRYoKDKq2j72
+         t5dk1OYKGOp0VaKlWP910sZxD/wND+ARhcdZzEFuI+J7pg9jtsq/d9pECl9Jj6HkXiFx
+         QN7IhBBLsln2usRUAx/S71IjBafVmvbe0LuUpEnQTYW+kW3Xz1weFyYG5SsuTXYTRqfx
+         Bj1kM66JY3hki27RX+vaysL+jhsgOqhJnZP4orI4iev1nCmLzfLJTuwYQKxA57yf+S5w
+         Hw3P9V7EknRbcPsOC1mGmgQ7XemkzVifsQKtybYlIuI3xUWhy+n4pdwbZESpgDtCCX8s
+         yc8A==
+X-Gm-Message-State: AC+VfDye7SNPQH54irf1VDxVqBu0CgP7ZBLL0r9rrJuGB0MNBFsvfkOb
+	kGSP1cATOImjQhD0cuYJ5fuXivSs5BN6D9I=
+X-Google-Smtp-Source: ACHHUZ6o4GiojOXqr8dHeQxFcIzAfgPIuVh2dfEfZqOu+9qH8T1DcnqB4JnNPrMzPTP0ia2JA/NRbg==
+X-Received: by 2002:a2e:a40d:0:b0:2a7:7055:97f5 with SMTP id p13-20020a2ea40d000000b002a7705597f5mr5210441ljn.0.1684851392444;
+        Tue, 23 May 2023 07:16:32 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:112:9108:f097:2b17:be35:a808? (dyfllccjtw81vssv11yfy-4.rev.dnainternet.fi. [2001:14bb:112:9108:f097:2b17:be35:a808])
+        by smtp.gmail.com with ESMTPSA id a6-20020a2e8606000000b002ac7c9d2806sm1646357lji.50.2023.05.23.07.16.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 May 2023 07:16:31 -0700 (PDT)
+Message-ID: <740999b7-1995-384c-41af-866df05c4a2a@gmail.com>
+Date: Tue, 23 May 2023 17:16:30 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH bpf-next] selftests/bpf: add xdp_feature selftest for bond
+ device
+Content-Language: en-US
+To: Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
+Cc: lorenzo.bianconi@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+ andrii@kernel.org, martin.lau@linux.dev, netdev@vger.kernel.org
+References: <64cb8f20e6491f5b971f8d3129335093c359aad7.1684329998.git.lorenzo@kernel.org>
+From: Jussi Maki <joamaki@gmail.com>
+In-Reply-To: <64cb8f20e6491f5b971f8d3129335093c359aad7.1684329998.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-[ Added a subject, as I always want to delete these emails as spam! ]
 
-On Mon, 22 May 2023 10:07:42 +0800
-Ze Gao <zegao2021@gmail.com> wrote:
+On 17/05/2023 16:41, Lorenzo Bianconi wrote:
+> Introduce selftests to check xdp_feature support for bond driver.
+>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>   .../selftests/bpf/prog_tests/xdp_bonding.c    | 121 ++++++++++++++++++
+>   1 file changed, 121 insertions(+)
 
-> Oops, I missed that. Thanks for pointing that out, which I thought is
-> conditional use of rcu_is_watching before.
-> 
-> One last point, I think we should double check on this
->      "fentry does not filter with !rcu_is_watching"
-> as quoted from Yonghong and argue whether it needs
-> the same check for fentry as well.
-> 
+Reviewed-by: Jussi Maki <joamaki@gmail.com>
 
-Note that trace_test_and_set_recursion() (which is used by
-ftrace_test_recursion_trylock()) checks for rcu_is_watching() and
-returns false if it isn't (and the trylock will fail).
-
--- Steve
 
