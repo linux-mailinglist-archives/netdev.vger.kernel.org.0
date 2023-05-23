@@ -1,126 +1,97 @@
-Return-Path: <netdev+bounces-4743-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4744-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AF3D770E13B
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:58:33 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8FDC570E16D
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 18:04:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 797311C20DCC
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:58:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4B3F7281361
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:04:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D308A200C3;
-	Tue, 23 May 2023 15:56:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1300200CB;
+	Tue, 23 May 2023 16:04:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C62A51F92A
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:56:00 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D868E
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=0jV/WMXtxsUL1nMGjvM9X2gfxx/ocKxcVudIC4DejDg=; b=st0JuY6YAwF95TnfOSiNnH6Psn
-	D/uVc/1E9uKDN4njXnw68BmfrazDLwzKLueDDim0aAPHKAaMRcMinsmL6DMrk2cdCI1yRAvLkGb3K
-	sjPe4005BnFA+8ZPlRWiKUtKqcGwCaAhEax76J6zRW6hHmAHVhtExB6CXe2asMVtYfu255BqoI6KP
-	gEH3p1sJCxHTU+J24P71o4+MMGnsmG7vWIffQXcdWv8Zw5hqFZfCHxgFwZDtHHPcmzod1XidrkkOF
-	CiVj4CbNDB+hZ/l3IIe8Z+Kctf9eH0cwpQ/bf1qSB6Sf4WzdMRd25wWmUBpwwhIrXbGdNiuAsXR2S
-	LKf+jJxQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:51728 helo=rmk-PC.armlinux.org.uk)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <rmk@armlinux.org.uk>)
-	id 1q1UMZ-0000m2-Fp; Tue, 23 May 2023 16:55:51 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1q1UMY-007FTP-SG; Tue, 23 May 2023 16:55:50 +0100
-In-Reply-To: <ZGzhvePzPjJ0v2En@shell.armlinux.org.uk>
-References: <ZGzhvePzPjJ0v2En@shell.armlinux.org.uk>
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Daniel Machon <daniel.machon@microchip.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Horatiu Vultur <horatiu.vultur@microchip.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Lars Povlsen <lars.povlsen@microchip.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Madalin Bucur <madalin.bucur@nxp.com>,
-	Marcin Wojtas <mw@semihalf.com>,
-	Michal Simek <michal.simek@amd.com>,
-	netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>,
-	Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-	Sean Anderson <sean.anderson@seco.com>,
-	Steen Hegelund <Steen.Hegelund@microchip.com>,
-	Taras Chornyi <taras.chornyi@plvision.eu>,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	UNGLinuxDriver@microchip.com,
-	Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH RFC net-next 9/9] net: sparx5: switch PCS driver to use
- phylink_pcs_neg_mode()
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54DA1F95D
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 16:04:45 +0000 (UTC)
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98696DD
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 09:04:44 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id d2e1a72fcca58-64d2da69fdfso6012364b3a.0
+        for <netdev@vger.kernel.org>; Tue, 23 May 2023 09:04:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1684857884; x=1687449884;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/duuhfAcXcPa+QNzHCbgZWoxYmxgSdECZUc2Y4yF7EY=;
+        b=P/pKOf6vXbINxItxFNLJ2LiZshXmg/r2eiDtr1X9Nu5Vta2x/eEoZVlCG/KcEhgFRo
+         8n7OsooyIuhVhs+ERjBEuSHXnAep0/c7IMjswc6jRgwROFXMvoZyqpWgBFWsSfpV4hzn
+         mpyAiYbDXRP8Gzqm5ETcJLeWK30knE/e5EZqPzIViJm5hF5Q5jUsZPZxwra/3Gq8MNUP
+         aa0E2i4WHxf0P6KHkRv4l/Ipq5DBn/wZBG2nFtNy0iuxizkX9vTZ2BAq3RPj+p7ObR+r
+         I2HQGYPiMYGebzvalZ7OdrA97WeOptYC6prhEGC+z4i2YgNKZapasAusGcMHkvlMtEX1
+         bIdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684857884; x=1687449884;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/duuhfAcXcPa+QNzHCbgZWoxYmxgSdECZUc2Y4yF7EY=;
+        b=k6twjKDhY2aWiWCtknyEKUnxHJLx8Cq1JVjDzn55iHIOJ4p92FiOlXFovLXZcjUrpM
+         sWlfqZVey/9BrD2W0Y4edkLZvun2PMQMKz4Hu9kXqCsAmRJ7dsj0kOaCExOaqPHLyAIj
+         GBCZbolm8FNIerNl2KBNPNCJvxBpmktHSLoAZJPxYRW9ycNEr51MqThejF+dYevbZYbz
+         qJ3SduP2iuBxJndlluinTgRCc1Z5o9dU7CB5BxGOWtIajXHVfJqa1Ff/5Okngy4pu4tn
+         XbvZ459r55g3rIRdxPyHbkTm3Je4c/1glr0+lnT0UWdVV2Ed9aTb2eGdK8lUZdhj18/q
+         ESKg==
+X-Gm-Message-State: AC+VfDxTrov2DmXJ16cXCUcTBP0+j1BcaNwn49qao1EMXhpDMMFknOib
+	/dXqMYtt1PsbDqmMJ1McOwRNcQ==
+X-Google-Smtp-Source: ACHHUZ6mMlGd8UVfojRKE3Z9yXyIQcIv+6uZicWtuHjP5fAy2DY8KSdsyuItN0VoNSzRNjaMtTj07w==
+X-Received: by 2002:a05:6a00:9a4:b0:63e:6b8a:7975 with SMTP id u36-20020a056a0009a400b0063e6b8a7975mr19572275pfg.9.1684857884089;
+        Tue, 23 May 2023 09:04:44 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id a23-20020aa78657000000b0064d29d5c8e7sm5998723pfo.58.2023.05.23.09.04.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 May 2023 09:04:43 -0700 (PDT)
+Date: Tue, 23 May 2023 09:04:41 -0700
+From: Stephen Hemminger <stephen@networkplumber.org>
+To: Vladimir Nikishkin <vladimir@nikishkin.pw>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
+ gnault@redhat.com, razor@blackwall.org, idosch@nvidia.com,
+ liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com
+Subject: Re: [PATCH iproute2-next v6] ip-link: add support for nolocalbypass
+ in vxlan
+Message-ID: <20230523090441.5a68d0db@hermes.local>
+In-Reply-To: <20230523044805.22211-1-vladimir@nikishkin.pw>
+References: <20230523044805.22211-1-vladimir@nikishkin.pw>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1q1UMY-007FTP-SG@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date: Tue, 23 May 2023 16:55:50 +0100
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use the newly introduced phylink_pcs_neg_mode() to configure whether
-inband-AN should be used.
+On Tue, 23 May 2023 12:48:05 +0800
+Vladimir Nikishkin <vladimir@nikishkin.pw> wrote:
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_phylink.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+> +	if (tb[IFLA_VXLAN_LOCALBYPASS]) {
+> +		__u8 localbypass = rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS]);
+> +
+> +		print_bool(PRINT_JSON, "localbypass", NULL, localbypass);
+> +		if (!localbypass)
+> +			print_bool(PRINT_FP, NULL, "nolocalbypass ", true);
+> +	}
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_phylink.c b/drivers/net/ethernet/microchip/sparx5/sparx5_phylink.c
-index bb97d27a1da4..87bdec185383 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_phylink.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_phylink.c
-@@ -99,13 +99,17 @@ static int sparx5_pcs_config(struct phylink_pcs *pcs,
- {
- 	struct sparx5_port *port = sparx5_pcs_to_port(pcs);
- 	struct sparx5_port_config conf;
-+	unsigned int neg_mode;
- 	int ret = 0;
- 
-+	neg_mode = phylink_pcs_neg_mode(mode, interface, advertising);
-+
- 	conf = port->conf;
- 	conf.power_down = false;
- 	conf.portmode = interface;
--	conf.inband = phylink_autoneg_inband(mode);
--	conf.autoneg = phylink_test(advertising, Autoneg);
-+	conf.inband = neg_mode == PHYLINK_PCS_NEG_INBAND_DISABLED ||
-+		      neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED;
-+	conf.autoneg = neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED;
- 	conf.pause_adv = 0;
- 	if (phylink_test(advertising, Pause))
- 		conf.pause_adv |= ADVERTISE_1000XPAUSE;
--- 
-2.30.2
-
+This is backwards since nolocalbypass is the default.
 
