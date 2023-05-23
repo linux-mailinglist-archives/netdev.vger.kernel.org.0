@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4574-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4575-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BB78370D45B
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 08:53:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BA09F70D45C
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 08:53:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 668772812A4
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 06:53:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 883B61C20BF8
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 06:53:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5F1A01C760;
-	Tue, 23 May 2023 06:52:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E28201D2B2;
+	Tue, 23 May 2023 06:52:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 545351C756
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 06:52:57 +0000 (UTC)
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83286109;
-	Mon, 22 May 2023 23:52:55 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1ae4c5e12edso52896005ad.3;
-        Mon, 22 May 2023 23:52:55 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D72F61C756
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 06:52:58 +0000 (UTC)
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FD1119;
+	Mon, 22 May 2023 23:52:57 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id d2e1a72fcca58-64d57cd373fso1833828b3a.1;
+        Mon, 22 May 2023 23:52:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684824775; x=1687416775;
+        d=gmail.com; s=20221208; t=1684824777; x=1687416777;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=v6WoMUPBPZ0xKom/xo0TfG/SnouT/YookA478MfBXb4=;
-        b=F0wJm02uha2IhksGg8WhtsbsyRvqPaHuOQ05l9L17GEPb9unQNKjWdzengHn6z1kQ/
-         /IIQqe+zSusJD/cSFy/0IbFZ/hVJmx4fQ6FlkflnO3il6FJqhiQMg1WpxnefvgaEdXer
-         J2XMaW7Pp2Gs+9fA+hyOl8759MGReIb2cPyh8zIffjtAQm+KQZUjqhL8GudbMcOAETTe
-         2ViT2Dserzqruo+Yw4Tksn7+iYs6vmYuCyarK/vOCQBUusZPxdGQa6Q3fh2XNBtuJUpn
-         a95lA0icXIjkuMQ0Ai5CQayg5bx+LotQ6sZFBqfVZQOrIAdwQwxoSeqfCdISNF3tEpbZ
-         Ldow==
+        bh=zpK9eA/3lj+tjk28hEidhkgrs72aVJBKWP37x7Y8nRU=;
+        b=jxSF1xNrMXLa2fxm1HVUxgI+vnvNGjGG11M8uSAyHpciiyZxguwmmwPhAqXAIuX7Al
+         AXQfvAgbkmHVEAFeY69CvN4nFCfMfBSVVaE8o7GQscOHPMZCzjApSWdQfuMQbMgF/qJS
+         Tz5Cdrc5SW94sdDyhA4kFzIqI9pRQ1GP6g8RrPNMTAoNT0LmH9R+DE72NrSG6oB55itw
+         UlXLmZbvB/x3WwJMG5AprzGcrl5rnCtv89xqTAirRoyxh4jy5NZMKtdnZbbIFBjfPc0t
+         1BYEY8ju8QuR6wfNOt1agDFKlRo653+KePKZ6eDtgpd+6+DVWqyr0H5/nB03nfWd6dnO
+         /Twg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684824775; x=1687416775;
+        d=1e100.net; s=20221208; t=1684824777; x=1687416777;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=v6WoMUPBPZ0xKom/xo0TfG/SnouT/YookA478MfBXb4=;
-        b=ZkWNJ/5q7qv92dpC0gLO/3HdifXcRYQgQtC6cHsNPACSrUdxppmZ2g1ZwV5KAuXYvC
-         kqRjiF0G2EGAqZotQ3yZVL6OwrvWxNd3FpDNMfxgehcxOFYT/idQfn78EqdBpPa15/Pe
-         sch3xZBQwieSB2k+nO229uQJTmkfnArdKmAjMgw1mo4Ekt16QT+ZN/SrYK9Qy1QyDQYE
-         xps7Dlj1OLXqap2Pb9N5r28XPLBmx0O28taaZHVrCcUm0xFdKh/NtTKXDvSGedZZx9RH
-         UYQ93hwadYAhD384kxaEXGZZ4hotmobuaCN8wK7tkf7ln0Y431YT3yNLBR/rCc8mvqnk
-         +bQQ==
-X-Gm-Message-State: AC+VfDwQ9iRFy7cuvmihv5tpT2k4wZiDHg8T+IuH8pxQ/YmIi6xHydbX
-	grLqrnMDucV5ihAYcZK7g1mGm6HmRBc=
-X-Google-Smtp-Source: ACHHUZ6HV5t+LdWMZI7SSiC067iesOljqC4dUAif5TXzMvtC3V33m2GpmjS4cWyc1Yh1wAdce10Oew==
-X-Received: by 2002:a17:902:d2c2:b0:1ac:b4db:6a62 with SMTP id n2-20020a170902d2c200b001acb4db6a62mr13896815plc.65.1684824774460;
-        Mon, 22 May 2023 23:52:54 -0700 (PDT)
+        bh=zpK9eA/3lj+tjk28hEidhkgrs72aVJBKWP37x7Y8nRU=;
+        b=QzKjcIsbBm0WI14+y73Cz8QZExeDEx0X2DG2xHDrOJPqD0Pt5pgMM/MUd+V5FA8d5i
+         BeGpTsfS82krUS4YLPWwMECuDoMobdGNp+qzqWjaHRA1QAFLsqed5o6dcyvdLbmYWEcS
+         lHsbJxXFTzAJ42sIWHowNloHTBUjzQu6CUqcbXzXPjwcOk5wFLSvFmK2FpEuSYNqEM+N
+         S/k2rpuYqOfh6EDpZp7dGhZNXuBPGO6LDmIzYfsX11rhQMN4Xuv/w/Dstz1iTScINlq7
+         GX1bAlR0C38M29Q+WLtsg3ohyHo7P2019qJY5su2q9IcfFBr2id0vNx9ztlmHjFY1/a1
+         5upQ==
+X-Gm-Message-State: AC+VfDzkrvnd1MBaHCNOBrPR6lO9LBN2GQVcvq5sZfj+eR0swalZlOKO
+	JyX6t70V9RRDl/Plc9nu3lU=
+X-Google-Smtp-Source: ACHHUZ5OxZKCKXwKZUZsVbNCwhiHNClCKuTWkPqsjWpXlN1aK1d5YNXWHwIALY/HIiTRg9XVvYnMoQ==
+X-Received: by 2002:a17:902:ecc8:b0:1ab:1260:19de with SMTP id a8-20020a170902ecc800b001ab126019demr15771034plh.11.1684824776960;
+        Mon, 22 May 2023 23:52:56 -0700 (PDT)
 Received: from XH22050090-L.ad.ts.tri-ad.global ([103.175.111.222])
-        by smtp.gmail.com with ESMTPSA id d10-20020a170902ceca00b001aafa2e212esm5963920plg.52.2023.05.22.23.52.52
+        by smtp.gmail.com with ESMTPSA id d10-20020a170902ceca00b001aafa2e212esm5963920plg.52.2023.05.22.23.52.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 23:52:54 -0700 (PDT)
+        Mon, 22 May 2023 23:52:56 -0700 (PDT)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To: Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -65,9 +65,9 @@ Cc: Oliver Hartkopp <socketcan@hartkopp.net>,
 	netdev@vger.kernel.org,
 	marex@denx.de,
 	Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v2 1/3] can: length: fix bitstuffing count
-Date: Tue, 23 May 2023 15:52:16 +0900
-Message-Id: <20230523065218.51227-2-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v2 2/3] can: length: fix description of the RRS field
+Date: Tue, 23 May 2023 15:52:17 +0900
+Message-Id: <20230523065218.51227-3-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230523065218.51227-1-mailhol.vincent@wanadoo.fr>
 References: <20230507155506.3179711-1-mailhol.vincent@wanadoo.fr>
@@ -87,113 +87,66 @@ X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The Stuff Bit Count is always coded on 4 bits (ref [1]). Update the
-Stuff Bit Count size accordingly.
+The CAN-FD frames only have one reserved bit. The bit corresponding to
+Classical CAN frame's RTR bit is called the "Remote Request
+Substitution (RRS)" [1].
 
-In addition, the CRC fields of CAN FD Frames contain stuff bits at
-fixed positions call fixed stuff bits [2]. The CRC field starts with a
-fixed stuff bit and then has another fixed stuff bit after each fourth
-bit [2], which allow us to derive this formula:
+N.B. The RRS is not to be confused with the Substitute remote request
+(SRR).
 
-  FSB count = 1 + round_down(len(CRC field)/4)
+Fix the description in the CANFD_FRAME_OVERHEAD_SFF/EFF.
 
-The length of the CRC field is [1]:
+The total remains unchange, so this is just a documentation fix.
 
-  len(CRC field) = len(Stuff Bit Count) + len(CRC)
-                 = 4 + len(CRC)
+In addition to the above add myself as copyright owner for 2020 (as
+coauthor of the initial version, c.f. Fixes tag).
 
-with len(CRC) either 17 or 21 bits depending of the payload length.
+[1] ISO 11898-1:2015 paragraph 10.4.2.3 "Arbitration field":
 
-In conclusion, for CRC17:
+  RSS bit [only in FD Frames]
 
-  FSB count = 1 + round_down((4 + 17)/4)
-            = 6
-
-and for CRC 21:
-
-  FSB count = 1 + round_down((4 + 21)/4)
-            = 7
-
-Add a Fixed Stuff bits (FSB) field with above values and update
-CANFD_FRAME_OVERHEAD_SFF and CANFD_FRAME_OVERHEAD_EFF accordingly.
-
-[1] ISO 11898-1:2015 section 10.4.2.6 "CRC field":
-
-  The CRC field shall contain the CRC sequence followed by a recessive
-  CRC delimiter. For FD Frames, the CRC field shall also contain the
-  stuff count.
-
-  Stuff count
-
-  If FD Frames, the stuff count shall be at the beginning of the CRC
-  field. It shall consist of the stuff bit count modulo 8 in a 3-bit
-  gray code followed by a parity bit [...]
-
-[2] ISO 11898-1:2015 paragraph 10.5 "Frame coding":
-
-  In the CRC field of FD Frames, the stuff bits shall be inserted at
-  fixed positions; they are called field stuff bits. There shall be a
-  fixed stuff bit before the first bit of the stuff count, even if the
-  last bits of the preceding field are a sequence of five consecutive
-  bits of identical value, there shall be only the fixed stuff bit,
-  there shall not be two consecutive stuff bits. A further fixed stuff
-  bit shall be inserted after each fourth bit of the CRC field [...]
+    The RRS bit shall be transmitted in fD Frames at the position of
+    the RTR bit in Classical Frames. The RRS bit shall be transmitted
+    dominant, but receivers shall accept recessive and dominant RRS
+    bits.
 
 Fixes: 85d99c3e2a13 ("can: length: can_skb_get_frame_len(): introduce function to get data length of frame in data link layer")
 Suggested-by: Thomas Kopp <Thomas.Kopp@microchip.com>
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- include/linux/can/length.h | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ include/linux/can/length.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/can/length.h b/include/linux/can/length.h
-index 69336549d24f..b8c12c83bc51 100644
+index b8c12c83bc51..521fdbce2d69 100644
 --- a/include/linux/can/length.h
 +++ b/include/linux/can/length.h
-@@ -72,17 +72,18 @@
-  * Error Status Indicator (ESI)		1
-  * Data length code (DLC)		4
-  * Data field				0...512
-- * Stuff Bit Count (SBC)		0...16: 4 20...64:5
-+ * Stuff Bit Count (SBC)		4
-  * CRC					0...16: 17 20...64:21
-  * CRC delimiter (CD)			1
-+ * Fixed Stuff bits (FSB)		0...16: 6 20...64:7
-  * ACK slot (AS)			1
-  * ACK delimiter (AD)			1
-  * End-of-frame (EOF)			7
-  * Inter frame spacing			3
-  *
-- * assuming CRC21, rounded up and ignoring bitstuffing
-+ * assuming CRC21, rounded up and ignoring dynamic bitstuffing
+@@ -1,6 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ /* Copyright (C) 2020 Oliver Hartkopp <socketcan@hartkopp.net>
+  * Copyright (C) 2020 Marc Kleine-Budde <kernel@pengutronix.de>
++ * Copyright (C) 2020 Vincent Mailhol <mailhol.vincent@wanadoo.fr>
   */
--#define CANFD_FRAME_OVERHEAD_SFF DIV_ROUND_UP(61, 8)
-+#define CANFD_FRAME_OVERHEAD_SFF DIV_ROUND_UP(67, 8)
  
- /*
-  * Size of a CAN-FD Extended Frame
-@@ -101,17 +102,18 @@
-  * Error Status Indicator (ESI)		1
-  * Data length code (DLC)		4
-  * Data field				0...512
-- * Stuff Bit Count (SBC)		0...16: 4 20...64:5
-+ * Stuff Bit Count (SBC)		4
-  * CRC					0...16: 17 20...64:21
-  * CRC delimiter (CD)			1
-+ * Fixed Stuff bits (FSB)		0...16: 6 20...64:7
-  * ACK slot (AS)			1
-  * ACK delimiter (AD)			1
-  * End-of-frame (EOF)			7
-  * Inter frame spacing			3
-  *
-- * assuming CRC21, rounded up and ignoring bitstuffing
-+ * assuming CRC21, rounded up and ignoring dynamic bitstuffing
-  */
--#define CANFD_FRAME_OVERHEAD_EFF DIV_ROUND_UP(80, 8)
-+#define CANFD_FRAME_OVERHEAD_EFF DIV_ROUND_UP(86, 8)
- 
- /*
-  * Maximum size of a Classical CAN frame
+ #ifndef _CAN_LENGTH_H
+@@ -64,7 +65,7 @@
+  * ---------------------------------------------------------
+  * Start-of-frame			1
+  * Identifier				11
+- * Reserved bit (r1)			1
++ * Remote Request Substitution (RRS)	1
+  * Identifier extension bit (IDE)	1
+  * Flexible data rate format (FDF)	1
+  * Reserved bit (r0)			1
+@@ -95,7 +96,7 @@
+  * Substitute remote request (SRR)	1
+  * Identifier extension bit (IDE)	1
+  * Identifier B				18
+- * Reserved bit (r1)			1
++ * Remote Request Substitution (RRS)	1
+  * Flexible data rate format (FDF)	1
+  * Reserved bit (r0)			1
+  * Bit Rate Switch (BRS)		1
 -- 
 2.25.1
 
