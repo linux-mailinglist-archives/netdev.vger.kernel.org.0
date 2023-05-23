@@ -1,113 +1,125 @@
-Return-Path: <netdev+bounces-4732-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4733-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1F74970E0D1
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:46:36 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B11E970E10F
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:54:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CD9E8281360
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:46:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7910A1C20B1E
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:54:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9D521F955;
-	Tue, 23 May 2023 15:46:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 570F5200A0;
+	Tue, 23 May 2023 15:54:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E058E1D2BA
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:46:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056F4C433EF;
-	Tue, 23 May 2023 15:46:28 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LxFORCx6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-	t=1684856786;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ZFdwPMiKsAJH00ZycyuEFzC8QU6t6hCvFI46hFx9poA=;
-	b=LxFORCx6IGTp+eoVZN08cdxdPDJfHG2XfKHIgHcph3kN8Zi1vX7c1p+GUKjjwwB2X5cmHY
-	NKK4Q/my6z0Yfl6EF787V25Sa0464ZRxJQRhqQwF747S9FOEt4du8lTB3PoHbVvcg1giLF
-	7xyZhIC13KAulKoyKtylbVUTHcm+HrA=
-Received: 
-	by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 789880a0 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-	Tue, 23 May 2023 15:46:24 +0000 (UTC)
-Date: Tue, 23 May 2023 17:46:20 +0200
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-To: syzbot <syzbot+c2775460db0e1c70018e@syzkaller.appspotmail.com>,
-	edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
-	syzkaller-bugs@googlegroups.com
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-	wireguard@lists.zx2c4.com, jann@thejh.net
-Subject: Re: [syzbot] [wireguard?] KASAN: slab-use-after-free Write in
- enqueue_timer
-Message-ID: <ZGzfzEs-vJcZAySI@zx2c4.com>
-References: <000000000000c0b11d05fa917fe3@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 402EA1D2BA
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:54:54 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F9191
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:54:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=FIiNuPP8ga2rEoNmjmmFkkUK2H100/g0RZ8OUp+/UqI=; b=fyRZoK02j4Vcxw9/mXb7/G9Q/5
+	kD2FgMoJdKgAvqhRUSeUWAyEqTyraq3GtZDp0kr4JmVlgWe1wLvINNtE+te5p1Ei0/rGj/qlPHWCK
+	hJoBNqCDG6xOZxnn9InvvjoA20YM6xiv+rQvy7K7M5nJtQTqxxU5ptzLVU40g1tuSh+gdtfdP70s+
+	Ws/JuO89ngk3oT2qUMxjPCBclGhPRC+iuPF0wwceuFgug0986Ng/Wx2SUNwL2z3XKFkAm+xYq4C/l
+	vLgda+rahJc8U7E7deJuuqvqj8y1O6XOb9rjx1vSrI2gacCORdkGlu4yRq4JFBm4vD4dK2YiLVGVQ
+	ElU+5Y7Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38370)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q1ULP-0000hn-SK; Tue, 23 May 2023 16:54:40 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q1ULN-0000i8-8e; Tue, 23 May 2023 16:54:37 +0100
+Date: Tue, 23 May 2023 16:54:37 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Daniel Machon <daniel.machon@microchip.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Horatiu Vultur <horatiu.vultur@microchip.com>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Lars Povlsen <lars.povlsen@microchip.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Madalin Bucur <madalin.bucur@nxp.com>,
+	Marcin Wojtas <mw@semihalf.com>,
+	Michal Simek <michal.simek@amd.com>, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>,
+	Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+	Sean Anderson <sean.anderson@seco.com>,
+	Steen Hegelund <Steen.Hegelund@microchip.com>,
+	Taras Chornyi <taras.chornyi@plvision.eu>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	UNGLinuxDriver@microchip.com, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH RFC 0/9] Add and use helper for PCS negotiation modes
+Message-ID: <ZGzhvePzPjJ0v2En@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <000000000000c0b11d05fa917fe3@google.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hey Syzkaller & Netdev folks,
+Hi,
 
-I've been looking at this a bit and am slightly puzzled. At first I saw
-this:
+Earlier this month, I proposed a helper for deciding whether a PCS
+should use inband negotiation modes or not. There was some discussion
+around this topic, and I believe there was no disagreement about
+providing the helper.
 
->  enqueue_timer+0xad/0x560 kernel/time/timer.c:605
->  internal_add_timer kernel/time/timer.c:634 [inline]
->  __mod_timer+0xa76/0xf40 kernel/time/timer.c:1131
->  mod_peer_timer+0x158/0x220 drivers/net/wireguard/timers.c:37
->  wg_packet_consume_data_done drivers/net/wireguard/receive.c:354 [inline]
->  wg_packet_rx_poll+0xd9e/0x2250 drivers/net/wireguard/receive.c:474
+The discussion can be found at:
 
-And I thought - darn, it's a bug where a struct wg_peer's timer is
-modified -- in this case, timer_persistent_keepalive by way of
-wg_timers_any_authenticated_packet_traversal() -- after the peer object
-has been freed. This fits most clearly the designated line
-receive.c:354, and the subsequent 8 byte write when enqueuing the timer.
+https://lore.kernel.org/r/ZGIkGmyL8yL1q1zp@shell.armlinux.org.uk
 
-So I traced through the peer shutdown code in peer.c -- the
-peer_make_dead() + peer_remove_after_dead() combo -- and made sure the
-peer->is_dead RCU logic was correct. And I couldn't find a bug.
+This series adds that helper, and modifies most code to use it. I have
+a couple of further patches that hoist this function out of every PCS
+driver and into phylink's new phylink_pcs_config() function that I've
+posted separately, and drop the "mode" argument to the pcs_config()
+method, instead passing the result of phylink_pcs_neg_mode().
 
-But then I looked further down at the syzbot report:
+I haven't included those because this series doesn't update everything
+in net-next, but for RFC purposes, I think this is good enough to get
+a few whether people are generally happy or not.
 
-> Allocated by task 16792:
->  kvzalloc include/linux/slab.h:705 [inline]
->  alloc_netdev_mqs+0x89/0xf30 net/core/dev.c:10626
->  rtnl_create_link+0x2f7/0xc00 net/core/rtnetlink.c:3315
+Note that this helper is only about modes that affect the PCS such as
+the SGMII family and 802.3z types, not amount negotiation that happens
+in order to select a PCS (e.g. for backplanes.)
 
-and
+ drivers/net/dsa/qca/qca8k-8xxx.c                   | 13 ++--
+ drivers/net/ethernet/freescale/fman/fman_dtsec.c   |  7 +-
+ drivers/net/ethernet/marvell/mvneta.c              |  5 +-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |  4 +-
+ .../net/ethernet/marvell/prestera/prestera_main.c  | 10 ++-
+ .../ethernet/microchip/lan966x/lan966x_phylink.c   |  8 ++-
+ .../net/ethernet/microchip/sparx5/sparx5_phylink.c |  8 ++-
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c  |  5 +-
+ drivers/net/pcs/pcs-lynx.c                         | 18 +++--
+ drivers/net/phy/phylink.c                          | 14 ++--
+ include/linux/phylink.h                            | 81 +++++++++++++++++++++-
+ 11 files changed, 136 insertions(+), 37 deletions(-)
 
-> Freed by task 41:
->  __kmem_cache_free+0x264/0x3c0 mm/slub.c:3799
->  device_release+0x95/0x1c0
->  kobject_cleanup lib/kobject.c:683 [inline]
->  kobject_release lib/kobject.c:714 [inline]
->  kref_put include/linux/kref.h:65 [inline]
->  kobject_put+0x228/0x470 lib/kobject.c:731
->  netdev_run_todo+0xe5a/0xf50 net/core/dev.c:10400
-
-So that means the memory in question is actually the one that's
-allocated and freed by the networking stack. Specifically, dev.c:10626
-is allocating a struct net_device with a trailing struct wg_device (its
-priv_data). However, wg_device does not have any struct timer_lists in
-it, and I don't see how net_device's watchdog_timer would be related to
-the stacktrace which is clearly operating over a wg_peer timer.
-
-So what on earth is going on here?
-
-Jason
-
-PS - Jakub, I have some WG fixes queued up for you, but I wanted to have
-some resolution with this first before sending a tranche.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
