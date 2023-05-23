@@ -1,48 +1,48 @@
-Return-Path: <netdev+bounces-4453-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4456-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 965B870CF48
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:32:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 90E9370CF4B
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:33:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4AB711C208CB
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 00:32:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 470AA1C20C21
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 00:33:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 001FD10E9;
-	Tue, 23 May 2023 00:30:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EB9811FAC;
+	Tue, 23 May 2023 00:30:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2AA1FAC
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 00:30:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4244C122
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 00:30:08 +0000 (UTC)
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB064205
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 17:29:55 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2AC4423B
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 17:30:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684801795; x=1716337795;
+  t=1684801803; x=1716337803;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KYe20yxJW82vkLHSfPMv0sLmtoCzxbOXT9rYWBVfAdk=;
-  b=DUxv77VUWQGnK4kQw1vzMLNm+NTNqBp4QCbP9fO5j9Y8uIvF71MHVSk/
-   1gnJK//XfDrv83P8NfVAF7+KnmlSLrKWKNbdYgGjweRagiM+UgKUsoE8s
-   /mZlhFf+fBVtS7C9ee77FrBPUCnZCpEEFNc5ZPhFZfnTNE7uuC2ApmcY9
-   PpU45yE5rj/kOztE5xgV4hRPu4xdGucACI8mCYDWBbVCzy97+stDq4jXL
-   ndBZOhkeD/CRk+e8djH16KyhZoJF4fURaTfiyMe0T90hwGeTAYUI9bodR
-   e6OHTKl2u5+0ffP/2AYqfyycSBy2ECPIjaLTRnPBA1q9i6VAsCRkplL5T
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="337670775"
+  bh=jXwFNmy37k4+dZtC6mkM3U8XgEnA32T1zRufjpHZmB8=;
+  b=hk/Kn/OkfpGZFjj6tSlka9hlPdPrJr4bsX0rPHDy8m7a7plDBiLjHb+n
+   MLzsM4ucv3yu+9CfNpxCBZ2XtNSk7+JguQRIJB4IYNwrABznwY0CXze/W
+   MdbGK8gHtxQgV8uAk2Pl4EqvWuBe0LjUvEyAn+AnrJkDNMiRJryEVCe9R
+   QNUdLtlNl5l6+BGrJ05ypbBbJEcJuDJnMgMyFS0JHVcOmSLpL3fmlKkkF
+   +2ecvZ41Ed67XSp4SKbu51bROUy0j00G1uYEnQSWwcWgMB0wv3N21LKac
+   iHypG/HzG3W0mbiqQ1U8ksWVHV28WFfjJ6MOWADjuftvepbYWXQenpUkX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="337670781"
 X-IronPort-AV: E=Sophos;i="6.00,184,1681196400"; 
-   d="scan'208";a="337670775"
+   d="scan'208";a="337670781"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2023 17:26:05 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="827885518"
+X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="827885522"
 X-IronPort-AV: E=Sophos;i="6.00,184,1681196400"; 
-   d="scan'208";a="827885518"
+   d="scan'208";a="827885522"
 Received: from unknown (HELO AMR-CMP1.ger.corp.intel.com) ([10.166.80.24])
   by orsmga004.jf.intel.com with ESMTP; 22 May 2023 17:26:04 -0700
 From: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
@@ -54,7 +54,7 @@ Cc: shannon.nelson@amd.com,
 	willemb@google.com,
 	stephen@networkplumber.org,
 	mst@redhat.com,
-	Joshua Hay <joshua.a.hay@intel.com>,
+	Alan Brady <alan.brady@intel.com>,
 	jesse.brandeburg@intel.com,
 	anthony.l.nguyen@intel.com,
 	davem@davemloft.net,
@@ -62,14 +62,14 @@ Cc: shannon.nelson@amd.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	netdev@vger.kernel.org,
-	Alan Brady <alan.brady@intel.com>,
+	Joshua Hay <joshua.a.hay@intel.com>,
 	Madhu Chittim <madhu.chittim@intel.com>,
 	Phani Burra <phani.r.burra@intel.com>,
 	Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
 	Sridhar Samudrala <sridhar.samudrala@intel.com>
-Subject: [PATCH iwl-next v6 11/15] idpf: add TX splitq napi poll support
-Date: Mon, 22 May 2023 17:22:48 -0700
-Message-Id: <20230523002252.26124-12-pavan.kumar.linga@intel.com>
+Subject: [PATCH iwl-next v6 12/15] idpf: add RX splitq napi poll support
+Date: Mon, 22 May 2023 17:22:49 -0700
+Message-Id: <20230523002252.26124-13-pavan.kumar.linga@intel.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20230523002252.26124-1-pavan.kumar.linga@intel.com>
 References: <20230523002252.26124-1-pavan.kumar.linga@intel.com>
@@ -87,52 +87,31 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Joshua Hay <joshua.a.hay@intel.com>
+From: Alan Brady <alan.brady@intel.com>
 
-Add support to handle the interrupts for the TX completion queue and
-process the various completion types.
+Add support to handle interrupts for the RX completion queue and
+RX buffer queue. When the interrupt fires on RX completion queue,
+process the RX descriptors that are received. Allocate and prepare
+the SKB with the RX packet info, for both data and header buffer.
 
-In the flow scheduling mode, the driver processes primarily buffer
-completions as well as descriptor completions occasionally. This mode
-supports out of order TX completions. To do so, HW generates one buffer
-completion per packet. Each of those completions contains the unique tag
-provided during the TX encoding which is used to locate the packet either
-on the TX buffer ring or in a hash table. The hash table is used to track
-TX buffer information so the descriptor(s) for a given packet can be
-reused while the driver is still waiting on the buffer completion(s).
+IDPF uses software maintained refill queues to manage buffers between
+RX queue producer and the buffer queue consumer. They are required in
+order to maintain a lockless buffer management system and are strictly
+software only constructs. Instead of updating the RX buffer queue tail
+with available buffers right after the clean routine, it posts the
+buffer ids to the refill queues, only to post them to the HW later.
 
-Packets end up in the hash table in one of 2 ways: 1) a packet was
-stashed during descriptor completion cleaning, or 2) because an out of
-order buffer completion was processed. A descriptor completion arrives
-only every so often and is primarily used to guarantee the TX descriptor
-ring can be reused without having to wait on the individual buffer
-completions. E.g. a descriptor completion for N+16 guarantees HW read all
-of the descriptors for packets N through N+15, therefore all of the
-buffers for packets N through N+15 are stashed into the hash table and the
-descriptors can be reused for more TX packets. Similarly, a packet can be
-stashed in the hash table because an out an order buffer completion was
-processed. E.g. processing a buffer completion for packet N+3 implies that
-HW read all of the descriptors for packets N through N+3 and they can be
-reused. However, the HW did not do the DMA yet. The buffers for packets N
-through N+2 cannot be freed, so they are stashed in the hash table.
-In either case, the buffer completions will eventually be processed for
-all of the stashed packets, and all of the buffers will be cleaned from
-the hash table.
+If the generic receive offload (GRO) is enabled in the capabilities
+and turned on by default or via ethtool, then HW performs the
+packet coalescing if certain criteria are met by the incoming
+packets and updates the RX descriptor. Similar to GRO, if generic
+checksum is enabled, HW computes the checksum and updates the
+respective fields in the descriptor. Add support to update the
+SKB fields with the GRO and the generic checksum received.
 
-In queue based scheduling mode, the driver processes primarily descriptor
-completions and cleans the TX ring the conventional way.
-
-Finally, the driver triggers a TX queue drain after sending the disable
-queues virtchnl message. When the HW completes the queue draining, it
-sends the driver a queue marker packet completion. The driver determines
-when all TX queues have been drained and proceeds with the disable flow.
-
-With this, the driver can send TX packets and clean up the resources
-properly.
-
-Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
-Co-developed-by: Alan Brady <alan.brady@intel.com>
 Signed-off-by: Alan Brady <alan.brady@intel.com>
+Co-developed-by: Joshua Hay <joshua.a.hay@intel.com>
+Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
 Co-developed-by: Madhu Chittim <madhu.chittim@intel.com>
 Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
 Co-developed-by: Phani Burra <phani.r.burra@intel.com>
@@ -142,868 +121,1007 @@ Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
 Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
 Reviewed-by: Willem de Bruijn <willemb@google.com>
 ---
- drivers/net/ethernet/intel/idpf/idpf.h        |  11 +
- .../net/ethernet/intel/idpf/idpf_lan_txrx.h   |  16 +
- drivers/net/ethernet/intel/idpf/idpf_lib.c    |   2 +
- drivers/net/ethernet/intel/idpf/idpf_txrx.c   | 795 +++++++++++++++++-
- drivers/net/ethernet/intel/idpf/idpf_txrx.h   |  40 +-
- .../net/ethernet/intel/idpf/idpf_virtchnl.c   |  52 +-
- 6 files changed, 911 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/idpf/idpf.h        |   2 +
+ drivers/net/ethernet/intel/idpf/idpf_txrx.c   | 992 +++++++++++++++++-
+ drivers/net/ethernet/intel/idpf/idpf_txrx.h   |  56 +-
+ .../net/ethernet/intel/idpf/idpf_virtchnl.c   |   4 +-
+ 4 files changed, 1045 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/idpf/idpf.h b/drivers/net/ethernet/intel/idpf/idpf.h
-index d769e92a42b0..3dc97dd45012 100644
+index 3dc97dd45012..ddb52cd16a47 100644
 --- a/drivers/net/ethernet/intel/idpf/idpf.h
 +++ b/drivers/net/ethernet/intel/idpf/idpf.h
 @@ -14,6 +14,7 @@ struct idpf_vport_max_q;
  #include <linux/etherdevice.h>
  #include <linux/pci.h>
  #include <linux/bitfield.h>
-+#include <linux/dim.h>
++#include <net/gro.h>
+ #include <linux/dim.h>
  
  #include "virtchnl2.h"
- #include "idpf_lan_txrx.h"
-@@ -203,12 +204,16 @@ extern const char * const idpf_vport_vc_state_str[];
-  * enum idpf_vport_flags - vport flags
-  * @IDPF_VPORT_VC_MSG_PENDING: Virtchnl message buffer received needs to be
-  *			       processed
-+ * @IDPF_VPORT_SW_MARKER: Indicate TX pipe drain software marker packets
-+ *			  processing is done
-  * @IDPF_VPORT_ADD_MAC_REQ: Asynchronous add ether address in flight
-  * @IDPF_VPORT_DEL_MAC_REQ: Asynchronous delete ether address in flight
-  * @IDPF_VPORT_FLAGS_NBITS: Must be last
-  */
- enum idpf_vport_flags {
- 	IDPF_VPORT_VC_MSG_PENDING,
-+	/* Indicate TX pipe drain software marker packets processing is done */
-+	IDPF_VPORT_SW_MARKER,
- 	/* Asynchronous add/del ether address in flight */
- 	IDPF_VPORT_ADD_MAC_REQ,
- 	IDPF_VPORT_DEL_MAC_REQ,
-@@ -232,6 +237,7 @@ struct idpf_vport {
- 	 */
- 	int txq_desc_count;
- 	int complq_desc_count;
-+	int compln_clean_budget;
- 	int num_txq_grp;
- 	struct idpf_txq_group *txq_grps;
- 	u32 txq_model;
-@@ -264,6 +270,9 @@ struct idpf_vport {
- 	u16 *q_vector_idxs;			/* q vector index array */
- 	u16 max_mtu;
+@@ -272,6 +273,7 @@ struct idpf_vport {
  	u8 default_mac_addr[ETH_ALEN];
-+	/* ITR profiles for the DIM algorithm */
-+#define IDPF_DIM_PROFILE_SLOTS  5
-+	u16 tx_itr_profile[IDPF_DIM_PROFILE_SLOTS];
+ 	/* ITR profiles for the DIM algorithm */
+ #define IDPF_DIM_PROFILE_SLOTS  5
++	u16 rx_itr_profile[IDPF_DIM_PROFILE_SLOTS];
+ 	u16 tx_itr_profile[IDPF_DIM_PROFILE_SLOTS];
  
  	bool link_up;
- 
-@@ -273,6 +282,8 @@ struct idpf_vport {
- 	/* Everything below this will NOT be copied during soft reset */
- 	enum idpf_vport_state state;
- 	wait_queue_head_t vchnl_wq;
-+	/* wait_queue for TX drain SW marker packets */
-+	wait_queue_head_t sw_marker_wq;
- 	/* lock to protect against multiple stop threads, which can happen when
- 	 * the driver is in a namespace in a system that is being shutdown
- 	 */
-diff --git a/drivers/net/ethernet/intel/idpf/idpf_lan_txrx.h b/drivers/net/ethernet/intel/idpf/idpf_lan_txrx.h
-index 5dd7f5367aab..e072991f77bc 100644
---- a/drivers/net/ethernet/intel/idpf/idpf_lan_txrx.h
-+++ b/drivers/net/ethernet/intel/idpf/idpf_lan_txrx.h
-@@ -56,6 +56,14 @@ enum idpf_rss_hash {
- 	BIT_ULL(IDPF_HASH_NONF_UNICAST_IPV6_UDP) |		\
- 	BIT_ULL(IDPF_HASH_NONF_MULTICAST_IPV6_UDP))
- 
-+/* For idpf_splitq_base_tx_compl_desc */
-+#define IDPF_TXD_COMPLQ_GEN_S		15
-+#define IDPF_TXD_COMPLQ_GEN_M		BIT_ULL(IDPF_TXD_COMPLQ_GEN_S)
-+#define IDPF_TXD_COMPLQ_COMPL_TYPE_S	11
-+#define IDPF_TXD_COMPLQ_COMPL_TYPE_M	GENMASK_ULL(13, 11)
-+#define IDPF_TXD_COMPLQ_QID_S		0
-+#define IDPF_TXD_COMPLQ_QID_M		GENMASK_ULL(9, 0)
-+
- #define IDPF_TXD_CTX_QW1_MSS_S		50
- #define IDPF_TXD_CTX_QW1_MSS_M		GENMASK_ULL(63, 50)
- #define IDPF_TXD_CTX_QW1_TSO_LEN_S	30
-@@ -75,6 +83,14 @@ enum idpf_rss_hash {
- #define IDPF_TXD_QW1_DTYPE_S		0
- #define IDPF_TXD_QW1_DTYPE_M		GENMASK_ULL(3, 0)
- 
-+/* TX Completion Descriptor Completion Types */
-+#define IDPF_TXD_COMPLT_ITR_FLUSH	0
-+/* Descriptor completion type 1 is reserved */
-+#define IDPF_TXD_COMPLT_RS		2
-+/* Descriptor completion type 3 is reserved */
-+#define IDPF_TXD_COMPLT_RE		4
-+#define IDPF_TXD_COMPLT_SW_MARKER	5
-+
- enum idpf_tx_desc_dtype_value {
- 	IDPF_TX_DESC_DTYPE_DATA				= 0,
- 	IDPF_TX_DESC_DTYPE_CTX				= 1,
-diff --git a/drivers/net/ethernet/intel/idpf/idpf_lib.c b/drivers/net/ethernet/intel/idpf/idpf_lib.c
-index 2e90eff5840c..173eae3b533b 100644
---- a/drivers/net/ethernet/intel/idpf/idpf_lib.c
-+++ b/drivers/net/ethernet/intel/idpf/idpf_lib.c
-@@ -916,6 +916,7 @@ static struct idpf_vport *idpf_vport_alloc(struct idpf_adapter *adapter,
- 
- 	vport->idx = idx;
- 	vport->adapter = adapter;
-+	vport->compln_clean_budget = IDPF_TX_COMPLQ_CLEAN_BUDGET;
- 	vport->default_vport = adapter->num_alloc_vports <
- 			       idpf_get_default_vports(adapter);
- 
-@@ -1253,6 +1254,7 @@ void idpf_init_task(struct work_struct *work)
- 	index = vport->idx;
- 	vport_config = adapter->vport_config[index];
- 
-+	init_waitqueue_head(&vport->sw_marker_wq);
- 	init_waitqueue_head(&vport->vchnl_wq);
- 
- 	spin_lock_init(&vport->mac_filter_list_lock);
 diff --git a/drivers/net/ethernet/intel/idpf/idpf_txrx.c b/drivers/net/ethernet/intel/idpf/idpf_txrx.c
-index 30517d17d722..7d070b7dcffb 100644
+index 7d070b7dcffb..528a870e9705 100644
 --- a/drivers/net/ethernet/intel/idpf/idpf_txrx.c
 +++ b/drivers/net/ethernet/intel/idpf/idpf_txrx.c
-@@ -3,6 +3,36 @@
+@@ -335,6 +335,11 @@ static void idpf_rx_buf_rel(struct idpf_queue *rxq,
+ 	idpf_rx_page_rel(rxq, &rx_buf->page_info[0]);
+ 	if (PAGE_SIZE < 8192 && rx_buf->buf_size > IDPF_RX_BUF_2048)
+ 		idpf_rx_page_rel(rxq, &rx_buf->page_info[1]);
++
++	if (rx_buf->skb) {
++		dev_kfree_skb(rx_buf->skb);
++		rx_buf->skb = NULL;
++	}
+ }
  
- #include "idpf.h"
- 
-+/**
-+ * idpf_buf_lifo_push - push a buffer pointer onto stack
-+ * @stack: pointer to stack struct
-+ * @buf: pointer to buf to push
-+ *
-+ * Returns 0 on success, negative on failure
-+ **/
-+static int idpf_buf_lifo_push(struct idpf_buf_lifo *stack,
-+			      struct idpf_tx_stash *buf)
-+{
-+	if (unlikely(stack->top == stack->size))
-+		return -ENOSPC;
-+
-+	stack->bufs[stack->top++] = buf;
-+
-+	return 0;
-+}
-+
-+/**
-+ * idpf_buf_lifo_pop - pop a buffer pointer from stack
-+ * @stack: pointer to stack struct
-+ **/
-+static struct idpf_tx_stash *idpf_buf_lifo_pop(struct idpf_buf_lifo *stack)
-+{
-+	if (unlikely(!stack->top))
-+		return NULL;
-+
-+	return stack->bufs[--stack->top];
-+}
-+
  /**
-  * idpf_tx_buf_rel - Release a Tx buffer
-  * @tx_q: the queue that owns the buffer
-@@ -1468,6 +1498,499 @@ int idpf_vport_queues_alloc(struct idpf_vport *vport)
- 	return err;
+@@ -650,6 +655,28 @@ static bool idpf_rx_buf_hw_alloc_all(struct idpf_queue *rxbufq, u16 alloc_count)
+ 	return !!alloc_count;
  }
  
 +/**
-+ * idpf_tx_handle_sw_marker - Handle queue marker packet
-+ * @tx_q: tx queue to handle software marker
++ * idpf_rx_post_buf_refill - Post buffer id to refill queue
++ * @refillq: refill queue to post to
++ * @buf_id: buffer id to post
 + */
-+static void idpf_tx_handle_sw_marker(struct idpf_queue *tx_q)
++static void idpf_rx_post_buf_refill(struct idpf_sw_queue *refillq, u16 buf_id)
 +{
-+	struct idpf_vport *vport = tx_q->vport;
-+	int i;
++	u16 nta = refillq->next_to_alloc;
 +
-+	clear_bit(__IDPF_Q_SW_MARKER, tx_q->flags);
-+	/* Hardware must write marker packets to all queues associated with
-+	 * completion queues. So check if all queues received marker packets
++	/* store the buffer ID and the SW maintained GEN bit to the refillq */
++	refillq->ring[nta] =
++		((buf_id << IDPF_RX_BI_BUFID_S) & IDPF_RX_BI_BUFID_M) |
++		(!!(test_bit(__IDPF_Q_GEN_CHK, refillq->flags)) <<
++		 IDPF_RX_BI_GEN_S);
++
++	if (unlikely(++nta == refillq->desc_count)) {
++		nta = 0;
++		change_bit(__IDPF_Q_GEN_CHK, refillq->flags);
++	}
++	refillq->next_to_alloc = nta;
++}
++
+ /**
+  * idpf_rx_post_buf_desc - Post buffer to bufq descriptor ring
+  * @bufq: buffer queue to post to
+@@ -2776,6 +2803,868 @@ netdev_tx_t idpf_tx_splitq_start(struct sk_buff *skb,
+ 	return idpf_tx_splitq_frame(skb, tx_q);
+ }
+ 
++/**
++ * idpf_ptype_to_htype - get a hash type
++ * @decoded: Decoded Rx packet type related fields
++ *
++ * Returns appropriate hash type (such as PKT_HASH_TYPE_L2/L3/L4) to be used by
++ * skb_set_hash based on PTYPE as parsed by HW Rx pipeline and is part of
++ * Rx desc.
++ */
++static enum pkt_hash_types
++idpf_ptype_to_htype(const struct idpf_rx_ptype_decoded *decoded)
++{
++	if (!decoded->known)
++		return PKT_HASH_TYPE_NONE;
++	if (decoded->payload_layer == IDPF_RX_PTYPE_PAYLOAD_LAYER_PAY2 &&
++	    decoded->inner_prot)
++		return PKT_HASH_TYPE_L4;
++	if (decoded->payload_layer == IDPF_RX_PTYPE_PAYLOAD_LAYER_PAY2 &&
++	    decoded->outer_ip)
++		return PKT_HASH_TYPE_L3;
++	if (decoded->outer_ip == IDPF_RX_PTYPE_OUTER_L2)
++		return PKT_HASH_TYPE_L2;
++
++	return PKT_HASH_TYPE_NONE;
++}
++
++/**
++ * idpf_rx_hash - set the hash value in the skb
++ * @rxq: Rx descriptor ring packet is being transacted on
++ * @skb: pointer to current skb being populated
++ * @rx_desc: Receive descriptor
++ * @decoded: Decoded Rx packet type related fields
++ */
++static void idpf_rx_hash(struct idpf_queue *rxq, struct sk_buff *skb,
++			 struct virtchnl2_rx_flex_desc_adv_nic_3 *rx_desc,
++			 struct idpf_rx_ptype_decoded *decoded)
++{
++	u32 hash;
++
++	if (unlikely(!idpf_is_feature_ena(rxq->vport, NETIF_F_RXHASH)))
++		return;
++
++	hash = le16_to_cpu(rx_desc->hash1) |
++	       (rx_desc->ff2_mirrid_hash2.hash2 << 16) |
++	       (rx_desc->hash3 << 24);
++
++	skb_set_hash(skb, hash, idpf_ptype_to_htype(decoded));
++}
++
++/**
++ * idpf_rx_csum - Indicate in skb if checksum is good
++ * @rxq: Rx descriptor ring packet is being transacted on
++ * @skb: pointer to current skb being populated
++ * @csum_bits: checksum fields extracted from the descriptor
++ * @decoded: Decoded Rx packet type related fields
++ *
++ * skb->protocol must be set before this function is called
++ */
++static void idpf_rx_csum(struct idpf_queue *rxq, struct sk_buff *skb,
++			 struct idpf_rx_csum_decoded *csum_bits,
++			 struct idpf_rx_ptype_decoded *decoded)
++{
++	bool ipv4, ipv6;
++
++	/* check if Rx checksum is enabled */
++	if (unlikely(!idpf_is_feature_ena(rxq->vport, NETIF_F_RXCSUM)))
++		return;
++
++	/* check if HW has decoded the packet and checksum */
++	if (!(csum_bits->l3l4p))
++		return;
++
++	ipv4 = IDPF_RX_PTYPE_TO_IPV(decoded, IDPF_RX_PTYPE_OUTER_IPV4);
++	ipv6 = IDPF_RX_PTYPE_TO_IPV(decoded, IDPF_RX_PTYPE_OUTER_IPV6);
++
++	if (ipv4 && (csum_bits->ipe || csum_bits->eipe))
++		goto checksum_fail;
++
++	if (ipv6 && csum_bits->ipv6exadd)
++		return;
++
++	/* check for L4 errors and handle packets that were not able to be
++	 * checksummed
 +	 */
-+	for (i = 0; i < vport->num_txq; i++)
-+		/* If we're still waiting on any other TXQ marker completions,
-+		 * just return now since we cannot wake up the marker_wq yet.
-+		 */
-+		if (test_bit(__IDPF_Q_SW_MARKER, vport->txqs[i]->flags))
-+			return;
++	if (csum_bits->l4e)
++		goto checksum_fail;
 +
-+	/* Drain complete */
-+	set_bit(IDPF_VPORT_SW_MARKER, vport->flags);
-+	wake_up(&vport->sw_marker_wq);
-+}
++	/* Only report checksum unnecessary for ICMP, TCP, UDP, or SCTP */
++	switch (decoded->inner_prot) {
++	case IDPF_RX_PTYPE_INNER_PROT_ICMP:
++	case IDPF_RX_PTYPE_INNER_PROT_TCP:
++	case IDPF_RX_PTYPE_INNER_PROT_UDP:
++		if (!csum_bits->raw_csum_inv) {
++			u16 csum = csum_bits->raw_csum;
 +
-+/**
-+ * idpf_tx_splitq_clean_hdr - Clean TX buffer resources for header portion of
-+ * packet
-+ * @tx_q: tx queue to clean buffer from
-+ * @tx_buf: buffer to be cleaned
-+ * @cleaned: pointer to stats struct to track cleaned packets/bytes
-+ * @napi_budget: Used to determine if we are in netpoll
-+ */
-+static void idpf_tx_splitq_clean_hdr(struct idpf_queue *tx_q,
-+				     struct idpf_tx_buf *tx_buf,
-+				     struct idpf_cleaned_stats *cleaned,
-+				     int napi_budget)
-+{
-+	napi_consume_skb(tx_buf->skb, napi_budget);
-+
-+	if (dma_unmap_len(tx_buf, len)) {
-+		dma_unmap_single(tx_q->dev,
-+				 dma_unmap_addr(tx_buf, dma),
-+				 dma_unmap_len(tx_buf, len),
-+				 DMA_TO_DEVICE);
-+
-+		dma_unmap_len_set(tx_buf, len, 0);
-+	}
-+
-+	/* clear tx_buf data */
-+	tx_buf->skb = NULL;
-+
-+	cleaned->bytes += tx_buf->bytecount;
-+	cleaned->packets += tx_buf->gso_segs;
-+}
-+
-+/**
-+ * idpf_tx_clean_stashed_bufs - clean bufs that were stored for
-+ * out of order completions
-+ * @txq: queue to clean
-+ * @compl_tag: completion tag of packet to clean (from completion descriptor)
-+ * @cleaned: pointer to stats struct to track cleaned packets/bytes
-+ * @budget: Used to determine if we are in netpoll
-+ */
-+static void idpf_tx_clean_stashed_bufs(struct idpf_queue *txq, u16 compl_tag,
-+				       struct idpf_cleaned_stats *cleaned,
-+				       int budget)
-+{
-+	struct idpf_tx_stash *stash;
-+	struct hlist_node *tmp_buf;
-+
-+	/* Buffer completion */
-+	hash_for_each_possible_safe(txq->sched_buf_hash, stash, tmp_buf,
-+				    hlist, compl_tag) {
-+		if (unlikely(stash->buf.compl_tag != (int)compl_tag))
-+			continue;
-+
-+		if (stash->buf.skb) {
-+			idpf_tx_splitq_clean_hdr(txq, &stash->buf, cleaned,
-+						 budget);
-+		} else if (dma_unmap_len(&stash->buf, len)) {
-+			dma_unmap_page(txq->dev,
-+				       dma_unmap_addr(&stash->buf, dma),
-+				       dma_unmap_len(&stash->buf, len),
-+				       DMA_TO_DEVICE);
-+			dma_unmap_len_set(&stash->buf, len, 0);
++			skb->csum = csum_unfold((__force __sum16)~swab16(csum));
++			skb->ip_summed = CHECKSUM_COMPLETE;
++		} else {
++			skb->ip_summed = CHECKSUM_UNNECESSARY;
 +		}
-+
-+		/* Push shadow buf back onto stack */
-+		idpf_buf_lifo_push(&txq->buf_stack, stash);
-+
-+		hash_del(&stash->hlist);
++		break;
++	case IDPF_RX_PTYPE_INNER_PROT_SCTP:
++		skb->ip_summed = CHECKSUM_UNNECESSARY;
++		break;
++	default:
++		break;
 +	}
++
++	return;
++
++checksum_fail:
++	u64_stats_update_begin(&rxq->stats_sync);
++	u64_stats_inc(&rxq->q_stats.rx.hw_csum_err);
++	u64_stats_update_end(&rxq->stats_sync);
 +}
 +
 +/**
-+ * idpf_stash_flow_sch_buffers - store buffer parameters info to be freed at a
-+ * later time (only relevant for flow scheduling mode)
-+ * @txq: Tx queue to clean
-+ * @tx_buf: buffer to store
-+ */
-+static int idpf_stash_flow_sch_buffers(struct idpf_queue *txq,
-+				       struct idpf_tx_buf *tx_buf)
++ * idpf_rx_splitq_extract_csum_bits - Extract checksum bits from descriptor
++ * @rx_desc: receive descriptor
++ * @csum: structure to extract checksum fields
++ *
++ **/
++static void idpf_rx_splitq_extract_csum_bits(struct virtchnl2_rx_flex_desc_adv_nic_3 *rx_desc,
++					     struct idpf_rx_csum_decoded *csum)
 +{
-+	struct idpf_tx_stash *stash;
++	u8 qword0, qword1;
 +
-+	if (unlikely(!dma_unmap_addr(tx_buf, dma) &&
-+		     !dma_unmap_len(tx_buf, len)))
++	qword0 = rx_desc->status_err0_qw0;
++	qword1 = rx_desc->status_err0_qw1;
++
++	csum->ipe = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_STATUS0_XSUM_IPE_M,
++			      qword1);
++	csum->eipe = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_STATUS0_XSUM_EIPE_M,
++			       qword1);
++	csum->l4e = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_STATUS0_XSUM_L4E_M,
++			      qword1);
++	csum->l3l4p = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_STATUS0_L3L4P_M,
++				qword1);
++	csum->ipv6exadd = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_STATUS0_IPV6EXADD_M,
++				    qword0);
++	csum->raw_csum_inv = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_RAW_CSUM_INV_M,
++				       le16_to_cpu(rx_desc->ptype_err_fflags0));
++	csum->raw_csum = le16_to_cpu(rx_desc->misc.raw_cs);
++}
++
++/**
++ * idpf_rx_rsc - Set the RSC fields in the skb
++ * @rxq : Rx descriptor ring packet is being transacted on
++ * @skb : pointer to current skb being populated
++ * @rx_desc: Receive descriptor
++ * @decoded: Decoded Rx packet type related fields
++ *
++ * Return 0 on success and error code on failure
++ *
++ * Populate the skb fields with the total number of RSC segments, RSC payload
++ * length and packet type.
++ */
++static int idpf_rx_rsc(struct idpf_queue *rxq, struct sk_buff *skb,
++		       struct virtchnl2_rx_flex_desc_adv_nic_3 *rx_desc,
++		       struct idpf_rx_ptype_decoded *decoded)
++{
++	u16 rsc_segments, rsc_seg_len;
++	bool ipv4, ipv6;
++	int len;
++
++	if (unlikely(!decoded->outer_ip))
++		return -EINVAL;
++
++	rsc_seg_len = le16_to_cpu(rx_desc->misc.rscseglen);
++	if (unlikely(!rsc_seg_len))
++		return -EINVAL;
++
++	ipv4 = IDPF_RX_PTYPE_TO_IPV(decoded, IDPF_RX_PTYPE_OUTER_IPV4);
++	ipv6 = IDPF_RX_PTYPE_TO_IPV(decoded, IDPF_RX_PTYPE_OUTER_IPV6);
++
++	if (unlikely(!(ipv4 ^ ipv6)))
++		return -EINVAL;
++
++	rsc_segments = DIV_ROUND_UP(skb->data_len, rsc_seg_len);
++	if (unlikely(rsc_segments == 1))
 +		return 0;
 +
-+	stash = idpf_buf_lifo_pop(&txq->buf_stack);
-+	if (unlikely(!stash)) {
-+		net_err_ratelimited("%s: No out-of-order TX buffers left!\n",
-+				    txq->vport->netdev->name);
++	NAPI_GRO_CB(skb)->count = rsc_segments;
++	skb_shinfo(skb)->gso_size = rsc_seg_len;
 +
-+		return -ENOMEM;
++	skb_reset_network_header(skb);
++	len = skb->len - skb_transport_offset(skb);
++
++	if (ipv4) {
++		struct iphdr *ipv4h = ip_hdr(skb);
++
++		skb_shinfo(skb)->gso_type = SKB_GSO_TCPV4;
++
++		/* Reset and set transport header offset in skb */
++		skb_set_transport_header(skb, sizeof(struct iphdr));
++
++		/* Compute the TCP pseudo header checksum*/
++		tcp_hdr(skb)->check =
++			~tcp_v4_check(len, ipv4h->saddr, ipv4h->daddr, 0);
++	} else {
++		struct ipv6hdr *ipv6h = ipv6_hdr(skb);
++
++		skb_shinfo(skb)->gso_type = SKB_GSO_TCPV6;
++		skb_set_transport_header(skb, sizeof(struct ipv6hdr));
++		tcp_hdr(skb)->check =
++			~tcp_v6_check(len, &ipv6h->saddr, &ipv6h->daddr, 0);
 +	}
 +
-+	/* Store buffer params in shadow buffer */
-+	stash->buf.skb = tx_buf->skb;
-+	stash->buf.bytecount = tx_buf->bytecount;
-+	stash->buf.gso_segs = tx_buf->gso_segs;
-+	dma_unmap_addr_set(&stash->buf, dma, dma_unmap_addr(tx_buf, dma));
-+	dma_unmap_len_set(&stash->buf, len, dma_unmap_len(tx_buf, len));
-+	stash->buf.compl_tag = tx_buf->compl_tag;
++	tcp_gro_complete(skb);
 +
-+	/* Add buffer to buf_hash table to be freed later */
-+	hash_add(txq->sched_buf_hash, &stash->hlist, stash->buf.compl_tag);
-+
-+	memset(tx_buf, 0, sizeof(struct idpf_tx_buf));
-+
-+	/* Reinitialize buf_id portion of tag */
-+	tx_buf->compl_tag = IDPF_SPLITQ_TX_INVAL_COMPL_TAG;
++	u64_stats_update_begin(&rxq->stats_sync);
++	u64_stats_inc(&rxq->q_stats.rx.rsc_pkts);
++	u64_stats_update_end(&rxq->stats_sync);
 +
 +	return 0;
 +}
 +
-+#define idpf_tx_splitq_clean_bump_ntc(txq, ntc, desc, buf)	\
-+do {								\
-+	(ntc)++;						\
-+	if (unlikely(!(ntc))) {					\
-+		ntc -= (txq)->desc_count;			\
-+		buf = (txq)->tx_buf;				\
-+		desc = IDPF_FLEX_TX_DESC(txq, 0);		\
-+	} else {						\
-+		(buf)++;					\
-+		(desc)++;					\
-+	}							\
-+} while (0)
-+
 +/**
-+ * idpf_tx_splitq_clean - Reclaim resources from buffer queue
-+ * @tx_q: Tx queue to clean
-+ * @end: queue index until which it should be cleaned
-+ * @napi_budget: Used to determine if we are in netpoll
-+ * @cleaned: pointer to stats struct to track cleaned packets/bytes
-+ * @descs_only: true if queue is using flow-based scheduling and should
-+ * not clean buffers at this time
++ * idpf_rx_process_skb_fields - Populate skb header fields from Rx descriptor
++ * @rxq: Rx descriptor ring packet is being transacted on
++ * @skb: pointer to current skb being populated
++ * @rx_desc: Receive descriptor
 + *
-+ * Cleans the queue descriptor ring. If the queue is using queue-based
-+ * scheduling, the buffers will be cleaned as well. If the queue is using
-+ * flow-based scheduling, only the descriptors are cleaned at this time.
-+ * Separate packet completion events will be reported on the completion queue,
-+ * and the buffers will be cleaned separately. The stats are not updated from
-+ * this function when using flow-based scheduling.
++ * This function checks the ring, descriptor, and packet information in
++ * order to populate the hash, checksum, protocol, and
++ * other fields within the skb.
 + */
-+static void idpf_tx_splitq_clean(struct idpf_queue *tx_q, u16 end,
-+				 int napi_budget,
-+				 struct idpf_cleaned_stats *cleaned,
-+				 bool descs_only)
++static int idpf_rx_process_skb_fields(struct idpf_queue *rxq,
++				      struct sk_buff *skb,
++				      struct virtchnl2_rx_flex_desc_adv_nic_3 *rx_desc)
 +{
-+	union idpf_tx_flex_desc *next_pending_desc = NULL;
-+	union idpf_tx_flex_desc *tx_desc;
-+	s16 ntc = tx_q->next_to_clean;
-+	struct idpf_tx_buf *tx_buf;
++	struct idpf_rx_csum_decoded csum_bits = { };
++	struct idpf_rx_ptype_decoded decoded;
++	u16 rx_ptype;
 +
-+	tx_desc = IDPF_FLEX_TX_DESC(tx_q, ntc);
-+	next_pending_desc = IDPF_FLEX_TX_DESC(tx_q, end);
-+	tx_buf = &tx_q->tx_buf[ntc];
-+	ntc -= tx_q->desc_count;
++	rx_ptype = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_PTYPE_M,
++			     le16_to_cpu(rx_desc->ptype_err_fflags0));
 +
-+	while (tx_desc != next_pending_desc) {
-+		union idpf_tx_flex_desc *eop_desc;
++	decoded = rxq->vport->rx_ptype_lkup[rx_ptype];
++	/* If we don't know the ptype we can't do anything else with it. Just
++	 * pass it up the stack as-is.
++	 */
++	if (!decoded.known)
++		return 0;
 +
-+		/* If this entry in the ring was used as a context descriptor,
-+		 * it's corresponding entry in the buffer ring will have an
-+		 * invalid completion tag since no buffer was used.  We can
-+		 * skip this descriptor since there is no buffer to clean.
-+		 */
-+		if (unlikely(tx_buf->compl_tag == IDPF_SPLITQ_TX_INVAL_COMPL_TAG))
-+			goto fetch_next_txq_desc;
++	/* process RSS/hash */
++	idpf_rx_hash(rxq, skb, rx_desc, &decoded);
 +
-+		eop_desc = (union idpf_tx_flex_desc *)tx_buf->next_to_watch;
++	skb->protocol = eth_type_trans(skb, rxq->vport->netdev);
 +
-+		/* clear next_to_watch to prevent false hangs */
-+		tx_buf->next_to_watch = NULL;
++	if (FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_RSC_M,
++		      le16_to_cpu(rx_desc->hdrlen_flags)))
++		return idpf_rx_rsc(rxq, skb, rx_desc, &decoded);
 +
-+		if (descs_only) {
-+			if (idpf_stash_flow_sch_buffers(tx_q, tx_buf))
-+				goto tx_splitq_clean_out;
++	idpf_rx_splitq_extract_csum_bits(rx_desc, &csum_bits);
++	idpf_rx_csum(rxq, skb, &csum_bits, &decoded);
 +
-+			while (tx_desc != eop_desc) {
-+				idpf_tx_splitq_clean_bump_ntc(tx_q, ntc,
-+							      tx_desc, tx_buf);
-+
-+				if (dma_unmap_len(tx_buf, len)) {
-+					if (idpf_stash_flow_sch_buffers(tx_q,
-+									tx_buf))
-+						goto tx_splitq_clean_out;
-+				}
-+			}
-+		} else {
-+			idpf_tx_splitq_clean_hdr(tx_q, tx_buf, cleaned,
-+						 napi_budget);
-+
-+			/* unmap remaining buffers */
-+			while (tx_desc != eop_desc) {
-+				idpf_tx_splitq_clean_bump_ntc(tx_q, ntc,
-+							      tx_desc, tx_buf);
-+
-+				/* unmap any remaining paged data */
-+				if (dma_unmap_len(tx_buf, len)) {
-+					dma_unmap_page(tx_q->dev,
-+						       dma_unmap_addr(tx_buf, dma),
-+						       dma_unmap_len(tx_buf, len),
-+						       DMA_TO_DEVICE);
-+					dma_unmap_len_set(tx_buf, len, 0);
-+				}
-+			}
-+		}
-+
-+fetch_next_txq_desc:
-+		idpf_tx_splitq_clean_bump_ntc(tx_q, ntc, tx_desc, tx_buf);
-+	}
-+
-+tx_splitq_clean_out:
-+	ntc += tx_q->desc_count;
-+	tx_q->next_to_clean = ntc;
++	return 0;
 +}
 +
-+#define idpf_tx_clean_buf_ring_bump_ntc(txq, ntc, buf)	\
-+do {							\
-+	(buf)++;					\
-+	(ntc)++;					\
-+	if (unlikely((ntc) == (txq)->desc_count)) {	\
-+		buf = (txq)->tx_buf;			\
-+		ntc = 0;				\
-+	}						\
-+} while (0)
++/**
++ * idpf_rx_buf_adjust_pg - Prepare rx buffer for reuse
++ * @rx_buf: Rx buffer to adjust
++ * @size: Size of adjustment
++ *
++ * Update the offset within page so that rx buf will be ready to be reused.
++ * For systems with PAGE_SIZE < 8192 this function will flip the page offset
++ * so the second half of page assigned to rx buffer will be used, otherwise
++ * the offset is moved by the @size bytes
++ */
++static void idpf_rx_buf_adjust_pg(struct idpf_rx_buf *rx_buf, unsigned int size)
++{
++	struct idpf_page_info *pinfo;
++
++	pinfo = &rx_buf->page_info[rx_buf->page_indx];
++
++	if (PAGE_SIZE < 8192)
++		if (rx_buf->buf_size > IDPF_RX_BUF_2048)
++			/* flip to second page */
++			rx_buf->page_indx = !rx_buf->page_indx;
++		else
++			/* flip page offset to other buffer */
++			pinfo->page_offset ^= size;
++	else
++		pinfo->page_offset += size;
++}
 +
 +/**
-+ * idpf_tx_clean_buf_ring - clean flow scheduling TX queue buffers
-+ * @txq: queue to clean
-+ * @compl_tag: completion tag of packet to clean (from completion descriptor)
-+ * @cleaned: pointer to stats struct to track cleaned packets/bytes
-+ * @budget: Used to determine if we are in netpoll
++ * idpf_rx_can_reuse_page - Determine if page can be reused for another rx
++ * @rx_buf: buffer containing the page
 + *
-+ * Cleans all buffers associated with the input completion tag either from the
-+ * TX buffer ring or from the hash table if the buffers were previously
-+ * stashed. Returns the byte/segment count for the cleaned packet associated
-+ * this completion tag.
++ * If page is reusable, we have a green light for calling idpf_reuse_rx_page,
++ * which will assign the current buffer to the buffer that next_to_alloc is
++ * pointing to; otherwise, the dma mapping needs to be destroyed and
++ * page freed
 + */
-+static bool idpf_tx_clean_buf_ring(struct idpf_queue *txq, u16 compl_tag,
-+				   struct idpf_cleaned_stats *cleaned,
-+				   int budget)
++static bool idpf_rx_can_reuse_page(struct idpf_rx_buf *rx_buf)
 +{
-+	u16 idx = compl_tag & txq->compl_tag_bufid_m;
-+	struct idpf_tx_buf *tx_buf = NULL;
-+	u16 ntc = txq->next_to_clean;
-+	u16 num_descs_cleaned = 0;
-+	u16 orig_idx = idx;
++	unsigned int last_offset = PAGE_SIZE - rx_buf->buf_size;
++	struct idpf_page_info *pinfo;
++	unsigned int pagecnt_bias;
++	struct page *page;
 +
-+	tx_buf = &txq->tx_buf[idx];
++	pinfo = &rx_buf->page_info[rx_buf->page_indx];
++	pagecnt_bias = pinfo->pagecnt_bias;
++	page = pinfo->page;
 +
-+	while (tx_buf->compl_tag == (int)compl_tag) {
-+		if (tx_buf->skb) {
-+			idpf_tx_splitq_clean_hdr(txq, tx_buf, cleaned, budget);
-+		} else if (dma_unmap_len(tx_buf, len)) {
-+			dma_unmap_page(txq->dev,
-+				       dma_unmap_addr(tx_buf, dma),
-+				       dma_unmap_len(tx_buf, len),
-+				       DMA_TO_DEVICE);
-+			dma_unmap_len_set(tx_buf, len, 0);
-+		}
-+
-+		memset(tx_buf, 0, sizeof(struct idpf_tx_buf));
-+		tx_buf->compl_tag = IDPF_SPLITQ_TX_INVAL_COMPL_TAG;
-+
-+		num_descs_cleaned++;
-+		idpf_tx_clean_buf_ring_bump_ntc(txq, idx, tx_buf);
-+	}
-+
-+	/* If we didn't clean anything on the ring for this completion, there's
-+	 * nothing more to do.
-+	 */
-+	if (unlikely(!num_descs_cleaned))
++	if (unlikely(!dev_page_is_reusable(page)))
 +		return false;
 +
-+	/* Otherwise, if we did clean a packet on the ring directly, it's safe
-+	 * to assume that the descriptors starting from the original
-+	 * next_to_clean up until the previously cleaned packet can be reused.
-+	 * Therefore, we will go back in the ring and stash any buffers still
-+	 * in the ring into the hash table to be cleaned later.
-+	 */
-+	tx_buf = &txq->tx_buf[ntc];
-+	while (tx_buf != &txq->tx_buf[orig_idx]) {
-+		idpf_stash_flow_sch_buffers(txq, tx_buf);
-+		idpf_tx_clean_buf_ring_bump_ntc(txq, ntc, tx_buf);
++	if (PAGE_SIZE < 8192) {
++		/* For 2K buffers, we can reuse the page if we are the
++		 * owner. For 4K buffers, we can reuse the page if there are
++		 * no other others.
++		 */
++		if (unlikely((page_count(page) - pagecnt_bias) >
++			     pinfo->reuse_bias))
++			return false;
++	} else if (pinfo->page_offset > last_offset) {
++		return false;
 +	}
 +
-+	/* Finally, update next_to_clean to reflect the work that was just done
-+	 * on the ring, if any. If the packet was only cleaned from the hash
-+	 * table, the ring will not be impacted, therefore we should not touch
-+	 * next_to_clean. The updated idx is used here
++	/* If we have drained the page fragment pool we need to update
++	 * the pagecnt_bias and page count so that we fully restock the
++	 * number of references the driver holds.
 +	 */
-+	txq->next_to_clean = idx;
++	if (unlikely(pagecnt_bias == 1)) {
++		page_ref_add(page, USHRT_MAX - 1);
++		pinfo->pagecnt_bias = USHRT_MAX;
++	}
 +
 +	return true;
 +}
 +
 +/**
-+ * idpf_tx_handle_rs_completion - clean a single packet and all of its buffers
-+ * whether on the buffer ring or in the hash table
-+ * @txq: Tx ring to clean
-+ * @desc: pointer to completion queue descriptor to extract completion
-+ * information from
-+ * @cleaned: pointer to stats struct to track cleaned packets/bytes
-+ * @budget: Used to determine if we are in netpoll
++ * idpf_rx_frame_truesize - Returns an actual size of Rx frame in memory
++ * @buf: pointer to buffer metadata struct
++ * @size: Packet length from rx_desc
 + *
-+ * Returns bytes/packets cleaned
++ * Returns an actual size of Rx frame in memory, considering page size
++ * and SKB data alignment.
 + */
-+static void idpf_tx_handle_rs_completion(struct idpf_queue *txq,
-+					 struct idpf_splitq_tx_compl_desc *desc,
-+					 struct idpf_cleaned_stats *cleaned,
-+					 int budget)
++static unsigned int idpf_rx_frame_truesize(struct idpf_rx_buf *buf,
++					   unsigned int size)
 +{
-+	u16 compl_tag;
-+
-+	if (!test_bit(__IDPF_Q_FLOW_SCH_EN, txq->flags)) {
-+		u16 head = le16_to_cpu(desc->q_head_compl_tag.q_head);
-+
-+		return idpf_tx_splitq_clean(txq, head, budget, cleaned, false);
-+	}
-+
-+	compl_tag = le16_to_cpu(desc->q_head_compl_tag.compl_tag);
-+
-+	/* If we didn't clean anything on the ring, this packet must be
-+	 * in the hash table. Go clean it there.
-+	 */
-+	if (!idpf_tx_clean_buf_ring(txq, compl_tag, cleaned, budget))
-+		idpf_tx_clean_stashed_bufs(txq, compl_tag, cleaned, budget);
++	return PAGE_SIZE >= 8192 ? SKB_DATA_ALIGN(size) : buf->buf_size;
 +}
 +
 +/**
-+ * idpf_tx_clean_complq - Reclaim resources on completion queue
-+ * @complq: Tx ring to clean
-+ * @budget: Used to determine if we are in netpoll
-+ * @cleaned: returns number of packets cleaned
++ * idpf_rx_add_frag - Add contents of Rx buffer to sk_buff as a frag
++ * @rx_buf: buffer containing page to add
++ * @skb: sk_buff to place the data into
++ * @size: packet length from rx_desc
 + *
-+ * Returns true if there's any budget left (e.g. the clean is finished)
++ * This function will add the data contained in rx_buf->page to the skb.
++ * It will just attach the page as a frag to the skb.
++ * The function will then update the page offset.
 + */
-+static bool idpf_tx_clean_complq(struct idpf_queue *complq, int budget,
-+				 int *cleaned)
++static void idpf_rx_add_frag(struct idpf_rx_buf *rx_buf, struct sk_buff *skb,
++			     unsigned int size)
 +{
-+	struct idpf_splitq_tx_compl_desc *tx_desc;
-+	struct idpf_vport *vport = complq->vport;
-+	s16 ntc = complq->next_to_clean;
-+	unsigned int complq_budget;
-+	bool complq_ok = true;
-+	int i;
++	unsigned int truesize = idpf_rx_frame_truesize(rx_buf, size);
++	struct idpf_page_info *pinfo;
 +
-+	complq_budget = vport->compln_clean_budget;
-+	tx_desc = IDPF_SPLITQ_TX_COMPLQ_DESC(complq, ntc);
-+	ntc -= complq->desc_count;
++	pinfo = &rx_buf->page_info[rx_buf->page_indx];
++	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, pinfo->page,
++			pinfo->page_offset, size, truesize);
 +
-+	do {
-+		struct idpf_cleaned_stats cleaned_stats = { };
-+		struct idpf_queue *tx_q;
-+		int rel_tx_qid;
-+		u16 hw_head;
-+		u8 ctype;	/* completion type */
-+		u16 gen;
++	idpf_rx_buf_adjust_pg(rx_buf, truesize);
++}
 +
-+		/* if the descriptor isn't done, no work yet to do */
-+		gen = (le16_to_cpu(tx_desc->qid_comptype_gen) &
-+		      IDPF_TXD_COMPLQ_GEN_M) >> IDPF_TXD_COMPLQ_GEN_S;
-+		if (test_bit(__IDPF_Q_GEN_CHK, complq->flags) != gen)
-+			break;
++/**
++ * idpf_rx_get_buf_page - Fetch Rx buffer page and synchronize data for use
++ * @dev: device struct
++ * @rx_buf: Rx buf to fetch page for
++ * @size: size of buffer to add to skb
++ *
++ * This function will pull an Rx buffer page from the ring and synchronize it
++ * for use by the CPU.
++ */
++static void idpf_rx_get_buf_page(struct device *dev, struct idpf_rx_buf *rx_buf,
++				 const unsigned int size)
++{
++	struct idpf_page_info *pinfo;
 +
-+		/* Find necessary info of TX queue to clean buffers */
-+		rel_tx_qid = (le16_to_cpu(tx_desc->qid_comptype_gen) &
-+			 IDPF_TXD_COMPLQ_QID_M) >> IDPF_TXD_COMPLQ_QID_S;
-+		if (rel_tx_qid >= complq->txq_grp->num_txq ||
-+		    !complq->txq_grp->txqs[rel_tx_qid]) {
-+			dev_err(&complq->vport->adapter->pdev->dev,
-+				"TxQ not found\n");
-+			goto fetch_next_desc;
-+		}
-+		tx_q = complq->txq_grp->txqs[rel_tx_qid];
++	pinfo = &rx_buf->page_info[rx_buf->page_indx];
 +
-+		/* Determine completion type */
-+		ctype = (le16_to_cpu(tx_desc->qid_comptype_gen) &
-+			IDPF_TXD_COMPLQ_COMPL_TYPE_M) >>
-+			IDPF_TXD_COMPLQ_COMPL_TYPE_S;
-+		switch (ctype) {
-+		case IDPF_TXD_COMPLT_RE:
-+			hw_head = le16_to_cpu(tx_desc->q_head_compl_tag.q_head);
++	/* we are reusing so sync this buffer for CPU use */
++	dma_sync_single_range_for_cpu(dev, pinfo->dma,
++				      pinfo->page_offset, size,
++				      DMA_FROM_DEVICE);
 +
-+			idpf_tx_splitq_clean(tx_q, hw_head, budget,
-+					     &cleaned_stats, true);
-+			break;
-+		case IDPF_TXD_COMPLT_RS:
-+			idpf_tx_handle_rs_completion(tx_q, tx_desc,
-+						     &cleaned_stats, budget);
-+			break;
-+		case IDPF_TXD_COMPLT_SW_MARKER:
-+			idpf_tx_handle_sw_marker(tx_q);
-+			break;
-+		default:
-+			dev_err(&tx_q->vport->adapter->pdev->dev,
-+				"Unknown TX completion type: %d\n",
-+				ctype);
-+			goto fetch_next_desc;
-+		}
++	/* We have pulled a buffer for use, so decrement pagecnt_bias */
++	pinfo->pagecnt_bias--;
++}
 +
-+		u64_stats_update_begin(&tx_q->stats_sync);
-+		u64_stats_add(&tx_q->q_stats.tx.packets, cleaned_stats.packets);
-+		u64_stats_add(&tx_q->q_stats.tx.bytes, cleaned_stats.bytes);
-+		tx_q->cleaned_pkts += cleaned_stats.packets;
-+		tx_q->cleaned_bytes += cleaned_stats.bytes;
-+		complq->num_completions++;
-+		u64_stats_update_end(&tx_q->stats_sync);
++/**
++ * idpf_rx_construct_skb - Allocate skb and populate it
++ * @rxq: Rx descriptor queue
++ * @rx_buf: Rx buffer to pull data from
++ * @size: the length of the packet
++ *
++ * This function allocates an skb. It then populates it with the page
++ * data from the current receive descriptor, taking care to set up the
++ * skb correctly.
++ */
++static struct sk_buff *idpf_rx_construct_skb(struct idpf_queue *rxq,
++					     struct idpf_rx_buf *rx_buf,
++					     unsigned int size)
++{
++	unsigned int headlen, truesize;
++	struct idpf_page_info *pinfo;
++	struct sk_buff *skb;
++	void *va;
 +
-+fetch_next_desc:
-+		tx_desc++;
-+		ntc++;
-+		if (unlikely(!ntc)) {
-+			ntc -= complq->desc_count;
-+			tx_desc = IDPF_SPLITQ_TX_COMPLQ_DESC(complq, 0);
-+			change_bit(__IDPF_Q_GEN_CHK, complq->flags);
-+		}
++	pinfo = &rx_buf->page_info[rx_buf->page_indx];
++	va = page_address(pinfo->page) + pinfo->page_offset;
 +
-+		prefetch(tx_desc);
++	/* prefetch first cache line of first page */
++	net_prefetch(va);
++	/* allocate a skb to store the frags */
++	skb = __napi_alloc_skb(&rxq->q_vector->napi, IDPF_RX_HDR_SIZE,
++			       GFP_ATOMIC | __GFP_NOWARN);
++	if (unlikely(!skb))
++		return NULL;
 +
-+		/* update budget accounting */
-+		complq_budget--;
-+	} while (likely(complq_budget));
++	skb_record_rx_queue(skb, rxq->idx);
 +
-+	/* Store the state of the complq to be used later in deciding if a
-+	 * TXQ can be started again
-+	 */
-+	if (unlikely(IDPF_TX_COMPLQ_PENDING(complq->txq_grp) >
-+		     IDPF_TX_COMPLQ_OVERFLOW_THRESH(complq)))
-+		complq_ok = false;
++	/* Determine available headroom for copy */
++	headlen = size;
++	if (headlen > IDPF_RX_HDR_SIZE)
++		headlen = eth_get_headlen(skb->dev, va, IDPF_RX_HDR_SIZE);
 +
-+	for (i = 0; i < complq->txq_grp->num_txq; ++i) {
-+		struct idpf_queue *tx_q = complq->txq_grp->txqs[i];
-+		struct netdev_queue *nq;
++	/* align pull length to size of long to optimize memcpy performance */
++	memcpy(__skb_put(skb, headlen), va, ALIGN(headlen, sizeof(long)));
 +
-+		/* We didn't clean anything on this queue, move along */
-+		if (!tx_q->cleaned_bytes)
-+			continue;
++	/* if we exhaust the linear part then add what is left as a frag */
++	size -= headlen;
++	if (!size) {
++		/* buffer is unused, reset bias back to rx_buf; data was copied
++		 * onto skb's linear part so there's no need for adjusting
++		 * page offset and we can reuse this buffer as-is
++		 */
++		pinfo->pagecnt_bias++;
 +
-+		*cleaned += tx_q->cleaned_pkts;
-+
-+		/* Update BQL */
-+		nq = netdev_get_tx_queue(tx_q->vport->netdev, tx_q->idx);
-+		netdev_tx_completed_queue(nq, tx_q->cleaned_pkts, tx_q->cleaned_bytes);
-+
-+		/* Reset cleaned stats for the next time this queue is cleaned */
-+		tx_q->cleaned_bytes = 0;
-+		tx_q->cleaned_pkts = 0;
-+
-+		/* Check if the TXQ needs to and can be restarted */
-+		if (unlikely(netif_tx_queue_stopped(nq) && complq_ok &&
-+			     netif_carrier_ok(tx_q->vport->netdev) &&
-+			     !IDPF_TX_BUF_RSV_LOW(tx_q) &&
-+			     (IDPF_DESC_UNUSED(tx_q) >= IDPF_TX_WAKE_THRESH))) {
-+			/* Make sure any other threads stopping queue after
-+			 * this see new next_to_clean.
-+			 */
-+			smp_mb();
-+			if (complq->vport->state == __IDPF_VPORT_UP)
-+				netif_tx_wake_queue(nq);
-+		}
++		return skb;
 +	}
 +
-+	ntc += complq->desc_count;
-+	complq->next_to_clean = ntc;
++	truesize = idpf_rx_frame_truesize(rx_buf, size);
++	skb_add_rx_frag(skb, 0, pinfo->page,
++			pinfo->page_offset + headlen, size,
++			truesize);
++	/* buffer is used by skb, update page_offset */
++	idpf_rx_buf_adjust_pg(rx_buf, truesize);
 +
-+	return !!complq_budget;
++	return skb;
++}
++
++/**
++ * idpf_rx_hdr_construct_skb - Allocate skb and populate it from header buffer
++ * @rxq: Rx descriptor queue
++ * @hdr_buf: Rx buffer to pull data from
++ * @size: the length of the packet
++ *
++ * This function allocates an skb. It then populates it with the page data from
++ * the current receive descriptor, taking care to set up the skb correctly.
++ * This specifically uses a header buffer to start building the skb.
++ */
++static struct sk_buff *idpf_rx_hdr_construct_skb(struct idpf_queue *rxq,
++						 struct idpf_dma_mem *hdr_buf,
++						 unsigned int size)
++{
++	struct sk_buff *skb;
++
++	/* allocate a skb to store the frags */
++	skb = __napi_alloc_skb(&rxq->q_vector->napi, size,
++			       GFP_ATOMIC | __GFP_NOWARN);
++	if (unlikely(!skb))
++		return NULL;
++
++	skb_record_rx_queue(skb, rxq->idx);
++
++	memcpy(__skb_put(skb, size), hdr_buf->va, ALIGN(size, sizeof(long)));
++
++	return skb;
++}
++
++/**
++ * idpf_rx_splitq_test_staterr - tests bits in Rx descriptor
++ * status and error fields
++ * @stat_err_field: field from descriptor to test bits in
++ * @stat_err_bits: value to mask
++ *
++ */
++static bool idpf_rx_splitq_test_staterr(const u8 stat_err_field,
++					const u8 stat_err_bits)
++{
++	return !!(stat_err_field & stat_err_bits);
++}
++
++/**
++ * idpf_rx_splitq_is_eop - process handling of EOP buffers
++ * @rx_desc: Rx descriptor for current buffer
++ *
++ * If the buffer is an EOP buffer, this function exits returning true,
++ * otherwise return false indicating that this is in fact a non-EOP buffer.
++ */
++static bool idpf_rx_splitq_is_eop(struct virtchnl2_rx_flex_desc_adv_nic_3 *rx_desc)
++{
++	/* if we are the last buffer then there is nothing else to do */
++	return likely(idpf_rx_splitq_test_staterr(rx_desc->status_err0_qw1,
++						  IDPF_RXD_EOF_SPLITQ));
++}
++
++/**
++ * idpf_rx_splitq_recycle_buf - Attempt to recycle or realloc buffer
++ * @rxbufq: receive queue
++ * @rx_buf: Rx buffer to pull data from
++ *
++ * This function will clean up the contents of the rx_buf. It will either
++ * recycle the buffer or unmap it and free the associated resources. The buffer
++ * will then be placed on a refillq where it will later be reclaimed by the
++ * corresponding bufq.
++ *
++ * This works based on page flipping. If we assume e.g., a 4k page, it will be
++ * divided into two 2k buffers. We post the first half to hardware and, after
++ * using it, flip to second half of the page with idpf_adjust_pg_offset and
++ * post that to hardware. The third time through we'll flip back to first half
++ * of page and check if stack is still using it, if not we can reuse the buffer
++ * as is, otherwise we'll drain it and get a new page.
++ */
++static void idpf_rx_splitq_recycle_buf(struct idpf_queue *rxbufq,
++				       struct idpf_rx_buf *rx_buf)
++{
++	struct idpf_page_info *pinfo = &rx_buf->page_info[rx_buf->page_indx];
++
++	if (idpf_rx_can_reuse_page(rx_buf))
++		return;
++
++	/* we are not reusing the buffer so unmap it */
++	dma_unmap_page_attrs(rxbufq->dev, pinfo->dma, PAGE_SIZE,
++			     DMA_FROM_DEVICE, IDPF_RX_DMA_ATTR);
++	__page_frag_cache_drain(pinfo->page, pinfo->pagecnt_bias);
++
++	/* clear contents of buffer_info */
++	pinfo->page = NULL;
++
++	/* It's possible the alloc can fail here but there's not much
++	 * we can do, bufq will have to try and realloc to fill the
++	 * hole.
++	 */
++	idpf_alloc_page(rxbufq, pinfo);
++}
++
++/**
++ * idpf_rx_splitq_clean - Clean completed descriptors from Rx queue
++ * @rxq: Rx descriptor queue to retrieve receive buffer queue
++ * @budget: Total limit on number of packets to process
++ *
++ * This function provides a "bounce buffer" approach to Rx interrupt
++ * processing. The advantage to this is that on systems that have
++ * expensive overhead for IOMMU access this provides a means of avoiding
++ * it by maintaining the mapping of the page to the system.
++ *
++ * Returns amount of work completed
++ */
++static int idpf_rx_splitq_clean(struct idpf_queue *rxq, int budget)
++{
++	int total_rx_bytes = 0, total_rx_pkts = 0;
++	struct idpf_queue *rx_bufq = NULL;
++	struct sk_buff *skb = rxq->skb;
++	u16 ntc = rxq->next_to_clean;
++
++	/* Process Rx packets bounded by budget */
++	while (likely(total_rx_pkts < budget)) {
++		struct virtchnl2_rx_flex_desc_adv_nic_3 *rx_desc;
++		struct idpf_sw_queue *refillq = NULL;
++		struct idpf_dma_mem *hdr_buf = NULL;
++		struct idpf_rxq_set *rxq_set = NULL;
++		struct idpf_rx_buf *rx_buf = NULL;
++		union virtchnl2_rx_desc *desc;
++		unsigned int pkt_len = 0;
++		unsigned int hdr_len = 0;
++		u16 gen_id, buf_id = 0;
++		 /* Header buffer overflow only valid for header split */
++		bool hbo = false;
++		int bufq_id;
++		u8 rxdid;
++
++		/* get the Rx desc from Rx queue based on 'next_to_clean' */
++		desc = IDPF_RX_DESC(rxq, ntc);
++		rx_desc = (struct virtchnl2_rx_flex_desc_adv_nic_3 *)desc;
++
++		/* This memory barrier is needed to keep us from reading
++		 * any other fields out of the rx_desc
++		 */
++		dma_rmb();
++
++		/* if the descriptor isn't done, no work yet to do */
++		gen_id = le16_to_cpu(rx_desc->pktlen_gen_bufq_id);
++		gen_id = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_GEN_M, gen_id);
++
++		if (test_bit(__IDPF_Q_GEN_CHK, rxq->flags) != gen_id)
++			break;
++
++		rxdid = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_RXDID_M,
++				  rx_desc->rxdid_ucast);
++		if (rxdid != VIRTCHNL2_RXDID_2_FLEX_SPLITQ) {
++			IDPF_RX_BUMP_NTC(rxq, ntc);
++			u64_stats_update_begin(&rxq->stats_sync);
++			u64_stats_inc(&rxq->q_stats.rx.bad_descs);
++			u64_stats_update_end(&rxq->stats_sync);
++			continue;
++		}
++
++		pkt_len = le16_to_cpu(rx_desc->pktlen_gen_bufq_id);
++		pkt_len = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_LEN_PBUF_M,
++				    pkt_len);
++
++		hbo = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_STATUS0_HBO_M,
++				rx_desc->status_err0_qw1);
++
++		if (unlikely(hbo)) {
++			/* If a header buffer overflow, occurs, i.e. header is
++			 * too large to fit in the header split buffer, HW will
++			 * put the entire packet, including headers, in the
++			 * data/payload buffer.
++			 */
++			u64_stats_update_begin(&rxq->stats_sync);
++			u64_stats_inc(&rxq->q_stats.rx.hsplit_buf_ovf);
++			u64_stats_update_end(&rxq->stats_sync);
++			goto bypass_hsplit;
++		}
++
++		hdr_len = le16_to_cpu(rx_desc->hdrlen_flags);
++		hdr_len = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_LEN_HDR_M,
++				    hdr_len);
++
++bypass_hsplit:
++		bufq_id = le16_to_cpu(rx_desc->pktlen_gen_bufq_id);
++		bufq_id = FIELD_GET(VIRTCHNL2_RX_FLEX_DESC_ADV_BUFQ_ID_M,
++				    bufq_id);
++
++		rxq_set = container_of(rxq, struct idpf_rxq_set, rxq);
++		if (!bufq_id)
++			refillq = rxq_set->refillq0;
++		else
++			refillq = rxq_set->refillq1;
++
++		/* retrieve buffer from the rxq */
++		rx_bufq = &rxq->rxq_grp->splitq.bufq_sets[bufq_id].bufq;
++
++		buf_id = le16_to_cpu(rx_desc->buf_id);
++
++		if (pkt_len) {
++			rx_buf = &rx_bufq->rx_buf.buf[buf_id];
++			idpf_rx_get_buf_page(rx_bufq->dev, rx_buf, pkt_len);
++		}
++
++		if (hdr_len) {
++			hdr_buf = rx_bufq->rx_buf.hdr_buf[buf_id];
++
++			dma_sync_single_for_cpu(rxq->dev, hdr_buf->pa, hdr_buf->size,
++						DMA_FROM_DEVICE);
++
++			skb = idpf_rx_hdr_construct_skb(rxq, hdr_buf, hdr_len);
++			u64_stats_update_begin(&rxq->stats_sync);
++			u64_stats_inc(&rxq->q_stats.rx.hsplit_pkts);
++			u64_stats_update_end(&rxq->stats_sync);
++		}
++
++		if (pkt_len) {
++			if (skb)
++				idpf_rx_add_frag(rx_buf, skb, pkt_len);
++			else
++				skb = idpf_rx_construct_skb(rxq, rx_buf,
++							    pkt_len);
++		}
++
++		/* exit if we failed to retrieve a buffer */
++		if (!skb) {
++			/* If we fetched a buffer, but didn't use it
++			 * undo pagecnt_bias decrement
++			 */
++			if (rx_buf)
++				rx_buf->page_info[rx_buf->page_indx].pagecnt_bias++;
++			break;
++		}
++
++		if (rx_buf)
++			idpf_rx_splitq_recycle_buf(rx_bufq, rx_buf);
++		idpf_rx_post_buf_refill(refillq, buf_id);
++
++		IDPF_RX_BUMP_NTC(rxq, ntc);
++		/* skip if it is non EOP desc */
++		if (!idpf_rx_splitq_is_eop(rx_desc))
++			continue;
++
++		/* pad skb if needed (to make valid ethernet frame) */
++		if (eth_skb_pad(skb)) {
++			skb = NULL;
++			continue;
++		}
++
++		/* probably a little skewed due to removing CRC */
++		total_rx_bytes += skb->len;
++
++		/* protocol */
++		if (unlikely(idpf_rx_process_skb_fields(rxq, skb, rx_desc))) {
++			dev_kfree_skb_any(skb);
++			skb = NULL;
++			continue;
++		}
++
++		/* send completed skb up the stack */
++		napi_gro_receive(&rxq->q_vector->napi, skb);
++		skb = NULL;
++
++		/* update budget accounting */
++		total_rx_pkts++;
++	}
++
++	rxq->next_to_clean = ntc;
++
++	rxq->skb = skb;
++	u64_stats_update_begin(&rxq->stats_sync);
++	u64_stats_add(&rxq->q_stats.rx.packets, total_rx_pkts);
++	u64_stats_add(&rxq->q_stats.rx.bytes, total_rx_bytes);
++	u64_stats_update_end(&rxq->stats_sync);
++
++	/* guarantee a trip back through this routine if there was a failure */
++	return total_rx_pkts;
++}
++
++/**
++ * idpf_rx_update_bufq_desc - Update buffer queue descriptor
++ * @bufq: Pointer to the buffer queue
++ * @refill_desc: SW Refill queue descriptor containing buffer ID
++ * @buf_desc: Buffer queue descriptor
++ *
++ * Return 0 on success and negative on failure.
++ */
++static int idpf_rx_update_bufq_desc(struct idpf_queue *bufq, u16 refill_desc,
++				    struct virtchnl2_splitq_rx_buf_desc *buf_desc)
++{
++	struct idpf_page_info *pinfo;
++	struct idpf_dma_mem *hdr_buf;
++	struct idpf_rx_buf *buf;
++	u16 buf_id;
++
++	buf_id = FIELD_GET(IDPF_RX_BI_BUFID_M, refill_desc);
++
++	buf = &bufq->rx_buf.buf[buf_id];
++	pinfo = &buf->page_info[buf->page_indx];
++
++	/* It's possible page alloc failed during rxq clean, try to
++	 * recover here.
++	 */
++	if (unlikely(!pinfo->page && idpf_alloc_page(bufq, pinfo)))
++		return -ENOMEM;
++
++	dma_sync_single_range_for_device(bufq->dev, pinfo->dma,
++					 pinfo->page_offset,
++					 bufq->rx_buf_size,
++					 DMA_FROM_DEVICE);
++	buf_desc->pkt_addr =
++		cpu_to_le64(pinfo->dma + pinfo->page_offset);
++	buf_desc->qword0.buf_id = cpu_to_le16(buf_id);
++
++	if (!bufq->rx_hsplit_en)
++		return 0;
++
++	hdr_buf = bufq->rx_buf.hdr_buf[buf_id];
++	buf_desc->hdr_addr = cpu_to_le64(hdr_buf->pa);
++
++	dma_sync_single_for_device(bufq->dev, hdr_buf->pa,
++				   hdr_buf->size, DMA_FROM_DEVICE);
++
++	return 0;
++}
++
++/**
++ * idpf_rx_clean_refillq - Clean refill queue buffers
++ * @bufq: buffer queue to post buffers back to
++ * @refillq: refill queue to clean
++ *
++ * This function takes care of the buffer refill management
++ */
++static void idpf_rx_clean_refillq(struct idpf_queue *bufq,
++				  struct idpf_sw_queue *refillq)
++{
++	struct virtchnl2_splitq_rx_buf_desc *buf_desc;
++	u16 bufq_nta = bufq->next_to_alloc;
++	u16 ntc = refillq->next_to_clean;
++	int cleaned = 0;
++	u16 gen;
++
++	buf_desc = IDPF_SPLITQ_RX_BUF_DESC(bufq, bufq_nta);
++
++	/* make sure we stop at ring wrap in the unlikely case ring is full */
++	while (likely(cleaned < refillq->desc_count)) {
++		u16 refill_desc = IDPF_SPLITQ_RX_BI_DESC(refillq, ntc);
++		bool failure;
++
++		gen = FIELD_GET(IDPF_RX_BI_GEN_M, refill_desc);
++		if (test_bit(__IDPF_RFLQ_GEN_CHK, refillq->flags) != gen)
++			break;
++
++		failure = idpf_rx_update_bufq_desc(bufq, refill_desc,
++						   buf_desc);
++		if (failure)
++			break;
++
++		if (unlikely(++ntc == refillq->desc_count)) {
++			change_bit(__IDPF_RFLQ_GEN_CHK, refillq->flags);
++			ntc = 0;
++		}
++
++		if (unlikely(++bufq_nta == bufq->desc_count)) {
++			buf_desc = IDPF_SPLITQ_RX_BUF_DESC(bufq, 0);
++			bufq_nta = 0;
++		} else {
++			buf_desc++;
++		}
++
++		cleaned++;
++	}
++
++	if (!cleaned)
++		return;
++
++	/* We want to limit how many transactions on the bus we trigger with
++	 * tail writes so we only do it in strides. It's also important we
++	 * align the write to a multiple of 8 as required by HW.
++	 */
++	if (((bufq->next_to_use <= bufq_nta ? 0 : bufq->desc_count) +
++	    bufq_nta - bufq->next_to_use) >= IDPF_RX_BUF_POST_STRIDE)
++		idpf_rx_buf_hw_update(bufq, ALIGN_DOWN(bufq_nta,
++						       IDPF_RX_BUF_POST_STRIDE));
++
++	/* update next to alloc since we have filled the ring */
++	refillq->next_to_clean = ntc;
++	bufq->next_to_alloc = bufq_nta;
++}
++
++/**
++ * idpf_rx_clean_refillq_all - Clean all refill queues
++ * @bufq: buffer queue with refill queues
++ *
++ * Iterates through all refill queues assigned to the buffer queue assigned to
++ * this vector.  Returns true if clean is complete within budget, false
++ * otherwise.
++ */
++static void idpf_rx_clean_refillq_all(struct idpf_queue *bufq)
++{
++	struct idpf_bufq_set *bufq_set;
++	int i;
++
++	bufq_set = container_of(bufq, struct idpf_bufq_set, bufq);
++	for (i = 0; i < bufq_set->num_refillqs; i++)
++		idpf_rx_clean_refillq(bufq, &bufq_set->refillqs[i]);
 +}
 +
  /**
-  * idpf_tx_splitq_build_ctb - populate command tag and size for queue
-  * based scheduling descriptors
-@@ -2262,7 +2785,11 @@ netdev_tx_t idpf_tx_splitq_start(struct sk_buff *skb,
- static irqreturn_t idpf_vport_intr_clean_queues(int __always_unused irq,
- 						void *data)
- {
--	/* stub */
-+	struct idpf_q_vector *q_vector = (struct idpf_q_vector *)data;
-+
-+	q_vector->total_events++;
-+	napi_schedule(&q_vector->napi);
-+
- 	return IRQ_HANDLED;
- }
+  * idpf_vport_intr_clean_queues - MSIX mode Interrupt Handler
+  * @irq: interrupt number
+@@ -2972,7 +3861,7 @@ static void idpf_net_dim(struct idpf_q_vector *q_vector)
+ 	u32 i;
  
-@@ -2368,6 +2895,121 @@ static void idpf_vport_intr_rel_irq(struct idpf_vport *vport)
- 	}
- }
+ 	if (!IDPF_ITR_IS_DYNAMIC(q_vector->tx_intr_mode))
+-		return;
++		goto check_rx_itr;
  
-+/**
-+ * idpf_vport_intr_dis_irq_all - Disable all interrupt
-+ * @vport: main vport structure
-+ */
-+static void idpf_vport_intr_dis_irq_all(struct idpf_vport *vport)
-+{
-+	struct idpf_q_vector *q_vector = vport->q_vectors;
-+	int q_idx;
+ 	for (i = 0, packets = 0, bytes = 0; i < q_vector->num_txq; i++) {
+ 		struct idpf_queue *txq = q_vector->tx[i];
+@@ -2988,6 +3877,25 @@ static void idpf_net_dim(struct idpf_q_vector *q_vector)
+ 	idpf_update_dim_sample(q_vector, &dim_sample, &q_vector->tx_dim,
+ 			       packets, bytes);
+ 	net_dim(&q_vector->tx_dim, dim_sample);
 +
-+	for (q_idx = 0; q_idx < vport->num_q_vectors; q_idx++)
-+		writel(0, q_vector[q_idx].intr_reg.dyn_ctl);
-+}
-+
-+/**
-+ * idpf_vport_intr_buildreg_itr - Enable default interrupt generation settings
-+ * @q_vector: pointer to q_vector
-+ * @type: itr index
-+ * @itr: itr value
-+ */
-+static u32 idpf_vport_intr_buildreg_itr(struct idpf_q_vector *q_vector,
-+					const int type, u16 itr)
-+{
-+	u32 itr_val;
-+
-+	itr &= IDPF_ITR_MASK;
-+	/* Don't clear PBA because that can cause lost interrupts that
-+	 * came in while we were cleaning/polling
-+	 */
-+	itr_val = q_vector->intr_reg.dyn_ctl_intena_m |
-+		  (type << q_vector->intr_reg.dyn_ctl_itridx_s) |
-+		  (itr << (q_vector->intr_reg.dyn_ctl_intrvl_s - 1));
-+
-+	return itr_val;
-+}
-+
-+/**
-+ * idpf_update_dim_sample - Update dim sample with packets and bytes
-+ * @q_vector: the vector associated with the interrupt
-+ * @dim_sample: dim sample to update
-+ * @dim: dim instance structure
-+ * @packets: total packets
-+ * @bytes: total bytes
-+ *
-+ * Update the dim sample with the packets and bytes which are passed to this
-+ * function. Set the dim state appropriately if the dim settings gets stale.
-+ */
-+static void idpf_update_dim_sample(struct idpf_q_vector *q_vector,
-+				   struct dim_sample *dim_sample,
-+				   struct dim *dim, u64 packets, u64 bytes)
-+{
-+	dim_update_sample(q_vector->total_events, packets, bytes, dim_sample);
-+	dim_sample->comp_ctr = 0;
-+
-+	/* if dim settings get stale, like when not updated for 1 second or
-+	 * longer, force it to start again. This addresses the frequent case
-+	 * of an idle queue being switched to by the scheduler.
-+	 */
-+	if (ktime_ms_delta(dim_sample->time, dim->start_sample.time) >= HZ)
-+		dim->state = DIM_START_MEASURE;
-+}
-+
-+/**
-+ * idpf_net_dim - Update net DIM algorithm
-+ * @q_vector: the vector associated with the interrupt
-+ *
-+ * Create a DIM sample and notify net_dim() so that it can possibly decide
-+ * a new ITR value based on incoming packets, bytes, and interrupts.
-+ *
-+ * This function is a no-op if the queue is not configured to dynamic ITR.
-+ */
-+static void idpf_net_dim(struct idpf_q_vector *q_vector)
-+{
-+	struct dim_sample dim_sample = { };
-+	u64 packets, bytes;
-+	u32 i;
-+
-+	if (!IDPF_ITR_IS_DYNAMIC(q_vector->tx_intr_mode))
++check_rx_itr:
++	if (!IDPF_ITR_IS_DYNAMIC(q_vector->rx_intr_mode))
 +		return;
 +
-+	for (i = 0, packets = 0, bytes = 0; i < q_vector->num_txq; i++) {
-+		struct idpf_queue *txq = q_vector->tx[i];
++	for (i = 0, packets = 0, bytes = 0; i < q_vector->num_rxq; i++) {
++		struct idpf_queue *rxq = q_vector->rx[i];
 +		unsigned int start;
 +
 +		do {
-+			start = u64_stats_fetch_begin(&txq->stats_sync);
-+			packets += u64_stats_read(&txq->q_stats.tx.packets);
-+			bytes += u64_stats_read(&txq->q_stats.tx.bytes);
-+		} while (u64_stats_fetch_retry(&txq->stats_sync, start));
++			start = u64_stats_fetch_begin(&rxq->stats_sync);
++			packets += u64_stats_read(&rxq->q_stats.rx.packets);
++			bytes += u64_stats_read(&rxq->q_stats.rx.bytes);
++		} while (u64_stats_fetch_retry(&rxq->stats_sync, start));
 +	}
 +
-+	idpf_update_dim_sample(q_vector, &dim_sample, &q_vector->tx_dim,
++	idpf_update_dim_sample(q_vector, &dim_sample, &q_vector->rx_dim,
 +			       packets, bytes);
-+	net_dim(&q_vector->tx_dim, dim_sample);
-+}
-+
-+/**
-+ * idpf_vport_intr_update_itr_ena_irq - Update itr and re-enable MSIX interrupt
-+ * @q_vector: q_vector for which itr is being updated and interrupt enabled
-+ *
-+ * Update the net_dim() algorithm and re-enable the interrupt associated with
-+ * this vector.
-+ */
-+static void idpf_vport_intr_update_itr_ena_irq(struct idpf_q_vector *q_vector)
-+{
-+	u32 intval;
-+
-+	/* net_dim() updates ITR out-of-band using a work item */
-+	idpf_net_dim(q_vector);
-+
-+	intval = idpf_vport_intr_buildreg_itr(q_vector,
-+					      IDPF_NO_ITR_UPDATE_IDX, 0);
-+
-+	writel(intval, q_vector->intr_reg.dyn_ctl);
-+}
-+
- /**
-  * idpf_vport_intr_req_irq - get MSI-X vectors from the OS for the vport
-  * @vport: main vport structure
-@@ -2420,6 +3062,54 @@ static int idpf_vport_intr_req_irq(struct idpf_vport *vport, char *basename)
- 	return err;
++	net_dim(&q_vector->rx_dim, dim_sample);
  }
  
-+/**
-+ * idpf_vport_intr_write_itr - Write ITR value to the ITR register
-+ * @q_vector: q_vector structure
-+ * @itr: Interrupt throttling rate
-+ * @tx: Tx or Rx ITR
-+ */
-+static void idpf_vport_intr_write_itr(struct idpf_q_vector *q_vector,
-+				      u16 itr, bool tx)
-+{
-+	struct idpf_intr_reg *intr_reg;
-+
-+	if (tx && !q_vector->tx)
-+		return;
-+	else if (!tx && !q_vector->rx)
-+		return;
-+
-+	intr_reg = &q_vector->intr_reg;
-+	writel(ITR_REG_ALIGN(itr) >> IDPF_ITR_GRAN_S,
-+	       tx ? intr_reg->tx_itr : intr_reg->rx_itr);
-+}
-+
-+/**
-+ * idpf_vport_intr_ena_irq_all - Enable IRQ for the given vport
-+ * @vport: main vport structure
-+ */
-+static void idpf_vport_intr_ena_irq_all(struct idpf_vport *vport)
-+{
-+	bool dynamic;
-+	int q_idx;
-+	u16 itr;
-+
-+	for (q_idx = 0; q_idx < vport->num_q_vectors; q_idx++) {
-+		struct idpf_q_vector *qv = &vport->q_vectors[q_idx];
-+
-+		/* Set the initial ITR values */
-+		if (qv->num_txq) {
-+			dynamic = IDPF_ITR_IS_DYNAMIC(qv->tx_intr_mode);
-+			itr = vport->tx_itr_profile[qv->tx_dim.profile_ix];
+ /**
+@@ -3105,7 +4013,15 @@ static void idpf_vport_intr_ena_irq_all(struct idpf_vport *vport)
+ 						  true);
+ 		}
+ 
+-		if (qv->num_txq)
++		if (qv->num_rxq) {
++			dynamic = IDPF_ITR_IS_DYNAMIC(qv->rx_intr_mode);
++			itr = vport->rx_itr_profile[qv->rx_dim.profile_ix];
 +			idpf_vport_intr_write_itr(qv, dynamic ?
-+						  itr : qv->tx_itr_value,
-+						  true);
++						  itr : qv->rx_itr_value,
++						  false);
 +		}
 +
-+		if (qv->num_txq)
-+			idpf_vport_intr_update_itr_ena_irq(qv);
-+	}
-+}
-+
- /**
-  * idpf_vport_intr_deinit - Release all vector associations for the vport
-  * @vport: main vport structure
-@@ -2428,9 +3118,47 @@ void idpf_vport_intr_deinit(struct idpf_vport *vport)
- {
- 	idpf_vport_intr_napi_dis_all(vport);
- 	idpf_vport_intr_napi_del_all(vport);
-+	idpf_vport_intr_dis_irq_all(vport);
- 	idpf_vport_intr_rel_irq(vport);
++		if (qv->num_txq || qv->num_rxq)
+ 			idpf_vport_intr_update_itr_ena_irq(qv);
+ 	}
+ }
+@@ -3148,6 +4064,32 @@ static void idpf_tx_dim_work(struct work_struct *work)
+ 	dim->state = DIM_START_MEASURE;
  }
  
 +/**
-+ * idpf_tx_dim_work - Call back from the stack
++ * idpf_rx_dim_work - Call back from the stack
 + * @work: work queue structure
 + */
-+static void idpf_tx_dim_work(struct work_struct *work)
++static void idpf_rx_dim_work(struct work_struct *work)
 +{
 +	struct idpf_q_vector *q_vector;
 +	struct idpf_vport *vport;
@@ -1011,65 +1129,72 @@ index 30517d17d722..7d070b7dcffb 100644
 +	u16 itr;
 +
 +	dim = container_of(work, struct dim, work);
-+	q_vector = container_of(dim, struct idpf_q_vector, tx_dim);
++	q_vector = container_of(dim, struct idpf_q_vector, rx_dim);
 +	vport = q_vector->vport;
 +
-+	if (dim->profile_ix >= ARRAY_SIZE(vport->tx_itr_profile))
-+		dim->profile_ix = ARRAY_SIZE(vport->tx_itr_profile) - 1;
++	if (dim->profile_ix >= ARRAY_SIZE(vport->rx_itr_profile))
++		dim->profile_ix = ARRAY_SIZE(vport->rx_itr_profile) - 1;
 +
 +	/* look up the values in our local table */
-+	itr = vport->tx_itr_profile[dim->profile_ix];
++	itr = vport->rx_itr_profile[dim->profile_ix];
 +
-+	idpf_vport_intr_write_itr(q_vector, itr, true);
++	idpf_vport_intr_write_itr(q_vector, itr, false);
 +
 +	dim->state = DIM_START_MEASURE;
 +}
 +
-+/**
-+ * idpf_init_dim - Set up dynamic interrupt moderation
-+ * @qv: q_vector structure
-+ */
-+static void idpf_init_dim(struct idpf_q_vector *qv)
-+{
-+	INIT_WORK(&qv->tx_dim.work, idpf_tx_dim_work);
-+	qv->tx_dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
-+	qv->tx_dim.profile_ix = IDPF_DIM_DEFAULT_PROFILE_IX;
-+}
-+
  /**
-  * idpf_vport_intr_napi_ena_all - Enable NAPI for all q_vectors in the vport
-  * @vport: main vport structure
-@@ -2445,10 +3173,37 @@ static void idpf_vport_intr_napi_ena_all(struct idpf_vport *vport)
- 	for (q_idx = 0; q_idx < vport->num_q_vectors; q_idx++) {
- 		struct idpf_q_vector *q_vector = &vport->q_vectors[q_idx];
+  * idpf_init_dim - Set up dynamic interrupt moderation
+  * @qv: q_vector structure
+@@ -3157,6 +4099,10 @@ static void idpf_init_dim(struct idpf_q_vector *qv)
+ 	INIT_WORK(&qv->tx_dim.work, idpf_tx_dim_work);
+ 	qv->tx_dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
+ 	qv->tx_dim.profile_ix = IDPF_DIM_DEFAULT_PROFILE_IX;
++
++	INIT_WORK(&qv->rx_dim.work, idpf_rx_dim_work);
++	qv->rx_dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
++	qv->rx_dim.profile_ix = IDPF_DIM_DEFAULT_PROFILE_IX;
+ }
  
-+		idpf_init_dim(q_vector);
- 		napi_enable(&q_vector->napi);
- 	}
+ /**
+@@ -3204,6 +4150,44 @@ static bool idpf_tx_splitq_clean_all(struct idpf_q_vector *q_vec,
+ 	return clean_complete;
  }
  
 +/**
-+ * idpf_tx_splitq_clean_all- Clean completion queues
++ * idpf_rx_splitq_clean_all- Clean completion queues
 + * @q_vec: queue vector
 + * @budget: Used to determine if we are in netpoll
 + * @cleaned: returns number of packets cleaned
 + *
 + * Returns false if clean is not complete else returns true
 + */
-+static bool idpf_tx_splitq_clean_all(struct idpf_q_vector *q_vec,
-+				     int budget, int *cleaned)
++static bool idpf_rx_splitq_clean_all(struct idpf_q_vector *q_vec, int budget,
++				     int *cleaned)
 +{
-+	int num_txq = q_vec->num_txq;
++	int num_rxq = q_vec->num_rxq;
 +	bool clean_complete = true;
++	int pkts_cleaned = 0;
 +	int i, budget_per_q;
 +
-+	if (unlikely(!num_txq))
-+		return true;
++	/* We attempt to distribute budget to each Rx queue fairly, but don't
++	 * allow the budget to go below 1 because that would exit polling early.
++	 */
++	budget_per_q = num_rxq ? max(budget / num_rxq, 1) : 0;
++	for (i = 0; i < num_rxq; i++) {
++		struct idpf_queue *rxq = q_vec->rx[i];
++		int pkts_cleaned_per_q;
 +
-+	budget_per_q = DIV_ROUND_UP(budget, num_txq);
-+	for (i = 0; i < num_txq; i++)
-+		clean_complete &= idpf_tx_clean_complq(q_vec->tx[i],
-+						       budget_per_q, cleaned);
++		pkts_cleaned_per_q = idpf_rx_splitq_clean(rxq, budget_per_q);
++		/* if we clean as many as budgeted, we must not be done */
++		if (pkts_cleaned_per_q >= budget_per_q)
++			clean_complete = false;
++		pkts_cleaned += pkts_cleaned_per_q;
++	}
++	*cleaned = pkts_cleaned;
++
++	for (i = 0; i < q_vec->num_bufq; i++)
++		idpf_rx_clean_refillq_all(q_vec->bufq[i]);
 +
 +	return clean_complete;
 +}
@@ -1077,266 +1202,177 @@ index 30517d17d722..7d070b7dcffb 100644
  /**
   * idpf_vport_splitq_napi_poll - NAPI handler
   * @napi: struct from which you get q_vector
-@@ -2456,8 +3211,40 @@ static void idpf_vport_intr_napi_ena_all(struct idpf_vport *vport)
-  */
- static int idpf_vport_splitq_napi_poll(struct napi_struct *napi, int budget)
- {
--	/* stub */
--	return 0;
-+	struct idpf_q_vector *q_vector =
-+				container_of(napi, struct idpf_q_vector, napi);
-+	bool clean_complete;
-+	int work_done = 0;
-+
-+	/* Handle case where we are called by netpoll with a budget of 0 */
-+	if (unlikely(!budget)) {
-+		idpf_tx_splitq_clean_all(q_vector, budget, &work_done);
-+
-+		return 0;
-+	}
-+
-+	clean_complete = idpf_tx_splitq_clean_all(q_vector, budget, &work_done);
-+
-+	/* If work not completed, return budget and polling will return */
-+	if (!clean_complete)
-+		return budget;
-+
-+	work_done = min_t(int, work_done, budget - 1);
-+
-+	/* Exit the polling mode, but don't re-enable interrupts if stack might
-+	 * poll us due to busy-polling
-+	 */
-+	if (likely(napi_complete_done(napi, work_done)))
-+		idpf_vport_intr_update_itr_ena_irq(q_vector);
-+
-+	/* Switch to poll mode in the tear-down path after sending disable queues
-+	 * virtchnl message, as the interrupts will be disabled after that
-+	 */
-+	if (unlikely(q_vector->num_txq && test_bit(__IDPF_Q_POLL_MODE,
-+						   q_vector->tx[0]->flags)))
-+		return budget;
-+	else
-+		return work_done;
- }
+@@ -3223,7 +4207,8 @@ static int idpf_vport_splitq_napi_poll(struct napi_struct *napi, int budget)
+ 		return 0;
+ 	}
  
+-	clean_complete = idpf_tx_splitq_clean_all(q_vector, budget, &work_done);
++	clean_complete = idpf_rx_splitq_clean_all(q_vector, budget, &work_done);
++	clean_complete &= idpf_tx_splitq_clean_all(q_vector, budget, &work_done);
+ 
+ 	/* If work not completed, return budget and polling will return */
+ 	if (!clean_complete)
+@@ -3577,7 +4562,6 @@ int idpf_init_rss(struct idpf_vport *vport)
  /**
-@@ -2707,6 +3494,8 @@ int idpf_vport_intr_init(struct idpf_vport *vport)
- 	if (err)
- 		goto unroll_vectors_alloc;
- 
-+	idpf_vport_intr_ena_irq_all(vport);
-+
- 	return 0;
- 
- unroll_vectors_alloc:
+  * idpf_deinit_rss - Release RSS resources
+  * @vport: virtual port
+- *
+  */
+ void idpf_deinit_rss(struct idpf_vport *vport)
+ {
 diff --git a/drivers/net/ethernet/intel/idpf/idpf_txrx.h b/drivers/net/ethernet/intel/idpf/idpf_txrx.h
-index 27c9255ec7df..83f802b06bb9 100644
+index 83f802b06bb9..e24339da9035 100644
 --- a/drivers/net/ethernet/intel/idpf/idpf_txrx.h
 +++ b/drivers/net/ethernet/intel/idpf/idpf_txrx.h
-@@ -13,6 +13,9 @@
- #define IDPF_MIN_TXQ_COMPLQ_DESC		256
- #define IDPF_MAX_QIDS				256
+@@ -62,10 +62,21 @@
  
-+#define IDPF_MIN_TX_DESC_NEEDED (MAX_SKB_FRAGS + 6)
-+#define IDPF_TX_WAKE_THRESH ((u16)IDPF_MIN_TX_DESC_NEEDED * 2)
+ #define IDPF_RX_BUFQ_WORKING_SET(rxq)		((rxq)->desc_count - 1)
+ 
++#define IDPF_RX_BUMP_NTC(rxq, ntc)				\
++do {								\
++	if (unlikely(++(ntc) == (rxq)->desc_count)) {		\
++		ntc = 0;					\
++		change_bit(__IDPF_Q_GEN_CHK, (rxq)->flags);	\
++	}							\
++} while (0)
 +
- #define MIN_SUPPORT_TXDID (\
- 	VIRTCHNL2_TXDID_FLEX_FLOW_SCHED |\
- 	VIRTCHNL2_TXDID_FLEX_TSO_CTX)
-@@ -77,6 +80,9 @@
++#define IDPF_RX_HDR_SIZE			256
+ #define IDPF_RX_BUF_2048			2048
+ #define IDPF_RX_BUF_4096			4096
+ #define IDPF_RX_BUF_STRIDE			32
++#define IDPF_RX_BUF_POST_STRIDE			16
+ #define IDPF_LOW_WATERMARK			64
++/* Size of header buffer specifically for header split */
+ #define IDPF_HDR_BUF_SIZE			256
+ #define IDPF_PACKET_HDR_PAD	\
+ 	(ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN * 2)
+@@ -75,10 +86,18 @@
+  */
+ #define IDPF_TX_SPLITQ_RE_MIN_GAP	64
+ 
++#define IDPF_RX_BI_BUFID_S		0
++#define IDPF_RX_BI_BUFID_M		GENMASK(14, 0)
++#define IDPF_RX_BI_GEN_S		15
++#define IDPF_RX_BI_GEN_M		BIT(IDPF_RX_BI_GEN_S)
++#define IDPF_RXD_EOF_SPLITQ		VIRTCHNL2_RX_FLEX_DESC_ADV_STATUS0_EOF_M
++#define IDPF_RXD_EOF_SINGLEQ		BIT(VIRTCHNL2_RX_BASE_DESC_STATUS_EOF_S)
++
+ #define IDPF_SINGLEQ_RX_BUF_DESC(rxq, i)	\
+ 	(&(((struct virtchnl2_singleq_rx_buf_desc *)((rxq)->desc_ring))[i]))
  #define IDPF_SPLITQ_RX_BUF_DESC(rxq, i)	\
  	(&(((struct virtchnl2_splitq_rx_buf_desc *)((rxq)->desc_ring))[i]))
++#define IDPF_SPLITQ_RX_BI_DESC(rxq, i) ((((rxq)->ring))[i])
  
-+#define IDPF_SPLITQ_TX_COMPLQ_DESC(txcq, i)	\
-+	(&(((struct idpf_splitq_tx_compl_desc *)((txcq)->desc_ring))[i]))
-+
- #define IDPF_FLEX_TX_DESC(txq, i) \
- 	(&(((union idpf_tx_flex_desc *)((txq)->desc_ring))[i]))
- #define IDPF_FLEX_TX_CTX_DESC(txq, i)	\
-@@ -144,7 +150,8 @@ struct idpf_tx_buf {
- };
- 
- struct idpf_tx_stash {
--	/* stub */
-+	struct hlist_node hlist;
-+	struct idpf_tx_buf buf;
- };
- 
- struct idpf_buf_lifo {
-@@ -177,6 +184,7 @@ struct idpf_tx_splitq_params {
+ #define IDPF_SPLITQ_TX_COMPLQ_DESC(txcq, i)	\
+ 	(&(((struct idpf_splitq_tx_compl_desc *)((txcq)->desc_ring))[i]))
+@@ -184,6 +203,20 @@ struct idpf_tx_splitq_params {
  	struct idpf_tx_offload_params offload;
  };
  
-+#define IDPF_TX_COMPLQ_CLEAN_BUDGET	256
++/* Checksum offload bits decoded from the receive descriptor. */
++struct idpf_rx_csum_decoded {
++	u32 l3l4p : 1;
++	u32 ipe : 1;
++	u32 eipe : 1;
++	u32 eudpe : 1;
++	u32 ipv6exadd : 1;
++	u32 l4e : 1;
++	u32 pprs : 1;
++	u32 nat : 1;
++	u32 raw_csum_inv : 1;
++	u32 raw_csum : 16;
++};
++
+ #define IDPF_TX_COMPLQ_CLEAN_BUDGET	256
  #define IDPF_TX_MIN_PKT_LEN		17
  #define IDPF_TX_DESCS_FOR_SKB_DATA_PTR	1
- #define IDPF_TX_DESCS_PER_CACHE_LINE	(L1_CACHE_BYTES / \
-@@ -338,6 +346,8 @@ enum idpf_queue_flags_t {
- 	 */
- 	__IDPF_RFLQ_GEN_CHK,
- 	__IDPF_Q_FLOW_SCH_EN,
-+	__IDPF_Q_SW_MARKER,
-+	__IDPF_Q_POLL_MODE,
+@@ -206,6 +239,8 @@ struct idpf_tx_splitq_params {
  
- 	__IDPF_Q_FLAGS_NBITS,
- };
-@@ -370,6 +380,7 @@ struct idpf_q_vector {
+ #define IDPF_RX_DMA_ATTR \
+ 	(DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING)
++#define IDPF_RX_DESC(rxq, i)	\
++	(&(((union virtchnl2_rx_desc *)((rxq)->desc_ring))[i]))
  
- 	int num_txq;
- 	struct idpf_queue **tx;
-+	struct dim tx_dim;	/* data for net_dim algorithm */
- 	u16 tx_itr_value;
- 	bool tx_intr_mode;
- 	u32 tx_itr_idx;
-@@ -383,6 +394,7 @@ struct idpf_q_vector {
- 	int num_bufq;
- 	struct idpf_queue **bufq;
- 
-+	u16 total_events;       /* net_dim(): number of interrupts processed */
- 	char name[IDPF_INT_NAME_STR_LEN];
+ struct idpf_page_info {
+ 	dma_addr_t dma;
+@@ -225,6 +260,7 @@ struct idpf_rx_buf {
+ 	struct idpf_page_info page_info[IDPF_RX_BUF_MAX_PAGES];
+ 	u8 page_indx;
+ 	u16 buf_size;
++	struct sk_buff *skb;
  };
  
-@@ -391,6 +403,8 @@ struct idpf_rx_queue_stats {
+ #define IDPF_GET_PTYPE_SIZE(p) struct_size((p), proto_id, (p)->proto_id_count)
+@@ -263,6 +299,10 @@ enum idpf_rx_ptype_outer_ip {
+ 	IDPF_RX_PTYPE_OUTER_IP	= 1,
+ };
+ 
++#define IDPF_RX_PTYPE_TO_IPV(ptype, ipv)			\
++	(((ptype)->outer_ip == IDPF_RX_PTYPE_OUTER_IP) &&	\
++	 ((ptype)->outer_ip_ver == (ipv)))
++
+ enum idpf_rx_ptype_outer_ip_ver {
+ 	IDPF_RX_PTYPE_OUTER_NONE	= 0,
+ 	IDPF_RX_PTYPE_OUTER_IPV4	= 1,
+@@ -387,6 +427,7 @@ struct idpf_q_vector {
+ 
+ 	int num_rxq;
+ 	struct idpf_queue **rx;
++	struct dim rx_dim;	/* data for net_dim algorithm */
+ 	u16 rx_itr_value;
+ 	bool rx_intr_mode;
+ 	u32 rx_itr_idx;
+@@ -399,7 +440,13 @@ struct idpf_q_vector {
+ };
+ 
+ struct idpf_rx_queue_stats {
+-	/* stub */
++	u64_stats_t packets;
++	u64_stats_t bytes;
++	u64_stats_t rsc_pkts;
++	u64_stats_t hw_csum_err;
++	u64_stats_t hsplit_pkts;
++	u64_stats_t hsplit_buf_ovf;
++	u64_stats_t bad_descs;
  };
  
  struct idpf_tx_queue_stats {
-+	u64_stats_t packets;
-+	u64_stats_t bytes;
- 	u64_stats_t lso_pkts;
- 	u64_stats_t linearize;
- 	u64_stats_t q_busy;
-@@ -398,6 +412,11 @@ struct idpf_tx_queue_stats {
- 	u64_stats_t dma_map_errs;
- };
- 
-+struct idpf_cleaned_stats {
-+	u32 packets;
-+	u32 bytes;
-+};
-+
- union idpf_queue_stats {
- 	struct idpf_rx_queue_stats rx;
- 	struct idpf_tx_queue_stats tx;
-@@ -405,9 +424,16 @@ union idpf_queue_stats {
- 
- #define IDPF_ITR_DYNAMIC	1
- #define IDPF_ITR_20K		0x0032
-+#define IDPF_ITR_GRAN_S		1	/* Assume ITR granularity is 2us */
-+#define IDPF_ITR_MASK		0x1FFE  /* ITR register value alignment mask */
-+#define ITR_REG_ALIGN(setting)	((setting) & IDPF_ITR_MASK)
-+#define IDPF_ITR_IS_DYNAMIC(itr_mode) (itr_mode)
- #define IDPF_ITR_TX_DEF		IDPF_ITR_20K
- #define IDPF_ITR_RX_DEF		IDPF_ITR_20K
-+/* Index used for 'No ITR' update in DYN_CTL register */
-+#define IDPF_NO_ITR_UPDATE_IDX	3
- #define IDPF_ITR_IDX_SPACING(spacing, dflt)	(spacing ? spacing : dflt)
-+#define IDPF_DIM_DEFAULT_PROFILE_IX		1
- 
- /* queue associated with a vport */
- struct idpf_queue {
-@@ -458,6 +484,18 @@ struct idpf_queue {
- 	union idpf_queue_stats q_stats;
- 	struct u64_stats_sync stats_sync;
- 
-+	/* Splitq only, TXQ only: When a TX completion is received on the TX
-+	 * completion queue, it can be for any TXQ associated with that
-+	 * completion queue. This means we can clean up to N TXQs during a
-+	 * single call to clean the completion queue. cleaned_bytes|pkts tracks
-+	 * the clean stats per TXQ during that single call to clean the
-+	 * completion queue. By doing so, we can update BQL with aggregate
-+	 * cleaned stats for each TXQ only once at the end of the cleaning
-+	 * routine.
-+	 */
-+	u32 cleaned_bytes;
-+	u16 cleaned_pkts;
-+
- 	bool rx_hsplit_en;
- 	u16 rx_hbuf_size;	/* Header buffer size */
- 	u16 rx_buf_size;
+@@ -569,9 +616,10 @@ struct idpf_queue {
+  * lockless buffer management system and are strictly software only constructs.
+  */
+ struct idpf_sw_queue {
+-	DECLARE_BITMAP(flags, __IDPF_Q_FLAGS_NBITS)
+-		____cacheline_aligned_in_smp;
+-	u16 *ring ____cacheline_aligned_in_smp;
++	u16 next_to_clean;
++	u16 next_to_alloc;
++	DECLARE_BITMAP(flags, __IDPF_Q_FLAGS_NBITS);
++	u16 *ring;
+ 	u16 desc_count;
+ 	u16 buf_size;
+ 	struct device *dev;
 diff --git a/drivers/net/ethernet/intel/idpf/idpf_virtchnl.c b/drivers/net/ethernet/intel/idpf/idpf_virtchnl.c
-index 2ca931177e53..07c7a3d30bb8 100644
+index 07c7a3d30bb8..4215ec8f97a3 100644
 --- a/drivers/net/ethernet/intel/idpf/idpf_virtchnl.c
 +++ b/drivers/net/ethernet/intel/idpf/idpf_virtchnl.c
-@@ -695,6 +695,36 @@ static int idpf_wait_for_event(struct idpf_adapter *adapter,
- 				     IDPF_WAIT_FOR_EVENT_TIMEO);
- }
- 
-+/**
-+ * idpf_wait_for_marker_event - wait for software marker response
-+ * @vport: virtual port data structure
-+ *
-+ * Returns 0 success, negative on failure.
-+ **/
-+static int idpf_wait_for_marker_event(struct idpf_vport *vport)
-+{
-+	int event = 0;
-+	int i;
-+
-+	for (i = 0; i < vport->num_txq; i++)
-+		set_bit(__IDPF_Q_SW_MARKER, vport->txqs[i]->flags);
-+
-+	event = wait_event_timeout(vport->sw_marker_wq,
-+				   test_and_clear_bit(IDPF_VPORT_SW_MARKER,
-+						      vport->flags),
-+				   msecs_to_jiffies(500));
-+
-+	for (i = 0; i < vport->num_txq; i++)
-+		clear_bit(__IDPF_Q_POLL_MODE, vport->txqs[i]->flags);
-+
-+	if (event)
-+		return 0;
-+
-+	dev_warn(&vport->adapter->pdev->dev, "Failed to receive marker packets\n");
-+
-+	return -ETIMEDOUT;
-+}
-+
- /**
-  * idpf_send_ver_msg - send virtchnl version message
-  * @adapter: Driver specific private structure
-@@ -1976,7 +2006,23 @@ int idpf_send_enable_queues_msg(struct idpf_vport *vport)
-  */
- int idpf_send_disable_queues_msg(struct idpf_vport *vport)
- {
--	return idpf_send_ena_dis_queues_msg(vport, VIRTCHNL2_OP_DISABLE_QUEUES);
-+	int err, i;
-+
-+	err = idpf_send_ena_dis_queues_msg(vport, VIRTCHNL2_OP_DISABLE_QUEUES);
-+	if (err)
-+		return err;
-+
-+	/* switch to poll mode as interrupts will be disabled after disable
-+	 * queues virtchnl message is sent
-+	 */
-+	for (i = 0; i < vport->num_txq; i++)
-+		set_bit(__IDPF_Q_POLL_MODE, vport->txqs[i]->flags);
-+
-+	/* schedule the napi to receive all the marker packets */
-+	for (i = 0; i < vport->num_q_vectors; i++)
-+		napi_schedule(&vport->q_vectors[i].napi);
-+
-+	return idpf_wait_for_marker_event(vport);
- }
- 
- /**
-@@ -2856,6 +2902,7 @@ void idpf_vport_init(struct idpf_vport *vport, struct idpf_vport_max_q *max_q)
- 	struct idpf_adapter *adapter = vport->adapter;
+@@ -2903,6 +2903,7 @@ void idpf_vport_init(struct idpf_vport *vport, struct idpf_vport_max_q *max_q)
  	struct virtchnl2_create_vport *vport_msg;
  	struct idpf_vport_config *vport_config;
-+	u16 tx_itr[] = {2, 8, 64, 128, 256};
+ 	u16 tx_itr[] = {2, 8, 64, 128, 256};
++	u16 rx_itr[] = {2, 8, 32, 96, 128};
  	struct idpf_rss_data *rss_data;
  	u16 idx = vport->idx;
  
-@@ -2881,6 +2928,9 @@ void idpf_vport_init(struct idpf_vport *vport, struct idpf_vport_max_q *max_q)
+@@ -2928,7 +2929,8 @@ void idpf_vport_init(struct idpf_vport *vport, struct idpf_vport_max_q *max_q)
  	ether_addr_copy(vport->default_mac_addr, vport_msg->default_mac_addr);
  	vport->max_mtu = le16_to_cpu(vport_msg->max_mtu) - IDPF_PACKET_HDR_PAD;
  
-+	/* Initialize Tx profiles for Dynamic Interrupt Moderation */
-+	memcpy(vport->tx_itr_profile, tx_itr, IDPF_DIM_PROFILE_SLOTS);
-+
+-	/* Initialize Tx profiles for Dynamic Interrupt Moderation */
++	/* Initialize Tx and Rx profiles for Dynamic Interrupt Moderation */
++	memcpy(vport->rx_itr_profile, rx_itr, IDPF_DIM_PROFILE_SLOTS);
+ 	memcpy(vport->tx_itr_profile, tx_itr, IDPF_DIM_PROFILE_SLOTS);
+ 
  	idpf_vport_init_num_qs(vport, vport_msg);
- 	idpf_vport_calc_num_q_desc(vport);
- 	idpf_vport_calc_num_q_groups(vport);
 -- 
 2.37.3
 
