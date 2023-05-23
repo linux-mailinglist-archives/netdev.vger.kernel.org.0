@@ -1,69 +1,73 @@
-Return-Path: <netdev+bounces-4631-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4632-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C011970DA02
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:09:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A981C70DA05
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:11:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 48E9C1C20D3D
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:09:14 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CA4A01C20D10
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:10:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A6F51EA60;
-	Tue, 23 May 2023 10:09:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA3311EA61;
+	Tue, 23 May 2023 10:10:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB3201E501
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:09:13 +0000 (UTC)
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08ABFFD
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:09:12 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C52CB1E501
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:10:58 +0000 (UTC)
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93515FA
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:10:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684836551; x=1716372551;
+  t=1684836657; x=1716372657;
   h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=mXI0n7DZZo9gKpFxtYLmj+pEtd6CldvxnqDgWBDIa68=;
-  b=jPlNWQqfR7m9McqPjb3dYpSLFwQUryAMK/VQYcrfISBfgixRv7L58e1f
-   KiHKVgZUIfl0503zCzK0QKZbIq4AMjcRZd+4Yr7HZblaPUriq3tl18LCy
-   32T8ZagL6jtRrDqOmmJRkMgweapkzSRYMXIsj33W5Q0L4O2q7snY+dPeG
-   +GL7TeFvU2Lx5Wq5blVsNeVdaXovqVmdNakUVicNv02qDEyvoVsrRdYYO
-   qsURETDUdZPdviylaeueBkROA3CoKFHQl86H91cyulm9GFblDbIHWNLRR
-   fccvuEP/Fl9bbaMvK6Y6e1OjN9DdYu04Dx+BEJ5mw8vHYGUhxtPUAqjur
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="381437225"
+  bh=3x6ZCqu5CT7Ue7AGn6/09f0ZzNfidjWOj6s25lmpMqQ=;
+  b=SYVNZqj2qc1N1kcoQEguFVVxf4YyzPw9emLaA8R21t1VB5nKSl73sdEA
+   FQRhVbK14nh2ypXELiPKdw9UPyWGO9szDYAIcgHP2zmk8kIpVdJc6XlJT
+   U2i/JFutedgwvLBNdhf2v8Ss3cZ0pOMEtJN81jVefy7omgunFh0HMwhGo
+   PvnSc2AdBJE/3ZhwJQRQQNgoQSSUTmbuiXgUwJyJ6MfxYAwMg76RIeO0R
+   mZmpb9ZR8uaAA9hEa2TNw2KVWuihdPHyyda1bUwv05cb+aP176jvn8CFp
+   TIb1ei6ShnGLcFF/5szbq1hr4hViPydXKZITAbc56XOdfiZrqj2dwmw9o
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="342655405"
 X-IronPort-AV: E=Sophos;i="6.00,185,1681196400"; 
-   d="scan'208";a="381437225"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2023 03:09:08 -0700
+   d="scan'208";a="342655405"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2023 03:10:54 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="768947176"
+X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="816080641"
 X-IronPort-AV: E=Sophos;i="6.00,185,1681196400"; 
-   d="scan'208";a="768947176"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga008.fm.intel.com with ESMTP; 23 May 2023 03:09:08 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="816080641"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga002.fm.intel.com with ESMTP; 23 May 2023 03:10:54 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 23 May 2023 03:09:08 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ 15.1.2507.23; Tue, 23 May 2023 03:10:54 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 23 May 2023 03:10:53 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
  fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Tue, 23 May 2023 03:09:08 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.102)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.23 via Frontend Transport; Tue, 23 May 2023 03:10:53 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.103)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Tue, 23 May 2023 03:09:08 -0700
+ 15.1.2507.23; Tue, 23 May 2023 03:10:53 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PdJyO5BsbKeacBp3PK/5Gg2pzPrtQl5YjWRz6GTeTNhAFwzj3W6zM6dsvfgysPgNN8AcuLxVjxQFOrxg0W60ZzZ5iX0Qu1Yhr0eqxdPvcpTBUJGkVRbt4fbe/84MqVt2w/s9H67sYZ9EMto+R+zMqt2i5A9UPUh6+wRifxkRUFlZjndAIo7QlIUEndgZVi0NP6pKRAlEYP00X/jc096S1xoLVRpZLR37pkU+/2rTAeY1p6NYnKfL3JLm6+f6zK5sIwHLoIpSLlG/mzUOFilX/d808RtqRT2h9R8rZhe8POSmlVRYOssPxGKEjqkhxgcWphgpdErVRb7dEKAJSoSfOA==
+ b=aYDPagx5s90BgdBj4zOsySFkXIUEUX55yqoETP1mvFjl6hHEtmKRQ3+o54vnLNYuQhwD8IZBfYhBplJ0h130akUFW1FQv9jBy/0VUNLNMYeiV9wU/GyA/F/NE4YlXlcsQ5DYNPUR2OGTC52NCpNtRT/+Ji3G7VK7iQp0A273krcgM3u4hhwSZvnQkWYM3Gr6tcKu2PSqdY0max8XUYeglbAjpdOUIJs+drWgxB3TqxyFAlJ5zBsKlsBTzMDWispY0s5otzroSWrVgt2ki3oc9ky+fZwWNhOt9uUdr3nJUQM6RqBjeJcdIikAckweOlTv1LVbNk2aymlOIuf9e+TsYQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wvVcW3XKzknmrKCqxbA4J8T0UspVm5AMnAKpibEiSpA=;
- b=UK5YZd3LoW6wfov2Koo8tA20HUmCH6r3sS6fpP2Cmxy6UPdo7WZpm2A6Yu7Q9B/QIOeAiNpRyAoD+FwQx5+9eXseA0wli8buxIqkGBLAezIXtfgAM5yVxQpCcCR+GAupNEJ7fGpAcgFfIKEqZ1IJfI2XZO2pQfTYbVNW+rsqoy+evQa0M1J9zmCozEXLFdwCZ9QAWc24W1bWyeYK25U6+MWXfNlb1q8D2vtg8Oys9JvaDzenFkCwOlsqqWCayo3uqzridDB2BSPMr1JpR8eCZME4uC4v8JG74jXh8/WCEOEoAE9Ic25nmQqMoFCiBfcwV4Snqu+m2LEb3CLCnObV5g==
+ bh=E1sGgOAGuUfhn9ycVxJAG82D3UJnDpXXIaslG4PIlpM=;
+ b=fS/zR4txVzL1zZpZXGR+7tST2TzvLVQTfiX5rizv+plo3Ki1Sd8hZtBokJ0AnnRSiYvZ7behgmc0ihLFwUkMshgz0tGDpn6edZ6o7F+n9ryq62dJzp/j5gY3WtCNnmsYCHqlRqBX+XT+bZ9azr8ClUbbC7PHY8oqEHZozvNRshAv9ngn+Edr0zlK1mEM5ZPgKSAO1F1CImNufyeF04gRWTbJPCap2AF+VS9NsEXqBU/S7J1qH02FSVNVjOjG34By77nBAfBlIWF37FFxp9zSfgFUGEhGk4oW++mKBtuSFK2zSUMY/Ib5PuncMeBI1wJ7QPyvCi3hmyuUMh4sgJDoGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
@@ -71,11 +75,11 @@ Received: from MW4PR11MB5776.namprd11.prod.outlook.com (2603:10b6:303:183::9)
  by BL1PR11MB5287.namprd11.prod.outlook.com (2603:10b6:208:31b::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.29; Tue, 23 May
- 2023 10:09:06 +0000
+ 2023 10:10:46 +0000
 Received: from MW4PR11MB5776.namprd11.prod.outlook.com
  ([fe80::936d:24c4:86d0:f2a0]) by MW4PR11MB5776.namprd11.prod.outlook.com
  ([fe80::936d:24c4:86d0:f2a0%7]) with mapi id 15.20.6411.028; Tue, 23 May 2023
- 10:09:06 +0000
+ 10:10:46 +0000
 From: "Drewek, Wojciech" <wojciech.drewek@intel.com>
 To: Simon Horman <simon.horman@corigine.com>
 CC: "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
@@ -85,17 +89,15 @@ CC: "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
 	"marcin.szycik@linux.intel.com" <marcin.szycik@linux.intel.com>,
 	"Chmielewski, Pawel" <pawel.chmielewski@intel.com>, "Samudrala, Sridhar"
 	<sridhar.samudrala@intel.com>, Dan Carpenter <dan.carpenter@linaro.org>
-Subject: RE: [PATCH iwl-next v3 03/10] ice: Implement basic eswitch bridge
- setup
-Thread-Topic: [PATCH iwl-next v3 03/10] ice: Implement basic eswitch bridge
- setup
-Thread-Index: AQHZjJ/O3Pefledqc0ihupcB1dp0gK9nokiQ
-Date: Tue, 23 May 2023 10:09:06 +0000
-Message-ID: <MW4PR11MB5776FA062B557DDA67402D4CFD409@MW4PR11MB5776.namprd11.prod.outlook.com>
+Subject: RE: [PATCH iwl-next v3 08/10] ice: implement bridge port vlan
+Thread-Topic: [PATCH iwl-next v3 08/10] ice: implement bridge port vlan
+Thread-Index: AQHZjKB149SJCHIED0WGNAYuwNEh669npEog
+Date: Tue, 23 May 2023 10:10:46 +0000
+Message-ID: <MW4PR11MB57762D825AD01B9A8527EE61FD409@MW4PR11MB5776.namprd11.prod.outlook.com>
 References: <20230522090542.45679-1-wojciech.drewek@intel.com>
- <20230522090542.45679-4-wojciech.drewek@intel.com>
- <ZGtQffLjYdt14Lpg@corigine.com>
-In-Reply-To: <ZGtQffLjYdt14Lpg@corigine.com>
+ <20230522090542.45679-9-wojciech.drewek@intel.com>
+ <ZGtRqTaWtKYbI+f1@corigine.com>
+In-Reply-To: <ZGtRqTaWtKYbI+f1@corigine.com>
 Accept-Language: pl-PL, en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -104,41 +106,41 @@ authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
 x-ms-traffictypediagnostic: MW4PR11MB5776:EE_|BL1PR11MB5287:EE_
-x-ms-office365-filtering-correlation-id: a0485fc4-058e-467c-54d2-08db5b75be1c
+x-ms-office365-filtering-correlation-id: 411ee99a-f37a-4bac-a1f9-08db5b75f9e1
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0WCzOQIDowQoFz3dodvAmZY09SuWuitxoX9sar43bkB4wxO3mFpEOCxsKOUxve+kRdArRlG37PbjQSbKquFvnnBdD7ZxeYvb7hyD8NXjjhep4pxxxJ6DAw1jSniaT+M8T/OxQFMJ19APuV3cS9DvTyMJJ+KPVRmOgLETZVvQ/slH0EfVfBTG79YEDtioe9F+NoJIyOdUR2O31tcVoqCGQIUzIXmfSsUX5DDmWWjL1aqSGiXHthhueoZD/NDvhSPAWV+4FiEp8PcRXRy/QQOCQkApn82w46ptYZ5fbcYCI0Of0LKOxvNey61TUU65S/MQTS74g6F1/VQjN74Kh4VGQFECqMKp5YYA7XEDDxBbTYkuH5bUutkBkDRkcaKwWbtRVR2VZ3y5xcnOx7LmR1pEQ/e33yaTKzMSzhA349hin6cCv4v+19QQpYd8390XyRkiPOMggis3A/52nGxZXmQ9vN1419ImFKyAaXebsjjhnpjIb6RxoJueutaCu9Da4PoIrU5KxkfbRBH4S5E08Gqv4fCkX7lTtbINatLE0xWONElIBobSwWdz5HVDqpoFsIkStOO8SGxCp0OunzQAsaw7cxoAGw+1mzThwIx9ZxnCmfOjfHPDuHPs+u45xFfjh8n2
+x-microsoft-antispam-message-info: 33jEJFPEriLXQv4+Q9LhUL1TYAb6TuXWRuD3AngEkTtB8+Qrp7znHrCuShsLRvPuCIYBiVpve4OMKyk7HlF6sdd9qVRZrBdYUB9gm2/U4KhziTLRgqOOb7cyK/0XGOkhaNCzqa+4m4ScyvFvjQ8doS1XV9RR3JGIYd57LCmKPVkuqJQb3G8Wbc0IdNdCCb4iyMR/b78/z6C1+Xsv76mRl/lVzMFu0tvMZaS1TCmd/cMKm4RCsvsBlfu3+E0KV0ykvIBkBVNOGQI8xtBbQpjGJoZs3aQlHl1LURpve3810jghmiYnnyBZ+cJvk89iKs5NVYMQI7xn9/hAxOInHLWRJRtGJtWj+MWiNzIYHC++3KXlvqCmZqWu492hLrkxbbVFLPKA7Vzd6Jjs6t43oMgoemzwuCx/k5s0k+QcVEP+4W5KEl6qdysDrAqfGBafIcsaisgEDLVhY69VyBoCWke4WBgaqm1P+MSDXS+EeSKLphOpLvFsA0q+Rz8rvwgVdbVQ2DLDNikD9/kyp78cVllTFX72eYpYDaGbJv5U3CgFeKHDPgSdNSO6nwsrlcRoiHEfqBo/9nFtxlyA4pfB8gKPYGGNNsTpZFvAm7U8sdAsDTyUS1D6Qgo9+4bpTvCQZXgT
 x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5776.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(39860400002)(346002)(136003)(376002)(396003)(451199021)(186003)(82960400001)(53546011)(122000001)(33656002)(6506007)(26005)(9686003)(38100700002)(66574015)(83380400001)(2906002)(55016003)(54906003)(7696005)(71200400001)(316002)(41300700001)(478600001)(86362001)(6916009)(4326008)(64756008)(66946007)(66556008)(66476007)(66446008)(76116006)(38070700005)(8936002)(8676002)(52536014)(5660300002);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-2?Q?KBgCFtDIFTfQIkyfXR44LZJmSamjvsv7Q5qt+8rswbDMLe9c1SW0vnhzjP?=
- =?iso-8859-2?Q?jxoFle3d/jmQbXZT53d8qh/DmNTmLbERTzwJPM/xHsyTXhUahCLiPLMLQn?=
- =?iso-8859-2?Q?M/HeskU0j+LarXlBLtLCb2MzUqJGYdnGolAGcSoI7lTkOEU7654g/lFUZR?=
- =?iso-8859-2?Q?tQDAVKIvdeQ0OwGxBnkabTsgnwUcXNt4/XctF0V+bCnkKHwFFI8CeQFCOF?=
- =?iso-8859-2?Q?eOj/yiHxBRsZLYdTRWdOMkSP+Citu125+W5gj2JE2cfPRfUQYxcZb2OzSq?=
- =?iso-8859-2?Q?FNsakGhvVyjlz6Kd7iECYuhSXBGuq1ZU1Maj4zSB144EqViDdrqohfFAgO?=
- =?iso-8859-2?Q?xg2v98NVZn/OJgQoJfHdlfT198lvEOfwbuQ/LJiK4hFXVAL8KWFH3aeFzP?=
- =?iso-8859-2?Q?F1qM4JSYszLGV48BhExUFDoJIQ7BUPPU7wo4wCUNFvOeZWkXUV+P/2OAzC?=
- =?iso-8859-2?Q?Dkz+bOyviQBXkgTNYgfXsZLtSd/Wz2XGHpDVC5lwse1JZ2DLHCx8lEc7Gd?=
- =?iso-8859-2?Q?9RuvjnFZsouGkzR2PM4Yz04RIwPUuUrV7ONAPt7OkNELsumu86H/rhG4Mu?=
- =?iso-8859-2?Q?NVWEIj1QhPR+grUZnB0X7juanDbnrpsAmHOX8uUg7S9rwOFgHm7YWBI0vt?=
- =?iso-8859-2?Q?APmvzimd98Q8wnQ1uxeV8ajCHDnJEaS7/9vBb9guAvirl5CfNjyfooQjWq?=
- =?iso-8859-2?Q?aJpVunz33thxSYeyybcJgALqS3leXB27KCZoJ+3fyJHnpOYyUk1I0xOAqY?=
- =?iso-8859-2?Q?7nuIa8RM61MTLsa7I3zndDraFzHB8mqkVGf2S8FVp3vBlUPScQ6z4iQct8?=
- =?iso-8859-2?Q?kmKcohgz+nK7R1k9a31NrWcPzT1Gc7QXEKPxANCzyvk0bm8s+de3x0ujXR?=
- =?iso-8859-2?Q?fg5Ts/BQTBLRGdBxhJBloPQzGqdBgyr6kRUTmtkD7IeN30OuvJzaDyeen9?=
- =?iso-8859-2?Q?SuQnd9CJqrY+faRgK00dzxMV3kbM1MF2mJ86Nwc6Lrn54yfS7FR+Usl6cO?=
- =?iso-8859-2?Q?TaB4k0Bx4P8BWWhriTwy9C2TRalaFZaRV5pWGdrM5KfApxJ157rZkWaM95?=
- =?iso-8859-2?Q?Fp4aqfmTM/+gNhIcL0/t9Jqy4cJcjITmBjSrTU57zMUAQDCqXQi6X4qQIn?=
- =?iso-8859-2?Q?DdBjdk5QJwWwQ2ifZiCaxhWU6KvKfyzAd69qAQkeaz2Ht3aLPVkJwJZKDm?=
- =?iso-8859-2?Q?MMcwmiqUiVjGmfARWnai5hzPLHZkSF+pAQAx8HO+dk/9Y2h9R4cGC7ZfoB?=
- =?iso-8859-2?Q?Hh0p3SU5Mr9mvuFU+68iNP+dAOup2pRNV6PT/m7x3U1DHymQo1S82IXavj?=
- =?iso-8859-2?Q?sFmNsi5jd5Br+KhyaHCVUECWtLfQRBfNWqngF3JcxBSP58EoAnPfOAgi7w?=
- =?iso-8859-2?Q?dKnhjfNF275oYsp43KRo41st2jPJRtZdc0i5ifwOFbYgEUO5el8hphZSsy?=
- =?iso-8859-2?Q?Zoulk3CoTUCLh2Slzk1JSgogkibamPcOEY3ZQZhlVV094biKucBR4ChNwQ?=
- =?iso-8859-2?Q?p19Xo7i3JCPjVRlD+iEKMrxX7RjDHYMf998TESZzVcs6f28MMZyx60UiHG?=
- =?iso-8859-2?Q?mlcBE/znj/EPQd540pw5fCITJk6tC+O/EVdi+uAAI+HS7Hc+im1U/NKdW5?=
- =?iso-8859-2?Q?/UbnsVynL4LOxv5dgFG3xI3OYl8g3dGB6Z?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-2?Q?SablMCwmoHuO26ITUoM09ta21ghlSzDI6EurnPxtPAPwdk+r7/Imh7mDV0?=
+ =?iso-8859-2?Q?8W9FATeM20FiIiKMD5Gv+AYpmjEc0xUZDa+YDaf/XhF9SwTEa/AEL9JXAI?=
+ =?iso-8859-2?Q?NOURn8147IT1TaYfWhwRQpC00RBM+Ja1yGm+5CJIEbqZDbZ1CRYoDHkPhO?=
+ =?iso-8859-2?Q?EtLOvyzuKepIsxAubId3K6z9JWnSLkCjEF5i+3yzsfNhG3lFU0tRTN70t2?=
+ =?iso-8859-2?Q?8XqwblaUT1UqksfC6Ed5K7TMaNkNap9jXCqzCjZ7+eV2xZb9BfTk42TLmv?=
+ =?iso-8859-2?Q?GWPhbtgi9ReXuh+CZH1NoDDtnfIwvoxknRTOMWhPNyKn+gXxjHBYununID?=
+ =?iso-8859-2?Q?HmfnfcPPS9+m0+bmFdkQ/7JtZAIPzq6DnC2GgBKE35WeSNgOZu9EVGZzdb?=
+ =?iso-8859-2?Q?vsFpApI4RkYtoHd/ZmnY07IWhzZlWm6OJnhHmrTNYET77zHhacIOTSyciX?=
+ =?iso-8859-2?Q?LYZiw+sA3yRWFRSSGY9qxfigcvdmNAEP7CxjQcI9BnDEDnEyKwn0Tw66TV?=
+ =?iso-8859-2?Q?XBDFiIC/TWQwZsvnsIZ7NvncWeVZPMSDjfJBYvB7nDp9RIHpEGAI4O7jjx?=
+ =?iso-8859-2?Q?AUcRWWyVNzcUkCt31OOdbCfyg83jaN4bUjhQxgdk5kn/8fS2iiBeAX2hsy?=
+ =?iso-8859-2?Q?vXkGFwReS7OxVy5K9hl7acH7uaxbjFwc5ssZDxX7wDzzpvNE9EX0Yb/UGs?=
+ =?iso-8859-2?Q?zREKgaLUKRC3Uaqe7bXyz2iz+Ph73p+AwE/ozae9h+4l2LDEO4duXdIQEW?=
+ =?iso-8859-2?Q?AQNNtcWF/jwZUbTnMF5TIbj/iTzDdbr00VYD+ZQiRvPswsrCCQ8nKCbQAI?=
+ =?iso-8859-2?Q?eJA2LwyqQqdP3C99rVpQTrhR50lZOK6/WnlsnRdNqFDXfVzLSXoVNMfNRU?=
+ =?iso-8859-2?Q?ksf8gZcx7kIEukW3C3Mco7d8PnpHkqJJgB6O8oyb2In4vDLwCWkVqVKnP1?=
+ =?iso-8859-2?Q?86khEaTSEkuPHEUXPx6eHxZCQB7PP3wzfCMMaJXl5wpBwN3ckJ19vAQVIr?=
+ =?iso-8859-2?Q?UAemkIMdCXF9fe++HzitlRYUztQZbbdKvLd3KTiKNTH8OjsdZoX6Hdiwxe?=
+ =?iso-8859-2?Q?49bewoVRC+xGoHjaSvKrERvkJZDx+973nHLeBm4FnVpVY4HI9SWDAF3nr3?=
+ =?iso-8859-2?Q?0if0+4kOEjKe9f7ZKa7ZHIMV8piZ1xRDLTVPGJ0CQ5vmlpchKacKFFOclY?=
+ =?iso-8859-2?Q?7OSFT/qPC/KjoLtOrnWmO/hDCJ0ypYs8SgFZTuIzAA4gq173Rdk8Ex73XF?=
+ =?iso-8859-2?Q?KkdGw6eFIirI99jxrOmi0K1Fp2YCh1r/Tobe6IaJlDFgZadN30PNTJ1cLF?=
+ =?iso-8859-2?Q?5zj6RvvvUwnR8zL8whQVlVwYxU4IT7+c4DGouHXWAaCn5oGuK0vR2PU/O9?=
+ =?iso-8859-2?Q?wposnBUqqs3nzX017zVwp21wYc9xmb3KKlWJYv6BCgkJlZtPYP6x6WzgC8?=
+ =?iso-8859-2?Q?vbv0rb6LEb1SavW8w4Wngu8ejzZWpIsUFM7vEAUyj6kd4SRSUtCo+ya7y/?=
+ =?iso-8859-2?Q?GsLvZqOb/SY8+W7rHgcJ+NALw416ig+/ODOO62wJ4tY4zPMllV9aMO5M/J?=
+ =?iso-8859-2?Q?uRr2j3QpyQ65/l9dpCcM5SqbEEPhuyuqb2BfiUdC3H76GvQV/fkQ6krg/t?=
+ =?iso-8859-2?Q?PBcC1Q55g+qM0nyNvZqz1TjSPtqMgSJh3I?=
 Content-Type: text/plain; charset="iso-8859-2"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -149,13 +151,13 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5776.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0485fc4-058e-467c-54d2-08db5b75be1c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2023 10:09:06.1519
+X-MS-Exchange-CrossTenant-Network-Message-Id: 411ee99a-f37a-4bac-a1f9-08db5b75f9e1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2023 10:10:46.4572
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: u30wfihrtaJORCzfVmcHi7tPgOIW74uZvqNKJQ2vg3p7bW15HqcIVJHcUNqDj0scsIJJ7YCqqpak9dL268UJWS11J3nWoCNKdaz1fkfbhjE=
+X-MS-Exchange-CrossTenant-userprincipalname: owlvWzWdV3o7MaxYF9L4UOmX9oBvjin9aXk1Cw/wDCAnprx6+sK9isZomEWPrX8Ly7SDE4GbOdhkPMYU/megnpEGddhmf9elAiIlp668N0Y=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5287
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -170,7 +172,7 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 > -----Original Message-----
 > From: Simon Horman <simon.horman@corigine.com>
-> Sent: poniedzia=B3ek, 22 maja 2023 13:23
+> Sent: poniedzia=B3ek, 22 maja 2023 13:28
 > To: Drewek, Wojciech <wojciech.drewek@intel.com>
 > Cc: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; Lobakin, Al=
 eksander <aleksander.lobakin@intel.com>; Ertman, David M
@@ -178,98 +180,96 @@ eksander <aleksander.lobakin@intel.com>; Ertman, David M
 ycik@linux.intel.com; Chmielewski, Pawel
 > <pawel.chmielewski@intel.com>; Samudrala, Sridhar <sridhar.samudrala@inte=
 l.com>; Dan Carpenter <dan.carpenter@linaro.org>
-> Subject: Re: [PATCH iwl-next v3 03/10] ice: Implement basic eswitch bridg=
-e setup
+> Subject: Re: [PATCH iwl-next v3 08/10] ice: implement bridge port vlan
 >=20
 > +Dan Carpenter
 >=20
-> On Mon, May 22, 2023 at 11:05:35AM +0200, Wojciech Drewek wrote:
-> > With this patch, ice driver is able to track if the port
-> > representors or uplink port were added to the linux bridge in
-> > switchdev mode. Listen for NETDEV_CHANGEUPPER events in order to
-> > detect this. ice_esw_br data structure reflects the linux bridge
-> > and stores all the ports of the bridge (ice_esw_br_port) in
-> > xarray, it's created when the first port is added to the bridge and
-> > freed once the last port is removed. Note that only one bridge is
-> > supported per eswitch.
+> On Mon, May 22, 2023 at 11:05:40AM +0200, Wojciech Drewek wrote:
+> > From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 > >
-> > Bridge port (ice_esw_br_port) can be either a VF port representor
-> > port or uplink port (ice_esw_br_port_type). In both cases bridge port
-> > holds a reference to the VSI, VF's VSI in case of the PR and uplink
-> > VSI in case of the uplink. VSI's index is used as an index to the
-> > xarray in which ports are stored.
+> > Port VLAN in this case means push and pop VLAN action on specific vid.
+> > There are a few limitation in hardware:
+> > - push and pop can't be used separately
+> > - if port VLAN is used there can't be any trunk VLANs, because pop
+> >   action is done on all traffic received by VSI in port VLAN mode
+> > - port VLAN mode on uplink port isn't supported
 > >
-> > Add a check which prevents configuring switchdev mode if uplink is
-> > already added to any bridge. This is needed because we need to listen
-> > for NETDEV_CHANGEUPPER events to record if the uplink was added to
-> > the bridge. Netdevice notifier is registered after eswitch mode
-> > is changed top switchdev.
+> > Reflect these limitations in code using dev_info to inform the user
+> > about unsupported configuration.
 > >
+> > In bridge mode there is a need to configure port vlan without resetting
+> > VFs. To do that implement ice_port_vlan_on/off() functions. They are
+> > only configuring correct vlan_ops to allow setting port vlan.
+> >
+> > We also need to clear port vlan without resetting the VF which is not
+> > supported right now. Change it by implementing clear_port_vlan ops.
+> > As previous VLAN configuration isn't always the same, store current
+> > config while creating port vlan and restore it in clear function.
+> >
+> > Configuration steps:
+> > - configure switchdev with bridge
+> > - #bridge vlan add dev eth0 vid 120 pvid untagged
+> > - #bridge vlan add dev eth1 vid 120 pvid untagged
+> > - ping from VF0 to VF1
+> >
+> > Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 > > Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 >=20
 > ...
 >=20
-> > +static void
-> > +ice_eswitch_br_port_deinit(struct ice_esw_br *bridge,
-> > +			   struct ice_esw_br_port *br_port)
-> > +{
-> > +	struct ice_vsi *vsi =3D br_port->vsi;
-> > +
-> > +	if (br_port->type =3D=3D ICE_ESWITCH_BR_UPLINK_PORT && vsi->back)
-> > +		vsi->back->br_port =3D NULL;
-> > +	else if (vsi->vf)
-> > +		vsi->vf->repr->br_port =3D NULL;
-> > +
-> > +	xa_erase(&bridge->ports, br_port->vsi_idx);
-> > +	kfree(br_port);
-> > +}
->=20
-> ...
->=20
-> > +static int
-> > +ice_eswitch_br_port_unlink(struct ice_esw_br_offloads *br_offloads,
-> > +			   struct net_device *dev, int ifindex,
-> > +			   struct netlink_ext_ack *extack)
-> > +{
-> > +	struct ice_esw_br_port *br_port =3D ice_eswitch_br_netdev_to_port(dev=
-);
-> > +
-> > +	if (!br_port) {
-> > +		NL_SET_ERR_MSG_MOD(extack,
-> > +				   "Port representor is not attached to any bridge");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	if (br_port->bridge->ifindex !=3D ifindex) {
-> > +		NL_SET_ERR_MSG_MOD(extack,
-> > +				   "Port representor is attached to another bridge");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	ice_eswitch_br_port_deinit(br_port->bridge, br_port);
+> > @@ -639,14 +698,29 @@ ice_eswitch_br_vlan_create(u16 vid, u16 flags, st=
+ruct ice_esw_br_port *port)
+> >
+> >  	vlan->vid =3D vid;
+> >  	vlan->flags =3D flags;
+> > +	if ((flags & BRIDGE_VLAN_INFO_PVID) &&
+> > +	    (flags & BRIDGE_VLAN_INFO_UNTAGGED)) {
+> > +		err =3D ice_eswitch_br_set_pvid(port, vlan);
+> > +		if (err)
+> > +			goto err_set_pvid;
+> > +	} else if ((flags & BRIDGE_VLAN_INFO_PVID) ||
+> > +		   (flags & BRIDGE_VLAN_INFO_UNTAGGED)) {
+> > +		dev_info(dev, "VLAN push and pop are supported only simultaneously\n=
+");
+> > +		return ERR_PTR(-EOPNOTSUPP);
 >=20
 > Hi Wojciech,
 >=20
-> According to Smatch, ice_eswitch_br_port_deinit() will free br_port.
+> Smatch thinks that vlan is being leaked here.
+> So perhaps:
 >=20
-> > +	ice_eswitch_br_verify_deinit(br_offloads, br_port->bridge);
+> 		err =3D -EOPNOTSUPP;
+> 		goto err_set_pvid;
 >=20
-> But br_port is dereferenced here.
+> .../ice_eswitch_br.c:709 ice_eswitch_br_vlan_create() warn: possible memo=
+ry leak of 'vlan'
+
+Thanks,
+I'll fix that
+
 >=20
-> .../ice_eswitch_br.c:207 ice_eswitch_br_port_unlink() error: dereferencin=
-g freed memory 'br_port'
 >=20
+> > +	}
+> >
+> >  	err =3D xa_insert(&port->vlans, vlan->vid, vlan, GFP_KERNEL);
+> > -	if (err) {
+> > -		kfree(vlan);
+> > -		return ERR_PTR(err);
+> > -	}
+> > +	if (err)
+> > +		goto err_insert;
+> >
+> >  	return vlan;
 > > +
-> > +	return 0;
-> > +}
-
-Thanks Simon,
-I'll fix that in v4
-
+> > +err_insert:
+> > +	if (port->pvid)
+> > +		ice_eswitch_br_clear_pvid(port);
+> > +err_set_pvid:
+> > +	kfree(vlan);
+> > +	return ERR_PTR(err);
+> >  }
+> >
+> >  static int
 >=20
 > ...
->=20
-> --
-> pw-bot: cr
-
 
