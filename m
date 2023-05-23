@@ -1,97 +1,89 @@
-Return-Path: <netdev+bounces-4772-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4773-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 357BE70E298
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 19:10:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 74B4B70E2AB
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 19:16:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DF7F0281062
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:10:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 27DF01C20CF2
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:16:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 147A02098A;
-	Tue, 23 May 2023 17:10:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EE9B20991;
+	Tue, 23 May 2023 17:16:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07AEC1F93D
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 17:10:17 +0000 (UTC)
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C825F90;
-	Tue, 23 May 2023 10:10:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1684861816; x=1716397816;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=r4qQMfaI1qjgbzjXoDIxbJ+UkErC3soNDbr3LWqBikA=;
-  b=OslMN7z9LMJbLLsTKLqd3nnL0JzTLJVTtj66Mn9gUVb99fm2bh/7M913
-   X5zUSYIARXcaTifmMc6FUyEJ8SiprZDB9DxIBDYsOpS5h37SitdnGd+PA
-   m2xFWCOP/M9n20WkcD2HwF68uYWxWLIQ0Yl4tvXavBMBXNU9Upe41JM7l
-   Y=;
-X-IronPort-AV: E=Sophos;i="6.00,186,1681171200"; 
-   d="scan'208";a="1133087791"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-f323d91c.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2023 17:09:56 +0000
-Received: from EX19D011EUA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-	by email-inbound-relay-pdx-2b-m6i4x-f323d91c.us-west-2.amazon.com (Postfix) with ESMTPS id CB1D240D4D;
-	Tue, 23 May 2023 17:09:55 +0000 (UTC)
-Received: from EX19D026EUB004.ant.amazon.com (10.252.61.64) by
- EX19D011EUA001.ant.amazon.com (10.252.50.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 23 May 2023 17:09:51 +0000
-Received: from uc3ecf78c6baf56.ant.amazon.com (10.187.170.24) by
- EX19D026EUB004.ant.amazon.com (10.252.61.64) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 23 May 2023 17:09:48 +0000
-From: Andrew Paniakin <apanyaki@amazon.com>
-To: Pablo Neira Ayuso <pablo@netfilter.org>
-CC: Andrew Paniakin <apanyaki@amazon.com>, <stable@vger.kernel.org>,
-	<luizcap@amazon.com>, <benh@amazon.com>, Florian Westphal <fw@strlen.de>,
-	Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>, "David S. Miller"
-	<davem@davemloft.net>, <netfilter-devel@vger.kernel.org>,
-	<coreteam@netfilter.org>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 4.14] netfilter: nf_tables: fix register ordering
-Date: Tue, 23 May 2023 10:09:35 -0700
-Message-ID: <20230523170935.2288354-1-apanyaki@amazon.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <ZGx9JsCjvoDNRTBy@calendula>
-References:
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2CED4C91
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 17:16:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EFA9C433D2;
+	Tue, 23 May 2023 17:16:27 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="looCTqoH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+	t=1684862183;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=HFJsOQSB9/S2uFWepKjivi/bXH52kAWTnSyImng+RbA=;
+	b=looCTqoHUH8IwlqRFT2RLLuymENVAFpFMDKuKRob0jaZv/KuJ4X2rY145Qw0VMLyV+FUMg
+	Wl7DZwJoR3KV8t31OjBtOTz4JXPduUqzq1gRX+FpX2HpKLSRkLOdr2Jwa2DgBZ94BTCoIb
+	2xf1z8W9ENJE0liw6gW4oY6TmX/XSys=
+Received: 
+	by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c151c9eb (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+	Tue, 23 May 2023 17:16:23 +0000 (UTC)
+Date: Tue, 23 May 2023 19:16:20 +0200
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: edumazet@google.com,
+	syzbot <syzbot+c2775460db0e1c70018e@syzkaller.appspotmail.com>,
+	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+	davem@davemloft.net, linux-kernel@vger.kernel.org,
+	pabeni@redhat.com, wireguard@lists.zx2c4.com, jann@thejh.net
+Subject: Re: [syzbot] [wireguard?] KASAN: slab-use-after-free Write in
+ enqueue_timer
+Message-ID: <ZGz05BI29KBb2fdz@zx2c4.com>
+References: <000000000000c0b11d05fa917fe3@google.com>
+ <ZGzfzEs-vJcZAySI@zx2c4.com>
+ <20230523090512.19ca60b6@kernel.org>
+ <ZGzmWtd7itw6oFsI@zx2c4.com>
+ <20230523094606.6f4f8f4f@kernel.org>
+ <CAHmME9pEu2cvrSQd+Rg8Cp=KDfKEfjeiPPgF-WecXLHyRZVjcw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.187.170.24]
-X-ClientProxiedBy: EX19D037UWC003.ant.amazon.com (10.13.139.231) To
- EX19D026EUB004.ant.amazon.com (10.252.61.64)
-Precedence: Bulk
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+In-Reply-To: <CAHmME9pEu2cvrSQd+Rg8Cp=KDfKEfjeiPPgF-WecXLHyRZVjcw@mail.gmail.com>
 
-On Tue, 23 May 2023 10:45:26 +0200 Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+On Tue, May 23, 2023 at 06:47:41PM +0200, Jason A. Donenfeld wrote:
+> On Tue, May 23, 2023 at 6:46 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Tue, 23 May 2023 18:14:18 +0200 Jason A. Donenfeld wrote:
+> > > So, IOW, not a wireguard bug, right?
+> >
+> > What's slightly concerning is that there aren't any other timers
+> > leading to
+> >
+> >   KASAN: slab-use-after-free Write in enqueue_timer
+> >
+> > :( If WG was just an innocent bystander there should be, right?
+> 
+> Well, WG does mod this timer for every single packet in its RX path.
+> So that's bound to turn things up I suppose.
 
-> On Mon, May 22, 2023 at 07:59:41PM -0700, Andrew Paniakin wrote:
-> > From: Florian Westphal <fw@strlen.de>
-> >
-> > commit d209df3e7f7002d9099fdb0f6df0f972b4386a63 upstream
-> >
-> 
-> I have to send pending batch of updates for -stable 4.14.
-> 
-> I take this patch and I will pass it on -stable maintainers.
-> 
-> Thanks.
-> 
-Sure, thanks for the help!
+Here's one that is seemingly the same -- enqueuing a timer to a freed
+base -- with the allocation and free being the same netdev core
+function, but the UaF trigger for it is a JBD2 transaction thing:
+https://syzkaller.appspot.com/text?tag=CrashReport&x=17dd2446280000
+No WG at all in it, but there's still the mysterious 5376 value...
+
+Jason
 
