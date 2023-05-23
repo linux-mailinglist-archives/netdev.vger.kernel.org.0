@@ -1,224 +1,259 @@
-Return-Path: <netdev+bounces-4706-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4716-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id E081D70DF8A
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:41:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D937370DFD7
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 17:02:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A499A281394
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:41:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 941B328136C
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 15:02:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4230C1F183;
-	Tue, 23 May 2023 14:41:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D85761F92C;
+	Tue, 23 May 2023 15:02:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F8816FB1
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 14:41:43 +0000 (UTC)
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2136.outbound.protection.outlook.com [40.107.212.136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495CD119
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 07:41:41 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C17CB1E524
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 15:02:21 +0000 (UTC)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2052.outbound.protection.outlook.com [40.107.237.52])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062C011A
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:02:20 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MjbJOGtsQNxLad/4ODIiRvObksEquCU3L/OqlZmdyx6NGU73qTqQX8/MvApxB4v6/zQZNOElbbuhY3YCOCYIlTLli21RVlnKUiT7k5jKx6/UV2Mx9emWmIcMETazNv721k2TbLusMori8laEjK/K3DTVUsxOu8qmwUdcPL9ZAVccfX6QcF1YXHonWWhZJUbby5wfFwjwGo/lhg2MK3iLsqGCSI+LN18OvyXbp/HokDI4+Ha8NQg6AZl57K2a3vQVNtNewFXJtQLxnrLg6eJtxWV0ZIq7tenwTQt5icvT7ALVLqLOf3u0t/uJ46EySRJGUf+AIJJtxdPTiP1kLm1PWw==
+ b=ZNOu9mOisglDxQ0fIr4SgseQsAEzYlB7XzCzfTrVmqLh2IDk3G3uapLKZUv7vks+l6t6bqNBOpu60CNAVq5e+NBcTWi5dSUv//K368aTtSB+wrs/6IUJZH3hnX3o0R7XHmBzgdJzThnSpi1z5gB+SJkKol74jz5PazmpKh3S8xFYh7HgTT/GD2Iz/xYIozzQRc1rVaXUCd4Is9squssoVLgoe5UFinXGwFji0y7+HwoZjafwOMc6E+xcFKf17/6fiiY9F/8zDIX1AVZFAqYTVBv7ljSQ508mvMVf6yc6I8BLRNjR/vUhrUEewo0z7OHvwxNT7Cl4yYBa5JWdeEn+uQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Yk1gybF2yWXA4Ucm/7+aFHXm/EzKsn0jkClI0hAmb3o=;
- b=TOl7MZisi40NUC8aQGdN5WqscWPtjVVQhQwFpzboVVPEmr4FBznYaz94adTPIqNXjQXJWvAaAS3Xd527iFQZvxlNfkGH7KOvdS1Kl0xr2mfA+amlA/SI3XF2BygXu2IEMmP7/6foS8UqkvYSHlMpdVjXRIiVXhvz2Y5TtOsAQOiy1rUwThsAY2kFax1WQ1ELv/kEdw3J61ctovDslePFLrnpaJKRtTnSgdSZWpziLkBQknXCyuNx/38OaWdt1YNOUfp/gNTLiPKmwvU3WZcVdtJb8JkLLj/9OZ84D/M1abV6iV54nyoJbJIuQwzlHeJ3WBl3bHdhz27x9KpQX7s/jA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ bh=ymMrrHekSvoKTeREa0kJCsnwTxEn4WE5DBnzVBtblms=;
+ b=EvWSuqZ6wIhm5KXdlK/aonCVDqFITkVy2NmUJ8l+OnVYKbGhGwv0QUdU9NTnS9wqtJqtRSk4GnxD7lOdT94JyH57/Oytdi94mRe3R0Lm3f8X2w0rYb8ptO/roQRJa2DN3VJdXc2hF1lATyLdz34vUyhXwFbR79NdA8zqU0w6T14qHl1yCHS409QNAH2iHOR4R73WpXeNee8eKU6MJfyBSvkGGhyjI6FZ/ylwu61zdyfe7a0C0zQrFIjt8li2AAKJfE/VhdDau2qz2+yI25sIwrQP+N0FALHIsrmn0CvltMPi4bit5s+ludjglSYxBT4F+imEJOTbHCiwlZsHSlLB+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Yk1gybF2yWXA4Ucm/7+aFHXm/EzKsn0jkClI0hAmb3o=;
- b=loHV+KR38FonpMy9r5gZRQ9WCuaK5661lk69ShmvNyR6WHhYRLBFRNDeYO30Y76Pn1iWzk+tEM9BjO5YrnLIONG2NlF55v3jFZGFFojc/Igg5hIkhvrXaHKl5gDrlznVyDdPWMavwhw1ca/2UPv3VYTDzu2fRh7Mw9YqXHm6X6o=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH0PR13MB5100.namprd13.prod.outlook.com (2603:10b6:610:111::10) with
+ bh=ymMrrHekSvoKTeREa0kJCsnwTxEn4WE5DBnzVBtblms=;
+ b=n0N0FC0O+c/IqIwMHzc60qlYkDyOHcaezZ8QPTjgqvgFiu2KwpGgfAeUATkZKAs2thTmBykbu8DDG19wyMw7qqPjcJHA6UPYTXmXiVRC+lrPaDcBxj+weowP+mkG3BPktnCSyVghaBIgj/bWEiLvzYM86QJ5gMSH6kkeaRw0rmcpKL3f8flGnsHrvUuxVai1u1KpLxrdHkTXMaiUO3WZpXLNhsFfGZm2OYJpNiM+N4y6NLkR6HYuzw/YH+wMuhWIUeOnV0Gpi50of5evuH0gKjRlAQq8bvsXk2QfgYG8sIha2HPIKBCHwxYozfonz+O+LZ2j4xcEzKXpaUoX1kgzpg==
+Received: from MW4PR03CA0156.namprd03.prod.outlook.com (2603:10b6:303:8d::11)
+ by BL0PR12MB4930.namprd12.prod.outlook.com (2603:10b6:208:1c8::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Tue, 23 May
- 2023 14:41:35 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6411.029; Tue, 23 May 2023
- 14:41:34 +0000
-Date: Tue, 23 May 2023 16:41:27 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Alexander Aring <alex.aring@gmail.com>, netdev@vger.kernel.org,
-	eric.dumazet@gmail.com
-Subject: Re: [PATCH net 1/3] ipv6: exthdrs: fix potential use-after-free in
- ipv6_rpl_srh_rcv()
-Message-ID: <ZGzQl/tuggsugbY+@corigine.com>
-References: <20230517213118.3389898-1-edumazet@google.com>
- <20230517213118.3389898-2-edumazet@google.com>
- <ZGZavH7hxiq/pkF8@corigine.com>
- <CANn89iJofjC=aqSu6X9itW8VQXTSFUOiAmBB2Zzuw-6kqTnwzA@mail.gmail.com>
- <20230522130050.6fa160f6@kernel.org>
- <ZGx9k6m6r7blT2B+@corigine.com>
- <CANn89iJ0Sdy5o8WHdTygE3UwUgHpJkdxKfeYXMN0DZBKs_f6AA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANn89iJ0Sdy5o8WHdTygE3UwUgHpJkdxKfeYXMN0DZBKs_f6AA@mail.gmail.com>
-X-ClientProxiedBy: AM0PR04CA0142.eurprd04.prod.outlook.com
- (2603:10a6:208:55::47) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.14; Tue, 23 May
+ 2023 15:02:18 +0000
+Received: from CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8d:cafe::e0) by MW4PR03CA0156.outlook.office365.com
+ (2603:10b6:303:8d::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28 via Frontend
+ Transport; Tue, 23 May 2023 15:02:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CO1NAM11FT007.mail.protection.outlook.com (10.13.174.131) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6411.30 via Frontend Transport; Tue, 23 May 2023 15:02:17 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 23 May 2023
+ 08:02:06 -0700
+Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 23 May
+ 2023 08:02:04 -0700
+References: <20230510-dcb-rewr-v1-0-83adc1f93356@microchip.com>
+ <20230510-dcb-rewr-v1-4-83adc1f93356@microchip.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Petr Machata <petrm@nvidia.com>
+To: Daniel Machon <daniel.machon@microchip.com>
+CC: <netdev@vger.kernel.org>, <dsahern@kernel.org>,
+	<stephen@networkplumber.org>, <petrm@nvidia.com>,
+	<UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next 4/9] dcb: app: modify
+ dcb_app_table_remove_replaced() for dcb-rewr reuse
+Date: Tue, 23 May 2023 16:42:16 +0200
+In-Reply-To: <20230510-dcb-rewr-v1-4-83adc1f93356@microchip.com>
+Message-ID: <87cz2r5bx1.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB5100:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8880f19c-6abb-444d-facc-08db5b9bce8a
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT007:EE_|BL0PR12MB4930:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9408fc44-6ba7-43b9-b4f9-08db5b9eb355
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	tXpOi6gU8Op70wJSzkUuaO7e3ABA5ZcJ/a2ETebCYoVnV0YIIf12rtXRs4XlgaPRTDE3YW/BJnwXDy/HB+d2EQyXovVtEESO8uTvbaKIJod0JxtUiZujZwVy5Y88fiZZX+Mp+H6JBOpP9jWfegnFwEzwcbCTUcDgd8XhRncW5QycA2xWnGj2E30S/zbd1I43gAxqv0wrJXc6Jh7zXITYZjA+5Q37R9RQWOrG/YuIjzq/ZpVTgzIEXoMJZkKHAnNzPsglPVkEHRcRmUwmdqHpnQnrPMltBJQwuBQzdbQM/rWtHtt08KPRzLLWYdDDz8+dLJQf6hq0E/arH6eqM2jnVLd2nUdRcWhOEGKdknWQEtU3XbJCxd0I3M1ARSw2nZtIy6/aYsDxkKpGsgCR5t5OJkN1qdPNM7oQNgMCtLkuZ66hpv3otyzXVdZBI9nlRpSAiS17cB8/i1SXKYMtsc6NDJr5UZKvrw5Ox/kAD6wc4PD6dowMAYoedpNudpgtrrmunZ7BDsv/BuY9w39AcAV5NC1HgfvTOp2ETbuDRh7xXg6KtPMx8KC5lnIUdet6XBg7
+	M+PqCJ6aXdHrovCGifhh8sFpsfl++u+8U5UoGjbtaFDnsbajOqnDWnCDH1OU4vxHF8+Usn/Zneo6qtbTMfXflJWcn6vZJO02Ih3OIY38sIhMAipuLsyrC9ea4KOKhpCLLQtk3XWvUU5wTci0xLKDk4bOzn34M4WJivwAmHPTuipByuL3GSnu/1lCbuNd4LM/vzaj5aBbXD4nYkg+PqzeiaSoxWagku/RVKopmuz1f2W5Umi8fexEq6jXu1WJrCZVK4IBP/JlcfdmTawhkXESadufPk4h+T8o8tX8euahn76mDhB52ZzyVr12+tFCE6lWUYNgMYMrLEAxFibUNlF5k/QPkck2ezxQCYQzeq8IJ0YCE1d2qnro/EIWjYXafQxaEyfeAZ4GgQ/M3PT/xUbmXh1spRkwz/GD/5OJobYaRaSbYcSkmQ8MYobdxLN+8WgkIBLLhf9/CUzpqoCU6JrfnbreXmSkQSa4pvaYviMl6oHISIK4rLb8F+G5Oicmb+A8mgVPs73Y164tN6yTiposZhCgI3tjux2A/v76QkBYosjiFtkF5xuPTykVU9F5U/aUHRZrdvyFc7lVF3KH3BMrtI48j1G2xWVJNvKPKlpK4JmVw95EM566OZ0VZ4QY+IoHmiPWxyNg39MQ5OYlx2BWGCg3oDO8Hn8B2KIYOuC4NIWOQ3MIO5hCaZLcHy0+g0CEN5QvuMK5uMLWHgos4yUwY/2D0w9AyHiDeHDzAN/ptcJvGnzvQminkVyB/01Vppqd
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39840400004)(366004)(346002)(396003)(136003)(451199021)(5660300002)(54906003)(8936002)(8676002)(44832011)(316002)(4326008)(6916009)(6512007)(6506007)(36756003)(186003)(66946007)(66556008)(66476007)(41300700001)(53546011)(6486002)(6666004)(86362001)(38100700002)(2616005)(478600001)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Q3JLbzVwRXk0d05XMkJYbFQrY3dOYnVYUlNnQ0lpNXNJMlozbUFFcExEWmVj?=
- =?utf-8?B?Sy8vODVURFJKamsxK0VUNWtpWEZCdXlhZFhiOGh1ZDFBOXdSRXk4Q25vM0cw?=
- =?utf-8?B?MGloMEcrUTRYSXNQUTVKc2tkalFzL1BKMVJ2ZG5RSFFvN0FDVEJRVVRsMlhy?=
- =?utf-8?B?TmZUY214ajgxWG1vaHo3WTBSTmIram1jbGpuUm5EdUJYTm15aTZ1eE9RQlVJ?=
- =?utf-8?B?RXZUN29zZFlJNkh2NWJzbXk2MFQwTXlsQnF5WS92a1NRbjV3RFpsdThZSFNv?=
- =?utf-8?B?WmRVRU5VUy9EbXR6SnVPcDRKK0l5VGVwdVQ4UkpPZlpGSWgwejJBSUVVV2dH?=
- =?utf-8?B?c3grREhqU1BNQ1YySHQzRnlpWVlycEROd2N2dXVrbk9jLzZ5cEZFTDdvSG9a?=
- =?utf-8?B?OUlTR2dDSjBWdGl3T3dLMmNiQjlTM1FLK0ZGa1VFRVpOTzJOVGVvT0J1TnhU?=
- =?utf-8?B?M1Bya084cnd4cVdCcmdrRUxFbDVlMyttVjNnODdlcThTNFhwV1dpWmNOWjM2?=
- =?utf-8?B?SlRsWU54OG5Ka05pSkZiUFNqQVI0aUtyek90RzBPOWEwT0JyRjFSVGNhdUs2?=
- =?utf-8?B?U0xLdSs1Wm1IUU9uQitiZVl1L0F3V0ovbXBvYlZXOVNqSy8reXFhK20waFBn?=
- =?utf-8?B?T05lQ09kemloWVZtOEV3QWRVOWxFNTg0cGlNSkk0Q2V6S091dWdicWtwY3RC?=
- =?utf-8?B?a2FHS2t3YkNxTy9wMERPaDZPSzhxbVdHR1VEVzFzMFdraFF3dGExY1FHa0l0?=
- =?utf-8?B?K3ZqRnFxOTRnaVZuaTZzcTR3ZDRHQ3k3RWoyNFNKT21BeEZhY1J1UzZBTVAr?=
- =?utf-8?B?MU5CdkJkYXlQRlc0bXJXOUx4TEtpYUNFR05UWit4V05aMlh0Z1dmVElCSnFP?=
- =?utf-8?B?MGVJU2FUVEZtc1F5M0UyM1hySDdZRTZVY1lOQXBBVlFFL1ZnWG8wUUVwVlVa?=
- =?utf-8?B?R1p1VWh2dW1RVmU4dERSRFFRRWtoNS9mUzVrWWRoY0RrYmJkMmc2TlV6WUU1?=
- =?utf-8?B?cVJ2YlNqQ2dZTUhIRFpaSmtGVmt6dGhXQ2xoQldsNlpIQnZQSlFZN3pUQkJ3?=
- =?utf-8?B?dDd1UlFVcXd5MXEwVXNUd1hZejhEc0tkM3AvWk00d0FOY2VpankvRTdKZ0Z3?=
- =?utf-8?B?M0tUaDMwdDdEbWRKYXA2Z1J0R0Z2d3Q1VTdaWC93NThqSmlIWHJxVmlra0NL?=
- =?utf-8?B?T1grZmZINHdTbWVtTnoyby9aMmVZdEdZREpOY2t2Um85SnpsandDN3Zubmkx?=
- =?utf-8?B?d2hVSWNIbjhHc0cxR0hvR2hnVVJBanl1SXpSYzNMNklvTWtWck9YVTkzOGhj?=
- =?utf-8?B?QzZiVGJkUWwrOVZ3Y1ZFNGdsRW83UmMwRDBQWStjeDYrR0FpSDF2d1RiWjhm?=
- =?utf-8?B?Nlo0Ukd3MmNtVXlhU3NJU05PSzRlYnRLZmdmSTlvMXp3dmEzN2xnSlo2Rmt3?=
- =?utf-8?B?eEFWWVo3eDhKSVRLRHJlSzFpRE1wVy9pcWh0bUZOeTBxOEhRK296anBCQ1ln?=
- =?utf-8?B?VFF5aUF4RTNaTEZuMDZYeUphV3JrUlB6MUJ6cHpRMlJVRUpRMGFuNFM5WEpV?=
- =?utf-8?B?UDhuWndRYnpPRXVacXRsbnZnUzFpY1REZnVqNG1BWm9QeGNCU2VxVFFmb24w?=
- =?utf-8?B?SjJud05EQ1RFRGVycEcraExJRzFNMG90ank5SnFISzNmYzdwc010Tm5lTTVL?=
- =?utf-8?B?VjI2MjIyNGNyUVQ0WlA1VWZiRTFBcVNPdGVDaDhhZ042c0xMQUFEUjB1dW5u?=
- =?utf-8?B?Z3dlVENta25nZHdVR2lNZGU4ZFowdHRlTHFDQjRTdERhbm9CeURSUXlGMk1W?=
- =?utf-8?B?emVUN3gvaHRkNFFYZlBiUU5MRVg3UmpNcjJ5VThqaEwrN0pmdTlLSk01MGtW?=
- =?utf-8?B?N3FvVWdwVmxvdnhraGlvZjRjTk1YTHpHQTMxTnVtWUlNaHVoRnQ1OGhUNkli?=
- =?utf-8?B?MnRrSlM1cVVuZ0VDbGJVcWpKZjNSZ3UrV2l6Z3pxOUl2ZmN4bFI0N1F2aEVB?=
- =?utf-8?B?WmpjNjdBNjBvSWZhcVFiZWJrc3piY3MrbCtoNlk5QU12aHYwSUhIQ0RHbTR3?=
- =?utf-8?B?QVo5RUpyZjNjdXhZSHROU2gzNEhrSHk1VmpYYSs1ZXRaM05sUXhZODZOT2p3?=
- =?utf-8?B?dXh3cXlNUko3WUZkNzlUL0hwMkZUdHJwTXlqQlZOaTZJUUQwaEY0elZGWVdM?=
- =?utf-8?B?ZmpWQ0NWbU9rMW01eTlycjg5R2h2am12TVV6bWUxZWE5VFFKRHg0TGs0cFBl?=
- =?utf-8?B?eFhKS3N6NjNCeXdaV2dvVXhLcEN3PT0=?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8880f19c-6abb-444d-facc-08db5b9bce8a
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 14:41:34.8281
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(39860400002)(346002)(376002)(451199021)(40470700004)(46966006)(36840700001)(8676002)(8936002)(5660300002)(36860700001)(82310400005)(47076005)(83380400001)(16526019)(186003)(7636003)(26005)(336012)(426003)(86362001)(2616005)(356005)(82740400003)(40460700003)(41300700001)(40480700001)(6666004)(70586007)(70206006)(6916009)(4326008)(316002)(36756003)(478600001)(54906003)(2906002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 15:02:17.3662
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fMiM4MPPoi7wYmwVs7Y1ae0tULRWddRoqNMcry8+MhjNBbBbByDAiHqR9DMnNErHKb7p93tQxxfT+RPSe5uRb6p/3iOpevfCeFVUkUJ2cLk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB5100
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9408fc44-6ba7-43b9-b4f9-08db5b9eb355
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4930
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 23, 2023 at 12:45:34PM +0200, Eric Dumazet wrote:
-> On Tue, May 23, 2023 at 10:47 AM Simon Horman <simon.horman@corigine.com> wrote:
-> >
-> > On Mon, May 22, 2023 at 01:00:50PM -0700, Jakub Kicinski wrote:
-> > > On Sun, 21 May 2023 20:22:16 +0200 Eric Dumazet wrote:
-> > > > On Thu, May 18, 2023 at 7:05 PM Simon Horman <simon.horman@corigine.com> wrote:
-> > > > > Not far below this line there is a call to pskb_pull():
-> > > > >
-> > > > >                 if (hdr->nexthdr == NEXTHDR_IPV6) {
-> > > > >                         int offset = (hdr->hdrlen + 1) << 3;
-> > > > >
-> > > > >                         skb_postpull_rcsum(skb, skb_network_header(skb),
-> > > > >                                            skb_network_header_len(skb));
-> > > > >
-> > > > >                         if (!pskb_pull(skb, offset)) {
-> > > > >                                 kfree_skb(skb);
-> > > > >                                 return -1;
-> > > > >                         }
-> > > > >                         skb_postpull_rcsum(skb, skb_transport_header(skb),
-> > > > >                                            offset);
-> > > > >
-> > > > > Should hdr be reloaded after the call to pskb_pull() too?
-> > > >
-> > > > I do not think so, because @hdr is not used between this pskb_pull()
-> > > > and the return -1:
-> > > >
-> > > >        if (hdr->nexthdr == NEXTHDR_IPV6) {
-> > > >             int offset = (hdr->hdrlen + 1) << 3;
-> > > >
-> > > >             skb_postpull_rcsum(skb, skb_network_header(skb),
-> > > >                        skb_network_header_len(skb));
-> > > >
-> > > >             if (!pskb_pull(skb, offset)) {
-> > > >                 kfree_skb(skb);
-> > > >                 return -1;
-> > > >             }
-> > > >             skb_postpull_rcsum(skb, skb_transport_header(skb),
-> > > >                        offset);
-> > > >
-> > > >             skb_reset_network_header(skb);
-> > > >             skb_reset_transport_header(skb);
-> > > >             skb->encapsulation = 0;
-> > > >
-> > > >             __skb_tunnel_rx(skb, skb->dev, net);
-> > > >
-> > > >             netif_rx(skb);
-> > > >             return -1;
-> > > >         }
-> > >
-> > > Hum, there's very similar code in ipv6_srh_rcv() (a different function
-> > > but with a very similar name) which calls pskb_pull() and then checks
-> > > if hdr->nexthdr is v4. I'm guessing that's the one Simon was referring
-> > > to.
-> >
-> > Yes, that does seem to be the case.
-> 
-> I think ipv6_srh_rcv() is fine.
-> 
-> The "goto looped_back" does not need to reload hdr.
-> 
-> The only point where skb->head can change is at the pskb_expand_head() call,
-> which is properly followed by:
-> 
-> hdr = (struct ipv6_sr_hdr *)skb_transport_header(skb);
-> 
-> I will send a V2, because this first patch in the series can also make
-> ipv6_rpl_srh_rcv() similar.
-> (No need to move around the pskb_may_pull(skb, sizeof(*hdr)
-> 
 
-Hi Eric,
+Daniel Machon <daniel.machon@microchip.com> writes:
 
-Thanks for the analysis.
-And sorry for the noise on this one.
+> When doing a replace command, entries are checked against selector and
+> protocol. Rewrite requires the check to be against selector and
+> priority.
+>
+> Modify the existing dcb_app_table_remove_replace function for dcb-rewr
+> reuse, by using the newly introduced dcbnl attribute in the
+> dcb_app_table struct.
+>
+> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+> ---
+>  dcb/dcb_app.c | 26 +++++++++++++++++++-------
+>  1 file changed, 19 insertions(+), 7 deletions(-)
+>
+> diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
+> index 9bb64f32e12e..23d6bb2a0013 100644
+> --- a/dcb/dcb_app.c
+> +++ b/dcb/dcb_app.c
+> @@ -160,15 +160,27 @@ void dcb_app_table_remove_replaced(struct dcb_app_table *a,
+>  		for (ib = 0; ib < b->n_apps; ib++) {
+>  			const struct dcb_app *ab = &b->apps[ib];
+>  
+> -			if (aa->selector == ab->selector &&
+> -			    aa->protocol == ab->protocol)
+> -				present = true;
+> -			else
+> +			if (aa->selector != ab->selector)
+>  				continue;
+>  
+> -			if (aa->priority == ab->priority) {
+> -				found = true;
+> -				break;
+> +			if (a->attr == DCB_ATTR_IEEE_APP_TABLE) {
+> +				if (aa->protocol == ab->protocol)
+> +					present = true;
+> +				else
+> +					continue;
+> +				if (aa->priority == ab->priority) {
+> +					found = true;
+> +					break;
+> +				}
+> +			} else {
+> +				if (aa->priority == ab->priority)
+> +					present = true;
+> +				else
+> +					continue;
+> +				if (aa->protocol == ab->protocol) {
+> +					found = true;
+> +					break;
+> +				}
+>  			}
+>  		}
 
+Same point about the attribute dispatch. How about this? (Not tested
+though.)
 
+	static bool dcb_app_pid_eq(const struct dcb_app *aa, const struct dcb_app *ab)
+	{
+		return aa->selector == ab->selector &&
+		       aa->protocol == ab->protocol;
+	}
+
+	static bool dcb_app_prio_eq(const struct dcb_app *aa, const struct dcb_app *ab)
+	{
+		return aa->selector == ab->selector &&
+		       aa->priority == ab->priority;
+	}
+
+	static void __dcb_app_table_remove_replaced(struct dcb_app_table *a,
+						    const struct dcb_app_table *b,
+						    bool (*key_eq)(const struct dcb_app *aa,
+								const struct dcb_app *ab),
+						    bool (*val_eq)(const struct dcb_app *aa,
+								const struct dcb_app *ab))
+	{
+		size_t ia, ja;
+		size_t ib;
+
+		for (ia = 0, ja = 0; ia < a->n_apps; ia++) {
+			struct dcb_app *aa = &a->apps[ia];
+			bool present = false;
+			bool found = false;
+
+			for (ib = 0; ib < b->n_apps; ib++) {
+				const struct dcb_app *ab = &b->apps[ib];
+
+				if (key_eq(aa, ab))
+					present = true;
+				else
+					continue;
+
+				if (val_eq(aa, ab)) {
+					found = true;
+					break;
+				}
+			}
+
+			/* Entries that remain in A will be removed, so keep in the
+                         * table only APP entries whose sel/pid is mentioned in B,
+			 * but that do not have the full sel/pid/prio match.
+			 */
+			if (present && !found)
+				a->apps[ja++] = *aa;
+		}
+
+		a->n_apps = ja;
+	}
+
+	void dcb_app_table_remove_replaced(struct dcb_app_table *a,
+					const struct dcb_app_table *b)
+	{
+		__dcb_app_table_remove_replaced(a, b, dcb_app_pid_eq, dcb_app_prio_eq);
+	}
+
+	void dcb_rwr_table_remove_replaced(struct dcb_app_table *a,
+					const struct dcb_app_table *b)
+	{
+		__dcb_app_table_remove_replaced(a, b, dcb_app_prio_eq, dcb_app_pid_eq);
+	}
+
+Alternatively have key / value extractor callbacks and compare those
+instead of directly priority and protocol.
+
+And actually now that I think about it more, a key_eq / get_key callback
+is all we need. Instead of val_eq / get_val, we can just compare the
+full app. We know the key matches already, so whatever it actually is,
+it will not prevent the second match.
+
+Dunno. I just don't want the attribute field become a polymorphic type
+tag of the structure. DCB is using these callbacks quite a bit all over
+the place, so code like this will be right at home.
+
+I was actually looking at dcb_app_table_remove_existing(), which is
+tantalizingly close to being a special case of the above where key_eq
+just always returns true and val_eq compares all fields. But alas for
+empty tables it would do the wrong thing.
 
