@@ -1,133 +1,198 @@
-Return-Path: <netdev+bounces-4555-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4556-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BF66570D36F
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:55:56 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3C6F570D373
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:57:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7AE7F28126F
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:55:55 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0BA251C20C77
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:56:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E43231B90E;
-	Tue, 23 May 2023 05:55:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8652D1B911;
+	Tue, 23 May 2023 05:56:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7C481B8F1
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:55:53 +0000 (UTC)
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B98D120;
-	Mon, 22 May 2023 22:55:49 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-969f90d71d4so1044414066b.3;
-        Mon, 22 May 2023 22:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684821348; x=1687413348;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EQwofF3LF6+OTAfuotFjpahnRo9PFTpogdxKYoNj2Bs=;
-        b=pQQYfzfWauHT8cHnTGTLfwbXA5x42YaldGgX0ySCQpej15JE3Bn/rai2Gmo5M/t0WR
-         NSZZKBhIlNXU0pM4Rbdizl5fBcAa5kirKQu2aJjdnzCanKS6nH9m6oiFao1SxMxPOrwi
-         17Ff6Y22ez4/R96wXaRk45h0XylCMyxFsvRbwt5efawppOGoo7ei1aJshbr7JtgJe9IS
-         UtwWttRtDk4yKhbEp/5uj4mkkNb9tsA7RtCvlTNLQxtAcT3XUkMF/MYzoeEjCef6Xw7Y
-         qUE7acdS+aq0d/DTQtWQ0wraqfNZb7IXqf/NOeQ94J/VxyzYghbJaFEh3/yPyspZkZoD
-         yZdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684821348; x=1687413348;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EQwofF3LF6+OTAfuotFjpahnRo9PFTpogdxKYoNj2Bs=;
-        b=ipy3lCW/4IFEAOzBJSjMI0eQr1DPmAmRVLZDmYukwgoiLsnC8Dn86DNf5N4GunD2PP
-         GxGThy/wYY1maymeNS2W5ocBh1uPix0c19aoCBvQUM/yujbn82P+bItDOneDZx1202ew
-         pPLc35eXcBUOi+eIvW3/RyjtL57LerKjl2ArxF/6ZmIuyNSST0BWV2xXB5Srkey+xfB9
-         O2VUnTU2vBDn1dcLiMOgH/hgl2y5RAMGv32dQF1TYTVlsbHYKz90zNIGx1eCq8EwkWMc
-         +MnfrC212hdzX8GLljgxqYn7G1nQHgIiMSgUBbm+bcAlDqy8e5HbJG8rdE9YnUfvhNsM
-         7a0Q==
-X-Gm-Message-State: AC+VfDyO82BPJHhbnRhp5rI2OAFrLCuptXuZUS6vnuz8Qww14x5Rrwp5
-	XAg30HKmPKt5M9ML3YqtpZH+YJ07f+4wSPMUe+4=
-X-Google-Smtp-Source: ACHHUZ6DL6gf5i6CwxpDotwtHQv/Gscf2+KzxFqKf6AvnuiDdBaC9/sgTjpfYN1zLrLAsQjpXq8tidE4pyBpBLTJlpg=
-X-Received: by 2002:a17:907:2da7:b0:970:10a9:3ca8 with SMTP id
- gt39-20020a1709072da700b0097010a93ca8mr3660981ejc.22.1684821347638; Mon, 22
- May 2023 22:55:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D5A91B8F1
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:56:58 +0000 (UTC)
+Received: from out-22.mta1.migadu.com (out-22.mta1.migadu.com [IPv6:2001:41d0:203:375::16])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3168F118
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 22:56:56 -0700 (PDT)
+Message-ID: <e2a3a27e-9c12-f180-4bb6-1906aa1a1844@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1684821414;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=m07o5exswnKt8yK6ZsQ/L7uRf4eL52Y1KwKINSNdTZ0=;
+	b=i36xmLc4j5aax91r2DKNDfB//n/KSwCav6OEvS8EKfaP874Un9M5dgmWfNHOQmWeCdcMND
+	P/4w7yrxHVuBzGvq0SJAiEk802KFLYnP3eNGX/YhPMQJwDQw1k9Wv5GYWtgGrbzZRkwghz
+	fi1P8D7SUQHFIDl5y8kgk5mf3sLzU5k=
+Date: Tue, 23 May 2023 13:56:51 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <000000000000a589d005fc52ee2d@google.com> <13528f21-0f36-4fa2-d34f-eecee6720bc1@linux.dev>
- <CAD=hENeCo=-Pk9TWnqxOWP9Pg-JXWk6n6J19gvPo9_h7drROGg@mail.gmail.com>
- <CAD=hENdoyBZaRz7aTy4mX5Kq1OYmWabx2vx8vPH0gQfHO1grzw@mail.gmail.com>
- <0d515e17-5386-61ba-8278-500620969497@linux.dev> <CAD=hENcqa0jQvLjuXw9bMtivCkKpQ9=1e0-y-1oxL23OLjutuw@mail.gmail.com>
- <63b9f740-3762-2ec0-9750-eb8709c886a5@linux.dev>
-In-Reply-To: <63b9f740-3762-2ec0-9750-eb8709c886a5@linux.dev>
-From: Zhu Yanjun <zyjzyj2000@gmail.com>
-Date: Tue, 23 May 2023 13:55:34 +0800
-Message-ID: <CAD=hENfRW7stx0c_uTh6KXwLwovv3wA9q-hKA6Xz6UNcEPYcNA@mail.gmail.com>
 Subject: Re: [syzbot] [rdma?] INFO: trying to register non-static key in
  skb_dequeue (2)
-To: Guoqing Jiang <guoqing.jiang@linux.dev>
-Cc: syzbot <syzbot+eba589d8f49c73d356da@syzkaller.appspotmail.com>, jgg@ziepe.ca, 
-	leon@kernel.org, linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org, 
-	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Language: en-US
+To: Zhu Yanjun <zyjzyj2000@gmail.com>
+Cc: syzbot <syzbot+eba589d8f49c73d356da@syzkaller.appspotmail.com>,
+ jgg@ziepe.ca, leon@kernel.org, linux-kernel@vger.kernel.org,
+ linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+ syzkaller-bugs@googlegroups.com
+References: <000000000000a589d005fc52ee2d@google.com>
+ <13528f21-0f36-4fa2-d34f-eecee6720bc1@linux.dev>
+ <CAD=hENeCo=-Pk9TWnqxOWP9Pg-JXWk6n6J19gvPo9_h7drROGg@mail.gmail.com>
+ <CAD=hENdoyBZaRz7aTy4mX5Kq1OYmWabx2vx8vPH0gQfHO1grzw@mail.gmail.com>
+ <0d515e17-5386-61ba-8278-500620969497@linux.dev>
+ <CAD=hENcqa0jQvLjuXw9bMtivCkKpQ9=1e0-y-1oxL23OLjutuw@mail.gmail.com>
+ <CAD=hENdXdqfcxjNrNnP8CoaDy6sUJ4g5uxcWE0mj3HtNohDUzw@mail.gmail.com>
+ <CAD=hENda4MxgEsgT-GUhYHH66m79wi8yxBQS8CYnxc_DsQKGwg@mail.gmail.com>
+ <5b6b8431-92c7-62df-299b-28f3a5f61d5f@linux.dev>
+ <CAD=hENc72B+gLLd_Xn7w8bd_qDw=mFd5sC0RKEsHpNA=85a9KA@mail.gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Guoqing Jiang <guoqing.jiang@linux.dev>
+In-Reply-To: <CAD=hENc72B+gLLd_Xn7w8bd_qDw=mFd5sC0RKEsHpNA=85a9KA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 23, 2023 at 1:50=E2=80=AFPM Guoqing Jiang <guoqing.jiang@linux.=
-dev> wrote:
->
->
->
-> On 5/23/23 12:29, Zhu Yanjun wrote:
-> > On Tue, May 23, 2023 at 12:10=E2=80=AFPM Guoqing Jiang <guoqing.jiang@l=
-inux.dev> wrote:
-> >>
-> >>
-> >> On 5/23/23 12:02, Zhu Yanjun wrote:
-> >>> On Tue, May 23, 2023 at 11:47=E2=80=AFAM Zhu Yanjun <zyjzyj2000@gmail=
-.com> wrote:
-> >>>> On Tue, May 23, 2023 at 10:26=E2=80=AFAM Guoqing Jiang <guoqing.jian=
-g@linux.dev> wrote:
-> >>>>>
-> >>>>> On 5/23/23 10:13, syzbot wrote:
-> >>>>>> Hello,
-> >>>>>>
-> >>>>>> syzbot tried to test the proposed patch but the build/boot failed:
-> >>>>>>
-> >>>>>> failed to apply patch:
-> >>>>>> checking file drivers/infiniband/sw/rxe/rxe_qp.c
-> >>>>>> patch: **** unexpected end of file in patch
-> >>>> This is not the root cause. The fix is not good.
-> >>> This problem is about "INFO: trying to register non-static key. The
-> >>> code is fine but needs lockdep annotation, or maybe"
-> > This warning is from "lock is not initialized". This is a
-> > use-before-initialized problem.
->
-> Right, and it also applies to qp->sq.queue which is set to NULL while do
-> cleanup
-> still de-reference it.
->
-> > The correct fix is to initialize the lock that is complained before it =
-is used.
->
-> The thing is it can't be initialized due to error, so I guess you want
-> to always init them
-> even for error cases.
 
-The complaining is about "spinlock is not initialized".
 
-Zhu Yanjun
-
+On 5/23/23 13:52, Zhu Yanjun wrote:
+> On Tue, May 23, 2023 at 1:44 PM Guoqing Jiang <guoqing.jiang@linux.dev> wrote:
+>>
+>>
+>> On 5/23/23 13:18, Zhu Yanjun wrote:
+>>> On Tue, May 23, 2023 at 1:08 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
+>>>> On Tue, May 23, 2023 at 12:29 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
+>>>>> On Tue, May 23, 2023 at 12:10 PM Guoqing Jiang <guoqing.jiang@linux.dev> wrote:
+>>>>>>
+>>>>>> On 5/23/23 12:02, Zhu Yanjun wrote:
+>>>>>>> On Tue, May 23, 2023 at 11:47 AM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
+>>>>>>>> On Tue, May 23, 2023 at 10:26 AM Guoqing Jiang <guoqing.jiang@linux.dev> wrote:
+>>>>>>>>> On 5/23/23 10:13, syzbot wrote:
+>>>>>>>>>> Hello,
+>>>>>>>>>>
+>>>>>>>>>> syzbot tried to test the proposed patch but the build/boot failed:
+>>>>>>>>>>
+>>>>>>>>>> failed to apply patch:
+>>>>>>>>>> checking file drivers/infiniband/sw/rxe/rxe_qp.c
+>>>>>>>>>> patch: **** unexpected end of file in patch
+>>>>>>>> This is not the root cause. The fix is not good.
+>>>>>>> This problem is about "INFO: trying to register non-static key. The
+>>>>>>> code is fine but needs lockdep annotation, or maybe"
+>>>>> This warning is from "lock is not initialized". This is a
+>>>>> use-before-initialized problem.
+>>>>> The correct fix is to initialize the lock that is complained before it is used.
+>>>>>
+>>>>> Zhu Yanjun
+>>>> Based on the call trace, the followings are the order of this call trace.
+>>>>
+>>>> 291 /* called by the create qp verb */
+>>>> 292 int rxe_qp_from_init(struct rxe_dev *rxe, struct rxe_qp *qp,
+>>>> struct rxe_pd *pd,
+>>>> 297 {
+>>>>               ...
+>>>> 317         rxe_qp_init_misc(rxe, qp, init);
+>>>>               ...
+>>>> 322
+>>>> 323         err = rxe_qp_init_resp(rxe, qp, init, udata, uresp);
+>>>> 324         if (err)
+>>>> 325                 goto err2;   <--- error
+>>>>
+>>>>               ...
+>>>>
+>>>> 334 err2:
+>>>> 335         rxe_queue_cleanup(qp->sq.queue); <--- Goto here
+>>>> 336         qp->sq.queue = NULL;
+>>>>
+>>>> In rxe_qp_init_resp, the error occurs before skb_queue_head_init.
+>>>> So this call trace appeared.
+>>> 250 static int rxe_qp_init_resp(struct rxe_dev *rxe, struct rxe_qp *qp,
+>>> 254 {
+>>>                           ...
+>>> 264
+>>> 265                 type = QUEUE_TYPE_FROM_CLIENT;
+>>> 266                 qp->rq.queue = rxe_queue_init(rxe, &qp->rq.max_wr,
+>>> 267                                         wqe_size, type);
+>>> 268                 if (!qp->rq.queue)
+>>> 269                         return -ENOMEM;    <---Error here
+>>> 270
+>>>
+>>> ...
+>>>
+>>> 282         skb_queue_head_init(&qp->resp_pkts); <-this is not called.
+>>> ...
+>>> This will make spin_lock of resp_pkts is used before initialized.
+>> IMHO, the above is same as
+>>
+>>> Which is caused by  "skb_queue_head_init(&qp->resp_pkts)" is not called
+>>> given rxe_qp_init_resp returns error, but the cleanup still trigger the
+>>> chain.
+>>>
+>>> rxe_qp_do_cleanup -> rxe_completer -> drain_resp_pkts ->
+>>> skb_dequeue(&qp->resp_pkts)
+>> my previous analysis. If not, could you provide another better way to
+>> fix it?
+> Move the initialization to the beginning. This can fix this problem.
+> See below:
 >
-> Guoqing
+> "
+> diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c
+> b/drivers/infiniband/sw/rxe/rxe_qp.c
+> index c5451a4488ca..22ef6188d7b1 100644
+> --- a/drivers/infiniband/sw/rxe/rxe_qp.c
+> +++ b/drivers/infiniband/sw/rxe/rxe_qp.c
+> @@ -176,6 +176,9 @@ static void rxe_qp_init_misc(struct rxe_dev *rxe,
+> struct rxe_qp *qp,
+>          spin_lock_init(&qp->rq.producer_lock);
+>          spin_lock_init(&qp->rq.consumer_lock);
+>
+> +       skb_queue_head_init(&qp->req_pkts);
+> +       skb_queue_head_init(&qp->resp_pkts);
+> +
+>          atomic_set(&qp->ssn, 0);
+>          atomic_set(&qp->skb_out, 0);
+>   }
+> @@ -234,8 +237,6 @@ static int rxe_qp_init_req(struct rxe_dev *rxe,
+> struct rxe_qp *qp,
+>          qp->req.opcode          = -1;
+>          qp->comp.opcode         = -1;
+>
+> -       skb_queue_head_init(&qp->req_pkts);
+> -
+>          rxe_init_task(&qp->req.task, qp, rxe_requester);
+>          rxe_init_task(&qp->comp.task, qp, rxe_completer);
+>
+> @@ -279,8 +280,6 @@ static int rxe_qp_init_resp(struct rxe_dev *rxe,
+> struct rxe_qp *qp,
+>                  }
+>          }
+>
+> -       skb_queue_head_init(&qp->resp_pkts);
+> -
+>          rxe_init_task(&qp->resp.task, qp, rxe_responder);
+>
+>          qp->resp.opcode         = OPCODE_NONE;
+> "
+
+It is weird to me that init them in init_misc instead of init_req/resp, 
+given they
+are dedicated/used for the different purpose. But just my 0.02$.
+
+Guoqing
 
