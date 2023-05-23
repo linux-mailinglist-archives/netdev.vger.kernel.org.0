@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-4565-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4566-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A0EDC70D3D0
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 08:19:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4F1AD70D3D8
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 08:19:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 558F71C20CCD
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 06:18:57 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 193A11C20CAF
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 06:19:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 582C11C748;
-	Tue, 23 May 2023 06:18:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A4D01C74B;
+	Tue, 23 May 2023 06:19:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AF361B919
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 06:18:57 +0000 (UTC)
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE0C132;
-	Mon, 22 May 2023 23:18:55 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id af79cd13be357-75b2726f04cso27069285a.3;
-        Mon, 22 May 2023 23:18:55 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E1901B908
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 06:19:56 +0000 (UTC)
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D152F119;
+	Mon, 22 May 2023 23:19:54 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id 6a1803df08f44-6238386eb9cso59272966d6.1;
+        Mon, 22 May 2023 23:19:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684822735; x=1687414735;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dQ6xsxSTLkO7Rnk+6PIH2xki1IufV5f5DazCokcyAas=;
-        b=n6t6P+54GlaB9B5/WU/pRGmMpbfpI0fr8wHKLkADwGEsXnz/LAK3aHaW292ADV/9oI
-         VzK4vXGh86UB5e0Eug1llKrjOV8TaCZPtdkU43IGcTKT0/WlP2WtHfW7dc8uwHCI18M3
-         cKguZUDZy1q5Tf/LWExYcQw7DGGU+Gk1NrDhcF34fzloKmNTyfBaVpKkQLzKCJgtTPKO
-         Lp6++xr4xEuD3FwEvlRB60RgW5zORZ8F053IOAm9ezZiI9RmvmXYk6CKkXerVICY0ZvO
-         6o6zlucVX0cXHnOfdctWSAYE39qc6OqzvE9WoTqDl1b1MlK3e8rxkjjZQQNFZ6G60UyY
-         y3pA==
+        d=gmail.com; s=20221208; t=1684822794; x=1687414794;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9o/AkYCvO3tV2BU0V8GNdESZ1hmHFfJ/JAYYnq2G7Ts=;
+        b=ltSNDHag4sBJXgnPrLe1CebvaUqaao+DR+zTyCo5AHases8sTOQVIaeH85q1QXnnAY
+         lQw9vk7fkxQB7hrKCsNxtdOX+J9HbTj13D7yi4YjM3s+ZmhpaOSygpboeXXoyboMMK9v
+         DU0++lebgnMKXewdizqARwdvl5VQSujfrfDX1D/6Ka1h/IPNHjbP045rveIPdQ0xat//
+         Qb9F0P3aECjUjlNGFDZ9o5MqW62U6ezv9UB4cl20RNuVouXEA7ZcyP6Fc+5fyWWHmJFb
+         742h42pMC68PBgRJWiB7RLMXIcTPuENNXj4lXCCdUa0rZCXki+JwsBhCq6LewsvB8uBB
+         27Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684822735; x=1687414735;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dQ6xsxSTLkO7Rnk+6PIH2xki1IufV5f5DazCokcyAas=;
-        b=iiGvU5JHVsaY1XbErAqKM+Vhbjh8FKq/a/Q6QzmITUSeklaFEKxtFJaCmXBgAqWjdd
-         oC5zJ1Inuv8V9g5WMnKtTVnVR3xNWFqN9blI6vwSEsbySm/Jy8lpjtcsmvo5ZszrHqMs
-         PqXKV6TwUKOWqnkahw6wan+bRkuqrJ98LPZsqEB0Zt8T78IztUQcrO3fqUmmicLjb8/9
-         ZRyxiC8vPVIkRTFHwGlDGtrMErU93U4Jwy+noJcUdJxb9Alt6FIIbrJp0QuMia/7KPAv
-         TYKtu5EZLwT7KhHs83tYdhNbeAJEZ7+BkHcUO6ZboJJM1bFKrU7DVYstCwOk2S9laAS7
-         5PaA==
-X-Gm-Message-State: AC+VfDycW6FxgnKGlPnhZ4qh2KPosdEgr2UbseQ3hzEfC3//ekRfgV0R
-	QqX72g+TRTJjgPZ40zqFuw==
-X-Google-Smtp-Source: ACHHUZ6TV9bylKcqnTq63+IkSlhlA4RaCxQflGA5AYGRd9iZwXIb4kNmG+zlRMTqfSdu9mgXfL6hUA==
-X-Received: by 2002:a05:620a:1a10:b0:75b:23a1:8e7a with SMTP id bk16-20020a05620a1a1000b0075b23a18e7amr3301687qkb.75.1684822734802;
-        Mon, 22 May 2023 23:18:54 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684822794; x=1687414794;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9o/AkYCvO3tV2BU0V8GNdESZ1hmHFfJ/JAYYnq2G7Ts=;
+        b=HmFgx9fVRVIwmZ/BH3feVS6xSwLhp/NJkvToI/URFNlqB1gqQmmnJqRh+SX0+obN+L
+         yyFDTScUbeed5t8S7vdaoD4oDHZ42e5ABWmDfT4o41y/KjrAVRk/MQL13a/JPn4ba+ra
+         Da0AUksm5Iss8ppPjvRV+l+PeE+cgwIH+ADLJLIFE4joKMPLJ7YrrWso+Rwoayl/vQ5/
+         /RFnNVGY7pMY8MKEDI9/OYFFSV+Ozx5h9ZrYCZUjSpe8FtAe749m8+0Mhn3zPQefYxhM
+         ImBSSm3GnGmN5qyAZre/idpPeE5wnZyhyZdXU89PpPfx/V9WbRKbtSRBqVjyh+S9pRnK
+         6sUA==
+X-Gm-Message-State: AC+VfDwS2ml/hQ3Br7e72BoFFhgAZ4rJrPMkN1Uq8y2x2vhe9V9bRyR5
+	NHxGpgbPGUdtafzI9cmiyw==
+X-Google-Smtp-Source: ACHHUZ5/l+u9V0ZEoDbPOfnGgrn6JxSlQeOvcewZ/8UgiMcfjyKlE3y3IUjhKeYxNZqgrMWLcZcq6w==
+X-Received: by 2002:a05:6214:29e9:b0:625:8b9a:b426 with SMTP id jv9-20020a05621429e900b006258b9ab426mr3639169qvb.46.1684822793931;
+        Mon, 22 May 2023 23:19:53 -0700 (PDT)
 Received: from C02FL77VMD6R.bytedance.net ([2600:1700:d860:12b0:18c1:dc19:5e29:e9a0])
-        by smtp.gmail.com with ESMTPSA id x19-20020ae9f813000000b00757882b0224sm2281393qkh.49.2023.05.22.23.18.52
+        by smtp.gmail.com with ESMTPSA id ev18-20020a0562140a9200b0062363e7dac5sm2502043qvb.104.2023.05.22.23.19.51
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 May 2023 23:18:54 -0700 (PDT)
+        Mon, 22 May 2023 23:19:53 -0700 (PDT)
 From: Peilin Ye <yepeilin.cs@gmail.com>
 X-Google-Original-From: Peilin Ye <peilin.ye@bytedance.com>
 To: "David S. Miller" <davem@davemloft.net>,
@@ -64,7 +65,7 @@ To: "David S. Miller" <davem@davemloft.net>,
 	Jamal Hadi Salim <jhs@mojatatu.com>,
 	Cong Wang <xiyou.wangcong@gmail.com>,
 	Jiri Pirko <jiri@resnulli.us>
-Cc: Peilin Ye <peilin.ye@bytedance.com>,
+Cc: Peilin Ye <yepeilin.cs@gmail.com>,
 	Daniel Borkmann <daniel@iogearbox.net>,
 	John Fastabend <john.fastabend@gmail.com>,
 	Vlad Buslov <vladbu@mellanox.com>,
@@ -73,11 +74,13 @@ Cc: Peilin Ye <peilin.ye@bytedance.com>,
 	netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Cong Wang <cong.wang@bytedance.com>,
-	Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH v3 net 0/6] net/sched: Fixes for sch_ingress and sch_clsact
-Date: Mon, 22 May 2023 23:18:21 -0700
-Message-Id: <cover.1684821877.git.peilin.ye@bytedance.com>
+	Peilin Ye <peilin.ye@bytedance.com>
+Subject: [PATCH v3 net 1/6] net/sched: sch_ingress: Only create under TC_H_INGRESS
+Date: Mon, 22 May 2023 23:19:44 -0700
+Message-Id: <72c5a2b8ae1c3301175419a18da18f186818fa7c.1684821877.git.peilin.ye@bytedance.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <cover.1684821877.git.peilin.ye@bytedance.com>
+References: <cover.1684821877.git.peilin.ye@bytedance.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -87,57 +90,46 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Link to v2: https://lore.kernel.org/r/cover.1684796705.git.peilin.ye@bytedance.com/
-Link to v1: https://lore.kernel.org/r/cover.1683326865.git.peilin.ye@bytedance.com/
+From: Peilin Ye <yepeilin.cs@gmail.com>
 
-Hi all,
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-These are v3 fixes for ingress and clsact Qdiscs.
+ingress Qdiscs are only supposed to be created under TC_H_INGRESS.
+Similar to mq_init(), return -EOPNOTSUPP if 'parent' is not
+TC_H_INGRESS.
 
-Change in v3:
-  - add in-body From: tags
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com
+Closes: https://lore.kernel.org/r/0000000000006cf87705f79acf1a@google.com/
+Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+---
+change in v3:
+  - add in-body From: tag
 
-Changes in v2:
-  - for [1-5/6], include tags from Jamal and Pedro
-  - for [6/6], as suggested by Vlad, replay the request if the current
-    Qdisc has any ongoing (RTNL-unlocked) filter requests, instead of
-    returning -EBUSY to the user
-  - use Closes: tag as warned by checkpatch
+ net/sched/sch_ingress.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-[1,2/6]: ingress and clsact Qdiscs should only be created under ffff:fff1
-  [3/6]: Under ffff:fff1, only create ingress and clsact Qdiscs (for now,
-         at least)
-  [4/6]: After creating ingress and clsact Qdiscs under ffff:fff1, do not
-         graft them again to anywhere else (e.g. as the inner Qdisc of a
-         TBF Qdisc)
-  [5/6]: Prepare for [6/6], do not reuse that for-loop in qdisc_graft()
-         for ingress and clsact Qdiscs
-  [6/6]: Fix use-after-free [a] in mini_qdisc_pair_swap()
-
-[a] https://syzkaller.appspot.com/bug?extid=b53a9c0d1ea4ad62da8b
-
-Thanks,
-Peilin Ye (6):
-  net/sched: sch_ingress: Only create under TC_H_INGRESS
-  net/sched: sch_clsact: Only create under TC_H_CLSACT
-  net/sched: Reserve TC_H_INGRESS (TC_H_CLSACT) for ingress (clsact)
-    Qdiscs
-  net/sched: Prohibit regrafting ingress or clsact Qdiscs
-  net/sched: Refactor qdisc_graft() for ingress and clsact Qdiscs
-  net/sched: qdisc_destroy() old ingress and clsact Qdiscs before
-    grafting
-
- include/net/sch_generic.h |  8 ++++++
- net/sched/sch_api.c       | 60 +++++++++++++++++++++++++++++----------
- net/sched/sch_generic.c   | 14 +++++++--
- net/sched/sch_ingress.c   | 10 +++++--
- 4 files changed, 72 insertions(+), 20 deletions(-)
-
+diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
+index 84838128b9c5..3d71f7a3b4ad 100644
+--- a/net/sched/sch_ingress.c
++++ b/net/sched/sch_ingress.c
+@@ -80,6 +80,9 @@ static int ingress_init(struct Qdisc *sch, struct nlattr *opt,
+ 	struct net_device *dev = qdisc_dev(sch);
+ 	int err;
+ 
++	if (sch->parent != TC_H_INGRESS)
++		return -EOPNOTSUPP;
++
+ 	net_inc_ingress_queue();
+ 
+ 	mini_qdisc_pair_init(&q->miniqp, sch, &dev->miniq_ingress);
 -- 
 2.20.1
 
