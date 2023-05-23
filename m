@@ -1,233 +1,137 @@
-Return-Path: <netdev+bounces-4648-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4649-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B1AE670DA9A
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:32:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D33B970DAC5
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 12:44:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 713E7281579
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:32:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 77D461C20D24
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:44:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3A18D4A861;
-	Tue, 23 May 2023 10:32:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9609B4A846;
+	Tue, 23 May 2023 10:44:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 284911F95D
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:32:34 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB70FD
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:32:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684837951;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=BnUyr8sQI0ykX2bQEqSArBLAPzKYjJ6x9XxmmftwarI=;
-	b=Sweo3V9wQrRaQ0JMEzdon4Oe/gtdYOUaJb4L0O7bpHxqv3pSz2MaxgTTdy8VSZSej2MqCJ
-	wzgnhfeJPrQB+f3B6FRecTuLpZU2qW81YK9YiU+1gtS1bSQ7ZifWOV1J9bWI4Ce7y0nuP7
-	xFOTtkHfqc5WTxV0pA2ThWBj5WXglSk=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-360-J9pMyCRKMU2LPVSD0GWWvQ-1; Tue, 23 May 2023 06:32:30 -0400
-X-MC-Unique: J9pMyCRKMU2LPVSD0GWWvQ-1
-Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-30a938fcfb5so1139252f8f.0
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 03:32:30 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84C0A4A842
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 10:44:21 +0000 (UTC)
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9272C119;
+	Tue, 23 May 2023 03:44:16 -0700 (PDT)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-562108900acso67007487b3.2;
+        Tue, 23 May 2023 03:44:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684837949; x=1687429949;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BnUyr8sQI0ykX2bQEqSArBLAPzKYjJ6x9XxmmftwarI=;
-        b=iCGZIiI1VJX4CQ4/wVeOlzVaMPS+GtejY7oufyeaZYQEwFSln7EO6LFLWyRXPom+LK
-         M1RB1sMn+dlUDeSzp1WoAOfYnfnvl7xpH63rxc9EoQDpLiykUvstPK/TBRloJc6a+QR9
-         7e9rsVLXh0YbHc55gHq6/FkerGtjikqZSBzAv6OWupCgqnNqtd8bJPh6IC5PfBz6juS9
-         ToR5YJu/Ay/iKscxCBUhFuiIHZEeaMMSlDFi826cj5LIp4QlaiRLoh+XAfBdqcpSsb9o
-         8RVbSYCpvbhKCTFJxdp6fF6vgJ34ukyQc6xUIhP+8y4QqwPgajoHjzqd0g39pip6DDz4
-         /x4Q==
-X-Gm-Message-State: AC+VfDydujCpBA62Svbnxg3XPQSt8bEgsW5NJV54WD6s6avSzSuEup1V
-	esAJcW/SfzvRtKZyuOw0KgQl+bg4RZz/IO0Z1X4rqReh/N5YN2BV1BrRWVtHUAij2cU7vXaRH9G
-	48tKWy4LO/bX/ZaZw
-X-Received: by 2002:a05:6000:1202:b0:2f7:8f62:1a45 with SMTP id e2-20020a056000120200b002f78f621a45mr10071693wrx.66.1684837949359;
-        Tue, 23 May 2023 03:32:29 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4NJUTeUHG8oF3ANLD0cT0nrBAyfEHEyR20ZA75gPmGsEakvK4haV5Zn+FkrWxXeL+NSnZTmg==
-X-Received: by 2002:a05:6000:1202:b0:2f7:8f62:1a45 with SMTP id e2-20020a056000120200b002f78f621a45mr10071672wrx.66.1684837949010;
-        Tue, 23 May 2023 03:32:29 -0700 (PDT)
-Received: from localhost ([37.161.12.148])
-        by smtp.gmail.com with ESMTPSA id t1-20020a5d6a41000000b003063176ef09sm10904775wrw.6.2023.05.23.03.32.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 May 2023 03:32:28 -0700 (PDT)
-Date: Tue, 23 May 2023 12:32:24 +0200
-From: Andrea Claudi <aclaudi@redhat.com>
-To: Vladimir Nikishkin <vladimir@nikishkin.pw>
-Cc: Stephen Hemminger <stephen@networkplumber.org>,
-	Ido Schimmel <idosch@idosch.org>, dsahern@gmail.com,
-	netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com,
-	eng.alaamohamedsoliman.am@gmail.com, gnault@redhat.com,
-	razor@blackwall.org, idosch@nvidia.com, liuhangbin@gmail.com,
-	eyal.birger@gmail.com, jtoppins@redhat.com
-Subject: Re: [PATCH iproute2-next v5] ip-link: add support for nolocalbypass
- in vxlan
-Message-ID: <ZGyWOBJ7bUUUhAbD@renaissance-vector>
-References: <20230521054948.22753-1-vladimir@nikishkin.pw>
- <ZGpvrV4FGjBvqVjg@shredder>
- <20230521124741.3bb2904c@hermes.local>
- <ZGsIhkGT4RBUTS+F@shredder>
- <20230522083216.09cc8fd7@hermes.local>
- <ZGyJ1r+A3zIhmk0/@renaissance-vector>
- <875y8je5er.fsf@laptop.lockywolf.net>
+        d=1e100.net; s=20221208; t=1684838655; x=1687430655;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wAGJ7K0eTZatSWk95P2dmmFxGdpx5RiAx15TGeRGBa0=;
+        b=FMRb7F2wf/7W58fsIYB46aD0jdmmCDrPqyyaWOFxdwwRyqahxxaNCKzpT80e5SURNQ
+         klZU5fa16Isidz8x3vNPWVPgy0mO34i1fxus7ZHgV8E1v42UGSA3VyqDFbOQA97WMdat
+         azp3XfE8P3CwajWf4F/BMl30/6gT8Qn9IequFLjyqesnc3WKgDE42iAm0g53T47nTvQa
+         sXKU0AiJmlncjP6apVbmtjHvjZvegPpWocJN+UQpdbWzjgwTDz20fQwAWO+BQ4nwqIzi
+         qomjM3UqwG70pWAew5WjWaoifAmqskTQxSif76FmOWQ2Sm6A4cGvxOqX9gVdbcnTyAHK
+         mWJQ==
+X-Gm-Message-State: AC+VfDxFFTC+Zyo2pxtR1h0TQvItSUiSpVzuYCCOJpn0tEitNLDCfeUh
+	/FnvO49VHlTTiHrZrPzvC2dWX7udZNvqFg==
+X-Google-Smtp-Source: ACHHUZ6YJ9zJvN0qE9S2BBzG8oNGio26IxwbglPykZdld8mltIWkKyzmWudRDShNKc3aUAXo7iiOsA==
+X-Received: by 2002:a81:8283:0:b0:565:310:f615 with SMTP id s125-20020a818283000000b005650310f615mr6461794ywf.32.1684838654814;
+        Tue, 23 May 2023 03:44:14 -0700 (PDT)
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
+        by smtp.gmail.com with ESMTPSA id n14-20020a819e4e000000b00552ccda9bb3sm2704819ywj.92.2023.05.23.03.44.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 May 2023 03:44:13 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-565014fc2faso25513187b3.1;
+        Tue, 23 May 2023 03:44:13 -0700 (PDT)
+X-Received: by 2002:a81:4603:0:b0:55a:7d83:7488 with SMTP id
+ t3-20020a814603000000b0055a7d837488mr13085744ywa.9.1684838652890; Tue, 23 May
+ 2023 03:44:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <875y8je5er.fsf@laptop.lockywolf.net>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+References: <20230522132439.634031-1-aleksandr.mikhalitsyn@canonical.com>
+ <20230522132439.634031-2-aleksandr.mikhalitsyn@canonical.com>
+ <20230522133409.5c6e839a@kernel.org> <20230523-flechten-ortsschild-e5724ecc4ed0@brauner>
+In-Reply-To: <20230523-flechten-ortsschild-e5724ecc4ed0@brauner>
+From: Luca Boccassi <bluca@debian.org>
+Date: Tue, 23 May 2023 11:44:01 +0100
+X-Gmail-Original-Message-ID: <CAMw=ZnS8GBTDV0rw+Dh6hPv3uLXJVwapRFQHLMYEYGZHNoLNOw@mail.gmail.com>
+Message-ID: <CAMw=ZnS8GBTDV0rw+Dh6hPv3uLXJVwapRFQHLMYEYGZHNoLNOw@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 1/3] scm: add SO_PASSPIDFD and SCM_PIDFD
+To: Christian Brauner <brauner@kernel.org>
+Cc: Jakub Kicinski <kuba@kernel.org>, 
+	Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>, davem@davemloft.net, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
+	Leon Romanovsky <leon@kernel.org>, David Ahern <dsahern@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Kees Cook <keescook@chromium.org>, Kuniyuki Iwashima <kuniyu@amazon.com>, 
+	Lennart Poettering <mzxreary@0pointer.de>, linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 23, 2023 at 05:52:30PM +0800, Vladimir Nikishkin wrote:
-> 
-> Andrea Claudi <aclaudi@redhat.com> writes:
-> 
-> > On Mon, May 22, 2023 at 08:32:16AM -0700, Stephen Hemminger wrote:
-> >> On Mon, 22 May 2023 09:15:34 +0300
-> >> Ido Schimmel <idosch@idosch.org> wrote:
-> >> 
-> >> > On Sun, May 21, 2023 at 12:47:41PM -0700, Stephen Hemminger wrote:
-> >> > > On Sun, 21 May 2023 22:23:25 +0300
-> >> > > Ido Schimmel <idosch@idosch.org> wrote:
-> >> > >   
-> >> > > > +       if (tb[IFLA_VXLAN_LOCALBYPASS])
-> >> > > > +               print_bool(PRINT_ANY, "localbypass", "localbypass ",
-> >> > > > +                          rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS]))  
-> >> > > 
-> >> > > That will not work for non json case.  It will print localbypass whether it is set or not.
-> >> > > The third argument is a format string used in the print routine.  
-> >> > 
-> >> > Yea, replied too late...
-> >> > 
-> >> > Anyway, my main problem is with the JSON output. Looking at other
-> >> > boolean VXLAN options, we have at least 3 different formats:
-> >> > 
-> >> > 1. Only print when "true" for both JSON and non-JSON output. Used for
-> >> > "external", "vnifilter", "proxy", "rsc", "l2miss", "l3miss",
-> >> > "remcsum_tx", "remcsum_rx".
-> >> > 
-> >> > 2. Print when both "true" and "false" for both JSON and non-JSON output.
-> >> > Used for "udp_csum", "udp_zero_csum6_tx", "udp_zero_csum6_rx".
-> >> > 
-> >> > 3. Print JSON when both "true" and "false" and non-JSON only when
-> >> > "false". Used for "learning".
-> >> > 
-> >> > I don't think we should be adding another format. We need to decide:
-> >> > 
-> >> > 1. What is the canonical format going forward?
-> >> > 
-> >> > 2. Do we change the format of existing options?
-> >> > 
-> >> > My preference is:
-> >> > 
-> >> > 1. Format 2. Can be implemented in a common helper used for all VXLAN
-> >> > options.
-> >> > 
-> >> > 2. Yes. It makes all the boolean options consistent and avoids future
-> >> > discussions such as this where a random option is used for a new option.
-> >> 
-> >> A fourth option is to us print_null(). The term null is confusing and people
-> >> seem to avoid it.  But it is often used by python programmers as way to represent
-> >> options. That would be my preferred option but others seem to disagree.
-> >> 
-> >> Option #2 is no good. Any printing of true/false in non-JSON output is a diveregence
-> >> from the most common practice across iproute2.
-> >> 
-> >> That leaves #3 as the correct and best output.
-> >> 
-> >> FYI - The iproute2 maintainers are David Ahern and me. The kernel bits have
-> >> other subsystem maintainers.
-> >> 
-> >
-> > Just to make sure I understand correctly, this means we are printing
-> > "nolocalbypass" in non-JSON output because it's the non-default
-> > settings, right?
-> >
-> > If this is correct, then if we have another option in the future that
-> > comes disabled by default, this means we are going to print it in
-> > non-JSON output when enabled.
-> >
-> > As the primary consumer of non-JSON output are humans, I am a bit
-> > concerned since a succession of enabled/noenabled options is awkward and
-> > difficult to read, in my opinion.
-> >
-> > Wouldn't it be better to have non-JSON print out options only when
-> > enabled, regardless of their default value?
-> 
-> Sorry, what is "enabled" and what is "disabled by default"?
-> I think this is a major source of confusion.
-> 
-> If the option is "nolocalbypass", it is "disabled by default".
-> If the option is "localbypass", it is "enabled by default".
-> 
-> Intuitively, it seems that everything that is "default" should be
-> considered disabled, hence the actual option is "nolocalbypass", an by
-> default it is disabled, and hence not printed. Its opposite requires
-> explicitly adding a command-line parameter, and hence the "enabled"
-> state is "nolocalbypass". I think this is the logic that Stephen is
-> proposing.
+On Tue, 23 May 2023 at 10:49, Christian Brauner <brauner@kernel.org> wrote:
 >
+> On Mon, May 22, 2023 at 01:34:09PM -0700, Jakub Kicinski wrote:
+> > On Mon, 22 May 2023 15:24:37 +0200 Alexander Mikhalitsyn wrote:
+> > > v6:
+> > >     - disable feature when CONFIG_UNIX=n/m (pidfd_prepare API is not exported to modules)
+> >
+> > IMHO hiding the code under #if IS_BUILTIN(CONFIG_UNRELATED) is
+> > surprising to the user and.. ugly?
+> >
+> > Can we move scm_pidfd_recv() into a C source and export that?
+> > That should be less controversial than exporting pidfd_prepare()
+> > directly?
+>
+> I really would like to avoid that because it will just mean that someone
+> else will abuse that function and then make an argument why we should
+> export the other function.
+>
+> I think it would be ok if we required that unix support is built in
+> because it's not unprecedented either and we're not breaking anything.
+> Bpf has the same requirement:
+>
+>   #if IS_BUILTIN(CONFIG_UNIX) && defined(CONFIG_BPF_SYSCALL)
+>   struct bpf_unix_iter_state {
+>           struct seq_net_private p;
+>           unsigned int cur_sk;
+>           unsigned int end_sk;
+>           unsigned int max_sk;
+>           struct sock **batch;
+>           bool st_bucket_done;
+>   };
+>
+> and
+>
+>   #if IS_BUILTIN(CONFIG_UNIX) && defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
+>   DEFINE_BPF_ITER_FUNC(unix, struct bpf_iter_meta *meta,
+>                        struct unix_sock *unix_sk, uid_t uid)
 
-This is indeed confusing, let me try to be more clear.
+Some data points: Debian, Ubuntu, Fedora, RHEL, CentOS, Archlinux all
+ship with CONFIG_UNIX=y, so a missing SCM_PIDFD in unlikely to have a
+widespread impact, and if it does, it might encourage someone to
+review their kconfig.
 
-Let's start considering that we have a single place to store this info,
-tb[IFLA_VXLAN_LOCALBYPASS], and this is either true or false.
+As mentioned on the v5 thread, we are waiting for this API to get the
+userspace side sorted (systemd/dbus/dbus-broker/polkit), so I'd be
+really grateful if we could start with the simplest and most
+conservative approach (which seems to be the current one in v6 to me),
+and then eventually later decide whether to export more functions, or
+to deprecate CONFIG_UNIX=m, or something else entirely, as that
+doesn't really affect the shape of the UAPI, just the details of its
+availability. Thank you.
 
-So, after:
-
-localbypass = rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS]);
-
-you expect localbypass to be true if the user does not modify it, and
-you print "nolocalbypass" when instead it is changed to false. Fine.
-
-Now, let's have another option, tb[IFLA_VXLAN_MYOPTION]. Using:
-
-myoption = rta_getattr_u8(tb[IFLA_VXLAN_MYOPTION]);
-
-I expect myoption to be false without user intervention, because this is
-how this new option work. I'll print this out only when the user toogle
-this to true.
-
-Now, if we decide to print only what happens when the user toogle the
-option with a command-line parameter, we may have:
-
-nolocalbypass myoption nooption2 option3 nooption4 ...
-
-which seems to me awkward and difficult to read.
-
-Instead, printing only when true:
-
-myoption option3
-
-This simply says "myoption and option3 are enabled, all the rest is
-disabled". It seems to me much more easier to read and understand.
-
-> 
-> -- 
-> Your sincerely,
-> Vladimir Nikishkin (MiEr, lockywolf)
-> (Laptop)
-> --
-> Fastmail.
-> 
-
+Kind regards,
+Luca Boccassi
 
