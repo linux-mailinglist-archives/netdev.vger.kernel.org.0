@@ -1,71 +1,75 @@
-Return-Path: <netdev+bounces-4613-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4614-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DF79370D93F
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 11:38:07 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id ED97970D944
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 11:38:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B4D0F1C20CC6
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 09:38:04 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B74F12812FE
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 09:38:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4A561E515;
-	Tue, 23 May 2023 09:38:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F4CD1E523;
+	Tue, 23 May 2023 09:38:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 940831E500
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 09:38:04 +0000 (UTC)
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F005F119
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:38:02 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id af79cd13be357-75afa109e60so141676985a.2
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:38:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DBF51E500
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 09:38:10 +0000 (UTC)
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565CA119
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:38:08 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id af79cd13be357-74e4f839ae4so365434385a.0
+        for <netdev@vger.kernel.org>; Tue, 23 May 2023 02:38:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684834682; x=1687426682;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dr30X9imBEZFF8RYSJvvNbTUTKyxHmbeECUnehEEaT8=;
-        b=Pi3A+4WWfBNBRsY8v/K/LC86XIvC4Te+u8zBO5MAaBfXeaAjir8xHoHnMajgVruiv3
-         vniGGYx0xPeOygpvFzMMXKhIJ0pHg/qKstN0i9DZC6eRmNaMO8KYRztKr08aZjPfXSJO
-         WKipL4L2P2ZBrkm9V31X0WyO8nP3u8yAzQZc2oDOrxzcGgCUINYPiXOxYLBhN1FfzBsH
-         hXARmT9kUHEKBSoO+SFXoEjrRH1lIXbS9LqbN0sekxwsPERMcF4LKNNDFrr3tTDWfsVc
-         7XALNMisErf4Aj6HSW9kfmWkwwvmtnhzu+Kmhvl1t1xzHaQ/eWtIzKOASpBvaa2lhw5K
-         rkDA==
+        d=gmail.com; s=20221208; t=1684834687; x=1687426687;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=59RNToYcEgAWQQb6QpKGjchAYAYXRoRp8Ed2xVUT/rI=;
+        b=bgTyCsTvxJiBEJdCgXXsd4xb2WtUYUZjtA6Of2ttq8CzFgEkNBJrtciooym4gxA594
+         bcuwCIvWVtMmMJumRSBYa0PdJcitTIuVv1WTyILTiCCTitvtRfVlefj2dcYgS2oMGPg7
+         1WvPuX29tBmN7McsftW/WQLZCRCdJC58xrTrWdBeQeezTylXo6CwAoj84Jv721miaAPZ
+         uCAh3FNb3I8BcuQFdoLAkHOii/ckB8VaYvXg6EUPHmchotH2R7teis1FT7WIiBZwnmBf
+         v5Nc96I1402vKlrE5P8CJqUlFsY8oZsi8/ys0Hsfgmi/xZtuDnhERxGh8QQYNrAAYQXy
+         MkkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684834682; x=1687426682;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dr30X9imBEZFF8RYSJvvNbTUTKyxHmbeECUnehEEaT8=;
-        b=Tcf3SyENulODZ0udWRPK/EXHWE9kl/CSotbTle2xZYs632Mers/Tz2PsOeecPEZLIe
-         FuULt38XXY0aZpD3mX721QajnRqkcZSwYgKmgqD6kPdbMDTzXSw43QA5Rre2MmRpV3qj
-         EbztYqAyYUHdt9lzCme0oyESEFavCypNxjWoKBza8X84B6zBhScAQW9prQUPITR2l3g1
-         Xn0mAvwKhMS1pP5gllsKKazgCo/p466oXtq6P70l0tLTrD8SwG/aELi0S39KYLIVK6hV
-         q+sxpp7TwJlGTVxwieoFTdMPkWK0nx0Ocoyva5ufD1vEWWXEChMI53RubrfQ+LaQSQzA
-         sz4Q==
-X-Gm-Message-State: AC+VfDzuxCcNW3cBKrF/yNXSfwACtC0DL1/zm3/PSYGqw+hwzB+EwLoz
-	HUimajJQym4kPwytGh/V06a75vv/KqOqLIMV
-X-Google-Smtp-Source: ACHHUZ4Vbl4E+/X+/UDQWpK47bNR9aw1NlSj7COolKV/DVwOF5ILFAjkfzTtJMUvDY0XhF+SCeN4dw==
-X-Received: by 2002:a05:622a:14d0:b0:3f4:ef5f:b5c7 with SMTP id u16-20020a05622a14d000b003f4ef5fb5c7mr21811484qtx.0.1684834681554;
-        Tue, 23 May 2023 02:38:01 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684834687; x=1687426687;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=59RNToYcEgAWQQb6QpKGjchAYAYXRoRp8Ed2xVUT/rI=;
+        b=GyzC1v0qg2Z/oI4CU9wKmjzAxzkkweq6gLoYpwhDF1CWLwrZHgNWTQZh5Iq265Ooxw
+         owq7DJelWxpI8LHKVkBLW9oSuIfDWP51DietzE3T1SrFJ/U+WIk0HFAJE5veUmw3Psqr
+         sb3+gsSVEFdbxo+RQe0PzUkROAiA5Snzw2214+y/JoItAeebX1Y+qBqGp0nJqaL6G/in
+         rL6L3NgBFYmzZUAWg16lKpIVct3gPqcI5DS8Z/LFL0qK6/RtjXRr5+lB8tV5sPem4c+B
+         MgHgtPWEm/uZ85iO5JcIRwKI3fvg4CV5iteGs65WRjGeGExM6umH105LukiZOOPeQp3c
+         YjFg==
+X-Gm-Message-State: AC+VfDzOBO2oHxd/OSCW/oPCmIFizsibU6ihzUFUVTXLx+Jh03vHnZKv
+	VOO5YwHEYWUWOYOxxGRzbukpPTgOEal2RQUl
+X-Google-Smtp-Source: ACHHUZ7DjrsokfqjW6xYtv4kPz489h8lGe94NY/dk7Zbpx4KHcbDIq3/LtBlFbgei5adH9R6BG8cuQ==
+X-Received: by 2002:a05:6214:492:b0:623:42c5:6125 with SMTP id pt18-20020a056214049200b0062342c56125mr29395413qvb.7.1684834686353;
+        Tue, 23 May 2023 02:38:06 -0700 (PDT)
 Received: from imac.redhat.com ([88.97.103.74])
-        by smtp.gmail.com with ESMTPSA id x7-20020a05622a000700b003bf9f9f1844sm2758128qtw.71.2023.05.23.02.37.59
+        by smtp.gmail.com with ESMTPSA id x7-20020a05622a000700b003bf9f9f1844sm2758128qtw.71.2023.05.23.02.38.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 May 2023 02:38:01 -0700 (PDT)
+        Tue, 23 May 2023 02:38:05 -0700 (PDT)
 From: Donald Hunter <donald.hunter@gmail.com>
 To: netdev@vger.kernel.org,
 	Jakub Kicinski <kuba@kernel.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Paolo Abeni <pabeni@redhat.com>
-Cc: donald.hunter@redhat.com
-Subject: [PATCH net-next v2 0/2] tools: ynl: Add byte-order support for struct members
-Date: Tue, 23 May 2023 10:37:46 +0100
-Message-Id: <20230523093748.61518-1-donald.hunter@gmail.com>
+Cc: donald.hunter@redhat.com,
+	Donald Hunter <donald.hunter@gmail.com>
+Subject: [PATCH net-next v2 1/2] tools: ynl: Use dict of predefined Structs to decode scalar types
+Date: Tue, 23 May 2023 10:37:47 +0100
+Message-Id: <20230523093748.61518-2-donald.hunter@gmail.com>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230523093748.61518-1-donald.hunter@gmail.com>
+References: <20230523093748.61518-1-donald.hunter@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -80,22 +84,225 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Donald Hunter <donald.hunter@redhat.com>
+Use a dict of predefined Struct() objects to decode scalar types in native,
+big or little endian format. This removes the repetitive code for the
+scalar variants and ensures all the signed variants are supported.
 
-This patchset adds support to ynl for handling byte-order in struct
-members. The first patch is a refactor to use predefined Struct() objects
-instead of generating byte-order specific formats on the fly. The second
-patch adds byte-order handling for struct members.
+Signed-off-by: Donald Hunter <donald.hunter@gmail.com>
+---
+ tools/net/ynl/lib/ynl.py | 101 +++++++++++++++++----------------------
+ 1 file changed, 44 insertions(+), 57 deletions(-)
 
-Donald Hunter (2):
-  tools: ynl: Use dict of predefined Structs to decode scalar types
-  tools: ynl: Handle byte-order in struct members
-
- Documentation/netlink/genetlink-legacy.yaml |   2 +
- tools/net/ynl/lib/nlspec.py                 |   4 +-
- tools/net/ynl/lib/ynl.py                    | 101 +++++++++-----------
- 3 files changed, 49 insertions(+), 58 deletions(-)
-
+diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
+index aa77bcae4807..6185ba27f2e7 100644
+--- a/tools/net/ynl/lib/ynl.py
++++ b/tools/net/ynl/lib/ynl.py
+@@ -1,10 +1,12 @@
+ # SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+ 
++from collections import namedtuple
+ import functools
+ import os
+ import random
+ import socket
+ import struct
++from struct import Struct
+ import yaml
+ 
+ from .nlspec import SpecFamily
+@@ -76,10 +78,17 @@ class NlError(Exception):
+ 
+ 
+ class NlAttr:
+-    type_formats = { 'u8' : ('B', 1), 's8' : ('b', 1),
+-                     'u16': ('H', 2), 's16': ('h', 2),
+-                     'u32': ('I', 4), 's32': ('i', 4),
+-                     'u64': ('Q', 8), 's64': ('q', 8) }
++    ScalarFormat = namedtuple('ScalarFormat', ['native', 'big', 'little'])
++    type_formats = {
++        'u8' : ScalarFormat(Struct('B'), Struct("B"),  Struct("B")),
++        's8' : ScalarFormat(Struct('b'), Struct("b"),  Struct("b")),
++        'u16': ScalarFormat(Struct('H'), Struct(">H"), Struct("<H")),
++        's16': ScalarFormat(Struct('h'), Struct(">h"), Struct("<h")),
++        'u32': ScalarFormat(Struct('I'), Struct(">I"), Struct("<I")),
++        's32': ScalarFormat(Struct('i'), Struct(">i"), Struct("<i")),
++        'u64': ScalarFormat(Struct('Q'), Struct(">Q"), Struct("<Q")),
++        's64': ScalarFormat(Struct('q'), Struct(">q"), Struct("<q"))
++    }
+ 
+     def __init__(self, raw, offset):
+         self._len, self._type = struct.unpack("HH", raw[offset:offset + 4])
+@@ -88,25 +97,17 @@ class NlAttr:
+         self.full_len = (self.payload_len + 3) & ~3
+         self.raw = raw[offset + 4:offset + self.payload_len]
+ 
+-    def format_byte_order(byte_order):
++    @classmethod
++    def get_format(cls, attr_type, byte_order=None):
++        format = cls.type_formats[attr_type]
+         if byte_order:
+-            return ">" if byte_order == "big-endian" else "<"
+-        return ""
++            return format.big if byte_order == "big-endian" \
++                else format.little
++        return format.native
+ 
+-    def as_u8(self):
+-        return struct.unpack("B", self.raw)[0]
+-
+-    def as_u16(self, byte_order=None):
+-        endian = NlAttr.format_byte_order(byte_order)
+-        return struct.unpack(f"{endian}H", self.raw)[0]
+-
+-    def as_u32(self, byte_order=None):
+-        endian = NlAttr.format_byte_order(byte_order)
+-        return struct.unpack(f"{endian}I", self.raw)[0]
+-
+-    def as_u64(self, byte_order=None):
+-        endian = NlAttr.format_byte_order(byte_order)
+-        return struct.unpack(f"{endian}Q", self.raw)[0]
++    def as_scalar(self, attr_type, byte_order=None):
++        format = self.get_format(attr_type, byte_order)
++        return format.unpack(self.raw)[0]
+ 
+     def as_strz(self):
+         return self.raw.decode('ascii')[:-1]
+@@ -115,17 +116,17 @@ class NlAttr:
+         return self.raw
+ 
+     def as_c_array(self, type):
+-        format, _ = self.type_formats[type]
+-        return list({ x[0] for x in struct.iter_unpack(format, self.raw) })
++        format = self.get_format(type)
++        return [ x[0] for x in format.iter_unpack(self.raw) ]
+ 
+     def as_struct(self, members):
+         value = dict()
+         offset = 0
+         for m in members:
+             # TODO: handle non-scalar members
+-            format, size = self.type_formats[m.type]
+-            decoded = struct.unpack_from(format, self.raw, offset)
+-            offset += size
++            format = self.get_format(m.type)
++            decoded = format.unpack_from(self.raw, offset)
++            offset += format.size
+             value[m.name] = decoded[0]
+         return value
+ 
+@@ -184,11 +185,11 @@ class NlMsg:
+                 if extack.type == Netlink.NLMSGERR_ATTR_MSG:
+                     self.extack['msg'] = extack.as_strz()
+                 elif extack.type == Netlink.NLMSGERR_ATTR_MISS_TYPE:
+-                    self.extack['miss-type'] = extack.as_u32()
++                    self.extack['miss-type'] = extack.as_scalar('u32')
+                 elif extack.type == Netlink.NLMSGERR_ATTR_MISS_NEST:
+-                    self.extack['miss-nest'] = extack.as_u32()
++                    self.extack['miss-nest'] = extack.as_scalar('u32')
+                 elif extack.type == Netlink.NLMSGERR_ATTR_OFFS:
+-                    self.extack['bad-attr-offs'] = extack.as_u32()
++                    self.extack['bad-attr-offs'] = extack.as_scalar('u32')
+                 else:
+                     if 'unknown' not in self.extack:
+                         self.extack['unknown'] = []
+@@ -272,11 +273,11 @@ def _genl_load_families():
+                 fam = dict()
+                 for attr in gm.raw_attrs:
+                     if attr.type == Netlink.CTRL_ATTR_FAMILY_ID:
+-                        fam['id'] = attr.as_u16()
++                        fam['id'] = attr.as_scalar('u16')
+                     elif attr.type == Netlink.CTRL_ATTR_FAMILY_NAME:
+                         fam['name'] = attr.as_strz()
+                     elif attr.type == Netlink.CTRL_ATTR_MAXATTR:
+-                        fam['maxattr'] = attr.as_u32()
++                        fam['maxattr'] = attr.as_scalar('u32')
+                     elif attr.type == Netlink.CTRL_ATTR_MCAST_GROUPS:
+                         fam['mcast'] = dict()
+                         for entry in NlAttrs(attr.raw):
+@@ -286,7 +287,7 @@ def _genl_load_families():
+                                 if entry_attr.type == Netlink.CTRL_ATTR_MCAST_GRP_NAME:
+                                     mcast_name = entry_attr.as_strz()
+                                 elif entry_attr.type == Netlink.CTRL_ATTR_MCAST_GRP_ID:
+-                                    mcast_id = entry_attr.as_u32()
++                                    mcast_id = entry_attr.as_scalar('u32')
+                             if mcast_name and mcast_id is not None:
+                                 fam['mcast'][mcast_name] = mcast_id
+                 if 'name' in fam and 'id' in fam:
+@@ -304,9 +305,9 @@ class GenlMsg:
+ 
+         self.fixed_header_attrs = dict()
+         for m in fixed_header_members:
+-            format, size = NlAttr.type_formats[m.type]
+-            decoded = struct.unpack_from(format, nl_msg.raw, offset)
+-            offset += size
++            format = NlAttr.get_format(m.type)
++            decoded = format.unpack_from(nl_msg.raw, offset)
++            offset += format.size
+             self.fixed_header_attrs[m.name] = decoded[0]
+ 
+         self.raw = nl_msg.raw[offset:]
+@@ -381,21 +382,13 @@ class YnlFamily(SpecFamily):
+                 attr_payload += self._add_attr(attr['nested-attributes'], subname, subvalue)
+         elif attr["type"] == 'flag':
+             attr_payload = b''
+-        elif attr["type"] == 'u8':
+-            attr_payload = struct.pack("B", int(value))
+-        elif attr["type"] == 'u16':
+-            endian = NlAttr.format_byte_order(attr.byte_order)
+-            attr_payload = struct.pack(f"{endian}H", int(value))
+-        elif attr["type"] == 'u32':
+-            endian = NlAttr.format_byte_order(attr.byte_order)
+-            attr_payload = struct.pack(f"{endian}I", int(value))
+-        elif attr["type"] == 'u64':
+-            endian = NlAttr.format_byte_order(attr.byte_order)
+-            attr_payload = struct.pack(f"{endian}Q", int(value))
+         elif attr["type"] == 'string':
+             attr_payload = str(value).encode('ascii') + b'\x00'
+         elif attr["type"] == 'binary':
+             attr_payload = value
++        elif attr['type'] in NlAttr.type_formats:
++            format = NlAttr.get_format(attr['type'], attr.byte_order)
++            attr_payload = format.pack(int(value))
+         else:
+             raise Exception(f'Unknown type at {space} {name} {value} {attr["type"]}')
+ 
+@@ -434,22 +427,16 @@ class YnlFamily(SpecFamily):
+             if attr_spec["type"] == 'nest':
+                 subdict = self._decode(NlAttrs(attr.raw), attr_spec['nested-attributes'])
+                 decoded = subdict
+-            elif attr_spec['type'] == 'u8':
+-                decoded = attr.as_u8()
+-            elif attr_spec['type'] == 'u16':
+-                decoded = attr.as_u16(attr_spec.byte_order)
+-            elif attr_spec['type'] == 'u32':
+-                decoded = attr.as_u32(attr_spec.byte_order)
+-            elif attr_spec['type'] == 'u64':
+-                decoded = attr.as_u64(attr_spec.byte_order)
+             elif attr_spec["type"] == 'string':
+                 decoded = attr.as_strz()
+             elif attr_spec["type"] == 'binary':
+                 decoded = self._decode_binary(attr, attr_spec)
+             elif attr_spec["type"] == 'flag':
+                 decoded = True
++            elif attr_spec["type"] in NlAttr.type_formats:
++                decoded = attr.as_scalar(attr_spec['type'], attr_spec.byte_order)
+             else:
+-                raise Exception(f'Unknown {attr.type} {attr_spec["name"]} {attr_spec["type"]}')
++                raise Exception(f'Unknown {attr_spec["type"]} with name {attr_spec["name"]}')
+ 
+             if not attr_spec.is_multi:
+                 rsp[attr_spec['name']] = decoded
+@@ -555,8 +542,8 @@ class YnlFamily(SpecFamily):
+             fixed_header_members = self.consts[op.fixed_header].members
+             for m in fixed_header_members:
+                 value = vals.pop(m.name)
+-                format, _ = NlAttr.type_formats[m.type]
+-                msg += struct.pack(format, value)
++                format = NlAttr.get_format(m.type)
++                msg += format.pack(value)
+         for name, value in vals.items():
+             msg += self._add_attr(op.attr_set.name, name, value)
+         msg = _genl_msg_finalize(msg)
 -- 
 2.40.0
 
