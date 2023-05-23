@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-4538-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4539-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B5E9870D343
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:44:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5675570D346
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 07:44:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7054F281273
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:44:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 25F7F1C20C12
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 05:44:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D3FCC1C74C;
-	Tue, 23 May 2023 05:42:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1BC841C759;
+	Tue, 23 May 2023 05:42:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF8F71C742
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:42:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F3DDC433A0;
-	Tue, 23 May 2023 05:42:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD48A1C74E
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 05:42:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90A67C433EF;
+	Tue, 23 May 2023 05:42:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684820576;
-	bh=kDMgFiABLVSY1/2ZltihwYIbKu4x/zb/5JwZTYIzNUI=;
+	s=k20201202; t=1684820577;
+	bh=871i7EDFk6b+f5Q1npWHpS3RSeVI13PuWwYuXi38Q1U=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=CQyno0DVjSLD5E7l6JnnAC8ZwSuG8bpBhZMXVFMWbe4qhQeswsyFp238yNmXHDRmw
-	 XNnPdHYXGNGgEX6ssJ3IfISDYdh3vKzDTaBMDty4u1UTFhIair/mmvZqeBPsKHwSSc
-	 YZiDWoXz3yMDchl3bAIdnU5Xo8irKb0qAocB+xJgzKPwH9CFH76zHyrwhm3oyCZEhR
-	 5hGHtpP3ngvKnid3vjhHP328qdQtT3xJVZ0bHnkxq422eS7KPYv63WfeERKTjuMe9O
-	 p55STW7V+w9DTB5T5jQRAU53BcG+qJ2d4aWK9CEJoX59bUOdD+miaBZVoNqk0DucIY
-	 JkvtuKQQrrtMw==
+	b=t6PJkSSG824B9Ue9ENhePmyc9iJezCvzc3fRjPHmE6mvRxnvndR2wEJreg8QHT7Hi
+	 v5xj896fDKwD7qVRWV9BG+IZlyhjx46RqHh2XMJ4U6/HEUls8ggGf9Mllnc2T2ZB9a
+	 473ncUHXqrGDwawz4E3c5LpknNyNDekysJCVMGKNHTRyCaHZcTdo+B4jF5pL+2IKo/
+	 MF/7dgP14u+CUO6LGeGWMkeBB1iWyWcR4Q8WZfSZEe7cpbSH++DHQcUS1kXxPywYQV
+	 cEG1uA78z0+94O8aO//y1+tlL6wC9KecPJuPHpzMi+4rxwZBnbHb3iPrRtgscJE2Zv
+	 gVIJU5sitcLCA==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -38,11 +38,11 @@ To: "David S. Miller" <davem@davemloft.net>,
 Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	netdev@vger.kernel.org,
 	Tariq Toukan <tariqt@nvidia.com>,
-	Yevgeny Kliteynik <kliteyn@nvidia.com>,
-	Itamar Gozlan <igozlan@nvidia.com>
-Subject: [net 04/15] net/mlx5: DR, Check force-loopback RC QP capability independently from RoCE
-Date: Mon, 22 May 2023 22:42:31 -0700
-Message-Id: <20230523054242.21596-5-saeed@kernel.org>
+	Vlad Buslov <vladbu@nvidia.com>,
+	Roi Dayan <roid@nvidia.com>
+Subject: [net 05/15] net/mlx5e: Use correct encap attribute during invalidation
+Date: Mon, 22 May 2023 22:42:32 -0700
+Message-Id: <20230523054242.21596-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230523054242.21596-1-saeed@kernel.org>
 References: <20230523054242.21596-1-saeed@kernel.org>
@@ -54,61 +54,62 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-SW Steering uses RC QP for writing STEs to ICM. This writingis done in LB
-(loopback), and FL (force-loopback) QP is preferred for performance. FL is
-available when RoCE is enabled or disabled based on RoCE caps.
-This patch adds reading of FL capability from HCA caps in addition to the
-existing reading from RoCE caps, thus fixing the case where we didn't
-have loopback enabled when RoCE was disabled.
+With introduction of post action infrastructure most of the users of encap
+attribute had been modified in order to obtain the correct attribute by
+calling mlx5e_tc_get_encap_attr() helper instead of assuming encap action
+is always on default attribute. However, the cited commit didn't modify
+mlx5e_invalidate_encap() which prevents it from destroying correct modify
+header action which leads to a warning [0]. Fix the issue by using correct
+attribute.
 
-Fixes: 7304d603a57a ("net/mlx5: DR, Add support for force-loopback QP")
-Signed-off-by: Itamar Gozlan <igozlan@nvidia.com>
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+[0]:
+
+Feb 21 09:47:35 c-237-177-40-045 kernel: WARNING: CPU: 17 PID: 654 at drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:684 mlx5e_tc_attach_mod_hdr+0x1cc/0x230 [mlx5_core]
+Feb 21 09:47:35 c-237-177-40-045 kernel: RIP: 0010:mlx5e_tc_attach_mod_hdr+0x1cc/0x230 [mlx5_core]
+Feb 21 09:47:35 c-237-177-40-045 kernel: Call Trace:
+Feb 21 09:47:35 c-237-177-40-045 kernel:  <TASK>
+Feb 21 09:47:35 c-237-177-40-045 kernel:  mlx5e_tc_fib_event_work+0x8e3/0x1f60 [mlx5_core]
+Feb 21 09:47:35 c-237-177-40-045 kernel:  ? mlx5e_take_all_encap_flows+0xe0/0xe0 [mlx5_core]
+Feb 21 09:47:35 c-237-177-40-045 kernel:  ? lock_downgrade+0x6d0/0x6d0
+Feb 21 09:47:35 c-237-177-40-045 kernel:  ? lockdep_hardirqs_on_prepare+0x273/0x3f0
+Feb 21 09:47:35 c-237-177-40-045 kernel:  ? lockdep_hardirqs_on_prepare+0x273/0x3f0
+Feb 21 09:47:35 c-237-177-40-045 kernel:  process_one_work+0x7c2/0x1310
+Feb 21 09:47:35 c-237-177-40-045 kernel:  ? lockdep_hardirqs_on_prepare+0x3f0/0x3f0
+Feb 21 09:47:35 c-237-177-40-045 kernel:  ? pwq_dec_nr_in_flight+0x230/0x230
+Feb 21 09:47:35 c-237-177-40-045 kernel:  ? rwlock_bug.part.0+0x90/0x90
+Feb 21 09:47:35 c-237-177-40-045 kernel:  worker_thread+0x59d/0xec0
+Feb 21 09:47:35 c-237-177-40-045 kernel:  ? __kthread_parkme+0xd9/0x1d0
+
+Fixes: 8300f225268b ("net/mlx5e: Create new flow attr for multi table actions")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c | 4 +++-
- include/linux/mlx5/mlx5_ifc.h                             | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-index 3835ba3f4dda..1aa525e509f1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-@@ -117,6 +117,8 @@ int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
- 	caps->gvmi		= MLX5_CAP_GEN(mdev, vhca_id);
- 	caps->flex_protocols	= MLX5_CAP_GEN(mdev, flex_parser_protocols);
- 	caps->sw_format_ver	= MLX5_CAP_GEN(mdev, steering_format_version);
-+	caps->roce_caps.fl_rc_qp_when_roce_disabled =
-+		MLX5_CAP_GEN(mdev, fl_rc_qp_when_roce_disabled);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+index 20c2d2ecaf93..6a052c6cfc15 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+@@ -1369,11 +1369,13 @@ static void mlx5e_invalidate_encap(struct mlx5e_priv *priv,
+ 	struct mlx5e_tc_flow *flow;
  
- 	if (MLX5_CAP_GEN(mdev, roce)) {
- 		err = dr_cmd_query_nic_vport_roce_en(mdev, 0, &roce_en);
-@@ -124,7 +126,7 @@ int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
- 			return err;
+ 	list_for_each_entry(flow, encap_flows, tmp_list) {
+-		struct mlx5_flow_attr *attr = flow->attr;
+ 		struct mlx5_esw_flow_attr *esw_attr;
++		struct mlx5_flow_attr *attr;
  
- 		caps->roce_caps.roce_en = roce_en;
--		caps->roce_caps.fl_rc_qp_when_roce_disabled =
-+		caps->roce_caps.fl_rc_qp_when_roce_disabled |=
- 			MLX5_CAP_ROCE(mdev, fl_rc_qp_when_roce_disabled);
- 		caps->roce_caps.fl_rc_qp_when_roce_enabled =
- 			MLX5_CAP_ROCE(mdev, fl_rc_qp_when_roce_enabled);
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index dc5e2cb302a5..b89778d0d326 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1705,7 +1705,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         rc[0x1];
+ 		if (!mlx5e_is_offloaded_flow(flow))
+ 			continue;
++
++		attr = mlx5e_tc_get_encap_attr(flow);
+ 		esw_attr = attr->esw_attr;
  
- 	u8         uar_4k[0x1];
--	u8         reserved_at_241[0x9];
-+	u8         reserved_at_241[0x7];
-+	u8         fl_rc_qp_when_roce_disabled[0x1];
-+	u8         regexp_params[0x1];
- 	u8         uar_sz[0x6];
- 	u8         port_selection_cap[0x1];
- 	u8         reserved_at_248[0x1];
+ 		if (flow_flag_test(flow, SLOW))
 -- 
 2.40.1
 
