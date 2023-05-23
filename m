@@ -1,401 +1,134 @@
-Return-Path: <netdev+bounces-4709-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4710-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CF98270DFAF
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:52:39 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C687770DFB1
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 16:53:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81BA9281310
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:52:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 91CAB1C20D5B
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 14:52:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 979301F199;
-	Tue, 23 May 2023 14:52:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7AA911F19B;
+	Tue, 23 May 2023 14:52:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8941E4C7B
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 14:52:36 +0000 (UTC)
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B9AFA
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 07:52:31 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id ada2fe7eead31-43485a18d5aso3422093137.1
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 07:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684853550; x=1687445550;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ov2Oc5u8alrp0ryIFZXMwNl4tyhrsxmBV9Vytekedzo=;
-        b=UJRngDC45gNZB0uv4K61y64oN3KbgM3BohvZdO5c08tcvtp9hK4Bl2BP7/PikIv+0F
-         s++3/65K8/zgPQMqnPLkaze8pMY6d4YDZU0X2MUDL0GOA5otArPyKJ1l5aVzame8PfqE
-         FM5XVVdClec9fPtFuagtmYRAS9KANqaS47w1O3AKGYAXaYIupJ0pW5p1gjF409MfvX9q
-         Pa5UCgM15Sy5H8OtP4/eZ6PS91vgLV0AquMhmYEGzeIVCuuYFsPVY1TsxNHbfDQWXzyt
-         bcfk3SiSZkXxRtYWSc/wooRw0gIVqwY/AJIY7PYoTFZFpWVTy2uRVdypDhGrKVrEvGtb
-         CW5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684853550; x=1687445550;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ov2Oc5u8alrp0ryIFZXMwNl4tyhrsxmBV9Vytekedzo=;
-        b=Hbl0Utb821XrvuzLdVi9fVGJJQWLyrsSHNmKgPpnYhguoJdJUL/2Ag31PHa/KlslZB
-         TZ0P8k7dGCIeaUX5dn7bkpiNXcImOeMhEeS1hCJ+lRuwQvyIDYrXgxayCCpaecZGNjO/
-         k4zmyGH/LaXWPIXOt/oNUu59zhbwrvYEIAzXrdXcCdP9gXvoDll9TBJPYXXFuLk0CNLm
-         Hr8kKpqqvrN8gkJelIz7dUJaDmnRdWz1stlJgQrg4wPyhHl0m47wyR34sPG5iqqNUl9O
-         sub5ooAmBTFFUC2aAY1owJYcLyK5gZtOKYhe95vCQABrz29PxFB89j5pOtDSjQF+Lkj4
-         YHFg==
-X-Gm-Message-State: AC+VfDyTGE+V3jSdmfCh68oFeiaFiopYZVQ9GrLvTEBoFwzop6lGtkKt
-	oreUoMGfkb7quYbcav/fKsoLSWRkR3exArl/M2r8ow==
-X-Google-Smtp-Source: ACHHUZ4rLhiSLlZC6XKl4l8eJWxiJ974uFE/cyJULYWv7+FRJPNbBowssp4UizoTjhEOG2R8fSqVsglW7XwIgDYE27M=
-X-Received: by 2002:a05:6102:3d95:b0:436:108e:b1e9 with SMTP id
- h21-20020a0561023d9500b00436108eb1e9mr4451381vsv.12.1684853550200; Tue, 23
- May 2023 07:52:30 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EDB31F17A
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 14:52:57 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA0EC6
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 07:52:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684853575;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=KHDYxPG+OnNKEEbmravfdg4Ujk0LU1sywu09RiZg4i4=;
+	b=Pxy/DukBKmiPPwZYmi69iMfbYvO35YY/9sFvaSUf7LyOMFHU8LCBe6HMGZAtsnHMPIsY++
+	STDQ2hsGpIORn0wR7agpR4C1ZKYvKtQvx2y1yzuoRwD2RKuvkmWV5a1uURPyCrYcu5cNsN
+	LkxvWormqo4OCZknj4h3GgH6LSiQ3+c=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-450-gQyoRNafPJqNEodLpHa1nw-1; Tue, 23 May 2023 10:52:50 -0400
+X-MC-Unique: gQyoRNafPJqNEodLpHa1nw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 063B929AA3B0;
+	Tue, 23 May 2023 14:52:50 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.45.242.23])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 620A11121314;
+	Tue, 23 May 2023 14:52:49 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+	by firesoul.localdomain (Postfix) with ESMTP id 3A424307372E8;
+	Tue, 23 May 2023 16:52:48 +0200 (CEST)
+Subject: [PATCH RFC net-next/mm V4 0/2] page_pool: new approach for leak
+ detection and shutdown phase
+From: Jesper Dangaard Brouer <brouer@redhat.com>
+To: Ilias Apalodimas <ilias.apalodimas@linaro.org>, netdev@vger.kernel.org,
+ Eric Dumazet <eric.dumazet@gmail.com>, linux-mm@kvack.org,
+ Mel Gorman <mgorman@techsingularity.net>
+Cc: Jesper Dangaard Brouer <brouer@redhat.com>, lorenzo@kernel.org,
+ =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+ linyunsheng@huawei.com, bpf@vger.kernel.org,
+ "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Andrew Morton <akpm@linux-foundation.org>,
+ willy@infradead.org
+Date: Tue, 23 May 2023 16:52:48 +0200
+Message-ID: <168485351546.2849279.13771638045665633339.stgit@firesoul>
+User-Agent: StGit/1.4
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230522190405.880733338@linuxfoundation.org>
-In-Reply-To: <20230522190405.880733338@linuxfoundation.org>
-From: Naresh Kamboju <naresh.kamboju@linaro.org>
-Date: Tue, 23 May 2023 20:22:18 +0530
-Message-ID: <CA+G9fYs4zoTUQUnkvncEpPWvfGD6sDSXi94KXji+udMrvfm5Rg@mail.gmail.com>
-Subject: Re: [PATCH 6.1 000/292] 6.1.30-rc1 review
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: stable@vger.kernel.org, patches@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, torvalds@linux-foundation.org, 
-	akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org, 
-	patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de, 
-	jonathanh@nvidia.com, f.fainelli@gmail.com, sudipm.mukherjee@gmail.com, 
-	srw@sladewatkins.net, rwarsow@gmx.de, LTP List <ltp@lists.linux.it>, 
-	Netdev <netdev@vger.kernel.org>, linux-perf-users@vger.kernel.org, 
-	MPTCP Upstream <mptcp@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 23 May 2023 at 00:53, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 6.1.30 release.
-> There are 292 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 24 May 2023 19:03:25 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v6.x/stable-review/patch-=
-6.1.30-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-6.1.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Patchset change summary:
+ - Remove PP workqueue and inflight warnings, instead rely on inflight
+   pages to trigger cleanup
+ - Moves leak detection to the MM-layer page allocator when combined
+   with CONFIG_DEBUG_VM.
+
+The page_pool (PP) workqueue calling page_pool_release_retry generate
+too many false-positive reports. Further more, these reports of
+page_pool shutdown still having inflight packets are not very helpful
+to track down the root-cause.
+
+In the past these reports have helped us catch driver bugs, that
+leaked pages by invoking put_page directly, often in code paths
+handling error cases. PP pages had a shorter lifespan (within driver
+and XDP code paths). Since PP pages got a recycle return path for
+SKBs, the lifespan for a PP page can be much longer. Thus, it is time
+to revisit periodic release retry mechanism. The default 60 sec
+lifespan assumption is obviously wrong/obsolete, as things like TCP
+sockets can keep SKBs around for much longer (e.g. retransmits,
+timeouts, NAPI defer schemes etc).
+
+The inflight reports, means one of two things: (1) API user is still
+holding on, or (2) page got leaked and will never be returned to PP.
+The PP need to accept it have no control over (1) how long outstanding
+PP pages are kept by the API users. What we really want to is to catch
+are(2) pages that "leak". Meaning they didn't get proper returned via
+PP APIs.
+
+Leaked PP pages result in these issues: (A) We can never release
+page_pool memory structs, which (B) holds on to a refcnt on struct
+device for DMA mapping, and (C) leaking DMA-mappings that (D) means a
+hardware device can potentially write into a page returned to the page
+allocator.
+
+V4: Use RCU sync method to resolve races
+
+V3: Fix races found Toke
+
+V2: Fix race found by Yunsheng Lin <linyunsheng@huawei.com>
+
+---
+
+Jesper Dangaard Brouer (2):
+      mm/page_pool: catch page_pool memory leaks
+      page_pool: Remove workqueue in new shutdown scheme
 
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
-
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-
-NOTE:
-Following are the list of intermittent failures.
-
-LTP syscalls msync04 started failing intermittently on 6.3, 6.1 and 5.15 on
-arm64 devices which are using NFS mounted rootfs and external mounted drive=
-.
-Where as on arm x15 device it is always fails from 6.3.2-rc1, 6.1.28-rc1
-and 5.15.111-rc1.
-
-Test log:
-=3D=3D=3D=3D=3D=3D=3D=3D
-
-tst_test.c:1634: TINFO: =3D=3D=3D Testing on vfat =3D=3D=3D
-tst_test.c:1093: TINFO: Formatting /dev/loop0 with vfat opts=3D'' extra opt=
-s=3D''
-msync04.c:72: TPASS: msync() working correctly
-tst_test.c:1634: TINFO: =3D=3D=3D Testing on ntfs =3D=3D=3D
-tst_test.c:1093: TINFO: Formatting /dev/loop0 with ntfs opts=3D'' extra opt=
-s=3D''
-The partition start sector was not specified for /dev/loop0 and it
-could not be obtained automatically.  It has been set to 0.
-The number of sectors per track was not specified for /dev/loop0 and
-it could not be obtained automatically.  It has been set to 0.
-The number of heads was not specified for /dev/loop0 and it could not
-be obtained automatically.  It has been set to 0.
-To boot from a device, Windows needs the 'partition start sector', the
-'sectors per track' and the 'number of heads' to be set.
-Windows will not be able to boot from this device.
-tst_test.c:1107: TINFO: Trying FUSE...
-msync04.c:59: TFAIL: Expected dirty bit to be set after writing to
-mmap()-ed area
-
-
-log:
- - https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.3.y/build/v6.=
-3.3-365-g20efcce0526d/testrun/17163865/suite/ltp-syscalls/test/msync04/log
- - https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.3.y/build/v6.=
-3.3-365-g20efcce0526d/testrun/17163865/suite/ltp-syscalls/test/msync04/hist=
-ory/
-
-Test results compare across 6.3, 6.1 and 5.15.
- - https://qa-reports.linaro.org/_/comparetest/?project=3D1764&project=3D15=
-97&project=3D1022&suite=3Dltp-syscalls&test=3Dmsync04
-
-
-=3D=3D=3D=3D=3D
-Following Perf CoreSight test cases failing intermittently on arm64
-Qualcomm dragonboard 410c.
-
-
- 78: CoreSight / Thread Loop 10 Threads - Check TID                  :
---- start ---
-test child forked, pid 1196
-[ perf record: Woken up 1 times to write data ]
-[ perf record: Captured and wrote 6.477 MB
-./perf-thread_loop-check-tid-10th.data ]
-Thread IDs  1211 not found in perf AUX data
-test child finished with -1
----- end ----
-CoreSight / Thread Loop 10 Threads - Check TID: FAILED!
-
-
- 79: CoreSight / Thread Loop 2 Threads - Check TID                   :
---- start ---
-test child forked, pid 1285
-[ perf record: Woken up 1 times to write data ]
-[ perf record: Captured and wrote 0.005 MB
-./perf-thread_loop-check-tid-2th.data ]
-Thread IDs  1290 1290 not found in perf AUX data
-test child finished with -1
----- end ----
-CoreSight / Thread Loop 2 Threads - Check TID: FAILED!
-
-
-logs:
- - https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.1.y/build/v6.=
-1.29-293-ge00a3d96f756/testrun/17164102/suite/perf/test/CoreSight_Thread_Lo=
-op_10_Threads__Check_TID/history/
- - https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.1.y/build/v6.=
-1.29-293-ge00a3d96f756/testrun/17164102/suite/perf/test/CoreSight_Thread_Lo=
-op_10_Threads__Check_TID/log
- - https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.1.y/build/v6.=
-1.29-293-ge00a3d96f756/testrun/17164102/suite/perf/test/CoreSight_Thread_Lo=
-op_10_Threads__Check_TID/details/
-
- - https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.1.y/build/v6.=
-1.29-293-ge00a3d96f756/testrun/17164102/suite/perf/test/CoreSight_Thread_Lo=
-op_2_Threads__Check_TID/history/
- - https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.1.y/build/v6.=
-1.29-293-ge00a3d96f756/testrun/17164102/suite/perf/test/CoreSight_Thread_Lo=
-op_2_Threads__Check_TID/details/
-
-
-=3D=3D=3D=3D=3D
-
-selftests: net/mptcp: diag.sh started failing on 6.1.30-rc1 but
-passed on 6.3.4-rc1. This is due to changes in latest kselftest
-(6.3) running on 6.1.
-
-test logs:
-=3D=3D=3D=3D=3D=3D=3D
-# selftests: net/mptcp: diag.sh
-# no msk on netns creation                          [  ok  ]
-# listen match for dport 10000                      [  ok  ]
-# listen match for sport 10000                      [  ok  ]
-# listen match for saddr and sport                  [  ok  ]
-# all listen sockets                                [  ok  ]
-# after MPC handshake                               [  ok  ]
-# ....chk remote_key                                [  ok  ]
-# ....chk no fallback                               [  ok  ]
-# ....chk 2 msk in use                              [ fail ] expected 2 fou=
-nd 0
-# ....chk 0 msk in use after flush                  [  ok  ]
-# check fallback                                    [  ok  ]
-# ....chk 1 msk in use                              [ fail ] expected 1 fou=
-nd 0
-# ....chk 0 msk in use after flush                  [  ok  ]
-# many msk socket present                           [  ok  ]
-# ....chk many msk in use                           [ fail ] expected
-254 found 0
-# ....chk 0 msk in use after flush                  [  ok  ]
-not ok 4 selftests: net/mptcp: diag.sh # exit=3D11
-
-logs:
- - https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.1.y/build/v6.=
-1.29-293-ge00a3d96f756/testrun/17163977/suite/kselftest-net-mptcp/test/net_=
-mptcp_diag_sh/history/
- - https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.1.y/build/v6.=
-1.29-293-ge00a3d96f756/testrun/17163977/suite/kselftest-net-mptcp/test/net_=
-mptcp_diag_sh/details/
-
-
-## Build
-* kernel: 6.1.30-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-6.1.y
-* git commit: e00a3d96f756a884ab864ae21c22bc1b86d0844d
-* git describe: v6.1.29-293-ge00a3d96f756
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.1.y/build/v6.1.2=
-9-293-ge00a3d96f756
-
-## Test Regressions (compared to v6.1.29)
-* bcm2711-rpi-4-b, ltp-syscalls - intermittent failures
-  - msync04
-
-* dragonboard-410c, perf - intermittent failures
-  - CoreSight_Thread_Loop_10_Threads__Check_TID
-  - CoreSight_Thread_Loop_2_Threads__Check_TID
-
-* qemu_i386, kselftest-net-mptcp - fails only on 32-bit architectures.
-  - net_mptcp_diag_sh
-
-## Metric Regressions (compared to v6.1.29)
-
-## Test Fixes (compared to v6.1.29)
-
-## Metric Fixes (compared to v6.1.29)
-
-## Test result summary
-total: 171342, pass: 147295, fail: 4403, skip: 19372, xfail: 272
-
-## Build Summary
-* arc: 5 total, 5 passed, 0 failed
-* arm: 151 total, 150 passed, 1 failed
-* arm64: 54 total, 53 passed, 1 failed
-* i386: 41 total, 38 passed, 3 failed
-* mips: 30 total, 28 passed, 2 failed
-* parisc: 8 total, 8 passed, 0 failed
-* powerpc: 38 total, 36 passed, 2 failed
-* riscv: 16 total, 15 passed, 1 failed
-* s390: 16 total, 16 passed, 0 failed
-* sh: 14 total, 12 passed, 2 failed
-* sparc: 8 total, 8 passed, 0 failed
-* x86_64: 46 total, 46 passed, 0 failed
-
-## Test suites summary
-* boot
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers-dma-buf
-* kselftest-efivarfs
-* kselftest-exec
-* kselftest-filesystems
-* kselftest-filesystems-binderfs
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-ftrace
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-net-forwarding
-* kselftest-net-mptcp
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-user_events
-* kselftest-vDSO
-* kselftest-watchdog
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-commands
-* ltp-containers
-* ltp-controllers
-* ltp-cpuhotplug
-* ltp-crypto
-* ltp-cve
-* ltp-dio
-* ltp-fcntl-locktests
-* ltp-filecaps
-* ltp-fs
-* ltp-fs_bind
-* ltp-fs_perms_simple
-* ltp-fsx
-* ltp-hugetlb
-* ltp-io
-* ltp-ipc
-* ltp-math
-* ltp-mm
-* ltp-nptl
-* ltp-pty
-* ltp-sched
-* ltp-securebits
-* ltp-smoke
-* ltp-syscalls
-* ltp-tracing
-* network-basic-tests
-* perf
-* rcutorture
-* v4l2-compliance
-* vdso
+ include/net/page_pool.h |  10 +--
+ mm/page_alloc.c         |   7 ++
+ net/core/page_pool.c    | 138 ++++++++++++++++++++++++++++------------
+ 3 files changed, 111 insertions(+), 44 deletions(-)
 
 --
-Linaro LKFT
-https://lkft.linaro.org
+
 
