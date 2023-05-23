@@ -1,211 +1,222 @@
-Return-Path: <netdev+bounces-4826-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4827-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EC5C870E954
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 01:01:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 57CF370E98B
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 01:28:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7D57D2810C9
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 23:01:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8035628115E
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 23:28:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 84DD117746;
-	Tue, 23 May 2023 23:01:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6886617754;
+	Tue, 23 May 2023 23:28:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 725284A3B
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 23:01:46 +0000 (UTC)
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC432C2
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 16:01:43 -0700 (PDT)
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id EBB993F47C
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 23:01:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1684882901;
-	bh=8eh5/RZ1N4hnvYM9TSbF70KmmaCoxIxAy/wgcy8i48I=;
-	h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-	 Content-Type:Date:Message-ID;
-	b=tN5WgQ0WwtNgVBWTOafp9f3j08G6J2D4hOe7y5gD3BzLri5w/Fs53AjCzHC5ZR0bC
-	 88np+bVWP+laPu5TfCdRouYS8wqc/kFk74DVMW0p6jjeiTSLNJ98sgrE4/VvXuZhnT
-	 trMdVwV24qkPc8W5GeIddhwYJ+dObaUPctSutkUweAY52lKZ/COdUAEV7kVwnYPMH4
-	 NMBcw2CIWLL5eO4MWS/uHlt6g0ByDaWn4x6vgne1KHtd6OU9SoFJjtNVsU0w3ipK9A
-	 aohQF9D/98htFrvmOCgkfprAyd7956ckD7GmweI4x6SEz27J7iBd4US9wxGUOT1ayN
-	 PYJQ+Jr/w2Z9g==
-Received: by mail-pg1-f198.google.com with SMTP id 41be03b00d2f7-53b9eb7bda0so87400a12.0
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 16:01:41 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53E0CC131
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 23:28:10 +0000 (UTC)
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F576E53
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 16:27:36 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id ca18e2360f4ac-76c75d32005so11184739f.1
+        for <netdev@vger.kernel.org>; Tue, 23 May 2023 16:27:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google; t=1684884444; x=1687476444;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=YhwW8qhEJQw+/1v+4hYhPuQN5/a14SoYFsTonrYKk4k=;
+        b=D72FmVoXL3p1cboocFEO89dkeTptxplLaET8P7uWI8Aklfd0t313xl/WwXnT9WGrLR
+         YHEQr89BbwRiE6KljT97in+0dHPID2M5pBDihme+WdU/PEqU6nbgrVQxBppHKgGYQA4s
+         yk52Bf5/oKPTf316ug3mA9J/4T7rp7pFADoSA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684882900; x=1687474900;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8eh5/RZ1N4hnvYM9TSbF70KmmaCoxIxAy/wgcy8i48I=;
-        b=A4ptR6OwOWSBS8OBgMPtkzNzQ0u7Pk9Pl43HoHodNwI85hcGtHDu4W1ws6GIboitui
-         Bl/8Mv5dVwhBF6HCUeBxVwS++cxQvbwgNRdKyuvC3ytt6Ki/+dh5vA7ybp0ZEFQ0bkIb
-         1gnPxTuHkrKx4p4V2teDetSFBe567Yu9u6VA5B+xavRu07MHMAEU4p5MxlalEfAn7zI9
-         lNcT1+Q72A8L3n72R3+ey4igdMDxIskTp9yWaIg/dt94mhnBxNvqtcUXS1bTh1TeCogS
-         vHBLEObNAhinzDoHhs8yskA4BtCp4Qsw/P0jrxaTxUjUUXiISfHcIewMJ4ohy1lFcXZD
-         sS4g==
-X-Gm-Message-State: AC+VfDw1OtWhBBtEOPTmcKw1VB1tr3Eut5ty317tzGLcivb33GQwIzYa
-	qWJlWCXYoH4EeKc0OO5sgZoFwg+YtnOBoWaLSXWWF3g54Ut6CAwBljAhKRZ6dwxicROmBWyiuwb
-	nwbnbakVLNCGK+FT8YsyT1shH76HKiJlis6sY2AAd0g==
-X-Received: by 2002:a17:902:bf06:b0:1a6:bd5c:649d with SMTP id bi6-20020a170902bf0600b001a6bd5c649dmr13486620plb.56.1684882900194;
-        Tue, 23 May 2023 16:01:40 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4wVD6c70MMUNYLcSLil+HTKwdONPE9r3CgomiB3YnVizq6HebbE5Byb61dKX4i8L+Jym8AYQ==
-X-Received: by 2002:a17:902:bf06:b0:1a6:bd5c:649d with SMTP id bi6-20020a170902bf0600b001a6bd5c649dmr13486607plb.56.1684882899833;
-        Tue, 23 May 2023 16:01:39 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id iw10-20020a170903044a00b001ac2f98e953sm7271508plb.216.2023.05.23.16.01.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 May 2023 16:01:39 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-	id DD4C660451; Tue, 23 May 2023 16:01:38 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-	by famine.localdomain (Postfix) with ESMTP id D6570A02D2;
-	Tue, 23 May 2023 16:01:38 -0700 (PDT)
-From: Jay Vosburgh <jay.vosburgh@canonical.com>
-To: Moviuro <moviuro@gmail.com>
-cc: netdev@vger.kernel.org
-Subject: Re: Secondary bond slave receiving packets when preferred is up
-In-reply-to: <ZGzGngNhahy6kGBG@toxoplasmosis>
-References: <ZGzGngNhahy6kGBG@toxoplasmosis>
-Comments: In-reply-to Moviuro <moviuro@gmail.com>
-   message dated "Tue, 23 May 2023 15:58:54 +0200."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        d=1e100.net; s=20221208; t=1684884444; x=1687476444;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YhwW8qhEJQw+/1v+4hYhPuQN5/a14SoYFsTonrYKk4k=;
+        b=SaqzTCQS+fVvc5fYqOIJBsl5QcZjzSjHrultciCYO3/bCg3GWCmdiAWD59BvwPMnZI
+         DdnUwjvFNItXz8hsOlEVMYzuRiVzalOJ7yPvdjBrfFt9j5aoUVq4TydE/9eJLhvH8hZN
+         E/4oJi/qmMvFjZ2ZzllFtovHLPxUgXOhEDpSm3KRAbl1sc26YGjvNU9M5H6/8CZLVspR
+         dT5RiyRdZkvwg3YRNqM/cge7Tp24mlH9FpKn5v/z1Lsj4OMQvIKm9UHxkux1kG9pIApX
+         7JRWnVJ+ho/WbUI7ITpQn6e4sPga1sE9cqJRyQ0wgu/jq6A12S5C3iTsRijBorHVxrdV
+         pGQA==
+X-Gm-Message-State: AC+VfDxbMSYfRUI7MZEGiBeR7OIJr0yOu3wQ0GZm9eLwOPwtE3FMKe1i
+	M0u0bpYclpTeGXGZxsjTXgMvKfBAv+kLfNftwwcQKA==
+X-Google-Smtp-Source: ACHHUZ4ldMEAsCmXo0bakvEqW/yKgESizqMM9wtMIlacNfpjLMS7s11dMsvIATPmNFiJKikj5OmYVC0x0/Y5w1hSVEA=
+X-Received: by 2002:a5e:8309:0:b0:76c:76ea:3e8d with SMTP id
+ x9-20020a5e8309000000b0076c76ea3e8dmr8959650iom.7.1684884444578; Tue, 23 May
+ 2023 16:27:24 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <17784.1684882898.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 23 May 2023 16:01:38 -0700
-Message-ID: <17785.1684882898@famine>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <1684878827-40672-1-git-send-email-justin.chen@broadcom.com>
+ <1684878827-40672-3-git-send-email-justin.chen@broadcom.com> <20230523-unfailing-twisting-9cb092b14f6f@spud>
+In-Reply-To: <20230523-unfailing-twisting-9cb092b14f6f@spud>
+From: Justin Chen <justin.chen@broadcom.com>
+Date: Tue, 23 May 2023 16:27:12 -0700
+Message-ID: <CALSSxFYMm5NYw41ERr1Ah-bejDgf9EdJd1dGNL9_sKVVmrpg3g@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 2/6] dt-bindings: net: Brcm ASP 2.0 Ethernet controller
+To: Conor Dooley <conor@kernel.org>
+Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	bcm-kernel-feedback-list@broadcom.com, justinpopo6@gmail.com, 
+	f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com, 
+	kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org, 
+	krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com, andrew@lunn.ch, 
+	hkallweit1@gmail.com, linux@armlinux.org.uk, richardcochran@gmail.com, 
+	sumit.semwal@linaro.org, christian.koenig@amd.com, simon.horman@corigine.com, 
+	Florian Fainelli <florian.fainelli@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+	boundary="000000000000d3d87605fc64baf0"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Moviuro <moviuro@gmail.com> wrote:
+--000000000000d3d87605fc64baf0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
->Hi there,
+On Tue, May 23, 2023 at 3:55=E2=80=AFPM Conor Dooley <conor@kernel.org> wro=
+te:
 >
->On 2 similar machines, some (random?) packets are received on a wireless
->bond slave when the preferred eth interface is connected: this causes
->local packet loss and at worst, disconnects (e.g. SSH and KDEConnect).
+> Hey Justin,
 >
->My setup looks fine, inspired by the Arch wiki[0], see
->/proc/net/bonding/bond0 below. The archlinux community has not been able
->to help so far[1].
+> On Tue, May 23, 2023 at 02:53:43PM -0700, Justin Chen wrote:
 >
->     +-----------+                =
-
->     |Router .1  |                =
-
->     +-----+-----+                =
-
->           |                      =
-
->     +-----+-----+                =
-
->     |Switch .30 +---------------+
->     +--+--------+-------------+ |
->        |                      | |
->        |                      | |
-> +------+--+    +-----------+  | |
-> | WAP .21 +~~~~+Client .111+--+ |
-> +------+--+    +-----------+    |
->        |                        |
->        |       +-----------+    |
->        +~~~~~~~+Client .149-----+
->                +-----------+     =
-
+> > +  compatible:
+> > +    enum:
+> > +      - brcm,asp-v2.0
+> > +      - brcm,bcm72165-asp
+> > +      - brcm,asp-v2.1
+> > +      - brcm,bcm74165-asp
 >
->Running ping(8) for a few hours, there's nothing much going on, packet
->loss is really because ICMP packets end up on the WiFi interface:
+> > +        compatible =3D "brcm,bcm72165-asp", "brcm,asp-v2.0";
 >
->* .1 -> .149: 56436 sent, 56405 replies
->* .1 -> .111: 20643 sent, 20640 replies
->* .111 -> .149: 7682/7702 packets
->* .149 -> .111: 14791/14792 packets
+> You can't do this, as Rob's bot has pointed out. Please test the
+> bindings :( You need one of these type of constructs:
 >
->Sure enough, there's some noise on the WiFi interface:
+> compatible:
+>   oneOf:
+>     - items:
+>         - const: brcm,bcm72165-asp
+>         - const: brcm,asp-v2.0
+>     - items:
+>         - const: brcm,bcm74165-asp
+>         - const: brcm,asp-v2.1
 >
->root@149 # tcpdump -ttttnei wlp3s0 host 192.168.1.149 and not arp
->2023-05-23 09:29:46.771535 11:11:11:11:11:74 > BB:BB:BB:BB:BB:33, etherty=
-pe IPv4 (0x0800), length 98: 192.168.1.1 > 192.168.1.149: ICMP echo reques=
-t , id 64306, seq 53425, length 64
->2023-05-23 09:36:04.710859 bb:bb:bb:bb:bb:32 > BB:BB:BB:BB:BB:33, etherty=
-pe IPv4 (0x0800), length 98: 192.168.1.111 > 192.168.1.149: ICMP echo requ=
-e st, id 1, seq 2390, length 64
+> Although, given either you or Florian said there are likely to be
+> multiple parts, going for an enum, rather than const for the brcm,bcm..
+> entry will prevent some churn. Up to you.
+>
+Urg so close. Thought it was a trivial change, so didn't bother
+retesting the binding. I think I have it right now...
 
-	Some amount of random traffic arriving on the inactive interface
-of an active-backup bond is expected; switches send traffic to such
-places for various reasons.  My initial guess would be that the switch's
-forwarding entry for whatever BB:BB:BB:BB:BB:33 is expired, and the
-switch flooded traffic for that destination to all ports.  As an aside,
-what is that MAC address?  The last octet (33) doesn't appear in any of
-the bond info dumps you list later for the .149 host.
+  compatible:
+    oneOf:
+      - items:
+          - enum:
+              - brcm,bcm72165-asp
+              - brcm,bcm74165-asp
+          - enum:
+              - brcm,asp-v2.0
+              - brcm,asp-v2.1
 
-	In any event, an inactive bond interface will pass incoming
-traffic in two cases:
+Something like this look good? Will submit a v5 tomorrow.
 
-	1) its destination MAC address is in the link local reserved
-range, 01:80:c2:00:00:0?, which is used for things like Spanning Tree or
-LACP; the complete list can be found at
+Thanks,
+Justin
 
-https://standards.ieee.org/products-programs/regauth/grpmac/public/
+> Cheers,
+> Conor.
 
-	These should not be ARP or IP, and this is unlikely to be your
-situation.
+--000000000000d3d87605fc64baf0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-	2) Something is bound directly to the bond interface itself via
-a raw socket or the like; an example of this is LLDP, which needs to
-exchange protocol frames at the interface level.
-
-	Even if the bond accepted some IP traffic on the inactive
-interface and sent it up the stack, any reply should go back out the
-active interface.  This is based on the lack of failovers in the bond
-status stuff, and presuming that the routing table on .111 and .149 is
-what I'd expect (basically, a default route and subnet route for
-192.168.1.0/24 that go through the bond only).
-
-	Some suggestions that might help:
-
-	1) Check rp_filter; if it's not enabled, then turn it on in
-strict mode.  This means insuring that the sysctls for .all, the bond
-and its interfaces are all set to 1, e.g.,
-
-net.ipv4.conf.all.rp_filter =3D 1
-net.ipv4.conf.bond0.rp_filter =3D 1
-net.ipv4.conf.wlp5s0.rp_filter =3D 1
-[... and so on ...]
-
-	Setting any of them to 2 will enable loose mode (the maximum
-value between .all and the interface is what counts).  Loose mode, or
-rp_filter being off entirely, might be your problem if your routing is
-not simple (e.g., you've got other IP networks that you didn't
-describe).  The docs for this can be found at
-
-https://docs.kernel.org/networking/ip-sysctl.html
-
-	2) Enable the bonding option fail_over_mac =3D follow, this will
-cause the MAC of the bond interfaces to not be all set to the same MAC.
-If somehow the switch is getting confused by seeing the same MAC from
-multiple ports, this may help.
-
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+MIIQagYJKoZIhvcNAQcCoIIQWzCCEFcCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3BMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBUkwggQxoAMCAQICDCPwEotc2kAt96Z1EDANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjM5NTBaFw0yNTA5MTAxMjM5NTBaMIGM
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFDASBgNVBAMTC0p1c3RpbiBDaGVuMScwJQYJKoZIhvcNAQkB
+FhhqdXN0aW4uY2hlbkBicm9hZGNvbS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQDKX7oyRqaeT81UCy+OTzAUHJeHABD6GDVZu7IJxt8GWSGx+ebFexFz/gnRO/sgwnPzzrC2DwM1
+kaDgYe+pI1lMzUZvAB5DfS1qXKNGoeeNv7FoNFlv3iD4bvOykX/K/voKtjS3QNs0EDnwkvETUWWu
+yiXtMiGENBBJcbGirKuFTT3U/2iPoSL5OeMSEqKLdkNTT9O79KN+Rf7Zi4Duz0LUqqpz9hZl4zGc
+NhTY3E+cXCB11wty89QStajwXdhGJTYEvUgvsq1h8CwJj9w/38ldAQf5WjhPmApYeJR2ewFrBMCM
+4lHkdRJ6TDc9nXoEkypUfjJkJHe7Eal06tosh6JpAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
+BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
+Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
+NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
+A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
+aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
+cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
+MBqBGGp1c3Rpbi5jaGVuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
+GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUIWGeYuaTsnIada5Xx8TR3cheUbgw
+DQYJKoZIhvcNAQELBQADggEBAHNQlMqQOFYPYFO71A+8t+qWMmtOdd2iGswSOvpSZ/pmGlfw8ZvY
+dRTkl27m37la84AxRkiVMes14JyOZJoMh/g7fbgPlU14eBc6WQWkIA6AmNkduFWTr1pRezkjpeo6
+xVmdBLM4VY1TFDYj7S8H2adPuypd62uHMY/MZi+BIUys4uAFA+N3NuUBNjcVZXYPplYxxKEuIFq6
+sDL+OV16G+F9CkNMN3txsym8Nnx5WAYZb6+rBUIhMGz70V05xsHQfzvo2s7f0J1tJ5BoRlPPhL0h
+VOnWA3h71u9TfSsv+PXVm3P21TfOS2uc1hbzEqyENCP4i5XQ0rv0TmPW42GZ0o4xggJtMIICaQIB
+ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
+bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwj8BKLXNpALfemdRAwDQYJ
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIM6107KIzIg7ZGSq63Yd2J/EIC3AcHZ1fs+6
+HdczdXPnMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDUyMzIz
+MjcyNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
+BgkqhkiG9w0BAQEFAASCAQCEOYTFefkKGPcqcemq+2Ef4IhEpui7s1s39zxshj0swcJFtbUCggVU
+rY9dXREzHy1iUehzMqcyVU8ku/D7uevxNDw2OqcwfQmfKd0ElAkU8NoxmooLV9WiCmrN24BO6rhG
+WvOTXOFMB8OrOKR2sq89hRdzDKVMzpu6x8T9sLyk4VL9DX0ZgPnJt6ZbgcDN1z8K0rRwmIEZ9njB
+7Y4EcuUfcuHPOP+RVSKM6N+HYPwCX7N1bkr2bLvWpsRmpwGbc3Kk1kz/FG2dW6QlKfH/ugGqWC4E
+0bUZyIa8iNPjEWcHiedUoi9FJ8KaYqp6WVY3hLKvD5LW2HE03ap/JWzWzZBB
+--000000000000d3d87605fc64baf0--
 
