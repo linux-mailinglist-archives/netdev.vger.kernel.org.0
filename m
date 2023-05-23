@@ -1,143 +1,127 @@
-Return-Path: <netdev+bounces-4822-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4823-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9478270E92A
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 00:40:31 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3EFF770E933
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 00:43:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4D1701C20A52
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 22:40:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DF46F2810E8
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 22:43:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 486A4EEDB;
-	Tue, 23 May 2023 22:40:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7E031642C;
+	Tue, 23 May 2023 22:43:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3420CED5
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 22:40:28 +0000 (UTC)
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2057.outbound.protection.outlook.com [40.107.92.57])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D81CBF;
-	Tue, 23 May 2023 15:40:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Txw8wEsjghms3flUMUZwcj2sYwtsTj35nI9453XvMXOOGjiqSVl8T0y2EnPfL1ng17Dy8WL8l19AptyobNLREDo7LL0Bk8NBds7CLzveGGji6vfD7JNo0QXKHcdYcdkVZjuWoJQUn8w3tWJccQsLM3dqbOWoq+ngvEiIsnbWawrRa74u5tpR1MLCzl9+pkSu470hyI8bkDCHgqGeJD+5Wc1Fp1v93owbo0EFNjOX73A2u3C+UUShCIoXsutTLZaNgl9zrpCpnHoAFtqIcnVzB0v0DdJcOIU9LHqWCpqUxhYlbsaNQWsJnyRGZEd9yNkyKvrqJ0l997TkQiLy184sZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yVR95slMPVeVhHM6nc6jlrfG95xlCOFBE/tpIAri17w=;
- b=QskypTJvJflQI9i0ys7n9TsgxPuvFtpTScZYGwnrTG/w4zqcH/bMRKmTsBrNrdndKVcVrTCXUxiPHs155KJX0anrk0gOG1H+Zi5GpyyeYPrGV6ed/ZO5jGukOURFtOyyrYe+cRKfSjc2TusIcQqt/0pVv/yZgQOtKp6pUDsV+fo29ChU91olcLC+mWDAY6He1cnj5PnMu+TaJLaPa1cGABNhJw28esPD8AAHmh1n7qUKgO7Uyz7xIaYVdmHxIkn5NPyLtdvKI8o7Uzxfsu4E5VCFha2LMIDYBLC12S0AsA2/SscVFKTsIhyiZl8xZ/H2k/sG6FA6H2a1ErIJqeKJSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yVR95slMPVeVhHM6nc6jlrfG95xlCOFBE/tpIAri17w=;
- b=x/0o+ov6cP6tBRAc/aR7eiztMzMAr+BWS6Y+SkgiQNWf+WFQtvrGNtyUO3qmvmQlDa1atcDFx5kWFD0tvPqVVizc58ld0El8a9qffTnIlIfAPeWsTzy+mz/aeA6g9LXEGFJEyffWeihqyeIoTBVQo8/eDkwu/2yEGc57zVuTMiw=
-Received: from BN9PR03CA0457.namprd03.prod.outlook.com (2603:10b6:408:139::12)
- by CO6PR12MB5428.namprd12.prod.outlook.com (2603:10b6:5:35c::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Tue, 23 May
- 2023 22:40:23 +0000
-Received: from BN8NAM11FT088.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:139:cafe::f0) by BN9PR03CA0457.outlook.office365.com
- (2603:10b6:408:139::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.14 via Frontend
- Transport; Tue, 23 May 2023 22:40:23 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT088.mail.protection.outlook.com (10.13.177.81) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6411.30 via Frontend Transport; Tue, 23 May 2023 22:40:23 +0000
-Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 23 May
- 2023 17:40:22 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB07.amd.com
- (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 23 May
- 2023 15:40:22 -0700
-Received: from yuho-dev.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Tue, 23 May 2023 17:40:22 -0500
-From: Kenny Ho <Kenny.Ho@amd.com>
-To: David Howells <dhowells@redhat.com>, Marc Dionne
-	<marc.dionne@auristor.com>, "David S. Miller" <davem@davemloft.net>, "Eric
- Dumazet" <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, <linux-afs@lists.infradead.org>,
-	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>, <y2kenny@gmail.com>
-CC: Kenny Ho <Kenny.Ho@amd.com>
-Subject: [PATCH] Remove hardcoded static string length
-Date: Tue, 23 May 2023 18:39:44 -0400
-Message-ID: <20230523223944.691076-1-Kenny.Ho@amd.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBD40BA55
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 22:43:11 +0000 (UTC)
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A72CA;
+	Tue, 23 May 2023 15:43:10 -0700 (PDT)
+Received: from pps.filterd (m0353722.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34NMRkUk007808;
+	Tue, 23 May 2023 22:42:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=DPxFy0kgkp15W/17/zrdeqdPMfusaYNP5aDhFAM4+Ck=;
+ b=FPjsUBN9nNGZxtrvceZMhyx11qP5uJy8pzzwpeC9oLlBM9/LvQ7FlK7WFu0ZeqAom7lE
+ 5aUT5UdzxmhOuyWxqoHZR9Jd5MhGBe8W9T34DzHhY4ZoUKRdLh6KFE44KOA7Fb7A/Ixi
+ 22++KFIvzqWQwuxuTAoH6ROj3gZjOax4rWUsHOgYW7nWOkHfv/NHGVL07i28VUqEdVxF
+ +uXknIPwUF69YDCYJvtc9vsbStzNljIZ8ZAun3vfhH4jlzECyzMBiGElBlHodp2P+QyG
+ TwQDacojcvBNrKDC4WsmxiOOHIuOFlBO2/dMIfNXKWdZj3peLZ21t8Zr0Ay/nQGjqX0X uQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qs6a0r8k5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 May 2023 22:42:33 +0000
+Received: from m0353722.ppops.net (m0353722.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34NMZtCl027793;
+	Tue, 23 May 2023 22:42:32 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qs6a0r8jq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 May 2023 22:42:32 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+	by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34NLABhg016521;
+	Tue, 23 May 2023 22:42:30 GMT
+Received: from smtprelay03.dal12v.mail.ibm.com ([9.208.130.98])
+	by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3qppdswdnb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 May 2023 22:42:30 +0000
+Received: from smtpav04.dal12v.mail.ibm.com (smtpav04.dal12v.mail.ibm.com [10.241.53.103])
+	by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34NMgTr549611192
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 23 May 2023 22:42:29 GMT
+Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B92735805A;
+	Tue, 23 May 2023 22:42:29 +0000 (GMT)
+Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id CBD5458056;
+	Tue, 23 May 2023 22:42:28 +0000 (GMT)
+Received: from [9.211.103.243] (unknown [9.211.103.243])
+	by smtpav04.dal12v.mail.ibm.com (Postfix) with ESMTPS;
+	Tue, 23 May 2023 22:42:28 +0000 (GMT)
+Message-ID: <4c6723df-5d40-2504-fcdc-dfdc2047f92c@linux.vnet.ibm.com>
+Date: Tue, 23 May 2023 15:42:28 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT088:EE_|CO6PR12MB5428:EE_
-X-MS-Office365-Filtering-Correlation-Id: e953bc36-e3e4-40ba-5fcd-08db5bdeb212
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	DW8nbXNv+FVrgCN6+YauDGcIzzMydhLsQsbheevHhYannlLaY/bEkLqvjoTOM0qqCr42reIzYN67GaDY1nk620B0d0xamI+Jm6xDCRNtFamKUes9Ba0mC9oAPYZrJbmKvvBsxleI8FVy0i6r7GzjqS7ucqPYiYQ933NLayuXOsFjJ99Z0gEjWeXY4QCrSUrlJDUDrNA3aWlGacd0EtnJOgdGOec8paDKBlBkCTsd8yqt+YcBIgEWWEDUbkHKNggx4myimKlZDr2KXUTduatB708YOX1jS8Gk6InOQuTXy0TKfhxkw8imbsXvvFz6SvDzOAOU7mZRE2fhvNRTrw9XZxQMcLRJTlayVPuFLJGMbCG8BayKCbfOdeGGEKSE2E/sXvvHRfhBuJfcN4H3XT53M18xBIB9v+4U9a3L885kSp3OhRZZr2Scz47pBl22AXiadFuL+q4DW/lW4iBInIq9qp2UY/q8kr1aF0xOg61z0LJSEG31xQplkHZtWuifF8CCdj5fW9N5FrklLjogyeBZYB3MeyGJRd5+796VwWMPW42luEKQAga+DTivEn+Iu11MD9+R5IIghkJkoATBvkPM0MA+qIpT/SPfGS76JqLxMulstFbQU4nmmx1vPrI9veBX7bziBJaeqstCsYdpaFyRQctoaYPgHr3Wvj/u4aLIDQTzTljMxPbvR+O/3c0k8WKTi5uA8W8d6j+uaNvfZzZL4ohzy8ojKhI4EG0JqFoFEed7f38TudMkVI0ZB2X3FZjOxtuEypB/W8RqEgn04w0EqWwiStCMocEp106KMdGdyO0=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(396003)(136003)(346002)(451199021)(36840700001)(40470700004)(46966006)(41300700001)(70206006)(70586007)(2906002)(40480700001)(4744005)(186003)(1076003)(478600001)(4326008)(6666004)(7696005)(26005)(316002)(5660300002)(110136005)(7416002)(8936002)(8676002)(36860700001)(40460700003)(81166007)(921005)(356005)(36756003)(47076005)(2616005)(426003)(336012)(83380400001)(82310400005)(86362001)(82740400003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 22:40:23.1004
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e953bc36-e3e4-40ba-5fcd-08db5bdeb212
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT088.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5428
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.1
+Subject: Re: [PATCH net-next 08/11] iavf: switch to Page Pool
+To: Alexander Lobakin <aleksander.lobakin@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Christoph Hellwig <hch@lst.de>, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
+References: <20230516161841.37138-1-aleksander.lobakin@intel.com>
+ <20230516161841.37138-9-aleksander.lobakin@intel.com>
+Content-Language: en-US
+From: David Christensen <drc@linux.vnet.ibm.com>
+In-Reply-To: <20230516161841.37138-9-aleksander.lobakin@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: SevONVa19cfGb6wVMoCGcEghTdYgfyUF
+X-Proofpoint-ORIG-GUID: JrrJtm8H54URjr6Drg0Je3S2Jk_G02FA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-23_14,2023-05-23_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1011
+ mlxscore=0 lowpriorityscore=0 bulkscore=0 mlxlogscore=883 suspectscore=0
+ spamscore=0 phishscore=0 priorityscore=1501 malwarescore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
+ definitions=main-2305230181
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-UTS_RELEASE length can exceed the hardcoded length.  This is causing
-compile error when WERROR is turned on.
 
-Signed-off-by: Kenny Ho <Kenny.Ho@amd.com>
----
- net/rxrpc/local_event.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/rxrpc/local_event.c b/net/rxrpc/local_event.c
-index 19e929c7c38b..61d53ee10784 100644
---- a/net/rxrpc/local_event.c
-+++ b/net/rxrpc/local_event.c
-@@ -16,7 +16,7 @@
- #include <generated/utsrelease.h>
- #include "ar-internal.h"
- 
--static const char rxrpc_version_string[65] = "linux-" UTS_RELEASE " AF_RXRPC";
-+static const char rxrpc_version_string[] = "linux-" UTS_RELEASE " AF_RXRPC";
- 
- /*
-  * Reply to a version request
--- 
-2.25.1
+On 5/16/23 9:18 AM, Alexander Lobakin wrote:
+> Now that the IAVF driver simply uses dev_alloc_page() + free_page() with
+> no custom recycling logics and one whole page per frame, it can easily
+> be switched to using Page Pool API instead.
 
+Any plans to add page pool fragmentation support (i.e. 
+PP_FLAG_PAGE_FRAG) in the future to better support architectures with 
+larger page sizes such as 64KB on ppc64le?
+
+Dave
 
