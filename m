@@ -1,113 +1,75 @@
-Return-Path: <netdev+bounces-4590-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4591-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EFB5870D6C0
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:09:44 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id F16A170D6CB
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 10:11:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A64D21C20CB4
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 08:09:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ACA2E281267
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 08:11:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2D6571DDF4;
-	Tue, 23 May 2023 08:09:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA93D1DDF4;
+	Tue, 23 May 2023 08:11:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0512D1D2D8;
-	Tue, 23 May 2023 08:09:38 +0000 (UTC)
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D7F10E7;
-	Tue, 23 May 2023 01:09:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684829348; x=1716365348;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=5TOMDN4fok71tycgPZVphIXYPVKoGE699Qc3mpnM5Gw=;
-  b=aGbFHNz4PJY95pGFTFBL/J5/F8PasPrcb7oRUIhOpVlbsXeggomJI1L6
-   78kU7qzyD/78vB465jyC4ECK08g68ZeOvbD3g0PPRbwnzbbhteug+pWmW
-   JIk+28o5ESVLwcI4XigCaM0gSw1vdCUtM9nIPqxkTgtpgRxBnc4iM38or
-   yqvXx1ofwML5SOU9lRZGderWnFtqR5UYE6lJ9yPAH4EEhjy30ltzdNG+F
-   6PJ6MPtr2AzpgHZHrW44w54MNYp9ESgFqVWXoQp57w1StAZy36XAylQp7
-   cYjDUUM4dezOwjJLAx4g3bTrtayU4rhypQw5BS/6D4LICCIHSoc6xNLBK
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="350678193"
-X-IronPort-AV: E=Sophos;i="6.00,185,1681196400"; 
-   d="scan'208";a="350678193"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2023 01:07:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="768904448"
-X-IronPort-AV: E=Sophos;i="6.00,185,1681196400"; 
-   d="scan'208";a="768904448"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga008.fm.intel.com with ESMTP; 23 May 2023 01:05:40 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 23 May 2023 01:05:40 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 23 May 2023 01:05:40 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Tue, 23 May 2023 01:05:40 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.176)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Tue, 23 May 2023 01:05:39 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7D251D2BF
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 08:11:24 +0000 (UTC)
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2040.outbound.protection.outlook.com [40.107.95.40])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A60E1980
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 01:10:59 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SQ9SYgymG/MPKX5U/gLeAg1eD6EQTdk5/YBK+oDFWc1/3NNff4xqkpFqyzSFl0HbwDjinZYMjnRTnRLoFuKQ7OT7OKvFQz7bkZJlad2K7EF4OGMr6S0ub7lVqeLiPv62Ix1eOANX+/gue8Q4giyCZ2fNIsvRPQZnrajdzHwMhA503OXZAsQ1V88tC0UGbOWtplp1j+6FMdjqIypyRjZVjrXTJkNa5F1VL9s2NDzX6QzjrH7k681n8iPJgxP2/3urya9U66vQEozU+p67K/WBGpeZ6aDZU1MWyJNR5tqIt9R76OrYDiY4LqgN8Zr4NtWEFDByvjXWA337tHpvBpcY/Q==
+ b=KHrC6MODICeoSoksTj6HxheTpynNpsKK18Vn5KHwseKsO89xlnxsUuWMEivk0Md72CSkIrsrwuRcM0cPXeyHQd8Q2C65AucxpgRZ19XZrdDf0Vu4eHXXxhDaeYAMp0duh4MyRvCqedIqRVvT0BkMrE5SXEProziHyQXYNziBsfL7RKQRNEW3ItBN/qwLDSZaoqmHN6hdGuPc7pF9V99zbL7x2acTgHHizpuk+0N2SSMHX9+dPnBwKnlY2mdV4eVtsnWZ9LJwxPkirCCkjy6IKGOefwnBKQVEJpW83Q9N2qV4uSe1tMjVy6yJOqYa+0ZbEZqblUlWxHzs/qxE2bm7Sg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hy1tV7RxNPWzYBQ2V73oIwEQYOY9hkQY8DoyqX45+c8=;
- b=ILVbyzE/nqpk6MqZdc1+WJAfAKLmIdgFCI2My/JyFQoZqA87x4Q8qb8nfPsI1bQjaS3LFNq3AEVjgaSeMtCkG0TbEHyCyYfGzNe4IBEeVrRi8VdSkMFnOI5/ztyQiiHWwToiNnmr1syzEs3JuCNRIZcQC4n7vEsYtHQ9SjJyA5nNqSZpfyx/+Ila5gxYFgIppHG02bRxpXBJLsqwk7XPP9Km3/JdsjndXeMhFFmZ3F+/0yTI3MAE2FyDU7lqvKKIoOB3q6UpxACU+oIoEuzfAdnoqDXRlkkEjaksxdKKgffD5a0jwr+s8oE8cNvxnKlQgAAdt83u0814sOXxzFrlVg==
+ bh=sZueTtt0AD4Zkz6gRNUOVHfwxQzF+RhTeQHA0ozMz2w=;
+ b=A5EwiryWb6SkojpJEkhcWTvSzWLMk8gV1URfn5jdUECAkXfyDQR0L8jFO9csZifxk2Pe1SAmOcfpexe2IixUDRUUutiOkPVjkEagPnMCZa+9Q+iQ9CVNWDhRlxP2uVG2UlzE2L/MGonPY86O0xnV23Enu8EoabWlqldRR9pUWTenACRsjOpWqOs3XXlGKoObrfNu7gGE1ezkRvJy3rTj1DWmIyy07EVfpDSFlc4OD7QCyYFO4SXt2HpI7z4XyfSCNaJm+zZs7VcC8CWwf67JVEvMuVhAUAJkpZ8ibh7Rr3+LRNVWEFFsqm1AVNWtX1Wa3XiH5Uxz1tKmnNWENaXUHw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sZueTtt0AD4Zkz6gRNUOVHfwxQzF+RhTeQHA0ozMz2w=;
+ b=ch00Fv8UxXQF9fUvTZtiy3k03Ix1EUNor09liRXVU+sUVpE5VDIp83niLgJbTvmMr/aVA5owoUhWAQACcKfDIRsTPz1EoYIasbTeuMSAhKqcjwk+ZohRLbv2WUZLPK2ACCc3800u/G+GwGc1myv54thaUJ2JhldXVKc4ElWtupUvykf6UJqX7CcLm9TwX1Y4CEh8oi8V3rulw1HPPKelkYEQ4BSw0r2bnQvRV2zAlIfTNv7ifkj6Tr33bRJ7PyM8248XKkzY2tOXarkjXzg0wnh9zypePf5l8n7RsgJ/moC21gmuNllPbz8gcf7TskxHy3kAwburMz/kR3qHYkfSGg==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB5471.namprd11.prod.outlook.com (2603:10b6:5:39d::10)
- by MW4PR11MB6812.namprd11.prod.outlook.com (2603:10b6:303:207::9) with
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by MW4PR12MB7119.namprd12.prod.outlook.com (2603:10b6:303:220::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Tue, 23 May
- 2023 08:05:36 +0000
-Received: from DM4PR11MB5471.namprd11.prod.outlook.com
- ([fe80::907c:ffaa:352a:8913]) by DM4PR11MB5471.namprd11.prod.outlook.com
- ([fe80::907c:ffaa:352a:8913%7]) with mapi id 15.20.6411.028; Tue, 23 May 2023
- 08:05:36 +0000
-Date: Tue, 23 May 2023 10:02:42 +0200
-From: Larysa Zaremba <larysa.zaremba@intel.com>
-To: Alexander Lobakin <aleksander.lobakin@intel.com>
-CC: <bpf@vger.kernel.org>, Stanislav Fomichev <sdf@google.com>, "Alexei
- Starovoitov" <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, Andrii
- Nakryiko <andrii@kernel.org>, Jakub Kicinski <kuba@kernel.org>, Martin KaFai
- Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, Yonghong Song
-	<yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>, "KP Singh"
-	<kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>, Jesse Brandeburg
-	<jesse.brandeburg@intel.com>, Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Anatoly Burakov <anatoly.burakov@intel.com>, Jesper Dangaard Brouer
-	<brouer@redhat.com>, Alexander Lobakin <alexandr.lobakin@intel.com>, "Magnus
- Karlsson" <magnus.karlsson@gmail.com>, Maryam Tahhan <mtahhan@redhat.com>,
-	<xdp-hints@xdp-project.net>, <netdev@vger.kernel.org>,
-	<intel-wired-lan@lists.osuosl.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RESEND bpf-next 05/15] ice: Introduce ice_xdp_buff
-Message-ID: <ZGxzIqbkgzSBWSIX@lincoln>
-References: <20230512152607.992209-1-larysa.zaremba@intel.com>
- <20230512152607.992209-6-larysa.zaremba@intel.com>
- <7a1716ca-365f-c869-3a57-94413234fb32@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+ 2023 08:10:46 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::66d8:40d2:14ed:7697]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::66d8:40d2:14ed:7697%3]) with mapi id 15.20.6411.028; Tue, 23 May 2023
+ 08:10:46 +0000
+Date: Tue, 23 May 2023 11:10:38 +0300
+From: Ido Schimmel <idosch@nvidia.com>
+To: Jakub Kicinski <kuba@kernel.org>, razor@blackwall.org
+Cc: netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+	davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+	roopa@nvidia.com, taras.chornyi@plvision.eu, saeedm@nvidia.com,
+	leon@kernel.org, petrm@nvidia.com, vladimir.oltean@nxp.com,
+	claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+	UNGLinuxDriver@microchip.com, jhs@mojatatu.com,
+	xiyou.wangcong@gmail.com, jiri@resnulli.us, taspelund@nvidia.com
+Subject: Re: [PATCH net-next 1/5] skbuff: bridge: Add layer 2 miss indication
+Message-ID: <ZGx0/hwPmFFN2ivS@shredder>
+References: <20230518113328.1952135-1-idosch@nvidia.com>
+ <20230518113328.1952135-2-idosch@nvidia.com>
+ <1ed139d5-6cb9-90c7-323c-22cf916e96a0@blackwall.org>
+ <ZGd+9CUBM+eWG5FR@shredder>
+ <20230519145218.659b0104@kernel.org>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7a1716ca-365f-c869-3a57-94413234fb32@intel.com>
-X-ClientProxiedBy: FR0P281CA0090.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1e::15) To DM4PR11MB5471.namprd11.prod.outlook.com
- (2603:10b6:5:39d::10)
+In-Reply-To: <20230519145218.659b0104@kernel.org>
+X-ClientProxiedBy: VI1PR0902CA0059.eurprd09.prod.outlook.com
+ (2603:10a6:802:1::48) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -115,238 +77,114 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB5471:EE_|MW4PR11MB6812:EE_
-X-MS-Office365-Filtering-Correlation-Id: b2d84a10-e3ed-4a24-2004-08db5b647d41
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|MW4PR12MB7119:EE_
+X-MS-Office365-Filtering-Correlation-Id: bbf4e46c-7bb8-4a37-2093-08db5b6535b0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WS5BxjSYvrRskXYJpLDHt1DQTacq6QF9SaWoYnsWWOEnyIgmV/6HAMRy33OGdzjPar3HC1TjqrBvjeDEc2erOZwOjtCL/4vV2DJfpIFVvmtrccuZMfIcYof47eGNO2hd4QJsTzALWgwtbzvd8XV4+SvMkidqMd4ACUo0wcYXWz/XNaYXEjKTjSAa6bip2Zu3dOr4cB3IolHH8OTgfKNLnXN8TtS7gTBQoIAiOodcbu98GqtHxzFaAY7Le01vz9LmHf1FGn+w+fznxmkxutZfQ4WGO7XrbWLSekBuTvJ1eku6gGUchanIbsWwbtKMpJLW2ke0KKggJ8YYe0GFWmmDf7AnpIiBobdw6PM9RGJ6rN8K3UDV8tQiy7T9YJSlY1ntLuHL/d3p03H+/f9JGcd3EgwYVHjTzdPL3CLw5Baa+rkBQCeiy2FMEbqCJ7Qqu2c5dpvmBywZklmiH8gXbiSbNV1eo4/3a74jD93M4S1KPcs9dTsNYE+by9phjGuT8B5RmnajBXvvRedngfDZeEqheG+cFDSohDTFWDKqjsQQ24kQA1QHwYCL/IqZ6s9mcVzy
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5471.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(136003)(396003)(376002)(39860400002)(346002)(366004)(451199021)(6862004)(8936002)(8676002)(5660300002)(44832011)(7416002)(33716001)(186003)(83380400001)(6512007)(6506007)(9686003)(26005)(86362001)(38100700002)(82960400001)(41300700001)(6666004)(6486002)(66946007)(66476007)(66556008)(316002)(6636002)(4326008)(478600001)(54906003)(2906002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info:
+	jdLIK1I91yHzkAphaCrJSxH7z+QnOziLgDu1Zcvzq84qLztvfMphEaON+6GF2W1E8dhiZaOMrV6xho8Nxdy5ccMA9uUqTE8QWgZU5z6W1tYac8eTuPyz0phLSl4aUk6nASo683Brb/OM80+6BjhGRFd5wrNp4ZfvucHpv+1kHZ4PVxgJptvTwz0/7OqfXEXmIkPdAzyZCOxsc82vPiwM6Fy4DWue02ohSo9TvOoFgQcwrw3vdXxxI9nFuq43Hh0vtSlt2ym5U6IQ0jchN5MZkupSKoT9+cMsFE5e9Tbgxjw/+JabwmpaZW82/k3/3hiO/nSqZbxyipn4lp/igXV+53hVHDgl0NfMZIoYEFiHV3Jr3mDLgXMhQ+/ATdewgJWlecuzs9J5Ca4Ea+USglFr0JIrGLglvdklGoUh4+v6ImAT2Hn4JxMJrAb08FRcOsf4VKOkDMbCaLQtak9fhchSjdjGfDSJE/pS48txd4E1ofTw6D5QnupjOcugt/MTc5HrNadxqOBrzqCKndmMPZ7yMuSfVa2AuC+iomxVhCE96sXF57CtgkUzrOIoVKKIkKVaNF67f41S2Ok5d7lso50PzFz0KUrRx/ZVWP9JfiZ5P0tjBaUXyn379YccGKbeA/6dzf9FMCErGKsHU2xAJvs6tQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(366004)(136003)(346002)(39860400002)(376002)(396003)(451199021)(6512007)(6506007)(26005)(9686003)(316002)(6666004)(41300700001)(6486002)(66476007)(4326008)(66556008)(66946007)(478600001)(966005)(8936002)(8676002)(7416002)(5660300002)(83380400001)(107886003)(33716001)(86362001)(38100700002)(2906002)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FlOdnT03fZjvRHmKkPQEbtUUhzxFNX+7PqG+RrxoqjvZ/v5IrGMXXqCLyLPp?=
- =?us-ascii?Q?nDQVtz5oD+2+K8ftiRFtKAtFocEgNQkBIAETqQEcSR1nvIJ6LsjUrg67Uopj?=
- =?us-ascii?Q?GxkvyZ7CQnwL8w4Qj6oz3zonsO585W8HRUZtLPY3COVb/cWjAnA9dqzAWDiJ?=
- =?us-ascii?Q?xfvB/h4jzgLpnxhBWXLX+73meqSbWd8yihS+hSzHqKauBIkA0txhrq15T5YT?=
- =?us-ascii?Q?V0WyZDGXZL6JcY+xeobCJO7teW7vqJTV5IsYpnoJfAQDsA9iv1vTpxfWqvM/?=
- =?us-ascii?Q?0+f29qHBDzRo4UDTdVsCou14UymcQ6+qfTQ3JV1zZk2gjjiaMrl+rvECDilh?=
- =?us-ascii?Q?XSOAGhOm8JHpQkeCj2iRp7xmZa7lmz1vQjUUlzxjjSBprPStIGSguPcS/6hb?=
- =?us-ascii?Q?sbAbQyFB2PIYTtzp0fi8s7sBcos2g9cYCooVhH2utW/X+vYBlLLd5RU0J0Q+?=
- =?us-ascii?Q?TeeURtwq8QEBljXjBtvIAQBBN161JVlc0U34i4K16tbjLAdLaWfYpFnB4bzk?=
- =?us-ascii?Q?NoPcN2NVKH1JxMEpmAXSaAof/nhPVtR8hAyNT8zhLDIWt4cBb0N5Yqm4Kcc3?=
- =?us-ascii?Q?K4j05YCajaefRLe23e7w3VWmJx4z2HCJcTn7hWQcUcncT2tz4FOkkaau4QML?=
- =?us-ascii?Q?tSzWGA8vMRhnwQpWOUEAp8KVPnU11+RKcZiGVZWRqddQmoCzQZ99/HzmWgib?=
- =?us-ascii?Q?y7OuStvqJVyOj83HPQt7qbJPKQ51J4f3jCYvMtikVwauMtq25vW5FG//sBpW?=
- =?us-ascii?Q?LgIiK68bJA5FLSxYHp24ph8rJ0WYk9gvbRhPqbyVBOHLQ1j54ZKfB/RK7IG4?=
- =?us-ascii?Q?RIx9tBczfHpTiDtJR5VxH/+pc8rISL3SPHSz5zKITVAVVuBvs8/UJXN/n+ju?=
- =?us-ascii?Q?ZnM32s9+qchmP8aNNsvNxDxlEb2SjKF5MYGsRf1OMN0ofwet4VfpEu9EhMDk?=
- =?us-ascii?Q?24aDz1bW5sag63DITbMzFIpv9Ij4zT6HbqG8Uk7lRdqAP6NL2pjQekDgOO6i?=
- =?us-ascii?Q?s/cykrhETJimPJdISldcVDS+zR2/Jua8PwnfcY7uzrBwe9du5vjTdzZpWsr5?=
- =?us-ascii?Q?pzcUCjP7osdg2jmkMhfIcXOCnGSvtSscSEMrqmcFkMpWIONto7KYjCzrfy1V?=
- =?us-ascii?Q?oYycBNpGKDHZXHk4JgoUObvD8qXVYyhWtadvwRr5JkT7AD/9YHvJRpR0ZxdX?=
- =?us-ascii?Q?tnOYA0CmCbQg4GBE9orpe5zfXFuaPXrduAyOXgjeGx7gWL032XnlqgAfcJ32?=
- =?us-ascii?Q?rX8pgPCiR/gJBSUl6oK061PiA4fUsUHd6hbXvo9lpvceoYHWaV4su00qCli9?=
- =?us-ascii?Q?Ibo7XWdrD1GFYyNqNlVlGbD6VHKUfQeX7f3urNt00yPXqW12LXSOig3LpJHW?=
- =?us-ascii?Q?19ErzAQGs9q5WAwBeahmHeU3KhcRM9gfLCE5uz6lepoXpWUoNh8vxQuDf4Hw?=
- =?us-ascii?Q?ncPPZ6z5lMVL5l/HGg5/t8SmxkRziyLdZ8B1JpFscovyAu1O6TGKfOMk0oYI?=
- =?us-ascii?Q?MHY5h8Ezg1KaSgOpWn42qiKqfsICh3XnwW3cvthZ/gjzHgU1Xx+x6s2ue/SZ?=
- =?us-ascii?Q?Riw242zCp0v+DeJ/LQllX5m7mAknx486sMYaqvgleNersgRnCsNcj5dhGvwr?=
- =?us-ascii?Q?PA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2d84a10-e3ed-4a24-2004-08db5b647d41
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5471.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?0Kh3E/u/jEjv9Yp+5fY3krS6E80WL8JtuiIDttyBO5rIZNaS7SHSUHJbvtS4?=
+ =?us-ascii?Q?N1/l8Z7cDsY4O67U+VkR3DNmhVq80lKaSz8B3p+MS3R092IJrJ0teJj7sARa?=
+ =?us-ascii?Q?56aM65YdufwJLWBY8hY0Mt/EeRLusi25Y9sO/e3yvoA2+pV8KpOH+ctLSCLM?=
+ =?us-ascii?Q?KyHWsL7ipWH4znWKydPi5wTpF9QazWlN+OTD/DbzAKBxMzskXLjuS7eQ+TZ0?=
+ =?us-ascii?Q?2x6P7llRf2gI7AOBHPcEJ3om5N2Yva1rdgqQrvXDFKefAtvRz8C7u55SMKbm?=
+ =?us-ascii?Q?hmxlUghN3fwznbGdHocPcqwajaY8U5ElPxoRtHYfYjX1skIoLScp3QJztvud?=
+ =?us-ascii?Q?0BtzbRMMxN9lca9rdfEFdU64sjsl4g/Q7dJpX3NMp7DX1yK8W3kJU7lFdMYE?=
+ =?us-ascii?Q?cHttFvEuQ2KLtOAaSC7A+G2Fs3814DXl3FH6BvXItcJpqEOqa+vvA0eTNEbm?=
+ =?us-ascii?Q?SrUMrutWFtVVF8SeyqURiiyohxHCDbTpPRVloqxc2GNpYaovYIJRWHJZOwB/?=
+ =?us-ascii?Q?iH3Qd+C8OxPRmELWq5Evp0f28xavtzWw+3FYB4W42kfxkkpJ2bdJF1qhqYZT?=
+ =?us-ascii?Q?FRbzpJYLscPoknqKWoWgilM2k3tnq1z27VEel1jPwHVb6jyUPtDTumyg4++F?=
+ =?us-ascii?Q?M1/Bhka6N9EtalvpRqTcva79p7MIb50lxOYVpdaa6I2kCZPvJ0REliPU88RS?=
+ =?us-ascii?Q?sJdJgLFBYD5f44YLo864msAfU43SWB4JmmHqc7ygsrf+gKZFl3bYBpifWifV?=
+ =?us-ascii?Q?vZeWt8rGbUx++1/8MdsNDpTZiDJF9lBhgXDY1HFc6m9wLg2SP9GBg1wjUA8k?=
+ =?us-ascii?Q?Hhk3IsYrQx2ZX6KXx0BG/hU9MxEEEwEuxUhdxkB3kFRIks8+K0kkkNzs8yz5?=
+ =?us-ascii?Q?FAZ6lDNzEZIDFja8KqhBqNVy81gYvVOWKlFbmOkYSMVHxiugLVdOAhxCZ5iX?=
+ =?us-ascii?Q?IFzwMiWU7rehLYivVi9glUu69lxFg3xIcwz+oAsNe+1BR9xQwAFGj0VX9tnw?=
+ =?us-ascii?Q?u3u02bUVxmNnnk9vvN/rxEliI8iKrA8+vAKxaeZ8DRIlq2rDBKqTGsxJwr9t?=
+ =?us-ascii?Q?l9IbDVoc5gZOHfq6qW2lcuPYKCVy6VxFPd2PWcMa+5jDXonnAno7jjROhgUy?=
+ =?us-ascii?Q?2xV1e8xFbydOcQgU6VtuCtfiusbbzWMi8k0xVaDmLqcZkc215HZYTUO6sJfx?=
+ =?us-ascii?Q?CBBskMKijPvcmQh7W4y3SRaRxczPdTNxel9P8tSqOEZT7KwoItlhpnEsQs/C?=
+ =?us-ascii?Q?pG3/vyugntuPeHZLD79cyJ+DAdzB5ThZMy115zqslU1naK44kjhBCtlXWdmt?=
+ =?us-ascii?Q?lIywOGXPaJQmkzKvfikq0NM9suWbl7DGpWn0niEyg2ZIuNZynUtY7PsiR/tJ?=
+ =?us-ascii?Q?6jPt42w1sr0/c9Vbt3NhvdjKIrnuURIPDK7dtcB2yDWEiMtTtIROj7GCrAqn?=
+ =?us-ascii?Q?Jl93m8iKFZLnB9EgqoR5CqFnbP1u3OVGvdu+g2MIWtiqmGyMrD7fsa+EkK7A?=
+ =?us-ascii?Q?B6dkiMoSXOdozX8sRgTR4G0rJz5Y70ietNJTgGxee2SS/oUIWtFwk1Bk572R?=
+ =?us-ascii?Q?Uw7oVWmT2WP5XHNbcijs8Dnudf3CCHDe3j2StyKd?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bbf4e46c-7bb8-4a37-2093-08db5b6535b0
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 08:05:36.2880
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2023 08:10:45.6578
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9X5JzENqK0ANcE+UE/LabAET8Fnj2A5NkASHFdIKb2UD/yMULYRQ2ttCzxX/tTRVLjRhsEiRZaSwDgJrwr9bJQaY+uglVufuyGpJ4mUMUig=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6812
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1uqhvkbRMkeajiJu9Z02JFzD/5B0k3Q4ysDfOKzjgH8lvfkMm/elKyGpEPWwZonUZ8+xNedKDPGM9xkG4r4xhw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7119
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023 at 06:46:40PM +0200, Alexander Lobakin wrote:
-> From: Larysa Zaremba <larysa.zaremba@intel.com>
-> Date: Fri, 12 May 2023 17:25:57 +0200
-> 
-> > In order to use XDP hints via kfuncs we need to put
-> > RX descriptor and ring pointers just next to xdp_buff.
-> > Same as in hints implementations in other drivers, we archieve
-> > this through putting xdp_buff into a child structure.
-> > 
-> > Currently, xdp_buff is stored in the ring structure,
-> > so replace it with union that includes child structure.
-> > This way enough memory is available while existing XDP code
-> > remains isolated from hints.
-> > 
-> > Size of the new child structure (ice_xdp_buff) is 72 bytes,
-> > therefore it does not fit into a single cache line.
-> > To at least place union at the start of cache line, move 'next'
-> > field from CL3 to CL1, as it isn't used often.
-> > 
-> > Placing union at the start of cache line makes at least xdp_buff
-> > and descriptor fit into a single CL,
-> > ring pointer is used less often, so it can spill into the next CL.
-> 
-> Spill or span?
-
-I guess 'span' is the better word.
-
-> 
-> > 
-> > Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice_txrx.c     |  7 ++++--
-> >  drivers/net/ethernet/intel/ice/ice_txrx.h     | 23 ++++++++++++++++---
-> >  drivers/net/ethernet/intel/ice/ice_txrx_lib.h | 11 +++++++++
-> >  3 files changed, 36 insertions(+), 5 deletions(-)
-> 
-> [...]
-> 
-> > --- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-> > +++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-> > @@ -260,6 +260,15 @@ enum ice_rx_dtype {
-> >  	ICE_RX_DTYPE_SPLIT_ALWAYS	= 2,
-> >  };
+On Fri, May 19, 2023 at 02:52:18PM -0700, Jakub Kicinski wrote:
+> On Fri, 19 May 2023 16:51:48 +0300 Ido Schimmel wrote:
+> > diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> > index fc17b9fd93e6..274e55455b15 100644
+> > --- a/net/bridge/br_input.c
+> > +++ b/net/bridge/br_input.c
+> > @@ -46,6 +46,8 @@ static int br_pass_frame_up(struct sk_buff *skb)
+> >          */
+> >         br_switchdev_frame_unmark(skb);
 > >  
-> > +struct ice_xdp_buff {
-> > +	struct xdp_buff xdp_buff;
-> > +	union ice_32b_rx_flex_desc *eop_desc;	/* Required for all metadata */
-> 
-> Probably can be const here as well after changing all the places
-> appropriately -- I don't think you write to it anywhere.
-
-Correct.
-
-> 
-> > +	/* End of the 1st cache line */
-> > +	struct ice_rx_ring *rx_ring;
-> 
-> Can't we get rid of ring dependency? Maybe there's only a couple fields
-> that could be copied here instead of referencing the ring? I just find
-> it weird that our drivers often look for something in the ring structure
-> to parse a descriptor ._.
-> If not, can't it be const?
-
-You're right, I could put just rx_ring->cached_phctime into this structure.
-But I recall you saying that if we access ring for timestamps only this is not a 
-problem :)
-
-> 
-> > +};
+> > +       skb->l2_miss = BR_INPUT_SKB_CB(skb)->miss;
 > > +
-> > +static_assert(offsetof(struct ice_xdp_buff, xdp_buff) == 0);
-> > +
-> >  /* indices into GLINT_ITR registers */
-> >  #define ICE_RX_ITR	ICE_IDX_ITR0
-> >  #define ICE_TX_ITR	ICE_IDX_ITR1
-> > @@ -301,7 +310,6 @@ enum ice_dynamic_itr {
-> >  /* descriptor ring, associated with a VSI */
-> >  struct ice_rx_ring {
-> >  	/* CL1 - 1st cacheline starts here */
-> > -	struct ice_rx_ring *next;	/* pointer to next ring in q_vector */
-> >  	void *desc;			/* Descriptor ring memory */
-> >  	struct device *dev;		/* Used for DMA mapping */
-> >  	struct net_device *netdev;	/* netdev ring maps to */
-> > @@ -313,12 +321,19 @@ struct ice_rx_ring {
-> >  	u16 count;			/* Number of descriptors */
-> >  	u16 reg_idx;			/* HW register index of the ring */
-> >  	u16 next_to_alloc;
-> > -	/* CL2 - 2nd cacheline starts here */
-> > +
-> >  	union {
-> >  		struct ice_rx_buf *rx_buf;
-> >  		struct xdp_buff **xdp_buf;
-> >  	};
-> > -	struct xdp_buff xdp;
-> > +	/* CL2 - 2nd cacheline starts here
-> > +	 * Size of ice_xdp_buff is 72 bytes,
-> > +	 * so it spills into CL3
-> > +	 */
-> > +	union {
-> > +		struct ice_xdp_buff xdp_ext;
-> > +		struct xdp_buff xdp;
-> > +	};
+> >         /* Bridge is just like any other port.  Make sure the
+> >          * packet is allowed except in promisc mode when someone
+> >          * may be running packet capture.
+> > 
+> > Ran these changes through the selftest and it seems to work.
 > 
-> ...or you can leave just one xdp_ext (naming it just "xdp") -- for now,
-> this union does literally nothing, as xdp_ext contains xdp at its very
-> beginning.
+> Can we possibly put the new field at the end of the CB and then have TC
+> look at it in the CB? We already do a bit of such CB juggling in strp
+> (first member of struct sk_skb_cb).
 
-I would like to leave non-meta-related-code rather unaware of existance of 
-ice_xdp_buff. Why access '&ring->xdp.xdp_buff' or '(struct xdp_buff *)xdp', when 
-we can do just 'ring->xdp'?
+Using the CB between different layers is very fragile and I would like
+to avoid it. Note that the skb can pass various layers until hitting the
+classifier, each of which can decide to memset() the CB.
 
-> 
-> >  	/* CL3 - 3rd cacheline starts here */
-> >  	struct bpf_prog *xdp_prog;
-> >  	u16 rx_offset;
-> > @@ -328,6 +343,8 @@ struct ice_rx_ring {
-> >  	u16 next_to_clean;
-> >  	u16 first_desc;
-> >  
-> > +	struct ice_rx_ring *next;	/* pointer to next ring in q_vector */
-> 
-> It can be placed even farther, somewhere near rcu_head -- IIRC it's not
-> used anywhere on hotpath. Even ::ring_stats below is hotter.
+Anyway, I think I have a better alternative. I added the 'l2_miss' bit
+to the tc skb extension and adjusted the bridge to mark packets via this
+extension. The entire thing is protected by the existing 'tc_skb_ext_tc'
+static key, so overhead is kept to a minimum when feature is disabled.
+Extended flower to enable / disable this key when filters that match on
+'l2_miss' are added / removed.
 
-Ok, I'll try to but it further from the start.
+bridge change to mark the packet:
+https://github.com/idosch/linux/commit/3fab206492fcad9177f2340680f02ced1b9a0dec.patch
 
-> 
-> > +
-> >  	/* stats structs */
-> >  	struct ice_ring_stats *ring_stats;
-> >  
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.h b/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-> > index e1d49e1235b3..2835a8348237 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-> > +++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-> > @@ -151,4 +151,15 @@ ice_process_skb_fields(struct ice_rx_ring *rx_ring,
-> >  		       struct sk_buff *skb);
-> >  void
-> >  ice_receive_skb(struct ice_rx_ring *rx_ring, struct sk_buff *skb, u16 vlan_tag);
-> > +
-> > +static inline void
-> > +ice_xdp_set_meta_srcs(struct xdp_buff *xdp,
-> 
-> Not sure about the naming... But can't propose anything :clownface:
-> ice_xdp_init_buff()? Like xdp_init_buff(), but ice_xdp_buff :D
+flow_dissector change to dissect the info from the extension:
+https://github.com/idosch/linux/commit/1533c078b02586547817a4e63989a0db62aa5315.patch
 
-ice_xdp_init_buff() sound exactly like a custom wrapper for xdp_init_buff(), but 
-usage of those functions would be quite different. I've contemplated the naming 
-of this one for some time and think it's good enough as it is, at least it 
-communicates that function has sth to do with 'xdp' and 'meta' and doesn't sound 
-like it fills in metadata.
-> 
-> > +		      union ice_32b_rx_flex_desc *eop_desc,
-> > +		      struct ice_rx_ring *rx_ring)
-> > +{
-> > +	struct ice_xdp_buff *xdp_ext = (struct ice_xdp_buff *)xdp;
-> 
-> I'd use container_of(), even though it will do the same thing here.
-> BTW, is having &xdp_buff at offset 0 still a requirement?
+flower change to enable / disable the key:
+https://github.com/idosch/linux/commit/cf84b277511ec80fe565c41271abc6b2e2f629af.patch
 
-I've actually forgot about why it is a requirement, but have found my older 
-github answer to you.
+Advantages compared to the previous approach are that we do not need a
+new bit in the skb and that overhead is kept to a minimum when feature
+is disabled. Disadvantage is that overhead is higher when feature is
+enabled.
 
-"AF_XDP implementation also assumes xdp_buff is at the start".
+WDYT?
 
-What I meant by that is xdp_buffs from xsk_pool have only tailroom.
+To be clear, merely asking for feedback on the general approach, not
+code review.
 
-Maybe I should add a comment about this next to static assert.
-Will change to container_of, I guess it's more future-proof.
-
-> 
-> > +
-> > +	xdp_ext->eop_desc = eop_desc;
-> > +	xdp_ext->rx_ring = rx_ring;
-> > +}
-> >  #endif /* !_ICE_TXRX_LIB_H_ */
-> 
-> Thanks,
-> Olek
+Thanks
 
