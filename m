@@ -1,86 +1,71 @@
-Return-Path: <netdev+bounces-4443-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4444-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8000B70CECD
-	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 01:55:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A44AE70CF3E
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 02:28:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0EF4A1C20A4A
-	for <lists+netdev@lfdr.de>; Mon, 22 May 2023 23:55:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DB0792810EA
+	for <lists+netdev@lfdr.de>; Tue, 23 May 2023 00:28:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A48A1774B;
-	Mon, 22 May 2023 23:55:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D5C6BED1;
+	Tue, 23 May 2023 00:28:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DEFE17748
-	for <netdev@vger.kernel.org>; Mon, 22 May 2023 23:55:53 +0000 (UTC)
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54EF2213F;
-	Mon, 22 May 2023 16:55:51 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id 46e09a7af769-6af7daff37eso1141127a34.0;
-        Mon, 22 May 2023 16:55:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684799750; x=1687391750;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tItS/JirFunMX5RfI2+aJ2PuNtEICNcjEQi3pmV0waQ=;
-        b=Oxk2wkmGKzN+KZViHTjAnIHcCWo+gN4WIpgSyeC38zjz0/hy481mG3wiKfWHFCi5xO
-         jT8cRnHQ3D3ueSB0lDmMHwzLh3KvDfuwKsW0XIpyFf/xyfvVx5huI+WnPlyt+LJJOjis
-         eUedKUWiJFf+2iKdFk/elq1GmfJPnZmXM80SwCwD7wQwpnwg3a3uDlP9iMVegvFYx+Y2
-         lgXAKuOW8opnf6DLXDlNtrrHKgM3A1Zkf3eo2BjeTdZZbaezCMRCeLGj5C1zZXFMMLYL
-         wKAqOZC330NVZoYCNaL7hzH/dBQWeJVXelx9UNWtp+r9MKl8lZcY9W8eQgtVsKw0JImk
-         eCqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684799750; x=1687391750;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tItS/JirFunMX5RfI2+aJ2PuNtEICNcjEQi3pmV0waQ=;
-        b=j5H1XNGO8ygVIUlhkdVWHf1ny78B5VZmQ6ghEKZDjM1XxVgnnE6bAjn+10CojJB3IU
-         ygqDgAI0m93xvGLkUwdH4KVsFGD+mnSQkrK4STbsrsZYwoPADiTjG31rXy6VASHX9LPc
-         wq9KoaejKLgFzus2uHgGWw8XQhTw0ZCcf51bQCbkzSw3oFmxb6TEH4hXdwzuIK4PG432
-         //xNkiyECy5MmmcCYgg4lQgtHCipB83bYWVuSNSJj4H2EIVRStTkOvodrPNB/43GUfWM
-         ZCmQMO4vzLbaF7eoqOPb5xm0HrN6WjX8m9kGe4JxrF/tp9Zi/bPJO/PZMaEf6UOB0FAA
-         Eeww==
-X-Gm-Message-State: AC+VfDw35I5GZtVckiQIKR+aexKrQpQkZE9PUnsioabG+RP+cBEohS8l
-	7YQO1wksPqj1hq/YIfOOdA==
-X-Google-Smtp-Source: ACHHUZ7J2d9jQgy3oq7FjYSJFKKOLBhyVFtopnugZ+aCOiVhrEIYqEqEii3AeTLVJme3IWQVqMoV4w==
-X-Received: by 2002:a9d:7ad7:0:b0:6ac:8844:3605 with SMTP id m23-20020a9d7ad7000000b006ac88443605mr6297410otn.30.1684799750582;
-        Mon, 22 May 2023 16:55:50 -0700 (PDT)
-Received: from C02FL77VMD6R.bytedance.net ([208.184.112.130])
-        by smtp.gmail.com with ESMTPSA id d5-20020a05683018e500b006a65be836acsm2889645otf.16.2023.05.22.16.55.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 May 2023 16:55:50 -0700 (PDT)
-From: Peilin Ye <yepeilin.cs@gmail.com>
-X-Google-Original-From: Peilin Ye <peilin.ye@bytedance.com>
-To: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Jamal Hadi Salim <jhs@mojatatu.com>,
-	Cong Wang <xiyou.wangcong@gmail.com>,
-	Jiri Pirko <jiri@resnulli.us>
-Cc: Peilin Ye <peilin.ye@bytedance.com>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Vlad Buslov <vladbu@mellanox.com>,
-	Pedro Tammela <pctammela@mojatatu.com>,
-	Hillf Danton <hdanton@sina.com>,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Cong Wang <cong.wang@bytedance.com>,
-	Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH v2 net 6/6] net/sched: qdisc_destroy() old ingress and clsact Qdiscs before grafting
-Date: Mon, 22 May 2023 16:55:36 -0700
-Message-Id: <8e3383d0bacd084f0e33d9158d24bd411f1bf6ba.1684796705.git.peilin.ye@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <cover.1684796705.git.peilin.ye@bytedance.com>
-References: <cover.1684796705.git.peilin.ye@bytedance.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0B64EA1
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 00:28:41 +0000 (UTC)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A3F3A96
+	for <netdev@vger.kernel.org>; Mon, 22 May 2023 17:27:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684801669; x=1716337669;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=AxkJYOIhBWGbOUXROaSgIA7RoOiNpxjrZhWRBptV37k=;
+  b=R63A9DkVdhb/p/K7dYFQWVWdlOpQbdfhL+4PRQcemzHKPI9WnCb161T3
+   Bwp+KSc3bpCy+qL4FlGSn4coId+p9LozMlrhZyv/M8eG90spf3J1+LnEl
+   T/UL/QJu0rFMFlrOpNVdTrqUYqlwemUUMK3uoJ+PTgDCS+/Ed+lOrJY+d
+   9Sd8VLWboB3QqYruf1hzIWtDN6QnkU7QuXPptdqVzEOyCCZuB0K2hFXqC
+   YPC91ip/qdX4HFdEET4RLMxkTTqn44DHLBu0CmEfExGu1+Czb4ryA7iK7
+   q+g/U+qcNGJZdaQ7GovWXXQDcW6SnO+fNJevNQOgimbC+8UOiFFdYJneg
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="337670661"
+X-IronPort-AV: E=Sophos;i="6.00,184,1681196400"; 
+   d="scan'208";a="337670661"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2023 17:26:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="827885480"
+X-IronPort-AV: E=Sophos;i="6.00,184,1681196400"; 
+   d="scan'208";a="827885480"
+Received: from unknown (HELO AMR-CMP1.ger.corp.intel.com) ([10.166.80.24])
+  by orsmga004.jf.intel.com with ESMTP; 22 May 2023 17:26:01 -0700
+From: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+To: intel-wired-lan@lists.osuosl.org
+Cc: shannon.nelson@amd.com,
+	simon.horman@corigine.com,
+	leon@kernel.org,
+	decot@google.com,
+	willemb@google.com,
+	stephen@networkplumber.org,
+	mst@redhat.com,
+	Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
+	jesse.brandeburg@intel.com,
+	anthony.l.nguyen@intel.com,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	netdev@vger.kernel.org
+Subject: [PATCH iwl-next v6 00/15] Introduce Intel IDPF driver
+Date: Mon, 22 May 2023 17:22:37 -0700
+Message-Id: <20230523002252.26124-1-pavan.kumar.linga@intel.com>
+X-Mailer: git-send-email 2.37.3
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -88,275 +73,243 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-1.8 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+	DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-mini_Qdisc_pair::p_miniq is a double pointer to mini_Qdisc, initialized in
-ingress_init() to point to net_device::miniq_ingress.  ingress Qdiscs
-access this per-net_device pointer in mini_qdisc_pair_swap().  Similar for
-clsact Qdiscs and miniq_egress.
+This patch series introduces the Intel Infrastructure Data Path Function
+(IDPF) driver. It is used for both physical and virtual functions. Except
+for some of the device operations the rest of the functionality is the
+same for both PF and VF. IDPF uses virtchnl version2 opcodes and
+structures defined in the virtchnl2 header file which helps the driver
+to learn the capabilities and register offsets from the device
+Control Plane (CP) instead of assuming the default values.
 
-Unfortunately, after introducing RTNL-unlocked RTM_{NEW,DEL,GET}TFILTER
-requests (thanks Hillf Danton for the hint), when replacing ingress or
-clsact Qdiscs, for example, the old Qdisc ("@old") could access the same
-miniq_{in,e}gress pointer(s) concurrently with the new Qdisc ("@new"),
-causing race conditions [1] including a use-after-free bug in
-mini_qdisc_pair_swap() reported by syzbot:
+The format of the series follows the driver init flow to interface open.
+To start with, probe gets called and kicks off the driver initialization
+by spawning the 'vc_event_task' work queue which in turn calls the
+'hard reset' function. As part of that, the mailbox is initialized which
+is used to send/receive the virtchnl messages to/from the CP. Once that is
+done, 'core init' kicks in which requests all the required global resources
+from the CP and spawns the 'init_task' work queue to create the vports.
 
- BUG: KASAN: slab-use-after-free in mini_qdisc_pair_swap+0x1c2/0x1f0 net/sched/sch_generic.c:1573
- Write of size 8 at addr ffff888045b31308 by task syz-executor690/14901
-...
- Call Trace:
-  <TASK>
-  __dump_stack lib/dump_stack.c:88 [inline]
-  dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
-  print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:319
-  print_report mm/kasan/report.c:430 [inline]
-  kasan_report+0x11c/0x130 mm/kasan/report.c:536
-  mini_qdisc_pair_swap+0x1c2/0x1f0 net/sched/sch_generic.c:1573
-  tcf_chain_head_change_item net/sched/cls_api.c:495 [inline]
-  tcf_chain0_head_change.isra.0+0xb9/0x120 net/sched/cls_api.c:509
-  tcf_chain_tp_insert net/sched/cls_api.c:1826 [inline]
-  tcf_chain_tp_insert_unique net/sched/cls_api.c:1875 [inline]
-  tc_new_tfilter+0x1de6/0x2290 net/sched/cls_api.c:2266
-...
+Based on the capability information received, the driver creates the said
+number of vports (one or many) where each vport is associated to a netdev.
+Also, each vport has its own resources such as queues, vectors etc.
+From there, rest of the netdev_ops and data path are added.
 
-@old and @new should not affect each other.  In other words, @old should
-never modify miniq_{in,e}gress after @new, and @new should not update
-@old's RCU state.  Fixing without changing sch_api.c turned out to be
-difficult (please refer to Closes: for discussions).  Instead, make sure
-@new's first call always happen after @old's last call, in
-qdisc_destroy(), has finished:
+IDPF implements both single queue which is traditional queueing model
+as well as split queue model. In split queue model, it uses separate queue
+for both completion descriptors and buffers which helps to implement
+out-of-order completions. It also helps to implement asymmetric queues,
+for example multiple RX completion queues can be processed by a single
+RX buffer queue and multiple TX buffer queues can be processed by a
+single TX completion queue. In single queue model, same queue is used
+for both descriptor completions as well as buffer completions. It also
+supports features such as generic checksum offload, generic receive
+offload (hardware GRO) etc.
 
-In qdisc_graft(), return -EAGAIN and tell the caller to replay
-(suggested by Vlad Buslov) if @old has any ongoing RTNL-unlocked filter
-requests, and call qdisc_destroy() for @old before grafting @new.
+v5 --> v6: link [5]
+ (patch 1):
+ * removed miss completion capability bit and feature flag to defer this
+   optional feature to a later follow-on patch
+ (patch 2):
+ * use typed back pointer in idpf_hw struct
+ (patch 3):
+ * fix incorrect mask in reset test
+ (patch 4):
+ * removed setting miss completion capability in 'get caps'
+ (patch 7):
+ * don't set miss completion in the queue context
+ * removed __IDPF_Q_MISS_TAG_EN flag and capability check for miss
+   completion tag
+ (patch 8):
+ * convert to const vport parameter in idpf_is_feature_ena()
+ (patch 11): 
+ * removed support for miss and reinject completion
+ * fixed the check to restart the TX queue if enough buffers are
+   available to avoid TX timeouts
+ (patch 14):
+ * removed 'tx_reinjection_timeouts' counter
+ (patch 15):
+ * updated the 'help' section in Kconfig file to use Infrastructure Data
+   Path Function instead of Infrastructure Processing Unit
 
-Introduce qdisc_refcount_dec_if_one() as the counterpart of
-qdisc_refcount_inc_nz() used for RTNL-unlocked filter requests.  Introduce
-a non-static version of qdisc_destroy() that does a TCQ_F_BUILTIN check,
-just like qdisc_put() etc.
+[5] https://lore.kernel.org/netdev/20230513225710.3898-1-emil.s.tantilov@intel.com/
 
-Depends on patch "net/sched: Refactor qdisc_graft() for ingress and clsact
-Qdiscs".
+v4 --> v5: link [4]
+ (patch 4):
+ * improved error handling in the init path
+ (patch 5):
+ * added check for adapter->vports before de-allocating vport resources in
+   the service task
+ * added check for adapter->netdevs and removed redundant msleep in idpf_remove()
+ * corrected s/simulatenously/simultaneously/ in comment
+ (patch 10):
+ * removed inline from idpf_tx_splitq_bump_ntu()
+ * renamed s/parms/params/ to be consistent with rest of naming in code
+ (patch 12):
+ * corrected s/specifcally/specifically/ in comment
+ (patch 13):
+ * removed inline from idpf_rx_singleq_extract_base_fields() and
+   idpf_rx_singleq_extract_flex_fields()
+ (patch 14):
+ * removed "port-" prefix from some stats
+ * fixed setting adaptive coalescing
+ (patch 15):
+ * added toctree entry
+ * fixed formatting, table of contents, notes and some wording in the docs
 
-[1] To illustrate, the syzkaller reproducer adds ingress Qdiscs under
-TC_H_ROOT (no longer possible after patch "net/sched: sch_ingress: Only
-create under TC_H_INGRESS") on eth0 that has 8 transmission queues:
+[4] https://lore.kernel.org/netdev/20230508194326.482-1-emil.s.tantilov@intel.com/
 
-  Thread 1 creates ingress Qdisc A (containing mini Qdisc a1 and a2), then
-  adds a flower filter X to A.
+v3 --> v4: link [3]
+ (patch 1):
+ * cleanups in virtchnl2 including redundant error codes, naming and
+   whitespace
+ (patch 3):
+ * removed "__" prefix from names of adapter and vport flags, converted
+   comments to kernel-doc style
+ * renamed error code variable names in controlq to be more consistent
+   with rest of the code
+ * removed Control Plane specific opcodes and changed "peer" type comments
+   to CP
+ * replaced managed dma calls with their non-managed equivalent
+ (patch 4):
+ * added additional info to some error messages on init to aid in debug
+ * removed unnecessary zero-init before loop and zeroing memcpy after
+   kzalloc()
+ * corrected wording of comment in idpf_wait_for_event() s/wake up/woken/
+ * replaced managed dma calls with their non-managed equivalent
 
-  Thread 2 creates another ingress Qdisc B (containing mini Qdisc b1 and
-  b2) to replace A, then adds a flower filter Y to B.
+[3] https://lore.kernel.org/netdev/20230427020917.12029-1-emil.s.tantilov@intel.com/
 
- Thread 1               A's refcnt   Thread 2
-  RTM_NEWQDISC (A, RTNL-locked)
-   qdisc_create(A)               1
-   qdisc_graft(A)                9
+v2 --> v3: link [2]
+ * converted virtchnl2 defines to enums
+ * fixed comment style in virtchnl2 to follow kernel-doc format
+ * removed empty lines between end of structs and size check macro
+   checkpatch will mark these instances as CHECK
+ * cleaned up unused Rx descriptor structs and related bits in virtchnl2
+ * converted Rx descriptor bit offsets into bitmasks to better align with
+   the use of GENMASK and FIELD_GET
+ * added device ids to pci_tbl from the start
+ * consolidated common probe and remove functions into idpf_probe() and
+   idpf_remove() respectively
+ * removed needless adapter NULL checks
+ * removed devm_kzalloc() in favor of kzalloc(), including kfree in
+   error and exit code path
+ * replaced instances of kcalloc() calls where either size parameter was
+   1 with kzalloc(), reported by smatch
+ * used kmemdup() in some instances reported by coccicheck
+ * added explicit error code and comment explaining the condition for
+   the exit to address warning by smatch
+ * moved build support to the last patch
 
-  RTM_NEWTFILTER (X, RTNL-unlocked)
-   __tcf_qdisc_find(A)          10
-   tcf_chain0_head_change(A)
-   mini_qdisc_pair_swap(A) (1st)
-            |
-            |                         RTM_NEWQDISC (B, RTNL-locked)
-         RCU sync                2     qdisc_graft(B)
-            |                    1     notify_and_destroy(A)
-            |
-   tcf_block_release(A)          0    RTM_NEWTFILTER (Y, RTNL-unlocked)
-   qdisc_destroy(A)                    tcf_chain0_head_change(B)
-   tcf_chain0_head_change_cb_del(A)    mini_qdisc_pair_swap(B) (2nd)
-   mini_qdisc_pair_swap(A) (3rd)                |
-           ...                                 ...
+[2] https://lore.kernel.org/netdev/20230411011354.2619359-1-pavan.kumar.linga@intel.com/
 
-Here, B calls mini_qdisc_pair_swap(), pointing eth0->miniq_ingress to its
-mini Qdisc, b1.  Then, A calls mini_qdisc_pair_swap() again during
-ingress_destroy(), setting eth0->miniq_ingress to NULL, so ingress packets
-on eth0 will not find filter Y in sch_handle_ingress().
+v1 --> v2: link [1]
+ * removed the OASIS reference in the commit message to make it clear
+   that this is an Intel vendor specific driver
+ * fixed misspells
+ * used comment starter "/**" for struct and definition headers in
+   virtchnl header files
+ * removed AVF reference
+ * renamed APF reference to IDPF
+ * added a comment to explain the reason for 'no flex field' at the end of
+   virtchnl2_get_ptype_info struct
+ * removed 'key[1]' in virtchnl2_rss_key struct as it is not used
+ * set VIRTCHNL2_RXDID_2_FLEX_SQ_NIC to VIRTCHNL2_RXDID_2_FLEX_SPLITQ
+   instead of assigning the same value
+ * cleanup unnecessary NULL assignment to the rx_buf skb pointer since
+   it is not used in splitq model
+ * added comments to clarify the generation bit usage in splitq model
+ * introduced 'reuse_bias' in the page_info structure and make use of it
+   in the hot path
+ * fixed RCT format in idpf_rx_construct_skb
+ * report SPEED_UNKNOWN and DUPLEX_UNKNOWN when the link is down
+ * fixed -Wframe-larger-than warning reported by lkp bot in
+   idpf_vport_queue_ids_init
+ * updated the documentation in idpf.rst to fix LKP bot warning
 
-This is only one of the possible consequences of concurrently accessing
-miniq_{in,e}gress pointers.  The point is clear though: again, A should
-never modify those per-net_device pointers after B, and B should not
-update A's RCU state.
+[1] https://lore.kernel.org/netdev/20230329140404.1647925-1-pavan.kumar.linga@intel.com/
 
-Fixes: 7a096d579e8e ("net: sched: ingress: set 'unlocked' flag for Qdisc ops")
-Fixes: 87f373921c4e ("net: sched: ingress: set 'unlocked' flag for clsact Qdisc ops")
-Reported-by: syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com
-Closes: https://lore.kernel.org/r/0000000000006cf87705f79acf1a@google.com/
-Cc: Hillf Danton <hdanton@sina.com>
-Cc: Vlad Buslov <vladbu@mellanox.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
----
-changes in v2:
-  - replay the request if the current Qdisc has any ongoing RTNL-unlocked
-    filter requests (Vlad)
-  - minor changes in code comments and commit log
+Alan Brady (4):
+  idpf: configure resources for TX queues
+  idpf: configure resources for RX queues
+  idpf: add RX splitq napi poll support
+  idpf: add ethtool callbacks
 
- include/net/sch_generic.h |  8 ++++++++
- net/sched/sch_api.c       | 32 ++++++++++++++++++++++++++------
- net/sched/sch_generic.c   | 14 +++++++++++---
- 3 files changed, 45 insertions(+), 9 deletions(-)
+Joshua Hay (5):
+  idpf: add controlq init and reset checks
+  idpf: add splitq start_xmit
+  idpf: add TX splitq napi poll support
+  idpf: add singleq start_xmit and napi poll
+  idpf: configure SRIOV and add other ndo_ops
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index fab5ba3e61b7..3e9cc43cbc90 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -137,6 +137,13 @@ static inline void qdisc_refcount_inc(struct Qdisc *qdisc)
- 	refcount_inc(&qdisc->refcnt);
- }
- 
-+static inline bool qdisc_refcount_dec_if_one(struct Qdisc *qdisc)
-+{
-+	if (qdisc->flags & TCQ_F_BUILTIN)
-+		return true;
-+	return refcount_dec_if_one(&qdisc->refcnt);
-+}
-+
- /* Intended to be used by unlocked users, when concurrent qdisc release is
-  * possible.
-  */
-@@ -652,6 +659,7 @@ void dev_deactivate_many(struct list_head *head);
- struct Qdisc *dev_graft_qdisc(struct netdev_queue *dev_queue,
- 			      struct Qdisc *qdisc);
- void qdisc_reset(struct Qdisc *qdisc);
-+void qdisc_destroy(struct Qdisc *qdisc);
- void qdisc_put(struct Qdisc *qdisc);
- void qdisc_put_unlocked(struct Qdisc *qdisc);
- void qdisc_tree_reduce_backlog(struct Qdisc *qdisc, int n, int len);
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index f72a581666a2..b3bafa6c1b44 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1080,10 +1080,18 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
- 		if ((q && q->flags & TCQ_F_INGRESS) ||
- 		    (new && new->flags & TCQ_F_INGRESS)) {
- 			ingress = 1;
--			if (!dev_ingress_queue(dev)) {
-+			dev_queue = dev_ingress_queue(dev);
-+			if (!dev_queue) {
- 				NL_SET_ERR_MSG(extack, "Device does not have an ingress queue");
- 				return -ENOENT;
- 			}
-+
-+			/* Replay if the current ingress (or clsact) Qdisc has ongoing
-+			 * RTNL-unlocked filter request(s).  This is the counterpart of that
-+			 * qdisc_refcount_inc_nz() call in __tcf_qdisc_find().
-+			 */
-+			if (!qdisc_refcount_dec_if_one(dev_queue->qdisc_sleeping))
-+				return -EAGAIN;
- 		}
- 
- 		if (dev->flags & IFF_UP)
-@@ -1104,8 +1112,16 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
- 				qdisc_put(old);
- 			}
- 		} else {
--			dev_queue = dev_ingress_queue(dev);
--			old = dev_graft_qdisc(dev_queue, new);
-+			old = dev_graft_qdisc(dev_queue, NULL);
-+
-+			/* {ingress,clsact}_destroy() @old before grafting @new to avoid
-+			 * unprotected concurrent accesses to net_device::miniq_{in,e}gress
-+			 * pointer(s) in mini_qdisc_pair_swap().
-+			 */
-+			qdisc_notify(net, skb, n, classid, old, new, extack);
-+			qdisc_destroy(old);
-+
-+			dev_graft_qdisc(dev_queue, new);
- 		}
- 
- skip:
-@@ -1119,8 +1135,6 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
- 
- 			if (new && new->ops->attach)
- 				new->ops->attach(new);
--		} else {
--			notify_and_destroy(net, skb, n, classid, old, new, extack);
- 		}
- 
- 		if (dev->flags & IFF_UP)
-@@ -1458,6 +1472,7 @@ static int tc_get_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
- 	struct Qdisc *p = NULL;
- 	int err;
- 
-+replay:
- 	err = nlmsg_parse_deprecated(n, sizeof(*tcm), tca, TCA_MAX,
- 				     rtm_tca_policy, extack);
- 	if (err < 0)
-@@ -1515,8 +1530,11 @@ static int tc_get_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
- 			return -ENOENT;
- 		}
- 		err = qdisc_graft(dev, p, skb, n, clid, NULL, q, extack);
--		if (err != 0)
-+		if (err != 0) {
-+			if (err == -EAGAIN)
-+				goto replay;
- 			return err;
-+		}
- 	} else {
- 		qdisc_notify(net, skb, n, clid, NULL, q, NULL);
- 	}
-@@ -1704,6 +1722,8 @@ static int tc_modify_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
- 	if (err) {
- 		if (q)
- 			qdisc_put(q);
-+		if (err == -EAGAIN)
-+			goto replay;
- 		return err;
- 	}
- 
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 37e41f972f69..e14ed47f961c 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1046,7 +1046,7 @@ static void qdisc_free_cb(struct rcu_head *head)
- 	qdisc_free(q);
- }
- 
--static void qdisc_destroy(struct Qdisc *qdisc)
-+static void __qdisc_destroy(struct Qdisc *qdisc)
- {
- 	const struct Qdisc_ops  *ops = qdisc->ops;
- 
-@@ -1070,6 +1070,14 @@ static void qdisc_destroy(struct Qdisc *qdisc)
- 	call_rcu(&qdisc->rcu, qdisc_free_cb);
- }
- 
-+void qdisc_destroy(struct Qdisc *qdisc)
-+{
-+	if (qdisc->flags & TCQ_F_BUILTIN)
-+		return;
-+
-+	__qdisc_destroy(qdisc);
-+}
-+
- void qdisc_put(struct Qdisc *qdisc)
- {
- 	if (!qdisc)
-@@ -1079,7 +1087,7 @@ void qdisc_put(struct Qdisc *qdisc)
- 	    !refcount_dec_and_test(&qdisc->refcnt))
- 		return;
- 
--	qdisc_destroy(qdisc);
-+	__qdisc_destroy(qdisc);
- }
- EXPORT_SYMBOL(qdisc_put);
- 
-@@ -1094,7 +1102,7 @@ void qdisc_put_unlocked(struct Qdisc *qdisc)
- 	    !refcount_dec_and_rtnl_lock(&qdisc->refcnt))
- 		return;
- 
--	qdisc_destroy(qdisc);
-+	__qdisc_destroy(qdisc);
- 	rtnl_unlock();
- }
- EXPORT_SYMBOL(qdisc_put_unlocked);
+Pavan Kumar Linga (5):
+  virtchnl: add virtchnl version 2 ops
+  idpf: add core init and interrupt request
+  idpf: add create vport and netdev configuration
+  idpf: continue expanding init task
+  idpf: initialize interrupts and enable vport
+
+Phani Burra (1):
+  idpf: add module register and probe functionality
+
+ .../device_drivers/ethernet/index.rst         |    1 +
+ .../device_drivers/ethernet/intel/idpf.rst    |  160 +
+ drivers/net/ethernet/intel/Kconfig            |   10 +
+ drivers/net/ethernet/intel/Makefile           |    1 +
+ drivers/net/ethernet/intel/idpf/Makefile      |   18 +
+ drivers/net/ethernet/intel/idpf/idpf.h        |  751 +++
+ .../net/ethernet/intel/idpf/idpf_controlq.c   |  641 +++
+ .../net/ethernet/intel/idpf/idpf_controlq.h   |  131 +
+ .../ethernet/intel/idpf/idpf_controlq_api.h   |  169 +
+ .../ethernet/intel/idpf/idpf_controlq_setup.c |  175 +
+ drivers/net/ethernet/intel/idpf/idpf_dev.c    |  165 +
+ drivers/net/ethernet/intel/idpf/idpf_devids.h |   10 +
+ .../net/ethernet/intel/idpf/idpf_ethtool.c    | 1331 +++++
+ .../ethernet/intel/idpf/idpf_lan_pf_regs.h    |  124 +
+ .../net/ethernet/intel/idpf/idpf_lan_txrx.h   |  293 ++
+ .../ethernet/intel/idpf/idpf_lan_vf_regs.h    |  128 +
+ drivers/net/ethernet/intel/idpf/idpf_lib.c    | 2354 +++++++++
+ drivers/net/ethernet/intel/idpf/idpf_main.c   |  269 +
+ drivers/net/ethernet/intel/idpf/idpf_mem.h    |   20 +
+ .../ethernet/intel/idpf/idpf_singleq_txrx.c   | 1251 +++++
+ drivers/net/ethernet/intel/idpf/idpf_txrx.c   | 4604 +++++++++++++++++
+ drivers/net/ethernet/intel/idpf/idpf_txrx.h   |  844 +++
+ drivers/net/ethernet/intel/idpf/idpf_vf_dev.c |  164 +
+ .../net/ethernet/intel/idpf/idpf_virtchnl.c   | 3825 ++++++++++++++
+ drivers/net/ethernet/intel/idpf/virtchnl2.h   | 1289 +++++
+ .../ethernet/intel/idpf/virtchnl2_lan_desc.h  |  448 ++
+ 26 files changed, 19176 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/intel/idpf.rst
+ create mode 100644 drivers/net/ethernet/intel/idpf/Makefile
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_controlq.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_controlq.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_controlq_api.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_controlq_setup.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_dev.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_devids.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_ethtool.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_lan_pf_regs.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_lan_txrx.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_lan_vf_regs.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_lib.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_main.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_mem.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_singleq_txrx.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_txrx.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_txrx.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_vf_dev.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_virtchnl.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/virtchnl2.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/virtchnl2_lan_desc.h
+
 -- 
-2.20.1
+2.37.3
 
 
