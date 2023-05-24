@@ -1,142 +1,155 @@
-Return-Path: <netdev+bounces-5012-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5010-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A872C70F6EE
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:52:34 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B1DFF70F6E6
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:51:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0D12128120F
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:52:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1AD252811BF
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:51:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6EA9760858;
-	Wed, 24 May 2023 12:52:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5725960855;
+	Wed, 24 May 2023 12:51:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6002660848
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:52:31 +0000 (UTC)
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F2412F
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:52:23 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id a640c23a62f3a-96f99222e80so214397366b.1
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:52:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A0426084D
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:51:28 +0000 (UTC)
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E8799;
+	Wed, 24 May 2023 05:51:25 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id d9443c01a7336-1ae6dce19f7so1692655ad.3;
+        Wed, 24 May 2023 05:51:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684932741; x=1687524741;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=4jVCBihOkUg8I7br77j3MvbR7iCX6aB+sSxj9zryEhU=;
-        b=QZsHkzxkp3A65zOu+EffaBnF5ujh7mqpm04tZ5nVF5RMM/e4vGx7W9Cp+taatOWqNM
-         RzueOdvJ9k77QsMOCCncvn8Si8E2SRMzN4+SV/1ofFXXf85p7y18B7ykLFJFh8xB6E+P
-         qr8oNfsi2pmJoCsFPbAuWvLg4nXoXaL/AgiTXWO0zfea5Ma9Q4Zy76lN45Otkw80baHN
-         oTS8WtLrSsNC+BBS+MqfS6mcoQqEBU0R4UU/Kzq0Ld8JZRxq06J7ActtflVb3Uxpy0KG
-         WO9qLo1JwARFmP0udfZKgjquj5FTd/qRmznTljyaehVdmZtbOfG4GI4OkTFiW749WM28
-         wqBA==
+        d=gmail.com; s=20221208; t=1684932685; x=1687524685;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Zk9EWfEb3kBrQUJGitkwkI89dkxpciH5LXEkEz68Cj8=;
+        b=T/XLAZorwFOJbaa+132APjPt+LQnEsFtRTYN3LtrM53eQaswePBHFctCjxCgSDDhjL
+         shp/g03d1hxkDFqQCoOTNcYnUvwnGun9DeIBp1zRws3X5wyPTHzSzRqGHDiNDdIoCLWP
+         zg/SyF8x0SQvQvYNp8VfjT3Z17jY2pXHGOmhD1JUN6Ev4i9Bn/wdQN7KYt/6eiTilcVK
+         rFiEtr/pLq/s139Kb+SEtb/929kZJgiwDjZKwz/wwPmdPAAXmN+RDPaPA/0Hjfw7Qq2w
+         gHdixhDSMM6kKKXG9H2m/w+gLQqfRI3YJ2MwGuFUhfidcHqz0HirkRli3v6jxKNxOovm
+         rEsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684932741; x=1687524741;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4jVCBihOkUg8I7br77j3MvbR7iCX6aB+sSxj9zryEhU=;
-        b=B12HeLNaEO2NZ6sXsqjC932aBcRk4qAp10m5HdadHSiNZWV04ibpYaqJOrcX+63Bn4
-         s3IVzKu1y6Sls419VxhM2dAwq+U89epKWYzI1JUvq2Mq50Unlt4vwf90aO5A85EjwxV3
-         Q042HDrH2NXwd8xMl/6UiYyivFzS9HnVCupOH5r1T3dV2qD7oCO/Rl4hb4n9sDN/p7MZ
-         gVPf7hAeLe1wZIi/PntwRdj3wE8+8pyUFNIHUI7lP/RJpijdmxw42pj/wG9GrTDj+LjN
-         OJJLy/tJwvC4zSweuaIAYwJGHCllw1JhR0XRh/aPSyLqBhvbjQ/gQOshLnQRjo3AtX8C
-         FwFw==
-X-Gm-Message-State: AC+VfDzoSKH/SC0lFQdN3oIo1NMWwzEpEjfmVqduHMMs1ayVMA7O3gYY
-	M1lO5dOs8RVE+Ou65yOEDrYUAad2hWM=
-X-Google-Smtp-Source: ACHHUZ7VlkGRZ4xxO0X9pXIBhZwnMUb9XbrbT63MjHm4EUKi+BynbDkWC+7HE6QggiylG0yeilfhTg==
-X-Received: by 2002:a17:907:1c26:b0:96f:a412:8b03 with SMTP id nc38-20020a1709071c2600b0096fa4128b03mr13689717ejc.5.1684932740936;
-        Wed, 24 May 2023 05:52:20 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::26ef? ([2620:10d:c092:600::2:db3c])
-        by smtp.gmail.com with ESMTPSA id w11-20020a170906480b00b0096f82171bdesm5688743ejq.215.2023.05.24.05.52.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 May 2023 05:52:20 -0700 (PDT)
-Message-ID: <5b93b626-df9a-6f8f-edc3-32a4478b8f00@gmail.com>
-Date: Wed, 24 May 2023 13:51:17 +0100
+        d=1e100.net; s=20221208; t=1684932685; x=1687524685;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Zk9EWfEb3kBrQUJGitkwkI89dkxpciH5LXEkEz68Cj8=;
+        b=cB+pARy5A5cLK6NrVTtMcV/73peEjXw+z54EEncSAgQUu87N2Gw6ewoZq6HI5d6fv5
+         d3l1LpJVH97nt+tZjyp3azV35Fuw83IBZfdHZRqaDDBK6YuL9Kj3U8ECiGTvqGXQhEzL
+         Nnh8K6TYgUJ18ahOsP8At/LQt7mv444oNZb39Dk3pRgrRVPn6Jrt2BywNYusBFSM1kYA
+         Cl0CDdXX9wG4Km1fi+/5fnb6nW2VsR8RrorI9gMYVIoqiqgI7DIQUiwFJJ3jSWNDRWDY
+         RTRzhRDehsVIcIm3Grkf5GXbFrlpYqJbF0KCpiN9BWlNGHX+IwrrOXszGajGnNcjrFgs
+         sB0w==
+X-Gm-Message-State: AC+VfDzmBo4mwWxTk75r3ibnqQ87XYJVyEsYS8I1b+m17ZfrJBJnyzvt
+	5B+ur3F9sPkDG9xeXPF439I=
+X-Google-Smtp-Source: ACHHUZ5C3R3Zpckqk00E2SQecJySjUWpaFT2Zzoiw6GylxDNkN3UlZL/FW9NAvl/SZqFfuEWDECbkQ==
+X-Received: by 2002:a17:902:e751:b0:19e:6e00:4676 with SMTP id p17-20020a170902e75100b0019e6e004676mr20675820plf.61.1684932685101;
+        Wed, 24 May 2023 05:51:25 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-11.three.co.id. [180.214.232.11])
+        by smtp.gmail.com with ESMTPSA id l10-20020a170903244a00b001a221d14179sm8607679pls.302.2023.05.24.05.51.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 May 2023 05:51:24 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+	id 2D0C210622B; Wed, 24 May 2023 19:51:20 +0700 (WIB)
+Date: Wed, 24 May 2023 19:51:20 +0700
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Francesco Dolcini <francesco@dolcini.it>, Andrew Lunn <andrew@lunn.ch>,
+	Praneeth Bajjuri <praneeth@ti.com>, Geet Modi <geet.modi@ti.com>,
+	"David S. Miller" <davem@davemloft.net>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Grygorii Strashko <grygorii.strashko@ti.com>,
+	Dan Murphy <dmurphy@ti.com>
+Subject: Re: DP83867 ethernet PHY regression
+Message-ID: <ZG4ISE3WXlTM3H54@debian.me>
+References: <ZGuDJos8D7N0J6Z2@francesco-nb.int.toradex.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next 1/2] net/tcp: optimise locking for blocking
- splice
-To: Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
- edumazet@google.com, davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org
-References: <cover.1684501922.git.asml.silence@gmail.com>
- <a6838ca891ccff2c2407d9232ccd2a46fa3f8989.1684501922.git.asml.silence@gmail.com>
- <c025952ddc527f0b60b2c476bb30bd45e9863d41.camel@redhat.com>
-Content-Language: en-US
-From: Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <c025952ddc527f0b60b2c476bb30bd45e9863d41.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="G6zBKAl4QuB1XUdm"
+Content-Disposition: inline
+In-Reply-To: <ZGuDJos8D7N0J6Z2@francesco-nb.int.toradex.com>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 5/23/23 14:52, Paolo Abeni wrote:
-> On Fri, 2023-05-19 at 14:33 +0100, Pavel Begunkov wrote:
->> Even when tcp_splice_read() reads all it was asked for, for blocking
->> sockets it'll release and immediately regrab the socket lock, loop
->> around and break on the while check.
->>
->> Check tss.len right after we adjust it, and return if we're done.
->> That saves us one release_sock(); lock_sock(); pair per successful
->> blocking splice read.
->>
->> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->> ---
->>   net/ipv4/tcp.c | 8 +++++---
->>   1 file changed, 5 insertions(+), 3 deletions(-)
->>
->> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
->> index 4d6392c16b7a..bf7627f37e69 100644
->> --- a/net/ipv4/tcp.c
->> +++ b/net/ipv4/tcp.c
->> @@ -789,13 +789,15 @@ ssize_t tcp_splice_read(struct socket *sock, loff_t *ppos,
->>   	 */
->>   	if (unlikely(*ppos))
->>   		return -ESPIPE;
->> +	if (unlikely(!tss.len))
->> +		return 0;
->>   
->>   	ret = spliced = 0;
->>   
->>   	lock_sock(sk);
->>   
->>   	timeo = sock_rcvtimeo(sk, sock->file->f_flags & O_NONBLOCK);
->> -	while (tss.len) {
->> +	while (true) {
->>   		ret = __tcp_splice_read(sk, &tss);
->>   		if (ret < 0)
->>   			break;
->> @@ -835,10 +837,10 @@ ssize_t tcp_splice_read(struct socket *sock, loff_t *ppos,
->>   			}
->>   			continue;
->>   		}
->> -		tss.len -= ret;
->>   		spliced += ret;
->> +		tss.len -= ret;
-> 
-> The patch LGTM. The only minor thing that I note is that the above
-> chunk is not needed. Perhaps avoiding unneeded delta could be worthy.
 
-It keeps it closer to the tss.len test, so I'd leave it for that reason,
-but on the other hand the compiler should be perfectly able to optimise it
-regardless (i.e. sub;cmp;jcc; vs sub;jcc;). I don't have a hard feeling
-on that, can change if you want.
+--G6zBKAl4QuB1XUdm
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Pavel Begunkov
+On Mon, May 22, 2023 at 04:58:46PM +0200, Francesco Dolcini wrote:
+> Hello all,
+> commit da9ef50f545f ("net: phy: dp83867: perform soft reset and retain
+> established link") introduces a regression on my TI AM62 based board.
+>=20
+> I have a working DTS with Linux TI 5.10 downstream kernel branch, while
+> testing the DTS with v6.4-rc in preparation of sending it to the mailing
+> list I noticed that ethernet is working only on a cold poweron.
+>=20
+> With da9ef50f545f reverted it always works.
+>=20
+> Here the DTS snippet for reference:
+>=20
+> &cpsw_port1 {
+> 	phy-handle =3D <&cpsw3g_phy0>;
+> 	phy-mode =3D "rgmii-rxid";
+> };
+>=20
+> &cpsw3g_mdio {
+> 	assigned-clocks =3D <&k3_clks 157 20>;
+> 	assigned-clock-parents =3D <&k3_clks 157 22>;
+> 	assigned-clock-rates =3D <25000000>;
+>=20
+> 	cpsw3g_phy0: ethernet-phy@0 {
+> 		compatible =3D "ethernet-phy-id2000.a231";
+> 		reg =3D <0>;
+> 		interrupt-parent =3D <&main_gpio0>;
+> 		interrupts =3D <25 IRQ_TYPE_EDGE_FALLING>;
+> 		reset-gpios =3D <&main_gpio0 17 GPIO_ACTIVE_LOW>;
+> 		reset-assert-us =3D <10>;
+> 		reset-deassert-us =3D <1000>;
+> 		ti,fifo-depth =3D <DP83867_PHYCR_FIFO_DEPTH_4_B_NIB>;
+> 		ti,rx-internal-delay =3D <DP83867_RGMIIDCTL_2_00_NS>;
+> 	};
+> };
+>=20
+
+Thanks for the regression report. I'm adding it to regzbot:
+
+#regzbot ^introduced: da9ef50f545f86
+#regzbot title: TI AM62 DTS regression due to dp83867 soft reset
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--G6zBKAl4QuB1XUdm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZG4IRAAKCRD2uYlJVVFO
+o5qfAQDwUI5i8vhNfuMRPTkr53hzcc3BMXEOS2dbl0R+Acl0NAD/Us8OljgaYCr2
+IRxQ5ohMdzwq4B8pLzs3Fl4LanHLHQY=
+=T8Bf
+-----END PGP SIGNATURE-----
+
+--G6zBKAl4QuB1XUdm--
 
