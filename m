@@ -1,243 +1,196 @@
-Return-Path: <netdev+bounces-4901-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4902-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C284D70F199
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 10:58:38 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id DB7E770F1A4
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 11:01:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 74CD91C20A0B
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 08:58:35 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7045828120F
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 09:01:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E704C2C2;
-	Wed, 24 May 2023 08:58:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 712BBC2C6;
+	Wed, 24 May 2023 09:01:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 625C02573;
-	Wed, 24 May 2023 08:58:33 +0000 (UTC)
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D421A1;
-	Wed, 24 May 2023 01:58:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684918707; x=1716454707;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=fS/ZgrTFZFGfvEc8noI1edySMCOq1fD5T0Rj/yxAzxk=;
-  b=mQw/ZjeGEe7DT2r3KvCWP1cdeFbbMR7WlS3+zpIB4GE9HmrLT6Z+umiq
-   0UIrQS72ME+OS9RtbMeL23O93IJAILFe4KO2aLZAdcbwfDTYZ42OL2zhn
-   id4TIqcMcAb5XNv79stOsl7EilpvQey6VtRFNMGGBpqFn7lQOFvdjp9WU
-   6zjMs4lQ0HKTonJi9/YycwC+VZBG64Eo43NinQQ3hqeneB2r4l8tsxB7g
-   RwqvZmRkHgyHBD8LzcGzOTcj4Bisiw2XhXgrZAaLJD1otqeLYM7ro+/CP
-   7oK3AbmTrv6DNjy6KC/bd8I+VlEFf41M1eRnPdZNV2hACUavHrqFg4i1z
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10719"; a="439858048"
-X-IronPort-AV: E=Sophos;i="6.00,188,1681196400"; 
-   d="scan'208";a="439858048"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2023 01:56:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10719"; a="878570762"
-X-IronPort-AV: E=Sophos;i="6.00,188,1681196400"; 
-   d="scan'208";a="878570762"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga005.jf.intel.com with ESMTP; 24 May 2023 01:56:30 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B78D2573
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 09:01:28 +0000 (UTC)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055D119C
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 02:01:20 -0700 (PDT)
+Received: from canpemm100001.china.huawei.com (unknown [172.30.72.57])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QR4qg5dB0zsRxC;
+	Wed, 24 May 2023 16:59:11 +0800 (CST)
+Received: from dggpeml500020.china.huawei.com (7.185.36.88) by
+ canpemm100001.china.huawei.com (7.192.105.122) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 24 May 2023 01:56:29 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 24 May 2023 01:56:29 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 24 May 2023 01:56:29 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.45) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 24 May 2023 01:56:29 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Id7f2oo0iwiZKG9LgApgJVaurZWFw9S9axl3D82qop4hZwhVUMTtRtimPdQFjxzL68rbdqC52D69ANO2S+d5Jd9EbWmsAS4RU8XMpbkc3kiWYETr5YnHrRbtYrkNsRjSanuXofOYY6vA8pePTverw00soqAsLa7c8rC3V+TX0eIV5f0Vld9rhuakYzswhYUIpw1QOPvQHWq7ZOdd6W+lv7lxnFQeK0DjkU1ZnOo3MRbf08qCZiBik+1WLx/MpC2y9E9ONnk9z3Y66I28rymAxnxlx04Eftn+rttyIdGCN3PrpbBkGCWWniZyT8I3Ha4mc8Np2liEvcCmfMVEOPsE0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fS/ZgrTFZFGfvEc8noI1edySMCOq1fD5T0Rj/yxAzxk=;
- b=SE8i2cqPQCsKYXkWu26aepXWF9dgi8zg78eo4trW4MLvg+uFlQLH55JsN8mKulrHkpbcM4e24sdYyHoW3jXjani1BcKeixFjbWtt1/4RiTJop79a1yV8RCn374qoHeEDI67OvX1XRXu+LmdQMyosX0VTwx73gN7BpEZC8TqS6UNzB76Z6BSMk+bW0nhHxnEiQ3F5rGLx+inU8Qv10GMsa+1WsJAixX07B9dao46UbcV22R9vyzV9F8nMGjhfP0GnELeTBVF0X2/i0mUOLbblLZGcYjoCvMEh4bJ8JxtYNp+YU5AvSAGTq6eoBhp6ss3KMs+mTGiVPEvOx6oDeARiMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from SN7PR11MB6655.namprd11.prod.outlook.com (2603:10b6:806:26d::20)
- by PH7PR11MB7644.namprd11.prod.outlook.com (2603:10b6:510:26a::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Wed, 24 May
- 2023 08:56:22 +0000
-Received: from SN7PR11MB6655.namprd11.prod.outlook.com
- ([fe80::81cd:9876:771e:24fe]) by SN7PR11MB6655.namprd11.prod.outlook.com
- ([fe80::81cd:9876:771e:24fe%7]) with mapi id 15.20.6411.025; Wed, 24 May 2023
- 08:56:22 +0000
-From: "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>
-To: Alexei Starovoitov <alexei.starovoitov@gmail.com>, Stanislav Fomichev
-	<sdf@google.com>
-CC: "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>, bpf
-	<bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
-	<daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, "Network
- Development" <netdev@vger.kernel.org>, "Karlsson, Magnus"
-	<magnus.karlsson@intel.com>, =?utf-8?B?QmrDtnJuIFTDtnBlbA==?=
-	<bjorn@kernel.org>
-Subject: RE: [PATCH bpf-next 01/21] xsk: prepare 'options' in xdp_desc for
- multi-buffer use
-Thread-Topic: [PATCH bpf-next 01/21] xsk: prepare 'options' in xdp_desc for
- multi-buffer use
-Thread-Index: AQHZibNpGqTOV8Ar6ESs4tPww21Nba9gaLUAgAFubACABDyo8A==
-Date: Wed, 24 May 2023 08:56:21 +0000
-Message-ID: <SN7PR11MB66554BA6BE57F4CBB407B88290419@SN7PR11MB6655.namprd11.prod.outlook.com>
-References: <20230518180545.159100-1-maciej.fijalkowski@intel.com>
- <20230518180545.159100-2-maciej.fijalkowski@intel.com>
- <ZGZ66D8x5Nbp2iYO@google.com>
- <CAADnVQJN6Wt2uiNu+wbmh-MPjxnYneA5gcRXF7Jg+3siACA9aA@mail.gmail.com>
-In-Reply-To: <CAADnVQJN6Wt2uiNu+wbmh-MPjxnYneA5gcRXF7Jg+3siACA9aA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
+ 15.1.2507.23; Wed, 24 May 2023 17:01:18 +0800
+Received: from dggpeml500020.china.huawei.com ([7.185.36.88]) by
+ dggpeml500020.china.huawei.com ([7.185.36.88]) with mapi id 15.01.2507.023;
+ Wed, 24 May 2023 17:01:18 +0800
+From: "jiangheng (G)" <jiangheng14@huawei.com>
+To: "jiri@nvidia.com" <jiri@nvidia.com>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>
+CC: "zhanghao (ES)" <zhanghao383@huawei.com>
+Subject: [BUG REPORT] softlock up in net/core cleanup_net
+Thread-Topic: [BUG REPORT] softlock up in net/core cleanup_net
+Thread-Index: AdmOHfB70oAcPTIrRqme868AQCsjww==
+Date: Wed, 24 May 2023 09:01:18 +0000
+Message-ID: <4fc0096b873448e1b0878d399cc8c563@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
 X-MS-Has-Attach:
 X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN7PR11MB6655:EE_|PH7PR11MB7644:EE_
-x-ms-office365-filtering-correlation-id: 00787fe4-eee6-437e-a42e-08db5c34bf2e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: pEQ28QMxeUn63iwAQ6MxMkZoyOBRRSKthXPTanOMhK8ydsN8IFcRjSNhrM+mjI8uRKk1VtutXDqV2IL3ARoGe9Yf6o2/z5Ob6oVc4UdlMtwCAkkHXPIo4NHhhPLqbX15iy44DjBtRtxYtUtLPsbgEnScbDw9xDhuNF6YqBPfLD/GUkG9w6ezCAWb2rh0hbbAA1kJG7mWTnY1TK/QdszGLmEVzN/+lqLtf2n9iMnUNZWyIaHPvw9085zzm/vub3iKNZJggTb1POmPQRRiwWiUe6ka/Ha3Voz1QPyWQn1Cd1e02WMwX0P8R+9muKLx1zmpHTnylJF2iNRJXFP+Hm4HcJZDfjrJ4R6uA3fy4HTYqBVPd1Z9MdHAKyeDZjWOwnVIvA2KCV8L2eu8Xoyc0quBw1LzlCCwyjYRGT1f8o6GBi4vjvk+1NL6Shjj5KxBpvKOa1FEjKv6xslgZq0iyaPuo7EJX+yFQKaPCxF5ZCo8o1zW/uLvXV6if2nqx3SOfR3fclsyg1Rsp1rq3ztuQrz+jyCrSTT9B5/93UvSWenl5UtTcN79MyC+cx4OUbkGBwTvd6gcldQZ3s7OO2h+IOt034668zWQUUAehkb8mBFhxUUfHqXS0Yi/i8GulEtYU3XQ
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN7PR11MB6655.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(366004)(396003)(376002)(39860400002)(346002)(451199021)(54906003)(7696005)(41300700001)(478600001)(110136005)(71200400001)(316002)(76116006)(4326008)(64756008)(66946007)(66556008)(66476007)(66446008)(86362001)(5660300002)(52536014)(38070700005)(8676002)(8936002)(38100700002)(2906002)(26005)(122000001)(82960400001)(6506007)(33656002)(55016003)(9686003)(53546011)(83380400001)(186003)(66574015);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?eEJwY3pua1AycnB4dWtibW8rZ09HazVCZDNNVDRWdnhucVZZeG9lZGdJQ3hO?=
- =?utf-8?B?M251T3pYUmZWa2N2SzZOSkxMRzViYUFoVUVEVktjbVBSUXloelcrSjJiaC92?=
- =?utf-8?B?R1FxV1JQalcybGlJN3ZyNDNNQnhGYStpSTA0enFlVmxaaEFFN2VLdmw5OEhk?=
- =?utf-8?B?RnZ6MmtXRldmSzlQc0I3YTBJSFpQT1d6MXR3aCs0UWNjbGcyWFZoZHFBdzNY?=
- =?utf-8?B?RDR1ekgwd1h0OE4rdVd6M1pQSlBFaGE0V3FWRnBOdjZYUnlHd0d5TkNSeTN2?=
- =?utf-8?B?UG0vaGNxbVN0WjlxSmRGckZwemlwUUwxRGFrbDJORW85WEFWOHhOVzd4WlZy?=
- =?utf-8?B?dWN1SEZkODMwZnNkcU9LWk50aDhndDdUSDdtM2NHd2FUYlpxZHRiVGxOMFJ1?=
- =?utf-8?B?ZDdkaEU3eHpTa2FxUlVtL2RxeUZtc2toazEzT2JLVk9mdFpJUnJTQ0EyU0NU?=
- =?utf-8?B?YjBSU3YxOXBxS0pPbmtqVXBnNVNEaFhHa1VlL3VmZzVzclNHMFd2aHdUYnRO?=
- =?utf-8?B?R2ZsbUpocTRFcVA0ajdBNXdQZUowTXBzQTIzamQ1Y0lnendydVc2U05nNTAr?=
- =?utf-8?B?T1ZIZWJ0MmIvZ2hEcGFGVW8rRzFPSFVBTldKY2dXRGlVUW1iUkVHNk5NMCtu?=
- =?utf-8?B?SGs5QWVObDhKWGhJcnZxVzQzbms1MjJIbE14MDhBT29RYzFXdGZZRld4cGx6?=
- =?utf-8?B?L1JKd0F4TGJoZHp3S2hRU2hScElLZTYxU1h0YmpYTWVHbXN4WmdBZUp2RW9N?=
- =?utf-8?B?emI5dVRDcWlaK2E1Q0pNczVDK2Z3WGswaXB1eTFXa3B3WnpSKzZPQ0xDL0pP?=
- =?utf-8?B?Q3Y3SEFHZmN6NDh2QVlZdDRJSWdXWURTclJYemJHVTVVSGM0aEVhNmJ1UTBG?=
- =?utf-8?B?UjZBeTFldTFlRlYyYzFMdGZuMTNxam1pd3BpTjY2bUZCdE42OEhTT3NUK3M5?=
- =?utf-8?B?aWNZRGtsZ0xzNC9JM0w3NGtEdSt6L1NsZzFUdnVBMG1NYXIwTi9jSVpENDdO?=
- =?utf-8?B?RE1LRmxzMDhXRWxuYytQNURiaTdFeHowVDRaenpTT2xBS0pyLzlxVHcrNFcy?=
- =?utf-8?B?WVZHM1I2QnBLcWhVQnpEN3lBWVNQOG5vWm10UjM2ODd6VzEyNFFlMEE3Z3Vs?=
- =?utf-8?B?dmJGeUJadzVzZVRLVC9PZ3JiWlVwSGlIcFhzaFlnU05rY0lZaTVjWVEvcUxs?=
- =?utf-8?B?MnNyRVlSOFJvT1VWUEhSN2hzUDdRamNDbVB1RmE3Zlg1VjZ1c2VwMXUwb1oz?=
- =?utf-8?B?WnJVU3BwS2E4UnhyOWFIdGJzVmo5OXE1MlBXM0hFUCtYYXhPQ1RSVDliVnQ5?=
- =?utf-8?B?NnhTMGowTFoyWmcxNHVhUFpBM0JSZG50RWtqcUc4TE02Rzl6d0tEeElyMW1U?=
- =?utf-8?B?eElDRGxRQVdYTHFrSkE5QnJLcUtGME5uYWZ2ZmlTb29ENUtJN0tuaERNVUFW?=
- =?utf-8?B?R3RwWnhXSGIzeWVJN1JUMGNsVzNRVUU5b2dDcmFSVytER1VIM1djaVVObFJu?=
- =?utf-8?B?SVAvRmJMdXIyRDhKZ0JVbjdYWW1GTGUrN2cxbHVWT295WkRJYVZ4dkpWcGJa?=
- =?utf-8?B?TmRSKytKUk9VZjNXZkxKUzU5NHU5NHhvRlZWVTdmcUZTbHd3d0tsQ3VkS1Ji?=
- =?utf-8?B?ZHB0dnBWZWpyMFhBdERqREJGQUN5RTNRaUJuTStsMjZvNjJMdkVETi8xZ1F2?=
- =?utf-8?B?TVhLeWZ5bU5aeWx6QkFsR01kdUNyeEcvMnh3ZFRGaTNmZ0Q1NHBuMUNKajRP?=
- =?utf-8?B?a3VLMytYeFp0Wnd2QmY1RWlTZVhBNkh0NVhBWWRYVjAwbE5oSDA4OTNyYWJh?=
- =?utf-8?B?aUY5c20yMjFPR2pwWi9SMGtzL0RXY1NVa3ErWVBCRUg0c2FBMzJwNGRWTFlr?=
- =?utf-8?B?bXc5MUtiYVBoSHBjZzZwS0QxRFliNzgraHl1ZUZoKzlGWWRjTS9IM3BWQXo3?=
- =?utf-8?B?T095V0I0dDdlaGVOSWhjYTB1TnQ0NGdNOGtpU0x5em0wN2pCdTZXaEtsaWk1?=
- =?utf-8?B?VDhXMG5pSm96VEkrdDEwaGxkVnRhZkNCR1RpZGk3UjJwNE96ZnM1anpzOU96?=
- =?utf-8?B?c2tpZWdWZGlZLzZPYlpQcUR4VXN1aUtwZjJDWWxzbTRRWldENEQvRGUrTTdO?=
- =?utf-8?Q?kJA4/Kl13uZKqBAZwoCCTBNDk?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-originating-ip: [10.136.117.195]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN7PR11MB6655.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 00787fe4-eee6-437e-a42e-08db5c34bf2e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 May 2023 08:56:21.8382
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JllzZk568/YkV3owUgYWs5cpq/N4Q8FKzvIXWVtliTtVSOplLUAvl6X/D1OI+M4tjz72RWBinPWL+50ImcxtT7oT7o/lf6zjDI4H/fgEJ8o=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7644
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbGV4ZWkgU3Rhcm92b2l0b3Yg
-PGFsZXhlaS5zdGFyb3ZvaXRvdkBnbWFpbC5jb20+DQo+IFNlbnQ6IEZyaWRheSwgTWF5IDE5LCAy
-MDIzIDEwOjQ0IFBNDQo+IFRvOiBTdGFuaXNsYXYgRm9taWNoZXYgPHNkZkBnb29nbGUuY29tPg0K
-PiBDYzogRmlqYWxrb3dza2ksIE1hY2llaiA8bWFjaWVqLmZpamFsa293c2tpQGludGVsLmNvbT47
-IGJwZg0KPiA8YnBmQHZnZXIua2VybmVsLm9yZz47IEFsZXhlaSBTdGFyb3ZvaXRvdiA8YXN0QGtl
-cm5lbC5vcmc+OyBEYW5pZWwNCj4gQm9ya21hbm4gPGRhbmllbEBpb2dlYXJib3gubmV0PjsgQW5k
-cmlpIE5ha3J5aWtvIDxhbmRyaWlAa2VybmVsLm9yZz47DQo+IE5ldHdvcmsgRGV2ZWxvcG1lbnQg
-PG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+OyBLYXJsc3NvbiwgTWFnbnVzDQo+IDxtYWdudXMua2Fy
-bHNzb25AaW50ZWwuY29tPjsgU2Fya2FyLCBUaXJ0aGVuZHUNCj4gPHRpcnRoZW5kdS5zYXJrYXJA
-aW50ZWwuY29tPjsgQmrDtnJuIFTDtnBlbCA8Ympvcm5Aa2VybmVsLm9yZz4NCj4gU3ViamVjdDog
-UmU6IFtQQVRDSCBicGYtbmV4dCAwMS8yMV0geHNrOiBwcmVwYXJlICdvcHRpb25zJyBpbiB4ZHBf
-ZGVzYyBmb3INCj4gbXVsdGktYnVmZmVyIHVzZQ0KPiANCj4gT24gVGh1LCBNYXkgMTgsIDIwMjMg
-YXQgMTI6MjLigK9QTSBTdGFuaXNsYXYgRm9taWNoZXYgPHNkZkBnb29nbGUuY29tPg0KPiB3cm90
-ZToNCj4gPg0KPiA+IE9uIDA1LzE4LCBNYWNpZWogRmlqYWxrb3dza2kgd3JvdGU6DQo+ID4gPiBG
-cm9tOiBUaXJ0aGVuZHUgU2Fya2FyIDx0aXJ0aGVuZHUuc2Fya2FyQGludGVsLmNvbT4NCj4gPiA+
-DQo+ID4gPiBVc2UgdGhlICdvcHRpb25zJyBmaWVsZCBpbiB4ZHBfZGVzYyBhcyBhIHBhY2tldCBj
-b250aW51aXR5IG1hcmtlci4gU2luY2UNCj4gPiA+ICdvcHRpb25zJyBmaWVsZCB3YXMgdW51c2Vk
-IHRpbGwgbm93IGFuZCB3YXMgZXhwZWN0ZWQgdG8gYmUgc2V0IHRvIDAsIHRoZQ0KPiA+ID4gJ2Vv
-cCcgZGVzY3JpcHRvciB3aWxsIGhhdmUgaXQgc2V0IHRvIDAsIHdoaWxlIHRoZSBub24tZW9wIGRl
-c2NyaXB0b3JzDQo+ID4gPiB3aWxsIGhhdmUgdG8gc2V0IGl0IHRvIDEuIFRoaXMgZW5zdXJlcyBs
-ZWdhY3kgYXBwbGljYXRpb25zIGNvbnRpbnVlIHRvDQo+ID4gPiB3b3JrIHdpdGhvdXQgbmVlZGlu
-ZyBhbnkgY2hhbmdlIGZvciBzaW5nbGUtYnVmZmVyIHBhY2tldHMuDQo+ID4gPg0KPiA+ID4gQWRk
-IGhlbHBlciBmdW5jdGlvbnMgYW5kIGV4dGVuZCB4c2txX3Byb2RfcmVzZXJ2ZV9kZXNjKCkgdG8g
-dXNlIHRoZQ0KPiA+ID4gJ29wdGlvbnMnIGZpZWxkLg0KPiA+ID4NCj4gPiA+IFNpZ25lZC1vZmYt
-Ynk6IFRpcnRoZW5kdSBTYXJrYXIgPHRpcnRoZW5kdS5zYXJrYXJAaW50ZWwuY29tPg0KPiA+ID4g
-LS0tDQo+ID4gPiAgaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oIHwgMTYgKysrKysrKysrKysr
-KysrKw0KPiA+ID4gIG5ldC94ZHAveHNrLmMgICAgICAgICAgICAgICB8ICA4ICsrKystLS0tDQo+
-ID4gPiAgbmV0L3hkcC94c2tfcXVldWUuaCAgICAgICAgIHwgMTIgKysrKysrKysrLS0tDQo+ID4g
-PiAgMyBmaWxlcyBjaGFuZ2VkLCAyOSBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQ0KPiA+
-ID4NCj4gPiA+IGRpZmYgLS1naXQgYS9pbmNsdWRlL3VhcGkvbGludXgvaWZfeGRwLmggYi9pbmNs
-dWRlL3VhcGkvbGludXgvaWZfeGRwLmgNCj4gPiA+IGluZGV4IGE3OGE4MDk2ZjRjZS4uNGFjYzNh
-OTQzMGYzIDEwMDY0NA0KPiA+ID4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oDQo+
-ID4gPiArKysgYi9pbmNsdWRlL3VhcGkvbGludXgvaWZfeGRwLmgNCj4gPiA+IEBAIC0xMDgsNCAr
-MTA4LDIwIEBAIHN0cnVjdCB4ZHBfZGVzYyB7DQo+ID4gPg0KPiA+ID4gIC8qIFVNRU0gZGVzY3Jp
-cHRvciBpcyBfX3U2NCAqLw0KPiA+ID4NCj4gPiA+ICsvKiBGbGFnIGluZGljYXRpbmcgdGhhdCB0
-aGUgcGFja2V0IGNvbnRpbnVlcyB3aXRoIHRoZSBidWZmZXIgcG9pbnRlZCBvdXQNCj4gYnkgdGhl
-DQo+ID4gPiArICogbmV4dCBmcmFtZSBpbiB0aGUgcmluZy4gVGhlIGVuZCBvZiB0aGUgcGFja2V0
-IGlzIHNpZ25hbGxlZCBieSBzZXR0aW5nDQo+IHRoaXMNCj4gPiA+ICsgKiBiaXQgdG8gemVyby4g
-Rm9yIHNpbmdsZSBidWZmZXIgcGFja2V0cywgZXZlcnkgZGVzY3JpcHRvciBoYXMgJ29wdGlvbnMn
-DQo+IHNldA0KPiA+ID4gKyAqIHRvIDAgYW5kIHRoaXMgbWFpbnRhaW5zIGJhY2t3YXJkIGNvbXBh
-dGliaWxpdHkuDQo+ID4gPiArICovDQo+ID4gPiArI2RlZmluZSBYRFBfUEtUX0NPTlREICgxIDw8
-IDApDQo+ID4gPiArDQo+ID4gPiArLyogTWF4aW11bSBudW1iZXIgb2YgZGVzY3JpcHRvcnMgc3Vw
-cG9ydGVkIGFzIGZyYWdzIGZvciBhIHBhY2tldC4gU28NCj4gdGhlIHRvdGFsDQo+ID4gPiArICog
-bnVtYmVyIG9mIGRlc2NyaXB0b3JzIHN1cHBvcnRlZCBmb3IgYSBwYWNrZXQgaXMNCj4gWFNLX0RF
-U0NfTUFYX0ZSQUdTICsgMS4gVGhlDQo+ID4gPiArICogbWF4IGZyYWdzIHN1cHBvcnRlZCBieSBz
-a2IgaXMgMTYgZm9yIHBhZ2Ugc2l6ZXMgZ3JlYXRlciB0aGFuIDRLIGFuZCAxNw0KPiBvcg0KPiA+
-DQo+ID4gVGhpcyBpcyBub3cgYSBjb25maWcgb3B0aW9uIENPTkZJR19NQVhfU0tCX0ZSQUdTLiBD
-YW4gd2UgdXNlIGl0DQo+ID4gZGlyZWN0bHk/DQo+IA0KPiBBbHNvIGl0IGRvZXNuJ3QgbG9vayBy
-aWdodCB0byBleHBvc2Uga2VybmVsIGludGVybmFsIGNvbmZpZyBpbiB1YXBpDQo+IGVzcGVjaWFs
-bHkgc2luY2UgWFNLX0RFU0NfTUFYX0ZSQUdTIGlzIG5vdCBndWFyYW50ZWVkIHRvIGJlIDE2Lg0K
-DQpPaywgd2UgaGF2ZSBjb3VwbGUgb2Ygb3B0aW9ucyBoZXJlOg0KDQpPcHRpb24gMTrCoCBXZSB3
-aWxsIGRlZmluZSBYU0tfREVTQ19NQVhfRlJBR1MgdG8gMTcgbm93LiBUaGlzIHdpbGwgZW5zdXJl
-IEFGX1hEUA0KIGFwcGxpY2F0aW9ucyB3aWxsIHdvcmsgb24gYW55IHN5c3RlbSB3aXRob3V0IGFu
-eSBjaGFuZ2Ugc2luY2UgdGhlIE1BWF9TS0JfRlJBR1MNCiBpcyBndWFyYW50ZWVkIHRvIGJlIGF0
-IGxlYXN0IDE3Lg0KDQpPcHRpb24gMjogSW5zdGVhZCBvZiBkZWZpbmluZyBhIG5ldyBtYWNybywg
-d2Ugc2F5IG1heCBmcmFncyBzdXBwb3J0ZWQgaXMgc2FtZSBhcw0KIE1BWF9TS0JfRlJBR1MgYXMg
-Y29uZmlndXJlZCBpbiB5b3VyIHN5c3RlbS4gU28gdXNlIDE3IG9yIGxlc3MgZnJhZ3MgaWYgeW91
-IHdhbnTCoA0KIHlvdXIgYXBwIHRvIHdvcmsgZXZlcnl3aGVyZSBidXQgeW91IGNhbiBnbyBsYXJn
-ZXIgaWYgeW91IGNvbnRyb2wgdGhlIHN5c3RlbS4NCg0KQW55IHN1Z2dlc3Rpb25zID8NCg0KQWxz
-byBBbGV4ZWkgY291bGQgeW91IHBsZWFzZSBjbGFyaWZ5IHdoYXQgeW91IG1lYW50IGJ5ICIuLiBz
-aW5jZSBYU0tfREVTQ19NQVhfRlJBR1MNCiBpcyBub3QgZ3VhcmFudGVlZCB0byBiZSAxNi4iID8N
-Cg==
+Hi all,
+on linux 5.10,=A0 we want to use docker interactively when testing an inter=
+nal feature. When docker restarts the container, it will call cleanup_net a=
+nd a crash will occur.
+
+[=A0 843.330515] CPU: 0 PID: 158 Comm: kworker/u8:2 Kdump: loaded Tainted: =
+G=A0=A0=A0 B=A0=A0=A0=A0=A0 OEL=A0=A0=A0 #1 [=A0 843.330516] Hardware name:=
+ QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015 [=A0 843.330523] Workqueue=
+: netns cleanup_net [=A0 843.330526] pstate: 60400085 (nZCv daIf +PAN -UAO =
+-TCO BTYPE=3D--) [=A0 843.330529] pc : machine_kexec+0x48/0x2b0 [=A0 843.33=
+0531] lr : machine_kexec+0x48/0x2b0 [=A0 843.330531] sp : ffff80010284bb10 =
+[=A0 843.330533] x29: ffff80010284bb10 x28: ffff0000ff851cf8 [=A0 843.33053=
+5] x27: ffff0000ff851d78 x26: ffff80010284bda0 [=A0 843.330537] x25: ffff80=
+0101d9c000 x24: 0000000000000001 [=A0 843.330539] x23: ffff800101d9c650 x22=
+: ffff800101eb6000 [=A0 843.330541] x21: ffff800101eb6000 x20: ffff0000cba2=
+3c00 [=A0 843.330543] x19: ffff0000cba23c00 x18: 0000000000000020 [ =A0843.=
+330545] x17: 0000000000000000 x16: ffff800100d27a3c [=A0 843.330548] x15: f=
+fffffffffffffff x14: 0000000060000085 [=A0 843.330550] x13: ffff8001001c090=
+c x12: 0000000000000040 [=A0 843.330552] x11: ffff800101aad158 x10: 0000000=
+0ffff8000 [=A0 843.330554] x9 : ffff800100157654 x8 : 0000000000000000 [=A0=
+ 843.330556] x7 : ffff8001017ed158 x6 : 0000000000017ffd [=A0 843.330559] x=
+5 : ffff0000ff84b410 x4 : ffff80010284b910 [=A0 843.330561] x3 : 0000000000=
+000001 x2 : 0000000000000000 [=A0 843.330563] x1 : 0000000000000000 x0 : ff=
+ff0000c09eb9c0 [=A0 843.330566] Call trace:
+[=A0 843.330569]=A0 machine_kexec+0x48/0x2b0 [=A0 843.330573]=A0 __crash_ke=
+xec+0x90/0x13c [=A0 843.330578]=A0 panic+0x314/0x4d8 [=A0 843.330582]=A0 wa=
+tchdog_timer_fn+0x26c/0x2f0 [=A0 843.330585]=A0 __run_hrtimer+0x98/0x2b4 [=
+=A0 843.330586]=A0 __hrtimer_run_queues+0xbc/0x130 [=A0 843.330588]=A0 hrti=
+mer_interrupt+0x150/0x3e4 [=A0 843.330592]=A0 arch_timer_handler_virt+0x3c/=
+0x50 [=A0 843.330596]=A0 handle_percpu_devid_irq+0x90/0x1f4
+[=A0 843.330599]=A0 __handle_domain_irq+0x84/0x100 [=A0 843.330601]=A0 gic_=
+handle_irq+0x88/0x2b0 [=A0 843.330603]=A0 el1_irq+0xb8/0x140 [=A0 843.33060=
+5]=A0 smp_call_function_single+0x1b8/0x1dc
+[=A0 843.330608]=A0 rcu_barrier+0x1c4/0x2d0
+[=A0 843.330612]=A0 netdev_run_todo+0x7c/0x330 [=A0 843.330615]=A0 rtnl_unl=
+ock+0x18/0x24 [=A0 843.330616]=A0 default_device_exit_batch+0x15c/0x190
+[=A0 843.330621]=A0 ops_exit_list+0x70/0x84
+[=A0 843.330622]=A0 cleanup_net+0x184/0x2e0
+[=A0 843.330625]=A0 process_one_work+0x1d4/0x4bc [=A0 843.330627]=A0 worker=
+_thread+0x150/0x400 [=A0 843.330629]=A0 kthread+0x108/0x134 [=A0 843.330631=
+]=A0 ret_from_fork+0x10/0x18 [=A0 843.330633] ---[ end trace 8378c01c76c90c=
+c4 ]--- [=A0 843.330637] Bye!
+
+Crash:bt -l
+PID: 158=A0=A0=A0 TASK: ffff0000c09eb9c0=A0 CPU: 0=A0=A0 COMMAND: "kworker/=
+u8:2"
+PID: 158=A0=A0=A0 TASK: ffff0000c09eb9c0=A0 CPU: 0=A0=A0 COMMAND: "kworker/=
+u8:2"
+bt: invalid kernel virtual address: 0=A0 type: "IRQ stack contents"
+bt: read of IRQ stack at 0 failed
+#0 [ffff80010284bb60] __crash_kexec at ffff8001001c0908
+=A0=A0=A0 /usr/src/debug/kernel/./arch/arm64/include/asm/kexec.h: 57
+#1 [ffff80010284bcf0] panic at ffff800100d256a4
+=A0=A0=A0 /usr/src/debug/kernel/kernel/panic.c: 392
+#2 [ffff80010284bde0] watchdog_timer_fn at ffff80010020a5c8
+=A0=A0=A0 /usr/src/debug/kernel/kernel/watchdog.c: 578
+#3 [ffff80010284be30] __run_hrtimer at ffff800100191d24
+=A0=A0=A0 /usr/src/debug/kernel/kernel/time/hrtimer.c: 1586
+#4 [ffff80010284be80] __hrtimer_run_queues at ffff800100191ffc
+=A0=A0=A0 /usr/src/debug/kernel/kernel/time/hrtimer.c: 1650
+#5 [ffff80010284bee0] hrtimer_interrupt at ffff80010019267c
+=A0=A0=A0 /usr/src/debug/kernel/kernel/time/hrtimer.c: 1712
+#6 [ffff80010284bf50] arch_timer_handler_virt at ffff800100aa9a38
+=A0=A0=A0 /usr/src/debug/kernel/drivers/clocksource/arm_arch_timer.c: 674
+#7 [ffff80010284bf60] handle_percpu_devid_irq at ffff80010016500c
+=A0=A0=A0 /usr/src/debug/kernel/./arch/arm64/include/asm/percpu.h: 45
+#8 [ffff80010284bf90] __handle_domain_irq at ffff80010015b840
+=A0=A0=A0 /usr/src/debug/kernel/./include/linux/irqdesc.h: 153
+#9 [ffff80010284bfd0] gic_handle_irq at ffff800100010144
+=A0=A0=A0 /usr/src/debug/kernel/./include/linux/irqdesc.h: 171
+--- <IRQ stack> ---
+#10 [ffff800102d4bb20] el1_irq at ffff800100012374
+=A0=A0=A0 /usr/src/debug/kernel/arch/arm64/kernel/entry.S: 672
+#11 [ffff800102d4bb40] smp_call_function_single at ffff8001001b1e68
+=A0=A0=A0 /usr/src/debug/kernel/./arch/arm64/include/asm/cmpxchg.h: 278
+#12 [ffff800102d4bba0] rcu_barrier at ffff800100178ba0
+=A0=A0=A0 /usr/src/debug/kernel/kernel/rcu/tree.c: 3920
+#13 [ffff800102d4bc00] netdev_run_todo at ffff800100b3f768
+=A0=A0=A0 /usr/src/debug/kernel/net/core/dev.c: 10313
+#14 [ffff800102d4bc80] rtnl_unlock at ffff800100b4cb54
+=A0=A0=A0 /usr/src/debug/kernel/net/core/rtnetlink.c: 114
+#15 [ffff800102d4bc90] default_device_exit_batch at ffff800100b378d8
+=A0=A0=A0 /usr/src/debug/kernel/net/core/dev.c: 11287
+#16 [ffff800102d4bd00] ops_exit_list at ffff800100b2337c
+=A0=A0=A0 /usr/src/debug/kernel/net/core/net_namespace.c: 200
+#17 [ffff800102d4bd30] cleanup_net at ffff800100b25ab0
+=A0=A0=A0 /usr/src/debug/kernel/net/core/net_namespace.c: 616
+#18 [ffff800102d4bd90] process_one_work at ffff8001000de784
+=A0=A0=A0 /usr/src/debug/kernel/kernel/workqueue.c: 2354
+#19 [ffff800102d4bdf0] worker_thread at ffff8001000df18c
+=A0=A0=A0 /usr/src/debug/kernel/kernel/workqueue.c: 2500
+#20 [ffff800102d4be50] kthread at ffff8001000e75a4
+=A0=A0=A0 /usr/src/debug/kernel/kernel/kthread.c: 313
+
+The above backtrace seems to be caused func:netdev_run_todo() that the size=
+ of list not null.
+void netdev_run_todo(void)
+{
+=A0=A0=A0=A0=A0=A0=A0=A0 struct net_device *dev, *tmp;
+=A0=A0=A0=A0=A0=A0=A0=A0 struct list_head list;
+#ifdef CONFIG_LOCKDEP
+=A0=A0=A0=A0=A0=A0=A0=A0 struct list_head unlink_list;
+
+=A0=A0=A0=A0=A0=A0=A0=A0 list_replace_init(&net_unlink_list, &unlink_list);
+
+=A0=A0=A0=A0=A0=A0=A0=A0 while (!list_empty(&unlink_list)) {
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 struct net_device *d=
+ev =3D list_first_entry(&unlink_list,
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0         =
+                     struct net_device,
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0unlink_li=
+st);
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 list_del_init(&dev->=
+unlink_list);
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 dev->nested_level =
+=3D dev->lower_level - 1;
+=A0=A0=A0=A0=A0=A0=A0=A0 }
+#endif
+
+=A0=A0=A0=A0=A0=A0=A0=A0 /* Snapshot list, allow later requests */
+=A0=A0=A0=A0=A0=A0=A0=A0 list_replace_init(&net_todo_list, &list);
+
+=A0=A0=A0=A0=A0=A0=A0=A0 __rtnl_unlock();
+
+=A0=A0=A0=A0=A0=A0=A0=A0 /* Wait for rcu callbacks to finish before next ph=
+ase */
+=A0=A0=A0=A0=A0=A0=A0=A0 if !(list_empty(&list))
+=A0=A0=A0=A0=A0=A0=A0=A0=A0          rcu_barrier();
+
+I wonder if softlockup is due to the above code? Please help analyze the po=
+ssible causes of this.
+
 
