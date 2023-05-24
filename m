@@ -1,91 +1,91 @@
-Return-Path: <netdev+bounces-5135-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5136-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A2A6770FC21
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 19:03:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AD42D70FC2F
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 19:07:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3A80E1C20AB3
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:03:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A1A471C20C0F
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:07:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 965C119E69;
-	Wed, 24 May 2023 17:03:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A84EC19E72;
+	Wed, 24 May 2023 17:07:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A5F96087C
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 17:03:49 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E5FFC;
-	Wed, 24 May 2023 10:03:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=xngnOTHnMcuSLuO19bCUtMqmaPj/zfQQZoM9yYAXdxs=; b=z1qO6QeiyV6CNKz82XzH8bb/Km
-	+w6RIScjeq1wtEU8MG13gJxNS1GH1d4J9bM5eky3JIdabQHpT/AHaisnrhRnTqg4SDFhhEcjffp+s
-	E5b6HZWWeegeBqKQA1rT21DMnUtqk5COjNX2ZkjjVdatU66mmW5ku0DvZcWqa7DYTfkk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q1rti-00DocK-3N; Wed, 24 May 2023 19:03:38 +0200
-Date: Wed, 24 May 2023 19:03:38 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	Woojung Huh <woojung.huh@microchip.com>,
-	Arun Ramadoss <arun.ramadoss@microchip.com>,
-	Vladimir Oltean <vladimir.oltean@nxp.com>, kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	UNGLinuxDriver@microchip.com,
-	"Russell King (Oracle)" <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v1 2/5] net: dsa: microchip: add an enum for
- regmap widths
-Message-ID: <9b1b2f17-0489-4adb-8e17-594a813c2dc9@lunn.ch>
-References: <20230524123220.2481565-1-o.rempel@pengutronix.de>
- <20230524123220.2481565-3-o.rempel@pengutronix.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1134A60859
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 17:07:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73AEEC433D2;
+	Wed, 24 May 2023 17:07:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684948052;
+	bh=9QQDE5aHQQ7Z6qlW7A5xkrog5EBpEq6APfJfe/gwIx8=;
+	h=From:To:Cc:Subject:Date:From;
+	b=qS5wLycPu2Rf8E1L9eg30lthnimlF22q23tdVV+VDv+YxAe6ejiq6Tj3dxA/cFUFE
+	 Fm5XhUO08j+fNTHgj8hgKaGGkXIu9FDIxr2DovE70ar4QFKtMmS7GM1YpvcTreKBLu
+	 4xBjYVK10fCrpWFueZPaILj/LYlCYCSMo5dc3iDPVCQVl7Q+caW/tPwhu2BM/He2ky
+	 yDYF9B86EoRNbEVYpj3ULYZuUFTg/1MlEkdG2Xkz/2dUOyX0lJnOEsQ0ihm0pInYM2
+	 dz8sF1Z6Sa7A4gZNjOvJrSkJJCcCqUQygs+bFGnybd+m8WLnUpdnxIC/OiuFoeleMV
+	 5HUXBhWLKUlFA==
+From: Jakub Kicinski <kuba@kernel.org>
+To: davem@davemloft.net
+Cc: netdev@vger.kernel.org,
+	edumazet@google.com,
+	pabeni@redhat.com,
+	Jakub Kicinski <kuba@kernel.org>,
+	donald.hunter@gmail.com
+Subject: [PATCH net] tools: ynl: avoid dict errors on older Python versions
+Date: Wed, 24 May 2023 10:07:12 -0700
+Message-Id: <20230524170712.2036128-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230524123220.2481565-3-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
 
-On Wed, May 24, 2023 at 02:32:17PM +0200, Oleksij Rempel wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> It is not immediately obvious that this driver allocates, via the
-> KSZ_REGMAP_TABLE() macro, 3 regmaps for register access: dev->regmap[0]
-> for 8-bit access, dev->regmap[1] for 16-bit and dev->regmap[2] for
-> 32-bit access.
-> 
-> In future changes that add support for reg_fields, each field will have
-> to specify through which of the 3 regmaps it's going to go. Add an enum
-> now, to denote one of the 3 register access widths, and make the code go
-> through some wrapper functions for easier review and further
-> modification.
+Python 3.9.0 or newer supports combining dicts() with |,
+but older versions of Python are still used in the wild
+(e.g. on CentOS 8, which goes EoL May 31, 2024).
+With Python 3.6.8 we get:
 
-Given the patches in this series, it is not obvious why the wrapper is
-needed.
+  TypeError: unsupported operand type(s) for |: 'dict' and 'dict'
 
-dev->regmap[KSZ_REGMAP_8] is just as readable as ksz_regmap_8(dev).
+Use older syntax. Tested with non-legacy families only.
 
-Do future changes add extra parameters to ksz_regmap_8()?
+Fixes: f036d936ca57 ("tools: ynl: Add fixed-header support to ynl")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: donald.hunter@gmail.com
 
-   Andrew
+This is arguably not a fix, but those trying YNL on 6.4 will likely
+appreciate not running into the problem.
+---
+ tools/net/ynl/lib/ynl.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
+index 39a2296c0003..7c7a54d6841c 100644
+--- a/tools/net/ynl/lib/ynl.py
++++ b/tools/net/ynl/lib/ynl.py
+@@ -578,8 +578,9 @@ genl_family_name_to_id = None
+                         print('Unexpected message: ' + repr(gm))
+                         continue
+ 
+-                rsp.append(self._decode(gm.raw_attrs, op.attr_set.name)
+-                           | gm.fixed_header_attrs)
++                rsp_msg = self._decode(gm.raw_attrs, op.attr_set.name)
++                rsp_msg.update(gm.fixed_header_attrs)
++                rsp.append(rsp_msg)
+ 
+         if not rsp:
+             return None
+-- 
+2.40.1
+
 
