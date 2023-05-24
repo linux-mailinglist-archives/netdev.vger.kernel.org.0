@@ -1,62 +1,45 @@
-Return-Path: <netdev+bounces-4854-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4855-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DAA3670EC2B
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 05:54:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A8DB70EC58
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 06:05:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 967531C20AF4
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 03:53:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9E1C51C20AF0
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 04:04:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2DDD15BB;
-	Wed, 24 May 2023 03:53:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF99115C2;
+	Wed, 24 May 2023 04:04:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A7E315B8
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 03:53:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD908C433D2;
-	Wed, 24 May 2023 03:53:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83F1715B8
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 04:04:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D569C433D2;
+	Wed, 24 May 2023 04:04:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684900437;
-	bh=4f1gt/BCfbLHog09/Xsin0iYouAloZtBkhPaw5h+3Uk=;
+	s=k20201202; t=1684901095;
+	bh=h0GPloYU1VAGgpUh/tie+7wVESLUBSFraCBtAuT3854=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=VTjRau/bNOfmdJ33zPP9fzppLzalj2n66xWeUM8et/U2kDIXenWJlws9ke/J63cua
-	 7h8nbEpBrHk+3kbBwK4hYrTG0TJuuA4Y8nyVrZV34Feh/wVZUCXe9pHkiL5GrZpTPb
-	 1pUq0WoLiV4z1hh/q8nIAUP6Q7nvRsPe6zxlxMbem5vTDjKC2IBSsISEX6TycDAT+K
-	 E11xrcZaYzPDD+AvVcAUfQueTdIeTLMtPcPMx7rpOceZRwETWUuo1o7AcoLQuOypBm
-	 fbpREO7W2cFcnLHLSfIPlJAIvbGWiK22cduJxuIMSKGEpMfWr2jO0/7hSlREuEGrtM
-	 7Bq4VihlXfeWA==
-Date: Tue, 23 May 2023 20:53:54 -0700
+	b=HhkszsfZ6rTKFmLO70MxjxjEyH5t5GLtXOzqSyFg3csKk5knmXCzal/ZPLDFwBbZa
+	 2rueLngCuYe5u99GHxsN+rmG20BcOvQjtt7NKqLejKL55Gq1qggCaGDbduq3PYo/Ca
+	 RtGfNqygXL5l5XtiFAOl1dVFiG58XdCmjR1B8Ej5rziJkymRaOfsY5/3sz5qbzPIZe
+	 atadsjt7JzAZjSTL/dAZFmywe6xT9KUAfY8BAgHBZfDAcWCX6ILxJarc99lXcaYLvl
+	 gweyk2KB3e0G4p5hRQ1Gwc0+i8vW7Ia6XWA6HQPKfkYwllN98cDj078OhiKKBm7RyD
+	 NWzwNXZ2VylMQ==
+Date: Tue, 23 May 2023 21:04:54 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Kees Cook <keescook@chromium.org>
-Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>, Christoph Hellwig
- <hch@infradead.org>, Tony Nguyen <anthony.l.nguyen@intel.com>, "David S.
- Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo
- Abeni <pabeni@redhat.com>, James Smart <james.smart@broadcom.com>, Keith
- Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>, Sagi Grimberg
- <sagi@grimberg.me>, HighPoint Linux Team <linux@highpoint-tech.com>, "James
- E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen"
- <martin.petersen@oracle.com>, Kashyap Desai <kashyap.desai@broadcom.com>,
- Sumit Saxena <sumit.saxena@broadcom.com>, Shivasharan S
- <shivasharan.srikanteshwara@broadcom.com>, Don Brace
- <don.brace@microchip.com>, "Darrick J. Wong" <djwong@kernel.org>, Dave
- Chinner <dchinner@redhat.com>, Guo Xuenan <guoxuenan@huawei.com>,
- Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>, Nick Desaulniers
- <ndesaulniers@google.com>, Daniel Latypov <dlatypov@google.com>, kernel
- test robot <lkp@intel.com>, intel-wired-lan@lists.osuosl.org,
- netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
- linux-scsi@vger.kernel.org, megaraidlinux.pdl@broadcom.com,
- storagedev@microchip.com, linux-xfs@vger.kernel.org,
- linux-hardening@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Tales
- Aparecida <tales.aparecida@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] overflow: Add struct_size_t() helper
-Message-ID: <20230523205354.06b147c6@kernel.org>
-In-Reply-To: <20230522211810.never.421-kees@kernel.org>
-References: <20230522211810.never.421-kees@kernel.org>
+To: Mengyuan Lou <mengyuanlou@net-swift.com>
+Cc: netdev@vger.kernel.org, jiawenwu@trustnetic.com
+Subject: Re: [PATCH net-next v6 2/8] net: wangxun: libwx add rx offload
+ functions
+Message-ID: <20230523210454.12963d67@kernel.org>
+In-Reply-To: <20230523030658.17738-3-mengyuanlou@net-swift.com>
+References: <20230523030658.17738-1-mengyuanlou@net-swift.com>
+	<20230523030658.17738-3-mengyuanlou@net-swift.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,51 +49,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 22 May 2023 14:18:13 -0700 Kees Cook wrote:
-> diff --git a/drivers/net/ethernet/intel/ice/ice_ddp.h b/drivers/net/ethernet/intel/ice/ice_ddp.h
-> index 37eadb3d27a8..41acfe26df1c 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_ddp.h
-> +++ b/drivers/net/ethernet/intel/ice/ice_ddp.h
-> @@ -185,7 +185,7 @@ struct ice_buf_hdr {
->  
->  #define ICE_MAX_ENTRIES_IN_BUF(hd_sz, ent_sz)                                 \
->  	((ICE_PKG_BUF_SIZE -                                                  \
-> -	  struct_size((struct ice_buf_hdr *)0, section_entry, 1) - (hd_sz)) / \
-> +	  struct_size_t(struct ice_buf_hdr,  section_entry, 1) - (hd_sz)) / \
->  	 (ent_sz))
->  
->  /* ice package section IDs */
-> @@ -297,7 +297,7 @@ struct ice_label_section {
->  };
->  
->  #define ICE_MAX_LABELS_IN_BUF                                             \
-> -	ICE_MAX_ENTRIES_IN_BUF(struct_size((struct ice_label_section *)0, \
-> +	ICE_MAX_ENTRIES_IN_BUF(struct_size_t(struct ice_label_section,  \
->  					   label, 1) -                    \
->  				       sizeof(struct ice_label),          \
->  			       sizeof(struct ice_label))
-> @@ -352,7 +352,7 @@ struct ice_boost_tcam_section {
->  };
->  
->  #define ICE_MAX_BST_TCAMS_IN_BUF                                               \
-> -	ICE_MAX_ENTRIES_IN_BUF(struct_size((struct ice_boost_tcam_section *)0, \
-> +	ICE_MAX_ENTRIES_IN_BUF(struct_size_t(struct ice_boost_tcam_section,  \
->  					   tcam, 1) -                          \
->  				       sizeof(struct ice_boost_tcam_entry),    \
->  			       sizeof(struct ice_boost_tcam_entry))
-> @@ -372,8 +372,7 @@ struct ice_marker_ptype_tcam_section {
->  };
->  
->  #define ICE_MAX_MARKER_PTYPE_TCAMS_IN_BUF                                    \
-> -	ICE_MAX_ENTRIES_IN_BUF(                                              \
-> -		struct_size((struct ice_marker_ptype_tcam_section *)0, tcam, \
-> +	ICE_MAX_ENTRIES_IN_BUF(struct_size_t(struct ice_marker_ptype_tcam_section,  tcam, \
->  			    1) -                                             \
->  			sizeof(struct ice_marker_ptype_tcam_entry),          \
->  		sizeof(struct ice_marker_ptype_tcam_entry))
+On Tue, 23 May 2023 11:06:52 +0800 Mengyuan Lou wrote:
+> +static inline struct wx_dec_ptype wx_decode_ptype(const u8 ptype)
+> +{
+> +	return wx_ptype_lookup[ptype];
+> +}
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+No need for inline keyword here, compiler will definitely inline this.
 
-but Intel ICE folks please speak up if this has a high chance of
-conflicts, I think I've seen some ICE DDP patches flying around :(
+> +	/* If there is an outer header present that might contain a checksum
+> +	 * we need to bump the checksum level by 1 to reflect the fact that
+> +	 * we are indicating we validated the inner checksum.
+> +	 */
+> +	if (dptype.etype >= WX_DEC_PTYPE_ETYPE_IG) {
+> +		skb->csum_level = 1;
+> +		skb->encapsulation = 1;
+> +	}
+
+That's not right, you shouldn't set encapsulation, that field means skb
+encap state / fields are valid. Just use
+__skb_incr_checksum_unnecessary() please, it will do the right thing.
+
+-- 
+pw-bot: cr
 
