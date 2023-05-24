@@ -1,94 +1,99 @@
-Return-Path: <netdev+bounces-4875-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4876-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 045AA70EF17
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 09:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 77B7270EF22
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 09:12:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A840A1C20B46
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 07:10:22 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3D67E1C209BA
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 07:12:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E603B79C6;
-	Wed, 24 May 2023 07:10:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5DDF379D1;
+	Wed, 24 May 2023 07:12:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01D0A1FA2
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 07:10:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A4EB8C4339B;
-	Wed, 24 May 2023 07:10:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684912220;
-	bh=5Edlffa6wzk6Sb6/TX+84tNyag5aI6qgOyHYRihIjTg=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=LOd3xsjDHca39yjO67fAnLUs6lBSMz3Nc/tEtRv1nNonCS5gRg+zwcnx2La/qoNHN
-	 xe32v+vhrbt+pCWZsfC8tl7zOfZ49zL4SuONWWzQr/b/M/OOgZKXQUlpSwJbTLCTvW
-	 6HZmFSpdWho40KZs99wgkyw+I8brQMprT95WFsdMF6Jpnb097EA3h0L3juwMLkkBqw
-	 bJWJi4mhj/enWt3qGX03yosqMNa7k/dplBdlW8aKytqySMkZEjjbmmCbVzAin5XhAQ
-	 fegmZLYJVvrLmhDFl7G7rHkiHm/DBeKrdblTK0tyOdsDXZbOGbUZUA3pUfpHs5yqIH
-	 0nARRU7qrozsg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 887A2E21ECD;
-	Wed, 24 May 2023 07:10:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 531F629A0
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 07:12:37 +0000 (UTC)
+Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B9F211F
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 00:12:11 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VjN6tgb_1684912243;
+Received: from smtpclient.apple(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0VjN6tgb_1684912243)
+          by smtp.aliyun-inc.com;
+          Wed, 24 May 2023 15:10:44 +0800
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ethernet: mtk_eth_soc: fix QoS on DSA MAC on non
- MTK_NETSYS_V2 SoCs
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168491222055.16342.9541453168146805082.git-patchwork-notify@kernel.org>
-Date: Wed, 24 May 2023 07:10:20 +0000
-References: <20230522105744.37227-1-arinc.unal@arinc9.com>
-In-Reply-To: <20230522105744.37227-1-arinc.unal@arinc9.com>
-To: =?utf-8?b?QXLEsW7DpyDDnE5BTCA8YXJpbmM5LnVuYWxAZ21haWwuY29tPg==?=@codeaurora.org
-Cc: nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
- Mark-MC.Lee@mediatek.com, lorenzo@kernel.org, davem@davemloft.net,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
- arinc.unal@arinc9.com, frank-w@public-files.de,
- bartel.eerdekens@constell8.be, mithat.guner@xeront.com,
- erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.500.231\))
+Subject: Re: [PATCH net-next] net: Return user_mss for TCP_MAXSEG in
+ CLOSE/LISTEN state
+From: Cambda Zhu <cambda@linux.alibaba.com>
+In-Reply-To: <CANn89iJmsM1YH01MsuDovn2LAKTQopOBjg6LNP8Uy_jOJh1+5Q@mail.gmail.com>
+Date: Wed, 24 May 2023 15:10:32 +0800
+Cc: Paolo Abeni <pabeni@redhat.com>,
+ Jason Xing <kerneljasonxing@gmail.com>,
+ netdev@vger.kernel.org,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+ Dust Li <dust.li@linux.alibaba.com>,
+ Tony Lu <tonylu@linux.alibaba.com>,
+ Jack Yang <mingliang@linux.alibaba.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <14D45862-36EA-4076-974C-EA67513C92F6@linux.alibaba.com>
+References: <34BAAED6-5CD0-42D0-A9FB-82A01962A2D7@linux.alibaba.com>
+ <20230519080118.25539-1-cambda@linux.alibaba.com>
+ <f55cd2026c6cc01e19f2248ef4ed27b7b8ad11e1.camel@redhat.com>
+ <CANn89iJmsM1YH01MsuDovn2LAKTQopOBjg6LNP8Uy_jOJh1+5Q@mail.gmail.com>
+To: Eric Dumazet <edumazet@google.com>
+X-Mailer: Apple Mail (2.3731.500.231)
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+After I did a deep search about the TCP_MAXSEG, I found this is a bit
+more complicated than I think before.
 
-This patch was applied to netdev/net.git (main)
-by David S. Miller <davem@davemloft.net>:
+I don't know whether the TCP_MAXSEG is from BSD or not, but if the
+"UNIX Network Programming" is right, getting TCP_MAXSEG returns default
+MSS before connecting is as expect, that's what FreeBSD does. If we
+simply remove the !val check for it, getting TCP_MAXSEG will return zero
+before connecting, because tp->rx_opt.user_mss is initialized with zero
+on Linux, while tp->t_maxseg is initialized with default MSS on FreeBSD.
 
-On Mon, 22 May 2023 13:57:43 +0300 you wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> 
-> The commit c6d96df9fa2c ("net: ethernet: mtk_eth_soc: drop generic vlan rx
-> offload, only use DSA untagging") makes VLAN RX offloading to be only used
-> on the SoCs without the MTK_NETSYS_V2 ability (which are not just MT7621
-> and MT7622). The commit disables the proper handling of special tagged
-> (DSA) frames, added with commit 87e3df4961f4 ("net-next: ethernet:
-> mediatek: add CDM able to recognize the tag for DSA"), for non
-> MTK_NETSYS_V2 SoCs when it finds a MAC that does not use DSA. So if the
-> other MAC uses DSA, the CDMQ component transmits DSA tagged frames to the
-> CPU improperly. This issue can be observed on frames with TCP, for example,
-> a TCP speed test using iperf3 won't work.
-> 
-> [...]
+I googled to see how it's used by developers now, and I think getting
+TCP_MAXSEG should return default MSS if before connecting and user_mss
+not set, for backward compatibility.
 
-Here is the summary with links:
-  - [net] net: ethernet: mtk_eth_soc: fix QoS on DSA MAC on non MTK_NETSYS_V2 SoCs
-    https://git.kernel.org/netdev/net/c/04910d8cbfed
+But the !val check is a bug also, and the problem is not discovered for
+the first time.
+=
+https://stackoverflow.com/questions/25996741/why-getsockopt-does-not-retur=
+n-the-expected-value-for-tcp-maxseg
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I think it should be:
+
+- if (!val && ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
++ if (tp->rx_opt.user_mss && ((1 << sk->sk_state) & (TCPF_CLOSE | =
+TCPF_LISTEN)))
+
+With this change, getting TCP_MAXSEG will return default MSS as book
+described, and return user_mss if user_mss is set and before connecting.
+The tp->t_maxseg will only decrease on FreeBSD and we don't. I think
+our solution is better.
+
+I'll send a new patch later.
 
 
+Regards,
+Cambda=
 
