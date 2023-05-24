@@ -1,85 +1,93 @@
-Return-Path: <netdev+bounces-5076-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5077-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D9D8470F997
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:02:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E635670F9BA
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:05:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0D72B281411
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:02:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9297F1C20DAE
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:05:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 152CE18C3D;
-	Wed, 24 May 2023 15:02:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D509019511;
+	Wed, 24 May 2023 15:05:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07058182D1
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:02:38 +0000 (UTC)
-Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006A0F5
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:02:36 -0700 (PDT)
-Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-19a60c9ddecso103027fac.2
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:02:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1D7C18AE4
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:05:49 +0000 (UTC)
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56095F5
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:05:48 -0700 (PDT)
+Received: by mail-oo1-xc30.google.com with SMTP id 006d021491bc7-54f8b7a4feeso363438eaf.2
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:05:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1684940747; x=1687532747;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jsXDqOwIthljXpliSBNwW9fUfKgJoKh43UtzFtV9dOU=;
+        b=qLup07BqTqy6KbTsvZUZyVtPx3/sc2qHkOeCdXLH2mPxT5WksE/UmyeaXqxs/xZiNr
+         Yjzl6miNyUemQI0e+x/SyHr9w0NVy90FIFBMItokZ4WSVbLziRU5a/2A8xMS0EuiNVPw
+         6bFh7vRTJ99gZFyUmCAHUtUKlTr/asWIlmR5WZ/xAUUS8P3vBjKpZvkACxnSht4aYnQY
+         eoOrC7utzWYU4QGOJtPT7AMJaMDJkWraHlFZUGNyesnxu2OaXvCj6WsH3jcg7PkT3MNr
+         /+XtwFQgN3FgfRaFjbuvb1L8XIK+LqJjwl0Yh8TFdmI8Pe+GsP7DH3C8v0yy1PCqYpmq
+         1KjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684940556; x=1687532556;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
+        d=1e100.net; s=20221208; t=1684940747; x=1687532747;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=VkTt7pUa2ZVNwy/OEsrIK++2IUTMhQoejHkdP2b+d60=;
-        b=d9EsuZAIbHcVeQMO64hait24iTQidblDhiaTgBUcDoMzwEnVU3UX+B3qhg6L/maUSk
-         VFbzMHY72p1lu+7y4w2ZUKM9wX6Lhi1Ho/2xcxQlGl9kePyGide8n4jx0GwxsQx47U7H
-         lkpPmaTVP1OrW7Lq8TS5v+LaBmBn1r4IOt5m9o3c0bd8OxG9iTtwGyuTEekBELne2RsD
-         iBU6shl1ySD2ZZGRMUjBOsIWHZQPILG+jpBNf+DcXWHwHE8SHU124ceZVQTljyJAssD5
-         aaBoG/IYuXtIx08OckS6MKhA5HUQclwybeMJbSXZKWSQ6lLW8Dltb7JMG+EabH9aKwZI
-         uZdA==
-X-Gm-Message-State: AC+VfDyGue+nX0MRuTOwy4EYVqj6+Z9z3ihol2aLnwAym6igHoNpLSqQ
-	wziQT9gTLh2071FBSNsFEdqDfX4OdYOk/+7NwNWxP51Q5oAq
-X-Google-Smtp-Source: ACHHUZ68LW5oC+fz0KsQ4ML8Xri9cf5VSXK28NaSo2LBUG1xrm2H3fwQhE8/IZiAwX6ePa/8pxEbtZBym2jxxMNYhHWCjVM5PCCM
+        bh=jsXDqOwIthljXpliSBNwW9fUfKgJoKh43UtzFtV9dOU=;
+        b=O2qB4SuXsM/rSBEnvog2ModRyFsoa0TETkZjgxsOvxUSBmJ5g9OyHaEEin0deIppP4
+         UWCfthE+y1U524d4vr6RFais3j1BHWounb6TMwwJYoJH4HiKM5gW0qX5AO9YbZvEErut
+         iHCG7UBSEAsJwx9uBZc/UYJi86ADV9O58RymEBxj5tXbubDFHXW/lL6YCqdO0jy3v2fk
+         ZbBKEx6FpjDYj7fm9h6gNRBUiMNcbCcQPaAVCBiJnFpiHQguTd0pWFbN6WuCTKJQD1hm
+         AM5MEDxQyNj6VddS9Osw7lZVegMsLvNfUp3nUt034k5Ws/VhGfmVdBPrD0RxE3Q0yRe+
+         l2Bg==
+X-Gm-Message-State: AC+VfDz4tIniWdICW0wROAo6WwY5LO3KD2hkR/EubtFEN47v/9p88BFP
+	rqLK9uaGcxcUdO9UbCfkYhhTKw==
+X-Google-Smtp-Source: ACHHUZ5SxBaXmW3shszgya23SMXxWUTnb1BSfAgQZcfVtJPI0Bi6Ve7lvtA1ZzDzTOopnJ+/LM3Xcw==
+X-Received: by 2002:a4a:625c:0:b0:555:5ab5:a0e0 with SMTP id y28-20020a4a625c000000b005555ab5a0e0mr3518499oog.8.1684940747668;
+        Wed, 24 May 2023 08:05:47 -0700 (PDT)
+Received: from ?IPV6:2804:14d:5c5e:44fb:522c:f73f:493b:2b5? ([2804:14d:5c5e:44fb:522c:f73f:493b:2b5])
+        by smtp.gmail.com with ESMTPSA id z6-20020a056830128600b006a44338c8efsm1856740otp.44.2023.05.24.08.05.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 May 2023 08:05:47 -0700 (PDT)
+Message-ID: <b811578d-bb53-f226-424c-7d2428ffd845@mojatatu.com>
+Date: Wed, 24 May 2023 12:05:43 -0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6871:6b9f:b0:196:bc94:bff4 with SMTP id
- zh31-20020a0568716b9f00b00196bc94bff4mr8946oab.10.1684940556301; Wed, 24 May
- 2023 08:02:36 -0700 (PDT)
-Date: Wed, 24 May 2023 08:02:36 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [syzbot] [net?] KASAN: slab-use-after-free Write in
+ mini_qdisc_pair_swap
+Content-Language: en-US
+From: Pedro Tammela <pctammela@mojatatu.com>
+To: syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com
+Cc: davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
+ jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org, pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+ xiyou.wangcong@gmail.com
+References: <0000000000006cf87705f79acf1a@google.com>
+ <f309f841-3997-93cf-3f30-fa2b06560fc0@mojatatu.com>
 In-Reply-To: <f309f841-3997-93cf-3f30-fa2b06560fc0@mojatatu.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000537fad05fc71cbb4@google.com>
-Subject: Re: [syzbot] [net?] KASAN: slab-use-after-free Write in mini_qdisc_pair_swap
-From: syzbot <syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com>
-To: davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com, 
-	jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org, pabeni@redhat.com, pctammela@mojatatu.com, 
-	syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-	RCVD_IN_MSPIKE_WL,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SCC_BODY_URI_ONLY,
+	SORTED_RECIPS,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+	autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello,
-
-syzbot tried to test the proposed patch but the build/boot failed:
-
-failed to checkout kernel repo git://gitlab.com/tammela/net.git/peilin-patches: failed to run ["git" "fetch" "--force" "71d757925c19d8f23c660d1e07af98f28b9c6977" "peilin-patches"]: exit status 128
-fatal: read error: Connection reset by peer
-
-
-
-Tested on:
-
-commit:         [unknown 
-git tree:       git://gitlab.com/tammela/net.git peilin-patches
-dashboard link: https://syzkaller.appspot.com/bug?extid=b53a9c0d1ea4ad62da8b
-compiler:       
-
-Note: no patches were applied.
+#syz test: https://gitlab.com/tammela/net.git peilin-patches
+Let's try with https then...
 
