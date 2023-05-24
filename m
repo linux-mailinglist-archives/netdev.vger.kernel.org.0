@@ -1,94 +1,112 @@
-Return-Path: <netdev+bounces-4899-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4900-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CBE1C70F124
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 10:37:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1BDCB70F136
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 10:40:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 282D02811E7
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 08:37:03 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C98812811CC
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 08:40:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0EE944C79;
-	Wed, 24 May 2023 08:37:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E006E8472;
+	Wed, 24 May 2023 08:40:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF8302904
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:37:00 +0000 (UTC)
-Received: from out199-10.us.a.mail.aliyun.com (out199-10.us.a.mail.aliyun.com [47.90.199.10])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1542C1FE8
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 01:36:27 -0700 (PDT)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VjNRRzq_1684917299;
-Received: from localhost(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0VjNRRzq_1684917299)
-          by smtp.aliyun-inc.com;
-          Wed, 24 May 2023 16:35:00 +0800
-From: Cambda Zhu <cambda@linux.alibaba.com>
-To: netdev@vger.kernel.org,
-	Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>
-Cc: Jason Xing <kerneljasonxing@gmail.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Dust Li <dust.li@linux.alibaba.com>,
-	Tony Lu <tonylu@linux.alibaba.com>,
-	Cambda Zhu <cambda@linux.alibaba.com>,
-	Jack Yang <mingliang@linux.alibaba.com>
-Subject: [PATCH net v1] tcp: Return user_mss for TCP_MAXSEG in CLOSE/LISTEN state if user_mss set
-Date: Wed, 24 May 2023 16:33:50 +0800
-Message-Id: <20230524083350.54197-1-cambda@linux.alibaba.com>
-X-Mailer: git-send-email 2.16.6
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D21351C11
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:40:47 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7591996
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 01:40:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+	Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=Zj/rj1W5GDyX6E1to52dr4HHArh9ndJwSjRT7CRzcWI=; b=xD47W7anwbtoKXOnU/FJLmzi/y
+	vUMgCMwZXWA8EGjeqMDXabYrlr6qsysyu8qYLBpjWrBXvXU31TviEwJXUMGnnW0/s03EeD+a7EK8b
+	t8zyursi9UuOKoQtpn23wPbkVzs+yHbOzLsJRM6mjqJfTP6IYbY9PV6d3LrdclwU0FOvWgh0RzueW
+	vtsTPWPxCCMXdXxjDGzSQFygKsfa9DdL5VpBIOTZaj0Kj5yxO0oPu/4XucMliXJL9tqGdbbpDPHfa
+	z1T+MXv+TejihjMOjKRXiB7U8O9YzoJU3Onqwdr5T+jpCHtf+zuuRmYx7Xluj0K5Z4SwoKdzobmpR
+	BBMKXjUg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47910)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q1k2o-0001x6-RH; Wed, 24 May 2023 09:40:30 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q1k2l-0001Tm-F1; Wed, 24 May 2023 09:40:27 +0100
+Date: Wed, 24 May 2023 09:40:27 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Genevieve Chan <genevieve.chan@starfivetech.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>,
+	"ddaney@caviumnetworks.com" <ddaney@caviumnetworks.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Marvell_of_reg_init function
+Message-ID: <ZG3Ne7wOo3SeSZTp@shell.armlinux.org.uk>
+References: <8eb8860a698b453788c29d43c6e3f239@EXMBX172.cuchost.com>
+ <907b769ca48a482eaf727b89ead56db4@EXMBX172.cuchost.com>
+ <ace88928-93b3-72fe-59e5-c7b5b7527f5e@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ace88928-93b3-72fe-59e5-c7b5b7527f5e@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-This patch replaces the tp->mss_cache check in getting TCP_MAXSEG
-with tp->rx_opt.user_mss check for CLOSE/LISTEN sock. Since
-tp->mss_cache is initialized with TCP_MSS_DEFAULT, checking if
-it's zero is probably a bug.
+On Wed, May 24, 2023 at 08:38:43AM +0200, Heiner Kallweit wrote:
+> On 24.05.2023 08:13, Genevieve Chan wrote:
+> > ++
+> > 
+> > Hi Heiner,
+> > 
+> >  
+> > 
+> > Hope you’re doing well. I am Genevieve Chan, a linux junior software developer for RISC-V based processor. As mentioned in the email thread below, I have came across a possible issue when attempting to issue reg-init onto Page 0 Reg 4, involving advertisement register of PHY. I have stated the observation and the root cause and possible solution. Would like to ask if this proposed solution is probable and I could submit a patch for this?
+> > 
+> 
+> Please address all phylib maintainers and the netdev mailing list.
+> 
+> You should start with explaining why you want to set these registers,
+> and why via device tree. There should never be the need to manually
+> fiddle with C22 standard registers via device tree.
+> 
+> If you need a specific register initialization for a particular PHY,
+> then the config_init callback of the PHY driver typically is the right
+> place.
+> 
+> And no, generic code should not query vendor-specific DT properties.
 
-With this change, getting TCP_MAXSEG before connecting will return
-default MSS normally, and return user_mss if user_mss is set.
+To Genevieve Chan...
 
-Fixes: 0c409e85f0ac ("Import 2.3.41pre2")
-Reported-by: Jack Yang <mingliang@linux.alibaba.com>
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/netdev/CANn89i+3kL9pYtkxkwxwNMzvC_w3LNUum_2=3u+UyLBmGmifHA@mail.gmail.com/#t
-Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
-Link: https://lore.kernel.org/netdev/14D45862-36EA-4076-974C-EA67513C92F6@linux.alibaba.com/
----
-v1:
-- Return default MSS if user_mss not set for backwards compatibility.
-- Send patch to net instead of net-next, with Fixes tag.
-- Add Eric's tags.
----
- net/ipv4/tcp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Page 0 register 4 is a register that is managed by the phylib code on
+behalf of the network driver. Attempting to configuring it (or any
+register managed by phylib, e.g. for advertisement) via the of_reg_init
+will not work as phylib will overwrite it. Doing so is intended not to
+work, isn't supported, and any value written will be overwritten by
+phylib or the PHY driver.
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 4d6392c16b7a..3e01a58724b8 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4081,7 +4081,8 @@ int do_tcp_getsockopt(struct sock *sk, int level,
- 	switch (optname) {
- 	case TCP_MAXSEG:
- 		val = tp->mss_cache;
--		if (!val && ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
-+		if (tp->rx_opt.user_mss &&
-+		    ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
- 			val = tp->rx_opt.user_mss;
- 		if (tp->repair)
- 			val = tp->rx_opt.mss_clamp;
+If you wish to change the advertisement, that has to be done via the
+"ethtool" userspace utility.
+
 -- 
-2.16.6
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
