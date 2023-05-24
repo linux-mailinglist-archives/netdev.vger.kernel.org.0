@@ -1,93 +1,133 @@
-Return-Path: <netdev+bounces-5077-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5079-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E635670F9BA
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:05:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 101CF70F9D4
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:11:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9297F1C20DAE
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:05:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CAE7D1C20E0A
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:10:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D509019511;
-	Wed, 24 May 2023 15:05:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BD9419526;
+	Wed, 24 May 2023 15:10:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1D7C18AE4
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:05:49 +0000 (UTC)
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56095F5
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:05:48 -0700 (PDT)
-Received: by mail-oo1-xc30.google.com with SMTP id 006d021491bc7-54f8b7a4feeso363438eaf.2
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:05:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1684940747; x=1687532747;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jsXDqOwIthljXpliSBNwW9fUfKgJoKh43UtzFtV9dOU=;
-        b=qLup07BqTqy6KbTsvZUZyVtPx3/sc2qHkOeCdXLH2mPxT5WksE/UmyeaXqxs/xZiNr
-         Yjzl6miNyUemQI0e+x/SyHr9w0NVy90FIFBMItokZ4WSVbLziRU5a/2A8xMS0EuiNVPw
-         6bFh7vRTJ99gZFyUmCAHUtUKlTr/asWIlmR5WZ/xAUUS8P3vBjKpZvkACxnSht4aYnQY
-         eoOrC7utzWYU4QGOJtPT7AMJaMDJkWraHlFZUGNyesnxu2OaXvCj6WsH3jcg7PkT3MNr
-         /+XtwFQgN3FgfRaFjbuvb1L8XIK+LqJjwl0Yh8TFdmI8Pe+GsP7DH3C8v0yy1PCqYpmq
-         1KjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684940747; x=1687532747;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jsXDqOwIthljXpliSBNwW9fUfKgJoKh43UtzFtV9dOU=;
-        b=O2qB4SuXsM/rSBEnvog2ModRyFsoa0TETkZjgxsOvxUSBmJ5g9OyHaEEin0deIppP4
-         UWCfthE+y1U524d4vr6RFais3j1BHWounb6TMwwJYoJH4HiKM5gW0qX5AO9YbZvEErut
-         iHCG7UBSEAsJwx9uBZc/UYJi86ADV9O58RymEBxj5tXbubDFHXW/lL6YCqdO0jy3v2fk
-         ZbBKEx6FpjDYj7fm9h6gNRBUiMNcbCcQPaAVCBiJnFpiHQguTd0pWFbN6WuCTKJQD1hm
-         AM5MEDxQyNj6VddS9Osw7lZVegMsLvNfUp3nUt034k5Ws/VhGfmVdBPrD0RxE3Q0yRe+
-         l2Bg==
-X-Gm-Message-State: AC+VfDz4tIniWdICW0wROAo6WwY5LO3KD2hkR/EubtFEN47v/9p88BFP
-	rqLK9uaGcxcUdO9UbCfkYhhTKw==
-X-Google-Smtp-Source: ACHHUZ5SxBaXmW3shszgya23SMXxWUTnb1BSfAgQZcfVtJPI0Bi6Ve7lvtA1ZzDzTOopnJ+/LM3Xcw==
-X-Received: by 2002:a4a:625c:0:b0:555:5ab5:a0e0 with SMTP id y28-20020a4a625c000000b005555ab5a0e0mr3518499oog.8.1684940747668;
-        Wed, 24 May 2023 08:05:47 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:522c:f73f:493b:2b5? ([2804:14d:5c5e:44fb:522c:f73f:493b:2b5])
-        by smtp.gmail.com with ESMTPSA id z6-20020a056830128600b006a44338c8efsm1856740otp.44.2023.05.24.08.05.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 May 2023 08:05:47 -0700 (PDT)
-Message-ID: <b811578d-bb53-f226-424c-7d2428ffd845@mojatatu.com>
-Date: Wed, 24 May 2023 12:05:43 -0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78EEB1950D
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:10:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD444C433D2;
+	Wed, 24 May 2023 15:10:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684941056;
+	bh=1HziZk0Ofryk7MpDRZfUaSYzXybvtVckG6+PfRVCo1c=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=VtjnI42vjLtKXXQrmlFpD4S0MDxUXc3TpPumveYqzmCrv1phZPzw7aRVWX9r8I8yP
+	 YcjvDpK6GkfOBA/6OeuZwCDBgZ2WckqL/A+/9iwEtBPG9/SIwno60R6pfkl913ttyW
+	 nL25h06PJrbFVcD7bmLFRfSdcJJU5y29FLYXidHBuQRR+cf4ZNvdjD1T7PWAaVwSFC
+	 Rj0W0eGEa4LsxRsjwtWcKvGP92NeX3DdYfDctqQnAGbBjegMhH5WDiuy3f+XbD978d
+	 cu7RGX43IKJ6B0X2NNZRbNNbflLK2CP+uPHAUTIf75BZNgbEoakwdIXqFS2oTrmxBt
+	 7JaVh7h5oEUrw==
+Date: Wed, 24 May 2023 10:10:54 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+	Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Lukas Wunner <lukas@wunner.de>, Kalle Valo <kvalo@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Michal Kazior <michal.kazior@tieto.com>,
+	Janusz Dziedzic <janusz.dziedzic@tieto.com>,
+	ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Dean Luick <dean.luick@cornelisnetworks.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v2 9/9] wifi: ath10k: Use RMW accessors for changing
+ LNKCTL
+Message-ID: <ZG4o/pYseBklnrTc@bhelgaas>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [syzbot] [net?] KASAN: slab-use-after-free Write in
- mini_qdisc_pair_swap
-Content-Language: en-US
-From: Pedro Tammela <pctammela@mojatatu.com>
-To: syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com
-Cc: davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
- jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
- xiyou.wangcong@gmail.com
-References: <0000000000006cf87705f79acf1a@google.com>
- <f309f841-3997-93cf-3f30-fa2b06560fc0@mojatatu.com>
-In-Reply-To: <f309f841-3997-93cf-3f30-fa2b06560fc0@mojatatu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SCC_BODY_URI_ONLY,
-	SORTED_RECIPS,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-	autolearn_force=no version=3.4.6
-X-Spam-Level: *
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230517105235.29176-10-ilpo.jarvinen@linux.intel.com>
 
-#syz test: https://gitlab.com/tammela/net.git peilin-patches
-Let's try with https then...
+On Wed, May 17, 2023 at 01:52:35PM +0300, Ilpo Järvinen wrote:
+> Don't assume that only the driver would be accessing LNKCTL. ASPM
+> policy changes can trigger write to LNKCTL outside of driver's control.
+> 
+> Use RMW capability accessors which does proper locking to avoid losing
+> concurrent updates to the register value. On restore, clear the ASPMC
+> field properly.
+> 
+> Fixes: 76d870ed09ab ("ath10k: enable ASPM")
+> Suggested-by: Lukas Wunner <lukas@wunner.de>
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> Cc: stable@vger.kernel.org
+> ---
+>  drivers/net/wireless/ath/ath10k/pci.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+> index a7f44f6335fb..9275a672f90c 100644
+> --- a/drivers/net/wireless/ath/ath10k/pci.c
+> +++ b/drivers/net/wireless/ath/ath10k/pci.c
+> @@ -1963,8 +1963,9 @@ static int ath10k_pci_hif_start(struct ath10k *ar)
+>  	ath10k_pci_irq_enable(ar);
+>  	ath10k_pci_rx_post(ar);
+>  
+> -	pcie_capability_write_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+> -				   ar_pci->link_ctl);
+> +	pcie_capability_clear_and_set_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+> +					   PCI_EXP_LNKCTL_ASPMC,
+> +					   ar_pci->link_ctl & PCI_EXP_LNKCTL_ASPMC);
+>  
+>  	return 0;
+>  }
+> @@ -2821,8 +2822,8 @@ static int ath10k_pci_hif_power_up(struct ath10k *ar,
+>  
+>  	pcie_capability_read_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+>  				  &ar_pci->link_ctl);
+> -	pcie_capability_write_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+> -				   ar_pci->link_ctl & ~PCI_EXP_LNKCTL_ASPMC);
+> +	pcie_capability_clear_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+> +				   PCI_EXP_LNKCTL_ASPMC);
+
+These ath drivers all have the form:
+
+  1) read LNKCTL
+  2) save LNKCTL value in ->link_ctl
+  3) write LNKCTL with "->link_ctl & ~PCI_EXP_LNKCTL_ASPMC"
+     to disable ASPM
+  4) write LNKCTL with ->link_ctl, presumably to re-enable ASPM
+
+These patches close the hole between 1) and 3) where other LNKCTL
+updates could interfere, which is definitely a good thing.
+
+But the hole between 1) and 4) is much bigger and still there.  Any
+update by the PCI core in that interval would be lost.
+
+Straw-man proposal:
+
+  - Change pci_disable_link_state() so it ignores aspm_disabled and
+    always disables ASPM even if platform firmware hasn't granted
+    ownership.  Maybe this should warn and taint the kernel.
+
+  - Change drivers to use pci_disable_link_state() instead of writing
+    LNKCTL directly.
+
+Bjorn
 
