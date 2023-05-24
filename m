@@ -1,128 +1,72 @@
-Return-Path: <netdev+bounces-5149-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5150-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1017770FD09
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 19:46:14 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id ED50470FD13
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 19:46:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BED2D281385
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:46:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AFBE21C20C17
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:46:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F38C1F190;
-	Wed, 24 May 2023 17:46:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C80B1F194;
+	Wed, 24 May 2023 17:46:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03A50538B
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 17:46:10 +0000 (UTC)
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5D01A8;
-	Wed, 24 May 2023 10:45:39 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50bcb229adaso2451961a12.2;
-        Wed, 24 May 2023 10:45:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684950338; x=1687542338;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=nWBdICZs1ylHFsz8zslSqh0ccqIAuQOZUPv8JnOg1n4=;
-        b=Ph7hH4NN5Xzd3WzBdsSVQS8+U87aBSWIrpyy7+WW0QkU1h5rnmAglEqXX+qT8idyBn
-         tuGBsqy4bNR0P53kYTfSXcv1RVx8P56JrjDguFJ2xDB2Jik1T7xuU68m7BLTI6vydpBx
-         4/vYBbe6gwOchR/v4SnWspk2/qa+klTSroJ/HZE9nio1csB5CsvtuWQBAw3X2wM5N72V
-         RWOe1yPtyX+SB1o+4y7Vfl1FqeSZah/FtQcfO7aAisxjzo96nvUquvYRLFzTHHRJYfMB
-         we7KhGHMmZmN1xxtrD17MLFmjbw8pI8ji/9G6fRM7laNyrmArTJCgVKO4wfxQTUk5mg6
-         DTXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684950338; x=1687542338;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nWBdICZs1ylHFsz8zslSqh0ccqIAuQOZUPv8JnOg1n4=;
-        b=aHYMhV6KrwbFanPLkA1Fb+EeyhXNrNwpq+xnD1VAJG2fvV3hLnmDNHHwBVS1XWLjqE
-         RBu74f7+nLJL1pBKrigxM0OSE/k9lHeE95pn/T9SzvW5nSOroQMYCipXxFTZNAo7DZII
-         xdCYe7OsWpKZDMq3o65vBAV5aZAXFgfNwSghQol8Q/jtVQB0SCDAUWiDuBmZclXYlpnn
-         ot4jmPoj0BOUf5v4WHtH1H+J2LQ3BtQjrJfSe953GoXQ/8/WWMxyh5O/NbR16CMimAwt
-         Ecoe2FuGoqNJES/9OPBFyZk6FIXboUBcDCUs14HpZyZXeYBSUel4ZaYdfDLoqdUGTC9m
-         IWXQ==
-X-Gm-Message-State: AC+VfDxouFjzlxxp1QMP6RU0E5KfFpP+Lr3VXDdMzQW5eu2PXqPCHHrg
-	JV9+K4n824n+KBmI3xrr2Ps=
-X-Google-Smtp-Source: ACHHUZ5kNjjMXypD+xFlWxn/uIyXBW8jfQ4bsLcwCAUAU/F/MLjAg+8IbDjx5a+657iaeX5f2L+AEg==
-X-Received: by 2002:a17:907:9809:b0:966:23e5:c8f7 with SMTP id ji9-20020a170907980900b0096623e5c8f7mr17741535ejc.62.1684950338056;
-        Wed, 24 May 2023 10:45:38 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id ja26-20020a170907989a00b0096b55be592asm6025738ejc.92.2023.05.24.10.45.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 May 2023 10:45:37 -0700 (PDT)
-Date: Wed, 24 May 2023 20:45:34 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: arinc9.unal@gmail.com
-Cc: Sean Wang <sean.wang@mediatek.com>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	DENG Qingfang <dqfext@gmail.com>,
-	Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Russell King <linux@armlinux.org.uk>,
-	=?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-	Richard van Schagen <richard@routerhints.com>,
-	Richard van Schagen <vschagen@cs.com>,
-	Frank Wunderlich <frank-w@public-files.de>,
-	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-	erkin.bozoglu@xeront.com, mithat.guner@xeront.com,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net-next 07/30] net: dsa: mt7530: do not run
- mt7530_setup_port5() if port 5 is disabled
-Message-ID: <20230524174534.hcxn6tjhjmho6io7@skbuf>
-References: <20230522121532.86610-1-arinc.unal@arinc9.com>
- <20230522121532.86610-1-arinc.unal@arinc9.com>
- <20230522121532.86610-8-arinc.unal@arinc9.com>
- <20230522121532.86610-8-arinc.unal@arinc9.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 419E41F190
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 17:46:34 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF4B10CE;
+	Wed, 24 May 2023 10:46:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=yuz9ArgDnVPACpReUH5oMEZEfxp4zwXrDfDOiInJOvE=; b=0ksWKqNVVSgcxoh2U44il/trCt
+	jmk6AHgcrdLOrK+dYNpyEIqE8tRTs28bRPkWvBehWzMcb9B+vKLBU02WPBJI8sfw3RVLz+Oq7keNx
+	U021KRyN3qSHlAuLNACj1il1xhFRVioQfEtXLQpKckcyWMQXhXKErcaAvOBdv2FesIQ8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q1sYY-00Dotu-Cw; Wed, 24 May 2023 19:45:50 +0200
+Date: Wed, 24 May 2023 19:45:50 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: stable <stable@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	Steffen =?iso-8859-1?Q?B=E4tz?= <steffen@innosonix.de>
+Subject: Re: net: dsa: mv88e6xxx: Request for stable inclusion
+Message-ID: <eec26f5c-1ad7-48ff-94a9-708a0a9f3b02@lunn.ch>
+References: <CAOMZO5Dd7z+k0X1aOug1K61FMC56u2qG-0s4vPpaMjT-gGVqaA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230522121532.86610-8-arinc.unal@arinc9.com>
- <20230522121532.86610-8-arinc.unal@arinc9.com>
+In-Reply-To: <CAOMZO5Dd7z+k0X1aOug1K61FMC56u2qG-0s4vPpaMjT-gGVqaA@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023 at 03:15:09PM +0300, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+On Wed, May 24, 2023 at 02:38:22PM -0300, Fabio Estevam wrote:
+> Hi,
 > 
-> There's no need to run all the code on mt7530_setup_port5() if port 5 is
-> disabled. The only case for calling mt7530_setup_port5() from
-> mt7530_setup() is when PHY muxing is enabled. That is because port 5 is not
-> defined as a port on the devicetree, therefore, it cannot be controlled by
-> phylink.
+> I would like to request the commit below to be applied to the 6.1-stable tree:
 > 
-> Because of this, run mt7530_setup_port5() if priv->p5_intf_sel is
-> P5_INTF_SEL_PHY_P0 or P5_INTF_SEL_PHY_P4. Remove the P5_DISABLED case from
-> mt7530_setup_port5().
+> 91e87045a5ef ("net: dsa: mv88e6xxx: Add RGMII delay to 88E6320")
 > 
-> Stop initialising the interface variable as the remaining cases will always
-> call mt7530_setup_port5() with it initialised.
-> 
-> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
+> Without this commit, there is a failure to retrieve an IP address via DHCP.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Please could your provide a Fixes: tag.
+
+       Andrew
 
