@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4839-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4840-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5255470EAA9
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 03:19:49 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5AA1A70EAAF
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 03:20:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0D7D12814FE
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 01:19:48 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E34ED1C20ADA
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 01:20:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C7231360;
-	Wed, 24 May 2023 01:19:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D44A1360;
+	Wed, 24 May 2023 01:20:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10084ED5
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 01:19:46 +0000 (UTC)
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8365F127;
-	Tue, 23 May 2023 18:19:43 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id af79cd13be357-75b0df81142so78112585a.2;
-        Tue, 23 May 2023 18:19:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BB77ED5
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 01:20:24 +0000 (UTC)
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBB4129;
+	Tue, 23 May 2023 18:20:10 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id d75a77b69052e-3f6bb5e8ed2so3665891cf.0;
+        Tue, 23 May 2023 18:20:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684891182; x=1687483182;
+        d=gmail.com; s=20221208; t=1684891210; x=1687483210;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=TTODVV/LQUtZuq/RjLJcuBFwBujVuHAiJuRPCFPbCjM=;
-        b=BrzggDAga5Rt3a3iEX7vGPEPt9SXVvN3Cnmu+jq6buGccnno5pp2RlpBZmRBZCPww6
-         OwbmSmBRlyXtf1Av66MLqOLLmZwzCBTcKxztaLXj4xreZeEUGfh2ViqVc5e5T4BhAP+X
-         1ASjtc6Ee/bGG16bbymk2qaG6SBGQFNeTXsbQMpxpcbZ8V3jfOKiv0E1YeSR73mLZJga
-         qb+T5v7D4dK66cfBrMLE7SD+i3CzH0HgI8e7T2C6+BgKflxzNPu2h3P1nrDPi5/bra+C
-         5igsrdlal26mnn+bFgQZ9Di7wrdQW00BLddUjI6LrdcbnXYep6VTHDg5T9Q9VkRTpFY8
-         7WwA==
+        bh=84jCH5csYFlMMdBF7z2xCF1DPFHya9qG/1Sk/ks2VEQ=;
+        b=hOcUcInMs4JnVjQj2ZGvkpXlgz5dC1ExyBx89pSGavh3uY3f/mXgkaIXKa/ttgPc4a
+         tG52vcl5hWvhNvGdfeDx5/3CuBgpEImIEFa5n9oZUpcVslaKy9/Uo+9o0grj2HIRnSWE
+         0aoImLF8dqdzIyO1EePCTTfboXa4mEb4v1fm3dkTIH4TrrPk0+7d9Gs7ZatiZfl2O1fm
+         2I+xYJwIEWYFkIjjEg36HQuXEqxNnhWU6V0v60Qgt+H1462O6vMV/zkciG/1TZT5QHU9
+         4BizBXXqmRkORlq3hMLjV2zVGWnVNq7UPZ3Qb/cDqgp+0KW596oAR/OfAamUy3RM/YKT
+         qZSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684891182; x=1687483182;
+        d=1e100.net; s=20221208; t=1684891210; x=1687483210;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=TTODVV/LQUtZuq/RjLJcuBFwBujVuHAiJuRPCFPbCjM=;
-        b=GBDSHsic5eRpKIZTNeWz6pvBzkc38MgnUitCmmgxHUmLaOoEOgGLnaDqAqkNykrr3U
-         FnlXdWbohHqXPxzBmuiDjSU56fE8AYhrknKeSpOGfTY4aNEhat/1daZhf33l5GN/itPc
-         fxGWaRQHKBKuxqGLqxHhOE/hdgFg0/H5V+gkgTfyGTCpe0j92+MWdbFGSwvEWVTIJYV3
-         Ureas+xvWrtgm5NNPqmb9g9HoZwSKztqPoPRQL91VIeuOt2aYOluiFQ8/M1gTpi9I6uf
-         qMcF1n4WXFGOhXiVxgE9vYWUWc9P+ofQEQ/ijWZ7T8ZW3Yx/G/GPdzIENUbgRQaw3YTz
-         OelA==
-X-Gm-Message-State: AC+VfDzvqiOg1mozKxBsQHNGda43mqRvOeW3BboS5TQDOP4TLYOkYPSx
-	Cut4u1Tgo/j0M1Xmk9kN1g==
-X-Google-Smtp-Source: ACHHUZ4y+yXQCI2e1CVL4mncxauvyL2x8kLEoVFuQARaQDMNYpMsBxXtY5x3M/vWnR8Ap11YxeYRhg==
-X-Received: by 2002:a05:6214:f0a:b0:5f1:683e:9bd6 with SMTP id gw10-20020a0562140f0a00b005f1683e9bd6mr28074624qvb.9.1684891182604;
-        Tue, 23 May 2023 18:19:42 -0700 (PDT)
+        bh=84jCH5csYFlMMdBF7z2xCF1DPFHya9qG/1Sk/ks2VEQ=;
+        b=gp5/pi2kv3u3AUXeCGHYrUypqebQFEg52O8ZE7AzoqKujZFK53Jn7tTANfQy6OPZZe
+         fs0Ip/0uQjLOlwHAbJ2jCtiuycw3KHa+PtA6IVM5zgkgQRhKdFgSUDo1J4dgS1KvcRt1
+         9+DMynS5nVwfy9c6VI5Fe9mwurcTHTrRZ+xZmHFm5urmWx69my06iDIuLaavHa+Bzug+
+         iMvctWo2T6WQ5pZNgR712lJ60/ClF8/YmrCqqI2MDdB4Qd629olKhZVWCCVSF+++yDHi
+         +0kfkmJwOeqQUF8hm6Znnd4KdjrgF3XYD4hpUxfeEZ7rNq8umT9iRXXsrk/kF0ARgcbX
+         kJpQ==
+X-Gm-Message-State: AC+VfDxX8IUd4eQ20JjNc3V9kViCUW7w6Lq+ThYfd5RODI37tYT3Kp1m
+	lsvzeKYT+RSC746E1i37MSNcV3vNKg==
+X-Google-Smtp-Source: ACHHUZ5bYkz7+O+Xl2QE+UD1IG8ASoya5T+BcH4RQ+gA43wAG22aGImQhzpnvX1IcQKPs1f/VDH7iw==
+X-Received: by 2002:a05:622a:652:b0:3e6:3851:b945 with SMTP id a18-20020a05622a065200b003e63851b945mr24754439qtb.67.1684891210003;
+        Tue, 23 May 2023 18:20:10 -0700 (PDT)
 Received: from C02FL77VMD6R.bytedance.net ([2600:1700:d860:12b0:c32:b55:eaec:a556])
-        by smtp.gmail.com with ESMTPSA id t27-20020a05622a181b00b003e3921077d9sm3347317qtc.38.2023.05.23.18.19.40
+        by smtp.gmail.com with ESMTPSA id g14-20020ac8774e000000b003e38c9a2a22sm3298930qtu.92.2023.05.23.18.20.07
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 May 2023 18:19:42 -0700 (PDT)
+        Tue, 23 May 2023 18:20:09 -0700 (PDT)
 From: Peilin Ye <yepeilin.cs@gmail.com>
 X-Google-Original-From: Peilin Ye <peilin.ye@bytedance.com>
 To: "David S. Miller" <davem@davemloft.net>,
@@ -75,9 +75,9 @@ Cc: Peilin Ye <peilin.ye@bytedance.com>,
 	linux-kernel@vger.kernel.org,
 	Cong Wang <cong.wang@bytedance.com>,
 	Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH v5 net 4/6] net/sched: Prohibit regrafting ingress or clsact Qdiscs
-Date: Tue, 23 May 2023 18:19:28 -0700
-Message-Id: <81628172b6ffe1dee6dbe4a829753e0d97f61a48.1684887977.git.peilin.ye@bytedance.com>
+Subject: [PATCH v5 net 5/6] net/sched: Refactor qdisc_graft() for ingress and clsact Qdiscs
+Date: Tue, 23 May 2023 18:20:02 -0700
+Message-Id: <304dfaef69e0212b98c355a45daf85316d7ce47d.1684887977.git.peilin.ye@bytedance.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <cover.1684887977.git.peilin.ye@bytedance.com>
 References: <cover.1684887977.git.peilin.ye@bytedance.com>
@@ -97,53 +97,66 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Peilin Ye <peilin.ye@bytedance.com>
 
-Currently, after creating an ingress (or clsact) Qdisc and grafting it
-under TC_H_INGRESS (TC_H_CLSACT), it is possible to graft it again under
-e.g. a TBF Qdisc:
+Grafting ingress and clsact Qdiscs does not need a for-loop in
+qdisc_graft().  Refactor it.  No functional changes intended.
 
-  $ ip link add ifb0 type ifb
-  $ tc qdisc add dev ifb0 handle 1: root tbf rate 20kbit buffer 1600 limit 3000
-  $ tc qdisc add dev ifb0 clsact
-  $ tc qdisc link dev ifb0 handle ffff: parent 1:1
-  $ tc qdisc show dev ifb0
-  qdisc tbf 1: root refcnt 2 rate 20Kbit burst 1600b lat 560.0ms
-  qdisc clsact ffff: parent ffff:fff1 refcnt 2
-                                      ^^^^^^^^
-
-clsact's refcount has increased: it is now grafted under both
-TC_H_CLSACT and 1:1.
-
-ingress and clsact Qdiscs should only be used under TC_H_INGRESS
-(TC_H_CLSACT).  Prohibit regrafting them.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Fixes: 1f211a1b929c ("net, sched: add clsact qdisc")
 Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Tested-by: Pedro Tammela <pctammela@mojatatu.com>
 Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
 ---
 change in v3, v4:
   - add in-body From: tag
 
- net/sched/sch_api.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/sched/sch_api.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 383195955b7d..49b9c1bbfdd9 100644
+index 49b9c1bbfdd9..f72a581666a2 100644
 --- a/net/sched/sch_api.c
 +++ b/net/sched/sch_api.c
-@@ -1596,6 +1596,11 @@ static int tc_modify_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
- 					NL_SET_ERR_MSG(extack, "Invalid qdisc name");
- 					return -EINVAL;
- 				}
-+				if (q->flags & TCQ_F_INGRESS) {
-+					NL_SET_ERR_MSG(extack,
-+						       "Cannot regraft ingress or clsact Qdiscs");
-+					return -EINVAL;
-+				}
- 				if (q == p ||
- 				    (p && check_loop(q, p, 0))) {
- 					NL_SET_ERR_MSG(extack, "Qdisc parent/child loop detected");
+@@ -1073,12 +1073,12 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
+ 
+ 	if (parent == NULL) {
+ 		unsigned int i, num_q, ingress;
++		struct netdev_queue *dev_queue;
+ 
+ 		ingress = 0;
+ 		num_q = dev->num_tx_queues;
+ 		if ((q && q->flags & TCQ_F_INGRESS) ||
+ 		    (new && new->flags & TCQ_F_INGRESS)) {
+-			num_q = 1;
+ 			ingress = 1;
+ 			if (!dev_ingress_queue(dev)) {
+ 				NL_SET_ERR_MSG(extack, "Device does not have an ingress queue");
+@@ -1094,18 +1094,18 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
+ 		if (new && new->ops->attach && !ingress)
+ 			goto skip;
+ 
+-		for (i = 0; i < num_q; i++) {
+-			struct netdev_queue *dev_queue = dev_ingress_queue(dev);
+-
+-			if (!ingress)
++		if (!ingress) {
++			for (i = 0; i < num_q; i++) {
+ 				dev_queue = netdev_get_tx_queue(dev, i);
++				old = dev_graft_qdisc(dev_queue, new);
+ 
+-			old = dev_graft_qdisc(dev_queue, new);
+-			if (new && i > 0)
+-				qdisc_refcount_inc(new);
+-
+-			if (!ingress)
++				if (new && i > 0)
++					qdisc_refcount_inc(new);
+ 				qdisc_put(old);
++			}
++		} else {
++			dev_queue = dev_ingress_queue(dev);
++			old = dev_graft_qdisc(dev_queue, new);
+ 		}
+ 
+ skip:
 -- 
 2.20.1
 
