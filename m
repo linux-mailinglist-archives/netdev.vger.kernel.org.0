@@ -1,105 +1,93 @@
-Return-Path: <netdev+bounces-5133-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5134-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5837170FC13
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 18:59:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D5D9470FC1E
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 19:02:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 12E9A28137E
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 16:59:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8069C280F5D
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:02:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8ED6219E70;
-	Wed, 24 May 2023 16:59:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BA97319E68;
+	Wed, 24 May 2023 17:02:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82F1C19E56
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 16:59:38 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49959E9;
-	Wed, 24 May 2023 09:59:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=vKojb+lmgQ6/iIULJ2na4xC8cdrCol3xSR+2MNG+xDg=; b=BEts6+pXn8xYxsw58Ey/5mU5TL
-	Mum+cwYx+VnKSayyJmO/lKEgzySACtSkoBrGkv/Anh0gNKoi08qhWGyEyLwseWJOe4V99jDZ5d8E6
-	ivrLMjeg9M9itNhXoYfXYtxxsc/ODmkT+F6zAYowRfyOhQqsIaHF/ODNgIFLQnd6BJes=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q1rpg-00Doak-OI; Wed, 24 May 2023 18:59:28 +0200
-Date: Wed, 24 May 2023 18:59:28 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	Woojung Huh <woojung.huh@microchip.com>,
-	Arun Ramadoss <arun.ramadoss@microchip.com>, kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	UNGLinuxDriver@microchip.com,
-	"Russell King (Oracle)" <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v1 4/5] net: dsa: microchip: ksz8: Prepare
- ksz8863_smi for regmap register access validation
-Message-ID: <584bb123-28c7-4d56-bad7-efcc2c343ecb@lunn.ch>
-References: <20230524123220.2481565-1-o.rempel@pengutronix.de>
- <20230524123220.2481565-5-o.rempel@pengutronix.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AED991951A
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 17:02:49 +0000 (UTC)
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEFDBB;
+	Wed, 24 May 2023 10:02:48 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id af79cd13be357-75b0df7b225so92906085a.1;
+        Wed, 24 May 2023 10:02:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684947768; x=1687539768;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c52Wx5gVDucU8yW4B1ni7YIFK5C1wFPEKZmBqYnCprk=;
+        b=D56ZvRFwklB5J3kFeIVqKOeeLB0IQH7EItC8K4tS4thFpG5MqlWh9+yo4GCNvjEoa9
+         TFyvLLitG7b27mz0/nitnSnD81oeGspf0vhmtkMY0bhZDUPOQd0YF8c+z6TN10mpakRD
+         DK73pL+IotjPWSEjYty+6yfrQsuUDSpwL3HO1MD+z9fMZANo9vl83W32Qar2VRFMIGDk
+         u072R/HZeNWeC4S9BwzpL3mKUB1IJFOqApANvCvV3i7H5+aBF2GwoZfIMJ4+2eecqeQO
+         chfjvGN5dqb11k0khY2jf/eRj3hGnZHJzYxers5Qxnvw515Gz7VzNH1jYI9qqLYipO5y
+         opfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684947768; x=1687539768;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=c52Wx5gVDucU8yW4B1ni7YIFK5C1wFPEKZmBqYnCprk=;
+        b=baD5SrRU8diEZgzfDbAxSeMUIJCWBntCANWu9wmlAutDsnzsFMcMYfd7KJv6NUlApQ
+         hWGNfa5odwrYoAbRxG1Metb74dkwSVjjxRL0ROPYdyGUay41i41bj76szz5yW6B1KXfV
+         dB3HqQiLoBHnV7qDfzLFxdVWpCc1RBAC3tTrbdn/Ipd63TU8rHzzTMZeJczDMfvmXYLp
+         XV8/OmE6/1xI/xBkpEgy1Wbdf9wW10xPyA+7K5pUm90322tBwbqF5vEHjxuIvSP7eSom
+         Tyk3zOE6l/3sElb8DTPCIxDijT/M/km7ReCHJkzirp+vuk99TAPzot8xWS9DsXi3Ezzp
+         dqAA==
+X-Gm-Message-State: AC+VfDwykreadVvBXwhSO7JcsoSqVBTxQrCZaw+F7SKU/tnX4ghoom1p
+	aMJYXbl/HwZdUhe208KEYMG/TYp1Liql5gHwXywTKgAr
+X-Google-Smtp-Source: ACHHUZ5XBYR1T0PHseLO3zU05/JyEAe8A+LbxvBmC+7mcUaj56Af9QuajP3SmdP8Nx5M23t+mxKV7czbCI5U7nfZVfE=
+X-Received: by 2002:a37:492:0:b0:75b:23a0:d9f4 with SMTP id
+ 140-20020a370492000000b0075b23a0d9f4mr8426925qke.74.1684947767725; Wed, 24
+ May 2023 10:02:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230524123220.2481565-5-o.rempel@pengutronix.de>
+References: <20230523223944.691076-1-Kenny.Ho@amd.com> <01936d68-85d3-4d20-9beb-27ff9f62d826@lunn.ch>
+ <CAB9dFdt4-cBFhEqsTXk9suE+Bw-xcpM0n3Q6rFmBaa+8A5uMWQ@mail.gmail.com> <c0fda91b-1e98-420f-a18a-16bbed25e98d@lunn.ch>
+In-Reply-To: <c0fda91b-1e98-420f-a18a-16bbed25e98d@lunn.ch>
+From: Kenny Ho <y2kenny@gmail.com>
+Date: Wed, 24 May 2023 13:02:36 -0400
+Message-ID: <CAOWid-erNGD24Ouf4fAJJBqm69QVoHOpNt0E-G+Wt=nq1W4oBQ@mail.gmail.com>
+Subject: Re: [PATCH] Remove hardcoded static string length
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Marc Dionne <marc.dionne@auristor.com>, Kenny Ho <Kenny.Ho@amd.com>, 
+	David Howells <dhowells@redhat.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	linux-afs@lists.infradead.org, netdev@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 24, 2023 at 02:32:19PM +0200, Oleksij Rempel wrote:
-> This patch prepares the ksz8863_smi part of ksz8 driver to utilize the
-> regmap register access validation feature.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/net/dsa/microchip/ksz8863_smi.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
-> index 2af807db0b45..303a4707c759 100644
-> --- a/drivers/net/dsa/microchip/ksz8863_smi.c
-> +++ b/drivers/net/dsa/microchip/ksz8863_smi.c
-> @@ -104,6 +104,7 @@ static const struct regmap_config ksz8863_regmap_config[] = {
->  		.cache_type = REGCACHE_NONE,
->  		.lock = ksz_regmap_lock,
->  		.unlock = ksz_regmap_unlock,
-> +		.max_register = BIT(8) - 1,
+On Wed, May 24, 2023 at 12:02=E2=80=AFPM Andrew Lunn <andrew@lunn.ch> wrote=
+:
+> So the compiler warning/error needs to be fixed a different want.
 
-Maybe SZ_256 - 1 is more readable?
+Understood.  Would caping the length at iov_len with a ternary be sufficien=
+t?
 
->  	},
->  	{
->  		.name = "#16",
-> @@ -113,6 +114,7 @@ static const struct regmap_config ksz8863_regmap_config[] = {
->  		.cache_type = REGCACHE_NONE,
->  		.lock = ksz_regmap_lock,
->  		.unlock = ksz_regmap_unlock,
-> +		.max_register = BIT(8) - 2,
-
-- 2?
-
-Is this the 16 bit regmap? So it has 1/2 the number of registers of
-the 8 bit regmap? So i would of thought it should be BIT(7)-1, or
-SZ_128-1 ?
-
-	Andrew
+Regards,
+Kenny
 
