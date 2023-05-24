@@ -1,160 +1,145 @@
-Return-Path: <netdev+bounces-4965-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4966-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7351870F612
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:18:03 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6B55D70F613
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:18:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A97C12812E2
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:18:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DCEC71C20C94
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:18:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 615AA18004;
-	Wed, 24 May 2023 12:17:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 415191800F;
+	Wed, 24 May 2023 12:18:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52D008472
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:17:55 +0000 (UTC)
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E551135;
-	Wed, 24 May 2023 05:17:53 -0700 (PDT)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-	(No client certificate requested)
-	(Authenticated sender: lukma@denx.de)
-	by phobos.denx.de (Postfix) with ESMTPSA id E72F5820F2;
-	Wed, 24 May 2023 14:17:50 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-	s=phobos-20191101; t=1684930671;
-	bh=LkM/bZ9fUL4pshbM4qtC4eGKFgQaRWUq/wKzWk4QxFQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=EO26svgA/TNan6SW6K/zaPBN71CX/OiBtClp1OaWhxTyddi86uSEAN0wEx81J93lR
-	 tqxBe+7Kwwf8QFwbSvJBLNwbSVdgCojMGDmf0AJL9t8QSmHu6Wk+sncvfDwmZ+GXnE
-	 NV+L9pp9cA+YnkTUUGf/3ROCJiHx2bzSUfmtxiSmlQ9MASE4dizH/OBqG/0wwKtX3U
-	 PWrFwR+Ao3OqUOIlh5c80kumaVWuznGRPiRVL0g4IxDukfP5NdpnNn/K2flks10+Xn
-	 ty9UV+NjtwvE5nN/XfwFNpJEDXxIWD1mGP5hNURQDC1kzSACVIHfPHul6Q7J2BKlCd
-	 ayoNiCJUk5vlw==
-Date: Wed, 24 May 2023 14:17:43 +0200
-From: Lukasz Majewski <lukma@denx.de>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: Vladimir Oltean <olteanv@gmail.com>, Russell King
- <linux@armlinux.org.uk>, Eric Dumazet <edumazet@google.com>, Florian
- Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Alexander Duyck <alexander.duyck@gmail.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 0/3] dsa: marvell: Add support for mv88e6071 and 6020
-  switches
-Message-ID: <20230524141743.1322c051@wsk>
-In-Reply-To: <89fd3a8d-c262-46d8-98ad-c8dc04fe9d9c@lunn.ch>
-References: <20230523142912.2086985-1-lukma@denx.de>
-	<89fd3a8d-c262-46d8-98ad-c8dc04fe9d9c@lunn.ch>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3594317ABE
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:18:41 +0000 (UTC)
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F023139
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:39 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id a640c23a62f3a-96f0678de80so143163866b.3
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684930718; x=1687522718;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mwGN8D2k0D/k107g1NIng8aOXm/Wd2auDCp7JfReOfk=;
+        b=30yUsvC9MNYnsqJubWHO6Yd1kRQ8vBt+D5wfoBfwpsU0i4BglAD+RLraU00N6xwgqf
+         /QV+/aZ3zmzEHnbmPx17IYmT2VmzO0nlUUscdGBimD2t63VKNMui875IDk6akvwa5rwg
+         VMkNblvofqI8csiduMK21wCcmQy+A2UmAO7/pZowvp5h8kCJUk7KXBWygiiLrABE8ZKU
+         q/bgk+9NsBkcY3ybQuRWSlL/IxwSgt7rClgDH1yJ4zUmBPXP5LouuXKm7zw4fyW7ewoL
+         eHaHWXaLvFEgBSwRKwOQZxyQEpjg39NVTKKj7ty0nS1TI8nOF81ezS/toM700YoHqQlM
+         xvNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684930718; x=1687522718;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mwGN8D2k0D/k107g1NIng8aOXm/Wd2auDCp7JfReOfk=;
+        b=MJXltdrqoVRuQ7L9rr/lhjOFpwTJfngk9ksly0tMF5iNu9x0cGSihEX0uMSm+/cq8X
+         xGYrRzqHU96GC0ygPK1MxxFOAYUPocxwQ+Ak56XdK+1qTHGacah4hHDPWcjphLiS66hm
+         g9qYWUr0WZ2qvqXii8MMzuY0hM8wpYFPrEVTtd/J0RTFaFivKM7y6/hT3wSFJ+qwjLWh
+         AVq152r7+MsUWDFNEDmFtNGtbgxSNBOsYw5npPyWT5BaTb7tyK8wEE8wlRsKDJsjcRq9
+         vL6OiaCTutiLbN4oP9z2faoyV/wrRXJ3P3r/DyDZ/nYwAHPogheZ0PtUSJZvzy03wMWj
+         MdaA==
+X-Gm-Message-State: AC+VfDxq3JRN3vBRs3cGqXXuD8ees6wXypa1M7v5n/uvNyYZNggTVHF1
+	XgSpxe4HfEktaLfH7yi0JFr0oRaGyVu09g8uU0siuw==
+X-Google-Smtp-Source: ACHHUZ68ztUi7mI1wp045haasJgxAul0SQ3WsW0kUCMgOqolzppQKiJYv2hRnudh2PacNv+yMxdwnA==
+X-Received: by 2002:a17:906:cc4d:b0:965:cc76:7716 with SMTP id mm13-20020a170906cc4d00b00965cc767716mr13634576ejb.76.1684930717984;
+        Wed, 24 May 2023 05:18:37 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id gr6-20020a170906e2c600b009658264076asm5674122ejb.45.2023.05.24.05.18.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 May 2023 05:18:37 -0700 (PDT)
+From: Jiri Pirko <jiri@resnulli.us>
+To: netdev@vger.kernel.org
+Cc: kuba@kernel.org,
+	pabeni@redhat.com,
+	davem@davemloft.net,
+	edumazet@google.com,
+	leon@kernel.org,
+	saeedm@nvidia.com,
+	moshe@nvidia.com,
+	jesse.brandeburg@intel.com,
+	anthony.l.nguyen@intel.com,
+	tariqt@nvidia.com,
+	idosch@nvidia.com,
+	petrm@nvidia.com,
+	simon.horman@corigine.com,
+	ecree.xilinx@gmail.com,
+	habetsm.xilinx@gmail.com,
+	michal.wilczynski@intel.com,
+	jacob.e.keller@intel.com
+Subject: [patch net-next 00/15] devlink: move port ops into separate structure
+Date: Wed, 24 May 2023 14:18:21 +0200
+Message-Id: <20230524121836.2070879-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/hxSIXto_jl.E+eAfLXTCiOR";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---Sig_/hxSIXto_jl.E+eAfLXTCiOR
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Jiri Pirko <jiri@nvidia.com>
 
-Hi Andrew,
+In devlink, some of the objects have separate ops registered alongside
+with the object itself. Port however have ops in devlink_ops structure.
+For drivers what register multiple kinds of ports with different ops
+this is not convenient.
 
-> On Tue, May 23, 2023 at 04:29:09PM +0200, Lukasz Majewski wrote:
-> > After the commit (SHA1: 7e9517375a14f44ee830ca1c3278076dd65fcc8f);
-> > "net: dsa: mv88e6xxx: fix max_mtu of 1492 on 6165, 6191, 6220,
-> > 6250, 6290" the error when mv88e6020 or mv88e6071 is used is not
-> > present anymore. =20
->=20
-> >   dsa: marvell: Define .set_max_frame_size() function for mv88e6250
-> > SoC family =20
->=20
-> Hi Lukasz
->=20
-> commit 7e9517375a14f44ee830ca1c3278076dd65fcc8f
-> Author: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Date:   Tue Mar 14 20:24:05 2023 +0200
->=20
->     net: dsa: mv88e6xxx: fix max_mtu of 1492 on 6165, 6191, 6220,
-> 6250, 6290=20
->     There are 3 classes of switch families that the driver is aware
-> of, as far as mv88e6xxx_change_mtu() is concerned:
->    =20
->     - MTU configuration is available per port. Here, the
->       chip->info->ops->port_set_jumbo_size() method will be present.
->    =20
->     - MTU configuration is global to the switch. Here, the
->       chip->info->ops->set_max_frame_size() method will be present.
->    =20
->     - We don't know how to change the MTU. Here, none of the above
-> methods will be present.
->    =20
->     Switch families MV88E6165, MV88E6191, MV88E6220, MV88E6250 and
-> MV88E6290 fall in category 3.
->=20
->=20
-> Vladimir indicates here that it is not known how to change the max MTU
-> for the MV88E6250. Where did you get the information from to implement
-> it?
+This patchset changes does following changes:
+1) Introduces devlink_port_ops with functions that allow devlink port
+   to be registered passing a pointer to driver port ops. (patch #1)
+2) Converts drivers to define port_ops and register ports passing the
+   ops pointer. (patches #2, #3, #4, #6, #8, and #9)
+3) Moves ops from devlink_ops struct to devlink_port_ops.
+   (patches #5, #7, #10-15)
 
-Please refer to [1].
+No functional changes.
 
-The mv88e6185_g1_set_max_frame_size() function can be reused (as
-registers' offsets and bits are the same for mv88e60{71|20}).
+Jiri Pirko (15):
+  devlink: introduce port ops placeholder
+  ice: register devlink port for PF with ops
+  mlxsw_core: register devlink port with ops
+  nfp: devlink: register devlink port with ops
+  devlink: move port_split/unsplit() ops into devlink_port_ops
+  mlx4: register devlink port with ops
+  devlink: move port_type_set() op into devlink_port_ops
+  sfc: register devlink port with ops
+  mlx5: register devlink ports with ops
+  devlink: move port_fn_hw_addr_get/set() to devlink_port_ops
+  devlink: move port_fn_roce_get/set() to devlink_port_ops
+  devlink: move port_fn_migratable_get/set() to devlink_port_ops
+  devlink: move port_fn_state_get/set() to devlink_port_ops
+  devlink: move port_del() to devlink_port_ops
+  devlink: save devlink_port_ops into a variable in
+    devlink_port_function_validate()
 
-After using Vladimir's patch there is no need to add max_frame size
-field and related patches from v6 can be dropped.
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  10 +-
+ drivers/net/ethernet/mellanox/mlx4/main.c     |  58 ++---
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |   9 -
+ .../mellanox/mlx5/core/esw/devlink_port.c     |  29 ++-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  12 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     |  12 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  10 +-
+ .../net/ethernet/netronome/nfp/nfp_devlink.c  |  10 +-
+ drivers/net/ethernet/sfc/efx_devlink.c        |  80 +++---
+ include/net/devlink.h                         | 228 +++++++++---------
+ net/devlink/leftover.c                        | 120 +++++----
+ 11 files changed, 298 insertions(+), 280 deletions(-)
 
->=20
-> 	Andrew
+-- 
+2.39.2
 
-
-Links:
-
-[1] - https://www.spinics.net/lists/kernel/msg4798861.html
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/hxSIXto_jl.E+eAfLXTCiOR
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmRuAGcACgkQAR8vZIA0
-zr0mwwgAlLajNzPWKh8DfgQzUDlUa6AdtQ8/xbBwHVh2YdV34VJUPZGghWjSG3NJ
-4YfP+YnsUdo7FnYRXHyqYel2X6fOR0wWo+VAlEDRk0VbIZyTmRh21eRm71zhz++1
-IrgemMToB3XOsrvkHyicfQxGynRzvcsENoDW4aFDO/eFdDcFmtRf6Dw/AvMHmQIP
-sUXPTxxZR8pGQpFnZZXslYs8P+0GJ/vAb8Ak61inDVMfZziphHUNlQYMuudKzkp7
-EBf7KNWAN1jRGlXTMJqqYfuuvKM3sfRElfh75PjyPkFh61BvifuZ98QBkxkOdGXo
-7ughGBgzF2phWJj1yZV/qjCDwis7nw==
-=BRNr
------END PGP SIGNATURE-----
-
---Sig_/hxSIXto_jl.E+eAfLXTCiOR--
 
