@@ -1,133 +1,81 @@
-Return-Path: <netdev+bounces-5079-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5080-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 101CF70F9D4
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:11:01 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F385470F9EF
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:19:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CAE7D1C20E0A
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:10:57 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 83836281304
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:19:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BD9419526;
-	Wed, 24 May 2023 15:10:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD65F1952E;
+	Wed, 24 May 2023 15:19:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78EEB1950D
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD444C433D2;
-	Wed, 24 May 2023 15:10:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7220F19528
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:19:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7791DC433D2;
+	Wed, 24 May 2023 15:19:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684941056;
-	bh=1HziZk0Ofryk7MpDRZfUaSYzXybvtVckG6+PfRVCo1c=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=VtjnI42vjLtKXXQrmlFpD4S0MDxUXc3TpPumveYqzmCrv1phZPzw7aRVWX9r8I8yP
-	 YcjvDpK6GkfOBA/6OeuZwCDBgZ2WckqL/A+/9iwEtBPG9/SIwno60R6pfkl913ttyW
-	 nL25h06PJrbFVcD7bmLFRfSdcJJU5y29FLYXidHBuQRR+cf4ZNvdjD1T7PWAaVwSFC
-	 Rj0W0eGEa4LsxRsjwtWcKvGP92NeX3DdYfDctqQnAGbBjegMhH5WDiuy3f+XbD978d
-	 cu7RGX43IKJ6B0X2NNZRbNNbflLK2CP+uPHAUTIf75BZNgbEoakwdIXqFS2oTrmxBt
-	 7JaVh7h5oEUrw==
-Date: Wed, 24 May 2023 10:10:54 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-	Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Lukas Wunner <lukas@wunner.de>, Kalle Valo <kvalo@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Michal Kazior <michal.kazior@tieto.com>,
-	Janusz Dziedzic <janusz.dziedzic@tieto.com>,
-	ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Dean Luick <dean.luick@cornelisnetworks.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v2 9/9] wifi: ath10k: Use RMW accessors for changing
- LNKCTL
-Message-ID: <ZG4o/pYseBklnrTc@bhelgaas>
+	s=k20201202; t=1684941575;
+	bh=b0FUtTBTh0b230DQrrfvkGYuz7+7G3AZG0ETnEJJ3Ks=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=j95lgJ+Yohg9mfGqQLUxF28ayZCi5FdjRe7IMbm5LWz0NAMLBohM79jnUuVSB1i/a
+	 FTCvpVGB7YInPhpPuHCYzxMXy5h9drvbtJG2wLav05hIkizeIYhG7qg7atk8iORKPI
+	 VtfxNQYuthGSB4ujydCClupo9zOIt7U18gnUEfYCXLQ/YkGT5GujLJohcIgG39njBi
+	 3zpofnDund8ZYF3xc7lTuoSI5dPQxpw3BX/ejTrvu9OajI/wNvmqmikBWdTv+GPoPl
+	 9E3ZXGBlCYLrX5JWiApLZQGzAeSERTdUY2gp2HQ41dnyRnDjk8gjoOnXJuTRcdqrLR
+	 ZGwTnvzO315AA==
+Date: Wed, 24 May 2023 08:19:33 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Luca Boccassi <bluca@debian.org>
+Cc: Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>, Christian
+ Brauner <brauner@kernel.org>, davem@davemloft.net,
+ linux-kernel@vger.kernel.org, netdev@vger.kernel.org, Eric Dumazet
+ <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Leon Romanovsky
+ <leon@kernel.org>, David Ahern <dsahern@kernel.org>, Arnd Bergmann
+ <arnd@arndb.de>, Kees Cook <keescook@chromium.org>, Kuniyuki Iwashima
+ <kuniyu@amazon.com>, Lennart Poettering <mzxreary@0pointer.de>,
+ linux-arch@vger.kernel.org
+Subject: Re: [PATCH net-next v6 1/3] scm: add SO_PASSPIDFD and SCM_PIDFD
+Message-ID: <20230524081933.44dc8bea@kernel.org>
+In-Reply-To: <CAMw=ZnRmNaoRb2uceatrV8EAufJSKZzD2AsfT5PJE8NBBOrHCg@mail.gmail.com>
+References: <20230522132439.634031-1-aleksandr.mikhalitsyn@canonical.com>
+	<20230522132439.634031-2-aleksandr.mikhalitsyn@canonical.com>
+	<20230522133409.5c6e839a@kernel.org>
+	<20230523-flechten-ortsschild-e5724ecc4ed0@brauner>
+	<CAMw=ZnS8GBTDV0rw+Dh6hPv3uLXJVwapRFQHLMYEYGZHNoLNOw@mail.gmail.com>
+	<20230523140844.5895d645@kernel.org>
+	<CAEivzxeS2J5i0RJDvFHq-U_RAU5bbKVF5ZbphYDGoPcMZTsE3Q@mail.gmail.com>
+	<CAMw=ZnRmNaoRb2uceatrV8EAufJSKZzD2AsfT5PJE8NBBOrHCg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230517105235.29176-10-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 17, 2023 at 01:52:35PM +0300, Ilpo Järvinen wrote:
-> Don't assume that only the driver would be accessing LNKCTL. ASPM
-> policy changes can trigger write to LNKCTL outside of driver's control.
+On Wed, 24 May 2023 11:47:50 +0100 Luca Boccassi wrote:
+> > I will send SO_PEERPIDFD as an independent patch too, because it
+> > doesn't require this change with CONFIG_UNIX
+> > and we can avoid waiting until CONFIG_UNIX change will be merged.
+> > I've a feeling that the discussion around making CONFIG_UNIX  to be a
+> > boolean won't be easy and fast ;-)  
 > 
-> Use RMW capability accessors which does proper locking to avoid losing
-> concurrent updates to the register value. On restore, clear the ASPMC
-> field properly.
-> 
-> Fixes: 76d870ed09ab ("ath10k: enable ASPM")
-> Suggested-by: Lukas Wunner <lukas@wunner.de>
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/net/wireless/ath/ath10k/pci.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
-> index a7f44f6335fb..9275a672f90c 100644
-> --- a/drivers/net/wireless/ath/ath10k/pci.c
-> +++ b/drivers/net/wireless/ath/ath10k/pci.c
-> @@ -1963,8 +1963,9 @@ static int ath10k_pci_hif_start(struct ath10k *ar)
->  	ath10k_pci_irq_enable(ar);
->  	ath10k_pci_rx_post(ar);
->  
-> -	pcie_capability_write_word(ar_pci->pdev, PCI_EXP_LNKCTL,
-> -				   ar_pci->link_ctl);
-> +	pcie_capability_clear_and_set_word(ar_pci->pdev, PCI_EXP_LNKCTL,
-> +					   PCI_EXP_LNKCTL_ASPMC,
-> +					   ar_pci->link_ctl & PCI_EXP_LNKCTL_ASPMC);
->  
->  	return 0;
->  }
-> @@ -2821,8 +2822,8 @@ static int ath10k_pci_hif_power_up(struct ath10k *ar,
->  
->  	pcie_capability_read_word(ar_pci->pdev, PCI_EXP_LNKCTL,
->  				  &ar_pci->link_ctl);
-> -	pcie_capability_write_word(ar_pci->pdev, PCI_EXP_LNKCTL,
-> -				   ar_pci->link_ctl & ~PCI_EXP_LNKCTL_ASPMC);
-> +	pcie_capability_clear_word(ar_pci->pdev, PCI_EXP_LNKCTL,
-> +				   PCI_EXP_LNKCTL_ASPMC);
+> Thank you, that sounds great to me, I can start using SO_PEERPIDFD
+> independently of SCM_PIDFD, there's no hard dependency between the
+> two.
 
-These ath drivers all have the form:
+How about you put the UNIX -> bool patch at the end of the series,
+(making it a 4 patch series) and if there's a discussion about it 
+I'll just skip it and apply the first 3 patches?
 
-  1) read LNKCTL
-  2) save LNKCTL value in ->link_ctl
-  3) write LNKCTL with "->link_ctl & ~PCI_EXP_LNKCTL_ASPMC"
-     to disable ASPM
-  4) write LNKCTL with ->link_ctl, presumably to re-enable ASPM
-
-These patches close the hole between 1) and 3) where other LNKCTL
-updates could interfere, which is definitely a good thing.
-
-But the hole between 1) and 4) is much bigger and still there.  Any
-update by the PCI core in that interval would be lost.
-
-Straw-man proposal:
-
-  - Change pci_disable_link_state() so it ignores aspm_disabled and
-    always disables ASPM even if platform firmware hasn't granted
-    ownership.  Maybe this should warn and taint the kernel.
-
-  - Change drivers to use pci_disable_link_state() instead of writing
-    LNKCTL directly.
-
-Bjorn
+In the (IMHO more likely) case that there isn't a discussion it saves
+me from remembering to chase you to send that patch ;)
 
