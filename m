@@ -1,102 +1,164 @@
-Return-Path: <netdev+bounces-5186-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5187-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B5DE971017F
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 01:05:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AD4A17101B1
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 01:30:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 70FDC28143F
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 23:05:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F8A11C20D15
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 23:30:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD7088826;
-	Wed, 24 May 2023 23:05:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A1138836;
+	Wed, 24 May 2023 23:30:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F0406087A
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 23:05:40 +0000 (UTC)
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F026A1A1;
-	Wed, 24 May 2023 16:05:34 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-50db91640d3so2813791a12.0;
-        Wed, 24 May 2023 16:05:34 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03A92848D
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 23:30:10 +0000 (UTC)
+Received: from smtp-fw-52004.amazon.com (smtp-fw-52004.amazon.com [52.119.213.154])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A6999
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 16:30:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684969533; x=1687561533;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3GxzgFxfx+TiykE1Xh7O/xgq+W33H38gTkL9jRqPtEs=;
-        b=rrYsnM4KPn6tO5D7xGsfGPwlyWMsLT2AEb1zyF4C1gnFiH07WSRSz58+hy/oolz/vK
-         8EnW0MBhN7noJvbAX4d/AXU9PNFDIAZIOv+JC2wxraLBkfTpCgtOUyNs+pTFYg79a516
-         9Ggu5E5s0Ry6nnDYQzpEfuYNcJAXwW8ieD7lCqfmVdh00eEZxXpYdD0D1dAaAQ8gZvPX
-         7EaQzCDqU5ZYNnK5djzJL9pXlAIMufaDqP2HjjU+3MySoAtb/oMsXteku2xHIHuw/sXB
-         4JeLvXUpKkTtQ1bgOpGL/lAH7UaXkun6cbOdYK7vdI6Of7rgBBZTwaqUKF4mpoyLho3S
-         PhKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684969533; x=1687561533;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3GxzgFxfx+TiykE1Xh7O/xgq+W33H38gTkL9jRqPtEs=;
-        b=A+u7onaKw6E24zwRO7KXnZ9rcysXF3YZ8axFQaRXVhk47pDVuN5HQutehFpDo8lEcO
-         pObBH04ATqIH1Z0R/5gO3o9vNjK2nH6J7TeUuJ/xRzGymhoN6F0puzIHXLPUbn2GdlWO
-         u+8sOXDS4RXDPsjHnVpYVQWFev24GMMGLV2awgeQdS1xhxvYm6zH/EkVWrgTaaIad7T3
-         zE9sqVU48t2kvfm7KeSzAn2IkHK23OMSHyOyrE+NqgatFNoeEv8UVvWlASEEn26s9o5K
-         EUxPJTNQ9AisAIuCaoX59KxNlVv2/fEkZJ8HAs51p5zZORdoPWf8FGZQL+HVk7pyoq2W
-         MZzw==
-X-Gm-Message-State: AC+VfDzlz2liq1PRJpN3UFfQXJsQJ4w2IEMo99bma6jfIVU/9eGDFFDR
-	yk0zJGzoRxWlARbkZ4l2Me+IOnLVHzzjuw==
-X-Google-Smtp-Source: ACHHUZ7Rqz2GAY35oKipEF/f4kZ9HSWyjBNdexIQnogNGNYtRhUG9pdKdSTq0qjRXerZPH2T40IDcg==
-X-Received: by 2002:aa7:c3ca:0:b0:50d:f881:1afc with SMTP id l10-20020aa7c3ca000000b0050df8811afcmr2869223edr.23.1684969533077;
-        Wed, 24 May 2023 16:05:33 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id ay24-20020a056402203800b0050690bc07a3sm374208edb.18.2023.05.24.16.05.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 May 2023 16:05:32 -0700 (PDT)
-Date: Thu, 25 May 2023 02:05:30 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: David Epping <david.epping@missinglinkelectronics.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net v3 4/4] net: phy: mscc: enable VSC8501/2 RGMII RX
- clock
-Message-ID: <20230524230530.ahnoz6cfedcz4pri@skbuf>
-References: <20230523153108.18548-1-david.epping@missinglinkelectronics.com>
- <20230523153108.18548-5-david.epping@missinglinkelectronics.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1684971009; x=1716507009;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vyqvBazfHKigXd0x4CIk+joJzzBeEa2c995yNaXn2MQ=;
+  b=pdfJwCKn9tt7JkXMUPVx4LQQHoYWQ9S8a0ht8rbh5699ecs/nc2QyM6o
+   TVFwVHzlw1sTrtMsr6HKHyFWlCJKQQE1IQUHF9f3EEq1Lf8orZwJtHumM
+   Zh67Knd8VLA/+2ruFowR6RNHZgTj194VlRfAxo1icsaoj/QbGu2QE/JB0
+   I=;
+X-IronPort-AV: E=Sophos;i="6.00,190,1681171200"; 
+   d="scan'208";a="135235484"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-0aba4706.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-52004.iad7.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2023 23:30:07 +0000
+Received: from EX19MTAUWC002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+	by email-inbound-relay-iad-1e-m6i4x-0aba4706.us-east-1.amazon.com (Postfix) with ESMTPS id 25BDBA118C;
+	Wed, 24 May 2023 23:30:04 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Wed, 24 May 2023 23:29:48 +0000
+Received: from 88665a182662.ant.amazon.com (10.142.186.55) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Wed, 24 May 2023 23:29:45 +0000
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC: Pavel Emelyanov <xemul@parallels.com>, Kuniyuki Iwashima
+	<kuniyu@amazon.com>, Kuniyuki Iwashima <kuni1840@gmail.com>,
+	<netdev@vger.kernel.org>, syzkaller <syzkaller@googlegroups.com>
+Subject: [PATCH v1 net] af_packet: Fix data-races of pkt_sk(sk)->num.
+Date: Wed, 24 May 2023 16:29:34 -0700
+Message-ID: <20230524232934.50950-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230523153108.18548-5-david.epping@missinglinkelectronics.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.142.186.55]
+X-ClientProxiedBy: EX19D040UWA003.ant.amazon.com (10.13.139.6) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+Precedence: Bulk
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 23, 2023 at 05:31:08PM +0200, David Epping wrote:
-> By default the VSC8501 and VSC8502 RGMII/GMII/MII RX_CLK output is
-> disabled. To allow packet forwarding towards the MAC it needs to be
-> enabled.
-> 
-> For other PHYs supported by this driver the clock output is enabled
-> by default.
-> 
-> Signed-off-by: David Epping <david.epping@missinglinkelectronics.com>
-> ---
+syzkaller found a data race of pkt_sk(sk)->num.
 
-Fixes: d3169863310d ("net: phy: mscc: add support for VSC8502")
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+The value is changed under lock_sock() and po->bind_lock, so we
+need READ_ONCE() to access pkt_sk(sk)->num without these locks in
+packet_bind_spkt(), packet_bind(), and sk_diag_fill().
+
+Note that WRITE_ONCE() is already added by commit c7d2ef5dd4b0
+("net/packet: annotate accesses to po->bind").
+
+BUG: KCSAN: data-race in packet_bind / packet_do_bind
+
+write (marked) to 0xffff88802ffd1cee of 2 bytes by task 7322 on cpu 0:
+ packet_do_bind+0x446/0x640 net/packet/af_packet.c:3236
+ packet_bind+0x99/0xe0 net/packet/af_packet.c:3321
+ __sys_bind+0x19b/0x1e0 net/socket.c:1803
+ __do_sys_bind net/socket.c:1814 [inline]
+ __se_sys_bind net/socket.c:1812 [inline]
+ __x64_sys_bind+0x40/0x50 net/socket.c:1812
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3b/0x90 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x72/0xdc
+
+read to 0xffff88802ffd1cee of 2 bytes by task 7318 on cpu 1:
+ packet_bind+0xbf/0xe0 net/packet/af_packet.c:3322
+ __sys_bind+0x19b/0x1e0 net/socket.c:1803
+ __do_sys_bind net/socket.c:1814 [inline]
+ __se_sys_bind net/socket.c:1812 [inline]
+ __x64_sys_bind+0x40/0x50 net/socket.c:1812
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3b/0x90 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x72/0xdc
+
+value changed: 0x0300 -> 0x0000
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 7318 Comm: syz-executor.4 Not tainted 6.3.0-13380-g7fddb5b5300c #4
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+
+Fixes: 96ec6327144e ("packet: Diag core and basic socket info dumping")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+ net/packet/af_packet.c | 4 ++--
+ net/packet/diag.c      | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 94c6a1ffa459..a1f9a0e9f3c8 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -3299,7 +3299,7 @@ static int packet_bind_spkt(struct socket *sock, struct sockaddr *uaddr,
+ 	memcpy(name, uaddr->sa_data, sizeof(uaddr->sa_data_min));
+ 	name[sizeof(uaddr->sa_data_min)] = 0;
+ 
+-	return packet_do_bind(sk, name, 0, pkt_sk(sk)->num);
++	return packet_do_bind(sk, name, 0, READ_ONCE(pkt_sk(sk)->num));
+ }
+ 
+ static int packet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+@@ -3317,7 +3317,7 @@ static int packet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len
+ 		return -EINVAL;
+ 
+ 	return packet_do_bind(sk, NULL, sll->sll_ifindex,
+-			      sll->sll_protocol ? : pkt_sk(sk)->num);
++			      sll->sll_protocol ? : READ_ONCE(pkt_sk(sk)->num));
+ }
+ 
+ static struct proto packet_proto = {
+diff --git a/net/packet/diag.c b/net/packet/diag.c
+index d0c4eda4cdc6..f6b200cb3c06 100644
+--- a/net/packet/diag.c
++++ b/net/packet/diag.c
+@@ -143,7 +143,7 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb,
+ 	rp = nlmsg_data(nlh);
+ 	rp->pdiag_family = AF_PACKET;
+ 	rp->pdiag_type = sk->sk_type;
+-	rp->pdiag_num = ntohs(po->num);
++	rp->pdiag_num = ntohs(READ_ONCE(po->num));
+ 	rp->pdiag_ino = sk_ino;
+ 	sock_diag_save_cookie(sk, rp->pdiag_cookie);
+ 
+-- 
+2.30.2
+
 
