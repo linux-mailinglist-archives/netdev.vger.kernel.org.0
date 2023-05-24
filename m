@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-5089-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5090-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4C6DA70FA38
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:34:25 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F299A70FA3D
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:34:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 06ECD1C20B72
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:34:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AC4A02811A1
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:34:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D4F8819BAE;
-	Wed, 24 May 2023 15:33:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A9E819937;
+	Wed, 24 May 2023 15:34:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C49BA19BA4
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:33:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76E8E19BA0
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:34:07 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AAF10D0
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:33:27 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D80E4A
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:33:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684942401;
+	s=mimecast20190719; t=1684942408;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=VHLRJgykEA+vivKsr5PIe4LNQi6791a3nIaeRR1gBwE=;
-	b=jA8m9DmkiVhTGPcHbHkjoqi6MSuirpsxs4HopqNAgTutRQIFsqpYUbEah44wBXfdGjl/Wb
-	ECBvopsYKuyIejix2E9AlvsDVxFUUEEzPiMN9Z25PikTLHJZzWgg7rOpNfG0adijINBqLV
-	m8KBvrZikU84Ga6ncw1UaQvaSxzVvl0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=5Xt/kb1I9tBW/zHVjBQrREyGjijOb+tpZUMT6BFY+/c=;
+	b=HZ8Of0rK1hyiWfcfsq/n1TQ4H44jwzSuyskoP3Xryi302meqeGzHEvoVATpV9YiR2GNG+6
+	CIcHInZD4ckVVi5gM2ajw2g4GvRoZ0siIranHiFJmQZWD6ZyvnrkqcJJZP0HV41w3hoQFK
+	ni9sDY+5Z2+vodB0va9kc1KrZ5khZQM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-283-sw8TgtPTPZKZI2FxAmu1nw-1; Wed, 24 May 2023 11:33:18 -0400
-X-MC-Unique: sw8TgtPTPZKZI2FxAmu1nw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+ us-mta-147-h5Ilq50YMBixAqm1S8Ipag-1; Wed, 24 May 2023 11:33:24 -0400
+X-MC-Unique: h5Ilq50YMBixAqm1S8Ipag-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 317F8185A793;
-	Wed, 24 May 2023 15:33:17 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 52D53280BC8A;
+	Wed, 24 May 2023 15:33:22 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 60D09492B00;
-	Wed, 24 May 2023 15:33:15 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 24FB920296C8;
+	Wed, 24 May 2023 15:33:18 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org
 Cc: David Howells <dhowells@redhat.com>,
@@ -57,10 +57,28 @@ Cc: David Howells <dhowells@redhat.com>,
 	Jens Axboe <axboe@kernel.dk>,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH net-next 01/12] mm: Move the page fragment allocator from page_alloc.c into its own file
-Date: Wed, 24 May 2023 16:33:00 +0100
-Message-Id: <20230524153311.3625329-2-dhowells@redhat.com>
+	Jeroen de Borst <jeroendb@google.com>,
+	Catherine Sullivan <csully@google.com>,
+	Shailend Chand <shailend@google.com>,
+	Felix Fietkau <nbd@nbd.name>,
+	John Crispin <john@phrozen.org>,
+	Sean Wang <sean.wang@mediatek.com>,
+	Mark Lee <Mark-MC.Lee@mediatek.com>,
+	Lorenzo Bianconi <lorenzo@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Keith Busch <kbusch@kernel.org>,
+	Jens Axboe <axboe@fb.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org,
+	linux-nvme@lists.infradead.org
+Subject: [PATCH net-next 02/12] mm: Provide a page_frag_cache allocator cleanup function
+Date: Wed, 24 May 2023 16:33:01 +0100
+Message-Id: <20230524153311.3625329-3-dhowells@redhat.com>
 In-Reply-To: <20230524153311.3625329-1-dhowells@redhat.com>
 References: <20230524153311.3625329-1-dhowells@redhat.com>
 Precedence: bulk
@@ -70,7 +88,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
@@ -78,312 +96,206 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Move the page fragment allocator from page_alloc.c into its own file
-preparatory to changing it.
+Provide a function to clean up a page_frag_cache allocator rather than
+doing it manually each time.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Andrew Morton <akpm@linux-foundation.org>
 cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
+cc: Jeroen de Borst <jeroendb@google.com>
+cc: Catherine Sullivan <csully@google.com>
+cc: Shailend Chand <shailend@google.com>
+cc: Felix Fietkau <nbd@nbd.name>
+cc: John Crispin <john@phrozen.org>
+cc: Sean Wang <sean.wang@mediatek.com>
+cc: Mark Lee <Mark-MC.Lee@mediatek.com>
+cc: Lorenzo Bianconi <lorenzo@kernel.org>
+cc: Matthias Brugger <matthias.bgg@gmail.com>
+cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+cc: Keith Busch <kbusch@kernel.org>
+cc: Jens Axboe <axboe@fb.com>
+cc: Christoph Hellwig <hch@lst.de>
+cc: Sagi Grimberg <sagi@grimberg.me>
+cc: Chaitanya Kulkarni <kch@nvidia.com>
+cc: Andrew Morton <akpm@linux-foundation.org>
 cc: Matthew Wilcox <willy@infradead.org>
-cc: linux-mm@kvack.org
 cc: netdev@vger.kernel.org
+cc: linux-arm-kernel@lists.infradead.org
+cc: linux-mediatek@lists.infradead.org
+cc: linux-nvme@lists.infradead.org
+cc: linux-mm@kvack.org
 ---
- mm/Makefile          |   2 +-
- mm/page_alloc.c      | 126 -----------------------------------------
- mm/page_frag_alloc.c | 131 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 132 insertions(+), 127 deletions(-)
- create mode 100644 mm/page_frag_alloc.c
+ drivers/net/ethernet/google/gve/gve_main.c | 11 ++---------
+ drivers/net/ethernet/mediatek/mtk_wed_wo.c | 17 ++---------------
+ drivers/nvme/host/tcp.c                    |  8 +-------
+ drivers/nvme/target/tcp.c                  |  5 +----
+ include/linux/gfp.h                        |  2 ++
+ mm/page_frag_alloc.c                       | 17 +++++++++++++++++
+ 6 files changed, 25 insertions(+), 35 deletions(-)
 
-diff --git a/mm/Makefile b/mm/Makefile
-index e29afc890cde..0daa4c6f4552 100644
---- a/mm/Makefile
-+++ b/mm/Makefile
-@@ -51,7 +51,7 @@ obj-y			:= filemap.o mempool.o oom_kill.o fadvise.o \
- 			   readahead.o swap.o truncate.o vmscan.o shmem.o \
- 			   util.o mmzone.o vmstat.o backing-dev.o \
- 			   mm_init.o percpu.o slab_common.o \
--			   compaction.o \
-+			   compaction.o page_frag_alloc.o \
- 			   interval_tree.o list_lru.o workingset.o \
- 			   debug.o gup.o mmap_lock.o $(mmu-y)
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 8fb70db63b8b..55feab29bed9 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -1251,17 +1251,10 @@ static void gve_unreg_xdp_info(struct gve_priv *priv)
  
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 47421bedc12b..29dc79dbeb22 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -4871,132 +4871,6 @@ void free_pages(unsigned long addr, unsigned int order)
- 
- EXPORT_SYMBOL(free_pages);
- 
--/*
-- * Page Fragment:
-- *  An arbitrary-length arbitrary-offset area of memory which resides
-- *  within a 0 or higher order page.  Multiple fragments within that page
-- *  are individually refcounted, in the page's reference counter.
-- *
-- * The page_frag functions below provide a simple allocation framework for
-- * page fragments.  This is used by the network stack and network device
-- * drivers to provide a backing region of memory for use as either an
-- * sk_buff->head, or to be used in the "frags" portion of skb_shared_info.
-- */
--static struct page *__page_frag_cache_refill(struct page_frag_cache *nc,
--					     gfp_t gfp_mask)
--{
--	struct page *page = NULL;
--	gfp_t gfp = gfp_mask;
--
--#if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
--	gfp_mask |= __GFP_COMP | __GFP_NOWARN | __GFP_NORETRY |
--		    __GFP_NOMEMALLOC;
--	page = alloc_pages_node(NUMA_NO_NODE, gfp_mask,
--				PAGE_FRAG_CACHE_MAX_ORDER);
--	nc->size = page ? PAGE_FRAG_CACHE_MAX_SIZE : PAGE_SIZE;
--#endif
--	if (unlikely(!page))
--		page = alloc_pages_node(NUMA_NO_NODE, gfp, 0);
--
--	nc->va = page ? page_address(page) : NULL;
--
--	return page;
--}
--
--void __page_frag_cache_drain(struct page *page, unsigned int count)
--{
--	VM_BUG_ON_PAGE(page_ref_count(page) == 0, page);
--
--	if (page_ref_sub_and_test(page, count))
--		free_the_page(page, compound_order(page));
--}
--EXPORT_SYMBOL(__page_frag_cache_drain);
--
--void *page_frag_alloc_align(struct page_frag_cache *nc,
--		      unsigned int fragsz, gfp_t gfp_mask,
--		      unsigned int align_mask)
--{
--	unsigned int size = PAGE_SIZE;
--	struct page *page;
--	int offset;
--
--	if (unlikely(!nc->va)) {
--refill:
--		page = __page_frag_cache_refill(nc, gfp_mask);
--		if (!page)
--			return NULL;
--
--#if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
--		/* if size can vary use size else just use PAGE_SIZE */
--		size = nc->size;
--#endif
--		/* Even if we own the page, we do not use atomic_set().
--		 * This would break get_page_unless_zero() users.
--		 */
--		page_ref_add(page, PAGE_FRAG_CACHE_MAX_SIZE);
--
--		/* reset page count bias and offset to start of new frag */
--		nc->pfmemalloc = page_is_pfmemalloc(page);
--		nc->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
--		nc->offset = size;
--	}
--
--	offset = nc->offset - fragsz;
--	if (unlikely(offset < 0)) {
--		page = virt_to_page(nc->va);
--
--		if (!page_ref_sub_and_test(page, nc->pagecnt_bias))
--			goto refill;
--
--		if (unlikely(nc->pfmemalloc)) {
--			free_the_page(page, compound_order(page));
--			goto refill;
--		}
--
--#if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
--		/* if size can vary use size else just use PAGE_SIZE */
--		size = nc->size;
--#endif
--		/* OK, page count is 0, we can safely set it */
--		set_page_count(page, PAGE_FRAG_CACHE_MAX_SIZE + 1);
--
--		/* reset page count bias and offset to start of new frag */
--		nc->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
--		offset = size - fragsz;
--		if (unlikely(offset < 0)) {
--			/*
--			 * The caller is trying to allocate a fragment
--			 * with fragsz > PAGE_SIZE but the cache isn't big
--			 * enough to satisfy the request, this may
--			 * happen in low memory conditions.
--			 * We don't release the cache page because
--			 * it could make memory pressure worse
--			 * so we simply return NULL here.
--			 */
--			return NULL;
--		}
--	}
--
--	nc->pagecnt_bias--;
--	offset &= align_mask;
--	nc->offset = offset;
--
--	return nc->va + offset;
--}
--EXPORT_SYMBOL(page_frag_alloc_align);
--
--/*
-- * Frees a page fragment allocated out of either a compound or order 0 page.
-- */
--void page_frag_free(void *addr)
--{
--	struct page *page = virt_to_head_page(addr);
--
--	if (unlikely(put_page_testzero(page)))
--		free_the_page(page, compound_order(page));
--}
--EXPORT_SYMBOL(page_frag_free);
--
- static void *make_alloc_exact(unsigned long addr, unsigned int order,
- 		size_t size)
+ static void gve_drain_page_cache(struct gve_priv *priv)
  {
+-	struct page_frag_cache *nc;
+ 	int i;
+ 
+-	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
+-		nc = &priv->rx[i].page_cache;
+-		if (nc->va) {
+-			__page_frag_cache_drain(virt_to_page(nc->va),
+-						nc->pagecnt_bias);
+-			nc->va = NULL;
+-		}
+-	}
++	for (i = 0; i < priv->rx_cfg.num_queues; i++)
++		page_frag_cache_clear(&priv->rx[i].page_cache);
+ }
+ 
+ static int gve_open(struct net_device *dev)
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed_wo.c b/drivers/net/ethernet/mediatek/mtk_wed_wo.c
+index 69fba29055e9..d90fea2c7d04 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed_wo.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed_wo.c
+@@ -286,7 +286,6 @@ mtk_wed_wo_queue_free(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q)
+ static void
+ mtk_wed_wo_queue_tx_clean(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q)
+ {
+-	struct page *page;
+ 	int i;
+ 
+ 	for (i = 0; i < q->n_desc; i++) {
+@@ -298,19 +297,12 @@ mtk_wed_wo_queue_tx_clean(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q)
+ 		entry->buf = NULL;
+ 	}
+ 
+-	if (!q->cache.va)
+-		return;
+-
+-	page = virt_to_page(q->cache.va);
+-	__page_frag_cache_drain(page, q->cache.pagecnt_bias);
+-	memset(&q->cache, 0, sizeof(q->cache));
++	page_frag_cache_clear(&q->cache);
+ }
+ 
+ static void
+ mtk_wed_wo_queue_rx_clean(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q)
+ {
+-	struct page *page;
+-
+ 	for (;;) {
+ 		void *buf = mtk_wed_wo_dequeue(wo, q, NULL, true);
+ 
+@@ -320,12 +312,7 @@ mtk_wed_wo_queue_rx_clean(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q)
+ 		skb_free_frag(buf);
+ 	}
+ 
+-	if (!q->cache.va)
+-		return;
+-
+-	page = virt_to_page(q->cache.va);
+-	__page_frag_cache_drain(page, q->cache.pagecnt_bias);
+-	memset(&q->cache, 0, sizeof(q->cache));
++	page_frag_cache_clear(&q->cache);
+ }
+ 
+ static void
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index bf0230442d57..dcc35f6bff8c 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -1315,7 +1315,6 @@ static int nvme_tcp_alloc_async_req(struct nvme_tcp_ctrl *ctrl)
+ 
+ static void nvme_tcp_free_queue(struct nvme_ctrl *nctrl, int qid)
+ {
+-	struct page *page;
+ 	struct nvme_tcp_ctrl *ctrl = to_tcp_ctrl(nctrl);
+ 	struct nvme_tcp_queue *queue = &ctrl->queues[qid];
+ 	unsigned int noreclaim_flag;
+@@ -1326,12 +1325,7 @@ static void nvme_tcp_free_queue(struct nvme_ctrl *nctrl, int qid)
+ 	if (queue->hdr_digest || queue->data_digest)
+ 		nvme_tcp_free_crypto(queue);
+ 
+-	if (queue->pf_cache.va) {
+-		page = virt_to_head_page(queue->pf_cache.va);
+-		__page_frag_cache_drain(page, queue->pf_cache.pagecnt_bias);
+-		queue->pf_cache.va = NULL;
+-	}
+-
++	page_frag_cache_clear(&queue->pf_cache);
+ 	noreclaim_flag = memalloc_noreclaim_save();
+ 	sock_release(queue->sock);
+ 	memalloc_noreclaim_restore(noreclaim_flag);
+diff --git a/drivers/nvme/target/tcp.c b/drivers/nvme/target/tcp.c
+index ed98df72c76b..984e6ce85dcd 100644
+--- a/drivers/nvme/target/tcp.c
++++ b/drivers/nvme/target/tcp.c
+@@ -1464,7 +1464,6 @@ static void nvmet_tcp_free_cmd_data_in_buffers(struct nvmet_tcp_queue *queue)
+ 
+ static void nvmet_tcp_release_queue_work(struct work_struct *w)
+ {
+-	struct page *page;
+ 	struct nvmet_tcp_queue *queue =
+ 		container_of(w, struct nvmet_tcp_queue, release_work);
+ 
+@@ -1486,9 +1485,7 @@ static void nvmet_tcp_release_queue_work(struct work_struct *w)
+ 	if (queue->hdr_digest || queue->data_digest)
+ 		nvmet_tcp_free_crypto(queue);
+ 	ida_free(&nvmet_tcp_queue_ida, queue->idx);
+-
+-	page = virt_to_head_page(queue->pf_cache.va);
+-	__page_frag_cache_drain(page, queue->pf_cache.pagecnt_bias);
++	page_frag_cache_clear(&queue->pf_cache);
+ 	kfree(queue);
+ }
+ 
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index ed8cb537c6a7..03504beb51e4 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -314,6 +314,8 @@ static inline void *page_frag_alloc(struct page_frag_cache *nc,
+ 	return page_frag_alloc_align(nc, fragsz, gfp_mask, ~0u);
+ }
+ 
++void page_frag_cache_clear(struct page_frag_cache *nc);
++
+ extern void page_frag_free(void *addr);
+ 
+ #define __free_page(page) __free_pages((page), 0)
 diff --git a/mm/page_frag_alloc.c b/mm/page_frag_alloc.c
-new file mode 100644
-index 000000000000..bee95824ef8f
---- /dev/null
+index bee95824ef8f..e02b81d68dc4 100644
+--- a/mm/page_frag_alloc.c
 +++ b/mm/page_frag_alloc.c
-@@ -0,0 +1,131 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Page fragment allocator
+@@ -46,6 +46,23 @@ void __page_frag_cache_drain(struct page *page, unsigned int count)
+ }
+ EXPORT_SYMBOL(__page_frag_cache_drain);
+ 
++/**
++ * page_frag_cache_clear - Clear out a page fragment cache
++ * @nc: The cache to clear
 + *
-+ * Page Fragment:
-+ *  An arbitrary-length arbitrary-offset area of memory which resides within a
-+ *  0 or higher order page.  Multiple fragments within that page are
-+ *  individually refcounted, in the page's reference counter.
-+ *
-+ * The page_frag functions provide a simple allocation framework for page
-+ * fragments.  This is used by the network stack and network device drivers to
-+ * provide a backing region of memory for use as either an sk_buff->head, or to
-+ * be used in the "frags" portion of skb_shared_info.
++ * Discard any pages still cached in a page fragment cache.
 + */
-+
-+#include <linux/export.h>
-+#include <linux/init.h>
-+#include <linux/mm.h>
-+
-+static struct page *__page_frag_cache_refill(struct page_frag_cache *nc,
-+					     gfp_t gfp_mask)
++void page_frag_cache_clear(struct page_frag_cache *nc)
 +{
-+	struct page *page = NULL;
-+	gfp_t gfp = gfp_mask;
++	if (nc->va) {
++		struct page *page = virt_to_head_page(nc->va);
 +
-+#if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
-+	gfp_mask |= __GFP_COMP | __GFP_NOWARN | __GFP_NORETRY |
-+		    __GFP_NOMEMALLOC;
-+	page = alloc_pages_node(NUMA_NO_NODE, gfp_mask,
-+				PAGE_FRAG_CACHE_MAX_ORDER);
-+	nc->size = page ? PAGE_FRAG_CACHE_MAX_SIZE : PAGE_SIZE;
-+#endif
-+	if (unlikely(!page))
-+		page = alloc_pages_node(NUMA_NO_NODE, gfp, 0);
-+
-+	nc->va = page ? page_address(page) : NULL;
-+
-+	return page;
-+}
-+
-+void __page_frag_cache_drain(struct page *page, unsigned int count)
-+{
-+	VM_BUG_ON_PAGE(page_ref_count(page) == 0, page);
-+
-+	if (page_ref_sub_and_test(page, count - 1))
-+		__free_pages(page, compound_order(page));
-+}
-+EXPORT_SYMBOL(__page_frag_cache_drain);
-+
-+void *page_frag_alloc_align(struct page_frag_cache *nc,
-+		      unsigned int fragsz, gfp_t gfp_mask,
-+		      unsigned int align_mask)
-+{
-+	unsigned int size = PAGE_SIZE;
-+	struct page *page;
-+	int offset;
-+
-+	if (unlikely(!nc->va)) {
-+refill:
-+		page = __page_frag_cache_refill(nc, gfp_mask);
-+		if (!page)
-+			return NULL;
-+
-+#if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
-+		/* if size can vary use size else just use PAGE_SIZE */
-+		size = nc->size;
-+#endif
-+		/* Even if we own the page, we do not use atomic_set().
-+		 * This would break get_page_unless_zero() users.
-+		 */
-+		page_ref_add(page, PAGE_FRAG_CACHE_MAX_SIZE);
-+
-+		/* reset page count bias and offset to start of new frag */
-+		nc->pfmemalloc = page_is_pfmemalloc(page);
-+		nc->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
-+		nc->offset = size;
++		__page_frag_cache_drain(page, nc->pagecnt_bias);
++		nc->va = NULL;
 +	}
-+
-+	offset = nc->offset - fragsz;
-+	if (unlikely(offset < 0)) {
-+		page = virt_to_page(nc->va);
-+
-+		if (page_ref_count(page) != nc->pagecnt_bias)
-+			goto refill;
-+		if (unlikely(nc->pfmemalloc)) {
-+			page_ref_sub(page, nc->pagecnt_bias - 1);
-+			__free_pages(page, compound_order(page));
-+			goto refill;
-+		}
-+
-+#if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
-+		/* if size can vary use size else just use PAGE_SIZE */
-+		size = nc->size;
-+#endif
-+		/* OK, page count is 0, we can safely set it */
-+		set_page_count(page, PAGE_FRAG_CACHE_MAX_SIZE + 1);
-+
-+		/* reset page count bias and offset to start of new frag */
-+		nc->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
-+		offset = size - fragsz;
-+		if (unlikely(offset < 0)) {
-+			/*
-+			 * The caller is trying to allocate a fragment
-+			 * with fragsz > PAGE_SIZE but the cache isn't big
-+			 * enough to satisfy the request, this may
-+			 * happen in low memory conditions.
-+			 * We don't release the cache page because
-+			 * it could make memory pressure worse
-+			 * so we simply return NULL here.
-+			 */
-+			return NULL;
-+		}
-+	}
-+
-+	nc->pagecnt_bias--;
-+	offset &= align_mask;
-+	nc->offset = offset;
-+
-+	return nc->va + offset;
 +}
-+EXPORT_SYMBOL(page_frag_alloc_align);
++EXPORT_SYMBOL(page_frag_cache_clear);
 +
-+/*
-+ * Frees a page fragment allocated out of either a compound or order 0 page.
-+ */
-+void page_frag_free(void *addr)
-+{
-+	struct page *page = virt_to_head_page(addr);
-+
-+	__free_pages(page, compound_order(page));
-+}
-+EXPORT_SYMBOL(page_frag_free);
+ void *page_frag_alloc_align(struct page_frag_cache *nc,
+ 		      unsigned int fragsz, gfp_t gfp_mask,
+ 		      unsigned int align_mask)
 
 
