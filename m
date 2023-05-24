@@ -1,180 +1,150 @@
-Return-Path: <netdev+bounces-5162-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5163-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B9D7670FD97
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 20:15:23 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 556CC70FDF5
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 20:44:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 02BAD1C20D52
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 18:15:20 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8C3F7281111
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 18:44:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E6432260C;
-	Wed, 24 May 2023 18:15:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BC02318C23;
+	Wed, 24 May 2023 18:44:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5191FE575
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 18:15:20 +0000 (UTC)
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B681BB;
-	Wed, 24 May 2023 11:15:17 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-3f608074b50so14426525e9.0;
-        Wed, 24 May 2023 11:15:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF76F60862
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 18:44:55 +0000 (UTC)
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFFA410B
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 11:44:53 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-64d18d772bdso1418232b3a.3
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 11:44:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684952115; x=1687544115;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=87ZCxQxTbVlKyzkUBnd4j43LV2JM7FHJHvdF0cKFlQQ=;
-        b=VbBXmu69uh2gs0RMb+R7/foz1uQKVq/j6oHNX547qBl9t+AzBFUP1CF0w/YXiQHoJJ
-         29rLQkeoO83pZRz0t4dESuYe2Thpebmo7IM4DjpLzyB5HPMz5AIxtPghdpemrkKWB2UL
-         yX2Mm5a0sZUVvSba4Dw103/TcQ3LEAY4bDD948jAt22q/QcJGp6zMhwg4OzqINO2y8t7
-         j8xydeHTuE8QCj8guqMq1hLPS0O0bJctnoyHum4EGVY9l2eakOh4l3j489OdjdklKa27
-         XFWba9CqLUvxG/qwUyK74Vu5ETED/2EQRQXR6hnS8nDctCZ99sX5JXIRfbjrj9xrzfwo
-         4QyQ==
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1684953893; x=1687545893;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3z9gVzvP+6FBEHWrnozdoHhW6MSUsg5+Grnw0Cfk85M=;
+        b=YQ41LCQ9nVxOxB03et/dUrxGYnN56neokWma7G4pkTsGeElrzv7vr7uc1tWyAfXdgI
+         Cx7yovjGMe92hoBu0Cko6TOOyWTITcAE77UI43TYoOyga0Wj3z7TA7xW9MsOmF4fY/j7
+         TPDcKmVX6DsNYEV5yfFztrNd2QjTzMmMK3YAR48yuJknTT6j9UvhXceWarLNkjiwBBU4
+         pLKe2PLpE3XAmKUYLdfI8JrzHZOYUZBxE+0C3y/udN0cGnXS5jPvKOwlj2JUVJuLaELO
+         to5G0TEFp0XS0D3GpvTipAeipXtT2BzQFDkIaduxZdBB6C/RHx9pDl3PPugC8MDiPEcP
+         B+Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684952115; x=1687544115;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=87ZCxQxTbVlKyzkUBnd4j43LV2JM7FHJHvdF0cKFlQQ=;
-        b=io3bUCvfc+LkuFARn6HrOs3NiSrXdNIurdTC/F6BHkpmQjQ/JWdlzmydT+OAUztSsD
-         vkzoMtByfq2BbI3mQzq9fr3KtCjVwf3X0WEzYKe2nwBw5Lqwhx39tmTfH2yp7zCcSBYh
-         mwBRVzcmvaM3YwtlUzb3aDyIk/vD3N+Gu71rhlvEJjUxUt5RQO6XA8hg6oEhs1hgAhDs
-         fzXAyR3PkbQ6N+DgFY1uxT24fRvo18/WgMN6+F0G1XkjblVvMcWPXUTmnCfTG832osEE
-         UbLfikv7c4gCA2/Sz1eXIDNMaXj7tCHBtyepu3Hnmo16LlCS+7sIcDKotztTtvgV0/nC
-         XLxg==
-X-Gm-Message-State: AC+VfDxyfGC3Y1U/oNM2bC7DszHDUDo4RMsS68c6+NkffUYSvfY5AZoj
-	C33v5nWeMZjgxq6GDy0uNp0=
-X-Google-Smtp-Source: ACHHUZ7FS9+AodX+nKeevqNznXZks1d6+Nsqsfu7Ns9jz1kUkH/m3dvKLOkzaIyMguQB4V8lerzsWA==
-X-Received: by 2002:a7b:cd14:0:b0:3f5:fff8:d4f3 with SMTP id f20-20020a7bcd14000000b003f5fff8d4f3mr541358wmj.7.1684952115423;
-        Wed, 24 May 2023 11:15:15 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id 10-20020a05600c228a00b003f42461ac75sm3107977wmf.12.2023.05.24.11.15.13
+        d=1e100.net; s=20221208; t=1684953893; x=1687545893;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3z9gVzvP+6FBEHWrnozdoHhW6MSUsg5+Grnw0Cfk85M=;
+        b=OJjUSCzRhFDqc9TDbeRHmBSQ01dIyB45HUqZCPCgz1wCnhJUc1LVHSzm+zbHVRUpJy
+         mdf8t5sF8CvEfUIXSJMbbITNX9oOmBeHASn1vxe9UAd7wndg0ykrBylWLwuz07eS96h1
+         S9dwkvwDkJtqk0U7G36f0Iry5I0jUl9uZsZMIJtfly0IDkv4Fp5BJ8PQWxkij6OyG25J
+         BQzzZeX0gAbsDepZhcqYpaRLM5mafr+g7hE9BZpyEzWJAnEqIPbKbBQ/0flS1ZB7In19
+         /LL95HrK4pCjbzAhqyD8xBlfxbggfUSr4YJWnGKHRJbEuAP90n4fhQJzLdnKwYnKRlp1
+         eztA==
+X-Gm-Message-State: AC+VfDzzw8o49DzIDiL2QZE4WjtlP19rOQLIB4EI/LEuLegyLE6VyHhb
+	CVJAGRlZb2R2cgDFOoF3cOB4bw==
+X-Google-Smtp-Source: ACHHUZ7OwPf2L4eaK00fKaPMHzC67Jqk3xa7TTNBwVDMHEoW6Lqn0uQW/IIYbvy5177xrJZYEQ2TDw==
+X-Received: by 2002:a05:6a00:1513:b0:623:8592:75c4 with SMTP id q19-20020a056a00151300b00623859275c4mr5192420pfu.29.1684953893292;
+        Wed, 24 May 2023 11:44:53 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id g20-20020a62e314000000b0064d48d98260sm7460092pfh.156.2023.05.24.11.44.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 May 2023 11:15:15 -0700 (PDT)
-Date: Wed, 24 May 2023 21:15:12 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: arinc9.unal@gmail.com
-Cc: Sean Wang <sean.wang@mediatek.com>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	DENG Qingfang <dqfext@gmail.com>,
-	Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Russell King <linux@armlinux.org.uk>,
-	=?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-	Richard van Schagen <richard@routerhints.com>,
-	Richard van Schagen <vschagen@cs.com>,
-	Frank Wunderlich <frank-w@public-files.de>,
-	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-	erkin.bozoglu@xeront.com, mithat.guner@xeront.com,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net-next 12/30] net: dsa: mt7530: move XTAL check to
- mt7530_setup()
-Message-ID: <20230524181512.tmll4ijpijmc5fea@skbuf>
-References: <20230522121532.86610-1-arinc.unal@arinc9.com>
- <20230522121532.86610-13-arinc.unal@arinc9.com>
+        Wed, 24 May 2023 11:44:53 -0700 (PDT)
+Date: Wed, 24 May 2023 11:44:51 -0700
+From: Stephen Hemminger <stephen@networkplumber.org>
+To: Andrea Claudi <aclaudi@redhat.com>
+Cc: netdev@vger.kernel.org
+Subject: Re: [RFC 2/2] vxlan: make option printing more consistent
+Message-ID: <20230524114451.2d014b03@hermes.local>
+In-Reply-To: <ZG5SF/8CLymhAQsT@renaissance-vector>
+References: <20230523165932.8376-1-stephen@networkplumber.org>
+	<20230523165932.8376-2-stephen@networkplumber.org>
+	<ZG5SF/8CLymhAQsT@renaissance-vector>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230522121532.86610-13-arinc.unal@arinc9.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023 at 03:15:14PM +0300, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> 
-> The crystal frequency concerns the switch core. The frequency should be
-> checked when the switch is being set up so the driver can reject the
-> unsupported hardware earlier and without requiring port 6 to be used.
-> 
-> Move it to mt7530_setup().
-> 
-> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
+On Wed, 24 May 2023 20:06:15 +0200
+Andrea Claudi <aclaudi@redhat.com> wrote:
 
-Do you know why a crystal frequency of 20 MHz is not supported?
-
->  drivers/net/dsa/mt7530.c | 18 ++++++++++--------
->  1 file changed, 10 insertions(+), 8 deletions(-)
+> Thanks Stephen for pointing this series out to me, I overlooked it due
+> to the missing "iproute" in the subject.
 > 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 049f7be0d790..fa48273269c4 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -408,13 +408,6 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
->  
->  	xtal = mt7530_read(priv, MT7530_HWTRAP) & HWTRAP_XTAL_MASK;
->  
-> -	if (xtal == HWTRAP_XTAL_20MHZ) {
-> -		dev_err(priv->dev,
-> -			"%s: MT7530 with a 20MHz XTAL is not supported!\n",
-> -			__func__);
-> -		return -EINVAL;
-> -	}
-> -
->  	switch (interface) {
->  	case PHY_INTERFACE_MODE_RGMII:
->  		trgint = 0;
-> @@ -2133,7 +2126,7 @@ mt7530_setup(struct dsa_switch *ds)
->  	struct mt7530_dummy_poll p;
->  	phy_interface_t interface;
->  	struct dsa_port *cpu_dp;
-> -	u32 id, val;
-> +	u32 id, val, xtal;
->  	int ret, i;
->  
->  	/* The parent node of master netdev which holds the common system
-> @@ -2203,6 +2196,15 @@ mt7530_setup(struct dsa_switch *ds)
->  		return -ENODEV;
->  	}
->  
-> +	xtal = mt7530_read(priv, MT7530_HWTRAP) & HWTRAP_XTAL_MASK;
+> I'm fine with the JSON result, having all params printed out is much
+> better than the current output.
+> 
+> My main objection to this is the non-JSON output result. Let's compare
+> the current output with the one resulting from this RFC:
+> 
+> $ ip link add type vxlan id 12
+> $ ip -d link show vxlan0
+> 79: vxlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>     link/ether b6:f6:12:c3:2d:52 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
+>     vxlan id 12 srcport 0 0 dstport 8472 ttl auto ageing 300 udpcsum noudp6zerocsumtx noudp6zerocsumrx addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536
+> 
+> $ ip.new -d link show vxlan0
+> 79: vxlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>     link/ether b6:f6:12:c3:2d:52 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535
+>     vxlan noexternal id 12 srcport 0 0 dstport 8472 learning noproxy norsc nol2miss nol3miss ttl auto ageing 300 udp_csum noudp_zero_csum6_tx noudp_zero_csum6_rx noremcsum_tx noremcsum_rx addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536
+> 
+> In my opinion, the new output is much longer and less human-readable.
+> The main problem (besides intermixed boolean and numerical params) is
+> that we have a lot of useless info. If the ARP proxy is turned off,
+> what's the use of "noproxy" over there? Let's not print anything at all,
+> I don't expect to find anything about proxy in the output if I'm not
+> asking to have it. It seems to me the same can be said for all the
+> "no"-params over there.
+> 
+> What I'm proposing is something along this line:
+> 
+> +int print_color_bool_opt(enum output_type type,
+> +			 enum color_attr color,
+> +			 const char *key,
+> +			 bool value)
+> +{
+> +	int ret = 0;
 > +
-> +	if (xtal == HWTRAP_XTAL_20MHZ) {
-> +		dev_err(priv->dev,
-> +			"%s: MT7530 with a 20MHz XTAL is not supported!\n",
-> +			__func__);
-
-I don't think __func__ brings much value here, it could be dropped in
-the process of moving the code.
-
-Also, the HWTRAP register is already read once, here (stored in "val"):
-
-	INIT_MT7530_DUMMY_POLL(&p, priv, MT7530_HWTRAP);
-	ret = readx_poll_timeout(_mt7530_read, &p, val, val != 0,
-				 20, 1000000);
-
-I wonder if we really need to read it twice.
-
-> +		return -EINVAL;
-> +	}
-> +
->  	/* Reset the switch through internal reset */
->  	mt7530_write(priv, MT7530_SYS_CTRL,
->  		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
-> -- 
-> 2.39.2
+> +	if (_IS_JSON_CONTEXT(type))
+> +		jsonw_bool_field(_jw, key, value);
+> +	else if (_IS_FP_CONTEXT(type) && value)
+> +		ret = color_fprintf(stdout, color, "%s ", key);
+> +	return ret;
+> +}
 > 
+> This should lead to no change in the JSON output w.r.t. this patch, and
+> to this non-JSON output
+> 
+> 79: vxlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>     link/ether b6:f6:12:c3:2d:52 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
+>     vxlan id 12 srcport 0 0 dstport 8472 learning ttl auto ageing 300 udp_csum addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536
+> 
+> that seems to me much more clear and concise.
+> 
+
+The problem is that one of the options is now by default enabled.
+The current practice in iproute2 is that the output of the show command must match the equivalent
+command line used to create the device.  There were even some VPN's using that.
+The proposed localbypass would have similar semantics.
+
+The learning option defaults to true, so either it has to be a special case or it needs to be
+printed only if false.
+
+Seems to me that if you ask for details in the output, that showing everything is less surprising,
+even if it is overly verbose. But the user asked for the details, so show them.
 
