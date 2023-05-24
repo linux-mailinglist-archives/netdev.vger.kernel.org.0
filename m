@@ -1,71 +1,71 @@
-Return-Path: <netdev+bounces-4952-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4953-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8D03970F589
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 13:45:13 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D125A70F5B3
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 13:54:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C1939281256
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 11:45:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C8686280F18
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 11:54:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF5A417ABB;
-	Wed, 24 May 2023 11:45:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B019417ABD;
+	Wed, 24 May 2023 11:54:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB402C8E9
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 11:45:09 +0000 (UTC)
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3413418B
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 04:45:07 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id 4fb4d7f45d1cf-510b56724caso3968013a12.1
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 04:45:07 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4F80C8FF
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 11:54:28 +0000 (UTC)
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED24B9D
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 04:54:26 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-510dabb39aeso1641561a12.2
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 04:54:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684928705; x=1687520705;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684929265; x=1687521265;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=w7tyzTfKRGX0t3cJP65p+vm9JOpJoXNJctsxbm2EddM=;
-        b=SRrLScCLWhrXZUJUNh9ls64wKRoCWT/Xfjg/IOVrWhg/5VVlgllIBonU97Hz/3s8Bl
-         0YJyB0TV8D6g8UuStq1YLqoNgHcedUu50ChU9Xmr/LDcaDeiJyNqSllhSzHcWzXzLBpj
-         ZqRdET1P1EAEWler6L1sNl0OmOcVWnTk+cJllb7ABMU1II8kHEzBEBnRzO+cnFO98NGm
-         AL+lgzgM9D/URvQQisKL+lBOc+ZbkiHxj97jtKtdigeP8XrwOEyFG3XaTPGS2FJal8hX
-         qs1BD6wsk5z8pqHqe9Z86dJltgrRFwWZ3z3rQgC8QvLPmGi7cTHjiLhbXRI2yUjOiCBH
-         uxKw==
+        bh=jrkT9JijtJoJX9jnOgTfzYfNDcAOoqyvINrRuCKkB5g=;
+        b=fliuRIY33+xXI8BsAMRiof7i9iIZNF4lNBWYeyf6fD9qPD6HojUFEIaHC0gwqNnTOq
+         DvdTF9+i9gRKhs0C416xsiRNk7PjFhhTQcTmEN5BnNrExTDjs0C0wqHKEwrRHSayHyMp
+         aOqFrNeMUE7/pVPRGej2ltACcxLaoB6z1SkJlcAmUbmw/1j3Ipx2xKW/AwaYXCsuy7+i
+         6S0M9ybZZ+dHc4bXpg5LFh0DXru5NsTUNt/AbkVXvzHl2f0Cv2ss+fdHtV4mAox4abVa
+         +3g/KEeFuJC2CWA+1V+2SgpoTA5qejzSJbwtFk5yJJBOlw1k/Wt1pxH9t+dev8SD3MJr
+         +akg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684928705; x=1687520705;
+        d=1e100.net; s=20221208; t=1684929265; x=1687521265;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=w7tyzTfKRGX0t3cJP65p+vm9JOpJoXNJctsxbm2EddM=;
-        b=EMb1o9nMM+uAXo2wUuJ9eyIKkj/k5npIJqAJAJABb3o69ghXp1+uuBmbdGpikScc2Z
-         GfrvsPSZIuz5mrVRiMBaLQajmEQdqfwM/zSMJ/Hnh/M+i1VtrRU1FUv4tOM9OuF2EwW4
-         wi/vjeyF/nmov0Ms2B1Jz15pJ+2xFQvJt18XSEzDwIw5CaOqGBBbNiuyA4X2T9m2FQt8
-         TAABPL5oyfNvih47F7LH8trK1lOUzEjcsZ+08zJ7+WHELxWhJ3s96S96QAmp1IZpK1Jk
-         mgKHNoTIlgqr9E7ESUleFE7D46Au3rHk7dJe1htURPLM97LxxqPtH1jHKelm+o0AH5D5
-         6/eA==
-X-Gm-Message-State: AC+VfDzIOYQRi9a6mI43sSkYd52LD9PJdddiWa0N25CuavpY/1sb+b+9
-	E/QuhkL7xduVk1/YMAyNQvkxpQ==
-X-Google-Smtp-Source: ACHHUZ6jV+ONi3ybLvFIhIyvf3OiC8w+essNXZliTLvmbK4Zqg2Ma4EYAwZ47adUyL2ndFDagh/rUg==
-X-Received: by 2002:a17:907:72d1:b0:96f:5511:8803 with SMTP id du17-20020a17090772d100b0096f55118803mr16379880ejc.22.1684928705349;
-        Wed, 24 May 2023 04:45:05 -0700 (PDT)
+        bh=jrkT9JijtJoJX9jnOgTfzYfNDcAOoqyvINrRuCKkB5g=;
+        b=UEfLyVAC1dtLpkasLs3GJjont7rH4/axR8dVGMjGXLraQsFRlCfyJWkSyvN2yiyXtK
+         6aLj1LPwR4PLxBNmcnMT9jRdAJDBxa3a3BtdvO7JPyQg02B5uvBqlpDpE43VQFGBzA6O
+         heQ6zzf8fZPpG7XvVHC9zFFcIhvqtDl7CYfTXaZWKA0w0ULlIpNUvnx2H7gYOZQAwg7K
+         gvT/OMzbJOIPKiwUzTc58FqxokqZoTNE4IV3ouKSPNqHJlAp8cvDoJWIA2aM5qsKO9x7
+         4S6XK/PGJ9CPaL9eswuXYaJE34kVxBI4BTogrfCYKRegJeMlyl66ZMdunm/MzeVgjt9i
+         Ufng==
+X-Gm-Message-State: AC+VfDyB8lXkRK8NSZS9VZ+cFFjKH56M362vkflPONqRROznRFvKv6Og
+	F2rY4ko3oY8aQjlRn7u+ISufXA==
+X-Google-Smtp-Source: ACHHUZ7/+O9om7pgkd4GNhslQpfxRVtamkE5jfRF0c4weku9ncD+y7MAJMCy7wKSSk8XCPK9GknbyQ==
+X-Received: by 2002:a05:6402:3ce:b0:514:2690:cd84 with SMTP id t14-20020a05640203ce00b005142690cd84mr948054edw.28.1684929265079;
+        Wed, 24 May 2023 04:54:25 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id d11-20020a17090694cb00b0096f8509f06dsm5573636ejy.158.2023.05.24.04.45.04
+        by smtp.gmail.com with ESMTPSA id f25-20020a05640214d900b0050dab547fc6sm5033411edx.74.2023.05.24.04.54.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 May 2023 04:45:04 -0700 (PDT)
-Date: Wed, 24 May 2023 13:45:03 +0200
+        Wed, 24 May 2023 04:54:24 -0700 (PDT)
+Date: Wed, 24 May 2023 13:54:23 +0200
 From: Jiri Pirko <jiri@resnulli.us>
 To: Tony Nguyen <anthony.l.nguyen@intel.com>
 Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
 	edumazet@google.com, netdev@vger.kernel.org,
-	Jakub Buchocki <jakubx.buchocki@intel.com>,
-	Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-	Arpana Arland <arpanax.arland@intel.com>
-Subject: Re: [PATCH net] ice: Fix ice module unload
-Message-ID: <ZG34v/FrUoEMkpMH@nanopsycho>
-References: <20230523173033.3577110-1-anthony.l.nguyen@intel.com>
+	michal.wilczynski@intel.com, lukasz.czapnik@intel.com,
+	przemyslaw.kitszel@intel.com
+Subject: Re: [PATCH net-next 0/5][pull request] ice: Support 5 layer Tx
+ scheduler topology
+Message-ID: <ZG367+pNuYtvHXPh@nanopsycho>
+References: <20230523174008.3585300-1-anthony.l.nguyen@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -74,138 +74,61 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230523173033.3577110-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20230523174008.3585300-1-anthony.l.nguyen@intel.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Tue, May 23, 2023 at 07:30:33PM CEST, anthony.l.nguyen@intel.com wrote:
->From: Jakub Buchocki <jakubx.buchocki@intel.com>
+Tue, May 23, 2023 at 07:40:03PM CEST, anthony.l.nguyen@intel.com wrote:
+>Michal Wilczynski says:
 >
->Clearing interrupt scheme before PFR reset, during the removal routine,
->could cause the hardware errors and possibly lead to system reboot, as
->the PF reset can cause the interrupt to be generated.
->Move clearing interrupt scheme from device deinitialization subprocedure,
->and call it directly in particular routines. In ice_remove(), call the
->ice_clear_interrupt_scheme() after the PFR is complete and all pending
->transactions are done.
+>For performance reasons there is a need to have support for selectable
+>Tx scheduler topology. Currently firmware supports only the default
+>9-layer and 5-layer topology. This patch series enables switch from
+>default to 5-layer topology, if user decides to opt-in.
+
+Why exactly the user cares which FW implementation you use. From what I
+see, there is a FW but causing unequal queue distribution in some cases,
+you fox this. Why would the user want to alter the behaviour between
+fixed and unfixed?
+
+
 >
->Error example:
->[   75.229328] ice 0000:ca:00.1: Failed to read Tx Scheduler Tree - User Selection data from flash
->[   77.571315] {1}[Hardware Error]: Hardware error from APEI Generic Hardware Error Source: 1
->[   77.571418] {1}[Hardware Error]: event severity: recoverable
->[   77.571459] {1}[Hardware Error]:  Error 0, type: recoverable
->[   77.571500] {1}[Hardware Error]:   section_type: PCIe error
->[   77.571540] {1}[Hardware Error]:   port_type: 4, root port
->[   77.571580] {1}[Hardware Error]:   version: 3.0
->[   77.571615] {1}[Hardware Error]:   command: 0x0547, status: 0x4010
->[   77.571661] {1}[Hardware Error]:   device_id: 0000:c9:02.0
->[   77.571703] {1}[Hardware Error]:   slot: 25
->[   77.571736] {1}[Hardware Error]:   secondary_bus: 0xca
->[   77.571773] {1}[Hardware Error]:   vendor_id: 0x8086, device_id: 0x347a
->[   77.571821] {1}[Hardware Error]:   class_code: 060400
->[   77.571858] {1}[Hardware Error]:   bridge: secondary_status: 0x2800, control: 0x0013
->[   77.572490] pcieport 0000:c9:02.0: AER: aer_status: 0x00200000, aer_mask: 0x00100020
->[   77.572870] pcieport 0000:c9:02.0:    [21] ACSViol                (First)
->[   77.573222] pcieport 0000:c9:02.0: AER: aer_layer=Transaction Layer, aer_agent=Receiver ID
->[   77.573554] pcieport 0000:c9:02.0: AER: aer_uncor_severity: 0x00463010
->[   77.691273] {2}[Hardware Error]: Hardware error from APEI Generic Hardware Error Source: 1
->[   77.691738] {2}[Hardware Error]: event severity: recoverable
->[   77.691971] {2}[Hardware Error]:  Error 0, type: recoverable
->[   77.692192] {2}[Hardware Error]:   section_type: PCIe error
->[   77.692403] {2}[Hardware Error]:   port_type: 4, root port
->[   77.692616] {2}[Hardware Error]:   version: 3.0
->[   77.692825] {2}[Hardware Error]:   command: 0x0547, status: 0x4010
->[   77.693032] {2}[Hardware Error]:   device_id: 0000:c9:02.0
->[   77.693238] {2}[Hardware Error]:   slot: 25
->[   77.693440] {2}[Hardware Error]:   secondary_bus: 0xca
->[   77.693641] {2}[Hardware Error]:   vendor_id: 0x8086, device_id: 0x347a
->[   77.693853] {2}[Hardware Error]:   class_code: 060400
->[   77.694054] {2}[Hardware Error]:   bridge: secondary_status: 0x0800, control: 0x0013
->[   77.719115] pci 0000:ca:00.1: AER: can't recover (no error_detected callback)
->[   77.719140] pcieport 0000:c9:02.0: AER: device recovery failed
->[   77.719216] pcieport 0000:c9:02.0: AER: aer_status: 0x00200000, aer_mask: 0x00100020
->[   77.719390] pcieport 0000:c9:02.0:    [21] ACSViol                (First)
->[   77.719557] pcieport 0000:c9:02.0: AER: aer_layer=Transaction Layer, aer_agent=Receiver ID
->[   77.719723] pcieport 0000:c9:02.0: AER: aer_uncor_severity: 0x00463010
+>The following are changes since commit b2e3406a38f0f48b1dfb81e5bb73d243ff6af179:
+>  octeontx2-pf: Add support for page pool
+>and are available in the git repository at:
+>  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
 >
->Fixes: 5b246e533d01 ("ice: split probe into smaller functions")
->Signed-off-by: Jakub Buchocki <jakubx.buchocki@intel.com>
->Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
->Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at Intel)
->Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
->---
-> drivers/net/ethernet/intel/ice/ice_main.c | 7 ++++++-
-> 1 file changed, 6 insertions(+), 1 deletion(-)
+>Lukasz Czapnik (1):
+>  ice: Add txbalancing devlink param
 >
->diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
->index a1f7c8edc22f..5052250b147e 100644
->--- a/drivers/net/ethernet/intel/ice/ice_main.c
->+++ b/drivers/net/ethernet/intel/ice/ice_main.c
->@@ -4802,7 +4802,6 @@ static int ice_init_dev(struct ice_pf *pf)
-> static void ice_deinit_dev(struct ice_pf *pf)
-> {
-> 	ice_free_irq_msix_misc(pf);
->-	ice_clear_interrupt_scheme(pf);
-> 	ice_deinit_pf(pf);
-> 	ice_deinit_hw(&pf->hw);
-> }
->@@ -5071,6 +5070,7 @@ static int ice_init(struct ice_pf *pf)
-> 	ice_dealloc_vsis(pf);
-> err_alloc_vsis:
-> 	ice_deinit_dev(pf);
->+	ice_clear_interrupt_scheme(pf);
-
-Can't you maintain the same order of calling
-ice_clear_interrupt_scheme() and ice_deinit_pf()?
-
-> 	return err;
-> }
-> 
->@@ -5098,6 +5098,8 @@ int ice_load(struct ice_pf *pf)
-> 	if (err)
-> 		return err;
-
-Don't you need pci_wait_for_pending_transaction() here as well?
-
-Btw, why can't you do reset in ice_unload to follow the same patterns as
-probe/remove?
-
-
-> 
->+	ice_clear_interrupt_scheme(pf);
->+
-> 	err = ice_init_dev(pf);
-> 	if (err)
-> 		return err;
->@@ -5132,6 +5134,7 @@ int ice_load(struct ice_pf *pf)
-> 	ice_vsi_decfg(ice_get_main_vsi(pf));
-> err_vsi_cfg:
-> 	ice_deinit_dev(pf);
->+	ice_clear_interrupt_scheme(pf);
-> 	return err;
-> }
-> 
->@@ -5251,6 +5254,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
-> 	ice_deinit_eth(pf);
-> err_init_eth:
-> 	ice_deinit(pf);
->+	ice_clear_interrupt_scheme(pf);
-> err_init:
-> 	pci_disable_device(pdev);
-> 	return err;
->@@ -5360,6 +5364,7 @@ static void ice_remove(struct pci_dev *pdev)
-> 	 */
-> 	ice_reset(&pf->hw, ICE_RESET_PFR);
-> 	pci_wait_for_pending_transaction(pdev);
->+	ice_clear_interrupt_scheme(pf);
-> 	pci_disable_device(pdev);
-> }
-> 
+>Michal Wilczynski (2):
+>  ice: Enable switching default tx scheduler topology
+>  ice: Document txbalancing parameter
+>
+>Raj Victor (2):
+>  ice: Support 5 layer topology
+>  ice: Adjust the VSI/Aggregator layers
+>
+> Documentation/networking/devlink/ice.rst      |  17 ++
+> .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  31 +++
+> drivers/net/ethernet/intel/ice/ice_common.c   |   6 +
+> drivers/net/ethernet/intel/ice/ice_ddp.c      | 200 ++++++++++++++++++
+> drivers/net/ethernet/intel/ice/ice_ddp.h      |   7 +-
+> drivers/net/ethernet/intel/ice/ice_devlink.c  | 161 +++++++++++++-
+> .../net/ethernet/intel/ice/ice_fw_update.c    |   2 +-
+> .../net/ethernet/intel/ice/ice_fw_update.h    |   3 +
+> drivers/net/ethernet/intel/ice/ice_main.c     | 105 +++++++--
+> drivers/net/ethernet/intel/ice/ice_nvm.c      |   2 +-
+> drivers/net/ethernet/intel/ice/ice_nvm.h      |   3 +
+> drivers/net/ethernet/intel/ice/ice_sched.c    |  34 +--
+> drivers/net/ethernet/intel/ice/ice_sched.h    |   3 +
+> drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
+> 14 files changed, 534 insertions(+), 41 deletions(-)
+>
 >-- 
 >2.38.1
->
 >
 
