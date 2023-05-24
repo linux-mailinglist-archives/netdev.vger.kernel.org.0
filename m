@@ -1,259 +1,135 @@
-Return-Path: <netdev+bounces-5101-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5091-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A5A7F70FA84
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:38:18 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5DC5770FA45
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:35:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6004C28147D
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:38:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 244F81C20E66
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:35:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D9BF1B910;
-	Wed, 24 May 2023 15:34:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 01AAC19BA7;
+	Wed, 24 May 2023 15:34:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DA3B1B8F5
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:34:50 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22812E7F
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:34:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684942462;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=k9cQP4HmvFAjJY7J8On2WvrNLYKoX68FiRQGhNJuMdw=;
-	b=dlKR/WyCB9KGHzb8SlsQ7uj6Uh3ktatSRBvl/saxBDdus19AVqs73E/VtZL7Sj7AcdetC0
-	P6AQEb690rZXM/4MOijGJwZS2NLzMwlrPhzKJOU10ZZL2OQK90VasjeVjNDvZXYQjDvogc
-	v0LceAPQmgmFgZkA9w8T7RpTXpgsA6Q=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-121-TJrS7NBWNQOPag9a_0ZUCA-1; Wed, 24 May 2023 11:34:18 -0400
-X-MC-Unique: TJrS7NBWNQOPag9a_0ZUCA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 712A928078D3;
-	Wed, 24 May 2023 15:34:17 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id DE8F140CFD45;
-	Wed, 24 May 2023 15:34:14 +0000 (UTC)
-From: David Howells <dhowells@redhat.com>
-To: netdev@vger.kernel.org
-Cc: David Howells <dhowells@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	David Ahern <dsahern@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Jens Axboe <axboe@kernel.dk>,
-	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Boris Pismenny <borisp@nvidia.com>,
-	John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH net-next 12/12] tls/device: Convert tls_device_sendpage() to use MSG_SPLICE_PAGES
-Date: Wed, 24 May 2023 16:33:11 +0100
-Message-Id: <20230524153311.3625329-13-dhowells@redhat.com>
-In-Reply-To: <20230524153311.3625329-1-dhowells@redhat.com>
-References: <20230524153311.3625329-1-dhowells@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA01A19BA0
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:34:22 +0000 (UTC)
+Received: from mail-vk1-xa32.google.com (mail-vk1-xa32.google.com [IPv6:2607:f8b0:4864:20::a32])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE4219D
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:33:54 -0700 (PDT)
+Received: by mail-vk1-xa32.google.com with SMTP id 71dfb90a1353d-457201c47f6so414147e0c.1
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:33:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684942431; x=1687534431;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FpurOHV7oeQhldeavKospxkqzWYZtVkv9zcnQob8kDw=;
+        b=dveUQJyyiWWwr7dm5X6iq7guR4ZKuciesprJD7kFcuEYCYn+Uqj+MVLJrMj9Gce2Bs
+         jpF05ZCSuTJjfd5zr8FJiKXwKEwLZCyYIiPJcZxqL+cuaGMUm/Hr7fpXH3mOJpPk7aWx
+         wf6EEMA3wy1eXou0OvE6Jez7LqXFkGxCeELPs6Pwivl+qwl3t2a8mC53oIs6O2lkaJj8
+         Dm4VUuLmV/jCbqT8InKMftnQfkusBlRQclqeatC3E2atZZRAny3HQjvX7XsPC1WEA0Jp
+         /ZxnTHDwasbo21HAukZ+y7WycgTRRkl5xXVECEMXRdJnau0lA6t6/4Blbw5cw7pxnmLJ
+         wz2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684942431; x=1687534431;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FpurOHV7oeQhldeavKospxkqzWYZtVkv9zcnQob8kDw=;
+        b=SgHjPzipkeDZw0tfo87E4W9LoA7nyo3b9Qe0RyRo0pYaqF3VBbUYDsCrsEhK1eejKl
+         Z5jt87Lyl2k8ezgnkdiG+Mc7v1APrflRRKn3OV+G/an5xgwVE4tnfhfVCTXciXsCO+FY
+         yXMTtAplbPKuIpHZQfyGwEZhuFjvrbQ9eCM0cHe7JkUq4Vtx1+vRqXcrNYu9mq4MQ8On
+         Um6waYzYo2328xmZ/pSAZiiAHhK8RBw6xjYqbQVwAXDTb7TFKghW5baoEVHdRsg56zDk
+         J6CIIfqvuPPYmGIHozFbAMkfudpglmAXlOPv4572tEkD71zcPB4+mcSFNl+DHQGD6+AK
+         tTCA==
+X-Gm-Message-State: AC+VfDxQIfqhGtLWlIuamzOwM2ls4zQxKqHjDJJBb3VD0gDXsVPy89D1
+	vpo5PZxJ0crl+0iKqKYiUXBRBi4Gra0yPlotp2A=
+X-Google-Smtp-Source: ACHHUZ6s//nJDkfKpoNLXz3kKpEAq0noO8BBq+fWg79OjPi/ZnllcrAACK60/844CqBsM0fIVCJe05A1la1cLW6bAdw=
+X-Received: by 2002:a1f:4944:0:b0:443:de44:6118 with SMTP id
+ w65-20020a1f4944000000b00443de446118mr5468854vka.14.1684942431434; Wed, 24
+ May 2023 08:33:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+References: <20230522141335.22536-1-louis.peens@corigine.com>
+ <beea9ce517bf597fb7af13a39a53bb1f47e646d4.camel@redhat.com>
+ <20230523142005.3c5cc655@kernel.org> <ZG31Plb6/UF3XKd3@corigine.com> <20230524082216.1e1fed93@kernel.org>
+In-Reply-To: <20230524082216.1e1fed93@kernel.org>
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Wed, 24 May 2023 11:33:15 -0400
+Message-ID: <CAF=yD-JH2NHTXCg-Z=cUw-JK0g9Y9pb-pcyboq5AkES+ohShkg@mail.gmail.com>
+Subject: Re: [PATCH net-next] nfp: add L4 RSS hashing on UDP traffic
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Simon Horman <simon.horman@corigine.com>, Paolo Abeni <pabeni@redhat.com>, 
+	Louis Peens <louis.peens@corigine.com>, David Miller <davem@davemloft.net>, netdev@vger.kernel.org, 
+	oss-drivers@corigine.com, Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Convert tls_device_sendpage() to use sendmsg() with MSG_SPLICE_PAGES rather
-than directly splicing in the pages itself.  With that, the tls_iter_offset
-union is no longer necessary and can be replaced with an iov_iter pointer
-and the zc_page argument to tls_push_data() can also be removed.
+On Wed, May 24, 2023 at 11:22=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> w=
+rote:
+>
+> On Wed, 24 May 2023 13:30:06 +0200 Simon Horman wrote:
+> > On Tue, May 23, 2023 at 02:20:05PM -0700, Jakub Kicinski wrote:
+> > > Yup, that's the exact reason it was disabled by default, FWIW.
+> > >
+> > > The Microsoft spec is not crystal clear on how to handles this:
+> > > https://learn.microsoft.com/en-us/windows-hardware/drivers/network/rs=
+s-hashing-types#ndis_hash_ipv4
+> > > There is a note saying:
+> > >
+> > >   If a NIC receives a packet that has both IP and TCP headers,
+> > >   NDIS_HASH_TCP_IPV4 should not always be used. In the case of a
+> > >   fragmented IP packet, NDIS_HASH_IPV4 must be used. This includes
+> > >   the first fragment which contains both IP and TCP headers.
+> > >
+> > > While NDIS_HASH_UDP_IPV4 makes no such distinction and talks only abo=
+ut
+> > > "presence" of the header.
+> > >
+> > > Maybe we should document that device is expected not to use the UDP
+> > > header if MF is set?
+> >
+> > Yes, maybe.
+> >
+> > Could you suggest where such documentation should go?
+>
+> That's the hardest question, perhaps :)
+>
+> Documentation/networking/scaling.rst and/or OCP NIC spec:
+>
+> https://ocp-all.groups.io/g/OCP-Networking/topic/nic_software_core_offloa=
+ds/98930671?p=3D,,,20,0,0,0::recentpostdate/sticky,,,20,2,0,98930671,previd=
+%3D1684255676674808204,nextid%3D1676673801962532335&previd=3D16842556766748=
+08204&nextid=3D1676673801962532335
 
-This allows ->sendpage() to be replaced by something that can handle
-multiple multipage folios in a single transaction.
+The OCP draft spec already has this wording, which covers UDP:
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Chuck Lever <chuck.lever@oracle.com>
-cc: Boris Pismenny <borisp@nvidia.com>
-cc: John Fastabend <john.fastabend@gmail.com>
-cc: Jakub Kicinski <kuba@kernel.org>
-cc: Eric Dumazet <edumazet@google.com>
-cc: "David S. Miller" <davem@davemloft.net>
-cc: Paolo Abeni <pabeni@redhat.com>
-cc: Jens Axboe <axboe@kernel.dk>
-cc: Matthew Wilcox <willy@infradead.org>
-cc: netdev@vger.kernel.org
----
- net/tls/tls_device.c | 81 ++++++++++----------------------------------
- 1 file changed, 18 insertions(+), 63 deletions(-)
+"RSS defines two rules to derive queue selection input in a
+flow-affine manner from packet headers. Selected fields of the headers
+are extracted and concatenated into a byte array. If the packet is
+IPv4 or IPv6, not fragmented, and followed by a transport layer
+protocol with ports, such as TCP and UDP, then extract the
+concatenated 4-field byte array { source address, destination address,
+source port, destination port }. Else, if the packet is IPv4 or IPv6,
+extract 2-field byte array { source address, destination address }.
+IPv4 packets are considered fragmented if the more fragments bit is
+set or the fragment offset field is non-zero."
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index ee07f6e67d52..f2c895009314 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -422,16 +422,10 @@ static int tls_device_copy_data(void *addr, size_t bytes, struct iov_iter *i)
- 	return 0;
- }
- 
--union tls_iter_offset {
--	struct iov_iter *msg_iter;
--	int offset;
--};
--
- static int tls_push_data(struct sock *sk,
--			 union tls_iter_offset iter_offset,
-+			 struct iov_iter *iter,
- 			 size_t size, int flags,
--			 unsigned char record_type,
--			 struct page *zc_page)
-+			 unsigned char record_type)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_prot_info *prot = &tls_ctx->prot_info;
-@@ -499,21 +493,12 @@ static int tls_push_data(struct sock *sk,
- 		record = ctx->open_record;
- 
- 		copy = min_t(size_t, size, max_open_record_len - record->len);
--		if (copy && zc_page) {
--			struct page_frag zc_pfrag;
--
--			zc_pfrag.page = zc_page;
--			zc_pfrag.offset = iter_offset.offset;
--			zc_pfrag.size = copy;
--			tls_append_frag(record, &zc_pfrag, copy);
--
--			iter_offset.offset += copy;
--		} else if (copy && (flags & MSG_SPLICE_PAGES)) {
-+		if (copy && (flags & MSG_SPLICE_PAGES)) {
- 			struct page_frag zc_pfrag;
- 			struct page **pages = &zc_pfrag.page;
- 			size_t off;
- 
--			rc = iov_iter_extract_pages(iter_offset.msg_iter, &pages,
-+			rc = iov_iter_extract_pages(iter, &pages,
- 						    copy, 1, 0, &off);
- 			if (rc <= 0) {
- 				if (rc == 0)
-@@ -523,7 +508,7 @@ static int tls_push_data(struct sock *sk,
- 			copy = rc;
- 
- 			if (!sendpage_ok(zc_pfrag.page)) {
--				iov_iter_revert(iter_offset.msg_iter, copy);
-+				iov_iter_revert(iter, copy);
- 				goto no_zcopy_this_page;
- 			}
- 
-@@ -536,7 +521,7 @@ static int tls_push_data(struct sock *sk,
- 
- 			rc = tls_device_copy_data(page_address(pfrag->page) +
- 						  pfrag->offset, copy,
--						  iter_offset.msg_iter);
-+						  iter);
- 			if (rc)
- 				goto handle_error;
- 			tls_append_frag(record, pfrag, copy);
-@@ -591,7 +576,6 @@ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- {
- 	unsigned char record_type = TLS_RECORD_TYPE_DATA;
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	union tls_iter_offset iter;
- 	int rc;
- 
- 	if (!tls_ctx->zerocopy_sendfile)
-@@ -606,8 +590,7 @@ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 			goto out;
- 	}
- 
--	iter.msg_iter = &msg->msg_iter;
--	rc = tls_push_data(sk, iter, size, msg->msg_flags, record_type, NULL);
-+	rc = tls_push_data(sk, &msg->msg_iter, size, msg->msg_flags, record_type);
- 
- out:
- 	release_sock(sk);
-@@ -618,44 +601,18 @@ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- int tls_device_sendpage(struct sock *sk, struct page *page,
- 			int offset, size_t size, int flags)
- {
--	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	union tls_iter_offset iter_offset;
--	struct iov_iter msg_iter;
--	char *kaddr;
--	struct kvec iov;
--	int rc;
-+	struct bio_vec bvec;
-+	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES, };
- 
- 	if (flags & MSG_SENDPAGE_NOTLAST)
--		flags |= MSG_MORE;
--
--	mutex_lock(&tls_ctx->tx_lock);
--	lock_sock(sk);
-+		msg.msg_flags |= MSG_MORE;
- 
--	if (flags & MSG_OOB) {
--		rc = -EOPNOTSUPP;
--		goto out;
--	}
--
--	if (tls_ctx->zerocopy_sendfile) {
--		iter_offset.offset = offset;
--		rc = tls_push_data(sk, iter_offset, size,
--				   flags, TLS_RECORD_TYPE_DATA, page);
--		goto out;
--	}
--
--	kaddr = kmap(page);
--	iov.iov_base = kaddr + offset;
--	iov.iov_len = size;
--	iov_iter_kvec(&msg_iter, ITER_SOURCE, &iov, 1, size);
--	iter_offset.msg_iter = &msg_iter;
--	rc = tls_push_data(sk, iter_offset, size, flags, TLS_RECORD_TYPE_DATA,
--			   NULL);
--	kunmap(page);
-+	if (flags & MSG_OOB)
-+		return -EOPNOTSUPP;
- 
--out:
--	release_sock(sk);
--	mutex_unlock(&tls_ctx->tx_lock);
--	return rc;
-+	bvec_set_page(&bvec, page, size, offset);
-+	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
-+	return tls_device_sendmsg(sk, &msg, size);
- }
- 
- struct tls_record_info *tls_get_record(struct tls_offload_context_tx *context,
-@@ -720,12 +677,10 @@ EXPORT_SYMBOL(tls_get_record);
- 
- static int tls_device_push_pending_record(struct sock *sk, int flags)
- {
--	union tls_iter_offset iter;
--	struct iov_iter msg_iter;
-+	struct iov_iter iter;
- 
--	iov_iter_kvec(&msg_iter, ITER_SOURCE, NULL, 0, 0);
--	iter.msg_iter = &msg_iter;
--	return tls_push_data(sk, iter, 0, flags, TLS_RECORD_TYPE_DATA, NULL);
-+	iov_iter_kvec(&iter, ITER_SOURCE, NULL, 0, 0);
-+	return tls_push_data(sk, &iter, 0, flags, TLS_RECORD_TYPE_DATA);
- }
- 
- void tls_device_write_space(struct sock *sk, struct tls_context *ctx)
-
+Non google docs version:
+https://www.opencompute.org/w/index.php?title=3DCore_Offloads
 
