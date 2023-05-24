@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4974-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4975-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EEDE370F61E
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:21:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1777370F622
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:21:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B57451C20C8D
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:21:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C6400281300
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:21:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CFC8018AFE;
-	Wed, 24 May 2023 12:18:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 808E618C05;
+	Wed, 24 May 2023 12:18:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C29ED18AFC
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:18:52 +0000 (UTC)
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888C49E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65A3D18C03
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:18:53 +0000 (UTC)
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B29130
 	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:51 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-510eb980ce2so1577349a12.2
+Received: by mail-ej1-x635.google.com with SMTP id a640c23a62f3a-94a342f7c4cso151217166b.0
         for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684930730; x=1687522730;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684930731; x=1687522731;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1FNdrvtHnbtfL76FYe0kRQO6C0cFNZLbdNGToa4/7rg=;
-        b=mo/Szc8HwP2a8ltMOCifPezMy2OX13iQFHMp1+Wm/FdWHPHcDroUumSjoPcI67r3wS
-         H4360qFbzxHKPie0F/2BR/2IinXMmLPhMQ9SOklypv6dsdewxkGTxxsDbjNUUf2N3h5S
-         fUQNnSPCIqstRA3KWLoF5SBLMAdw+Z+i/G/ocjkxvOzU5uTm8uZmInP89gbw+bwu1FJY
-         dmgRm8UkPE813jrTm85Hx6z8YJxaayKiv22k2Lwtpuwsyhl+ViL+G62Jmm+3WM9ou3u8
-         dryd+8ZHpF7p6QQA56cRO5v9kIXQoK3mwj3qAaSdL8RiilFpnef8gxlWVckn6gGxtN/A
-         4Z9Q==
+        bh=lvHSM1U/Ik/DQAZsWMpTg8xLA9lNmPvHf6W0fcg5knA=;
+        b=0qhb8dWFJcBeWN3xfTKy+FNpLPouDrJl837u8xmCKn1FHraBOTkEwaHwuCsjMedCeT
+         Qraqv/Q4eCaUBhdcIlOo2jRi8i5QB7ykR5KD04xsp710Zvwxv1kfCuH1Gc7jaRAKOWOL
+         Mqw1lZ34uSiafSkVSesRATpGiBVpA4gY4x49fkJerKG5NBQzeXnLsLhn4UW78MI9bDgA
+         Dae72iH2GBc6N6byOPEMPK8wy+2xYPCIPOxjv5PCo2jwO0CGlID6aUblFSBTvuOyXGPf
+         jzzKuVvhE0I1YLagOaNRSWzJRAsFGu3wqZU1IW9J/lr+wQ+Mbhyg4V5JR3gOq1ReXuRJ
+         kokg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684930730; x=1687522730;
+        d=1e100.net; s=20221208; t=1684930731; x=1687522731;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1FNdrvtHnbtfL76FYe0kRQO6C0cFNZLbdNGToa4/7rg=;
-        b=OvvUSGqd1q5XktMT0wxib24WbZ8Ar58UySI5yV/gAukWjhG0Cp71xC9ZUMymZFU6AJ
-         8hi895ubMzwfXuFVvkUhic4BawYec9wg2OK5GZxfSRPBuIf08cNQdNzvN6IA7PHR2e8h
-         fh3W5vDP+lBR3yqEBs6yCxfNS2ZXxdT8DZ4DL+1O5d6p/myEpe8mEKQspN0/MzzD19qM
-         BWvF8PyFD+IpxxuA9KTgyJotFyO+aLg2dpzToCxLcqB3b0vOCWtcCxrI93yki37e5Wlm
-         IQ1BK2pwlY74/WMZKgzYWmPLxIt+qOh1fkut11hSpb+i+dGVi6xcmvIjmPQZ+zVdfDky
-         64Fw==
-X-Gm-Message-State: AC+VfDybotBNh+N+SLq0AnRId4J+EWvIpqKMzh5/pAIDD5iHeG6dnUIj
-	bleNOsetFina7IUqs3ejCxXUyZlFLJQuDRVJgj56BQ==
-X-Google-Smtp-Source: ACHHUZ5LlbIQOyDPHRXXYUTkXAl8cEzlGWv0qFuWJfPvOHAyHy5pUUlFXCwODmJ+TRoHR5d+Sws97A==
-X-Received: by 2002:aa7:c498:0:b0:510:d0bc:e130 with SMTP id m24-20020aa7c498000000b00510d0bce130mr1711899edq.33.1684930730067;
-        Wed, 24 May 2023 05:18:50 -0700 (PDT)
+        bh=lvHSM1U/Ik/DQAZsWMpTg8xLA9lNmPvHf6W0fcg5knA=;
+        b=HlBJdzZaaLglMSnE5LCJuT1wImIWs5ghQ9Z4YSUAF4IEcg5dRQ1Vn4sXnUouLwhlkm
+         4SFDo2VqTNlVPA78lk4aazktjcnsHwfm+lmLPpnpyqz9kaZnFIeuM65BSp9pzanrp8Ga
+         43G4UaZbNXEMi1ycsUUM/fv0e0ZdPI5Yolr8jNBVg1llgYoLj4VLstqenSUM8U71QUNt
+         3Dpy061o7xRYbLdTPbp6LZfIfJK/p/OnwZLVdQ+qPxmNdvUp8VbOYRC7hOgfRsH/dRx7
+         rMAmtgTrHGrn9IQ/onN42xrGVaPeRDJ66cN0lGQEZDYAVIAbj/GwlBfh6euyeEzEjDtO
+         TMjQ==
+X-Gm-Message-State: AC+VfDxTlAk9V+I7xpVRf/yqGLJHl4fDRIW7UBbyEdGcNjSQx1Xxvqn9
+	Z4vXAq4MAnPCxDpNK0Yyra/1II/mgmcPW6T2DwQEdw==
+X-Google-Smtp-Source: ACHHUZ7W+XUk8rY7IEr0zYXclAPoUv5GNYpnhKzv2Ywa4yRhl/MnDKhTSXJ6u9wesi4MoBtE76Mrqw==
+X-Received: by 2002:a17:907:2d23:b0:96a:928c:d382 with SMTP id gs35-20020a1709072d2300b0096a928cd382mr19106516ejc.48.1684930731533;
+        Wed, 24 May 2023 05:18:51 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id dy11-20020a05640231eb00b00501c96564b5sm4986380edb.93.2023.05.24.05.18.49
+        by smtp.gmail.com with ESMTPSA id jl16-20020a17090775d000b009662d0e637esm5678976ejc.155.2023.05.24.05.18.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 May 2023 05:18:49 -0700 (PDT)
+        Wed, 24 May 2023 05:18:50 -0700 (PDT)
 From: Jiri Pirko <jiri@resnulli.us>
 To: netdev@vger.kernel.org
 Cc: kuba@kernel.org,
@@ -75,9 +75,9 @@ Cc: kuba@kernel.org,
 	habetsm.xilinx@gmail.com,
 	michal.wilczynski@intel.com,
 	jacob.e.keller@intel.com
-Subject: [patch net-next 08/15] sfc: register devlink port with ops
-Date: Wed, 24 May 2023 14:18:29 +0200
-Message-Id: <20230524121836.2070879-9-jiri@resnulli.us>
+Subject: [patch net-next 09/15] mlx5: register devlink ports with ops
+Date: Wed, 24 May 2023 14:18:30 +0200
+Message-Id: <20230524121836.2070879-10-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230524121836.2070879-1-jiri@resnulli.us>
 References: <20230524121836.2070879-1-jiri@resnulli.us>
@@ -101,35 +101,53 @@ register devlink port passing ops.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/sfc/efx_devlink.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ .../ethernet/mellanox/mlx5/core/esw/devlink_port.c   | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
-index 381b805659d3..f93437757ba3 100644
---- a/drivers/net/ethernet/sfc/efx_devlink.c
-+++ b/drivers/net/ethernet/sfc/efx_devlink.c
-@@ -25,6 +25,10 @@ struct efx_devlink {
- };
- 
- #ifdef CONFIG_SFC_SRIOV
-+
-+static const struct devlink_port_ops sfc_devlink_port_ops = {
-+};
-+
- static void efx_devlink_del_port(struct devlink_port *dl_port)
- {
- 	if (!dl_port)
-@@ -57,7 +61,9 @@ static int efx_devlink_add_port(struct efx_nic *efx,
- 
- 	mport->dl_port.index = mport->mport_id;
- 
--	return devl_port_register(efx->devlink, &mport->dl_port, mport->mport_id);
-+	return devl_port_register_with_ops(efx->devlink, &mport->dl_port,
-+					   mport->mport_id,
-+					   &sfc_devlink_port_ops);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
+index 084a910bb4e7..d9c17481b972 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
+@@ -65,6 +65,9 @@ static void mlx5_esw_dl_port_free(struct devlink_port *dl_port)
+ 	kfree(dl_port);
  }
  
- static int efx_devlink_port_addr_get(struct devlink_port *port, u8 *hw_addr,
++static const struct devlink_port_ops mlx5_esw_dl_port_ops = {
++};
++
+ int mlx5_esw_offloads_devlink_port_register(struct mlx5_eswitch *esw, u16 vport_num)
+ {
+ 	struct mlx5_core_dev *dev = esw->dev;
+@@ -87,7 +90,8 @@ int mlx5_esw_offloads_devlink_port_register(struct mlx5_eswitch *esw, u16 vport_
+ 
+ 	devlink = priv_to_devlink(dev);
+ 	dl_port_index = mlx5_esw_vport_to_devlink_port_index(dev, vport_num);
+-	err = devl_port_register(devlink, dl_port, dl_port_index);
++	err = devl_port_register_with_ops(devlink, dl_port, dl_port_index,
++					  &mlx5_esw_dl_port_ops);
+ 	if (err)
+ 		goto reg_err;
+ 
+@@ -134,6 +138,9 @@ struct devlink_port *mlx5_esw_offloads_devlink_port(struct mlx5_eswitch *esw, u1
+ 	return IS_ERR(vport) ? ERR_CAST(vport) : vport->dl_port;
+ }
+ 
++static const struct devlink_port_ops mlx5_esw_dl_sf_port_ops = {
++};
++
+ int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct devlink_port *dl_port,
+ 				      u16 vport_num, u32 controller, u32 sfnum)
+ {
+@@ -156,7 +163,8 @@ int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct devlink_p
+ 	devlink_port_attrs_pci_sf_set(dl_port, controller, pfnum, sfnum, !!controller);
+ 	devlink = priv_to_devlink(dev);
+ 	dl_port_index = mlx5_esw_vport_to_devlink_port_index(dev, vport_num);
+-	err = devl_port_register(devlink, dl_port, dl_port_index);
++	err = devl_port_register_with_ops(devlink, dl_port, dl_port_index,
++					  &mlx5_esw_dl_sf_port_ops);
+ 	if (err)
+ 		return err;
+ 
 -- 
 2.39.2
 
