@@ -1,150 +1,87 @@
-Return-Path: <netdev+bounces-5106-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5104-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1C61B70FA93
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:40:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1EB8C70FA8B
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:39:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CC0F9281006
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:40:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 50B501C20B72
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:39:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E53D019BB8;
-	Wed, 24 May 2023 15:40:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B059B19BA9;
+	Wed, 24 May 2023 15:39:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA3E019907
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:40:30 +0000 (UTC)
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B56DE4E
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:40:10 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-19a13476ffeso352297fac.0
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:40:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1684942737; x=1687534737;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JXUt/ydD2q4pGzaniA+mmW+0t+wCIp9nemsCnmX6WJM=;
-        b=ApkFE7FQIqtU+VA+oa0mvicWOFz/g4CGP4NH6NMNWbCDVr+9O9kRrzWFriVrJd7zN4
-         IAa/GNxjZY9eimkVY+MHM1PnSo0NYuYj7N2udCRiav67WP4FdDNlkvCZTHnJ9pwW4ONr
-         3Rbhx2fO7KadJ/BY1wPyOJ+NtdL1nhNNvdlR/JUeCbfrYPdfuEwNXOc3AyHB/Gi+qAIP
-         yZFv3tPh7JpGq+SiUkoshP/k1qT+sOEUBPdUb/nRS8FK21d4zv4SiF6GHknM1Z+ZyRf8
-         GBER3kRXY6k/leyJslNXHqViYQsPmyEcF/PHZHPy+9/MitL6NfOcQc9iaA61ThziQS6G
-         MDZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684942737; x=1687534737;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JXUt/ydD2q4pGzaniA+mmW+0t+wCIp9nemsCnmX6WJM=;
-        b=Z0yUIPSj4Wfb8X/SJ+S0xAkY8b+HVCIKT30w4xSVOlK0CgcXg6zqDAeapMlWyc0NKC
-         Mbh9jPCEFJIMSd/h0dGsz3H6bVEGoQa2iJcmPG80CmkVH8DPTk6uIMT6Ip/mFWU4Ek7M
-         cfjlVgaMJ9VPsLwSKH+iZ+FuDq9UlnOVnYccEQrmpj9OUZbGEwj+HK0aRmXV1kzgOyCl
-         PqapyxDV/Mav4C+L3zWQzMxz8OEa14ZwPlzk/C74oK1KaGgrunj1DYereTt1hiaJXqrG
-         +AsP5lsyDcUVSpy7nUETlA+tIwlzuLGjRTyLqgsBHGfZRShQZXczPRPAlsBFdb4TtyMz
-         QxkA==
-X-Gm-Message-State: AC+VfDxxqNO7nfXBcQDWQgnyJSG6yk74y6y05KC4PJd0VgXstcE5QctE
-	EBkNzpxWRJd7YQu5IwsSqH3wp0BLTOtI+AZoVp8=
-X-Google-Smtp-Source: ACHHUZ5qtv6wn5gvW7KsUlCuOFdPOiCezYd0GSkwBzr7dnEIQHsZczZ1YnlS7/iO4LKIicpwTG9ygQ==
-X-Received: by 2002:a05:6870:c803:b0:196:7dec:dbd7 with SMTP id ee3-20020a056870c80300b001967decdbd7mr116390oab.3.1684942737273;
-        Wed, 24 May 2023 08:38:57 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:522c:f73f:493b:2b5? ([2804:14d:5c5e:44fb:522c:f73f:493b:2b5])
-        by smtp.gmail.com with ESMTPSA id e21-20020a056871045500b0017243edbe5bsm23381oag.58.2023.05.24.08.38.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 May 2023 08:38:57 -0700 (PDT)
-Message-ID: <9b58d882-743a-c392-0407-17bb0b075516@mojatatu.com>
-Date: Wed, 24 May 2023 12:38:51 -0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AEB119536
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:39:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A60B2C433D2;
+	Wed, 24 May 2023 15:39:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684942777;
+	bh=9Hl32z8O29zupLewPwrp8TBa3k0iI9CyhI88kKC9mx0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=LeXRm7BtiZTlebT681eMU23sdH7H3sx167YpHnt5zUzTXsy44X1JAfbDnIrBJ03rn
+	 19Xpt0L3QVP5WH7cZyizBHJJIS/nDyh3pgzmRvR5iSIKpowHGWtlhTYYz6jWduPvsx
+	 /kU8JlHTQXC5B/QbvoP6Dbw73YwFfbqMaUVmUmX8oem0zwojl2enIcZFazIW3vXYca
+	 jgbWY4A0mTTsmC9CtMNsO2ctPty55mAQu6OLhG2RABV1LavDUqbFCXCZBzrnvKl53U
+	 gtEgxaLeayUCj1TrpE8ckP9p8gmbT5XElDKW2lo/J8KhX4cmJDWMv+UGx92Lrisixv
+	 93vgt0zerCxmQ==
+Date: Wed, 24 May 2023 08:39:35 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Dmitry Vyukov <dvyukov@google.com>
+Cc: Eric Dumazet <edumazet@google.com>, "Jason A. Donenfeld"
+ <Jason@zx2c4.com>, syzbot
+ <syzbot+c2775460db0e1c70018e@syzkaller.appspotmail.com>,
+ netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+ davem@davemloft.net, linux-kernel@vger.kernel.org, pabeni@redhat.com,
+ wireguard@lists.zx2c4.com, jann@thejh.net
+Subject: Re: [syzbot] [wireguard?] KASAN: slab-use-after-free Write in
+ enqueue_timer
+Message-ID: <20230524083935.7108f17f@kernel.org>
+In-Reply-To: <20230524083341.0cd435f7@kernel.org>
+References: <000000000000c0b11d05fa917fe3@google.com>
+	<ZGzfzEs-vJcZAySI@zx2c4.com>
+	<20230523090512.19ca60b6@kernel.org>
+	<CANn89iLVSiO1o1C-P30_3i19Ci8W1jQk9mr-_OMsQ4tS8Nq2dg@mail.gmail.com>
+	<20230523094108.0c624d47@kernel.org>
+	<CAHmME9obRJPrjiJE95JZug0r6NUwrwwWib+=LO4jiQf-y2m+Vg@mail.gmail.com>
+	<20230523094736.3a9f6f8c@kernel.org>
+	<ZGzxa18w-v8Dsy5D@zx2c4.com>
+	<CANn89iLrP7-NbE1yU_okruVKqbuUc3gxPABq4-vQ4SKrUhEdtA@mail.gmail.com>
+	<CANn89iKEjb-g1ed2M+VS5avSs=M0gNgH9QWXtOQRM_uDTMCwPw@mail.gmail.com>
+	<CACT4Y+YcNt8rvJRK+XhCZa1Ocw9epHg1oSGc28mntjY3HWZp1g@mail.gmail.com>
+	<20230524083341.0cd435f7@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v5 net 4/6] net/sched: Prohibit regrafting ingress or
- clsact Qdiscs
-Content-Language: en-US
-To: Peilin Ye <yepeilin.cs@gmail.com>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Jamal Hadi Salim <jhs@mojatatu.com>, Cong Wang <xiyou.wangcong@gmail.com>,
- Jiri Pirko <jiri@resnulli.us>
-Cc: Peilin Ye <peilin.ye@bytedance.com>,
- Daniel Borkmann <daniel@iogearbox.net>,
- John Fastabend <john.fastabend@gmail.com>, Vlad Buslov
- <vladbu@mellanox.com>, Hillf Danton <hdanton@sina.com>,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- Cong Wang <cong.wang@bytedance.com>
-References: <cover.1684887977.git.peilin.ye@bytedance.com>
- <81628172b6ffe1dee6dbe4a829753e0d97f61a48.1684887977.git.peilin.ye@bytedance.com>
-From: Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <81628172b6ffe1dee6dbe4a829753e0d97f61a48.1684887977.git.peilin.ye@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-On 23/05/2023 22:19, Peilin Ye wrote:
-> From: Peilin Ye <peilin.ye@bytedance.com>
+On Wed, 24 May 2023 08:33:41 -0700 Jakub Kicinski wrote:
+> On Wed, 24 May 2023 10:24:31 +0200 Dmitry Vyukov wrote:
+> > FWIW There are more report examples on the dashboard.
+> > There are some that don't mention wireguard nor usbnet, e.g.:
+> > https://syzkaller.appspot.com/text?tag=CrashReport&x=17dd2446280000
+> > So that's probably red herring. But they all seem to mention alloc_netdev_mqs.  
 > 
-> Currently, after creating an ingress (or clsact) Qdisc and grafting it
-> under TC_H_INGRESS (TC_H_CLSACT), it is possible to graft it again under
-> e.g. a TBF Qdisc:
-> 
->    $ ip link add ifb0 type ifb
->    $ tc qdisc add dev ifb0 handle 1: root tbf rate 20kbit buffer 1600 limit 3000
->    $ tc qdisc add dev ifb0 clsact
->    $ tc qdisc link dev ifb0 handle ffff: parent 1:1
->    $ tc qdisc show dev ifb0
->    qdisc tbf 1: root refcnt 2 rate 20Kbit burst 1600b lat 560.0ms
->    qdisc clsact ffff: parent ffff:fff1 refcnt 2
->                                        ^^^^^^^^
-> 
-> clsact's refcount has increased: it is now grafted under both
-> TC_H_CLSACT and 1:1.
-> 
-> ingress and clsact Qdiscs should only be used under TC_H_INGRESS
-> (TC_H_CLSACT).  Prohibit regrafting them.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Fixes: 1f211a1b929c ("net, sched: add clsact qdisc")
-> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+> While we have you, let me ask about the possibility of having vmcore
+> access - I think it'd be very useful to solve this mystery. 
+> With a bit of luck the timer still has the function set.
 
-Tested-by: Pedro Tammela <pctammela@mojatatu.com>
+I take that back.
 
-> ---
-> change in v3, v4:
->    - add in-body From: tag
-> 
->   net/sched/sch_api.c | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> index 383195955b7d..49b9c1bbfdd9 100644
-> --- a/net/sched/sch_api.c
-> +++ b/net/sched/sch_api.c
-> @@ -1596,6 +1596,11 @@ static int tc_modify_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
->   					NL_SET_ERR_MSG(extack, "Invalid qdisc name");
->   					return -EINVAL;
->   				}
-> +				if (q->flags & TCQ_F_INGRESS) {
-> +					NL_SET_ERR_MSG(extack,
-> +						       "Cannot regraft ingress or clsact Qdiscs");
-> +					return -EINVAL;
-> +				}
->   				if (q == p ||
->   				    (p && check_loop(q, p, 0))) {
->   					NL_SET_ERR_MSG(extack, "Qdisc parent/child loop detected");
-
+Memory state around the buggy address:
+ ffff88801ecc1400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88801ecc1480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88801ecc1500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb  
+                   ^
+ ffff88801ecc1580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88801ecc1600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
 
