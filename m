@@ -1,166 +1,142 @@
-Return-Path: <netdev+bounces-5009-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5012-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A581A70F6CB
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:44:59 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A872C70F6EE
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:52:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6C8CD1C20CCD
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:44:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0D12128120F
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:52:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BEB876084D;
-	Wed, 24 May 2023 12:44:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6EA9760858;
+	Wed, 24 May 2023 12:52:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD82660843
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:44:56 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24F9A3
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:44:51 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q1nqr-0000ph-DY; Wed, 24 May 2023 14:44:25 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q1nqk-002USh-GG; Wed, 24 May 2023 14:44:18 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q1nqj-007Yje-A3; Wed, 24 May 2023 14:44:17 +0200
-Date: Wed, 24 May 2023 14:44:14 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Jean Delvare <jdelvare@suse.de>
-Cc: Corey Minyard <cminyard@mvista.com>,
-	Benjamin Mugnier <benjamin.mugnier@foss.st.com>,
-	Peter Senna Tschudin <peter.senna@gmail.com>,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Jeremy Kerr <jk@codeconstruct.com.au>,
-	Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Javier Martinez Canillas <javierm@redhat.com>,
-	Adrien Grassein <adrien.grassein@gmail.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Luca Ceresoli <luca.ceresoli@bootlin.com>,
-	Kang Chen <void0red@gmail.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Petr Machata <petrm@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Shang XiaoJing <shangxiaojing@huawei.com>,
-	Michael Walle <michael@walle.cc>, kernel@pengutronix.de,
-	netdev@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next] nfc: Switch i2c drivers back to use .probe()
-Message-ID: <20230524124414.foiodqo6zejby27y@pengutronix.de>
-References: <20230520172104.359597-1-u.kleine-koenig@pengutronix.de>
- <20230524131011.0d948017@endymion.delvare>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6002660848
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:52:31 +0000 (UTC)
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F2412F
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:52:23 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id a640c23a62f3a-96f99222e80so214397366b.1
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:52:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684932741; x=1687524741;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=4jVCBihOkUg8I7br77j3MvbR7iCX6aB+sSxj9zryEhU=;
+        b=QZsHkzxkp3A65zOu+EffaBnF5ujh7mqpm04tZ5nVF5RMM/e4vGx7W9Cp+taatOWqNM
+         RzueOdvJ9k77QsMOCCncvn8Si8E2SRMzN4+SV/1ofFXXf85p7y18B7ykLFJFh8xB6E+P
+         qr8oNfsi2pmJoCsFPbAuWvLg4nXoXaL/AgiTXWO0zfea5Ma9Q4Zy76lN45Otkw80baHN
+         oTS8WtLrSsNC+BBS+MqfS6mcoQqEBU0R4UU/Kzq0Ld8JZRxq06J7ActtflVb3Uxpy0KG
+         WO9qLo1JwARFmP0udfZKgjquj5FTd/qRmznTljyaehVdmZtbOfG4GI4OkTFiW749WM28
+         wqBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684932741; x=1687524741;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4jVCBihOkUg8I7br77j3MvbR7iCX6aB+sSxj9zryEhU=;
+        b=B12HeLNaEO2NZ6sXsqjC932aBcRk4qAp10m5HdadHSiNZWV04ibpYaqJOrcX+63Bn4
+         s3IVzKu1y6Sls419VxhM2dAwq+U89epKWYzI1JUvq2Mq50Unlt4vwf90aO5A85EjwxV3
+         Q042HDrH2NXwd8xMl/6UiYyivFzS9HnVCupOH5r1T3dV2qD7oCO/Rl4hb4n9sDN/p7MZ
+         gVPf7hAeLe1wZIi/PntwRdj3wE8+8pyUFNIHUI7lP/RJpijdmxw42pj/wG9GrTDj+LjN
+         OJJLy/tJwvC4zSweuaIAYwJGHCllw1JhR0XRh/aPSyLqBhvbjQ/gQOshLnQRjo3AtX8C
+         FwFw==
+X-Gm-Message-State: AC+VfDzoSKH/SC0lFQdN3oIo1NMWwzEpEjfmVqduHMMs1ayVMA7O3gYY
+	M1lO5dOs8RVE+Ou65yOEDrYUAad2hWM=
+X-Google-Smtp-Source: ACHHUZ7VlkGRZ4xxO0X9pXIBhZwnMUb9XbrbT63MjHm4EUKi+BynbDkWC+7HE6QggiylG0yeilfhTg==
+X-Received: by 2002:a17:907:1c26:b0:96f:a412:8b03 with SMTP id nc38-20020a1709071c2600b0096fa4128b03mr13689717ejc.5.1684932740936;
+        Wed, 24 May 2023 05:52:20 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::26ef? ([2620:10d:c092:600::2:db3c])
+        by smtp.gmail.com with ESMTPSA id w11-20020a170906480b00b0096f82171bdesm5688743ejq.215.2023.05.24.05.52.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 May 2023 05:52:20 -0700 (PDT)
+Message-ID: <5b93b626-df9a-6f8f-edc3-32a4478b8f00@gmail.com>
+Date: Wed, 24 May 2023 13:51:17 +0100
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="4dsiprop32wx4qxm"
-Content-Disposition: inline
-In-Reply-To: <20230524131011.0d948017@endymion.delvare>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next 1/2] net/tcp: optimise locking for blocking
+ splice
+To: Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+ edumazet@google.com, davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org
+References: <cover.1684501922.git.asml.silence@gmail.com>
+ <a6838ca891ccff2c2407d9232ccd2a46fa3f8989.1684501922.git.asml.silence@gmail.com>
+ <c025952ddc527f0b60b2c476bb30bd45e9863d41.camel@redhat.com>
+Content-Language: en-US
+From: Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <c025952ddc527f0b60b2c476bb30bd45e9863d41.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On 5/23/23 14:52, Paolo Abeni wrote:
+> On Fri, 2023-05-19 at 14:33 +0100, Pavel Begunkov wrote:
+>> Even when tcp_splice_read() reads all it was asked for, for blocking
+>> sockets it'll release and immediately regrab the socket lock, loop
+>> around and break on the while check.
+>>
+>> Check tss.len right after we adjust it, and return if we're done.
+>> That saves us one release_sock(); lock_sock(); pair per successful
+>> blocking splice read.
+>>
+>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+>> ---
+>>   net/ipv4/tcp.c | 8 +++++---
+>>   1 file changed, 5 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+>> index 4d6392c16b7a..bf7627f37e69 100644
+>> --- a/net/ipv4/tcp.c
+>> +++ b/net/ipv4/tcp.c
+>> @@ -789,13 +789,15 @@ ssize_t tcp_splice_read(struct socket *sock, loff_t *ppos,
+>>   	 */
+>>   	if (unlikely(*ppos))
+>>   		return -ESPIPE;
+>> +	if (unlikely(!tss.len))
+>> +		return 0;
+>>   
+>>   	ret = spliced = 0;
+>>   
+>>   	lock_sock(sk);
+>>   
+>>   	timeo = sock_rcvtimeo(sk, sock->file->f_flags & O_NONBLOCK);
+>> -	while (tss.len) {
+>> +	while (true) {
+>>   		ret = __tcp_splice_read(sk, &tss);
+>>   		if (ret < 0)
+>>   			break;
+>> @@ -835,10 +837,10 @@ ssize_t tcp_splice_read(struct socket *sock, loff_t *ppos,
+>>   			}
+>>   			continue;
+>>   		}
+>> -		tss.len -= ret;
+>>   		spliced += ret;
+>> +		tss.len -= ret;
+> 
+> The patch LGTM. The only minor thing that I note is that the above
+> chunk is not needed. Perhaps avoiding unneeded delta could be worthy.
 
---4dsiprop32wx4qxm
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+It keeps it closer to the tss.len test, so I'd leave it for that reason,
+but on the other hand the compiler should be perfectly able to optimise it
+regardless (i.e. sub;cmp;jcc; vs sub;jcc;). I don't have a hard feeling
+on that, can change if you want.
 
-Hello Jean,
-
-On Wed, May 24, 2023 at 01:10:11PM +0200, Jean Delvare wrote:
-> On Sat, 20 May 2023 19:21:04 +0200, Uwe Kleine-K=F6nig wrote:
-> > After commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
-> > call-back type"), all drivers being converted to .probe_new() and then
-> > 03c835f498b5 ("i2c: Switch .probe() to not take an id parameter")
-> > convert back to (the new) .probe() to be able to eventually drop
-> > .probe_new() from struct i2c_driver.
-> >=20
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> > Hello,
-> >=20
-> > this patch was generated using coccinelle, but I aligned the result to
-> > the per-file indention.
-> >=20
-> > This is one patch for the whole iio subsystem. if you want it split per
->=20
-> s/iio/nfc/
-
-Yeah, copy&paste failure. I noticed after sending out the patch, but as
-it's only in a part of the mail that doesn't make it into git I didn't
-care to point it out.
-
-> > driver for improved patch count numbers, please tell me.
-> >=20
-> > This currently fits on top of 6.4-rc1 and next/master. If you apply it
-> > somewhere else and get conflicts, feel free to just drop the files with
-> > conflicts from this patch and apply anyhow. I'll care about the fallout
-> > later then.
-> >=20
-> > Best regards
-> > Uwe
-> >=20
-> >  drivers/nfc/fdp/i2c.c       | 2 +-
-> >  drivers/nfc/microread/i2c.c | 2 +-
-> >  drivers/nfc/nfcmrvl/i2c.c   | 2 +-
-> >  drivers/nfc/nxp-nci/i2c.c   | 2 +-
-> >  drivers/nfc/pn533/i2c.c     | 2 +-
-> >  drivers/nfc/pn544/i2c.c     | 2 +-
-> >  drivers/nfc/s3fwrn5/i2c.c   | 2 +-
-> >  drivers/nfc/st-nci/i2c.c    | 2 +-
-> >  drivers/nfc/st21nfca/i2c.c  | 2 +-
-> >  9 files changed, 9 insertions(+), 9 deletions(-)
-> > (...)
->=20
-> Reviewed-by: Jean Delvare <jdelvare@suse.de>
-
-Thanks, but note that davem already applied the patch, so your tag
-probably won't make it in.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---4dsiprop32wx4qxm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmRuBp0ACgkQj4D7WH0S
-/k4+1Qf6AvpuEqbhup7szAc9UEn35Tu6D/fons+YB8mbGcd/q3YoNwPUFVe0zQXv
-WFFNClIZ5YsYDajb7GigBpYtZ1SRHaQ2VvHiY52BaaSBFmrnkHFHcn1CX7OSix+o
-C0cgONnsM8EC3FBtua9xCqGxa8e79Aiv48yJ5trUIsdg4CSRX1bkxpdVuHrck1lJ
-HkgLOxRmwVTNRtVGEMyiuvBgCLUvqDnnGKYq5Q7P5zlLrYvjMG+SPOsTqvZZUCGS
-FdoYLg+bKP1XVp7rI98cfdGRnxLuEEDYiO12aR8KPWC/ZPJ9iUiPFYcSHFLCQLfY
-RVDrsJc+hg173JvQVPjuKc0O+ny1kA==
-=wRp/
------END PGP SIGNATURE-----
-
---4dsiprop32wx4qxm--
+-- 
+Pavel Begunkov
 
