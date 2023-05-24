@@ -1,45 +1,45 @@
-Return-Path: <netdev+bounces-4855-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4856-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2A8DB70EC58
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 06:05:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0959F70EC5B
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 06:07:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9E1C51C20AF0
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 04:04:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 16A601C2082D
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 04:07:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF99115C2;
-	Wed, 24 May 2023 04:04:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F91F15C6;
+	Wed, 24 May 2023 04:07:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83F1715B8
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 04:04:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D569C433D2;
-	Wed, 24 May 2023 04:04:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0400F15B8
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 04:07:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87791C433D2;
+	Wed, 24 May 2023 04:07:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684901095;
-	bh=h0GPloYU1VAGgpUh/tie+7wVESLUBSFraCBtAuT3854=;
+	s=k20201202; t=1684901220;
+	bh=/XAedTGYqXqTdcRK1LAmkTGEbv0FADFApbjfU6HBHIQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=HhkszsfZ6rTKFmLO70MxjxjEyH5t5GLtXOzqSyFg3csKk5knmXCzal/ZPLDFwBbZa
-	 2rueLngCuYe5u99GHxsN+rmG20BcOvQjtt7NKqLejKL55Gq1qggCaGDbduq3PYo/Ca
-	 RtGfNqygXL5l5XtiFAOl1dVFiG58XdCmjR1B8Ej5rziJkymRaOfsY5/3sz5qbzPIZe
-	 atadsjt7JzAZjSTL/dAZFmywe6xT9KUAfY8BAgHBZfDAcWCX6ILxJarc99lXcaYLvl
-	 gweyk2KB3e0G4p5hRQ1Gwc0+i8vW7Ia6XWA6HQPKfkYwllN98cDj078OhiKKBm7RyD
-	 NWzwNXZ2VylMQ==
-Date: Tue, 23 May 2023 21:04:54 -0700
+	b=uDPOTSDJ2YAIcKA4n9nuy7TkwiHJxNPc/Bhc8yhnf8H9oLzSdS2xereWaAkCGE7ug
+	 uk7h7Ogk+1BsT4BseOHBLy+V9OepNEkWNZuy+hnyBfJqPR1jlHBzVjjRFeobQOVMyp
+	 4cy4l3Sdg4H+UM3LCD4bWpLAv+wK2dZPblK1A4FsDK2AAdjgtPEe/nG+gFBioULt3k
+	 sG9pVKP1p1ReDACT6dFuMjfgrzYYqBpVEMdO+f3fOpd4+76RwULzHlz/zBbvLeNAAp
+	 k1+uYlbqRMr1ChL1k/T5TISLlgBFEU/T8v6lIW+6QL9parL7EZURPtg6b8On8P7ALr
+	 SVP12xD2NO3kQ==
+Date: Tue, 23 May 2023 21:06:59 -0700
 From: Jakub Kicinski <kuba@kernel.org>
 To: Mengyuan Lou <mengyuanlou@net-swift.com>
 Cc: netdev@vger.kernel.org, jiawenwu@trustnetic.com
-Subject: Re: [PATCH net-next v6 2/8] net: wangxun: libwx add rx offload
+Subject: Re: [PATCH net-next v6 1/8] net: wangxun: libwx add tx offload
  functions
-Message-ID: <20230523210454.12963d67@kernel.org>
-In-Reply-To: <20230523030658.17738-3-mengyuanlou@net-swift.com>
+Message-ID: <20230523210659.11304cce@kernel.org>
+In-Reply-To: <20230523030658.17738-2-mengyuanlou@net-swift.com>
 References: <20230523030658.17738-1-mengyuanlou@net-swift.com>
-	<20230523030658.17738-3-mengyuanlou@net-swift.com>
+	<20230523030658.17738-2-mengyuanlou@net-swift.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -49,27 +49,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 23 May 2023 11:06:52 +0800 Mengyuan Lou wrote:
-> +static inline struct wx_dec_ptype wx_decode_ptype(const u8 ptype)
-> +{
-> +	return wx_ptype_lookup[ptype];
-> +}
+On Tue, 23 May 2023 11:06:51 +0800 Mengyuan Lou wrote:
+> +	if (skb->encapsulation) {
+> +		union network_header hdr;
+> +
+> +		switch (first->protocol) {
+> +		case htons(ETH_P_IP):
+> +			tun_prot = ip_hdr(skb)->protocol;
+> +			if (ip_is_fragment(ip_hdr(skb)))
+> +				return WX_PTYPE_PKT_IP | WX_PTYPE_TYP_IPFRAG;
+> +			ptype = WX_PTYPE_TUN_IPV4;
+> +			break;
+> +		case htons(ETH_P_IPV6):
+> +			wx_get_ipv6_proto(skb, skb_network_offset(skb), &tun_prot);
+> +			if (tun_prot == NEXTHDR_FRAGMENT)
+> +				return WX_PTYPE_PKT_IP | WX_PTYPE_PKT_IPV6 |
+> +				       WX_PTYPE_TYP_IPFRAG;
+> +			ptype = WX_PTYPE_TUN_IPV6;
 
-No need for inline keyword here, compiler will definitely inline this.
-
-> +	/* If there is an outer header present that might contain a checksum
-> +	 * we need to bump the checksum level by 1 to reflect the fact that
-> +	 * we are indicating we validated the inner checksum.
-> +	 */
-> +	if (dptype.etype >= WX_DEC_PTYPE_ETYPE_IG) {
-> +		skb->csum_level = 1;
-> +		skb->encapsulation = 1;
-> +	}
-
-That's not right, you shouldn't set encapsulation, that field means skb
-encap state / fields are valid. Just use
-__skb_incr_checksum_unnecessary() please, it will do the right thing.
-
--- 
-pw-bot: cr
+Why does the HW care about fragmented packets?
+AFAIU fragmented packets won't have any offloads enabled.
 
