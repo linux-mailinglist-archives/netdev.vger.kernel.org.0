@@ -1,134 +1,130 @@
-Return-Path: <netdev+bounces-4922-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4921-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 44B2770F308
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 11:37:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1AB1870F2CB
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 11:31:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DF04A28122D
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 09:37:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CA84C281245
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 09:31:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D689BC8CA;
-	Wed, 24 May 2023 09:37:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF540C8C3;
+	Wed, 24 May 2023 09:31:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD57AC121
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 09:37:22 +0000 (UTC)
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on20603.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::603])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11B012E
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 02:37:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Unn/uhOcZCH8M1+DlSl5bkq6lc70kc6VVSgK6wKNDrw=;
- b=hSV2NfsxnSi327ZKipfgWWQRptmd4C+AiJFBGh8UW9WSsuDBWtS1buOsqFTcwRQknTf33U2Y02kvl47/8Hl6P4f3D+2x9UWHKTLRkCNcNU9iWKnwqokD0sz28gOREDCktPyFXoFNX+lZePlVmydClLOddxDdih/fhqUeleaIeUgFRrprUQSGKQDrOtKWP9OUm2twOdIDvYIL0uwWLSozdAJkcbtMlqtH/VM0O0vqY/0FucvkvYPCalcvcmePYa6WyfErO1wNWGMDgtbbfPF2s5AbUzMFb22qfD66S1MKvZgVPp0gqDqXVu268xlWUElACdO9qhEWFCjOYSDOaOzEdg==
-Received: from MW4PR04CA0226.namprd04.prod.outlook.com (2603:10b6:303:87::21)
- by SJ0PR12MB5675.namprd12.prod.outlook.com (2603:10b6:a03:42d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.28; Wed, 24 May
- 2023 09:37:13 +0000
-Received: from CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:87:cafe::d1) by MW4PR04CA0226.outlook.office365.com
- (2603:10b6:303:87::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.29 via Frontend
- Transport; Wed, 24 May 2023 09:37:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT055.mail.protection.outlook.com (10.13.175.129) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6411.30 via Frontend Transport; Wed, 24 May 2023 09:37:13 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 24 May 2023
- 02:36:57 -0700
-Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 24 May
- 2023 02:36:56 -0700
-References: <20230510-dcb-rewr-v1-0-83adc1f93356@microchip.com>
- <20230510-dcb-rewr-v1-1-83adc1f93356@microchip.com>
- <87lehf5gu1.fsf@nvidia.com> <ZG2xBsorejY7v5l1@DEN-LT-70577>
-User-agent: mu4e 1.6.6; emacs 28.1
-From: Petr Machata <petrm@nvidia.com>
-To: <Daniel.Machon@microchip.com>
-CC: <petrm@nvidia.com>, <netdev@vger.kernel.org>, <dsahern@kernel.org>,
-	<stephen@networkplumber.org>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH iproute2-next 1/9] dcb: app: expose dcb-app functions in
- new header
-Date: Wed, 24 May 2023 11:28:34 +0200
-In-Reply-To: <ZG2xBsorejY7v5l1@DEN-LT-70577>
-Message-ID: <87r0r63way.fsf@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2A04C2F0
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 09:31:16 +0000 (UTC)
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4332097
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 02:31:15 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id 5614622812f47-394440f483fso21928b6e.3
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 02:31:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684920674; x=1687512674;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Uf99Uy+0c+4BQsmOOBb+vJ9dhas3yxhHs2DZnOp4VCA=;
+        b=eXSB6WsPwairggrDaS8CyDr544YSEc7WoDikOa+M3eNUKNlEbo6bhpq6JWJLp/Wi2c
+         FXEcOWPeGAoijUrxaaPPBN6ZLbL38HC/nc4pAYiZRZW346603hN6i7abPFE3Mthl9Win
+         PiSivb2tQg+sQfBwbSVT4pQgWOTNC5NYA8Kd0qLjUCKkrBoURiWuJdkd5kzE4EbosMEh
+         OwqHV1K9nv3ubp7UjmtXx/vEpiQwl1j5VfrwDi+FNwY5ty8o8WPgYOC+3k8RLNSE69Pk
+         5r4VOck7bAa/KSZNKBqTMIeW8Xflou99+kW+WXJYVQfchZRRjP/ZEDG8wUdU4S49vjPP
+         gWWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684920674; x=1687512674;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Uf99Uy+0c+4BQsmOOBb+vJ9dhas3yxhHs2DZnOp4VCA=;
+        b=XYQeVrNTE9w3fbnzwOliXYwp4hgvN2IxtTmhkaXWQyz2Wwf7Mmnnsg9QtqEpWuuCYb
+         5lCSC+D/HfybmFBUBHNSVudjNb4lTATWbokrAzyw/bE5Itjg3GkuHuOROhGRUCztJ7EQ
+         ovh5PsayoGFG2XJhanBgqM9CpZgEeb20/xOHtfOTPeJSkg5cBUUrapkVmtKI2qJMofYG
+         2MoC17AniYJ0tNk+ar+nv0JaVrCPr9gSxPYMI2JGNLUFyS/t3OB6sRbPgijUD90QNMG9
+         V5BWDfJ8h19eAm1WVLZmIS64deOJvTMsdpuYjhbbdhgrMfctoIuggk4wBEmy4aSxHMEA
+         o23Q==
+X-Gm-Message-State: AC+VfDxTSl8nP3nqHVFgQ1cBuFE7YEXd/7Y03Chxy7SaUYw4xNgfapTu
+	0bLMrg9GCAFeowbhX/7vW8NZjoykZYX/V1VZr1U=
+X-Google-Smtp-Source: ACHHUZ5SbkJ+Vicj46xeNZ/Nw2yUct5tVOlpvhIO+XkRiOl9cZw2T4GMTJDL6nDthInE3Ea+LRUlk9fhcJOY5MU5h9Q=
+X-Received: by 2002:a54:478b:0:b0:398:450f:fb95 with SMTP id
+ o11-20020a54478b000000b00398450ffb95mr1175712oic.0.1684920674285; Wed, 24 May
+ 2023 02:31:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT055:EE_|SJ0PR12MB5675:EE_
-X-MS-Office365-Filtering-Correlation-Id: d9d8af72-0712-4e89-46b2-08db5c3a746a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	9s+qbZKZ7xiAF8fbVKvrU4iO9UP9ENtqc2oPqxUluS12/0yI3lPERCvzioT2suIKw6Km0ySSQo1fYxpHDwX+oVqYUqGn5/iqlikQy1CvE8V49eIkkj4ZnqailPLno9CnuBFkhnt1qDaOkbJXqprOFxqH0CmygmQMFRSyoLqus4Tkztrke3t2R+SpYgVclH4FwdtaqC4FUM0477AeC7tJFe62emt+M3DTfeL1zoIODC64xkaZ3XFv98OTSSdihPHiALC/fJdSFoYBH76BBAPoG1THcd5dzGG4QB5wYbLe6G5jCsXJNeCbUigUV2aNO34P3NdG8RcuCYEDZbqYAmx/D0kSg9llrUSDVj2gp1JFXVsY0L28OOIohV6D9o9pN8pn8fHEplzrN/ACEjLbfxQu0XjFblR6+Lr5qlgJiJx9r1vNB5KRyF6ZSM4xjm77UVYD1ye5xbhfWkHzLePih5IJtHXq+cxguchiPDBeGG/J0X6WC2e1qDRE9ZoBdETkT7rUYLuRJaww3D/XLuTYpuSwk022Js5CFXp3vc/89mZlnmlJy7/UJnjuq+FMVSwyJLCMA6lusSU2Ht8JPtVfiLa6kM7K1CQ6cjGDnWvZB9K91ovdsy2hyNe9240jlhPd7neFAEHYlodSAEA+a0Bat7gkt4VIeRkFskB1NAeSdH89W5kS07KpPT8DbLJJsBE68WHrUFgs4soG0tZi1t6w9ws68Mh1VWncNBtiQfBDPgikOD2xn9z5OdCaCB4tWh8Ls0hX
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(346002)(396003)(376002)(451199021)(36840700001)(46966006)(40470700004)(186003)(40460700003)(356005)(26005)(82740400003)(2906002)(16526019)(36756003)(2616005)(36860700001)(47076005)(7636003)(83380400001)(336012)(426003)(40480700001)(316002)(6916009)(6666004)(86362001)(70586007)(70206006)(4326008)(41300700001)(54906003)(82310400005)(478600001)(8936002)(8676002)(5660300002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2023 09:37:13.3100
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9d8af72-0712-4e89-46b2-08db5c3a746a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5675
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-	autolearn_force=no version=3.4.6
+References: <34BAAED6-5CD0-42D0-A9FB-82A01962A2D7@linux.alibaba.com>
+ <20230519080118.25539-1-cambda@linux.alibaba.com> <f55cd2026c6cc01e19f2248ef4ed27b7b8ad11e1.camel@redhat.com>
+ <CANn89iJmsM1YH01MsuDovn2LAKTQopOBjg6LNP8Uy_jOJh1+5Q@mail.gmail.com> <14D45862-36EA-4076-974C-EA67513C92F6@linux.alibaba.com>
+In-Reply-To: <14D45862-36EA-4076-974C-EA67513C92F6@linux.alibaba.com>
+From: Jason Xing <kerneljasonxing@gmail.com>
+Date: Wed, 24 May 2023 17:30:38 +0800
+Message-ID: <CAL+tcoDi-=WAjyoM9n01JjYBj_p5_yrOMBJW4M_SCYFw9YGimg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: Return user_mss for TCP_MAXSEG in
+ CLOSE/LISTEN state
+To: Cambda Zhu <cambda@linux.alibaba.com>
+Cc: Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org, 
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Dust Li <dust.li@linux.alibaba.com>, 
+	Tony Lu <tonylu@linux.alibaba.com>, Jack Yang <mingliang@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
-<Daniel.Machon@microchip.com> writes:
-
->> > -/* dcb_app.c */
->> > -
->> > -int dcb_cmd_app(struct dcb *dcb, int argc, char **argv);
->> > -enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
->> > -bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
->> > -bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
->> > -
->> 
->> Why the move to a dedicated header? dcb.h ends up being the only client
->> and everybody consumes the prototypes through that file anyway. I don't
->> fine it necessary.
+On Wed, May 24, 2023 at 3:10=E2=80=AFPM Cambda Zhu <cambda@linux.alibaba.co=
+m> wrote:
 >
-> I did try to rationalize that a bit in the commit description. I thought
-> the amount of exposed app functions ended up polutting the dcb header.
+> After I did a deep search about the TCP_MAXSEG, I found this is a bit
+> more complicated than I think before.
+>
+> I don't know whether the TCP_MAXSEG is from BSD or not, but if the
+> "UNIX Network Programming" is right, getting TCP_MAXSEG returns default
+> MSS before connecting is as expect, that's what FreeBSD does. If we
+> simply remove the !val check for it, getting TCP_MAXSEG will return zero
+> before connecting, because tp->rx_opt.user_mss is initialized with zero
+> on Linux, while tp->t_maxseg is initialized with default MSS on FreeBSD.
+>
+> I googled to see how it's used by developers now, and I think getting
+> TCP_MAXSEG should return default MSS if before connecting and user_mss
+> not set, for backward compatibility.
+>
+> But the !val check is a bug also, and the problem is not discovered for
+> the first time.
+> https://stackoverflow.com/questions/25996741/why-getsockopt-does-not-retu=
+rn-the-expected-value-for-tcp-maxseg
+>
+> I think it should be:
+>
+> - if (!val && ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
+> + if (tp->rx_opt.user_mss && ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LI=
+STEN)))
 
-I think it's not too bad. The dcb.c section of the header is similarly
-large as the app section will be. Even with all the stuff that you
-publish, the header is still, what, 150 lines maybe? I find that the
-fragmentation isn't necessary and the current setup is just super
-simple.
+Good catch, It makes sense to me. With this modification, it could
+prevent getsockopt returning zero with TCP_MAXSEG flag when the socket
+stays in the close/listen state.
 
-> Maybe it is not that bad - can move them back in the next v.
+Thanks,
+Jason
+
+>
+> With this change, getting TCP_MAXSEG will return default MSS as book
+> described, and return user_mss if user_mss is set and before connecting.
+> The tp->t_maxseg will only decrease on FreeBSD and we don't. I think
+> our solution is better.
+>
+> I'll send a new patch later.
+>
+>
+> Regards,
+> Cambda
 
