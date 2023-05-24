@@ -1,94 +1,210 @@
-Return-Path: <netdev+bounces-4863-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4864-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7559F70ED3D
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 07:43:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A106B70ED72
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 07:57:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 459C71C20AF0
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 05:43:40 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D82962811C9
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 05:57:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 953061864;
-	Wed, 24 May 2023 05:43:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF6881C06;
+	Wed, 24 May 2023 05:57:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88151185D
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:43:40 +0000 (UTC)
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4D21AC
-	for <netdev@vger.kernel.org>; Tue, 23 May 2023 22:43:27 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-7636c775952so40938639f.2
-        for <netdev@vger.kernel.org>; Tue, 23 May 2023 22:43:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684907006; x=1687499006;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sVMaGANBT4FO+M+4WaVWfwLxfnECFcgkDsXKsvAj/u4=;
-        b=OLwVV1Cvte/oyV/C7Yq/YX9/WMUHB65pnuHfCjsn6i1bSfU75Hn1DunHXHLNiyQjYl
-         H2hRZZIr239agUZD1UtmU3o5iqTfGFBpffDFHK+fboDU17s3BHaYrMWXCJeuoRwRKJ+Q
-         ZxUWgl2BLy8DMMfBcGJkfnnDnV6Ckr622UautIoXTnH2hZJ4o0vIZYaHqh0rkzSZnTFE
-         CFEyed61YcKbyJQXAR14yNcNSa0qoqkLK4vUi22QIyLi4+fbdQj6gEGP/MfMZDiaGDmN
-         J9gxqz1h3zNpaouOQoFyY5b9E5hPZ5Q4/WTQ1O5AvJLhkaGu8CpjYqoo5mOfUOqqroa5
-         IIhQ==
-X-Gm-Message-State: AC+VfDz82Ow+/Pwj/AVQ+5NnrEPzheOXt2nSR3NKbB1S93NsttGVUVUK
-	tFGhiw7vtTrK/rfYeE9aEq9SVT5ydMrvnSvFlo9IZd3g1AnT
-X-Google-Smtp-Source: ACHHUZ6E+B0ThBWOffyc/2kjmrvqKXkx5dohzqDxl4C5/YcAggY515Y7n0augbCIg4gJcLhcroaufm/VAh/xlIcI7ey6+zMbI6As
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF655185D
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:57:28 +0000 (UTC)
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2622518E;
+	Tue, 23 May 2023 22:57:27 -0700 (PDT)
+Received: by linux.microsoft.com (Postfix, from userid 1134)
+	id 2D51020FB9F2; Tue, 23 May 2023 22:57:26 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2D51020FB9F2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1684907846;
+	bh=t5dzhOilp7QpFsI2q/pIEVeDMxfw0/HEc1rMQtlFgqk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=MYTppQc3MP2tIIarrRFPMqgstCxp/wch2FlbAWuwnIfTNrG+L7HqZZS48JWKV7pVr
+	 5IUxNkGn94JIQevJFCrjxfUGEO00YhFIlnPBWpNWtxiRr1JklsbNpkZKdX7TilMspQ
+	 JwMPO9ChXPz/GKkjwaiYIh73SsnHCKFOzXFvKjrE=
+From: Shradha Gupta <shradhagupta@linux.microsoft.com>
+To: linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org,
+	netdev@vger.kernel.org
+Cc: Shradha Gupta <shradhagupta@linux.microsoft.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>,
+	Michael Kelley <mikelley@microsoft.com>,
+	"David S. Miller" <davem@davemloft.net>
+Subject: [PATCH] hv_netvsc: Allocate rx indirection table size dynamically
+Date: Tue, 23 May 2023 22:57:24 -0700
+Message-Id: <1684907844-23224-1-git-send-email-shradhagupta@linux.microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
+	USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2585:b0:774:7cc5:6682 with SMTP id
- p5-20020a056602258500b007747cc56682mr2664467ioo.3.1684907006403; Tue, 23 May
- 2023 22:43:26 -0700 (PDT)
-Date: Tue, 23 May 2023 22:43:26 -0700
-In-Reply-To: <000000000000959f6b05ed853d12@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000098aa2305fc69fb67@google.com>
-Subject: Re: [syzbot] [nfc?] INFO: task hung in nfc_rfkill_set_block
-From: syzbot <syzbot+3e3c2f8ca188e30b1427@syzkaller.appspotmail.com>
-To: brauner@kernel.org, broonie@kernel.org, catalin.marinas@arm.com, 
-	davem@davemloft.net, edumazet@google.com, faenkhauser@gmail.com, 
-	hdanton@sina.com, krzysztof.kozlowski@linaro.org, kuba@kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	linux-nfc@lists.01.org, luiz.von.dentz@intel.com, 
-	madvenka@linux.microsoft.com, netdev@vger.kernel.org, pabeni@redhat.com, 
-	scott@os.amperecomputing.com, syzkaller-bugs@googlegroups.com, 
-	will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-syzbot has bisected this issue to:
+Allocate the size of rx indirection table dynamically in netvsc
+from the value of size provided by OID_GEN_RECEIVE_SCALE_CAPABILITIES
+query instead of using a constant value of ITAB_NUM.
 
-commit 7ac7267fad5908476b357e7e9813d23516c2b0a1
-Author: Fae <faenkhauser@gmail.com>
-Date:   Sun Jul 24 18:25:02 2022 +0000
+Signed-off-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
+---
+ drivers/net/hyperv/hyperv_net.h   |  5 ++++-
+ drivers/net/hyperv/netvsc_drv.c   | 11 +++++++----
+ drivers/net/hyperv/rndis_filter.c | 23 +++++++++++++++++++----
+ 3 files changed, 30 insertions(+), 9 deletions(-)
 
-    Bluetooth: Add VID/PID 0489/e0e0 for MediaTek MT7921
+diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+index dd5919ec408b..1dbdb65ca8f0 100644
+--- a/drivers/net/hyperv/hyperv_net.h
++++ b/drivers/net/hyperv/hyperv_net.h
+@@ -74,6 +74,7 @@ struct ndis_recv_scale_cap { /* NDIS_RECEIVE_SCALE_CAPABILITIES */
+ #define NDIS_RSS_HASH_SECRET_KEY_MAX_SIZE_REVISION_2   40
+ 
+ #define ITAB_NUM 128
++#define ITAB_NUM_MAX 256
+ 
+ struct ndis_recv_scale_param { /* NDIS_RECEIVE_SCALE_PARAMETERS */
+ 	struct ndis_obj_header hdr;
+@@ -1034,7 +1035,9 @@ struct net_device_context {
+ 
+ 	u32 tx_table[VRSS_SEND_TAB_SIZE];
+ 
+-	u16 rx_table[ITAB_NUM];
++	u16 *rx_table;
++
++	int rx_table_sz;
+ 
+ 	/* Ethtool settings */
+ 	u8 duplex;
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 0103ff914024..5b8a7d5f9a15 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -1747,7 +1747,9 @@ static u32 netvsc_get_rxfh_key_size(struct net_device *dev)
+ 
+ static u32 netvsc_rss_indir_size(struct net_device *dev)
+ {
+-	return ITAB_NUM;
++	struct net_device_context *ndc = netdev_priv(dev);
++
++	return ndc->rx_table_sz;
+ }
+ 
+ static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
+@@ -1766,7 +1768,7 @@ static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
+ 
+ 	rndis_dev = ndev->extension;
+ 	if (indir) {
+-		for (i = 0; i < ITAB_NUM; i++)
++		for (i = 0; i < ndc->rx_table_sz; i++)
+ 			indir[i] = ndc->rx_table[i];
+ 	}
+ 
+@@ -1792,11 +1794,11 @@ static int netvsc_set_rxfh(struct net_device *dev, const u32 *indir,
+ 
+ 	rndis_dev = ndev->extension;
+ 	if (indir) {
+-		for (i = 0; i < ITAB_NUM; i++)
++		for (i = 0; i < ndc->rx_table_sz; i++)
+ 			if (indir[i] >= ndev->num_chn)
+ 				return -EINVAL;
+ 
+-		for (i = 0; i < ITAB_NUM; i++)
++		for (i = 0; i < ndc->rx_table_sz; i++)
+ 			ndc->rx_table[i] = indir[i];
+ 	}
+ 
+@@ -2638,6 +2640,7 @@ static void netvsc_remove(struct hv_device *dev)
+ 
+ 	hv_set_drvdata(dev, NULL);
+ 
++	kfree(ndev_ctx->rx_table);
+ 	free_percpu(ndev_ctx->vf_stats);
+ 	free_netdev(net);
+ }
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index eea777ec2541..af031e711cb2 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -927,7 +927,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
+ 	struct rndis_set_request *set;
+ 	struct rndis_set_complete *set_complete;
+ 	u32 extlen = sizeof(struct ndis_recv_scale_param) +
+-		     4 * ITAB_NUM + NETVSC_HASH_KEYLEN;
++		     4 * ndc->rx_table_sz + NETVSC_HASH_KEYLEN;
+ 	struct ndis_recv_scale_param *rssp;
+ 	u32 *itab;
+ 	u8 *keyp;
+@@ -953,7 +953,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
+ 	rssp->hashinfo = NDIS_HASH_FUNC_TOEPLITZ | NDIS_HASH_IPV4 |
+ 			 NDIS_HASH_TCP_IPV4 | NDIS_HASH_IPV6 |
+ 			 NDIS_HASH_TCP_IPV6;
+-	rssp->indirect_tabsize = 4*ITAB_NUM;
++	rssp->indirect_tabsize = 4 * ndc->rx_table_sz;
+ 	rssp->indirect_taboffset = sizeof(struct ndis_recv_scale_param);
+ 	rssp->hashkey_size = NETVSC_HASH_KEYLEN;
+ 	rssp->hashkey_offset = rssp->indirect_taboffset +
+@@ -961,7 +961,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
+ 
+ 	/* Set indirection table entries */
+ 	itab = (u32 *)(rssp + 1);
+-	for (i = 0; i < ITAB_NUM; i++)
++	for (i = 0; i < ndc->rx_table_sz; i++)
+ 		itab[i] = ndc->rx_table[i];
+ 
+ 	/* Set hask key values */
+@@ -1548,6 +1548,21 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
+ 	if (ret || rsscap.num_recv_que < 2)
+ 		goto out;
+ 
++	if (rsscap.num_indirect_tabent &&
++		rsscap.num_indirect_tabent <= ITAB_NUM_MAX) {
++		ndc->rx_table_sz = rsscap.num_indirect_tabent;
++	} else {
++		ndc->rx_table_sz = ITAB_NUM;
++	}
++
++	ndc->rx_table = kzalloc(sizeof(u16) * ndc->rx_table_sz,
++				GFP_KERNEL);
++	if (ndc->rx_table) {
++		netdev_err(net, "Error in allocating rx indirection table of size %d\n",
++				ndc->rx_table_sz);
++		goto out;
++	}
++
+ 	/* This guarantees that num_possible_rss_qs <= num_online_cpus */
+ 	num_possible_rss_qs = min_t(u32, num_online_cpus(),
+ 				    rsscap.num_recv_que);
+@@ -1558,7 +1573,7 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
+ 	net_device->num_chn = min(net_device->max_chn, device_info->num_chn);
+ 
+ 	if (!netif_is_rxfh_configured(net)) {
+-		for (i = 0; i < ITAB_NUM; i++)
++		for (i = 0; i < ndc->rx_table_sz; i++)
+ 			ndc->rx_table[i] = ethtool_rxfh_indir_default(
+ 						i, net_device->num_chn);
+ 	}
+-- 
+2.34.1
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1523596a280000
-start commit:   ae8373a5add4 Merge tag 'x86_urgent_for_6.4-rc4' of git://g..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1723596a280000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1323596a280000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=927d4df6d674370e
-dashboard link: https://syzkaller.appspot.com/bug?extid=3e3c2f8ca188e30b1427
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1099e2c5280000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=113f66b1280000
-
-Reported-by: syzbot+3e3c2f8ca188e30b1427@syzkaller.appspotmail.com
-Fixes: 7ac7267fad59 ("Bluetooth: Add VID/PID 0489/e0e0 for MediaTek MT7921")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
