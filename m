@@ -1,117 +1,145 @@
-Return-Path: <netdev+bounces-5041-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5042-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 904C770F815
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:53:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 64E9270F83B
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 16:06:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4ADA62813A3
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 13:53:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 13F0F28135C
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:06:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 820B4182DF;
-	Wed, 24 May 2023 13:53:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0AEEB18AF0;
+	Wed, 24 May 2023 14:06:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7551A182C7
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 13:53:44 +0000 (UTC)
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0AAAA
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 06:53:41 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id 5b1f17b1804b1-3f6a6b9bebdso2415e9.0
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 06:53:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684936420; x=1687528420;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aj1igd+Unso/o5dEBECenNgQvIet9Wuc5A/XOunEKM8=;
-        b=bzkTCB1/e48gzw8wYr1Z8WlpPec/8R6TsTsOyeoXQhNiR+34rrkKviMT6BCLSa0dXn
-         IY3UjohWK+UrDsFbpwsCvPMoXpfDPpfSNablL9pJnYOVmccAuNhC4OUTkq6u905b2eTP
-         I1BKTRcNNDJIYBBraMFKvFCcIrPn5UTO8aJX8EvDb+7V31ONviT2se7UtRdcJ2aDGNXm
-         OxSyBf33Yve0QlcY1ehGBEuOTz+WiSG6dq9WbhGxRXbzDLeFPpnv3uXruOwxfiilrpBk
-         RsRRtBGcunYnvdWwywVZcjsMu3ewMmiGR6UvSYhKwWO/+QO8FJjXRat47RDI7zd7SONH
-         hNxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684936420; x=1687528420;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=aj1igd+Unso/o5dEBECenNgQvIet9Wuc5A/XOunEKM8=;
-        b=KDHjcyrtRsIdd4gwKsZ0sLerI629szvG+/JeMpVtZihxmQzpggyfEttLEofDeFTr/h
-         0EPwOxDwL8nDbqRG4H5++ymMV1iFzIlAKGDZ3mKccV4/ZB2OWmZqokvNAaHOv0IwHTz7
-         cnf13l1tn7wDFuE47If01FVPn4pAAMwJWU3c17LS3Ba7WODI1WZz8CISDnzwJKVW5FPP
-         Tuc4tOFPWJh/a28Y7buXp2OtcgqiXThTlKk47XeiivhxSKbr66K9/w8Aympt+jDTmK2h
-         hBpURB++7CpIldKsYnEz0ZbnvtLndcW+fmcOeT0EcTARVBhjvyyKU5OBgThL7B05wmEg
-         T6TA==
-X-Gm-Message-State: AC+VfDw4d88R/hHFioF3UDG7w6wNfZuO9QhSWZ6KeJE00cVGzZwAQOiq
-	CNTY/tG8E80y1+NPOnv3O6tJZsjHr69ELZ5GwxVIeo4uZD7BS+Y56/15nQ==
-X-Google-Smtp-Source: ACHHUZ5shup3PHLnfwBESJ9LJmf3vvvThRCA5VFtxEVTJoGrrAt+q6hB0MGsjx2ix9q/hQfR1gKCTcgDLrhsaEdcaZo=
-X-Received: by 2002:a05:600c:1c29:b0:3f3:3855:c5d8 with SMTP id
- j41-20020a05600c1c2900b003f33855c5d8mr193829wms.6.1684936420000; Wed, 24 May
- 2023 06:53:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2AFA60841
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 14:06:47 +0000 (UTC)
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on20625.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe59::625])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E815312E
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 07:06:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jUiDNw/+pAJBiuAW+FmFdT/xHYGztqwe5unFwHT2evp6XsAf29OgUXR7h17LRqWHRhlaKrZ3iUXiCfEmo8nSBmHoFyL7gOCFaIGjQgBXZGpBnWbo7eKbCrKkHXWq24dtD9jW0xr6gWsYxdrEmL0MFpp5OGXK7qph14I1GHoOWtKy13oCGVRIpScjCUnWnOfuIqyl+EO977HOZqawZQKjcOEjdN43TTN7irb9jtm8/hPmWt6fHYO8PpSlGosSrudhs60fsvMrwVdJzLRzTxlBQ4YNO01aPqrZWbeLHdNSK0go41UsJL8vDEPTSFtU4VlEZ8Y3DDZbHVYEx3azTifFXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=STpVRGUugXlbcF7jNrJ77RrtrZ56zFT6tlNWXmESyBQ=;
+ b=C9gtXGF/h9FxCuVUetKDdLdUG+ZtazSLD1ZrsTYedNsA0R368EBgpmxExNfSQu3SxIQ8JGdXh/unGoaYAFYefQsQoMlilhmkch3cROAuGVHJhQHi2RF/lyGWXy//iX2DRjoUz+Nbpfpt4L0WqYmev29nuh0PZjbF9YCb2n3/VZkgBgJTZ45yUhKTVvCjhDkzZCiy68d0RYmNZtyWYS2OpKwd/Adx0JkADg9ZB/w3gKyQC/2y0vH2FYLrPicPZ9clJgV2v4blJrY9XWBGWVyq6QhpUfhhLrkbsFV+kIetws5NmQvbFRfvxHUGaG1n4FQXZdLfLK2KDLxlZ0JupZKjDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=STpVRGUugXlbcF7jNrJ77RrtrZ56zFT6tlNWXmESyBQ=;
+ b=gp8pIDEjexlM75spakFWgLYm4+lgj7guC9vw3FvaAYmuNYwKtPi6W2LZ1yEEeAKBbSMdC+Kmhca27J4OeDSjlK+6jyq7srcrn2oICQ5SjJoyqwOY+ehYAzZ4XD/wbuV0NMz9wYdxH/raqVYxdyuMr3GTu1bEg/x2e/VQHG1/hrAR2mwvtpEvanPeYUo3QEF6lWW5WvusKDb9yiiQs2WpDd3jGydQ17w0QZXBs1aBI0iF0JwvH8GLx/PGLYXn8vZD4t+QMvZTrK8MCq96UhmLDSvmHEm9X57TC7pKJtY+vSLR/DoUSXqTCP678LMOORRqLBSGs/F/Ek/jJbl+DjVOwQ==
+Received: from BN1PR13CA0026.namprd13.prod.outlook.com (2603:10b6:408:e2::31)
+ by DM4PR12MB7551.namprd12.prod.outlook.com (2603:10b6:8:10d::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.15; Wed, 24 May
+ 2023 14:06:43 +0000
+Received: from BN8NAM11FT106.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e2:cafe::4c) by BN1PR13CA0026.outlook.office365.com
+ (2603:10b6:408:e2::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.14 via Frontend
+ Transport; Wed, 24 May 2023 14:06:43 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT106.mail.protection.outlook.com (10.13.177.7) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6433.16 via Frontend Transport; Wed, 24 May 2023 14:06:42 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 24 May 2023
+ 07:06:32 -0700
+Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 24 May
+ 2023 07:06:28 -0700
+References: <20230524121836.2070879-1-jiri@resnulli.us>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Petr Machata <petrm@nvidia.com>
+To: Jiri Pirko <jiri@resnulli.us>
+CC: <netdev@vger.kernel.org>, <kuba@kernel.org>, <pabeni@redhat.com>,
+	<davem@davemloft.net>, <edumazet@google.com>, <leon@kernel.org>,
+	<saeedm@nvidia.com>, <moshe@nvidia.com>, <jesse.brandeburg@intel.com>,
+	<anthony.l.nguyen@intel.com>, <tariqt@nvidia.com>, <idosch@nvidia.com>,
+	<petrm@nvidia.com>, <simon.horman@corigine.com>, <ecree.xilinx@gmail.com>,
+	<habetsm.xilinx@gmail.com>, <michal.wilczynski@intel.com>,
+	<jacob.e.keller@intel.com>
+Subject: Re: [patch net-next 00/15] devlink: move port ops into separate
+ structure
+Date: Wed, 24 May 2023 16:02:48 +0200
+In-Reply-To: <20230524121836.2070879-1-jiri@resnulli.us>
+Message-ID: <87a5xt4ye5.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230524111259.1323415-1-bigeasy@linutronix.de> <20230524111259.1323415-2-bigeasy@linutronix.de>
-In-Reply-To: <20230524111259.1323415-2-bigeasy@linutronix.de>
-From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 24 May 2023 15:53:27 +0200
-Message-ID: <CANn89iLRALON8-Bp+0iN8qEfSas2QoAE0nPMTDHS97QQWS9gyg@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/2] net: Add sysfs files for threaded NAPI.
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>, 
-	Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>, Paolo Abeni <pabeni@redhat.com>, 
-	Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT106:EE_|DM4PR12MB7551:EE_
+X-MS-Office365-Filtering-Correlation-Id: eb0924c0-7390-4dd3-2b90-08db5c601a24
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	AGhcBZsRTX5vqvztjLdHTg7OKh0lAR1jy/sj4VYXLQvotO+PPsS9bqXeGQwcA66PYNVZu2/7AMOXOSXDeVMgCY7wYjyWUQyUYp1JII3K2GUdBLdVqz9KmuKXO0Eq44MjzLaOuz4lsjIJB21wUmR6USQJQpRQ7vedSTOXHE7vWlNsqeCvtVQCosn5z9NrjX+IPz+RwHeREKJqZ4WBoI3yvsx3tZdXr8VjhBLNqJLZHx7SazWYBu8DKAdHmnshyGYFh3xM3zqt6a7my9w0lAmseoYb3hNHHiDiqyRvoJx+iCmvlXo5OIWMb5G414YWZ1le9kY5MUycwDmRpkvFaR15EB+cIBoMaRYTyrX+Inkxqq7V0bYvb3DbbknOUT/mffVHm+8tHE2Ja94G/ILzOKHZcvr1ab3qFGNVxObUPdRqFBvScHLV9ux0QHEnDClH4divUuzEPr/e+f8bXyJUOsY/W3185hU8paTch7Sct+AD1hFfyePXZAgG35y4kkO3L1QY1NM2juQ+ffpjY5ZmoKQBrING+OER6DjkTTPl1Nys+euDlHlu9Q70GqvuKQKZQg4nc6xebvhg+AxvxE1/SDMokM2GTlApQH0EbvKnsPW4eptbeQQDRJWxpDGQ/uCdisr/0wBDvKQBjc62HO4Ti300YUNZ0FBFploJwNyPkiXIF3XQM8X4hS37aLBVovOatskbHzKziZltyGM6OdGgcS+qOrwjmtqXQrAHDwcMXKcyace9TzncnexTW67Vd6s0IOrc
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(136003)(396003)(376002)(451199021)(36840700001)(46966006)(40470700004)(7416002)(54906003)(478600001)(5660300002)(8676002)(8936002)(41300700001)(26005)(6666004)(6916009)(4326008)(316002)(70586007)(70206006)(186003)(16526019)(426003)(336012)(2616005)(47076005)(4744005)(2906002)(40460700003)(36860700001)(82740400003)(7636003)(356005)(40480700001)(86362001)(82310400005)(36756003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2023 14:06:42.6376
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb0924c0-7390-4dd3-2b90-08db5c601a24
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT106.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7551
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 24, 2023 at 1:13=E2=80=AFPM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
+
+Jiri Pirko <jiri@resnulli.us> writes:
+
+> From: Jiri Pirko <jiri@nvidia.com>
 >
-> I've been looking into threaded NAPI. One awkward thing to do is
-> to figure out the thread names, pids in order to adjust the thread
-> priorities and SMP affinity.
-> On PREEMPT_RT the NAPI thread is treated (by the user) the same way as
-> the threaded interrupt which means a dedicate CPU affinity for the
-> thread and a higher task priority to be favoured over other tasks on the
-> CPU. Otherwise the NAPI thread can be preempted by other threads leading
-> to delays in packet delivery.
-> Having to run ps/ grep is awkward to get the PID right. It is not easy
-> to match the interrupt since there is no obvious relation between the
-> IRQ and the NAPI thread.
-> NAPI threads are enabled often to mitigate the problems caused by a
-> "pending" ksoftirqd (which has been mitigated recently by doing softiqrs
-> regardless of ksoftirqd status). There is still the part that the NAPI
-> thread does not use softnet_data::poll_list.
+> In devlink, some of the objects have separate ops registered alongside
+> with the object itself. Port however have ops in devlink_ops structure.
+> For drivers what register multiple kinds of ports with different ops
+> this is not convenient.
 >
+> This patchset changes does following changes:
+> 1) Introduces devlink_port_ops with functions that allow devlink port
+>    to be registered passing a pointer to driver port ops. (patch #1)
+> 2) Converts drivers to define port_ops and register ports passing the
+>    ops pointer. (patches #2, #3, #4, #6, #8, and #9)
+> 3) Moves ops from devlink_ops struct to devlink_port_ops.
+>    (patches #5, #7, #10-15)
+>
+> No functional changes.
 
-How is interface rename handled ?
-
-root@edumazet1:~# ip link show dev dummy0
-4: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode
-DEFAULT group default qlen 1000
-    link/ether f2:38:20:69:b4:ca brd ff:ff:ff:ff:ff:ff
-root@edumazet1:~# ip link set dummy0 name new-name
-root@edumazet1:~# ip link show dev dummy0
-Device "dummy0" does not exist.
-root@edumazet1:~# ip link show dev new-name
-4: new-name: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode
-DEFAULT group default qlen 1000
-    link/ether f2:38:20:69:b4:ca brd ff:ff:ff:ff:ff:ff
-
-Thanks.
+The mlxsw bits look good to me. Will take this for a spin in our
+regression and report back tomorrow.
 
