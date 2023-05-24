@@ -1,54 +1,52 @@
-Return-Path: <netdev+bounces-5153-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5154-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5002970FD40
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 19:53:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1577C70FD4E
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 19:56:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7CBA828131E
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:53:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CF8901C20C78
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:56:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8721A20696;
-	Wed, 24 May 2023 17:53:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 154E620699;
+	Wed, 24 May 2023 17:56:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7448A1D2C1
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 17:53:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F161C76B
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 17:56:30 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4244D3
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 10:53:15 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C45EB6
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 10:56:29 -0700 (PDT)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q1sfc-0000HV-6w; Wed, 24 May 2023 19:53:08 +0200
+	id 1q1sip-0000nx-Ee; Wed, 24 May 2023 19:56:27 +0200
 Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q1sfb-0002aT-4A; Wed, 24 May 2023 19:53:07 +0200
-Date: Wed, 24 May 2023 19:53:07 +0200
+	id 1q1sio-0002iZ-TK; Wed, 24 May 2023 19:56:26 +0200
+Date: Wed, 24 May 2023 19:56:26 +0200
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Andrew Lunn <andrew@lunn.ch>
 Cc: Woojung Huh <woojung.huh@microchip.com>,
 	Arun Ramadoss <arun.ramadoss@microchip.com>,
 	Florian Fainelli <f.fainelli@gmail.com>,
 	"Russell King (Oracle)" <linux@armlinux.org.uk>,
-	Vladimir Oltean <vladimir.oltean@nxp.com>,
-	linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-	Eric Dumazet <edumazet@google.com>,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	UNGLinuxDriver@microchip.com, Eric Dumazet <edumazet@google.com>,
 	Vladimir Oltean <olteanv@gmail.com>, kernel@pengutronix.de,
-	netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
 	"David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v1 2/5] net: dsa: microchip: add an enum for
- regmap widths
-Message-ID: <20230524175307.GB7074@pengutronix.de>
+Subject: Re: [PATCH net-next v1 4/5] net: dsa: microchip: ksz8: Prepare
+ ksz8863_smi for regmap register access validation
+Message-ID: <20230524175626.GC7074@pengutronix.de>
 References: <20230524123220.2481565-1-o.rempel@pengutronix.de>
- <20230524123220.2481565-3-o.rempel@pengutronix.de>
- <9b1b2f17-0489-4adb-8e17-594a813c2dc9@lunn.ch>
+ <20230524123220.2481565-5-o.rempel@pengutronix.de>
+ <584bb123-28c7-4d56-bad7-efcc2c343ecb@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -57,7 +55,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <9b1b2f17-0489-4adb-8e17-594a813c2dc9@lunn.ch>
+In-Reply-To: <584bb123-28c7-4d56-bad7-efcc2c343ecb@lunn.ch>
 X-Sent-From: Pengutronix Hildesheim
 X-URL: http://www.pengutronix.de/
 X-Accept-Language: de,en
@@ -68,34 +66,54 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 24, 2023 at 07:03:38PM +0200, Andrew Lunn wrote:
-> On Wed, May 24, 2023 at 02:32:17PM +0200, Oleksij Rempel wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed, May 24, 2023 at 06:59:28PM +0200, Andrew Lunn wrote:
+> On Wed, May 24, 2023 at 02:32:19PM +0200, Oleksij Rempel wrote:
+> > This patch prepares the ksz8863_smi part of ksz8 driver to utilize the
+> > regmap register access validation feature.
 > > 
-> > It is not immediately obvious that this driver allocates, via the
-> > KSZ_REGMAP_TABLE() macro, 3 regmaps for register access: dev->regmap[0]
-> > for 8-bit access, dev->regmap[1] for 16-bit and dev->regmap[2] for
-> > 32-bit access.
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > ---
+> >  drivers/net/dsa/microchip/ksz8863_smi.c | 11 +++++++++++
+> >  1 file changed, 11 insertions(+)
 > > 
-> > In future changes that add support for reg_fields, each field will have
-> > to specify through which of the 3 regmaps it's going to go. Add an enum
-> > now, to denote one of the 3 register access widths, and make the code go
-> > through some wrapper functions for easier review and further
-> > modification.
+> > diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
+> > index 2af807db0b45..303a4707c759 100644
+> > --- a/drivers/net/dsa/microchip/ksz8863_smi.c
+> > +++ b/drivers/net/dsa/microchip/ksz8863_smi.c
+> > @@ -104,6 +104,7 @@ static const struct regmap_config ksz8863_regmap_config[] = {
+> >  		.cache_type = REGCACHE_NONE,
+> >  		.lock = ksz_regmap_lock,
+> >  		.unlock = ksz_regmap_unlock,
+> > +		.max_register = BIT(8) - 1,
 > 
-> Given the patches in this series, it is not obvious why the wrapper is
-> needed.
-> 
-> dev->regmap[KSZ_REGMAP_8] is just as readable as ksz_regmap_8(dev).
->
-> Do future changes add extra parameters to ksz_regmap_8()?
+> Maybe SZ_256 - 1 is more readable?
 
-As for me, it looks short. Less problems with line length restrictions.
+It is the same way used in other regmap_config in this driver.
+
+As for me, U8_MAX is probably more understandable way, since addressing
+since is 8bit.
+
+> >  	},
+> >  	{
+> >  		.name = "#16",
+> > @@ -113,6 +114,7 @@ static const struct regmap_config ksz8863_regmap_config[] = {
+> >  		.cache_type = REGCACHE_NONE,
+> >  		.lock = ksz_regmap_lock,
+> >  		.unlock = ksz_regmap_unlock,
+> > +		.max_register = BIT(8) - 2,
+> 
+> - 2?
+> 
+> Is this the 16 bit regmap? So it has 1/2 the number of registers of
+> the 8 bit regmap? So i would of thought it should be BIT(7)-1, or
+> SZ_128-1 ?
+
+Sorry, it is a typo.
 
 -- 
 Pengutronix e.K.                           |                             |
