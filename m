@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-4888-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4887-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DA28970EFE4
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 09:50:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7D3E270EFDF
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 09:50:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 94ECA281239
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 07:50:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4FC8C1C20B39
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 07:50:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBAFFC147;
-	Wed, 24 May 2023 07:50:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0CA2C12C;
+	Wed, 24 May 2023 07:50:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01BF91FA2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01C2CC123
 	for <netdev@vger.kernel.org>; Wed, 24 May 2023 07:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A45A2C4339B;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9FC9BC433D2;
 	Wed, 24 May 2023 07:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1684914622;
-	bh=bVpio6PzGQyQVs77Te6EMaxzOPI0zNz4x4en9a0dH4M=;
+	bh=hxeu2EvmrYDm2jEGcvHtpPvdgJHOOAy/bTgv4kejpxw=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=SMgk5r6xJuF0yG0qtBs+p6AC/3CAmCw55sZ/kWZLbh3lXnHjr/T1lfIx+s/t3Nj4S
-	 ZgeIZQsKjAiCBBNQWuUSan7orCmDi8HkwLZ4zWYBHax/7OLfD7Lt7/unGAZBHgB5ea
-	 PojKGd//zijzqKufR3jpA/CrNWiX7sJ1Ew7XY2AEBFOF9U4XA8KG+2T3uHb8w9K9cQ
-	 EaHJl0d+8u3Ma+Gv1KSEbiZsoLeVgeE7uPfFV38EYXGdj3ZqmCgvvGxyw+jjwFR6hc
-	 qAAEV6dPw28vPhuWZ4/ZnMMewSR1zWGYaFtku+l2gJ+ym8KScA8n3PiBsIgicRy8fJ
-	 vye6lfBP5FLqg==
+	b=ADhsbG4kVoavouRzSb1PSMfEphYenTGyFX4LJh14Bcu0XRl26EQjTHYBoR81+cgaK
+	 kF8Uc5Gbt5oHaI634dpMMz4njtkduMlU+I4/Rj1QPN1TrmjOd/xUbxgACoH/hpfao6
+	 j/JQWK2ZKHf1c9Dee3QdQcAie8dNFSN4bFPCqFNVKbnfvWxdlCrN07HYEtbjojLMMC
+	 AqXkNOWXvai2ljUMA+MBc1w53y7VoVRKb6iR+g3foW5jLFFrYKB08ZopMyi0ToZq+5
+	 1F2WYNm3QQT0EPeHerQYAWWJXyiD2iWpGwNy84J/Zgc8rTlgm/oh/ORR/mHqf+xcnL
+	 mwniPvDkHI1Vw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8213FC4166F;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 766A5E21ECD;
 	Wed, 24 May 2023 07:50:22 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,39 +41,65 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] ipv6: Fix out-of-bounds access in ipv6_find_tlv()
+Subject: Re: [net 01/15] net/mlx5: Collect command failures data only for known
+ commands
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168491462252.4606.14185635484952180767.git-patchwork-notify@kernel.org>
+ <168491462248.4606.14521009670777988480.git-patchwork-notify@kernel.org>
 Date: Wed, 24 May 2023 07:50:22 +0000
-References: <20230523082903.117626-1-Ilia.Gavrilov@infotecs.ru>
-In-Reply-To: <20230523082903.117626-1-Ilia.Gavrilov@infotecs.ru>
-To: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
-Cc: davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, vyasevic@redhat.com,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- lvc-project@linuxtesting.org
+References: <20230523054242.21596-2-saeed@kernel.org>
+In-Reply-To: <20230523054242.21596-2-saeed@kernel.org>
+To: Saeed Mahameed <saeed@kernel.org>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+ edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
+ tariqt@nvidia.com, shayd@nvidia.com
 
 Hello:
 
-This patch was applied to netdev/net.git (main)
-by David S. Miller <davem@davemloft.net>:
+This series was applied to netdev/net.git (main)
+by Saeed Mahameed <saeedm@nvidia.com>:
 
-On Tue, 23 May 2023 08:29:44 +0000 you wrote:
-> optlen is fetched without checking whether there is more than one byte to parse.
-> It can lead to out-of-bounds access.
+On Mon, 22 May 2023 22:42:28 -0700 you wrote:
+> From: Shay Drory <shayd@nvidia.com>
 > 
-> Found by InfoTeCS on behalf of Linux Verification Center
-> (linuxtesting.org) with SVACE.
-> 
-> Fixes: 3c73a0368e99 ("ipv6: Update ipv6 static library with newly needed functions")
-> Signed-off-by: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
+> DEVX can issue a general command, which is not used by mlx5 driver.
+> In case such command is failed, mlx5 is trying to collect the failure
+> data, However, mlx5 doesn't create a storage for this command, since
+> mlx5 doesn't use it. This lead to array-index-out-of-bounds error.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] ipv6: Fix out-of-bounds access in ipv6_find_tlv()
-    https://git.kernel.org/netdev/net/c/878ecb0897f4
+  - [net,01/15] net/mlx5: Collect command failures data only for known commands
+    https://git.kernel.org/netdev/net/c/2a0a935fb64e
+  - [net,02/15] net/mlx5: Handle pairing of E-switch via uplink un/load APIs
+    https://git.kernel.org/netdev/net/c/2be5bd42a5bb
+  - [net,03/15] net/mlx5: DR, Fix crc32 calculation to work on big-endian (BE) CPUs
+    https://git.kernel.org/netdev/net/c/1e5daf5565b6
+  - [net,04/15] net/mlx5: DR, Check force-loopback RC QP capability independently from RoCE
+    https://git.kernel.org/netdev/net/c/c7dd225bc224
+  - [net,05/15] net/mlx5e: Use correct encap attribute during invalidation
+    https://git.kernel.org/netdev/net/c/be071cdb167f
+  - [net,06/15] net/mlx5: Fix error message when failing to allocate device memory
+    https://git.kernel.org/netdev/net/c/a65735148e03
+  - [net,07/15] net/mlx5e: Fix deadlock in tc route query code
+    https://git.kernel.org/netdev/net/c/691c041bf208
+  - [net,08/15] net/mlx5e: Fix SQ wake logic in ptp napi_poll context
+    https://git.kernel.org/netdev/net/c/7aa503801916
+  - [net,09/15] net/mlx5e: TC, Fix using eswitch mapping in nic mode
+    https://git.kernel.org/netdev/net/c/dfa1e46d6093
+  - [net,10/15] net/mlx5: E-switch, Devcom, sync devcom events and devcom comp register
+    https://git.kernel.org/netdev/net/c/8c253dfc89ef
+  - [net,11/15] net/mlx5: Devcom, fix error flow in mlx5_devcom_register_device
+    https://git.kernel.org/netdev/net/c/af87194352ca
+  - [net,12/15] net/mlx5: Devcom, serialize devcom registration
+    https://git.kernel.org/netdev/net/c/1f893f57a3bf
+  - [net,13/15] net/mlx5: Free irqs only on shutdown callback
+    https://git.kernel.org/netdev/net/c/9c2d08010963
+  - [net,14/15] net/mlx5: Fix irq affinity management
+    https://git.kernel.org/netdev/net/c/ef8c063cf88e
+  - [net,15/15] net/mlx5: Fix indexing of mlx5_irq
+    https://git.kernel.org/netdev/net/c/1da438c0ae02
 
 You are awesome, thank you!
 -- 
