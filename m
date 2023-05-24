@@ -1,74 +1,92 @@
-Return-Path: <netdev+bounces-5112-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5113-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 957E470FACE
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:52:17 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3BED570FAD0
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:52:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 516A628136B
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:52:16 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EB47F2813D8
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:52:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4768B19BCF;
-	Wed, 24 May 2023 15:52:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8960C19BD0;
+	Wed, 24 May 2023 15:52:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6200019BAA
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:51:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A7C3C4339C;
-	Wed, 24 May 2023 15:51:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684943519;
-	bh=XWnQo/qdI9QS7Vl/TkbgebkpbwZYMFbbX7jgoE+jOEU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=oDrl9cg8f/SvTELCMV33pKctM2szKyacR/eO0Q1jQWAeWTh1hfYZQswJbhdxGIMUC
-	 0MSuSHsyWEV9Ug+dOST1xVUsLbbw02/1PSnW21LIURe5MvLfnGO5G9O3G4nWOwwfUg
-	 EYIUQpTzudn4A2vwvmDTC0nEFbHx0pcVCueQ6AE44lvgUEkhP3Ah6SfexPa9+rFgob
-	 c5DVRTFSSQTzSeyyAQZ7wXnt8BXSzxYSY/9fr96DZo3t0RaX3BZoSJ3vfpa5viqWHS
-	 p1tvAPVGKzt6wZnc3DALBTJvuA5CH8sRJGc01fmyWGO4iv37LtAu6cg1i//5ymOr72
-	 JtPRTaJ+jTKXQ==
-Date: Wed, 24 May 2023 08:51:57 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc: jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
- davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
- intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH v2] iavf: Remove useless else if
-Message-ID: <20230524085157.59aeebea@kernel.org>
-In-Reply-To: <20230524100203.28645-1-jiapeng.chong@linux.alibaba.com>
-References: <20230524100203.28645-1-jiapeng.chong@linux.alibaba.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ECFE19BC4
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:52:20 +0000 (UTC)
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F271D12E
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:52:18 -0700 (PDT)
+Date: Wed, 24 May 2023 17:52:16 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1684943537;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=SfUoeZ9Z+KPrjkB/OsSbV7qe+H98ssPcHqDKlVHn/fc=;
+	b=FfSUtYQHQGTAlhkbQ2RUbhclDNWRYOdf+UBhHXwKx3UrplGcaoNAKRM6UDqwwIncRfmU1u
+	7RRI+6mKAvaWYisXv8xpHH/PDQOgC1YIUg8Dqmkso5UYx3A9pYuhKP2xCjazDrY/sc0a0+
+	qvRXUeMD188/rIs3GpRQr6tSv+DLpW4hHIxxO7VxJb1BhdwgdAsU+oUfaCncQsDkK3mchE
+	MwYVozpBPOs6d8Jn3tOjS3ahvXBpt/sFnbSVswnAViytzDcj8BXFScdRgsU9r2eA/TtEc7
+	aIKcE2SFQ2CBqKOz3d/IZUClEPbIAS0bjy4980Me7Lu8NP6gTRHhWGb8NnJUmw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1684943537;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=SfUoeZ9Z+KPrjkB/OsSbV7qe+H98ssPcHqDKlVHn/fc=;
+	b=dQCvmvsVI3t9h0XacIUQh1dkrk6/bC5ML/YmtD1cmBy8XvubHzzQhoN5/iDyiC4G1ELLe2
+	1ZMKfotyX+A/4LBw==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+	Jakub Kicinski <kuba@kernel.org>,
+	Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC PATCH 1/2] net: Add sysfs files for threaded NAPI.
+Message-ID: <20230524155216.3ktuEsod@linutronix.de>
+References: <20230524111259.1323415-1-bigeasy@linutronix.de>
+ <20230524111259.1323415-2-bigeasy@linutronix.de>
+ <CANn89iLRALON8-Bp+0iN8qEfSas2QoAE0nPMTDHS97QQWS9gyg@mail.gmail.com>
+ <ZG4iDxcQ7BIz0H33@nanopsycho>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <ZG4iDxcQ7BIz0H33@nanopsycho>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, 24 May 2023 18:02:03 +0800 Jiapeng Chong wrote:
-> The assignment of the else and if branches is the same, so the if else
-> here is redundant, so we remove it.
+On 2023-05-24 16:41:19 [+0200], Jiri Pirko wrote:
+> >How is interface rename handled ?
 > 
-> ./drivers/net/ethernet/intel/iavf/iavf_main.c:2203:6-8: WARNING: possible condition with no effect (if == else).
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Closes: https://bugzilla.openanolis.cn/show_bug.cgi?id=5255
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> Well, having name of interface in sysfs dir/file name is silly, even if
+> it would be handled correctly. Should not be there.
 
-Looking thru git history most of the patches you send for this check
-are converting perfectly valid code. Please change the check to ignore
+The name is there due to the fact that the driver is using it as the
+IRQ-name and that is what I recycled here. So it matches what is seen at
+the time in proc/interrupts.
+Given that it relies on the IRQ-number we may just avoid using the
+interrupt name for the folder and simply stick with the napi_id scheme.
+The IRQ number should give information for proper mapping.
 
-if (cond)
-	/*A*/
-else if (cond2)
-	/*B*/
-else
-	/*B*/
--- 
-pw-bot: reject
+By providing an explicit name for the napi instance like TxRx-0 (without
+the device name) we would have a stable name for a given configuration.
+The napi_id while mostly stable is generated on the fly and depends on
+device registration order.
+
+Sebastian
 
