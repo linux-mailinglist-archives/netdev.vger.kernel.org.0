@@ -1,41 +1,41 @@
-Return-Path: <netdev+bounces-5019-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5020-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BC3B170F724
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:02:35 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8E91270F725
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:02:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 78E1F1C20D4A
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 13:02:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 550A71C20CD1
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 13:02:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C4501775C;
-	Wed, 24 May 2023 13:01:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1301A17AD5;
+	Wed, 24 May 2023 13:01:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2122317AD5
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 13:01:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 066A2182C6
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 13:01:26 +0000 (UTC)
 Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FEA99;
-	Wed, 24 May 2023 06:01:20 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA3AA9;
+	Wed, 24 May 2023 06:01:22 -0700 (PDT)
 Received: (Authenticated sender: alexis.lothore@bootlin.com)
-	by mail.gandi.net (Postfix) with ESMTPSA id D45D760010;
-	Wed, 24 May 2023 13:01:17 +0000 (UTC)
+	by mail.gandi.net (Postfix) with ESMTPSA id 93A266000B;
+	Wed, 24 May 2023 13:01:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1684933279;
+	t=1684933281;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=fENFV6k0hW/KI0XKc6WbSD1SpjYijhd5O6JA6P01zNU=;
-	b=TW6l16kpLoESOHBtWLwy/VwDog9MtFmtcc+Q8vYNsIzatWoKgrDLlkcFuSZ/EwtctEoDiW
-	6cvli5orWg3tbqhflgbcyHzXra+Qcr02z/MlbMP7+Mghv02zaIROJiEtEdSzsWTW9UYJfq
-	81vkxWcTe8NdPsySbN6CdQofUfOdvnGsI9dwx8pPmbYPVgKr0+9iHqctuDiojIMgc1ZXWq
-	zNZofO3HlckoYHi1s5RsL0hgbgXFerwNGbdu02NWZ9k3K4BAJEY3fMsE8VWD6yqnudSycW
-	P2G28Rxou9qx0IYjhH9NF9qP4xOMV3F0gvva9gLZ4oyIgKygd+UMo5haduRS1A==
+	bh=/KpBTQNbYUCVWHc93n6KUkrBnNtHu99ffD+p+bkadsI=;
+	b=fICbrXZxJSkEBR/BqqIYnRWp5wmyh7dwiZCl9GqGl9jIHlply+CKU0xtcee/x/JJpuznt7
+	kWnv3ygmyQMuN8CUh6KJ1E6skyM+bn+RzT857MUWLM4G15lPNkrDpT7JryXFEsonoi/W2u
+	WfXMgNG8DBqtRdbMVd8yJiYQ0J+jczohKhPiwhus4khHJyqgn57EXpnlxsqBCw8bHvTMF8
+	L+JdL7urAkMYA7j6kI6EiWN2eDEsLCdhrkNNdKfQrh6AJlOCbJWpRZ5rYbMuS4nlNd4Txy
+	/C3qOdZP5lXJy9Vvza+2bD4tgx3BqIs/D7jfkk7B/RDDyJNyFOr4AqaY+eLP5A==
 From: =?UTF-8?q?Alexis=20Lothor=C3=A9?= <alexis.lothore@bootlin.com>
 To: Andrew Lunn <andrew@lunn.ch>,
 	Florian Fainelli <f.fainelli@gmail.com>,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org ,
 	scott.roberts@telus.com ,
 	=?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
 	=?UTF-8?q?Alexis=20Lothor=C3=A9?= <alexis.lothore@bootlin.com>
-Subject: [PATCH net-next v3 4/7] net: dsa: mv88e6xxx: add field to specify internal phys layout
-Date: Wed, 24 May 2023 15:01:24 +0200
-Message-Id: <20230524130127.268201-5-alexis.lothore@bootlin.com>
+Subject: [PATCH net-next v3 5/7] net: dsa: mv88e6xxx: fix 88E6393X family internal phys layout
+Date: Wed, 24 May 2023 15:01:25 +0200
+Message-Id: <20230524130127.268201-6-alexis.lothore@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230524130127.268201-1-alexis.lothore@bootlin.com>
 References: <20230524130127.268201-1-alexis.lothore@bootlin.com>
@@ -78,76 +78,55 @@ X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-mv88e6xxx currently assumes that switch equipped with internal phys have
-those phys mapped contiguously starting from port 0 (see
-mv88e6xxx_phy_is_internal). However, some switches have internal PHYs but
-NOT starting from port 0. For example 88e6393X, 88E6193X and 88E6191X have
-integrated PHYs available on ports 1 to 8
-To properly support this offset, add a new field to allow specifying an
-internal PHYs layout. If field is not set, default layout is assumed (start
-at port 0)
+88E6393X/88E6193X/88E6191X swicthes have in fact 8 internal PHYs, but those
+are not present starting at port 0: supported ports go from 1 to 8
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
 ---
 Changes since v2:
-- move start/end computation out of for loop
-- remove whitespace
+- add reviewed-by tags
 
 Signed-off-by: Alexis Lothoré <alexis.lothore@bootlin.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c    | 4 +++-
- drivers/net/dsa/mv88e6xxx/chip.h    | 5 +++++
- drivers/net/dsa/mv88e6xxx/global2.c | 5 ++++-
- 3 files changed, 12 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index c812e52bb5b7..2716d17c5c49 100644
+index 2716d17c5c49..f15ca17bf9e2 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -465,7 +465,9 @@ static int mv88e6xxx_port_setup_mac(struct mv88e6xxx_chip *chip, int port,
- 
- static int mv88e6xxx_phy_is_internal(struct mv88e6xxx_chip *chip, int port)
- {
--	return port < chip->info->num_internal_phys;
-+	return port >= chip->info->internal_phys_offset &&
-+		port < chip->info->num_internal_phys +
-+			chip->info->internal_phys_offset;
- }
- 
- static int mv88e6xxx_port_ppu_updates(struct mv88e6xxx_chip *chip, int port)
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index da6e1339f809..eca51946c100 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -167,6 +167,11 @@ struct mv88e6xxx_info {
- 
- 	/* Supports PTP */
- 	bool ptp_support;
-+
-+	/* Internal PHY start index. 0 means that internal PHYs range starts at
-+	 * port 0, 1 means internal PHYs range starts at port 1, etc
-+	 */
-+	unsigned int internal_phys_offset;
- };
- 
- struct mv88e6xxx_atu_entry {
-diff --git a/drivers/net/dsa/mv88e6xxx/global2.c b/drivers/net/dsa/mv88e6xxx/global2.c
-index 615896893076..937a01f2ba75 100644
---- a/drivers/net/dsa/mv88e6xxx/global2.c
-+++ b/drivers/net/dsa/mv88e6xxx/global2.c
-@@ -1196,9 +1196,12 @@ int mv88e6xxx_g2_irq_setup(struct mv88e6xxx_chip *chip)
- int mv88e6xxx_g2_irq_mdio_setup(struct mv88e6xxx_chip *chip,
- 				struct mii_bus *bus)
- {
-+	int phy_start = chip->info->internal_phys_offset;
-+	int phy_end = chip->info->internal_phys_offset +
-+		      chip->info->num_internal_phys;
- 	int phy, irq;
- 
--	for (phy = 0; phy < chip->info->num_internal_phys; phy++) {
-+	for (phy = phy_start; phy < phy_end; phy++) {
- 		irq = irq_find_mapping(chip->g2_irq.domain, phy);
- 		if (irq < 0)
- 			return irq;
+@@ -6024,7 +6024,8 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.name = "Marvell 88E6191X",
+ 		.num_databases = 4096,
+ 		.num_ports = 11,	/* 10 + Z80 */
+-		.num_internal_phys = 9,
++		.num_internal_phys = 8,
++		.internal_phys_offset = 1,
+ 		.max_vid = 8191,
+ 		.max_sid = 63,
+ 		.port_base_addr = 0x0,
+@@ -6047,7 +6048,8 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.name = "Marvell 88E6193X",
+ 		.num_databases = 4096,
+ 		.num_ports = 11,	/* 10 + Z80 */
+-		.num_internal_phys = 9,
++		.num_internal_phys = 8,
++		.internal_phys_offset = 1,
+ 		.max_vid = 8191,
+ 		.max_sid = 63,
+ 		.port_base_addr = 0x0,
+@@ -6366,7 +6368,8 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.name = "Marvell 88E6393X",
+ 		.num_databases = 4096,
+ 		.num_ports = 11,	/* 10 + Z80 */
+-		.num_internal_phys = 9,
++		.num_internal_phys = 8,
++		.internal_phys_offset = 1,
+ 		.max_vid = 8191,
+ 		.max_sid = 63,
+ 		.port_base_addr = 0x0,
 -- 
 2.40.1
 
