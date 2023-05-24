@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4977-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4978-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1781F70F626
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:22:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D412F70F629
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:22:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D27401C20CCD
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:22:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8514228135F
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:22:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 55F6218C1F;
-	Wed, 24 May 2023 12:18:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E582417FFE;
+	Wed, 24 May 2023 12:18:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45DEB18C03
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:18:58 +0000 (UTC)
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5601D9E
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:56 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-96fe2a1db26so157725066b.0
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:56 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5B5C17ADA
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:18:59 +0000 (UTC)
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241EA130
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:58 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50bcb00a4c2so1703845a12.1
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684930735; x=1687522735;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684930736; x=1687522736;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NJb2QMDl75hVEpCgB5B9dmDdv3Q9DLi4HpEJ9o/QJXM=;
-        b=RsicsqUwoPnF5aO9VyqR0ooJImv06uK8v2EnMbnaybDHzY08ij8zvEndriSyGxwElq
-         Y6kgJvwSqa+5Te7jx+VsBPBAENU8ImnMCmpBfXj6NcxQLwIKIsaaOv+p3YOjbTuXE41+
-         19g1VzW1AF8JT85JmvdwlXCCIkKmrN0EyCuW6mCROc5H6fGt9lmeQO2qh8Ja1vRU6c3z
-         r4wGHPEZS+YnGOYCPIWS/BexzMyrQbDV4WRPbbwnqHXsyNo+cCace/sWGHm6fsGxQyYX
-         L25kPOed4HoDsL9aK28IRyha4Ya+3WCHfH9hF4e88vzwimpG3GRNSzhu2P84enGLh4Py
-         /foQ==
+        bh=ZsjhAQB8N/TkxBdbH2gZBxb4b180/ob+EJpjSAcTeI0=;
+        b=b6c7Dg7pMUW3SDDm6YOJXXWtW4f03ow9K5cpUiFmSvD2kJ+BGnDCZnqFAisgzmY2vr
+         0cv+bARRscannPTvK8M2UmZuExSLkNLJqvrbaFUUf3G0OoJhc6vA4L3HRDoy40vfOYPm
+         NWAvfQYjnsmvazzGrA+Qss8w09FzvIt3dKk7DOy3uCBmwHeTTffGBQD5HWGG89vm0ZEk
+         zfTcmTnOLacJiphe3znYOLNJvZCF8OWaO5aTe20t/tYMPhquuLofj3hogdgkCB8sPeGV
+         yRDncQyM3A8460g0IeftQy5l4avNOfjUC7BP/4lCQYQJEXyUs4n92AHV7+q/kxhM+Fwg
+         HReg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684930735; x=1687522735;
+        d=1e100.net; s=20221208; t=1684930736; x=1687522736;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=NJb2QMDl75hVEpCgB5B9dmDdv3Q9DLi4HpEJ9o/QJXM=;
-        b=eIYSRbXq3sZOOAS02l168gpORcExhK+/UoLDKihgR9sd3UhpdauCmBAmhbZkusSo7V
-         KTULuLzb2wWHu7isY54Bqi8rXmY2omkzz+roIMw1xzCIyhIfW0V7fn6WJYMhS64a47Te
-         wXUW3W57BjRbMjsix/3IDIharRqjdirVps405dGQUcMZdrrCKv3jmHoSsitCysDIwvLm
-         UgCEM8DzG9+K+sfQRweHLRbACcqVmw6upU17wJ+oayfvCbl6Se5nYanhMZTLf6FSGjtI
-         7Ck7oOQFSwxUBbLg0XET0irpB/epkW2CDju0IELMkcFdmjeXBdpHXu6YJu1gdVoE13QH
-         5YXw==
-X-Gm-Message-State: AC+VfDwn0S3HATr5PSTfadfaN8QMv0z39ZUgOtlBXxJRUc7ahN5BA+Mu
-	98u9Vf2PGxrda7vLAV5Dnc8atue9qUwmdFha4AldUQ==
-X-Google-Smtp-Source: ACHHUZ6kZjEfvzaLmmqUfWR7No6OScxmkPKQuw4Jxwg7MwycIGYZgJBYXPYRVqfvpKBHs9c0CGHqFg==
-X-Received: by 2002:a17:906:eec8:b0:968:2bb1:f39d with SMTP id wu8-20020a170906eec800b009682bb1f39dmr15679765ejb.36.1684930734919;
-        Wed, 24 May 2023 05:18:54 -0700 (PDT)
+        bh=ZsjhAQB8N/TkxBdbH2gZBxb4b180/ob+EJpjSAcTeI0=;
+        b=Hl/MBnIYX2uz9paplIb2JzBkeGeKw/30woKDvnErgdmtd3QcapeH3h8E0He3h1nSKa
+         ZiP5mdL1P5vRjd4VFQPkCRRZb0BZgzkoqbIJOasAkc/AH70iMWGlPZAhMp4a1HhHOIDF
+         4SKxkXtch9PimCpwViLvGEsTuhDvXKsdORpoxG7nRgE4oTFY6t6scjH3Kt582iqxtyId
+         oMjTw4jRLzscaHWhuJtwMagf4CRttymqFOQ4Wn8ZOTbnr0elBXh/xCg8Kb/buXm3kJnb
+         /NrHedLOwt7cvq8UxrMialzzWFTfhhyPAfGCAORt8LYqjthFwVzPHpYMhbi023aUKbIk
+         nOeA==
+X-Gm-Message-State: AC+VfDxsgeTCwmfWnfVCtfIa6OaLLC7ujhNfHIPWru0maCKBFu4MasIK
+	r0Tz15Ym0Lm0SK/f8IFV5taabcE+ztVX7SQ+udszVA==
+X-Google-Smtp-Source: ACHHUZ6FA0cG70cyOHKONODPzM4l4/QTIuowxIK8Xv4NxzOy1B0yg1Y17sTqnOdtFMK0fzm+WLT6BQ==
+X-Received: by 2002:a17:907:268e:b0:969:f677:11b9 with SMTP id bn14-20020a170907268e00b00969f67711b9mr16974157ejc.54.1684930736505;
+        Wed, 24 May 2023 05:18:56 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id e14-20020a170906844e00b0095fd0462695sm5636304ejy.5.2023.05.24.05.18.53
+        by smtp.gmail.com with ESMTPSA id p9-20020a17090635c900b00965fdb90801sm5635646ejb.153.2023.05.24.05.18.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 May 2023 05:18:53 -0700 (PDT)
+        Wed, 24 May 2023 05:18:55 -0700 (PDT)
 From: Jiri Pirko <jiri@resnulli.us>
 To: netdev@vger.kernel.org
 Cc: kuba@kernel.org,
@@ -75,9 +75,9 @@ Cc: kuba@kernel.org,
 	habetsm.xilinx@gmail.com,
 	michal.wilczynski@intel.com,
 	jacob.e.keller@intel.com
-Subject: [patch net-next 11/15] devlink: move port_fn_roce_get/set() to devlink_port_ops
-Date: Wed, 24 May 2023 14:18:32 +0200
-Message-Id: <20230524121836.2070879-12-jiri@resnulli.us>
+Subject: [patch net-next 12/15] devlink: move port_fn_migratable_get/set() to devlink_port_ops
+Date: Wed, 24 May 2023 14:18:33 +0200
+Message-Id: <20230524121836.2070879-13-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230524121836.2070879-1-jiri@resnulli.us>
 References: <20230524121836.2070879-1-jiri@resnulli.us>
@@ -96,166 +96,182 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Move port_fn_roce_get/set() from devlink_ops into newly introduced
+Move port_fn_migratable_get/set() from devlink_ops into newly introduced
 devlink_port_ops.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
  .../net/ethernet/mellanox/mlx5/core/devlink.c |  2 --
- .../mellanox/mlx5/core/esw/devlink_port.c     |  4 +++
- include/net/devlink.h                         | 31 ++++++++-----------
- net/devlink/leftover.c                        | 18 +++++------
- 4 files changed, 26 insertions(+), 29 deletions(-)
+ .../mellanox/mlx5/core/esw/devlink_port.c     |  2 ++
+ include/net/devlink.h                         | 35 ++++++++-----------
+ net/devlink/leftover.c                        | 24 ++++++-------
+ 4 files changed, 27 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 1e96f32bd1b5..d63ec466dcd6 100644
+index d63ec466dcd6..678bae618769 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
 @@ -317,8 +317,6 @@ static const struct devlink_ops mlx5_devlink_ops = {
  	.rate_node_new = mlx5_esw_devlink_rate_node_new,
  	.rate_node_del = mlx5_esw_devlink_rate_node_del,
  	.rate_leaf_parent_set = mlx5_esw_devlink_rate_parent_set,
--	.port_fn_roce_get = mlx5_devlink_port_fn_roce_get,
--	.port_fn_roce_set = mlx5_devlink_port_fn_roce_set,
- 	.port_fn_migratable_get = mlx5_devlink_port_fn_migratable_get,
- 	.port_fn_migratable_set = mlx5_devlink_port_fn_migratable_set,
+-	.port_fn_migratable_get = mlx5_devlink_port_fn_migratable_get,
+-	.port_fn_migratable_set = mlx5_devlink_port_fn_migratable_set,
  #endif
+ #ifdef CONFIG_MLX5_SF_MANAGER
+ 	.port_new = mlx5_devlink_sf_port_new,
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-index 78d12c377900..9011619e1fdd 100644
+index 9011619e1fdd..2ececd2b86c8 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-@@ -68,6 +68,8 @@ static void mlx5_esw_dl_port_free(struct devlink_port *dl_port)
- static const struct devlink_port_ops mlx5_esw_dl_port_ops = {
- 	.port_fn_hw_addr_get = mlx5_devlink_port_fn_hw_addr_get,
+@@ -70,6 +70,8 @@ static const struct devlink_port_ops mlx5_esw_dl_port_ops = {
  	.port_fn_hw_addr_set = mlx5_devlink_port_fn_hw_addr_set,
-+	.port_fn_roce_get = mlx5_devlink_port_fn_roce_get,
-+	.port_fn_roce_set = mlx5_devlink_port_fn_roce_set,
+ 	.port_fn_roce_get = mlx5_devlink_port_fn_roce_get,
+ 	.port_fn_roce_set = mlx5_devlink_port_fn_roce_set,
++	.port_fn_migratable_get = mlx5_devlink_port_fn_migratable_get,
++	.port_fn_migratable_set = mlx5_devlink_port_fn_migratable_set,
  };
  
  int mlx5_esw_offloads_devlink_port_register(struct mlx5_eswitch *esw, u16 vport_num)
-@@ -143,6 +145,8 @@ struct devlink_port *mlx5_esw_offloads_devlink_port(struct mlx5_eswitch *esw, u1
- static const struct devlink_port_ops mlx5_esw_dl_sf_port_ops = {
- 	.port_fn_hw_addr_get = mlx5_devlink_port_fn_hw_addr_get,
- 	.port_fn_hw_addr_set = mlx5_devlink_port_fn_hw_addr_set,
-+	.port_fn_roce_get = mlx5_devlink_port_fn_roce_get,
-+	.port_fn_roce_set = mlx5_devlink_port_fn_roce_set,
- };
- 
- int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct devlink_port *dl_port,
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 984829e9239e..5ceedd279a1d 100644
+index 5ceedd279a1d..94a1fdb4105d 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -1429,24 +1429,6 @@ struct devlink_ops {
+@@ -1429,27 +1429,6 @@ struct devlink_ops {
  	int (*trap_policer_counter_get)(struct devlink *devlink,
  					const struct devlink_trap_policer *policer,
  					u64 *p_drops);
 -	/**
--	 * @port_fn_roce_get: Port function's roce get function.
+-	 * @port_fn_migratable_get: Port function's migratable get function.
 -	 *
--	 * Query RoCE state of a function managed by the devlink port.
--	 * Return -EOPNOTSUPP if port function RoCE handling is not supported.
+-	 * Query migratable state of a function managed by the devlink port.
+-	 * Return -EOPNOTSUPP if port function migratable handling is not
+-	 * supported.
 -	 */
--	int (*port_fn_roce_get)(struct devlink_port *devlink_port,
--				bool *is_enable,
--				struct netlink_ext_ack *extack);
+-	int (*port_fn_migratable_get)(struct devlink_port *devlink_port,
+-				      bool *is_enable,
+-				      struct netlink_ext_ack *extack);
 -	/**
--	 * @port_fn_roce_set: Port function's roce set function.
+-	 * @port_fn_migratable_set: Port function's migratable set function.
 -	 *
--	 * Enable/Disable the RoCE state of a function managed by the devlink
+-	 * Enable/Disable migratable state of a function managed by the devlink
 -	 * port.
--	 * Return -EOPNOTSUPP if port function RoCE handling is not supported.
+-	 * Return -EOPNOTSUPP if port function migratable handling is not
+-	 * supported.
 -	 */
--	int (*port_fn_roce_set)(struct devlink_port *devlink_port,
--				bool enable, struct netlink_ext_ack *extack);
+-	int (*port_fn_migratable_set)(struct devlink_port *devlink_port,
+-				      bool enable,
+-				      struct netlink_ext_ack *extack);
  	/**
- 	 * @port_fn_migratable_get: Port function's migratable get function.
- 	 *
-@@ -1636,6 +1618,14 @@ void devlink_free(struct devlink *devlink);
-  * @port_fn_hw_addr_set: Callback used to set port function's hardware address.
-  *			 Should be used by device drivers to set the hardware
-  *			 address of a function managed by the devlink port.
-+ * @port_fn_roce_get: Callback used to get port function's RoCE capability.
-+ *		      Should be used by device drivers to report
-+ *		      the current state of RoCE capability of a function
-+ *		      managed by the devlink port.
-+ * @port_fn_roce_set: Callback used to set port function's RoCE capability.
-+ *		      Should be used by device drivers to enable/disable
-+ *		      RoCE capability of a function managed
-+ *		      by the devlink port.
+ 	 * port_new() - Add a new port function of a specified flavor
+ 	 * @devlink: Devlink instance
+@@ -1626,6 +1605,14 @@ void devlink_free(struct devlink *devlink);
+  *		      Should be used by device drivers to enable/disable
+  *		      RoCE capability of a function managed
+  *		      by the devlink port.
++ * @port_fn_migratable_get: Callback used to get port function's migratable
++ *			    capability. Should be used by device drivers
++ *			    to report the current state of migratable capability
++ *			    of a function managed by the devlink port.
++ * @port_fn_migratable_set: Callback used to set port function's migratable
++ *			    capability. Should be used by device drivers
++ *			    to enable/disable migratable capability of
++ *			    a function managed by the devlink port.
   *
   * Note: Driver should return -EOPNOTSUPP if it doesn't support
   * port function (@port_fn_*) handling for a particular port.
-@@ -1653,6 +1643,11 @@ struct devlink_port_ops {
- 	int (*port_fn_hw_addr_set)(struct devlink_port *port,
- 				   const u8 *hw_addr, int hw_addr_len,
- 				   struct netlink_ext_ack *extack);
-+	int (*port_fn_roce_get)(struct devlink_port *devlink_port,
-+				bool *is_enable,
-+				struct netlink_ext_ack *extack);
-+	int (*port_fn_roce_set)(struct devlink_port *devlink_port,
-+				bool enable, struct netlink_ext_ack *extack);
+@@ -1648,6 +1635,12 @@ struct devlink_port_ops {
+ 				struct netlink_ext_ack *extack);
+ 	int (*port_fn_roce_set)(struct devlink_port *devlink_port,
+ 				bool enable, struct netlink_ext_ack *extack);
++	int (*port_fn_migratable_get)(struct devlink_port *devlink_port,
++				      bool *is_enable,
++				      struct netlink_ext_ack *extack);
++	int (*port_fn_migratable_set)(struct devlink_port *devlink_port,
++				      bool enable,
++				      struct netlink_ext_ack *extack);
  };
  
  void devlink_port_init(struct devlink *devlink,
 diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index fe38c4b2ab14..a72586c5b1ad 100644
+index a72586c5b1ad..e19554187362 100644
 --- a/net/devlink/leftover.c
 +++ b/net/devlink/leftover.c
-@@ -447,18 +447,18 @@ static void devlink_port_fn_cap_fill(struct nla_bitfield32 *caps,
- 		caps->value |= cap;
+@@ -469,19 +469,19 @@ static int devlink_port_fn_roce_fill(struct devlink_port *devlink_port,
+ 	return 0;
  }
  
--static int devlink_port_fn_roce_fill(const struct devlink_ops *ops,
--				     struct devlink_port *devlink_port,
-+static int devlink_port_fn_roce_fill(struct devlink_port *devlink_port,
- 				     struct nla_bitfield32 *caps,
- 				     struct netlink_ext_ack *extack)
+-static int devlink_port_fn_migratable_fill(const struct devlink_ops *ops,
+-					   struct devlink_port *devlink_port,
++static int devlink_port_fn_migratable_fill(struct devlink_port *devlink_port,
+ 					   struct nla_bitfield32 *caps,
+ 					   struct netlink_ext_ack *extack)
  {
  	bool is_enable;
  	int err;
  
--	if (!ops->port_fn_roce_get)
-+	if (!devlink_port->ops || !devlink_port->ops->port_fn_roce_get)
+-	if (!ops->port_fn_migratable_get ||
++	if (!devlink_port->ops || !devlink_port->ops->port_fn_migratable_get ||
+ 	    devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_PCI_VF)
  		return 0;
  
--	err = ops->port_fn_roce_get(devlink_port, &is_enable, extack);
-+	err = devlink_port->ops->port_fn_roce_get(devlink_port, &is_enable,
-+						  extack);
+-	err = ops->port_fn_migratable_get(devlink_port, &is_enable, extack);
++	err = devlink_port->ops->port_fn_migratable_get(devlink_port,
++							&is_enable, extack);
  	if (err) {
  		if (err == -EOPNOTSUPP)
  			return 0;
-@@ -501,7 +501,7 @@ static int devlink_port_fn_caps_fill(const struct devlink_ops *ops,
- 	struct nla_bitfield32 caps = {};
- 	int err;
+@@ -492,8 +492,7 @@ static int devlink_port_fn_migratable_fill(const struct devlink_ops *ops,
+ 	return 0;
+ }
  
--	err = devlink_port_fn_roce_fill(ops, devlink_port, &caps, extack);
-+	err = devlink_port_fn_roce_fill(devlink_port, &caps, extack);
+-static int devlink_port_fn_caps_fill(const struct devlink_ops *ops,
+-				     struct devlink_port *devlink_port,
++static int devlink_port_fn_caps_fill(struct devlink_port *devlink_port,
+ 				     struct sk_buff *msg,
+ 				     struct netlink_ext_ack *extack,
+ 				     bool *msg_updated)
+@@ -505,7 +504,7 @@ static int devlink_port_fn_caps_fill(const struct devlink_ops *ops,
  	if (err)
  		return err;
  
-@@ -837,9 +837,8 @@ static int
- devlink_port_fn_roce_set(struct devlink_port *devlink_port, bool enable,
- 			 struct netlink_ext_ack *extack)
+-	err = devlink_port_fn_migratable_fill(ops, devlink_port, &caps, extack);
++	err = devlink_port_fn_migratable_fill(devlink_port, &caps, extack);
+ 	if (err)
+ 		return err;
+ 
+@@ -828,9 +827,8 @@ static int
+ devlink_port_fn_mig_set(struct devlink_port *devlink_port, bool enable,
+ 			struct netlink_ext_ack *extack)
  {
 -	const struct devlink_ops *ops = devlink_port->devlink->ops;
 -
--	return ops->port_fn_roce_set(devlink_port, enable, extack);
-+	return devlink_port->ops->port_fn_roce_set(devlink_port, enable,
-+						   extack);
+-	return ops->port_fn_migratable_set(devlink_port, enable, extack);
++	return devlink_port->ops->port_fn_migratable_set(devlink_port, enable,
++							 extack);
  }
  
- static int devlink_port_fn_caps_set(struct devlink_port *devlink_port,
-@@ -1214,7 +1213,8 @@ static int devlink_port_function_validate(struct devlink_port *devlink_port,
- 
- 		caps = nla_get_bitfield32(attr);
- 		if (caps.selector & DEVLINK_PORT_FN_CAP_ROCE &&
--		    !ops->port_fn_roce_set) {
-+		    (!devlink_port->ops ||
-+		     !devlink_port->ops->port_fn_roce_set)) {
- 			NL_SET_ERR_MSG_ATTR(extack, attr,
- 					    "Port doesn't support RoCE function attribute");
+ static int
+@@ -885,8 +883,7 @@ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *por
+ 	err = devlink_port_fn_hw_addr_fill(port, msg, extack, &msg_updated);
+ 	if (err)
+ 		goto out;
+-	err = devlink_port_fn_caps_fill(ops, port, msg, extack,
+-					&msg_updated);
++	err = devlink_port_fn_caps_fill(port, msg, extack, &msg_updated);
+ 	if (err)
+ 		goto out;
+ 	err = devlink_port_fn_state_fill(ops, port, msg, extack, &msg_updated);
+@@ -1220,7 +1217,8 @@ static int devlink_port_function_validate(struct devlink_port *devlink_port,
  			return -EOPNOTSUPP;
+ 		}
+ 		if (caps.selector & DEVLINK_PORT_FN_CAP_MIGRATABLE) {
+-			if (!ops->port_fn_migratable_set) {
++			if (!devlink_port->ops ||
++			    !devlink_port->ops->port_fn_migratable_set) {
+ 				NL_SET_ERR_MSG_ATTR(extack, attr,
+ 						    "Port doesn't support migratable function attribute");
+ 				return -EOPNOTSUPP;
 -- 
 2.39.2
 
