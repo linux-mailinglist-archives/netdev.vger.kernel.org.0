@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4969-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4970-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6A25D70F616
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:19:41 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id ED30370F617
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:20:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 312E01C20C9F
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:19:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 225651C20D21
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:19:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63943182BF;
-	Wed, 24 May 2023 12:18:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 22FDC182CA;
+	Wed, 24 May 2023 12:18:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59736182A3
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:18:45 +0000 (UTC)
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B14184
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:43 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-96aae59bbd6so136232966b.3
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17DA0182A3
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:18:47 +0000 (UTC)
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B402B135
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:45 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-969f90d71d4so118422166b.3
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:18:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684930722; x=1687522722;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684930724; x=1687522724;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=djeZrsWOk0xjFSpIhZMqzXpKAy1lry4yS2RgSZQ2AII=;
-        b=qGBKXoF3thL8ALwehUEM5T+EqMFvurEaIDK+cJb6XFCg2JA01BPdvJYxaIt50YoCOJ
-         GaQXVkXTBmKrDPNc42x/mxIMaB215VJ2+Ky4RKcVIno7rZWw/sBVNyxKH3H5mvLp8xjV
-         fzDj29v1y48eHgzphnAco07Q1BkrFYp2+mtwmy+aVdKN9ncU3xNhfHOKixTNbvqtNPJ4
-         Vqd7CsKviPyRISUkVG0Z6qB8whieeqVjq4Nbo61IMpXpJsypqpIV9kJbeQdxGhE6Z3xv
-         BQgnREXzXjo02TOVVUCtkSf1sm+QXhbaNNBJQyJUaHG2TOau0NwdNYqe6SvjkeK5mqZ7
-         XowQ==
+        bh=EQuPxbL5mz5Z2Rx39MZxKPTzLT4LdssI9aag/rEWDnM=;
+        b=XtU95nwFwMyD3u0iM8ckdmM2xgmBd53NIKhN4ExFT1ehqZoIA+kFPJzgatSQ2gq7Bk
+         BzLfnht+zI9qq9EDAlt279sJ44rJkNeWlLQrRLbzPBJev10CydnIPtK8vOlWOCdEFYdr
+         72D1tu7h+6lbEy48k+5k35xblsvrNZzK8GLg/mlXjiZacgS4vjYbP23TYhtVvVq2ECkl
+         Ph69WSg2BVWShyrzAlTbXWbdHrlZ4AZ8t+61ERHUkFIFJuieAwMFpx04BoDtkoQY82ZZ
+         qar9g0PxXBY0bgKFuhmZHMMHhP3OqXr3wDkokUEOqUbhC7bgCC+rWq5bjHu6prraEVDe
+         k1vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684930722; x=1687522722;
+        d=1e100.net; s=20221208; t=1684930724; x=1687522724;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=djeZrsWOk0xjFSpIhZMqzXpKAy1lry4yS2RgSZQ2AII=;
-        b=ZyebGIZsPEcNtHMrWSmaI4syHCNB8JD/ywoEXcgu4LRzF7ITNqLTab2XiLemnlr5KJ
-         lBMzV1bjRMXCTzSjUVFQo+Plwofg6320W4zUfANk4v20uKlBYtt56/76+io2NnK0dZJA
-         aoWAFnDVczhsiuE/sWHIn06PFcq1Di5NZigndxUea2jEnkq8JMhT2yDrgWxUTF0aFaz5
-         X2BBU/oFhIcsbBOoMJZlTuPPWqYbz1uMZcayY9HuQkqG8YqaDqkjrg/M6Mbd63mbiUBZ
-         eYkcLYD2towVeuIcrKv90RKbchi0kR4NEYEAenaLJBplV+tt+HnBw1n12sEksz2wJhB9
-         JyBg==
-X-Gm-Message-State: AC+VfDzh11prfAN+8vE8O64DTZX8mropschAAb81wa5tXyTczxwx0cZ7
-	4JGnM4KJcx86dewxV/pZ8kiYiLqLecKqGUMCqfOHNA==
-X-Google-Smtp-Source: ACHHUZ7stYriMnt9typ9OjYFg4OPDJU55Toh24F3oXVlW4tIB2fucE80cEpg9r/Gnua2Rv2hWdUmRA==
-X-Received: by 2002:a17:907:9716:b0:970:19a2:7303 with SMTP id jg22-20020a170907971600b0097019a27303mr8452443ejc.19.1684930722416;
-        Wed, 24 May 2023 05:18:42 -0700 (PDT)
+        bh=EQuPxbL5mz5Z2Rx39MZxKPTzLT4LdssI9aag/rEWDnM=;
+        b=KOqa1hg2IzWyXcWyUX6BIJb3XhJt34ytvdxPklZn90dN/fWkdJDHtP9/UyNOhhjAv/
+         n79fd5snzjVVUsMHZHbYalmccufzw7eR7E8Re9uBtrW+wUTyqxzES5aYiIJpGwNZmwhF
+         pP8CHOGlbnKVo7jD5W1GpUv9uxhF/vZaraukvWBRnsCTXSI49+l9B48+WowGu07hv3T1
+         cAx8Lv6LMY6LrVLSZ6B8bW5GqKE7HTzbkJlcoGngdu5rxp2L9aO/8CixBLzyXBfWsZUj
+         VY6uZ3KejBIobvk7bx7ylH4pCw4Bc5d8zlXD1zB3hyu7pbaZtolNH36qULVypnb7SMKB
+         U7iw==
+X-Gm-Message-State: AC+VfDz0DL9u5GpMKLmDvqzmsC/3eocA1nn36K2YlT8pI0fkGxH+mBHr
+	/z+7GquDRkOxBHQ6WrmiijNKIBWL5slFtDsQrQdXSQ==
+X-Google-Smtp-Source: ACHHUZ6vYMqi391K7TCmAvZlwaJe+11kgMFq3oIyJAXKmIxY/+lf/qmpEiWEDhFnk1UWLWPYZvj9uQ==
+X-Received: by 2002:a17:906:da89:b0:95e:d3f5:3d47 with SMTP id xh9-20020a170906da8900b0095ed3f53d47mr14605858ejb.48.1684930723963;
+        Wed, 24 May 2023 05:18:43 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id jz3-20020a17090775e300b0096557203071sm5772181ejc.217.2023.05.24.05.18.41
+        by smtp.gmail.com with ESMTPSA id g18-20020a170906199200b00965cfc209d5sm5655527ejd.8.2023.05.24.05.18.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 May 2023 05:18:41 -0700 (PDT)
+        Wed, 24 May 2023 05:18:43 -0700 (PDT)
 From: Jiri Pirko <jiri@resnulli.us>
 To: netdev@vger.kernel.org
 Cc: kuba@kernel.org,
@@ -75,9 +75,9 @@ Cc: kuba@kernel.org,
 	habetsm.xilinx@gmail.com,
 	michal.wilczynski@intel.com,
 	jacob.e.keller@intel.com
-Subject: [patch net-next 03/15] mlxsw_core: register devlink port with ops
-Date: Wed, 24 May 2023 14:18:24 +0200
-Message-Id: <20230524121836.2070879-4-jiri@resnulli.us>
+Subject: [patch net-next 04/15] nfp: devlink: register devlink port with ops
+Date: Wed, 24 May 2023 14:18:25 +0200
+Message-Id: <20230524121836.2070879-5-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230524121836.2070879-1-jiri@resnulli.us>
 References: <20230524121836.2070879-1-jiri@resnulli.us>
@@ -101,33 +101,33 @@ register devlink port passing ops.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c | 6 +++++-
+ drivers/net/ethernet/netronome/nfp/nfp_devlink.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 22db0bb15c45..605881b17ccc 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -3116,6 +3116,9 @@ u64 mlxsw_core_res_get(struct mlxsw_core *mlxsw_core,
- }
- EXPORT_SYMBOL(mlxsw_core_res_get);
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
+index bf6bae557158..4e4296ecae7c 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
+@@ -321,6 +321,9 @@ const struct devlink_ops nfp_devlink_ops = {
+ 	.flash_update		= nfp_devlink_flash_update,
+ };
  
-+static const struct devlink_port_ops mlxsw_devlink_port_ops = {
++static const struct devlink_port_ops nfp_devlink_port_ops = {
 +};
 +
- static int __mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u16 local_port,
- 				  enum devlink_port_flavour flavour,
- 				  u8 slot_index, u32 port_number, bool split,
-@@ -3150,7 +3153,8 @@ static int __mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u16 local_port,
- 		devlink_port_linecard_set(devlink_port,
- 					  linecard->devlink_linecard);
- 	}
--	err = devl_port_register(devlink, devlink_port, local_port);
-+	err = devl_port_register_with_ops(devlink, devlink_port, local_port,
-+					  &mlxsw_devlink_port_ops);
- 	if (err)
- 		memset(mlxsw_core_port, 0, sizeof(*mlxsw_core_port));
- 	return err;
+ int nfp_devlink_port_register(struct nfp_app *app, struct nfp_port *port)
+ {
+ 	struct devlink_port_attrs attrs = {};
+@@ -351,7 +354,8 @@ int nfp_devlink_port_register(struct nfp_app *app, struct nfp_port *port)
+ 
+ 	devlink = priv_to_devlink(app->pf);
+ 
+-	return devl_port_register(devlink, &port->dl_port, port->eth_id);
++	return devl_port_register_with_ops(devlink, &port->dl_port,
++					   port->eth_id, &nfp_devlink_port_ops);
+ }
+ 
+ void nfp_devlink_port_unregister(struct nfp_port *port)
 -- 
 2.39.2
 
