@@ -1,145 +1,137 @@
-Return-Path: <netdev+bounces-5051-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5057-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4513370F8F0
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 16:43:55 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9803170F904
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 16:46:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CD0251C20DAE
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:43:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4811A281411
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:46:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D5A0B17ACB;
-	Wed, 24 May 2023 14:43:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99A59182C2;
+	Wed, 24 May 2023 14:46:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C607D6084A
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 14:43:51 +0000 (UTC)
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA91180
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 07:43:48 -0700 (PDT)
-Date: Wed, 24 May 2023 16:43:44 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1684939426;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=LHgrw9qdIMC3z7WYxNuJXIAI2oyypGtsquiBageqa60=;
-	b=AQbfDFRSrGMCaBwuWyQeyatxlOpxVxo3n7t/L/Kaj2uKCitLw61QMHLRfb92HyKHSf1U5n
-	7HAxGEfwIbmxE98hSZqXchx1rJGSNZox+T6rAjZu05yYYgV6CJVZFYBZ4sNG0QEKeTj3Y6
-	g4XzT0Fn56o848DcBpRS2Xw29VOgiDQrmQU5YMEKKJH5iZ72ntV9I8ag5hKqW4hV6uoi4g
-	yPQfMqxMZH65bNBdUb/S8+aObbkM51+RMNNMG8aej2OoPKZP2lZmOHFrYDDpeaxuC1zVaF
-	4Mz+GMyaM11//7EtzIktIK2Q6tRxB9YdnHQqhjsGxUKEthRkdXT5fm79cXb2yQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1684939426;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=LHgrw9qdIMC3z7WYxNuJXIAI2oyypGtsquiBageqa60=;
-	b=ZnREWOLxQ/pxdViXSs575MKqUkmgwXEYI0LPaTrDi1WDqql6t/Kf6ynjhraMIcrNuDnFDa
-	7v4YbCQaI5KhTaAw==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Eric Dumazet <edumazet@google.com>
-Cc: netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-	Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC PATCH 1/2] net: Add sysfs files for threaded NAPI.
-Message-ID: <20230524144344.9Xu6U4Lj@linutronix.de>
-References: <20230524111259.1323415-1-bigeasy@linutronix.de>
- <20230524111259.1323415-2-bigeasy@linutronix.de>
- <CANn89iLRALON8-Bp+0iN8qEfSas2QoAE0nPMTDHS97QQWS9gyg@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E9236084A
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 14:46:10 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF287E4D;
+	Wed, 24 May 2023 07:45:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1684939552; x=1716475552;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2Ci1Mh6KyubEPooPTk4y/VJuppWOmjEcoHvnTUiGcCY=;
+  b=yL8Q9eAuMJ4CY9igQXoUt7dsrc076s9lKmsxHzbR51te6r+kjniT/ZTw
+   3hUVaNzpalOONkMivpPFx/glO4lJ447Nt401OYpMtrD95ltMgNOiiaXSc
+   tQlUp/QiUW6/2mVanPuCu7RIkrXUscA8QoLxHg7mSx4Ti10SbxpDy2z1b
+   EmuwCBJ7coUzfm1kagvqtzWoGzMmb/H6wRDBdehdR7ERxcovjbi0Vra8A
+   80UmgPHl43vKvzZ1tSRI7PaOTarRlL1SFb+lmZ3e+yy9fRo03HT2P/CYr
+   9fhoU2cvIC0qgUqMJF4eExjTsp9GqDbDfLYnXydhNznBvNeTijW8sCwpi
+   w==;
+X-IronPort-AV: E=Sophos;i="6.00,189,1681196400"; 
+   d="scan'208";a="226814291"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 May 2023 07:44:36 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 24 May 2023 07:44:33 -0700
+Received: from CHE-LT-I17164LX.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Wed, 24 May 2023 07:44:29 -0700
+From: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+To: <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <ramon.nordin.rodriguez@ferroamp.se>
+CC: <horatiu.vultur@microchip.com>, <Woojung.Huh@microchip.com>,
+	<Nicolas.Ferre@microchip.com>, <Thorsten.Kummermehr@microchip.com>,
+	"Parthiban Veerasooran" <Parthiban.Veerasooran@microchip.com>
+Subject: [PATCH net-next v3 0/6] microchip_t1s: Update on Microchip 10BASE-T1S PHY driver
+Date: Wed, 24 May 2023 20:15:33 +0530
+Message-ID: <20230524144539.62618-1-Parthiban.Veerasooran@microchip.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CANn89iLRALON8-Bp+0iN8qEfSas2QoAE0nPMTDHS97QQWS9gyg@mail.gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 2023-05-24 15:53:27 [+0200], Eric Dumazet wrote:
-> How is interface rename handled ?
->=20
-> root@edumazet1:~# ip link show dev dummy0
-> 4: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode
-> DEFAULT group default qlen 1000
->     link/ether f2:38:20:69:b4:ca brd ff:ff:ff:ff:ff:ff
-> root@edumazet1:~# ip link set dummy0 name new-name
-> root@edumazet1:~# ip link show dev dummy0
-> Device "dummy0" does not exist.
-> root@edumazet1:~# ip link show dev new-name
-> 4: new-name: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode
-> DEFAULT group default qlen 1000
->     link/ether f2:38:20:69:b4:ca brd ff:ff:ff:ff:ff:ff
+This patch series contain the below updates,
+- Fixes on the Microchip LAN8670/1/2 10BASE-T1S PHYs support in the
+  net/phy/microchip_t1s.c driver.
+- Adds support for the Microchip LAN8650/1 Rev.B0 10BASE-T1S Internal
+  PHYs in the net/phy/microchip_t1s.c driver.
 
-Not sure I understood the question. But after
-	ip link set eno0 name newdev
+Changes:
+v2:
+- Updated cover letter contents.
+- Modified driver description is more generic as it is common for all the
+  Microchip 10BASE-T1S PHYs.
+- Replaced read-modify-write code with phy_modify_mmd function.
+- Moved */ to the same line for the single line comments.
+- Changed the type int to u16 for LAN865X Rev.B0 fixup registers
+  declaration.
+- Changed all the comments starting letter to upper case for the
+  consistency.
+- Removed return value check of phy_read_mmd and returned directly in the
+  last line of the function lan865x_revb0_indirect_read.
+- Used reverse christmas notation wherever is possible.
+- Used FIELD_PREP instead of << in all the places.
+- Used 4 byte representation for all the register addresses and values
+  for consistency.
+- Comment for indirect read is modified.
+- Implemented "Reset Complete" status polling in config_init.
+- Function lan865x_setup_cfgparam is split into multiple functions for
+  readability.
+- Reference to AN1760 document is added in the comment.
+- Removed interrupt disabling code as it is not needed.
+- Provided meaningful macros for the LAN865X Rev.B0 indirect read
+  registers and control.
+- Replaced 0x10 with BIT(4).
+- Removed collision detection disable/enable code as it can be done with
+  a separate patch later.
 
-I have
-| root@box:/sys/class/net/newdev# ps uax | grep napi
-| root        2246  0.0  0.0      0     0 ?        S    12:04   0:00 [napi/=
-eno0-8200]
-| root        2247  0.0  0.0      0     0 ?        S    12:04   0:00 [napi/=
-eno0-8199]
-| root        2248  0.0  0.0      0     0 ?        S    12:04   0:00 [napi/=
-eno0-8198]
-| root        2249  0.0  0.0      0     0 ?        S    12:04   0:00 [napi/=
-eno0-8197]
-| root        2250  0.0  0.0      0     0 ?        S    12:04   0:00 [napi/=
-eno0-8196]
-| root        2251  0.0  0.0      0     0 ?        S    12:04   0:00 [napi/=
-eno0-8195]
-| root        2252  0.0  0.0      0     0 ?        S    12:04   0:00 [napi/=
-eno0-8194]
-| root        2253  0.0  0.0      0     0 ?        S    12:04   0:00 [napi/=
-eno0-8193]
-|
-| root@box:/sys/class/net/newdev# ls -lh napi
-| total 0
-| drwxr-xr-x 2 root root 0 May 24 12:05 eno0-TxRx-0
-| drwxr-xr-x 2 root root 0 May 24 12:05 eno0-TxRx-1
-| drwxr-xr-x 2 root root 0 May 24 12:05 eno0-TxRx-2
-| drwxr-xr-x 2 root root 0 May 24 12:05 eno0-TxRx-3
-| drwxr-xr-x 2 root root 0 May 24 12:05 eno0-TxRx-4
-| drwxr-xr-x 2 root root 0 May 24 12:05 eno0-TxRx-5
-| drwxr-xr-x 2 root root 0 May 24 12:05 eno0-TxRx-6
-| drwxr-xr-x 2 root root 0 May 24 12:05 eno0-TxRx-7
+v3:
+- Comment for phy_modify_mmd() is extended to indicate that the write is
+  not required if the register already has the required value.
+- Commit message is updated for the not supported hardware revisions
+  0x0007C160 (Rev.A0) and 0x0007C161 (Rev.B0) since they are never
+  released to production.
+- Commit message is updated to indicate that the Reset Complete interrupt
+  will be cleared when the STS2 register read is done.
+- Corrected the typo in the offset calculation comment.
+- Used reverse christmas notation for the local variable declarations.
 
-NAPI was not freed/ allocated again. For some reason the interface went
-down during the rename. I suspect the fancy network manager because it
-does not know the interface. It did noto happen again after a further
-rename of the renamed device and it remained up.
+Parthiban Veerasooran (6):
+  net: phy: microchip_t1s: modify driver description to be more generic
+  net: phy: microchip_t1s: replace read-modify-write code with
+    phy_modify_mmd
+  net: phy: microchip_t1s: update LAN867x PHY supported revision number
+  net: phy: microchip_t1s: fix reset complete status handling
+  net: phy: microchip_t1s: remove unnecessary interrupts disabling code
+  net: phy: microchip_t1s: add support for Microchip LAN865x Rev.B0 PHYs
 
-A link up request resulted in requesting the interrupts again and so the
-names of the IRQ-threads contain now "newdev" in /proc/interrupts and
-the relevant interrupt thread. This isn't the case if I rename it again
-since the device isn't going down.
+ drivers/net/phy/microchip_t1s.c | 269 +++++++++++++++++++++++++++-----
+ 1 file changed, 229 insertions(+), 40 deletions(-)
 
-If I reconfigure the queues
-	ethtool -L newdev combined 6 other 1
+-- 
+2.34.1
 
-which drops all NAPI devices and asks for new then the NAPI threads are
-displayed properly (in ps) but the sysfs entries in the napi folder are
-napi_id-$id so I probably missed a spot in the igb driver. And reverting
-back to the original 8 channels does not change the fact that I still
-see napi_id-$id. So details=E2=80=A6 But the interrupt number and so on mat=
-ch :)
-
-> Thanks.
-
-Sebastian
 
