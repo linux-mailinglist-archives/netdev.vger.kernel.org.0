@@ -1,161 +1,216 @@
-Return-Path: <netdev+bounces-4897-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4898-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 77D1470F091
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 10:24:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 35D3770F0A3
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 10:28:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4095D1C20B97
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 08:24:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6475B281153
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 08:28:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C5C7C15B;
-	Wed, 24 May 2023 08:24:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 894E8C15D;
+	Wed, 24 May 2023 08:28:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80664C158
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:24:50 +0000 (UTC)
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9AC1A7
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 01:24:46 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id 2adb3069b0e04-4f1217f16e9so1208e87.0
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 01:24:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684916684; x=1687508684;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8RtszprC6DzRLbG0ispzYFYS8wzl447D3eL8AdqyasE=;
-        b=R1Ngd5KfBHhoR+GO+dvWzGuur8Vrd6c4NYVGe7aruFtF47hE+4EHPplsEx9Ggh5wwm
-         7QLP9lURwE6Tbvkus/tYEPxzKjzisveZlORA6QtKKz0hRwrn5AGjU4RLB8hlW5rm90p1
-         ljUqXRRd5Cz+V2wXIKvhr99niFRkauTOBvOBkn3oiLWyphNqFjF5AWZ9Oq8PzGMRwpb/
-         FaxJX63CqnWtV48RD4LilzOQC516Waq48onYtDAwr5Zb5EU50NMomkZgyXZAs96xhRGD
-         VqIwPbDzoA7ho/XgYwPaRzSCGSUgRk7TV9/iQOGmniAwDWX8ySyxhxX0GaCswAG5lwSe
-         vvEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684916684; x=1687508684;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8RtszprC6DzRLbG0ispzYFYS8wzl447D3eL8AdqyasE=;
-        b=H77OfAPhi2lHuyVn9aPBf3RHwn0z4V4mNwgeIkMN0d/qkn7l3nac72d6/pRt8LgGk1
-         ydygqgcNOUY0AkEhBPl1ixBonqStBn/MIyU+BSQzEvxn6bC0QQAjcLEm0aWR124a8FoI
-         2smtusbsyZaetZpFSQFpTLU5+ZTidnqqOrUt5a6MhyktR1PQP5t3vAnt4+gkN5KxIf5F
-         t5a51mkz75kfc1E4kp+M6W9O50MoyBt8Dmxv9Q+uAlhxJfvEUSvEXu0pFZS/eFAPRisc
-         54+KJiLmofgrxW0rfFeS+8IiWNE9MH4fkjU9NB5AlfLtRYm/lcytvgeOePoFMau1rTuV
-         k0SA==
-X-Gm-Message-State: AC+VfDzSRJ3u/4Q5+0IEDzJarmWUhwkr1c70bUOcLQcyIfCgZtMRI4yb
-	840sXvsox5GvClFgsNvHR7ySE0w/h5HC8mvy6jJSVw==
-X-Google-Smtp-Source: ACHHUZ6tGZ0d+SHBtkkFPVWYkItO9PJtj5bJYjh8QNcwjAwNan5vTxwhzhMX7pQTPHXPZyQIZObczBy/rQ0vasV0OyE=
-X-Received: by 2002:a05:6512:799:b0:4f2:5cf0:36fd with SMTP id
- x25-20020a056512079900b004f25cf036fdmr54112lfr.5.1684916684162; Wed, 24 May
- 2023 01:24:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75663C146
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:28:02 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A32112B;
+	Wed, 24 May 2023 01:28:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1684916880; x=1716452880;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=htB6cCnFK3gzZGTZ8M7qNcCQ2Wriy8hXkM0cfyK59YM=;
+  b=uuQnprOu+vmP2AGwFbfEWAR5oWBk8BP6GIRiY1vVbPxKHrWHfKrnI6s7
+   1ZyjNyoocVARIkBYhwVqtCQv3mBwJFvpnzElhaDU4PFORExJOpgltepn0
+   jCKhN+DFXGSKAEtqflkQ1/75GDjvxmOXy6Nmo81ScaGNmim3oqPSDiz8Q
+   zQzlLWRxabqiStER1EOyLqAIqJw5SJ4A47X3H/NvT+aeGnOgI4ZE9nfjM
+   h1iqsmwhEfazOD9clOYeD6LeHjbDpASQkhyuRigkPzKSDz6r6B/EjHNyt
+   kO63ymmh5pxPvEXW+Va6GK1/DG8v1DCrGus78jSZlXSkMvXf9Llx3eIn6
+   g==;
+X-IronPort-AV: E=Sophos;i="6.00,188,1681196400"; 
+   d="scan'208";a="212802497"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 May 2023 01:27:59 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 24 May 2023 01:27:58 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Wed, 24 May 2023 01:27:55 -0700
+Message-ID: <7758d9f3ed40d154c27519b19248127e9d5b7575.camel@microchip.com>
+Subject: Re: [PATCH] hv_netvsc: Allocate rx indirection table size
+ dynamically
+From: Steen Hegelund <steen.hegelund@microchip.com>
+To: Shradha Gupta <shradhagupta@linux.microsoft.com>,
+	<linux-kernel@vger.kernel.org>, <linux-hyperv@vger.kernel.org>,
+	<netdev@vger.kernel.org>
+CC: Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>, "K. Y. Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>, Dexuan
+ Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>, "Michael Kelley"
+	<mikelley@microsoft.com>, "David S. Miller" <davem@davemloft.net>
+Date: Wed, 24 May 2023 10:27:55 +0200
+In-Reply-To: <1684907844-23224-1-git-send-email-shradhagupta@linux.microsoft.com>
+References: <1684907844-23224-1-git-send-email-shradhagupta@linux.microsoft.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.48.1 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <000000000000c0b11d05fa917fe3@google.com> <ZGzfzEs-vJcZAySI@zx2c4.com>
- <20230523090512.19ca60b6@kernel.org> <CANn89iLVSiO1o1C-P30_3i19Ci8W1jQk9mr-_OMsQ4tS8Nq2dg@mail.gmail.com>
- <20230523094108.0c624d47@kernel.org> <CAHmME9obRJPrjiJE95JZug0r6NUwrwwWib+=LO4jiQf-y2m+Vg@mail.gmail.com>
- <20230523094736.3a9f6f8c@kernel.org> <ZGzxa18w-v8Dsy5D@zx2c4.com>
- <CANn89iLrP7-NbE1yU_okruVKqbuUc3gxPABq4-vQ4SKrUhEdtA@mail.gmail.com> <CANn89iKEjb-g1ed2M+VS5avSs=M0gNgH9QWXtOQRM_uDTMCwPw@mail.gmail.com>
-In-Reply-To: <CANn89iKEjb-g1ed2M+VS5avSs=M0gNgH9QWXtOQRM_uDTMCwPw@mail.gmail.com>
-From: Dmitry Vyukov <dvyukov@google.com>
-Date: Wed, 24 May 2023 10:24:31 +0200
-Message-ID: <CACT4Y+YcNt8rvJRK+XhCZa1Ocw9epHg1oSGc28mntjY3HWZp1g@mail.gmail.com>
-Subject: Re: [syzbot] [wireguard?] KASAN: slab-use-after-free Write in enqueue_timer
-To: Eric Dumazet <edumazet@google.com>
-Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>, Jakub Kicinski <kuba@kernel.org>, 
-	syzbot <syzbot+c2775460db0e1c70018e@syzkaller.appspotmail.com>, 
-	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com, davem@davemloft.net, 
-	linux-kernel@vger.kernel.org, pabeni@redhat.com, wireguard@lists.zx2c4.com, 
-	jann@thejh.net
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 23 May 2023 at 19:07, 'Eric Dumazet' via syzkaller-bugs
-<syzkaller-bugs@googlegroups.com> wrote:
->
-> On Tue, May 23, 2023 at 7:05=E2=80=AFPM Eric Dumazet <edumazet@google.com=
-> wrote:
-> >
-> > On Tue, May 23, 2023 at 7:01=E2=80=AFPM Jason A. Donenfeld <Jason@zx2c4=
-.com> wrote:
-> > >
-> > > On Tue, May 23, 2023 at 09:47:36AM -0700, Jakub Kicinski wrote:
-> > > > On Tue, 23 May 2023 18:42:53 +0200 Jason A. Donenfeld wrote:
-> > > > > > It should, no idea why it isn't. Looking thru the code now I do=
-n't see
-> > > > > > any obvious gaps where timer object is on a list but not active=
- :S
-> > > > > > There's no way to get a vmcore from syzbot, right? :)
-> > > > > >
-> > > > > > Also I thought the shutdown leads to a warning when someone tri=
-es to
-> > > > > > schedule the dead timer but in fact add_timer() just exits clea=
-nly.
-> > > > > > So the shutdown won't help us find the culprit :(
-> > > > >
-> > > > > Worth noting that it could also be caused by adding to a dead tim=
-er
-> > > > > anywhere in priv_data of another netdev, not just the sole timer_=
-list
-> > > > > in net_device.
-> > > >
-> > > > Oh, I thought you zero'ed in on the watchdog based on offsets.
-> > > > Still, object debug should track all timers in the slab and complai=
-n
-> > > > on the free path.
-> > >
-> > > No, I mentioned watchdog because it's the only timer_list in struct
-> > > net_device.
-> > >
-> > > Offset analysis is an interesting idea though. Look at this:
-> > >
-> > > > The buggy address belongs to the object at ffff88801ecc0000
-> > > >  which belongs to the cache kmalloc-cg-8k of size 8192
-> > > > The buggy address is located 5376 bytes inside of
-> > > >  freed 8192-byte region [ffff88801ecc0000, ffff88801ecc2000)
-> > >
-> > > IDA says that for syzkaller's vmlinux, net_device has a size of 0xc80
-> > > and wg_device has a size of 0x880. 0xc80+0x880=3D5376. Coincidence th=
-at
-> > > the address offset is just after what wg uses?
-> >
-> >
-> > Note that the syzkaller report mentioned:
-> >
-> > alloc_netdev_mqs+0x89/0xf30 net/core/dev.c:10626
-> >  usbnet_probe+0x196/0x2770 drivers/net/usb/usbnet.c:1698
-> >  usb_probe_interface+0x5c4/0xb00 drivers/usb/core/driver.c:396
-> >  really_probe+0x294/0xc30 drivers/base/dd.c:658
-> >  __driver_probe_device+0x1a2/0x3d0 drivers/base/dd.c:800
-> >  driver_probe_device+0x50/0x420 drivers/base/dd.c:830
-> >  __device_attach_driver+0x2d3/0x520 drivers/base/dd.c:958
-> >
-> > So maybe an usbnet driver has a timer_list in its priv_data.
->
-> struct usbnet {
-> ...
-> struct timer_list   delay;
+SGkgU2hyYWRoYSwKCk9uIFR1ZSwgMjAyMy0wNS0yMyBhdCAyMjo1NyAtMDcwMCwgU2hyYWRoYSBH
+dXB0YSB3cm90ZToKPiBbWW91IGRvbid0IG9mdGVuIGdldCBlbWFpbCBmcm9tIHNocmFkaGFndXB0
+YUBsaW51eC5taWNyb3NvZnQuY29tLiBMZWFybiB3aHkKPiB0aGlzIGlzIGltcG9ydGFudCBhdCBo
+dHRwczovL2FrYS5tcy9MZWFybkFib3V0U2VuZGVySWRlbnRpZmljYXRpb27CoF0KPiAKPiBFWFRF
+Uk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNz
+IHlvdSBrbm93IHRoZQo+IGNvbnRlbnQgaXMgc2FmZQo+IAo+IEFsbG9jYXRlIHRoZSBzaXplIG9m
+IHJ4IGluZGlyZWN0aW9uIHRhYmxlIGR5bmFtaWNhbGx5IGluIG5ldHZzYwo+IGZyb20gdGhlIHZh
+bHVlIG9mIHNpemUgcHJvdmlkZWQgYnkgT0lEX0dFTl9SRUNFSVZFX1NDQUxFX0NBUEFCSUxJVElF
+Uwo+IHF1ZXJ5IGluc3RlYWQgb2YgdXNpbmcgYSBjb25zdGFudCB2YWx1ZSBvZiBJVEFCX05VTS4K
+PiAKPiBTaWduZWQtb2ZmLWJ5OiBTaHJhZGhhIEd1cHRhIDxzaHJhZGhhZ3VwdGFAbGludXgubWlj
+cm9zb2Z0LmNvbT4KPiAtLS0KPiDCoGRyaXZlcnMvbmV0L2h5cGVydi9oeXBlcnZfbmV0LmjCoMKg
+IHzCoCA1ICsrKystCj4gwqBkcml2ZXJzL25ldC9oeXBlcnYvbmV0dnNjX2Rydi5jwqDCoCB8IDEx
+ICsrKysrKystLS0tCj4gwqBkcml2ZXJzL25ldC9oeXBlcnYvcm5kaXNfZmlsdGVyLmMgfCAyMyAr
+KysrKysrKysrKysrKysrKysrLS0tLQo+IMKgMyBmaWxlcyBjaGFuZ2VkLCAzMCBpbnNlcnRpb25z
+KCspLCA5IGRlbGV0aW9ucygtKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9oeXBlcnYv
+aHlwZXJ2X25ldC5oIGIvZHJpdmVycy9uZXQvaHlwZXJ2L2h5cGVydl9uZXQuaAo+IGluZGV4IGRk
+NTkxOWVjNDA4Yi4uMWRiZGI2NWNhOGYwIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvbmV0L2h5cGVy
+di9oeXBlcnZfbmV0LmgKPiArKysgYi9kcml2ZXJzL25ldC9oeXBlcnYvaHlwZXJ2X25ldC5oCj4g
+QEAgLTc0LDYgKzc0LDcgQEAgc3RydWN0IG5kaXNfcmVjdl9zY2FsZV9jYXAgeyAvKgo+IE5ESVNf
+UkVDRUlWRV9TQ0FMRV9DQVBBQklMSVRJRVMgKi8KPiDCoCNkZWZpbmUgTkRJU19SU1NfSEFTSF9T
+RUNSRVRfS0VZX01BWF9TSVpFX1JFVklTSU9OXzLCoMKgIDQwCj4gCj4gwqAjZGVmaW5lIElUQUJf
+TlVNIDEyOAo+ICsjZGVmaW5lIElUQUJfTlVNX01BWCAyNTYKPiAKPiDCoHN0cnVjdCBuZGlzX3Jl
+Y3Zfc2NhbGVfcGFyYW0geyAvKiBORElTX1JFQ0VJVkVfU0NBTEVfUEFSQU1FVEVSUyAqLwo+IMKg
+wqDCoMKgwqDCoMKgIHN0cnVjdCBuZGlzX29ial9oZWFkZXIgaGRyOwo+IEBAIC0xMDM0LDcgKzEw
+MzUsOSBAQCBzdHJ1Y3QgbmV0X2RldmljZV9jb250ZXh0IHsKPiAKPiDCoMKgwqDCoMKgwqDCoCB1
+MzIgdHhfdGFibGVbVlJTU19TRU5EX1RBQl9TSVpFXTsKPiAKPiAtwqDCoMKgwqDCoMKgIHUxNiBy
+eF90YWJsZVtJVEFCX05VTV07Cj4gK8KgwqDCoMKgwqDCoCB1MTYgKnJ4X3RhYmxlOwo+ICsKPiAr
+wqDCoMKgwqDCoMKgIGludCByeF90YWJsZV9zejsKPiAKPiDCoMKgwqDCoMKgwqDCoCAvKiBFdGh0
+b29sIHNldHRpbmdzICovCj4gwqDCoMKgwqDCoMKgwqAgdTggZHVwbGV4Owo+IGRpZmYgLS1naXQg
+YS9kcml2ZXJzL25ldC9oeXBlcnYvbmV0dnNjX2Rydi5jIGIvZHJpdmVycy9uZXQvaHlwZXJ2L25l
+dHZzY19kcnYuYwo+IGluZGV4IDAxMDNmZjkxNDAyNC4uNWI4YTdkNWY5YTE1IDEwMDY0NAo+IC0t
+LSBhL2RyaXZlcnMvbmV0L2h5cGVydi9uZXR2c2NfZHJ2LmMKPiArKysgYi9kcml2ZXJzL25ldC9o
+eXBlcnYvbmV0dnNjX2Rydi5jCj4gQEAgLTE3NDcsNyArMTc0Nyw5IEBAIHN0YXRpYyB1MzIgbmV0
+dnNjX2dldF9yeGZoX2tleV9zaXplKHN0cnVjdCBuZXRfZGV2aWNlCj4gKmRldikKPiAKPiDCoHN0
+YXRpYyB1MzIgbmV0dnNjX3Jzc19pbmRpcl9zaXplKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpCj4g
+wqB7Cj4gLcKgwqDCoMKgwqDCoCByZXR1cm4gSVRBQl9OVU07Cj4gK8KgwqDCoMKgwqDCoCBzdHJ1
+Y3QgbmV0X2RldmljZV9jb250ZXh0ICpuZGMgPSBuZXRkZXZfcHJpdihkZXYpOwo+ICsKPiArwqDC
+oMKgwqDCoMKgIHJldHVybiBuZGMtPnJ4X3RhYmxlX3N6Owo+IMKgfQo+IAo+IMKgc3RhdGljIGlu
+dCBuZXR2c2NfZ2V0X3J4Zmgoc3RydWN0IG5ldF9kZXZpY2UgKmRldiwgdTMyICppbmRpciwgdTgg
+KmtleSwKPiBAQCAtMTc2Niw3ICsxNzY4LDcgQEAgc3RhdGljIGludCBuZXR2c2NfZ2V0X3J4Zmgo
+c3RydWN0IG5ldF9kZXZpY2UgKmRldiwgdTMyCj4gKmluZGlyLCB1OCAqa2V5LAo+IAo+IMKgwqDC
+oMKgwqDCoMKgIHJuZGlzX2RldiA9IG5kZXYtPmV4dGVuc2lvbjsKPiDCoMKgwqDCoMKgwqDCoCBp
+ZiAoaW5kaXIpIHsKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBmb3IgKGkgPSAwOyBp
+IDwgSVRBQl9OVU07IGkrKykKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBmb3IgKGkg
+PSAwOyBpIDwgbmRjLT5yeF90YWJsZV9zejsgaSsrKQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaW5kaXJbaV0gPSBuZGMtPnJ4X3RhYmxlW2ldOwo+IMKg
+wqDCoMKgwqDCoMKgIH0KPiAKPiBAQCAtMTc5MiwxMSArMTc5NCwxMSBAQCBzdGF0aWMgaW50IG5l
+dHZzY19zZXRfcnhmaChzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LAo+IGNvbnN0IHUzMiAqaW5kaXIs
+Cj4gCj4gwqDCoMKgwqDCoMKgwqAgcm5kaXNfZGV2ID0gbmRldi0+ZXh0ZW5zaW9uOwo+IMKgwqDC
+oMKgwqDCoMKgIGlmIChpbmRpcikgewo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGZv
+ciAoaSA9IDA7IGkgPCBJVEFCX05VTTsgaSsrKQo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIGZvciAoaSA9IDA7IGkgPCBuZGMtPnJ4X3RhYmxlX3N6OyBpKyspCj4gwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAoaW5kaXJbaV0gPj0gbmRldi0+
+bnVtX2NobikKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gLUVJTlZBTDsKPiAKPiAtwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBmb3IgKGkgPSAwOyBpIDwgSVRBQl9OVU07IGkrKykKPiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBmb3IgKGkgPSAwOyBpIDwgbmRjLT5yeF90YWJsZV9zejsgaSsrKQo+
+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbmRjLT5yeF90
+YWJsZVtpXSA9IGluZGlyW2ldOwo+IMKgwqDCoMKgwqDCoMKgIH0KPiAKPiBAQCAtMjYzOCw2ICsy
+NjQwLDcgQEAgc3RhdGljIHZvaWQgbmV0dnNjX3JlbW92ZShzdHJ1Y3QgaHZfZGV2aWNlICpkZXYp
+Cj4gCj4gwqDCoMKgwqDCoMKgwqAgaHZfc2V0X2RydmRhdGEoZGV2LCBOVUxMKTsKPiAKPiArwqDC
+oMKgwqDCoMKgIGtmcmVlKG5kZXZfY3R4LT5yeF90YWJsZSk7Cj4gwqDCoMKgwqDCoMKgwqAgZnJl
+ZV9wZXJjcHUobmRldl9jdHgtPnZmX3N0YXRzKTsKPiDCoMKgwqDCoMKgwqDCoCBmcmVlX25ldGRl
+dihuZXQpOwo+IMKgfQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9oeXBlcnYvcm5kaXNfZmls
+dGVyLmMKPiBiL2RyaXZlcnMvbmV0L2h5cGVydi9ybmRpc19maWx0ZXIuYwo+IGluZGV4IGVlYTc3
+N2VjMjU0MS4uYWYwMzFlNzExY2IyIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvbmV0L2h5cGVydi9y
+bmRpc19maWx0ZXIuYwo+ICsrKyBiL2RyaXZlcnMvbmV0L2h5cGVydi9ybmRpc19maWx0ZXIuYwo+
+IEBAIC05MjcsNyArOTI3LDcgQEAgc3RhdGljIGludCBybmRpc19zZXRfcnNzX3BhcmFtX21zZyhz
+dHJ1Y3Qgcm5kaXNfZGV2aWNlCj4gKnJkZXYsCj4gwqDCoMKgwqDCoMKgwqAgc3RydWN0IHJuZGlz
+X3NldF9yZXF1ZXN0ICpzZXQ7Cj4gwqDCoMKgwqDCoMKgwqAgc3RydWN0IHJuZGlzX3NldF9jb21w
+bGV0ZSAqc2V0X2NvbXBsZXRlOwo+IMKgwqDCoMKgwqDCoMKgIHUzMiBleHRsZW4gPSBzaXplb2Yo
+c3RydWN0IG5kaXNfcmVjdl9zY2FsZV9wYXJhbSkgKwo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCA0ICogSVRBQl9OVU0gKyBORVRWU0NfSEFTSF9LRVlMRU47Cj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDQgKiBuZGMtPnJ4X3RhYmxlX3N6
+ICsgTkVUVlNDX0hBU0hfS0VZTEVOOwo+IMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBuZGlzX3JlY3Zf
+c2NhbGVfcGFyYW0gKnJzc3A7Cj4gwqDCoMKgwqDCoMKgwqAgdTMyICppdGFiOwo+IMKgwqDCoMKg
+wqDCoMKgIHU4ICprZXlwOwo+IEBAIC05NTMsNyArOTUzLDcgQEAgc3RhdGljIGludCBybmRpc19z
+ZXRfcnNzX3BhcmFtX21zZyhzdHJ1Y3Qgcm5kaXNfZGV2aWNlCj4gKnJkZXYsCj4gwqDCoMKgwqDC
+oMKgwqAgcnNzcC0+aGFzaGluZm8gPSBORElTX0hBU0hfRlVOQ19UT0VQTElUWiB8IE5ESVNfSEFT
+SF9JUFY0IHwKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgTkRJU19IQVNIX1RDUF9JUFY0IHwgTkRJU19IQVNIX0lQVjYgfAo+IMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBORElTX0hBU0hfVENQX0lQVjY7Cj4g
+LcKgwqDCoMKgwqDCoCByc3NwLT5pbmRpcmVjdF90YWJzaXplID0gNCpJVEFCX05VTTsKPiArwqDC
+oMKgwqDCoMKgIHJzc3AtPmluZGlyZWN0X3RhYnNpemUgPSA0ICogbmRjLT5yeF90YWJsZV9zejsK
+PiDCoMKgwqDCoMKgwqDCoCByc3NwLT5pbmRpcmVjdF90YWJvZmZzZXQgPSBzaXplb2Yoc3RydWN0
+IG5kaXNfcmVjdl9zY2FsZV9wYXJhbSk7Cj4gwqDCoMKgwqDCoMKgwqAgcnNzcC0+aGFzaGtleV9z
+aXplID0gTkVUVlNDX0hBU0hfS0VZTEVOOwo+IMKgwqDCoMKgwqDCoMKgIHJzc3AtPmhhc2hrZXlf
+b2Zmc2V0ID0gcnNzcC0+aW5kaXJlY3RfdGFib2Zmc2V0ICsKPiBAQCAtOTYxLDcgKzk2MSw3IEBA
+IHN0YXRpYyBpbnQgcm5kaXNfc2V0X3Jzc19wYXJhbV9tc2coc3RydWN0IHJuZGlzX2RldmljZQo+
+ICpyZGV2LAo+IAo+IMKgwqDCoMKgwqDCoMKgIC8qIFNldCBpbmRpcmVjdGlvbiB0YWJsZSBlbnRy
+aWVzICovCj4gwqDCoMKgwqDCoMKgwqAgaXRhYiA9ICh1MzIgKikocnNzcCArIDEpOwo+IC3CoMKg
+wqDCoMKgwqAgZm9yIChpID0gMDsgaSA8IElUQUJfTlVNOyBpKyspCj4gK8KgwqDCoMKgwqDCoCBm
+b3IgKGkgPSAwOyBpIDwgbmRjLT5yeF90YWJsZV9zejsgaSsrKQo+IMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBpdGFiW2ldID0gbmRjLT5yeF90YWJsZVtpXTsKPiAKPiDCoMKgwqDCoMKg
+wqDCoCAvKiBTZXQgaGFzayBrZXkgdmFsdWVzICovCj4gQEAgLTE1NDgsNiArMTU0OCwyMSBAQCBz
+dHJ1Y3QgbmV0dnNjX2RldmljZSAqcm5kaXNfZmlsdGVyX2RldmljZV9hZGQoc3RydWN0Cj4gaHZf
+ZGV2aWNlICpkZXYsCj4gwqDCoMKgwqDCoMKgwqAgaWYgKHJldCB8fCByc3NjYXAubnVtX3JlY3Zf
+cXVlIDwgMikKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBvdXQ7Cj4gCj4g
+K8KgwqDCoMKgwqDCoCBpZiAocnNzY2FwLm51bV9pbmRpcmVjdF90YWJlbnQgJiYKPiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByc3NjYXAubnVtX2luZGlyZWN0X3RhYmVudCA8PSBJVEFC
+X05VTV9NQVgpIHsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBuZGMtPnJ4X3RhYmxl
+X3N6ID0gcnNzY2FwLm51bV9pbmRpcmVjdF90YWJlbnQ7Cj4gK8KgwqDCoMKgwqDCoCB9IGVsc2Ug
+ewo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG5kYy0+cnhfdGFibGVfc3ogPSBJVEFC
+X05VTTsKPiArwqDCoMKgwqDCoMKgIH0KPiArCj4gK8KgwqDCoMKgwqDCoCBuZGMtPnJ4X3RhYmxl
+ID0ga3phbGxvYyhzaXplb2YodTE2KSAqIG5kYy0+cnhfdGFibGVfc3osCj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBHRlBfS0VS
+TkVMKTsKPiArwqDCoMKgwqDCoMKgIGlmIChuZGMtPnJ4X3RhYmxlKSB7Cj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgbmV0ZGV2X2VycihuZXQsICJFcnJvciBpbiBhbGxvY2F0aW5nIHJ4
+IGluZGlyZWN0aW9uIHRhYmxlIG9mCj4gc2l6ZSAlZFxuIiwKPiArwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG5kYy0+cnhfdGFibGVf
+c3opOwo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdvdG8gb3V0Owo+ICvCoMKgwqDC
+oMKgwqAgfQo+ICsKCllvdSBhcmUgbm93IGFsd2F5cyBhbGxvY2F0aW5nIHRoZSByeF90YWJsZSBp
+biB0aGUgcm5kaXNfZmlsdGVyX2RldmljZV9hZGQoKQpmdW5jdGlvbiwgYnV0IHRoaXMgZnVuY3Rp
+b24gaXMgY2FsbGVkIGJvdGggZnJvbSB0aGUgbmV0dnNjX3Byb2JlIGZ1bmN0aW9uCmFuZCB0aGUg
+bmV0dnNjX2F0dGFjaCBmdW5jdGlvbiwgYnV0IGFzIGZhciBhcyBJIGNhbiBzZWUgdGhlIHJ4X3Rh
+YmxlIG9ubHkKZ2V0cyBmcmVlZCBpbiB0aGUgcmVtb3ZlIGZ1bmN0aW9uIG5vdCBpbiB0aGUgbmV0
+dnNjX2RldGFjaC4KClNvIGlmIHRoZXJlIGlzIGEgY2hhbmNlIHRoYXQgdGhlIGF0dGFjaC9kZXRh
+Y2ggd2lsbCBiZSBjYWxsZWQgbW9yZSB0aW1lcwpvbiBhIGV4aXN0aW5nIGRldmljZSB5b3Ugd2ls
+bCBoYXZlIGEgbGVhay4KCj4gwqDCoMKgwqDCoMKgwqAgLyogVGhpcyBndWFyYW50ZWVzIHRoYXQg
+bnVtX3Bvc3NpYmxlX3Jzc19xcyA8PSBudW1fb25saW5lX2NwdXMgKi8KPiDCoMKgwqDCoMKgwqDC
+oCBudW1fcG9zc2libGVfcnNzX3FzID0gbWluX3QodTMyLCBudW1fb25saW5lX2NwdXMoKSwKPiDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIHJzc2NhcC5udW1fcmVjdl9xdWUpOwo+IEBAIC0xNTU4LDcgKzE1NzMsNyBA
+QCBzdHJ1Y3QgbmV0dnNjX2RldmljZSAqcm5kaXNfZmlsdGVyX2RldmljZV9hZGQoc3RydWN0Cj4g
+aHZfZGV2aWNlICpkZXYsCj4gwqDCoMKgwqDCoMKgwqAgbmV0X2RldmljZS0+bnVtX2NobiA9IG1p
+bihuZXRfZGV2aWNlLT5tYXhfY2huLCBkZXZpY2VfaW5mby0+bnVtX2Nobik7Cj4gCj4gwqDCoMKg
+wqDCoMKgwqAgaWYgKCFuZXRpZl9pc19yeGZoX2NvbmZpZ3VyZWQobmV0KSkgewo+IC3CoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIGZvciAoaSA9IDA7IGkgPCBJVEFCX05VTTsgaSsrKQo+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGZvciAoaSA9IDA7IGkgPCBuZGMtPnJ4X3RhYmxl
+X3N6OyBpKyspCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCBuZGMtPnJ4X3RhYmxlW2ldID0gZXRodG9vbF9yeGZoX2luZGlyX2RlZmF1bHQoCj4gwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpLCBuZXRfZGV2aWNlLT5udW1fY2huKTsK
+PiDCoMKgwqDCoMKgwqDCoCB9Cj4gLS0KPiAyLjM0LjEKPiAKPiAKCkJlc3QgUmVnYXJkcwpTdGVl
+bgo=
 
-FWIW There are more report examples on the dashboard.
-There are some that don't mention wireguard nor usbnet, e.g.:
-https://syzkaller.appspot.com/text?tag=3DCrashReport&x=3D17dd2446280000
-So that's probably red herring. But they all seem to mention alloc_netdev_m=
-qs.
-Let's do for now:
-#syz set subsystems: net
 
