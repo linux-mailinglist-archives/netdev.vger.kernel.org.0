@@ -1,129 +1,125 @@
-Return-Path: <netdev+bounces-5108-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5109-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C913270FAAA
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1460670FAB1
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 17:46:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 469081C2084E
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:45:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B6A3F1C202F1
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 15:46:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 625FF19BC3;
-	Wed, 24 May 2023 15:45:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F15C319BC8;
+	Wed, 24 May 2023 15:46:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57C7C18C19
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:45:08 +0000 (UTC)
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F6DE4D;
-	Wed, 24 May 2023 08:44:40 -0700 (PDT)
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-64d2981e3abso857051b3a.1;
-        Wed, 24 May 2023 08:44:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E593419BB3
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:46:55 +0000 (UTC)
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9DE1B4
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:46:28 -0700 (PDT)
+Received: from mail-yw1-f200.google.com (mail-yw1-f200.google.com [209.85.128.200])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 097AA41B3C
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 15:45:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1684943138;
+	bh=92JsxtKc2doKzuIzI6aLPIX3GzuVF3Oem9Ak6r3By98=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type;
+	b=Oy3mUJtsR8+daqdkE/eZzHg5GtrArvzXZSD1wf3sRtRff5lVcxrbz2iyIFQtBF4jW
+	 vU1qslA5ZpVtSeNcxr6hTScry9QVUJltLo7awpa67Q8mjwRVvfXyINkvURd5aKkedm
+	 LxrZN9cGORnnlFpxAHWwh1V7MDMdMcckZwdxNKPsUHe7x16BTCyrKosGZrj43uTYay
+	 aH/oK+8BSMppKCIv1aQqEYcCpzgYq8PaiQuT9oX3BveCOvJZl+vtv4bqmsJDX3gChS
+	 m3nfAGQsqCI9LYbQTgUEgNBxbDOeCCxfx5dl7kgE4vABU+w5Nai3HjYRpRNomwG6au
+	 NjLnpJn/qo36g==
+Received: by mail-yw1-f200.google.com with SMTP id 00721157ae682-561985d744fso127516057b3.1
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 08:45:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684943011; x=1687535011;
+        d=1e100.net; s=20221208; t=1684943137; x=1687535137;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=TrdToRO/bP+geIejtXExyfPp1Jsz9iDuLIlZnoMhAw4=;
-        b=P/Z3sLeAmsP8pEEDEAueNGGJmHzU2puBjrruJ+DqSV6RK3O3677kqzeJ2At91Zpjpu
-         PAK9vizjcbIzwk5a0VqzdyAlfBijUK52E9yGI1y4roZdb17pDkiN17JZK1o1juzTgHyV
-         VUsBmFniitcUF6WqqLAzU2bFnHW5BFx9IgItaEuYIf+NO/2O2oH/GlApsSZzLuJcK8sm
-         FH3FB4xmBIaha08cjq454ZE0MHyUJx70BV1wu/m/ZcpQ7uRv9Coe12S6clVYbTO4hD8m
-         qXVYQ1zqdquxQTGCqG4z8VfhBze6q0cU967P3XJAwN+4k7y56W2HVrB5KakFBkOF8ic3
-         8FmQ==
-X-Gm-Message-State: AC+VfDx6s/qTZNlHCJyGbg9bFpn6S2wkuzJZQmSt0nGjJYgUV8CA5Qki
-	cLdZncfNDoqL7rvRR1hmwwRXhKu6Ps8=
-X-Google-Smtp-Source: ACHHUZ4RvB86TUSb68aXdsprcG5wd0nzPx/ZN+jMVjsHyN+i36qEg/CQLdWfQdCwdGen4OL8SAc61w==
-X-Received: by 2002:a17:902:bf06:b0:1a6:bd5c:649d with SMTP id bi6-20020a170902bf0600b001a6bd5c649dmr15565269plb.56.1684943010704;
-        Wed, 24 May 2023 08:43:30 -0700 (PDT)
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com. [209.85.216.45])
-        by smtp.gmail.com with ESMTPSA id s10-20020a170902ea0a00b001a0448731c2sm8911493plg.47.2023.05.24.08.43.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 May 2023 08:43:30 -0700 (PDT)
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-2537a79b9acso321149a91.3;
-        Wed, 24 May 2023 08:43:30 -0700 (PDT)
-X-Received: by 2002:a17:90b:1003:b0:253:669b:4dbc with SMTP id
- gm3-20020a17090b100300b00253669b4dbcmr16813007pjb.41.1684943010142; Wed, 24
- May 2023 08:43:30 -0700 (PDT)
+        bh=92JsxtKc2doKzuIzI6aLPIX3GzuVF3Oem9Ak6r3By98=;
+        b=h+BIVAWOiqK3llxD4ip24fhHFTMJ5ZTr0undeXdYwe1KcO4pwxcDC+2X7lmFRgVP1X
+         y5DPMQ4n01vwVe4kpujDilEgammutNy0mNcCbpL/W+drqJueMaZ5pXOdn90g3b6tETDB
+         64x1jhq1j+RP7oU55PKYWbi609i8aYi2HAGC+K4GlPE/xaGFi45rtdbEefOF7vcEvABU
+         zJlC0z8XCR00x2jYhcL3EwN/s+qW+qJHCOQr8HyYXaRjHwND8CacD9waHP60r2ckAkWh
+         cBuf+JnliNNYMlLz9j0FNg07ig780DAenogQhDDNNiRdZ/A3nz135u8XDeCeSK1/WvA0
+         0Ylw==
+X-Gm-Message-State: AC+VfDztjntPK7zLCLn4HyeQSMwljNzCvv7eJZRsloo0NIOhSXSkiOp5
+	0Ajsl3qbCohSze6REwQjJ8Qt4FZPW3QyvWJ1M1sg305BKdo9aQM9W9f4y6KXWNmUvB/daM2gUTs
+	FdMJ8YNRhhFTHNjbE+Xm0aVNzk8zKgEsV85MB6JYDLEtrSyntSA==
+X-Received: by 2002:a81:9a0e:0:b0:565:4c40:fc3 with SMTP id r14-20020a819a0e000000b005654c400fc3mr5833533ywg.23.1684943137038;
+        Wed, 24 May 2023 08:45:37 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4NCqrhc0yq/4yGhKiNRTK/xREKkd6tNR7bvv/mKO+Lk2sONFl/YAqyvoWKLnPhNWxGPsyLx7N9OEP4prvaTeQ=
+X-Received: by 2002:a81:9a0e:0:b0:565:4c40:fc3 with SMTP id
+ r14-20020a819a0e000000b005654c400fc3mr5833509ywg.23.1684943136808; Wed, 24
+ May 2023 08:45:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230523223944.691076-1-Kenny.Ho@amd.com> <01936d68-85d3-4d20-9beb-27ff9f62d826@lunn.ch>
-In-Reply-To: <01936d68-85d3-4d20-9beb-27ff9f62d826@lunn.ch>
-From: Marc Dionne <marc.dionne@auristor.com>
-Date: Wed, 24 May 2023 12:43:18 -0300
-X-Gmail-Original-Message-ID: <CAB9dFdt4-cBFhEqsTXk9suE+Bw-xcpM0n3Q6rFmBaa+8A5uMWQ@mail.gmail.com>
-Message-ID: <CAB9dFdt4-cBFhEqsTXk9suE+Bw-xcpM0n3Q6rFmBaa+8A5uMWQ@mail.gmail.com>
-Subject: Re: [PATCH] Remove hardcoded static string length
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: Kenny Ho <Kenny.Ho@amd.com>, David Howells <dhowells@redhat.com>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org, 
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, y2kenny@gmail.com
+References: <20230522132439.634031-1-aleksandr.mikhalitsyn@canonical.com>
+ <20230522132439.634031-2-aleksandr.mikhalitsyn@canonical.com>
+ <20230522133409.5c6e839a@kernel.org> <20230523-flechten-ortsschild-e5724ecc4ed0@brauner>
+ <CAMw=ZnS8GBTDV0rw+Dh6hPv3uLXJVwapRFQHLMYEYGZHNoLNOw@mail.gmail.com>
+ <20230523140844.5895d645@kernel.org> <CAEivzxeS2J5i0RJDvFHq-U_RAU5bbKVF5ZbphYDGoPcMZTsE3Q@mail.gmail.com>
+ <CAMw=ZnRmNaoRb2uceatrV8EAufJSKZzD2AsfT5PJE8NBBOrHCg@mail.gmail.com> <20230524081933.44dc8bea@kernel.org>
+In-Reply-To: <20230524081933.44dc8bea@kernel.org>
+From: Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Date: Wed, 24 May 2023 17:45:25 +0200
+Message-ID: <CAEivzxcTEghPqk=9hQMReSGzE=ruWnJyiuPhW5rGd7eUOEg12A@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 1/3] scm: add SO_PASSPIDFD and SCM_PIDFD
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Luca Boccassi <bluca@debian.org>, Christian Brauner <brauner@kernel.org>, davem@davemloft.net, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
+	Leon Romanovsky <leon@kernel.org>, David Ahern <dsahern@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Kees Cook <keescook@chromium.org>, Kuniyuki Iwashima <kuniyu@amazon.com>, 
+	Lennart Poettering <mzxreary@0pointer.de>, linux-arch@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=0.6 required=5.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URI_DOTEDU autolearn=no
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 23, 2023 at 9:50=E2=80=AFPM Andrew Lunn <andrew@lunn.ch> wrote:
+On Wed, May 24, 2023 at 5:19=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
+ote:
 >
-> On Tue, May 23, 2023 at 06:39:44PM -0400, Kenny Ho wrote:
-> > UTS_RELEASE length can exceed the hardcoded length.  This is causing
-> > compile error when WERROR is turned on.
+> On Wed, 24 May 2023 11:47:50 +0100 Luca Boccassi wrote:
+> > > I will send SO_PEERPIDFD as an independent patch too, because it
+> > > doesn't require this change with CONFIG_UNIX
+> > > and we can avoid waiting until CONFIG_UNIX change will be merged.
+> > > I've a feeling that the discussion around making CONFIG_UNIX  to be a
+> > > boolean won't be easy and fast ;-)
 > >
-> > Signed-off-by: Kenny Ho <Kenny.Ho@amd.com>
-> > ---
-> >  net/rxrpc/local_event.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/net/rxrpc/local_event.c b/net/rxrpc/local_event.c
-> > index 19e929c7c38b..61d53ee10784 100644
-> > --- a/net/rxrpc/local_event.c
-> > +++ b/net/rxrpc/local_event.c
-> > @@ -16,7 +16,7 @@
-> >  #include <generated/utsrelease.h>
-> >  #include "ar-internal.h"
-> >
-> > -static const char rxrpc_version_string[65] =3D "linux-" UTS_RELEASE " =
-AF_RXRPC";
-> > +static const char rxrpc_version_string[] =3D "linux-" UTS_RELEASE " AF=
-_RXRPC";
+> > Thank you, that sounds great to me, I can start using SO_PEERPIDFD
+> > independently of SCM_PIDFD, there's no hard dependency between the
+> > two.
 >
-> This is not an area of the network stack i know about, so please
-> excuse what might be a dumb question.
+> How about you put the UNIX -> bool patch at the end of the series,
+> (making it a 4 patch series) and if there's a discussion about it
+> I'll just skip it and apply the first 3 patches?
+
+Sure, I will do that!
+
 >
-> How is the protocol defined here? Is there an RFC or some other sort
-> of standard?
->
-> A message is being built and sent over a socket. The size of that
-> message was fixed, at 65 + sizeof(whdr). Now the message is variable
-> length. Does the protocol specification actually allow this?
->
->         Andrew
+> In the (IMHO more likely) case that there isn't a discussion it saves
+> me from remembering to chase you to send that patch ;)
 
-I don't think there is an RFC describing RX, but the closest thing to
-a spec (https://web.mit.edu/kolya/afs/rx/rx-spec) states:
+Thanks a lot, Jakub!
 
-"If a server receives a packet with a type value of 13, and the
-client-initiated flag set, it should respond with a 65-byte payload
-containing a string that identifies the version of AFS software it is
-running."
-
-So while it may not actually cause any issues (the few things that
-look at the data just truncate past 65), it's probably best to keep
-the response at a fixed 65 bytes.
-
-Marc
+Kind regards,
+Alex
 
