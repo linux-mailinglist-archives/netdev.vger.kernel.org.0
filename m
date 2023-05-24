@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-5003-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4999-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4F6A970F687
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 32A3870F67D
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:32:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 04FFB280DD3
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:34:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E33AE281456
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:32:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC50B1775C;
-	Wed, 24 May 2023 12:32:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D21F3182C4;
+	Wed, 24 May 2023 12:32:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAA0D19907
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:32:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C32B61775C
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:32:34 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B10A3
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:32:34 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6773B18D
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:32:33 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q1nfE-0006vt-2w; Wed, 24 May 2023 14:32:24 +0200
+	id 1q1nfE-0006vp-2r; Wed, 24 May 2023 14:32:24 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q1nfD-002TzJ-9e; Wed, 24 May 2023 14:32:23 +0200
+	id 1q1nfC-002TzB-SG; Wed, 24 May 2023 14:32:22 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q1nfB-00APa2-N6; Wed, 24 May 2023 14:32:21 +0200
+	id 1q1nfB-00APaC-Nv; Wed, 24 May 2023 14:32:21 +0200
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: "David S. Miller" <davem@davemloft.net>,
 	Andrew Lunn <andrew@lunn.ch>,
@@ -43,16 +43,15 @@ To: "David S. Miller" <davem@davemloft.net>,
 	Vladimir Oltean <olteanv@gmail.com>,
 	Woojung Huh <woojung.huh@microchip.com>,
 	Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>,
-	Oleksij Rempel <o.rempel@pengutronix.de>,
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	kernel@pengutronix.de,
 	linux-kernel@vger.kernel.org,
 	netdev@vger.kernel.org,
 	UNGLinuxDriver@microchip.com,
 	"Russell King (Oracle)" <linux@armlinux.org.uk>
-Subject: [PATCH net-next v1 2/5] net: dsa: microchip: add an enum for regmap widths
-Date: Wed, 24 May 2023 14:32:17 +0200
-Message-Id: <20230524123220.2481565-3-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v1 3/5] net: dsa: microchip: remove ksz_port:on variable
+Date: Wed, 24 May 2023 14:32:18 +0200
+Message-Id: <20230524123220.2481565-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230524123220.2481565-1-o.rempel@pengutronix.de>
 References: <20230524123220.2481565-1-o.rempel@pengutronix.de>
@@ -73,456 +72,94 @@ X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+The only place where this variable would be set to false is the
+ksz8_config_cpu_port() function. But it is done in a bogus way:
 
-It is not immediately obvious that this driver allocates, via the
-KSZ_REGMAP_TABLE() macro, 3 regmaps for register access: dev->regmap[0]
-for 8-bit access, dev->regmap[1] for 16-bit and dev->regmap[2] for
-32-bit access.
+ 	for (i = 0; i < dev->phy_port_cnt; i++) {
+		if (i == dev->phy_port_cnt) <--- will be never executed.
+			break;
+		p->on = 1;
 
-In future changes that add support for reg_fields, each field will have
-to specify through which of the 3 regmaps it's going to go. Add an enum
-now, to denote one of the 3 register access widths, and make the code go
-through some wrapper functions for easier review and further
-modification.
+So, we never have a situation where p->on = 0. In this case, we can just
+remove it.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8795.c      |  8 ++--
- drivers/net/dsa/microchip/ksz8863_smi.c  |  2 +-
- drivers/net/dsa/microchip/ksz9477.c      | 24 +++++------
- drivers/net/dsa/microchip/ksz9477_i2c.c  |  2 +-
- drivers/net/dsa/microchip/ksz_common.c   |  6 +--
- drivers/net/dsa/microchip/ksz_common.h   | 54 ++++++++++++++++--------
- drivers/net/dsa/microchip/ksz_spi.c      |  2 +-
- drivers/net/dsa/microchip/lan937x_main.c |  8 ++--
- 8 files changed, 63 insertions(+), 43 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 20 +-------------------
+ drivers/net/dsa/microchip/ksz_common.h |  1 -
+ 2 files changed, 1 insertion(+), 20 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index f56fca1b1a22..d2f7fa3fbd27 100644
+index d2f7fa3fbd27..84d502589f8e 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -28,13 +28,13 @@
- 
- static void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
+@@ -941,7 +941,6 @@ void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
  {
--	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
-+	regmap_update_bits(ksz_regmap_8(dev), addr, bits, set ? bits : 0);
- }
+ 	u8 learn[DSA_MAX_PORTS];
+ 	int first, index, cnt;
+-	struct ksz_port *p;
+ 	const u16 *regs;
  
- static void ksz_port_cfg(struct ksz_device *dev, int port, int offset, u8 bits,
- 			 bool set)
- {
--	regmap_update_bits(dev->regmap[0], PORT_CTRL_ADDR(port, offset),
-+	regmap_update_bits(ksz_regmap_8(dev), PORT_CTRL_ADDR(port, offset),
- 			   bits, set ? bits : 0);
- }
- 
-@@ -1425,14 +1425,14 @@ int ksz8_setup(struct dsa_switch *ds)
- 	ksz_cfg(dev, S_LINK_AGING_CTRL, SW_LINK_AUTO_AGING, true);
- 
- 	/* Enable aggressive back off algorithm in half duplex mode. */
--	regmap_update_bits(dev->regmap[0], REG_SW_CTRL_1,
-+	regmap_update_bits(ksz_regmap_8(dev), REG_SW_CTRL_1,
- 			   SW_AGGR_BACKOFF, SW_AGGR_BACKOFF);
- 
- 	/*
- 	 * Make sure unicast VLAN boundary is set as default and
- 	 * enable no excessive collision drop.
- 	 */
--	regmap_update_bits(dev->regmap[0], REG_SW_CTRL_2,
-+	regmap_update_bits(ksz_regmap_8(dev), REG_SW_CTRL_2,
- 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP,
- 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP);
- 
-diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
-index 3698112138b7..2af807db0b45 100644
---- a/drivers/net/dsa/microchip/ksz8863_smi.c
-+++ b/drivers/net/dsa/microchip/ksz8863_smi.c
-@@ -136,7 +136,7 @@ static int ksz8863_smi_probe(struct mdio_device *mdiodev)
- 	if (!dev)
- 		return -ENOMEM;
- 
--	for (i = 0; i < ARRAY_SIZE(ksz8863_regmap_config); i++) {
-+	for (i = 0; i < __KSZ_NUM_REGMAPS; i++) {
- 		rc = ksz8863_regmap_config[i];
- 		rc.lock_arg = &dev->regmap_mutex;
- 		dev->regmap[i] = devm_regmap_init(&mdiodev->dev,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index bf13d47c26cf..3019f54049fc 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -21,25 +21,25 @@
- 
- static void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
- {
--	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
-+	regmap_update_bits(ksz_regmap_8(dev), addr, bits, set ? bits : 0);
- }
- 
- static void ksz_port_cfg(struct ksz_device *dev, int port, int offset, u8 bits,
- 			 bool set)
- {
--	regmap_update_bits(dev->regmap[0], PORT_CTRL_ADDR(port, offset),
-+	regmap_update_bits(ksz_regmap_8(dev), PORT_CTRL_ADDR(port, offset),
- 			   bits, set ? bits : 0);
- }
- 
- static void ksz9477_cfg32(struct ksz_device *dev, u32 addr, u32 bits, bool set)
- {
--	regmap_update_bits(dev->regmap[2], addr, bits, set ? bits : 0);
-+	regmap_update_bits(ksz_regmap_32(dev), addr, bits, set ? bits : 0);
- }
- 
- static void ksz9477_port_cfg32(struct ksz_device *dev, int port, int offset,
- 			       u32 bits, bool set)
- {
--	regmap_update_bits(dev->regmap[2], PORT_CTRL_ADDR(port, offset),
-+	regmap_update_bits(ksz_regmap_32(dev), PORT_CTRL_ADDR(port, offset),
- 			   bits, set ? bits : 0);
- }
- 
-@@ -52,7 +52,7 @@ int ksz9477_change_mtu(struct ksz_device *dev, int port, int mtu)
- 
- 	frame_size = mtu + VLAN_ETH_HLEN + ETH_FCS_LEN;
- 
--	return regmap_update_bits(dev->regmap[1], REG_SW_MTU__2,
-+	return regmap_update_bits(ksz_regmap_16(dev), REG_SW_MTU__2,
- 				  REG_SW_MTU_MASK, frame_size);
- }
- 
-@@ -60,7 +60,7 @@ static int ksz9477_wait_vlan_ctrl_ready(struct ksz_device *dev)
- {
- 	unsigned int val;
- 
--	return regmap_read_poll_timeout(dev->regmap[0], REG_SW_VLAN_CTRL,
-+	return regmap_read_poll_timeout(ksz_regmap_8(dev), REG_SW_VLAN_CTRL,
- 					val, !(val & VLAN_START), 10, 1000);
- }
- 
-@@ -147,7 +147,7 @@ static int ksz9477_wait_alu_ready(struct ksz_device *dev)
- {
- 	unsigned int val;
- 
--	return regmap_read_poll_timeout(dev->regmap[2], REG_SW_ALU_CTRL__4,
-+	return regmap_read_poll_timeout(ksz_regmap_32(dev), REG_SW_ALU_CTRL__4,
- 					val, !(val & ALU_START), 10, 1000);
- }
- 
-@@ -155,7 +155,7 @@ static int ksz9477_wait_alu_sta_ready(struct ksz_device *dev)
- {
- 	unsigned int val;
- 
--	return regmap_read_poll_timeout(dev->regmap[2],
-+	return regmap_read_poll_timeout(ksz_regmap_32(dev),
- 					REG_SW_ALU_STAT_CTRL__4,
- 					val, !(val & ALU_STAT_START),
- 					10, 1000);
-@@ -170,7 +170,7 @@ int ksz9477_reset_switch(struct ksz_device *dev)
- 	ksz_cfg(dev, REG_SW_OPERATION, SW_RESET, true);
- 
- 	/* turn off SPI DO Edge select */
--	regmap_update_bits(dev->regmap[0], REG_SW_GLOBAL_SERIAL_CTRL_0,
-+	regmap_update_bits(ksz_regmap_8(dev), REG_SW_GLOBAL_SERIAL_CTRL_0,
- 			   SPI_AUTO_EDGE_DETECTION, 0);
- 
- 	/* default configuration */
-@@ -213,7 +213,7 @@ void ksz9477_r_mib_cnt(struct ksz_device *dev, int port, u16 addr, u64 *cnt)
- 	data |= (addr << MIB_COUNTER_INDEX_S);
- 	ksz_pwrite32(dev, port, REG_PORT_MIB_CTRL_STAT__4, data);
- 
--	ret = regmap_read_poll_timeout(dev->regmap[2],
-+	ret = regmap_read_poll_timeout(ksz_regmap_32(dev),
- 			PORT_CTRL_ADDR(port, REG_PORT_MIB_CTRL_STAT__4),
- 			val, !(val & MIB_COUNTER_READ), 10, 1000);
- 	/* failed to read MIB. get out of loop */
-@@ -346,7 +346,7 @@ void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
- 	const u16 *regs = dev->info->regs;
- 	u8 data;
- 
--	regmap_update_bits(dev->regmap[0], REG_SW_LUE_CTRL_2,
-+	regmap_update_bits(ksz_regmap_8(dev), REG_SW_LUE_CTRL_2,
- 			   SW_FLUSH_OPTION_M << SW_FLUSH_OPTION_S,
- 			   SW_FLUSH_OPTION_DYN_MAC << SW_FLUSH_OPTION_S);
- 
-@@ -1165,7 +1165,7 @@ int ksz9477_setup(struct dsa_switch *ds)
- 	ksz_cfg(dev, REG_SW_MAC_CTRL_1, SW_JUMBO_PACKET, true);
- 
- 	/* Now we can configure default MTU value */
--	ret = regmap_update_bits(dev->regmap[1], REG_SW_MTU__2, REG_SW_MTU_MASK,
-+	ret = regmap_update_bits(ksz_regmap_16(dev), REG_SW_MTU__2, REG_SW_MTU_MASK,
- 				 VLAN_ETH_FRAME_LEN + ETH_FCS_LEN);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
-index 97a317263a2f..497be833f707 100644
---- a/drivers/net/dsa/microchip/ksz9477_i2c.c
-+++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
-@@ -24,7 +24,7 @@ static int ksz9477_i2c_probe(struct i2c_client *i2c)
- 	if (!dev)
- 		return -ENOMEM;
- 
--	for (i = 0; i < ARRAY_SIZE(ksz9477_regmap_config); i++) {
-+	for (i = 0; i < __KSZ_NUM_REGMAPS; i++) {
- 		rc = ksz9477_regmap_config[i];
- 		rc.lock_arg = &dev->regmap_mutex;
- 		dev->regmap[i] = devm_regmap_init_i2c(i2c, &rc);
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index a4428be5f483..53bb7d9712d0 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -2095,7 +2095,7 @@ static int ksz_setup(struct dsa_switch *ds)
+ 	regs = dev->info->regs;
+@@ -955,9 +954,6 @@ void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ 		cnt = dev->info->port_cnt;
  	}
- 
- 	/* set broadcast storm protection 10% rate */
--	regmap_update_bits(dev->regmap[1], regs[S_BROADCAST_CTRL],
-+	regmap_update_bits(ksz_regmap_16(dev), regs[S_BROADCAST_CTRL],
- 			   BROADCAST_STORM_RATE,
- 			   (BROADCAST_STORM_VALUE *
- 			   BROADCAST_STORM_PROT_RATE) / 100);
-@@ -2106,7 +2106,7 @@ static int ksz_setup(struct dsa_switch *ds)
- 
- 	ds->num_tx_queues = dev->info->num_tx_queues;
- 
--	regmap_update_bits(dev->regmap[0], regs[S_MULTICAST_CTRL],
-+	regmap_update_bits(ksz_regmap_8(dev), regs[S_MULTICAST_CTRL],
- 			   MULTICAST_STORM_DISABLE, MULTICAST_STORM_DISABLE);
- 
- 	ksz_init_mib_timer(dev);
-@@ -2156,7 +2156,7 @@ static int ksz_setup(struct dsa_switch *ds)
+ 	for (index = first; index < cnt; index++) {
+-		p = &dev->ports[index];
+-		if (!p->on)
+-			continue;
+ 		ksz_pread8(dev, index, regs[P_STP_CTRL], &learn[index]);
+ 		if (!(learn[index] & PORT_LEARN_DISABLE))
+ 			ksz_pwrite8(dev, index, regs[P_STP_CTRL],
+@@ -965,9 +961,6 @@ void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
  	}
+ 	ksz_cfg(dev, S_FLUSH_TABLE_CTRL, SW_FLUSH_DYN_MAC_TABLE, true);
+ 	for (index = first; index < cnt; index++) {
+-		p = &dev->ports[index];
+-		if (!p->on)
+-			continue;
+ 		if (!(learn[index] & PORT_LEARN_DISABLE))
+ 			ksz_pwrite8(dev, index, regs[P_STP_CTRL], learn[index]);
+ 	}
+@@ -1338,25 +1331,14 @@ void ksz8_config_cpu_port(struct dsa_switch *ds)
  
- 	/* start switch */
--	regmap_update_bits(dev->regmap[0], regs[S_START_CTRL],
-+	regmap_update_bits(ksz_regmap_8(dev), regs[S_START_CTRL],
- 			   SW_START, SW_START);
+ 	ksz_cfg(dev, regs[S_TAIL_TAG_CTRL], masks[SW_TAIL_TAG_ENABLE], true);
  
- 	return 0;
+-	p = &dev->ports[dev->cpu_port];
+-	p->on = 1;
+-
+ 	ksz8_port_setup(dev, dev->cpu_port, true);
+ 
+ 	for (i = 0; i < dev->phy_port_cnt; i++) {
+-		p = &dev->ports[i];
+-
+ 		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
+-
+-		/* Last port may be disabled. */
+-		if (i == dev->phy_port_cnt)
+-			break;
+-		p->on = 1;
+ 	}
+ 	for (i = 0; i < dev->phy_port_cnt; i++) {
+ 		p = &dev->ports[i];
+-		if (!p->on)
+-			continue;
++
+ 		if (!ksz_is_ksz88x3(dev)) {
+ 			ksz_pread8(dev, i, regs[P_REMOTE_STATUS], &remote);
+ 			if (remote & KSZ8_PORT_FIBER_MODE)
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index b86f1e27a0c3..f45f5fe11bde 100644
+index f45f5fe11bde..5aa58aac3e07 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -22,6 +22,13 @@
- struct ksz_device;
- struct ksz_port;
+@@ -108,7 +108,6 @@ struct ksz_port {
+ 	int stp_state;
+ 	struct phy_device phydev;
  
-+enum ksz_regmap_width {
-+	KSZ_REGMAP_8,
-+	KSZ_REGMAP_16,
-+	KSZ_REGMAP_32,
-+	__KSZ_NUM_REGMAPS,
-+};
-+
- struct vlan_table {
- 	u32 table[3];
- };
-@@ -137,7 +144,7 @@ struct ksz_device {
- 	const struct ksz_dev_ops *dev_ops;
- 
- 	struct device *dev;
--	struct regmap *regmap[3];
-+	struct regmap *regmap[__KSZ_NUM_REGMAPS];
- 
- 	void *priv;
- 	int irq;
-@@ -377,11 +384,25 @@ phy_interface_t ksz_get_xmii(struct ksz_device *dev, int port, bool gbit);
- extern const struct ksz_chip_data ksz_switch_chips[];
- 
- /* Common register access functions */
-+static inline struct regmap *ksz_regmap_8(struct ksz_device *dev)
-+{
-+	return dev->regmap[KSZ_REGMAP_8];
-+}
-+
-+static inline struct regmap *ksz_regmap_16(struct ksz_device *dev)
-+{
-+	return dev->regmap[KSZ_REGMAP_16];
-+}
-+
-+static inline struct regmap *ksz_regmap_32(struct ksz_device *dev)
-+{
-+	return dev->regmap[KSZ_REGMAP_32];
-+}
- 
- static inline int ksz_read8(struct ksz_device *dev, u32 reg, u8 *val)
- {
- 	unsigned int value;
--	int ret = regmap_read(dev->regmap[0], reg, &value);
-+	int ret = regmap_read(ksz_regmap_8(dev), reg, &value);
- 
- 	if (ret)
- 		dev_err(dev->dev, "can't read 8bit reg: 0x%x %pe\n", reg,
-@@ -394,7 +415,7 @@ static inline int ksz_read8(struct ksz_device *dev, u32 reg, u8 *val)
- static inline int ksz_read16(struct ksz_device *dev, u32 reg, u16 *val)
- {
- 	unsigned int value;
--	int ret = regmap_read(dev->regmap[1], reg, &value);
-+	int ret = regmap_read(ksz_regmap_16(dev), reg, &value);
- 
- 	if (ret)
- 		dev_err(dev->dev, "can't read 16bit reg: 0x%x %pe\n", reg,
-@@ -407,7 +428,7 @@ static inline int ksz_read16(struct ksz_device *dev, u32 reg, u16 *val)
- static inline int ksz_read32(struct ksz_device *dev, u32 reg, u32 *val)
- {
- 	unsigned int value;
--	int ret = regmap_read(dev->regmap[2], reg, &value);
-+	int ret = regmap_read(ksz_regmap_32(dev), reg, &value);
- 
- 	if (ret)
- 		dev_err(dev->dev, "can't read 32bit reg: 0x%x %pe\n", reg,
-@@ -422,7 +443,7 @@ static inline int ksz_read64(struct ksz_device *dev, u32 reg, u64 *val)
- 	u32 value[2];
- 	int ret;
- 
--	ret = regmap_bulk_read(dev->regmap[2], reg, value, 2);
-+	ret = regmap_bulk_read(ksz_regmap_32(dev), reg, value, 2);
- 	if (ret)
- 		dev_err(dev->dev, "can't read 64bit reg: 0x%x %pe\n", reg,
- 			ERR_PTR(ret));
-@@ -436,7 +457,7 @@ static inline int ksz_write8(struct ksz_device *dev, u32 reg, u8 value)
- {
- 	int ret;
- 
--	ret = regmap_write(dev->regmap[0], reg, value);
-+	ret = regmap_write(ksz_regmap_8(dev), reg, value);
- 	if (ret)
- 		dev_err(dev->dev, "can't write 8bit reg: 0x%x %pe\n", reg,
- 			ERR_PTR(ret));
-@@ -448,7 +469,7 @@ static inline int ksz_write16(struct ksz_device *dev, u32 reg, u16 value)
- {
- 	int ret;
- 
--	ret = regmap_write(dev->regmap[1], reg, value);
-+	ret = regmap_write(ksz_regmap_16(dev), reg, value);
- 	if (ret)
- 		dev_err(dev->dev, "can't write 16bit reg: 0x%x %pe\n", reg,
- 			ERR_PTR(ret));
-@@ -460,7 +481,7 @@ static inline int ksz_write32(struct ksz_device *dev, u32 reg, u32 value)
- {
- 	int ret;
- 
--	ret = regmap_write(dev->regmap[2], reg, value);
-+	ret = regmap_write(ksz_regmap_32(dev), reg, value);
- 	if (ret)
- 		dev_err(dev->dev, "can't write 32bit reg: 0x%x %pe\n", reg,
- 			ERR_PTR(ret));
-@@ -473,7 +494,7 @@ static inline int ksz_rmw16(struct ksz_device *dev, u32 reg, u16 mask,
- {
- 	int ret;
- 
--	ret = regmap_update_bits(dev->regmap[1], reg, mask, value);
-+	ret = regmap_update_bits(ksz_regmap_16(dev), reg, mask, value);
- 	if (ret)
- 		dev_err(dev->dev, "can't rmw 16bit reg 0x%x: %pe\n", reg,
- 			ERR_PTR(ret));
-@@ -486,7 +507,7 @@ static inline int ksz_rmw32(struct ksz_device *dev, u32 reg, u32 mask,
- {
- 	int ret;
- 
--	ret = regmap_update_bits(dev->regmap[2], reg, mask, value);
-+	ret = regmap_update_bits(ksz_regmap_32(dev), reg, mask, value);
- 	if (ret)
- 		dev_err(dev->dev, "can't rmw 32bit reg 0x%x: %pe\n", reg,
- 			ERR_PTR(ret));
-@@ -503,14 +524,14 @@ static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
- 	val[0] = swab32(value & 0xffffffffULL);
- 	val[1] = swab32(value >> 32ULL);
- 
--	return regmap_bulk_write(dev->regmap[2], reg, val, 2);
-+	return regmap_bulk_write(ksz_regmap_32(dev), reg, val, 2);
- }
- 
- static inline int ksz_rmw8(struct ksz_device *dev, int offset, u8 mask, u8 val)
- {
- 	int ret;
- 
--	ret = regmap_update_bits(dev->regmap[0], offset, mask, val);
-+	ret = regmap_update_bits(ksz_regmap_8(dev), offset, mask, val);
- 	if (ret)
- 		dev_err(dev->dev, "can't rmw 8bit reg 0x%x: %pe\n", offset,
- 			ERR_PTR(ret));
-@@ -561,7 +582,7 @@ static inline int ksz_prmw8(struct ksz_device *dev, int port, int offset,
- {
- 	int ret;
- 
--	ret = regmap_update_bits(dev->regmap[0],
-+	ret = regmap_update_bits(ksz_regmap_8(dev),
- 				 dev->dev_ops->get_port_addr(port, offset),
- 				 mask, val);
- 	if (ret)
-@@ -570,7 +591,6 @@ static inline int ksz_prmw8(struct ksz_device *dev, int port, int offset,
- 			ERR_PTR(ret));
- 
- 	return ret;
--
- }
- 
- static inline void ksz_regmap_lock(void *__mtx)
-@@ -725,9 +745,9 @@ static inline int is_lan937x(struct ksz_device *dev)
- 
- #define KSZ_REGMAP_TABLE(ksz, swp, regbits, regpad, regalign)		\
- 	static const struct regmap_config ksz##_regmap_config[] = {	\
--		KSZ_REGMAP_ENTRY(8, swp, (regbits), (regpad), (regalign)), \
--		KSZ_REGMAP_ENTRY(16, swp, (regbits), (regpad), (regalign)), \
--		KSZ_REGMAP_ENTRY(32, swp, (regbits), (regpad), (regalign)), \
-+		[KSZ_REGMAP_8] = KSZ_REGMAP_ENTRY(8, swp, (regbits), (regpad), (regalign)), \
-+		[KSZ_REGMAP_16] = KSZ_REGMAP_ENTRY(16, swp, (regbits), (regpad), (regalign)), \
-+		[KSZ_REGMAP_32] = KSZ_REGMAP_ENTRY(32, swp, (regbits), (regpad), (regalign)), \
- 	}
- 
- #endif
-diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
-index 96c52e8fb51b..279338451621 100644
---- a/drivers/net/dsa/microchip/ksz_spi.c
-+++ b/drivers/net/dsa/microchip/ksz_spi.c
-@@ -63,7 +63,7 @@ static int ksz_spi_probe(struct spi_device *spi)
- 	else
- 		regmap_config = ksz9477_regmap_config;
- 
--	for (i = 0; i < ARRAY_SIZE(ksz8795_regmap_config); i++) {
-+	for (i = 0; i < __KSZ_NUM_REGMAPS; i++) {
- 		rc = regmap_config[i];
- 		rc.lock_arg = &dev->regmap_mutex;
- 		rc.wr_table = chip->wr_table;
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 399a3905e6ca..b479a628b1ae 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -20,13 +20,13 @@
- 
- static int lan937x_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
- {
--	return regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
-+	return regmap_update_bits(ksz_regmap_8(dev), addr, bits, set ? bits : 0);
- }
- 
- static int lan937x_port_cfg(struct ksz_device *dev, int port, int offset,
- 			    u8 bits, bool set)
- {
--	return regmap_update_bits(dev->regmap[0], PORT_CTRL_ADDR(port, offset),
-+	return regmap_update_bits(ksz_regmap_8(dev), PORT_CTRL_ADDR(port, offset),
- 				  bits, set ? bits : 0);
- }
- 
-@@ -86,7 +86,7 @@ static int lan937x_internal_phy_write(struct ksz_device *dev, int addr, int reg,
- 	if (ret < 0)
- 		return ret;
- 
--	ret = regmap_read_poll_timeout(dev->regmap[1], REG_VPHY_IND_CTRL__2,
-+	ret = regmap_read_poll_timeout(ksz_regmap_16(dev), REG_VPHY_IND_CTRL__2,
- 				       value, !(value & VPHY_IND_BUSY), 10,
- 				       1000);
- 	if (ret < 0) {
-@@ -116,7 +116,7 @@ static int lan937x_internal_phy_read(struct ksz_device *dev, int addr, int reg,
- 	if (ret < 0)
- 		return ret;
- 
--	ret = regmap_read_poll_timeout(dev->regmap[1], REG_VPHY_IND_CTRL__2,
-+	ret = regmap_read_poll_timeout(ksz_regmap_16(dev), REG_VPHY_IND_CTRL__2,
- 				       value, !(value & VPHY_IND_BUSY), 10,
- 				       1000);
- 	if (ret < 0) {
+-	u32 on:1;			/* port is not disabled by hardware */
+ 	u32 fiber:1;			/* port is fiber */
+ 	u32 force:1;
+ 	u32 read:1;			/* read MIB counters in background */
 -- 
 2.39.2
 
