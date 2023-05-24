@@ -1,150 +1,248 @@
-Return-Path: <netdev+bounces-5044-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5045-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B3B9A70F866
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 16:15:05 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7875370F868
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 16:15:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 610C7280F32
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:15:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 493051C20DCC
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:15:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81C9D18B09;
-	Wed, 24 May 2023 14:15:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6BA718C01;
+	Wed, 24 May 2023 14:15:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CDBE60847
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 14:15:02 +0000 (UTC)
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCFA12E
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 07:14:58 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-556011695d1so18284057b3.1
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 07:14:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684937698; x=1687529698;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=3QpoZ9y5N+ktvZDtvrvSN6vnq4i+JDRJoYjrXy4QMdk=;
-        b=MYnLIZUyKdjv2RPom2LqjM9paMRqiqYt4df0wpY5TrzK2CwoIO+6Q33rUphSTvHGQR
-         cUNuqiMW+kyoS+oNa32QfHvCGp94zNasK8gCS3IcZmtukuMf5RVI3A4cDzN0pSQhZLlz
-         avOlKFHbA0JZMnbtcZ9nPQKupeSBojez4+zw9tP0112/f0woT/RZ//u1anJiRePYsITs
-         HfVcRyBmfYXy2DcDOywq4h4AH7pn1k609H2ds/rqSyFCZeqibgSvkVXJzb3uVbbgf3fB
-         OiK+wNPlgYyWHFT5hsuK8rkw7ZZeId3xdu79JCjjTuHq7B5fdJRprysGQIjjyYhJ7i+A
-         9Lkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684937698; x=1687529698;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3QpoZ9y5N+ktvZDtvrvSN6vnq4i+JDRJoYjrXy4QMdk=;
-        b=RCi6qfpOoDSLdbhGl36EwcjwP3C52o7dpqMWqH0kOtXnhKOOPhXUSv/lznySYzWfVd
-         mz+Vgp5NqaTocpk2ocrHtSzHR3yqrPWdDiFRf5giJTCufDgYDQY/rFVbL/wiLc9zswG4
-         Kxfm2E6JUkYmtQ4iCS1qn9btlbiuQG1c5weEMl5B2itJ3roVGKM2CSM9S9g+knc2/Ioy
-         RQ3MrzQAKTpjxXmkDEZK3Tyq5NilXmpY95ibC7MwvoNsG6PbHvmck+rPNQEYOhD0rV5M
-         kBQnSKfQESRA4IzzMqHQJnWQQb0T66HqLoIPrZGL/5HaMbW7VSrtKxQ1ruwTy9U/HGuX
-         xR7Q==
-X-Gm-Message-State: AC+VfDxeSvxGI2IgCIH92v5Qped5gQWlgAo2klyFysRxWKnlAYJb1CrT
-	2kLItKCAVJPRKfqoP9zlHrvkV8HOX91nLQ==
-X-Google-Smtp-Source: ACHHUZ5Js+WzTer2Ao4PLf0UsLTQ6DVuoYRIMN37+tweA7T7obElzB/n84h1tMYS8c7DNWizmqjDvwJMyspuSA==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:1895:b0:ba8:4ba3:5b54 with SMTP
- id cj21-20020a056902189500b00ba84ba35b54mr8041225ybb.11.1684937697857; Wed,
- 24 May 2023 07:14:57 -0700 (PDT)
-Date: Wed, 24 May 2023 14:14:56 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95CA617AD5
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 14:15:39 +0000 (UTC)
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A0F11D;
+	Wed, 24 May 2023 07:15:34 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by domac.alu.hr (Postfix) with ESMTP id 3AB9F60171;
+	Wed, 24 May 2023 16:15:32 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+	t=1684937732; bh=jX+U2qFkL9kOsl3dg0r8zNgfUzZNcOzw0PDQGkAamNs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=WUBXTR/QeyhHwgnNm5r9PJ08PA2rzdgAlfNohV9mnHMW66F+rg0dv1yrVcv68Wj3F
+	 QLKiwDGgaElv61Ic0NPqI28uEQPIbW3fZjkW2QpAT76fRbB/y26oMUJFNdj8VFpq9+
+	 G37RE/Hp314P9PiX4RsqKB4R2eq5DKjJoFAA//wgIYH6WEMhBDFVaQZ2G1Esln2afZ
+	 LMPHp2Buc3KImvskb8zu/XQWGGdgsnBJE4v3JrFThSRosVoRWZu0zfGtzY7or8OGYb
+	 zberJTyZXT/bnn0756FfXt5xCrxMuIzX/pQ6+8d+sJFdajCqZJ+dH4uYIEkhgbDkCu
+	 1QaOmR6ot9eTg==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+	by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9N6Spi061kV4; Wed, 24 May 2023 16:15:29 +0200 (CEST)
+Received: from [193.198.186.200] (pc-mtodorov.slava.alu.hr [193.198.186.200])
+	by domac.alu.hr (Postfix) with ESMTPSA id A02346016E;
+	Wed, 24 May 2023 16:15:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+	t=1684937729; bh=jX+U2qFkL9kOsl3dg0r8zNgfUzZNcOzw0PDQGkAamNs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=aa3ToDy02ohu1xgY1IJSmLT7oZGksuVgdPch5gQYpB2oMOrHuwOxAXyqsTGxReO9R
+	 0yCvpf4aImJqhxZfQN/u/V7bN/stV7Sigf1Hbnf2PpvO2pK9XNLIt3bdRW6oNkqzZn
+	 9e2+oCGCkhSn5VetrIgRHcq0sk3SHPclLVk0lpvowgd4xJASFgFRZKl4vNiALPSTe9
+	 h1PMX5MMhxVpWyoAX0gmeqvm6n4rq2xU7zVG0fH/KQ6Ut6Ls09L40NnYa/B3dRXQkp
+	 G1CsBzLlZBFHABcN0dLjirMPwZQEv5ok4iyrIeD4aQFe2BL37ROF2I6v+z4/Fgykiz
+	 iFFns9Yzs2HVQ==
+Message-ID: <29ae885c-cb7f-412a-43c7-22df8052831b@alu.unizg.hr>
+Date: Wed, 24 May 2023 16:15:23 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.1.698.g37aff9b760-goog
-Message-ID: <20230524141456.1045467-1-edumazet@google.com>
-Subject: [PATCH net] netrom: fix info-leak in nr_write_internal()
-From: Eric Dumazet <edumazet@google.com>
-To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
-	Eric Dumazet <edumazet@google.com>, Simon Kapadia <szymon@kapadia.pl>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [BUG] selftests: af_unix: unix:diag.c does not compile on
+ AlmaLinux 8.7
+To: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ netdev@vger.kernel.org, pabeni@redhat.com, shuah@kernel.org
+References: <c993180f-22a8-130a-8487-74fbe4c81335@alu.unizg.hr>
+ <20230522182623.67385-1-kuniyu@amazon.com>
+Content-Language: en-US, hr
+From: Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <20230522182623.67385-1-kuniyu@amazon.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Simon Kapadia reported the following issue:
+Hi,
 
-<quote>
+On 5/22/23 20:26, Kuniyuki Iwashima wrote:
+>>>
+>>> I launched AlmaLinux/RockyLinux 8.7 and 9.2 with images listed in the pages
+>>> below.
+>>>
+>>>     https://wiki.almalinux.org/cloud/AWS.html#community-amis
+>>>     https://rockylinux.org/cloud-images/
+>>>
+>>> The kernel versions in each image were :
+>>>
+>>>     8.7:
+>>>     Alma  : 4.18.0-425.3.1.el8.x86_64
+>>>     Rocky : 4.18.0-425.10.1.el8_7.x86_64
+>>>
+>>>     9.2:
+>>>     Alma  : 5.14.0-284.11.1.el9_2.x86_64
+>>>     Rocky : 5.14.0-284.11.1.el9_2.x86_64
+>>>
+>>> So, this is not a bug.  It's just because v4.18 does not support
+>>> UNIX_DIAG_UID, which was introduced in v5.3.
+>>>
+>>> You should install 5.3+ kernel if you want to build the test.
+>>>
+>>> Thanks,
+>>> Kuniyuki
+>>
+>> Hi, Kuniyuki,
+>>
+>> Good point. However, newer kernel won't save me from old /usr/include
+>> headers, will it?
+> 
+> Sorry, I meant kernel and kernel-headers package that should be
+> updated along with kernel.
+> 
+> You should use proper header files that match to the actual kernel
+> version running on the machine.
+> 
+> 
+>> I was actually testing the 6.4-rc3 on AlmaLinux 8.7, as it is my only
+>> RHEL-based box ...
+>>
+>> What would then be the right action?
+> 
+> make headers_install ?
 
-The Online Amateur Radio Community (OARC) has recently been experimenting
-with building a nationwide packet network in the UK.
-As part of our experimentation, we have been testing out packet on 300bps HF,
-and playing with net/rom.  For HF packet at this baud rate you really need
-to make sure that your MTU is relatively low; AX.25 suggests a PACLEN of 60,
-and a net/rom PACLEN of 40 to go with that.
-However the Linux net/rom support didn't work with a low PACLEN;
-the mkiss module would truncate packets if you set the PACLEN below about 200 or so, e.g.:
+I would rather not to. For the installation to remain manageable,
+preferably I'd have a kernel-devel RPM built.
 
-Apr 19 14:00:51 radio kernel: [12985.747310] mkiss: ax1: truncating oversized transmit packet!
+>> If it was a #define instead of enum, I'd probably work around and
+>> exclude the test that doesn't fit the kernel, or the system call
+>> would return -EINVAL?
+>>
+>> Including from the includes that came with the kernel might be
+>> a solution:
+>>
+>> ../../../../../include/uapi/linux/unix_diag.h:44:	UNIX_DIAG_UID,
+>>
+>> Alas, when I try to include, I get these ugly errors:
+>>
+>> [marvin@pc-mtodorov af_unix]$ gcc -I ../../../../../include/ diag_uid.c
+>> In file included from ../../../../../include/linux/build_bug.h:5,
+>>                    from ../../../../../include/linux/bits.h:21,
+>>                    from ../../../../../include/linux/capability.h:18,
+>>                    from ../../../../../include/linux/netlink.h:6,
+>>                    from diag_uid.c:8:
+>> ../../../../../include/linux/compiler.h:246:10: fatal error:
+>> asm/rwonce.h: No such file or directory
+>>    #include <asm/rwonce.h>
+>>             ^~~~~~~~~~~~~~
+> 
+> FWIW, this is provided by kernel-devel package.
 
-This didn't make any sense to me (if the packets are smaller why would they
-be truncated?) so I started investigating.
-I looked at the packets using ethereal, and found that many were just huge
-compared to what I would expect.
-A simple net/rom connection request packet had the request and then a bunch
-of what appeared to be random data following it:
+Actually, what is provided is essentially the same as before:
 
-</quote>
+[root@pc-mtodorov kernel]# rpm -q --fileprovide kernel-devel-6.3.3 | grep rwonce.h
+/usr/src/kernels/6.3.3-100.fc37.x86_64/arch/x86/include/generated/asm/rwonce.h	
+/usr/src/kernels/6.3.3-100.fc37.x86_64/include/asm-generic/rwonce.h	
+[root@pc-mtodorov kernel]#
 
-Simon provided a patch that I slightly revised:
-Not only we must not use skb_tailroom(), we also do
-not want to count NR_NETWORK_LEN twice.
+>> compilation terminated.
+>> [marvin@pc-mtodorov af_unix]$ vi +246
+>> ../../../../../include/linux/compiler.h
+>> [marvin@pc-mtodorov af_unix]$ find ../../../../../include -name rwonce.h
+>> ../../../../../include/asm-generic/rwonce.h
+>> [marvin@pc-mtodorov af_unix]$
+>>
+>> Minimum reproducer is:
+>>
+>> [marvin@pc-mtodorov af_unix]$ gcc -I ../../../../../include/ reproducer.c
+>> In file included from ../../../../../include/linux/build_bug.h:5,
+>>                    from ../../../../../include/linux/bits.h:21,
+>>                    from ../../../../../include/linux/capability.h:18,
+>>                    from ../../../../../include/linux/netlink.h:6,
+>>                    from reproducer.c:5:
+>> ../../../../../include/linux/compiler.h:246:10: fatal error:
+>> asm/rwonce.h: No such file or directory
+>>    #include <asm/rwonce.h>
+>>             ^~~~~~~~~~~~~~
+>> compilation terminated.
+>> [marvin@pc-mtodorov af_unix]$
+>>
+>> [marvin@pc-mtodorov af_unix]$ nl reproducer.c
+>>
+>>        1	#define _GNU_SOURCE
+>>        2	#include <linux/netlink.h>
+>>
+>> [marvin@pc-mtodorov af_unix]$
+>>
+>> Am I doing something very stupid right now, for actually I see
+>>
+>> #include <asm/rwonce.h>
+>>
+>> in "include/linux/compiler.h" 248L, 7843C
+>>
+>> while actual rwonce.h is in <asm-generic/rwonce.h>
+>>
+>> [marvin@pc-mtodorov af_unix]$ find ../../../../../include -name rwonce.h
+>> ../../../../../include/asm-generic/rwonce.h
+>> [marvin@pc-mtodorov af_unix]$
+>>
+>> I must be doing something wrong, for I see that the kernel compiled
+>> despite not having include/asm ?
+>>
+>> When looking at the invocations of rwonce.h in the kernel, they seem to
+>> be equally spread between <asm-generic/rwonce.h> and <asm/rwonce.h> :
+>>
+>> [marvin@pc-mtodorov af_unix]$ grep --include="*.[ch]" -n -w rwonce.h -r ../../../../.. 2> /dev/null | less
+>> ../../../../../arch/alpha/include/asm/rwonce.h:33:#include <asm-generic/rwonce.h>
+>> ../../../../../arch/arm64/include/asm/rwonce.h:71:#include <asm-generic/rwonce.h>
+>> ../../../../../arch/arm64/kvm/hyp/include/nvhe/spinlock.h:18:#include <asm/rwonce.h>
+>> ../../../../../arch/s390/include/asm/rwonce.h:29:#include <asm-generic/rwonce.h>
+>> ../../../../../arch/x86/include/generated/asm/rwonce.h:1:#include <asm-generic/rwonce.h>
+>> ../../../../../include/asm-generic/barrier.h:18:#include <asm/rwonce.h>
+>> ../../../../../include/kunit/test.h:29:#include <asm/rwonce.h>
+>> ../../../../../include/linux/compiler.h:246:#include <asm/rwonce.h>
+>>
+>> I figured out I must be doing something wrong or the kernel otherwise
+>> would not build for me.
+>>
+>> Eventually, the UNIX_DIAG_UID enum is used in only one place:
+>>
+>>           ASSERT_EQ(attr->rta_type, UNIX_DIAG_UID);
+>>
+>> That particular test should fail in case of kernel older than 5.3.
+> 
+> We don't expect it to be run on older kernels in the first place.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Co-Developed-by: Simon Kapadia <szymon@kapadia.pl>
-Signed-off-by: Simon Kapadia <szymon@kapadia.pl>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Tested-by: Simon Kapadia <szymon@kapadia.pl>
----
- net/netrom/nr_subr.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Certainly.
 
-diff --git a/net/netrom/nr_subr.c b/net/netrom/nr_subr.c
-index 3f99b432ea707e20a9620fb89cdf37d5e4f121e9..e2d2af924cff4a4103e59e04a6efe69c6fcca23e 100644
---- a/net/netrom/nr_subr.c
-+++ b/net/netrom/nr_subr.c
-@@ -123,7 +123,7 @@ void nr_write_internal(struct sock *sk, int frametype)
- 	unsigned char  *dptr;
- 	int len, timeout;
- 
--	len = NR_NETWORK_LEN + NR_TRANSPORT_LEN;
-+	len = NR_TRANSPORT_LEN;
- 
- 	switch (frametype & 0x0F) {
- 	case NR_CONNREQ:
-@@ -141,7 +141,8 @@ void nr_write_internal(struct sock *sk, int frametype)
- 		return;
- 	}
- 
--	if ((skb = alloc_skb(len, GFP_ATOMIC)) == NULL)
-+	skb = alloc_skb(NR_NETWORK_LEN + len, GFP_ATOMIC);
-+	if (!skb)
- 		return;
- 
- 	/*
-@@ -149,7 +150,7 @@ void nr_write_internal(struct sock *sk, int frametype)
- 	 */
- 	skb_reserve(skb, NR_NETWORK_LEN);
- 
--	dptr = skb_put(skb, skb_tailroom(skb));
-+	dptr = skb_put(skb, len);
- 
- 	switch (frametype & 0x0F) {
- 	case NR_CONNREQ:
+>> However, I fell into a terrible mess where one thing breaks the other.
+>>
+>> I can't seem to make this work.
+>>
+>> Thanks,
+>> Mirsad
+
 -- 
-2.40.1.698.g37aff9b760-goog
+Mirsad Goran Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
 
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
 
