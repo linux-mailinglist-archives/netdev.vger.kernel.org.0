@@ -1,210 +1,200 @@
-Return-Path: <netdev+bounces-4864-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4865-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A106B70ED72
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 07:57:33 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9781C70EE14
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 08:38:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D82962811C9
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 05:57:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E3CD12811CC
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 06:38:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF6881C06;
-	Wed, 24 May 2023 05:57:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0495F15D5;
+	Wed, 24 May 2023 06:38:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF655185D
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:57:28 +0000 (UTC)
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2622518E;
-	Tue, 23 May 2023 22:57:27 -0700 (PDT)
-Received: by linux.microsoft.com (Postfix, from userid 1134)
-	id 2D51020FB9F2; Tue, 23 May 2023 22:57:26 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2D51020FB9F2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1684907846;
-	bh=t5dzhOilp7QpFsI2q/pIEVeDMxfw0/HEc1rMQtlFgqk=;
-	h=From:To:Cc:Subject:Date:From;
-	b=MYTppQc3MP2tIIarrRFPMqgstCxp/wch2FlbAWuwnIfTNrG+L7HqZZS48JWKV7pVr
-	 5IUxNkGn94JIQevJFCrjxfUGEO00YhFIlnPBWpNWtxiRr1JklsbNpkZKdX7TilMspQ
-	 JwMPO9ChXPz/GKkjwaiYIh73SsnHCKFOzXFvKjrE=
-From: Shradha Gupta <shradhagupta@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	netdev@vger.kernel.org
-Cc: Shradha Gupta <shradhagupta@linux.microsoft.com>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	Long Li <longli@microsoft.com>,
-	Michael Kelley <mikelley@microsoft.com>,
-	"David S. Miller" <davem@davemloft.net>
-Subject: [PATCH] hv_netvsc: Allocate rx indirection table size dynamically
-Date: Tue, 23 May 2023 22:57:24 -0700
-Message-Id: <1684907844-23224-1-git-send-email-shradhagupta@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
-	USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E18F815B9
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 06:38:52 +0000 (UTC)
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7667D18D
+	for <netdev@vger.kernel.org>; Tue, 23 May 2023 23:38:48 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-96f5d651170so1160649466b.1
+        for <netdev@vger.kernel.org>; Tue, 23 May 2023 23:38:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684910327; x=1687502327;
+        h=content-transfer-encoding:in-reply-to:subject:from:cc
+         :content-language:references:to:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=z9qKa9RqSjKQDvTKCOJFhrIeOFF4u6aV7AZVl7uk18k=;
+        b=ZBpInanbrCzHVCQI7SLNfxU6ZvLsyBdQ5Pp+GMCNyzWz/S7Tmh836LHu+UYjbtmzsL
+         o3bbIiJXLMT8U9P6G+kKkLKozMElZDF5J2DV1tcfaJh4HJIUiCLSvV3SIqTgtieIzUH0
+         Hg3lq1uQbBAGeUv38CLNxA7NvrimhbyKmUHUOvlD66gfJHzNR1giegZVrd/ElSAGBMbC
+         erN9747wAF2xw0NMKS1fNkavhefUSgIX9kYyZT+LTSMZDdAoI4u/vib4hX95r21+Y5mL
+         7TLxm/G9mgoEjaqyWMPGIDHN1gf7H6NrOvSFxSNrxOHn4wpnbz1z1NOtWEopLdC/Fq9R
+         wFSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684910327; x=1687502327;
+        h=content-transfer-encoding:in-reply-to:subject:from:cc
+         :content-language:references:to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=z9qKa9RqSjKQDvTKCOJFhrIeOFF4u6aV7AZVl7uk18k=;
+        b=QPab24traGy0B17c+zEPRBPwebLCPYDM0yG3LIbpdywA35v3DaBysw6XgHUfZsXQMV
+         O9Hzzxudm8/UwkVMo2R5Ja4AIQxgikkkI6G7oTib9+G0UopoYoNijOqTLaRdH1y/j6kp
+         HZ2T3zXMz7KWjW/ABeDZC7CTYAPIsNgWBbxaWBm20shzrwJDOeYsvKUtdE09QcEalBWc
+         bZblpoS6Tf60CrJ4Xw0XJnHGcJ1dfBkYHIH5M9AnCLhj5q80azrmOjhQgmLfXl9cEqYs
+         MCjSqvgD2gRERcHTrgUCg4/wGo8cdvRYbGnhxGFHCXmEtrb4oWdhQ0SeokxJIL720b6y
+         /CCA==
+X-Gm-Message-State: AC+VfDxU41B1A4QxMxzVCtnrJKKBuWtXqgHoepubPgDAC/BZS7Cjqvd/
+	OUccMwb76AdMfpOQwGSVRW9nLIZI9UA=
+X-Google-Smtp-Source: ACHHUZ7S3ocIZrGabnev92IGt6SgQM3nF0NEzspHL6TjFSLDik2UUJJ0tqR0G8D4SVlMoSNHcpFrpw==
+X-Received: by 2002:a17:907:2d0a:b0:94a:6229:8fc1 with SMTP id gs10-20020a1709072d0a00b0094a62298fc1mr17215446ejc.31.1684910326214;
+        Tue, 23 May 2023 23:38:46 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:c519:9c00:b49b:cbaf:f9dc:9438? (dynamic-2a01-0c23-c519-9c00-b49b-cbaf-f9dc-9438.c23.pool.telefonica.de. [2a01:c23:c519:9c00:b49b:cbaf:f9dc:9438])
+        by smtp.googlemail.com with ESMTPSA id mf6-20020a170906cb8600b00966265be7adsm5329418ejb.22.2023.05.23.23.38.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 May 2023 23:38:45 -0700 (PDT)
+Message-ID: <ace88928-93b3-72fe-59e5-c7b5b7527f5e@gmail.com>
+Date: Wed, 24 May 2023 08:38:43 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+To: Genevieve Chan <genevieve.chan@starfivetech.com>,
+ "ddaney@caviumnetworks.com" <ddaney@caviumnetworks.com>
+References: <8eb8860a698b453788c29d43c6e3f239@EXMBX172.cuchost.com>
+ <907b769ca48a482eaf727b89ead56db4@EXMBX172.cuchost.com>
+Content-Language: en-US
+Cc: Andrew Lunn <andrew@lunn.ch>,
+ Russell King - ARM Linux <linux@armlinux.org.uk>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: Marvell_of_reg_init function
+In-Reply-To: <907b769ca48a482eaf727b89ead56db4@EXMBX172.cuchost.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Allocate the size of rx indirection table dynamically in netvsc
-from the value of size provided by OID_GEN_RECEIVE_SCALE_CAPABILITIES
-query instead of using a constant value of ITAB_NUM.
+On 24.05.2023 08:13, Genevieve Chan wrote:
+> ++
+> 
+> Hi Heiner,
+> 
+>  
+> 
+> Hope you’re doing well. I am Genevieve Chan, a linux junior software developer for RISC-V based processor. As mentioned in the email thread below, I have came across a possible issue when attempting to issue reg-init onto Page 0 Reg 4, involving advertisement register of PHY. I have stated the observation and the root cause and possible solution. Would like to ask if this proposed solution is probable and I could submit a patch for this?
+> 
 
-Signed-off-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
----
- drivers/net/hyperv/hyperv_net.h   |  5 ++++-
- drivers/net/hyperv/netvsc_drv.c   | 11 +++++++----
- drivers/net/hyperv/rndis_filter.c | 23 +++++++++++++++++++----
- 3 files changed, 30 insertions(+), 9 deletions(-)
+Please address all phylib maintainers and the netdev mailing list.
 
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index dd5919ec408b..1dbdb65ca8f0 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -74,6 +74,7 @@ struct ndis_recv_scale_cap { /* NDIS_RECEIVE_SCALE_CAPABILITIES */
- #define NDIS_RSS_HASH_SECRET_KEY_MAX_SIZE_REVISION_2   40
- 
- #define ITAB_NUM 128
-+#define ITAB_NUM_MAX 256
- 
- struct ndis_recv_scale_param { /* NDIS_RECEIVE_SCALE_PARAMETERS */
- 	struct ndis_obj_header hdr;
-@@ -1034,7 +1035,9 @@ struct net_device_context {
- 
- 	u32 tx_table[VRSS_SEND_TAB_SIZE];
- 
--	u16 rx_table[ITAB_NUM];
-+	u16 *rx_table;
-+
-+	int rx_table_sz;
- 
- 	/* Ethtool settings */
- 	u8 duplex;
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 0103ff914024..5b8a7d5f9a15 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -1747,7 +1747,9 @@ static u32 netvsc_get_rxfh_key_size(struct net_device *dev)
- 
- static u32 netvsc_rss_indir_size(struct net_device *dev)
- {
--	return ITAB_NUM;
-+	struct net_device_context *ndc = netdev_priv(dev);
-+
-+	return ndc->rx_table_sz;
- }
- 
- static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
-@@ -1766,7 +1768,7 @@ static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
- 
- 	rndis_dev = ndev->extension;
- 	if (indir) {
--		for (i = 0; i < ITAB_NUM; i++)
-+		for (i = 0; i < ndc->rx_table_sz; i++)
- 			indir[i] = ndc->rx_table[i];
- 	}
- 
-@@ -1792,11 +1794,11 @@ static int netvsc_set_rxfh(struct net_device *dev, const u32 *indir,
- 
- 	rndis_dev = ndev->extension;
- 	if (indir) {
--		for (i = 0; i < ITAB_NUM; i++)
-+		for (i = 0; i < ndc->rx_table_sz; i++)
- 			if (indir[i] >= ndev->num_chn)
- 				return -EINVAL;
- 
--		for (i = 0; i < ITAB_NUM; i++)
-+		for (i = 0; i < ndc->rx_table_sz; i++)
- 			ndc->rx_table[i] = indir[i];
- 	}
- 
-@@ -2638,6 +2640,7 @@ static void netvsc_remove(struct hv_device *dev)
- 
- 	hv_set_drvdata(dev, NULL);
- 
-+	kfree(ndev_ctx->rx_table);
- 	free_percpu(ndev_ctx->vf_stats);
- 	free_netdev(net);
- }
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-index eea777ec2541..af031e711cb2 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -927,7 +927,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
- 	struct rndis_set_request *set;
- 	struct rndis_set_complete *set_complete;
- 	u32 extlen = sizeof(struct ndis_recv_scale_param) +
--		     4 * ITAB_NUM + NETVSC_HASH_KEYLEN;
-+		     4 * ndc->rx_table_sz + NETVSC_HASH_KEYLEN;
- 	struct ndis_recv_scale_param *rssp;
- 	u32 *itab;
- 	u8 *keyp;
-@@ -953,7 +953,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
- 	rssp->hashinfo = NDIS_HASH_FUNC_TOEPLITZ | NDIS_HASH_IPV4 |
- 			 NDIS_HASH_TCP_IPV4 | NDIS_HASH_IPV6 |
- 			 NDIS_HASH_TCP_IPV6;
--	rssp->indirect_tabsize = 4*ITAB_NUM;
-+	rssp->indirect_tabsize = 4 * ndc->rx_table_sz;
- 	rssp->indirect_taboffset = sizeof(struct ndis_recv_scale_param);
- 	rssp->hashkey_size = NETVSC_HASH_KEYLEN;
- 	rssp->hashkey_offset = rssp->indirect_taboffset +
-@@ -961,7 +961,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
- 
- 	/* Set indirection table entries */
- 	itab = (u32 *)(rssp + 1);
--	for (i = 0; i < ITAB_NUM; i++)
-+	for (i = 0; i < ndc->rx_table_sz; i++)
- 		itab[i] = ndc->rx_table[i];
- 
- 	/* Set hask key values */
-@@ -1548,6 +1548,21 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
- 	if (ret || rsscap.num_recv_que < 2)
- 		goto out;
- 
-+	if (rsscap.num_indirect_tabent &&
-+		rsscap.num_indirect_tabent <= ITAB_NUM_MAX) {
-+		ndc->rx_table_sz = rsscap.num_indirect_tabent;
-+	} else {
-+		ndc->rx_table_sz = ITAB_NUM;
-+	}
-+
-+	ndc->rx_table = kzalloc(sizeof(u16) * ndc->rx_table_sz,
-+				GFP_KERNEL);
-+	if (ndc->rx_table) {
-+		netdev_err(net, "Error in allocating rx indirection table of size %d\n",
-+				ndc->rx_table_sz);
-+		goto out;
-+	}
-+
- 	/* This guarantees that num_possible_rss_qs <= num_online_cpus */
- 	num_possible_rss_qs = min_t(u32, num_online_cpus(),
- 				    rsscap.num_recv_que);
-@@ -1558,7 +1573,7 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
- 	net_device->num_chn = min(net_device->max_chn, device_info->num_chn);
- 
- 	if (!netif_is_rxfh_configured(net)) {
--		for (i = 0; i < ITAB_NUM; i++)
-+		for (i = 0; i < ndc->rx_table_sz; i++)
- 			ndc->rx_table[i] = ethtool_rxfh_indir_default(
- 						i, net_device->num_chn);
- 	}
--- 
-2.34.1
+You should start with explaining why you want to set these registers,
+and why via device tree. There should never be the need to manually
+fiddle with C22 standard registers via device tree.
+
+If you need a specific register initialization for a particular PHY,
+then the config_init callback of the PHY driver typically is the right
+place.
+
+And no, generic code should not query vendor-specific DT properties.
+
+>  
+> 
+> Thank you and have a nice day!
+> 
+>  
+> 
+> Best regards,
+> 
+> Genevieve Chan（陈巧艳）
+> 
+> Software Team, MDC
+> 
+> Starfive Technology Sdn. Bhd.
+> 
+>  
+> 
+> *From:*Genevieve Chan
+> *Sent:* Wednesday, May 24, 2023 1:57 PM
+> *To:* 'ddaney@caviumnetworks.com' <ddaney@caviumnetworks.com>
+> *Subject:* Marvell_of_reg_init function
+> 
+>  
+> 
+> Hi David,
+> 
+>  
+> 
+> How are you doing? I am Genevieve Chan, a Linux Junior Software Developer for RISC-V Based Processor. I was working on GMAC driver and came across this wonderful feature you’ve enabled long ago, to modify PHY registers using device tree nodes.
+> 
+>  
+> 
+> I did try to modify a number of registers, but one 0:4 was overwritten by other config function:
+> 
+>  
+> 
+> Device tree node:
+> 
+>  
+> 
+> Output log:
+> 
+>  
+> 
+> As shown in the screenshots above, I have intended to set 0x441 to page 0 reg 4. In m88e1121_config_aneg, it got overwritten with 0xc61, in which when stepping in, it is *_due to this function_*:
+> 
+>  
+> 
+>  
+> 
+> *_Problem:_* If any user intend to modify page 0 register 4, it becomes redundant as it will eventually be overwritten by this function.
+> 
+>  
+> 
+> *_Here is my proposed solution:_*
+> 
+>   * Add in a condition if CONFIG_OF_MDIO is enabled, and check if “marvell,reg-init” node is present, then return 0, else proceed to check valid advertisement*__*
+> 
+> *_ _*
+> 
+> *_Screenshot of proposal:_*
+> 
+> *__*
+> 
+> *_ _*
+> 
+> *_ _*
+> 
+> Would like to reach out to you to gather you opinions and suggestion, if it’s okay for me to submit a patch for this.
+> 
+>  
+> 
+>  
+> 
+> Thank you and have a nice day!
+> 
+>  
+> 
+> Best regards,
+> 
+> Genevieve Chan（陈巧艳）
+> 
+> Software Team, MDC
+> 
+> Starfive Technology Sdn. Bhd.
+> 
+>  
+> 
 
 
