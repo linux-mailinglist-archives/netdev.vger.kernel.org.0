@@ -1,342 +1,254 @@
-Return-Path: <netdev+bounces-5172-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5173-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B788570FFE7
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 23:20:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 942CD70FFF1
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 23:23:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 249DE1C20D68
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 21:20:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2324E1C20C93
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 21:23:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 408CF2262F;
-	Wed, 24 May 2023 21:20:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 25D6022632;
+	Wed, 24 May 2023 21:23:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C6792260D
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 21:20:49 +0000 (UTC)
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9B2132;
-	Wed, 24 May 2023 14:20:45 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 34OLKFGp073915;
-	Wed, 24 May 2023 16:20:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1684963215;
-	bh=Anjqsreye1B4ntfPOBld6ZtkWYZAP0DjCad9lmUAkGE=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=uQVDZHbmTkpA/mH3J5yqgWVx2chzOoe0h/S9rI0FvmWZg2RLr8kCNiD+0QI/l7vN7
-	 GHz9zCK1uhebWqdfMjN3GVdd85YboWrt2a2CcVyggl1AIqVb6lrYn8rF+RPNqE36Ze
-	 v3G0ScixR4azV1CH8ODECmuYMLsxDuRC9nEG+D4A=
-Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
-	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 34OLKFcM030529
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 24 May 2023 16:20:15 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Wed, 24
- May 2023 16:20:15 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Wed, 24 May 2023 16:20:15 -0500
-Received: from [128.247.81.105] (ileaxei01-snat.itg.ti.com [10.180.69.5])
-	by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 34OLKFEC109050;
-	Wed, 24 May 2023 16:20:15 -0500
-Message-ID: <351cbfcc-a3be-ff23-ead7-5fc38013ecbb@ti.com>
-Date: Wed, 24 May 2023 16:20:15 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CE68200B0;
+	Wed, 24 May 2023 21:23:21 +0000 (UTC)
+Received: from DM6FTOPR00CU001.outbound.protection.outlook.com (mail-centralusazon11020016.outbound.protection.outlook.com [52.101.61.16])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2138A1A1;
+	Wed, 24 May 2023 14:23:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tf1hayWDjbjF60GVI6qFm9CGEb3pVXFfKPmftZTZQkwccbrD2t4OT/PF2HnERIY8s7SpT5H39dWEF1E8Xzsoc0s3y8i3+zfsssjP0APMTGVtFlbYkpZksonPGZT7Lwup9GNwB1D9WRTQ3iwCFQ8a14AElosGMz91sSZFPhtc8kLh2Ta73XcOraZJguxyzxrkHF/VzbT7pIArTwM+tiTUAJubutKAG4oYhII/zFehvW9/HZWC68cUrAUTTI/3ssQgiuQfTEwkwfttwb34o8OaDk4ygDO/MBeAmfA+qOt6xWviEP7OoxlsEXKfi96xEhmbWwkD+SYfuKrOP6J+oXppnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MQUXBrJuL2icVYk256lcv+PFN07oTOo1dWrKmdJPeeo=;
+ b=d3DqcbSLTENfeBXG5+I4PSAIsOtdjtav4Bc3+8AZWFGFnlElYhzwHchohAwbY46psY9wo67DSRw/5PuVrJRM3Co2H/8Abd7vErFQb15GJEb42Ha9ocpVrf+nvmIY9MHohFsSRHYiMMvlmc4Y5z8IvsfEAzSvgqfpYXrVphdc7WMdF0Q07m6A9Ahpuro1pXcbo/60Q/s5DGokRCjDPTlVlnEbAo98e+FSAXFofELOw7bKS3eDw/Y9Ac7c7xQWAFwHA2y6UtOS/acOqKhQSrOiY8RbS56v3GID5HmgdomRG8j1gsueXlG9/Lxn2IunYGTZaW5irDxoy+oIksoyUAurbA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MQUXBrJuL2icVYk256lcv+PFN07oTOo1dWrKmdJPeeo=;
+ b=h8K1cknG6gp7mxJ6ZA4gCvxfIMRTzG7lECExSrjuJvKCKFRw22tydTGgQ0zjhUG4TFeSvzNe2ITMLix+oHvbGhUauehLWCpWyGyMuHl+3Ur6EZzjWzVkSaeEuiEvHmwKhebN2GTcOpx/UzZNRespNnu74gVBLYwiMXGBwHtKaN0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from BY5PR21MB1443.namprd21.prod.outlook.com (2603:10b6:a03:21f::18)
+ by LV2PR21MB3372.namprd21.prod.outlook.com (2603:10b6:408:14e::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.7; Wed, 24 May
+ 2023 21:23:15 +0000
+Received: from BY5PR21MB1443.namprd21.prod.outlook.com
+ ([fe80::9d99:e955:81ed:40e0]) by BY5PR21MB1443.namprd21.prod.outlook.com
+ ([fe80::9d99:e955:81ed:40e0%3]) with mapi id 15.20.6455.004; Wed, 24 May 2023
+ 21:23:15 +0000
+From: Haiyang Zhang <haiyangz@microsoft.com>
+To: linux-hyperv@vger.kernel.org,
+	netdev@vger.kernel.org
+Cc: haiyangz@microsoft.com,
+	decui@microsoft.com,
+	kys@microsoft.com,
+	paulros@microsoft.com,
+	olaf@aepfle.de,
+	vkuznets@redhat.com,
+	davem@davemloft.net,
+	wei.liu@kernel.org,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	leon@kernel.org,
+	longli@microsoft.com,
+	ssengar@linux.microsoft.com,
+	linux-rdma@vger.kernel.org,
+	daniel@iogearbox.net,
+	john.fastabend@gmail.com,
+	bpf@vger.kernel.org,
+	ast@kernel.org,
+	sharmaajay@microsoft.com,
+	hawk@kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH net] net: mana: Fix perf regression: remove rx_cqes, tx_cqes counters
+Date: Wed, 24 May 2023 14:22:00 -0700
+Message-Id: <1684963320-25282-1-git-send-email-haiyangz@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR03CA0153.namprd03.prod.outlook.com
+ (2603:10b6:303:8d::8) To BY5PR21MB1443.namprd21.prod.outlook.com
+ (2603:10b6:a03:21f::18)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v7 2/2] can: m_can: Add hrtimer to generate software
- interrupt
-Content-Language: en-US
-To: Marc Kleine-Budde <mkl@pengutronix.de>
-CC: Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        <linux-can@vger.kernel.org>, Wolfgang Grandegger <wg@grandegger.com>,
-        "David
- S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, Jakub
- Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Schuyler Patton
-	<spatton@ti.com>,
-        Tero Kristo <kristo@kernel.org>, Rob Herring
-	<robh+dt@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>, <devicetree@vger.kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Tony
- Lindgren <tony@atomide.com>
-References: <20230523023749.4526-1-jm@ti.com>
- <20230523023749.4526-3-jm@ti.com>
- <20230523-crawlers-cupbearer-7a7cbfed010b-mkl@pengutronix.de>
-From: Judith Mendez <jm@ti.com>
-In-Reply-To: <20230523-crawlers-cupbearer-7a7cbfed010b-mkl@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Sender: LKML haiyangz <lkmlhyz@microsoft.com>
+X-MS-Exchange-MessageSentRepresentingType: 2
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BY5PR21MB1443:EE_|LV2PR21MB3372:EE_
+X-MS-Office365-Filtering-Correlation-Id: 58fe12df-51d2-40fd-6156-08db5c9d15fb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	6DTNh3rn4VEKn8NTdnElaeK4A+sOnlvk+NsankMbwR/OXn3V/+j+kDS1QhGS0FVUK2/lOqGlQhsuE5ypk6kC044fzNqdQ2RTcLP+wxRX9L5JWXgVpjiRImyYBOTsAXQKcBufMqt31m8O1HHCbKj9dWvQMUBmwbvfRMjnwCp6XP58g3rYGxzTwrMZOnCiq7Jr+c6ITp+Te1yNuMv5/XRGm0RVTQfsAALRZe1LSn1ZorQLA0DVcJnLYptVMSuMs8BXKF54cN9uhklXW7zLsemIcTNI1AyMmPAsJUN9dWtHqpGbmQiWjFwUyY2esCRXr+IhhXfnJJQVM2uFKwDWiAr5zafIvIv/YswIPK2XnBdkOIZ08CCNyYs/7s5KyX4SJzU0T9I9IEMYKNNFhryWnlehx7ZTjARqRk0e2aOXOh4F20usMIZt3tybZwXr/cDY27inuxYGxnEDrQ89kYJMLgqsKmxz5bAm8AeGJRQ4zRfM8bXk1nf/LmhacjptpEkc13u2eYx2S8nRzXv/013H2/bPpPAACeem6aCgDaEwbnxsJV5wChMJzxXQSJNgcxUhH9Nl/FdHhIosgyDUDS9z2CoJnZUKOKA5dUZBiSVSI3GIJ/mYglNBv/C6nLstWeyzfMaSoc9XSCrZOuZY1ekFYy0WCNB/D6xFAKP+YezCleLRyKU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR21MB1443.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(39860400002)(366004)(396003)(346002)(451199021)(36756003)(316002)(8676002)(786003)(82960400001)(82950400001)(7416002)(38350700002)(8936002)(38100700002)(41300700001)(66476007)(66556008)(10290500003)(66946007)(52116002)(4326008)(83380400001)(2906002)(478600001)(6486002)(186003)(5660300002)(6666004)(6506007)(6512007)(7846003)(2616005)(26005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?pSGGD9UfmTCRHd6ZhU0o+23sU9O4ksuKmO5VFvm+EPBaL6zHuZSB8gKRfWQL?=
+ =?us-ascii?Q?GKkHsrC/K0SAg3YfIpZOh1+mPkZMDCV6+XDxJtVJX+wFLE7Qnhpsfe7wzhSh?=
+ =?us-ascii?Q?y9ZfX8vAWV7eaiqs2yR2G7T/qRQc7l/6FoswsnnGylHlD2IhP9Z9eTyLqhOV?=
+ =?us-ascii?Q?fIbgre30lxqftQSDcvlPrNn4r7PLoBopklrfVNpEOqYYOmY7W/Q9HCwObLat?=
+ =?us-ascii?Q?AJlRmYncZOTPow3CrGeEHUZFoijyv6yMM0bthLd8wkpMpLg1vOVkSBud/hul?=
+ =?us-ascii?Q?/XQXz0Ok0rKMsS39xHaHyu5QY3CKgHdFJ27YNxkgw3eMoHuPLWap4946Y1s9?=
+ =?us-ascii?Q?srFiAo++d+WDAaixeYbmiR5dESaF70CUJDugMivvt8SeNWstvSpuP5qQ8vB7?=
+ =?us-ascii?Q?SHZv5OIQGsHx3za4+zj1my6b2KBsAT6cWtIYQ1KY4ofZg1dH3UEAk8ZGULfY?=
+ =?us-ascii?Q?8Xpr/epnsErNhIG7oLUC7R14isWGyMuoH9iMVaSBwcWfk7BagDFKXV6wCU9w?=
+ =?us-ascii?Q?mCnagJuhUB8J8D8OC8uhG0Rl69kafuqkazqamWuf78A1qnoL4v298dXSfe11?=
+ =?us-ascii?Q?SFRx2TxsC7JVMq/b6WVOgP7CTv6XqmMGGyjN8QsuAWthPeSngrTFqj80IVVN?=
+ =?us-ascii?Q?6JNwpfBSAb9WVPue3jU1iM76KPc9S94CSmNUs+mbq/a7TRucDWq+hCa2o2yi?=
+ =?us-ascii?Q?pbkyWxFwXbSfANUZCGmtuHQKrNWm+SdOcaHuMn8vhPOvCpShJDBDYOxyh5Kz?=
+ =?us-ascii?Q?yzMty//N8zrSwIrCfL0uwCA7BPYMmdKdDTAZF4jw9nyOUSypgFZklK9Njoji?=
+ =?us-ascii?Q?VqWcVQydBBtw77crg4rerJSppKeNw1/hOXTlalAgSzZjNERH1JggLStAVO5/?=
+ =?us-ascii?Q?+XmOHPmj06wUHS115ZFv/9gPv0qVZhswfHg3tT3YcHZ21XSNFDd1VHM7H+2y?=
+ =?us-ascii?Q?kACR8tjKVGLCf/rGJVw3Fjo2Aj4v3FPt5eolJac2JpjQQJuP9x2AtWjGuLTs?=
+ =?us-ascii?Q?dVDabQI9gO40Nc7jB9Xsv7ZE4oBwXBzCB/HYCBa+R8tcWINdCo8Tj1bguTGA?=
+ =?us-ascii?Q?D6ziAJL+QI1G8Bs78QnfXreDwRtwQHoxGOY5ZbJi8dqsauaF8xtxezYjOGvI?=
+ =?us-ascii?Q?1Pv7LMywnSQL2cdDWqblNAOJ3iR/uGXIvXz3OltDnpIJTAvjarSmV61yuL6t?=
+ =?us-ascii?Q?rVtfj92d4jUbmo/gaP9LXF2zFWYrNu49qltlHiylRZNf6pjZamXsz8VF5heN?=
+ =?us-ascii?Q?egn2Nz/2drTLKMpS40eq1tqwMyDQiLC6Dk2XmtFo5Tq4q+ZQRqLhqFic0j0B?=
+ =?us-ascii?Q?f1g+L39ykdXLwT2/e25eBLmYoaA2bz6/UYZzlNXsuPYnGfnIh46//EABZvw7?=
+ =?us-ascii?Q?QV6CjGIS9e8Rbv3Crz/Bn3Pks8NetlwQ1m//WICt20e1uxVWRuHxdsI52Mb0?=
+ =?us-ascii?Q?Z189k3yxk0H5zja4odqiwBvo56wOtS+iKxKz4Lc7dbWhe8jj9xogDG0DUsNi?=
+ =?us-ascii?Q?cSdptG7aaXmt8YLFUG9TbBZiCoqrYLw72RMkN0de+UiYO8NsQx3O8t2u0M4o?=
+ =?us-ascii?Q?c4UfmMnhxaY5HrqzeiF4wxCp2nl9DUWbhme0TVtR?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58fe12df-51d2-40fd-6156-08db5c9d15fb
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR21MB1443.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2023 21:23:15.4233
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: akulSX95wjKMst2Bow0OxO7UTLpLsW4qNrAxbDkfAjQfw54ZtZYuuCgoxvWK5RHHafef+oY31+732KOeAIbjzQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR21MB3372
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello Marc,
+The apc->eth_stats.rx_cqes is one per NIC (vport), and it's on the
+frequent and parallel code path of all queues. So, r/w into this
+single shared variable by many threads on different CPUs creates a
+lot caching and memory overhead, hence perf regression. And, it's
+not accurate due to the high volume concurrent r/w.
 
-On 5/23/23 1:35 AM, Marc Kleine-Budde wrote:
-> On 22.05.2023 21:37:49, Judith Mendez wrote:
->> Add an hrtimer to MCAN class device. Each MCAN will have its own
->> hrtimer instantiated if there is no hardware interrupt found in
->> device tree M_CAN node.
-> 
-> Please add a sentence why you introduce polling mode, i.e. there are
-> SoCs where the M_CAN interrupt is not available on the CPUs (which are
-> running Linux).
+Since the error path of mana_poll_rx_cq() already has warnings, so
+keeping the counter and convert it to a per-queue variable is not
+necessary. So, just remove this counter from this high frequency
+code path.
 
-Sure, I can do that, thanks.
+Also, remove the tx_cqes counter for the same reason. We have
+warnings & other counters for errors on that path, and don't need
+to count every normal cqe processing.
 
-> 
->> The hrtimer will generate a software interrupt every 1 ms. In
->> hrtimer callback, we check if there is a transaction pending by
->> reading a register, then process by calling the isr if there is.
->>
->> Signed-off-by: Judith Mendez <jm@ti.com>
->> ---
->> Changelog:
->> v7:
->> - Clean up m_can_platform.c if/else section after removing poll-interval
->> - Remove poll-interval from patch description
->> v6:
->> - Move hrtimer stop/start function calls to m_can_open and m_can_close to
->> support power suspend/resume
->> v5:
->> - Change dev_dbg to dev_info if hardware interrupt exists and polling
->> is enabled
->> v4:
->> - No changes
->> v3:
->> - Create a define for 1 ms polling interval
->> - Change plarform_get_irq to optional to not print error msg
->> v2:
->> - Add functionality to check for 'poll-interval' property in MCAN node
->> - Add 'polling' flag in driver to check if device is using polling method
->> - Check for timer polling and hardware interrupt cases, default to
->> hardware interrupt method
->> - Change ns_to_ktime() to ms_to_ktime()
->> ---
->>   drivers/net/can/m_can/m_can.c          | 33 ++++++++++++++++++++++++--
->>   drivers/net/can/m_can/m_can.h          |  4 ++++
->>   drivers/net/can/m_can/m_can_platform.c | 25 ++++++++++++++++---
->>   3 files changed, 57 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
->> index a5003435802b..f273d989bdff 100644
->> --- a/drivers/net/can/m_can/m_can.c
->> +++ b/drivers/net/can/m_can/m_can.c
->> @@ -11,6 +11,7 @@
->>   #include <linux/bitfield.h>
->>   #include <linux/can/dev.h>
->>   #include <linux/ethtool.h>
->> +#include <linux/hrtimer.h>
->>   #include <linux/interrupt.h>
->>   #include <linux/io.h>
->>   #include <linux/iopoll.h>
->> @@ -308,6 +309,9 @@ enum m_can_reg {
->>   #define TX_EVENT_MM_MASK	GENMASK(31, 24)
->>   #define TX_EVENT_TXTS_MASK	GENMASK(15, 0)
->>   
->> +/* Hrtimer polling interval */
->> +#define HRTIMER_POLL_INTERVAL		1
->> +
->>   /* The ID and DLC registers are adjacent in M_CAN FIFO memory,
->>    * and we can save a (potentially slow) bus round trip by combining
->>    * reads and writes to them.
->> @@ -895,7 +899,7 @@ static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstatus,
->>   			netdev_dbg(dev, "Arbitration phase error detected\n");
->>   			work_done += m_can_handle_lec_err(dev, lec);
->>   		}
->> -		
->> +
-> 
-> Unrelated change. I've send a separate patch to fix the problem.
+Cc: stable@vger.kernel.org
+Fixes: bd7fc6e1957c ("net: mana: Add new MANA VF performance counters for easier troubleshooting")
+Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+---
+ drivers/net/ethernet/microsoft/mana/mana_en.c      | 10 ----------
+ drivers/net/ethernet/microsoft/mana/mana_ethtool.c |  2 --
+ include/net/mana/mana.h                            |  2 --
+ 3 files changed, 14 deletions(-)
 
-Sorry about this, this was not intentional.
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+index 06d6292e09b3..d907727c7b7a 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_en.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+@@ -1279,8 +1279,6 @@ static void mana_poll_tx_cq(struct mana_cq *cq)
+ 	if (comp_read < 1)
+ 		return;
+ 
+-	apc->eth_stats.tx_cqes = comp_read;
+-
+ 	for (i = 0; i < comp_read; i++) {
+ 		struct mana_tx_comp_oob *cqe_oob;
+ 
+@@ -1363,8 +1361,6 @@ static void mana_poll_tx_cq(struct mana_cq *cq)
+ 		WARN_ON_ONCE(1);
+ 
+ 	cq->work_done = pkt_transmitted;
+-
+-	apc->eth_stats.tx_cqes -= pkt_transmitted;
+ }
+ 
+ static void mana_post_pkt_rxq(struct mana_rxq *rxq)
+@@ -1626,15 +1622,11 @@ static void mana_poll_rx_cq(struct mana_cq *cq)
+ {
+ 	struct gdma_comp *comp = cq->gdma_comp_buf;
+ 	struct mana_rxq *rxq = cq->rxq;
+-	struct mana_port_context *apc;
+ 	int comp_read, i;
+ 
+-	apc = netdev_priv(rxq->ndev);
+-
+ 	comp_read = mana_gd_poll_cq(cq->gdma_cq, comp, CQE_POLLING_BUFFER);
+ 	WARN_ON_ONCE(comp_read > CQE_POLLING_BUFFER);
+ 
+-	apc->eth_stats.rx_cqes = comp_read;
+ 	rxq->xdp_flush = false;
+ 
+ 	for (i = 0; i < comp_read; i++) {
+@@ -1646,8 +1638,6 @@ static void mana_poll_rx_cq(struct mana_cq *cq)
+ 			return;
+ 
+ 		mana_process_rx_cqe(rxq, cq, &comp[i]);
+-
+-		apc->eth_stats.rx_cqes--;
+ 	}
+ 
+ 	if (rxq->xdp_flush)
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_ethtool.c b/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
+index a64c81410dc1..0dc78679f620 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
+@@ -13,11 +13,9 @@ static const struct {
+ } mana_eth_stats[] = {
+ 	{"stop_queue", offsetof(struct mana_ethtool_stats, stop_queue)},
+ 	{"wake_queue", offsetof(struct mana_ethtool_stats, wake_queue)},
+-	{"tx_cqes", offsetof(struct mana_ethtool_stats, tx_cqes)},
+ 	{"tx_cq_err", offsetof(struct mana_ethtool_stats, tx_cqe_err)},
+ 	{"tx_cqe_unknown_type", offsetof(struct mana_ethtool_stats,
+ 					tx_cqe_unknown_type)},
+-	{"rx_cqes", offsetof(struct mana_ethtool_stats, rx_cqes)},
+ 	{"rx_coalesced_err", offsetof(struct mana_ethtool_stats,
+ 					rx_coalesced_err)},
+ 	{"rx_cqe_unknown_type", offsetof(struct mana_ethtool_stats,
+diff --git a/include/net/mana/mana.h b/include/net/mana/mana.h
+index cd386aa7c7cc..9eef19972845 100644
+--- a/include/net/mana/mana.h
++++ b/include/net/mana/mana.h
+@@ -347,10 +347,8 @@ struct mana_tx_qp {
+ struct mana_ethtool_stats {
+ 	u64 stop_queue;
+ 	u64 wake_queue;
+-	u64 tx_cqes;
+ 	u64 tx_cqe_err;
+ 	u64 tx_cqe_unknown_type;
+-	u64 rx_cqes;
+ 	u64 rx_coalesced_err;
+ 	u64 rx_cqe_unknown_type;
+ };
+-- 
+2.25.1
 
-> 
->>   		if (is_lec_err(dlec)) {
->>   			netdev_dbg(dev, "Data phase error detected\n");
->>   			work_done += m_can_handle_lec_err(dev, dlec);
->> @@ -1414,6 +1418,12 @@ static int m_can_start(struct net_device *dev)
->>   
->>   	m_can_enable_all_interrupts(cdev);
->>   
->> +	if (cdev->polling) {
->> +		dev_dbg(cdev->dev, "Start hrtimer\n");
->> +		hrtimer_start(&cdev->hrtimer, ms_to_ktime(HRTIMER_POLL_INTERVAL),
->> +			      HRTIMER_MODE_REL_PINNED);
->> +	}
->> +
->>   	return 0;
->>   }
->>   
->> @@ -1571,6 +1581,11 @@ static void m_can_stop(struct net_device *dev)
->>   	/* disable all interrupts */
->>   	m_can_disable_all_interrupts(cdev);
->>   
->> +	if (cdev->polling) {
->> +		dev_dbg(cdev->dev, "Disabling the hrtimer\n");
->> +		hrtimer_cancel(&cdev->hrtimer);
->> +	}
->> +
-> 
-> This might be a racy. Please move the disabling of the hrtimer before
-> disabling all interrupts. This makes it also symmetric with respect to
-> m_can_start().
-
-This makes sense.
-
-> 
->>   	/* Set init mode to disengage from the network */
->>   	m_can_config_endisable(cdev, true);
->>   
->> @@ -1793,6 +1808,18 @@ static netdev_tx_t m_can_start_xmit(struct sk_buff *skb,
->>   	return NETDEV_TX_OK;
->>   }
->>   
->> +static enum hrtimer_restart hrtimer_callback(struct hrtimer *timer)
->> +{
->> +	struct m_can_classdev *cdev = container_of(timer, struct
->> +						   m_can_classdev, hrtimer);
->> +
->> +	m_can_isr(0, cdev->net);
->> +
->> +	hrtimer_forward_now(timer, ms_to_ktime(HRTIMER_POLL_INTERVAL));
->> +
->> +	return HRTIMER_RESTART;
->> +}
->> +
->>   static int m_can_open(struct net_device *dev)
->>   {
->>   	struct m_can_classdev *cdev = netdev_priv(dev);
->> @@ -1831,9 +1858,11 @@ static int m_can_open(struct net_device *dev)
->>   		err = request_threaded_irq(dev->irq, NULL, m_can_isr,
->>   					   IRQF_ONESHOT,
->>   					   dev->name, dev);
->> -	} else {
->> +	} else if (!cdev->polling) {
->>   		err = request_irq(dev->irq, m_can_isr, IRQF_SHARED, dev->name,
->>   				  dev);
->> +	} else {
->> +		cdev->hrtimer.function = &hrtimer_callback;
-> 
-> I think you can move this assignment to m_can_class_register(). We only
-> need to set the function once.
-
-Great idea!
-
-> 
->>   	}
->>   
->>   	if (err < 0) {
->> diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
->> index a839dc71dc9b..e9db5cce4e68 100644
->> --- a/drivers/net/can/m_can/m_can.h
->> +++ b/drivers/net/can/m_can/m_can.h
->> @@ -15,6 +15,7 @@
->>   #include <linux/device.h>
->>   #include <linux/dma-mapping.h>
->>   #include <linux/freezer.h>
->> +#include <linux/hrtimer.h>
->>   #include <linux/interrupt.h>
->>   #include <linux/io.h>
->>   #include <linux/iopoll.h>
->> @@ -93,6 +94,9 @@ struct m_can_classdev {
->>   	int is_peripheral;
->>   
->>   	struct mram_cfg mcfg[MRAM_CFG_NUM];
->> +
->> +	struct hrtimer hrtimer;
->> +	bool polling;
->>   };
->>   
->>   struct m_can_classdev *m_can_class_allocate_dev(struct device *dev, int sizeof_priv);
->> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
->> index 94dc82644113..b639c9e645d3 100644
->> --- a/drivers/net/can/m_can/m_can_platform.c
->> +++ b/drivers/net/can/m_can/m_can_platform.c
->> @@ -5,6 +5,7 @@
->>   //
->>   // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
->>   
->> +#include <linux/hrtimer.h>
->>   #include <linux/phy/phy.h>
->>   #include <linux/platform_device.h>
->>   
->> @@ -96,12 +97,30 @@ static int m_can_plat_probe(struct platform_device *pdev)
->>   		goto probe_fail;
->>   
->>   	addr = devm_platform_ioremap_resource_byname(pdev, "m_can");
->> -	irq = platform_get_irq_byname(pdev, "int0");
-> 
-> I think irq will be uninitialized after this change. Although the
-> compiler doesn't complain :(
-
-Agreed, I did notice this when testing. But is it an issue?
-
-> 
-> BTW: I think we don't need the "polling" variable in the priv. We can
-> make use of "irq". "irq" being 0 means use polling.
-
-True, but is using the polling flag easier for the user to read?
-
-> 
->> -	if (IS_ERR(addr) || irq < 0) {
->> -		ret = -EINVAL;
->> +	if (IS_ERR(addr)) {
->> +		ret = PTR_ERR(addr);
->>   		goto probe_fail;
->>   	}
->>   
->> +	if (device_property_present(mcan_class->dev, "interrupts") ||
->> +	    device_property_present(mcan_class->dev, "interrupt-names")) {
->> +		irq = platform_get_irq_byname(pdev, "int0");
->> +		mcan_class->polling = false;
->> +		if (irq == -EPROBE_DEFER) {
->> +			ret = -EPROBE_DEFER;
->> +			goto probe_fail;
->> +		}
->> +		if (irq < 0) {
->> +			ret = -ENXIO;
-
-EINVAL? Wouldn't ENXIO (No such device or address) be more appropriate than
-invalid argument?
-
-> 
-> Please return the original error code.
-> 
->> +			goto probe_fail;
->> +		}
->> +	} else {
->> +		mcan_class->polling = true;
->> +		dev_dbg(mcan_class->dev, "Polling enabled, initialize hrtimer");
->> +		hrtimer_init(&mcan_class->hrtimer, CLOCK_MONOTONIC,
->> +			     HRTIMER_MODE_REL_PINNED);
->> +	}
->> +
->>   	/* message ram could be shared */
->>   	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "message_ram");
->>   	if (!res) {
-
-~Judith
 
