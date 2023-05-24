@@ -1,128 +1,166 @@
-Return-Path: <netdev+bounces-5008-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5009-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 60C2770F6C8
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:43:59 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id A581A70F6CB
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:44:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1BFC228139E
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:43:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6C8CD1C20CCD
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:44:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B98AD60851;
-	Wed, 24 May 2023 12:43:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BEB876084D;
+	Wed, 24 May 2023 12:44:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8BFD60847;
-	Wed, 24 May 2023 12:43:28 +0000 (UTC)
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC95FA3;
-	Wed, 24 May 2023 05:43:17 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QR9j00blWzqT2m;
-	Wed, 24 May 2023 20:38:44 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 24 May
- 2023 20:43:13 +0800
-Subject: Re: mlx5 XDP redirect leaking memory on kernel 6.3
-To: Dragos Tatulea <dtatulea@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>,
-	"ttoukan.linux@gmail.com" <ttoukan.linux@gmail.com>, "jbrouer@redhat.com"
-	<jbrouer@redhat.com>, "saeed@kernel.org" <saeed@kernel.org>, Saeed Mahameed
-	<saeedm@nvidia.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC: "maxtram95@gmail.com" <maxtram95@gmail.com>, "lorenzo@kernel.org"
-	<lorenzo@kernel.org>, "alexander.duyck@gmail.com"
-	<alexander.duyck@gmail.com>, "kheib@redhat.com" <kheib@redhat.com>,
-	"ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-	"mkabat@redhat.com" <mkabat@redhat.com>, "brouer@redhat.com"
-	<brouer@redhat.com>, "atzin@redhat.com" <atzin@redhat.com>,
-	"fmaurer@redhat.com" <fmaurer@redhat.com>, "bpf@vger.kernel.org"
-	<bpf@vger.kernel.org>, "jbenc@redhat.com" <jbenc@redhat.com>
-References: <d862a131-5e31-bd26-84f7-fd8764ca9d48@redhat.com>
- <00ca7beb7fe054a3ba1a36c61c1e3b1314369f11.camel@nvidia.com>
- <7a0bd108-ba00-add9-a244-02a6c3cb64df@huawei.com>
- <6de64ad1fa9c4c82de190d4f71923984979782d8.camel@nvidia.com>
-From: Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <791ed915-ca7d-ef7c-04ce-999caa899e95@huawei.com>
-Date: Wed, 24 May 2023 20:43:13 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD82660843
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:44:56 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24F9A3
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:44:51 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1q1nqr-0000ph-DY; Wed, 24 May 2023 14:44:25 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1q1nqk-002USh-GG; Wed, 24 May 2023 14:44:18 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1q1nqj-007Yje-A3; Wed, 24 May 2023 14:44:17 +0200
+Date: Wed, 24 May 2023 14:44:14 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Jean Delvare <jdelvare@suse.de>
+Cc: Corey Minyard <cminyard@mvista.com>,
+	Benjamin Mugnier <benjamin.mugnier@foss.st.com>,
+	Peter Senna Tschudin <peter.senna@gmail.com>,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Jeremy Kerr <jk@codeconstruct.com.au>,
+	Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Javier Martinez Canillas <javierm@redhat.com>,
+	Adrien Grassein <adrien.grassein@gmail.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Luca Ceresoli <luca.ceresoli@bootlin.com>,
+	Kang Chen <void0red@gmail.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Petr Machata <petrm@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Shang XiaoJing <shangxiaojing@huawei.com>,
+	Michael Walle <michael@walle.cc>, kernel@pengutronix.de,
+	netdev@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next] nfc: Switch i2c drivers back to use .probe()
+Message-ID: <20230524124414.foiodqo6zejby27y@pengutronix.de>
+References: <20230520172104.359597-1-u.kleine-koenig@pengutronix.de>
+ <20230524131011.0d948017@endymion.delvare>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <6de64ad1fa9c4c82de190d4f71923984979782d8.camel@nvidia.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="4dsiprop32wx4qxm"
+Content-Disposition: inline
+In-Reply-To: <20230524131011.0d948017@endymion.delvare>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 2023/5/24 20:03, Dragos Tatulea wrote:
-> On Wed, 2023-05-24 at 19:26 +0800, Yunsheng Lin wrote:
->> On 2023/5/24 0:35, Dragos Tatulea wrote:
->>>
->>> On Tue, 2023-05-23 at 17:55 +0200, Jesper Dangaard Brouer wrote:
->>>>
->>>> When the mlx5 driver runs an XDP program doing XDP_REDIRECT, then memory
->>>> is getting leaked. Other XDP actions, like XDP_DROP, XDP_PASS and XDP_TX
->>>> works correctly. I tested both redirecting back out same mlx5 device and
->>>> cpumap redirect (with XDP_PASS), which both cause leaking.
->>>>
->>>> After removing the XDP prog, which also cause the page_pool to be
->>>> released by mlx5, then the leaks are visible via the page_pool periodic
->>>> inflight reports. I have this bpftrace[1] tool that I also use to detect
->>>> the problem faster (not waiting 60 sec for a report).
->>>>
->>>>   [1] 
->>>> https://github.com/xdp-project/xdp-project/blob/master/areas/mem/bpftrace/page_pool_track_shutdown01.bt
->>>>
->>>> I've been debugging and reading through the code for a couple of days,
->>>> but I've not found the root-cause, yet. I would appreciate new ideas
->>>> where to look and fresh eyes on the issue.
->>>>
->>>>
->>>> To Lin, it looks like mlx5 uses PP_FLAG_PAGE_FRAG, and my current
->>>> suspicion is that mlx5 driver doesn't fully release the bias count (hint
->>>> see MLX5E_PAGECNT_BIAS_MAX).
->>
->> It seems mlx5 is implementing it's own frag allocation scheme, it there a
->> reason why the native frag allocation scheme in page pool is not used? To
->> avoid the "((page->pp_magic & ~0x3UL) == PP_SIGNATURE)" checking?
-> 
-> mlx5 uses fragmentation of the page from within the driver instead of the pre-
-> partitioning of the page using page_pool_alloc_frag(). As shown in commit
-> 52cc6ffc0ab2 ("page_pool: Refactor page_pool to enable fragmenting after
-> allocation")
 
-page_pool_alloc_frag() API does allow driver to allocate different number of
-frag for the same page by specifying different 'size'.
+--4dsiprop32wx4qxm
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> The exception is however the following optimization:
+Hello Jean,
 
-The below rfc may be able to allow the following optimization using frag API
-too.
-https://patchwork.kernel.org/project/netdevbpf/cover/20230516124801.2465-1-linyunsheng@huawei.com/
+On Wed, May 24, 2023 at 01:10:11PM +0200, Jean Delvare wrote:
+> On Sat, 20 May 2023 19:21:04 +0200, Uwe Kleine-K=F6nig wrote:
+> > After commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
+> > call-back type"), all drivers being converted to .probe_new() and then
+> > 03c835f498b5 ("i2c: Switch .probe() to not take an id parameter")
+> > convert back to (the new) .probe() to be able to eventually drop
+> > .probe_new() from struct i2c_driver.
+> >=20
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> > Hello,
+> >=20
+> > this patch was generated using coccinelle, but I aligned the result to
+> > the per-file indention.
+> >=20
+> > This is one patch for the whole iio subsystem. if you want it split per
+>=20
+> s/iio/nfc/
 
-> page_pool_put_defragged_page() can be called for XDP_TX directly to avoid the
-> overhead of fragment management. That's because mlx5 currently supports only one
-> packet per page for XDP.
-> 
+Yeah, copy&paste failure. I noticed after sending out the patch, but as
+it's only in a part of the mail that doesn't make it into git I didn't
+care to point it out.
 
-it seems almost everyone is doing the only one packet per page for XDP, but it is not
-very memory saving for ususal case with 1.5K mtu with 4K page size if we reduce the xdp
-headroom a little bit, and not to mention the 64K page size case.
+> > driver for improved patch count numbers, please tell me.
+> >=20
+> > This currently fits on top of 6.4-rc1 and next/master. If you apply it
+> > somewhere else and get conflicts, feel free to just drop the files with
+> > conflicts from this patch and apply anyhow. I'll care about the fallout
+> > later then.
+> >=20
+> > Best regards
+> > Uwe
+> >=20
+> >  drivers/nfc/fdp/i2c.c       | 2 +-
+> >  drivers/nfc/microread/i2c.c | 2 +-
+> >  drivers/nfc/nfcmrvl/i2c.c   | 2 +-
+> >  drivers/nfc/nxp-nci/i2c.c   | 2 +-
+> >  drivers/nfc/pn533/i2c.c     | 2 +-
+> >  drivers/nfc/pn544/i2c.c     | 2 +-
+> >  drivers/nfc/s3fwrn5/i2c.c   | 2 +-
+> >  drivers/nfc/st-nci/i2c.c    | 2 +-
+> >  drivers/nfc/st21nfca/i2c.c  | 2 +-
+> >  9 files changed, 9 insertions(+), 9 deletions(-)
+> > (...)
+>=20
+> Reviewed-by: Jean Delvare <jdelvare@suse.de>
+
+Thanks, but note that davem already applied the patch, so your tag
+probably won't make it in.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--4dsiprop32wx4qxm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmRuBp0ACgkQj4D7WH0S
+/k4+1Qf6AvpuEqbhup7szAc9UEn35Tu6D/fons+YB8mbGcd/q3YoNwPUFVe0zQXv
+WFFNClIZ5YsYDajb7GigBpYtZ1SRHaQ2VvHiY52BaaSBFmrnkHFHcn1CX7OSix+o
+C0cgONnsM8EC3FBtua9xCqGxa8e79Aiv48yJ5trUIsdg4CSRX1bkxpdVuHrck1lJ
+HkgLOxRmwVTNRtVGEMyiuvBgCLUvqDnnGKYq5Q7P5zlLrYvjMG+SPOsTqvZZUCGS
+FdoYLg+bKP1XVp7rI98cfdGRnxLuEEDYiO12aR8KPWC/ZPJ9iUiPFYcSHFLCQLfY
+RVDrsJc+hg173JvQVPjuKc0O+ny1kA==
+=wRp/
+-----END PGP SIGNATURE-----
+
+--4dsiprop32wx4qxm--
 
