@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-4980-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4981-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 82D3370F635
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:23:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9ED7570F63C
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 14:23:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 22EE12812E4
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:23:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 66FB91C20CAE
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:23:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 08B2C19508;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E392E1951A;
 	Wed, 24 May 2023 12:19:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC38919504
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:19:02 +0000 (UTC)
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F28709E
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:19:00 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-513fd8cc029so1902436a12.3
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:19:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D84FB19504
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 12:19:03 +0000 (UTC)
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C32130
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:19:02 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-51190fd46c3so1730847a12.1
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 05:19:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684930739; x=1687522739;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1684930741; x=1687522741;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=kHLkWvb8hGc4er6p4IbdjeBQu5ETNgOVtKKvjXJWnfI=;
-        b=bCkYgHF57bGwl36Vsna/jzuTp0Zr91eB1U0K+5Lhyf0nvh/ww+NOMWXyDn7XpMLTzC
-         MQIkMc5xNhB1tU0/gKgWo6EG2SMI/MH2WRPutEatD1JN3BvAOeJQHYhRvZdZrIB5nGsw
-         weqiJMkW9jECgUTSCGntuNq2/oSaTpbAi/gi1Lv5ea1tDQrpH+TLJNtUPqFJ9B8nWIKU
-         qPZJK/bNkNnPoaEq5j8PIK0tdzfRicRiWeAo3rDZnJymX86PrRw7hzm71wk78Vn5noPU
-         L9tfA8bQm3ZwiZNaevPnAXG4DCuem20NJ0aW0SrGFqs/hjYV0m3qBRaRhvPn9BiN/OIt
-         g/HQ==
+        bh=feTvn9xrp/0lxRGp7LllYvD/0WGV/fiydTMIJPyan48=;
+        b=dAjMt0IA1D3MuPoccBdc0eqHxrZBHqFcC4n49ylr0rA7cgvLh/gCSru8Ub6u7JknOc
+         +JVbjvwukuivU4zZwP8S2TJzbLxN0zmyX/dt0bfRVHowpl55wQS55mWHPgEvcCNpUwaA
+         hAGH3uZCDpLZfPKSSYIOyCYaGkHFZTPvn2sSs4FfPmFrOTy4mpidy539Mok2rBpADixz
+         6Vu3aMKUvsjBY6MFawR0tDiUFu471XLusYdMP4AL/G5ZpXwEm64WYzhACuhz2xqdsNZk
+         /LRsaWFcOcZ/uw+8aaxi/bImARuC0uN2+LAXX5TCbGgmJ61Eoi7+2+tA+lPZ01gzX+s2
+         JTqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684930739; x=1687522739;
+        d=1e100.net; s=20221208; t=1684930741; x=1687522741;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=kHLkWvb8hGc4er6p4IbdjeBQu5ETNgOVtKKvjXJWnfI=;
-        b=EuKTke74vo6bw/KSQSp33Mzl9lRv8RAT/J9/N/pLXI+DBTQsjyCDci5gaK3w2yOlAA
-         FheqC5uNtr5HzZRjADjs3WiR4WZHXKvOe613LQbrqAWOL1eYWxeQUzDYP2Ga9aSh57FT
-         VHs66ONV1CT3/xSTvAI4/Ydus/RbFK9rAmzzai1BLrUXZyILbVLn7hbjzl7WgUQVazuK
-         5u5IKzWh0sVsL23eoWEh7CFPaD2OGwBPeJPrr7cf1ywDMM9NvzYNzicGsFioWsYhWoaJ
-         rovF+Gtu+P29XC7z4WZPhL7SuCMrmZmYajk2ME0RRt+Kb9MZKnzSvzJgKVWT3X2JeSy7
-         hnXg==
-X-Gm-Message-State: AC+VfDyNXsm2Q6xpoOrV4wEoKKYYRvXdE9bpkXMp1QX1g3FHVl/PY8dJ
-	ynAtPZ+jHh8qwZeaX2Z+9OCl2JqeFMqLKqZk2lOJqA==
-X-Google-Smtp-Source: ACHHUZ7pifP5NkES/X7vgHySn9/N9YHhX2b5j3I0PlYIm+whKovrwOr93nGXxlG3+HQxIi7eY46pmQ==
-X-Received: by 2002:a17:907:940b:b0:96f:bc31:5e0b with SMTP id dk11-20020a170907940b00b0096fbc315e0bmr12110096ejc.64.1684930739429;
-        Wed, 24 May 2023 05:18:59 -0700 (PDT)
+        bh=feTvn9xrp/0lxRGp7LllYvD/0WGV/fiydTMIJPyan48=;
+        b=J2kqurlTd7WmpS32PmmfKuFUj3frqBVpvPETYWpmq+bvTJg/bdsl16u6cCx/PndOba
+         yG5m40SaK9r28cmwvHIkw78Zj/OzaiWjDAlROdYGigdN40XvbpD7gVYnb9U4y9Tei2sw
+         LhP8AC2iFmzOik37HC65ub+ypSoyV11qPwUQliL1MxONJF6OqzoDCGc1XAPC6FK/Xck0
+         ME5juQHWAgirWKMgbVFrcgHQY/JHzomSEiy0VlQvkDw3/dACiyAVfobs3W6gUTGBBCGR
+         5crA3Fs+h8mRLfVrK7hq7JxhkavZAURsIJz5gdzB+Ncx2nyauaty7McrrWiCcKWmcqU2
+         Jntg==
+X-Gm-Message-State: AC+VfDxZI2wUqIlcBggZBUOgUvIxClcClYMpFIybM85DGkhZ1oEWxIDz
+	b7aj+oMoRZYI+rXVkaCEHGp6QvB9cFImTtLDGa95EA==
+X-Google-Smtp-Source: ACHHUZ7GDASBRYPcPUbHQYbeuYfptwGYuC+oVS2XKnzLcU62tsUeUqJM5xwMa6VNEB05rSb46ntbSQ==
+X-Received: by 2002:a50:fa8f:0:b0:50d:abde:c7a3 with SMTP id w15-20020a50fa8f000000b0050dabdec7a3mr1610605edr.42.1684930741065;
+        Wed, 24 May 2023 05:19:01 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id w26-20020a170907271a00b0096599bf7029sm5788148ejk.145.2023.05.24.05.18.58
+        by smtp.gmail.com with ESMTPSA id d18-20020aa7d5d2000000b0050bc9ffed66sm5111101eds.53.2023.05.24.05.19.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 May 2023 05:18:58 -0700 (PDT)
+        Wed, 24 May 2023 05:19:00 -0700 (PDT)
 From: Jiri Pirko <jiri@resnulli.us>
 To: netdev@vger.kernel.org
 Cc: kuba@kernel.org,
@@ -75,9 +75,9 @@ Cc: kuba@kernel.org,
 	habetsm.xilinx@gmail.com,
 	michal.wilczynski@intel.com,
 	jacob.e.keller@intel.com
-Subject: [patch net-next 14/15] devlink: move port_del() to devlink_port_ops
-Date: Wed, 24 May 2023 14:18:35 +0200
-Message-Id: <20230524121836.2070879-15-jiri@resnulli.us>
+Subject: [patch net-next 15/15] devlink: save devlink_port_ops into a variable in devlink_port_function_validate()
+Date: Wed, 24 May 2023 14:18:36 +0200
+Message-Id: <20230524121836.2070879-16-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230524121836.2070879-1-jiri@resnulli.us>
 References: <20230524121836.2070879-1-jiri@resnulli.us>
@@ -96,115 +96,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Move port_del() from devlink_ops into newly introduced devlink_port_ops.
+Now when the original ops variable is removed, introduce it again
+but this time for devlink_port_ops.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/devlink.c |  1 -
- .../mellanox/mlx5/core/esw/devlink_port.c     |  3 +++
- include/net/devlink.h                         | 22 +++++--------------
- net/devlink/leftover.c                        |  6 ++---
- 4 files changed, 11 insertions(+), 21 deletions(-)
+ net/devlink/leftover.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index e39fd85ea2f9..63635cc44479 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -320,7 +320,6 @@ static const struct devlink_ops mlx5_devlink_ops = {
- #endif
- #ifdef CONFIG_MLX5_SF_MANAGER
- 	.port_new = mlx5_devlink_sf_port_new,
--	.port_del = mlx5_devlink_sf_port_del,
- #endif
- 	.flash_update = mlx5_devlink_flash_update,
- 	.info_get = mlx5_devlink_info_get,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-index 76c5d6e9d47f..f370f67d9e33 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-@@ -145,6 +145,9 @@ struct devlink_port *mlx5_esw_offloads_devlink_port(struct mlx5_eswitch *esw, u1
- }
- 
- static const struct devlink_port_ops mlx5_esw_dl_sf_port_ops = {
-+#ifdef CONFIG_MLX5_SF_MANAGER
-+	.port_del = mlx5_devlink_sf_port_del,
-+#endif
- 	.port_fn_hw_addr_get = mlx5_devlink_port_fn_hw_addr_get,
- 	.port_fn_hw_addr_set = mlx5_devlink_port_fn_hw_addr_set,
- 	.port_fn_roce_get = mlx5_devlink_port_fn_roce_get,
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 21254d6884ee..aeccab044358 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1447,23 +1447,6 @@ struct devlink_ops {
- 	int (*port_new)(struct devlink *devlink,
- 			const struct devlink_port_new_attrs *attrs,
- 			struct netlink_ext_ack *extack);
--	/**
--	 * port_del() - Delete a port function
--	 * @devlink: Devlink instance
--	 * @port: The devlink port
--	 * @extack: extack for reporting error messages
--	 *
--	 * Devlink core will call this device driver function upon user request
--	 * to delete a previously created port function
--	 *
--	 * Notes:
--	 *	- On success, drivers must unregister the corresponding devlink
--	 *	  port
--	 *
--	 * Return: 0 on success, negative value otherwise.
--	 */
--	int (*port_del)(struct devlink *devlink, struct devlink_port *port,
--			struct netlink_ext_ack *extack);
- 
- 	/**
- 	 * Rate control callbacks.
-@@ -1560,6 +1543,9 @@ void devlink_free(struct devlink *devlink);
-  * @port_unsplit: Callback used to unsplit the port group back into
-  *		  a single port.
-  * @port_type_set: Callback used to set a type of a port.
-+ * @port_del: Callback used to delete selected port along with related function.
-+ *	      Devlink core calls this upon user request to delete
-+ *	      a port previously created by devlink_ops->port_new().
-  * @port_fn_hw_addr_get: Callback used to set port function's hardware address.
-  *			 Should be used by device drivers to report
-  *			 the hardware address of a function managed
-@@ -1602,6 +1588,8 @@ struct devlink_port_ops {
- 			    struct netlink_ext_ack *extack);
- 	int (*port_type_set)(struct devlink_port *devlink_port,
- 			     enum devlink_port_type port_type);
-+	int (*port_del)(struct devlink *devlink, struct devlink_port *port,
-+			struct netlink_ext_ack *extack);
- 	int (*port_fn_hw_addr_get)(struct devlink_port *port, u8 *hw_addr,
- 				   int *hw_addr_len,
- 				   struct netlink_ext_ack *extack);
 diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index ddff9815c651..b35dee4dddbc 100644
+index b35dee4dddbc..fd2b1a40b61e 100644
 --- a/net/devlink/leftover.c
 +++ b/net/devlink/leftover.c
-@@ -1350,7 +1350,7 @@ static int devlink_nl_cmd_port_new_doit(struct sk_buff *skb,
- 	struct devlink_port_new_attrs new_attrs = {};
- 	struct devlink *devlink = info->user_ptr[0];
+@@ -1185,16 +1185,17 @@ static int devlink_port_function_validate(struct devlink_port *devlink_port,
+ 					  struct nlattr **tb,
+ 					  struct netlink_ext_ack *extack)
+ {
++	const struct devlink_port_ops *ops = devlink_port->ops;
+ 	struct nlattr *attr;
  
--	if (!devlink->ops->port_new || !devlink->ops->port_del)
-+	if (!devlink->ops->port_new)
+ 	if (tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR] &&
+-	    (!devlink_port->ops || !devlink_port->ops->port_fn_hw_addr_set)) {
++	    (!ops || !ops->port_fn_hw_addr_set)) {
+ 		NL_SET_ERR_MSG_ATTR(extack, tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR],
+ 				    "Port doesn't support function attributes");
  		return -EOPNOTSUPP;
- 
- 	if (!info->attrs[DEVLINK_ATTR_PORT_FLAVOUR] ||
-@@ -1389,10 +1389,10 @@ static int devlink_nl_cmd_port_del_doit(struct sk_buff *skb,
- 	struct netlink_ext_ack *extack = info->extack;
- 	struct devlink *devlink = info->user_ptr[0];
- 
--	if (!devlink->ops->port_del)
-+	if (!devlink_port->ops || !devlink_port->ops->port_del)
+ 	}
+ 	if (tb[DEVLINK_PORT_FN_ATTR_STATE] &&
+-	    (!devlink_port->ops || !devlink_port->ops->port_fn_state_set)) {
++	    (!ops || !ops->port_fn_state_set)) {
+ 		NL_SET_ERR_MSG_ATTR(extack, tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR],
+ 				    "Function does not support state setting");
  		return -EOPNOTSUPP;
+@@ -1205,15 +1206,13 @@ static int devlink_port_function_validate(struct devlink_port *devlink_port,
  
--	return devlink->ops->port_del(devlink, devlink_port, extack);
-+	return devlink_port->ops->port_del(devlink, devlink_port, extack);
- }
- 
- static int
+ 		caps = nla_get_bitfield32(attr);
+ 		if (caps.selector & DEVLINK_PORT_FN_CAP_ROCE &&
+-		    (!devlink_port->ops ||
+-		     !devlink_port->ops->port_fn_roce_set)) {
++		    (!ops || !ops->port_fn_roce_set)) {
+ 			NL_SET_ERR_MSG_ATTR(extack, attr,
+ 					    "Port doesn't support RoCE function attribute");
+ 			return -EOPNOTSUPP;
+ 		}
+ 		if (caps.selector & DEVLINK_PORT_FN_CAP_MIGRATABLE) {
+-			if (!devlink_port->ops ||
+-			    !devlink_port->ops->port_fn_migratable_set) {
++			if (!ops || !ops->port_fn_migratable_set) {
+ 				NL_SET_ERR_MSG_ATTR(extack, attr,
+ 						    "Port doesn't support migratable function attribute");
+ 				return -EOPNOTSUPP;
 -- 
 2.39.2
 
