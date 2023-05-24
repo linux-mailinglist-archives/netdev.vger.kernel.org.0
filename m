@@ -1,163 +1,193 @@
-Return-Path: <netdev+bounces-4938-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-4939-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6DF4070F486
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:48:20 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id D5E0670F49B
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 12:54:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E1CE11C20BEA
-	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 10:48:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8F5671C20C78
+	for <lists+netdev@lfdr.de>; Wed, 24 May 2023 10:54:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10DD0C15C;
-	Wed, 24 May 2023 10:48:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C133CC2C5;
+	Wed, 24 May 2023 10:54:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2B741FB1
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 10:48:16 +0000 (UTC)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBFE1A8;
-	Wed, 24 May 2023 03:48:03 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-561f10b6139so7345777b3.2;
-        Wed, 24 May 2023 03:48:03 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B69F88471
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 10:54:11 +0000 (UTC)
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F168CB7
+	for <netdev@vger.kernel.org>; Wed, 24 May 2023 03:54:09 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-510ea8d0bb5so1483181a12.0
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 03:54:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1684925648; x=1687517648;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0/qi+dHgB0OUou2fTatsWKxVpRKt0hH2Bcu1Do/nAuA=;
+        b=GftWbWECWQFLbvcv03JoAPeER0zJrtOqVthatc1RpHrmOLrBOX8yVtEf+Dhl2PqNUu
+         YdodgmdA/Ge5MR5vz3mUJQsQ9NhIdN3ivxeb87HNRa4MX7baDVrvPaZSmC+smSRKbFx/
+         n6BlgiMG2y8MBuWi3oF78vr00bVu6KKuhjYcE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684925283; x=1687517283;
+        d=1e100.net; s=20221208; t=1684925648; x=1687517648;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=QnWIVHFoNbsQTI/EkqM6iBpWOcV5CSw3JS4i0UJMOqA=;
-        b=gCIXS72YrHlzIeOO6bfhahYysz0R+nKKEVwaB7pVFp1Y4OBEw5KXwXXH+X1HnUUhP/
-         JxgdLKsWHzt+MUzT7wSVFk1x/bdH2Xn81aJVPlW+0HickVg98davDmwyJPnos/2AKuUz
-         8tkhHBtoGQl0kaJCAEDcoy5NbwlThbJnfT2HbAwUaA6nlj111GF5Zk+MUvtIn0xeyq9O
-         r3KoGLoDb22GpWBPc6XSat5v3o02KeQCA8zkrug83WJY/SZeoohNTqQBEJNGMQ52i+gh
-         vhSIq4GQrDa4II22N0AP3C9Akp427mCylGXKhhYWg2UvglG9r7Lus4be4FQUvzomqAYT
-         TlJw==
-X-Gm-Message-State: AC+VfDzq6hoF2oqU9/JetA4mVauUbIqI2r2jQTyv598GbnmdC9dSlqlc
-	piNTKRsFkZeVqWAW09qtbThyT5UnVPI16A==
-X-Google-Smtp-Source: ACHHUZ7XM7Y5p15ds3axmbh3RNuqUrz/Md0p+ksEKg0Wt7Cli5FfL3qJtQqaju5PnUgDLitlhj7OUQ==
-X-Received: by 2002:a81:6c43:0:b0:561:a7fd:4fe4 with SMTP id h64-20020a816c43000000b00561a7fd4fe4mr18794588ywc.28.1684925282680;
-        Wed, 24 May 2023 03:48:02 -0700 (PDT)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id x11-20020a817c0b000000b0055a4fe11ce0sm1485796ywc.130.2023.05.24.03.48.01
+        bh=0/qi+dHgB0OUou2fTatsWKxVpRKt0hH2Bcu1Do/nAuA=;
+        b=d1OBG8DWIRdaWpD5MGeOeYN0Nurmzhr0q3Dm3a9+GtafnZqJTYghBwVjhkQEWERzf1
+         MVXSuQ59RaG9fH+3ZpQNIyHD9HB+QVaT9bigVSoolceVsXJAspDkoDNO0qJsFCayOqXx
+         wLHopeHLK0T04PXx7Aw+0I0Jmjqs37c2MuRRAQd72s6PAXk6RcJXtz6ASoepkpwlSC5R
+         pvlPze5/8oNA8vGY3NFkv2nnrIQWicuvowO5RjOTYGFA80rfwnOgSxhlQ3rjemURQVn8
+         cg1Fj4y4M02uJluLwhH6NMbBjLq9OWuYqBCnqMMo51ibgs0+JbZcjj8bM45p1GJHy6aw
+         90Bw==
+X-Gm-Message-State: AC+VfDynmIXGXrcuNRmP0MPDzNncYGLYHOYVD4twIVhzoevko3Kx86wo
+	jt9e6kMnwUYGJ0DMxl+jNwKpZh2iL25OfEkaAAI=
+X-Google-Smtp-Source: ACHHUZ6Ez++yn+ij/7PonrzYR6UlrzO1LKTbBEk8BAQTmvPxiUE353OEIQfxfixwkSzkPtLcOX0O/w==
+X-Received: by 2002:a05:6402:10d0:b0:506:741e:5c14 with SMTP id p16-20020a05640210d000b00506741e5c14mr1717594edu.30.1684925648064;
+        Wed, 24 May 2023 03:54:08 -0700 (PDT)
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
+        by smtp.gmail.com with ESMTPSA id bf23-20020a0564021a5700b0050d83a39e6fsm5067200edb.4.2023.05.24.03.54.06
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 May 2023 03:48:01 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-563b1e5f701so7313997b3.3;
-        Wed, 24 May 2023 03:48:01 -0700 (PDT)
-X-Received: by 2002:a81:9245:0:b0:561:beec:89d3 with SMTP id
- j66-20020a819245000000b00561beec89d3mr20362339ywg.6.1684925281318; Wed, 24
- May 2023 03:48:01 -0700 (PDT)
+        Wed, 24 May 2023 03:54:07 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3078a3f3b5fso642046f8f.0
+        for <netdev@vger.kernel.org>; Wed, 24 May 2023 03:54:06 -0700 (PDT)
+X-Received: by 2002:a5d:5348:0:b0:306:2ef0:d223 with SMTP id
+ t8-20020a5d5348000000b003062ef0d223mr11847562wrv.62.1684925646235; Wed, 24
+ May 2023 03:54:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230522132439.634031-1-aleksandr.mikhalitsyn@canonical.com>
- <20230522132439.634031-2-aleksandr.mikhalitsyn@canonical.com>
- <20230522133409.5c6e839a@kernel.org> <20230523-flechten-ortsschild-e5724ecc4ed0@brauner>
- <CAMw=ZnS8GBTDV0rw+Dh6hPv3uLXJVwapRFQHLMYEYGZHNoLNOw@mail.gmail.com>
- <20230523140844.5895d645@kernel.org> <CAEivzxeS2J5i0RJDvFHq-U_RAU5bbKVF5ZbphYDGoPcMZTsE3Q@mail.gmail.com>
-In-Reply-To: <CAEivzxeS2J5i0RJDvFHq-U_RAU5bbKVF5ZbphYDGoPcMZTsE3Q@mail.gmail.com>
-From: Luca Boccassi <bluca@debian.org>
-Date: Wed, 24 May 2023 11:47:50 +0100
-X-Gmail-Original-Message-ID: <CAMw=ZnRmNaoRb2uceatrV8EAufJSKZzD2AsfT5PJE8NBBOrHCg@mail.gmail.com>
-Message-ID: <CAMw=ZnRmNaoRb2uceatrV8EAufJSKZzD2AsfT5PJE8NBBOrHCg@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 1/3] scm: add SO_PASSPIDFD and SCM_PIDFD
-To: Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Cc: Jakub Kicinski <kuba@kernel.org>, Christian Brauner <brauner@kernel.org>, davem@davemloft.net, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
-	Leon Romanovsky <leon@kernel.org>, David Ahern <dsahern@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Kees Cook <keescook@chromium.org>, Kuniyuki Iwashima <kuniyu@amazon.com>, 
-	Lennart Poettering <mzxreary@0pointer.de>, linux-arch@vger.kernel.org
+References: <20230522234154.2924052-1-yinghsu@chromium.org>
+ <ZGyPt1GYGV2C2RQZ@corigine.com> <CABBYNZ+by-OQH2aPEMHpQ5cOLoKNpR7k111rJj6iOd2PGLx3gg@mail.gmail.com>
+In-Reply-To: <CABBYNZ+by-OQH2aPEMHpQ5cOLoKNpR7k111rJj6iOd2PGLx3gg@mail.gmail.com>
+From: Ying Hsu <yinghsu@chromium.org>
+Date: Wed, 24 May 2023 18:53:29 +0800
+X-Gmail-Original-Message-ID: <CAAa9mD3A+3uJzFK0EbTrn5hX42EOgeixehmxgkwdhp1KetxjVQ@mail.gmail.com>
+Message-ID: <CAAa9mD3A+3uJzFK0EbTrn5hX42EOgeixehmxgkwdhp1KetxjVQ@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: Fix l2cap_disconnect_req deadlock
+To: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: Simon Horman <simon.horman@corigine.com>, linux-bluetooth@vger.kernel.org, 
+	chromeos-bluetooth-upstreaming@chromium.org, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Johan Hedberg <johan.hedberg@gmail.com>, 
+	Marcel Holtmann <marcel@holtmann.org>, Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org, 
+	netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, 24 May 2023 at 11:43, Aleksandr Mikhalitsyn
-<aleksandr.mikhalitsyn@canonical.com> wrote:
->
-> On Tue, May 23, 2023 at 11:08=E2=80=AFPM Jakub Kicinski <kuba@kernel.org>=
- wrote:
-> >
-> > On Tue, 23 May 2023 11:44:01 +0100 Luca Boccassi wrote:
-> > > > I really would like to avoid that because it will just mean that so=
-meone
-> > > > else will abuse that function and then make an argument why we shou=
-ld
-> > > > export the other function.
-> > > >
-> > > > I think it would be ok if we required that unix support is built in
-> > > > because it's not unprecedented either and we're not breaking anythi=
-ng.
-> > > > Bpf has the same requirement:
-> > > >
-> > > >   #if IS_BUILTIN(CONFIG_UNIX) && defined(CONFIG_BPF_SYSCALL)
-> > > >   struct bpf_unix_iter_state {
-> > > >           struct seq_net_private p;
-> > > >           unsigned int cur_sk;
-> > > >           unsigned int end_sk;
-> > > >           unsigned int max_sk;
-> > > >           struct sock **batch;
-> > > >           bool st_bucket_done;
-> > > >   };
-> > > >
-> > > > and
-> > > >
-> > > >   #if IS_BUILTIN(CONFIG_UNIX) && defined(CONFIG_BPF_SYSCALL) && def=
-ined(CONFIG_PROC_FS)
-> > > >   DEFINE_BPF_ITER_FUNC(unix, struct bpf_iter_meta *meta,
-> > > >                        struct unix_sock *unix_sk, uid_t uid)
-> >
-> > Don't think we should bring BPF into arguments about uAPI consistency :=
-S
-> >
-> > > Some data points: Debian, Ubuntu, Fedora, RHEL, CentOS, Archlinux all
-> > > ship with CONFIG_UNIX=3Dy, so a missing SCM_PIDFD in unlikely to have=
- a
-> > > widespread impact, and if it does, it might encourage someone to
-> > > review their kconfig.
-> >
-> > IDK how you can argue that everyone sets UNIX to =3Dy so hiding SCM_PID=
-FD
-> > is fine and at the same time not be okay with making UNIX a bool :S
-> >
-> > > As mentioned on the v5 thread, we are waiting for this API to get the
-> > > userspace side sorted (systemd/dbus/dbus-broker/polkit), so I'd be
-> > > really grateful if we could start with the simplest and most
-> > > conservative approach (which seems to be the current one in v6 to me)=
-,
-> > > and then eventually later decide whether to export more functions, or
-> > > to deprecate CONFIG_UNIX=3Dm, or something else entirely, as that
-> > > doesn't really affect the shape of the UAPI, just the details of its
-> > > availability. Thank you.
-> >
-> > Just throw in a patch to make UNIX a bool and stop arguing then.
->
-> Dear Jakub,
->
-> Thanks for your attention to these patch series!
->
-> I'm ready to prepare/send a patch to make CONFIG_UNIX bool.
->
-> I will send SO_PEERPIDFD as an independent patch too, because it
-> doesn't require this change with CONFIG_UNIX
-> and we can avoid waiting until CONFIG_UNIX change will be merged.
-> I've a feeling that the discussion around making CONFIG_UNIX  to be a
-> boolean won't be easy and fast ;-)
+Hi Simon,
 
-Thank you, that sounds great to me, I can start using SO_PEERPIDFD
-independently of SCM_PIDFD, there's no hard dependency between the
-two.
+I understand your concern about the repeated code.
+However, simply hiding the locking logic in another function
+introduces hidden assumptions.
+For this patch, I would like to fix the deadlock in a simple and easy
+to understand way.
+We can always refactor the l2cap_chan utility functions later.
 
-Kind regards,
-Luca Boccassi
+Hi Luis,
+
+I'll add a fixes tag in the next version.
+
+Best regards,
+Ying
+
+
+On Wed, May 24, 2023 at 3:06=E2=80=AFAM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Simon, Ying,
+>
+> On Tue, May 23, 2023 at 3:04=E2=80=AFAM Simon Horman <simon.horman@corigi=
+ne.com> wrote:
+> >
+> > On Mon, May 22, 2023 at 11:41:51PM +0000, Ying Hsu wrote:
+> > > L2CAP assumes that the locks conn->chan_lock and chan->lock are
+> > > acquired in the order conn->chan_lock, chan->lock to avoid
+> > > potential deadlock.
+> > > For example, l2sock_shutdown acquires these locks in the order:
+> > >   mutex_lock(&conn->chan_lock)
+> > >   l2cap_chan_lock(chan)
+> > >
+> > > However, l2cap_disconnect_req acquires chan->lock in
+> > > l2cap_get_chan_by_scid first and then acquires conn->chan_lock
+> > > before calling l2cap_chan_del. This means that these locks are
+> > > acquired in unexpected order, which leads to potential deadlock:
+> > >   l2cap_chan_lock(c)
+> > >   mutex_lock(&conn->chan_lock)
+> > >
+> > > This patch uses __l2cap_get_chan_by_scid to replace
+> > > l2cap_get_chan_by_scid and adjusts the locking order to avoid the
+> > > potential deadlock.
+>
+> This needs the fixes tag so we can backport it properly.
+>
+> > > Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+> > > ---
+> > > This commit has been tested on a Chromebook device.
+> > >
+> > > Changes in v2:
+> > > - Adding the prefix "Bluetooth:" to subject line.
+> > >
+> > >  net/bluetooth/l2cap_core.c | 26 ++++++++++++++++++++------
+> > >  1 file changed, 20 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+> > > index 376b523c7b26..8f08192b8fb1 100644
+> > > --- a/net/bluetooth/l2cap_core.c
+> > > +++ b/net/bluetooth/l2cap_core.c
+> > > @@ -4651,8 +4651,16 @@ static inline int l2cap_disconnect_req(struct =
+l2cap_conn *conn,
+> > >
+> > >       BT_DBG("scid 0x%4.4x dcid 0x%4.4x", scid, dcid);
+> > >
+> > > -     chan =3D l2cap_get_chan_by_scid(conn, dcid);
+> > > +     mutex_lock(&conn->chan_lock);
+> > > +     chan =3D __l2cap_get_chan_by_scid(conn, dcid);
+> > > +     if (chan) {
+> > > +             chan =3D l2cap_chan_hold_unless_zero(chan);
+> > > +             if (chan)
+> > > +                     l2cap_chan_lock(chan);
+> > > +     }
+> > > +
+> > >       if (!chan) {
+> > > +             mutex_unlock(&conn->chan_lock);
+> > >               cmd_reject_invalid_cid(conn, cmd->ident, dcid, scid);
+> > >               return 0;
+> > >       }
+> >
+> > Hi Ying,
+> >
+> > The conditional setting of chan and calling l2cap_chan_lock()
+> > is both non-trivial and repeated. It seems that it ought to be
+> > in a helper.
+> >
+> > Something like this (I'm sure a better function name can be chosen):
+> >
+> >         chan =3D __l2cap_get_and_lock_chan_by_scid(conn, dcid);
+> >         if (!chan) {
+> >                 ...
+> >         }
+> >
+> >         ...
+>
+> Or perhaps we could do something like l2cap_del_chan_by_scid:
+>
+> https://gist.github.com/Vudentz/e513859ecb31e79c947dfcb4b5c60453
+>
+> --
+> Luiz Augusto von Dentz
 
