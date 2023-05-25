@@ -1,48 +1,47 @@
-Return-Path: <netdev+bounces-5445-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5446-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4E091711477
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:39:51 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 83E4C711479
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:40:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E4B541C20A71
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:39:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3CEC3280C4E
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:40:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1752723D45;
-	Thu, 25 May 2023 18:38:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 188A723D49;
+	Thu, 25 May 2023 18:38:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D57A19BC4
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:38:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F9C1C433EF;
-	Thu, 25 May 2023 18:38:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D579923D42
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:38:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D66DFC4339E;
+	Thu, 25 May 2023 18:38:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685039921;
-	bh=awLwyRpuLvxzkYp1+BuQee70cH6x2ekPPiLJGmfacb0=;
+	s=k20201202; t=1685039922;
+	bh=HzruN7S94e2jiNL7UDJDgCBmvP+Pdrad2H4wZ+KkonU=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=HG9tdDn3XBS9yTWEnfbDdJ7dQxiRb+zF/0TJbWLT+mS4M5tb1DXHYe+quF9YQK+Ik
-	 fqUCsUtTdd3+q700Dxs4AXzGb7PxLqkXqDgbKfR7/8F5uZPasclJ1Vb5Z51E1yiFjj
-	 0gA3eOY4+7yUAzjT0HvwI7gBoWRY0LPjwVA36JHB0QKKfPXNVNQ98boFFrloq9CHx0
-	 y/q7FRBEDtU9IU1oZZ9w9xJD8Vj/oJcaeC1M4EbRwB3+VQntCZ0NI2DSVR60oJdt77
-	 6qo6xxyUDcfSFaIlpsLwaZIDWktsBRuro2GCsteAIuXtCiSQEjHuYPyJzF5U3APAE7
-	 B92AFF3POYGvA==
+	b=aBCIq1Ocichl3SyhxOEgFrtJaE8ys+1DxsvmOs6QLZiaUXPwXzSLlO1Rpa9dXWdLo
+	 UWMemZ4RBebvxBrRsdMvPffsfwqBVNxKBAfrgLmd6UbjfkOSqnJ/+O0fhTUOqx4kBc
+	 MB/ao27BU/WkiqMpUn26PVqnhCN2GMnjDe3sB0StbN+FNulisx3E4zAmxXXiXbl6vW
+	 QLDMYrp0NiVN0YcuYJgvgXSHBqDx96astEfUqbx1PswBnkHH8l8uo8pQoGhxHIdarp
+	 WdGGpd6FkGlq43SexeTsj9PvbI6Eo/vnrLN0uPjiIJgcWUhxKCHBaCd4SyuQ3RrsXD
+	 HYEg6V8DVtHmQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
 Cc: Arnd Bergmann <arnd@arndb.de>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
-	davem@davemloft.net,
-	edumazet@google.com,
-	pabeni@redhat.com,
+	andrew@lunn.ch,
+	hkallweit1@gmail.com,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 51/57] atm: hide unused procfs functions
-Date: Thu, 25 May 2023 14:36:01 -0400
-Message-Id: <20230525183607.1793983-51-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 52/57] mdio_bus: unhide mdio_bus_init prototype
+Date: Thu, 25 May 2023 14:36:02 -0400
+Message-Id: <20230525183607.1793983-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230525183607.1793983-1-sashal@kernel.org>
 References: <20230525183607.1793983-1-sashal@kernel.org>
@@ -58,43 +57,39 @@ Content-Transfer-Encoding: 8bit
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit fb1b7be9b16c1f4626969ba4e95a97da2a452b41 ]
+[ Upstream commit 2e9f8ab68f42b059e80db71266c1675c07c664bd ]
 
-When CONFIG_PROC_FS is disabled, the function declarations for some
-procfs functions are hidden, but the definitions are still build,
-as shown by this compiler warning:
+mdio_bus_init() is either used as a local module_init() entry,
+or it gets called in phy_device.c. In the former case, there
+is no declaration, which causes a warning:
 
-net/atm/resources.c:403:7: error: no previous prototype for 'atm_dev_seq_start' [-Werror=missing-prototypes]
-net/atm/resources.c:409:6: error: no previous prototype for 'atm_dev_seq_stop' [-Werror=missing-prototypes]
-net/atm/resources.c:414:7: error: no previous prototype for 'atm_dev_seq_next' [-Werror=missing-prototypes]
+drivers/net/phy/mdio_bus.c:1371:12: error: no previous prototype for 'mdio_bus_init' [-Werror=missing-prototypes]
 
-Add another #ifdef to leave these out of the build.
+Remove the #ifdef around the declaration to avoid the warning..
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20230516194625.549249-2-arnd@kernel.org
+Link: https://lore.kernel.org/r/20230516194625.549249-4-arnd@kernel.org
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/atm/resources.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/phy.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/atm/resources.c b/net/atm/resources.c
-index 2b2d33eeaf200..995d29e7fb138 100644
---- a/net/atm/resources.c
-+++ b/net/atm/resources.c
-@@ -400,6 +400,7 @@ int atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,
- 	return error;
- }
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index ddf66198f7511..bcb0a13360a31 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1759,10 +1759,8 @@ void phy_package_leave(struct phy_device *phydev);
+ int devm_phy_package_join(struct device *dev, struct phy_device *phydev,
+ 			  int addr, size_t priv_size);
  
-+#ifdef CONFIG_PROC_FS
- void *atm_dev_seq_start(struct seq_file *seq, loff_t *pos)
- {
- 	mutex_lock(&atm_dev_mutex);
-@@ -415,3 +416,4 @@ void *atm_dev_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- {
- 	return seq_list_next(v, &atm_devs, pos);
- }
-+#endif
+-#if IS_ENABLED(CONFIG_PHYLIB)
+ int __init mdio_bus_init(void);
+ void mdio_bus_exit(void);
+-#endif
+ 
+ int phy_ethtool_get_strings(struct phy_device *phydev, u8 *data);
+ int phy_ethtool_get_sset_count(struct phy_device *phydev);
 -- 
 2.39.2
 
