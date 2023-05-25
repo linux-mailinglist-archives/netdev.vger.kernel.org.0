@@ -1,55 +1,55 @@
-Return-Path: <netdev+bounces-5413-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5414-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AD6C9711340
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:11:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E4114711341
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:11:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 608661C20EF7
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:11:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A41971C20EF7
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:11:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB110209B8;
-	Thu, 25 May 2023 18:11:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 09DDB2108C;
+	Thu, 25 May 2023 18:11:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D06F91F95C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E841221080
 	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:11:08 +0000 (UTC)
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496CDD9
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 11:11:02 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC5D19C
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 11:11:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1685038262; x=1716574262;
+  t=1685038266; x=1716574266;
   h=from:date:subject:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc;
-  bh=lihZEA8md6Ln0rRdNt1bbPU1NnyU/TsRvNIoNfvDfGM=;
-  b=VPfeSgMvcdCJm7OF5u8IW+mubmRe6kUTt+sWQkuI5m7hmp7wWs+hfgze
-   yovBvugImokekqU7qVBAMSRhqJIZNjdZL/Euz3YF9TX37MnMq42WPlPKa
-   ewweFXDnSggH5r+mNeKNuauGD8JsEms62QRPw0FiM8zV3PornjD0zgEUv
-   Ar8JUPHVu8OLneqf2JXT3bw/iOoQj8CL/Nsx3hXr19fdeSOCEiyFI42ss
-   QxzM5Ch9pj/HjuzgEeaV2YJCl+e0cIl+Jdx1n72BWq0IVeL1OOkdJP0hs
-   cgO23fnQHWlRKX74pRelmxuhR6MTSXUpZfT3+lMacKQxk6xPkIedEsZ3+
-   Q==;
+  bh=lnAdOtE8rJJeWM0rv7uiFotMQI30BMt2qwsC5jOoSLM=;
+  b=XuitoUajnU92kQixEPy+srPlR2N7UAsLPeJPbAHMUuAvHBvtxBl3p2Ve
+   Ue7iEs1TAD15wZvmgYVUrckXMrWfXwKoJI4zjyQk1NyzuZhP+RaH3lyh3
+   NJwMWHEwtFt6RQdrMkUW/dLuNU18WYVJYGZI/flE5tS+Cp83l36L4Yds3
+   FLv1IK2r7stPsa5g9NK/YXa231F1qDsKoBAqAuL76zg5GuayWNoDjqVWv
+   Sswe4mC95H9GL0RPik7z0uDRgyqjSf4mQheSrwgNW+AkMGhUUNevPqmfD
+   dkpqTSIiGdMgCAGV33oLgSt5gMaJ3Mo0J/YI7Q4tK4w5o4+NP13eiVJ78
+   g==;
 X-IronPort-AV: E=Sophos;i="6.00,191,1681196400"; 
-   d="scan'208";a="215499937"
+   d="scan'208";a="227025976"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 May 2023 11:11:02 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 May 2023 11:11:05 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 25 May 2023 11:11:01 -0700
+ 15.1.2507.21; Thu, 25 May 2023 11:11:02 -0700
 Received: from [10.205.21.38] (10.10.115.15) by chn-vm-ex04.mchp-main.com
  (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Thu, 25 May 2023 11:11:00 -0700
+ Transport; Thu, 25 May 2023 11:11:01 -0700
 From: Daniel Machon <daniel.machon@microchip.com>
-Date: Thu, 25 May 2023 20:10:21 +0200
-Subject: [PATCH iproute2-next v2 1/8] dcb: app: add new dcbnl attribute
- field
+Date: Thu, 25 May 2023 20:10:22 +0200
+Subject: [PATCH iproute2-next v2 2/8] dcb: app: modify dcb-app print
+ functions for dcb-rewr reuse
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -58,7 +58,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20230510-dcb-rewr-v2-1-9f38e688117e@microchip.com>
+Message-ID: <20230510-dcb-rewr-v2-2-9f38e688117e@microchip.com>
 References: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
 In-Reply-To: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
 To: <netdev@vger.kernel.org>
@@ -72,93 +72,157 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add a new field 'attr' to the dcb_app_table struct, in order to inject
-different dcbnl get/set attributes for APP and rewrite.
+Where dcb-app requires protocol to be the printed key, dcb-rewr requires
+it to be the priority. Adapt existing dcb-app print functions for this.
+
+dcb_app_print_filtered() has been modified, to take two callbacks; one
+for printing the entire string (pid and prio), and one for the pid type
+(dec, hex, dscp, pcp). This saves us for making one dedicated function
+for each pid type for both app and rewr.
+
+dcb_app_print_key_*() functions have been renamed to
+dcb_app_print_pid_*() to align with new situation. Also, none of them
+will print the colon anymore.
 
 Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 ---
- dcb/dcb_app.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ dcb/dcb_app.c | 58 ++++++++++++++++++++++++++++++++++++----------------------
+ 1 file changed, 36 insertions(+), 22 deletions(-)
 
 diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
-index eeb78e70f63f..8073415ad084 100644
+index 8073415ad084..1e36541bec61 100644
 --- a/dcb/dcb_app.c
 +++ b/dcb/dcb_app.c
-@@ -71,6 +71,7 @@ static void dcb_app_help(void)
- struct dcb_app_table {
- 	struct dcb_app *apps;
- 	size_t n_apps;
-+	int attr;
- };
+@@ -403,38 +403,39 @@ static bool dcb_app_is_port(const struct dcb_app *app)
+ 	return app->selector == IEEE_8021QAZ_APP_SEL_ANY;
+ }
  
- enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector)
-@@ -583,7 +584,7 @@ static int dcb_app_get(struct dcb *dcb, const char *dev, struct dcb_app_table *t
- 	void *payload;
- 	int ret;
- 
--	ret = dcb_get_attribute_va(dcb, dev, DCB_ATTR_IEEE_APP_TABLE, &payload, &payload_len);
-+	ret = dcb_get_attribute_va(dcb, dev, tab->attr, &payload, &payload_len);
- 	if (ret != 0)
- 		return ret;
- 
-@@ -606,7 +607,7 @@ static int dcb_app_add_del_cb(struct dcb *dcb, struct nlmsghdr *nlh, void *data)
- 	struct nlattr *nest;
- 	size_t i;
- 
--	nest = mnl_attr_nest_start(nlh, DCB_ATTR_IEEE_APP_TABLE);
-+	nest = mnl_attr_nest_start(nlh, add_del->tab->attr);
- 
- 	for (i = 0; i < add_del->tab->n_apps; i++) {
- 		const struct dcb_app *app = &add_del->tab->apps[i];
-@@ -715,7 +716,7 @@ static int dcb_cmd_app_parse_add_del(struct dcb *dcb, const char *dev,
- 
- static int dcb_cmd_app_add(struct dcb *dcb, const char *dev, int argc, char **argv)
+-static int dcb_app_print_key_dec(__u16 protocol)
++static int dcb_app_print_pid_dec(__u16 protocol)
  {
--	struct dcb_app_table tab = {};
-+	struct dcb_app_table tab = { .attr = DCB_ATTR_IEEE_APP_TABLE };
- 	int ret;
+-	return print_uint(PRINT_ANY, NULL, "%d:", protocol);
++	return print_uint(PRINT_ANY, NULL, "%u", protocol);
+ }
  
- 	ret = dcb_cmd_app_parse_add_del(dcb, dev, argc, argv, &tab);
-@@ -729,7 +730,7 @@ static int dcb_cmd_app_add(struct dcb *dcb, const char *dev, int argc, char **ar
- 
- static int dcb_cmd_app_del(struct dcb *dcb, const char *dev, int argc, char **argv)
+-static int dcb_app_print_key_hex(__u16 protocol)
++static int dcb_app_print_pid_hex(__u16 protocol)
  {
--	struct dcb_app_table tab = {};
-+	struct dcb_app_table tab = { .attr = DCB_ATTR_IEEE_APP_TABLE };
- 	int ret;
+-	return print_uint(PRINT_ANY, NULL, "%x:", protocol);
++	return print_uint(PRINT_ANY, NULL, "%x", protocol);
+ }
  
- 	ret = dcb_cmd_app_parse_add_del(dcb, dev, argc, argv, &tab);
-@@ -743,7 +744,7 @@ static int dcb_cmd_app_del(struct dcb *dcb, const char *dev, int argc, char **ar
- 
- static int dcb_cmd_app_show(struct dcb *dcb, const char *dev, int argc, char **argv)
+-static int dcb_app_print_key_dscp(__u16 protocol)
++static int dcb_app_print_pid_dscp(__u16 protocol)
  {
--	struct dcb_app_table tab = {};
-+	struct dcb_app_table tab = { .attr = DCB_ATTR_IEEE_APP_TABLE };
- 	int ret;
+ 	const char *name = rtnl_dsfield_get_name(protocol << 2);
  
- 	ret = dcb_app_get(dcb, dev, &tab);
-@@ -795,7 +796,7 @@ out:
+-
+ 	if (!is_json_context() && name != NULL)
+-		return print_string(PRINT_FP, NULL, "%s:", name);
+-	return print_uint(PRINT_ANY, NULL, "%d:", protocol);
++		return print_string(PRINT_FP, NULL, "%s", name);
++	return print_uint(PRINT_ANY, NULL, "%u", protocol);
+ }
  
- static int dcb_cmd_app_flush(struct dcb *dcb, const char *dev, int argc, char **argv)
+-static int dcb_app_print_key_pcp(__u16 protocol)
++static int dcb_app_print_pid_pcp(__u16 protocol)
  {
--	struct dcb_app_table tab = {};
-+	struct dcb_app_table tab = { .attr = DCB_ATTR_IEEE_APP_TABLE };
- 	int ret;
+ 	/* Print in numerical form, if protocol value is out-of-range */
+ 	if (protocol > DCB_APP_PCP_MAX)
+-		return print_uint(PRINT_ANY, NULL, "%d:", protocol);
++		return print_uint(PRINT_ANY, NULL, "%u", protocol);
  
- 	ret = dcb_app_get(dcb, dev, &tab);
-@@ -848,9 +849,9 @@ out:
+-	return print_string(PRINT_ANY, NULL, "%s:", pcp_names[protocol]);
++	return print_string(PRINT_ANY, NULL, "%s", pcp_names[protocol]);
+ }
  
- static int dcb_cmd_app_replace(struct dcb *dcb, const char *dev, int argc, char **argv)
+ static void dcb_app_print_filtered(const struct dcb_app_table *tab,
+ 				   bool (*filter)(const struct dcb_app *),
+-				   int (*print_key)(__u16 protocol),
++				   void (*print_pid_prio)(int (*print_pid)(__u16),
++							  const struct dcb_app *),
++				   int (*print_pid)(__u16 protocol),
+ 				   const char *json_name,
+ 				   const char *fp_name)
  {
--	struct dcb_app_table orig = {};
--	struct dcb_app_table tab = {};
--	struct dcb_app_table new = {};
-+	struct dcb_app_table orig = { .attr = DCB_ATTR_IEEE_APP_TABLE };
-+	struct dcb_app_table tab = { .attr = DCB_ATTR_IEEE_APP_TABLE };
-+	struct dcb_app_table new = { .attr = DCB_ATTR_IEEE_APP_TABLE };
- 	int ret;
+@@ -453,8 +454,8 @@ static void dcb_app_print_filtered(const struct dcb_app_table *tab,
+ 		}
  
- 	ret = dcb_app_get(dcb, dev, &orig);
+ 		open_json_array(PRINT_JSON, NULL);
+-		print_key(app->protocol);
+-		print_uint(PRINT_ANY, NULL, "%d ", app->priority);
++		print_pid_prio(print_pid, app);
++		print_string(PRINT_ANY, NULL, "%s", " ");
+ 		close_json_array(PRINT_JSON, NULL);
+ 	}
+ 
+@@ -464,9 +465,17 @@ static void dcb_app_print_filtered(const struct dcb_app_table *tab,
+ 	}
+ }
+ 
++static void dcb_app_print_pid_prio(int (*print_pid)(__u16 protocol),
++				   const struct dcb_app *app)
++{
++	print_pid(app->protocol);
++	print_uint(PRINT_ANY, NULL, ":%u", app->priority);
++}
++
+ static void dcb_app_print_ethtype_prio(const struct dcb_app_table *tab)
+ {
+-	dcb_app_print_filtered(tab, dcb_app_is_ethtype,  dcb_app_print_key_hex,
++	dcb_app_print_filtered(tab, dcb_app_is_ethtype,
++			       dcb_app_print_pid_prio, dcb_app_print_pid_hex,
+ 			       "ethtype_prio", "ethtype-prio");
+ }
+ 
+@@ -474,8 +483,9 @@ static void dcb_app_print_pcp_prio(const struct dcb *dcb,
+ 				   const struct dcb_app_table *tab)
+ {
+ 	dcb_app_print_filtered(tab, dcb_app_is_pcp,
+-			       dcb->numeric ? dcb_app_print_key_dec
+-					    : dcb_app_print_key_pcp,
++			       dcb_app_print_pid_prio,
++			       dcb->numeric ? dcb_app_print_pid_dec :
++					      dcb_app_print_pid_pcp,
+ 			       "pcp_prio", "pcp-prio");
+ }
+ 
+@@ -483,26 +493,30 @@ static void dcb_app_print_dscp_prio(const struct dcb *dcb,
+ 				    const struct dcb_app_table *tab)
+ {
+ 	dcb_app_print_filtered(tab, dcb_app_is_dscp,
+-			       dcb->numeric ? dcb_app_print_key_dec
+-					    : dcb_app_print_key_dscp,
++			       dcb_app_print_pid_prio,
++			       dcb->numeric ? dcb_app_print_pid_dec :
++					      dcb_app_print_pid_dscp,
+ 			       "dscp_prio", "dscp-prio");
+ }
+ 
+ static void dcb_app_print_stream_port_prio(const struct dcb_app_table *tab)
+ {
+-	dcb_app_print_filtered(tab, dcb_app_is_stream_port, dcb_app_print_key_dec,
++	dcb_app_print_filtered(tab, dcb_app_is_stream_port,
++			       dcb_app_print_pid_prio, dcb_app_print_pid_dec,
+ 			       "stream_port_prio", "stream-port-prio");
+ }
+ 
+ static void dcb_app_print_dgram_port_prio(const struct dcb_app_table *tab)
+ {
+-	dcb_app_print_filtered(tab, dcb_app_is_dgram_port, dcb_app_print_key_dec,
++	dcb_app_print_filtered(tab, dcb_app_is_dgram_port,
++			       dcb_app_print_pid_prio, dcb_app_print_pid_dec,
+ 			       "dgram_port_prio", "dgram-port-prio");
+ }
+ 
+ static void dcb_app_print_port_prio(const struct dcb_app_table *tab)
+ {
+-	dcb_app_print_filtered(tab, dcb_app_is_port, dcb_app_print_key_dec,
++	dcb_app_print_filtered(tab, dcb_app_is_port,
++			       dcb_app_print_pid_prio, dcb_app_print_pid_dec,
+ 			       "port_prio", "port-prio");
+ }
+ 
 
 -- 
 2.34.1
