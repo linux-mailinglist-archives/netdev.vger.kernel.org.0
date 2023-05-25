@@ -1,48 +1,47 @@
-Return-Path: <netdev+bounces-5463-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5464-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8E8F4711514
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:45:32 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 74C8A711515
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:45:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C42FA280FDD
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:45:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 33CF81C20F61
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:45:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E81923D6E;
-	Thu, 25 May 2023 18:45:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1CEC42412A;
+	Thu, 25 May 2023 18:45:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 481C223D50
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:45:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C50C4339B;
-	Thu, 25 May 2023 18:45:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADD9A24122
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:45:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A6CC4339C;
+	Thu, 25 May 2023 18:45:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685040314;
-	bh=R2szygw8FMPBznQfFFea6pkYnXE8rPymtXIxPAxltKY=;
+	s=k20201202; t=1685040315;
+	bh=CKkzf9WnSHSuDY0Ls9IPQG/AS+xqgVyUO5PWSL2wPI0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lxgwhKyTNhwX6nv4SySRSkRTa9xUYjB52OV/5k0I4nBjUZ5tYNrkpp7xotDMSTIR4
-	 jVcHNQG9EGbuzfSE9MAEKtnzq5wbDLAq1TMyp3Ga5X8p6Sm5mPZrpnUMg5ZosN3F+l
-	 MykEKEMQ/Xvh/JSIUjlUH6ryibDvc70WJGDmc/qYcW4RZz/QpFK8jND67gkHGyNdIU
-	 ybOIgrfk+oPDZi68j5pqN5KHNYb1VQK+1QM/rmuAYpCl+nfiyyb1WU2uZvXffyQaFQ
-	 vUHB96UQ+FqHlPmfvB1XNt3iR5xEm1PdkNbje2E2QWgWxXm4tuq/Z0AKKKwsT/Kxza
-	 zaWRRwPHAiHaA==
+	b=rQ4tkrkIcFXktI6J6PerG0qwEU1H+BuE/N6IozSn6BkbkfoDwpbe7eUhL9MKJGV87
+	 JsCebhD4nErotcQBQ2XjvAxEvuyisZRNn9SFPKsT80CXXS5mBN7z10tK7kHKFJb7UH
+	 ZZY7PniWQghHq67aB/UajZtqRr9DWghH9N3kzNUe2c0YJpUKX2z7sHbl7Cu1H9C4s1
+	 9v0EMAk40oHd9E0DV0JsQWXlRq//qKbYtGKS3lM99BynVTUyrlugxtlEDEGl275aZQ
+	 mTqEg80DjcG+NlJlkp3R2C9S7/OU8WhpOHGIzU2109rLrRrcjIfnCLYkUKUy19qloB
+	 k2DV/i2aBM1PA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
 Cc: Arnd Bergmann <arnd@arndb.de>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
-	davem@davemloft.net,
-	edumazet@google.com,
-	pabeni@redhat.com,
+	andrew@lunn.ch,
+	hkallweit1@gmail.com,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 26/27] atm: hide unused procfs functions
-Date: Thu, 25 May 2023 14:43:52 -0400
-Message-Id: <20230525184356.1974216-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 27/27] mdio_bus: unhide mdio_bus_init prototype
+Date: Thu, 25 May 2023 14:43:53 -0400
+Message-Id: <20230525184356.1974216-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230525184356.1974216-1-sashal@kernel.org>
 References: <20230525184356.1974216-1-sashal@kernel.org>
@@ -58,43 +57,39 @@ Content-Transfer-Encoding: 8bit
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit fb1b7be9b16c1f4626969ba4e95a97da2a452b41 ]
+[ Upstream commit 2e9f8ab68f42b059e80db71266c1675c07c664bd ]
 
-When CONFIG_PROC_FS is disabled, the function declarations for some
-procfs functions are hidden, but the definitions are still build,
-as shown by this compiler warning:
+mdio_bus_init() is either used as a local module_init() entry,
+or it gets called in phy_device.c. In the former case, there
+is no declaration, which causes a warning:
 
-net/atm/resources.c:403:7: error: no previous prototype for 'atm_dev_seq_start' [-Werror=missing-prototypes]
-net/atm/resources.c:409:6: error: no previous prototype for 'atm_dev_seq_stop' [-Werror=missing-prototypes]
-net/atm/resources.c:414:7: error: no previous prototype for 'atm_dev_seq_next' [-Werror=missing-prototypes]
+drivers/net/phy/mdio_bus.c:1371:12: error: no previous prototype for 'mdio_bus_init' [-Werror=missing-prototypes]
 
-Add another #ifdef to leave these out of the build.
+Remove the #ifdef around the declaration to avoid the warning..
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20230516194625.549249-2-arnd@kernel.org
+Link: https://lore.kernel.org/r/20230516194625.549249-4-arnd@kernel.org
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/atm/resources.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/phy.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/atm/resources.c b/net/atm/resources.c
-index bada395ecdb18..9389080224f87 100644
---- a/net/atm/resources.c
-+++ b/net/atm/resources.c
-@@ -447,6 +447,7 @@ int atm_dev_ioctl(unsigned int cmd, void __user *arg, int compat)
- 	return error;
- }
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 86a3792c568c2..dbaca6a6a32b8 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1080,10 +1080,8 @@ int phy_ethtool_set_link_ksettings(struct net_device *ndev,
+ 				   const struct ethtool_link_ksettings *cmd);
+ int phy_ethtool_nway_reset(struct net_device *ndev);
  
-+#ifdef CONFIG_PROC_FS
- void *atm_dev_seq_start(struct seq_file *seq, loff_t *pos)
- {
- 	mutex_lock(&atm_dev_mutex);
-@@ -462,3 +463,4 @@ void *atm_dev_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- {
- 	return seq_list_next(v, &atm_devs, pos);
- }
-+#endif
+-#if IS_ENABLED(CONFIG_PHYLIB)
+ int __init mdio_bus_init(void);
+ void mdio_bus_exit(void);
+-#endif
+ 
+ /* Inline function for use within net/core/ethtool.c (built-in) */
+ static inline int phy_ethtool_get_strings(struct phy_device *phydev, u8 *data)
 -- 
 2.39.2
 
