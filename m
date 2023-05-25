@@ -1,107 +1,134 @@
-Return-Path: <netdev+bounces-5427-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5428-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 216997113B0
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:30:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 480817113C7
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:32:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C9FD22815FD
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:30:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF1C328162A
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:32:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 56C32125DE;
-	Thu, 25 May 2023 18:30:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C868156E2;
+	Thu, 25 May 2023 18:32:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40AA223D41
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:30:37 +0000 (UTC)
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE78125
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 11:30:31 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id 2adb3069b0e04-4f3bb61f860so2931372e87.3
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 11:30:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ferroamp-se.20221208.gappssmtp.com; s=20221208; t=1685039430; x=1687631430;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=+YJ/U9yQq7zENy/xeT5OhlkVCIP/m9WLirdWwzeDK4I=;
-        b=jklSg68Yjq7Ohsf/zGVOv18G5cs2zXhVUYIHJ9oz41V5C6o9cEHx0aUKecr5ZvoSMz
-         bfvuVb+k25HF7HOGe68clM7VAZM/PrDoBpAhleFL9zvFYPvvXvzz8clUm+txJU7XeYw5
-         /AdH8wAIROoj0XRklCZKZ2yNmZcXiE2QkHUF+N7ioHqcEFJXPDqY+YuHgrJtBTeIChwF
-         xhVUst+NzkjyVjGhtZWA2Ek7XS1/wyfXkSyl8dkYWF3j+9glwpQVhDpY31boqS8kYa9F
-         brttZp2s3/JdaEwTHpdtkgl7+Yp+U07XKejie82aCumUh5KB+40AiG29ZQo+6hKp6JOh
-         TI9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685039430; x=1687631430;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+YJ/U9yQq7zENy/xeT5OhlkVCIP/m9WLirdWwzeDK4I=;
-        b=FAezchjsZ4EvUm4i6BiW0y0K2QCMjmlqIvvZy1tZm4lVtRFBXMmogenSntnfe+NvGZ
-         jDY2luCmKFbSsCKVRjFmHfuT6UIs0HEq+3qsOTpPvA84uc+3y4rlGpr4cHNybPGYyooa
-         1hxbanS/SV83HDKNq24Ndv/M409L+GXPntkrCSbPaKXFUwDwv1yc79IkCfbqEE7eU7fJ
-         y/NGb4qLIpUEnF+JcJ/D6jLyK/yMnUshi8SenOCtaecDP81mmKGANfCDNG4OmyA4OHoF
-         vgTowm80LXsUboWggA/hQIJVuzUdEZ1hexCExIKQZfxdUtl2+iIh090k3UyvwBNPASB+
-         ZRQw==
-X-Gm-Message-State: AC+VfDwe0Mfemnc57n2+KnleZxs9Gker0o449kb4Vbpz30Bk1kx/c1Fm
-	UbByWx8kNHubkocDIV3On6pUZQ==
-X-Google-Smtp-Source: ACHHUZ6GpGNkXqsuXcs2YgoOJsCMXwrX9WEYcj1NNZ2HxN1HKZL1L3M96Tda83v8EXyBwnNG83x1Bg==
-X-Received: by 2002:ac2:4299:0:b0:4d8:75f8:6963 with SMTP id m25-20020ac24299000000b004d875f86963mr5769978lfh.38.1685039430204;
-        Thu, 25 May 2023 11:30:30 -0700 (PDT)
-Received: from builder (c188-149-203-37.bredband.tele2.se. [188.149.203.37])
-        by smtp.gmail.com with ESMTPSA id g21-20020ac25395000000b004f3b258feefsm296583lfh.179.2023.05.25.11.30.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 11:30:29 -0700 (PDT)
-Date: Thu, 25 May 2023 20:30:27 +0200
-From: =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
-To: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
-Cc: andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
-	Woojung.Huh@microchip.com, Nicolas.Ferre@microchip.com,
-	Thorsten.Kummermehr@microchip.com
-Subject: Re: [PATCH net-next v3 5/6] net: phy: microchip_t1s: remove
- unnecessary interrupts disabling code
-Message-ID: <ZG+pQ95pU2yn7LlR@builder>
-References: <20230524144539.62618-1-Parthiban.Veerasooran@microchip.com>
- <20230524144539.62618-6-Parthiban.Veerasooran@microchip.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE3A85C97
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:32:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6224FC4339C;
+	Thu, 25 May 2023 18:32:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685039570;
+	bh=1MEKyxkJ90RDJSqFQeVLPjMv/ykSG+pw14Skt27cOqI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=agqnNThq2ZPOGCUSf+OTGh0AzxthVNdP++qk/jxabaslSATfCuynkXuunikudbEqF
+	 A1rFq7GmyNRwKZgT/89MqV5PcxMZRR0itkw1TgzJbcn8+wVZqSYuY2hW/bLZ/D/UlV
+	 BuPeazsGx8V0xJuqvV/KqPEWN2Ss2uTrawinS8njdpMH5UXX2CV6YIwHHFj+YVqj5q
+	 BnLZ5EWwsOtpOGgEb3e/lTYgsi1R1M+iHJZyE4xH+HQNmy6fKo0cMSRhpkyxs+ZBzA
+	 JsfRldSqf8OAGVx39J+JJaw5FmkWew9sz3D6LP+B2BJwtLhNhEFi0Z8RndIDAROFPc
+	 msgVaq/DgB+8Q==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Benedict Wong <benedictwong@google.com>,
+	Steffen Klassert <steffen.klassert@secunet.com>,
+	Sasha Levin <sashal@kernel.org>,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.3 10/67] xfrm: Check if_id in inbound policy/secpath match
+Date: Thu, 25 May 2023 14:30:47 -0400
+Message-Id: <20230525183144.1717540-10-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230525183144.1717540-1-sashal@kernel.org>
+References: <20230525183144.1717540-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230524144539.62618-6-Parthiban.Veerasooran@microchip.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-	T_SPF_PERMERROR autolearn=unavailable autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-On Wed, May 24, 2023 at 08:15:38PM +0530, Parthiban Veerasooran wrote:
-> By default, except Reset Complete interrupt in the Interrupt Mask 2
-> Register all other interrupts are disabled/masked. As Reset Complete
-> status is already handled, it doesn't make sense to disable it.
-> 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
-> ---
+From: Benedict Wong <benedictwong@google.com>
 
-Reviewed-by: Ramón Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
-Tested-by: Ramón Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
+[ Upstream commit 8680407b6f8f5fba59e8f1d63c869abc280f04df ]
 
-Testing has been pretty rudamentary, but the procedure has been as
-follows:
-    * Hotplug 2 devices
-    * Unload and reload the lkm
-    * Ping 2 devices over ipv6 link local addresses
-All testing has been performed with the EVB-LAN8670-USB
+This change ensures that if configured in the policy, the if_id set in
+the policy and secpath states match during the inbound policy check.
+Without this, there is potential for ambiguity where entries in the
+secpath differing by only the if_id could be mismatched.
+
+Notably, this is checked in the outbound direction when resolving
+templates to SAs, but not on the inbound path when matching SAs and
+policies.
+
+Test: Tested against Android kernel unit tests & CTS
+Signed-off-by: Benedict Wong <benedictwong@google.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/xfrm/xfrm_policy.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 5c61ec04b839b..361b561908075 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3312,7 +3312,7 @@ xfrm_secpath_reject(int idx, struct sk_buff *skb, const struct flowi *fl)
+ 
+ static inline int
+ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+-	      unsigned short family)
++	      unsigned short family, u32 if_id)
+ {
+ 	if (xfrm_state_kern(x))
+ 		return tmpl->optional && !xfrm_state_addr_cmp(tmpl, x, tmpl->encap_family);
+@@ -3323,7 +3323,8 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+ 		(tmpl->allalgs || (tmpl->aalgos & (1<<x->props.aalgo)) ||
+ 		 !(xfrm_id_proto_match(tmpl->id.proto, IPSEC_PROTO_ANY))) &&
+ 		!(x->props.mode != XFRM_MODE_TRANSPORT &&
+-		  xfrm_state_addr_cmp(tmpl, x, family));
++		  xfrm_state_addr_cmp(tmpl, x, family)) &&
++		(if_id == 0 || if_id == x->if_id);
+ }
+ 
+ /*
+@@ -3335,7 +3336,7 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+  */
+ static inline int
+ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int start,
+-	       unsigned short family)
++	       unsigned short family, u32 if_id)
+ {
+ 	int idx = start;
+ 
+@@ -3345,7 +3346,7 @@ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int star
+ 	} else
+ 		start = -1;
+ 	for (; idx < sp->len; idx++) {
+-		if (xfrm_state_ok(tmpl, sp->xvec[idx], family))
++		if (xfrm_state_ok(tmpl, sp->xvec[idx], family, if_id))
+ 			return ++idx;
+ 		if (sp->xvec[idx]->props.mode != XFRM_MODE_TRANSPORT) {
+ 			if (start == -1)
+@@ -3730,7 +3731,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 		 * are implied between each two transformations.
+ 		 */
+ 		for (i = xfrm_nr-1, k = 0; i >= 0; i--) {
+-			k = xfrm_policy_ok(tpp[i], sp, k, family);
++			k = xfrm_policy_ok(tpp[i], sp, k, family, if_id);
+ 			if (k < 0) {
+ 				if (k < -1)
+ 					/* "-2 - errored_index" returned */
+-- 
+2.39.2
+
 
