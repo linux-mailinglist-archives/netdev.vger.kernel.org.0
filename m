@@ -1,266 +1,177 @@
-Return-Path: <netdev+bounces-5408-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5410-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 355207112F8
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 19:59:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id DAF43711333
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:08:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DEB622815CA
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:59:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 17BDA2815A8
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:08:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 38F43200A9;
-	Thu, 25 May 2023 17:59:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 62A2C200C5;
+	Thu, 25 May 2023 18:08:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A4F01C77F
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 17:59:24 +0000 (UTC)
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD1AB6
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 10:59:22 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id 6a1803df08f44-625bb506739so226756d6.0
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 10:59:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1685037561; x=1687629561;
-        h=mime-version:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=I+mK/CF4rzQFpS8QtRhULjXnRhPUjRxMQNFAiIZ7c4Q=;
-        b=RoyqKOCtat4bSf8Jn15j2PU1sb19tq4yPc2Lrgb7HKu/JPW7jrsUdqc0TlhowiNFTd
-         7KtbukCB70hxv1Por5JkQWRLV4IQALaCfwFoMsNjQFJPLkk1B1jZYGgvYDT7fun0D6pv
-         QNrxCyNUPt5tuk2cp8LDZk1aOhltOf72AP/Dg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685037561; x=1687629561;
-        h=mime-version:message-id:date:subject:cc:to:from:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=I+mK/CF4rzQFpS8QtRhULjXnRhPUjRxMQNFAiIZ7c4Q=;
-        b=f+D4jziqWCfE4Z8KXkpkm2iIQBgsYsuRou4AnQRnAB9KMm4mu/SdCzFr2Qf6UKc5bz
-         BJ/AnX6sW0mpeQz7vZzQF96gm6XJ2a7+dWBfDz6V85QC6cxKulDRU77xLadoqP//0I0S
-         T9YPsm3T46beDwZ6Uh4PawrUt/TLuUWy8rb1uCrzH+s8vwi71TeWkwzFV0xBTAv734uT
-         eYacF9oEYCVPFFXNL1SC/VyRO+HGS+wEzchy0IwtQaHNaYohtmu42HQEl9b3H618hp/D
-         2nSY1A3Tz68W+4hJ0cw2pK1eGrh3d7b0w4neSsHYIsmMa2F+c68B7AVVpcV2ytEZOIRe
-         kUYw==
-X-Gm-Message-State: AC+VfDztdAMrBPFDRyl5XRQILpDynzbwaheM+CntxkXw8obI11ws+ag1
-	8kuApOA8JfZ9CTIJoWdXmxJHuUChMTS3gciY+ShC9fX39YpSgVBfW/4QudA6ceADw/gKV8dViPa
-	+ekc+tIg8XJW3tLtX/+V/ntKvBkOcOFh8LMokhyKL7ZRfYOvRI1UQPR6zfwryrdSyf1gAHhiejm
-	gUG46y/916aA==
-X-Google-Smtp-Source: ACHHUZ7/1WnwUtu7rRfenj0wPjQi+PDctVOTb4kqHC5JGDcy3jyqWBfFc9/AV3r8to5l29aRUSb+/g==
-X-Received: by 2002:a05:6214:4014:b0:619:152a:b9a5 with SMTP id kd20-20020a056214401400b00619152ab9a5mr2212677qvb.10.1685037561084;
-        Thu, 25 May 2023 10:59:21 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q26-20020a05620a039a00b0075c97468f57sm554049qkm.82.2023.05.25.10.59.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 10:59:20 -0700 (PDT)
-From: Florian Fainelli <florian.fainelli@broadcom.com>
-To: netdev@vger.kernel.org
-Cc: Florian Fainelli <florian.fainelli@broadcom.com>,
-	Doug Berger <doug.berger@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Simon Horman <simon.horman@corigine.com>,
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v2] net: phy: broadcom: Register dummy IRQ handler
-Date: Thu, 25 May 2023 10:59:15 -0700
-Message-Id: <20230525175916.3550997-1-florian.fainelli@broadcom.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E4D61F95C
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:08:22 +0000 (UTC)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on20628.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5b::628])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB29119
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 11:07:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=isj6DyJNVE5+fZP9VWI4ZRD6Py6OlD2pugFtUe0jkHU59hjKPowxQ9bC5TcEbmxGJRZuILP9rvUegWBIjN8LqhRE7rjMPkMyertBPLaIjr14i5FGmonXZYj4sktyDZNOsU4AGLT/C8T7nb9RCbPceWEXRM8naRSoPNIJR0Qbtyenmc4ekMc5JmGRxs5Z7rJgMu/NlrM/eH1bC6USgQVcIEoCMNNmc8V/ZIV6zaHZoPw9oQfusAna0I23YhQys5cGtDz431hgsKhUia3B1jW8EZa0TLjhX7grNvT5fMyKk2JpZWZgLINShDwU8a1UZgkhmr5+URtApzxYieffgXV4/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HQOe+R85romfIIq4Z9HRkFsUZ4w/+B6ltHhcI6nPAGU=;
+ b=TugYCFRLbQhXdx7fMjNBCigWopAaVKOrNJylpqBTmhtIzfWR2qQmYeEjlhj3oRTo0irXk0Xed2am4F16txv8FTfzEalObWtYWm2gnS3BQTheQzZIfEXOwbU0Fqukz0w1ArBBTmCc29M4kccxt2ZCMJ7MiK7FBaGlEvRquNhovDq13whDIhwbx60tqcdyqpq3yHQvbmdm/WIvvMmo7bpOKuNX/JKQuSSe0vgWNHAuA9iZB+BF8YJVaXA3KoWxjo7IRErpoM4a9EaS40GQHnIUVW+ItI97WrBUw3AA/kGNhYdEIK2i/b0RHxeqYZKDBT7Y9tFEd1734RhhIZsGDsLKnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HQOe+R85romfIIq4Z9HRkFsUZ4w/+B6ltHhcI6nPAGU=;
+ b=4V4mxrRZsbTf8H7Tf8mSZdmBb5/07SaOJIbWVVttPHqiPiRs5o+ruBsGJEpDw2kDWHpxzh5Gdc6IdPn4f8kuQq+uNkklfoJT3a2cbV9D3wLKJbtrwiKxzzT77KGbwCJ76bebipb6jwVdn9KZDsc0/DZYFQ7KmuHQrVnC8ah+WP0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM6PR12MB4170.namprd12.prod.outlook.com (2603:10b6:5:219::20)
+ by MN2PR12MB4286.namprd12.prod.outlook.com (2603:10b6:208:199::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.15; Thu, 25 May
+ 2023 18:07:42 +0000
+Received: from DM6PR12MB4170.namprd12.prod.outlook.com
+ ([fe80::74ba:d6fc:d7b5:60aa]) by DM6PR12MB4170.namprd12.prod.outlook.com
+ ([fe80::74ba:d6fc:d7b5:60aa%4]) with mapi id 15.20.6433.017; Thu, 25 May 2023
+ 18:07:42 +0000
+Message-ID: <cc2aab32-35be-f11a-6bf1-aeb522019456@amd.com>
+Date: Thu, 25 May 2023 23:37:31 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v2 net] amd-xgbe: fix the false linkup in xgbe_phy_status
+To: Tom Lendacky <thomas.lendacky@amd.com>, netdev@vger.kernel.org
+Cc: Sudheesh Mavila <sudheesh.mavila@amd.com>,
+ Simon Horman <simon.horman@corigine.com>,
+ Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+References: <20230525101728.863971-1-Raju.Rangoju@amd.com>
+ <62beadfd-9de1-9fa8-f62f-b8eb8cf355b8@amd.com>
+Content-Language: en-US
+From: Raju Rangoju <Raju.Rangoju@amd.com>
+In-Reply-To: <62beadfd-9de1-9fa8-f62f-b8eb8cf355b8@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MA1PR01CA0181.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:d::19) To DM6PR12MB4170.namprd12.prod.outlook.com
+ (2603:10b6:5:219::20)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="0000000000004c2f0005fc886190"
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MIME_NO_TEXT,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4170:EE_|MN2PR12MB4286:EE_
+X-MS-Office365-Filtering-Correlation-Id: c2e18707-12d6-46d4-2b31-08db5d4aeefa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ZNeTdJHwZ6aCNt3xcfYEJ5r194t8AT5qvs5XCu4tb70zZOzECfl/TwE0SzF/G1qCghgyOP62a6CBSx7Kw10HX/WB5nWhzmWdPxvM2Mhw5qRC3yaquli5Gd4FKzJ7LItvwGOFcJesc5m1vVeMTILS9eDvXQHtcl+uMjeIVcJV7A5r3KNdKpAEs/iFV0gIr3jGqZAd/4HZyDvC9tMmdJCeccsGvOy3s49JK3iaEONCUDNiASiML80birBo+E6+9W9UEDwFLbHq3r64EIICpQgwpt2ohf27cClgVegDTS0GHrUnAFXh5BuMyuY9K+QLWVkRIcnWJcnj0CH4PAAoIoolvMZXBkmjKwJjR8+ooJjbMPOcia5FZF+2FJ+P4BbNvf8768Y50gC9UIoV+C7Upa0GCOZpBhBGPHXt3zq/YsM7QrmqGTuqyWnGkI+vEPwnRiWDejL0smIKsX8hdMpCDaeiyoYxxoeHMwoYGKlnZRrC6hrLymuH6rWRBq8/2dH7t+BCmI0luB8WuJtBiQfWWIspNfY1W8GmZS0p/Wl01ZlJr6n6Zw7ZJu7ftvw9+FLiPirGia1glWsj9migbS6Apoq033CgE2P50jQUqLd6NiBqHbRtm4LX98/oVT3h49Md6zyuD0fTmxuRm5iycHQrMKwD4w==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4170.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(396003)(39860400002)(366004)(136003)(451199021)(4326008)(8676002)(8936002)(36756003)(5660300002)(66946007)(66556008)(66476007)(316002)(31686004)(478600001)(54906003)(41300700001)(6486002)(6666004)(38100700002)(2906002)(53546011)(4744005)(186003)(6506007)(6512007)(2616005)(86362001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?aE1iQkxFZWFHWjRYNGhoem0xejdnekh6WnFVUjFjTkVEejBseHRXeVhvRmJ0?=
+ =?utf-8?B?LzJOaWtPMDNFZWVNVDhabjBtNmVSeEo0QWV3eWFrRlh1c1ZUTEd4NHdreU5L?=
+ =?utf-8?B?N2h2QjVxM0R6cVBWRXBTMjV2ZjNDOGhYZWVOS3BRQnJ5WFZ1TGRrM3I3N0V0?=
+ =?utf-8?B?aml1L3dSQU1XNlUwRmlYbGd2S2ZrWG92WUsrNXJObi9nSnc1dFgvSEtESFBv?=
+ =?utf-8?B?U1lNZGg2SHlqMW1oQ3F0UCs5cUZXbzUyK29ZQUZ0dUdkam1Zd1Jwc1FlakhZ?=
+ =?utf-8?B?Tk55NzVYVFJSd2lQd3BxWmlkcVRWakRCLy9VSms2WlplcFlNL2RFTGZWVnNY?=
+ =?utf-8?B?bUNGenZoMzF3cHNQRzI2ak1kWno2clJMU0o1b1B5RzhQektUQzRtc213V2VB?=
+ =?utf-8?B?T0VYRTNKTzJRckpwbERabm1yMk44UjZNUGpaNnIzVHlVbzgwMEJqbmpJTjB3?=
+ =?utf-8?B?bVZwTTZtNDM5UDRrcW1tY015QTc5eUI0bG80dmRWZFEzRW8ycDFmSzZvZjl4?=
+ =?utf-8?B?eHFyeUtmM2x5SFo4ZHBtaFl4R1NIOVRiT2RsTmRZUlpUK3lib2F5ajhkcHlB?=
+ =?utf-8?B?OHJiVUtjODRReUNpMVBVVFdjNHBpazdWMzFCRUp3NVArajhZOXJpMjZjVU13?=
+ =?utf-8?B?d1pFMmgxVUdkcS9RU0MvMnBXaDd4RWc3OWZlS21XaHpPVEltTWZBcXcyam9x?=
+ =?utf-8?B?aXdnaUFkU3N5SzlPY0QyMk5ubjdxRWJ1NlduazFnZFlTUUlwOHVQMDJkeHRi?=
+ =?utf-8?B?VnZzV3hLWVhMNmhhckRYU0kycjBZalJSZ2Q2ZDhjalMrRVp1alZVVXFvU3k2?=
+ =?utf-8?B?L0NmbkJlK0NTV3hTbXNGOHpDeTdYWWdEMWZ1dnVsNnphdkRPSDU1L3JmV2pu?=
+ =?utf-8?B?bXZmVGR4MXVib1IxUDl3dlNvSWJPWjlvaUhMM0Y0YU9MWHJmZzk3b3Fwd3Z0?=
+ =?utf-8?B?R2Vqbis1NVpnYjZ6ejUwYlNRYWZnaGQxdG1mQmsrWE5QbmNsNUQ0dXBaYXBq?=
+ =?utf-8?B?dVhoMjRFQzNYaW94MlhPaVlGdGZIanJQaG5lR3RySnU1alI0RnlhcWN3Q29s?=
+ =?utf-8?B?d2Z6SUhQQUhBU3FPYTNVMUYxWnRSU256eENBYkhPUjJOelpHZ2Y5M3p5YzFZ?=
+ =?utf-8?B?NTkwdDhrWGRBUjRPdGV6QWtjUGtaaVN6cXE0V0JLaUFPc1FiSHdHbitqYjVY?=
+ =?utf-8?B?S3pPclpXZXpTRHJaZXJlS1NFUUxwUmxXK3R2eUNFRVdNc0lwaDBzWnNSNE1k?=
+ =?utf-8?B?UjQxYi9teXpOUnA1OTZmWW9sQnMwdUlzYnpFSzlmYmhyeHpWMUJldW40UWhF?=
+ =?utf-8?B?aERtU24wU0RveENuYXNFSHVMY05SazBWZE1qV0dMbEovaXJrVHJEbWF4OE9q?=
+ =?utf-8?B?TXFBZG9OY240MVdacU9jRTJkeW9VMmtjb1lyWHQ5bTJ4ZHg4SzhWWHBNN1cr?=
+ =?utf-8?B?aE9QQlpIVkJZVmk1WlJCUmdzd2JCVmRhbk15cHdINEdXb25iWk9DTFZlRnZu?=
+ =?utf-8?B?U1pmT01meUM2VzBmNVZrNEtRZ05KZkZBN2Y3eUdOcDAzN2R6ODQ2QzY0NjVS?=
+ =?utf-8?B?MS9kL0Nwalk1QnBoWHVQMEpodjc4c1pRbGMvTU50SDQ1S3IyalU4L0pMblYv?=
+ =?utf-8?B?bXpYZXZOZXpNWHN0dE9wUDd1b1MyYXoxMGNwNkl2S3o1akh4VDZaS2RhQ0pn?=
+ =?utf-8?B?dFNZbXNQU3BsTDE3Yk4vZTFIQ1AxQzR2SVFxODkrWjhXbTVSRDltak5iRmpV?=
+ =?utf-8?B?Q2hZWkdIMTR5N3AwVzI4V2tuS0J4Zmc5bWpRTkhEMkoyY0RHTmxOcHBIR21a?=
+ =?utf-8?B?MzVDOG5UNFg0cGRRV3hGbEErV3M0dXU5QnZrSXR3K21hSVRKM1RYaDhlR3Vl?=
+ =?utf-8?B?Y0R3YlUybnFwa0tobU9tQzVBWU5ESUFLQm8ybDdDZmpZenNBR2l2dHVmb2FJ?=
+ =?utf-8?B?dFNKNC9tcnlqVzFtdUx3a0ZsMU5VcHpmWXpJUDNDeUZoSmxROEFjN1lqd3NO?=
+ =?utf-8?B?SlV4Yytub0xTbmgwRjUrbTNQcEFBeExEVE5iWHoxSjUrYTJJNHhYOXZYM01t?=
+ =?utf-8?B?bWpIMWJLK0syQ3lPMHFOZG1VczI3ZjM2SytWL3ZjblZzQlJZYVZMNUc4Q1I4?=
+ =?utf-8?B?aG9iNjU1dGhRTFJkQVcxeTlRRVgwcndYYW1VT3VyYzRVSWFzdzVpdUxidGdJ?=
+ =?utf-8?Q?XcjVpaI1mc4vhdBox+KrkiGNnWfmYgYd0XhthXLqHRWq?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2e18707-12d6-46d4-2b31-08db5d4aeefa
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4170.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2023 18:07:42.5688
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mMxLa03e1aCuGEHq8LJlcbefT9ctTVkzShC8QBVVsyIofRTOktH3HVP5PPhHC+Wyn4es8nd7lH8NzQ7sVi3Udw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4286
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---0000000000004c2f0005fc886190
-Content-Transfer-Encoding: 8bit
-
-In order to have our interrupt descriptor fully setup and in particular
-the action, ensure that we register a full fledged interrupt handler.
-This also allow us to set the interrupt polarity and flow through the
-same call.
-
-This is specifically necessary for kernel/irq/pm.c::suspend_device_irq
-to set the interrupt descriptor to the IRQD_WAKEUP_ARMED state and
-enable the interrupt for wake-up since it was still in a disabled state.
-
-Without an interrupt descriptor we would have ran into cases where the
-wake-up interrupt is not capable of waking up the system, specifically
-if we resumed the system ACPI S5 using the Ethernet PHY. In that case
-the Ethernet PHY interrupt would be pending by the time the kernel
-booted, which it would acknowledge but then we could never use it as
-a wake-up source again.
-
-Fixes: 8baddaa9d4ba ("net: phy: broadcom: Add support for Wake-on-LAN")
-Suggested-by: Doug Berger <doug.berger@broadcom.com>
-Debugged-by: Doug Berger <doug.berger@broadcom.com>
-Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
----
-Changes in v2:
-
-- provided more details about the mechanics of wake-up interrupts arming
-- added a Debugged-by tag for Doug since he really whispered the
-  solution to my keyboard
-
- drivers/net/phy/bcm-phy-lib.c | 6 ++++++
- drivers/net/phy/bcm-phy-lib.h | 2 ++
- drivers/net/phy/broadcom.c    | 9 ++++++++-
- 3 files changed, 16 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/bcm-phy-lib.c
-index 27c57f6ab211..5603d0a9ce96 100644
---- a/drivers/net/phy/bcm-phy-lib.c
-+++ b/drivers/net/phy/bcm-phy-lib.c
-@@ -1028,6 +1028,12 @@ void bcm_phy_get_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
- }
- EXPORT_SYMBOL_GPL(bcm_phy_get_wol);
- 
-+irqreturn_t bcm_phy_wol_isr(int irq, void *dev_id)
-+{
-+	return IRQ_HANDLED;
-+}
-+EXPORT_SYMBOL_GPL(bcm_phy_wol_isr);
-+
- MODULE_DESCRIPTION("Broadcom PHY Library");
- MODULE_LICENSE("GPL v2");
- MODULE_AUTHOR("Broadcom Corporation");
-diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/bcm-phy-lib.h
-index c6fed43ec913..2f30ce0cab0e 100644
---- a/drivers/net/phy/bcm-phy-lib.h
-+++ b/drivers/net/phy/bcm-phy-lib.h
-@@ -8,6 +8,7 @@
- 
- #include <linux/brcmphy.h>
- #include <linux/phy.h>
-+#include <linux/interrupt.h>
- 
- struct ethtool_wolinfo;
- 
-@@ -115,5 +116,6 @@ static inline void bcm_ptp_stop(struct bcm_ptp_private *priv)
- 
- int bcm_phy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol);
- void bcm_phy_get_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol);
-+irqreturn_t bcm_phy_wol_isr(int irq, void *dev_id);
- 
- #endif /* _LINUX_BCM_PHY_LIB_H */
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 418e6bc0e998..822c8b01dc53 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -927,7 +927,14 @@ static int bcm54xx_phy_probe(struct phy_device *phydev)
- 
- 	if (!IS_ERR(wakeup_gpio)) {
- 		priv->wake_irq = gpiod_to_irq(wakeup_gpio);
--		ret = irq_set_irq_type(priv->wake_irq, IRQ_TYPE_LEVEL_LOW);
-+
-+		/* Dummy interrupt handler which is not enabled but is provided
-+		 * in order for the interrupt descriptor to be fully set-up.
-+		 */
-+		ret = devm_request_irq(&phydev->mdio.dev, priv->wake_irq,
-+				       bcm_phy_wol_isr,
-+				       IRQF_TRIGGER_LOW | IRQF_NO_AUTOEN,
-+				       dev_name(&phydev->mdio.dev), phydev);
- 		if (ret)
- 			return ret;
- 	}
--- 
-2.34.1
 
 
---0000000000004c2f0005fc886190
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+On 5/25/2023 8:11 PM, Tom Lendacky wrote:
 
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
-9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
-UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
-KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
-nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
-Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
-KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
-kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
-2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
-3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
-NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
-AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIi35FbTGMSROxIx
-ou08smRwPZZ4sAicqgQFMxg4hUTKMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIzMDUyNTE3NTkyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCEOY7xgxquOju2+/UJxS/fQJWh/7Wi32y3
-awBk5abRUtcL9UvdVkVG4PJbxqQmzNMxYv/t5hU///OEriL7Oi0v64LwaJTPUZfpu3JsFIhIlwdu
-06hM4MRCZGTEFNq0qEXckzqkfOnYA9sFf3G6wpZixo8hRhnVD4Nlz76B/nnkcI1fQx9R02dyg1VR
-WGwjsRtY82lpYVXcVewyKkf4H+Qs1hRFmd+SehUnTFIGG2lkB/VXzqDaa6sW9DkB+kz1ZFuZsepe
-KG4zmqy12tTosmm+ZZ7OA4l8C+5brTw1Jb/1YYy0HpBcP2G8rBurn6QYIW2t5dw435DX2dtzljp5
-263q
---0000000000004c2f0005fc886190--
+>> @@ -1367,8 +1367,13 @@ static void xgbe_phy_status_result(struct 
+>> xgbe_prv_data *pdata)
+>>       pdata->phy.duplex = DUPLEX_FULL;
+>> -    if (xgbe_set_mode(pdata, mode) && pdata->an_again)
+>> -        xgbe_phy_reconfig_aneg(pdata);
+>> +    if (xgbe_set_mode(pdata, mode)) {
+>> +        if (pdata->an_again)
+>> +            xgbe_phy_reconfig_aneg(pdata);
+>> +        return true;
+>> +    }
+>> +
+>> +    return false;
+> 
+> Just a nit (and only my opinion) for better code readability, but you 
+> can save some indentation and make this a bit cleaner by doing:
+
+Thanks Tom for the suggestion. I'll fix it in v3.
+
+> 
+>      if (!xgbe_set_mode(pdata, mode))
+>          return false;
+> 
+>      if (pdata->an_again)
+>          xgbe_phy_reconfig_aneg(pdata);
+> 
+>      return true;
+> 
+> Thanks,
+> Tom
+> 
+>>   }
+>>   static void xgbe_phy_status(struct xgbe_prv_data *pdata)
 
