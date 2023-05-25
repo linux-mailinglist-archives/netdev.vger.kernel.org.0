@@ -1,203 +1,235 @@
-Return-Path: <netdev+bounces-5272-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5273-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 450B771082E
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:59:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E340F710836
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 11:01:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EBF892811BA
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:59:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 55EF91C20C06
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 09:01:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 464BDD300;
-	Thu, 25 May 2023 08:59:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9409D302;
+	Thu, 25 May 2023 09:01:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BA33849C
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:59:18 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D2398
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 01:59:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685005155;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jPXW1KdbrSs0dMckNiomRMjJwvr95CqztuTR5+p1fwA=;
-	b=a2jzG0p2oRbPqeMGbRI2S459HDI56t1gdFjkNqKnthy46b4YBaUoC37VV5oAD80BhfGShb
-	SCQpaYfQeKvwvwuGofO4153zNtEEisXtuHGYC+tXr/UHIujtzG9wpFpnJkKqdCBTpFXPvl
-	sbu2JRPx4OkKQiDkpVkrNv5HcfKmcIc=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-76-NXig8K8cM5KaZjJccAYXpw-1; Thu, 25 May 2023 04:59:14 -0400
-X-MC-Unique: NXig8K8cM5KaZjJccAYXpw-1
-Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-625891d5ad5so4029896d6.0
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 01:59:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685005154; x=1687597154;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jPXW1KdbrSs0dMckNiomRMjJwvr95CqztuTR5+p1fwA=;
-        b=iVpEC4LQieiKgU6jSMTtsuylDcCRoUXaodE4TBOLaW9SPGbmk3Lrvt3rVlfh7LEfEh
-         T7ymW/OzwcuDtyK742RpMgvRNSNmZAZZzCsZeQpgyoIjn1A36eWxI2jpDJp1WCdYLvYS
-         uvA+XmMLGmqS/SpBOsnFyce4qGrt8Bnfv1nfYFUdPlxv1i9f1pCnfslrx9BgKKpMBxSg
-         HTj2VwCZs2rcee/4mh/me/tXwxiwJ7BlowUDLDd4v8zlulXCXIAkVaF8DQjI6O5lOO7a
-         Qvsd+qpiivlJs/O3t5wfleB/l2paCZWJ97tcHkra+46W23PxE8TbUGnGlXjO4jfW7CXG
-         QNLg==
-X-Gm-Message-State: AC+VfDzcTxZ4CpABr2FLhQKEoK6HGcqwEtSQd2xjCmUvPA8FYJ4G7mWs
-	roOefxSFU/3sRff/OijUyz356ybKNUC+kDJjyvyL59KYfAwdaKKu0XIyw1/VWLAikv0LoHpXiVD
-	1AlskYUlW1e6yvSui
-X-Received: by 2002:a05:620a:2783:b0:75c:a2bb:5e10 with SMTP id g3-20020a05620a278300b0075ca2bb5e10mr598667qkp.0.1685005153796;
-        Thu, 25 May 2023 01:59:13 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4/fsN0PSCQKj0ZhL1Dv6Eok+d0lZd1Bk6fQcS04ka19mo2lDvX5d/aWd2mM1fuH/QU+OPTLg==
-X-Received: by 2002:a05:620a:2783:b0:75c:a2bb:5e10 with SMTP id g3-20020a05620a278300b0075ca2bb5e10mr598659qkp.0.1685005153406;
-        Thu, 25 May 2023 01:59:13 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-242-207.dyn.eolo.it. [146.241.242.207])
-        by smtp.gmail.com with ESMTPSA id p9-20020a05620a112900b0075ca4cd03d4sm159474qkk.64.2023.05.25.01.59.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 01:59:13 -0700 (PDT)
-Message-ID: <048c84aacfe650e6602c266ff52625798fbcaa62.camel@redhat.com>
-Subject: Re: [PATCH v1 net] udplite: Fix NULL pointer dereference in
- __sk_mem_raise_allocated().
-From: Paolo Abeni <pabeni@redhat.com>
-To: Kuniyuki Iwashima <kuniyu@amazon.com>, "David S. Miller"
-	 <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
-	 <kuba@kernel.org>
-Cc: Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org, 
-	syzbot+444ca0907e96f7c5e48b@syzkaller.appspotmail.com
-Date: Thu, 25 May 2023 10:59:09 +0200
-In-Reply-To: <20230523163305.66466-1-kuniyu@amazon.com>
-References: <20230523163305.66466-1-kuniyu@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0882BE77
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 09:01:16 +0000 (UTC)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163FA98;
+	Thu, 25 May 2023 02:01:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685005272; x=1716541272;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=WowrIcXJecqIR9pxMwECVEJttudJteYXC11gTuo4qmk=;
+  b=djQULr0HppPWPCRvRSFnngNv03Puh2U1rolRc5xmL5DoS+cQ+eE5o97X
+   9IFV7HRWxnSlk1lUBPVZ3b55vlfSMfFyAF8lgNQwhe8lA+M4a1imMrG0E
+   0PPTcDXade9O7ryh3Ds+gmX4ff7a8qAeekR477oJlj3lkqFYBKnOLCLG+
+   V5I3UdP0KSmuqRPgBou5Y6AfSnowrdLrkOQRSHlqwF/g1IAaXExc5HH0S
+   PfbshTLrjM/tP6OD0NM62wPvG0l1Drz5kTfCUNjrwamco6bZAvQBLM+u3
+   mNevlot0MPKkufPHYI2rILzPz+DFQIvEdxa0e0rhd/nnDb5NJjat1YcUJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="333451985"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="333451985"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 02:01:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="769803475"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="769803475"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga008.fm.intel.com with ESMTP; 25 May 2023 02:01:11 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 25 May 2023 02:01:10 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 25 May 2023 02:01:10 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Thu, 25 May 2023 02:01:10 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.109)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Thu, 25 May 2023 02:01:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Auvv67g+ERCZoH0pNGcJY2dpFX8JHAbw4w/4jNPPb2f0ScCkoa0Hvfj5eeYw0MBnhyWlWORKTztfg1Oi2Hx+GOc7T35wNsbd0LC/qyVkQhTeEK3GS7DhQ44tFGI9J+uH3T/gEZvjp9SayURR21TSV1asJY3iZdMBHZu6chAD2MqKxSNfUcYgbeWNiqTYr8GyC6ZnPsTHXOlYrl/YyCXtSiU56HGf+FW+29TfxoSGOaJynLpc1pKn1eQhmn1Ey/H4ytcdm8j5/VnKVnssmRZPviGc38VwQ5r1WnxDOt6HasNhTYT9gYj/aFu4q7vCZ4IHh1cmrtTBfza+n+7mlTpLLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/jK4zMeJB5bER33E9ZBydrDzcSwADDsMg+YedpC3wsQ=;
+ b=B4LpoO5F4QTvXe/7PkJZDqJMBG/VPpNLGYVeqZoyCc76ViN1cODOJP2pKRcphkE21rCMT1se97z3WZxpyFgtJJdOdKapVZTGUSh3cEW0oVXO/NygewIVcGLfuaU1aTP8FZQLYaLDgC0JZYkjD7OSsW8EytwfXuvjkjeWYE5VDnYb9J2iDljcvGRnbbqlZ2d/peRd1jSSpzmVRLNSgmsazZ0ipqeCm+qhAJfb0SaVJDKZ2oWVasKgeJrpscWC38J208qdZ22e/f9ZhfPaHMaa9V1aLkjyXiQkVZfYu9LXS9rAITQtMy4LGRXIKO7K8vNglVGS6uyLzH3FXyWHlP6kIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
+ DM4PR11MB6019.namprd11.prod.outlook.com (2603:10b6:8:60::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6433.16; Thu, 25 May 2023 09:01:08 +0000
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::7887:a196:2b04:c96e]) by DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::7887:a196:2b04:c96e%6]) with mapi id 15.20.6433.015; Thu, 25 May 2023
+ 09:01:07 +0000
+From: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+To: Jiri Pirko <jiri@resnulli.us>
+CC: Vadim Fedorenko <vadfed@meta.com>, Jakub Kicinski <kuba@kernel.org>,
+	Jonathan Lemon <jonathan.lemon@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
+	"Olech, Milena" <milena.olech@intel.com>, "Michalik, Michal"
+	<michal.michalik@intel.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, poros <poros@redhat.com>, mschmidt
+	<mschmidt@redhat.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: RE: [RFC PATCH v7 5/8] ice: implement dpll interface to control cgu
+Thread-Topic: [RFC PATCH v7 5/8] ice: implement dpll interface to control cgu
+Thread-Index: AQHZeWdQDnOnlwLdVUynBqrraL/3s69If/yAgBOAjACAAItZgIADxo+ggADtUgCACZujwA==
+Date: Thu, 25 May 2023 09:01:07 +0000
+Message-ID: <DM6PR11MB4657BBAED47B49A5C58B6E069B469@DM6PR11MB4657.namprd11.prod.outlook.com>
+References: <20230428002009.2948020-1-vadfed@meta.com>
+ <20230428002009.2948020-6-vadfed@meta.com> <ZFJRIY1HM64gFo3a@nanopsycho>
+ <DM6PR11MB4657EAF163220617A94154A39B789@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <ZGMiE1ByArIr8ARB@nanopsycho>
+ <DM6PR11MB4657F542DD71F61FD2A1C20B9B7F9@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <ZGcT9tx/xsKGVYBU@nanopsycho>
+In-Reply-To: <ZGcT9tx/xsKGVYBU@nanopsycho>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|DM4PR11MB6019:EE_
+x-ms-office365-filtering-correlation-id: ee971834-d0fe-455a-71a0-08db5cfe93fa
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0A6UwufTfrB44qmb65VOYEtAyYlreHuJb9MMHlEsD1CwGtjKk7sCN4LgnGKv6hReXUxEUAyjCHJJJDPg0vOtcvME9RGfuA/ErDeF7hqhv1FY/8VrQif5rDm+c1YFwfskfBtAC+CN7DLVeS2bSy25MBnnOQXPfnv9arIT+A0ooPTSwf8DiNzdBAAVf8idA/wW+IHp5AWGZa+FXuoJKQBYitfwLEA9nInD/7lOOnYrgPLXV5mp5z10/Y8DIgLKmEv8McEjfRmO0IAqgbGSN4GoMS37gES/eIsbFxdyFKTg2iDmqOP0KlCGWIQM1uZeppmx+Glv8f6tuPdKBWVSkvliGJullQFsjVCdn5+PX4gG05Dc4Ve0qoycf0kL4toBFEJWrmwi5FbE0pd1CzLNaA5n33UalRn3SKyVV01fmQkAzhdkJ/OwrYVPskTYeJHdUO6OVWuxUWnzXMw9Ncy9s0IAgeLH1CQ9sgOAG/zMX+aTIvW5+Bz24m8XL1WYW9W240iVzDcx/vFh3jsjYub67SEO0Ad29z2oR7sEIRxN0Prp3zPxfL91C0sinMabA9qVyPh2uOLpXNqyPN3wOquhroizGFPoQGq1dB9MxWZ6u5xN9jjrf8bY63FrsKXEW+Vzn7OR
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(366004)(39860400002)(346002)(136003)(396003)(451199021)(6916009)(66446008)(66946007)(66556008)(66476007)(64756008)(76116006)(478600001)(54906003)(4326008)(316002)(38070700005)(33656002)(86362001)(83380400001)(9686003)(6506007)(26005)(186003)(41300700001)(5660300002)(8936002)(8676002)(52536014)(7416002)(2906002)(7696005)(71200400001)(55016003)(38100700002)(82960400001)(122000001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?D1qGxZ5swmQ+dXsvJCA9Cwp1anQwgk/42c8RfctHNo76hI27fD4JmcoZG2r2?=
+ =?us-ascii?Q?9ofPNgqyhyxrzs1+/6lgQeEwM2W5QChHibg7YR2Yvl4eEPy8qbT4wv/FdoDP?=
+ =?us-ascii?Q?oPvOxSbFIyxvsQznP2vmWFnrBFJT079CKIsTu4UtPp8K2i+yqa19vrZfVy1I?=
+ =?us-ascii?Q?+ig/rJq+gok99axlOqfy/9lqJZcjdhxmgAqTVnNEkjZ58XbCIVbMDR0wyt9Y?=
+ =?us-ascii?Q?/E9oJBM2pM3yBS98CWrn/Kyef0dtxuMhY+mEEr4eCfwxZV0ZEa8RYZw6SzYo?=
+ =?us-ascii?Q?a2qRXik77R2ISCizSGfgEng0xS1C3lU05n4aV95IQTzVDXDFOgD0Ci2PU2yH?=
+ =?us-ascii?Q?tRKXrc4t9b57InJQjisMXTMC1RlxWdpCzhuOg8Bq4E4SktYnq3rLXhNmUHno?=
+ =?us-ascii?Q?3FlNUf1m0RMgJsox87ZIQYnHRYZU4G0kwEBK6JLbw8jtIxZSLO7VrZcwYgMk?=
+ =?us-ascii?Q?WKoGVWOTyNaMOgz2pysfmi2vAXxKj4nRs+yFyPzj9ggiaVpZW1umJXMWFKuN?=
+ =?us-ascii?Q?tlT3ngeDAbk3dXw3+GPmiNZ9aGSLMRvkOsMDlE0hAp3pgJ01ISPTQx069Hf2?=
+ =?us-ascii?Q?lXEvWR3mceVCR9kCdrhRRWhHswCNKMlngiGFrqwlmYMaOKb6vn05c/+J2x6P?=
+ =?us-ascii?Q?I5jlgb1UbiFWf27FKA6kZqa2mk9ISw/GCAxBKo/B7PbRNPwbk/2dRuVu4Gl+?=
+ =?us-ascii?Q?QQc2zCdI6DQsicyDv311+kD/QC5FDO4SQhkVFRhQFqd8laUbeKvMQ4MsbGj/?=
+ =?us-ascii?Q?iIrqtckckrBbMjfNuN0aonoNA3xPGlBX5ac6yYKsy3DpbwHOWSkMXCKo2h0o?=
+ =?us-ascii?Q?0MedPjea9S+3HiSS+n5/XEFNbjsne4TeIKVmaLBCwABhi4nJQZTSg8UTuOrI?=
+ =?us-ascii?Q?oLQQppo0Oz+0F56XBZmZiNsnt2pFgixHPtNuzbiHsGwVyvVy6zPyculKaC/M?=
+ =?us-ascii?Q?jg0s04jTj7t8JO38oRTOsxgvR5Nf2XZLmOkDrsCx7qxstWMB2CuapsA2QXAK?=
+ =?us-ascii?Q?7DIaHaZ8zIRUe+yQGci2lr7MiEuOshlcQbaC6GowS81UH3WpIqWGi8GtIeCv?=
+ =?us-ascii?Q?0gZHzVO5yRUqTv/fAs6XkldHXVh94+s7dHedyui9iOsPKZ+CQ+rnyYDdDiev?=
+ =?us-ascii?Q?wekhNLj+XhZ6clNmozprDRiXmslmBO9bN2NsZIXRuYNR/v6iHuL61X2QhDZO?=
+ =?us-ascii?Q?SEGlPdl8JNlrVEgo9sWcbPJ/IPGpThaL9ayaIWrcamMrJLqUkCgi8eeS3lJT?=
+ =?us-ascii?Q?fh7GkxzLtT5FxFBaEUBa1VD3UTy/mZlCuOUzqnf6KPXKcp8C3zbN2ZQIimKD?=
+ =?us-ascii?Q?s3JOaTJavZN07kotgX/6w7NxfnyQpG+cwxFB+0p+rCtOpghvipFjRtRFXWJ2?=
+ =?us-ascii?Q?jiqtVzjS1b64C98AR6WU2tcDMEO6oo3SxeptnRXSWlUuc5Dzs3H08hljif7Q?=
+ =?us-ascii?Q?b5SHF/3UlIdwtE7O/fOmljhcXNjqnTwGJg++MwH6Fuzhl8iyC5Ir3amVDw43?=
+ =?us-ascii?Q?qkPO0fc/l5XdtRV5jgSNoqIU6izKROAmYC3CC6qtGlA68Z+3vUWnBfB42Ngv?=
+ =?us-ascii?Q?RWSHrh+OXaRwA+cIWtLwu8OcUWb8SDouPmRmtMNU2qWNIyFU5/Qrj7vutNcY?=
+ =?us-ascii?Q?8w=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee971834-d0fe-455a-71a0-08db5cfe93fa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 May 2023 09:01:07.7132
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: L2MtORcP6hT3AV7zyNkr+wAOmxGSi8Wu+Pz4VXe0h02G1us8Wl0Ad/9nojvoXmGwZb2rJglObRj3YCIIret6Lat6nLslYjZcus4MH1UA9zA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6019
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 2023-05-23 at 09:33 -0700, Kuniyuki Iwashima wrote:
-> syzbot reported [0] a null-ptr-deref in sk_get_rmem0() while using
-> IPPROTO_UDPLITE (0x88):
->=20
->   14:25:52 executing program 1:
->   r0 =3D socket$inet6(0xa, 0x80002, 0x88)
->=20
-> We had a similar report [1] for probably sk_memory_allocated_add()
-> in __sk_mem_raise_allocated(), and commit c915fe13cbaa ("udplite: fix
-> NULL pointer dereference") fixed it by setting .memory_allocated for
-> udplite_prot and udplitev6_prot.
->=20
-> To fix the variant, we need to set either .sysctl_wmem_offset or
-> .sysctl_rmem.
->=20
-> Now UDP and UDPLITE share the same value for .memory_allocated, so we
-> use the same .sysctl_wmem_offset for UDP and UDPLITE.
->=20
-> [0]:
-> general protection fault, probably for non-canonical address 0xdffffc0000=
-000000: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-> CPU: 0 PID: 6829 Comm: syz-executor.1 Not tainted 6.4.0-rc2-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS G=
-oogle 04/28/2023
-> RIP: 0010:sk_get_rmem0 include/net/sock.h:2907 [inline]
-> RIP: 0010:__sk_mem_raise_allocated+0x806/0x17a0 net/core/sock.c:3006
-> Code: c1 ea 03 80 3c 02 00 0f 85 23 0f 00 00 48 8b 44 24 08 48 8b 98 38 0=
-1 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <0f> b6 14 02 48=
- 89 d8 83 e0 07 83 c0 03 38 d0 0f 8d 6f 0a 00 00 8b
-> RSP: 0018:ffffc90005d7f450 EFLAGS: 00010246
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc90004d92000
-> RDX: 0000000000000000 RSI: ffffffff88066482 RDI: ffffffff8e2ccbb8
-> RBP: ffff8880173f7000 R08: 0000000000000005 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000030000
-> R13: 0000000000000001 R14: 0000000000000340 R15: 0000000000000001
-> FS:  0000000000000000(0000) GS:ffff8880b9800000(0063) knlGS:00000000f7f1c=
-b40
-> CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-> CR2: 000000002e82f000 CR3: 0000000034ff0000 CR4: 00000000003506f0
-> Call Trace:
->  <TASK>
->  __sk_mem_schedule+0x6c/0xe0 net/core/sock.c:3077
->  udp_rmem_schedule net/ipv4/udp.c:1539 [inline]
->  __udp_enqueue_schedule_skb+0x776/0xb30 net/ipv4/udp.c:1581
->  __udpv6_queue_rcv_skb net/ipv6/udp.c:666 [inline]
->  udpv6_queue_rcv_one_skb+0xc39/0x16c0 net/ipv6/udp.c:775
->  udpv6_queue_rcv_skb+0x194/0xa10 net/ipv6/udp.c:793
->  __udp6_lib_mcast_deliver net/ipv6/udp.c:906 [inline]
->  __udp6_lib_rcv+0x1bda/0x2bd0 net/ipv6/udp.c:1013
->  ip6_protocol_deliver_rcu+0x2e7/0x1250 net/ipv6/ip6_input.c:437
->  ip6_input_finish+0x150/0x2f0 net/ipv6/ip6_input.c:482
->  NF_HOOK include/linux/netfilter.h:303 [inline]
->  NF_HOOK include/linux/netfilter.h:297 [inline]
->  ip6_input+0xa0/0xd0 net/ipv6/ip6_input.c:491
->  ip6_mc_input+0x40b/0xf50 net/ipv6/ip6_input.c:585
->  dst_input include/net/dst.h:468 [inline]
->  ip6_rcv_finish net/ipv6/ip6_input.c:79 [inline]
->  NF_HOOK include/linux/netfilter.h:303 [inline]
->  NF_HOOK include/linux/netfilter.h:297 [inline]
->  ipv6_rcv+0x250/0x380 net/ipv6/ip6_input.c:309
->  __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5491
->  __netif_receive_skb+0x1f/0x1c0 net/core/dev.c:5605
->  netif_receive_skb_internal net/core/dev.c:5691 [inline]
->  netif_receive_skb+0x133/0x7a0 net/core/dev.c:5750
->  tun_rx_batched+0x4b3/0x7a0 drivers/net/tun.c:1553
->  tun_get_user+0x2452/0x39c0 drivers/net/tun.c:1989
->  tun_chr_write_iter+0xdf/0x200 drivers/net/tun.c:2035
->  call_write_iter include/linux/fs.h:1868 [inline]
->  new_sync_write fs/read_write.c:491 [inline]
->  vfs_write+0x945/0xd50 fs/read_write.c:584
->  ksys_write+0x12b/0x250 fs/read_write.c:637
->  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
->  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
->  do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
->  entry_SYSENTER_compat_after_hwframe+0x70/0x82
-> RIP: 0023:0xf7f21579
-> Code: b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 0=
-0 00 00 00 00 00 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90=
- 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-> RSP: 002b:00000000f7f1c590 EFLAGS: 00000282 ORIG_RAX: 0000000000000004
-> RAX: ffffffffffffffda RBX: 00000000000000c8 RCX: 0000000020000040
-> RDX: 0000000000000083 RSI: 00000000f734e000 RDI: 0000000000000000
-> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000296 R12: 0000000000000000
-> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
->  </TASK>
-> Modules linked in:
->=20
-> Link: https://lore.kernel.org/netdev/CANaxB-yCk8hhP68L4Q2nFOJht8sqgXGGQO2=
-AftpHs0u1xyGG5A@mail.gmail.com/ [1]
-> Fixes: 850cbaddb52d ("udp: use it's own memory accounting schema")
+>From: Jiri Pirko <jiri@resnulli.us>
+>Sent: Friday, May 19, 2023 8:15 AM
+>
+>Thu, May 18, 2023 at 06:06:03PM CEST, arkadiusz.kubalewski@intel.com wrote=
+:
+>>>From: Jiri Pirko <jiri@resnulli.us>
+>>>Sent: Tuesday, May 16, 2023 8:26 AM
+>>>
+>>>Tue, May 16, 2023 at 12:07:57AM CEST, arkadiusz.kubalewski@intel.com
+>>>wrote:
+>>>>>From: Jiri Pirko <jiri@resnulli.us>
+>>>>>Sent: Wednesday, May 3, 2023 2:19 PM
+>>>>>
+>>>>>Fri, Apr 28, 2023 at 02:20:06AM CEST, vadfed@meta.com wrote:
+>>>>>>From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+>
+>[...]
+>
+>
+>>>>>>+			pins[i].pin =3D NULL;
+>>>>>>+			return -ENOMEM;
+>>>>>>+		}
+>>>>>>+		if (cgu) {
+>>>>>>+			ret =3D dpll_pin_register(pf->dplls.eec.dpll,
+>>>>>>+						pins[i].pin,
+>>>>>>+						ops, pf, NULL);
+>>>>>>+			if (ret)
+>>>>>>+				return ret;
+>>>>>>+			ret =3D dpll_pin_register(pf->dplls.pps.dpll,
+>>>>>>+						pins[i].pin,
+>>>>>>+						ops, pf, NULL);
+>>>>>>+			if (ret)
+>>>>>>+				return ret;
+>>>>>
+>>>>>You have to call dpll_pin_unregister(pf->dplls.eec.dpll, pins[i].pin,
+>>>>>..)
+>>>>>here.
+>>>>>
+>>>>
+>>>>No, in case of error, the caller releases everything
+>>>ice_dpll_release_all(..).
+>>>
+>>>
+>>>How does ice_dpll_release_all() where you failed? If you need to
+>>>unregister one or both or none? I know that in ice you have odd ways to
+>>>handle error paths in general, but this one clearly seems to be broken.
+>>>
+>>
+>>It doesn't have to, as release all would release all anyway.
+>>Leaving it for now.
+>
+>So you call dpll_pin_unregister() even for the pin that was not
+>registered before? How is that even remotely correct?
+>
+>Fix your error paths, please. I don't understand the resistance here :)
+>
+>[...]
 
-Thanks for addressing this issue!
+Fixed.
 
-The patch LGTM.=20
-
-Side note: the blamed commit is almost 7y old and the oops should not
-that hard to reproduce by a real app using UDP-lite, but only syzkaller
-stumbled upon it.
-
-The above looks like a serious hint UDP-lite is not used by anyone
-anymore ?!? Perhaps we could consider deprecating and dropping it? It
-could simplify the UDP code a bit removing a bunch of conditionals in
-fast-path, and that  nowadays would be possibly more relevant?!?
-
-Cheers,
-
-Paolo
-
+Thank you,
+Arkadiusz
 
