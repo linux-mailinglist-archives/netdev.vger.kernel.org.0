@@ -1,110 +1,93 @@
-Return-Path: <netdev+bounces-5334-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5335-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 14764710D8E
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:47:45 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 308C2710D95
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:49:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7DC501C20E9D
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:47:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D9D182814E9
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:49:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B58E0107AC;
-	Thu, 25 May 2023 13:47:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 25D9D107B9;
+	Thu, 25 May 2023 13:49:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6CF21079D
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 13:47:41 +0000 (UTC)
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49279197
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 06:47:40 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-5619032c026so7595137b3.1
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 06:47:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685022459; x=1687614459;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hvX3qTYnWmFe+W70V5JCbvykxTeA+ozEK9uZ5GQt4so=;
-        b=q2nzyAvWejUD3JwR7mFGQPT2GPWeaVIEeaFR/7oUXDoDkjI262vYRp7uITJhm38K4g
-         upLwGmxLF+ZBT0Wt7HbiVX6ykWWIDZp3Mz6q52Xx0uYDkOJaVqkOqg5ir58fI8ADb2YM
-         1vtADouc4aX/U0dSoHAlHGn8Ek0q5R5ozG5/oU/l4b+lHgq7Y+Pst4Uw/btzgwsbj4dC
-         bxQ+xjA7JDTKRN3DDTWsIZquxnFaWFng6dkdYrlMib9gT6NKdQqDDVSKuXc0ArDxO8Jn
-         qvZiZS4fX/4HXTsXGLKhMhTqVtgrKEGQEebKeBDb2vy2Di6/bSl6fzBnf5gDxNVQH2Xt
-         Ku7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685022459; x=1687614459;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hvX3qTYnWmFe+W70V5JCbvykxTeA+ozEK9uZ5GQt4so=;
-        b=TuXrAKCQNUylJQ7v9C1FeNkECM/8om7JJllTE63Bwuju82alFN914QpyppJEJ5PeZV
-         +hNhfRBSMOKoH6RQeS8lDeKVOwUJW0zlwqQj26KFVSkDk/g9vqwZLTruqC5r/4GscoHL
-         q3uJvyBt1OavErWKk8o31/7QXACES1pWBgSblmderC5f/xeDNXzZjln3g/FISwNbvv6c
-         9kie4vQfAUMPzi3uG696P7353RTjfuKaw68iuIbQXpNQSRcHPOkM9N6+udkv1deE7Maz
-         NDRVJRVOEgLUuxGEOwN24YuXGQOXn0Ygg14gzzVNBqpDblKhzTrQgrn8QqJX2DYi1B2M
-         p1iQ==
-X-Gm-Message-State: AC+VfDy5qcL00+K8eGWvtpGd4uaN3OumSvVERji7H7yh8jajaieB+yfq
-	v5gM82WaVGQGcpfVppe54GwqiOA/C5whdRbabY0F1yYl98s2sH3v
-X-Google-Smtp-Source: ACHHUZ7y8gATzBWNHSdzx5J9bh9s6aYETJ1C8/dygpgpBavsOQ8azBCpcw01ORvU0zwyW0QsR5nbg5dxKgdYsiiDjgM=
-X-Received: by 2002:a81:9c51:0:b0:55a:ec:6de4 with SMTP id n17-20020a819c51000000b0055a00ec6de4mr21696722ywa.10.1685022459535;
- Thu, 25 May 2023 06:47:39 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1695210797
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 13:49:49 +0000 (UTC)
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E1B186
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 06:49:47 -0700 (PDT)
+Date: Thu, 25 May 2023 15:49:43 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1685022585;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pDZZL81C9ggn2hEh4qTlo6cP8O6ke9kUEPJ3PAd8cMY=;
+	b=yXm6ITCORKPakRM+2l/G8DDAUvhGFhZl6bJSlh6zCayt8B9XM5Z5fWnvF2JNSMcBwPLI5n
+	dmo2CMhuQAfyrgUfuAC6nH2QHKK62GJj5sWjM1xTW7tSY5F9HmhV+EiZBAaeuw3HefQBkq
+	SWJQ6mQH0OtokMdP1bsNBmVU1LwdOTZxlAayHz3vs0crcokEB1Th4I2qCU4DVxNH3UQbKY
+	M/Pb2+dXCl272q/HsdSI61xOu0I7zyFfr8f+QhnaVAt4I9r8zH2Y3Z6HoZ4YW3L6CKf2wD
+	CiPOiFOu5oUw0cRwCGVELk632douapcNA4I3Hf5Olsuw/kFoCPttWgjMw+Mwhg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1685022585;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pDZZL81C9ggn2hEh4qTlo6cP8O6ke9kUEPJ3PAd8cMY=;
+	b=IEDl24TjX07HKIqozzUrbGl1Sx2Lrw5pFvLxYTDjI6p007yZOo4GpaZqMw02ZUc2x43hc/
+	yrK4YI255KNPPfDw==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Paolo Abeni <pabeni@redhat.com>
+Cc: Kurt Kanzenbach <kurt@linutronix.de>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+	juri.lelli@redhat.com
+Subject: Re: [PATCH net-next] net/core: Enable socket busy polling on -RT
+Message-ID: <20230525134943.ifOi8qCa@linutronix.de>
+References: <20230523111518.21512-1-kurt@linutronix.de>
+ <9e128547a586f1ee122879c616941340455c2f51.camel@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230523140342.2672713-1-linus.walleij@linaro.org>
- <20230524221147.5791ba3a@kernel.org> <20230524221247.1dc731a8@kernel.org>
-In-Reply-To: <20230524221247.1dc731a8@kernel.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Thu, 25 May 2023 15:47:27 +0200
-Message-ID: <CACRpkdbUrEZ1FAqMCq35z+g3NF1gx_9c_0vhQw6ioqkyOwaAnw@mail.gmail.com>
-Subject: Re: [PATCH] xen/netback: Pass (void *) to virt_to_page()
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>, xen-devel@lists.xenproject.org, 
-	netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <9e128547a586f1ee122879c616941340455c2f51.camel@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 25, 2023 at 7:12=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
-> On Wed, 24 May 2023 22:11:47 -0700 Jakub Kicinski wrote:
-> > On Tue, 23 May 2023 16:03:42 +0200 Linus Walleij wrote:
-> > > virt_to_page() takes a virtual address as argument but
-> > > the driver passes an unsigned long, which works because
-> > > the target platform(s) uses polymorphic macros to calculate
-> > > the page.
-> > >
-> > > Since many architectures implement virt_to_pfn() as
-> > > a macro, this function becomes polymorphic and accepts both a
-> > > (unsigned long) and a (void *).
-> > >
-> > > Fix this up by an explicit (void *) cast.
-> >
-> > Paul, Wei, looks like netdev may be the usual path for this patch
-> > to flow thru, although I'm never 100% sure with Xen.
-> > Please ack or LUK if you prefer to direct the patch elsewhere?
->
-> Ugh, Wei already acked this, sorry for the noise.
+On 2023-05-25 13:16:46 [+0200], Paolo Abeni wrote:
+> Hi,
+Hi Paolo,
 
-Don't worry about it Jakub, it's queued in the asm-generic tree
-along with patches making things give nasty compile messages
-if they are not typed right, we try to keep down the level of noise
-this way: silence it while fixing the root cause.
+> > Suggested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> 
+> The patch looks reasonable to me, but it would be great to hear a
+> second opinion from someone from RT side.
 
-If you prefer to take it into the net tree that works too but no need.
+I suggested and reviewed this and crafted parts of the commit message
+before Kurt sent it. Is this enough or do you look for someone in
+particular?
 
-Yours,
-Linus Walleij
+> CC: Juri
+> 
+> 
+> Thanks!
+> 
+> Paolo
+
+Sebastian
 
