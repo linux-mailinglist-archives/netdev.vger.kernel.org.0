@@ -1,50 +1,52 @@
-Return-Path: <netdev+bounces-5446-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5447-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 83E4C711479
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 42E4171147C
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:40:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3CEC3280C4E
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:40:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F0037281667
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:40:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 188A723D49;
-	Thu, 25 May 2023 18:38:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B81DB23C9A;
+	Thu, 25 May 2023 18:39:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D579923D42
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:38:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D66DFC4339E;
-	Thu, 25 May 2023 18:38:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C52823C62
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:39:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E053DC4339B;
+	Thu, 25 May 2023 18:39:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685039922;
-	bh=HzruN7S94e2jiNL7UDJDgCBmvP+Pdrad2H4wZ+KkonU=;
+	s=k20201202; t=1685039964;
+	bh=Q0Qt4aWqGX05VLarPtClXH3CWxhuSYOpVcdoNxytzH4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=aBCIq1Ocichl3SyhxOEgFrtJaE8ys+1DxsvmOs6QLZiaUXPwXzSLlO1Rpa9dXWdLo
-	 UWMemZ4RBebvxBrRsdMvPffsfwqBVNxKBAfrgLmd6UbjfkOSqnJ/+O0fhTUOqx4kBc
-	 MB/ao27BU/WkiqMpUn26PVqnhCN2GMnjDe3sB0StbN+FNulisx3E4zAmxXXiXbl6vW
-	 QLDMYrp0NiVN0YcuYJgvgXSHBqDx96astEfUqbx1PswBnkHH8l8uo8pQoGhxHIdarp
-	 WdGGpd6FkGlq43SexeTsj9PvbI6Eo/vnrLN0uPjiIJgcWUhxKCHBaCd4SyuQ3RrsXD
-	 HYEg6V8DVtHmQ==
+	b=XbOQnLuHZA4HbwILlPOb+QUj1Jssn/RkBChzgNq9Dq/BSq1azxAAbgkRaE/ws+Syz
+	 WuJ7selaSoyK0enRBe+A7Fj6CYkRsa1+K1UV8m/jVPdo8xhBSXIHxtkceluKeWdmiO
+	 ObA3/jcBNUgFBeMKgnThd/ypnJUMgoMgKOg8pAWU+UmWc8vL6GddpKIP3ist9DQxI0
+	 FqLCprjPv1Zqma2wpSMPqM6Mp3pS4I5MN8rIBCfrjH/mDLWQVcMTW4xFAm0X6F92d5
+	 swjW8nKp3SKObb2YsdbbVYmTLqu/svRuEjIA9yBF///0ToSo0efKGN/yRBobT34iTF
+	 WTxSdXkubvXJw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	Jakub Kicinski <kuba@kernel.org>,
+Cc: Benedict Wong <benedictwong@google.com>,
+	Steffen Klassert <steffen.klassert@secunet.com>,
 	Sasha Levin <sashal@kernel.org>,
-	andrew@lunn.ch,
-	hkallweit1@gmail.com,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 52/57] mdio_bus: unhide mdio_bus_init prototype
-Date: Thu, 25 May 2023 14:36:02 -0400
-Message-Id: <20230525183607.1793983-52-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 06/43] xfrm: Check if_id in inbound policy/secpath match
+Date: Thu, 25 May 2023 14:38:17 -0400
+Message-Id: <20230525183854.1855431-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230525183607.1793983-1-sashal@kernel.org>
-References: <20230525183607.1793983-1-sashal@kernel.org>
+In-Reply-To: <20230525183854.1855431-1-sashal@kernel.org>
+References: <20230525183854.1855431-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -55,41 +57,77 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Benedict Wong <benedictwong@google.com>
 
-[ Upstream commit 2e9f8ab68f42b059e80db71266c1675c07c664bd ]
+[ Upstream commit 8680407b6f8f5fba59e8f1d63c869abc280f04df ]
 
-mdio_bus_init() is either used as a local module_init() entry,
-or it gets called in phy_device.c. In the former case, there
-is no declaration, which causes a warning:
+This change ensures that if configured in the policy, the if_id set in
+the policy and secpath states match during the inbound policy check.
+Without this, there is potential for ambiguity where entries in the
+secpath differing by only the if_id could be mismatched.
 
-drivers/net/phy/mdio_bus.c:1371:12: error: no previous prototype for 'mdio_bus_init' [-Werror=missing-prototypes]
+Notably, this is checked in the outbound direction when resolving
+templates to SAs, but not on the inbound path when matching SAs and
+policies.
 
-Remove the #ifdef around the declaration to avoid the warning..
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20230516194625.549249-4-arnd@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Test: Tested against Android kernel unit tests & CTS
+Signed-off-by: Benedict Wong <benedictwong@google.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/phy.h | 2 --
- 1 file changed, 2 deletions(-)
+ net/xfrm/xfrm_policy.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index ddf66198f7511..bcb0a13360a31 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1759,10 +1759,8 @@ void phy_package_leave(struct phy_device *phydev);
- int devm_phy_package_join(struct device *dev, struct phy_device *phydev,
- 			  int addr, size_t priv_size);
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 0540e9f72b2fe..5fe3995223f16 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3238,7 +3238,7 @@ xfrm_secpath_reject(int idx, struct sk_buff *skb, const struct flowi *fl)
  
--#if IS_ENABLED(CONFIG_PHYLIB)
- int __init mdio_bus_init(void);
- void mdio_bus_exit(void);
--#endif
+ static inline int
+ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+-	      unsigned short family)
++	      unsigned short family, u32 if_id)
+ {
+ 	if (xfrm_state_kern(x))
+ 		return tmpl->optional && !xfrm_state_addr_cmp(tmpl, x, tmpl->encap_family);
+@@ -3249,7 +3249,8 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+ 		(tmpl->allalgs || (tmpl->aalgos & (1<<x->props.aalgo)) ||
+ 		 !(xfrm_id_proto_match(tmpl->id.proto, IPSEC_PROTO_ANY))) &&
+ 		!(x->props.mode != XFRM_MODE_TRANSPORT &&
+-		  xfrm_state_addr_cmp(tmpl, x, family));
++		  xfrm_state_addr_cmp(tmpl, x, family)) &&
++		(if_id == 0 || if_id == x->if_id);
+ }
  
- int phy_ethtool_get_strings(struct phy_device *phydev, u8 *data);
- int phy_ethtool_get_sset_count(struct phy_device *phydev);
+ /*
+@@ -3261,7 +3262,7 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+  */
+ static inline int
+ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int start,
+-	       unsigned short family)
++	       unsigned short family, u32 if_id)
+ {
+ 	int idx = start;
+ 
+@@ -3271,7 +3272,7 @@ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int star
+ 	} else
+ 		start = -1;
+ 	for (; idx < sp->len; idx++) {
+-		if (xfrm_state_ok(tmpl, sp->xvec[idx], family))
++		if (xfrm_state_ok(tmpl, sp->xvec[idx], family, if_id))
+ 			return ++idx;
+ 		if (sp->xvec[idx]->props.mode != XFRM_MODE_TRANSPORT) {
+ 			if (start == -1)
+@@ -3654,7 +3655,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 		 * are implied between each two transformations.
+ 		 */
+ 		for (i = xfrm_nr-1, k = 0; i >= 0; i--) {
+-			k = xfrm_policy_ok(tpp[i], sp, k, family);
++			k = xfrm_policy_ok(tpp[i], sp, k, family, if_id);
+ 			if (k < 0) {
+ 				if (k < -1)
+ 					/* "-2 - errored_index" returned */
 -- 
 2.39.2
 
