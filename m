@@ -1,303 +1,167 @@
-Return-Path: <netdev+bounces-5248-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5249-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 54557710691
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 09:42:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DC8C8710694
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 09:44:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C20191C20E6F
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 07:42:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 91B3D2810BC
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 07:44:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E532ABE61;
-	Thu, 25 May 2023 07:42:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58437BE66;
+	Thu, 25 May 2023 07:44:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0CFDA923
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 07:42:10 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4601BD9
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 00:41:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685000516;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xLlszakwtl2NiocvGs5LQWEAprM6Y0QlYDNKUyv6EwY=;
-	b=cOroiditd0MOexVSXuQga57C1bFPl83+FYQQFnOvQTPRcTla2igE/Ld4/x/uexc6nWL8ru
-	knJcKMXWOajt+Sg7UL8T4xWnkdMLaRRZbc99rw0O887ekkNuSqonVkZJIr4FzjnZ+3Ne8+
-	TCX4jTu/uc0IwMHIOW1pv2lydKRN/R8=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-186-c1hzCK6fP_KDDFsxFIDTyg-1; Thu, 25 May 2023 03:41:54 -0400
-X-MC-Unique: c1hzCK6fP_KDDFsxFIDTyg-1
-Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-623a43db679so7014396d6.1
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 00:41:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685000514; x=1687592514;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xLlszakwtl2NiocvGs5LQWEAprM6Y0QlYDNKUyv6EwY=;
-        b=jNxdkJrxiThVzu430iyLr/6UTH4BgNvi+WaFYxF4jXmeoq7pXjvjvBmZPl4jjBKX2q
-         jy0hWuUvhwu+35bT2qcCud5c79R2GqPy5d4kR33eXrXQwbffUnJlFBAbuartygN9La02
-         RSlIOFa4D7cVukoq6alFw0II3y1c6k9xyoHFutkfZQn36drmUn9UEOusDGFC6M+YCyqI
-         XsqZP8atxzqTeACE8YGeIEZFyIMSce8eG3vsewI3EsaQ7fWBv0+zjSpmtNEMi19X2lTI
-         rbnqHEto6Pow13m+lG7rq+CtNJmJQy+G7mG4syfiy1nttmdWSQEpzQjs6+wiWwlGjxr3
-         6TMg==
-X-Gm-Message-State: AC+VfDyhSA1F6dp5Xg0DBOLXmX7ZQSGPWSi+w8XX2FlbdTxL2AeSIiD7
-	ULtv/70x0tvvkbo/JkdtjSa1hjBn3k2e+VDJkMNO9XCI8cz2UTgVvynzx/sCE6wivaHTrR9Gt24
-	y18wyUATHruHsA1Ab
-X-Received: by 2002:a05:6214:d4e:b0:56f:52ba:cce6 with SMTP id 14-20020a0562140d4e00b0056f52bacce6mr569114qvr.19.1685000514249;
-        Thu, 25 May 2023 00:41:54 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5qH+YWw5yHuyI4A93GN69Ss1hSLcoPsLz80aHg9NVN0huU1YrbOORiES+yuWNgP5FGs17w4g==
-X-Received: by 2002:a05:6214:d4e:b0:56f:52ba:cce6 with SMTP id 14-20020a0562140d4e00b0056f52bacce6mr569095qvr.19.1685000513802;
-        Thu, 25 May 2023 00:41:53 -0700 (PDT)
-Received: from redhat.com ([191.101.160.247])
-        by smtp.gmail.com with ESMTPSA id e14-20020a0cf74e000000b005dd8b9345besm214153qvo.86.2023.05.25.00.41.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 00:41:53 -0700 (PDT)
-Date: Thu, 25 May 2023 03:41:47 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jason Wang <jasowang@redhat.com>
-Cc: xuanzhuo@linux.alibaba.com, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com,
-	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, alvaro.karsz@solid-run.com
-Subject: Re: [PATCH V3 net-next 1/2] virtio-net: convert rx mode setting to
- use workqueue
-Message-ID: <20230525033750-mutt-send-email-mst@kernel.org>
-References: <20230524081842.3060-1-jasowang@redhat.com>
- <20230524081842.3060-2-jasowang@redhat.com>
- <20230524050604-mutt-send-email-mst@kernel.org>
- <CACGkMEvm=MJz5e2C_7U=yjrvoo7pxsr=tRAL29OdxJDWhvtiSQ@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45824BE51
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 07:44:41 +0000 (UTC)
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D1310C3
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 00:44:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RtI0bPLAamMPaWKzYQpoobW+o2teGvL9qyERiKltaMeQvGULgdVfOZ34btNHTvPKcr7QZ5//WFiWrPDWVmLgmjTEhhVXwMnLFYFOP9rJBWUWPFSPmNuXNYpq2a3glpLnNmBQLIaXzEjoEF4Y258hQQWCKjion6MAQfgf+oQKaZ8AGpojWz6xVgNbSB0CjyufAfk4CZbJhkpbyeJlDIQBOg9vj+jJfp9+ZMzK9BmrPtirHAbm4ZKbcvvwFjNedd7notebFUBLMcPRIJkz2Vyp54aOqlkfcgW0vDl2a0g6F/+u9M3V4kjPN7haOQkByOBhaPRWdd33JJFiwUBskzqwtg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8Qj1Gt9vrVAYmHQ/ly94ZDR3v3XsvJtu+125xzAjMQo=;
+ b=gYyn4wGcADsgWU23ZncehPmjH2y082vI2N8CRrNV1kglHlV7HRUJ0Qh8s/PV4CzjmdCypbtZjjgYHONkXw3EJUTfO6uX2HCfcXQmHuICe2zDvYJoPIRPpalvCHWBhOSZqGcxzcEwKqQlthax3n+FHTuVlWlm7WYhrs3LR3dd95HkfhCbZB5z5EswSiace/yRsMqElGRdjl7XLApkgHfTKQYfmiHbZNyY/nDWPFLpYMPuvAiSi/Wp9G7EoUd5xjaYPUilDE4uy+O595riCaIOJ4HsJkKezuWV9R0rOMF0YIr/vezDehiKXeCaV80S49041Ggpppb/wxjMx1c+OY5ESQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8Qj1Gt9vrVAYmHQ/ly94ZDR3v3XsvJtu+125xzAjMQo=;
+ b=vTWENvl5sygNorbKaoMB7kRvgYeWUKWuit2Lg5wdFbbRZsTkDpgB+3uiudIvNFcsUKvnw6y2qesjHs3wxYiYW+PgEM1pMXE4qjXucJcJ/BgduqvDVynUmtepjntnBKWxDPBQwaHD0LiE2C/foA2Il9ZyOmtqpQiZBYur+wLQvb0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by DM6PR13MB3818.namprd13.prod.outlook.com (2603:10b6:5:243::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.14; Thu, 25 May
+ 2023 07:44:36 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6411.029; Thu, 25 May 2023
+ 07:44:36 +0000
+Date: Thu, 25 May 2023 09:44:30 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Eric Dumazet <edumazet@google.com>
+Cc: "David S . Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org, eric.dumazet@gmail.com,
+	Simon Kapadia <szymon@kapadia.pl>
+Subject: Re: [PATCH net] netrom: fix info-leak in nr_write_internal()
+Message-ID: <ZG8R3uaruTpe38pZ@corigine.com>
+References: <20230524141456.1045467-1-edumazet@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230524141456.1045467-1-edumazet@google.com>
+X-ClientProxiedBy: AM0PR05CA0083.eurprd05.prod.outlook.com
+ (2603:10a6:208:136::23) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEvm=MJz5e2C_7U=yjrvoo7pxsr=tRAL29OdxJDWhvtiSQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB3818:EE_
+X-MS-Office365-Filtering-Correlation-Id: aa6603a6-9297-4447-b9cc-08db5cf3e30b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	B9vVmU0vBg2cufwf6cI7/ulljNc30owijpilmMlgQ5SKKU7thlcpI2V4exEdo6tt2z35A5PbUnbwvbgQOPQT1VYfV6nAHURaIkVvK1c80+BeUHkO68PTv9lfiSuhS2TwzoBZxcdsZY/bHptvvm9HG3BOdiwdBIh3mx2Dqx1J6BGTuzyK18VeQxqQdHfkepIDG0ko5BVujnRt9jLLPK1JekIx1cY2AIbx8MpZmjAQCRFIwjggWxGWXE4VzI5sxgExH/691BeMfsDYouWkIgQYLVO0HJFZos2750j5Yt6oKv5N0oFa/yUMrnM+qPLYXmpJKTabG8e3a/j3bE9Bj/B6sZjqxPVryjeMeTdAyYK3ptRg8uZB80oxXd8aFtKxBypQVKSjjGm3iCU5SNkeFUYfqTWPtE/gTxVnd29hS1bdE6e/1CAxA1P6GSg4PT7dKh6AGwaz+4Ks0QysFXH2lX6nbLryDSmSvv6vmSxnSCJnZAoZ560D+H/D79cjJDH7DXPzPsfR5/BT83Es6dCP8QwsLWwVk9TDomAQiBon3+tJDTkGkFEEfgSAkqTg0SPy3CxW
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(366004)(346002)(136003)(39840400004)(451199021)(83380400001)(2616005)(6512007)(6506007)(86362001)(186003)(2906002)(5660300002)(38100700002)(8676002)(8936002)(36756003)(44832011)(478600001)(6486002)(41300700001)(54906003)(66946007)(6916009)(4326008)(6666004)(66556008)(66476007)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?YuTVobEAynKkZ4zyL9a2Zo8GMaH4hA3zQi8hEx8U1ihy1Sbp/yFCBVXLKc6L?=
+ =?us-ascii?Q?oHBcodN6/CnPIPw8IYle5mciJKpLxj73YGYIMQrPGY3hq9+iSXRkhd9ukcQW?=
+ =?us-ascii?Q?VLaVL2QXUaVrTmcKyqboUXJlnePed+noRe3QuEGMJQ45OSlHBEI/gTA4uVPA?=
+ =?us-ascii?Q?zYlB4Lx/MuxYgdYEJuIpoeBLJT2QdUU7ChvJYiSeOeXRBi2ln5BAqev31K0c?=
+ =?us-ascii?Q?QHR+Lx7JmYV9vXGUvw2gOg7HWZgVZM4r7+vwEF0ns3GMZrFiVxKrW07dVSCK?=
+ =?us-ascii?Q?L3nLwewnd82lWFHScSR/TtVJGdzuXbiObpl/HZPnqBU7LDUTMOr6O2mQkjHI?=
+ =?us-ascii?Q?qmNgyCUvXzYm19VEaFLJ+z11jW+qIqbiWnFGV9cMsFr0jjXMS7lyY+zJ7194?=
+ =?us-ascii?Q?KhwVsZgaEeTK85S4P6zDXUMOpIeeDe4b8io0B17237EdulBnict2STH80AYD?=
+ =?us-ascii?Q?Q0RpHefQvZPSonzqQke37IqpdX6e5LkZ5WdBY9VPDE2nmXIE3eCeluL7rsF7?=
+ =?us-ascii?Q?iGiShUz15B4ZNB8Ff//u9NYeprPJyRTi2fYxp/26JaPzhmMkv9FX2jjpSvE4?=
+ =?us-ascii?Q?VLYHJu93cfJn/pLwY+036RQYGEfOng06I6Xr8dIhVZE5L230/2mhTXqWdz+0?=
+ =?us-ascii?Q?BoIjDrL84HtGYzYxx8qgJv8wfKgXgkrEvRVbkrX9Cw3IBT2zocA33oGOqcB8?=
+ =?us-ascii?Q?YOCH7ew2+BStSYECRHjfY2WnAgJuCk9cy11auG4mk7CB3NnOxQUmSLAnxO2R?=
+ =?us-ascii?Q?J9176IoATfscoMxVGKK7rX1I2x0L2C+jCrqLAEN7R+++o9nHIxGh50ATGACr?=
+ =?us-ascii?Q?+xgmkLMcNNuxjuY5oLMpYVSVP0TKvlZOnVEkRfdGgPlZanFKKReJkIiujusc?=
+ =?us-ascii?Q?oI/+j3OPw9IRVkCauKR88eYnHXziUAj5dyvcvbXGXDi9n4QdrArk6Mm4kEr9?=
+ =?us-ascii?Q?9iX+gHp6LTa0zXVKn/CedprP5koUxfplqrOMqPIhQ26leTFvQC5D2aJwMHDl?=
+ =?us-ascii?Q?nZ6qw5ivMXzGbWuWFX8eDD3KCq1fFXoGuA0rpNTjWKftb2ih9sUxms1EUEQR?=
+ =?us-ascii?Q?4S8Bs9nM45lHzn8jETu5NFzYlHKqwqTTVHJ6cLf3mE9YzacSHEYaXaHTNAvW?=
+ =?us-ascii?Q?8mwL6OxtESbMS9+CHy5vHv2s1ijxee6Za2dGXs9U2FvrlrFwRHXOD4rzTDXm?=
+ =?us-ascii?Q?C1QhHrDd6fIcIy3IcTGWLnA4VWcTr5mJTt8IqDR6BNpRlsawerlBVqltD6fu?=
+ =?us-ascii?Q?lAiq6X7Rryj98o14SCkt7SvOCGRnFtg6PrVV7FmpPaLAN5KMy8kRcq/A7RIJ?=
+ =?us-ascii?Q?iOKBt0yfYr2etHOtxvvGI46hwIL86V6Fz0BuVqBZ7xOgaB5jl7aZFlqkbAtm?=
+ =?us-ascii?Q?Uk1iWVaJAxz1ZiSheVYQnYZkCMKPn6pfYMoj2mSadH4A6pJcvlpKNHY9sNA9?=
+ =?us-ascii?Q?V8OjAsMxwJPXP++agupCeF/bDyuI0H4IWTpOwidhCQs+aJMxoSGtYrirw1D9?=
+ =?us-ascii?Q?kLixF0G21DN136Z8ZYH5mDVGu2V7SdTeayFRSrrd+u/y1CZCBl656aD3uZ4M?=
+ =?us-ascii?Q?V+Rxjn4R+r4kLXZdT63NVw5jKN3GjqyaDGkuFZJS7xr6Iv+i4/DXS1CF5RaO?=
+ =?us-ascii?Q?A1HImekjOjWib/WvbFvRuyFTh/WvNs0S/1FFvgaH8/+rUEcJnyz/flBKdQnX?=
+ =?us-ascii?Q?hEZYyA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa6603a6-9297-4447-b9cc-08db5cf3e30b
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2023 07:44:36.1532
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: S5+VhumoovBbt8iVDne9Cwss3rjrjy1avCVqbp90FqK/Ow9QAUS4gxM4bKtL1K30z7lIL0BUeKss87sLITawxQprASs8xad0WI3wwgjKQBo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB3818
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 25, 2023 at 11:43:34AM +0800, Jason Wang wrote:
-> On Wed, May 24, 2023 at 5:15 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Wed, May 24, 2023 at 04:18:41PM +0800, Jason Wang wrote:
-> > > This patch convert rx mode setting to be done in a workqueue, this is
-> > > a must for allow to sleep when waiting for the cvq command to
-> > > response since current code is executed under addr spin lock.
-> > >
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > ---
-> > > Changes since V1:
-> > > - use RTNL to synchronize rx mode worker
-> > > ---
-> > >  drivers/net/virtio_net.c | 55 +++++++++++++++++++++++++++++++++++++---
-> > >  1 file changed, 52 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index 56ca1d270304..5d2f1da4eaa0 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -265,6 +265,12 @@ struct virtnet_info {
-> > >       /* Work struct for config space updates */
-> > >       struct work_struct config_work;
-> > >
-> > > +     /* Work struct for config rx mode */
-> >
-> > With a bit less abbreviation maybe? setting rx mode?
+On Wed, May 24, 2023 at 02:14:56PM +0000, Eric Dumazet wrote:
+> Simon Kapadia reported the following issue:
 > 
-> That's fine.
+> <quote>
 > 
-> >
-> > > +     struct work_struct rx_mode_work;
-> > > +
-> > > +     /* Is rx mode work enabled? */
-> >
-> > Ugh not a great comment.
+> The Online Amateur Radio Community (OARC) has recently been experimenting
+> with building a nationwide packet network in the UK.
+> As part of our experimentation, we have been testing out packet on 300bps HF,
+> and playing with net/rom.  For HF packet at this baud rate you really need
+> to make sure that your MTU is relatively low; AX.25 suggests a PACLEN of 60,
+> and a net/rom PACLEN of 40 to go with that.
+> However the Linux net/rom support didn't work with a low PACLEN;
+> the mkiss module would truncate packets if you set the PACLEN below about 200 or so, e.g.:
 > 
-> Any suggestions for this. E.g we had:
+> Apr 19 14:00:51 radio kernel: [12985.747310] mkiss: ax1: truncating oversized transmit packet!
 > 
->         /* Is delayed refill enabled? */
+> This didn't make any sense to me (if the packets are smaller why would they
+> be truncated?) so I started investigating.
+> I looked at the packets using ethereal, and found that many were just huge
+> compared to what I would expect.
+> A simple net/rom connection request packet had the request and then a bunch
+> of what appeared to be random data following it:
+> 
+> </quote>
+> 
+> Simon provided a patch that I slightly revised:
+> Not only we must not use skb_tailroom(), we also do
+> not want to count NR_NETWORK_LEN twice.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Co-Developed-by: Simon Kapadia <szymon@kapadia.pl>
+> Signed-off-by: Simon Kapadia <szymon@kapadia.pl>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Tested-by: Simon Kapadia <szymon@kapadia.pl>
 
-/* OK to queue work setting RX mode? */
-
-
-> >
-> > > +     bool rx_mode_work_enabled;
-> > > +
-> >
-> >
-> >
-> > >       /* Does the affinity hint is set for virtqueues? */
-> > >       bool affinity_hint_set;
-> > >
-> > > @@ -388,6 +394,20 @@ static void disable_delayed_refill(struct virtnet_info *vi)
-> > >       spin_unlock_bh(&vi->refill_lock);
-> > >  }
-> > >
-> > > +static void enable_rx_mode_work(struct virtnet_info *vi)
-> > > +{
-> > > +     rtnl_lock();
-> > > +     vi->rx_mode_work_enabled = true;
-> > > +     rtnl_unlock();
-> > > +}
-> > > +
-> > > +static void disable_rx_mode_work(struct virtnet_info *vi)
-> > > +{
-> > > +     rtnl_lock();
-> > > +     vi->rx_mode_work_enabled = false;
-> > > +     rtnl_unlock();
-> > > +}
-> > > +
-> > >  static void virtqueue_napi_schedule(struct napi_struct *napi,
-> > >                                   struct virtqueue *vq)
-> > >  {
-> > > @@ -2341,9 +2361,11 @@ static int virtnet_close(struct net_device *dev)
-> > >       return 0;
-> > >  }
-> > >
-> > > -static void virtnet_set_rx_mode(struct net_device *dev)
-> > > +static void virtnet_rx_mode_work(struct work_struct *work)
-> > >  {
-> > > -     struct virtnet_info *vi = netdev_priv(dev);
-> > > +     struct virtnet_info *vi =
-> > > +             container_of(work, struct virtnet_info, rx_mode_work);
-> > > +     struct net_device *dev = vi->dev;
-> > >       struct scatterlist sg[2];
-> > >       struct virtio_net_ctrl_mac *mac_data;
-> > >       struct netdev_hw_addr *ha;
-> > > @@ -2356,6 +2378,8 @@ static void virtnet_set_rx_mode(struct net_device *dev)
-> > >       if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_RX))
-> > >               return;
-> > >
-> > > +     rtnl_lock();
-> > > +
-> > >       vi->ctrl->promisc = ((dev->flags & IFF_PROMISC) != 0);
-> > >       vi->ctrl->allmulti = ((dev->flags & IFF_ALLMULTI) != 0);
-> > >
-> > > @@ -2373,14 +2397,19 @@ static void virtnet_set_rx_mode(struct net_device *dev)
-> > >               dev_warn(&dev->dev, "Failed to %sable allmulti mode.\n",
-> > >                        vi->ctrl->allmulti ? "en" : "dis");
-> > >
-> > > +     netif_addr_lock_bh(dev);
-> > > +
-> > >       uc_count = netdev_uc_count(dev);
-> > >       mc_count = netdev_mc_count(dev);
-> > >       /* MAC filter - use one buffer for both lists */
-> > >       buf = kzalloc(((uc_count + mc_count) * ETH_ALEN) +
-> > >                     (2 * sizeof(mac_data->entries)), GFP_ATOMIC);
-> > >       mac_data = buf;
-> > > -     if (!buf)
-> > > +     if (!buf) {
-> > > +             netif_addr_unlock_bh(dev);
-> > > +             rtnl_unlock();
-> > >               return;
-> > > +     }
-> > >
-> > >       sg_init_table(sg, 2);
-> > >
-> > > @@ -2401,6 +2430,8 @@ static void virtnet_set_rx_mode(struct net_device *dev)
-> > >       netdev_for_each_mc_addr(ha, dev)
-> > >               memcpy(&mac_data->macs[i++][0], ha->addr, ETH_ALEN);
-> > >
-> > > +     netif_addr_unlock_bh(dev);
-> > > +
-> > >       sg_set_buf(&sg[1], mac_data,
-> > >                  sizeof(mac_data->entries) + (mc_count * ETH_ALEN));
-> > >
-> > > @@ -2408,9 +2439,19 @@ static void virtnet_set_rx_mode(struct net_device *dev)
-> > >                                 VIRTIO_NET_CTRL_MAC_TABLE_SET, sg))
-> > >               dev_warn(&dev->dev, "Failed to set MAC filter table.\n");
-> > >
-> > > +     rtnl_unlock();
-> > > +
-> > >       kfree(buf);
-> > >  }
-> > >
-> > > +static void virtnet_set_rx_mode(struct net_device *dev)
-> > > +{
-> > > +     struct virtnet_info *vi = netdev_priv(dev);
-> > > +
-> > > +     if (vi->rx_mode_work_enabled)
-> > > +             schedule_work(&vi->rx_mode_work);
-> > > +}
-> > > +
-> >
-> > >  static int virtnet_vlan_rx_add_vid(struct net_device *dev,
-> > >                                  __be16 proto, u16 vid)
-> > >  {
-> > > @@ -3181,6 +3222,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
-> > >
-> > >       /* Make sure no work handler is accessing the device */
-> > >       flush_work(&vi->config_work);
-> > > +     disable_rx_mode_work(vi);
-> > > +     flush_work(&vi->rx_mode_work);
-> > >
-> > >       netif_tx_lock_bh(vi->dev);
-> > >       netif_device_detach(vi->dev);
-> >
-> > Hmm so queued rx mode work will just get skipped
-> > and on restore we get a wrong rx mode.
-> > Any way to make this more robust?
-> 
-> It could be done by scheduling a work on restore.
-> 
-> Thanks
-
-
-> >
-> >
-> > > @@ -3203,6 +3246,7 @@ static int virtnet_restore_up(struct virtio_device *vdev)
-> > >       virtio_device_ready(vdev);
-> > >
-> > >       enable_delayed_refill(vi);
-> > > +     enable_rx_mode_work(vi);
-> > >
-> > >       if (netif_running(vi->dev)) {
-> > >               err = virtnet_open(vi->dev);
-> > > @@ -4002,6 +4046,7 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > >       vdev->priv = vi;
-> > >
-> > >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-> > > +     INIT_WORK(&vi->rx_mode_work, virtnet_rx_mode_work);
-> > >       spin_lock_init(&vi->refill_lock);
-> > >
-> > >       if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF)) {
-> > > @@ -4110,6 +4155,8 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > >       if (vi->has_rss || vi->has_rss_hash_report)
-> > >               virtnet_init_default_rss(vi);
-> > >
-> > > +     enable_rx_mode_work(vi);
-> > > +
-> > >       /* serialize netdev register + virtio_device_ready() with ndo_open() */
-> > >       rtnl_lock();
-> > >
-> > > @@ -4207,6 +4254,8 @@ static void virtnet_remove(struct virtio_device *vdev)
-> > >
-> > >       /* Make sure no work handler is accessing the device. */
-> > >       flush_work(&vi->config_work);
-> > > +     disable_rx_mode_work(vi);
-> > > +     flush_work(&vi->rx_mode_work);
-> > >
-> > >       unregister_netdev(vi->dev);
-> > >
-> > > --
-> > > 2.25.1
-> >
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
 
