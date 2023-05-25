@@ -1,99 +1,114 @@
-Return-Path: <netdev+bounces-5490-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5491-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 27391711A54
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 00:52:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 12679711AC5
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 01:43:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 95EC61C20F5E
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 22:52:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A3F5728166C
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 23:43:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF8D023D64;
-	Thu, 25 May 2023 22:52:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBFD0261D3;
+	Thu, 25 May 2023 23:42:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1432259A
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 22:52:24 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B1C5DF
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 15:52:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685055142;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD0424EB9
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 23:42:58 +0000 (UTC)
+Received: from out-51.mta0.migadu.com (out-51.mta0.migadu.com [IPv6:2001:41d0:1004:224b::33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DFA134
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 16:42:57 -0700 (PDT)
+Message-ID: <7188429a-c380-14c8-57bb-9d05d3ba4e5e@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1685058175;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=eH/m3nuC2rUICmXjI3vrVBe5xrzk336eMJPenhN/WVU=;
-	b=NShMk9T1+Tbv/wBrfOQLd8Zr4kvcbyAyY0bz8rBauwV44MXsF5tOL/rKZE39KpBVD31Obc
-	nMyPRnOeZDo/YnBbGEvdnn2MRRaK1C0l/iqFz9wEV0naf11dhGm3UpNuakA7nMYoWtvewy
-	hf1ukY8B3AjSXOKMdUKboTxeQ5CsmHo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-177-r5E-x5qvMTKelVVvgs9yLQ-1; Thu, 25 May 2023 18:52:16 -0400
-X-MC-Unique: r5E-x5qvMTKelVVvgs9yLQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 74741803497;
-	Thu, 25 May 2023 22:52:15 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id A42757AF5;
-	Thu, 25 May 2023 22:52:13 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <CAOWid-c2_atz6oQspoQq4MQQ=DQWfJ=-JgbV2QFY8PveC+Sb8Q@mail.gmail.com>
-References: <CAOWid-c2_atz6oQspoQq4MQQ=DQWfJ=-JgbV2QFY8PveC+Sb8Q@mail.gmail.com> <20230525211346.718562-1-Kenny.Ho@amd.com> <223250.1685052554@warthog.procyon.org.uk>
-To: Kenny Ho <y2kenny@gmail.com>
-Cc: dhowells@redhat.com, Kenny Ho <Kenny.Ho@amd.com>,
-    David Laight <David.Laight@aculab.com>,
-    Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-    Marc Dionne <marc.dionne@auristor.com>,
-    "David S. Miller" <davem@davemloft.net>,
-    Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-    "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
-    "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-    alexander.deucher@amd.com
-Subject: Re: [PATCH] Truncate UTS_RELEASE for rxrpc version
+	bh=cEWHFC+tyHwwjk19PVCSJ1YdwxL9+T4gCvhEfMMt5tI=;
+	b=Hbnh35/ncWfFI5sf/wrM3kOXXVBum+XmbBuy7X03+bbvbaSXBa7oajd2kzFJveRI6famim
+	NP7Jq/gGzFcjlCP59SssUXEh7Bt+liNPx/zQrbjz/lf5TL7QJxgff1KRdDc7irDi9eNgGS
+	x/Ik1cMlCnS9xAjQfxkKx1hWN2dKTsk=
+Date: Thu, 25 May 2023 16:42:46 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <225784.1685055132.1@warthog.procyon.org.uk>
-Date: Thu, 25 May 2023 23:52:12 +0100
-Message-ID: <225785.1685055132@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next 1/2] bpf, net: Support SO_REUSEPORT sockets with
+ bpf_sk_assign
+Content-Language: en-US
+To: Lorenz Bauer <lmb@isovalent.com>
+Cc: Joe Stringer <joe@cilium.io>, Martin KaFai Lau <kafai@fb.com>,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+ Andrii Nakryiko <andrii@kernel.org>, Song Liu <song@kernel.org>,
+ Yonghong Song <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>,
+ KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>,
+ Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+ David Ahern <dsahern@kernel.org>,
+ Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+ Joe Stringer <joe@wand.net.nz>
+References: <20230525081923.8596-1-lmb@isovalent.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20230525081923.8596-1-lmb@isovalent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Kenny Ho <y2kenny@gmail.com> wrote:
+On 5/25/23 1:19 AM, Lorenz Bauer wrote:
+> diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
+> index 56f1286583d3..3ba4dc2703da 100644
+> --- a/include/net/inet6_hashtables.h
+> +++ b/include/net/inet6_hashtables.h
+> @@ -48,6 +48,13 @@ struct sock *__inet6_lookup_established(struct net *net,
+>   					const u16 hnum, const int dif,
+>   					const int sdif);
+>   
+> +struct sock *inet6_lookup_reuseport(struct net *net, struct sock *sk,
+> +				    struct sk_buff *skb, int doff,
+> +				    const struct in6_addr *saddr,
+> +				    __be16 sport,
+> +				    const struct in6_addr *daddr,
+> +				    unsigned short hnum);
+> +
+>   struct sock *inet6_lookup_listener(struct net *net,
+>   				   struct inet_hashinfo *hashinfo,
+>   				   struct sk_buff *skb, int doff,
+> @@ -85,14 +92,33 @@ static inline struct sock *__inet6_lookup_skb(struct inet_hashinfo *hashinfo,
+>   					      int iif, int sdif,
+>   					      bool *refcounted)
+>   {
+> -	struct sock *sk = skb_steal_sock(skb, refcounted);
+> -
+> +	bool prefetched;
+> +	struct sock *sk = skb_steal_sock(skb, refcounted, &prefetched);
+> +	struct net *net = dev_net(skb_dst(skb)->dev);
+> +	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
+> +
+> +	if (prefetched) {
+> +		struct sock *reuse_sk = inet6_lookup_reuseport(net, sk, skb, doff,
 
-> This makes sense and looks fine to me.  I don't know the proper
-> etiquette here, but
-> Acked-by: Kenny Ho <Kenny.Ho@amd.com>
+If sk is TCP_ESTABLISHED, I suspect sk->sk_reuseport is 1 (from sk_clone)?
 
-If I'm not going to pick the patch up, I tend to use Acked-by when reviewing a
-patch that touches code I'm a listed maintainer for and Reviewed-by when it's
-code that I'm not a maintainer for...  but the descriptions in:
+If it is, it should still work other than an extra inet6_ehashfn. Does it worth 
+an extra sk->sk_state check or it is overkill?
 
-	Documentation/process/submitting-patches.rst
 
-seem to leave a lot of overlap.
-
-David
+> +							       &ip6h->saddr, sport,
+> +							       &ip6h->daddr, ntohs(dport));
 
 
