@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-5360-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5361-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 841DA710EDB
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 16:57:55 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E5B98710EDD
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 16:58:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3EFBF2815C1
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 14:57:54 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A614E1C20EF0
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 14:58:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A512F1C773;
-	Thu, 25 May 2023 14:55:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A0EEE1D2AA;
+	Thu, 25 May 2023 14:55:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A0E619BC1
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 14:55:08 +0000 (UTC)
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C37F1B6;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95A971D2A6
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 14:55:09 +0000 (UTC)
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF97E41;
 	Thu, 25 May 2023 07:55:03 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id ffacd0b85a97d-309382efe13so1560142f8f.2;
-        Thu, 25 May 2023 07:55:02 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-30950eecc1eso2202038f8f.0;
+        Thu, 25 May 2023 07:55:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685026501; x=1687618501;
+        d=gmail.com; s=20221208; t=1685026502; x=1687618502;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=bzjSHLcSLKuyYbnB5oKrxVcxoSmgJOggg+ZfYlmNaGM=;
-        b=lPP6ejuyGdUqbdV05DpRufEgFHgzuJGeS64NKLHMuExx8FvbX8ruFT3fTkY41QZeby
-         KkXRgU0ApGNMzqxQRCmArJyv4/Mun+oDG6we+ubfPm1p0Tkk27KMjxpQuIFxWpKBZpvn
-         L5b7YcVy0FAreEqDA0YJ2Od5NrK3v4DNmGu9pHOfxovHja5WiQxvspAruwrGk+l5Tx/s
-         VfT8JQLTrRmicfLSog13cloS+8x3rTx1BgG+m1ohLP7v/+n4yno8zv0029uoAJzunmOT
-         L9CCxNZm4ogSyd0i0l0/yaMHHDSTrgTYpVFFs6MnXF4lRhh4OsGmWV/D8knbsHzjj/UN
-         iHog==
+        bh=t032UqrKs2qK0Tmykkb/w0e10wBacVTlNSbQa7zNqmM=;
+        b=lk+LPQzKeEhjejpM7t5dj1Id8x9o3Kde6+5yRdFfD8o17qYlM53Rc1EQO2MZDE6GCK
+         xZxoq7ef6Qb4sEt3lRvgzzADsWYuqR+Yum4tz1uOgIj2aDl32mdWDE0bnRPaQsQh95OA
+         fg0tzv/UMNn1+kmKlKPLuPHmkrndmBkA6xdZypAAyKudtHEEijLGAWdGTCRLm4REcVbd
+         NsSwKrslT2xT1f+o8rf0rasPaqWHBs7UYz9uI9+U56V2rWOdJ5+daTtzy88LXuEAy84t
+         9FCBnLuUeoglXeqE3XxjvBIUKZxiN0PmyZ/ztBv0KqOGLB25MNzlJtiasPmGC112QAJx
+         IEzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685026501; x=1687618501;
+        d=1e100.net; s=20221208; t=1685026502; x=1687618502;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=bzjSHLcSLKuyYbnB5oKrxVcxoSmgJOggg+ZfYlmNaGM=;
-        b=CFfvkST6F1Eno5aKsnPfPIHOXob7b9JrYUlEDnLlIYeOzKO3EE+xDcWEhFreZnF4SB
-         SO+J/m76zDpy9uYIwyT/09flJ2quw5wpmVpV6+gl8Lu7m2B7Str9NEatL+Oqqcy/VSUF
-         pywC0UMt/qRfcIgUpP4gy59DyS8cetOKMAu4moJpTdpKT7FjCeNV+cJraZYxmUw0ksqJ
-         BeKlCVm3yCoJa/Qn99yzOgi6wu770rBnlVHRY5ORWT5n8Z3cc9JEySaAHGReARBW4EFL
-         nAImYkLCs18OH7kNstwGLtZAjLE8KUNsGZ4SxSC6YobSSOiX5x8CkpTYfl2iPVrANUp+
-         r0qg==
-X-Gm-Message-State: AC+VfDyX43eq8kXicpA63V36S2efVJteURjQKC6jR0guF3xNC8vx93RO
-	+QJGbuo2dJgyAHh9Bob2RhxLHq0Y5H4=
-X-Google-Smtp-Source: ACHHUZ5C8g7q++jNTKBD8izlwn3KaW2UultwaDuld2Mh5yH1lo+swsqkySFSUo38JGoGOI/+EddZkQ==
-X-Received: by 2002:a5d:5607:0:b0:309:4289:91ca with SMTP id l7-20020a5d5607000000b00309428991camr2621768wrv.61.1685026500942;
-        Thu, 25 May 2023 07:55:00 -0700 (PDT)
+        bh=t032UqrKs2qK0Tmykkb/w0e10wBacVTlNSbQa7zNqmM=;
+        b=CLsnXgV6VisrRKqayVln5HvMb1PV7q0yyF56o06Fi0Ypmu82BvKcsDxAfmGV+Vuqxa
+         OXULMZDNBHOWLpUW2SpbPAX+1rvTmLKYg36IVJbFfDHhhMa+CC5VZA8yTMrR0uojE5Kq
+         HluO7qGWij8EdvAhAQCsencZ5x+AsqV4AeArdUYt4NcshqeuEp+F93J/35/0Im23C6j6
+         QwEI4BF+ZlJd+oXw3ctFJjuuc06jfkyQVcNkGvu26c1jgtdf9JqHbQW7eYduS23B/yKp
+         gjJu5JqO9DOKogbPtyDcxa8H3ajvsVFrAqRfqho9zU4bVhdcBiMX/IncKj1PSfg7hVrg
+         zrrw==
+X-Gm-Message-State: AC+VfDzQ+TBTs+PFWVVQsRl7M9fSbFxGYsC7ibIGbzWJi4pqB0QucPxi
+	3K1B7Wi4ZdvJkiY8/cakV5HexziaRNk=
+X-Google-Smtp-Source: ACHHUZ7uYjwK0LlEOlSsD0tHabtZUW+f31t2nJZASWhMK5V5HmzdsVKNmt8iZo6KsmAxmNfh0Zz5vA==
+X-Received: by 2002:a5d:670f:0:b0:306:3817:4a80 with SMTP id o15-20020a5d670f000000b0030638174a80mr2968518wru.0.1685026502084;
+        Thu, 25 May 2023 07:55:02 -0700 (PDT)
 Received: from localhost.localdomain (93-34-93-173.ip49.fastwebnet.it. [93.34.93.173])
-        by smtp.googlemail.com with ESMTPSA id t11-20020a5d49cb000000b0030732d6e104sm2048043wrs.105.2023.05.25.07.54.59
+        by smtp.googlemail.com with ESMTPSA id t11-20020a5d49cb000000b0030732d6e104sm2048043wrs.105.2023.05.25.07.55.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 07:55:00 -0700 (PDT)
+        Thu, 25 May 2023 07:55:01 -0700 (PDT)
 From: Christian Marangi <ansuelsmth@gmail.com>
 To: Pavel Machek <pavel@ucw.cz>,
 	Lee Jones <lee@kernel.org>,
@@ -72,9 +72,9 @@ To: Pavel Machek <pavel@ucw.cz>,
 	linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [net-next PATCH v2 09/13] leds: trigger: netdev: validate configured netdev
-Date: Thu, 25 May 2023 16:53:57 +0200
-Message-Id: <20230525145401.27007-10-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 10/13] leds: trigger: netdev: init mode if hw control already active
+Date: Thu, 25 May 2023 16:53:58 +0200
+Message-Id: <20230525145401.27007-11-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230525145401.27007-1-ansuelsmth@gmail.com>
 References: <20230525145401.27007-1-ansuelsmth@gmail.com>
@@ -92,62 +92,54 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Andrew Lunn <andrew@lunn.ch>
+On netdev trigger activation, hw control may be already active by
+default. If this is the case and a device is actually provided by
+hw_control_get_device(), init the already active mode and set the
+bool to hw_control bool to true to reflect the already set mode in the
+trigger_data.
 
-The netdev which the LED should blink for is configurable in
-/sys/class/led/foo/device_name. Ensure when offloading that the
-configured netdev is the same as the netdev the LED is associated
-with. If it is not, only perform software blinking.
-
+Co-developed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/leds/trigger/ledtrig-netdev.c | 24 ++++++++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+ drivers/leds/trigger/ledtrig-netdev.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-index 8d6381415208..5b59441fc415 100644
+index 5b59441fc415..b0cab2b84ce2 100644
 --- a/drivers/leds/trigger/ledtrig-netdev.c
 +++ b/drivers/leds/trigger/ledtrig-netdev.c
-@@ -108,6 +108,24 @@ static bool supports_hw_control(struct led_classdev *led_cdev)
- 	return !strcmp(led_cdev->hw_control_trigger, led_cdev->trigger->name);
- }
- 
-+/*
-+ * Validate the configured netdev is the same as the one associated with
-+ * the LED driver in hw control.
-+ */
-+static bool validate_net_dev(struct led_classdev *led_cdev,
-+			     struct net_device *net_dev)
-+{
-+	struct device *dev = led_cdev->hw_control_get_device(led_cdev);
-+	struct net_device *ndev;
-+
-+	if (!dev)
-+		return false;
-+
-+	ndev = to_net_dev(dev);
-+
-+	return ndev == net_dev;
-+}
-+
- static bool can_hw_control(struct led_netdev_data *trigger_data)
+@@ -452,6 +452,8 @@ static void netdev_trig_work(struct work_struct *work)
+ static int netdev_trig_activate(struct led_classdev *led_cdev)
  {
- 	unsigned int interval = atomic_read(&trigger_data->interval);
-@@ -129,9 +147,11 @@ static bool can_hw_control(struct led_netdev_data *trigger_data)
- 	/*
- 	 * net_dev must be set with hw control, otherwise no
- 	 * blinking can be happening and there is nothing to
--	 * offloaded.
-+	 * offloaded. Additionally, for hw control to be
-+	 * valid, the configured netdev must be the same as
-+	 * netdev associated to the LED.
- 	 */
--	if (!trigger_data->net_dev)
-+	if (!validate_net_dev(led_cdev, trigger_data->net_dev))
- 		return false;
+ 	struct led_netdev_data *trigger_data;
++	unsigned long mode;
++	struct device *dev;
+ 	int rc;
  
- 	/* Check if the requested mode is supported */
+ 	trigger_data = kzalloc(sizeof(struct led_netdev_data), GFP_KERNEL);
+@@ -473,6 +475,21 @@ static int netdev_trig_activate(struct led_classdev *led_cdev)
+ 	atomic_set(&trigger_data->interval, msecs_to_jiffies(50));
+ 	trigger_data->last_activity = 0;
+ 
++	/* Check if hw control is active by default on the LED.
++	 * Init already enabled mode in hw control.
++	 */
++	if (supports_hw_control(led_cdev) &&
++	    !led_cdev->hw_control_get(led_cdev, &mode)) {
++		dev = led_cdev->hw_control_get_device(led_cdev);
++		if (dev) {
++			const char *name = dev_name(dev);
++
++			set_device_name(trigger_data, name, strlen(name));
++			trigger_data->hw_control = true;
++			trigger_data->mode = mode;
++		}
++	}
++
+ 	led_set_trigger_data(led_cdev, trigger_data);
+ 
+ 	rc = register_netdevice_notifier(&trigger_data->notifier);
 -- 
 2.39.2
 
