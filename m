@@ -1,49 +1,51 @@
-Return-Path: <netdev+bounces-5447-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5448-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 42E4171147C
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:40:29 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2EBF471147F
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:40:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F0037281667
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:40:27 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E1C3B1C20A71
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:40:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B81DB23C9A;
-	Thu, 25 May 2023 18:39:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E2EC823D45;
+	Thu, 25 May 2023 18:40:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C52823C62
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:39:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E053DC4339B;
-	Thu, 25 May 2023 18:39:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81F8E22638
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3006EC4339B;
+	Thu, 25 May 2023 18:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685039964;
-	bh=Q0Qt4aWqGX05VLarPtClXH3CWxhuSYOpVcdoNxytzH4=;
+	s=k20201202; t=1685040017;
+	bh=CUr0yTl7nviruHV9mZPeeqoglZPG9brYvgzpsnmbcqg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=XbOQnLuHZA4HbwILlPOb+QUj1Jssn/RkBChzgNq9Dq/BSq1azxAAbgkRaE/ws+Syz
-	 WuJ7selaSoyK0enRBe+A7Fj6CYkRsa1+K1UV8m/jVPdo8xhBSXIHxtkceluKeWdmiO
-	 ObA3/jcBNUgFBeMKgnThd/ypnJUMgoMgKOg8pAWU+UmWc8vL6GddpKIP3ist9DQxI0
-	 FqLCprjPv1Zqma2wpSMPqM6Mp3pS4I5MN8rIBCfrjH/mDLWQVcMTW4xFAm0X6F92d5
-	 swjW8nKp3SKObb2YsdbbVYmTLqu/svRuEjIA9yBF///0ToSo0efKGN/yRBobT34iTF
-	 WTxSdXkubvXJw==
+	b=P9gQfp7y0Cu+MpH7uK0vBB1axwBkT/R/KZCuW0mXwDabphmdRNRDpQWJ+NraYdTVu
+	 vZtTRNorNZmtX75FYIjREy+WU0Pwmbz3/BgiRE4fquN/xiX8UrfZBkCltnkK6bNW2t
+	 Zi5A9d1n9u7eSuoLtVCCijX7FjZ1w09a0iVRGerDaHdB+oxdRPt1XeTGPndWnkHZkg
+	 8Y9GHtoEmxE5klmR2avs4kHliLdUAMasJHOm4EskH5ech2tbxcCzGKMCVX3PhtL9Rp
+	 IfEFFIz2lLESSlvhO8N+l2udD6QDvQ2Je/mfYZp03ies50E3wSwG0wqclt5mwfJcvq
+	 9uQatMHEmb+lw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Benedict Wong <benedictwong@google.com>,
-	Steffen Klassert <steffen.klassert@secunet.com>,
+Cc: Xin Long <lucien.xin@gmail.com>,
+	Jon Maloy <jmaloy@redhat.com>,
+	"David S . Miller" <davem@davemloft.net>,
 	Sasha Levin <sashal@kernel.org>,
-	davem@davemloft.net,
+	ying.xue@windriver.com,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 06/43] xfrm: Check if_id in inbound policy/secpath match
-Date: Thu, 25 May 2023 14:38:17 -0400
-Message-Id: <20230525183854.1855431-6-sashal@kernel.org>
+	netdev@vger.kernel.org,
+	tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.15 24/43] tipc: add tipc_bearer_min_mtu to calculate min mtu
+Date: Thu, 25 May 2023 14:38:35 -0400
+Message-Id: <20230525183854.1855431-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230525183854.1855431-1-sashal@kernel.org>
 References: <20230525183854.1855431-1-sashal@kernel.org>
@@ -57,77 +59,102 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Benedict Wong <benedictwong@google.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit 8680407b6f8f5fba59e8f1d63c869abc280f04df ]
+[ Upstream commit 3ae6d66b605be604644d4bb5708a7ffd9cf1abe8 ]
 
-This change ensures that if configured in the policy, the if_id set in
-the policy and secpath states match during the inbound policy check.
-Without this, there is potential for ambiguity where entries in the
-secpath differing by only the if_id could be mismatched.
+As different media may requires different min mtu, and even the
+same media with different net family requires different min mtu,
+add tipc_bearer_min_mtu() to calculate min mtu accordingly.
 
-Notably, this is checked in the outbound direction when resolving
-templates to SAs, but not on the inbound path when matching SAs and
-policies.
+This API will be used to check the new mtu when doing the link
+mtu negotiation in the next patch.
 
-Test: Tested against Android kernel unit tests & CTS
-Signed-off-by: Benedict Wong <benedictwong@google.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_policy.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ net/tipc/bearer.c    | 13 +++++++++++++
+ net/tipc/bearer.h    |  3 +++
+ net/tipc/udp_media.c |  5 +++--
+ 3 files changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 0540e9f72b2fe..5fe3995223f16 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3238,7 +3238,7 @@ xfrm_secpath_reject(int idx, struct sk_buff *skb, const struct flowi *fl)
- 
- static inline int
- xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
--	      unsigned short family)
-+	      unsigned short family, u32 if_id)
- {
- 	if (xfrm_state_kern(x))
- 		return tmpl->optional && !xfrm_state_addr_cmp(tmpl, x, tmpl->encap_family);
-@@ -3249,7 +3249,8 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
- 		(tmpl->allalgs || (tmpl->aalgos & (1<<x->props.aalgo)) ||
- 		 !(xfrm_id_proto_match(tmpl->id.proto, IPSEC_PROTO_ANY))) &&
- 		!(x->props.mode != XFRM_MODE_TRANSPORT &&
--		  xfrm_state_addr_cmp(tmpl, x, family));
-+		  xfrm_state_addr_cmp(tmpl, x, family)) &&
-+		(if_id == 0 || if_id == x->if_id);
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index b0ad61b4b1013..897fc8fc08a0b 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -541,6 +541,19 @@ int tipc_bearer_mtu(struct net *net, u32 bearer_id)
+ 	return mtu;
  }
  
- /*
-@@ -3261,7 +3262,7 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
++int tipc_bearer_min_mtu(struct net *net, u32 bearer_id)
++{
++	int mtu = TIPC_MIN_BEARER_MTU;
++	struct tipc_bearer *b;
++
++	rcu_read_lock();
++	b = bearer_get(net, bearer_id);
++	if (b)
++		mtu += b->encap_hlen;
++	rcu_read_unlock();
++	return mtu;
++}
++
+ /* tipc_bearer_xmit_skb - sends buffer to destination over bearer
   */
- static inline int
- xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int start,
--	       unsigned short family)
-+	       unsigned short family, u32 if_id)
- {
- 	int idx = start;
- 
-@@ -3271,7 +3272,7 @@ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int star
- 	} else
- 		start = -1;
- 	for (; idx < sp->len; idx++) {
--		if (xfrm_state_ok(tmpl, sp->xvec[idx], family))
-+		if (xfrm_state_ok(tmpl, sp->xvec[idx], family, if_id))
- 			return ++idx;
- 		if (sp->xvec[idx]->props.mode != XFRM_MODE_TRANSPORT) {
- 			if (start == -1)
-@@ -3654,7 +3655,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 		 * are implied between each two transformations.
- 		 */
- 		for (i = xfrm_nr-1, k = 0; i >= 0; i--) {
--			k = xfrm_policy_ok(tpp[i], sp, k, family);
-+			k = xfrm_policy_ok(tpp[i], sp, k, family, if_id);
- 			if (k < 0) {
- 				if (k < -1)
- 					/* "-2 - errored_index" returned */
+ void tipc_bearer_xmit_skb(struct net *net, u32 bearer_id,
+diff --git a/net/tipc/bearer.h b/net/tipc/bearer.h
+index 57c6a1a719e24..483f90958857e 100644
+--- a/net/tipc/bearer.h
++++ b/net/tipc/bearer.h
+@@ -146,6 +146,7 @@ struct tipc_media {
+  * @identity: array index of this bearer within TIPC bearer array
+  * @disc: ptr to link setup request
+  * @net_plane: network plane ('A' through 'H') currently associated with bearer
++ * @encap_hlen: encap headers length
+  * @up: bearer up flag (bit 0)
+  * @refcnt: tipc_bearer reference counter
+  *
+@@ -170,6 +171,7 @@ struct tipc_bearer {
+ 	u32 identity;
+ 	struct tipc_discoverer *disc;
+ 	char net_plane;
++	u16 encap_hlen;
+ 	unsigned long up;
+ 	refcount_t refcnt;
+ };
+@@ -232,6 +234,7 @@ int tipc_bearer_setup(void);
+ void tipc_bearer_cleanup(void);
+ void tipc_bearer_stop(struct net *net);
+ int tipc_bearer_mtu(struct net *net, u32 bearer_id);
++int tipc_bearer_min_mtu(struct net *net, u32 bearer_id);
+ bool tipc_bearer_bcast_support(struct net *net, u32 bearer_id);
+ void tipc_bearer_xmit_skb(struct net *net, u32 bearer_id,
+ 			  struct sk_buff *skb,
+diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
+index c2bb818704c8f..0a85244fd6188 100644
+--- a/net/tipc/udp_media.c
++++ b/net/tipc/udp_media.c
+@@ -738,8 +738,8 @@ static int tipc_udp_enable(struct net *net, struct tipc_bearer *b,
+ 			udp_conf.local_ip.s_addr = local.ipv4.s_addr;
+ 		udp_conf.use_udp_checksums = false;
+ 		ub->ifindex = dev->ifindex;
+-		if (tipc_mtu_bad(dev, sizeof(struct iphdr) +
+-				      sizeof(struct udphdr))) {
++		b->encap_hlen = sizeof(struct iphdr) + sizeof(struct udphdr);
++		if (tipc_mtu_bad(dev, b->encap_hlen)) {
+ 			err = -EINVAL;
+ 			goto err;
+ 		}
+@@ -760,6 +760,7 @@ static int tipc_udp_enable(struct net *net, struct tipc_bearer *b,
+ 		else
+ 			udp_conf.local_ip6 = local.ipv6;
+ 		ub->ifindex = dev->ifindex;
++		b->encap_hlen = sizeof(struct ipv6hdr) + sizeof(struct udphdr);
+ 		b->mtu = 1280;
+ #endif
+ 	} else {
 -- 
 2.39.2
 
