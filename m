@@ -1,212 +1,171 @@
-Return-Path: <netdev+bounces-5369-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5370-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B511D710F14
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:06:23 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id DE7F2710F2F
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:10:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3FA82281537
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:06:22 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 535B91C20C91
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:10:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8674F171CA;
-	Thu, 25 May 2023 15:06:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 60E8F171CA;
+	Thu, 25 May 2023 15:10:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78BCE171B2
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 15:06:20 +0000 (UTC)
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF4EA3;
-	Thu, 25 May 2023 08:06:18 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id d75a77b69052e-3f6b2f1a04bso11524121cf.3;
-        Thu, 25 May 2023 08:06:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EE523D7C
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 15:10:30 +0000 (UTC)
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE841B1
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:09:40 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id 38308e7fff4ca-2af24ee004dso7136801fa.0
+        for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:09:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685027178; x=1687619178;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KeTVaGcp8mf3R6o1m6w+QLJatVKY9fsQyGy4GYdH3/U=;
-        b=fAtd5/htRUFMBa6f2nihULsyk2krg4KuX1xoWANa66q5xQnrzl33EhjI7zDw/HAwyP
-         I+8jc6OlE/v38ijMp7n0KEs7MgDBx4is5tOGMyFslK7i0G9KI24TpDdkiJSwRGIEeBQw
-         ggqMtD24W8lTsA7GshRDvyDkhP2OGnjSpqzEz0OOMJrWuBIt4u3sSx0gMejYsnKbhx9v
-         7mjg1PZKVnmUJw41QmGV92z17mH6Prf/cBXyn5Cvi8HnhZzZaRgp0g8QmkOmj0J8j/hu
-         K+GjM6ifOJuG8aP0rLPjJxH82SDp4MV8J8hXDZ8v11Eiw2ZzbTfZmuvBKBB3W5t7PPIa
-         KfMg==
+        d=ferroamp-se.20221208.gappssmtp.com; s=20221208; t=1685027322; x=1687619322;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=g5XsRCnJXw5agxTtSv8CFfkB96RGLAZ6espWkPg/3a0=;
+        b=kXPXhsYN7hQ2LhUGrPQ20GTon06sJ6QF0mLkvgipiXYB3oiK4KciklEkWoEIWZ3rSl
+         ynZBVV84FFY62lveh0ggZ3XRUNXdudxVdS1IpFHtKq+82MVjq7cOePQrQIrP12eKwK4z
+         RLJoIq7js+cnUfZI5o/oNwHA/MF40yxk1PB2LhlHh09P0qig8knvonMrC6tXdj0V+k/w
+         EK9dVRj4yZ56f71b8iHlqEyF5p3W4AcnkLjJdkuVrVQYps3d/d8Sj0M8mCUdtfbbXxOe
+         RfXMN+0HPm8EL9hlWwamXb+7/cpeyO0Dn2t6VVHZG6nVX6XW9PqZjo7306VPIhpjGrc1
+         9DEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685027178; x=1687619178;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KeTVaGcp8mf3R6o1m6w+QLJatVKY9fsQyGy4GYdH3/U=;
-        b=lHsUElvk7Fv6mLeF9q9JHNMBphjYw/wt9oyl4m1pa8cBhIfMNPyZvq5BlpjAwZMeyC
-         Es8mgbMR3Xssun0EwL0CIFDTYsPAP+/vswLrnkg0RWphybRZNkncu6uQlccTpNMfsoZh
-         S5ji7Dxn+5P07XXWGj+L6Yr4lhp9SHegNBeNUnnmcNrL4sKVBe5R/IfzrvTH9rqsffcg
-         Z0vzrrEV0Q0udiWDOXtkkHAwPtzXuwFZ7gChUViJ1wKnltuaY0Q4Pckd4v6hYD8ZyK3d
-         m2V9LRkyjYR5cf6rJ76ID3oYNOy7xq/5GiN8ieWur8NAk9UOXs/VJGGQyTl+f/9Nk64H
-         boeg==
-X-Gm-Message-State: AC+VfDwrmX6Ux0GWlK59uPI7UsY76p0Yr60tXM08C95GlzCOSPAXQVFa
-	PKr6IXoAS+jUZN1U5JlVoOSvC6wD01LahbnMgss=
-X-Google-Smtp-Source: ACHHUZ7UCznfEjmcmpbGGznthDIVRdV0Ywo844eEoZVqoIgAM1pxMcr4sL+6PvSj6oRGzSLaHoa3ww2gR4P5ptHqPYQ=
-X-Received: by 2002:ac8:5e53:0:b0:3eb:1512:91c5 with SMTP id
- i19-20020ac85e53000000b003eb151291c5mr31239024qtx.12.1685027177888; Thu, 25
- May 2023 08:06:17 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685027322; x=1687619322;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=g5XsRCnJXw5agxTtSv8CFfkB96RGLAZ6espWkPg/3a0=;
+        b=YuqThA5eGlaNBc4z85Xpf5Z9XNmnSluKJf/485baklG/f41EluwmFLYf5XrDfWYWwq
+         pQ0rrjeI6eAZOLRMikamEGYG+wOJvPBzJkLh2720yXyeXRyOWsYh003AD0wn0vmqeZtG
+         9F0KXa+9jcOaIKaiywavYOza0+oq187XEonDLbF0W1rHwoHimXS1aoJCnej/uIxtn2Qz
+         bvbItIpxzgBoYTDzsCFgjGhWvcaU02+rhV7l+E9MOoGFwL2fvc4Pk0g8K4jJxzwXpBJR
+         p1apBkxAGCJk1u3eaftFLNBjAG6vULAbXIR13Qu1nCgRvyHkuCtpYnHrOvf0pk4aT5M+
+         e8BA==
+X-Gm-Message-State: AC+VfDyQ1ri5AiP2rIjtpqBBjRWzwtl8FnK32lG5XIHFlIbP52HLAKSu
+	qSdLE4n0ZGA5e5EHjn/NIdZrzw==
+X-Google-Smtp-Source: ACHHUZ7o0OPFdjXoRrgjAnOYax+ZckVAwO/nALq8VnwdY7JZQ7NKMlB4OsXq9uuL1GVNuH5ZvmUORg==
+X-Received: by 2002:a2e:9d42:0:b0:2af:1c0a:20e1 with SMTP id y2-20020a2e9d42000000b002af1c0a20e1mr1013262ljj.52.1685027322146;
+        Thu, 25 May 2023 08:08:42 -0700 (PDT)
+Received: from debian (151.236.202.107.c.fiberdirekt.net. [151.236.202.107])
+        by smtp.gmail.com with ESMTPSA id w21-20020a2e9bd5000000b002ac7978f0a6sm271812ljj.100.2023.05.25.08.08.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 May 2023 08:08:41 -0700 (PDT)
+Date: Thu, 25 May 2023 17:08:39 +0200
+From: =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
+To: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+Cc: andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
+	Woojung.Huh@microchip.com, Nicolas.Ferre@microchip.com,
+	Thorsten.Kummermehr@microchip.com
+Subject: Re: [PATCH net-next v3 2/6] net: phy: microchip_t1s: replace
+ read-modify-write code with phy_modify_mmd
+Message-ID: <ZG9599nfDnkcw8er@debian>
+References: <20230524144539.62618-1-Parthiban.Veerasooran@microchip.com>
+ <20230524144539.62618-3-Parthiban.Veerasooran@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230525125503.400797-1-leitao@debian.org>
-In-Reply-To: <20230525125503.400797-1-leitao@debian.org>
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date: Thu, 25 May 2023 11:05:40 -0400
-Message-ID: <CAF=yD-LHQNkgPb-R==53-2auVxkP9r=xqrz2A8oe61vkoDdWjg@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: ioctl: Use kernel memory on protocol
- ioctl callbacks
-To: Breno Leitao <leitao@debian.org>
-Cc: dsahern@kernel.org, Remi Denis-Courmont <courmisch@gmail.com>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Alexander Aring <alex.aring@gmail.com>, Stefan Schmidt <stefan@datenfreihafen.org>, 
-	Miquel Raynal <miquel.raynal@bootlin.com>, Matthieu Baerts <matthieu.baerts@tessares.net>, 
-	Mat Martineau <martineau@kernel.org>, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>, 
-	Xin Long <lucien.xin@gmail.com>, leit@fb.com, axboe@kernel.dk, asml.silence@gmail.com, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, dccp@vger.kernel.org, 
-	linux-wpan@vger.kernel.org, mptcp@lists.linux.dev, linux-sctp@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230524144539.62618-3-Parthiban.Veerasooran@microchip.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+	T_SPF_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 25, 2023 at 8:55=E2=80=AFAM Breno Leitao <leitao@debian.org> wr=
-ote:
->
-> Most of the ioctls to net protocols operates directly on userspace
-> argument (arg). Usually doing get_user()/put_user() directly in the
-> ioctl callback.  This is not flexible, because it is hard to reuse these
-> functions without passing userspace buffers.
->
-> Change the "struct proto" ioctls to avoid touching userspace memory and
-> operate on kernel buffers, i.e., all protocol's ioctl callbacks is
-> adapted to operate on a kernel memory other than on userspace (so, no
-> more {put,get}_user() and friends being called in the ioctl callback).
->
-> This changes the "struct proto" ioctl format in the following way:
->
->     int                     (*ioctl)(struct sock *sk, int cmd,
-> -                                        unsigned long arg);
-> +                                        int *karg);
->
-> So, the "karg" argument, which is passed to the ioctl callback, is a
-> pointer allocated to kernel space memory (inside a function wrapper).
-> This buffer (karg) may contain input argument (copied from userspace in
-> a prep function) and it might return a value/buffer, which is copied
-> back to userspace if necessary. There is not one-size-fits-all format
-> (that is I am using 'may' above), but basically, there are three type of
-> ioctls:
->
-> 1) Do not read from userspace, returns a result to userspace
-> 2) Read an input parameter from userspace, and does not return anything
->   to userspace
-> 3) Read an input from userspace, and return a buffer to userspace.
->
-> The default case (1) (where no input parameter is given, and an "int" is
-> returned to userspace) encompasses more than 90% of the cases, but there
-> are two other exceptions. Here is a list of exceptions:
->
-> * Protocol RAW:
->    * cmd =3D SIOCGETVIFCNT:
->      * input and output =3D struct sioc_vif_req
->    * cmd =3D SIOCGETSGCNT
->      * input and output =3D struct sioc_sg_req
->    * Explanation: for the SIOCGETVIFCNT case, userspace passes the input
->      argument, which is struct sioc_vif_req. Then the callback populates
->      the struct, which is copied back to userspace.
->
-> * Protocol RAW6:
->    * cmd =3D SIOCGETMIFCNT_IN6
->      * input and output =3D struct sioc_mif_req6
->    * cmd =3D SIOCGETSGCNT_IN6
->      * input and output =3D struct sioc_sg_req6
->
-> * Protocol PHONET:
->   * cmd =3D=3D SIOCPNADDRESOURCE | SIOCPNDELRESOURCE
->      * input int (4 bytes)
->   * Nothing is copied back to userspace.
->
-> For the exception cases, functions sock_sk_ioctl_inout() will
-> copy the userspace input, and copy it back to kernel space.
->
-> The wrapper that prepare the buffer and put the buffer back to user is
-> sk_ioctl(), so, instead of calling sk->sk_prot->ioctl(), the callee now
-> calls sk_ioctl(), which will handle all cases.
->
-> Signed-off-by: Breno Leitao <leitao@debian.org>
+On Wed, May 24, 2023 at 08:15:35PM +0530, Parthiban Veerasooran wrote:
+> Replace read-modify-write code in the lan867x_config_init function to
+> avoid handling data type mismatch and to simplify the code.
+> 
+> Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+> ---
+>  drivers/net/phy/microchip_t1s.c | 23 +++++++++++------------
+>  1 file changed, 11 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/net/phy/microchip_t1s.c b/drivers/net/phy/microchip_t1s.c
+> index a42a6bb6e3bd..b5b5a95fa6e7 100644
+> --- a/drivers/net/phy/microchip_t1s.c
+> +++ b/drivers/net/phy/microchip_t1s.c
+> @@ -31,19 +31,19 @@
+>   * W   0x1F 0x0099 0x7F80 ------
+>   */
+>  
+> -static const int lan867x_fixup_registers[12] = {
+> +static const u32 lan867x_fixup_registers[12] = {
+>  	0x00D0, 0x00D1, 0x0084, 0x0085,
+>  	0x008A, 0x0087, 0x0088, 0x008B,
+>  	0x0080, 0x00F1, 0x0096, 0x0099,
+>  };
+>  
+> -static const int lan867x_fixup_values[12] = {
+> +static const u16 lan867x_fixup_values[12] = {
+>  	0x0002, 0x0000, 0x3380, 0x0006,
+>  	0xC000, 0x801C, 0x033F, 0x0404,
+>  	0x0600, 0x2400, 0x2000, 0x7F80,
+>  };
+>  
+> -static const int lan867x_fixup_masks[12] = {
+> +static const u16 lan867x_fixup_masks[12] = {
+>  	0x0E03, 0x0300, 0xFFC0, 0x000F,
+>  	0xF800, 0x801C, 0x1FFF, 0xFFFF,
+>  	0x0600, 0x7F00, 0x2000, 0xFFFF,
+> @@ -63,23 +63,22 @@ static int lan867x_config_init(struct phy_device *phydev)
+>  	 * used, which might then write the same value back as read + modified.
+>  	 */
+>  
+> -	int reg_value;
+>  	int err;
+> -	int reg;
+>  
+>  	/* Read-Modified Write Pseudocode (from AN1699)
+>  	 * current_val = read_register(mmd, addr) // Read current register value
+>  	 * new_val = current_val AND (NOT mask) // Clear bit fields to be written
+>  	 * new_val = new_val OR value // Set bits
+> -	 * write_register(mmd, addr, new_val) // Write back updated register value
+> +	 * write_register(mmd, addr, new_val) // Write back updated register value.
+> +	 * Although AN1699 says Read, Modify, Write, the write is not required if
+> +	 * the register already has the required value.
+>  	 */
 
-> +/* A wrapper around sock ioctls, which copies the data from userspace
-> + * (depending on the protocol/ioctl), and copies back the result to user=
-space.
-> + * The main motivation for this function is to pass kernel memory to the
-> + * protocol ioctl callbacks, instead of userspace memory.
-> + */
-> +int sk_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
-> +{
-> +       int rc =3D 1;
-> +
-> +       if (ipmr_is_sk(sk))
-> +               rc =3D ipmr_sk_ioctl(sk, cmd, arg);
-> +       else if (ip6mr_is_sk(sk))
-> +               rc =3D ip6mr_sk_ioctl(sk, cmd, arg);
-> +       else if (phonet_is_sk(sk))
-> +               rc =3D phonet_sk_ioctl(sk, cmd, arg);
+Nitpick, I think this block comment can be reduced to:
+/* The following block deviates from AN1699 which states that a values
+ * should be written back, even if unmodified.
+ * Which is not necessary, so it's safe to use phy_modify_mmd here.*/
 
-I don't understand what this buys us vs testing the sk_family,
-sk_protocol and cmd here.
+ The comment I added was intended to describe why I was doing weird
+ things, but now I think it's more interesting to describe why we're
+ deviating from the AN.
 
-It introduces even deeper dependencies on the protocol specific
-header files. And the CONFIG issues that result from that. And it
-adds a bunch of wrappers that are only used once.
+ Or the block comment could be dropped all togheter, I'm guessing no one
+ is going to consult the AN if things 'just work'
 
-> @@ -1547,6 +1547,28 @@ int ip_mroute_setsockopt(struct sock *sk, int optn=
-ame, sockptr_t optval,
->         return ret;
->  }
->
-> +/* Execute if this ioctl is a special mroute ioctl */
-> +int ipmr_sk_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
-> +{
-> +       switch (cmd) {
-> +       /* These userspace buffers will be consumed by ipmr_ioctl() */
-> +       case SIOCGETVIFCNT: {
-> +               struct sioc_vif_req buffer;
-> +
-> +               return sock_ioctl_inout(sk, cmd, arg, &buffer,
-> +                                     sizeof(buffer));
-> +               }
-
-More importantly, if we go down the path of demultiplexing in protocol
-independent code to call protocol specific handlers, then there there
-is no need to have them call protocol independent helpers like
-sock_ioct_inout again. Just call the protocol-specific ioctl handlers
-directly?
-
-
-
-> +       case SIOCGETSGCNT: {
-> +               struct sioc_sg_req buffer;
-> +
-> +               return sock_ioctl_inout(sk, cmd, arg, &buffer,
-> +                                     sizeof(buffer));
-> +               }
-> +       }
-> +       /* return code > 0 means that the ioctl was not executed */
-> +       return 1;
-> +}
+>  	for (int i = 0; i < ARRAY_SIZE(lan867x_fixup_registers); i++) {
+> -		reg = lan867x_fixup_registers[i];
+> -		reg_value = phy_read_mmd(phydev, MDIO_MMD_VEND2, reg);
+> -		reg_value &= ~lan867x_fixup_masks[i];
+> -		reg_value |= lan867x_fixup_values[i];
+> -		err = phy_write_mmd(phydev, MDIO_MMD_VEND2, reg, reg_value);
+> -		if (err != 0)
+> +		err = phy_modify_mmd(phydev, MDIO_MMD_VEND2,
+> +				     lan867x_fixup_registers[i],
+> +				     lan867x_fixup_masks[i],
+> +				     lan867x_fixup_values[i]);
+> +		if (err)
+>  			return err;
+>  	}
+>  
+> -- 
+> 2.34.1
+> 
 
