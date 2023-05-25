@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-5205-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5206-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 55767710373
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 05:50:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A88F5710374
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 05:50:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 98B2F281313
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 03:50:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 63C62280AB0
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 03:50:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13AE61FCF;
-	Thu, 25 May 2023 03:49:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B16B5250;
+	Thu, 25 May 2023 03:49:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C58E7522C
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 03:49:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA1AC433A1;
-	Thu, 25 May 2023 03:49:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8E50522D
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 03:49:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9487EC433D2;
+	Thu, 25 May 2023 03:49:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684986544;
-	bh=+8/dYIz2QFPNsGiDNZHF2qOkzIIsr1Zid2SbLWsHTZo=;
+	s=k20201202; t=1684986545;
+	bh=ualQWcFRT2sDreGjTpQIpsgE31I133gyU1V9dNf7MTc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=mWmo4u9E/cCBlFQqXI63rkHp6jUjgzC1+YT65TAcCeJwvcbxeXoRSp8bYBXdhsqzh
-	 T6KSynJVkx1ubhkW/BFhpHFUT4RieSlhZ8yL1y1lg1jrpJbmzzyF4SmJzhfH6DD3oF
-	 +pfXMPaW0yCRpHQbnSEN/3STdiZyCJ3u1tqbTGB3qM3KNfv5CnKbfhqxm1hiPcFcKB
-	 ZD2xC1zb2vjIWZJAzpXtWAftRzlEBlEE+mZVK3nVKcUvdMCMSFH8SQQO5lxeeQ2F3R
-	 c2i2V7QXkajrtTT0XEefeQNiRkO2MORlvhDBOHFcYsFTsWmN1MmUZfoOJTQwkUCBBG
-	 KEB1pt6y2fwkQ==
+	b=mREioYtlevD+jkH57gB/JWf4vN7K0TP83lNpgzr+hiRQVrQe/GntiaWRbdLM6ne4u
+	 IpIJAEBkSNGo2AYR+RD6836f/iqFkfW2qSmFWnHhLjtZcMp+qlrvInPEItbzFDFdYf
+	 pgtO8GSdunWxlAkLgeLcKZbVSyKRsVYnsJ4FVmf8au71tRB36rzjdkLgm2pFsI2xoV
+	 9y023f6wXWf4gnjU4CcSfPgDKtKifRloiYThxv60W6iMZ/0/OEu2/MyWnDnNte/EOY
+	 62Q0Nj+Kw3RX6IGV2prEqWfVu72xLCOKdVQ0UYX6JP5sDriqyBtG2JN2JmVOanf7vG
+	 2332gpH9gkEEw==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -40,9 +40,9 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	Tariq Toukan <tariqt@nvidia.com>,
 	Shay Drory <shayd@nvidia.com>,
 	Moshe Shemesh <moshe@nvidia.com>
-Subject: [net 05/17] net/mlx5: Drain health before unregistering devlink
-Date: Wed, 24 May 2023 20:48:35 -0700
-Message-Id: <20230525034847.99268-6-saeed@kernel.org>
+Subject: [net 06/17] net/mlx5: SF, Drain health before removing device
+Date: Wed, 24 May 2023 20:48:36 -0700
+Message-Id: <20230525034847.99268-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230525034847.99268-1-saeed@kernel.org>
 References: <20230525034847.99268-1-saeed@kernel.org>
@@ -56,43 +56,32 @@ Content-Transfer-Encoding: 8bit
 
 From: Shay Drory <shayd@nvidia.com>
 
-mlx5 health mechanism is using devlink APIs, which are using devlink
-notify APIs. After the cited patch, using devlink notify APIs after
-devlink is unregistered triggers a WARN_ON().
-Hence, drain health WQ before devlink is unregistered.
+There is no point in recovery during device removal. Also, if health
+work started need to wait for it to avoid races and NULL pointer
+access.
 
-Fixes: cf530217408e ("devlink: Notify users when objects are accessible")
+Hence, drain health WQ before removing device.
+
+Fixes: 1958fc2f0712 ("net/mlx5: SF, Add auxiliary device driver")
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/main.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index a7eb65cd0bdd..2132a6510639 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1802,15 +1802,16 @@ static void remove_one(struct pci_dev *pdev)
- 	struct devlink *devlink = priv_to_devlink(dev);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+index e2f26d0bc615..0692363cf80e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+@@ -63,6 +63,7 @@ static void mlx5_sf_dev_remove(struct auxiliary_device *adev)
+ 	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
+ 	struct devlink *devlink = priv_to_devlink(sf_dev->mdev);
  
- 	set_bit(MLX5_BREAK_FW_WAIT, &dev->intf_state);
--	/* mlx5_drain_fw_reset() is using devlink APIs. Hence, we must drain
--	 * fw_reset before unregistering the devlink.
-+	/* mlx5_drain_fw_reset() and mlx5_drain_health_wq() are using
-+	 * devlink notify APIs.
-+	 * Hence, we must drain them before unregistering the devlink.
- 	 */
- 	mlx5_drain_fw_reset(dev);
-+	mlx5_drain_health_wq(dev);
++	mlx5_drain_health_wq(sf_dev->mdev);
  	devlink_unregister(devlink);
- 	mlx5_sriov_disable(pdev);
- 	mlx5_thermal_uninit(dev);
- 	mlx5_crdump_disable(dev);
--	mlx5_drain_health_wq(dev);
- 	mlx5_uninit_one(dev);
- 	mlx5_pci_close(dev);
- 	mlx5_mdev_uninit(dev);
+ 	mlx5_uninit_one(sf_dev->mdev);
+ 	iounmap(sf_dev->mdev->iseg);
 -- 
 2.40.1
 
