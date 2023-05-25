@@ -1,161 +1,345 @@
-Return-Path: <netdev+bounces-5373-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5374-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DAB50710F4A
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:16:09 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B8801710F4C
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:16:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 84FAF280FC1
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:16:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6810A1C20A70
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:16:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D4E39182B2;
-	Thu, 25 May 2023 15:16:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EFDB9182B2;
+	Thu, 25 May 2023 15:16:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6C671095C
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 15:16:06 +0000 (UTC)
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE19898
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:16:01 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id 98e67ed59e1d1-2532d6c7ef2so865705a91.0
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:16:01 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE9A418C20
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 15:16:18 +0000 (UTC)
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4568298
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:16:16 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id 2adb3069b0e04-4f3b9755961so2567221e87.0
+        for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:16:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1685027761; x=1687619761;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=J2b/3uRdLQvB1a1AkQjbqm2CzIjwmLhcA/Nedq80Teg=;
-        b=L/pu/CjMwbKnOylyo/twBsrPieht5GtBjY5UZNv9dWqGcUYuz8rSd6VFXV1GttQO99
-         tg0qNGxKyWVzJY/im04K9ecqgSyVWQgBdwaySgrajv0RHy1zNefwnb2Se8I7apwqGm5y
-         yRvgLW2tviemOJllMT5l8h724pLWbCzsO+R6STUWQ5Txd6YXvDTL262A3R7Ked7h4rCL
-         yt38NwUK8LJYmr96PSKHig3xlh48mgd8cWrYsI3G3cq+/fMbCf4WFkea/eovkiodpXAA
-         nbDKKJlEHRpYK42UovrWleB4SjQ2tbEy4MUQbKxCfldGkRLuZWnMrKBacuWa0JZdSYtx
-         cUxA==
+        d=ferroamp-se.20221208.gappssmtp.com; s=20221208; t=1685027774; x=1687619774;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=CbUHgbQ01OFVeQtbVeIpc1X2VekPkVcIuPa5VaHtGWI=;
+        b=Sti93aP0KaI4iajErh4agnFSZQWuibrHoXBVwIHUWGJAPpNX8oIq9mbiVOfedYm1cg
+         IM1+nEW5LzjHBkyzjeQjrB1UKuRjrEXBowhgKSKyCZ6bdWl2SMoRmerSTwUWs0HCByYA
+         vnugpLqy9UX//wVJeNrNlIQjThFPcua2YTPCU6AEr7vmxBKINSUjnl3AWWl6fQFUkbhF
+         hVlOGYKmLhwKpYi0zHqDwvj1pKhQClH936hAYbHiM+L/rxznBcBMuV6AxxT+hqn4Bylb
+         7h45Ufxp7clmIDeoX2uScqlFFFU0bek6kaibbXwc1LSuPx2cEQbpfi6ox8akF2OG6gti
+         a3ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685027761; x=1687619761;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=J2b/3uRdLQvB1a1AkQjbqm2CzIjwmLhcA/Nedq80Teg=;
-        b=GGxJ+S/lWSdocbZHXSHVhGQagMWomozwnFHr7PN7CxJvncBmV3s7Ql4pStmTgOEnZd
-         PEqKMmwVKWOk59UWLmSfI3X9XntF7aoNKwX6d+HJuPFVjpOvoGPoHPZtXJqYx3ss886E
-         m8QRgQFuzBWnNuQ0oaA2DURsSGKGc+nED1v8BMGCvfT5TZr1TFFURDDFrK4XMJfxwqHZ
-         ikFqXJWL2g/XRlJtmBqH41XMeDxaTDTjm7cZjggib9ZJT707LfCAJJFdYRCcxzCKZzml
-         vpJqA9HnVotaoBbytqgh3DwWLNpub4s5KWHWpLz9r1D/ydw7dLyjgZv+54i+WiIrbRMI
-         82/Q==
-X-Gm-Message-State: AC+VfDwKoViR0W/qwqFVTRQtiqRungctps5Y1pbaBoIHSFQ7unhhlZvJ
-	WKLmHzMrtVI6pp5EhaQxdBUdBpX5+CcduprDGxZaxg==
-X-Google-Smtp-Source: ACHHUZ5TspX7WMA1iRK7o+XSK3OrnMnx0zO6B1jFAfxxFIV4uJxjjPK5hgFbWllTIb10llojyp5Vyg==
-X-Received: by 2002:a17:90a:d994:b0:252:977e:c257 with SMTP id d20-20020a17090ad99400b00252977ec257mr1958267pjv.23.1685027761044;
-        Thu, 25 May 2023 08:16:01 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id me15-20020a17090b17cf00b002471deb13fcsm3218714pjb.6.2023.05.25.08.16.00
+        d=1e100.net; s=20221208; t=1685027774; x=1687619774;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CbUHgbQ01OFVeQtbVeIpc1X2VekPkVcIuPa5VaHtGWI=;
+        b=bERVZuRqWGooChOx3NyvSK5rSYMSj/a1FNYdwFLs4EcPxsO1bbac/caWmD6bMxYvg3
+         D9wdtjXlnFhtJnOj0O6sM6xUBs4K05Df62RrkAb6KcekH5R5eiqNTdsv7/Tj17pP/xBK
+         Rw3iR5zzVLeuWXnJ5Y9nKrpDbwlhrb/s6HjHEUz79knOQWzzZZrXHDjNxo6hNTUKfPHZ
+         Ilimc2j7H74Ow9ZEBsChxYSUaK96b26Wepsk310oAnrrbmb8G5kILJhxT5+fPHD3Ueqp
+         iRXuxNXPFqNNzm6GD5L5q3CarpyOJ6m+YhUUDuM9TDYV4eFNappo5kSI08MVSs8T2Q02
+         Njvw==
+X-Gm-Message-State: AC+VfDwme7yfNAvU6RGEePMMttsgYo/qkj0Wf91TI9P2on/kVL6kK3DW
+	ZDKQYTS+mNEnUL+A+gBGx1VTSQ6A+aqufvlo7sQ=
+X-Google-Smtp-Source: ACHHUZ7xTMseJf7yzUfkWwQomQR9NY9GGWjx7AwIzKwpqsUI6BhQBYEZ6xEv4gWl6MDdsa5WaZEaRw==
+X-Received: by 2002:ac2:4556:0:b0:4f1:5015:43c4 with SMTP id j22-20020ac24556000000b004f1501543c4mr6682983lfm.38.1685027774445;
+        Thu, 25 May 2023 08:16:14 -0700 (PDT)
+Received: from debian (151.236.202.107.c.fiberdirekt.net. [151.236.202.107])
+        by smtp.gmail.com with ESMTPSA id 11-20020ac2482b000000b004f02268db8fsm241912lft.222.2023.05.25.08.16.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 08:16:00 -0700 (PDT)
-Date: Thu, 25 May 2023 08:15:58 -0700
-From: Stephen Hemminger <stephen@networkplumber.org>
-To: netdev@vger.kernel.org
-Cc: bugzilla-daemon@kernel.org
-Subject: Re: [Bug 217486] New: 'doubel fault' in if_nlmsg_size func by
- syz-executor fuzz
-Message-ID: <20230525081558.38ee5cde@hermes.local>
-In-Reply-To: <bug-217486-100@https.bugzilla.kernel.org/>
-References: <bug-217486-100@https.bugzilla.kernel.org/>
+        Thu, 25 May 2023 08:16:13 -0700 (PDT)
+Date: Thu, 25 May 2023 17:16:11 +0200
+From: =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
+To: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+Cc: andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
+	Woojung.Huh@microchip.com, Nicolas.Ferre@microchip.com,
+	Thorsten.Kummermehr@microchip.com
+Subject: Re: [PATCH net-next v3 6/6] net: phy: microchip_t1s: add support for
+ Microchip LAN865x Rev.B0 PHYs
+Message-ID: <ZG97u6GN/pzDk6zy@debian>
+References: <20230524144539.62618-1-Parthiban.Veerasooran@microchip.com>
+ <20230524144539.62618-7-Parthiban.Veerasooran@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230524144539.62618-7-Parthiban.Veerasooran@microchip.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+	T_SPF_PERMERROR,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Not much info in this bug report.
-Blaming if_nlmsg_size() is not right, something is passing bogus data.
+On Wed, May 24, 2023 at 08:15:39PM +0530, Parthiban Veerasooran wrote:
+> Add support for the Microchip LAN865x Rev.B0 10BASE-T1S Internal PHYs
+> (LAN8650/1). The LAN865x combines a Media Access Controller (MAC) and an
+> internal 10BASE-T1S Ethernet PHY to access 10BASE‑T1S networks. As
+> LAN867X and LAN865X are using the same function for the read_status,
+> rename the function as lan86xx_read_status.
+> 
+> Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+> ---
+>  drivers/net/phy/microchip_t1s.c | 184 +++++++++++++++++++++++++++++++-
+>  1 file changed, 181 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/phy/microchip_t1s.c b/drivers/net/phy/microchip_t1s.c
+> index 6f9e197d8623..00c4c23906ce 100644
+> --- a/drivers/net/phy/microchip_t1s.c
+> +++ b/drivers/net/phy/microchip_t1s.c
+> @@ -4,6 +4,7 @@
+>   *
+>   * Support: Microchip Phys:
+>   *  lan8670/1/2 Rev.B1
+> + *  lan8650/1 Rev.B0 Internal PHYs
+>   */
+>  
+>  #include <linux/kernel.h>
+> @@ -11,11 +12,19 @@
+>  #include <linux/phy.h>
+>  
+>  #define PHY_ID_LAN867X_REVB1 0x0007C162
+> +#define PHY_ID_LAN865X_REVB0 0x0007C1B3
+>  
+>  #define LAN867X_REG_STS2 0x0019
+>  
+>  #define LAN867x_RESET_COMPLETE_STS BIT(11)
+>  
+> +#define LAN865X_REG_CFGPARAM_ADDR 0x00D8
+> +#define LAN865X_REG_CFGPARAM_DATA 0x00D9
+> +#define LAN865X_REG_CFGPARAM_CTRL 0x00DA
+> +#define LAN865X_REG_STS2 0x0019
+> +
+> +#define LAN865X_CFGPARAM_READ_ENABLE BIT(1)
+> +
+>  /* The arrays below are pulled from the following table from AN1699
+>   * Access MMD Address Value Mask
+>   * RMW 0x1F 0x00D0 0x0002 0x0E03
+> @@ -50,6 +59,164 @@ static const u16 lan867x_revb1_fixup_masks[12] = {
+>  	0x0600, 0x7F00, 0x2000, 0xFFFF,
+>  };
+>  
+> +/* LAN865x Rev.B0 configuration parameters from AN1760 */
+> +static const u32 lan865x_revb0_fixup_registers[28] = {
+> +	0x0091, 0x0081, 0x0043, 0x0044,
+> +	0x0045, 0x0053, 0x0054, 0x0055,
+> +	0x0040, 0x0050, 0x00D0, 0x00E9,
+> +	0x00F5, 0x00F4, 0x00F8, 0x00F9,
+> +	0x00B0, 0x00B1, 0x00B2, 0x00B3,
+> +	0x00B4, 0x00B5, 0x00B6, 0x00B7,
+> +	0x00B8, 0x00B9, 0x00BA, 0x00BB,
+> +};
+> +
+> +static const u16 lan865x_revb0_fixup_values[28] = {
+> +	0x9660, 0x00C0, 0x00FF, 0xFFFF,
+> +	0x0000, 0x00FF, 0xFFFF, 0x0000,
+> +	0x0002, 0x0002, 0x5F21, 0x9E50,
+> +	0x1CF8, 0xC020, 0x9B00, 0x4E53,
+> +	0x0103, 0x0910, 0x1D26, 0x002A,
+> +	0x0103, 0x070D, 0x1720, 0x0027,
+> +	0x0509, 0x0E13, 0x1C25, 0x002B,
+> +};
+> +
+> +static const u16 lan865x_revb0_fixup_cfg_regs[5] = {
+> +	0x0084, 0x008A, 0x00AD, 0x00AE, 0x00AF
+> +};
+> +
+> +/* Pulled from AN1760 describing 'indirect read'
+> + *
+> + * write_register(0x4, 0x00D8, addr)
+> + * write_register(0x4, 0x00DA, 0x2)
+> + * return (int8)(read_register(0x4, 0x00D9))
+> + *
+> + * 0x4 refers to memory map selector 4, which maps to MDIO_MMD_VEND2
+> + */
+> +static int lan865x_revb0_indirect_read(struct phy_device *phydev, u16 addr)
+> +{
+> +	int ret;
+> +
+> +	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN865X_REG_CFGPARAM_ADDR,
+> +			    addr);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN865X_REG_CFGPARAM_CTRL,
+> +			    LAN865X_CFGPARAM_READ_ENABLE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return phy_read_mmd(phydev, MDIO_MMD_VEND2, LAN865X_REG_CFGPARAM_DATA);
+> +}
+> +
+> +/* This is pulled straight from AN1760 from 'calculation of offset 1' &
+> + * 'calculation of offset 2'
+> + */
+> +static int lan865x_generate_cfg_offsets(struct phy_device *phydev, s8 offsets[2])
+> +{
+> +	const u16 fixup_regs[2] = {0x0004, 0x0008};
+> +	int ret;
+> +
+> +	for (int i = 0; i < ARRAY_SIZE(fixup_regs); i++) {
+> +		ret = lan865x_revb0_indirect_read(phydev, fixup_regs[i]);
+> +		if (ret < 0)
+> +			return ret;
+> +		if (ret & BIT(4))
+> +			offsets[i] = ret | 0xE0;
+> +		else
+> +			offsets[i] = ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int lan865x_read_cfg_params(struct phy_device *phydev, u16 cfg_params[])
+> +{
+> +	int ret;
+> +
+> +	for (int i = 0; i < ARRAY_SIZE(lan865x_revb0_fixup_cfg_regs); i++) {
+> +		ret = phy_read_mmd(phydev, MDIO_MMD_VEND2,
+> +				   lan865x_revb0_fixup_cfg_regs[i]);
+> +		if (ret < 0)
+> +			return ret;
+> +		cfg_params[i] = (u16)ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int lan865x_write_cfg_params(struct phy_device *phydev, u16 cfg_params[])
+> +{
+> +	int ret;
+> +
+> +	for (int i = 0; i < ARRAY_SIZE(lan865x_revb0_fixup_cfg_regs); i++) {
+> +		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
+> +				    lan865x_revb0_fixup_cfg_regs[i],
+> +				    cfg_params[i]);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int lan865x_setup_cfgparam(struct phy_device *phydev)
+> +{
+> +	u16 cfg_params[ARRAY_SIZE(lan865x_revb0_fixup_cfg_regs)];
+> +	u16 cfg_results[5];
+> +	s8 offsets[2];
+> +	int ret;
+> +
+> +	ret = lan865x_generate_cfg_offsets(phydev, offsets);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = lan865x_read_cfg_params(phydev, cfg_params);
+> +	if (ret)
+> +		return ret;
+> +
+> +	cfg_results[0] = (cfg_params[0] & 0x000F) |
+> +			  FIELD_PREP(GENMASK(15, 10), 9 + offsets[0]) |
+> +			  FIELD_PREP(GENMASK(15, 4), 14 + offsets[0]);
+> +	cfg_results[1] = (cfg_params[1] & 0x03FF) |
+> +			  FIELD_PREP(GENMASK(15, 10), 40 + offsets[1]);
+> +	cfg_results[2] = (cfg_params[2] & 0xC0C0) |
+> +			  FIELD_PREP(GENMASK(15, 8), 5 + offsets[0]) |
+> +			  (9 + offsets[0]);
+> +	cfg_results[3] = (cfg_params[3] & 0xC0C0) |
+> +			  FIELD_PREP(GENMASK(15, 8), 9 + offsets[0]) |
+> +			  (14 + offsets[0]);
+> +	cfg_results[4] = (cfg_params[4] & 0xC0C0) |
+> +			  FIELD_PREP(GENMASK(15, 8), 17 + offsets[0]) |
+> +			  (22 + offsets[0]);
+> +
+> +	return lan865x_write_cfg_params(phydev, cfg_results);
+> +}
+> +
+> +static int lan865x_revb0_config_init(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +
+> +	/* Reference to AN1760
+> +	 * https://ww1.microchip.com/downloads/aemDocuments/documents/AIS/ProductDocuments/SupportingCollateral/AN-LAN8650-1-Configuration-60001760.pdf
+> +	 */
+> +	for (int i = 0; i < ARRAY_SIZE(lan865x_revb0_fixup_registers); i++) {
+> +		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
+> +				    lan865x_revb0_fixup_registers[i],
+> +				    lan865x_revb0_fixup_values[i]);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +	/* Function to calculate and write the configuration parameters in the
+> +	 * 0x0084, 0x008A, 0x00AD, 0x00AE and 0x00AF registers (from AN1760)
+> +	 */
+> +	ret = lan865x_setup_cfgparam(phydev);
 
+Nit, you could return the result of lan865x_setup_cfgparam directly
 
-On Thu, 25 May 2023 12:40:12 +0000
-bugzilla-daemon@kernel.org wrote:
-
-> https://bugzilla.kernel.org/show_bug.cgi?id=217486
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+>  static int lan867x_revb1_config_init(struct phy_device *phydev)
+>  {
+>  	/* HW quirk: Microchip states in the application note (AN1699) for the phy
+> @@ -107,7 +274,7 @@ static int lan867x_revb1_config_init(struct phy_device *phydev)
+>  	return 0;
+>  }
+>  
+> -static int lan867x_read_status(struct phy_device *phydev)
+> +static int lan86xx_read_status(struct phy_device *phydev)
+>  {
+>  	/* The phy has some limitations, namely:
+>  	 *  - always reports link up
+> @@ -128,17 +295,28 @@ static struct phy_driver microchip_t1s_driver[] = {
+>  		.name               = "LAN867X Rev.B1",
+>  		.features           = PHY_BASIC_T1S_P2MP_FEATURES,
+>  		.config_init        = lan867x_revb1_config_init,
+> -		.read_status        = lan867x_read_status,
+> +		.read_status        = lan86xx_read_status,
+>  		.get_plca_cfg	    = genphy_c45_plca_get_cfg,
+>  		.set_plca_cfg	    = genphy_c45_plca_set_cfg,
+>  		.get_plca_status    = genphy_c45_plca_get_status,
+> -	}
+> +	},
+> +	{
+> +		PHY_ID_MATCH_EXACT(PHY_ID_LAN865X_REVB0),
+> +		.name               = "LAN865X Rev.B0 Internal Phy",
+> +		.features           = PHY_BASIC_T1S_P2MP_FEATURES,
+> +		.config_init        = lan865x_revb0_config_init,
+> +		.read_status        = lan86xx_read_status,
+> +		.get_plca_cfg	    = genphy_c45_plca_get_cfg,
+> +		.set_plca_cfg	    = genphy_c45_plca_set_cfg,
+> +		.get_plca_status    = genphy_c45_plca_get_status,
+> +	},
+>  };
+>  
+>  module_phy_driver(microchip_t1s_driver);
+>  
+>  static struct mdio_device_id __maybe_unused tbl[] = {
+>  	{ PHY_ID_MATCH_EXACT(PHY_ID_LAN867X_REVB1) },
+> +	{ PHY_ID_MATCH_EXACT(PHY_ID_LAN865X_REVB0) },
+>  	{ }
+>  };
+>  
+> -- 
+> 2.34.1
 > 
->             Bug ID: 217486
->            Summary: 'doubel fault' in if_nlmsg_size func by syz-executor
->                     fuzz
->            Product: Networking
->            Version: 2.5
->           Hardware: All
->                 OS: Linux
->             Status: NEW
->           Severity: normal
->           Priority: P3
->          Component: IPV4
->           Assignee: stephen@networkplumber.org
->           Reporter: 13151562558@163.com
->         Regression: No
-> 
-> in syz-executor fuzz test, system panic in "double fault" err.
-> by the kernel log, only get one dump stack info, "if_nlmsg_size+0x4ea/0x7c0".
-> I have vmcore, but don't know how to debug "double fault"? what't first fault ?
-> 
-> if_nlmsg_size+0x4ea/0x7c0 code:
-> ```
-> static noinline size_t if_nlmsg_size(const struct net_device *dev,
->                                      u32 ext_filter_mask)
-> {
->         return NLMSG_ALIGN(sizeof(struct ifinfomsg))
->                + nla_total_size(IFNAMSIZ) /* IFLA_IFNAME */
->                + nla_total_size(IFALIASZ) /* IFLA_IFALIAS */
-> 
->                + nla_total_size(4)  /* IFLA_MIN_MTU */
->                + nla_total_size(4)  /* IFLA_MAX_MTU */
->                + rtnl_prop_list_size(dev) // this
-> line;if_nlmsg_size+0x4ea/0x7c0
->                + nla_total_size(MAX_ADDR_LEN) /* IFLA_PERM_ADDRESS */
->                + 0;
-> }
-> ```
-> 
-> dis the code of dump stack, like this:
-> /include/linux/list.h: 
->  <if_nlmsg_size+1325>:        mov    %rbp,%rdx
->  <if_nlmsg_size+1328>:        shr    $0x3,%rdx
->  <if_nlmsg_size+1332>:        cmpb   $0x0,(%rdx,%rax,1)
->  <if_nlmsg_size+1336>:        jne    0xffffffff8a5b86a6 <if_nlmsg_size+1766>
->  <if_nlmsg_size+1342>:        mov    0x10(%r15),%rax
->  <if_nlmsg_size+1346>:        cmp    %rax,%rbp
->  <if_nlmsg_size+1349>:        je     0xffffffff8a5b8659 <if_nlmsg_size+1689>
-> 
-> 
-> kernel log:
-> [ 3213.317259] CPU: 1 PID: 1830 Comm: syz-executor.6 Tainted: G      D         
->  5.10.0 #1
-> [ 3213.317404] RIP: 0010:if_nlmsg_size+0x53e/0x7c0
-> [ 3213.317415] Code: 00 0f 85 2e 02 00 00 48 b8 00 00 00 00 00 fc ff df 4c 8b
-> 7b 10 49 8d 6f 10 48 89 ea 48 c1 ea 03 80 3c 02 00 0f 85 a8 01 00 00 <49> 8b 47
-> 10 48 39 c5 0f 84 4e 01 00 00 e8 90 ff 1a f7 48 89 ea 48
-> [ 3213.317420] RSP: 0018:ffff88809f4ca570 EFLAGS: 00010246
-> [ 3213.317428] RAX: dffffc0000000000 RBX: ffff88803767c000 RCX:
-> ffffc90006714000
-> [ 3213.317433] RDX: 1ffff11008037c92 RSI: ffffffff8a5b84aa RDI:
-> ffff88803767c010
-> [ 3213.317439] RBP: ffff8880401be490 R08: 0000000000000cc0 R09:
-> 0000000000000000
-> [ 3213.317445] R10: ffffffff9287d2e7 R11: fffffbfff250fa5c R12:
-> 0000000000000640
-> [ 3213.317450] R13: 0000000000000950 R14: 0000000000000008 R15:
-> ffff8880401be480
-> [ 3213.317454]  ? if_nlmsg_size+0x4ea/0x7c0
-> [ 3213.317457]  </#DF>
-> 
-
 
