@@ -1,183 +1,149 @@
-Return-Path: <netdev+bounces-5237-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5238-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6269D7105A1
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:21:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CE3A27105B0
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:31:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EC966281476
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 06:21:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4C0CC1C20E8B
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 06:31:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C2C5A932;
-	Thu, 25 May 2023 06:21:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D42E31FD9;
+	Thu, 25 May 2023 06:31:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9D88477
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 06:21:09 +0000 (UTC)
-Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99587139;
-	Wed, 24 May 2023 23:21:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1684995622; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=PMYlw8HNIORs6O71agJRG6kN/o5Gdaqc/Q6WI0OGFxBB084gH7qPo8ZYJsksMRIbOdhqNIBZmci9WTTEjB8yd/oNBxzkAGA2ihoR5jKXn7FDW71ffEzlNS+bGsqtdFKbyJGUcuUuz2aAdW66/+G+V2tnkfmeRBXAEqoIiGuimrU=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1684995622; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-	bh=T+zgrtDe2vx2LT7iA9VVOVQz2rx8LBh9zMLhK+oLZuk=; 
-	b=SpbduvPkD1iSXDEfwNu4KjEG9HT4f3PLSf4TW7+iEysPbiEykWDFmPuShumcaIeerwIDPlPCOu3MKZ/V5HJcLiRd55JnuvNxZSx2r5VhPsVMNfuhr2JDPYKY0PDKzHAWy7B+8iiNkF4ZZl6Ct3YqqJoe5gHkf0ZD/CxwzRzT8nk=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=arinc9.com;
-	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-	dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1684995622;
-	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=T+zgrtDe2vx2LT7iA9VVOVQz2rx8LBh9zMLhK+oLZuk=;
-	b=B69arnkMEs140Qlr+wkfQzzcENArNjqdJD3UAmCxEVoVh/GqGbY95tp3A/hzfsVX
-	Sjn/3b82zGorWrZYT1FAV5RYjz/wvOTS0q982mpQsRWCbdFag9P4uuPSp9fitGp43w/
-	tg587m02KXk+DqzGLykcXha07Tu2XxgchBLE0NIU=
-Received: from [10.10.10.217] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-	with SMTPS id 1684995620524912.9368149177582; Wed, 24 May 2023 23:20:20 -0700 (PDT)
-Message-ID: <7c915d5b-56c9-430d-05ac-544f76966eb1@arinc9.com>
-Date: Thu, 25 May 2023 09:20:08 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C38AFBE50
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 06:31:15 +0000 (UTC)
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19486189;
+	Wed, 24 May 2023 23:31:13 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-561bcd35117so2714027b3.3;
+        Wed, 24 May 2023 23:31:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684996272; x=1687588272;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8n8iOYyYZVUfxiH0/iEZbqyr+i/7ghiJPs0pDzg9C1M=;
+        b=CEG+EMXyuQ6cQIaCVG5zhC6DLoaW9Y9bYtqLKPYbsnsc//kGjybkaBY5ND1eHqCBfa
+         o5lFTInLRncn+bPWvIhJMiacT9q/WLWrhawblI7EvTZaiEKt45THhZCqqXcFJ01vVVnl
+         P7dvLt8hkWxf7RD/qimHZ4Qt6TVTRry2nzymNq6h/5p58Vkm9rAd4+ORN1TZA5P0Trmj
+         XCZvAfF8ebTLNxVA6YY2qQgg/2pj6X50DYMrNJZ+OUJQ+yxJxlYaBbt+Xr6KNiqUWjai
+         iwCmHR/s9qugPawoChN67lNCjPzowMYKDl+6lEXREEesC9ygQfKlCL9Q/RZvgZYVjVgF
+         0neA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684996272; x=1687588272;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8n8iOYyYZVUfxiH0/iEZbqyr+i/7ghiJPs0pDzg9C1M=;
+        b=Hg2belZHGQQln81K+WJrkl32UzuDm5p4FmETL5MxRnxsWjyYgYdm8QVa6WvJT2+Lar
+         n3KEMj6nz0l7Hoga2mtluNTCvXf5LPxoBJAmYYUv3cvrPFypBc2A4DT4aRBnLTVF+TAD
+         K53Tx8MF3CL5+G+gmw0ErAwbz7boqcl0oRd52JzeTBP3vqe0qPuH22vVlJxS8vcSe9Bb
+         RMPliy0pEl0ojCaVXtJU8b9lZmoAv4YqTjv9KIuIyYUooXvdQErqKazmGgARwf50Dtae
+         Ikuj+Krm2sTX7AwCjof6lPsdQ4vDl6ERGzkDvBGgmYYIOYwmZQxMW56NhjYoJ7o/5V2N
+         30OQ==
+X-Gm-Message-State: AC+VfDwvenbCyzizD+uNx3X1ATAU6wNnAkc/SOwKAc6lnmf7LlkassI/
+	0vPUyxPHovwiq/pBGFECjYPji9vNsqDXLEss7w==
+X-Google-Smtp-Source: ACHHUZ56BFLHxCC/VLM3UoUcphcEeGIxtn7J8rlrtNeupmfjXUWipsAbSTJh4ygS6L6azKUsT7BMHOimNJUHd9tW/Z0=
+X-Received: by 2002:a81:c308:0:b0:565:323d:8182 with SMTP id
+ r8-20020a81c308000000b00565323d8182mr11261506ywk.22.1684996272237; Wed, 24
+ May 2023 23:31:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net-next 05/30] net: dsa: mt7530: read XTAL value from
- correct register
-Content-Language: en-US
-To: Vladimir Oltean <olteanv@gmail.com>
-Cc: Sean Wang <sean.wang@mediatek.com>, Landen Chao
- <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
- Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
- Florian Fainelli <f.fainelli@gmail.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Russell King <linux@armlinux.org.uk>,
- Richard van Schagen <richard@routerhints.com>,
- Richard van Schagen <vschagen@cs.com>,
- Frank Wunderlich <frank-w@public-files.de>,
- Bartel Eerdekens <bartel.eerdekens@constell8.be>, erkin.bozoglu@xeront.com,
- mithat.guner@xeront.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
-References: <20230522121532.86610-1-arinc.unal@arinc9.com>
- <20230522121532.86610-6-arinc.unal@arinc9.com>
- <20230524165701.pbrcs4e74juzb4r3@skbuf>
-From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230524165701.pbrcs4e74juzb4r3@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <ZGuDJos8D7N0J6Z2@francesco-nb.int.toradex.com> <ZG4ISE3WXlTM3H54@debian.me>
+In-Reply-To: <ZG4ISE3WXlTM3H54@debian.me>
+From: Johannes Pointner <h4nn35.work@gmail.com>
+Date: Thu, 25 May 2023 08:31:00 +0200
+Message-ID: <CAHvQdo0gucr-GcWc9YFxsP4WwPUdK9GQ6w-5t9CuqqvPTv+VcA@mail.gmail.com>
+Subject: Re: DP83867 ethernet PHY regression
+To: Francesco Dolcini <francesco@dolcini.it>, Bagas Sanjaya <bagasdotme@gmail.com>, 
+	Andrew Lunn <andrew@lunn.ch>, Praneeth Bajjuri <praneeth@ti.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>, Russell King <linux@armlinux.org.uk>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Grygorii Strashko <grygorii.strashko@ti.com>, Dan Murphy <dmurphy@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 24.05.2023 19:57, Vladimir Oltean wrote:
-> On Mon, May 22, 2023 at 03:15:07PM +0300, arinc9.unal@gmail.com wrote:
->> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>
->> On commit 7ef6f6f8d237 ("net: dsa: mt7530: Add MT7621 TRGMII mode support")
->> macros for reading the crystal frequency were added under the MT7530_HWTRAP
->> register. However, the value given to the xtal variable on
->> mt7530_pad_clk_setup() is read from the MT7530_MHWTRAP register instead.
->>
->> Although the document MT7621 Giga Switch Programming Guide v0.3 states that
->> the value can be read from both registers, use the register where the
->> macros were defined under.
->>
->> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> ---
-> 
-> I'm sorry, but I refuse this patch, mainly as a matter of principle -
-> because that's just not how we do things, and you need to understand why.
-> 
-> The commit title ("read XTAL value from correct register") claims that
-> the process of reading a field which cannot be changed by software is
-> any more correct when it is read from HWTRAP rather than MHWTRAP
-> (modified HWTRAP).
-> 
-> Your justification is that it's confusing to you if two registers have
-> the same layout, and the driver has a single set of macros to decode the
-> fields from both. You seem to think it's somehow not correct to decode
-> fields from the MHWTRAP register using macros which have just HWTRAP in
-> the name.
+On Wed, May 24, 2023 at 3:22=E2=80=AFPM Bagas Sanjaya <bagasdotme@gmail.com=
+> wrote:
+>
+> On Mon, May 22, 2023 at 04:58:46PM +0200, Francesco Dolcini wrote:
+> > Hello all,
+> > commit da9ef50f545f ("net: phy: dp83867: perform soft reset and retain
+> > established link") introduces a regression on my TI AM62 based board.
+> >
+> > I have a working DTS with Linux TI 5.10 downstream kernel branch, while
+> > testing the DTS with v6.4-rc in preparation of sending it to the mailin=
+g
+> > list I noticed that ethernet is working only on a cold poweron.
+> >
+> > With da9ef50f545f reverted it always works.
+> >
+> > Here the DTS snippet for reference:
+> >
+> > &cpsw_port1 {
+> >       phy-handle =3D <&cpsw3g_phy0>;
+> >       phy-mode =3D "rgmii-rxid";
+> > };
+> >
+> > &cpsw3g_mdio {
+> >       assigned-clocks =3D <&k3_clks 157 20>;
+> >       assigned-clock-parents =3D <&k3_clks 157 22>;
+> >       assigned-clock-rates =3D <25000000>;
+> >
+> >       cpsw3g_phy0: ethernet-phy@0 {
+> >               compatible =3D "ethernet-phy-id2000.a231";
+> >               reg =3D <0>;
+> >               interrupt-parent =3D <&main_gpio0>;
+> >               interrupts =3D <25 IRQ_TYPE_EDGE_FALLING>;
+> >               reset-gpios =3D <&main_gpio0 17 GPIO_ACTIVE_LOW>;
+> >               reset-assert-us =3D <10>;
+> >               reset-deassert-us =3D <1000>;
+> >               ti,fifo-depth =3D <DP83867_PHYCR_FIFO_DEPTH_4_B_NIB>;
+> >               ti,rx-internal-delay =3D <DP83867_RGMIIDCTL_2_00_NS>;
+> >       };
+> > };
+> >
+>
+> Thanks for the regression report. I'm adding it to regzbot:
+>
+> #regzbot ^introduced: da9ef50f545f86
+> #regzbot title: TI AM62 DTS regression due to dp83867 soft reset
 
-No, it doesn't confuse me that two registers share the same layout. My 
-understanding was that the MHWTRAP register should be used for modifying 
-the hardware trap, and the HWTRAP register should be used for reading 
-from the hardware trap. I see that the XTAL constants were defined under 
-the HWTRAP register so I thought it would make sense to change the code 
-to read the XTAL values from the HWTRAP register instead. Let me know if 
-you disagree with this.
+Hello Francesco,
 
-> 
-> While in this very particular case there should be no negative effect
-> caused by the change (*because* XTAL_FSEL is read-only), your approach
-> absolutely does not scale to the other situations that you will be faced
-> with.
-> 
-> If it was any other r/w field from HWTRAP vs MHWTRAP, you would have
-> needed to get used to that coding pattern (or do something about the
-> coding pattern itself), and not just decide to change the register to
-> what you think is correct - which is a *behavior* change and not just
-> a *coding style* change. You don't change the *behavior* when you don't
-> like the *coding style* !!! because that's not a punctual fix to your
-> problem.
-> 
-> I'm sorry that it is like this, but you can't expect the Linux kernel to
-> be written for the level of understanding of a beginner C programmer.
-> It's simply too hard for everyone to change, and much easier, and more
-> beneficial overall, for you to change.
-> 
-> I understand that you're poking sticks at everything in order to become
-> more familiar with the driver. That's perfectly normal and fine. But not
-> everything that comes as a result of that is of value for sharing back
-> to the mainline kernel's mailing lists.
+I had a similar issue with a patch like this, but in my case it was the DP8=
+3822.
+https://lore.kernel.org/netdev/CAHvQdo2yzJC89K74c_CZFjPydDQ5i22w36XPR5tKVv_=
+W8a2vcg@mail.gmail.com/
+I also raised the question for the commit da9ef50f545f.
+https://lore.kernel.org/lkml/CAHvQdo1U_L=3DpETmTJXjdzO+k7vNTxMyujn99Y3Ot9xA=
+yQu=3DatQ@mail.gmail.com/
 
-Makes sense.
+The problem was/is for me that the phy gets the clock from the CPU and
+the phy is already initialized in the u-boot.
+During the Linux kernel boot up there is a short amount of time where
+no clock is delivered to the phy.
+The phy didn't like this and was most of the time not usable anymore.
+The only thing that brought the phy/link back was resetting the phy
+using the phytool.
 
-> 
-> Seriously, please first share these small rewrites with someone more
-> senior than you, and ask for a preliminary second opinion.
-
-Would submitting this as an RFC had been a similar action to your 
-describing here? Because I already did that:
-
-https://lore.kernel.org/netdev/20230421143648.87889-6-arinc.unal@arinc9.com/
-
-> 
-> As they say, "on the Internet, nobody knows you're a dog". If reviewers
-> don't take into account that you're a newbie with C (which is a badge
-> that you don't carry everywhere - because you don't have to), it's easy
-> for patches like this (and most of this series) to come across as:
-> "I have no consideration for the fact that the existing code works, and
-> the way in which it works, I'm just gonna rewrite all of it according to
-> my own sensibilities and subjective justifications, and throw baseless
-> words at it such as: fix this, correct that, when in fact all I'm doing
-> is make silly changes with no effect to the observable behavior".
-> 
-> Because I know that the above isn't the case, I try to be as polite as
-> possible expressing my frustration that I am looking at a large volume
-> of worthless and misguided refactoring.
-
-I should've given more effort to explain my reasons for this patch. I 
-disagree that the series is a large volume of worthless and misguided 
-refactoring and am happy to discuss it patch by patch.
-
-Arınç
+Regards,
+Hannes
 
