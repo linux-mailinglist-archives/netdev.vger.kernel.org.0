@@ -1,53 +1,73 @@
-Return-Path: <netdev+bounces-5256-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5257-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0B3CE710711
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:14:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 72C9471071D
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:16:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3FCE02814A0
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:14:20 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A84982814AA
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:16:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FAE5C2C1;
-	Thu, 25 May 2023 08:14:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A08DEC8DF;
+	Thu, 25 May 2023 08:16:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED599C137
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:14:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92C45C433EF;
-	Thu, 25 May 2023 08:14:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685002456;
-	bh=fJ0ImxHlk5vtkSx7zFqdK3Q8pgeQQrfYrqrZBkpl6x0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=HzV+IGBSfB2AJXqMxyOrPVN+YDwI7XBpRFUjLfKpt3I5I8iED76YS6HRXR2Pf1Piz
-	 qiBd5AD/9Ic8ehfMgDhPsqd5tt1HuZB6DPM1RU4ykZHaaH96LxquxIPP1dKE/UQ/an
-	 3AzFDZ7rg2rAWOlGwB0GtzPVy3PdBLlf73AreD+gREDQ6t8Iy8bVyvXV4ednlDpWUn
-	 zATJSlFd0JzSDggonWR3+DWtOQmnY4DSxl47Pjy3UW49ww14oOedKKhbG4gtTczLVI
-	 eNxm0Z9Cn2qS0wo9PUeV9XAcgYq8hWnNKq+QSV7vJ/pmWR6CCe0BZQi1tuAQV8eE2e
-	 doJu8VbVukaJA==
-Date: Thu, 25 May 2023 10:14:06 +0200
-From: Lorenzo Pieralisi <lpieralisi@kernel.org>
-To: Dexuan Cui <decui@microsoft.com>
-Cc: bhelgaas@google.com, davem@davemloft.net, edumazet@google.com,
-	haiyangz@microsoft.com, jakeo@microsoft.com, kuba@kernel.org,
-	kw@linux.com, kys@microsoft.com, leon@kernel.org,
-	linux-pci@vger.kernel.org, mikelley@microsoft.com,
-	pabeni@redhat.com, robh@kernel.org, saeedm@nvidia.com,
-	wei.liu@kernel.org, longli@microsoft.com, boqun.feng@gmail.com,
-	ssengar@microsoft.com, helgaas@kernel.org,
-	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-	josete@microsoft.com, stable@vger.kernel.org
-Subject: Re: [PATCH v3 1/6] PCI: hv: Fix a race condition bug in
- hv_pci_query_relations()
-Message-ID: <ZG8YzuK/5+8iE8He@lpieralisi>
-References: <20230420024037.5921-1-decui@microsoft.com>
- <20230420024037.5921-2-decui@microsoft.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941861FB8
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:16:13 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0E4122
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 01:16:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=8AhKvPYDDe+OwfLxGgQDNwaPPycIR0LgME1YS5cozeQ=; b=HsBU8VhkE2R1TAJHxsFxwdtCA7
+	T41hcWIrE1Zb0uT7d8OVtpULcJpnDofNMnR1Q05bzLM4JmZGFrCQLK4z/140SYMf3aY7XyFqxVDt0
+	ehl6za+uC5XLQXXcvIw/Wd2bMaH1OZumfaqiQiJVyVar5TsirXyF5aYnTchw8jp+zX3IH0U65VFML
+	DnQZeF9fz3owZwwJibOh50QMJl2TsAvfKoXA/1wuEaY7Tz0ay6s7V6SQgUtx6NkSYXDlsQXv7wBtS
+	j0Fy1o5j7nIr/koAVB3pL/U96WS41nQz6ciEc6d64QQzz+hBe3C1KBq5HVAYK92ur60BYM33aGpPf
+	6FWYG7Ew==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40694)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q268T-0003ko-Aq; Thu, 25 May 2023 09:15:49 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q268O-0002Vn-2R; Thu, 25 May 2023 09:15:44 +0100
+Date: Thu, 25 May 2023 09:15:44 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
+	Daniel Machon <daniel.machon@microchip.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Lars Povlsen <lars.povlsen@microchip.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Madalin Bucur <madalin.bucur@nxp.com>,
+	Marcin Wojtas <mw@semihalf.com>,
+	Michal Simek <michal.simek@amd.com>, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>,
+	Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+	Sean Anderson <sean.anderson@seco.com>,
+	Steen Hegelund <Steen.Hegelund@microchip.com>,
+	Taras Chornyi <taras.chornyi@plvision.eu>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	UNGLinuxDriver@microchip.com, Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC 0/9] Add and use helper for PCS negotiation modes
+Message-ID: <ZG8ZMO/HRFVFdOll@shell.armlinux.org.uk>
+References: <ZGzhvePzPjJ0v2En@shell.armlinux.org.uk>
+ <20230524072619.dnzfy3lmgobqmu2k@soft-dev3-1>
+ <ZG3GZ59MUqATsKVm@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -56,67 +76,35 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230420024037.5921-2-decui@microsoft.com>
+In-Reply-To: <ZG3GZ59MUqATsKVm@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, Apr 19, 2023 at 07:40:32PM -0700, Dexuan Cui wrote:
-> Fix the longstanding race between hv_pci_query_relations() and
-> survey_child_resources() by flushing the workqueue before we exit from
-> hv_pci_query_relations().
-
-"Fix the longstanding race" is vague. Please describe the race
-succinctly at least to give an idea of what the problem is.
-
-> Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
-> Signed-off-by: Dexuan Cui <decui@microsoft.com>
-> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-> Cc: stable@vger.kernel.org
-> ---
+On Wed, May 24, 2023 at 09:10:15AM +0100, Russell King (Oracle) wrote:
+> On Wed, May 24, 2023 at 09:26:19AM +0200, Horatiu Vultur wrote:
+> > The 05/23/2023 16:54, Russell King (Oracle) wrote:
+> > 
+> > Hi Russell,
+> > 
+> > I have tried this series on lan966x and it seems to be working fine.
 > 
-> v2:
->   Removed the "debug code".
->   No change to the patch body.
->   Added Cc:stable
+> Thanks for testing.
 > 
-> v3:
->   Added Michael's Reviewed-by.
+> > There was a small issue applying the patch 3, as the function
+> > 'phylink_resolve_c73' doesn't exist yet.
 > 
->  drivers/pci/controller/pci-hyperv.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-> index f33370b756283..b82c7cde19e66 100644
-> --- a/drivers/pci/controller/pci-hyperv.c
-> +++ b/drivers/pci/controller/pci-hyperv.c
-> @@ -3308,6 +3308,19 @@ static int hv_pci_query_relations(struct hv_device *hdev)
->  	if (!ret)
->  		ret = wait_for_response(hdev, &comp);
->  
-> +	/*
-> +	 * In the case of fast device addition/removal, it's possible that
-> +	 * vmbus_sendpacket() or wait_for_response() returns -ENODEV but we
-> +	 * already got a PCI_BUS_RELATIONS* message from the host and the
-> +	 * channel callback already scheduled a work to hbus->wq, which can be
-> +	 * running survey_child_resources() -> complete(&hbus->survey_event),
-> +	 * even after hv_pci_query_relations() exits and the stack variable
-> +	 * 'comp' is no longer valid. This can cause a strange hang issue
+> It's for applying after my XPCS cleanup series that has been sent as RFC
+> twice and now been sent for merging. Sorry for not stating that in the
+> cover message.
 
-"A strange hang" sounds like we don't understand what's happening, it
-does not feel like it is a solid understanding of the issue.
+... which is now in net-next.
 
-I would remove it - given that you already explain that comp is no
-longer valid - that is already a bug that needs fixing.
-
-Acked-by: Lorenzo Pieralisi <lpieralisi@kernel.org>
-
-> +	 * or sometimes a page fault. Flush hbus->wq before we exit from
-> +	 * hv_pci_query_relations() to avoid the issues.
-> +	 */
-> +	flush_workqueue(hbus->wq);
-> +
->  	return ret;
->  }
->  
-> -- 
-> 2.25.1
-> 
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
