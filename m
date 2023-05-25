@@ -1,187 +1,186 @@
-Return-Path: <netdev+bounces-5260-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5259-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 799C371072C
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:19:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 11598710729
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:18:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3A4111C20E26
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:19:13 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BC9F01C20E07
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:18:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A2B3ED2E0;
-	Thu, 25 May 2023 08:19:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B9709C8F6;
+	Thu, 25 May 2023 08:18:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91338BE78
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:19:07 +0000 (UTC)
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4F818C;
-	Thu, 25 May 2023 01:19:04 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 34P8IdMa088728;
-	Thu, 25 May 2023 03:18:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1685002719;
-	bh=7VamqbMYAJFJmQ+I85X/FgnVMg8pLLAOtK3pZ1kRL9Q=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=odZ0wS76m+PVzhY1L0vwLX8JmwY9wtoMZZ27gIQ8QlF7cdRCLwMOqPVzMj2SqevfG
-	 Kc1lZZjiTLlm8OkeJNxW3M+cF+gYhPaW/tNzLUSC81GK4DbZukzM6R3Bcejebcp7dx
-	 8rSve8tbekX3SrZm55U+Ci1+sILPU3Zy4J5E4iRw=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 34P8IdkH022658
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 25 May 2023 03:18:39 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Thu, 25
- May 2023 03:18:39 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Thu, 25 May 2023 03:18:39 -0500
-Received: from [172.24.221.38] (ileaxei01-snat.itg.ti.com [10.180.69.5])
-	by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 34P8IYY0016393;
-	Thu, 25 May 2023 03:18:35 -0500
-Message-ID: <827377ae-091b-8888-18b9-bb574d7ff3ca@ti.com>
-Date: Thu, 25 May 2023 03:18:34 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2229C8DF
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:18:54 +0000 (UTC)
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C617F122;
+	Thu, 25 May 2023 01:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1685002732; x=1716538732;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nhKc0mAgAHG1uUzY5knTrGiokdmqHJnsDHjF/RXZ8pA=;
+  b=M7j53JGXOqlxbqO0KMmksHJVRIAgO4LCcmUOoESMbllCo9RqaGdeXtQc
+   jFROvrFgLMx08YS+tvros+cR24IxFmkCWuKQfcF7Cs9EoLdDpqBLcgUyi
+   t0yapn31FjVThOq1CiLvsi/X3fv9GAtzA/Ti5s3rvUhnBDDnm9Xf+Aan1
+   9A9GlsXyPHRF+5ZXSEbEGVh72Z2A68z352Wqdv0fEXDpxfbAoHpa7nvZn
+   /VwuNSXWVgFDLoorBpNRI6rEv8CH+2NVakbSXkwS/c6OYVW5e0w/ZthqZ
+   b2MACtixVGWSfzHcA42xn2oCepUY1ioW9CGFAa5H5I4BBiY94KMsChmJ5
+   Q==;
+X-IronPort-AV: E=Sophos;i="6.00,190,1681164000"; 
+   d="scan'208";a="31092978"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 25 May 2023 10:18:49 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Thu, 25 May 2023 10:18:49 +0200
+X-PGP-Universal: processed;
+	by tq-pgp-pr1.tq-net.de on Thu, 25 May 2023 10:18:49 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1685002729; x=1716538729;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nhKc0mAgAHG1uUzY5knTrGiokdmqHJnsDHjF/RXZ8pA=;
+  b=VOK1z3/Gnea3Zf+C1yDOMmT+9IxdmOpoTtwCoimwlIjNbjQKsGB7WeCr
+   xcw+tmJ4zYnCBXmqB3DL/gRon2ZwFKqNgdrr44zN/CsVoKb3j72aozK8Z
+   jKWasdSAwik9LFIGVvwwNXfyaolNSBdqjRAJLFelOY7cZhwdXei0r6r5F
+   jX3O7YHYca6OQdSPY15aI+IH3RKJesK5ydMHS4afDNEYsvAX8W9oGqGBI
+   +3KmOdPidThpkaBFrMj0o7kqElmDrqDAUfGBDPT8v++b9S3ha0iYfF2OT
+   28rfOz73G4dwuynRvvTwZYAvLsLAVwGxPoSXFV685jKqcitskmKWj3uVm
+   w==;
+X-IronPort-AV: E=Sophos;i="6.00,190,1681164000"; 
+   d="scan'208";a="31092977"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 25 May 2023 10:18:49 +0200
+Received: from steina-w.localnet (unknown [10.123.53.21])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 689C6280082;
+	Thu, 25 May 2023 10:18:49 +0200 (CEST)
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
+To: Francesco Dolcini <francesco@dolcini.it>, Andrew Lunn <andrew@lunn.ch>
+Cc: Praneeth Bajjuri <praneeth@ti.com>, Geet Modi <geet.modi@ti.com>, "David S. Miller" <davem@davemloft.net>, Heiner Kallweit <hkallweit1@gmail.com>, Russell King <linux@armlinux.org.uk>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Grygorii Strashko <grygorii.strashko@ti.com>, Dan Murphy <dmurphy@ti.com>
+Subject: Re: DP83867 ethernet PHY regression
+Date: Thu, 25 May 2023 10:18:49 +0200
+Message-ID: <1857120.tdWV9SEqCh@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <07037ce6-8d1c-4a1d-9fdd-2cd9e68c4594@lunn.ch>
+References: <ZGuDJos8D7N0J6Z2@francesco-nb.int.toradex.com> <ZGuLxSJwXbSE/Rbb@francesco-nb.int.toradex.com> <07037ce6-8d1c-4a1d-9fdd-2cd9e68c4594@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: DP83867 ethernet PHY regression
-Content-Language: en-US
-To: Francesco Dolcini <francesco@dolcini.it>,
-        Johannes Pointner
-	<h4nn35.work@gmail.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>, <vikram.sharma@ti.com>
-CC: Bagas Sanjaya <bagasdotme@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner
- Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Eric
- Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni
-	<pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <ZGuDJos8D7N0J6Z2@francesco-nb.int.toradex.com>
- <ZG4ISE3WXlTM3H54@debian.me>
- <CAHvQdo0gucr-GcWc9YFxsP4WwPUdK9GQ6w-5t9CuqqvPTv+VcA@mail.gmail.com>
- <ZG8PS/CSpHXIA6wt@francesco-nb.int.toradex.com>
-From: "Bajjuri, Praneeth" <praneeth@ti.com>
-In-Reply-To: <ZG8PS/CSpHXIA6wt@francesco-nb.int.toradex.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Andrew,Francesco,
+Hi,
 
-On 5/25/2023 2:33 AM, Francesco Dolcini wrote:
-> Hello Johannes,
-> 
-> On Thu, May 25, 2023 at 08:31:00AM +0200, Johannes Pointner wrote:
->> On Wed, May 24, 2023 at 3:22 PM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
->>>
->>> On Mon, May 22, 2023 at 04:58:46PM +0200, Francesco Dolcini wrote:
->>>> Hello all,
->>>> commit da9ef50f545f ("net: phy: dp83867: perform soft reset and retain
->>>> established link") introduces a regression on my TI AM62 based board.
->>>>
->>>> I have a working DTS with Linux TI 5.10 downstream kernel branch, while
->>>> testing the DTS with v6.4-rc in preparation of sending it to the mailing
->>>> list I noticed that ethernet is working only on a cold poweron.
->>>>
->>>> With da9ef50f545f reverted it always works.
+Am Montag, 22. Mai 2023, 18:15:56 CEST schrieb Andrew Lunn:
+> On Mon, May 22, 2023 at 05:35:33PM +0200, Francesco Dolcini wrote:
+> > On Mon, May 22, 2023 at 05:15:56PM +0200, Andrew Lunn wrote:
+> > > On Mon, May 22, 2023 at 04:58:46PM +0200, Francesco Dolcini wrote:
+> > > > Hello all,
+> > > > commit da9ef50f545f ("net: phy: dp83867: perform soft reset and ret=
+ain
+> > > > established link") introduces a regression on my TI AM62 based boar=
+d.
+> > > >=20
+> > > > I have a working DTS with Linux TI 5.10 downstream kernel branch,
+> > > > while
+> > > > testing the DTS with v6.4-rc in preparation of sending it to the
+> > > > mailing
+> > > > list I noticed that ethernet is working only on a cold poweron.
+> > >=20
+> > > Do you have more details about how it does not work.
+> > >=20
+> > > Please could you use:
+> > >=20
+> > > mii-tool -vvv ethX
+> >=20
+> > please see the attached files:
+> >=20
+> > working_da9ef50f545f_reverted.txt
+> >=20
+> >   this is on a v6.4-rc, with da9ef50f545f reverted
+> >=20
+> > not_working.txt
+> >=20
+> >   v6.4-rc not working
+> >=20
+> > working.txt
+> >=20
+> >   v6.4-rc working
+> >=20
+> > It looks like, even on cold boot, it's not working in a reliable way.
+> > Not sure the exact difference when it's working and when it's not.
+> >=20
+> > Using SIOCGMIIPHY=3D0x8947
+> > eth0: negotiated 1000baseT-FD flow-control, link ok
+> >=20
+> >   registers for MII PHY 0:
+> >     1140 796d 2000 a231 05e1 c5e1 006f 2001
+> >     5806 0200 3800 0000 0000 4007 0000 3000
+> >     5048 ac02 ec10 0004 2bc7 0000 0000 0040
+> >     6150 4444 0002 0000 0000 0000 0282 0000
+> >    =20
+> >     1140 796d 2000 a231 05e1 c5e1 006d 2001
+> >     5806 0200 3800 0000 0000 4007 0000 3000
+> >     5048 af02 ec10 0000 2bc7 0000 0000 0040
+> >     6150 4444 0002 0000 0000 0000 0282 0000
+>=20
+> Register  6: 006f vs 006d
+> Register 17: ac02 vs 1f02
+> Register 19: 0004 vs 0000
+>=20
+> Register 6 is MII_EXPANSION. Bit 1 is
+>=20
+> #define EXPANSION_LCWP          0x0002  /* Got new RX page code word   */
+>=20
+> So that is probably not relevant here.
+>=20
+> Register 17 is MII_DP83867_PHYSTS, and bits 8 and 9 are not documented
+> in the driver. Do you have the datasheet?
 
-Thank you for bringing this issue to attention.
-I have looped Siddharth and vikram to further investigate and provide input.
+Bit 8 & 9 is indicating the MDI/MDIX resolution status for lines A/B and C/=
+D.
+
+> Register 19 is MII_DP83867_ISR. The interrupt bits are not documented
+> in the driver either.
+
+I guess that's the more interesting part. Bit 2 (0x4) indicates a xGMII=20
+(RGMII/SGMII) error interrupt.
+
+Best regards,
+Alexander
+
+> This driver also uses C45 registers, which are not shown here. At some
+> point, we might need to look at those. But first it would be good to
+> understand what these differences mean.
+>=20
+> 	Andrew
 
 
->>>>
->>>> Here the DTS snippet for reference:
->>>>
->>>> &cpsw_port1 {
->>>>        phy-handle = <&cpsw3g_phy0>;
->>>>        phy-mode = "rgmii-rxid";
->>>> };
->>>>
->>>> &cpsw3g_mdio {
->>>>        assigned-clocks = <&k3_clks 157 20>;
->>>>        assigned-clock-parents = <&k3_clks 157 22>;
->>>>        assigned-clock-rates = <25000000>;
->>>>
->>>>        cpsw3g_phy0: ethernet-phy@0 {
->>>>                compatible = "ethernet-phy-id2000.a231";
->>>>                reg = <0>;
->>>>                interrupt-parent = <&main_gpio0>;
->>>>                interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
->>>>                reset-gpios = <&main_gpio0 17 GPIO_ACTIVE_LOW>;
->>>>                reset-assert-us = <10>;
->>>>                reset-deassert-us = <1000>;
->>>>                ti,fifo-depth = <DP83867_PHYCR_FIFO_DEPTH_4_B_NIB>;
->>>>                ti,rx-internal-delay = <DP83867_RGMIIDCTL_2_00_NS>;
->>>>        };
->>>> };
->>>>
->>>
->>> Thanks for the regression report. I'm adding it to regzbot:
->>>
->>> #regzbot ^introduced: da9ef50f545f86
->>> #regzbot title: TI AM62 DTS regression due to dp83867 soft reset
->>
->> Hello Francesco,
->>
->> I had a similar issue with a patch like this, but in my case it was the DP83822.
->> https://lore.kernel.org/netdev/CAHvQdo2yzJC89K74c_CZFjPydDQ5i22w36XPR5tKVv_W8a2vcg@mail.gmail.com/
->> I also raised the question for the commit da9ef50f545f.
->> https://lore.kernel.org/lkml/CAHvQdo1U_L=pETmTJXjdzO+k7vNTxMyujn99Y3Ot9xAyQu=atQ@mail.gmail.com/
->>
->> The problem was/is for me that the phy gets the clock from the CPU and
->> the phy is already initialized in the u-boot.
->> During the Linux kernel boot up there is a short amount of time where
->> no clock is delivered to the phy.
->> The phy didn't like this and was most of the time not usable anymore.
->> The only thing that brought the phy/link back was resetting the phy
->> using the phytool.
-> 
-> I had a look and it seems that is a different issue here, but I cannot
-> exclude that this is related.
-> 
-> First the link up/down, negotiation and mdio and related communication
-> is perfectly fine, what it looks like is not working is that no data is
-> flowing over RGMII.
-> 
-> Second, also in our case the clock is coming from the SoC, however this
-> clock is enabled way earlier in the boot, and at that time the phy is
-> even in reset.
-> 
->   phy reset asserted
->   . SPL on TI AM62 R5
->     . enable clock
->   . SPL on TI AM62 A
->   . U-Boot proper on TI AM62 A
->     .release phy reset
-> 
-> The phy reset is also configured in the DTS and used by the Linux driver.
-> 
-> In addition to that, as I already clarified in my second email, the
-> issue is happening also on a cold poweron. It happens most of the time,
-> but not always.
-> 
-> Francesco
-> 
-> 
+=2D-=20
+TQ-Systems GmbH | M=FChlstra=DFe 2, Gut Delling | 82229 Seefeld, Germany
+Amtsgericht M=FCnchen, HRB 105018
+Gesch=E4ftsf=FChrer: Detlef Schneider, R=FCdiger Stahl, Stefan Schneider
+http://www.tq-group.com/
+
+
 
