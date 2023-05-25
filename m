@@ -1,650 +1,272 @@
-Return-Path: <netdev+bounces-5330-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5331-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 509E6710CF3
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 49ED9710CF5
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:05:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F12161C20962
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:03:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E5C081C20E9D
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:05:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F14C1078C;
-	Thu, 25 May 2023 13:00:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41FC8101EC;
+	Thu, 25 May 2023 13:05:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EAD5101D1
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 13:00:51 +0000 (UTC)
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AE510E4;
-	Thu, 25 May 2023 06:00:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CD09101D6
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 13:05:14 +0000 (UTC)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39104E4E;
+	Thu, 25 May 2023 06:04:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685019626; x=1716555626;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wF6bRgbMGI8gMENkkSkKdZ8e+y0Jpj2PF5F+u+WqUzg=;
-  b=cpeOIgNr1fcbMqz3tKkZZPggp8sxKnfIL3s0dHeZTda8wnvio7R/S+hh
-   ExF6b7/8Dw0yhWmIL4tAA+/w4W+72jARkEBOCbYT1VnvGxP6jaFQ6xfoZ
-   Eaz6krBEhaB9M3PXeCBJSbFxABIFTOTJ0ojzqQ9t9LfwLMOFkuvtk2pAv
-   BZy2fqFTylMlq+hVJW/u8/qCYaQIDg6g28+kvHmkmB298s859qVK+O0ei
-   4BT9RerPV0MYuMqgjweh1zEPCT9jjgEAN/dvPE8Z427iIwQH7ErTcvxLj
-   yj/Ukrc+8B+gmqMKExuqbAvpiWvp/97lxPOq+fd8wbUaVYfHb9WSFxchS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="351384498"
+  t=1685019889; x=1716555889;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=3dF9cgxshhiGe3wyUCmyP/HJC6pozdDirO4mfysXwgk=;
+  b=AtPNVw4Oxmp/kx7Ll3i4P2dGtkQcUEf6oHVaqFzPPK6r6qBG+ysDmkbd
+   t5NBLexfkB4eS/s55IzCx945GZp+CT5wMUrQ3xiQzbEAGeu2Rq7Ah+yN/
+   /YxCwIn8/p+LKdORUrwYavVDHuu0aVi3J7r1n7Gr9lZ3KDkcZpXoPzsw+
+   YceHMUrHL17NfZSF10bc3RKui1BzKxd3iFXQ+B8h9g34+oZbxWLQcdk+X
+   MEegggYOViwymQQyELFP4wW5ay+jgiqPoD8bkPV7uQs4VWT0hHdwqSmzE
+   t/8cFXYIIRMFXkn/hoxysnjW8gklO4aURt1CIAxI8JVb9SKIlJ2aOrXan
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="382124241"
 X-IronPort-AV: E=Sophos;i="6.00,191,1681196400"; 
-   d="scan'208";a="351384498"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 05:59:19 -0700
+   d="scan'208";a="382124241"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 06:01:38 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="817075227"
+X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="655192604"
 X-IronPort-AV: E=Sophos;i="6.00,191,1681196400"; 
-   d="scan'208";a="817075227"
-Received: from newjersey.igk.intel.com ([10.102.20.203])
-  by fmsmga002.fm.intel.com with ESMTP; 25 May 2023 05:59:15 -0700
-From: Alexander Lobakin <aleksander.lobakin@intel.com>
-To: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
-Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-	Magnus Karlsson <magnus.karlsson@intel.com>,
-	Michal Kubiak <michal.kubiak@intel.com>,
-	Larysa Zaremba <larysa.zaremba@intel.com>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Paul Menzel <pmenzel@molgen.mpg.de>,
-	netdev@vger.kernel.org,
-	intel-wired-lan@lists.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 12/12] iavf: switch queue stats to libie
-Date: Thu, 25 May 2023 14:57:46 +0200
-Message-Id: <20230525125746.553874-13-aleksander.lobakin@intel.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230525125746.553874-1-aleksander.lobakin@intel.com>
-References: <20230525125746.553874-1-aleksander.lobakin@intel.com>
+   d="scan'208";a="655192604"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga003.jf.intel.com with ESMTP; 25 May 2023 06:01:38 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 25 May 2023 06:01:37 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 25 May 2023 06:01:37 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Thu, 25 May 2023 06:01:37 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.173)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Thu, 25 May 2023 06:01:37 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kfgGusn4SyIYHJcq+yhs3k/suQm+vpM7thspEiGuTXKJFar2FWPxKZIWsGDrD5G5Y0VF4RwDdfJZsvjmMQtoanT2ansS02PJOUEtXNYuxFHv43hFkkkpxtncPmOGGzpdSqpb6vqPBY7mh+PXmSuvu/FGcxisRkrqH9M3soPyNYsr6YL+7jhfgu9d56ZKI0HPBDRBzLgk2Gt7/ttH5ucKrlMn03BVgQN4OFeVYc5z/YtTh1eemPkfML4iWaLMzmpSKgUH+56HaENNfv2S9a68//Ow8YQfa0TASyegKT5iXerA+taB/aJB6y5olEayar2Yy9UAVYnybekYqOGNSo/hww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uEnTCkLiPye3YcxMBfe/9vQ7eHwpCD7iIKxQcxLiykw=;
+ b=VegO4QPnKMifk9rDZQLLUDnge3txXZmxlLtFUVVCBi7l5RGPF3/zGNf+XVPiC81h/QRD+iM/80ELB/y7NSo4ac3Sa4tN+JVXx77yTiafhhvbQ/rk5ix48XmQIqq27c3NNAafSbQ984/6vpMI5HU7UPwPpB2CTiVW12yT/UQD52hGG48vj5JV4AzYxxl1EHy2fufozTAW2EV9CgyJW1GrSXwJ5G9kypiUISGn4lkVfPUS5+iIgKpRNW7pBw1UIoZErdAnDpCb4GfKmc4Qf2oWMyB9S0XET7kVejSNuJ5Y+HF4o8rcduJeEqbi7vU3e+NGo3p4x4s6wrf0Xdwy/eJ30g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
+ SA2PR11MB5100.namprd11.prod.outlook.com (2603:10b6:806:119::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.14; Thu, 25 May
+ 2023 13:01:35 +0000
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::7887:a196:2b04:c96e]) by DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::7887:a196:2b04:c96e%6]) with mapi id 15.20.6433.015; Thu, 25 May 2023
+ 13:01:34 +0000
+From: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+To: Jiri Pirko <jiri@resnulli.us>, Vadim Fedorenko <vadfed@meta.com>
+CC: Jakub Kicinski <kuba@kernel.org>, Jonathan Lemon
+	<jonathan.lemon@gmail.com>, Paolo Abeni <pabeni@redhat.com>, "Olech, Milena"
+	<milena.olech@intel.com>, "Michalik, Michal" <michal.michalik@intel.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Vadim Fedorenko
+	<vadim.fedorenko@linux.dev>, poros <poros@redhat.com>, mschmidt
+	<mschmidt@redhat.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: RE: [RFC PATCH v7 0/8] Create common DPLL configuration API
+Thread-Topic: [RFC PATCH v7 0/8] Create common DPLL configuration API
+Thread-Index: AQHZeWdMwpT4Id4KhEupVVmmO03v069UyFGAgBZVn+A=
+Date: Thu, 25 May 2023 13:01:34 +0000
+Message-ID: <DM6PR11MB4657CF4CF688D0542A00F6AD9B469@DM6PR11MB4657.namprd11.prod.outlook.com>
+References: <20230428002009.2948020-1-vadfed@meta.com>
+ <ZFyeydHS6iTECqiA@nanopsycho>
+In-Reply-To: <ZFyeydHS6iTECqiA@nanopsycho>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|SA2PR11MB5100:EE_
+x-ms-office365-filtering-correlation-id: 6625ea8f-8fda-4828-5fe1-08db5d202b38
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0ixXlExd/hr64J1B5Bb1a2Vy+wkXt3IThWW/HwULXeJPBtcGenQWKhMgoU7DUaQNhyb5Jb4JlnALF8E2Zxj4tIuL95MZrebBBFFP2pPHFSwQ7Mw1v7FOSW/ngq2/LfKOM4ie46T41ZWqE6po0PNtnl3jZCl7ledocTQhLqZZY/Yx+tAikCgV/7GmXInojeVUr5BTspOrUk0I4dylxhtmpONJ/y+Ppf7nVYWpykbGK/WEA2PtUzRH6XcQePF9cWVTgMDLItdtJdDq+s3aHCfz0FDqqPIcF1ZLCdKN9yMQSG09fQ3Kz3drOAQ61r0Npj7X/3K/BbYMP//s4eM6MQTxRL/oDthaWrRdzw59DqwrlmZLXlzpzoqB3zUIdGtD5VpYAoR4C7ZFRt+cUeDCnNerD+o8t6+9IjDC4HjFY/IURBRdw5j2LaQUF4Qm5dizwDbyzwUxpik1QRJdu57rpjdWaPeAEbJnaMfmO/KWMUc3E4CNzPMs8DD01KmCoMVG1ImkJ9guEwaiE9H/Pj1WQX5QXMsPgFbA249LhAiSR4tZyRwe5HT0zLL/Z3tb1G3Rv8V1IEGlzWXIJzWm6YZvNQl5tmZl4leBPwTfPhBoNZY0f6vnQpRJBwVFEdid9UwoUJZR
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(366004)(376002)(396003)(346002)(451199021)(122000001)(6506007)(38100700002)(186003)(9686003)(83380400001)(7696005)(26005)(71200400001)(54906003)(110136005)(82960400001)(478600001)(8936002)(52536014)(7416002)(4326008)(76116006)(66446008)(66946007)(66556008)(66476007)(64756008)(5660300002)(33656002)(2906002)(41300700001)(38070700005)(316002)(86362001)(8676002)(55016003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?KUnomMKyjmvNvdcmo4UBb4VQKOZeVPLO7lOfJ6Jk3MtikVjPKvlekNUrc67R?=
+ =?us-ascii?Q?mpxC4nDLNuKyORt3wOdMhn5QfX9ryR4nE9A7x72oaVFigw7GC2446jsMPlO1?=
+ =?us-ascii?Q?g09NxIPP/29gvvR0OD41JSTuFINt5UPCpGtws8Ti7QBl0+aK+0bBKcut0Q7W?=
+ =?us-ascii?Q?8bxNE60FE9A1HOiMaxB2b7OX6sf0EMbiqL5KdDLmQYKPJ1JrW6OXyxdU3h6O?=
+ =?us-ascii?Q?uPYiv94iZAsY67encq8GboL841XIjU8JDNd1xBHUR8z0dYFiXsn5J4vRCSC8?=
+ =?us-ascii?Q?9V64SuI0hLh5J5bU89/3By9e9QlvrUsk36PxLtKSjo/JEUcV3DUhdwj0f45r?=
+ =?us-ascii?Q?Yh/W1CbybfIRjp7bX+xRepvrg9siGxIhvaIrwq+ZZRjIc4YtSPTvRe+Fee5a?=
+ =?us-ascii?Q?Bl3AVUMlI1/R7mt2mEkJCkGmAzLyDrW8e9VzyCXKBJmcrFg+DNDoNGpuSHJI?=
+ =?us-ascii?Q?h5A0mkSrVqw9AW+nlLn09fJ1j83cLCK+a7dthGbeTWD4o9QOOaILeTZzJtI6?=
+ =?us-ascii?Q?thiksl+0v6Sq2qeQc/KNdjSFoGfXoI/CLg+mCY7KnSxoWS+pOYXatIPmPGKS?=
+ =?us-ascii?Q?BmF7eZ/KlanArXvfYtn7a+tk3WoK/dS0kpCVivpdmgLQJMclpzpB6CbOOJfU?=
+ =?us-ascii?Q?WcPyxaj11dgHdc3pEl/3kehG8MGUOZgkl10OnOU0tZyZGQV2ED+D66Fx7bFt?=
+ =?us-ascii?Q?d54uM4ospg23ym40VLB3ENq/tlPP093rPIv9twKeq2m5+74hot6WAXe/GyAs?=
+ =?us-ascii?Q?30Vt0Js2LvTjLFQGbezTuofvi50rUmtEWp0Gl7CbfNcXuItk45JssHiGGJSy?=
+ =?us-ascii?Q?FNzEfOrVZZi/bUUvbfSDU3hZ2A7SvYMLQ0mGidOfyPmbw52BV82CDTBtDR/3?=
+ =?us-ascii?Q?njK0HuNRm7OZblyxA0V4Aksrlj4KOy8YsNxQtKQ4egqz/Wo3SYGz1zj0f2yi?=
+ =?us-ascii?Q?aC2KbVESq+RZtGvF2Y1KupQ0eKOBHvR/E5mGt9o9jEhRo81r0bYoE4I3SBwD?=
+ =?us-ascii?Q?2uxlVByTmof71wyGrTrNl47IxuxVrFytsB+rAaC0wXcz1x/Q9nqi/JOmi5Z1?=
+ =?us-ascii?Q?ojs/Sstcl9NznNeHD4DAba0cQlREo6AdvwovRH8jrK4FJfnv273qZ7gesKB3?=
+ =?us-ascii?Q?Kx6wKkB4L8B/IFE/0fx8lTM/zMjqCNQ5K8rRu3zc31kquuSZzZsX2X4n5lpK?=
+ =?us-ascii?Q?14nffMbcUXj3L+rPH3oB3Sfa1DZ4OZy6ULZ5VTbt23YR8mAJqiIIGv3PRDjI?=
+ =?us-ascii?Q?qZMZyaUiqYszgI2YkN7ot5yQ8KccaX+OGVxd77yiS8VHJN5LxRobDJ+OfQYt?=
+ =?us-ascii?Q?FHr93CM+qyRWRRUW7mZafLrwwgRcuddkBMfqB/KkXZhwbTfdkZ7FNg/T57vd?=
+ =?us-ascii?Q?Z4gG/VkCPriezQpFSOu4fefBPWLxDoSiiSRVIy/10bRaS/SJbtB9EfIgC9s9?=
+ =?us-ascii?Q?iwOVtLf/k9TZHWQpyJVHEcIHoFcSV3Vl5n/0W9t/GEj6f06E+I8nQq3/WHW4?=
+ =?us-ascii?Q?qQ9gHt8B081eZP4wIYtTpd2D0GwXie9Ql3FHp/1dRXfNtnzvKyicf+qgAueb?=
+ =?us-ascii?Q?CGh+c3cQ+mg9R8IVdtLqAH4dltaNqtk8uVAjUNcocmv3R+ExZU6GIXlQhfjV?=
+ =?us-ascii?Q?Ag=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6625ea8f-8fda-4828-5fe1-08db5d202b38
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 May 2023 13:01:34.8265
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Cwv6avutwbpROdPAMuPuChohyY7tvSIQhksu78W5dK00Fqv6r7LS8EvA5hLByQdVaF7PsKRcUvSi60x/jLgfDi+Z2T13H4c7g1Yi0Ij6GNc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5100
+X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-iavf is pretty much ready for using the generic libie stats, so drop all
-the custom code and just use generic definitions. The only thing is that
-it previously lacked the counter of Tx queue stops. It's present in the
-other drivers, so add it here as well.
-The rest is straightforward. There were two fields in the Tx stats
-struct, which didn't belong there. The first one has never been used,
-wipe it; and move the other to the queue structure. Plus move around
-a couple fields in &iavf_ring to account stats structs' alignment.
+>From: Jiri Pirko <jiri@resnulli.us>
+>Sent: Thursday, May 11, 2023 9:53 AM
+>
+>Fri, Apr 28, 2023 at 02:20:01AM CEST, vadfed@meta.com wrote:
+>>From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+>>
+>>Implement common API for clock/DPLL configuration and status reporting.
+>>The API utilises netlink interface as transport for commands and event
+>>notifications. This API aim to extend current pin configuration and
+>>make it flexible and easy to cover special configurations.
+>>
+>>v6 -> v7:
+>> * YAML spec:
+>>   - remove nested 'pin' attribute
+>>   - clean up definitions on top of the latest changes
+>> * pin object:
+>>   - pin xarray uses id provided by the driver
+>>   - remove usage of PIN_IDX_INVALID in set function
+>>   - source_pin_get() returns object instead of idx
+>>   - fixes in frequency support API
+>> * device and pin operations are const now
+>> * small fixes in naming in Makefile and in the functions
+>> * single mutex for the subsystem to avoid possible ABBA locks
+>> * no special *_priv() helpers anymore, private data is passed as void*
+>> * no netlink filters by name anymore, only index is supported
+>> * update ptp_ocp and ice drivers to follow new API version
+>> * add mlx5e driver as a new customer of the subsystem
+>>v5 -> v6:
+>> * rework pin part to better fit shared pins use cases
+>> * add YAML spec to easy generate user-space apps
+>> * simple implementation in ptp_ocp is back again
+>>v4 -> v5:
+>> * fix code issues found during last reviews:
+>>   - replace cookie with clock id
+>>   - follow one naming schema in dpll subsys
+>>   - move function comments to dpll_core.c, fix exports
+>>   - remove single-use helper functions
+>>   - merge device register with alloc
+>>   - lock and unlock mutex on dpll device release
+>>   - move dpll_type to uapi header
+>>   - rename DPLLA_DUMP_FILTER to DPLLA_FILTER
+>>   - rename dpll_pin_state to dpll_pin_mode
+>>   - rename DPLL_MODE_FORCED to DPLL_MODE_MANUAL
+>>   - remove DPLL_CHANGE_PIN_TYPE enum value
+>> * rewrite framework once again (Arkadiusz)
+>>   - add clock class:
+>>     Provide userspace with clock class value of DPLL with dpll device du=
+mp
+>>     netlink request. Clock class is assigned by driver allocating a dpll
+>>     device. Clock class values are defined as specified in:
+>>     ITU-T G.8273.2/Y.1368.2 recommendation.
+>>   - dpll device naming schema use new pattern:
+>>     "dpll_%s_%d_%d", where:
+>>       - %s - dev_name(parent) of parent device,
+>>       - %d (1) - enum value of dpll type,
+>>       - %d (2) - device index provided by parent device.
+>>   - new muxed/shared pin registration:
+>>     Let the kernel module to register a shared or muxed pin without find=
+ing
+>>     it or its parent. Instead use a parent/shared pin description to fin=
+d
+>>     correct pin internally in dpll_core, simplifing a dpll API
+>> * Implement complex DPLL design in ice driver (Arkadiusz)
+>> * Remove ptp_ocp driver from the series for now
+>>v3 -> v4:
+>> * redesign framework to make pins dynamically allocated (Arkadiusz)
+>> * implement shared pins (Arkadiusz)
+>>v2 -> v3:
+>> * implement source select mode (Arkadiusz)
+>> * add documentation
+>> * implementation improvements (Jakub)
+>>v1 -> v2:
+>> * implement returning supported input/output types
+>> * ptp_ocp: follow suggestions from Jonathan
+>> * add linux-clk mailing list
+>>v0 -> v1:
+>> * fix code style and errors
+>> * add linux-arm mailing list
+>
+>Vadim, did you try ynl monitor? I think there might be something wrong
+>with the yaml spec:
+># ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --
+>subscribe monitor --sleep 10
+>Unexpected msg id done while checking for ntf nl_len =3D 92 (76) nl_flags =
+=3D
+>0x0 nl_type =3D 19
+>
 
-Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
----
- .../net/ethernet/intel/iavf/iavf_ethtool.c    | 87 ++++------------
- drivers/net/ethernet/intel/iavf/iavf_main.c   |  2 +
- drivers/net/ethernet/intel/iavf/iavf_txrx.c   | 98 ++++++++++---------
- drivers/net/ethernet/intel/iavf/iavf_txrx.h   | 47 +++------
- 4 files changed, 87 insertions(+), 147 deletions(-)
+One of the commits I have prepared already replaces old notifications with =
+the
+ones suggested previously, where format of notification is the same as form=
+at
+of get command.
+It works there, altough not sure if it works only for me or for everyone,
+I might have done some modifications to ynl-lib itself, need to double chec=
+k
+that.
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-index de3050c02b6f..0dcf50d75f86 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-@@ -46,16 +46,6 @@ struct iavf_stats {
- 	.stat_offset = offsetof(_type, _stat) \
- }
- 
--/* Helper macro for defining some statistics related to queues */
--#define IAVF_QUEUE_STAT(_name, _stat) \
--	IAVF_STAT(struct iavf_ring, _name, _stat)
--
--/* Stats associated with a Tx or Rx ring */
--static const struct iavf_stats iavf_gstrings_queue_stats[] = {
--	IAVF_QUEUE_STAT("%s-%u.packets", stats.packets),
--	IAVF_QUEUE_STAT("%s-%u.bytes", stats.bytes),
--};
--
- /**
-  * iavf_add_one_ethtool_stat - copy the stat into the supplied buffer
-  * @data: location to store the stat value
-@@ -141,43 +131,6 @@ __iavf_add_ethtool_stats(u64 **data, void *pointer,
- #define iavf_add_ethtool_stats(data, pointer, stats) \
- 	__iavf_add_ethtool_stats(data, pointer, stats, ARRAY_SIZE(stats))
- 
--/**
-- * iavf_add_queue_stats - copy queue statistics into supplied buffer
-- * @data: ethtool stats buffer
-- * @ring: the ring to copy
-- *
-- * Queue statistics must be copied while protected by
-- * u64_stats_fetch_begin, so we can't directly use iavf_add_ethtool_stats.
-- * Assumes that queue stats are defined in iavf_gstrings_queue_stats. If the
-- * ring pointer is null, zero out the queue stat values and update the data
-- * pointer. Otherwise safely copy the stats from the ring into the supplied
-- * buffer and update the data pointer when finished.
-- *
-- * This function expects to be called while under rcu_read_lock().
-- **/
--static void
--iavf_add_queue_stats(u64 **data, struct iavf_ring *ring)
--{
--	const unsigned int size = ARRAY_SIZE(iavf_gstrings_queue_stats);
--	const struct iavf_stats *stats = iavf_gstrings_queue_stats;
--	unsigned int start;
--	unsigned int i;
--
--	/* To avoid invalid statistics values, ensure that we keep retrying
--	 * the copy until we get a consistent value according to
--	 * u64_stats_fetch_retry. But first, make sure our ring is
--	 * non-null before attempting to access its syncp.
--	 */
--	do {
--		start = !ring ? 0 : u64_stats_fetch_begin(&ring->syncp);
--		for (i = 0; i < size; i++)
--			iavf_add_one_ethtool_stat(&(*data)[i], ring, &stats[i]);
--	} while (ring && u64_stats_fetch_retry(&ring->syncp, start));
--
--	/* Once we successfully copy the stats in, update the data pointer */
--	*data += size;
--}
--
- /**
-  * __iavf_add_stat_strings - copy stat strings into ethtool buffer
-  * @p: ethtool supplied buffer
-@@ -237,8 +190,6 @@ static const struct iavf_stats iavf_gstrings_stats[] = {
- 
- #define IAVF_STATS_LEN	ARRAY_SIZE(iavf_gstrings_stats)
- 
--#define IAVF_QUEUE_STATS_LEN	ARRAY_SIZE(iavf_gstrings_queue_stats)
--
- /**
-  * iavf_get_link_ksettings - Get Link Speed and Duplex settings
-  * @netdev: network interface device structure
-@@ -308,18 +259,22 @@ static int iavf_get_link_ksettings(struct net_device *netdev,
-  **/
- static int iavf_get_sset_count(struct net_device *netdev, int sset)
- {
--	/* Report the maximum number queues, even if not every queue is
--	 * currently configured. Since allocation of queues is in pairs,
--	 * use netdev->real_num_tx_queues * 2. The real_num_tx_queues is set
--	 * at device creation and never changes.
--	 */
-+	u32 num;
- 
--	if (sset == ETH_SS_STATS)
--		return IAVF_STATS_LEN +
--			(IAVF_QUEUE_STATS_LEN * 2 *
--			 netdev->real_num_tx_queues);
--	else
-+	switch (sset) {
-+	case ETH_SS_STATS:
-+		/* Per-queue */
-+		num = libie_rq_stats_get_sset_count();
-+		num += libie_sq_stats_get_sset_count();
-+		num *= netdev->real_num_tx_queues;
-+
-+		/* Global */
-+		num += IAVF_STATS_LEN;
-+
-+		return num;
-+	default:
- 		return -EINVAL;
-+	}
- }
- 
- /**
-@@ -346,15 +301,15 @@ static void iavf_get_ethtool_stats(struct net_device *netdev,
- 	 * it to iterate over rings' stats.
- 	 */
- 	for (i = 0; i < adapter->num_active_queues; i++) {
--		struct iavf_ring *ring;
-+		const struct iavf_ring *ring;
- 
- 		/* Tx rings stats */
--		ring = &adapter->tx_rings[i];
--		iavf_add_queue_stats(&data, ring);
-+		libie_sq_stats_get_data(&data, &adapter->tx_rings[i].sq_stats);
- 
- 		/* Rx rings stats */
- 		ring = &adapter->rx_rings[i];
--		iavf_add_queue_stats(&data, ring);
-+		libie_rq_stats_get_data(&data, &ring->rq_stats,
-+					ring->rx_pages ? ring->pool : NULL);
- 	}
- 	rcu_read_unlock();
- }
-@@ -376,10 +331,8 @@ static void iavf_get_stat_strings(struct net_device *netdev, u8 *data)
- 	 * real_num_tx_queues for both Tx and Rx queues.
- 	 */
- 	for (i = 0; i < netdev->real_num_tx_queues; i++) {
--		iavf_add_stat_strings(&data, iavf_gstrings_queue_stats,
--				      "tx", i);
--		iavf_add_stat_strings(&data, iavf_gstrings_queue_stats,
--				      "rx", i);
-+		libie_sq_stats_get_strings(&data, i);
-+		libie_rq_stats_get_strings(&data, i);
- 	}
- }
- 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 120bb6a09ceb..4a702795ddb3 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1581,6 +1581,7 @@ static int iavf_alloc_queues(struct iavf_adapter *adapter)
- 		tx_ring->itr_setting = IAVF_ITR_TX_DEF;
- 		if (adapter->flags & IAVF_FLAG_WB_ON_ITR_CAPABLE)
- 			tx_ring->flags |= IAVF_TXR_FLAGS_WB_ON_ITR;
-+		u64_stats_init(&tx_ring->sq_stats.syncp);
- 
- 		rx_ring = &adapter->rx_rings[i];
- 		rx_ring->queue_index = i;
-@@ -1588,6 +1589,7 @@ static int iavf_alloc_queues(struct iavf_adapter *adapter)
- 		rx_ring->dev = &adapter->pdev->dev;
- 		rx_ring->count = adapter->rx_desc_count;
- 		rx_ring->itr_setting = IAVF_ITR_RX_DEF;
-+		u64_stats_init(&rx_ring->rq_stats.syncp);
- 	}
- 
- 	adapter->num_active_queues = num_active_queues;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-index 1de67a70f045..12308e7c9ec0 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-@@ -158,6 +158,9 @@ void iavf_detect_recover_hung(struct iavf_vsi *vsi)
- 	for (i = 0; i < vsi->back->num_active_queues; i++) {
- 		tx_ring = &vsi->back->tx_rings[i];
- 		if (tx_ring && tx_ring->desc) {
-+			const struct libie_sq_stats *st = &tx_ring->sq_stats;
-+			u32 start;
-+
- 			/* If packet counter has not changed the queue is
- 			 * likely stalled, so force an interrupt for this
- 			 * queue.
-@@ -165,8 +168,13 @@ void iavf_detect_recover_hung(struct iavf_vsi *vsi)
- 			 * prev_pkt_ctr would be negative if there was no
- 			 * pending work.
- 			 */
--			packets = tx_ring->stats.packets & INT_MAX;
--			if (tx_ring->tx_stats.prev_pkt_ctr == packets) {
-+			do {
-+				start = u64_stats_fetch_begin(&st->syncp);
-+				packets = u64_stats_read(&st->packets) &
-+					  INT_MAX;
-+			} while (u64_stats_fetch_retry(&st->syncp, start));
-+
-+			if (tx_ring->prev_pkt_ctr == packets) {
- 				iavf_force_wb(vsi, tx_ring->q_vector);
- 				continue;
- 			}
-@@ -175,7 +183,7 @@ void iavf_detect_recover_hung(struct iavf_vsi *vsi)
- 			 * to iavf_get_tx_pending()
- 			 */
- 			smp_rmb();
--			tx_ring->tx_stats.prev_pkt_ctr =
-+			tx_ring->prev_pkt_ctr =
- 			  iavf_get_tx_pending(tx_ring, true) ? packets : -1;
- 		}
- 	}
-@@ -194,10 +202,10 @@ void iavf_detect_recover_hung(struct iavf_vsi *vsi)
- static bool iavf_clean_tx_irq(struct iavf_vsi *vsi,
- 			      struct iavf_ring *tx_ring, int napi_budget)
- {
-+	struct libie_sq_onstack_stats stats = { };
- 	int i = tx_ring->next_to_clean;
- 	struct iavf_tx_buffer *tx_buf;
- 	struct iavf_tx_desc *tx_desc;
--	unsigned int total_bytes = 0, total_packets = 0;
- 	unsigned int budget = IAVF_DEFAULT_IRQ_WORK;
- 
- 	tx_buf = &tx_ring->tx_bi[i];
-@@ -224,8 +232,8 @@ static bool iavf_clean_tx_irq(struct iavf_vsi *vsi,
- 		tx_buf->next_to_watch = NULL;
- 
- 		/* update the statistics for this packet */
--		total_bytes += tx_buf->bytecount;
--		total_packets += tx_buf->gso_segs;
-+		stats.bytes += tx_buf->bytecount;
-+		stats.packets += tx_buf->gso_segs;
- 
- 		/* free the skb */
- 		napi_consume_skb(tx_buf->skb, napi_budget);
-@@ -282,12 +290,9 @@ static bool iavf_clean_tx_irq(struct iavf_vsi *vsi,
- 
- 	i += tx_ring->count;
- 	tx_ring->next_to_clean = i;
--	u64_stats_update_begin(&tx_ring->syncp);
--	tx_ring->stats.bytes += total_bytes;
--	tx_ring->stats.packets += total_packets;
--	u64_stats_update_end(&tx_ring->syncp);
--	tx_ring->q_vector->tx.total_bytes += total_bytes;
--	tx_ring->q_vector->tx.total_packets += total_packets;
-+	libie_sq_napi_stats_add(&tx_ring->sq_stats, &stats);
-+	tx_ring->q_vector->tx.total_bytes += stats.bytes;
-+	tx_ring->q_vector->tx.total_packets += stats.packets;
- 
- 	if (tx_ring->flags & IAVF_TXR_FLAGS_WB_ON_ITR) {
- 		/* check to see if there are < 4 descriptors
-@@ -306,10 +311,10 @@ static bool iavf_clean_tx_irq(struct iavf_vsi *vsi,
- 
- 	/* notify netdev of completed buffers */
- 	netdev_tx_completed_queue(txring_txq(tx_ring),
--				  total_packets, total_bytes);
-+				  stats.packets, stats.bytes);
- 
- #define TX_WAKE_THRESHOLD ((s16)(DESC_NEEDED * 2))
--	if (unlikely(total_packets && netif_carrier_ok(tx_ring->netdev) &&
-+	if (unlikely(stats.packets && netif_carrier_ok(tx_ring->netdev) &&
- 		     (IAVF_DESC_UNUSED(tx_ring) >= TX_WAKE_THRESHOLD))) {
- 		/* Make sure that anybody stopping the queue after this
- 		 * sees the new next_to_clean.
-@@ -320,7 +325,7 @@ static bool iavf_clean_tx_irq(struct iavf_vsi *vsi,
- 		   !test_bit(__IAVF_VSI_DOWN, vsi->state)) {
- 			netif_wake_subqueue(tx_ring->netdev,
- 					    tx_ring->queue_index);
--			++tx_ring->tx_stats.restart_queue;
-+			libie_stats_inc_one(&tx_ring->sq_stats, restarts);
- 		}
- 	}
- 
-@@ -675,7 +680,7 @@ int iavf_setup_tx_descriptors(struct iavf_ring *tx_ring)
- 
- 	tx_ring->next_to_use = 0;
- 	tx_ring->next_to_clean = 0;
--	tx_ring->tx_stats.prev_pkt_ctr = -1;
-+	tx_ring->prev_pkt_ctr = -1;
- 	return 0;
- 
- err:
-@@ -731,7 +736,7 @@ void iavf_free_rx_resources(struct iavf_ring *rx_ring)
- 	kfree(rx_ring->rx_pages);
- 	rx_ring->rx_pages = NULL;
- 
--	page_pool_destroy(rx_ring->pool);
-+	libie_rx_page_pool_destroy(rx_ring->pool, &rx_ring->rq_stats);
- 	rx_ring->dev = dev;
- 
- 	if (rx_ring->desc) {
-@@ -760,8 +765,6 @@ int iavf_setup_rx_descriptors(struct iavf_ring *rx_ring)
- 	if (!rx_ring->rx_pages)
- 		return ret;
- 
--	u64_stats_init(&rx_ring->syncp);
--
- 	/* Round up to nearest 4K */
- 	rx_ring->size = rx_ring->count * sizeof(union iavf_32byte_rx_desc);
- 	rx_ring->size = ALIGN(rx_ring->size, 4096);
-@@ -863,10 +866,8 @@ static u32 __iavf_alloc_rx_pages(struct iavf_ring *rx_ring, u32 to_refill,
- 		dma_addr_t dma;
- 
- 		page = page_pool_alloc_pages(pool, gfp);
--		if (!page) {
--			rx_ring->rx_stats.alloc_page_failed++;
-+		if (!page)
- 			break;
--		}
- 
- 		rx_ring->rx_pages[ntu] = page;
- 		dma = page_pool_get_dma_addr(page);
-@@ -1090,25 +1091,23 @@ static struct sk_buff *iavf_build_skb(struct page *page, u32 size)
- 
- /**
-  * iavf_is_non_eop - process handling of non-EOP buffers
-- * @rx_ring: Rx ring being processed
-  * @rx_desc: Rx descriptor for current buffer
-- * @skb: Current socket buffer containing buffer in progress
-+ * @stats: NAPI poll local stats to update
-  *
-  * This function updates next to clean.  If the buffer is an EOP buffer
-  * this function exits returning false, otherwise it will place the
-  * sk_buff in the next buffer to be chained and return true indicating
-  * that this is in fact a non-EOP buffer.
-  **/
--static bool iavf_is_non_eop(struct iavf_ring *rx_ring,
--			    union iavf_rx_desc *rx_desc,
--			    struct sk_buff *skb)
-+static bool iavf_is_non_eop(union iavf_rx_desc *rx_desc,
-+			    struct libie_rq_onstack_stats *stats)
- {
- 	/* if we are the last buffer then there is nothing else to do */
- #define IAVF_RXD_EOF BIT(IAVF_RX_DESC_STATUS_EOF_SHIFT)
- 	if (likely(iavf_test_staterr(rx_desc, IAVF_RXD_EOF)))
- 		return false;
- 
--	rx_ring->rx_stats.non_eop_descs++;
-+	stats->fragments++;
- 
- 	return true;
- }
-@@ -1127,8 +1126,8 @@ static bool iavf_is_non_eop(struct iavf_ring *rx_ring,
-  **/
- static int iavf_clean_rx_irq(struct iavf_ring *rx_ring, int budget)
- {
--	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
- 	const gfp_t gfp = GFP_ATOMIC | __GFP_NOWARN;
-+	struct libie_rq_onstack_stats stats = { };
- 	u32 to_refill = IAVF_DESC_UNUSED(rx_ring);
- 	struct page_pool *pool = rx_ring->pool;
- 	struct sk_buff *skb = rx_ring->skb;
-@@ -1145,9 +1144,13 @@ static int iavf_clean_rx_irq(struct iavf_ring *rx_ring, int budget)
- 		u64 qword;
- 
- 		/* return some buffers to hardware, one at a time is too slow */
--		if (to_refill >= IAVF_RX_BUFFER_WRITE)
-+		if (to_refill >= IAVF_RX_BUFFER_WRITE) {
- 			to_refill = __iavf_alloc_rx_pages(rx_ring, to_refill,
- 							  gfp);
-+			if (unlikely(to_refill))
-+				libie_stats_inc_one(&rx_ring->rq_stats,
-+						    alloc_page_fail);
-+		}
- 
- 		rx_desc = IAVF_RX_DESC(rx_ring, ntc);
- 
-@@ -1195,7 +1198,8 @@ static int iavf_clean_rx_irq(struct iavf_ring *rx_ring, int budget)
- 		/* exit if we failed to retrieve a buffer */
- 		if (!skb) {
- 			page_pool_put_page(pool, page, size, true);
--			rx_ring->rx_stats.alloc_buff_failed++;
-+			libie_stats_inc_one(&rx_ring->rq_stats,
-+					    build_skb_fail);
- 			break;
- 		}
- 
-@@ -1207,7 +1211,7 @@ static int iavf_clean_rx_irq(struct iavf_ring *rx_ring, int budget)
- 
- 		prefetch(IAVF_RX_DESC(rx_ring, ntc));
- 
--		if (iavf_is_non_eop(rx_ring, rx_desc, skb))
-+		if (iavf_is_non_eop(rx_desc, &stats))
- 			continue;
- 
- 		/* ERR_MASK will only have valid bits if EOP set, and
-@@ -1227,7 +1231,7 @@ static int iavf_clean_rx_irq(struct iavf_ring *rx_ring, int budget)
- 		}
- 
- 		/* probably a little skewed due to removing CRC */
--		total_rx_bytes += skb->len;
-+		stats.bytes += skb->len;
- 
- 		qword = le64_to_cpu(rx_desc->wb.qword1.status_error_len);
- 		rx_ptype = (qword & IAVF_RXD_QW1_PTYPE_MASK) >>
-@@ -1249,7 +1253,7 @@ static int iavf_clean_rx_irq(struct iavf_ring *rx_ring, int budget)
- 		skb = NULL;
- 
- 		/* update budget accounting */
--		total_rx_packets++;
-+		stats.packets++;
- 	}
- 
- 	rx_ring->next_to_clean = ntc;
-@@ -1260,16 +1264,16 @@ static int iavf_clean_rx_irq(struct iavf_ring *rx_ring, int budget)
- 		/* guarantee a trip back through this routine if there was
- 		 * a failure
- 		 */
--		if (unlikely(to_refill))
-+		if (unlikely(to_refill)) {
-+			libie_stats_inc_one(&rx_ring->rq_stats,
-+					    alloc_page_fail);
- 			cleaned_count = budget;
-+		}
- 	}
- 
--	u64_stats_update_begin(&rx_ring->syncp);
--	rx_ring->stats.packets += total_rx_packets;
--	rx_ring->stats.bytes += total_rx_bytes;
--	u64_stats_update_end(&rx_ring->syncp);
--	rx_ring->q_vector->rx.total_packets += total_rx_packets;
--	rx_ring->q_vector->rx.total_bytes += total_rx_bytes;
-+	libie_rq_napi_stats_add(&rx_ring->rq_stats, &stats);
-+	rx_ring->q_vector->rx.total_packets += stats.packets;
-+	rx_ring->q_vector->rx.total_bytes += stats.bytes;
- 
- 	return cleaned_count;
- }
-@@ -1448,10 +1452,8 @@ int iavf_napi_poll(struct napi_struct *napi, int budget)
- 			return budget - 1;
- 		}
- tx_only:
--		if (arm_wb) {
--			q_vector->tx.ring[0].tx_stats.tx_force_wb++;
-+		if (arm_wb)
- 			iavf_enable_wb_on_itr(vsi, q_vector);
--		}
- 		return budget;
- 	}
- 
-@@ -1910,6 +1912,7 @@ bool __iavf_chk_linearize(struct sk_buff *skb)
- int __iavf_maybe_stop_tx(struct iavf_ring *tx_ring, int size)
- {
- 	netif_stop_subqueue(tx_ring->netdev, tx_ring->queue_index);
-+	libie_stats_inc_one(&tx_ring->sq_stats, stops);
- 	/* Memory barrier before checking head and tail */
- 	smp_mb();
- 
-@@ -1919,7 +1922,8 @@ int __iavf_maybe_stop_tx(struct iavf_ring *tx_ring, int size)
- 
- 	/* A reprieve! - use start_queue because it doesn't call schedule */
- 	netif_start_subqueue(tx_ring->netdev, tx_ring->queue_index);
--	++tx_ring->tx_stats.restart_queue;
-+	libie_stats_inc_one(&tx_ring->sq_stats, restarts);
-+
- 	return 0;
- }
- 
-@@ -2100,7 +2104,7 @@ static netdev_tx_t iavf_xmit_frame_ring(struct sk_buff *skb,
- 			return NETDEV_TX_OK;
- 		}
- 		count = iavf_txd_use_count(skb->len);
--		tx_ring->tx_stats.tx_linearize++;
-+		libie_stats_inc_one(&tx_ring->sq_stats, linearized);
- 	}
- 
- 	/* need: 1 descriptor per page * PAGE_SIZE/IAVF_MAX_DATA_PER_TXD,
-@@ -2110,7 +2114,7 @@ static netdev_tx_t iavf_xmit_frame_ring(struct sk_buff *skb,
- 	 * otherwise try next time
- 	 */
- 	if (iavf_maybe_stop_tx(tx_ring, count + 4 + 1)) {
--		tx_ring->tx_stats.tx_busy++;
-+		libie_stats_inc_one(&tx_ring->sq_stats, busy);
- 		return NETDEV_TX_BUSY;
- 	}
- 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.h b/drivers/net/ethernet/intel/iavf/iavf_txrx.h
-index 8fbe549ce6a5..64c93d6fa54d 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_txrx.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.h
-@@ -4,6 +4,8 @@
- #ifndef _IAVF_TXRX_H_
- #define _IAVF_TXRX_H_
- 
-+#include <linux/net/intel/libie/stats.h>
-+
- /* Interrupt Throttling and Rate Limiting Goodies */
- #define IAVF_DEFAULT_IRQ_WORK      256
- 
-@@ -201,27 +203,6 @@ struct iavf_tx_buffer {
- 	u32 tx_flags;
- };
- 
--struct iavf_queue_stats {
--	u64 packets;
--	u64 bytes;
--};
--
--struct iavf_tx_queue_stats {
--	u64 restart_queue;
--	u64 tx_busy;
--	u64 tx_done_old;
--	u64 tx_linearize;
--	u64 tx_force_wb;
--	int prev_pkt_ctr;
--	u64 tx_lost_interrupt;
--};
--
--struct iavf_rx_queue_stats {
--	u64 non_eop_descs;
--	u64 alloc_page_failed;
--	u64 alloc_buff_failed;
--};
--
- /* some useful defines for virtchannel interface, which
-  * is the only remaining user of header split
-  */
-@@ -272,21 +253,9 @@ struct iavf_ring {
- #define IAVF_TXR_FLAGS_VLAN_TAG_LOC_L2TAG2	BIT(4)
- #define IAVF_RXR_FLAGS_VLAN_TAG_LOC_L2TAG2_2	BIT(5)
- 
--	/* stats structs */
--	struct iavf_queue_stats	stats;
--	struct u64_stats_sync syncp;
--	union {
--		struct iavf_tx_queue_stats tx_stats;
--		struct iavf_rx_queue_stats rx_stats;
--	};
--
--	unsigned int size;		/* length of descriptor ring in bytes */
--	dma_addr_t dma;			/* physical address of ring */
--
- 	struct iavf_vsi *vsi;		/* Backreference to associated VSI */
- 	struct iavf_q_vector *q_vector;	/* Backreference to associated vector */
- 
--	struct rcu_head rcu;		/* to avoid race on free */
- 	struct sk_buff *skb;		/* When iavf_clean_rx_ring_irq() must
- 					 * return before it sees the EOP for
- 					 * the current packet, we save that skb
-@@ -295,6 +264,18 @@ struct iavf_ring {
- 					 * iavf_clean_rx_ring_irq() is called
- 					 * for this ring.
- 					 */
-+
-+	/* stats structs */
-+	union {
-+		struct libie_sq_stats sq_stats;
-+		struct libie_rq_stats rq_stats;
-+	};
-+
-+	int prev_pkt_ctr;		/* For stall detection */
-+	unsigned int size;		/* length of descriptor ring in bytes */
-+	dma_addr_t dma;			/* physical address of ring */
-+
-+	struct rcu_head rcu;		/* to avoid race on free */
- } ____cacheline_internodealigned_in_smp;
- 
- #define IAVF_ITR_ADAPTIVE_MIN_INC	0x0002
--- 
-2.40.1
-
+Thank you,
+Arkadiusz
 
