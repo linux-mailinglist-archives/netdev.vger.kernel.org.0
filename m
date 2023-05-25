@@ -1,67 +1,62 @@
-Return-Path: <netdev+bounces-5471-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5473-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9FA117117A9
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 21:51:58 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 404527117C6
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 22:01:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 570051C20F19
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 19:51:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9C7112815DF
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:01:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 955FA2414F;
-	Thu, 25 May 2023 19:51:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9571624157;
+	Thu, 25 May 2023 20:01:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 832401DDED;
-	Thu, 25 May 2023 19:51:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D5D3FC05;
+	Thu, 25 May 2023 20:01:18 +0000 (UTC)
 Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BEA12F;
-	Thu, 25 May 2023 12:51:34 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7757895;
+	Thu, 25 May 2023 13:01:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
 	In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
 	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=51vGjxfu+4jotgoJPqTXpcFpuWreFBe0vTvfgLveh0Y=; b=WzVLUJN1dYmV1mynMoZwi8ICIP
-	NtA2lShoTygqgtpXYkIe5sF+5WXFcm+Jej6ktbE0g1HpXQY48uBsUku8kaEZnZPk+afyRbucGHlVH
-	IfnoX6xV203VqkBQlAt+SCGwYq/twxrjzXsLXbvklVi1JjmcvcH5dEn+z/QM2PS/JZbLwSmIZSCci
-	fe3qpg/sqS71PwAhakT6qeoQWcR+2gyRal1XLChNGtkmorNg2tkzOHienaazOQTRiuvJVroRFkYkX
-	AcA3vPn2CAWVu84iHYg7djTtkD0KeJXqDLmaZbYy/F67zzhxODejLfgFcO0KvCMUgjDfUXszBFvYH
-	U8jC/61A==;
-Received: from sslproxy04.your-server.de ([78.46.152.42])
+	bh=nqfhm3/Yv5prAaAJ3hLzCTN2dKkIp+erbKr/gQI7qtE=; b=HDLoT+2z2oyn1lpV6boByRvq0B
+	ssnHAwUL8qfkkR0wmfBHbhRowm5fQdTtJqQ9zqhRmuz1XaWy6Ln7+rAu5po+Lmpx9sBXTVHdZETE/
+	Mk5yY/q6l7oaKOWnK16xkeHVczkDp0Ndpl/lf5fveWhxxq5oft2IikFtcuzeGW3EaokONEGiN/Opg
+	tcaJYmrmOvH9EHlQaywLLzT1ag+S4i4vMvMfl/9s3MvkWj/6a8KXQumR8quO3e4cOjlPdq35CNqlX
+	q5+N8wIeHk9VImG40lii0oygOVjO39OSgFLOEMcvslER6QxS067b7aJKJ9EcPmeHKe9GMnHnvUvmM
+	bnOWDWcA==;
+Received: from sslproxy05.your-server.de ([78.46.172.2])
 	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <daniel@iogearbox.net>)
-	id 1q2GzU-0000BH-Lm; Thu, 25 May 2023 21:51:16 +0200
+	id 1q2H93-0001Bo-V8; Thu, 25 May 2023 22:01:09 +0200
 Received: from [178.197.248.42] (helo=linux.home)
-	by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+	by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <daniel@iogearbox.net>)
-	id 1q2GzT-00018s-Nw; Thu, 25 May 2023 21:51:15 +0200
+	id 1q2H92-000XIa-Sz; Thu, 25 May 2023 22:01:08 +0200
 Subject: Re: [PATCH bpf-next 1/2] bpf, net: Support SO_REUSEPORT sockets with
  bpf_sk_assign
-To: Eric Dumazet <edumazet@google.com>, Lorenz Bauer <lmb@isovalent.com>
-Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski
- <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Alexei Starovoitov <ast@kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
- Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>,
- Yonghong Song <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>,
- KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>,
- Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
- David Ahern <dsahern@kernel.org>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- Joe Stringer <joe@wand.net.nz>, Joe Stringer <joe@cilium.io>,
- Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+To: Kuniyuki Iwashima <kuniyu@amazon.com>, lmb@isovalent.com
+Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+ davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+ haoluo@google.com, joe@cilium.io, joe@wand.net.nz, john.fastabend@gmail.com,
+ jolsa@kernel.org, kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
+ linux-kernel@vger.kernel.org, martin.lau@linux.dev, netdev@vger.kernel.org,
+ pabeni@redhat.com, sdf@google.com, song@kernel.org,
+ willemdebruijn.kernel@gmail.com, yhs@fb.com
 References: <20230525081923.8596-1-lmb@isovalent.com>
- <CANn89iJx74gR7Xuahd0S3pLXYC8EX6+JRkbt6T_bemMX-8zyig@mail.gmail.com>
+ <20230525174131.4706-1-kuniyu@amazon.com>
 From: Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <a71b8941-1ffc-37fc-6676-d3b4cf44f149@iogearbox.net>
-Date: Thu, 25 May 2023 21:51:14 +0200
+Message-ID: <99681548-fa79-0607-d574-db61818cab78@iogearbox.net>
+Date: Thu, 25 May 2023 22:01:08 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 Precedence: bulk
@@ -70,10 +65,10 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CANn89iJx74gR7Xuahd0S3pLXYC8EX6+JRkbt6T_bemMX-8zyig@mail.gmail.com>
+In-Reply-To: <20230525174131.4706-1-kuniyu@amazon.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-Authenticated-Sender: daniel@iogearbox.net
 X-Virus-Scanned: Clear (ClamAV 0.103.8/26918/Thu May 25 09:25:14 2023)
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -83,9 +78,9 @@ X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 5/25/23 3:24 PM, Eric Dumazet wrote:
-> On Thu, May 25, 2023 at 10:19 AM Lorenz Bauer <lmb@isovalent.com> wrote:
->>
+On 5/25/23 7:41 PM, Kuniyuki Iwashima wrote:
+> From: Lorenz Bauer <lmb@isovalent.com>
+> Date: Thu, 25 May 2023 09:19:22 +0100
 >> Currently the bpf_sk_assign helper in tc BPF context refuses SO_REUSEPORT
 >> sockets. This means we can't use the helper to steer traffic to Envoy, which
 >> configures SO_REUSEPORT on its sockets. In turn, we're blocked from removing
@@ -114,6 +109,21 @@ On 5/25/23 3:24 PM, Eric Dumazet wrote:
 >>
 >> Fixes: 8e368dc ("bpf: Fix use of sk->sk_reuseport from sk_assign")
 >> Fixes: cf7fbe6 ("bpf: Add socket assign support")
+> 
+> Please use 12 chars of hash.
+> 
+> $ cat ~/.gitconfig
+> [core]
+> 	abbrev = 12
+> [pretty]
+> 	fixes = Fixes: %h (\"%s\")
+> 
+> $ git show 8e368dc --pretty=fixes | head -n 1
+> Fixes: 8e368dc72e86 ("bpf: Fix use of sk->sk_reuseport from sk_assign")
+
+Yeap, not quite sure what happened here but the 12 chars is clear. Will
+be fixed up in v2, too, ofc.
+
 >> Co-developed-by: Daniel Borkmann <daniel@iogearbox.net>
 >> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 >> Signed-off-by: Lorenz Bauer <lmb@isovalent.com>
@@ -131,58 +141,44 @@ On 5/25/23 3:24 PM, Eric Dumazet wrote:
 >>   net/ipv6/udp.c                 | 23 +++++++++++++++++++---
 >>   tools/include/uapi/linux/bpf.h |  3 ---
 >>   10 files changed, 119 insertions(+), 39 deletions(-)
-> 
-> 
->> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
->> index e7391bf310a7..920131e4a65d 100644
->> --- a/net/ipv4/inet_hashtables.c
->> +++ b/net/ipv4/inet_hashtables.c
->> @@ -332,10 +332,10 @@ static inline int compute_score(struct sock *sk, struct net *net,
->>          return score;
->>   }
 >>
->> -static inline struct sock *lookup_reuseport(struct net *net, struct sock *sk,
->> -                                           struct sk_buff *skb, int doff,
->> -                                           __be32 saddr, __be16 sport,
->> -                                           __be32 daddr, unsigned short hnum)
->> +struct sock *inet_lookup_reuseport(struct net *net, struct sock *sk,
->> +                                  struct sk_buff *skb, int doff,
->> +                                  __be32 saddr, __be16 sport,
->> +                                  __be32 daddr, unsigned short hnum)
+[...]
+>> @@ -85,14 +92,33 @@ static inline struct sock *__inet6_lookup_skb(struct inet_hashinfo *hashinfo,
+>>   					      int iif, int sdif,
+>>   					      bool *refcounted)
 >>   {
->>          struct sock *reuse_sk = NULL;
->>          u32 phash;
->> @@ -346,6 +346,7 @@ static inline struct sock *lookup_reuseport(struct net *net, struct sock *sk,
->>          }
->>          return reuse_sk;
->>   }
->> +EXPORT_SYMBOL_GPL(inet_lookup_reuseport);
->>
->>   /*
->>    * Here are some nice properties to exploit here. The BSD API
->> @@ -369,8 +370,8 @@ static struct sock *inet_lhash2_lookup(struct net *net,
->>          sk_nulls_for_each_rcu(sk, node, &ilb2->nulls_head) {
->>                  score = compute_score(sk, net, hnum, daddr, dif, sdif);
->>                  if (score > hiscore) {
->> -                       result = lookup_reuseport(net, sk, skb, doff,
->> -                                                 saddr, sport, daddr, hnum);
->> +                       result = inet_lookup_reuseport(net, sk, skb, doff,
->> +                                                      saddr, sport, daddr, hnum);
->>                          if (result)
->>                                  return result;
->>
+>> -	struct sock *sk = skb_steal_sock(skb, refcounted);
+>> -
+>> +	bool prefetched;
+>> +	struct sock *sk = skb_steal_sock(skb, refcounted, &prefetched);
+>> +	struct net *net = dev_net(skb_dst(skb)->dev);
+>> +	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
 > 
-> Please split in a series.
-> 
-> First a patch renaming lookup_reuseport() to inet_lookup_reuseport()
-> and inet6_lookup_reuseport()
-> (cleanup, no change in behavior)
-> 
-> This would ease review and future bug hunting quite a bit.
+> nit: Reverse Xmas Tree order.  Same for other chunks.
 
-Makes sense and should reduce the churn on the actual change.
+It is, the prefetched bool is simply used one line below. I don't think
+this is much different than most other code from style pov..
 
-I think Lorenz is planning to flush out a v2 next week with this split.
+>> +
+>> +	if (prefetched) {
+>> +		struct sock *reuse_sk = inet6_lookup_reuseport(net, sk, skb, doff,
+>> +							       &ip6h->saddr, sport,
+>> +							       &ip6h->daddr, ntohs(dport));
+>> +		if (reuse_sk) {
+>> +			if (reuse_sk != sk) {
+>> +				if (*refcounted) {
+>> +					sock_put(sk);
+>> +					*refcounted = false;
+>> +				}
+>> +				if (IS_ERR(reuse_sk))
+>> +					return NULL;
+>> +			}
+>> +			return reuse_sk;
+>> +		}
+> 
+> Maybe we can add a hepler to avoid this duplication ?
+
+We'll check if it can be made a bit nicer and integrate this into the v2.
 
 Thanks,
 Daniel
