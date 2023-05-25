@@ -1,129 +1,166 @@
-Return-Path: <netdev+bounces-5254-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5255-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D70107106E7
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id E4C50710702
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:12:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8805E281480
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:11:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9F752281480
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:12:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D1E1C13A;
-	Thu, 25 May 2023 08:11:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E35D3C150;
+	Thu, 25 May 2023 08:12:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A5F51FB8
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:11:00 +0000 (UTC)
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B0A186
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 01:10:58 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-	by mailout.nyi.internal (Postfix) with ESMTP id 7E6AE5C0068;
-	Thu, 25 May 2023 04:10:55 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 25 May 2023 04:10:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm1; t=1685002255; x=1685088655; bh=7E
-	S4Nut8b33fEHfPBa/Aj9NxsXpNp27WRrVr4a+sE4Y=; b=Iu9GY1qwrqil9lziPL
-	MudKDgumJUnEgvbNYqy6MrtgwmMJIvHHfpwfVMeAe41dg6lzfcpuZS719E685HKt
-	WrvxBaupDPnT6caV47LE8/kBxSWWxrYCLWbKmX62jrdflCbAeV4E0F8Nu8ONJKEj
-	SnUaIjkUu5gdJ60YWkHsI4JFou4yqjUStT33jeBHc1IDsONZGimvdmuoLTb0MwDu
-	/YfIjtrmVhn7mEeS8MeacIjEojjynE0qdlBr+Im7zWEX36SBLLSklPg1H+atNLPc
-	ogICnslo/pRF/ReHALfQ6yM3HMCjQKhrNALjOy3q7xSe8y20xuGUeESIXC0mQGlN
-	WzYw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1685002255; x=1685088655; bh=7ES4Nut8b33fE
-	HfPBa/Aj9NxsXpNp27WRrVr4a+sE4Y=; b=kfpXQOrp2QsRiAnPuIf990eOSJlkX
-	DcI+anxqOrHLxOACWxPo+/TsX/lAGgYRtJD1XfJ5cTg/BnmlZ8ymlSa2oNbC9mEa
-	lBIx8iQX8NROJ1jah70JLzW923DGV/60e/hdQrWkspBdzDiiQju5Yn40TDcqkFVk
-	sXMRi4FW3yyQHu9w7inCZp0RLBTOtDpuzVhV95b2F7O9hsg4BsUHxKWqIZrCD9EY
-	ED1SPaflRFd2y+172Wm0l9vUqybWIFgJvmO2uoEAa7fU7cMRrNHiQBQDdaqBSwbg
-	OekJUZ/Yb8+nm9HZXat+xBrLoh4s/O3qsLs0QVwq5FXzxqHXDDqSdhX1A==
-X-ME-Sender: <xms:DxhvZBHBkXpz8TA7W66R1ETcWpf58amhnn3Dfs9Wd7M9ztq5jJAAfA>
-    <xme:DxhvZGWWJiXSJFRaAw-hjZ7wranN_UfooHqW4DI26sGq9ANCdBz_PgXdMIsppqcG7
-    HlnHm-fSYWIFolt3DU>
-X-ME-Received: <xmr:DxhvZDIfCa9NQ0YWUU2tujYQ1Z7HxM-OFmWu-H2D7ZoMCl3G7v6AHd0PwGA_iR7Zw7LGPbAoaGU>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeejiedguddvjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enfghrlhcuvffnffculddutddmnecujfgurhepfhgfhffvvefuffgjkfggtgesthdtredt
-    tdertdenucfhrhhomhepgghlrgguihhmihhrucfpihhkihhshhhkihhnuceovhhlrgguih
-    hmihhrsehnihhkihhshhhkihhnrdhpfieqnecuggftrfgrthhtvghrnhepiefgvdegieei
-    leduheeuueeujeeiieehgeduvefhgfeggeduvdevudeuheeufeegnecuvehluhhsthgvrh
-    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepvhhlrgguihhmihhrsehnihhk
-    ihhshhhkihhnrdhpfi
-X-ME-Proxy: <xmx:DxhvZHGg5BvgeYCNkahwTGIuSO8gci9nG-DXoSBzPmrMOuQqQO_aGw>
-    <xmx:DxhvZHWa7WpOp1-iUmJ-JoVMXhFzShajt0cu9bXdwi52ILOh_S4RXA>
-    <xmx:DxhvZCN-slrzfuiMMC-3lCFMw_iV6EQhGI2zy-WgntLGwCmXEtDN1w>
-    <xmx:DxhvZKNfwPI12_eNlkF71T8EMVJ5EReHA9GmEl5FGKP0HsCjjH1V3w>
-Feedback-ID: id3b446c5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 25 May 2023 04:10:51 -0400 (EDT)
-References: <20230523044805.22211-1-vladimir@nikishkin.pw>
- <20230523090441.5a68d0db@hermes.local>
-User-agent: mu4e 1.8.14; emacs 30.0.50
-From: Vladimir Nikishkin <vladimir@nikishkin.pw>
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
- gnault@redhat.com, razor@blackwall.org, idosch@nvidia.com,
- liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com
-Subject: Re: [PATCH iproute2-next v6] ip-link: add support for nolocalbypass
- in vxlan
-Date: Thu, 25 May 2023 16:08:46 +0800
-In-reply-to: <20230523090441.5a68d0db@hermes.local>
-Message-ID: <87bki8de5z.fsf@laptop.lockywolf.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFF54BE78
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:12:33 +0000 (UTC)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2113.outbound.protection.outlook.com [40.107.92.113])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BECC1A6;
+	Thu, 25 May 2023 01:12:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CwLRWsUU4VhIfZj8dexxfw++QAJa3b+C9vYRp9RdQEVVXFijYcsOpneEz36i2diCJbjeOu3n4A7tYNtvZo2J6h+W1Eqn45zItF2uhFoukvjSeaauynV1A68H4ZTPCFIFXuSRIxYGu1rI3s+KMWPmmQ+p/pIbJUwbrvr/Kn2E08QlDQMT8csiRwTY46f21IQBlHAIIKFVKmOS2R2bagLdUPJNilztlFrJw529VHSUkVfdahLNPon73Il5z9f4+Rox+Y6xj7E4c1pKZMONtxdoQj62p3P0CJDJxXtqjL84qcDk2E7fSp1ATQO5GFXuMjx7GNshHr4vKPsdAbwo3R5Qqg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C0fAlMIZAxgukyNINM+zUAWlgyHggETYvrKLHpoDlig=;
+ b=S0nna07uNQtVVkF/scqFEsbTuYP3CYyvkN9E4QtC51uCX/S9d6Oi1Toxx3iiDGbnSoYOg+oJrNySE95/ZzzIZO83BgfTV9A3/jSjdDDGsGcFFW5UyCpECUoCmmUQMWycBzdh+dvmyXvxVpupX3P9pzIwF6+YX//n0LKsU7JDUn01tROnz9br0wdGPf5FWIzcLoNH1OsLulsc/rjbZyGB1Ta8hjmTRTt6ssc3AbSsDa6N+K9dWNLkh2B4Mjk8KNdWsGid80YZiU7p7cwes7Z3nlmC1wUviIaubJxXFClrPitmMHIUXzxwhnx+gliXMmMSgzAZGjNmZr77o9aqfVwrlg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C0fAlMIZAxgukyNINM+zUAWlgyHggETYvrKLHpoDlig=;
+ b=gu/1LVjJB4AS8JvhNvO2ad70nUQ2n5N575+jb9TQe1UA41FlXhx5TxthoU1Okx8pXBrPN3Oo8swigthKMkXivkAqYeBd/k16Xno/Y7Y0bKhdgVELO2WJXZoNHAUpt7y7kkwW2ssSNsz0uTYLs7ISgy/f5+cxqOl7ysO0ce3sg4A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by LV3PR13MB6528.namprd13.prod.outlook.com (2603:10b6:408:1a5::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.15; Thu, 25 May
+ 2023 08:12:27 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6411.029; Thu, 25 May 2023
+ 08:12:26 +0000
+Date: Thu, 25 May 2023 10:12:19 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Osama Muhammad <osmtendev@gmail.com>
+Cc: krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, nbd@nbd.name, ryder.lee@mediatek.com,
+	lorenzo@kernel.org, shayne.chen@mediatek.com, davem@davemloft.net,
+	linux-wireless@vger.kernel.org, linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] nfcsim.c: Fix error checking for debugfs_create_dir
+Message-ID: <ZG8YY/r8BLCzw93q@corigine.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230524160352.19704-1-osmtendev@gmail.com>
+ <20230524155506.19353-1-osmtendev@gmail.com>
+X-ClientProxiedBy: AS4P191CA0043.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:20b:657::10) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|LV3PR13MB6528:EE_
+X-MS-Office365-Filtering-Correlation-Id: 93edf731-1e9f-4ef3-9db4-08db5cf7c699
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Cr9ILz4Km0JXZJ4dvWwvRAPKRHhIyj+GHaYeiyEri1i7+/l37ZVTcoSjKKz2CibKcgLV1GWMRtmo5OjKR3oNhUoPXfxbMsUS5YiGo6Xdq/S0OtjVO7X9lkUkUZE4REMut83PO+Hxr1LBwekBBroByPrUCJId5s072nPL5UFWvkNQZL2f5mh2OP85BAXXUpL8XjigVC5m5XSlHrd0BjJnY4eZGhf0P6wciCSJ96KV6iVlRuRpnSSp6sJJPOuA5bXXn8Q/VEc1zu45ozL7EVK0lsYDS4LhIzeksXKLqYaDG7Q9pFb60QzbzuSK5HlsrRfQIQqRxsjB3gob7YAyTEoY7T1wV57iLzIBt211ra0zGzqlF0+dqNNKgGxdSi0qg/InDpFwaigZPVye8uq954UVC/jJs7eYwzSVqil6LRaLwG9j+84HsM8mlxOrOdxkzVgU85W82gm8k5u+O5pX7w0/LAQHFDLq02reI/IuqVYCEGCv++K34llMvp6G7PgbgxE+gnCnFJB2/LXE3bz3EuDN76NNufERlIymsWOUK7C0TNI1kZaSLuynjqPTIROBqGBu6kXqhWntjpACW4tyHTDgSFrc8qUX2ofqMkHjsMH/IIs=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39840400004)(366004)(136003)(376002)(396003)(451199021)(66946007)(66556008)(66476007)(36756003)(83380400001)(2906002)(8936002)(8676002)(7416002)(6666004)(6486002)(41300700001)(4326008)(316002)(6916009)(2616005)(44832011)(5660300002)(478600001)(6506007)(6512007)(186003)(38100700002)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?mwXNdBD5HPS2eCdpuNJ6KcmRoXNHNqTihZzaTfH72R/pCNbOuJ/efnhENG9G?=
+ =?us-ascii?Q?vZk3NiWw+htk38vELLXHwFfwz3KyB167svr+vLfb2nHNpKHfnhPpJm0zL+a9?=
+ =?us-ascii?Q?YjPlQp9kmK0jf+IzjcFo2qxLXP/9AWBHMzIR0UPlGfhCRfDNWnvkPstphZ/2?=
+ =?us-ascii?Q?WzKLWJedfLWxuzwN4yUayRCSR29QkDWmeqctMTru92fhL0IiTfZZH5xJvOFa?=
+ =?us-ascii?Q?T3zxf1wksfaQLNSuFnZhFGIKJ/ab8swM7buU0rqRCVBh8Wc2CEuNODsLTXyH?=
+ =?us-ascii?Q?vL3g1X8DljNxiOZ9uIpqs2gCTnbvfnKJaKT/qjLdLiH+7Tc1dlYvoaBUr610?=
+ =?us-ascii?Q?Yp5/7SmWufVe8ZQLSKt7x4qVOjLgFj8h9ZpUYysuWCoIm5+duaH7EB9eWqZ8?=
+ =?us-ascii?Q?J9Wbj6z2OfmSUN++EbGPf7yK1PX0KaoPQ4sIrPfFQDneFtaB8x5oYIHaF5kq?=
+ =?us-ascii?Q?sXwQi9tFMf0YTS5ALoRH6sU4TT1x9SEM+Zv3ZBxczNVjr3WWmC31jKe+c+LI?=
+ =?us-ascii?Q?MXVCkzKC1KRS4aUvORhnbA3SOyLzaqxI0ZAUFMecVX+uCg4eNfXCPaQfSODV?=
+ =?us-ascii?Q?W/tgQFLYbpBhU6XRqJeION+CsM8slq2k8BAs/KkddFJmCAJi82xMUJGpyNQh?=
+ =?us-ascii?Q?uwaZB/YWytDjsVORalbG1Q3SjjkcFoEzBQzcDTlD4aru10f7HiXBSOi23HD0?=
+ =?us-ascii?Q?vkQ8rGwfVOyQxk4/CsLwnTf4pBVkNZXTxxqndkuFqts+7Xu7MQjjEbMguvO9?=
+ =?us-ascii?Q?35DFPGRxbFi5QIGvQHCI0mq5SXGkSFlSItUNYKiI/UWnIC9fFOYoHnZ1z2aM?=
+ =?us-ascii?Q?RLDPzW3fb0sgqNnHHbgK0vpbn/MdkS7UD1OFR4+Y0G25SXpXilscL/XMwc60?=
+ =?us-ascii?Q?M1K+alljQoj3sC1NhJRRCkaOxINqraeR/Wz1L13HZ3wTtY4So5Ceri75I35C?=
+ =?us-ascii?Q?0kV4t23Ua/uC0Ei2xyPCZhvKyn+Ia9ZDpz13yCmOq4pL1z9Ngz5QTQLiiE3L?=
+ =?us-ascii?Q?IdAN2Lw9WBGf5XoTEjcLAnt4DfxECScGbc8Hppa7DRnww8PdYWg3BhxFj4x6?=
+ =?us-ascii?Q?il7KQdOTFCqnXchf0P0aNp1DlO25tivbfhsy16U86RBJMAlQXpPTR5CZLQtx?=
+ =?us-ascii?Q?LYvtQd0jiPu8/bJpuid9mftV4gQwGAytEel7DDnhjaWIn5Yx4uQHZNs41yh2?=
+ =?us-ascii?Q?wyjtpING1k6oG2hzVy8cFqDX/AFhwprD0Fbsi1elW9iUnShzAxyjaP/eWTli?=
+ =?us-ascii?Q?t6V99/Ktodjnw8Lb8sjXfPF7DwjCSRBgiX+6GA7gwZcH2oMiL0xsS1K0uSYP?=
+ =?us-ascii?Q?JXS+xWxPy3ojV2DJXgAJC1tDWvlXPeCkz9z+gZ4CiumM0WO7my90JB5LeLDt?=
+ =?us-ascii?Q?KqGW4qbgXHW0ykgME9bBbOONw395wRFL7xeEF5D4LstGPILR0yFVDD8dmLsY?=
+ =?us-ascii?Q?srZ3YvhOGHmVU+krVP3r4Y6/Zl4nGPMnCqqzhJgHetE3aKrYKJHhTSfGH0Qd?=
+ =?us-ascii?Q?WZy/s2dvTvF7HW9QHULEuEOTKSZ//fSPSw50LNkn5CDEUPbCUNDPwQJ5RRN2?=
+ =?us-ascii?Q?up9qgNHHcq+agEJRUPL5TvntImuIbUk8P+C4iMuj8BSIzu3AqlxdlmLW+f2q?=
+ =?us-ascii?Q?FSYqozWq564Wy85EHlMzheZVEnLIHke08Zbn4yX3c5bi8PpLqJlNFn6PBm2R?=
+ =?us-ascii?Q?Sdu5Xg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93edf731-1e9f-4ef3-9db4-08db5cf7c699
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2023 08:12:26.4396
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6tyFjxUxmCw2ch/kbbQ+KVNQPhm6Na0JGUFxp9CdaAkgw/KSLoLgMmwNWoqIhoGdvYPj7E4Iw8xT1fjDigIkgWSH1/HkbnIB3MNCsRNOez0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR13MB6528
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Wed, May 24, 2023 at 08:55:06PM +0500, Osama Muhammad wrote:
+> This patch fixes the error checking in nfcsim.c in
+> debugfs_create_dir. The correct way to check if an error occurred
+> is using 'IS_ERR' inline function.
+> 
+> Signed-off-by: Osama Muhammad <osmtendev@gmail.com>
 
-Stephen Hemminger <stephen@networkplumber.org> writes:
+...
 
-> On Tue, 23 May 2023 12:48:05 +0800
-> Vladimir Nikishkin <vladimir@nikishkin.pw> wrote:
->
->> +	if (tb[IFLA_VXLAN_LOCALBYPASS]) {
->> +		__u8 localbypass = rta_getattr_u8(tb[IFLA_VXLAN_LOCALBYPASS]);
->> +
->> +		print_bool(PRINT_JSON, "localbypass", NULL, localbypass);
->> +		if (!localbypass)
->> +			print_bool(PRINT_FP, NULL, "nolocalbypass ", true);
->> +	}
->
-> This is backwards since nolocalbypass is the default.
+On Wed, May 24, 2023 at 09:03:52PM +0500, Osama Muhammad wrote:
+> This patch fixes the error checking in debugfs.c in
+> debugfs_create_dir. The correct way to check if an error occurred
+> is using 'IS_ERR' inline function.
+> 
+> Signed-off-by: Osama Muhammad <osmtendev@gmail.com>
 
-Could you, please, look at the proposed changes again? I do not think
-that the default is "nolocalbypass". The default is "localbypass", as
-this is how the kernel behaved without commit
-69474a8a5837be63f13c6f60a7d622b98ed5c539.
+...
+
+The comment above debugfs_create_dir includes the following text.
+
+ * NOTE: it's expected that most callers should _ignore_ the errors returned
+ * by this function. Other debugfs functions handle the fact that the "dentry"
+ * passed to them could be an error and they don't crash in that case.
+ * Drivers should generally work fine even if debugfs fails to init anyway.
+
+And I notice that in this same file there are calls to debugfs_create_dir()
+where that advice is followed: the return value is ignored.
+
+So I think the correct approaches here are to either:
+
+1. Do nothing, the code isn't really broken
+2. Remove the error checking
 
 -- 
-Your sincerely,
-Vladimir Nikishkin (MiEr, lockywolf)
-(Laptop)
---
-Fastmail.
+pw-bot: cr
 
 
