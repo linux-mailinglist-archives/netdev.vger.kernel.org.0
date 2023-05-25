@@ -1,163 +1,284 @@
-Return-Path: <netdev+bounces-5283-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5284-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C07F4710927
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 11:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 9356A71096C
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 12:05:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 880612814F0
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 09:47:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E900B2814F1
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:05:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 85AC3DF55;
-	Thu, 25 May 2023 09:47:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D385DF5E;
+	Thu, 25 May 2023 10:05:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DA63D301
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 09:47:00 +0000 (UTC)
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2086.outbound.protection.outlook.com [40.107.105.86])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854C4A9;
-	Thu, 25 May 2023 02:46:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MfU1WGGpMWIDU48BLSpHCSsfasi3lqy4Os+L8+WNmgh10nCFey5xLOiuqL+cNLmdwBXercdirozouoQuiiyU9sjviMMgKhUHXmNeJrmtlN87NIjQZdAFXKHwWO9Q7LAHB25X0QGa4c3zyNG+eKKDFHtfHf3n+1JYvob43UForzXLuJxnoMWAdVMGSBwGrqkh4kg3iMvtrlkGraOEAoM4XupZpWgJOMIDW+BvqUDMpfNT3jT01c6HhAljapZSgjbbcB+PvmUYzukptFJGHnibOOqDc+OUVq4qJ9W7+G8lv44U6NgdJX0rfb9nO+/eyGZBmYsrHtTKOHVXV1XZZtpxDA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4AOxuBMkGqbkqaST1daTeOfgf+RVcE5uRuYDziO5n7o=;
- b=I9VIiecCcz50Pw0kgjOPhKI19h9Mqq53KtExMJ2qM1H3pxaaJ+T+1P8WL2fMhenxccedk4i+TiTtPKUi/bYV2XYB1kjQPQq3issjhD0DxCxtnua4JyidWKrMFGlPuqMovDEWs8Ipv746nM1zY8eR3Tg0r54pCbX7rM5iF2/qQ3PdNy1lnw8qiJZaUwlsWlNBZariJO3FWyk/JK0NSg4fWC27Eg5vKxBkQpQLTz9u0nEvROzgi9rUFXvFA73JAo8fjoNb8CtVY4KMbyCalxm2bxolCpLwjO5RzIRU0GFawZzH6edXSqs9+aNWcr4P9yYLQcUWbav5gowayoPEaX1Dzw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4AOxuBMkGqbkqaST1daTeOfgf+RVcE5uRuYDziO5n7o=;
- b=Q42V0i8E3uRjTwHC+eGinipaa24wGYSgg2GilPR9ESGSCRaFGFmiy10duxssDVkf6Iuw1yZmFm8F+WtqEBVL9lNczw0d4gWGPqi2uUTOyrWrXqS20TpKCBNrJj+KgKE0W1NWgSlNe53CLfCSGe4PpWmIjzBUEUYog6bIzheAYTE=
-Received: from AM5PR04MB3139.eurprd04.prod.outlook.com (2603:10a6:206:8::20)
- by DU2PR04MB8791.eurprd04.prod.outlook.com (2603:10a6:10:2e2::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.15; Thu, 25 May
- 2023 09:46:54 +0000
-Received: from AM5PR04MB3139.eurprd04.prod.outlook.com
- ([fe80::682b:185:581f:7ea2]) by AM5PR04MB3139.eurprd04.prod.outlook.com
- ([fe80::682b:185:581f:7ea2%4]) with mapi id 15.20.6433.015; Thu, 25 May 2023
- 09:46:54 +0000
-From: Wei Fang <wei.fang@nxp.com>
-To: Simon Horman <simon.horman@corigine.com>
-CC: "davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
-	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, Shenwei Wang <shenwei.wang@nxp.com>,
-	Clark Wang <xiaoning.wang@nxp.com>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] net: fec: remove last_bdp from
- fec_enet_txq_xmit_frame()
-Thread-Topic: [PATCH net-next] net: fec: remove last_bdp from
- fec_enet_txq_xmit_frame()
-Thread-Index: AQHZjuToAdjg79t7vkOJMZ+/LVMoXq9qs0IAgAAKGCA=
-Date: Thu, 25 May 2023 09:46:54 +0000
-Message-ID:
- <AM5PR04MB3139757DD806591C0E2BFCC188469@AM5PR04MB3139.eurprd04.prod.outlook.com>
-References: <20230525083824.526627-1-wei.fang@nxp.com>
- <ZG8lpJvFnZlA3w2q@corigine.com>
-In-Reply-To: <ZG8lpJvFnZlA3w2q@corigine.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AM5PR04MB3139:EE_|DU2PR04MB8791:EE_
-x-ms-office365-filtering-correlation-id: f014e7aa-f361-4c17-4a7e-08db5d04f957
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 7OeBoKoyCONfqZnKfBXFLEyQZUsD2aktEysU/v6DB10rRmKZUiQ+gSiQ5ZBWY80hp5K29tqK+LWKpafOMi9EYL6B/25ram6WwnYIXP+1kwFXP/jyD9xIbNCAlQzJyzQ9/yPIXOeFZd+cB+ECHMMWHE6Ni3e7scQVaUY6bEjRSBeWvVCHEPI42kxb/wYMtU9Fbb7xDMWRrtvN1H2DFin7DqDQGKr3eD0IoVx/ZBYplxiXVmtvB6jdS9nxx8g/VhQ7E2kumTbtsLxBo4P8OI1sOPdOaG+ebHZhhcppXUGJUWXfju603ckAfBLtDEONWcYu15rBXmzAMdy4ZsMgi2d3x8qw1E4jyz2fxlVdzJWmy6L+JQmhidH2Anl847gO2EGja8tZ4iV+H1cpzEBReZx1erX8WhUxSf7E2NU2hYnZdKyUR6Jq3ddCyXw7XDPQVs99Jn34/kZZjh2A9qAViWp+xKTBhdsDkxvz8N8PdWZTuAbVm323iYcc/OwN1+8Aeuxs3FaVpBFjG+g6rawI5PTK2+T9gHNblGuXEihHmc6rW03Hn6GSNQvBx2fS0b+KiZYrUk6z+KPy0xwmYdDTLpTMrTpwN7lsh8eNAyvCTe7ulk/Sg4KFusEUVSY6X60IoWB1
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM5PR04MB3139.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(376002)(396003)(346002)(136003)(451199021)(54906003)(4744005)(2906002)(52536014)(5660300002)(8676002)(8936002)(44832011)(7696005)(4326008)(41300700001)(76116006)(66556008)(66476007)(66946007)(6916009)(478600001)(66446008)(33656002)(64756008)(71200400001)(55016003)(316002)(9686003)(6506007)(38100700002)(26005)(53546011)(122000001)(86362001)(186003)(83380400001)(38070700005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?gb2312?B?NW1qSlhWTE1xNFVCN0tSZk1haE90MzNXU0MxclJ4V0J1M29IN1E2bTFRSXQ3?=
- =?gb2312?B?aFExRllSaWgxTitwWElPWVVkU1VxNWQ4ZW96MzcvQ3h5WWJTdTdiZEY0SC9Y?=
- =?gb2312?B?YlFLUnVPeDFLazN6Zm9Wc24yNFVxblc2MUhwOUFPajluZ3k3QTNrSDRGeTk1?=
- =?gb2312?B?bEV0VGh2aDdyVW5MbmY4b08rMmVoaHpBNHQ0RktaVnBzenl3cjNGVytuamRE?=
- =?gb2312?B?bzlpQkNRYnR5TkMxN3E0ZTlqanlyZGE2Z29CZVlFaHk3SUxUWmJ1MUtKYzUz?=
- =?gb2312?B?YTNQdE9pYkFxai9CNXh4SkVZMXgvUDhEbkpSbEtXeVEwc21pWHNjNWFCUWMv?=
- =?gb2312?B?YXNsdUVycGR3Ujh0RE85aXN3aFB3cWt2QllrWm1tcXpaZTllZFJ0VTYySjBo?=
- =?gb2312?B?R2VBWUpRT29ra3NCdkpuVU1tOXQ3Q3l6SC9QcURDaG9LeDQvTGhmMnFWcmZj?=
- =?gb2312?B?a092OUlmRlMybFhzeTRVMGpQdnJReGlIRzZNOVlTSm9CRWMwYStiRnFXaHNI?=
- =?gb2312?B?YkpMamNGVVF3cy9Zc3BkQnNYQU80d2xSVGFnUmVHU2x0TU5BbGMxcVJPU0ZD?=
- =?gb2312?B?QStqeGhyMVdlNGxTTVk4RFk3RWNMSmdybWZQVkJjUmw2eDNZMFFyY1ErMEpO?=
- =?gb2312?B?ajhJYTFhTG5KNysxSVF6RzllL25LMHg4YytxYURweUxRVUhibzA2alE5Z2FF?=
- =?gb2312?B?RFFuRWVVTXM4WTVJWHZsOVBBRDhlVnRBMDNoUmhQL1dVWnN2enhlWGxTSVFj?=
- =?gb2312?B?TlJWVTljaDIwWTd1QlduZUlFbDZwR1h0WCt4cHg2aTNpNzJnZlp6M0V6UUFG?=
- =?gb2312?B?ZGM0V21DbDRucXNPcEpYVmU3OVFQVllScmdCWUt3bXE3RDhFdmlRR2NjaUJT?=
- =?gb2312?B?SENUbFN5WEFYSzE3b3JEYWluNVpOeFFRck9FenpRZzJZUHF1MHlLT3EyZ1k2?=
- =?gb2312?B?eS9qTGlFalRvTGVzOVhoSjZvMlZKOGs4eXNmZmtCRTdSaGx2cFUrZkd6SGsw?=
- =?gb2312?B?aVZOODJxM1ZmY3lpMmNUS3lYdkZJcGkrZHhHVEhJbVZIZDJ0RU1DU2JNVXZ2?=
- =?gb2312?B?Ykp4ZXh4VThpdjFibktpNXFjcG1tbXlmRE4rR1pRT0NjNTZIOWsyaTFnVGxR?=
- =?gb2312?B?eDdyaWdyWHp5Tlh5RTJPYW5BeTkvQVRzUEF4c1MxWnd0T2VTY2N4bFdGR0hF?=
- =?gb2312?B?eXVmcFVPZTZVMXlDaU9IQUJ0cXpBMkZzcys3N3F5N2VDbkJLbGNuMDFnYjg5?=
- =?gb2312?B?UGhtemVUMWZNczBqdlc3RWQ3em41UDZXTDBhYUJZcDlvR1BVdXZGa1pBQ0VD?=
- =?gb2312?B?eEhxTmxHZmxQNkpnQ085TDJnUHU2d2E1ajVnclF1eWUwazR6YmptYXorMFlT?=
- =?gb2312?B?eFBNclhRNllCanhPWnd4NkhWN2RWQjhOam5yVC90ak9sVHZpdkJjcHMrZkFC?=
- =?gb2312?B?TlZGZG1nZmtYMjlTaWtPR05NVDI5ZTk3ZmYwY1E1SWlnckk2UmRrWkxkQllE?=
- =?gb2312?B?UStmemd3ZXByOW5vOUlqNzhhaitET0ozM0l2dXpHN1NvZnN4MDZLa1RaYVoz?=
- =?gb2312?B?dFVsMXpHQWFEL2Y5ZEtSNVhBcHdMWWpTMlBKQy9FemRYMnVPV3dMZXZ3N0Rh?=
- =?gb2312?B?WmhNemNUNVI5aWxFTUhqOXhWK0tVMGdnemtGcWl3RktkMHluZi93Q1I5ZUpN?=
- =?gb2312?B?V1RiQ080TjV0ZStPQ3Z0ZldFMU1ZVGlWM1BvZHIxck04NXJTNzJqL0JjYklq?=
- =?gb2312?B?UExpTmk0TGhBcER4QUN5RWdiam5JMHowaFM3NlVHelVTS0c0dEw2cnlPMStN?=
- =?gb2312?B?K29PSnpZUGVDai9rSXNrOGJMMjZEdjZpUW9mTVpLdFZOUjBKNGVkYW5QcHYw?=
- =?gb2312?B?T0F5UVFxSW5yb3pJd2dFT2lpS2RmRW94V3h2NmhkTVBkcVQveFc0bkJTeHdy?=
- =?gb2312?B?cXN6dTFiRVNaUWcxSGZWWHE0cGxKZmlHdjRUUytvVHM1djBYM1ppNU1qMWJn?=
- =?gb2312?B?U1hnUndUdHJ3RmEyRlJNam9BK2paNVQydWJhSmt0L0Q3OExUMktpSFBpeG5a?=
- =?gb2312?B?bmFxQWVmOVkvUVlaVG5wT2NkRHIrbXRRdzRiWkllSHQwSXFkci9uNzQ0a3U4?=
- =?gb2312?Q?ziPE=3D?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECC15D2EF
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 10:05:20 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0465019D
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 03:05:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685009117;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=Eyd/q8MK7wtOVi8Txfm6tN7TJizqEO/n+/54cINgKVY=;
+	b=O36br3CKaLhsBfCFPO3VwlgGSaownbge7G1/o3Tv8HUMz44cvWuB0gjk27KQZlRYWyjwBv
+	J5uRO3YYH655q2bC+Wm3MZLLrURW7mL6qoGc5FHBdQ3x5DSau2pOkqfF/q5Umoeuu4anmg
+	1h82koOe55GMRGd7BHNSIqL9h89OzJY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-84-Hj15obMNM6iNGtPJxM76dQ-1; Thu, 25 May 2023 06:05:12 -0400
+X-MC-Unique: Hj15obMNM6iNGtPJxM76dQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D476A185A78E;
+	Thu, 25 May 2023 10:05:11 +0000 (UTC)
+Received: from toolbox.. (unknown [10.43.2.246])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id B9DB22166B2B;
+	Thu, 25 May 2023 10:05:10 +0000 (UTC)
+From: Michal Schmidt <mschmidt@redhat.com>
+To: intel-wired-lan@lists.osuosl.org
+Cc: Karol Kolacinski <karol.kolacinski@intel.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>,
+	Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+	Michal Michalik <michal.michalik@intel.com>,
+	Petr Oros <poros@redhat.com>,
+	netdev@vger.kernel.org
+Subject: [PATCH net v2] ice: make writes to /dev/gnssX synchronous
+Date: Thu, 25 May 2023 12:04:46 +0200
+Message-Id: <20230525100446.125117-1-mschmidt@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM5PR04MB3139.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f014e7aa-f361-4c17-4a7e-08db5d04f957
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 May 2023 09:46:54.7100
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZOkQ+0xr+azLDl7hM85N6SfrA96S4cYpMN4J5dzjQlK/wUtH6iRBKdL6ngByqyiuuSCpXDqad9jcQ15430Mvmg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8791
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBTaW1vbiBIb3JtYW4gPHNpbW9u
-Lmhvcm1hbkBjb3JpZ2luZS5jb20+DQo+IFNlbnQ6IDIwMjPE6jXUwjI1yNUgMTc6MDkNCj4gVG86
-IFdlaSBGYW5nIDx3ZWkuZmFuZ0BueHAuY29tPg0KPiBDYzogZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsg
-ZWR1bWF6ZXRAZ29vZ2xlLmNvbTsga3ViYUBrZXJuZWwub3JnOw0KPiBwYWJlbmlAcmVkaGF0LmNv
-bTsgU2hlbndlaSBXYW5nIDxzaGVud2VpLndhbmdAbnhwLmNvbT47IENsYXJrIFdhbmcNCj4gPHhp
-YW9uaW5nLndhbmdAbnhwLmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGRsLWxpbnV4LWlt
-eA0KPiA8bGludXgtaW14QG54cC5jb20+OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+
-IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHRdIG5ldDogZmVjOiByZW1vdmUgbGFzdF9iZHAg
-ZnJvbQ0KPiBmZWNfZW5ldF90eHFfeG1pdF9mcmFtZSgpDQo+IA0KPiBPbiBUaHUsIE1heSAyNSwg
-MjAyMyBhdCAwNDozODoyNFBNICswODAwLCB3ZWkuZmFuZ0BueHAuY29tIHdyb3RlOg0KPiA+IEZy
-b206IFdlaSBGYW5nIDx3ZWkuZmFuZ0BueHAuY29tPg0KPiA+DQo+ID4gQWN0dWFsbHksIHRoZSBs
-YXN0X2JkcCBpcyB1c2VsZXNzIGluIGZlY19lbmV0X3R4cV94bWl0X2ZyYW1lKCksIHNvDQo+ID4g
-cmVtb3ZlIGl0Lg0KPiANCj4gSSB0aGluayBpdCB3b3VsZCBiZSB1c2VmdWwgdG8gZGVzY3JpYmUg
-d2h5IGl0IGlzIHVzZWxlc3MuDQo+IA0KPiBGLmUuIGJlY2F1c2UgaXQgaXMgc2V0IHRvIGJkcCwg
-d2hpY2ggZG9lc24ndCBjaGFuZ2UsIHNvIGJkcCBjYW4gYmUgdXNlZCBkaXJlY3RseQ0KPiBpbnN0
-ZWFkLg0KPiANClNvcnJ5LCBJJ2xsIHJlZmluZSB0aGUgY29tbWl0IG1lc3NhZ2UgaW4gdGhlIG5l
-eHQgdmVyc2lvbi4gVGhhbmsgeW91IQ0K
+The current ice driver's GNSS write implementation buffers writes and
+works through them asynchronously in a kthread. That's bad because:
+ - The GNSS write_raw operation is supposed to be synchronous[1][2].
+ - There is no upper bound on the number of pending writes.
+   Userspace can submit writes much faster than the driver can process,
+   consuming unlimited amounts of kernel memory.
+
+A patch that's currently on review[3] ("[v3,net] ice: Write all GNSS
+buffers instead of first one") would add one more problem:
+ - The possibility of waiting for a very long time to flush the write
+   work when doing rmmod, softlockups.
+
+To fix these issues, simplify the implementation: Drop the buffering,
+the write_work, and make the writes synchronous.
+
+I tested this with gpsd and ubxtool.
+
+[1] https://events19.linuxfoundation.org/wp-content/uploads/2017/12/The-GNSS-Subsystem-Johan-Hovold-Hovold-Consulting-AB.pdf
+    "User interface" slide.
+[2] A comment in drivers/gnss/core.c:gnss_write():
+        /* Ignoring O_NONBLOCK, write_raw() is synchronous. */
+[3] https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20230217120541.16745-1-karol.kolacinski@intel.com/
+
+Fixes: d6b98c8d242a ("ice: add write functionality for GNSS TTY")
+Signed-off-by: Michal Schmidt <mschmidt@redhat.com>
+---
+v2: No real change. Just rebased, per Michal Michalik's request.
+---
+ drivers/net/ethernet/intel/ice/ice_common.c |  2 +-
+ drivers/net/ethernet/intel/ice/ice_common.h |  2 +-
+ drivers/net/ethernet/intel/ice/ice_gnss.c   | 64 ++-------------------
+ drivers/net/ethernet/intel/ice/ice_gnss.h   | 10 ----
+ 4 files changed, 6 insertions(+), 72 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 0157f6e98d3e..eb2dc0983776 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -5160,7 +5160,7 @@ ice_aq_read_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
+  */
+ int
+ ice_aq_write_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
+-		 u16 bus_addr, __le16 addr, u8 params, u8 *data,
++		 u16 bus_addr, __le16 addr, u8 params, const u8 *data,
+ 		 struct ice_sq_cd *cd)
+ {
+ 	struct ice_aq_desc desc = { 0 };
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index 8ba5f935a092..81961a7d6598 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -229,7 +229,7 @@ ice_aq_read_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
+ 		struct ice_sq_cd *cd);
+ int
+ ice_aq_write_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
+-		 u16 bus_addr, __le16 addr, u8 params, u8 *data,
++		 u16 bus_addr, __le16 addr, u8 params, const u8 *data,
+ 		 struct ice_sq_cd *cd);
+ bool ice_fw_supports_report_dflt_cfg(struct ice_hw *hw);
+ #endif /* _ICE_COMMON_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
+index 2ea8a2b11bcd..bd0ed155e11b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.c
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
+@@ -16,8 +16,8 @@
+  * * number of bytes written - success
+  * * negative - error code
+  */
+-static unsigned int
+-ice_gnss_do_write(struct ice_pf *pf, unsigned char *buf, unsigned int size)
++static int
++ice_gnss_do_write(struct ice_pf *pf, const unsigned char *buf, unsigned int size)
+ {
+ 	struct ice_aqc_link_topo_addr link_topo;
+ 	struct ice_hw *hw = &pf->hw;
+@@ -72,39 +72,7 @@ ice_gnss_do_write(struct ice_pf *pf, unsigned char *buf, unsigned int size)
+ 	dev_err(ice_pf_to_dev(pf), "GNSS failed to write, offset=%u, size=%u, err=%d\n",
+ 		offset, size, err);
+ 
+-	return offset;
+-}
+-
+-/**
+- * ice_gnss_write_pending - Write all pending data to internal GNSS
+- * @work: GNSS write work structure
+- */
+-static void ice_gnss_write_pending(struct kthread_work *work)
+-{
+-	struct gnss_serial *gnss = container_of(work, struct gnss_serial,
+-						write_work);
+-	struct ice_pf *pf = gnss->back;
+-
+-	if (!pf)
+-		return;
+-
+-	if (!test_bit(ICE_FLAG_GNSS, pf->flags))
+-		return;
+-
+-	if (!list_empty(&gnss->queue)) {
+-		struct gnss_write_buf *write_buf = NULL;
+-		unsigned int bytes;
+-
+-		write_buf = list_first_entry(&gnss->queue,
+-					     struct gnss_write_buf, queue);
+-
+-		bytes = ice_gnss_do_write(pf, write_buf->buf, write_buf->size);
+-		dev_dbg(ice_pf_to_dev(pf), "%u bytes written to GNSS\n", bytes);
+-
+-		list_del(&write_buf->queue);
+-		kfree(write_buf->buf);
+-		kfree(write_buf);
+-	}
++	return err;
+ }
+ 
+ /**
+@@ -220,8 +188,6 @@ static struct gnss_serial *ice_gnss_struct_init(struct ice_pf *pf)
+ 	pf->gnss_serial = gnss;
+ 
+ 	kthread_init_delayed_work(&gnss->read_work, ice_gnss_read);
+-	INIT_LIST_HEAD(&gnss->queue);
+-	kthread_init_work(&gnss->write_work, ice_gnss_write_pending);
+ 	kworker = kthread_create_worker(0, "ice-gnss-%s", dev_name(dev));
+ 	if (IS_ERR(kworker)) {
+ 		kfree(gnss);
+@@ -281,7 +247,6 @@ static void ice_gnss_close(struct gnss_device *gdev)
+ 	if (!gnss)
+ 		return;
+ 
+-	kthread_cancel_work_sync(&gnss->write_work);
+ 	kthread_cancel_delayed_work_sync(&gnss->read_work);
+ }
+ 
+@@ -300,10 +265,7 @@ ice_gnss_write(struct gnss_device *gdev, const unsigned char *buf,
+ 	       size_t count)
+ {
+ 	struct ice_pf *pf = gnss_get_drvdata(gdev);
+-	struct gnss_write_buf *write_buf;
+ 	struct gnss_serial *gnss;
+-	unsigned char *cmd_buf;
+-	int err = count;
+ 
+ 	/* We cannot write a single byte using our I2C implementation. */
+ 	if (count <= 1 || count > ICE_GNSS_TTY_WRITE_BUF)
+@@ -319,24 +281,7 @@ ice_gnss_write(struct gnss_device *gdev, const unsigned char *buf,
+ 	if (!gnss)
+ 		return -ENODEV;
+ 
+-	cmd_buf = kcalloc(count, sizeof(*buf), GFP_KERNEL);
+-	if (!cmd_buf)
+-		return -ENOMEM;
+-
+-	memcpy(cmd_buf, buf, count);
+-	write_buf = kzalloc(sizeof(*write_buf), GFP_KERNEL);
+-	if (!write_buf) {
+-		kfree(cmd_buf);
+-		return -ENOMEM;
+-	}
+-
+-	write_buf->buf = cmd_buf;
+-	write_buf->size = count;
+-	INIT_LIST_HEAD(&write_buf->queue);
+-	list_add_tail(&write_buf->queue, &gnss->queue);
+-	kthread_queue_work(gnss->kworker, &gnss->write_work);
+-
+-	return err;
++	return ice_gnss_do_write(pf, buf, count);
+ }
+ 
+ static const struct gnss_operations ice_gnss_ops = {
+@@ -432,7 +377,6 @@ void ice_gnss_exit(struct ice_pf *pf)
+ 	if (pf->gnss_serial) {
+ 		struct gnss_serial *gnss = pf->gnss_serial;
+ 
+-		kthread_cancel_work_sync(&gnss->write_work);
+ 		kthread_cancel_delayed_work_sync(&gnss->read_work);
+ 		kthread_destroy_worker(gnss->kworker);
+ 		gnss->kworker = NULL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.h b/drivers/net/ethernet/intel/ice/ice_gnss.h
+index b8bb8b63d081..75e567ad7059 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.h
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.h
+@@ -22,26 +22,16 @@
+  */
+ #define ICE_GNSS_UBX_WRITE_BYTES	(ICE_MAX_I2C_WRITE_BYTES + 1)
+ 
+-struct gnss_write_buf {
+-	struct list_head queue;
+-	unsigned int size;
+-	unsigned char *buf;
+-};
+-
+ /**
+  * struct gnss_serial - data used to initialize GNSS TTY port
+  * @back: back pointer to PF
+  * @kworker: kwork thread for handling periodic work
+  * @read_work: read_work function for handling GNSS reads
+- * @write_work: write_work function for handling GNSS writes
+- * @queue: write buffers queue
+  */
+ struct gnss_serial {
+ 	struct ice_pf *back;
+ 	struct kthread_worker *kworker;
+ 	struct kthread_delayed_work read_work;
+-	struct kthread_work write_work;
+-	struct list_head queue;
+ };
+ 
+ #if IS_ENABLED(CONFIG_GNSS)
+-- 
+2.40.1
+
 
