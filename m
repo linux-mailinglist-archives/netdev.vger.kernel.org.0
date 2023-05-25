@@ -1,73 +1,53 @@
-Return-Path: <netdev+bounces-5257-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5258-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 72C9471071D
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:16:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B37E4710723
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:16:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A84982814AA
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:16:15 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 43DF31C20E3F
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 08:16:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A08DEC8DF;
-	Thu, 25 May 2023 08:16:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 834BDD2E6;
+	Thu, 25 May 2023 08:16:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941861FB8
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:16:13 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0E4122
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 01:16:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=8AhKvPYDDe+OwfLxGgQDNwaPPycIR0LgME1YS5cozeQ=; b=HsBU8VhkE2R1TAJHxsFxwdtCA7
-	T41hcWIrE1Zb0uT7d8OVtpULcJpnDofNMnR1Q05bzLM4JmZGFrCQLK4z/140SYMf3aY7XyFqxVDt0
-	ehl6za+uC5XLQXXcvIw/Wd2bMaH1OZumfaqiQiJVyVar5TsirXyF5aYnTchw8jp+zX3IH0U65VFML
-	DnQZeF9fz3owZwwJibOh50QMJl2TsAvfKoXA/1wuEaY7Tz0ay6s7V6SQgUtx6NkSYXDlsQXv7wBtS
-	j0Fy1o5j7nIr/koAVB3pL/U96WS41nQz6ciEc6d64QQzz+hBe3C1KBq5HVAYK92ur60BYM33aGpPf
-	6FWYG7Ew==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40694)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q268T-0003ko-Aq; Thu, 25 May 2023 09:15:49 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q268O-0002Vn-2R; Thu, 25 May 2023 09:15:44 +0100
-Date: Thu, 25 May 2023 09:15:44 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
-	Daniel Machon <daniel.machon@microchip.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Lars Povlsen <lars.povlsen@microchip.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Madalin Bucur <madalin.bucur@nxp.com>,
-	Marcin Wojtas <mw@semihalf.com>,
-	Michal Simek <michal.simek@amd.com>, netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>,
-	Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-	Sean Anderson <sean.anderson@seco.com>,
-	Steen Hegelund <Steen.Hegelund@microchip.com>,
-	Taras Chornyi <taras.chornyi@plvision.eu>,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	UNGLinuxDriver@microchip.com, Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC 0/9] Add and use helper for PCS negotiation modes
-Message-ID: <ZG8ZMO/HRFVFdOll@shell.armlinux.org.uk>
-References: <ZGzhvePzPjJ0v2En@shell.armlinux.org.uk>
- <20230524072619.dnzfy3lmgobqmu2k@soft-dev3-1>
- <ZG3GZ59MUqATsKVm@shell.armlinux.org.uk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B304D2E5
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 08:16:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E18EDC433EF;
+	Thu, 25 May 2023 08:16:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685002574;
+	bh=K2jAHhKKwgAET5fyc2ERiEaO3ErwK7xD3nttPnJaXfI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YGJ1dimBfF/DWboT1zfSrn474WMxAVgWF28GxGUOFEjBEw+reuo6isz3sWjMK2G7R
+	 qm8UAEInwNMyeYBhRCtjl+aeqZzfsfsGnfRyrFtr6srnsr/AdGSceiunkSB7sFmwUQ
+	 ahNXN9Mx5UNo2rgPPeg3EjbMqvWmyopyDSkW+eGiEHhX2t3h2diyfpoiWEfxVw11MV
+	 MNJdU01N9f+9DzsX7ZzxCmRrZPhaY7/l0zVVRLUXMxAiA0mG6we58jB/X+x0eYcSrY
+	 dm/BF+QoQH/A9uiFPHIdlPv8NeN0VWijfkv6GDzRyfY3vzga5Lj2jcLLE4/O5DhNtR
+	 Dt58Pxq0LUcVA==
+Date: Thu, 25 May 2023 10:16:03 +0200
+From: Lorenzo Pieralisi <lpieralisi@kernel.org>
+To: Dexuan Cui <decui@microsoft.com>
+Cc: bhelgaas@google.com, davem@davemloft.net, edumazet@google.com,
+	haiyangz@microsoft.com, jakeo@microsoft.com, kuba@kernel.org,
+	kw@linux.com, kys@microsoft.com, leon@kernel.org,
+	linux-pci@vger.kernel.org, mikelley@microsoft.com,
+	pabeni@redhat.com, robh@kernel.org, saeedm@nvidia.com,
+	wei.liu@kernel.org, longli@microsoft.com, boqun.feng@gmail.com,
+	ssengar@microsoft.com, helgaas@kernel.org,
+	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+	josete@microsoft.com, stable@vger.kernel.org
+Subject: Re: [PATCH v3 3/6] PCI: hv: Remove the useless hv_pcichild_state
+ from struct hv_pci_dev
+Message-ID: <ZG8ZQ1U4kmGBVe4/@lpieralisi>
+References: <20230420024037.5921-1-decui@microsoft.com>
+ <20230420024037.5921-4-decui@microsoft.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -76,35 +56,74 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZG3GZ59MUqATsKVm@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+In-Reply-To: <20230420024037.5921-4-decui@microsoft.com>
 
-On Wed, May 24, 2023 at 09:10:15AM +0100, Russell King (Oracle) wrote:
-> On Wed, May 24, 2023 at 09:26:19AM +0200, Horatiu Vultur wrote:
-> > The 05/23/2023 16:54, Russell King (Oracle) wrote:
-> > 
-> > Hi Russell,
-> > 
-> > I have tried this series on lan966x and it seems to be working fine.
+On Wed, Apr 19, 2023 at 07:40:34PM -0700, Dexuan Cui wrote:
+> The hpdev->state is never really useful. The only use in
+> hv_pci_eject_device() and hv_eject_device_work() is not really necessary.
 > 
-> Thanks for testing.
+> Signed-off-by: Dexuan Cui <decui@microsoft.com>
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+> Cc: stable@vger.kernel.org
+> ---
 > 
-> > There was a small issue applying the patch 3, as the function
-> > 'phylink_resolve_c73' doesn't exist yet.
+> v2:
+>   No change to the patch body.
+>   Added Cc:stable
 > 
-> It's for applying after my XPCS cleanup series that has been sent as RFC
-> twice and now been sent for merging. Sorry for not stating that in the
-> cover message.
+> v3:
+>   Added Michael's Reviewed-by.
+> 
+>  drivers/pci/controller/pci-hyperv.c | 12 ------------
+>  1 file changed, 12 deletions(-)
 
-... which is now in net-next.
+Is this patch _required_ for subsequent fixes ? It is not a fix itself
+so I am asking.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Acked-by: Lorenzo Pieralisi <lpieralisi@kernel.org>
+
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index 1b11cf7391933..46df6d093d683 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -553,19 +553,10 @@ struct hv_dr_state {
+>  	struct hv_pcidev_description func[];
+>  };
+>  
+> -enum hv_pcichild_state {
+> -	hv_pcichild_init = 0,
+> -	hv_pcichild_requirements,
+> -	hv_pcichild_resourced,
+> -	hv_pcichild_ejecting,
+> -	hv_pcichild_maximum
+> -};
+> -
+>  struct hv_pci_dev {
+>  	/* List protected by pci_rescan_remove_lock */
+>  	struct list_head list_entry;
+>  	refcount_t refs;
+> -	enum hv_pcichild_state state;
+>  	struct pci_slot *pci_slot;
+>  	struct hv_pcidev_description desc;
+>  	bool reported_missing;
+> @@ -2750,8 +2741,6 @@ static void hv_eject_device_work(struct work_struct *work)
+>  	hpdev = container_of(work, struct hv_pci_dev, wrk);
+>  	hbus = hpdev->hbus;
+>  
+> -	WARN_ON(hpdev->state != hv_pcichild_ejecting);
+> -
+>  	/*
+>  	 * Ejection can come before or after the PCI bus has been set up, so
+>  	 * attempt to find it and tear down the bus state, if it exists.  This
+> @@ -2808,7 +2797,6 @@ static void hv_pci_eject_device(struct hv_pci_dev *hpdev)
+>  		return;
+>  	}
+>  
+> -	hpdev->state = hv_pcichild_ejecting;
+>  	get_pcichild(hpdev);
+>  	INIT_WORK(&hpdev->wrk, hv_eject_device_work);
+>  	queue_work(hbus->wq, &hpdev->wrk);
+> -- 
+> 2.25.1
+> 
 
