@@ -1,49 +1,54 @@
-Return-Path: <netdev+bounces-5461-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5462-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 404A071150E
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id A3E59711513
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:45:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F38F41C20FDB
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:44:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 629531C20FDD
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:45:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AAF6723D62;
-	Thu, 25 May 2023 18:44:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F4B123D62;
+	Thu, 25 May 2023 18:45:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0516A23D5D
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:44:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA752C433D2;
-	Thu, 25 May 2023 18:43:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B1ED23D50
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 483C5C433A0;
+	Thu, 25 May 2023 18:45:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685040240;
-	bh=HVX1TG+Qa3cHR0WeqERurokfZJdHcyOndIbduqxdvnE=;
+	s=k20201202; t=1685040306;
+	bh=tuPD9tbd1QFn6JVrf++j4GfjcNGEqO9MaIreX1BrwjI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rB0QsqSOWDVCiJZsW61taA0eSQPv6hLVHSTmeeDFNT0CBMB2t4CkQ6QSgzMEWy9Jr
-	 f3ZXI91DiukW+sSwc0MwplWnxMsWkrkJk0PsbkYgvKOtEDchAl1HttwygEbzKDFslL
-	 iVoHXbSnqzBL8Pya3bXiXSsHhP+YMfiCpbAWemLwdE1F1iqc+fRSwYe8UKOXPT1lFR
-	 JUX3gsQyeCub1FW0Qdd1PTyMId5jcFUD5Ea6ZodOBmUV2e9W55/uELW7ZwMHqvNVoh
-	 cE1EjTrkZCcz92edLR7YHf7/62d51PDah9kET9APWfuUb91bgGeuBwYRJoxx76mNKL
-	 VqSbyPmXr6rQg==
+	b=Ll4kiKiv+P7V5ocPkJdnewhQwAmx2lk+6Gp+c+P+v7S7lQK4e8hwa49Y+HY1LQGrW
+	 Cl/miqQvK+5sG/kSgR+7IBrJd6xt3lYXi+SaonQZ4Cg40XopE8rK6DGok2cMuuvckF
+	 y+g+OWgdcT0LjkhVH+iEhqfYdXjYcy5YT5FEjXwg0EY0RggJtaDIa+BunVFfUOUF9b
+	 XIpnUUJTmoEabYI4bVY+vrl3Wby3yAdFNuahiz6V8RKquioGV8/ZdFqA+KQ72K8n6Y
+	 +MKYfTjdckkp8W3PZQpcRvj3X+Lu/pByFcvFElElA5HOi3kXXOvnjI9HlEH0vM8UDi
+	 mHm/NB9vZAchA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Benedict Wong <benedictwong@google.com>,
-	Steffen Klassert <steffen.klassert@secunet.com>,
+Cc: Tom Rix <trix@redhat.com>,
+	Simon Horman <simon.horman@corigine.com>,
+	Florian Westphal <fw@strlen.de>,
 	Sasha Levin <sashal@kernel.org>,
+	pablo@netfilter.org,
+	kadlec@netfilter.org,
 	davem@davemloft.net,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
+	netfilter-devel@vger.kernel.org,
+	coreteam@netfilter.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/27] xfrm: Check if_id in inbound policy/secpath match
-Date: Thu, 25 May 2023 14:43:28 -0400
-Message-Id: <20230525184356.1974216-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 24/27] netfilter: conntrack: define variables exp_nat_nla_policy and any_addr with CONFIG_NF_NAT
+Date: Thu, 25 May 2023 14:43:50 -0400
+Message-Id: <20230525184356.1974216-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230525184356.1974216-1-sashal@kernel.org>
 References: <20230525184356.1974216-1-sashal@kernel.org>
@@ -53,81 +58,62 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Benedict Wong <benedictwong@google.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit 8680407b6f8f5fba59e8f1d63c869abc280f04df ]
+[ Upstream commit 224a876e37543eee111bf9b6aa4935080e619335 ]
 
-This change ensures that if configured in the policy, the if_id set in
-the policy and secpath states match during the inbound policy check.
-Without this, there is potential for ambiguity where entries in the
-secpath differing by only the if_id could be mismatched.
+gcc with W=1 and ! CONFIG_NF_NAT
+net/netfilter/nf_conntrack_netlink.c:3463:32: error:
+  ‘exp_nat_nla_policy’ defined but not used [-Werror=unused-const-variable=]
+ 3463 | static const struct nla_policy exp_nat_nla_policy[CTA_EXPECT_NAT_MAX+1] = {
+      |                                ^~~~~~~~~~~~~~~~~~
+net/netfilter/nf_conntrack_netlink.c:2979:33: error:
+  ‘any_addr’ defined but not used [-Werror=unused-const-variable=]
+ 2979 | static const union nf_inet_addr any_addr;
+      |                                 ^~~~~~~~
 
-Notably, this is checked in the outbound direction when resolving
-templates to SAs, but not on the inbound path when matching SAs and
-policies.
+These variables use is controlled by CONFIG_NF_NAT, so should their definitions.
 
-Test: Tested against Android kernel unit tests & CTS
-Signed-off-by: Benedict Wong <benedictwong@google.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Tom Rix <trix@redhat.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_policy.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ net/netfilter/nf_conntrack_netlink.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 1cd21a8c4deac..6fe578773a51d 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -2240,7 +2240,7 @@ xfrm_secpath_reject(int idx, struct sk_buff *skb, const struct flowi *fl)
- 
- static inline int
- xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
--	      unsigned short family)
-+	      unsigned short family, u32 if_id)
- {
- 	if (xfrm_state_kern(x))
- 		return tmpl->optional && !xfrm_state_addr_cmp(tmpl, x, tmpl->encap_family);
-@@ -2251,7 +2251,8 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
- 		(tmpl->allalgs || (tmpl->aalgos & (1<<x->props.aalgo)) ||
- 		 !(xfrm_id_proto_match(tmpl->id.proto, IPSEC_PROTO_ANY))) &&
- 		!(x->props.mode != XFRM_MODE_TRANSPORT &&
--		  xfrm_state_addr_cmp(tmpl, x, family));
-+		  xfrm_state_addr_cmp(tmpl, x, family)) &&
-+		(if_id == 0 || if_id == x->if_id);
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index 58bba2e2691fa..eed597097fe1e 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -2689,7 +2689,9 @@ static int ctnetlink_exp_dump_mask(struct sk_buff *skb,
+ 	return -1;
  }
  
- /*
-@@ -2263,7 +2264,7 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
-  */
- static inline int
- xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int start,
--	       unsigned short family)
-+	       unsigned short family, u32 if_id)
- {
- 	int idx = start;
++#if IS_ENABLED(CONFIG_NF_NAT)
+ static const union nf_inet_addr any_addr;
++#endif
  
-@@ -2273,7 +2274,7 @@ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int star
- 	} else
- 		start = -1;
- 	for (; idx < sp->len; idx++) {
--		if (xfrm_state_ok(tmpl, sp->xvec[idx], family))
-+		if (xfrm_state_ok(tmpl, sp->xvec[idx], family, if_id))
- 			return ++idx;
- 		if (sp->xvec[idx]->props.mode != XFRM_MODE_TRANSPORT) {
- 			if (start == -1)
-@@ -2450,7 +2451,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 		 * are implied between each two transformations.
- 		 */
- 		for (i = xfrm_nr-1, k = 0; i >= 0; i--) {
--			k = xfrm_policy_ok(tpp[i], sp, k, family);
-+			k = xfrm_policy_ok(tpp[i], sp, k, family, if_id);
- 			if (k < 0) {
- 				if (k < -1)
- 					/* "-2 - errored_index" returned */
+ static __be32 nf_expect_get_id(const struct nf_conntrack_expect *exp)
+ {
+@@ -3189,10 +3191,12 @@ ctnetlink_change_expect(struct nf_conntrack_expect *x,
+ 	return 0;
+ }
+ 
++#if IS_ENABLED(CONFIG_NF_NAT)
+ static const struct nla_policy exp_nat_nla_policy[CTA_EXPECT_NAT_MAX+1] = {
+ 	[CTA_EXPECT_NAT_DIR]	= { .type = NLA_U32 },
+ 	[CTA_EXPECT_NAT_TUPLE]	= { .type = NLA_NESTED },
+ };
++#endif
+ 
+ static int
+ ctnetlink_parse_expect_nat(const struct nlattr *attr,
 -- 
 2.39.2
 
