@@ -1,197 +1,176 @@
-Return-Path: <netdev+bounces-5332-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5333-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 84743710D2C
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:24:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BC84A710D40
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:31:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2B4DF281375
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:24:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D51B72814EB
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:31:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2877910795;
-	Thu, 25 May 2023 13:24:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F8EE1079D;
+	Thu, 25 May 2023 13:31:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11894FBE5
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 13:24:35 +0000 (UTC)
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7365E7
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 06:24:33 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-3f606e111d3so55125e9.1
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 06:24:33 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3E5EE56F
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 13:31:47 +0000 (UTC)
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C7C186;
+	Thu, 25 May 2023 06:31:46 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-50bcb00a4c2so3828496a12.1;
+        Thu, 25 May 2023 06:31:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685021072; x=1687613072;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cJE2Y+9lHKdGfQARiSKxGndvrD8wTcpfzxVhMA8TopU=;
-        b=YiF+QeExMQxuNZllkEbjao6wMWMhEVzx3YUS3ZCR+T5Z2ViGeXLDrlgSwESrKLz4XQ
-         aHC36izj9qACsxIgCo1nJDvqof44tKuHXIkY4kMj3RL7juxIvC7mFQrH6i1cUU7b8BrD
-         Io4wq4+XN+bmjjD0soDHYJ9NIDAYY3aUCLSrnFNj4uMSnImFW/vOejV5JXLMM/pp7EJp
-         sYWnIaQW3BDRzeONo50RoHpiggh6qlgQNYUcj5w+dS4gssm5oB7LTIUIZhfDspsPxQ5c
-         arukdP3Z6mDo9glEQxRMdshI8016mULKUSggLbucCMYpclqFvItsXNBoomXocgU7GeYp
-         Q3nQ==
+        d=gmail.com; s=20221208; t=1685021504; x=1687613504;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=gT/KiN/GVyh9un3dWdPg6LQ82j/4nY+K0qSJUuMUUpI=;
+        b=qwY0TP99Ca/0IXyk27S4mDxmWlYNSp8F/MWDDKTv+ExOQQRSAx/ztp5tsYcLPqOysY
+         BUrxc8gfNJh4f22r4z7XXHTb2bbsK+aEsh0TYxie2/eAd6IDCzwdrPl6RfEtz2GD8qx4
+         xrf0bjaw4Jvhkhn8O7dVhBLuS4joNfs10SrHXpZDwDaBXt2Cd3xXw1boXhEHE97CPDQi
+         ukjzCp4QzULJ4DEAHjnoRth5O8b68CULO7pqpCK/AxpHKnr3paefwDwC+9kAVhKWW5Ba
+         r2ZBxx3d/9/vOKyH5n4M0afyxFQrvnN+dyngVkXo6oU+Bx7mUnis9Dg/A4eEdoT2Dy54
+         JhcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685021072; x=1687613072;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cJE2Y+9lHKdGfQARiSKxGndvrD8wTcpfzxVhMA8TopU=;
-        b=hGDRu14wFTQC16/w/70CbEkS+xtIZh133vuKDHgrGwkJ6HnouMf/bcTTDxhxDLqH3m
-         CxeX7JkjcVEHFV3VKKeHQbeHdr3OA+kov8eF/7p1xVHXiyGMjrjtfNX+6rMmGeLXGWDF
-         QCAFCQlZvtC7zsqfvVJauZCOxu8boE6WzsZ4AtF2RIK20xuZurQaVv9/c0+++ndZ1iUC
-         Q2ghfjl9OQs4hW3tUR6InRMAOnGigXQlj4dyu9OUw4HAjdlyfaYW6Jgm1kD+7YOLbP2Z
-         Uw3AxRAGYdsUEIw64cD2ilBIYS+27ZQNKL7vOtE+D3mZJ8VVGOR+KsnHSJ9TU7LlV3f0
-         wZdw==
-X-Gm-Message-State: AC+VfDxDKEG6uvzuFBXYf/DEj9G8Oljet2KbpcqKoxsweLI+WSnCxY9q
-	Ud7fws5ALylCRVod3buclwNuWyo1cg2lERRVitERCA==
-X-Google-Smtp-Source: ACHHUZ4Z0j2Nxi6xWsZl7nLei6HQfuzqIW/xvulwwCVcsoBQeSDRrx4VHDdQSD2O4FHODE6va2MYGq8ssJeMeT0CGbQ=
-X-Received: by 2002:a05:600c:1c1b:b0:3f6:f4b:d4a6 with SMTP id
- j27-20020a05600c1c1b00b003f60f4bd4a6mr134629wms.7.1685021072117; Thu, 25 May
- 2023 06:24:32 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685021504; x=1687613504;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gT/KiN/GVyh9un3dWdPg6LQ82j/4nY+K0qSJUuMUUpI=;
+        b=M38J7dJCfPwjWpEKdojeuht9GgGYxz6an8PNOCjv940tOGdLWQFN+gA6GjoaR+TMUr
+         cvq27vJknIwijkrA0rmazzcl2q/STcjIWqZVgaWsXM1oZ8l0GcU4eR3u4kYZsfnkzQJ4
+         KxJ3CuGxWYB8+eUVs9vSxCG5AjE0DRhtzOnpa6ODP10kzWoo/qYWLVdPJ3i44Da67Ht+
+         4xpmTBBJ4K6Y6YeDQeXOfkmFi6c7U1m3S7RhUUwrbKfa3qIXM+L3pexc+IhyJP+By/mH
+         GDdICWB/Vh7lzAcRYzXNhyXT7py6vP31f8IOwDqVlXa5RPaUmNovbHdh81obUQovfKE9
+         +6DA==
+X-Gm-Message-State: AC+VfDyRwl+pVg5dt7KU7TbXcHnTmoelH8wg5L+exrY08jxm10pZvHVr
+	dQRYdgxUKVBPtw3xBJh2SH0=
+X-Google-Smtp-Source: ACHHUZ7C1fLtYhn8fZGe3ehLd1Xq/uazQq9TEEOCoBMvdYjTG9644jyrZ3G60lSa+jZQQSKib5XpTw==
+X-Received: by 2002:a05:6402:204d:b0:510:ec67:22d2 with SMTP id bc13-20020a056402204d00b00510ec6722d2mr4482475edb.10.1685021504024;
+        Thu, 25 May 2023 06:31:44 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id r3-20020a056402034300b0050bce352dc5sm543380edw.85.2023.05.25.06.31.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 May 2023 06:31:43 -0700 (PDT)
+Date: Thu, 25 May 2023 16:31:40 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc: Sean Wang <sean.wang@mediatek.com>,
+	Landen Chao <Landen.Chao@mediatek.com>,
+	DENG Qingfang <dqfext@gmail.com>,
+	Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Richard van Schagen <richard@routerhints.com>,
+	Richard van Schagen <vschagen@cs.com>,
+	Frank Wunderlich <frank-w@public-files.de>,
+	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+	erkin.bozoglu@xeront.com, mithat.guner@xeront.com,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next 05/30] net: dsa: mt7530: read XTAL value from
+ correct register
+Message-ID: <20230525133140.xewm6g5rl7sm57d2@skbuf>
+References: <20230522121532.86610-1-arinc.unal@arinc9.com>
+ <20230522121532.86610-6-arinc.unal@arinc9.com>
+ <20230524165701.pbrcs4e74juzb4r3@skbuf>
+ <7c915d5b-56c9-430d-05ac-544f76966eb1@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230525081923.8596-1-lmb@isovalent.com>
-In-Reply-To: <20230525081923.8596-1-lmb@isovalent.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Thu, 25 May 2023 15:24:20 +0200
-Message-ID: <CANn89iJx74gR7Xuahd0S3pLXYC8EX6+JRkbt6T_bemMX-8zyig@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf, net: Support SO_REUSEPORT sockets with bpf_sk_assign
-To: Lorenz Bauer <lmb@isovalent.com>
-Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Alexei Starovoitov <ast@kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, 
-	Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>, 
-	John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, 
-	Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>, 
-	David Ahern <dsahern@kernel.org>, Willem de Bruijn <willemdebruijn.kernel@gmail.com>, 
-	Joe Stringer <joe@wand.net.nz>, Joe Stringer <joe@cilium.io>, Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7c915d5b-56c9-430d-05ac-544f76966eb1@arinc9.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 25, 2023 at 10:19=E2=80=AFAM Lorenz Bauer <lmb@isovalent.com> w=
-rote:
->
-> Currently the bpf_sk_assign helper in tc BPF context refuses SO_REUSEPORT
-> sockets. This means we can't use the helper to steer traffic to Envoy, wh=
-ich
-> configures SO_REUSEPORT on its sockets. In turn, we're blocked from remov=
-ing
-> TPROXY from our setup.
->
-> The reason that bpf_sk_assign refuses such sockets is that the bpf_sk_loo=
-kup
-> helpers don't execute SK_REUSEPORT programs. Instead, one of the
-> reuseport sockets is selected by hash. This could cause dispatch to the
-> "wrong" socket:
->
->     sk =3D bpf_sk_lookup_tcp(...) // select SO_REUSEPORT by hash
->     bpf_sk_assign(skb, sk) // SK_REUSEPORT wasn't executed
->
-> Fixing this isn't as simple as invoking SK_REUSEPORT from the lookup
-> helpers unfortunately. In the tc context, L2 headers are at the start
-> of the skb, while SK_REUSEPORT expects L3 headers instead.
->
-> Instead, we execute the SK_REUSEPORT program when the assigned socket
-> is pulled out of the skb, further up the stack. This creates some
-> trickiness with regards to refcounting as bpf_sk_assign will put both
-> refcounted and RCU freed sockets in skb->sk. reuseport sockets are RCU
-> freed. We can infer that the sk_assigned socket is RCU freed if the
-> reuseport lookup succeeds, but convincing yourself of this fact isn't
-> straight forward. Therefore we defensively check refcounting on the
-> sk_assign sock even though it's probably not required in practice.
->
-> Fixes: 8e368dc ("bpf: Fix use of sk->sk_reuseport from sk_assign")
-> Fixes: cf7fbe6 ("bpf: Add socket assign support")
-> Co-developed-by: Daniel Borkmann <daniel@iogearbox.net>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Signed-off-by: Lorenz Bauer <lmb@isovalent.com>
-> Cc: Joe Stringer <joe@cilium.io>
-> Link: https://lore.kernel.org/bpf/CACAyw98+qycmpQzKupquhkxbvWK4OFyDuuLMBN=
-ROnfWMZxUWeA@mail.gmail.com/
-> ---
->  include/net/inet6_hashtables.h | 36 +++++++++++++++++++++++++++++-----
->  include/net/inet_hashtables.h  | 27 +++++++++++++++++++++++--
->  include/net/sock.h             |  7 +++++--
->  include/uapi/linux/bpf.h       |  3 ---
->  net/core/filter.c              |  2 --
->  net/ipv4/inet_hashtables.c     | 15 +++++++-------
->  net/ipv4/udp.c                 | 23 +++++++++++++++++++---
->  net/ipv6/inet6_hashtables.c    | 19 +++++++++---------
->  net/ipv6/udp.c                 | 23 +++++++++++++++++++---
->  tools/include/uapi/linux/bpf.h |  3 ---
->  10 files changed, 119 insertions(+), 39 deletions(-)
+On Thu, May 25, 2023 at 09:20:08AM +0300, Arınç ÜNAL wrote:
+> On 24.05.2023 19:57, Vladimir Oltean wrote:
+> > On Mon, May 22, 2023 at 03:15:07PM +0300, arinc9.unal@gmail.com wrote:
+> > > From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > 
+> > > On commit 7ef6f6f8d237 ("net: dsa: mt7530: Add MT7621 TRGMII mode support")
+> > > macros for reading the crystal frequency were added under the MT7530_HWTRAP
+> > > register. However, the value given to the xtal variable on
+> > > mt7530_pad_clk_setup() is read from the MT7530_MHWTRAP register instead.
+> > > 
+> > > Although the document MT7621 Giga Switch Programming Guide v0.3 states that
+> > > the value can be read from both registers, use the register where the
+> > > macros were defined under.
+> > > 
+> > > Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > ---
+> > 
+> > I'm sorry, but I refuse this patch, mainly as a matter of principle -
+> > because that's just not how we do things, and you need to understand why.
+> > 
+> > The commit title ("read XTAL value from correct register") claims that
+> > the process of reading a field which cannot be changed by software is
+> > any more correct when it is read from HWTRAP rather than MHWTRAP
+> > (modified HWTRAP).
+> > 
+> > Your justification is that it's confusing to you if two registers have
+> > the same layout, and the driver has a single set of macros to decode the
+> > fields from both. You seem to think it's somehow not correct to decode
+> > fields from the MHWTRAP register using macros which have just HWTRAP in
+> > the name.
+> 
+> No, it doesn't confuse me that two registers share the same layout. My
+> understanding was that the MHWTRAP register should be used for modifying the
+> hardware trap, and the HWTRAP register should be used for reading from the
+> hardware trap.
 
+My understanding is that reading from the read-only HWTRAP always gives
+you the power-on settings, while reading from the r/w MHWTRAP always
+gives you the current settings. If those settings coincide, as happens
+here, there's no practical difference.
 
-> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> index e7391bf310a7..920131e4a65d 100644
-> --- a/net/ipv4/inet_hashtables.c
-> +++ b/net/ipv4/inet_hashtables.c
-> @@ -332,10 +332,10 @@ static inline int compute_score(struct sock *sk, st=
-ruct net *net,
->         return score;
->  }
->
-> -static inline struct sock *lookup_reuseport(struct net *net, struct sock=
- *sk,
-> -                                           struct sk_buff *skb, int doff=
-,
-> -                                           __be32 saddr, __be16 sport,
-> -                                           __be32 daddr, unsigned short =
-hnum)
-> +struct sock *inet_lookup_reuseport(struct net *net, struct sock *sk,
-> +                                  struct sk_buff *skb, int doff,
-> +                                  __be32 saddr, __be16 sport,
-> +                                  __be32 daddr, unsigned short hnum)
->  {
->         struct sock *reuse_sk =3D NULL;
->         u32 phash;
-> @@ -346,6 +346,7 @@ static inline struct sock *lookup_reuseport(struct ne=
-t *net, struct sock *sk,
->         }
->         return reuse_sk;
->  }
-> +EXPORT_SYMBOL_GPL(inet_lookup_reuseport);
->
->  /*
->   * Here are some nice properties to exploit here. The BSD API
-> @@ -369,8 +370,8 @@ static struct sock *inet_lhash2_lookup(struct net *ne=
-t,
->         sk_nulls_for_each_rcu(sk, node, &ilb2->nulls_head) {
->                 score =3D compute_score(sk, net, hnum, daddr, dif, sdif);
->                 if (score > hiscore) {
-> -                       result =3D lookup_reuseport(net, sk, skb, doff,
-> -                                                 saddr, sport, daddr, hn=
-um);
-> +                       result =3D inet_lookup_reuseport(net, sk, skb, do=
-ff,
-> +                                                      saddr, sport, dadd=
-r, hnum);
->                         if (result)
->                                 return result;
->
+> I see that the XTAL constants were defined under the HWTRAP
+> register so I thought it would make sense to change the code to read the
+> XTAL values from the HWTRAP register instead. Let me know if you disagree
+> with this.
 
-Please split in a series.
+I disagree as a matter of principle with the reasoning. The fact that
+XTAL constants are defined under HWTRAP is not a reason to change the
+code to read the XTAL values from the HWTRAP register. The fact that
+XTAL_FSEL is read-only in MHWTRAP is indeed a reason why you *could*
+read it from HWTRAP, but also not one why you *should* make a change.
 
-First a patch renaming lookup_reuseport() to inet_lookup_reuseport()
-and inet6_lookup_reuseport()
-(cleanup, no change in behavior)
+> > Seriously, please first share these small rewrites with someone more
+> > senior than you, and ask for a preliminary second opinion.
+> 
+> Would submitting this as an RFC had been a similar action to your describing
+> here? Because I already did that:
+> 
+> https://lore.kernel.org/netdev/20230421143648.87889-6-arinc.unal@arinc9.com/
 
-This would ease review and future bug hunting quite a bit.
+In practice, volume is also an issue. The higher the volume, the lower
+the chances that people will be able to crop a chunk of time large enough
+to review.
+
+> I should've given more effort to explain my reasons for this patch. I
+> disagree that the series is a large volume of worthless and misguided
+> refactoring and am happy to discuss it patch by patch.
+
+I agree that the follow-up patches, as far as I could reach into this
+series, are not as gratuitous as this one.
 
