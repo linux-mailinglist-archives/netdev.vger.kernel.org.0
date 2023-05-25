@@ -1,310 +1,199 @@
-Return-Path: <netdev+bounces-5251-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5252-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D89AD7106B5
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 09:51:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id F0BCF7106B6
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 09:51:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 684731C20E55
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 07:50:59 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B3B321C20E98
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 07:51:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9640BE78;
-	Thu, 25 May 2023 07:50:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B304DBE78;
+	Thu, 25 May 2023 07:51:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7D89BE6A
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 07:50:59 +0000 (UTC)
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9C48F
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 00:50:57 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-51446bdfb77so332320a12.1
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 00:50:57 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A02B4C12D
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 07:51:10 +0000 (UTC)
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2129.outbound.protection.outlook.com [40.107.95.129])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E565A8F;
+	Thu, 25 May 2023 00:51:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RImZlbFjb9YqyLXFeaQvfmdVvrTyLKkqMr2OOn7BCEcxfJ3mj2ONpuNhEe82gK1tvHTY6ppV/pFwKWsJ+aU7yOZwo3dkyakBPjwcp1Y0Q7D+OaqfWmRs2CVXvCAupNt8POyQn5mzIN3PD6iJPWxa2SzAXJHheCMX+/TTo1q/4mS1vtgHSBSduOryiUzGdCEkuJ4NDwEbiO29DdGImR/Uys5wNgk2MioO+P+0RkfFRNJudOWsie6X+nuoTU0XX6hkX6bBYRtPtL3sjKOs531k94RWyXwTsnlmwEMHAzaIzwRNjzpCt7/iopaWUj2X67Gh+pmQYWrxIQoiZT+nSWc50w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WaTsvVFQJqbECxyg2ThLZu3q0GvciUqzI0alyvYb+qA=;
+ b=Zu4SdQnyhmP7V1whPwXkPIc6paXChtHeKoVNsOZDrVrjTRLFnuDGMPbLE9Qj+8dainF/0XNthssoR1lBJ31uqya9LfCMFvb0cD8Pwh2p3UmeHR598acCbJ/kx21A7EByE/RtvigaEnao0eys6bAGAuk9mfYlx6v8KMaUCYFDIwbANwPecbTYCbRuDL60jP9f8U2bTlTHWBhzT6GoURdsr0hVKtc5liQ9nZfGnCVMoiAhHhE8Lb4muQOFrl04s7WO6OS/m5WepAjK8lJQDCJ5M1OCF6ct6L/9RNeIV7iDaDbWfnY2mcn7u8XR4vQznIqR3YYky6VxEtNZ+Vo5dOr2eQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685001056; x=1687593056;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a7QV07IZ64hn9uM4fMtaZ5LqHDUJ7j/1En86BJb2+yU=;
-        b=FG1gYR06FKzsF0ArIFEjin2iQaQFwhehCykNcxNQNvQKUHa68kxVNUpKhhFFWw2UcY
-         BT366yt4rSdaGBTcfK/uoXT3lp4b5B1pZPl3Kkpfx5MsvOkEa/oSDlJHWbjJIxCUtWeD
-         L37f1Qo4KohjKwgYQlIuWh75LeYicJ0HrVHcld825oEsJxjY47Lmo7VdAaXBGzcSDLfN
-         XdHfmJ+qY39JTs621r8mwju64jFmJk9nqhutMbvTYyrPaytl5HO7Labc6SufM0k9N8OP
-         O2u1YHg1ZQY3Gf1aUgAR9NAClPROMBQ7pMVL3dvACUBbQORHDOvAnfkxac23D85OAsLp
-         CaZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685001056; x=1687593056;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=a7QV07IZ64hn9uM4fMtaZ5LqHDUJ7j/1En86BJb2+yU=;
-        b=S6+s/OTnyZZojDLxxn28YsFUD+1ZnjgsqTgMwpJ0M3BzSBhR0nx2N5ABgQhgAFSqcP
-         AvCPBTpKmw2FjZbgOf3kO2g3i8a1qqsaGQXVo+tceLzsoFP7vUn52KL9IpOz4UDcrOkv
-         h9LvaVF2Sj29Ra/0f8eUVqKXn1xJjcMWNel6d9wqxpPOEnoou+kyqRmavdvz4zuEyBz0
-         q7r0mn76CYy04AMsjBureCHf4KEB0lohc1Xby8FZ4YtJX4JZr/XkWhkxJLgMgrMrGQ8r
-         pFRIOdyrZQY8ppZGI8xbpF9GRC8DhelGJEEo7LsBEw/WEtCJOPT7b+Vpl0NRvEIPKKkO
-         7Xqg==
-X-Gm-Message-State: AC+VfDyrHKflTFuW4AKGGWrswvQv6PJ2lC7yP2Cr7SEPLY1ER10wTDGW
-	P1PxocPOainzY0Q3eyBXfhA4vDU0YTs=
-X-Google-Smtp-Source: ACHHUZ52sj17I/+UwxvTJ2uQFTHL3YPzykyZJ/oEOMQb6L9OF7hlR1j5RbgtxZszgmbOGasTSfhXbA==
-X-Received: by 2002:a17:907:da3:b0:96f:678:d2e2 with SMTP id go35-20020a1709070da300b0096f0678d2e2mr790451ejc.11.1685001055810;
-        Thu, 25 May 2023 00:50:55 -0700 (PDT)
-Received: from smtpclient.apple ([178.254.237.20])
-        by smtp.gmail.com with ESMTPSA id j9-20020a17090686c900b00965e68b8df5sm482799ejy.76.2023.05.25.00.50.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 25 May 2023 00:50:55 -0700 (PDT)
-Content-Type: text/plain;
-	charset=utf-8
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WaTsvVFQJqbECxyg2ThLZu3q0GvciUqzI0alyvYb+qA=;
+ b=bPuIDE1p+Kh0kE2et8YoYcO9Cu+WviPcx+Xjz33V4FZJJd+fv3l5s1U4NU4VeCqJWK4qIK++tDeq3BrDp1FQnkCCsF+iuS17rdBGgyE/5xcJujMD+wxZ8tF7ljm23R5DCM+RVlAtTsqkA0ZaCEOOro0Out0kYNES51d4Q6rMu/w=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CH0PR13MB5169.namprd13.prod.outlook.com (2603:10b6:610:ea::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.16; Thu, 25 May
+ 2023 07:51:01 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6411.029; Thu, 25 May 2023
+ 07:51:01 +0000
+Date: Thu, 25 May 2023 09:50:54 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: David Howells <dhowells@redhat.com>
+Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+	David Ahern <dsahern@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+	Ayush Sawal <ayush.sawal@chelsio.com>
+Subject: Re: [PATCH net-next 2/4] chelsio: Convert chtls_sendpage() to use
+ MSG_SPLICE_PAGES
+Message-ID: <ZG8TXgs+36O9AS93@corigine.com>
+References: <20230524144923.3623536-1-dhowells@redhat.com>
+ <20230524144923.3623536-3-dhowells@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230524144923.3623536-3-dhowells@redhat.com>
+X-ClientProxiedBy: AM0PR01CA0082.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:10e::23) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.500.231\))
-Subject: Re: Very slow remove interface from kernel
-From: Martin Zaharinov <micron10@gmail.com>
-In-Reply-To: <CANn89iKLSBwCnzS8TPSbkH+v_gMobFotOdCbdSMxAkhtx54xQA@mail.gmail.com>
-Date: Thu, 25 May 2023 10:50:44 +0300
-Cc: Ido Schimmel <idosch@idosch.org>,
- netdev <netdev@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <D1743DF0-79B9-44C4-900C-22159B65CE59@gmail.com>
-References: <371A6638-8D92-4891-8DF5-C0EA4FBC1977@gmail.com>
- <ZFoeZLOZbNZPUfcg@shredder>
- <CANn89i+=gWwebCHk2qwu12qC+yXTFUqOxWTfnqbJOAFjidcYeg@mail.gmail.com>
- <A4F00E57-AB0E-4211-B9E4-225093EB101F@gmail.com>
- <CANn89iKOm2WPoemiqCsWaMXMyGf9C5xXH=NaSidPSNCpKxf_jQ@mail.gmail.com>
- <FE7CE62C-DBEB-4FE1-8ACB-C8B7DAF15710@gmail.com> <ZFqoNJqwLjaVFGaa@shredder>
- <F6300D47-506F-495B-AFAB-9077DD6D4DC8@gmail.com>
- <CANn89iKLSBwCnzS8TPSbkH+v_gMobFotOdCbdSMxAkhtx54xQA@mail.gmail.com>
-To: Eric Dumazet <edumazet@google.com>
-X-Mailer: Apple Mail (2.3731.500.231)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB5169:EE_
+X-MS-Office365-Filtering-Correlation-Id: 07b265e0-24fc-44e9-530a-08db5cf4c8be
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	8bA9ROEvMBzXmxhXswcHYBk+4mi3nMTa9hG2oLDtLDkR5I6muVB0hMNMA6I0ohDbIJ7F4gsjs3rU7+PvMOpRNYAGxYW/LlRYuhOnmc0DVcqjipacGmd+xLLAm0A+00QLv+pDdYGUtoApkMu78WzvLI+fGO874GE6gX4FHv/jGc64rUWIZ/9+rHqSCGgbvW2HdnuLaYcCaAUOpQX3oUWAZEnqJUIeyJlF4cO63EfErWjuP+7b6qfUgn4PhRRvjqIMFG1BX4QXg7K+gZcis0eA/yLLpVn9IGcOw0n0iNjnNRZWxyUFJ1PK5B19EBoGv967z+eOyKPvCX4T+h1995VVRZfFcS/7yl7i94iVMJ4GFDxzGgFMhE/oVIQeBEJ/8FazVYEqD8TyPHDrpwYT4Q4MuDDrODjYDNrwbOVq5tBXYPa2n/ecHHExtlF9+i92K80kYu74nKCP+TzV/ei7IBAyIqX5y0vDefoQMgWEgMUIdnHNPZMVYKf6AOXSJK1vSaScSTqTM2itfuqdDzEG5FPw21LW96EyR7neLpAVLjWqAOnjQlL8/4bl3JJDK1ZgCZTd0Hi5/C/HLtXmDHSutB6jZQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(396003)(39840400004)(376002)(366004)(451199021)(36756003)(86362001)(54906003)(4326008)(316002)(6916009)(66946007)(66556008)(66476007)(966005)(478600001)(6486002)(6666004)(8936002)(8676002)(5660300002)(41300700001)(2906002)(7416002)(44832011)(38100700002)(2616005)(6512007)(6506007)(186003)(83380400001)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?cYM53YFXJsJy6OvUYO9zIkAB66/S59GeWTcPmnczZ4COKdDns19+PlFDMBt8?=
+ =?us-ascii?Q?QeUDbu83t7TpJlsVhXly/zyX5mhsmdRxtJpDk1S0lmJ3weTm3LVUpPIdysyr?=
+ =?us-ascii?Q?HygsuatkYc7PAKodGPYiCYEK0gksyke1Wb54q2k1wZ4WuKufuwjCgCMJDuxd?=
+ =?us-ascii?Q?bYbGU5xsbBA0R/xwrYxAPgpqqG8hzN6GNmu5gCQX5bhBlZbMyJt1+C3EOmPz?=
+ =?us-ascii?Q?ZBmZex5OBHVuQMbD/70jo8FKmg8j7ONkwX1x+QkJq6x9f3Vb+K9SKCHBYaSh?=
+ =?us-ascii?Q?g9hK4yQKsHYaROMMcxm5NTKbgK1bo/h+4cyUioEM2S/Op5j14v0iYKfEG1Rx?=
+ =?us-ascii?Q?VmBqIohDrEWlX9xpNeO3m+med4Gp44M+sTVcXQTq+J3xpbiQvsDK1Bial9eF?=
+ =?us-ascii?Q?z8CATd01ZwTQwKKB8hE5weIfOOam1rbBTM17QHlod919EAz18ax32Q2JnaBB?=
+ =?us-ascii?Q?hER7DdPowtmyxlPhOK2rd9B0W7ec/OvkLBuVDj1PXmCKkho5eGT6uaxHb/BB?=
+ =?us-ascii?Q?FeUhG04riHzLEV4Pd4gStysbWxiTD7slORI7ZVWgdGUmgC6x+mIwezvim2NH?=
+ =?us-ascii?Q?ky7JtA0vrcPU6YzwlSJY1u0vmsO7JcQxlXcJtEro0PPSasZMtmdeo4tTzGxU?=
+ =?us-ascii?Q?c/klix3J7FGRuU8Q8Pxo/ncAQi5f8eZg8cW+WY8theB2OdOkfrym0A0Fu+0v?=
+ =?us-ascii?Q?L/UsGbuata+7flCHorkBHmH4KTWduVU/N2aTFAwbVbFs5z9l5NdviP14AYCW?=
+ =?us-ascii?Q?OZwnBTlOdCnI0PXD8VO4Z5pboI1ZHfjSM55aWwwaMfOGAD7mKxRoQubXUUvO?=
+ =?us-ascii?Q?WA4VJP2AxyF3EuSJStcVs39XYjZqwpxwDXx0usR3em6PQvOhcUlVGL5JAe0k?=
+ =?us-ascii?Q?y2T3zaTnC4EZZ6poNbsWzSmeGjK9YF+LMdFTyfBtTr6F8zETnLCbVucLKCtT?=
+ =?us-ascii?Q?P/1K61SkYdbiax9+NuMKE9absuHl63w1ctL8nyZs6b1pNfQA+ewncK0S3jKv?=
+ =?us-ascii?Q?bIAqosXZlYqtIK8BuLlfuN2pWWJfDPUvWVg7Sv9Tzjb0lJife6WcjducEKC8?=
+ =?us-ascii?Q?GVZUmxSQT17WAp+89dAXaNTrpawKf9vFNl6D5un1gbGscmu7SocyYGtRBd2b?=
+ =?us-ascii?Q?2ylxfFShE2/yWmR8WZTjj2iZOvJTnFFknZuFppxFhpmDcEvk5KrkQiO2jXOE?=
+ =?us-ascii?Q?WihLqcqScSKtfhZRIADN2SSMcxQVXNRXQngmCMHuQfChHHzDOBkfaD9n+d7/?=
+ =?us-ascii?Q?fB1GD0tGiCJax4x0n9ikfylJUK2xTz9HCray6C5nkM+2/twflxQtcsj8h4oR?=
+ =?us-ascii?Q?EALRBe0kwW8W+0LfjecA7jRl4wn+OQFLp+0MbHoekKg41iJKVfKCyfLyPsY0?=
+ =?us-ascii?Q?AmrSxvWlKZ3ngqpzqvqV1EggKAmIJ8n0VVIxN9L0qb+1GZboP/NK7esEo+1N?=
+ =?us-ascii?Q?wNn98+iUIcbjP6xCFR3AIXqFLaR8n7gC/dyuBEeEVhJ95m8QYlZq3vdEEfqY?=
+ =?us-ascii?Q?yIpWDAMipP3HRwFVS/SIArGPW70QwrpnTWulNiSPb+7ZgwjahCoieekCSXU0?=
+ =?us-ascii?Q?Ad5jbjovcbHDoWotda2EX6jr4AF+9PXN+XCt+dmY29uCAoLS8EmfYM1A6daU?=
+ =?us-ascii?Q?GztUE7ks+LZgQIxCxQONgZtiQMk7mJk1UfsiYTJSYhEkaUajTP13FSN4BAln?=
+ =?us-ascii?Q?S7Sgbw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07b265e0-24fc-44e9-530a-08db5cf4c8be
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2023 07:51:01.5863
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KydzZvuvLF1ncS6N3yyn+lHtArDI9MBFsi1qJx89Nh5GVCu2HaAos5s8TOrU2PEkFIxe9Vff/TklDQo524hOahTax7Y3UeN4wEsVCwlzniU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB5169
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Eric=20
-after switch to HZ 1666 reduce time to 30 sec for remove 4093 vlans .
+On Wed, May 24, 2023 at 03:49:21PM +0100, David Howells wrote:
+> Convert chtls_sendpage() to use sendmsg() with MSG_SPLICE_PAGES rather than
+> directly splicing in the pages itself.
+> 
+> This allows ->sendpage() to be replaced by something that can handle
+> multiple multipage folios in a single transaction.
+> 
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: Ayush Sawal <ayush.sawal@chelsio.com>
+> cc: "David S. Miller" <davem@davemloft.net>
+> cc: Eric Dumazet <edumazet@google.com>
+> cc: Jakub Kicinski <kuba@kernel.org>
+> cc: Paolo Abeni <pabeni@redhat.com>
+> cc: Jens Axboe <axboe@kernel.dk>
+> cc: Matthew Wilcox <willy@infradead.org>
+> cc: netdev@vger.kernel.org
+> ---
+>  .../chelsio/inline_crypto/chtls/chtls_io.c    | 109 ++----------------
+>  1 file changed, 7 insertions(+), 102 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
+> index 1d08386ac916..65efd20ec796 100644
+> --- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
+> +++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
+> @@ -1240,110 +1240,15 @@ int chtls_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+>  int chtls_sendpage(struct sock *sk, struct page *page,
+>  		   int offset, size_t size, int flags)
+>  {
+> -	struct chtls_sock *csk;
+> -	struct chtls_dev *cdev;
+> -	int mss, err, copied;
+> -	struct tcp_sock *tp;
+> -	long timeo;
+> -
+> -	tp = tcp_sk(sk);
+> -	copied = 0;
+> -	csk = rcu_dereference_sk_user_data(sk);
+> -	cdev = csk->cdev;
+> -	lock_sock(sk);
+> -	timeo = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
+> +	struct bio_vec bvec;
+> +	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES, };
+>  
 
-Do you think there will be a problem?
+Hi David,
 
-Best regards,
-martin
+a minor nit, in case you need to repost this series for some other reason.
 
-> On 10 May 2023, at 12:40, Eric Dumazet <edumazet@google.com> wrote:
->=20
-> On Wed, May 10, 2023 at 8:06=E2=80=AFAM Martin Zaharinov =
-<micron10@gmail.com> wrote:
->>=20
->> I think problem is in this part of code in net/core/dev.c
->=20
-> What makes you think this ?
->=20
-> msleep()  is not called a single time on my test bed.
->=20
-> # perf probe -a msleep
-> # cat bench.sh
-> modprobe dummy 2>/dev/null
-> ip link set dev dummy0 up 2>/dev/null
-> for i in $(seq 2 4094); do ip link add link dummy0 name vlan$i type
-> vlan id $i; done
-> for i in $(seq 2 4094); do ip link set dev vlan$i up; done
-> time for i in $(seq 2 4094); do ip link del link dummy0 name vlan$i
-> type vlan id $i; done
->=20
-> #  perf record -e probe:msleep -a -g ./bench.sh
->=20
-> real 0m59.877s
-> user 0m0.588s
-> sys 0m7.023s
-> [ perf record: Woken up 6 times to write data ]
-> [ perf record: Captured and wrote 8.561 MB perf.data ]
-> # perf script
-> #   << empty, nothing >>
->=20
->=20
->=20
->=20
->> #define WAIT_REFS_MIN_MSECS 1
->> #define WAIT_REFS_MAX_MSECS 250
->> /**
->> * netdev_wait_allrefs_any - wait until all references are gone.
->> * @list: list of net_devices to wait on
->> *
->> * This is called when unregistering network devices.
->> *
->> * Any protocol or device that holds a reference should register
->> * for netdevice notification, and cleanup and put back the
->> * reference if they receive an UNREGISTER event.
->> * We can get stuck here if buggy protocols don't correctly
->> * call dev_put.
->> */
->> static struct net_device *netdev_wait_allrefs_any(struct list_head =
-*list)
->> {
->>        unsigned long rebroadcast_time, warning_time;
->>        struct net_device *dev;
->>        int wait =3D 0;
->>=20
->>        rebroadcast_time =3D warning_time =3D jiffies;
->>=20
->>        list_for_each_entry(dev, list, todo_list)
->>                if (netdev_refcnt_read(dev) =3D=3D 1)
->>                        return dev;
->>=20
->>        while (true) {
->>                if (time_after(jiffies, rebroadcast_time + 1 * HZ)) {
->>                        rtnl_lock();
->>=20
->>                        /* Rebroadcast unregister notification */
->>                        list_for_each_entry(dev, list, todo_list)
->>                                =
-call_netdevice_notifiers(NETDEV_UNREGISTER, dev);
->>=20
->>                        __rtnl_unlock();
->>                        rcu_barrier();
->>                        rtnl_lock();
->>=20
->>                        list_for_each_entry(dev, list, todo_list)
->>                                if =
-(test_bit(__LINK_STATE_LINKWATCH_PENDING,
->>                                             &dev->state)) {
->>                                        /* We must not have linkwatch =
-events
->>                                         * pending on unregister. If =
-this
->>                                         * happens, we simply run the =
-queue
->>                                         * unscheduled, resulting in a =
-noop
->>                                         * for this device.
->>                                         */
->>                                        linkwatch_run_queue();
->>                                        break;
->>                                }
->>=20
->>                        __rtnl_unlock();
->>=20
->>                        rebroadcast_time =3D jiffies;
->>                }
->>=20
->>                if (!wait) {
->>                        rcu_barrier();
->>                        wait =3D WAIT_REFS_MIN_MSECS;
->>                } else {
->>                        msleep(wait);
->>                        wait =3D min(wait << 1, WAIT_REFS_MAX_MSECS);
->>                }
->>=20
->>                list_for_each_entry(dev, list, todo_list)
->>                        if (netdev_refcnt_read(dev) =3D=3D 1)
->>                                return dev;
->>=20
->>                if (time_after(jiffies, warning_time +
->>                               =
-READ_ONCE(netdev_unregister_timeout_secs) * HZ)) {
->>                        list_for_each_entry(dev, list, todo_list) {
->>                                pr_emerg("unregister_netdevice: =
-waiting for %s to become free. Usage count =3D %d\n",
->>                                         dev->name, =
-netdev_refcnt_read(dev));
->>                                =
-ref_tracker_dir_print(&dev->refcnt_tracker, 10);
->>                        }
->>=20
->>                        warning_time =3D jiffies;
->>                }
->>        }
->> }
->>=20
->>=20
->>=20
->> m.
->>=20
->>=20
->>> On 9 May 2023, at 23:08, Ido Schimmel <idosch@idosch.org> wrote:
->>>=20
->>> On Tue, May 09, 2023 at 09:50:18PM +0300, Martin Zaharinov wrote:
->>>> i try on kernel 6.3.1
->>>>=20
->>>>=20
->>>> time for i in $(seq 2 4094); do ip link del link eth1 name vlan$i =
-type vlan id $i; done
->>>>=20
->>>> real 4m51.633s  =E2=80=94=E2=80=94 here i stop with Ctrl + C  -  =
-and rerun  and second part finish after 3 min
->>>> user 0m7.479s
->>>> sys 0m0.367s
->>>=20
->>> You are off-CPU most of the time, the question is what is blocking. =
-I'm
->>> getting the following results with net-next:
->>>=20
->>> # time -p for i in $(seq 2 4094); do ip link del dev eth0.$i; done
->>> real 177.09
->>> user 3.85
->>> sys 31.26
->>>=20
->>> When using a batch file to perform the deletion:
->>>=20
->>> # time -p ip -b vlan_del.batch
->>> real 35.25
->>> user 0.02
->>> sys 3.61
->>>=20
->>> And to check where we are blocked most of the time while using the =
-batch
->>> file:
->>>=20
->>> # ../bcc/libbpf-tools/offcputime -p `pgrep -nx ip`
->>> [...]
->>>   __schedule
->>>   schedule
->>>   schedule_timeout
->>>   wait_for_completion
->>>   rcu_barrier
->>>   netdev_run_todo
->>>   rtnetlink_rcv_msg
->>>   netlink_rcv_skb
->>>   netlink_unicast
->>>   netlink_sendmsg
->>>   ____sys_sendmsg
->>>   ___sys_sendmsg
->>>   __sys_sendmsg
->>>   do_syscall_64
->>>   entry_SYSCALL_64_after_hwframe
->>>   -                ip (3660)
->>>       25089479
->>> [...]
->>>=20
->>> We are blocked for around 70% of the time on the rcu_barrier() in
->>> netdev_run_todo().
->>>=20
->>> Note that one big difference between my setup and yours is that in =
-my
->>> case eth0 is a dummy device and in your case it's probably a =
-physical
->>> device that actually implements netdev_ops::ndo_vlan_rx_kill_vid(). =
-If
->>> so, it's possible that a non-negligible amount of time is spent =
-talking
->>> to hardware/firmware to delete the 4K VIDs from the device's VLAN
->>> filter.
->>>=20
->>>>=20
->>>>=20
->>>> Config is very clean i remove big part of CONFIG options .
->>>>=20
->>>> is there options to debug what is happen.
->>>>=20
->>>> m
->>=20
+Please use reverse Xmas tree - longest line to shortest - order for
+Networking code. I understand this file doesn't adhere to that, and
+we probably don't want churn due to addressing it throughout this file.
+But my preference is to move towards this standard, or at least not away
+from it.
+
+So in this case:
+
+	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES, };
+	struct bio_vec bvec;
+
+This tool can be useful:
+
+	https://github.com/ecree-solarflare/xmastree
 
 
