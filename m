@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-5324-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5325-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9590F710CDB
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:01:50 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E8B17710CDF
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:02:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 512E72814EB
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:01:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A342F281577
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:02:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EDB49101E6;
-	Thu, 25 May 2023 13:00:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A20613AC3;
+	Thu, 25 May 2023 13:00:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9AD411C8C
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 13:00:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E4D8125DE
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 13:00:20 +0000 (UTC)
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C71E5C;
-	Thu, 25 May 2023 06:00:06 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7D7191;
+	Thu, 25 May 2023 06:00:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685019606; x=1716555606;
+  t=1685019611; x=1716555611;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=gKDvjdihs8R6U5hgO6lRBeB6lfzAxXYdxQ6Etd0WGqc=;
-  b=TTJkp7HnhEkhU0DH27NYqksIPCKWe9NJbLwz6xvGRWHWHz0f2TaPweSP
-   NZSO9wO8Ms6ODsZDFbJo0WJhZTzi1Z5lQSsIfPUTDePYOX3l83Qsa4rUP
-   6yP7fcWsdPi3hR3MGLDQJFOI4upvmBAbKGxwehLVIYrD97PpYanpKKJEX
-   XEzF49uk/JVkdxX3IDbPzoGAJWya9Y4wKlREmTewvao11abfqqBLQN/St
-   CymlxmrEFVDWYlu/wMhQE4v0+cBeMuiMzh+h9OI6GUPWylSHi+YgMSh2Q
-   hE8449NpUyfyMPYQLADi9dFbwuod6pbf6xtKrX6Se7oLGFRr/xkMmq+Cr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="351384405"
+  bh=aN8/dkqLOjIgLkSbA6BlYEq32MiAHhADHMb8dVnvsEI=;
+  b=Hbj7ztfCAVQDyiN5R0Jf1TGE7gWSUm8EPPM4c895Xe/rxM43EeuMgkdr
+   3boXCKr6Kdt0Dr4fhp4P202WYD8999UC6W5I3C4CXDDSR65/TycORBO7O
+   z9tbZIll0BqLZY9M6091WWnWWu9CwhNB2MNls31ekGPyY3DxSAvTYIypu
+   jzihKfWSFNEw0gnTn0I4S6hXg45Hw3potooEyBNqZS3bgJz61swparcPf
+   K+rQj8m9d/LZXjVPdubVfSKOVQB2+F5QZjtybpGON56ecXS5802CkglaE
+   J9on6VfWW64DkHdCekTmjOE7z/BajdpX5tCeednqS38BL2iUtJCkMYGmm
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="351384418"
 X-IronPort-AV: E=Sophos;i="6.00,191,1681196400"; 
-   d="scan'208";a="351384405"
+   d="scan'208";a="351384418"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 05:58:58 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 05:59:01 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="817075146"
+X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="817075163"
 X-IronPort-AV: E=Sophos;i="6.00,191,1681196400"; 
-   d="scan'208";a="817075146"
+   d="scan'208";a="817075163"
 Received: from newjersey.igk.intel.com ([10.102.20.203])
-  by fmsmga002.fm.intel.com with ESMTP; 25 May 2023 05:58:51 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 25 May 2023 05:58:57 -0700
 From: Alexander Lobakin <aleksander.lobakin@intel.com>
 To: "David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
@@ -62,9 +62,9 @@ Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
 	netdev@vger.kernel.org,
 	intel-wired-lan@lists.osuosl.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 06/12] net: skbuff: don't include <net/page_pool.h> into <linux/skbuff.h>
-Date: Thu, 25 May 2023 14:57:40 +0200
-Message-Id: <20230525125746.553874-7-aleksander.lobakin@intel.com>
+Subject: [PATCH net-next v2 07/12] net: page_pool: avoid calling no-op externals when possible
+Date: Thu, 25 May 2023 14:57:41 +0200
+Message-Id: <20230525125746.553874-8-aleksander.lobakin@intel.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230525125746.553874-1-aleksander.lobakin@intel.com>
 References: <20230525125746.553874-1-aleksander.lobakin@intel.com>
@@ -82,128 +82,86 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Currently, touching <net/page_pool.h> triggers a rebuild of more than
-a half of the kernel. That's because it's included in <linux/skbuff.h>.
+Turned out page_pool_put{,_full}_page() can burn quite a bunch of cycles
+even when on DMA-coherent platforms (like x86) with no active IOMMU or
+swiotlb, just for the call ladder.
+Indeed, it's
 
-In 6a5bcd84e886 ("page_pool: Allow drivers to hint on SKB recycling"),
-Matteo included it to be able to call a couple functions defined there.
-Then, in 57f05bc2ab24 ("page_pool: keep pp info as long as page pool
-owns the page") one of the calls was removed, so only one left.
-It's call to page_pool_return_skb_page() in napi_frag_unref(). The
-function is external and doesn't have any dependencies. Having include
-of very niche page_pool.h only for that looks like an overkill.
-Instead, move the declaration of that function to skbuff.h itself, with
-a small comment that it's a special guest and should not be touched.
-Now, after a few include fixes in the drivers, touching page_pool.h
-only triggers rebuilding of the drivers using it and a couple core
-networking files.
+page_pool_put_page()
+  page_pool_put_defragged_page()                  <- external
+    __page_pool_put_page()
+      page_pool_dma_sync_for_device()             <- non-inline
+        dma_sync_single_range_for_device()
+          dma_sync_single_for_device()            <- external
+            dma_direct_sync_single_for_device()
+              dev_is_dma_coherent()               <- exit
+
+For the inline functions, no guarantees the compiler won't uninline them
+(they're clearly not one-liners and sometimes compilers uninline even
+2 + 2). The first external call is necessary, but the rest 2+ are done
+for nothing each time, plus a bunch of checks here and there.
+Since Page Pool mappings are long-term and for one "device + addr" pair
+dma_need_sync() will always return the same value (basically, whether it
+belongs to an swiotlb pool), addresses can be tested once right after
+they're obtained and the result can be reused until the page is unmapped.
+Define new PP flag, which will mean "do DMA syncs for device, but only
+when needed" and turn it on by default when the driver asks to sync
+pages. When a page is mapped, check whether it needs syncs and if so,
+replace that "sync when needed" back to "always do syncs" globally for
+the whole pool (better safe than sorry). As long as a pool has no pages
+requiring DMA syncs, this cuts off a good piece of calls and checks.
+On my x86_64, this gives from 2% to 5% performance benefit with no
+negative impact for cases when IOMMU is on and the shortcut can't be
+used.
 
 Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
 ---
- drivers/net/ethernet/engleder/tsnep_main.c          | 1 +
- drivers/net/ethernet/freescale/fec_main.c           | 1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c    | 1 +
- drivers/net/wireless/mediatek/mt76/mt76.h           | 1 +
- include/linux/skbuff.h                              | 4 +++-
- include/net/page_pool.h                             | 2 --
- 7 files changed, 8 insertions(+), 3 deletions(-)
+ include/net/page_pool.h |  3 +++
+ net/core/page_pool.c    | 10 ++++++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index 84751bb303a6..6222aaa5157f 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -28,6 +28,7 @@
- #include <linux/iopoll.h>
- #include <linux/bpf.h>
- #include <linux/bpf_trace.h>
-+#include <net/page_pool.h>
- #include <net/xdp_sock_drv.h>
- 
- #define TSNEP_RX_OFFSET (max(NET_SKB_PAD, XDP_PACKET_HEADROOM) + NET_IP_ALIGN)
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 3ecf20ee5851..6ef162f8ed33 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -38,6 +38,7 @@
- #include <linux/in.h>
- #include <linux/ip.h>
- #include <net/ip.h>
-+#include <net/page_pool.h>
- #include <net/selftests.h>
- #include <net/tso.h>
- #include <linux/tcp.h>
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 9c94807097cb..3235a3a4ed08 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -6,6 +6,7 @@
- #include "en/port.h"
- #include "en_accel/en_accel.h"
- #include "en_accel/ipsec.h"
-+#include <net/page_pool.h>
- #include <net/xdp_sock_drv.h>
- 
- static u8 mlx5e_mpwrq_min_page_shift(struct mlx5_core_dev *mdev)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index f0e6095809fa..1bd91bc09eb8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -35,6 +35,7 @@
- #include "en/xdp.h"
- #include "en/params.h"
- #include <linux/bitfield.h>
-+#include <net/page_pool.h>
- 
- int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk)
- {
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
-index 6b07b8fafec2..95c16f11d156 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76.h
-@@ -15,6 +15,7 @@
- #include <linux/average.h>
- #include <linux/soc/mediatek/mtk_wed.h>
- #include <net/mac80211.h>
-+#include <net/page_pool.h>
- #include "util.h"
- #include "testmode.h"
- 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 8cff3d817131..163d3b2d00cb 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -32,7 +32,6 @@
- #include <linux/if_packet.h>
- #include <linux/llist.h>
- #include <net/flow.h>
--#include <net/page_pool.h>
- #if IS_ENABLED(CONFIG_NF_CONNTRACK)
- #include <linux/netfilter/nf_conntrack_common.h>
- #endif
-@@ -3412,6 +3411,9 @@ static inline void skb_frag_ref(struct sk_buff *skb, int f)
- 	__skb_frag_ref(&skb_shinfo(skb)->frags[f]);
- }
- 
-+/* Internal from net/core/page_pool.c, do not use in drivers directly */
-+bool page_pool_return_skb_page(struct page *page, bool napi_safe);
-+
- static inline void
- napi_frag_unref(skb_frag_t *frag, bool recycle, bool napi_safe)
- {
 diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index c8ec2f34722b..821c75bba125 100644
+index 821c75bba125..08e9571d2545 100644
 --- a/include/net/page_pool.h
 +++ b/include/net/page_pool.h
-@@ -240,8 +240,6 @@ inline enum dma_data_direction page_pool_get_dma_dir(struct page_pool *pool)
- 	return pool->p.dma_dir;
- }
+@@ -46,6 +46,9 @@
+ 					* device driver responsibility
+ 					*/
+ #define PP_FLAG_PAGE_FRAG	BIT(2) /* for page frag feature */
++#define PP_FLAG_DMA_MAYBE_SYNC	BIT(3) /* Internal, should not be used in
++					* drivers
++					*/
+ #define PP_FLAG_ALL		(PP_FLAG_DMA_MAP |\
+ 				 PP_FLAG_DMA_SYNC_DEV |\
+ 				 PP_FLAG_PAGE_FRAG)
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index e212e9d7edcb..57f323dee6c4 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -175,6 +175,10 @@ static int page_pool_init(struct page_pool *pool,
+ 		/* pool->p.offset has to be set according to the address
+ 		 * offset used by the DMA engine to start copying rx data
+ 		 */
++
++		/* Try to avoid calling no-op syncs */
++		pool->p.flags |= PP_FLAG_DMA_MAYBE_SYNC;
++		pool->p.flags &= ~PP_FLAG_DMA_SYNC_DEV;
+ 	}
  
--bool page_pool_return_skb_page(struct page *page, bool napi_safe);
--
- struct page_pool *page_pool_create(const struct page_pool_params *params);
+ 	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
+@@ -323,6 +327,12 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
  
- struct xdp_mem_info;
+ 	page_pool_set_dma_addr(page, dma);
+ 
++	if ((pool->p.flags & PP_FLAG_DMA_MAYBE_SYNC) &&
++	    dma_need_sync(pool->p.dev, dma)) {
++		pool->p.flags |= PP_FLAG_DMA_SYNC_DEV;
++		pool->p.flags &= ~PP_FLAG_DMA_MAYBE_SYNC;
++	}
++
+ 	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+ 		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
+ 
 -- 
 2.40.1
 
