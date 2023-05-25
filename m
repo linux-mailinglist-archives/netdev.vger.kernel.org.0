@@ -1,51 +1,52 @@
-Return-Path: <netdev+bounces-5442-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5443-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 46856711470
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:38:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 9EC21711473
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:39:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E91361C20EE3
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:38:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5E45B1C2099D
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:39:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C01B423D50;
-	Thu, 25 May 2023 18:38:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DC1923C62;
+	Thu, 25 May 2023 18:38:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9709319BC4
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:38:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0F7C4339C;
-	Thu, 25 May 2023 18:38:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF71919BC4
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:38:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C86BC4339E;
+	Thu, 25 May 2023 18:38:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685039895;
-	bh=EA7EnyBO8cmCNPcf02dhIWL9dadcEv0qdxkRF7doZKc=;
+	s=k20201202; t=1685039907;
+	bh=db40lIQNftQ6tKjDPGrRKcbC2u/3Ff74Fj9+8XNcPDk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=JAqVzC2HAGhcfAxE2MW5GyrQmArqWiXHiOrxlsvjCLzxj+tXVMpbsAxS1d/E1qU+I
-	 8JaCb5hhgrdB/4Nf3oouNFbBxQXhSCODAK5hKZ+6Xj6fj2gEsjdBgO2GIVzrIPJdN4
-	 zy80wLyGhi6xzEkkhlvBLigszqvsKK+FPIi6ndINT73o4KDxls1LL471lASFUnYohy
-	 Hp2Tjg+pjNjOpit1kmKl4KzqbFnoYy9YTCQHxG2dGMOfNSMuyhBt9Vt6FzcV6qkas8
-	 ueohZvjZtYfWcMXh+NV1Vevct4hwZGqrx/5rUnpUdB9DE7sEfYX0qK8bMyscNExCGl
-	 LbFfJBqez9PJQ==
+	b=rfrs6Q4rGzo4iRbZcenHYDrXn9SHmQxtpgxDOnDY0p4YaF+MyfFQZFdtbr9LHKzxq
+	 un7uSxTAFZGs4V8/NplOKhKGHtrCapg0rIP1du1kQnZn8WPbaJnAj0Bmz83p56o8tO
+	 f3r15lHJkPOATCjlN69fXUVHwydX50WRS8rsVvB/9Eg004SIaahBlIlD831tTH2ADO
+	 sn/zieE961jWK1YpQ8oLtbtncVotv0tLIKGoh5hN1Db0Cqkrt1nDlyt6BDlmZMKxeI
+	 bhjkTq7KhTHdgfRNwFxiZTYszlFNBlxRJ9bbGMucIPeVSAE06sA8CT+D67QgiCTX4S
+	 AA1WmcB3WO+xA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Johannes Berg <johannes.berg@intel.com>,
-	Gregory Greenman <gregory.greenman@intel.com>,
+Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>,
+	"David S . Miller" <davem@davemloft.net>,
 	Sasha Levin <sashal@kernel.org>,
-	johannes@sipsolutions.net,
-	davem@davemloft.net,
+	chandrashekar.devegowda@intel.com,
+	linuxwwan@intel.com,
+	loic.poulain@linaro.org,
+	ryazanov.s.a@gmail.com,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	linux-wireless@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 41/57] wifi: mac80211: recalc chanctx mindef before assigning
-Date: Thu, 25 May 2023 14:35:51 -0400
-Message-Id: <20230525183607.1793983-41-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 45/57] net: wwan: t7xx: Ensure init is completed before system sleep
+Date: Thu, 25 May 2023 14:35:55 -0400
+Message-Id: <20230525183607.1793983-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230525183607.1793983-1-sashal@kernel.org>
 References: <20230525183607.1793983-1-sashal@kernel.org>
@@ -59,50 +60,98 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 04312de4ced4b152749614e8179f3978a20a992f ]
+[ Upstream commit ab87603b251134441a67385ecc9d3371be17b7a7 ]
 
-When we allocate a new channel context, or find an existing one
-that is compatible, we currently assign it to a link before its
-mindef is updated. This leads to strange situations, especially
-in link switching where you switch to an 80 MHz link and expect
-it to be active immediately, but the mindef is still configured
-to 20 MHz while assigning.  Also, it's strange that the chandef
-passed to the assign method's argument is wider than the one in
-the context.
+When the system attempts to sleep while mtk_t7xx is not ready, the driver
+cannot put the device to sleep:
+[   12.472918] mtk_t7xx 0000:57:00.0: [PM] Exiting suspend, modem in invalid state
+[   12.472936] mtk_t7xx 0000:57:00.0: PM: pci_pm_suspend(): t7xx_pci_pm_suspend+0x0/0x20 [mtk_t7xx] returns -14
+[   12.473678] mtk_t7xx 0000:57:00.0: PM: dpm_run_callback(): pci_pm_suspend+0x0/0x1b0 returns -14
+[   12.473711] mtk_t7xx 0000:57:00.0: PM: failed to suspend async: error -14
+[   12.764776] PM: Some devices failed to suspend, or early wake event detected
 
-Fix this by calculating the mindef with the new link considered
-before calling the driver.
+Mediatek confirmed the device can take a rather long time to complete
+its initialization, so wait for up to 20 seconds until init is done.
 
-In particular, this fixes an iwlwifi problem during link switch
-where the firmware would assert because the (link) station that
-was added for the AP is configured to transmit at a bandwidth
-that's wider than the channel context that it's configured on.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20230504134511.828474-5-gregory.greenman@intel.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/chan.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wwan/t7xx/t7xx_pci.c | 18 ++++++++++++++++++
+ drivers/net/wwan/t7xx/t7xx_pci.h |  1 +
+ 2 files changed, 19 insertions(+)
 
-diff --git a/net/mac80211/chan.c b/net/mac80211/chan.c
-index c5d345e53056a..f07e34bed8f3a 100644
---- a/net/mac80211/chan.c
-+++ b/net/mac80211/chan.c
-@@ -871,6 +871,9 @@ static int ieee80211_assign_link_chanctx(struct ieee80211_link_data *link,
- 	}
+diff --git a/drivers/net/wwan/t7xx/t7xx_pci.c b/drivers/net/wwan/t7xx/t7xx_pci.c
+index 226fc1703e90f..91256e005b846 100644
+--- a/drivers/net/wwan/t7xx/t7xx_pci.c
++++ b/drivers/net/wwan/t7xx/t7xx_pci.c
+@@ -45,6 +45,7 @@
+ #define T7XX_PCI_IREG_BASE		0
+ #define T7XX_PCI_EREG_BASE		2
  
- 	if (new_ctx) {
-+		/* recalc considering the link we'll use it for now */
-+		ieee80211_recalc_chanctx_min_def(local, new_ctx, link);
++#define T7XX_INIT_TIMEOUT		20
+ #define PM_SLEEP_DIS_TIMEOUT_MS		20
+ #define PM_ACK_TIMEOUT_MS		1500
+ #define PM_AUTOSUSPEND_MS		20000
+@@ -96,6 +97,7 @@ static int t7xx_pci_pm_init(struct t7xx_pci_dev *t7xx_dev)
+ 	spin_lock_init(&t7xx_dev->md_pm_lock);
+ 	init_completion(&t7xx_dev->sleep_lock_acquire);
+ 	init_completion(&t7xx_dev->pm_sr_ack);
++	init_completion(&t7xx_dev->init_done);
+ 	atomic_set(&t7xx_dev->md_pm_state, MTK_PM_INIT);
+ 
+ 	device_init_wakeup(&pdev->dev, true);
+@@ -124,6 +126,7 @@ void t7xx_pci_pm_init_late(struct t7xx_pci_dev *t7xx_dev)
+ 	pm_runtime_mark_last_busy(&t7xx_dev->pdev->dev);
+ 	pm_runtime_allow(&t7xx_dev->pdev->dev);
+ 	pm_runtime_put_noidle(&t7xx_dev->pdev->dev);
++	complete_all(&t7xx_dev->init_done);
+ }
+ 
+ static int t7xx_pci_pm_reinit(struct t7xx_pci_dev *t7xx_dev)
+@@ -529,6 +532,20 @@ static void t7xx_pci_shutdown(struct pci_dev *pdev)
+ 	__t7xx_pci_pm_suspend(pdev);
+ }
+ 
++static int t7xx_pci_pm_prepare(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct t7xx_pci_dev *t7xx_dev;
 +
- 		ret = drv_assign_vif_chanctx(local, sdata, link->conf, new_ctx);
- 		if (ret)
- 			goto out;
++	t7xx_dev = pci_get_drvdata(pdev);
++	if (!wait_for_completion_timeout(&t7xx_dev->init_done, T7XX_INIT_TIMEOUT * HZ)) {
++		dev_warn(dev, "Not ready for system sleep.\n");
++		return -ETIMEDOUT;
++	}
++
++	return 0;
++}
++
+ static int t7xx_pci_pm_suspend(struct device *dev)
+ {
+ 	return __t7xx_pci_pm_suspend(to_pci_dev(dev));
+@@ -555,6 +572,7 @@ static int t7xx_pci_pm_runtime_resume(struct device *dev)
+ }
+ 
+ static const struct dev_pm_ops t7xx_pci_pm_ops = {
++	.prepare = t7xx_pci_pm_prepare,
+ 	.suspend = t7xx_pci_pm_suspend,
+ 	.resume = t7xx_pci_pm_resume,
+ 	.resume_noirq = t7xx_pci_pm_resume_noirq,
+diff --git a/drivers/net/wwan/t7xx/t7xx_pci.h b/drivers/net/wwan/t7xx/t7xx_pci.h
+index 50b37056ce5a4..5dffe24ef37b4 100644
+--- a/drivers/net/wwan/t7xx/t7xx_pci.h
++++ b/drivers/net/wwan/t7xx/t7xx_pci.h
+@@ -69,6 +69,7 @@ struct t7xx_pci_dev {
+ 	struct t7xx_modem	*md;
+ 	struct t7xx_ccmni_ctrl	*ccmni_ctlb;
+ 	bool			rgu_pci_irq_en;
++	struct completion	init_done;
+ 
+ 	/* Low Power Items */
+ 	struct list_head	md_pm_entities;
 -- 
 2.39.2
 
