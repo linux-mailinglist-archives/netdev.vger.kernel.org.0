@@ -1,67 +1,70 @@
-Return-Path: <netdev+bounces-5397-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5398-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DEA2C71117C
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:59:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7A2C971117E
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:59:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 61B791C20F1D
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 16:59:27 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 394101C209AB
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 16:59:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A8C1E19532;
-	Thu, 25 May 2023 16:59:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 148101D2A3;
+	Thu, 25 May 2023 16:59:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 989983D7C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 087A81D2A2
 	for <netdev@vger.kernel.org>; Thu, 25 May 2023 16:59:27 +0000 (UTC)
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB58197
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 09:59:25 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id 41be03b00d2f7-5343c3daff0so1323144a12.0
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 09:59:25 -0700 (PDT)
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6C5135
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 09:59:26 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 41be03b00d2f7-5289ce6be53so919463a12.0
+        for <netdev@vger.kernel.org>; Thu, 25 May 2023 09:59:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1685033965; x=1687625965;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=E4HwbWVSwZYHAz8V2xubbDDkUlRRamOtQxQnCL0RkJ0=;
-        b=KQHHNabeDpuoSxyeVFJ17o2zaqR8zFgF16dloshGB7cxfG5EoxLPS/jmJ8XzfEfZ1u
-         /sDedCeBabKAM1iS/4sLRF+m5NyUF3iI/agqj4TbtUQvCcL8DEpaaB+FFAZovdJRf/7i
-         x3i/KwxI5AEPzCWOoXPIem+bhyBYolytAFmT4MX2uQovxSMR9l50CPGd362VM+H1xwqh
-         QEHrrvmfPdkkhoFOvKD8Dhp7eVqQ4cMOmuqlFWFZRQIa4sKrU340QZPrNz5LHHiYiHaC
-         rNrZ7Edk3rQMfKQJtDzCfEkKSSHumrM3k8YTLrbFkvqqi0PbWmc0UyzgpTTA3qzskDdB
-         Vhnw==
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1685033966; x=1687625966;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aaevM9BfQQ0Et7TptAOei2iDqnn44+cVy5H+Vqe/tqg=;
+        b=hVzCPPJRzOgdTY3YNfnhVyoG9L/G+lJ4S6MgCiZekNv6olo84/fGKM+tfEJM1poQV0
+         hcTZDx+UjHBpe0lHodLk4zTsxorGu/QrRgu5tywVK2ej75dFEv0utNm+UuZDMtbMBpji
+         2nshCmTqwYO+phhTCfm8o+E4SSEZCW2cB8nS/iEwjRIlCj/y4sfkCIY6vK/Mwc1Ri0Xl
+         MJPOk7pWwTIifNfvS3CA4PjDTeVISUF7fbwmOBi22NKzXurFyS9Yn97R8nA1fUe89prB
+         QEeeRnIaNjY7Kjh3WNVDAeahuOLaTlx65Yn3D5RXA/QuKhjFIeO1ALlVY960/KDS0oNm
+         vycg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685033965; x=1687625965;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=E4HwbWVSwZYHAz8V2xubbDDkUlRRamOtQxQnCL0RkJ0=;
-        b=WGAPsozOQjV6Fu1PCenkYhs9R5r3qf2qoGKcHTg99DXyXbeDSfW5NomMhcTEWn2qI1
-         cLtl4QVh4IYZdGLj41I7gG82DB7V9jz93UCB1tABQ0rXcEXfpB1KTyYFf4n71mGPSUW5
-         zwOTOvglErf578hKGdMETMHonhkAdcmD9bYb4CzGr+mzc5wbYgLwdwXMAzRZP0rdEvIh
-         5iGr4PLNpmc+NdfU7DUOOQjjNpCjd5EG8WiKXF770vv2FsvI3gJcyd9yqXYp/5w0Gju1
-         P5Rf3AAlySyY7xT7QD27BkgakaZIqo80hZd4/xAucSMJ+7qOAraVeo3J8Hw/1aJvQLSq
-         /Z3A==
-X-Gm-Message-State: AC+VfDwnIAXca4kdn7yWFmxZ7aKclJ525vMJDNc4qUxCjVhgPWcSmjjK
-	KU4ZBwPjEZlQ0wddd61dc4S7ckusQonoQ5awgf2KzQ==
-X-Google-Smtp-Source: ACHHUZ6DFyKY70rHcAuwe4spJ7UkispTooSjosCI8GjJjrkIJqby/Ph9WiQDEb7OrH9YX1qo9Ou5eA==
-X-Received: by 2002:a17:902:c1c4:b0:1ae:56ff:74a with SMTP id c4-20020a170902c1c400b001ae56ff074amr2160840plc.58.1685033965051;
-        Thu, 25 May 2023 09:59:25 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685033966; x=1687625966;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=aaevM9BfQQ0Et7TptAOei2iDqnn44+cVy5H+Vqe/tqg=;
+        b=UFIolU2yyKkmSpP/vMMXf0rS04En70nxnZQjLT4WcXA1nssDpjEkdbVkaPyHWhokqA
+         px86zNFvB22KGO3S+eCHi1vIhZELLOFOIk9QmcEu5dahOC3hxZmZMta1/afgyr0B+nnB
+         WQp7s07DW0zphEpzcOt89nPDpB7hfZaDdcuNezFJ0C+lOKKXaC1GdbQ5ASBIH8uYF0Xy
+         G5DnTVcQQZEaaAVTkOiMBo1RN5fPWpduaKI/Q61Z+G3v9xhWKYRXvILQbGtWapxcSWBx
+         LjENpsnh9qzDbKEQ2FEjxSCpmrr7LSt9G78DrIuSIY83xHuh58RkgxoT2z1AEvrJG4Aq
+         1aNA==
+X-Gm-Message-State: AC+VfDy+sBVT7D26zjO0iVUXjKFWnhc9JifpzTTM7YLTS3Nslkrt7tTZ
+	z1HtclnkmTVrpSRbc2IHxKE+AecG/4yRg7coxyjkog==
+X-Google-Smtp-Source: ACHHUZ6TX7LiQ9dsGf8FykMMngZQ8zn5rFgbrkYNCjGgVrpOMFMCylF2Kx+iVVeYkNgm405A4zLRxw==
+X-Received: by 2002:a17:902:d483:b0:1ac:788c:872a with SMTP id c3-20020a170902d48300b001ac788c872amr3143235plg.1.1685033966123;
+        Thu, 25 May 2023 09:59:26 -0700 (PDT)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id w3-20020a170902e88300b00194d14d8e54sm1662111plg.96.2023.05.25.09.59.24
+        by smtp.gmail.com with ESMTPSA id w3-20020a170902e88300b00194d14d8e54sm1662111plg.96.2023.05.25.09.59.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 09:59:24 -0700 (PDT)
+        Thu, 25 May 2023 09:59:25 -0700 (PDT)
 From: Stephen Hemminger <stephen@networkplumber.org>
 To: netdev@vger.kernel.org
 Cc: Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 v3 0/2] vxlan: option printing
-Date: Thu, 25 May 2023 09:59:20 -0700
-Message-Id: <20230525165922.9711-1-stephen@networkplumber.org>
+Subject: [PATCH iproute2 v3 1/2] vxlan: use print_nll for gbp and gpe
+Date: Thu, 25 May 2023 09:59:21 -0700
+Message-Id: <20230525165922.9711-2-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230525165922.9711-1-stephen@networkplumber.org>
+References: <20230525165922.9711-1-stephen@networkplumber.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -75,36 +78,30 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This patchset makes printing of vxlan details more consistent.
-It also adds extra verbose output.
+The Gbp and Gpe are presence, not booleans so use print_null()
+for them
 
-Before:
-$ ip -d link show dev vxlan0
-4: vxlan0: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether e6:a4:54:b2:34:85 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
-    vxlan id 42 group 239.1.1.1 dev enp2s0 srcport 0 0 dstport 4789 ttl auto ageing 300 udpcsum noudp6zerocsumtx noudp6zerocsumrx addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 64000 gso_max_segs 64 tso_max_size 64000 tso_max_segs 64 gro_max_size 65536 
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+ ip/iplink_vxlan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-After:
-$ ip -d link show dev vxlan0
-4: vxlan0: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether e6:a4:54:b2:34:85 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
-    vxlan id 42 group 239.1.1.1 dev enp2s0 srcport 0 0 dstport 4789 ttl auto ageing 300 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 64000 gso_max_segs 64 tso_max_size 64000 tso_max_segs 64 gro_max_size 65536
-
-To get all settings, use multiple detail flags
-$ ip -d -d link show dev vxlan0
-4: vxlan0: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether e6:a4:54:b2:34:85 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
-    vxlan noexternal id 42 group 239.1.1.1 dev enp2s0 srcport 0 0 dstport 4789 learning noproxy norsc nol2miss nol3miss ttl auto ageing 300 udp_csum noudp_zero_csum6_tx noudp_zero_csum6_rx noremcsum_tx noremcsum_rx addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 64000 gso_max_segs 64 tso_max_size 64000 tso_max_segs 64 gro_max_size 65536
-
-Stephen Hemminger (2):
-  vxlan: use print_nll for gbp and gpe
-  vxlan: make option printing more consistent
-
- include/json_print.h |  9 +++++
- ip/iplink_vxlan.c    | 95 ++++++++++----------------------------------
- lib/json_print.c     | 19 +++++++++
- 3 files changed, 48 insertions(+), 75 deletions(-)
-
+diff --git a/ip/iplink_vxlan.c b/ip/iplink_vxlan.c
+index c7e0e1c47606..cb6745c74507 100644
+--- a/ip/iplink_vxlan.c
++++ b/ip/iplink_vxlan.c
+@@ -650,9 +650,9 @@ static void vxlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 		print_bool(PRINT_ANY, "remcsum_rx", "remcsumrx ", true);
+ 
+ 	if (tb[IFLA_VXLAN_GBP])
+-		print_bool(PRINT_ANY, "gbp", "gbp ", true);
++		print_null(PRINT_ANY, "gbp", "gbp ", NULL);
+ 	if (tb[IFLA_VXLAN_GPE])
+-		print_bool(PRINT_ANY, "gpe", "gpe ", true);
++		print_null(PRINT_ANY, "gpe", "gpe ", NULL);
+ }
+ 
+ static void vxlan_print_help(struct link_util *lu, int argc, char **argv,
 -- 
 2.39.2
 
