@@ -1,115 +1,101 @@
-Return-Path: <netdev+bounces-5305-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5306-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F14B3710A9C
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D90B0710AA5
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 13:15:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B139E1C20ECD
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 11:11:52 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9E9981C20EC2
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 11:15:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF331FBFD;
-	Thu, 25 May 2023 11:11:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7BE5FC00;
+	Thu, 25 May 2023 11:15:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D68D512
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 11:11:52 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADBB1191;
-	Thu, 25 May 2023 04:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=7pnqEDqTdXXIQOBLwb2FYHGZeiwAvkXUoR0xGIGm1tA=; b=Y5fWM8svQePSKhhdt6bnlWPjdN
-	pZ6uBLzdn+6ZLX66yd6iAQSOPELpAsm2thocsaCrSBICaQtZpH+w3bUnUeot4cjW6uoEiJiKCNeEo
-	Hn0UM8Oruh62o+WHwv+tl/PZnTilFT6xDZElEoyuozcUNcdyGxv0ln3N6Tg1Z5bTdz4KuHbdZTdI0
-	v2NBZQ7iyQDxoBpGtCoF5ZRHR0YuQHEmi39yJynaQ4m0hD2JXpm1ux/qofPOcxXtoejMnAD2T2VSz
-	UjuSYtERGhniQnzXMm9lrmwgxVsD3ZwcekQwK/a061aLpV7X72NKqDLos/hahiKnIEIhHTZCBX9nb
-	JX3EUG6Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:49710)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q28sj-0003y0-FZ; Thu, 25 May 2023 12:11:45 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q28sc-0002ct-V3; Thu, 25 May 2023 12:11:38 +0100
-Date: Thu, 25 May 2023 12:11:38 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc: Mark Brown <broonie@kernel.org>, davem@davemloft.net,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	alexis.lothore@bootlin.com, thomas.petazzoni@bootlin.com,
-	Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B035E574
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 11:15:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19BF6C433D2;
+	Thu, 25 May 2023 11:15:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685013327;
+	bh=16CfExnCW0v4mSVwy4bxcZIlomgq0okkzlQp2MZhQ9w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=uZtmMFtKqX/kAst5YKvj5lVcaOben3KKmosrpLCqDWiWJHQb6umgDMbEbOf1vI2Cw
+	 OGIblC5DfKopA1ciYfTcVBkZr1wj3uBP13UJkJsSmMK4PumIInnk5oAtj5qqmewXSN
+	 7Iaut92MkM5WESQxgXuPHtbs7yiHCvweZlKSwjjWrJOahKuQF+ij+mP9NJwKoaM41h
+	 6ZgxSDjvXgamYndW9DWZsrxwXjBUVTEIcq52NzeNX8vUmIEejP8NGaE3jemxMvUDa4
+	 BuRnc5RmKEyvpcKe0JNH945RQSn4hxZLVmGMz+p8KySo5KLWHLvsbCvfNgntSccvOW
+	 v5miO3mPgCLWQ==
+Date: Thu, 25 May 2023 12:15:21 +0100
+From: Lee Jones <lee@kernel.org>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Christian Marangi <ansuelsmth@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+	linux-leds@vger.kernel.org, David Miller <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
 	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Vladimir Oltean <vladimir.oltean@nxp.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Jose Abreu <joabreu@synopsys.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Subject: Re: [PATCH net-next v2 1/4] net: mdio: Introduce a regmap-based mdio
- driver
-Message-ID: <ZG9CajddFYKAFlO/@shell.armlinux.org.uk>
-References: <20230525101126.370108-1-maxime.chevallier@bootlin.com>
- <20230525101126.370108-2-maxime.chevallier@bootlin.com>
+	netdev <netdev@vger.kernel.org>
+Subject: [GIT PULL] Immutable branch between LEDs and netdev due for the v6.5
+ merge window
+Message-ID: <20230525111521.GA411262@google.com>
+References: <02004a73-2768-46f6-86ad-c6c631631abf@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230525101126.370108-2-maxime.chevallier@bootlin.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <02004a73-2768-46f6-86ad-c6c631631abf@lunn.ch>
 
-On Thu, May 25, 2023 at 12:11:23PM +0200, Maxime Chevallier wrote:
-> +struct mii_bus *devm_mdio_regmap_register(struct device *dev,
-> +					  const struct mdio_regmap_config *config)
-> +{
-> +	struct mdio_regmap_config *mrc;
-> +	struct mii_bus *mii;
-> +	int rc;
-> +
-> +	if (!config->parent)
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	mii = devm_mdiobus_alloc_size(config->parent, sizeof(*mrc));
-> +	if (!mii)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	mrc = mii->priv;
-> +	memcpy(mrc, config, sizeof(*mrc));
-> +
-> +	mrc->regmap = config->regmap;
-> +	mrc->valid_addr = config->valid_addr;
+> Christian Marangi and I will be continuing the work of offloading LED
+> blinking to Ethernet MAC and PHY LED controllers. The next set of
+> patches is again cross subsystem, LEDs and netdev. It also requires
+> some patches you have in for-leds-next:
+> 
+> a286befc24e8 leds: trigger: netdev: Use mutex instead of spinlocks
+> 509412749002 leds: trigger: netdev: Convert device attr to macro
+> 0fd93ac85826 leds: trigger: netdev: Rename add namespace to netdev trigger enum modes
+> eb31ca4531a0 leds: trigger: netdev: Drop NETDEV_LED_MODE_LINKUP from mode
+> 3fc498cf54b4 leds: trigger: netdev: Recheck NETDEV_LED_MODE_LINKUP on dev rename
+> 
+> I'm assuming the new series will get nerged via netdev, with your
+> Acked-by. Could you create a stable branch with these patches which
+> can be pulled into netdev?
 
-You have just memcpy'd everything from config into mrc. Doesn't this
-already include "regmap" and "valid_addr" ?
+-------------
 
-However, these are the only two things used, so does it really make
-sense to allocate the full mdio_regmap_config structure, or would a
-smaller data structure (of one pointer and one u8) be more appropriate?
+The following changes since commit ac9a78681b921877518763ba0e89202254349d1b:
+
+  Linux 6.4-rc1 (2023-05-07 13:34:35 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/lee/leds.git ib-leds-netdev-v6.5
+
+for you to fetch changes up to d1b9e1391ab2dc80e9db87fe8b2de015c651e4c9:
+
+  leds: trigger: netdev: Use mutex instead of spinlocks (2023-05-25 12:07:38 +0100)
+
+----------------------------------------------------------------
+Immutable branch between LEDs and netdev due for the v6.5 merge window
+
+----------------------------------------------------------------
+Christian Marangi (5):
+      leds: trigger: netdev: Recheck NETDEV_LED_MODE_LINKUP on dev rename
+      leds: trigger: netdev: Drop NETDEV_LED_MODE_LINKUP from mode
+      leds: trigger: netdev: Rename add namespace to netdev trigger enum modes
+      leds: trigger: netdev: Convert device attr to macro
+      leds: trigger: netdev: Use mutex instead of spinlocks
+
+ drivers/leds/trigger/ledtrig-netdev.c | 151 +++++++++++++---------------------
+ 1 file changed, 59 insertions(+), 92 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Lee Jones [李琼斯]
 
