@@ -1,173 +1,143 @@
-Return-Path: <netdev+bounces-5189-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5190-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2B1D97101E5
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 02:12:09 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id BEB937101EA
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 02:13:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DC6A61C20DC4
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 00:12:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5175D28141D
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 00:13:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 099AE195;
-	Thu, 25 May 2023 00:12:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 503AC621;
+	Thu, 25 May 2023 00:13:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4AB018E
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 00:12:05 +0000 (UTC)
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F18FB3
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 17:12:04 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id d2e1a72fcca58-64d138bd759so928952b3a.0
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 17:12:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684973524; x=1687565524;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=CuGzP4jvcFhZR0qNDB5MEw2qn9YAXXZ3upPhfuHloLo=;
-        b=QyP5/8p7Gy/PZSdwURtv5JC7lUyDeFZAlQgrfKUMESQAz11X9jTC701MmiWTjBTWvF
-         IAuICHYBgGOZqQeEcyVQjQpaMAQYEio+n0H39WxwzhfDxbpisBUkNZjpTJD5ubWRy1Iy
-         c6nUdTAJEBFUNl/+Byq7Cyfiw0sqvpVQLlvMrz2cFsUwhoccvg3tiIsUCPORX8Fr1MC5
-         u000gRpAjzCP6n671I4By3AFo3+L3eeMmeRAwC87rjDfLnqU7Xk3YbbsJ516rCo/V6py
-         UEzelwVRqWiBazvdg4pIdomKH5G/lutEBpQNw1JZ8k27mpiU74Cz5jr01Ri8TpDddZUW
-         QLaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684973524; x=1687565524;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CuGzP4jvcFhZR0qNDB5MEw2qn9YAXXZ3upPhfuHloLo=;
-        b=Q1cp9uqJZPMYu0TAEqXjXBgTGR5XIBvXHKCWxV6eOlSuW0XOA8XtRaJcpbquuxFP5g
-         SOUu4mrlsmRmT15BrmHdkBTkyzUDt4LSS7M2L4UdjEE62VtmV3oPWXFC7dQrILW35ABe
-         czq9W7cLxZ3BBUVwme4t4IEAFeoRs1TeZqUrXRX+kwy8zR49p5cw6PduVtQl39JMSp3y
-         GE37JrHMo8D8/zdkjQ9/T6GJMEsxBCZ594+X1ZIxnD4mITUQ2ru5Z1A1hofsPoBxOdjc
-         aGqRFmjMldvGRrsmx8+0sFYlNd9rFgSoG6jRq+ibtTTR9WVJeNytcWRaONNOQ62pTLYV
-         PTag==
-X-Gm-Message-State: AC+VfDyXuQ3P1SE8sfdwKoZCWmLC7TwWNau/Oxn4m+Va3CsjlDThZ1l6
-	flQknU/RRnN0iCRdVXaf+fXwCIzjlgPK
-X-Google-Smtp-Source: ACHHUZ5L4U6ncBchHbVPNxt3jSblZwPArf1Lu6PXIrUka0L1XTGS+c1Dcdl+Z/M7MxNvOvoT5Wxs5g76s7/Q
-X-Received: from jiangzp-glinux-dev.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:4c52])
- (user=jiangzp job=sendgmr) by 2002:a05:6a00:1514:b0:63d:397a:8fdd with SMTP
- id q20-20020a056a00151400b0063d397a8fddmr1747469pfu.0.1684973523938; Wed, 24
- May 2023 17:12:03 -0700 (PDT)
-Date: Wed, 24 May 2023 17:11:58 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F9C518E;
+	Thu, 25 May 2023 00:13:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A514CC433EF;
+	Thu, 25 May 2023 00:13:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684973606;
+	bh=+sO/602AFB9zwrX7ybT2/4+Yeh6TWX6oBP4DUinmm54=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Py9qIiJzIpSMi4z4T9kyJPBchACoaSp3A7iYr1VpVzwqexoMOOdxYJ5zL5OeHBBrh
+	 JVYdNd2LlDfnVEOz+yR57rv1siSYYZknxy22r88FLLkcgMBn0rEJjkAM5AlenUyY9n
+	 YSpq5vCayYJ/0IQwEkZXafQkhLjDa0blKzDdRxBSfGwbZIc84fEYyDSmphBVwmUFGT
+	 +y5NOqyQwe3zB0EgVVKwN7jPInjmlyEVw5ydeTGxS3+CI96EtESizgB+hgSY8JQHtW
+	 zPTA2C8zsTuXitNWWQuW8MUze0j3t+GebrL5qJQEGqbtJabRmlA6V9aAHxlojW8k9R
+	 GI54H+pI+M0Zg==
+Date: Thu, 25 May 2023 08:13:18 +0800
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+To: paulmck@kernel.org
+Cc: Ze Gao <zegao2021@gmail.com>, Jiri Olsa <olsajiri@gmail.com>, Yonghong
+ Song <yhs@meta.com>, Alexei Starovoitov <ast@kernel.org>, Andrii Nakryiko
+ <andrii@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, Hao Luo
+ <haoluo@google.com>, John Fastabend <john.fastabend@gmail.com>, KP Singh
+ <kpsingh@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, Song Liu
+ <song@kernel.org>, Stanislav Fomichev <sdf@google.com>, Steven Rostedt
+ <rostedt@goodmis.org>, Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+ kafai@fb.com, kpsingh@chromium.org, netdev@vger.kernel.org,
+ songliubraving@fb.com, Ze Gao <zegao@tencent.com>
+Subject: Re:
+Message-Id: <20230525081318.b4984f7d5f3e89f70368fe71@kernel.org>
+In-Reply-To: <9dc981d5-e385-4468-9b51-64a10476c86d@paulmck-laptop>
+References: <20220515203653.4039075-1-jolsa@kernel.org>
+	<20230520094722.5393-1-zegao@tencent.com>
+	<b4f66729-90ab-080a-51ec-bf435ad6199d@meta.com>
+	<CAD8CoPAXse1GKAb15O5tZJwBqMt1N_btH+qRe7c_a-ryUMjx7A@mail.gmail.com>
+	<ZGp+fW855gmWuh9W@krava>
+	<CAD8CoPDASe7hpkFbK+UzJats7j4sbgsCh_P4zaQYVuKD7jWu2w@mail.gmail.com>
+	<20230523133019.ce19932f89585eb10d092896@kernel.org>
+	<9dc981d5-e385-4468-9b51-64a10476c86d@paulmck-laptop>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.1.698.g37aff9b760-goog
-Message-ID: <20230524171158.kernel.v1.1.Ie9c81a5f8bbdb4f9a2007c56f05001d7e674dbe0@changeid>
-Subject: [kernel PATCH v1] Bluetooth: hci_sync: add lock to protect HCI_UNREGISTER
-From: Zhengping Jiang <jiangzp@google.com>
-To: linux-bluetooth@vger.kernel.org, marcel@holtmann.org, luiz.dentz@gmail.com
-Cc: chromeos-bluetooth-upstreaming@chromium.org, 
-	Zhengping Jiang <jiangzp@google.com>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Johan Hedberg <johan.hedberg@gmail.com>, Paolo Abeni <pabeni@redhat.com>, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-When the HCI_UNREGISTER flag is set, no jobs should be scheduled. Fix
-potential race when HCI_UNREGISTER is set after the flag is tested in
-hci_cmd_sync_queue.
+On Mon, 22 May 2023 23:59:28 -0700
+"Paul E. McKenney" <paulmck@kernel.org> wrote:
 
-Fixes: 0b94f2651f56 ("Bluetooth: hci_sync: Fix queuing commands when HCI_UNREGISTER is set")
-Signed-off-by: Zhengping Jiang <jiangzp@google.com>
----
+> On Tue, May 23, 2023 at 01:30:19PM +0800, Masami Hiramatsu wrote:
+> > On Mon, 22 May 2023 10:07:42 +0800
+> > Ze Gao <zegao2021@gmail.com> wrote:
+> > 
+> > > Oops, I missed that. Thanks for pointing that out, which I thought is
+> > > conditional use of rcu_is_watching before.
+> > > 
+> > > One last point, I think we should double check on this
+> > >      "fentry does not filter with !rcu_is_watching"
+> > > as quoted from Yonghong and argue whether it needs
+> > > the same check for fentry as well.
+> > 
+> > rcu_is_watching() comment says;
+> > 
+> >  * if the current CPU is not in its idle loop or is in an interrupt or
+> >  * NMI handler, return true.
+> > 
+> > Thus it returns *fault* if the current CPU is in the idle loop and not
+> > any interrupt(including NMI) context. This means if any tracable function
+> > is called from idle loop, it can be !rcu_is_watching(). I meant, this is
+> > 'context' based check, thus fentry can not filter out that some commonly
+> > used functions is called from that context but it can be detected.
+> 
+> It really does return false (rather than faulting?) if the current CPU
+> is deep within the idle loop.
+> 
+> In addition, the recent x86/entry rework (thank you Peter and
+> Thomas!) mean that the "idle loop" is quite restricted, as can be
+> seen by the invocations of ct_cpuidle_enter() and ct_cpuidle_exit().
+> For example, in default_idle_call(), these are immediately before and
+> after the call to arch_cpu_idle().
 
-Changes in v1:
-- Add a lock to protect HCI_UNREGISTER flag
+Thanks! I also found that the default_idle_call() is enough small and
+it seems not happening on fentry because there are no commonly used
+functions on that path.
 
- include/net/bluetooth/hci_core.h |  1 +
- net/bluetooth/hci_core.c         |  2 ++
- net/bluetooth/hci_sync.c         | 20 ++++++++++++++------
- 3 files changed, 17 insertions(+), 6 deletions(-)
+> 
+> Would the following help?  Or am I missing your point?
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index c86ecce34854..9a21b4787df5 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -515,6 +515,7 @@ struct hci_dev {
- 	struct work_struct	cmd_sync_work;
- 	struct list_head	cmd_sync_work_list;
- 	struct mutex		cmd_sync_work_lock;
-+	struct mutex		hdev_unregister_lock;
- 	struct work_struct	cmd_sync_cancel_work;
- 	struct work_struct	reenable_adv_work;
- 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index a856b1051d35..216c78656133 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -2686,7 +2686,9 @@ void hci_unregister_dev(struct hci_dev *hdev)
- {
- 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
- 
-+	mutex_lock(&hdev->hdev_unregister_lock);
- 	hci_dev_set_flag(hdev, HCI_UNREGISTER);
-+	mutex_unlock(&hdev->hdev_unregister_lock);
- 
- 	write_lock(&hci_dev_list_lock);
- 	list_del(&hdev->list);
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 647a8ce54062..2038335bdc85 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -629,6 +629,7 @@ void hci_cmd_sync_init(struct hci_dev *hdev)
- 	INIT_WORK(&hdev->cmd_sync_work, hci_cmd_sync_work);
- 	INIT_LIST_HEAD(&hdev->cmd_sync_work_list);
- 	mutex_init(&hdev->cmd_sync_work_lock);
-+	mutex_init(&hdev->hdev_unregister_lock);
- 
- 	INIT_WORK(&hdev->cmd_sync_cancel_work, hci_cmd_sync_cancel_work);
- 	INIT_WORK(&hdev->reenable_adv_work, reenable_adv);
-@@ -692,14 +693,19 @@ int hci_cmd_sync_submit(struct hci_dev *hdev, hci_cmd_sync_work_func_t func,
- 			void *data, hci_cmd_sync_work_destroy_t destroy)
- {
- 	struct hci_cmd_sync_work_entry *entry;
-+	int err = 0;
- 
--	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
--		return -ENODEV;
-+	mutex_lock(&hdev->hdev_unregister_lock);
-+	if (hci_dev_test_flag(hdev, HCI_UNREGISTER)) {
-+		err = -ENODEV;
-+		goto unlock;
-+	}
- 
- 	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
--	if (!entry)
--		return -ENOMEM;
--
-+	if (!entry) {
-+		err = -ENOMEM;
-+		goto unlock;
-+	}
- 	entry->func = func;
- 	entry->data = data;
- 	entry->destroy = destroy;
-@@ -710,7 +716,9 @@ int hci_cmd_sync_submit(struct hci_dev *hdev, hci_cmd_sync_work_func_t func,
- 
- 	queue_work(hdev->req_workqueue, &hdev->cmd_sync_work);
- 
--	return 0;
-+unlock:
-+	mutex_unlock(&hdev->hdev_unregister_lock);
-+	return err;
- }
- EXPORT_SYMBOL(hci_cmd_sync_submit);
- 
+Yes, thank you for the update!
+
+> 
+> 							Thanx, Paul
+> 
+> ------------------------------------------------------------------------
+> 
+> diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> index 1449cb69a0e0..fae9b4e29c93 100644
+> --- a/kernel/rcu/tree.c
+> +++ b/kernel/rcu/tree.c
+> @@ -679,10 +679,14 @@ static void rcu_disable_urgency_upon_qs(struct rcu_data *rdp)
+>  /**
+>   * rcu_is_watching - see if RCU thinks that the current CPU is not idle
+>   *
+> - * Return true if RCU is watching the running CPU, which means that this
+> - * CPU can safely enter RCU read-side critical sections.  In other words,
+> - * if the current CPU is not in its idle loop or is in an interrupt or
+> - * NMI handler, return true.
+> + * Return @true if RCU is watching the running CPU and @false otherwise.
+> + * An @true return means that this CPU can safely enter RCU read-side
+> + * critical sections.
+> + *
+> + * More specifically, if the current CPU is not deep within its idle
+> + * loop, return @true.  Note that rcu_is_watching() will return @true if
+> + * invoked from an interrupt or NMI handler, even if that interrupt or
+> + * NMI interrupted the CPU while it was deep within its idle loop.
+>   *
+>   * Make notrace because it can be called by the internal functions of
+>   * ftrace, and making this notrace removes unnecessary recursion calls.
+
+
 -- 
-2.40.1.698.g37aff9b760-goog
-
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
