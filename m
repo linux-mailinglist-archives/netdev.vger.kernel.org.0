@@ -1,191 +1,144 @@
-Return-Path: <netdev+bounces-5290-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5291-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8ED96710999
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 12:12:59 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id D06C27109AA
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 12:16:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4913E281518
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:12:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 77EC21C20E9F
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:16:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 17E2FE564;
-	Thu, 25 May 2023 10:12:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D00FBE561;
+	Thu, 25 May 2023 10:16:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F423AE560
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 10:12:15 +0000 (UTC)
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FE51B1;
-	Thu, 25 May 2023 03:12:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685009522; x=1716545522;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=N/zwrSVypYR69GoZqPE+SbIhxpOv+B6QByyWYEs768E=;
-  b=ilJ1+XzFjHnlOrV0x8DWRKcoNnbkuh3EgV+pLe/6Leqe9Mb+GZkJxaca
-   NAnjT3/oLwrVH+hbB0dIfGWBCbUIQJN4x2Ep8BeydXW6eDM2y4I61/uwH
-   TbyL3zYTm5WSWDx3y7035arwab5+BTuuhY2yT6as1XEQuNapUeXjoAAsQ
-   lExkOKaDi0CXPTqoAjwOgc4qnP3Q6FIiv269YBuaLeQ4lNpH0hYbmnTwg
-   pM1nLy2oJWlsXefRiGLj2Xum/6+Ba4JlR/hBcnPTQohNH3MhUg1c8Fd8S
-   pPB84aOx3kf3OezJkxHVBZrrk8toFZDdoxVYyVpLmw4hJpwf92q//y25D
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="334194535"
-X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
-   d="scan'208";a="334194535"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 03:12:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="655164459"
-X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
-   d="scan'208";a="655164459"
-Received: from aghiriba-mobl.ger.corp.intel.com ([10.249.40.17])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 03:11:54 -0700
-Date: Thu, 25 May 2023 13:11:51 +0300 (EEST)
-From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: Bjorn Helgaas <helgaas@kernel.org>
-cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, 
-    Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, 
-    Rob Herring <robh@kernel.org>, 
-    =?ISO-8859-2?Q?Krzysztof_Wilczy=F1ski?= <kw@linux.com>, 
-    Emmanuel Grumbach <emmanuel.grumbach@intel.com>, 
-    "Rafael J . Wysocki" <rafael@kernel.org>, 
-    Heiner Kallweit <hkallweit1@gmail.com>, Lukas Wunner <lukas@wunner.de>, 
-    Kalle Valo <kvalo@kernel.org>, "David S. Miller" <davem@davemloft.net>, 
-    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-    Paolo Abeni <pabeni@redhat.com>, Michal Kazior <michal.kazior@tieto.com>, 
-    Janusz Dziedzic <janusz.dziedzic@tieto.com>, ath10k@lists.infradead.org, 
-    linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    Dean Luick <dean.luick@cornelisnetworks.com>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    stable@vger.kernel.org
-Subject: Re: [PATCH v2 9/9] wifi: ath10k: Use RMW accessors for changing
- LNKCTL
-In-Reply-To: <ZG4o/pYseBklnrTc@bhelgaas>
-Message-ID: <ecdc8e85-786-db97-a7d4-bfd82c08714@linux.intel.com>
-References: <ZG4o/pYseBklnrTc@bhelgaas>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C2BAD2EF
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 10:16:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F94C433EF;
+	Thu, 25 May 2023 10:15:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685009763;
+	bh=7bXHnIYWtYF8xI7DWrHnG3fKIHxxxog4xxhaz5xiH1w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QALVqdn7P/EEvs1ccrAeWVErDIOt1p3IKbax3xk3ikHcjvnMA3VMa2rOwPIW2tdaH
+	 Zh2Ii9xY3JaT+YmZGkM5DKs6WG2dBRri4XTd7C6CVmyHrKHJ6E+C0m8h5qiifmnSQV
+	 SdGmhqkU9lPYxQGXKFa7OpN3e0ySccLt2YSOGO8SnnsguhHjWD5NxjyBlq4PYmD6Fl
+	 pztMKQGT4oN27tybKp8xiculeV2/LQWSxX7Rh4Vf1J2WVOLv5521Vib55zTsZ5AyLY
+	 XpBOgVkJ88lXDCXRreNFeoQYNZLcbVZiuy0g1LOT5dpPS3b58+NsM9nXoayF4o9QW6
+	 yGiiBPPZ7ZP7Q==
+Date: Thu, 25 May 2023 12:15:54 +0200
+From: Lorenzo Pieralisi <lpieralisi@kernel.org>
+To: Dexuan Cui <decui@microsoft.com>
+Cc: bhelgaas@google.com, davem@davemloft.net, edumazet@google.com,
+	haiyangz@microsoft.com, jakeo@microsoft.com, kuba@kernel.org,
+	kw@linux.com, kys@microsoft.com, leon@kernel.org,
+	linux-pci@vger.kernel.org, mikelley@microsoft.com,
+	pabeni@redhat.com, robh@kernel.org, saeedm@nvidia.com,
+	wei.liu@kernel.org, longli@microsoft.com, boqun.feng@gmail.com,
+	ssengar@microsoft.com, helgaas@kernel.org,
+	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+	josete@microsoft.com, stable@vger.kernel.org
+Subject: Re: [PATCH v3 2/6] PCI: hv: Fix a race condition in hv_irq_unmask()
+ that can cause panic
+Message-ID: <ZG81WpJBBegbLSbT@lpieralisi>
+References: <20230420024037.5921-1-decui@microsoft.com>
+ <20230420024037.5921-3-decui@microsoft.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1525169391-1685006896=:1738"
-Content-ID: <e7b32c4d-e7b9-c81d-670-b54285b6b554@linux.intel.com>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230420024037.5921-3-decui@microsoft.com>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1525169391-1685006896=:1738
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <5114585-6ccd-c09a-416-a53bb2256299@linux.intel.com>
-
-On Wed, 24 May 2023, Bjorn Helgaas wrote:
-
-> On Wed, May 17, 2023 at 01:52:35PM +0300, Ilpo Järvinen wrote:
-> > Don't assume that only the driver would be accessing LNKCTL. ASPM
-> > policy changes can trigger write to LNKCTL outside of driver's control.
-> > 
-> > Use RMW capability accessors which does proper locking to avoid losing
-> > concurrent updates to the register value. On restore, clear the ASPMC
-> > field properly.
-> > 
-> > Fixes: 76d870ed09ab ("ath10k: enable ASPM")
-> > Suggested-by: Lukas Wunner <lukas@wunner.de>
-> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > Cc: stable@vger.kernel.org
-> > ---
-> >  drivers/net/wireless/ath/ath10k/pci.c | 9 +++++----
-> >  1 file changed, 5 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
-> > index a7f44f6335fb..9275a672f90c 100644
-> > --- a/drivers/net/wireless/ath/ath10k/pci.c
-> > +++ b/drivers/net/wireless/ath/ath10k/pci.c
-> > @@ -1963,8 +1963,9 @@ static int ath10k_pci_hif_start(struct ath10k *ar)
-> >  	ath10k_pci_irq_enable(ar);
-> >  	ath10k_pci_rx_post(ar);
-> >  
-> > -	pcie_capability_write_word(ar_pci->pdev, PCI_EXP_LNKCTL,
-> > -				   ar_pci->link_ctl);
-> > +	pcie_capability_clear_and_set_word(ar_pci->pdev, PCI_EXP_LNKCTL,
-> > +					   PCI_EXP_LNKCTL_ASPMC,
-> > +					   ar_pci->link_ctl & PCI_EXP_LNKCTL_ASPMC);
-> >  
-> >  	return 0;
-> >  }
-> > @@ -2821,8 +2822,8 @@ static int ath10k_pci_hif_power_up(struct ath10k *ar,
-> >  
-> >  	pcie_capability_read_word(ar_pci->pdev, PCI_EXP_LNKCTL,
-> >  				  &ar_pci->link_ctl);
-> > -	pcie_capability_write_word(ar_pci->pdev, PCI_EXP_LNKCTL,
-> > -				   ar_pci->link_ctl & ~PCI_EXP_LNKCTL_ASPMC);
-> > +	pcie_capability_clear_word(ar_pci->pdev, PCI_EXP_LNKCTL,
-> > +				   PCI_EXP_LNKCTL_ASPMC);
+On Wed, Apr 19, 2023 at 07:40:33PM -0700, Dexuan Cui wrote:
+> When the host tries to remove a PCI device, the host first sends a
+> PCI_EJECT message to the guest, and the guest is supposed to gracefully
+> remove the PCI device and send a PCI_EJECTION_COMPLETE message to the host;
+> the host then sends a VMBus message CHANNELMSG_RESCIND_CHANNELOFFER to
+> the guest (when the guest receives this message, the device is already
+> unassigned from the guest) and the guest can do some final cleanup work;
+> if the guest fails to respond to the PCI_EJECT message within one minute,
+> the host sends the VMBus message CHANNELMSG_RESCIND_CHANNELOFFER and
+> removes the PCI device forcibly.
 > 
-> These ath drivers all have the form:
+> In the case of fast device addition/removal, it's possible that the PCI
+> device driver is still configuring MSI-X interrupts when the guest receives
+> the PCI_EJECT message; the channel callback calls hv_pci_eject_device(),
+> which sets hpdev->state to hv_pcichild_ejecting, and schedules a work
+> hv_eject_device_work(); if the PCI device driver is calling
+> pci_alloc_irq_vectors() -> ... -> hv_compose_msi_msg(), we can break the
+> while loop in hv_compose_msi_msg() due to the updated hpdev->state, and
+> leave data->chip_data with its default value of NULL; later, when the PCI
+> device driver calls request_irq() -> ... -> hv_irq_unmask(), the guest
+> crashes in hv_arch_irq_unmask() due to data->chip_data being NULL.
 > 
->   1) read LNKCTL
->   2) save LNKCTL value in ->link_ctl
->   3) write LNKCTL with "->link_ctl & ~PCI_EXP_LNKCTL_ASPMC"
->      to disable ASPM
->   4) write LNKCTL with ->link_ctl, presumably to re-enable ASPM
+> Fix the issue by not testing hpdev->state in the while loop: when the
+> guest receives PCI_EJECT, the device is still assigned to the guest, and
+> the guest has one minute to finish the device removal gracefully. We don't
+> really need to (and we should not) test hpdev->state in the loop.
 > 
-> These patches close the hole between 1) and 3) where other LNKCTL
-> updates could interfere, which is definitely a good thing.
+> Fixes: de0aa7b2f97d ("PCI: hv: Fix 2 hang issues in hv_compose_msi_msg()")
+> Signed-off-by: Dexuan Cui <decui@microsoft.com>
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+> Cc: stable@vger.kernel.org
+> ---
 > 
-> But the hole between 1) and 4) is much bigger and still there.  Any
-> update by the PCI core in that interval would be lost.
-
-Any update to PCI_EXP_LNKCTL_ASPMC field in that interval is lost yes, the 
-updates to _the other fields_ in LNKCTL are not lost.
-
-I know this might result in drivers/pci/pcie/aspm.c disagreeing what
-the state of the ASPM is (as shown under sysfs) compared with LNKCTL 
-value but the cause can no longer be due racing RMW. Essentially, 4) is 
-seen as an override to what core did if it changed ASPMC in between. 
-Technically, something is still "lost" like you say but for a different 
-reason than this series is trying to fix.
-
-> Straw-man proposal:
+> v2:
+>   Removed the "debug code".
+>   No change to the patch body.
+>   Added Cc:stable
 > 
->   - Change pci_disable_link_state() so it ignores aspm_disabled and
->     always disables ASPM even if platform firmware hasn't granted
->     ownership.  Maybe this should warn and taint the kernel.
+> v3:
+>   Added Michael's Reviewed-by.
 > 
->   - Change drivers to use pci_disable_link_state() instead of writing
->     LNKCTL directly.
+>  drivers/pci/controller/pci-hyperv.c | 11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index b82c7cde19e66..1b11cf7391933 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -643,6 +643,11 @@ static void hv_arch_irq_unmask(struct irq_data *data)
+>  	pbus = pdev->bus;
+>  	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
+>  	int_desc = data->chip_data;
+> +	if (!int_desc) {
+> +		dev_warn(&hbus->hdev->device, "%s() can not unmask irq %u\n",
+> +			 __func__, data->irq);
+> +		return;
+> +	}
 
-I fully agree that's the direction we should be moving, yes. However, I'm 
-a bit hesitant to take that leap in one step. These drivers currently not 
-only disable ASPM but also re-enable it (assuming we guessed the intent
-right).
+That's a check that should be there regardless ?
 
-If I directly implement that proposal, ASPM is not going to be re-enabled 
-when PCI core does not allowing it. Could it cause some power related 
-regression?
+>  	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
+>  
+> @@ -1911,12 +1916,6 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  		hv_pci_onchannelcallback(hbus);
+>  		spin_unlock_irqrestore(&channel->sched_lock, flags);
+>  
+> -		if (hpdev->state == hv_pcichild_ejecting) {
+> -			dev_err_once(&hbus->hdev->device,
+> -				     "the device is being ejected\n");
+> -			goto enable_tasklet;
+> -		}
+> -
+>  		udelay(100);
+>  	}
 
-My plan is to make another patch series after these to realize exactly 
-what you're proposing. It would allow better to isolate the problems that 
-related to the lack of ASPM.
+I don't understand why this code is in hv_compose_msi_msg() in the first
+place (and why only in that function ?) to me this looks like you are
+adding plasters in the code that can turn out to be problematic while
+ejecting a device, this does not seem robust at all - that's my opinion.
 
-I hope this two step approach is an acceptable way forward? I can of 
-course add those patches on top of these if that would be preferrable.
+Feel free to merge this code, I can't ACK it, sorry.
 
-
--- 
- i.
---8323329-1525169391-1685006896=:1738--
+Lorenzo
 
