@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-5400-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5401-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 727C0711196
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 19:03:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1FF7B71119A
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 19:04:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2DBDA1C208CC
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:03:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5EFF12815B2
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:04:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 51E4F1C779;
-	Thu, 25 May 2023 17:03:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64DD51C77F;
+	Thu, 25 May 2023 17:04:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB406168D3
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 17:03:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69D09C433D2;
-	Thu, 25 May 2023 17:03:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FB927E3
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 17:03:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD71EC433EF;
+	Thu, 25 May 2023 17:03:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685034199;
-	bh=K9n01kiiSt4kRO6VRK0U3IaunCH/mjPmCGWushqaFCE=;
+	s=k20201202; t=1685034237;
+	bh=TPlPKAj0p+zEqi9z0wS9kwH6FfheU3xhHZLDGA9HSMI=;
 	h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-	b=BW+9I/AXFnxNseELZ+15IxLElvl0zyNLVlnJWYcHRu0IrlpC7jiZkWiUGQ8ZvhK3q
-	 HDr4fK4ssieD0qGC5k2Q/3YYQNbFKR078nRvsLNTW20nEiWjqcyMrEojIfYlTdzgtx
-	 9UDH0sEMDZuKXC15O/yHOmcO8CKMQKKE8yGFosNNsLr4xOQ6S/Ds2T7MHWC5xzNTmv
-	 6AWxobC8SwwDD3AnHlwIvELVJjS0nezwg0M2RHeKo83dd9PcITpL+SR9FKuut3eAV4
-	 9iGLND/JSCEJTLidzJQUP1YWvPU7jpz0dFv/C1NyhzUzsIEx3BhSJHKrQmzJ93fuVl
-	 PNGocxeBKbxDg==
+	b=WulJw5conWhP1Dnf+r2lYH3dRz1hcS/L7rpxgSyv16nh8X3+iYKTxP70dPDmOzojR
+	 2GHX+1oVGYrIqKu1JFz07eKVxqPse+fqem4POSGVurzyMgcY0j8RhH/0utl01k7WDb
+	 +aSbKnhEELRwjJ7lOHvMHLjzthAUb17SjlVzSpLb1bpXx1oz7hE0/bB3Ty98OecFjP
+	 n4arCtcvZhXXxTtroxeDwI0jZBK36e3cBOUSzo/QnU/CJ8LAE08EG0vCmB/eSfFYUs
+	 OYzfPvUabl9HwQrJesUFxJZXqu8A5p26immo0He1XiaVrxx38rTxnCu7BNUzAotaa3
+	 8QqrRnsqcE1yw==
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -38,11 +38,11 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] wifi: wil6210: fw: Replace zero-length arrays with
+Subject: Re: [PATCH][next] wifi: wil6210: wmi: Replace zero-length array with
  DECLARE_FLEX_ARRAY() helper
 From: Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <ZGKHByxujJoygK+l@work>
-References: <ZGKHByxujJoygK+l@work>
+In-Reply-To: <ZGKHM+MWFsuqzTjm@work>
+References: <ZGKHM+MWFsuqzTjm@work>
 To: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 Cc: "David S. Miller" <davem@davemloft.net>,
  Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
@@ -51,8 +51,8 @@ Cc: "David S. Miller" <davem@davemloft.net>,
  "Gustavo A. R. Silva" <gustavoars@kernel.org>,
  linux-hardening@vger.kernel.org
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <168503419448.19957.18092228078896033455.kvalo@kernel.org>
-Date: Thu, 25 May 2023 17:03:17 +0000 (UTC)
+Message-ID: <168503423402.19957.8400109691029717015.kvalo@kernel.org>
+Date: Thu, 25 May 2023 17:03:55 +0000 (UTC)
 
 "Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
 
@@ -64,7 +64,7 @@ Date: Thu, 25 May 2023 17:03:17 +0000 (UTC)
 > This helper allows for flexible-array members alone in structs.
 > 
 > Link: https://github.com/KSPP/linux/issues/193
-> Link: https://github.com/KSPP/linux/issues/287
+> Link: https://github.com/KSPP/linux/issues/288
 > Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
 > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 > Reviewed-by: Simon Horman <simon.horman@corigine.com>
@@ -73,10 +73,10 @@ Date: Thu, 25 May 2023 17:03:17 +0000 (UTC)
 
 Patch applied to ath-next branch of ath.git, thanks.
 
-cbb3debbb163 wifi: wil6210: fw: Replace zero-length arrays with DECLARE_FLEX_ARRAY() helper
+27044b57f8a5 wifi: wil6210: wmi: Replace zero-length array with DECLARE_FLEX_ARRAY() helper
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/ZGKHByxujJoygK+l@work/
+https://patchwork.kernel.org/project/linux-wireless/patch/ZGKHM+MWFsuqzTjm@work/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
