@@ -1,114 +1,87 @@
-Return-Path: <netdev+bounces-5383-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5387-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3FEC3710FD5
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:41:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9F494710FFA
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:51:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AC3B11C20EEF
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:41:42 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5A90B281589
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 15:51:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CD99419BB4;
-	Thu, 25 May 2023 15:41:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 97EFE1D2AA;
+	Thu, 25 May 2023 15:50:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E90F43D7C
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 15:41:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EF89C433D2;
-	Thu, 25 May 2023 15:41:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685029300;
-	bh=mE3JdQ4IVTJW5EnMsaQFQKF0IBoNFJyIySUUiYE4Hm8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=vHfSZp4q9TGUciYt956Q1qqGmTXBlC+Xn31Yog1LJh0jXpnXfqPJdG6vthVhO4Tru
-	 bTshjdahrch33pZ8PIVDuPZa0OgtLUM1bPHLQkB5Cqs1rayxnxTJI4h2B+cskygHa+
-	 LahggifZ3Q7Is0rCwJETmdoJqruQUvCYJ5yMvv3J0GH6IIUEXGCT7iItw/ozTIoxj8
-	 /87fueZYy+YtY86NXLfRkOgiWc/dxjLL51BH9yWfmEI1CktSWXeg2vG/n0evfZjJgZ
-	 VLCVVR66Bfiig6Csu6pirjUOEWyQlZmStdDRc0H1MHGp6aqwE5JWLoy2S9M16jLy9A
-	 zqQl3oSvsi61Q==
-Date: Thu, 25 May 2023 08:41:39 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: "Wilczynski, Michal" <michal.wilczynski@intel.com>
-Cc: Jiri Pirko <jiri@resnulli.us>, Tony Nguyen <anthony.l.nguyen@intel.com>,
- <davem@davemloft.net>, <pabeni@redhat.com>, <edumazet@google.com>,
- <netdev@vger.kernel.org>, <lukasz.czapnik@intel.com>,
- <przemyslaw.kitszel@intel.com>
-Subject: Re: [PATCH net-next 0/5][pull request] ice: Support 5 layer Tx
- scheduler topology
-Message-ID: <20230525084139.7e381557@kernel.org>
-In-Reply-To: <e5a3edb9-1f6b-d7af-3f3a-4c80ee567c6b@intel.com>
-References: <20230523174008.3585300-1-anthony.l.nguyen@intel.com>
-	<ZG367+pNuYtvHXPh@nanopsycho>
-	<98366fa5-dc88-aa73-d07b-10e3bc84321c@intel.com>
-	<20230524092607.17123289@kernel.org>
-	<7ece1ba9-03bf-b836-1c55-c57f5235467c@intel.com>
-	<20230524130240.24a47852@kernel.org>
-	<e5a3edb9-1f6b-d7af-3f3a-4c80ee567c6b@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D65F1C752
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 15:50:43 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD32D10B;
+	Thu, 25 May 2023 08:50:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=9zPZPSkgvuyotoAA/KTUJbfPBjL1vH6aa8V0io941jQ=; b=LDOqAV1ryRWXbT+F5bkBsxp4rW
+	3yuiEn6uzp08iegx29y+n2fARDgg7gwGNPWdd5NKemk6BLw59COhjne3TSxgQlzX8uz9p/vA8cEjm
+	JGrUHYHa6cHUxZRLnwxO++Y2ZYT+dgCF1qHQlpdBarooN9iOFtu6cV1W1kNjvBA7ydYA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q2DEL-00DuN4-UJ; Thu, 25 May 2023 17:50:21 +0200
+Date: Thu, 25 May 2023 17:50:21 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
+Cc: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>,
+	hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	horatiu.vultur@microchip.com, Woojung.Huh@microchip.com,
+	Nicolas.Ferre@microchip.com, Thorsten.Kummermehr@microchip.com
+Subject: Re: [PATCH net-next v3 2/6] net: phy: microchip_t1s: replace
+ read-modify-write code with phy_modify_mmd
+Message-ID: <99ccdedb-c2c7-4187-9fb4-b2047480e097@lunn.ch>
+References: <20230524144539.62618-1-Parthiban.Veerasooran@microchip.com>
+ <20230524144539.62618-3-Parthiban.Veerasooran@microchip.com>
+ <ZG9/E8Am2ICEHIbr@debian>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZG9/E8Am2ICEHIbr@debian>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Thu, 25 May 2023 09:49:53 +0200 Wilczynski, Michal wrote:
-> On 5/24/2023 10:02 PM, Jakub Kicinski wrote:
-> > On Wed, 24 May 2023 18:59:20 +0200 Wilczynski, Michal wrote:  
-> >> Sorry about that, I gave examples from the top of my head, since those are the
-> >> features that potentially could modify the scheduler tree, seemed obvious to me
-> >> at the time. Lowering number of layers in the scheduling tree increases performance,
-> >> but only allows you to create a much simpler scheduling tree. I agree that mentioning the
-> >> features that actually modify the scheduling tree could be helpful to the reviewer.  
-> > Reviewer is one thing, but also the user. The documentation needs to be
-> > clear enough for the user to be able to confidently make a choice one
-> > way or the other. I'm not sure 5- vs 9-layer is meaningful to the user
-> > at all.  
-> 
-> It is relevant especially if the number of VF's/queues is not a multiply of 8, as described
-> in the first commit of this series - that's the real-world user problem. Performance was
-> not consistent among queues if you had 9 queues for example.
-> 
-> But I was also trying to provide some background on why we don't want to make 5-layer
-> topology the default in the answers above.
+> This change also invalidates most of the comment. I think this should be
+> reduced to something along the lines of:
+> 	/* HW quirk: Microchip states in the application note (AN1699) for the phy
+> 	 * that a set of read-modify-write (rmw) operations has to be performed
+> 	 * on a set of seemingly magic registers.
+> 	 * The result of these operations is just described as 'optimal performance'
+> 	 * Microchip gives no explanation as to what these mmd regs do,
+> 	 * in fact they are marked as reserved in the datasheet.*/
 
-What I'm saying is that 5- vs 9-layer is not meaningful as 
-a description. The user has to (somehow?!) know that the number 
-of layers in the hierarchy implies the grouping problem.
-The documentation doesn't mention the grouping problem!
+I agree the comments should be reviewed in light of these changes.
 
-+     - This parameter gives user flexibility to choose the 5-layer
-+       transmit scheduler topology, which helps to smooth out the transmit
-+       performance. The default topology is 9-layer. Each layer represents
-+       a physical junction in the network. Decreased number of layers
-+       improves performance, but at the same time number of network junctions
-+       is reduced, which might not be desirable depending on the use case.
+> 
+> Additionally I don't mind it if you change the tone of the comment. This was brought
+> up in the sitdown we had, where it was explained from Microchip that
+> documenting what the reg operations actually does would expose to much
+> of the internal workings of the chip.
 
-> >  In fact, the entire configuration would be better defined as
-> > a choice of features user wants to be available and the FW || driver
-> > makes the decision on how to implement that most efficiently.  
-> 
-> User can change number of queues/VF's 'on the fly' , but change in topology
-> requires a reboot basically, since the contents of the NVM are changed.
-> 
-> So to accomplish that we would need to perform topology change after each
-> change to number of queues to adapt, and it's not feasible to reboot every time
-> user changes number of queues.
-> 
-> Additionally 5-layer topology doesn't disable any of the features mentioned
-> (i.e. DCB/devlink-rate) it just makes them work a bit differently, but they still
-> should work.
-> 
-> To summarize: I would say that this series address specific performance problem
-> user might have if their queue count is not a power of 8. I can't see how this can
-> be solved by a choice of features, as the decision regarding number of queues can
-> be made 'on-the-fly'.
+They cannot care too much, or the firmware in the PHY would do this
+where it is all hidden away.
 
-Well, think among yourselves. "txbalancing" and a enigmatic
-documentation talking about topology and junctions is a no go.
+      Andrew
 
