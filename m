@@ -1,107 +1,103 @@
-Return-Path: <netdev+bounces-5296-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5297-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 55949710A43
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 12:45:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5646C710A5D
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 12:53:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0F86D2812BF
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:45:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F351B281504
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:53:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 070C8E573;
-	Thu, 25 May 2023 10:45:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36D76E577;
+	Thu, 25 May 2023 10:53:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED2FFD2EB
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 10:45:43 +0000 (UTC)
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774B6199
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 03:45:42 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id af79cd13be357-75ca95cd9b1so9971785a.0
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 03:45:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685011541; x=1687603541;
-        h=mime-version:user-agent:references:message-id:date:in-reply-to
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=bKttB3WcJdaHdzy4P80YHhy+V1bvEzmZ/qzOTLgj4nw=;
-        b=ZOwLs3j9Z5t4Dkel5ngICYvigbO9aXnKUuBRRFUuRNqaI5q5JhRPdFNyRpm9naWytY
-         Q9zdAGAvA/AkxEg6o7Ra6kKmxK/4sBGBsduNiUAAnJ47aG3KR0bSAigHezUxbFYmrONo
-         rYOYTLdiulH58TfzOX2lX9URJcPNe485SbwT0zKFfmrE5tfYKJZekBhxW1iMEeJ790oP
-         wqJiUYkRT6ocXhhph1AfJd9ItTYOXW72QFbBdr6UbkHqmmNdC63dN5SmuiP2SebTffp/
-         oV99cJJ5SCE78AJJD+yJRirgQBphisOokMJNwdvP/Azynjqp3nzKZpODCqTVBKwrPWt9
-         k9EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685011541; x=1687603541;
-        h=mime-version:user-agent:references:message-id:date:in-reply-to
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bKttB3WcJdaHdzy4P80YHhy+V1bvEzmZ/qzOTLgj4nw=;
-        b=S4szCz4OtrP5HfvBzyQ5iWso08YoyTwqPWF9hsICtbXwDFz8D/JAZmJ8jT8FF0G/ds
-         SHKNr+v5p6Jp0kNzQZLPp7DrIySIO4BynLWuuVreBemxKPU+W/pcVHpxSAy2nk1n/Ikq
-         wkyUyMaLSTQAC2bppY0St4WmAkmi/tquNUTql3xB8HpC0U1H5YwVvWWutlgAXOr4ppA7
-         DobEZzA40fmogWP5uBN9dP6y6RLvS3I3QQYovTur01Z+UhkSrnzoTz6LG0wAg7/+tQp5
-         I1rirtt2V66m0jTx9NdsqDu2ORiYZjfyU8lf6MswmHbYWKvrVYEf/9raOLeOwEgBx7Fb
-         Ceyw==
-X-Gm-Message-State: AC+VfDz6TalH34gxvmDQ3wo0kLKlnpcYjkBmN14x103dZ9mZZvEM8RLh
-	WGIbGQECvbdh9VN15DXNjhQ=
-X-Google-Smtp-Source: ACHHUZ4QbGBBzbBBoS0rBTYdt9aOdrpmt9LtMkwPlKCTwY7U1+fhNgzafxTSohphYdnF30xrq74Hjg==
-X-Received: by 2002:a05:6214:c63:b0:5ef:7e33:c6c9 with SMTP id t3-20020a0562140c6300b005ef7e33c6c9mr779899qvj.38.1685011541482;
-        Thu, 25 May 2023 03:45:41 -0700 (PDT)
-Received: from imac ([88.97.103.74])
-        by smtp.gmail.com with ESMTPSA id mn6-20020a0562145ec600b0060530c942f4sm316820qvb.46.2023.05.25.03.45.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 03:45:41 -0700 (PDT)
-From: Donald Hunter <donald.hunter@gmail.com>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: davem@davemloft.net,  netdev@vger.kernel.org,  edumazet@google.com,
-  pabeni@redhat.com
-Subject: Re: [PATCH net] tools: ynl: avoid dict errors on older Python versions
-In-Reply-To: <20230524170712.2036128-1-kuba@kernel.org> (Jakub Kicinski's
-	message of "Wed, 24 May 2023 10:07:12 -0700")
-Date: Thu, 25 May 2023 11:45:28 +0100
-Message-ID: <m28rdclmev.fsf@gmail.com>
-References: <20230524170712.2036128-1-kuba@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBC34D533
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 10:53:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A14CC433D2;
+	Thu, 25 May 2023 10:53:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685011989;
+	bh=DGZUNnKLpFIKKgAIoq8KpqEt+LPmKrgx96HvrKtT9Yw=;
+	h=From:Date:Subject:To:Cc:From;
+	b=Dft2P935xbpmZpkslBzCWrsDqbaeVKgPg3BoZ5+uADaeCLyX91goudh/37PWofh5j
+	 YKZkCYWz+F0uWy56wWc5BSRRRTx7Pf6VvqulpN/Q3LoBo1NnJNS0yj++edEeri0DdZ
+	 KfjL2vUmtjaAo38IuDuhlje4cSdsr9IWyyhvV5qIozhc1H76JayVKB4xYPrKO7mwqt
+	 5rZ77eCbN8cVz3Nh4YgO12xlgfdpkmsgTRPVG7Oh37iKlPkzv1zGPOJPjArM/9NGWI
+	 VaWQmNQXR5J4WyPKyl2Ig2sQF24+A9JNxW2I+jh5XKv5uApSVSni5S0D36RFXjgLe5
+	 rWHWzZ/xO294Q==
+From: Simon Horman <horms@kernel.org>
+Date: Thu, 25 May 2023 12:52:58 +0200
+Subject: [PATCH net] ice: Don't dereference NULL in ice_gns_read error path
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230525-null-ice-v1-1-30d10557b91e@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAAk+b2QC/x2M0QqDMBAEf0XuuQcmqaX4K6UPMa71QK6SVBHEf
+ /fs4ywzu1NBFhRqq50yVinyVQN3qyiNUT9g6Y3J1z7UjW9Yl2liSeDQu2d8hOEe4Mj0LhZwl6O
+ m0YJLs3HOGGT7/79I8aP3cZzb+JqMdAAAAA==
+To: Jesse Brandeburg <jesse.brandeburg@intel.com>, 
+ Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: Jakub Kicinski <kuba@kernel.org>, 
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+ Paolo Abeni <pabeni@redhat.com>, 
+ Karol Kolacinski <karol.kolacinski@intel.com>, 
+ Sudhansu Sekhar Mishra <sudhansu.mishra@intel.com>, 
+ Dan Carpenter <dan.carpenter@linaro.org>, intel-wired-lan@lists.osuosl.org, 
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Mailer: b4 0.12.2
 
-Jakub Kicinski <kuba@kernel.org> writes:
+If pf is NULL in ice_gns_read() then it will be dereferenced
+in the error path by a call to dev_dbg(ice_pf_to_dev(pf), ...).
 
-> Python 3.9.0 or newer supports combining dicts() with |,
-> but older versions of Python are still used in the wild
-> (e.g. on CentOS 8, which goes EoL May 31, 2024).
-> With Python 3.6.8 we get:
->
->   TypeError: unsupported operand type(s) for |: 'dict' and 'dict'
->
-> Use older syntax. Tested with non-legacy families only.
->
-> Fixes: f036d936ca57 ("tools: ynl: Add fixed-header support to ynl")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: donald.hunter@gmail.com
->
-> This is arguably not a fix, but those trying YNL on 6.4 will likely
-> appreciate not running into the problem.
+Avoid this by simply returning in this case.
+If logging is desired an alternate approach might be to
+use pr_err() before returning.
 
-I just hit the issue on Ubuntu on a BF2 so thank you for getting a fix
-out before me! Tested with ovs_datapath.
+Flagged by Smatch as:
 
-Reviewed-by: Donald Hunter <donald.hunter@gmail.com>
-Tested-by: Donald Hunter <donald.hunter@gmail.com>
+  .../ice_gnss.c:196 ice_gnss_read() error: we previously assumed 'pf' could be null (see line 131)
+
+Fixes: 43113ff73453 ("ice: add TTY for GNSS module for E810T device")
+Signed-off-by: Simon Horman <horms@kernel.org>
+---
+ drivers/net/ethernet/intel/ice/ice_gnss.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
+index 2ea8a2b11bcd..3d0663840aa1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.c
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
+@@ -128,12 +128,7 @@ static void ice_gnss_read(struct kthread_work *work)
+ 	int err = 0;
+ 
+ 	pf = gnss->back;
+-	if (!pf) {
+-		err = -EFAULT;
+-		goto exit;
+-	}
+-
+-	if (!test_bit(ICE_FLAG_GNSS, pf->flags))
++	if (!pf || !test_bit(ICE_FLAG_GNSS, pf->flags))
+ 		return;
+ 
+ 	hw = &pf->hw;
+@@ -191,7 +186,6 @@ static void ice_gnss_read(struct kthread_work *work)
+ 	free_page((unsigned long)buf);
+ requeue:
+ 	kthread_queue_delayed_work(gnss->kworker, &gnss->read_work, delay);
+-exit:
+ 	if (err)
+ 		dev_dbg(ice_pf_to_dev(pf), "GNSS failed to read err=%d\n", err);
+ }
+
 
