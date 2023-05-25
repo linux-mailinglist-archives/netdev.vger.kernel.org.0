@@ -1,105 +1,103 @@
-Return-Path: <netdev+bounces-5469-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5472-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2F335711781
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 21:35:51 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4EC837117BA
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 21:55:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6A77B2815B0
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 19:35:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E1F79281618
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 19:55:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 60BB024141;
-	Thu, 25 May 2023 19:35:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF2B024150;
+	Thu, 25 May 2023 19:54:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53D08FC05
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 19:35:47 +0000 (UTC)
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3D8A7
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 12:35:14 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-96652cb7673so162746966b.0
-        for <netdev@vger.kernel.org>; Thu, 25 May 2023 12:35:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ferroamp-se.20221208.gappssmtp.com; s=20221208; t=1685043238; x=1687635238;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=omMTY1or9SrrKMZELZLQH6rGhEK2aJzxF2jTBqOVLSU=;
-        b=c7+IBQv9F2x6/HunvO55aA13WEf5dOglIWwDousi/j+F3o3KlcwrDBaDnxr9ID0+4Z
-         N4oYB1W/yf0zlxDl87DLLIU1/QWa+ER4b4D8+6DSS/pulqPGjxWAQdWzLCFRt7nzPfer
-         swveGjjoconXUmqpL4vMZCG/s83sd2hqS9i+je2IAMWZp0dLV6weBTy1pYulVPi1En58
-         +peQZJcW6antyQkboh6pOEQLWrckNTCVEO3p/ljrwlk9NOMqAiuj8quxDg5R3cXqahor
-         wTnMwSOS8IuE1LjM/Gx+PRByyr4l8xfTMs9ZtzoJVgmmudAQFgnEXDEeKLPz2eVfvqt/
-         XekA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685043238; x=1687635238;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=omMTY1or9SrrKMZELZLQH6rGhEK2aJzxF2jTBqOVLSU=;
-        b=b1L8j26azstSb158UaLgTnxFtx/nt5rpMW1qUS+0rjnRfAOgrOsyX/jvskmVBqPeYs
-         ZMO2MPMmt5AJcfMkzoZvW3As638XPfC9QQ49PyAtm3KFmZtCy9OiH4/ZLtk9bm+GrX93
-         bkqfHIsGDYqAH8YG/vCi08cd6ScahQ6Ga3TFuaPvI7TrMYiNSoGt7jXeN0ot3HFMdyWV
-         OhSVNiQL9+lOJoJrqJX9hrgUKr+zXZ4ymm8CqTqO43/i235JpMFTlAYh3UDG9S1JU3fz
-         6LEM6ZC8xzjpa/X9pmvxX65tE4Eu/1wU8s7Ij8LD2bbb9/YTI9VoI7+r94RyDC9C7I1e
-         Yl+A==
-X-Gm-Message-State: AC+VfDyfV3JoUCskvghaJHq78bqbKNQoBokU/rmCR8UiIEhiw6vDhjNX
-	JFODclxsw1HrIGqRUdlw9XyKngqwtNc/50r3h0c=
-X-Google-Smtp-Source: ACHHUZ435jO5TrrceiQBfE9d+lBxEraCM6asT5qwo8SN1MRiOJ4KYPTcXaqdfNzdKmKkbfSdyI9fsw==
-X-Received: by 2002:ac2:5923:0:b0:4f3:bb14:6bac with SMTP id v3-20020ac25923000000b004f3bb146bacmr5341050lfi.56.1685042554346;
-        Thu, 25 May 2023 12:22:34 -0700 (PDT)
-Received: from builder (c188-149-203-37.bredband.tele2.se. [188.149.203.37])
-        by smtp.gmail.com with ESMTPSA id c6-20020ac244a6000000b004f4cae38a1dsm305824lfm.223.2023.05.25.12.22.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 12:22:33 -0700 (PDT)
-Date: Thu, 25 May 2023 21:22:31 +0200
-From: =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
-To: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
-Cc: andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
-	Woojung.Huh@microchip.com, Nicolas.Ferre@microchip.com,
-	Thorsten.Kummermehr@microchip.com
-Subject: Re: [PATCH net-next v3 6/6] net: phy: microchip_t1s: add support for
- Microchip LAN865x Rev.B0 PHYs
-Message-ID: <ZG+1d6m7Tum3KcVL@builder>
-References: <20230524144539.62618-1-Parthiban.Veerasooran@microchip.com>
- <20230524144539.62618-7-Parthiban.Veerasooran@microchip.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D08E324141
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 19:54:58 +0000 (UTC)
+Received: from st43p00im-ztfb10063301.me.com (st43p00im-ztfb10063301.me.com [17.58.63.179])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E884E7
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 12:54:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pen.gy; s=sig1;
+	t=1685043805; bh=7qTQoFvIqowISFG0SsZjr8VVFkKEqUXMz8EjBTX/N9s=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version;
+	b=SJJ4ZJDQTYYGTcl/HoWkVi8tnsrisCEUmSq3u6Vz/z5aAqebXX3mxopFTeOW1wxvm
+	 584lWPyZpiHTgWedvuVQyR41mVXu5wMkkIhLsuOYoiLWosodYNFZzJU+Y3R/QYeb9N
+	 FdVmiG8ycUhzDQQX1Epd0vXid6/vGnFtNp/ySPHG8VbTe/soRmo8AmxuGIyhkCe8uV
+	 nd09ylETMlNW0dum/YSUqAck4iWOAvKZX4BxhVDpG1MCpFHtMdcDm3rCLlJmc0Xy8a
+	 1VoF037xMjRQgqdcyvtAG9oz+KlN8Lp9objirCDFYZllp/5fuloRGTnIrdI630tZST
+	 UOQc3ZkbzVG2w==
+Received: from Eagle.se1.pen.gy (st43p00im-dlb-asmtp-mailmevip.me.com [17.42.251.41])
+	by st43p00im-ztfb10063301.me.com (Postfix) with ESMTPSA id AF0CE700477;
+	Thu, 25 May 2023 19:43:23 +0000 (UTC)
+From: Foster Snowhill <forst@pen.gy>
+To: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>
+Cc: Georgi Valkov <gvalkov@gmail.com>,
+	Simon Horman <simon.horman@corigine.com>,
+	linux-usb@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: [PATCH net-next v2 1/2] usbnet: ipheth: fix risk of NULL pointer deallocation
+Date: Thu, 25 May 2023 21:42:54 +0200
+Message-Id: <20230525194255.4516-1-forst@pen.gy>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230524144539.62618-7-Parthiban.Veerasooran@microchip.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-	T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-ORIG-GUID: 3hI-HWMBjo6aieRqhnIrucz4KdKH5qNX
+X-Proofpoint-GUID: 3hI-HWMBjo6aieRqhnIrucz4KdKH5qNX
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.573,18.0.957,17.0.605.474.0000000_definitions?=
+ =?UTF-8?Q?=3D2023-05-18=5F15:2023-05-17=5F02,2023-05-18=5F15,2020-01-23?=
+ =?UTF-8?Q?=5F02_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 phishscore=0 bulkscore=0
+ mlxscore=0 spamscore=0 adultscore=0 clxscore=1030 malwarescore=0
+ mlxlogscore=590 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2305250166
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 24, 2023 at 08:15:39PM +0530, Parthiban Veerasooran wrote:
-> Add support for the Microchip LAN865x Rev.B0 10BASE-T1S Internal PHYs
-> (LAN8650/1). The LAN865x combines a Media Access Controller (MAC) and an
-> internal 10BASE-T1S Ethernet PHY to access 10BASE‑T1S networks. As
-> LAN867X and LAN865X are using the same function for the read_status,
-> rename the function as lan86xx_read_status.
-> 
-> Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
-> ---
+From: Georgi Valkov <gvalkov@gmail.com>
 
-I spotted something that's missing, the help text for the
-MICROCHIP_T1S_PHY config option in driver/net/phy/Kconfig
-should be updated. Currently it says:
-	  Currently supports the LAN8670, LAN8671, LAN8672
+The cleanup precedure in ipheth_probe will attempt to free a
+NULL pointer in dev->ctrl_buf if the memory allocation for
+this buffer is not successful. Rearrange the goto labels to
+avoid this risk.
 
-Which should be extended with the 865x phys
+Signed-off-by: Georgi Valkov <gvalkov@gmail.com>
+---
+ drivers/net/usb/ipheth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
+index 6a769df0b..8875a3d0e 100644
+--- a/drivers/net/usb/ipheth.c
++++ b/drivers/net/usb/ipheth.c
+@@ -510,8 +510,8 @@ static int ipheth_probe(struct usb_interface *intf,
+ 	ipheth_free_urbs(dev);
+ err_alloc_urbs:
+ err_get_macaddr:
+-err_alloc_ctrl_buf:
+ 	kfree(dev->ctrl_buf);
++err_alloc_ctrl_buf:
+ err_endpoints:
+ 	free_netdev(netdev);
+ 	return retval;
+-- 
+2.40.1
+
 
