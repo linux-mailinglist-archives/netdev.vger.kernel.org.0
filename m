@@ -1,36 +1,62 @@
-Return-Path: <netdev+bounces-5402-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5403-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 30AF671119C
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 19:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id AA1C57111A6
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 19:07:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 663B72815DA
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:04:57 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2F44F281045
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 17:07:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D29071D2A2;
-	Thu, 25 May 2023 17:04:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 51CFB1D2B8;
+	Thu, 25 May 2023 17:07:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75D63168D3
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 17:04:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BB65C433D2;
-	Thu, 25 May 2023 17:04:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685034293;
-	bh=gBgpG9vTwOaMKv/+/eY1oC9MAIfEaLOfyfZw8B7xYrs=;
-	h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-	b=pio0Er+luZrzNM1SJ2AttAghtZM4LVeBGEhQJeM8Btg85aqeZ7C0Uk0WtKDGG48Hh
-	 3SvpKa7OJKD21AzpxfUrxY0K6PiIbpIG2Cd1EidA3FOwdiYMtDsgP8c3SnaoTyDCDL
-	 Oth+XHrdB2RPFdHB9gRJXFxYMD8tTQsG6iL+PvNWZrcwn22p4nktAuZOzgSkPimdPP
-	 huP2sDOiV5QXSqeEwmdAHnJEqY6wOR4r41JG04UUpZQGMabslLkYHOfui+rP+xmMF1
-	 vmSqg+dYqpgXHSHm4Abtsp/KplIC8kVbOGMHywkQCNCCSvMycqmrifBux7tTi59mFm
-	 oYEmkyuR07H3g==
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DDE77E3
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 17:07:14 +0000 (UTC)
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB44135
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 10:07:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1685034433; x=1716570433;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=beCNnZJObXzL2xfYsr0CfHXvir18ERwDCJTrcgHdgto=;
+  b=TRTdW6tl1QwTdWlqR/BcOEZlr85spD5jjmQjER2Qyy72QtYNadOjH+Ir
+   Ga6LJTVEn9u+OEfwuAcpIc2/NR3I/2NrO8WGnF4sX8l+v9pqKs4xK/3kz
+   BpuUXI1FsJfbBbfXCBFh90/8IZDZGSoqfWqGO/StYAiULn4W0XhzNPti0
+   k=;
+X-IronPort-AV: E=Sophos;i="6.00,191,1681171200"; 
+   d="scan'208";a="341479835"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 17:07:07 +0000
+Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+	by email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com (Postfix) with ESMTPS id EDDB482FBF;
+	Thu, 25 May 2023 17:07:04 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Thu, 25 May 2023 17:07:04 +0000
+Received: from 88665a182662.ant.amazon.com (10.187.170.54) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.26;
+ Thu, 25 May 2023 17:07:01 +0000
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+To: <fw@strlen.de>
+CC: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<kuni1840@gmail.com>, <kuniyu@amazon.com>, <netdev@vger.kernel.org>,
+	<pabeni@redhat.com>, <syzbot+444ca0907e96f7c5e48b@syzkaller.appspotmail.com>
+Subject: Re: [PATCH v1 net] udplite: Fix NULL pointer dereference in __sk_mem_raise_allocated().
+Date: Thu, 25 May 2023 10:06:53 -0700
+Message-ID: <20230525170653.99846-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230525163342.GB25057@breakpoint.cc>
+References: <20230525163342.GB25057@breakpoint.cc>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -38,48 +64,59 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] wifi: ath9k: don't allow to overwrite ENDPOINT0
- attributes
-From: Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230516150427.79469-1-pchelkin@ispras.ru>
-References: <20230516150427.79469-1-pchelkin@ispras.ru>
-To: Fedor Pchelkin <pchelkin@ispras.ru>
-Cc: =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
- Fedor Pchelkin <pchelkin@ispras.ru>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, linux-wireless@vger.kernel.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- Takeshi Misawa <jeliantsurux@gmail.com>,
- Alexey Khoroshilov <khoroshilov@ispras.ru>, lvc-project@linuxtesting.org,
- syzbot+b68fbebe56d8362907e8@syzkaller.appspotmail.com
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <168503428836.19957.620283860814904448.kvalo@kernel.org>
-Date: Thu, 25 May 2023 17:04:50 +0000 (UTC)
+Content-Type: text/plain
+X-Originating-IP: [10.187.170.54]
+X-ClientProxiedBy: EX19D035UWB004.ant.amazon.com (10.13.138.104) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+Precedence: Bulk
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Fedor Pchelkin <pchelkin@ispras.ru> wrote:
-
-> A bad USB device is able to construct a service connection response
-> message with target endpoint being ENDPOINT0 which is reserved for
-> HTC_CTRL_RSVD_SVC and should not be modified to be used for any other
-> services.
+From: Florian Westphal <fw@strlen.de>
+Date: Thu, 25 May 2023 18:33:42 +0200
+> Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > I'd remove it in -next.  Same for DCCP.
+> > 
+> > Ok, I'll do for UDP Lite.
 > 
-> Reject such service connection responses.
+> Thanks.
 > 
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+> > +1 for DCCP, but we know there are real?
+> > still experimenting? users ... ?
 > 
-> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-> Reported-by: syzbot+b68fbebe56d8362907e8@syzkaller.appspotmail.com
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+> Yes, and they can continue to work on their out of tree fork
+> and research projects, no problem.
+> 
+> I'd say next time some net/core change needs dccp changes,
+> remove dccp first (or mark it as CONFIG_BROKEN) so it doesn't
+> cause extra work.
 
-Patch applied to ath-next branch of ath.git, thanks.
+FWIW, I was going to post such a patch that removes .twsk_unique
+and .twsk_destructor handler in timewait_sock_ops, which is only
+used by TCP but exists just because DCCP shares the struct.
 
-061b0cb9327b wifi: ath9k: don't allow to overwrite ENDPOINT0 attributes
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230516150427.79469-1-pchelkin@ispras.ru/
+> DCCP can be brought back when someone has interest to maintain it.
+> 
+> Looking at DCCP patches its either:
+> 1. odd syzbot fixes
+> 2. api changes in net that need folloup changes in dccp
+> 3. automated transformations
+> 
+> There is no sign that anyone is maintaining this (or running it
+> in a production environment...).
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Exactly.  It's now kind of bleeding ground of CVE.
 
+Actualy, we disable CONFIG_IP_DCCP for our latest distribution (AL2023)
+for the reason, and RHEL 7.8+ also prevents the module from being loaded
+by default.
+
+If there's no objection, I can remove it after UDP Lite.
+
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/7.8_release_notes/deprecated_functionality#automatic_loading_of_dccp_modules_through_socket_layer_is_now_disabled_by_default
 
