@@ -1,52 +1,54 @@
-Return-Path: <netdev+bounces-5443-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5444-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9EC21711473
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B2A66711475
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 20:39:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5E45B1C2099D
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:39:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 717781C2099D
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 18:39:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DC1923C62;
-	Thu, 25 May 2023 18:38:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E16B22638;
+	Thu, 25 May 2023 18:38:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF71919BC4
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:38:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C86BC4339E;
-	Thu, 25 May 2023 18:38:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E45A719BC4
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 18:38:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 296B2C4339C;
+	Thu, 25 May 2023 18:38:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685039907;
-	bh=db40lIQNftQ6tKjDPGrRKcbC2u/3Ff74Fj9+8XNcPDk=;
+	s=k20201202; t=1685039909;
+	bh=neEQQcwzMS4leMh2rFFk6gXw/rhv/YocNDnT7xN7yCc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rfrs6Q4rGzo4iRbZcenHYDrXn9SHmQxtpgxDOnDY0p4YaF+MyfFQZFdtbr9LHKzxq
-	 un7uSxTAFZGs4V8/NplOKhKGHtrCapg0rIP1du1kQnZn8WPbaJnAj0Bmz83p56o8tO
-	 f3r15lHJkPOATCjlN69fXUVHwydX50WRS8rsVvB/9Eg004SIaahBlIlD831tTH2ADO
-	 sn/zieE961jWK1YpQ8oLtbtncVotv0tLIKGoh5hN1Db0Cqkrt1nDlyt6BDlmZMKxeI
-	 bhjkTq7KhTHdgfRNwFxiZTYszlFNBlxRJ9bbGMucIPeVSAE06sA8CT+D67QgiCTX4S
-	 AA1WmcB3WO+xA==
+	b=OE3LUJC1pMQpHeEv42T5pkQSVOUCp7A9NpN+OZpxRgY8dMIHLtLFotit9zakmxzyD
+	 XwqlcZL/sNrb0mzEj7HISMgjJ2HBLErfQwua8xlh7TwMRNC7DR26M9GilaHf6T/1YS
+	 x243PgDiz470CXU/MBepQxgmlmRMAEbboo8+cRfKREq90AnGwIiUmBQrRWVlBps8Zd
+	 pXIDLveSHZu9FrJYqyHVsiy+KQoR5K1RDxgJaB5A0sSiIAkoTWt4QLv/rp2cDySbzU
+	 QJDTwKFkD8H5HEmi/BuL6INBfjwArfnJg2kbJF2i0uTuoiRvZxlNGlg6J2YMvNnG3m
+	 CT3yupPFW/IHg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>,
-	"David S . Miller" <davem@davemloft.net>,
+Cc: Tom Rix <trix@redhat.com>,
+	Simon Horman <simon.horman@corigine.com>,
+	Florian Westphal <fw@strlen.de>,
 	Sasha Levin <sashal@kernel.org>,
-	chandrashekar.devegowda@intel.com,
-	linuxwwan@intel.com,
-	loic.poulain@linaro.org,
-	ryazanov.s.a@gmail.com,
+	pablo@netfilter.org,
+	kadlec@netfilter.org,
+	davem@davemloft.net,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
+	netfilter-devel@vger.kernel.org,
+	coreteam@netfilter.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 45/57] net: wwan: t7xx: Ensure init is completed before system sleep
-Date: Thu, 25 May 2023 14:35:55 -0400
-Message-Id: <20230525183607.1793983-45-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 46/57] netfilter: conntrack: define variables exp_nat_nla_policy and any_addr with CONFIG_NF_NAT
+Date: Thu, 25 May 2023 14:35:56 -0400
+Message-Id: <20230525183607.1793983-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230525183607.1793983-1-sashal@kernel.org>
 References: <20230525183607.1793983-1-sashal@kernel.org>
@@ -56,102 +58,62 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit ab87603b251134441a67385ecc9d3371be17b7a7 ]
+[ Upstream commit 224a876e37543eee111bf9b6aa4935080e619335 ]
 
-When the system attempts to sleep while mtk_t7xx is not ready, the driver
-cannot put the device to sleep:
-[   12.472918] mtk_t7xx 0000:57:00.0: [PM] Exiting suspend, modem in invalid state
-[   12.472936] mtk_t7xx 0000:57:00.0: PM: pci_pm_suspend(): t7xx_pci_pm_suspend+0x0/0x20 [mtk_t7xx] returns -14
-[   12.473678] mtk_t7xx 0000:57:00.0: PM: dpm_run_callback(): pci_pm_suspend+0x0/0x1b0 returns -14
-[   12.473711] mtk_t7xx 0000:57:00.0: PM: failed to suspend async: error -14
-[   12.764776] PM: Some devices failed to suspend, or early wake event detected
+gcc with W=1 and ! CONFIG_NF_NAT
+net/netfilter/nf_conntrack_netlink.c:3463:32: error:
+  ‘exp_nat_nla_policy’ defined but not used [-Werror=unused-const-variable=]
+ 3463 | static const struct nla_policy exp_nat_nla_policy[CTA_EXPECT_NAT_MAX+1] = {
+      |                                ^~~~~~~~~~~~~~~~~~
+net/netfilter/nf_conntrack_netlink.c:2979:33: error:
+  ‘any_addr’ defined but not used [-Werror=unused-const-variable=]
+ 2979 | static const union nf_inet_addr any_addr;
+      |                                 ^~~~~~~~
 
-Mediatek confirmed the device can take a rather long time to complete
-its initialization, so wait for up to 20 seconds until init is done.
+These variables use is controlled by CONFIG_NF_NAT, so should their definitions.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Tom Rix <trix@redhat.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wwan/t7xx/t7xx_pci.c | 18 ++++++++++++++++++
- drivers/net/wwan/t7xx/t7xx_pci.h |  1 +
- 2 files changed, 19 insertions(+)
+ net/netfilter/nf_conntrack_netlink.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wwan/t7xx/t7xx_pci.c b/drivers/net/wwan/t7xx/t7xx_pci.c
-index 226fc1703e90f..91256e005b846 100644
---- a/drivers/net/wwan/t7xx/t7xx_pci.c
-+++ b/drivers/net/wwan/t7xx/t7xx_pci.c
-@@ -45,6 +45,7 @@
- #define T7XX_PCI_IREG_BASE		0
- #define T7XX_PCI_EREG_BASE		2
- 
-+#define T7XX_INIT_TIMEOUT		20
- #define PM_SLEEP_DIS_TIMEOUT_MS		20
- #define PM_ACK_TIMEOUT_MS		1500
- #define PM_AUTOSUSPEND_MS		20000
-@@ -96,6 +97,7 @@ static int t7xx_pci_pm_init(struct t7xx_pci_dev *t7xx_dev)
- 	spin_lock_init(&t7xx_dev->md_pm_lock);
- 	init_completion(&t7xx_dev->sleep_lock_acquire);
- 	init_completion(&t7xx_dev->pm_sr_ack);
-+	init_completion(&t7xx_dev->init_done);
- 	atomic_set(&t7xx_dev->md_pm_state, MTK_PM_INIT);
- 
- 	device_init_wakeup(&pdev->dev, true);
-@@ -124,6 +126,7 @@ void t7xx_pci_pm_init_late(struct t7xx_pci_dev *t7xx_dev)
- 	pm_runtime_mark_last_busy(&t7xx_dev->pdev->dev);
- 	pm_runtime_allow(&t7xx_dev->pdev->dev);
- 	pm_runtime_put_noidle(&t7xx_dev->pdev->dev);
-+	complete_all(&t7xx_dev->init_done);
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index cb4325b8ebb11..2c21b4ed87c37 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -2984,7 +2984,9 @@ static int ctnetlink_exp_dump_mask(struct sk_buff *skb,
+ 	return -1;
  }
  
- static int t7xx_pci_pm_reinit(struct t7xx_pci_dev *t7xx_dev)
-@@ -529,6 +532,20 @@ static void t7xx_pci_shutdown(struct pci_dev *pdev)
- 	__t7xx_pci_pm_suspend(pdev);
- }
++#if IS_ENABLED(CONFIG_NF_NAT)
+ static const union nf_inet_addr any_addr;
++#endif
  
-+static int t7xx_pci_pm_prepare(struct device *dev)
-+{
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct t7xx_pci_dev *t7xx_dev;
-+
-+	t7xx_dev = pci_get_drvdata(pdev);
-+	if (!wait_for_completion_timeout(&t7xx_dev->init_done, T7XX_INIT_TIMEOUT * HZ)) {
-+		dev_warn(dev, "Not ready for system sleep.\n");
-+		return -ETIMEDOUT;
-+	}
-+
-+	return 0;
-+}
-+
- static int t7xx_pci_pm_suspend(struct device *dev)
+ static __be32 nf_expect_get_id(const struct nf_conntrack_expect *exp)
  {
- 	return __t7xx_pci_pm_suspend(to_pci_dev(dev));
-@@ -555,6 +572,7 @@ static int t7xx_pci_pm_runtime_resume(struct device *dev)
+@@ -3468,10 +3470,12 @@ ctnetlink_change_expect(struct nf_conntrack_expect *x,
+ 	return 0;
  }
  
- static const struct dev_pm_ops t7xx_pci_pm_ops = {
-+	.prepare = t7xx_pci_pm_prepare,
- 	.suspend = t7xx_pci_pm_suspend,
- 	.resume = t7xx_pci_pm_resume,
- 	.resume_noirq = t7xx_pci_pm_resume_noirq,
-diff --git a/drivers/net/wwan/t7xx/t7xx_pci.h b/drivers/net/wwan/t7xx/t7xx_pci.h
-index 50b37056ce5a4..5dffe24ef37b4 100644
---- a/drivers/net/wwan/t7xx/t7xx_pci.h
-+++ b/drivers/net/wwan/t7xx/t7xx_pci.h
-@@ -69,6 +69,7 @@ struct t7xx_pci_dev {
- 	struct t7xx_modem	*md;
- 	struct t7xx_ccmni_ctrl	*ccmni_ctlb;
- 	bool			rgu_pci_irq_en;
-+	struct completion	init_done;
++#if IS_ENABLED(CONFIG_NF_NAT)
+ static const struct nla_policy exp_nat_nla_policy[CTA_EXPECT_NAT_MAX+1] = {
+ 	[CTA_EXPECT_NAT_DIR]	= { .type = NLA_U32 },
+ 	[CTA_EXPECT_NAT_TUPLE]	= { .type = NLA_NESTED },
+ };
++#endif
  
- 	/* Low Power Items */
- 	struct list_head	md_pm_entities;
+ static int
+ ctnetlink_parse_expect_nat(const struct nlattr *attr,
 -- 
 2.39.2
 
