@@ -1,688 +1,191 @@
-Return-Path: <netdev+bounces-5289-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5290-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1378F710998
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 12:12:57 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8ED96710999
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 12:12:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C0D8F1C20EC9
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:12:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4913E281518
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 10:12:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03A23E562;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 17E2FE564;
 	Thu, 25 May 2023 10:12:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4205DF63
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F423AE560
 	for <netdev@vger.kernel.org>; Thu, 25 May 2023 10:12:15 +0000 (UTC)
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8699097;
-	Thu, 25 May 2023 03:12:00 -0700 (PDT)
-X-GND-Sasl: maxime.chevallier@bootlin.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1685009519;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=thy8THt3krQHjzuqi3AqPLfyztLfqorBBa9OW7HntmI=;
-	b=JSyAaOHFoUO38LPEH5+eN6LltsF6yCgnVXk7uDn1wvw987hWbC8KdMMM5kRj3NqIweWpZY
-	WtqT1AA7E+ANMoSdr16dhGDNooQU3oU8X76FuSbOYC294tGberHOweiKLRpd/Gh/s++AhK
-	HdLjGyrkyFz+1oRtAlh8hB6HDLll7lES9OTgVpVJP5Z2++OFX1qfWoYBExzFNBDgDMOTau
-	HKrpSCPQ4HADiICo9a49xUrFP20t+QSx0ZyGAWwOGE3cXvzMjCqWGU9BFOWGIgPgkBf0PK
-	2Rpw50aLV2lUhtIjW69eJ/f7QeH4B3Id+m7LtmOt6/Hk9j8qo4/5uJ53flwsiQ==
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 8835DC000C;
-	Thu, 25 May 2023 10:11:49 +0000 (UTC)
-From: Maxime Chevallier <maxime.chevallier@bootlin.com>
-To: Mark Brown <broonie@kernel.org>,
-	davem@davemloft.net
-Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	alexis.lothore@bootlin.com,
-	thomas.petazzoni@bootlin.com,
-	Andrew Lunn <andrew@lunn.ch>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Vladimir Oltean <vladimir.oltean@nxp.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Jose Abreu <joabreu@synopsys.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Subject: [PATCH net-next v2 4/4] net: stmmac: dwmac-sogfpga: use the lynx pcs driver
-Date: Thu, 25 May 2023 12:11:26 +0200
-Message-Id: <20230525101126.370108-5-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230525101126.370108-1-maxime.chevallier@bootlin.com>
-References: <20230525101126.370108-1-maxime.chevallier@bootlin.com>
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FE51B1;
+	Thu, 25 May 2023 03:12:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685009522; x=1716545522;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=N/zwrSVypYR69GoZqPE+SbIhxpOv+B6QByyWYEs768E=;
+  b=ilJ1+XzFjHnlOrV0x8DWRKcoNnbkuh3EgV+pLe/6Leqe9Mb+GZkJxaca
+   NAnjT3/oLwrVH+hbB0dIfGWBCbUIQJN4x2Ep8BeydXW6eDM2y4I61/uwH
+   TbyL3zYTm5WSWDx3y7035arwab5+BTuuhY2yT6as1XEQuNapUeXjoAAsQ
+   lExkOKaDi0CXPTqoAjwOgc4qnP3Q6FIiv269YBuaLeQ4lNpH0hYbmnTwg
+   pM1nLy2oJWlsXefRiGLj2Xum/6+Ba4JlR/hBcnPTQohNH3MhUg1c8Fd8S
+   pPB84aOx3kf3OezJkxHVBZrrk8toFZDdoxVYyVpLmw4hJpwf92q//y25D
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="334194535"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="334194535"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 03:12:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="655164459"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="655164459"
+Received: from aghiriba-mobl.ger.corp.intel.com ([10.249.40.17])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 03:11:54 -0700
+Date: Thu, 25 May 2023 13:11:51 +0300 (EEST)
+From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: Bjorn Helgaas <helgaas@kernel.org>
+cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, 
+    Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, 
+    Rob Herring <robh@kernel.org>, 
+    =?ISO-8859-2?Q?Krzysztof_Wilczy=F1ski?= <kw@linux.com>, 
+    Emmanuel Grumbach <emmanuel.grumbach@intel.com>, 
+    "Rafael J . Wysocki" <rafael@kernel.org>, 
+    Heiner Kallweit <hkallweit1@gmail.com>, Lukas Wunner <lukas@wunner.de>, 
+    Kalle Valo <kvalo@kernel.org>, "David S. Miller" <davem@davemloft.net>, 
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+    Paolo Abeni <pabeni@redhat.com>, Michal Kazior <michal.kazior@tieto.com>, 
+    Janusz Dziedzic <janusz.dziedzic@tieto.com>, ath10k@lists.infradead.org, 
+    linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    Dean Luick <dean.luick@cornelisnetworks.com>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    stable@vger.kernel.org
+Subject: Re: [PATCH v2 9/9] wifi: ath10k: Use RMW accessors for changing
+ LNKCTL
+In-Reply-To: <ZG4o/pYseBklnrTc@bhelgaas>
+Message-ID: <ecdc8e85-786-db97-a7d4-bfd82c08714@linux.intel.com>
+References: <ZG4o/pYseBklnrTc@bhelgaas>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+Content-Type: multipart/mixed; BOUNDARY="8323329-1525169391-1685006896=:1738"
+Content-ID: <e7b32c4d-e7b9-c81d-670-b54285b6b554@linux.intel.com>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-dwmac_socfpga re-implements support for the TSE PCS, which is identical
-to the already existing TSE PCS, which in turn is the same as the Lynx
-PCS. Drop the existing TSE re-implemenation and use the Lynx PCS
-instead, relying on the regmap-mdio driver to translate MDIO accesses
-into mmio accesses.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Instead of extending xpcs, allow using a generic phylink_pcs, populated
-by lynx_pcs_create(), and use .mac_select_pcs() to return the relevant
-PCS to be used.
+--8323329-1525169391-1685006896=:1738
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <5114585-6ccd-c09a-416-a53bb2256299@linux.intel.com>
 
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
----
-V1->V2 : No changes
+On Wed, 24 May 2023, Bjorn Helgaas wrote:
 
- drivers/net/ethernet/stmicro/stmmac/Kconfig   |   1 +
- drivers/net/ethernet/stmicro/stmmac/Makefile  |   2 +-
- .../ethernet/stmicro/stmmac/altr_tse_pcs.c    | 257 ------------------
- .../ethernet/stmicro/stmmac/altr_tse_pcs.h    |  29 --
- drivers/net/ethernet/stmicro/stmmac/common.h  |   1 +
- .../ethernet/stmicro/stmmac/dwmac-socfpga.c   |  90 ++++--
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  12 +-
- 7 files changed, 76 insertions(+), 316 deletions(-)
- delete mode 100644 drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
- delete mode 100644 drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
+> On Wed, May 17, 2023 at 01:52:35PM +0300, Ilpo Järvinen wrote:
+> > Don't assume that only the driver would be accessing LNKCTL. ASPM
+> > policy changes can trigger write to LNKCTL outside of driver's control.
+> > 
+> > Use RMW capability accessors which does proper locking to avoid losing
+> > concurrent updates to the register value. On restore, clear the ASPMC
+> > field properly.
+> > 
+> > Fixes: 76d870ed09ab ("ath10k: enable ASPM")
+> > Suggested-by: Lukas Wunner <lukas@wunner.de>
+> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > Cc: stable@vger.kernel.org
+> > ---
+> >  drivers/net/wireless/ath/ath10k/pci.c | 9 +++++----
+> >  1 file changed, 5 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+> > index a7f44f6335fb..9275a672f90c 100644
+> > --- a/drivers/net/wireless/ath/ath10k/pci.c
+> > +++ b/drivers/net/wireless/ath/ath10k/pci.c
+> > @@ -1963,8 +1963,9 @@ static int ath10k_pci_hif_start(struct ath10k *ar)
+> >  	ath10k_pci_irq_enable(ar);
+> >  	ath10k_pci_rx_post(ar);
+> >  
+> > -	pcie_capability_write_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+> > -				   ar_pci->link_ctl);
+> > +	pcie_capability_clear_and_set_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+> > +					   PCI_EXP_LNKCTL_ASPMC,
+> > +					   ar_pci->link_ctl & PCI_EXP_LNKCTL_ASPMC);
+> >  
+> >  	return 0;
+> >  }
+> > @@ -2821,8 +2822,8 @@ static int ath10k_pci_hif_power_up(struct ath10k *ar,
+> >  
+> >  	pcie_capability_read_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+> >  				  &ar_pci->link_ctl);
+> > -	pcie_capability_write_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+> > -				   ar_pci->link_ctl & ~PCI_EXP_LNKCTL_ASPMC);
+> > +	pcie_capability_clear_word(ar_pci->pdev, PCI_EXP_LNKCTL,
+> > +				   PCI_EXP_LNKCTL_ASPMC);
+> 
+> These ath drivers all have the form:
+> 
+>   1) read LNKCTL
+>   2) save LNKCTL value in ->link_ctl
+>   3) write LNKCTL with "->link_ctl & ~PCI_EXP_LNKCTL_ASPMC"
+>      to disable ASPM
+>   4) write LNKCTL with ->link_ctl, presumably to re-enable ASPM
+> 
+> These patches close the hole between 1) and 3) where other LNKCTL
+> updates could interfere, which is definitely a good thing.
+> 
+> But the hole between 1) and 4) is much bigger and still there.  Any
+> update by the PCI core in that interval would be lost.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 5f5a997f21f3..62b484cca1c3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -158,6 +158,7 @@ config DWMAC_SOCFPGA
- 	default ARCH_INTEL_SOCFPGA
- 	depends on OF && (ARCH_INTEL_SOCFPGA || COMPILE_TEST)
- 	select MFD_SYSCON
-+	select PCS_LYNX
- 	help
- 	  Support for ethernet controller on Altera SOCFPGA
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
-index 8738fdbb4b2d..7dd3d388068b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-+++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-@@ -35,7 +35,7 @@ obj-$(CONFIG_DWMAC_IMX8)	+= dwmac-imx.o
- obj-$(CONFIG_DWMAC_TEGRA)	+= dwmac-tegra.o
- obj-$(CONFIG_DWMAC_VISCONTI)	+= dwmac-visconti.o
- stmmac-platform-objs:= stmmac_platform.o
--dwmac-altr-socfpga-objs := altr_tse_pcs.o dwmac-socfpga.o
-+dwmac-altr-socfpga-objs := dwmac-socfpga.o
- 
- obj-$(CONFIG_STMMAC_PCI)	+= stmmac-pci.o
- obj-$(CONFIG_DWMAC_INTEL)	+= dwmac-intel.o
-diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-deleted file mode 100644
-index 00f6d347eaf7..000000000000
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-+++ /dev/null
-@@ -1,257 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/* Copyright Altera Corporation (C) 2016. All rights reserved.
-- *
-- * Author: Tien Hock Loh <thloh@altera.com>
-- */
--
--#include <linux/mfd/syscon.h>
--#include <linux/of.h>
--#include <linux/of_address.h>
--#include <linux/of_net.h>
--#include <linux/phy.h>
--#include <linux/regmap.h>
--#include <linux/reset.h>
--#include <linux/stmmac.h>
--
--#include "stmmac.h"
--#include "stmmac_platform.h"
--#include "altr_tse_pcs.h"
--
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII	0
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII		BIT(1)
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII		BIT(2)
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_WIDTH		2
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_MASK			GENMASK(1, 0)
--
--#define TSE_PCS_CONTROL_AN_EN_MASK			BIT(12)
--#define TSE_PCS_CONTROL_REG				0x00
--#define TSE_PCS_CONTROL_RESTART_AN_MASK			BIT(9)
--#define TSE_PCS_CTRL_AUTONEG_SGMII			0x1140
--#define TSE_PCS_IF_MODE_REG				0x28
--#define TSE_PCS_LINK_TIMER_0_REG			0x24
--#define TSE_PCS_LINK_TIMER_1_REG			0x26
--#define TSE_PCS_SIZE					0x40
--#define TSE_PCS_STATUS_AN_COMPLETED_MASK		BIT(5)
--#define TSE_PCS_STATUS_LINK_MASK			0x0004
--#define TSE_PCS_STATUS_REG				0x02
--#define TSE_PCS_SGMII_SPEED_1000			BIT(3)
--#define TSE_PCS_SGMII_SPEED_100				BIT(2)
--#define TSE_PCS_SGMII_SPEED_10				0x0
--#define TSE_PCS_SW_RST_MASK				0x8000
--#define TSE_PCS_PARTNER_ABILITY_REG			0x0A
--#define TSE_PCS_PARTNER_DUPLEX_FULL			0x1000
--#define TSE_PCS_PARTNER_DUPLEX_HALF			0x0000
--#define TSE_PCS_PARTNER_DUPLEX_MASK			0x1000
--#define TSE_PCS_PARTNER_SPEED_MASK			GENMASK(11, 10)
--#define TSE_PCS_PARTNER_SPEED_1000			BIT(11)
--#define TSE_PCS_PARTNER_SPEED_100			BIT(10)
--#define TSE_PCS_PARTNER_SPEED_10			0x0000
--#define TSE_PCS_PARTNER_SPEED_1000			BIT(11)
--#define TSE_PCS_PARTNER_SPEED_100			BIT(10)
--#define TSE_PCS_PARTNER_SPEED_10			0x0000
--#define TSE_PCS_SGMII_SPEED_MASK			GENMASK(3, 2)
--#define TSE_PCS_SGMII_LINK_TIMER_0			0x0D40
--#define TSE_PCS_SGMII_LINK_TIMER_1			0x0003
--#define TSE_PCS_SW_RESET_TIMEOUT			100
--#define TSE_PCS_USE_SGMII_AN_MASK			BIT(1)
--#define TSE_PCS_USE_SGMII_ENA				BIT(0)
--#define TSE_PCS_IF_USE_SGMII				0x03
--
--#define AUTONEGO_LINK_TIMER				20
--
--static int tse_pcs_reset(void __iomem *base, struct tse_pcs *pcs)
--{
--	int counter = 0;
--	u16 val;
--
--	val = readw(base + TSE_PCS_CONTROL_REG);
--	val |= TSE_PCS_SW_RST_MASK;
--	writew(val, base + TSE_PCS_CONTROL_REG);
--
--	while (counter < TSE_PCS_SW_RESET_TIMEOUT) {
--		val = readw(base + TSE_PCS_CONTROL_REG);
--		val &= TSE_PCS_SW_RST_MASK;
--		if (val == 0)
--			break;
--		counter++;
--		udelay(1);
--	}
--	if (counter >= TSE_PCS_SW_RESET_TIMEOUT) {
--		dev_err(pcs->dev, "PCS could not get out of sw reset\n");
--		return -ETIMEDOUT;
--	}
--
--	return 0;
--}
--
--int tse_pcs_init(void __iomem *base, struct tse_pcs *pcs)
--{
--	int ret = 0;
--
--	writew(TSE_PCS_IF_USE_SGMII, base + TSE_PCS_IF_MODE_REG);
--
--	writew(TSE_PCS_CTRL_AUTONEG_SGMII, base + TSE_PCS_CONTROL_REG);
--
--	writew(TSE_PCS_SGMII_LINK_TIMER_0, base + TSE_PCS_LINK_TIMER_0_REG);
--	writew(TSE_PCS_SGMII_LINK_TIMER_1, base + TSE_PCS_LINK_TIMER_1_REG);
--
--	ret = tse_pcs_reset(base, pcs);
--	if (ret == 0)
--		writew(SGMII_ADAPTER_ENABLE,
--		       pcs->sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--
--	return ret;
--}
--
--static void pcs_link_timer_callback(struct tse_pcs *pcs)
--{
--	u16 val = 0;
--	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
--	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
--
--	val = readw(tse_pcs_base + TSE_PCS_STATUS_REG);
--	val &= TSE_PCS_STATUS_LINK_MASK;
--
--	if (val != 0) {
--		dev_dbg(pcs->dev, "Adapter: Link is established\n");
--		writew(SGMII_ADAPTER_ENABLE,
--		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--	} else {
--		mod_timer(&pcs->aneg_link_timer, jiffies +
--			  msecs_to_jiffies(AUTONEGO_LINK_TIMER));
--	}
--}
--
--static void auto_nego_timer_callback(struct tse_pcs *pcs)
--{
--	u16 val = 0;
--	u16 speed = 0;
--	u16 duplex = 0;
--	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
--	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
--
--	val = readw(tse_pcs_base + TSE_PCS_STATUS_REG);
--	val &= TSE_PCS_STATUS_AN_COMPLETED_MASK;
--
--	if (val != 0) {
--		dev_dbg(pcs->dev, "Adapter: Auto Negotiation is completed\n");
--		val = readw(tse_pcs_base + TSE_PCS_PARTNER_ABILITY_REG);
--		speed = val & TSE_PCS_PARTNER_SPEED_MASK;
--		duplex = val & TSE_PCS_PARTNER_DUPLEX_MASK;
--
--		if (speed == TSE_PCS_PARTNER_SPEED_10 &&
--		    duplex == TSE_PCS_PARTNER_DUPLEX_FULL)
--			dev_dbg(pcs->dev,
--				"Adapter: Link Partner is Up - 10/Full\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_100 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_FULL)
--			dev_dbg(pcs->dev,
--				"Adapter: Link Partner is Up - 100/Full\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_1000 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_FULL)
--			dev_dbg(pcs->dev,
--				"Adapter: Link Partner is Up - 1000/Full\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_10 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_HALF)
--			dev_err(pcs->dev,
--				"Adapter does not support Half Duplex\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_100 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_HALF)
--			dev_err(pcs->dev,
--				"Adapter does not support Half Duplex\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_1000 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_HALF)
--			dev_err(pcs->dev,
--				"Adapter does not support Half Duplex\n");
--		else
--			dev_err(pcs->dev,
--				"Adapter: Invalid Partner Speed and Duplex\n");
--
--		if (duplex == TSE_PCS_PARTNER_DUPLEX_FULL &&
--		    (speed == TSE_PCS_PARTNER_SPEED_10 ||
--		     speed == TSE_PCS_PARTNER_SPEED_100 ||
--		     speed == TSE_PCS_PARTNER_SPEED_1000))
--			writew(SGMII_ADAPTER_ENABLE,
--			       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--	} else {
--		val = readw(tse_pcs_base + TSE_PCS_CONTROL_REG);
--		val |= TSE_PCS_CONTROL_RESTART_AN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_CONTROL_REG);
--
--		tse_pcs_reset(tse_pcs_base, pcs);
--		mod_timer(&pcs->aneg_link_timer, jiffies +
--			  msecs_to_jiffies(AUTONEGO_LINK_TIMER));
--	}
--}
--
--static void aneg_link_timer_callback(struct timer_list *t)
--{
--	struct tse_pcs *pcs = from_timer(pcs, t, aneg_link_timer);
--
--	if (pcs->autoneg == AUTONEG_ENABLE)
--		auto_nego_timer_callback(pcs);
--	else if (pcs->autoneg == AUTONEG_DISABLE)
--		pcs_link_timer_callback(pcs);
--}
--
--void tse_pcs_fix_mac_speed(struct tse_pcs *pcs, struct phy_device *phy_dev,
--			   unsigned int speed)
--{
--	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
--	u32 val;
--
--	pcs->autoneg = phy_dev->autoneg;
--
--	if (phy_dev->autoneg == AUTONEG_ENABLE) {
--		val = readw(tse_pcs_base + TSE_PCS_CONTROL_REG);
--		val |= TSE_PCS_CONTROL_AN_EN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_CONTROL_REG);
--
--		val = readw(tse_pcs_base + TSE_PCS_IF_MODE_REG);
--		val |= TSE_PCS_USE_SGMII_AN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_IF_MODE_REG);
--
--		val = readw(tse_pcs_base + TSE_PCS_CONTROL_REG);
--		val |= TSE_PCS_CONTROL_RESTART_AN_MASK;
--
--		tse_pcs_reset(tse_pcs_base, pcs);
--
--		timer_setup(&pcs->aneg_link_timer, aneg_link_timer_callback,
--			    0);
--		mod_timer(&pcs->aneg_link_timer, jiffies +
--			  msecs_to_jiffies(AUTONEGO_LINK_TIMER));
--	} else if (phy_dev->autoneg == AUTONEG_DISABLE) {
--		val = readw(tse_pcs_base + TSE_PCS_CONTROL_REG);
--		val &= ~TSE_PCS_CONTROL_AN_EN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_CONTROL_REG);
--
--		val = readw(tse_pcs_base + TSE_PCS_IF_MODE_REG);
--		val &= ~TSE_PCS_USE_SGMII_AN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_IF_MODE_REG);
--
--		val = readw(tse_pcs_base + TSE_PCS_IF_MODE_REG);
--		val &= ~TSE_PCS_SGMII_SPEED_MASK;
--
--		switch (speed) {
--		case 1000:
--			val |= TSE_PCS_SGMII_SPEED_1000;
--			break;
--		case 100:
--			val |= TSE_PCS_SGMII_SPEED_100;
--			break;
--		case 10:
--			val |= TSE_PCS_SGMII_SPEED_10;
--			break;
--		default:
--			return;
--		}
--		writew(val, tse_pcs_base + TSE_PCS_IF_MODE_REG);
--
--		tse_pcs_reset(tse_pcs_base, pcs);
--
--		timer_setup(&pcs->aneg_link_timer, aneg_link_timer_callback,
--			    0);
--		mod_timer(&pcs->aneg_link_timer, jiffies +
--			  msecs_to_jiffies(AUTONEGO_LINK_TIMER));
--	}
--}
-diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-deleted file mode 100644
-index 694ac25ef426..000000000000
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-+++ /dev/null
-@@ -1,29 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/* Copyright Altera Corporation (C) 2016. All rights reserved.
-- *
-- * Author: Tien Hock Loh <thloh@altera.com>
-- */
--
--#ifndef __TSE_PCS_H__
--#define __TSE_PCS_H__
--
--#include <linux/phy.h>
--#include <linux/timer.h>
--
--#define SGMII_ADAPTER_CTRL_REG		0x00
--#define SGMII_ADAPTER_ENABLE		0x0000
--#define SGMII_ADAPTER_DISABLE		0x0001
--
--struct tse_pcs {
--	struct device *dev;
--	void __iomem *tse_pcs_base;
--	void __iomem *sgmii_adapter_base;
--	struct timer_list aneg_link_timer;
--	int autoneg;
--};
--
--int tse_pcs_init(void __iomem *base, struct tse_pcs *pcs);
--void tse_pcs_fix_mac_speed(struct tse_pcs *pcs, struct phy_device *phy_dev,
--			   unsigned int speed);
--
--#endif /* __TSE_PCS_H__ */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 4ad692c4116c..34751524775a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -519,6 +519,7 @@ struct mac_device_info {
- 	const struct stmmac_tc_ops *tc;
- 	const struct stmmac_mmc_ops *mmc;
- 	struct dw_xpcs *xpcs;
-+	struct phylink_pcs *phylink_pcs; /* Generic external PCS */
- 	struct mii_regs mii;	/* MII register Addresses */
- 	struct mac_link link;
- 	void __iomem *pcsr;     /* vpointer to device CSRs */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-index 6ee050300b31..5f61b33905fc 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -10,14 +10,14 @@
- #include <linux/of_net.h>
- #include <linux/phy.h>
- #include <linux/regmap.h>
-+#include <linux/mdio/mdio-regmap.h>
- #include <linux/reset.h>
- #include <linux/stmmac.h>
-+#include <linux/pcs-lynx.h>
- 
- #include "stmmac.h"
- #include "stmmac_platform.h"
- 
--#include "altr_tse_pcs.h"
--
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
-@@ -37,6 +37,10 @@
- #define EMAC_SPLITTER_CTRL_SPEED_100		0x3
- #define EMAC_SPLITTER_CTRL_SPEED_1000		0x0
- 
-+#define SGMII_ADAPTER_CTRL_REG		0x00
-+#define SGMII_ADAPTER_ENABLE		0x0000
-+#define SGMII_ADAPTER_DISABLE		0x0001
-+
- struct socfpga_dwmac;
- struct socfpga_dwmac_ops {
- 	int (*set_phy_mode)(struct socfpga_dwmac *dwmac_priv);
-@@ -50,16 +54,18 @@ struct socfpga_dwmac {
- 	struct reset_control *stmmac_rst;
- 	struct reset_control *stmmac_ocp_rst;
- 	void __iomem *splitter_base;
-+	void __iomem *tse_pcs_base;
-+	void __iomem *sgmii_adapter_base;
- 	bool f2h_ptp_ref_clk;
--	struct tse_pcs pcs;
- 	const struct socfpga_dwmac_ops *ops;
-+	struct mdio_device *pcs_mdiodev;
- };
- 
- static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
- {
- 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
- 	void __iomem *splitter_base = dwmac->splitter_base;
--	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
-+	void __iomem *sgmii_adapter_base = dwmac->sgmii_adapter_base;
- 	struct device *dev = dwmac->dev;
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct phy_device *phy_dev = ndev->phydev;
-@@ -89,11 +95,9 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
- 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
- 	}
- 
--	if (phy_dev && sgmii_adapter_base) {
-+	if (phy_dev && sgmii_adapter_base)
- 		writew(SGMII_ADAPTER_ENABLE,
- 		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
--	}
- }
- 
- static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *dev)
-@@ -183,11 +187,11 @@ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *
- 				goto err_node_put;
- 			}
- 
--			dwmac->pcs.sgmii_adapter_base =
-+			dwmac->sgmii_adapter_base =
- 			    devm_ioremap_resource(dev, &res_sgmii_adapter);
- 
--			if (IS_ERR(dwmac->pcs.sgmii_adapter_base)) {
--				ret = PTR_ERR(dwmac->pcs.sgmii_adapter_base);
-+			if (IS_ERR(dwmac->sgmii_adapter_base)) {
-+				ret = PTR_ERR(dwmac->sgmii_adapter_base);
- 				goto err_node_put;
- 			}
- 		}
-@@ -205,11 +209,11 @@ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *
- 				goto err_node_put;
- 			}
- 
--			dwmac->pcs.tse_pcs_base =
-+			dwmac->tse_pcs_base =
- 			    devm_ioremap_resource(dev, &res_tse_pcs);
- 
--			if (IS_ERR(dwmac->pcs.tse_pcs_base)) {
--				ret = PTR_ERR(dwmac->pcs.tse_pcs_base);
-+			if (IS_ERR(dwmac->tse_pcs_base)) {
-+				ret = PTR_ERR(dwmac->tse_pcs_base);
- 				goto err_node_put;
- 			}
- 		}
-@@ -235,6 +239,13 @@ static int socfpga_get_plat_phymode(struct socfpga_dwmac *dwmac)
- 	return priv->plat->interface;
- }
- 
-+static void socfpga_sgmii_config(struct socfpga_dwmac *dwmac, bool enable)
-+{
-+	u16 val = enable ? SGMII_ADAPTER_ENABLE : SGMII_ADAPTER_DISABLE;
-+
-+	writew(val, dwmac->sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+}
-+
- static int socfpga_set_phy_mode_common(int phymode, u32 *val)
- {
- 	switch (phymode) {
-@@ -310,12 +321,8 @@ static int socfpga_gen5_set_phy_mode(struct socfpga_dwmac *dwmac)
- 	 */
- 	reset_control_deassert(dwmac->stmmac_ocp_rst);
- 	reset_control_deassert(dwmac->stmmac_rst);
--	if (phymode == PHY_INTERFACE_MODE_SGMII) {
--		if (tse_pcs_init(dwmac->pcs.tse_pcs_base, &dwmac->pcs) != 0) {
--			dev_err(dwmac->dev, "Unable to initialize TSE PCS");
--			return -EINVAL;
--		}
--	}
-+	if (phymode == PHY_INTERFACE_MODE_SGMII)
-+		socfpga_sgmii_config(dwmac, true);
- 
- 	return 0;
- }
-@@ -367,12 +374,8 @@ static int socfpga_gen10_set_phy_mode(struct socfpga_dwmac *dwmac)
- 	 */
- 	reset_control_deassert(dwmac->stmmac_ocp_rst);
- 	reset_control_deassert(dwmac->stmmac_rst);
--	if (phymode == PHY_INTERFACE_MODE_SGMII) {
--		if (tse_pcs_init(dwmac->pcs.tse_pcs_base, &dwmac->pcs) != 0) {
--			dev_err(dwmac->dev, "Unable to initialize TSE PCS");
--			return -EINVAL;
--		}
--	}
-+	if (phymode == PHY_INTERFACE_MODE_SGMII)
-+		socfpga_sgmii_config(dwmac, true);
- 	return 0;
- }
- 
-@@ -386,6 +389,14 @@ static int socfpga_dwmac_probe(struct platform_device *pdev)
- 	struct net_device	*ndev;
- 	struct stmmac_priv	*stpriv;
- 	const struct socfpga_dwmac_ops *ops;
-+	struct regmap_config pcs_regmap_cfg;
-+	struct regmap *pcs_regmap;
-+	struct mii_bus *pcs_bus;
-+
-+	struct mdio_regmap_config mrc = {
-+		.parent = &pdev->dev,
-+		.valid_addr = 0x0,
-+	};
- 
- 	ops = device_get_match_data(&pdev->dev);
- 	if (!ops) {
-@@ -443,6 +454,35 @@ static int socfpga_dwmac_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_dvr_remove;
- 
-+	memset(&pcs_regmap_cfg, 0, sizeof(pcs_regmap_cfg));
-+	pcs_regmap_cfg.reg_bits = 16;
-+	pcs_regmap_cfg.val_bits = 16;
-+	pcs_regmap_cfg.reg_shift = REGMAP_UPSHIFT(1);
-+
-+	/* Create a regmap for the PCS so that it can be used by the PCS driver,
-+	 * if we have such a PCS
-+	 */
-+	if (dwmac->tse_pcs_base) {
-+		pcs_regmap = devm_regmap_init_mmio(&pdev->dev, dwmac->tse_pcs_base,
-+						   &pcs_regmap_cfg);
-+		if (IS_ERR(pcs_regmap)) {
-+			ret = PTR_ERR(pcs_regmap);
-+			goto err_dvr_remove;
-+		}
-+
-+		mrc.regmap = pcs_regmap;
-+
-+		snprintf(mrc.name, MII_BUS_ID_SIZE, "%s-pcs-mii", ndev->name);
-+		pcs_bus = devm_mdio_regmap_register(&pdev->dev, &mrc);
-+		if (IS_ERR(pcs_bus)) {
-+			ret = PTR_ERR(pcs_bus);
-+			goto err_dvr_remove;
-+		}
-+
-+		dwmac->pcs_mdiodev = mdio_device_create(pcs_bus, 0);
-+		stpriv->hw->phylink_pcs = lynx_pcs_create(dwmac->pcs_mdiodev);
-+	}
-+
- 	return 0;
- 
- err_dvr_remove:
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 0fca81507a77..e570a95dd8d0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -937,10 +937,13 @@ static struct phylink_pcs *stmmac_mac_select_pcs(struct phylink_config *config,
- {
- 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
- 
--	if (!priv->hw->xpcs)
--		return NULL;
-+	if (priv->hw->xpcs)
-+		return &priv->hw->xpcs->pcs;
-+
-+	if (priv->hw->phylink_pcs)
-+		return priv->hw->phylink_pcs;
- 
--	return &priv->hw->xpcs->pcs;
-+	return NULL;
- }
- 
- static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
-@@ -3813,7 +3816,8 @@ static int __stmmac_open(struct net_device *dev,
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI &&
- 	    (!priv->hw->xpcs ||
--	     xpcs_get_an_mode(priv->hw->xpcs, mode) != DW_AN_C73)) {
-+	     xpcs_get_an_mode(priv->hw->xpcs, mode) != DW_AN_C73) &&
-+	    !priv->hw->phylink_pcs) {
- 		ret = stmmac_init_phy(dev);
- 		if (ret) {
- 			netdev_err(priv->dev,
+Any update to PCI_EXP_LNKCTL_ASPMC field in that interval is lost yes, the 
+updates to _the other fields_ in LNKCTL are not lost.
+
+I know this might result in drivers/pci/pcie/aspm.c disagreeing what
+the state of the ASPM is (as shown under sysfs) compared with LNKCTL 
+value but the cause can no longer be due racing RMW. Essentially, 4) is 
+seen as an override to what core did if it changed ASPMC in between. 
+Technically, something is still "lost" like you say but for a different 
+reason than this series is trying to fix.
+
+> Straw-man proposal:
+> 
+>   - Change pci_disable_link_state() so it ignores aspm_disabled and
+>     always disables ASPM even if platform firmware hasn't granted
+>     ownership.  Maybe this should warn and taint the kernel.
+> 
+>   - Change drivers to use pci_disable_link_state() instead of writing
+>     LNKCTL directly.
+
+I fully agree that's the direction we should be moving, yes. However, I'm 
+a bit hesitant to take that leap in one step. These drivers currently not 
+only disable ASPM but also re-enable it (assuming we guessed the intent
+right).
+
+If I directly implement that proposal, ASPM is not going to be re-enabled 
+when PCI core does not allowing it. Could it cause some power related 
+regression?
+
+My plan is to make another patch series after these to realize exactly 
+what you're proposing. It would allow better to isolate the problems that 
+related to the lack of ASPM.
+
+I hope this two step approach is an acceptable way forward? I can of 
+course add those patches on top of these if that would be preferrable.
+
+
 -- 
-2.40.1
-
+ i.
+--8323329-1525169391-1685006896=:1738--
 
