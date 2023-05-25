@@ -1,304 +1,135 @@
-Return-Path: <netdev+bounces-5199-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5200-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3A261710365
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 05:43:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8E55C71036C
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 05:48:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CC1EB2813FC
-	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 03:43:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2BCFB281470
+	for <lists+netdev@lfdr.de>; Thu, 25 May 2023 03:48:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E75291FAE;
-	Thu, 25 May 2023 03:43:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A2601FB4;
+	Thu, 25 May 2023 03:48:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFD7C19C
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 03:43:52 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFBAE7
-	for <netdev@vger.kernel.org>; Wed, 24 May 2023 20:43:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684986230;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=s4m2p+lm6+1Dh1af/W/L1B6pO/Ymz2+CVF2VL5CW0fg=;
-	b=el+rQi1hrkiQ3o05JwQ8vTpddHJrg6hIep8fgU7dkrZ2RmByFQ4KiOhSiuSPaVCoNmnEjq
-	iKJt73sszeIsnWXJj0fj6UXg5gx02SxplMupZkyRE3MyhPT0qNxFkdxk2aOOCyKOggr9NA
-	BDAMFAtsPZoaiNkCcDLQLBCIfYaXFyA=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-380-_Lo-MnoaNXi-ELS7ThYkFA-1; Wed, 24 May 2023 23:43:48 -0400
-X-MC-Unique: _Lo-MnoaNXi-ELS7ThYkFA-1
-Received: by mail-lj1-f197.google.com with SMTP id 38308e7fff4ca-2af1ed9514bso485541fa.0
-        for <netdev@vger.kernel.org>; Wed, 24 May 2023 20:43:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684986226; x=1687578226;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=s4m2p+lm6+1Dh1af/W/L1B6pO/Ymz2+CVF2VL5CW0fg=;
-        b=LE4I23GBvViijiYjc3z7a1n88aRCBI/Ima9Ipb1kgwq91c9aAw1myjjUeAqjxmlmDi
-         W6IyWmP02lrYLXN/YLgYASRM2DyzdMdTS9OcQRtU5DRBdEMN150OpEtB7dEqZTKzdkqA
-         nte+6qYpHTkTLJCbojPpXUupYkhJiNXg7Uxwclw3OojlPPqFcFTBSHkJZY20JxaeDsIX
-         2WEb1I6Uwk3iOX6gnNFcnBLjtYbqQfl/pbLURlM1Lib1SYQmxbw3GWEZ/XBXXxbTVtVT
-         CFm77iFSqljOtXGWF2TRCd3gmsQ4Xx2dAQo7Zo06nk4UINQ13/MIm56kljmpFe8PmE76
-         +F0A==
-X-Gm-Message-State: AC+VfDzKCxw2ayXa37zR4mpICEJIz0sYBLj1j+vkZTOiFKDIt9sLgGeO
-	pu+6quJp5rrpn3YYWapo18Q5s9H2R6lgi/VmEhWPBIPbRTzsbG0RJOP7B62fQ9dHK9VG/TPg409
-	M8KysAnydre+5GxpjkMTxyDbvzAoUpikGFGnAIlJe2SRp8g==
-X-Received: by 2002:a2e:b1c7:0:b0:2af:1fd4:9011 with SMTP id e7-20020a2eb1c7000000b002af1fd49011mr549053lja.34.1684986226504;
-        Wed, 24 May 2023 20:43:46 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5Nxno0CpX0KxVDu2aSi+nZY7wvCAw+00hD9PbzdyW/N6KVXC3Z9EBcXiECbwBPrWDt6zuPtKluPlPeL66TBWs=
-X-Received: by 2002:a2e:b1c7:0:b0:2af:1fd4:9011 with SMTP id
- e7-20020a2eb1c7000000b002af1fd49011mr549044lja.34.1684986226178; Wed, 24 May
- 2023 20:43:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E27B19C
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 03:48:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3222FC433D2;
+	Thu, 25 May 2023 03:48:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684986530;
+	bh=oI8Tbtg74hv0TFqZp1TH5Ee9ChO80OPzTdLpJqRmHrw=;
+	h=From:To:Cc:Subject:Date:From;
+	b=DX3iGHlz7tV44jtbNuu5nKvqob7+fT3b91PsHaLfn1gY4c13jEWf5h9DdOik+X15x
+	 +jd7aqCmV00nHU/93Eq8G0IvfrN0xpFVEzEPgO7g/kuvgSQBXAzRF5w3eSF1Xx87IF
+	 ibhDZnvFd+lRu8rxR8m58c1E0AwsVNP22yDk03zURU7LFzK+hiTmYJkhOCsDckQTMS
+	 yQdP31Tj1jt+nY+fOfmOlNU2oXrDdDicnQzGCKSNo8QlvR7jIHadaNefmOexxFS7gk
+	 HI+avI64ZIF83UAPDkPpPy5gCzeSUhYgOKdjdfKuwcbpya1FQQkfxalVUMVnenQ50T
+	 Gb46s4yDZ64Zw==
+From: Saeed Mahameed <saeed@kernel.org>
+To: "David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Eric Dumazet <edumazet@google.com>
+Cc: Saeed Mahameed <saeedm@nvidia.com>,
+	netdev@vger.kernel.org,
+	Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net 00/17] mlx5 fixes 2023-05-24
+Date: Wed, 24 May 2023 20:48:30 -0700
+Message-Id: <20230525034847.99268-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230524081842.3060-1-jasowang@redhat.com> <20230524081842.3060-2-jasowang@redhat.com>
- <20230524050604-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230524050604-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Date: Thu, 25 May 2023 11:43:34 +0800
-Message-ID: <CACGkMEvm=MJz5e2C_7U=yjrvoo7pxsr=tRAL29OdxJDWhvtiSQ@mail.gmail.com>
-Subject: Re: [PATCH V3 net-next 1/2] virtio-net: convert rx mode setting to
- use workqueue
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: xuanzhuo@linux.alibaba.com, davem@davemloft.net, edumazet@google.com, 
-	kuba@kernel.org, pabeni@redhat.com, virtualization@lists.linux-foundation.org, 
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	alvaro.karsz@solid-run.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
 
-On Wed, May 24, 2023 at 5:15=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com>=
- wrote:
->
-> On Wed, May 24, 2023 at 04:18:41PM +0800, Jason Wang wrote:
-> > This patch convert rx mode setting to be done in a workqueue, this is
-> > a must for allow to sleep when waiting for the cvq command to
-> > response since current code is executed under addr spin lock.
-> >
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > ---
-> > Changes since V1:
-> > - use RTNL to synchronize rx mode worker
-> > ---
-> >  drivers/net/virtio_net.c | 55 +++++++++++++++++++++++++++++++++++++---
-> >  1 file changed, 52 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 56ca1d270304..5d2f1da4eaa0 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -265,6 +265,12 @@ struct virtnet_info {
-> >       /* Work struct for config space updates */
-> >       struct work_struct config_work;
-> >
-> > +     /* Work struct for config rx mode */
->
-> With a bit less abbreviation maybe? setting rx mode?
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-That's fine.
+This series includes bug fixes for the mlx5 driver.
+Please pull and let me know if there is any problem.
 
->
-> > +     struct work_struct rx_mode_work;
-> > +
-> > +     /* Is rx mode work enabled? */
->
-> Ugh not a great comment.
+Thanks,
+Saeed.
 
-Any suggestions for this. E.g we had:
 
-        /* Is delayed refill enabled? */
+The following changes since commit 878ecb0897f4737a4c9401f3523fd49589025671:
 
->
-> > +     bool rx_mode_work_enabled;
-> > +
->
->
->
-> >       /* Does the affinity hint is set for virtqueues? */
-> >       bool affinity_hint_set;
-> >
-> > @@ -388,6 +394,20 @@ static void disable_delayed_refill(struct virtnet_=
-info *vi)
-> >       spin_unlock_bh(&vi->refill_lock);
-> >  }
-> >
-> > +static void enable_rx_mode_work(struct virtnet_info *vi)
-> > +{
-> > +     rtnl_lock();
-> > +     vi->rx_mode_work_enabled =3D true;
-> > +     rtnl_unlock();
-> > +}
-> > +
-> > +static void disable_rx_mode_work(struct virtnet_info *vi)
-> > +{
-> > +     rtnl_lock();
-> > +     vi->rx_mode_work_enabled =3D false;
-> > +     rtnl_unlock();
-> > +}
-> > +
-> >  static void virtqueue_napi_schedule(struct napi_struct *napi,
-> >                                   struct virtqueue *vq)
-> >  {
-> > @@ -2341,9 +2361,11 @@ static int virtnet_close(struct net_device *dev)
-> >       return 0;
-> >  }
-> >
-> > -static void virtnet_set_rx_mode(struct net_device *dev)
-> > +static void virtnet_rx_mode_work(struct work_struct *work)
-> >  {
-> > -     struct virtnet_info *vi =3D netdev_priv(dev);
-> > +     struct virtnet_info *vi =3D
-> > +             container_of(work, struct virtnet_info, rx_mode_work);
-> > +     struct net_device *dev =3D vi->dev;
-> >       struct scatterlist sg[2];
-> >       struct virtio_net_ctrl_mac *mac_data;
-> >       struct netdev_hw_addr *ha;
-> > @@ -2356,6 +2378,8 @@ static void virtnet_set_rx_mode(struct net_device=
- *dev)
-> >       if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_RX))
-> >               return;
-> >
-> > +     rtnl_lock();
-> > +
-> >       vi->ctrl->promisc =3D ((dev->flags & IFF_PROMISC) !=3D 0);
-> >       vi->ctrl->allmulti =3D ((dev->flags & IFF_ALLMULTI) !=3D 0);
-> >
-> > @@ -2373,14 +2397,19 @@ static void virtnet_set_rx_mode(struct net_devi=
-ce *dev)
-> >               dev_warn(&dev->dev, "Failed to %sable allmulti mode.\n",
-> >                        vi->ctrl->allmulti ? "en" : "dis");
-> >
-> > +     netif_addr_lock_bh(dev);
-> > +
-> >       uc_count =3D netdev_uc_count(dev);
-> >       mc_count =3D netdev_mc_count(dev);
-> >       /* MAC filter - use one buffer for both lists */
-> >       buf =3D kzalloc(((uc_count + mc_count) * ETH_ALEN) +
-> >                     (2 * sizeof(mac_data->entries)), GFP_ATOMIC);
-> >       mac_data =3D buf;
-> > -     if (!buf)
-> > +     if (!buf) {
-> > +             netif_addr_unlock_bh(dev);
-> > +             rtnl_unlock();
-> >               return;
-> > +     }
-> >
-> >       sg_init_table(sg, 2);
-> >
-> > @@ -2401,6 +2430,8 @@ static void virtnet_set_rx_mode(struct net_device=
- *dev)
-> >       netdev_for_each_mc_addr(ha, dev)
-> >               memcpy(&mac_data->macs[i++][0], ha->addr, ETH_ALEN);
-> >
-> > +     netif_addr_unlock_bh(dev);
-> > +
-> >       sg_set_buf(&sg[1], mac_data,
-> >                  sizeof(mac_data->entries) + (mc_count * ETH_ALEN));
-> >
-> > @@ -2408,9 +2439,19 @@ static void virtnet_set_rx_mode(struct net_devic=
-e *dev)
-> >                                 VIRTIO_NET_CTRL_MAC_TABLE_SET, sg))
-> >               dev_warn(&dev->dev, "Failed to set MAC filter table.\n");
-> >
-> > +     rtnl_unlock();
-> > +
-> >       kfree(buf);
-> >  }
-> >
-> > +static void virtnet_set_rx_mode(struct net_device *dev)
-> > +{
-> > +     struct virtnet_info *vi =3D netdev_priv(dev);
-> > +
-> > +     if (vi->rx_mode_work_enabled)
-> > +             schedule_work(&vi->rx_mode_work);
-> > +}
-> > +
->
-> >  static int virtnet_vlan_rx_add_vid(struct net_device *dev,
-> >                                  __be16 proto, u16 vid)
-> >  {
-> > @@ -3181,6 +3222,8 @@ static void virtnet_freeze_down(struct virtio_dev=
-ice *vdev)
-> >
-> >       /* Make sure no work handler is accessing the device */
-> >       flush_work(&vi->config_work);
-> > +     disable_rx_mode_work(vi);
-> > +     flush_work(&vi->rx_mode_work);
-> >
-> >       netif_tx_lock_bh(vi->dev);
-> >       netif_device_detach(vi->dev);
->
-> Hmm so queued rx mode work will just get skipped
-> and on restore we get a wrong rx mode.
-> Any way to make this more robust?
+  ipv6: Fix out-of-bounds access in ipv6_find_tlv() (2023-05-24 08:43:39 +0100)
 
-It could be done by scheduling a work on restore.
+are available in the Git repository at:
 
-Thanks
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2023-05-24
 
->
->
-> > @@ -3203,6 +3246,7 @@ static int virtnet_restore_up(struct virtio_devic=
-e *vdev)
-> >       virtio_device_ready(vdev);
-> >
-> >       enable_delayed_refill(vi);
-> > +     enable_rx_mode_work(vi);
-> >
-> >       if (netif_running(vi->dev)) {
-> >               err =3D virtnet_open(vi->dev);
-> > @@ -4002,6 +4046,7 @@ static int virtnet_probe(struct virtio_device *vd=
-ev)
-> >       vdev->priv =3D vi;
-> >
-> >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-> > +     INIT_WORK(&vi->rx_mode_work, virtnet_rx_mode_work);
-> >       spin_lock_init(&vi->refill_lock);
-> >
-> >       if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF)) {
-> > @@ -4110,6 +4155,8 @@ static int virtnet_probe(struct virtio_device *vd=
-ev)
-> >       if (vi->has_rss || vi->has_rss_hash_report)
-> >               virtnet_init_default_rss(vi);
-> >
-> > +     enable_rx_mode_work(vi);
-> > +
-> >       /* serialize netdev register + virtio_device_ready() with ndo_ope=
-n() */
-> >       rtnl_lock();
-> >
-> > @@ -4207,6 +4254,8 @@ static void virtnet_remove(struct virtio_device *=
-vdev)
-> >
-> >       /* Make sure no work handler is accessing the device. */
-> >       flush_work(&vi->config_work);
-> > +     disable_rx_mode_work(vi);
-> > +     flush_work(&vi->rx_mode_work);
-> >
-> >       unregister_netdev(vi->dev);
-> >
-> > --
-> > 2.25.1
->
+for you to fetch changes up to bb72b94c659f5032850e9ab070d850bc743e3a0e:
 
+  Documentation: net/mlx5: Wrap notes in admonition blocks (2023-05-24 20:44:20 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2023-05-24
+
+----------------------------------------------------------------
+Bagas Sanjaya (4):
+      Documentation: net/mlx5: Wrap vnic reporter devlink commands in code blocks
+      Documentation: net/mlx5: Use bullet and definition lists for vnic counters description
+      Documentation: net/mlx5: Add blank line separator before numbered lists
+      Documentation: net/mlx5: Wrap notes in admonition blocks
+
+Chris Mi (2):
+      net/mlx5e: Extract remaining tunnel encap code to dedicated file
+      net/mlx5e: Prevent encap offload when neigh update is running
+
+Dan Carpenter (1):
+      net/mlx5: Fix check for allocation failure in comp_irqs_request_pci()
+
+Dmytro Linkin (1):
+      net/mlx5e: Don't attach netdev profile while handling internal error
+
+Dragos Tatulea (1):
+      net/mlx5e: Use query_special_contexts cmd only once per mdev
+
+Jianbo Liu (1):
+      net/mlx5e: Move Ethernet driver debugfs to profile init callback
+
+Maher Sanalla (2):
+      net/mlx5e: Consider internal buffers size in port buffer calculations
+      net/mlx5e: Do not update SBCM when prio2buffer command is invalid
+
+Shay Drory (3):
+      net/mlx5: Drain health before unregistering devlink
+      net/mlx5: SF, Drain health before removing device
+      net/mlx5: fw_tracer, Fix event handling
+
+Vlad Buslov (1):
+      net/mlx5: Fix post parse infra to only parse every action once
+
+Yevgeny Kliteynik (1):
+      net/mlx5: DR, Add missing mutex init/destroy in pattern manager
+
+ .../ethernet/mellanox/mlx5/devlink.rst             |  60 +++++++----
+ .../ethernet/mellanox/mlx5/core/diag/fw_tracer.c   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   1 +
+ .../ethernet/mellanox/mlx5/core/en/port_buffer.c   |  46 +++++---
+ .../ethernet/mellanox/mlx5/core/en/port_buffer.h   |   8 +-
+ .../ethernet/mellanox/mlx5/core/en/tc/act/act.c    |   7 +-
+ .../ethernet/mellanox/mlx5/core/en/tc/act/act.h    |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  | 120 ++++++++++++++++++---
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.h  |   9 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_dcbnl.c |   7 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  69 ++++++------
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |   6 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  97 ++---------------
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   7 +-
+ drivers/net/ethernet/mellanox/mlx5/core/mr.c       |  21 ++++
+ .../ethernet/mellanox/mlx5/core/sf/dev/driver.c    |   1 +
+ .../ethernet/mellanox/mlx5/core/steering/dr_ptrn.c |   3 +
+ include/linux/mlx5/driver.h                        |   1 +
+ 19 files changed, 279 insertions(+), 190 deletions(-)
 
