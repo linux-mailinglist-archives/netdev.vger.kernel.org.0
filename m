@@ -1,95 +1,123 @@
-Return-Path: <netdev+bounces-5701-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5702-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 96EA47127E6
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 15:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 892997127EB
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:02:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 06E531C2109F
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 13:59:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 359B91C210A9
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:02:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5F8D81EA91;
-	Fri, 26 May 2023 13:59:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 786C41F160;
+	Fri, 26 May 2023 14:02:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 524B41EA7F
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 13:59:32 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D38DF
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 06:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685109569;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=AZR+i/KA4SM5MJbNxGgeo60QfZYJs7gffgNmM3EOr+0=;
-	b=Bq9sJ2AS63Bpq0+cAGexhWtnmp0k6DR1JhQKaQi7uOWxiJzrPyPggNFebNEBAxFuhQVkSm
-	xyfTF1MVoIZhhQyF1EzrCC1XdowYnFRZhPF8KmING+UVCjCXEubxNOrxq/ycBPs9O5vztm
-	H+qkZIpPPrha55E7wmtqOsqvFKtiIdU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-466-NAJcYUu3MISI0BN9tbIX4w-1; Fri, 26 May 2023 09:59:26 -0400
-X-MC-Unique: NAJcYUu3MISI0BN9tbIX4w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B145985A5A8;
-	Fri, 26 May 2023 13:59:20 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 29A307C2A;
-	Fri, 26 May 2023 13:59:17 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <366861a7-87c8-4bbf-9101-69dd41021d07@kili.mountain>
-References: <366861a7-87c8-4bbf-9101-69dd41021d07@kili.mountain>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: dhowells@redhat.com, "David S. Miller" <davem@davemloft.net>,
-    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-    Paolo Abeni <pabeni@redhat.com>,
-    Alexander Duyck <alexanderduyck@fb.com>,
-    Jesper Dangaard Brouer <brouer@redhat.com>,
-    Pavel Begunkov <asml.silence@gmail.com>,
-    Kees Cook <keescook@chromium.org>, Jiri Benc <jbenc@redhat.com>,
-    netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: fix signedness bug in skb_splice_from_iter()
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 675801DDD2
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 14:02:34 +0000 (UTC)
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFC2F2
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:02:32 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id 38308e7fff4ca-2afb2875491so7692191fa.1
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:02:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ferroamp-se.20221208.gappssmtp.com; s=20221208; t=1685109750; x=1687701750;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=I24xOJUPwotirG7z+TXrhtcscl8kClafHqUY8HoH3jQ=;
+        b=U+37g5QCWau8FMMqFyw7/ahikzVlf58I9L65O/nwVQziYDrjPcZMznL3rckunSpQHc
+         kJNnr3PR8YRLcbN+E64/qviorAojRf7lrZ4es3pYuzv4RTaFFIcu0CbuopJ3Iq1R/Yjx
+         BLtTtxR34MZEG3RO9GNxPiwD6yps/wmpiwmoPerA71MfLWpHG1X1XmeUgwvNvHCDgx/5
+         E8gnoO8y7AtFcQr3fbnK7pCXJUPeKVBbPoZXTQIe54/+l+i4HKzSqHwcTdvD2iOWWg9x
+         mBhebsRjbe5PkzJKUYtsqFy/ZgEcgcUCFdKWzwACYyWxl6JI+MVmiOu9Z2frtVdFtpYM
+         6T0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685109750; x=1687701750;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=I24xOJUPwotirG7z+TXrhtcscl8kClafHqUY8HoH3jQ=;
+        b=jA8pnNkWPWnRUuPiRYBQGuzCQA3x3tUDLBMlWwB91+Ku2aCX6vBgY2X5NmCUkkAsgZ
+         NeUuj1PmEkK1z+EhpRiKt2QA3hNMXPPMV1jjoAicOdNICH4kA8KfBK6+U5Bgznlbs9ii
+         RqBevMww8ZVA0kLEns52Hj1fBzNdHF0eLfPifmgatDc5Jmg6CHpnDXfb3YXNF7sTMSba
+         diPifErviaUpigu892tXMbkAvSYJ7t70GFcArhJuAfYGDYm/Dtmq01kbAeuMdJWzxiow
+         qnyYMYkpoqDKIus4pRvJegw1HD7KhL4iPrnanwA46XSDh6pMGGo7RvlWgdpCoQHE9taY
+         Qwew==
+X-Gm-Message-State: AC+VfDxJo0uI+72Sc9JKOPo4awPWPeDqLgvxx2ue3fstEo4bxS6RNSu/
+	bDtlAYDqZwXobDulQUrUk1Lp1Q==
+X-Google-Smtp-Source: ACHHUZ6KsmwbD0WumVIxZybsAhOs0AkayBUKKYqlJF9vW/kh8LukQC/2MUJTJQo05NkI1GcIAc0zpw==
+X-Received: by 2002:a2e:8843:0:b0:2a7:6e85:e287 with SMTP id z3-20020a2e8843000000b002a76e85e287mr817003ljj.45.1685109750513;
+        Fri, 26 May 2023 07:02:30 -0700 (PDT)
+Received: from builder (c188-149-203-37.bredband.tele2.se. [188.149.203.37])
+        by smtp.gmail.com with ESMTPSA id o20-20020a2e90d4000000b002aecfa8c58bsm741809ljg.40.2023.05.26.07.02.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 May 2023 07:02:29 -0700 (PDT)
+Date: Fri, 26 May 2023 16:02:27 +0200
+From: =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
+To: Parthiban.Veerasooran@microchip.com
+Cc: andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Horatiu.Vultur@microchip.com,
+	Woojung.Huh@microchip.com, Nicolas.Ferre@microchip.com,
+	Thorsten.Kummermehr@microchip.com
+Subject: Re: [PATCH net-next v3 2/6] net: phy: microchip_t1s: replace
+ read-modify-write code with phy_modify_mmd
+Message-ID: <ZHC78yzOp/xIXKYL@builder>
+References: <20230524144539.62618-1-Parthiban.Veerasooran@microchip.com>
+ <20230524144539.62618-3-Parthiban.Veerasooran@microchip.com>
+ <ZG9599nfDnkcw8er@debian>
+ <f81c80cb-fbe8-0c7e-f0f9-14509f47c653@microchip.com>
+ <ZHBbVNWeKK2di73h@debian>
+ <6eb6893f-7731-dcc5-9221-048383bcbce4@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <881536.1685109556.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 26 May 2023 14:59:16 +0100
-Message-ID: <881537.1685109556@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6eb6893f-7731-dcc5-9221-048383bcbce4@microchip.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+	T_SPF_PERMERROR,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Dan Carpenter <dan.carpenter@linaro.org> wrote:
+> >> /* Reference to AN1699
+> >>    *
+> >> https://ww1.microchip.com/downloads/aemDocuments/documents/AIS/ProductDocuments/SupportingCollateral/AN-LAN8670-1-2-config-60001699.pdf
+> >>    * AN1699 says Read, Modify, Write, but the Write is not required if
+> >> the  register already has the required value. So it is safe to use
+> >> phy_modify_mmd here.
+> >>    */
+> >>
+> >> So in future, if someone wants to know about this configuration they can
+> >> simply refer the AN1699.
+> >>
+> >> What do you think?
+> >>
+> > 
+> > I'm not sure about the link, resources have a tendency to move.
+> Yes, I agree with you but somehow there is no way for giving the 
+> reference to this document. May be we will keep this link for the 
+> reference, later if someone is not able to access the link then they can 
+> request Microchip to get the document.
+> 
+> What do you think about this proposal? If you agree then I will proceed 
+> for preparing the next version with your comments.
 
-> The "len" variable needs to be signed for the error handling to work
-> correctly.
-> =
+Thumbs up from me
+R
 
-> Fixes: 2e910b95329c ("net: Add a function to splice pages into an skbuff=
- for MSG_SPLICE_PAGES")
-> Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
-
-Reviewed-by: David Howells <dhowells@redhat.com>
-
+> > Otherwise LGTM
+> > 
+> >> Best Regards,
+> >> Parthiban V
+> 
 
