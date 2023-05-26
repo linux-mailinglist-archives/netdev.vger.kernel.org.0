@@ -1,63 +1,69 @@
-Return-Path: <netdev+bounces-5703-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5704-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5846A7127EE
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:03:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 183EC712802
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:07:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0C792281877
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:03:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C04111C2109C
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:07:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2105C1F196;
-	Fri, 26 May 2023 14:03:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3DAB209B7;
+	Fri, 26 May 2023 14:07:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13AE419E7A
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 14:03:22 +0000 (UTC)
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E86F3
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:03:21 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-19a19778b09so460029fac.3
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:03:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685109800; x=1687701800;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tV0gna99qIIz1CPcXI3boJD9BVhKLITKO5e6Yz/aCCc=;
-        b=HGaJyungSHCuIc0g83dZ0Mduzi2QkLqZ6tGoxWAtKPAtExzRNWmoNF6vMM2ih1C17I
-         bnWxw6fIUDuK9L/CwnzjSWqMzsNxHhV1nvUSr6v6//jclGyTVUclAFiUZZ+fHNXof0HP
-         dUAyjnVFFae6kYIf1rSxUWmNsmezBNCR5ad8Lfewv6kWqXfhQTfrHqqU41HkN7woKrRK
-         daNakNK5WeV70yTTXR2l9VP6tnR5BHs9EY+nKxlbbh0yRfykXp6QJChgAXywD+pab4lC
-         ultMXVdQNDD3vVMXygVPYCGOHfo5HZatohCDHgPFhYsmEGJyDkMZw/wkPyrCL9TvOpSY
-         4rtQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E018B1EA9D
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 14:07:03 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B03F2
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:07:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685110020;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LAbN/2lmj85EfJ5ZXB9Lxx6BdfoaVulpG4pANfEifWY=;
+	b=X0a4NSjNHuSN756y5UHIbVku/E8Wmzzizc1uvkHKOwdCl2DnOsf9cggdnepCkqRU8CcEVi
+	q7A975UDNZqFxjfB2z6RtJcrfnOZt3QWh7fxZnU6FWU3Id41JwCmGN3NDrvTsxcSTqRbOp
+	2gMkafkCPtFCoi38movIyuMut3ZxKtM=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-671-2p5bw4jmNZeqgRUH0wSfhg-1; Fri, 26 May 2023 10:06:59 -0400
+X-MC-Unique: 2p5bw4jmNZeqgRUH0wSfhg-1
+Received: by mail-lf1-f70.google.com with SMTP id 2adb3069b0e04-4f3bb23174eso417308e87.2
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:06:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685109800; x=1687701800;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+        d=1e100.net; s=20221208; t=1685110018; x=1687702018;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tV0gna99qIIz1CPcXI3boJD9BVhKLITKO5e6Yz/aCCc=;
-        b=QUe8nFxmcTNnwqzV0LqfthBiekHlGeB9wZgIwCP0w+8fO6EbYybogmnaMY+SdffPCg
-         0VxhJJx94bd3O8OihxXx7JmJuUZGHgZiw4xa/Eu0xfdjZeFpt3wlOUO/RTFZX3HgiyDa
-         AvpCrGGgesMZmjWhxz2xhjNfiM3S3LcDpPGzHPkdLpeRnhxW7PtDgnluRxSFVkZFKKvP
-         s0wsHtlbRcY8RQhgn/hoTXcfDa3ZoqXkYxBEOu7VeQXT2sOPGttiotrvp8l+G6iJMBr1
-         5JQULf1xokBbzq2sEYA5OEpFVdWdfvlWJKg15VMIJkjt4d4Dflgpf9fDk9kxe3o6GP3B
-         +yag==
-X-Gm-Message-State: AC+VfDxp5T7PCat2pS1dz0yn2LOlkGlxOJm0/0e/9rh86ikvQkFAyKr8
-	krXruqwtK2fcgtnlPY8hMYnC+g==
-X-Google-Smtp-Source: ACHHUZ6rpb6xruW5YFnPERRxHwBAepSKKTAraxlw9zCbEXom9/0mDY7muPbcrzuBvje1mJ5IJvkCwQ==
-X-Received: by 2002:a05:6870:8446:b0:192:ae8a:2f30 with SMTP id n6-20020a056870844600b00192ae8a2f30mr1088010oak.6.1685109800289;
-        Fri, 26 May 2023 07:03:20 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:2f26:80da:f713:69d3? ([2804:14d:5c5e:44fb:2f26:80da:f713:69d3])
-        by smtp.gmail.com with ESMTPSA id a26-20020a9d6e9a000000b006a950658447sm1727006otr.52.2023.05.26.07.03.17
+        bh=LAbN/2lmj85EfJ5ZXB9Lxx6BdfoaVulpG4pANfEifWY=;
+        b=X4s/PI8hGtcfLUXCx7P6m1CCf5jIkhGVxI9X5X+Yvj1scKk+t9IaP6ue9Rs1Y+YGfk
+         vfQhIAxE+Jo5M7Pq+nlfBd7vOyNUItU2fAyucwE8I4wyRummTcTzfoh76z+aY8pkErrw
+         VOTtedPMoAPFO3wSR2qvHhQqRVJzr8virjHhsAnbl2XdK0bmJVA7A1AN482CXLOolB4C
+         IXgUU3rdirST+7Vtd8IHi63otN4TcDnWf+b5XkQsSfbZw2+5NuRXkaI/pmQqrasuP1XI
+         oneK3EgsWpaNF/0r+nPARIOxPgXqMelTfCBye+x24mOjHAp6RmHwptcwN3eQiwXCpOWg
+         DPkA==
+X-Gm-Message-State: AC+VfDxpMned2nEqK8WKWFABM55HywvjUsGezhIoikB2dYykMiSy+FEY
+	dKqgKuImj2KubAbU89hRtyLOV/sIk5y5OYBql7LeCElkKibuUnPGnzPupVLL+4kRV+QFJP2cwqT
+	afLzo/dAWFXA+NIU=
+X-Received: by 2002:ac2:59cf:0:b0:4ed:d2cf:857b with SMTP id x15-20020ac259cf000000b004edd2cf857bmr543147lfn.5.1685110017970;
+        Fri, 26 May 2023 07:06:57 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7er+LeGsxnFDYQXWSIbLqlc4+5J32U68qYkTck/GPaTlh3YQQH7LynqG86HW/G1yXwV5CNog==
+X-Received: by 2002:ac2:59cf:0:b0:4ed:d2cf:857b with SMTP id x15-20020ac259cf000000b004edd2cf857bmr543126lfn.5.1685110017600;
+        Fri, 26 May 2023 07:06:57 -0700 (PDT)
+Received: from [192.168.1.121] (85-23-48-202.bb.dnainternet.fi. [85.23.48.202])
+        by smtp.gmail.com with ESMTPSA id j22-20020ac253b6000000b004f3aee3aae2sm639896lfh.140.2023.05.26.07.06.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 May 2023 07:03:19 -0700 (PDT)
-Message-ID: <b693fce4-7a05-ce88-ebe0-27b6fa03ed2f@mojatatu.com>
-Date: Fri, 26 May 2023 11:03:16 -0300
+        Fri, 26 May 2023 07:06:56 -0700 (PDT)
+Message-ID: <5dd62fee-56bf-0b54-2e91-c31068a2b040@redhat.com>
+Date: Fri, 26 May 2023 17:06:55 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,178 +72,132 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Subject: Re: [PATCH v2] net/sched: act_pedit: Parse L3 Header for L4 offset
+Subject: Re: [PATCH net-next 04/12] mm: Make the page_frag_cache allocator use
+ multipage folios
 Content-Language: en-US
-From: Pedro Tammela <pctammela@mojatatu.com>
-To: Max Tottenham <mtottenh@akamai.com>, netdev@vger.kernel.org
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>, Cong Wang
- <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
- Amir Vadai <amir@vadai.me>, Josh Hunt <johunt@akamai.com>,
- kernel test robot <lkp@intel.com>
-References: <20230526095810.280474-1-mtottenh@akamai.com>
- <5587e78a-acfe-edfa-6b6b-c35bea34f5a3@mojatatu.com>
-In-Reply-To: <5587e78a-acfe-edfa-6b6b-c35bea34f5a3@mojatatu.com>
+To: David Howells <dhowells@redhat.com>, Yunsheng Lin
+ <linyunsheng@huawei.com>, Matthew Wilcox <willy@infradead.org>
+Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>,
+ Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+ David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ Jeroen de Borst <jeroendb@google.com>, Catherine Sullivan
+ <csully@google.com>, Shailend Chand <shailend@google.com>,
+ Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+ Sean Wang <sean.wang@mediatek.com>, Mark Lee <Mark-MC.Lee@mediatek.com>,
+ Lorenzo Bianconi <lorenzo@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+ Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ linux-nvme@lists.infradead.org
+References: <a819dd80-54cc-695f-f142-e3d42ce815a7@huawei.com>
+ <20230524153311.3625329-1-dhowells@redhat.com>
+ <20230524153311.3625329-5-dhowells@redhat.com>
+ <739166.1685105220@warthog.procyon.org.uk>
+From: =?UTF-8?Q?Mika_Penttil=c3=a4?= <mpenttil@redhat.com>
+In-Reply-To: <739166.1685105220@warthog.procyon.org.uk>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 26/05/2023 10:47, Pedro Tammela wrote:
-> On 26/05/2023 06:58, Max Tottenham wrote:
->> Instead of relying on skb->transport_header being set correctly, opt
->> instead to parse the L3 header length out of the L3 headers for both
->> IPv4/IPv6 when the Extended Layer Op for tcp/udp is used. This fixes a
->> bug if GRO is disabled, when GRO is disabled skb->transport_header is
->> set by __netif_receive_skb_core() to point to the L3 header, it's later
->> fixed by the upper protocol layers, but act_pedit will receive the SKB
->> before the fixups are completed. The existing behavior causes the
->> following to edit the L3 header if GRO is disabled instead of the UDP
->> header:
->>
->>      tc filter add dev eth0 ingress protocol ip flower ip_proto udp \
->>   dst_ip 192.168.1.3 action pedit ex munge udp set dport 18053
->>
->> Also re-introduce a rate-limited warning if we were unable to extract
->> the header offset when using the 'ex' interface.
->>
->> Fixes: 71d0ed7079df ("net/act_pedit: Support using offset relative to
->> the conventional network headers")
-> 
-> Just a FYI: the automatic back port will probably fail because of a 
-> recent cleanup in this code
-> 
->> Signed-off-by: Max Tottenham <mtottenh@akamai.com>
->> Reviewed-by: Josh Hunt <johunt@akamai.com>
->> Reported-by: kernel test robot <lkp@intel.com>
->> Closes: 
->> https://lore.kernel.org/oe-kbuild-all/202305261541.N165u9TZ-lkp@intel.com/
->> ---
->> V1 -> V2:
->>    * Fix minor bug reported by kernel test bot.
->>
->> ---
->>   net/sched/act_pedit.c | 48 ++++++++++++++++++++++++++++++++++++++-----
->>   1 file changed, 43 insertions(+), 5 deletions(-)
->>
->> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
->> index fc945c7e4123..d28335519459 100644
->> --- a/net/sched/act_pedit.c
->> +++ b/net/sched/act_pedit.c
->> @@ -13,7 +13,10 @@
->>   #include <linux/rtnetlink.h>
->>   #include <linux/module.h>
->>   #include <linux/init.h>
->> +#include <linux/ip.h>
->> +#include <linux/ipv6.h>
->>   #include <linux/slab.h>
->> +#include <net/ipv6.h>
->>   #include <net/netlink.h>
->>   #include <net/pkt_sched.h>
->>   #include <linux/tc_act/tc_pedit.h>
->> @@ -327,28 +330,58 @@ static bool offset_valid(struct sk_buff *skb, 
->> int offset)
->>       return true;
->>   }
->> -static void pedit_skb_hdr_offset(struct sk_buff *skb,
->> +static int pedit_l4_skb_offset(struct sk_buff *skb, int *hoffset, 
->> const int header_type)
->> +{
->> +    int noff = skb_network_offset(skb);
->> +    struct iphdr *iph = NULL;
->> +    int ret = -EINVAL;
-> 
-> nit: Should be in reverse Christmas tree
-> 
->> +
->> +    switch (skb->protocol) {
->> +    case htons(ETH_P_IP):
->> +        if (!pskb_may_pull(skb, sizeof(*iph) + noff))
->> +            goto out;
-> 
-> I might have missed something but is this really needed?
-> https://elixir.bootlin.com/linux/latest/source/net/ipv4/ip_input.c#L456
+Hi,
 
-Yes this obviously happens before the mentioned function.
-Now I'm wondering if it's not better to use skb_header_pointer() instead...
+On 26.5.2023 15.47, David Howells wrote:
+> Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> 
+>>> Change the page_frag_cache allocator to use multipage folios rather than
+>>> groups of pages.  This reduces page_frag_free to just a folio_put() or
+>>> put_page().
+>>
+>> put_page() is not used in this patch, perhaps remove it to avoid
+>> the confusion?
+> 
+> Will do if I need to respin the patches.
+> 
+>> Also, Is there any significant difference between __free_pages()
+>> and folio_put()? IOW, what does the 'reduces' part means here?
+> 
+> I meant that the folio code handles page compounding for us and we don't need
+> to work out how big the page is for ourselves.
+> 
+> If you look at __free_pages(), you can see a PageHead() call.  folio_put()
+> doesn't need that.
+> 
+>> I followed some disscusion about folio before, but have not really
+>> understood about real difference between 'multipage folios' and
+>> 'groups of pages' yet. Is folio mostly used to avoid the confusion
+>> about whether a page is 'headpage of compound page', 'base page' or
+>> 'tailpage of compound page'? Or is there any abvious benefit about
+>> folio that I missed?
+> 
+> There is a benefit: a folio pointer always points to the head page and so we
+> never need to do "is this compound? where's the head?" logic to find it.  When
+> going from a page pointer, we still have to find the head.
+> 
 
+
+But page_frag_free() uses folio_put(virt_to_folio(addr)) and 
+virt_to_folio() depends on the compound infrastructure to get the head 
+page and folio.
+
+
+> Ultimately, the aim is to reduce struct page to a typed pointer to massively
+> reduce the amount of space consumed by mem_map[].  A page struct will then
+> point at a folio or a slab struct or one of a number of different types.  But
+> to get to that point, we have to stop a whole lot of things from using page
+> structs, but rather use some other type, such as folio.
 > 
->> +        iph = ip_hdr(skb);
->> +        *hoffset = noff + iph->ihl *  > +        ret = 0;
->> +        break;
->> +    case htons(ETH_P_IPV6):
->> +        *hoffset = 0;
-> nit: Not needed
+> Eventually, there won't be a need for head pages and tail pages per se - just
+> memory objects of different sizes.
 > 
->> +        ret = ipv6_find_hdr(skb, hoffset, header_type, NULL, NULL) == 
->> header_type ? 0 : -EINVAL;
->> +        break;
->> +    }
->> +out:
->> +    return ret;
->> +}
->> +
->> +static int pedit_skb_hdr_offset(struct sk_buff *skb,
->>                    enum pedit_header_type htype, int *hoffset)
->>   {
->> +    int ret = -EINVAL;
->>       /* 'htype' is validated in the netlink parsing */
->>       switch (htype) {
->>       case TCA_PEDIT_KEY_EX_HDR_TYPE_ETH:
->> -        if (skb_mac_header_was_set(skb))
->> +        if (skb_mac_header_was_set(skb)) {
->>               *hoffset = skb_mac_offset(skb);
->> +            ret = 0;
->> +        }
->>           break;
->>       case TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK:
->>       case TCA_PEDIT_KEY_EX_HDR_TYPE_IP4:
->>       case TCA_PEDIT_KEY_EX_HDR_TYPE_IP6:
->>           *hoffset = skb_network_offset(skb);
->> +        ret = 0;
->>           break;
->>       case TCA_PEDIT_KEY_EX_HDR_TYPE_TCP:
->> +        ret = pedit_l4_skb_offset(skb, hoffset, IPPROTO_TCP);
->> +        break;
->>       case TCA_PEDIT_KEY_EX_HDR_TYPE_UDP:
->> -        if (skb_transport_header_was_set(skb))
->> -            *hoffset = skb_transport_offset(skb);
->> +        ret = pedit_l4_skb_offset(skb, hoffset, IPPROTO_UDP);
->>           break;
->>       default:
->> +        ret = -EINVAL;
+>>> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+>>> index 306a3d1a0fa6..d7c52a5979cc 100644
+>>> --- a/include/linux/mm_types.h
+>>> +++ b/include/linux/mm_types.h
+>>> @@ -420,18 +420,13 @@ static inline void *folio_get_private(struct folio *folio)
+>>>   }
+>>>   
+>>>   struct page_frag_cache {
+>>> -	void * va;
+>>> -#if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
+>>> -	__u16 offset;
+>>> -	__u16 size;
+>>> -#else
+>>> -	__u32 offset;
+>>> -#endif
+>>> +	struct folio	*folio;
+>>> +	unsigned int	offset;
+>>>   	/* we maintain a pagecount bias, so that we dont dirty cache line
+>>>   	 * containing page->_refcount every time we allocate a fragment.
+>>>   	 */
+>>> -	unsigned int		pagecnt_bias;
+>>> -	bool pfmemalloc;
+>>> +	unsigned int	pagecnt_bias;
+>>> +	bool		pfmemalloc;
+>>>   };
+>>
+>> It seems 'va' and 'size' field is used to avoid touching 'stuct page' to
+>> avoid possible cache bouncing when there is more frag can be allocated
+>> from the page while other frags is freed at the same time before this patch?
 > 
-> nit: Not needed
+> Hmmm... fair point, though va is calculated from the page pointer on most
+> arches without the need to dereference struct page (only arc, m68k and sparc
+> define WANT_PAGE_VIRTUAL).
 > 
->>           break;
->>       }
->> +    return ret;
->>   }
->>   TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
->> @@ -384,6 +417,7 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff 
->> *skb,
->>           int hoffset = 0;
->>           u32 *ptr, hdata;
->>           u32 val;
->> +        int rc;
->>           if (tkey_ex) {
->>               htype = tkey_ex->htype;
->> @@ -392,7 +426,11 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct 
->> sk_buff *skb,
->>               tkey_ex++;
->>           }
->> -        pedit_skb_hdr_offset(skb, htype, &hoffset);
->> +        rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
->> +        if (rc) {
->> +            pr_info_ratelimited("tc action pedit unable to extract 
->> header offset for header type (0x%x)\n", htype);
->> +            goto bad;
->> +        }
->>           if (tkey->offmask) {
->>               u8 *d, _d;
+> David
 > 
+
+--Mika
 
 
