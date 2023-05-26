@@ -1,166 +1,141 @@
-Return-Path: <netdev+bounces-5615-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5618-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B6415712446
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:11:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0A4E4712454
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:14:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 713501C20F57
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:11:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 730951C20F9C
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:14:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBA20156C9;
-	Fri, 26 May 2023 10:11:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D4DAD156DC;
+	Fri, 26 May 2023 10:14:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D173411C84
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:11:12 +0000 (UTC)
-Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129D6E6E
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:10:57 -0700 (PDT)
-Received: by mail-io1-f77.google.com with SMTP id ca18e2360f4ac-763da06540aso115506839f.3
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:10:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685095856; x=1687687856;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kuYO3aLfJvCK87vZ47xyX8acyHpnlVpjpc6nvwXT1kc=;
-        b=A6m5wIQ1uF0JviWi91jlc0IBMjfF/yG+sAe/axbC26AfDJjq/etTlJbz7rMWoibkyn
-         gjMzTklU8l6maAGAihJh2tdpyCo+TPvLmrAvOM09egiM/b1Rua1s4MqHM+Mwe3iPrgju
-         200JAhdJRsol7J9cze7zh6QV7+YA4sxTIZSt2WntO7sfoLmX8p2E/nR8yHR/N4GnDUIM
-         8s//DoadtDo0oNVCudiJmmnYk4ieldyFP3NeAFCnw8cDh5f07qlF69SD9Quvfqrqm3k/
-         iJIIBPyDGwU2GiEMl6u3zjzCW83u1EOaG5/ftekoKOWvDpLMCPfbdo3lGGk7v5zYpXLI
-         6AzA==
-X-Gm-Message-State: AC+VfDxR5jHXmKW31IuZbwbgl5qzMmcNuqLiZCKFfYQ4POJRgJu3FhNi
-	6McCXXf2gk43t6bpOnIeTSvQuOjOoxlyMuHFDuCvWtISm3ef
-X-Google-Smtp-Source: ACHHUZ7DE4O4WK2S0swdnvx3USOzfATnarHx7chK7KiduOBTJ9n17lCRfZtlIXXbKlsD/eoQO4cbRZjYcfao7hqnucXIQItDb53z
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4CB4156CB
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:14:30 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA99DF
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:14:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=gIbo2OHXFMVJ6gyvgDlZbweRhKVO88XqXsauWqjJJGQ=; b=DSkLujtz9AOVB+vvmi/42gjSnq
+	uoUlG7ED9r8gJ0Qj+5nEnvcDkXs7+nwqXPwkpJYsOC5QfvqKyKC8DsX/uNZwp92LV4Yo5lAGPfu8w
+	7Evr+/NSpNA/1RBChiFAX6PiLdAlwTEKLBYJth+sMpjfhQw7kEUAmRZerkTT+FsnW8JS2hAW89oyL
+	I+awrXYTmwcnjG2ywmVqSxaLJ3E84TQJseaZnWPnyXtUM47V8fus1y2O4omvTGoMdAgrgMnJcfIuh
+	MlKlJaLu5Lsxaa5pZZk37lr3sBnr5cKi4ds3WMfyXVc1kWHqg2mEek70C8HgjEw8z5NFM/630XEma
+	ohjVJwaA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55470)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q2USW-0005OU-5d; Fri, 26 May 2023 11:14:08 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q2USN-0003e9-Ec; Fri, 26 May 2023 11:13:59 +0100
+Date: Fri, 26 May 2023 11:13:59 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Claudiu Manoil <claudiu.manoil@nxp.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Jiawen Wu <jiawenwu@trustnetic.com>,
+	Jose Abreu <joabreu@synopsys.com>,
+	Jose Abreu <Jose.Abreu@synopsys.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>,
+	Simon Horman <simon.horman@corigine.com>,
+	UNGLinuxDriver@microchip.com,
+	Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 0/6] net: pcs: add helpers to xpcs and lynx to
+ manage mdiodev
+Message-ID: <ZHCGZ8IgAAwr8bla@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a02:638b:0:b0:418:8bcd:ad9d with SMTP id
- j133-20020a02638b000000b004188bcdad9dmr421299jac.4.1685095856115; Fri, 26 May
- 2023 03:10:56 -0700 (PDT)
-Date: Fri, 26 May 2023 03:10:56 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ea970305fc95f3c6@google.com>
-Subject: [syzbot] [bpf?] WARNING: bad unlock balance in bpf
-From: syzbot <syzbot+8982e75c2878b9ffeac5@syzkaller.appspotmail.com>
-To: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org, 
-	daniel@iogearbox.net, davem@davemloft.net, haoluo@google.com, hawk@kernel.org, 
-	john.fastabend@gmail.com, jolsa@kernel.org, kpsingh@kernel.org, 
-	kuba@kernel.org, linux-kernel@vger.kernel.org, martin.lau@linux.dev, 
-	netdev@vger.kernel.org, sdf@google.com, song@kernel.org, 
-	syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello,
+Hi,
 
-syzbot found the following issue on:
+This morning, we have had two instances where the destruction of the
+MDIO device associated with XPCS and Lynx has been wrong. Rather than
+allowing this pattern of errors to continue, let's make it easier for
+driver authors to get this right by adding a helper.
 
-HEAD commit:    c4c84f6fb2c4 bpf: drop unnecessary bpf_capable() check in ..
-git tree:       bpf-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=119576a9280000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8bc832f563d8bf38
-dashboard link: https://syzkaller.appspot.com/bug?extid=8982e75c2878b9ffeac5
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10391dde280000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=137da9c5280000
+The changes are essentially:
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/3cb57feeb883/disk-c4c84f6f.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/7ccb6d78c42d/vmlinux-c4c84f6f.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/fb02c9cdb21c/bzImage-c4c84f6f.xz
+1. Add two new mdio device helpers to manage the underlying struct
+   device reference count. Note that the existing mdio_device_free()
+   doesn't actually free anything, it merely puts the reference count.
 
-The issue was bisected to:
+2. Make the existing _create() and _destroy() PCS driver methods
+   increment and decrement this refcount using these helpers. This
+   results in no overall change, although drivers may hang on to
+   the mdio device for a few cycles longer.
 
-commit c4c84f6fb2c4dc4c0f5fd927b3c3d3fd28b7030e
-Author: Andrii Nakryiko <andrii@kernel.org>
-Date:   Wed May 24 22:54:19 2023 +0000
+3. Add _create_mdiodev() which creates the mdio device before calling
+   the existing _create() method. Once the _create() method has
+   returned, we put the reference count on the mdio device.
 
-    bpf: drop unnecessary bpf_capable() check in BPF_MAP_FREEZE command
+   If _create() was successful, then the reference count taken there
+   will "hold" the mdio device for the lifetime of the PCS (in other
+   words, until _destroy() is called.) However, if _create() failed,
+   then dropping the refcount at this point will free the mdio device.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17b7214d280000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1477214d280000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1077214d280000
+   This is the exact behaviour we desire.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8982e75c2878b9ffeac5@syzkaller.appspotmail.com
-Fixes: c4c84f6fb2c4 ("bpf: drop unnecessary bpf_capable() check in BPF_MAP_FREEZE command")
+4. Convert users that create a mdio device and then call the PCS's
+   _create() method over to the new _create_mdiodev() method, and
+   simplify the cleanup.
 
-=====================================
-WARNING: bad unlock balance detected!
-6.4.0-rc1-syzkaller-00358-gc4c84f6fb2c4 #0 Not tainted
--------------------------------------
-syz-executor518/5004 is trying to release lock (&map->freeze_mutex) at:
-[<ffffffff8193e2c4>] map_freeze kernel/bpf/syscall.c:1951 [inline]
-[<ffffffff8193e2c4>] __sys_bpf+0x3234/0x5520 kernel/bpf/syscall.c:5078
-but there are no more locks to release!
+We also have DPAA2 and fmem_memac that look up their PCS rather than
+creating it. These could also drop their reference count on the MDIO
+device immediately after calling lynx_pcs_create(), which would then
+mean we wouldn't need lynx_get_mdio_device() and the associated
+complexity to put the device in dpaa2_pcs_destroy() and pcs_put().
+Note that DPAA2 bypasses the mdio device's abstractions by calling
+put_device() directly.
 
-other info that might help us debug this:
-no locks held by syz-executor518/5004.
+ drivers/net/dsa/ocelot/felix_vsc9959.c            | 20 +++------------
+ drivers/net/dsa/ocelot/seville_vsc9953.c          | 20 +++------------
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c   | 22 +++-------------
+ drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 15 +++--------
+ drivers/net/pcs/pcs-lynx.c                        | 31 +++++++++++++++++++++++
+ drivers/net/pcs/pcs-xpcs.c                        | 28 ++++++++++++++++++++
+ include/linux/mdio.h                              | 10 ++++++++
+ include/linux/pcs-lynx.h                          |  1 +
+ include/linux/pcs/pcs-xpcs.h                      |  2 ++
+ 9 files changed, 87 insertions(+), 62 deletions(-)
 
-stack backtrace:
-CPU: 0 PID: 5004 Comm: syz-executor518 Not tainted 6.4.0-rc1-syzkaller-00358-gc4c84f6fb2c4 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/16/2023
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
- __lock_release kernel/locking/lockdep.c:5368 [inline]
- lock_release+0x4f1/0x670 kernel/locking/lockdep.c:5711
- __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:907
- map_freeze kernel/bpf/syscall.c:1951 [inline]
- __sys_bpf+0x3234/0x5520 kernel/bpf/syscall.c:5078
- __do_sys_bpf kernel/bpf/syscall.c:5185 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:5183 [inline]
- __x64_sys_bpf+0x79/0xc0 kernel/bpf/syscall.c:5183
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f7eb20e8bb9
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fffe49d4848 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f7eb20e8bb9
-RDX: 0000000000000004 RSI: 0000000020000180 RDI: 0000000000000016
-RBP: 00007f7eb20acd60 R08: 0000000000000000
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-
-If the bug is already fixed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to change bug's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the bug is a duplicate of another bug, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
