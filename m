@@ -1,153 +1,113 @@
-Return-Path: <netdev+bounces-5640-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5641-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8BCFA7124C2
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:34:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id D43AF7124C5
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:34:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 386951C21062
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:34:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8FAE61C21048
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:34:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6BBD5261E4;
-	Fri, 26 May 2023 10:29:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 448BB290EF;
+	Fri, 26 May 2023 10:30:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BC08156CF
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:29:11 +0000 (UTC)
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056CAFB
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:29:10 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-3f6d7abe9a4so4120205e9.2
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:29:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1685096948; x=1687688948;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iB4waUIWmV+BGRfYFQ7oeCuxtGCEhXCmhgsGifY6VfI=;
-        b=5Jl+Syahug7PvAmAQMDuk3PMzGhyzA3RAHCLQGSQ8oPAlX+jLs3CsOjICfm0ZvieBH
-         /hCSoVwNNOfBs+ekghWUObKm22YD2uK4MWEY93Dbn0LbftaGgQK1R3e1MIEsrXWM4z64
-         W6Ogve4s/snuBSwTiEyu5pysKXtpG2QpHGL5WTy1eNlrO352lorv2Ue0GwcIUxOi1Pq3
-         auvKgfMfN3Qs6d5LyZKkCHSM8iNkKuC+mh8xgzdclmMBg8ho2Ct8NAn4USHQnAHEKAyi
-         dLv6f4yLA9EUG1W9xuVvzWKJwbNtS5u4zQPE9en2YsTimLbHJSOG74JMeFMCQJg6FxrV
-         OaQQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38C2F290EC
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:30:34 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB091B0
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:30:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685097018;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Mg7/ojhaSlvyz/vXgtSMO2mGG83UKNLR01zwLceFGek=;
+	b=QcUPxN3xtd+24baPvOtker6r8DYzyGnxxOjse6mdiSoaRWl/gSRoS8yij0OFqqfECZTJMK
+	mLCKkeWUQ4xV2oVUz593nHax42IwRXmnZ9hIZ3YHiCQqTmhAp2lZvh5v/jQ+6iiRBPyHfW
+	D3o5eHR/yltcZUEbC2T7wGR7Wem4wxc=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-344-oOwqix7aN8iENdbUETzXHg-1; Fri, 26 May 2023 06:30:16 -0400
+X-MC-Unique: oOwqix7aN8iENdbUETzXHg-1
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-3f60481749eso4002065e9.1
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:30:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685096948; x=1687688948;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=iB4waUIWmV+BGRfYFQ7oeCuxtGCEhXCmhgsGifY6VfI=;
-        b=R2TgtnT7qAiDoA/BnG2Lkzt18c1MBQIQlRGz6JOkZ1IUQBqVJt3j8HXhXuhsFaEtvg
-         NDFkG/hg4yIwkBaax2O36PxPYosW1Bu+59XFq0kDKSWgsSA0EUaieVIg2YjYvI5PsRl7
-         +mRlAnjyNODXYO3rb8aFi2ugjtw4VPKcMVLkrf9tt8G+n/JGtQSPOnf/GBnlGVw6ykYM
-         mkKDBfnOdZpHTEuILG81ZSCvowJPheATB3DFeGDyuysXQu9s9IUJgMqaPouzEDv1fgBd
-         IXsVNIJZQ8kK19bf2I/0AqJr+1dizCddSZkGr8hsSixwIyGxLaUVE8TspqEMDSpcq4sy
-         v36A==
-X-Gm-Message-State: AC+VfDyPvw39TpOUgQXkMX8hUUa1dT/x2/SGmzV0PPW4UG+69RDLwqbY
-	nGDjomZ4qf5WnYn30M2iEXmkp5ZTmwra7tom5sQ5sw==
-X-Google-Smtp-Source: ACHHUZ6bLS5AO8BDHCBXrn0UK9dylm3nVhmra3NBq2H+USaMYF+WCWxpmkAVcVRKNSfiW0K244LCFw==
-X-Received: by 2002:a5d:45d2:0:b0:309:4227:829c with SMTP id b18-20020a5d45d2000000b003094227829cmr918203wrs.36.1685096948559;
-        Fri, 26 May 2023 03:29:08 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id o9-20020a5d6849000000b003078c535277sm4610250wrw.91.2023.05.26.03.29.07
+        d=1e100.net; s=20221208; t=1685097015; x=1687689015;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Mg7/ojhaSlvyz/vXgtSMO2mGG83UKNLR01zwLceFGek=;
+        b=C66dkNFnz4ZCBkHVSJEHdDP8VvHUpP0EGzKPn4hyiKAeVTyhj9MTSAzn7T0/JVOHZp
+         LW08Iwg4SqqISJ5GrPz/n6EBFIfci/BFBvFCdKuBrmHsoaD0tCzrpwxnoqDb8u7vMHTr
+         bcQNkHGTMfQPiOs41sQDWkVrWOrN++3He800zxUSV4m0MIcPXb8Auk4Qfne6Bv7skRz+
+         RgP7b68j14ocz97mqddUCacyVsbdwKeBy/ckflPQqJ4xVkHvIAvmCcDD9fl9aYMp22Xv
+         8ELNTQtMDYsi43ioYwWBFAkT1K26E8Q+UMOh2ch/kLeI2nULfRXE1H7eQmwHIsjTA8jP
+         9ofg==
+X-Gm-Message-State: AC+VfDyvr0nkngmoSQYP3ZWqNAp3ccbhpx5ivE+aCdK2P7jW8yX4601i
+	nYnAdrFR4JGDlZsYMNZJArVeLad57Fot0w1U/q65xTri43AohXgEvgG4spqHCbzULdJ7cQ28n+l
+	gWvszcQfVc/9htgxu
+X-Received: by 2002:a05:600c:3b13:b0:3f6:f81:385e with SMTP id m19-20020a05600c3b1300b003f60f81385emr4386158wms.17.1685097015596;
+        Fri, 26 May 2023 03:30:15 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7azWOTs7u22NKP+c/72YjQZNnbnYXTsbR5Iqy6Gxd/0ppYvVT8VSjnd/KLYwpjJ1ml7uASbg==
+X-Received: by 2002:a05:600c:3b13:b0:3f6:f81:385e with SMTP id m19-20020a05600c3b1300b003f60f81385emr4386137wms.17.1685097015327;
+        Fri, 26 May 2023 03:30:15 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
+        by smtp.gmail.com with ESMTPSA id v7-20020a05600c214700b003f4f89bc48dsm8530412wml.15.2023.05.26.03.30.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 03:29:08 -0700 (PDT)
-From: Jiri Pirko <jiri@resnulli.us>
-To: netdev@vger.kernel.org
-Cc: kuba@kernel.org,
-	pabeni@redhat.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	leon@kernel.org,
-	saeedm@nvidia.com,
-	moshe@nvidia.com,
-	jesse.brandeburg@intel.com,
-	anthony.l.nguyen@intel.com,
-	tariqt@nvidia.com,
-	idosch@nvidia.com,
-	petrm@nvidia.com,
-	simon.horman@corigine.com,
-	ecree.xilinx@gmail.com,
-	habetsm.xilinx@gmail.com,
-	michal.wilczynski@intel.com,
-	jacob.e.keller@intel.com
-Subject: [patch net-next v2 15/15] devlink: save devlink_port_ops into a variable in devlink_port_function_validate()
-Date: Fri, 26 May 2023 12:28:41 +0200
-Message-Id: <20230526102841.2226553-16-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230526102841.2226553-1-jiri@resnulli.us>
-References: <20230526102841.2226553-1-jiri@resnulli.us>
+        Fri, 26 May 2023 03:30:14 -0700 (PDT)
+Date: Fri, 26 May 2023 12:30:11 +0200
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Cc: Stefan Hajnoczi <stefanha@redhat.com>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	"Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, 
+	Bobby Eshleman <bobby.eshleman@bytedance.com>, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, 
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@sberdevices.ru, 
+	oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v3 00/17] vsock: MSG_ZEROCOPY flag support
+Message-ID: <y5tgyj5awrd4hvlrsxsvrern6pd2sby2mdtskah2qp5hemmo2a@72nhcpilg7v2>
+References: <20230522073950.3574171-1-AVKrasnov@sberdevices.ru>
+ <76270fab-8af7-7597-9193-64cb553a543e@sberdevices.ru>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <76270fab-8af7-7597-9193-64cb553a543e@sberdevices.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Jiri Pirko <jiri@nvidia.com>
+On Thu, May 25, 2023 at 06:56:42PM +0300, Arseniy Krasnov wrote:
+>
+>
+>On 22.05.2023 10:39, Arseniy Krasnov wrote:
+>
+>This patchset is unstable with SOCK_SEQPACKET. I'll fix it.
 
-Now when the original ops variable is removed, introduce it again
-but this time for devlink_port_ops.
+Thanks for let us know!
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
-v1->v2:
-- rebased on top of removed ops checks
----
- net/devlink/leftover.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+I'm thinking if we should start split this series in two, because it
+becomes too big.
 
-diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index 52aaa439caa5..bfec0a744280 100644
---- a/net/devlink/leftover.c
-+++ b/net/devlink/leftover.c
-@@ -1185,16 +1185,16 @@ static int devlink_port_function_validate(struct devlink_port *devlink_port,
- 					  struct nlattr **tb,
- 					  struct netlink_ext_ack *extack)
- {
-+	const struct devlink_port_ops *ops = devlink_port->ops;
- 	struct nlattr *attr;
- 
- 	if (tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR] &&
--	    !devlink_port->ops->port_fn_hw_addr_set) {
-+	    !ops->port_fn_hw_addr_set) {
- 		NL_SET_ERR_MSG_ATTR(extack, tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR],
- 				    "Port doesn't support function attributes");
- 		return -EOPNOTSUPP;
- 	}
--	if (tb[DEVLINK_PORT_FN_ATTR_STATE] &&
--	    !devlink_port->ops->port_fn_state_set) {
-+	if (tb[DEVLINK_PORT_FN_ATTR_STATE] && !ops->port_fn_state_set) {
- 		NL_SET_ERR_MSG_ATTR(extack, tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR],
- 				    "Function does not support state setting");
- 		return -EOPNOTSUPP;
-@@ -1205,13 +1205,13 @@ static int devlink_port_function_validate(struct devlink_port *devlink_port,
- 
- 		caps = nla_get_bitfield32(attr);
- 		if (caps.selector & DEVLINK_PORT_FN_CAP_ROCE &&
--		    !devlink_port->ops->port_fn_roce_set) {
-+		    !ops->port_fn_roce_set) {
- 			NL_SET_ERR_MSG_ATTR(extack, attr,
- 					    "Port doesn't support RoCE function attribute");
- 			return -EOPNOTSUPP;
- 		}
- 		if (caps.selector & DEVLINK_PORT_FN_CAP_MIGRATABLE) {
--			if (!devlink_port->ops->port_fn_migratable_set) {
-+			if (!ops->port_fn_migratable_set) {
- 				NL_SET_ERR_MSG_ATTR(extack, attr,
- 						    "Port doesn't support migratable function attribute");
- 				return -EOPNOTSUPP;
--- 
-2.39.2
+But let keep this for RFC, we can decide later. An idea is to send
+the first 7 patches with a preparation series, and the next ones with a
+second series.
+
+Thanks,
+Stefano
 
 
