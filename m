@@ -1,116 +1,106 @@
-Return-Path: <netdev+bounces-5572-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5583-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1019F7122CB
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:57:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id DBFA37122FC
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:06:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 779D11C20FE3
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 08:57:39 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 96AD328175F
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:06:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C60DF101F5;
-	Fri, 26 May 2023 08:57:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21A45107B1;
+	Fri, 26 May 2023 09:04:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB66D525D
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 08:57:39 +0000 (UTC)
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B246F119
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 01:57:37 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-273-LeFxhf7FOqaUSuK7fsXyyQ-1; Fri, 26 May 2023 09:57:34 +0100
-X-MC-Unique: LeFxhf7FOqaUSuK7fsXyyQ-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Fri, 26 May
- 2023 09:57:31 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Fri, 26 May 2023 09:57:31 +0100
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Alexander Lobakin' <aleksander.lobakin@intel.com>, "David S. Miller"
-	<davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
-	<kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-CC: Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Magnus Karlsson
-	<magnus.karlsson@intel.com>, Michal Kubiak <michal.kubiak@intel.com>, "Larysa
- Zaremba" <larysa.zaremba@intel.com>, Jesper Dangaard Brouer
-	<hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Christoph
- Hellwig <hch@lst.de>, Paul Menzel <pmenzel@molgen.mpg.de>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next v2 05/12] iavf: always use a full order-0 page
-Thread-Topic: [PATCH net-next v2 05/12] iavf: always use a full order-0 page
-Thread-Index: AQHZjwj6Ca95rmUXrk6PtFqkdUejnq9sPxhQ
-Date: Fri, 26 May 2023 08:57:31 +0000
-Message-ID: <9acb1863f53542b6bd247ad641b8c0fa@AcuMS.aculab.com>
-References: <20230525125746.553874-1-aleksander.lobakin@intel.com>
- <20230525125746.553874-6-aleksander.lobakin@intel.com>
-In-Reply-To: <20230525125746.553874-6-aleksander.lobakin@intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17B75523D
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:04:14 +0000 (UTC)
+Received: from smtpbgeu2.qq.com (smtpbgeu2.qq.com [18.194.254.142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5CE194
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 02:04:04 -0700 (PDT)
+X-QQ-mid:Yeas43t1685091710t715t18142
+Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [125.120.148.168])
+X-QQ-SSF:00400000000000F0FOF000000000000
+From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
+X-BIZMAIL-ID: 2709956065173614677
+To: "'Russell King \(Oracle\)'" <linux@armlinux.org.uk>
+Cc: "'Jakub Kicinski'" <kuba@kernel.org>,
+	<netdev@vger.kernel.org>,
+	<jarkko.nikula@linux.intel.com>,
+	<andriy.shevchenko@linux.intel.com>,
+	<mika.westerberg@linux.intel.com>,
+	<jsd@semihalf.com>,
+	<Jose.Abreu@synopsys.com>,
+	<andrew@lunn.ch>,
+	<hkallweit1@gmail.com>,
+	<linux-i2c@vger.kernel.org>,
+	<linux-gpio@vger.kernel.org>,
+	<mengyuanlou@net-swift.com>
+References: <20230524091722.522118-1-jiawenwu@trustnetic.com> <20230524091722.522118-9-jiawenwu@trustnetic.com> <20230525211403.44b5f766@kernel.org> <022201d98f9a$4b4ccc00$e1e66400$@trustnetic.com> <ZHBxJP4DXevPNpab@shell.armlinux.org.uk>
+In-Reply-To: <ZHBxJP4DXevPNpab@shell.armlinux.org.uk>
+Subject: RE: [PATCH net-next v9 8/9] net: txgbe: Implement phylink pcs
+Date: Fri, 26 May 2023 17:01:49 +0800
+Message-ID: <026901d98fb0$b5001d80$1f005880$@trustnetic.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQIrQcdiCo7tNEhbaUMwQ6r5o07FvQI4H2aIApOsZCcBuMNaNAG5zvSTrobqp4A=
+Content-Language: zh-cn
+X-QQ-SENDSIZE: 520
+Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR,UNPARSEABLE_RELAY
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Alexander Lobakin
-> Sent: 25 May 2023 13:58
->=20
-> The current scheme with trying to pick the smallest buffer possible for
-> the current MTU in order to flip/split pages is not very optimal.
-> For example, on default MTU of 1500 it gives only 192 bytes of headroom,
-> while XDP may require up to 258. But this also involves unnecessary code
-> complication, which sometimes is even hard to follow.
-> As page split is no more, always allocate order-0 pages. This optimizes
-> performance a bit and drops some bytes off the object code. Next, always
-> pick the maximum buffer length available for this %PAGE_SIZE to set it
-> up in the hardware. This means it now becomes a constant value, which
-> also has its positive impact.
-> On x64 this means (without XDP):
->=20
-> 4096 page
-> 64 head, 320 tail
-> 3712 HW buffer size
-> 3686 max MTU w/o frags
+On Friday, May 26, 2023 4:43 PM, Russell King (Oracle) wrote:
+> On Fri, May 26, 2023 at 02:21:23PM +0800, Jiawen Wu wrote:
+> > On Friday, May 26, 2023 12:14 PM, Jakub Kicinski wrote:
+> > > On Wed, 24 May 2023 17:17:21 +0800 Jiawen Wu wrote:
+> > > > +	ret = devm_mdiobus_register(&pdev->dev, mii_bus);
+> > > > +	if (ret)
+> > > > +		return ret;
+> > > > +
+> > > > +	mdiodev = mdio_device_create(mii_bus, 0);
+> > > > +	if (IS_ERR(mdiodev))
+> > > > +		return PTR_ERR(mdiodev);
+> > > > +
+> > > > +	xpcs = xpcs_create(mdiodev, PHY_INTERFACE_MODE_10GBASER);
+> > > > +	if (IS_ERR(xpcs)) {
+> > > > +		mdio_device_free(mdiodev);
+> > > > +		return PTR_ERR(xpcs);
+> > > > +	}
+> > >
+> > > How does the mdiodev get destroyed in case of success?
+> > > Seems like either freeing it in case of xpcs error is unnecessary
+> > > or it needs to also be freed when xpcs is destroyed?
+> >
+> > When xpcs is destroyed, that means mdiodev is no longer needed.
+> > I think there is no need to free mdiodev in case of xpcs error,
+> > since devm_* function leads to free it.
+> 
+> If you are relying on the devm-ness of devm_mdiobus_register() then
+> it won't. Although mdiobus_unregister() walks bus->mdio_map[], I
+> think you are assuming that the mdio device you've created in
+> mdio_device_create() will be in that array. MDIO devices only get
+> added to that array when mdiobus_register_device() has been called,
+> which must only be called from mdio_device_register().
+> 
+> Please arrange to call mdio_device_free() prior to destroying the
+> XPCS in every case.
 
-I'd have thought it was important to pack multiple buffers for
-MTU 1500 into a single page.
-512 bytes split between head and tail room really ought to
-be enough for most cases.
-
-Is much tailroom ever used for received packets?
-It is used to append data to packets being sent - but that isn't
-really relevant here.
-
-While the unused memory is moderate for 4k pages, it is horrid
-for anything with large pages - think 64k and above.
-IIRC large pages are common on big PPC and maybe some arm cpus.
-
-=09David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1=
-PT, UK
-Registration No: 1397386 (Wales)
+Get it.
 
 
