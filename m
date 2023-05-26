@@ -1,310 +1,218 @@
-Return-Path: <netdev+bounces-5560-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5561-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CBD9F712231
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:29:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 87F55712242
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:33:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 71935281202
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 08:29:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 32B0F1C20FE5
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 08:33:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95B9DC2DB;
-	Fri, 26 May 2023 08:29:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB8353C04;
+	Fri, 26 May 2023 08:33:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8287B322B
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 08:29:18 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6F6128;
-	Fri, 26 May 2023 01:29:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1685089756; x=1716625756;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iWO1MfdJCzGC3YITtNdOfCdqaJYl5A9FQ5lMWK5MTAU=;
-  b=aCEGdizwQ3v4r4WBtX6TNMdQXpZgyIpudx/tfALuwQFpyoSR8TdNOurm
-   4lFvJF2+5eicmBOg0ObYhyrvu1TA+ECiTMflrX6Uq5AuTHS++NqyaW7QQ
-   J8aPVUYZj7+6rW0CXlwQY15V+3dbeQ1Xk49QGiFU/IPGn0JcNCQ5ccsxd
-   NZ+Cqn2oRT3VQ9WpBMa6EazQs6pFxpV5Rs0YZrMHORpCQIlE6me5UaBxS
-   l/zYYQxLApGxy2EQtDxExi9m2jembCaIcGy1beRIr6vw4U5k0+S/b3sqQ
-   vlPQ3RMjSDqCc1um9dyxhkFhBVvDjkl00d62irl0rw6vSUkAG9ZLJ9iwV
-   A==;
-X-IronPort-AV: E=Sophos;i="6.00,193,1681196400"; 
-   d="scan'208";a="215005322"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 May 2023 01:29:15 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 26 May 2023 01:29:15 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Fri, 26 May 2023 01:29:14 -0700
-Date: Fri, 26 May 2023 10:29:14 +0200
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
-To: Liang Chen <liangchen.linux@gmail.com>
-CC: <jasowang@redhat.com>, <mst@redhat.com>,
-	<virtualization@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <xuanzhuo@linux.alibaba.com>,
-	<kuba@kernel.org>, <edumazet@google.com>, <davem@davemloft.net>,
-	<pabeni@redhat.com>, <alexander.duyck@gmail.com>
-Subject: Re: [PATCH net-next 3/5] virtio_net: Add page pool fragmentation
- support
-Message-ID: <20230526082914.owofnszwdjgcjwhi@soft-dev3-1>
-References: <20230526054621.18371-1-liangchen.linux@gmail.com>
- <20230526054621.18371-3-liangchen.linux@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 971BA23A4
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 08:33:37 +0000 (UTC)
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A745213A;
+	Fri, 26 May 2023 01:33:35 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-3093aa2f2a5so52833f8f.0;
+        Fri, 26 May 2023 01:33:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685090014; x=1687682014;
+        h=references:to:cc:in-reply-to:date:subject:mime-version:message-id
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nRhRobWF9Hr3G4ofrhF1TL7x8KZgTqCRAivN1RjHiAY=;
+        b=dh885MJtpnnCAR1HoaRZO2f1Kcv/ajJu+pRmPCS3XXxbkXKTptXtn8eke3u6H2rgjU
+         qbuP8xXu2PhgMUD2teehIpNL4V5xeuTfrtxvPeqNP9RtxI2U9wR9VVvAArbFb70vAbj2
+         Bh0namDnVf+GEPbCOJSs7ohNjRAB5fgCzvsYDaviYp5ovvlYHtWzzIVOrerjvF7Bh3Pn
+         6b08TZM3NiyGoOhVTHX0o0JV98wqST3FClZsy00SxlFNY1hJspRnpbyBpBuCxaGJlDWT
+         JW4eLAt8tzL0O2VAZcGpcrGMN6w6rQHtE+UJlEdeW68Tx/FZVsbbzDcmnEloKyABGVw/
+         aY2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685090014; x=1687682014;
+        h=references:to:cc:in-reply-to:date:subject:mime-version:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nRhRobWF9Hr3G4ofrhF1TL7x8KZgTqCRAivN1RjHiAY=;
+        b=P0737YF6ZPDI2ekbNZ1/d1Y9KlbngNz6sGQNjUKs2Zz78lCCxKmXeIwkS8BGCLufX/
+         2GtWaRMXXLQR4iNyG0zkc8Jqv9xqoRx1OCzTWdRbSuGxzNb7tk2k9FJHUs4V102oBhYR
+         MyZ3mds3Xu0IYFfPCIz5MytUEg1Cb152gQzJwKDpPtF0Rg1xZmGbiKTqC7qUJHCACO6i
+         B8J9KNEKKiR25C+ZBzT2P1NjbAJeS9as+SS/ET9v5VvdV0QHo4m34yhubmf4c1clR8n3
+         d0CXSMkm6n4Gbn2qw5Bf8ORRUNBEXBy/FhIorJS44og8y9JF3ANqOrdp7MlQbLEi3euG
+         XwhQ==
+X-Gm-Message-State: AC+VfDyD96bZ4q4T6jlrGchE5k3sW4O+/nhrs5YcIC0TmFpv+Pvl/tzB
+	Suu0JpT8ksEJWKCy7C4hy3pF3xF0LIE2XA==
+X-Google-Smtp-Source: ACHHUZ7MGzp+g/hoKuvONM19NevX3m9E9u8iKlkxmxt9F3MLjZSkqLfL1LEGk7gSjoo8624Dmg/y2g==
+X-Received: by 2002:a5d:6910:0:b0:309:3a72:3cea with SMTP id t16-20020a5d6910000000b003093a723ceamr713191wru.0.1685090013739;
+        Fri, 26 May 2023 01:33:33 -0700 (PDT)
+Received: from smtpclient.apple (212-39-89-99.ip.btc-net.bg. [212.39.89.99])
+        by smtp.gmail.com with ESMTPSA id k7-20020a5d66c7000000b00307a83ea722sm4280769wrw.58.2023.05.26.01.33.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 26 May 2023 01:33:33 -0700 (PDT)
+From: George Valkov <gvalkov@gmail.com>
+Message-Id: <C0FADE3B-5422-444A-8F09-32BE215B5E88@gmail.com>
+Content-Type: multipart/mixed;
+	boundary="Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20230526054621.18371-3-liangchen.linux@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.600.7\))
+Subject: Re: [PATCH net-next v2 1/2] usbnet: ipheth: fix risk of NULL pointer
+ deallocation
+Date: Fri, 26 May 2023 11:33:21 +0300
+In-Reply-To: <ZHBlShZDu3C8VOl3@corigine.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>,
+ linux-usb <linux-usb@vger.kernel.org>,
+ Linux Netdev List <netdev@vger.kernel.org>
+To: Simon Horman <simon.horman@corigine.com>,
+ Foster Snowhill <forst@pen.gy>
+References: <20230525194255.4516-1-forst@pen.gy>
+ <ZHBlShZDu3C8VOl3@corigine.com>
+X-Mailer: Apple Mail (2.3731.600.7)
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The 05/26/2023 13:46, Liang Chen wrote:
 
-Hi Liang,
+--Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
 
-> 
-> To further enhance performance, implement page pool fragmentation
-> support and introduce a module parameter to enable or disable it.
-> 
-> In single-core vm testing environments, there is an additional performance
-> gain observed in the normal path compared to the one packet per page
-> approach.
->   Upstream codebase: 47.5 Gbits/sec
->   Upstream codebase with page pool: 50.2 Gbits/sec
->   Upstream codebase with page pool fragmentation support: 52.3 Gbits/sec
-> 
-> There is also some performance gain for XDP cpumap.
->   Upstream codebase: 1.38 Gbits/sec
->   Upstream codebase with page pool: 9.74 Gbits/sec
->   Upstream codebase with page pool fragmentation: 10.3 Gbits/sec
-> 
-> Signed-off-by: Liang Chen <liangchen.linux@gmail.com>
-> ---
->  drivers/net/virtio_net.c | 72 ++++++++++++++++++++++++++++++----------
->  1 file changed, 55 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 99c0ca0c1781..ac40b8c66c59 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -32,7 +32,9 @@ module_param(gso, bool, 0444);
->  module_param(napi_tx, bool, 0644);
-> 
->  static bool page_pool_enabled;
-> +static bool page_pool_frag;
->  module_param(page_pool_enabled, bool, 0400);
-> +module_param(page_pool_frag, bool, 0400);
-> 
->  /* FIXME: MTU in config. */
->  #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
-> @@ -909,23 +911,32 @@ static struct page *xdp_linearize_page(struct receive_queue *rq,
->                                        struct page *p,
->                                        int offset,
->                                        int page_off,
-> -                                      unsigned int *len)
-> +                                      unsigned int *len,
-> +                                          unsigned int *pp_frag_offset)
 
-The 'unsigned int *pp_frag_offset' seems to be unaligned.
+> On 26 May 2023, at 10:52 AM, Simon Horman <simon.horman@corigine.com> =
+wrote:
+>=20
+> On Thu, May 25, 2023 at 09:42:54PM +0200, Foster Snowhill wrote:
+>> From: Georgi Valkov <gvalkov@gmail.com>
+>>=20
+>> The cleanup precedure in ipheth_probe will attempt to free a
+>> NULL pointer in dev->ctrl_buf if the memory allocation for
+>> this buffer is not successful. Rearrange the goto labels to
+>> avoid this risk.
+>=20
+> Hi Georgi and Foster,
+>=20
+> kfree will ignore a NULL argument, so I think the existing code is =
+safe.
+> But given the name of the label I do agree there is scope for a =
+cleanup
+> here.
 
->  {
->         int tailroom = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->         struct page *page;
-> +       unsigned int pp_frag_offset_val;
+It=E2=80=99s good to know that precaution has been taken in kfree to =
+avoid this, yet at my opinion knowingly attempting to free a NULL =
+pointer is a red flag and bad design. Likely a misplaced label.
 
-Please use reverse christmas tree notation here. The pp_frag_offset_val
-needs to be declared before page;
+> Could you consider rewording the patch description accordingly?
 
-> 
->         if (page_off + *len + tailroom > PAGE_SIZE)
->                 return NULL;
-> 
->         if (rq->page_pool)
-> -               page = page_pool_dev_alloc_pages(rq->page_pool);
-> +               if (rq->page_pool->p.flags & PP_FLAG_PAGE_FRAG)
-> +                       page = page_pool_dev_alloc_frag(rq->page_pool, pp_frag_offset,
-> +                                                       PAGE_SIZE);
+What would you like me to use as title and description? Can I use this?
 
-Don't you need to check if pp_frag_offset is null? As you call once with
-NULL.
+usbnet: ipheth: avoid kfree with a NULL pointer
 
-> +               else
-> +                       page = page_pool_dev_alloc_pages(rq->page_pool);
->         else
->                 page = alloc_page(GFP_ATOMIC);
-> 
->         if (!page)
->                 return NULL;
-> 
-> -       memcpy(page_address(page) + page_off, page_address(p) + offset, *len);
-> +       pp_frag_offset_val = pp_frag_offset ? *pp_frag_offset : 0;
-> +
-> +       memcpy(page_address(page) + page_off + pp_frag_offset_val,
-> +              page_address(p) + offset, *len);
->         page_off += *len;
-> 
->         while (--*num_buf) {
-> @@ -948,7 +959,7 @@ static struct page *xdp_linearize_page(struct receive_queue *rq,
->                         goto err_buf;
->                 }
-> 
-> -               memcpy(page_address(page) + page_off,
-> +               memcpy(page_address(page) + page_off + pp_frag_offset_val,
->                        page_address(p) + off, buflen);
->                 page_off += buflen;
->                 virtnet_put_page(rq, p);
-> @@ -1029,7 +1040,7 @@ static struct sk_buff *receive_small_xdp(struct net_device *dev,
->                         SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->                 xdp_page = xdp_linearize_page(rq, &num_buf, page,
->                                               offset, header_offset,
-> -                                             &tlen);
-> +                                             &tlen, NULL);
->                 if (!xdp_page)
->                         goto err_xdp;
-> 
-> @@ -1323,6 +1334,7 @@ static void *mergeable_xdp_get_buf(struct virtnet_info *vi,
->         unsigned int headroom = mergeable_ctx_to_headroom(ctx);
->         struct page *xdp_page;
->         unsigned int xdp_room;
-> +       unsigned int page_frag_offset = 0;
+The cleanup precedure in ipheth_probe will attempt to free a
+NULL pointer in dev->ctrl_buf if the memory allocation for
+this buffer is not successful. While kfree ignores NULL pointers,
+and the existing code is safe, it is a better design to rearrange
+the goto labels and avoid this.
 
-Please use reverse x-mas tree notation.
 
-> 
->         /* Transient failure which in theory could occur if
->          * in-flight packets from before XDP was enabled reach
-> @@ -1356,7 +1368,8 @@ static void *mergeable_xdp_get_buf(struct virtnet_info *vi,
->                 xdp_page = xdp_linearize_page(rq, num_buf,
->                                               *page, offset,
->                                               VIRTIO_XDP_HEADROOM,
-> -                                             len);
-> +                                             len,
-> +                                                 &page_frag_offset);
+>> Signed-off-by: Georgi Valkov <gvalkov@gmail.com>
+>=20
+> If Georgi is the author of the patch, which seems to be the case,
+> then the above is correct. But as the patch is being posted by Foster
+> I think it should be followed by a Signed-off-by line for Foster.
 
-You have also here some misalignment with regards to page_frag_offset.
+Yes, I discovered the potential issue and authored the patch to help. =
+We=E2=80=99ll append Signed-off-by Foster as you suggested. Thanks =
+Simon!
 
->                 if (!xdp_page)
->                         return NULL;
->         } else {
-> @@ -1366,14 +1379,19 @@ static void *mergeable_xdp_get_buf(struct virtnet_info *vi,
->                         return NULL;
-> 
->                 if (rq->page_pool)
-> -                       xdp_page = page_pool_dev_alloc_pages(rq->page_pool);
-> +                       if (rq->page_pool->p.flags & PP_FLAG_PAGE_FRAG)
-> +                               xdp_page = page_pool_dev_alloc_frag(rq->page_pool,
-> +                                                                   &page_frag_offset, PAGE_SIZE);
-> +                       else
-> +                               xdp_page = page_pool_dev_alloc_pages(rq->page_pool);
->                 else
->                         xdp_page = alloc_page(GFP_ATOMIC);
-> +
->                 if (!xdp_page)
->                         return NULL;
-> 
-> -               memcpy(page_address(xdp_page) + VIRTIO_XDP_HEADROOM,
-> -                      page_address(*page) + offset, *len);
-> +               memcpy(page_address(xdp_page) + VIRTIO_XDP_HEADROOM +
-> +                               page_frag_offset, page_address(*page) + offset, *len);
->         }
-> 
->         *frame_sz = PAGE_SIZE;
-> @@ -1382,7 +1400,7 @@ static void *mergeable_xdp_get_buf(struct virtnet_info *vi,
-> 
->         *page = xdp_page;
-> 
-> -       return page_address(*page) + VIRTIO_XDP_HEADROOM;
-> +       return page_address(*page) + VIRTIO_XDP_HEADROOM + page_frag_offset;
->  }
-> 
->  static struct sk_buff *receive_mergeable_xdp(struct net_device *dev,
-> @@ -1762,6 +1780,7 @@ static int add_recvbuf_mergeable(struct virtnet_info *vi,
->         void *ctx;
->         int err;
->         unsigned int len, hole;
-> +       unsigned int pp_frag_offset;
+Something like that?
 
-There same here.
 
-> 
->         /* Extra tailroom is needed to satisfy XDP's assumption. This
->          * means rx frags coalescing won't work, but consider we've
-> @@ -1769,13 +1788,29 @@ static int add_recvbuf_mergeable(struct virtnet_info *vi,
->          */
->         len = get_mergeable_buf_len(rq, &rq->mrg_avg_pkt_len, room);
->         if (rq->page_pool) {
-> -               struct page *page;
-> +               if (rq->page_pool->p.flags & PP_FLAG_PAGE_FRAG) {
-> +                       if (unlikely(!page_pool_dev_alloc_frag(rq->page_pool,
-> +                                                              &pp_frag_offset, len + room)))
-> +                               return -ENOMEM;
-> +                       buf = (char *)page_address(rq->page_pool->frag_page) +
-> +                               pp_frag_offset;
-> +                       buf += headroom; /* advance address leaving hole at front of pkt */
-> +                       hole = (PAGE_SIZE << rq->page_pool->p.order)
-> +                               - rq->page_pool->frag_offset;
-> +                       if (hole < len + room) {
-> +                               if (!headroom)
-> +                                       len += hole;
-> +                               rq->page_pool->frag_offset += hole;
-> +                       }
-> +               } else {
-> +                       struct page *page;
-> 
-> -               page = page_pool_dev_alloc_pages(rq->page_pool);
-> -               if (unlikely(!page))
-> -                       return -ENOMEM;
-> -               buf = (char *)page_address(page);
-> -               buf += headroom; /* advance address leaving hole at front of pkt */
-> +                       page = page_pool_dev_alloc_pages(rq->page_pool);
-> +                       if (unlikely(!page))
-> +                               return -ENOMEM;
-> +                       buf = (char *)page_address(page);
-> +                       buf += headroom; /* advance address leaving hole at front of pkt */
-> +               }
->         } else {
->                 if (unlikely(!skb_page_frag_refill(len + room, alloc_frag, gfp)))
->                         return -ENOMEM;
-> @@ -3800,13 +3835,16 @@ static void virtnet_alloc_page_pool(struct receive_queue *rq)
->         struct virtio_device *vdev = rq->vq->vdev;
-> 
->         struct page_pool_params pp_params = {
-> -               .order = 0,
-> +               .order = page_pool_frag ? SKB_FRAG_PAGE_ORDER : 0,
->                 .pool_size = rq->vq->num_max,
->                 .nid = dev_to_node(vdev->dev.parent),
->                 .dev = vdev->dev.parent,
->                 .offset = 0,
->         };
-> 
-> +       if (page_pool_frag)
-> +               pp_params.flags |= PP_FLAG_PAGE_FRAG;
-> +
->         rq->page_pool = page_pool_create(&pp_params);
->         if (IS_ERR(rq->page_pool)) {
->                 dev_warn(&vdev->dev, "page pool creation failed: %ld\n",
-> --
-> 2.31.1
-> 
-> 
+--Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A
+Content-Disposition: attachment;
+	filename=0001-usbnet-ipheth-avoid-kfree-with-a-NULL-pointer.patch
+Content-Type: application/octet-stream;
+	x-unix-mode=0644;
+	name="0001-usbnet-ipheth-avoid-kfree-with-a-NULL-pointer.patch"
+Content-Transfer-Encoding: quoted-printable
 
--- 
-/Horatiu
+=46rom=2015dc5cec0d239d30856dc6d9b9a7a9528342cde0=20Mon=20Sep=2017=20=
+00:00:00=202001=0AFrom:=20Georgi=20Valkov=20<gvalkov@gmail.com>=0ADate:=20=
+Thu,=2025=20May=202023=2021:23:12=20+0200=0ASubject:=20[PATCH=20net-next=20=
+v3=201/2]=20usbnet:=20ipheth:=20avoid=20kfree=20with=20a=20NULL=20=
+pointer=0A=0AThe=20cleanup=20precedure=20in=20ipheth_probe=20will=20=
+attempt=20to=20free=20a=0ANULL=20pointer=20in=20dev->ctrl_buf=20if=20the=20=
+memory=20allocation=20for=0Athis=20buffer=20is=20not=20successful.=20=
+While=20kfree=20ignores=20NULL=20pointers,=0Aand=20the=20existing=20code=20=
+is=20safe,=20it=20is=20a=20better=20design=20to=20rearrange=0Athe=20goto=20=
+labels=20and=20avoid=20this.=0A=0ASigned-off-by:=20Georgi=20Valkov=20=
+<gvalkov@gmail.com>=0ASigned-off-by:=20Foster=20Snowhill=20=
+<forst@pen.gy>=0A---=0A=20drivers/net/usb/ipheth.c=20|=202=20+-=0A=201=20=
+file=20changed,=201=20insertion(+),=201=20deletion(-)=0A=0Adiff=20--git=20=
+a/drivers/net/usb/ipheth.c=20b/drivers/net/usb/ipheth.c=0Aindex=20=
+6a769df0b421..8875a3d0e6d9=20100644=0A---=20a/drivers/net/usb/ipheth.c=0A=
++++=20b/drivers/net/usb/ipheth.c=0A@@=20-510,8=20+510,8=20@@=20static=20=
+int=20ipheth_probe(struct=20usb_interface=20*intf,=0A=20=09=
+ipheth_free_urbs(dev);=0A=20err_alloc_urbs:=0A=20err_get_macaddr:=0A=
+-err_alloc_ctrl_buf:=0A=20=09kfree(dev->ctrl_buf);=0A=
++err_alloc_ctrl_buf:=0A=20err_endpoints:=0A=20=09free_netdev(netdev);=0A=20=
+=09return=20retval;=0A--=20=0A2.40.1=0A=0A=
+
+--Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
+
+
+
+
+Georgi Valkov
+httpstorm.com
+nano RTOS
+
+> Link: =
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html?hig=
+hlight=3Dsigned+off#developer-s-certificate-of-origin-1-1
+>=20
+>> ---
+>> drivers/net/usb/ipheth.c | 2 +-
+>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>=20
+>> diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
+>> index 6a769df0b..8875a3d0e 100644
+>> --- a/drivers/net/usb/ipheth.c
+>> +++ b/drivers/net/usb/ipheth.c
+>> @@ -510,8 +510,8 @@ static int ipheth_probe(struct usb_interface =
+*intf,
+>>        ipheth_free_urbs(dev);
+>> err_alloc_urbs:
+>> err_get_macaddr:
+>> -err_alloc_ctrl_buf:
+>>        kfree(dev->ctrl_buf);
+>> +err_alloc_ctrl_buf:
+>> err_endpoints:
+>>        free_netdev(netdev);
+>>        return retval;
+>=20
+> --=20
+> pw-bot: cr
+
+
+
+--Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A--
 
