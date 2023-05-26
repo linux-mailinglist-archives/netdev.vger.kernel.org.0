@@ -1,114 +1,112 @@
-Return-Path: <netdev+bounces-5788-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5789-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 46D6A712BF2
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:41:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 70169712BF9
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:42:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F1535281931
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:41:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 18D761C20FD8
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:42:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7C0A290E0;
-	Fri, 26 May 2023 17:41:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A2DB290E0;
+	Fri, 26 May 2023 17:42:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D912828C3B
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:41:09 +0000 (UTC)
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE50CE6B
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:40:58 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-96f8d485ef3so159880166b.0
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:40:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FFCC1E536
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:42:05 +0000 (UTC)
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9FD110D1
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:41:44 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1b024e29657so380775ad.3
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:41:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1685122857; x=1687714857;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pSaK6G2VVNNpdqq+Y56+DOhWYZRR11ay4bAj5o0qKr0=;
-        b=czdUTFvhPB0C6gRIDGLrtXntLLjn8RAMUDHXPG5nwslO2jPFmWYNzO+F0MNWObI7tc
-         IdwG9omkM1l+EucKUrK4tisIoPYa/TVw8r+Ho1fMGy0DrxUz2LYhusjUAl/dG6r2MfJq
-         dChQOAoZqKl4SeoRM/4MPmdihEA4hptwF3e/U=
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1685122904; x=1687714904;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=iN0bWrlsTbLW3cE9h2whD1OxVhKz4hCXw/N1eir7WkY=;
+        b=fEn41M6JwOV1EFrPmGLzk4innvcD9MTC0tUkCpRyfdPbwvRC2fmmtdjU+Le/Qvybo1
+         MJs/zdKyf3awdwVVIRuq6QS7gDd5ca/lJSLmp/UaDwabfhOg8mPPAmEyPH0qPUCVgMhe
+         ZP0b/DGSTIJN94RzzuU8kop1MUnW8MSw6OI3vISeBt6Bw0av3VThfgY11nEGc/M1Cx2j
+         nuidT67tA1O+WARO5bdP/A+jARZhEWKnfqve+q4Tc0Ttwp61oxbcrpVqu+Tuk9Dt7gsU
+         FeI3LCK2803wSEe4g/0UdlKXyLEQvmFWqs6eyDclwhy15p2NzdV7khm6TZ23m++APWG+
+         kikg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685122857; x=1687714857;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pSaK6G2VVNNpdqq+Y56+DOhWYZRR11ay4bAj5o0qKr0=;
-        b=ayrc9OksG0osrawxbVHaXr/U59Nd2Hz7xLgodPlFcpjn5HRaDOvS3XK94pVqsEobrP
-         I3veHLDbmL5JpsavD6AdJMDA3QxXYNK3NXX+oFP95W8O2wzmeitkkK557Qr9NXUqPzla
-         ZJq9CVmxPstp5iJUpms4Uy56iCt2xhxbPbcOGypDKo7eafZ9E8gCKOPhRhSWA4zF0Frw
-         e/2L+Lqubs3A2FZbVaXqnbE7ZXZUknd0AZNjPdMIQMVfK2e5PdiFHSK3+Vm6k5xBKLP6
-         ihkIuFpKsN2jms0BjIFnOKqCG9mM3k3IrPZiqIh0naxmFmO7MZHDzNxziGrKGXy/bQBp
-         mtjQ==
-X-Gm-Message-State: AC+VfDxUZbgsJJOSc1cvWZpgtlOjfRNA1+FbE1ZrdEz7Kb/jh9+u7fa/
-	0Z3bsLFK4P+IM3NOP69K2CLoIXRvghrmdyUIiIekFIYe
-X-Google-Smtp-Source: ACHHUZ6+kHb5jr7Z5aXb8gaRauf6k03IwbHq5G3j2WCW9LxJ/b9K0ByAjL+O80k1rpRFEf9d/MdJcg==
-X-Received: by 2002:a17:906:ee8e:b0:965:6b9e:7ded with SMTP id wt14-20020a170906ee8e00b009656b9e7dedmr2885697ejb.42.1685122857065;
-        Fri, 26 May 2023 10:40:57 -0700 (PDT)
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com. [209.85.208.52])
-        by smtp.gmail.com with ESMTPSA id lf13-20020a170907174d00b009571293d6acsm2429692ejc.59.2023.05.26.10.40.56
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 May 2023 10:40:56 -0700 (PDT)
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-51190fd46c3so1432828a12.1
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:40:56 -0700 (PDT)
-X-Received: by 2002:a17:907:786:b0:965:ff38:2fb3 with SMTP id
- xd6-20020a170907078600b00965ff382fb3mr2607275ejb.74.1685122856105; Fri, 26
- May 2023 10:40:56 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685122904; x=1687714904;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=iN0bWrlsTbLW3cE9h2whD1OxVhKz4hCXw/N1eir7WkY=;
+        b=HDSUn7iFjyIyeTrTtunt9jTU51cQJylnIbiY2AM97lygXTvxeEsUIZwF0UXFTIkQj3
+         w8wSlEOMYA96s6uv3XEI4LLuFIhVGDp3yUtIZX9GLlZBE4fnhy1PyBEelnoxLLpsAmor
+         o/a5xzEyJWLbVqR3RRn1vAMVecLNHXjXnMs7ggaDe1RR2R06jXDPzXIZHPf4vTq1Xc+d
+         JeMg96js4SsD8xwoWL88fH6hIBvtZDdzRou36xgIzXwLvKcMegD/QBFq/WNaofAXYc+q
+         bzMdHyRthat40iYiyyMs4fhSZyuc2Vya7f/q7QBdz3p0ZwrZ5cRtTujnkKxjqp9veKTH
+         g63A==
+X-Gm-Message-State: AC+VfDysjei4N1dMYXnT4iNdppQ0oO8N0PUd8oQjglAxuMf78HX30bf0
+	+ccpgZaRXDlR0MhwT8vy48AuKDgoqrSutr/WZBnv0w==
+X-Google-Smtp-Source: ACHHUZ62NmsL7Z3M1U8xVJ3zZ1RxWeJdoPzwq3wYwmKf3PDuXJhWABaRezBknBCpxnovFaJbRibcAA==
+X-Received: by 2002:a17:902:d4ca:b0:1ac:6c46:8c80 with SMTP id o10-20020a170902d4ca00b001ac6c468c80mr3988793plg.53.1685122903853;
+        Fri, 26 May 2023 10:41:43 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id c10-20020a170903234a00b001ab2b4105ddsm3528754plh.60.2023.05.26.10.41.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 May 2023 10:41:43 -0700 (PDT)
+From: Stephen Hemminger <stephen@networkplumber.org>
+To: netdev@vger.kernel.org
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH iproute2 v4 0/2] vxlan: option printing
+Date: Fri, 26 May 2023 10:41:39 -0700
+Message-Id: <20230526174141.5972-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CANn89iKUbyrJ=r2+_kK+sb2ZSSHifFZ7QkPLDpAtkJ8v4WUumA@mail.gmail.com>
- <CAHk-=whqNMUPbjCyMjyxfH_5-Xass=DrMkPT5ZTJbFrtU=qDEQ@mail.gmail.com>
- <CANn89i+bExb_P6A9ROmwqNgGdO5o8wawVZ5r3MHnz0qfhxvTtA@mail.gmail.com>
- <CAHk-=wig6VizZHtRznz7uAWa-hHWjrCNANZ9B+1G=aTWPiVH4g@mail.gmail.com>
- <CAHk-=whkci5ck5Him8Lx5ECKHEtj=bipYmOCGe8DWrrp8uDq5g@mail.gmail.com>
- <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com> <CANn89i+u8jvfSQAQ=_JY0be56deJNhKgDWbqpDAvfm-i34qX9A@mail.gmail.com>
-In-Reply-To: <CANn89i+u8jvfSQAQ=_JY0be56deJNhKgDWbqpDAvfm-i34qX9A@mail.gmail.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 26 May 2023 10:40:39 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wh16fVwO2yZ4Fx0kyRHsNDhGddzNxfQQz2+x08=CPvk_Q@mail.gmail.com>
-Message-ID: <CAHk-=wh16fVwO2yZ4Fx0kyRHsNDhGddzNxfQQz2+x08=CPvk_Q@mail.gmail.com>
-Subject: Re: x86 copy performance regression
-To: Eric Dumazet <edumazet@google.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 26, 2023 at 10:25=E2=80=AFAM Eric Dumazet <edumazet@google.com>=
- wrote:
->
-> arch/x86/lib/copy_user_64.S:34:2: error: invalid instruction mnemonic
-> 'alternative'
+This patchset makes printing of vxlan details more consistent.
+It also adds extra verbose output. The boolean options
+are now brinted after all the non-boolean options.
 
-Ok, that's just odd. For me, assembler mnemonics - very much including
-macros - are case-insensitive.
+Before:
+$ ip -d link show dev vxlan0
+4: vxlan0: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether e6:a4:54:b2:34:85 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
+    vxlan id 42 group 239.1.1.1 dev enp2s0 srcport 0 0 dstport 4789 ttl auto ageing 300 udpcsum noudp6zerocsumtx noudp6zerocsumrx addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 64000 gso_max_segs 64 tso_max_size 64000 tso_max_segs 64 gro_max_size 65536 
 
-It's actually documented that way, with the example given is for a
-macro that is declared as "sum" and then used as "SUM":
+After:
+$ ip -d link show dev vxlan0
+4: vxlan0: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether e6:a4:54:b2:34:85 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
+    vxlan id 42 group 239.1.1.1 dev enp2s0 srcport 0 0 dstport 4789 ttl auto ageing 300 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 64000 gso_max_segs 64 tso_max_size 64000 tso_max_segs 64 gro_max_size 65536
 
-   https://sourceware.org/binutils/docs/as/Macro.html
+To get all settings, use multiple detail flags
+$ ip -d -d link show dev vxlan0
+4: vxlan0: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether e6:a4:54:b2:34:85 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
+    vxlan id 42 group 239.1.1.1 dev enp2s0 srcport 0 0 dstport 4789 ttl auto ageing 300 nometadata learning noproxy norsc nol2miss nol3miss udp_csum noudp_zero_csum6_tx noudp_zero_csum6_rx noremcsum_tx noremcsum_rx addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 64000 gso_max_segs 64 tso_max_size 64000 tso_max_segs 64 gro_max_size 65536 
 
-And if you want to use macros as pseudo-instructions, that's what you
-want, since typically assembler instructions are not case sensitive.
+Stephen Hemminger (2):
+  vxlan: use print_nll for gbp and gpe
+  vxlan: make option printing more consistent
 
-But yeah, your build environment is clearly different, and yes, we
-declare the macro with all caps, and other places use it that way too.
+ include/json_print.h |   9 ++++
+ ip/iplink_vxlan.c    | 110 +++++++++++++------------------------------
+ lib/json_print.c     |  19 ++++++++
+ 3 files changed, 60 insertions(+), 78 deletions(-)
 
-Clang?
+-- 
+2.39.2
 
-              Linus
 
