@@ -1,110 +1,154 @@
-Return-Path: <netdev+bounces-5815-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5816-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AF4B0712E2E
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 22:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BF721712E46
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 22:42:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 42F761C21113
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 20:37:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2DBD11C21129
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 20:42:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B8DB2773D;
-	Fri, 26 May 2023 20:37:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5BF5228C06;
+	Fri, 26 May 2023 20:42:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2017C2CA9
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 20:37:36 +0000 (UTC)
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F533114
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 13:37:35 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-51480d3e161so709219a12.3
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 13:37:35 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47F362CA9
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 20:42:05 +0000 (UTC)
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CF713A;
+	Fri, 26 May 2023 13:41:59 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-3f6cbdf16d2so8150975e9.2;
+        Fri, 26 May 2023 13:41:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1685133453; x=1687725453;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eKtb5pF799Vf0zYkpYw5rmcT4zTxO2bOf/EKOzgAhcY=;
-        b=BOjN3c0mNuFLGaA8ph4Pbmp3phDLkFpEmpt7ob4g0VlG6IQxJqBcj42Dej6W8LeWYR
-         ql3RVtPvRxVf9j9PQKQl4EQewjdi4lBNwKNHhGhgUYmGJWUfOpULkOnvq2WUbMUju49c
-         XvBg68bgZ9/uoJaW3x1ZF5yJPaw1gS1utGf6s=
+        d=gmail.com; s=20221208; t=1685133717; x=1687725717;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Jaj5bts2ys56VQ+QWVF3ByEpaCAX5z4OlrYGlYiteV0=;
+        b=hZMGftC8dUzxsfwVTC/wIo3MjBnXihNAhVtmlM+kvJ/1sCz7bja+HAhA6VhKwFo8AN
+         5uQAv1/MpYs646lBH1hII1Yb9RAk0F/Jjl0bQFvunBeWqwZXkX6kqe4IskjXC2AYwbJ0
+         d2U4XharC2SK644yyUUXU070GIhwUJA2hpLtYAPrrnAqR9iR6Ext6zkoXRUgtUGodcnd
+         X5atEMi3t1QTszXMm3zEktI3XhE9UstMhc/MglrLdKI1abDkVpkGoL2ZaMEc1IMsDjDI
+         9FdggY3Hr/7FQnZSUXhZ+c/scMAwbV0y03iwab1jQhb2S9nnekpDiL8kXxCTEEQphrZx
+         pkdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685133453; x=1687725453;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eKtb5pF799Vf0zYkpYw5rmcT4zTxO2bOf/EKOzgAhcY=;
-        b=L9SA7PmoeYGsM2RJtYl2iRogxV+HwiSFN5F2LixXnXACodHSsuQ5MGLHOvqPyvw3jC
-         pmp41WnD2F2+MTsAnWiQS8DBWpgnVejn6DKtnghcJMGDjGql+7QCHh7IVLNEIq21kjGA
-         b7xXGPWfiYafNTYzmwGC/uCCWYCbotknFVpvurPCsgxU8k2sF7JNYPa/t5jGX6Hl44VZ
-         HoDUpkEGeCUP6pM/kf2ozFesbJ/8zq6SErfaBgrYJdskGp/CvlyzvrR2C7+l1tTpmaha
-         gUd2Nzcd3JaKH0leQB9g7YhIbK+SasGRngMgAt1Iknq7jfCC54jrwHY+1uk6oOZec6Av
-         Xzdg==
-X-Gm-Message-State: AC+VfDwQwH6MnmRuqh9lJ3FM9UzxgRPP2z4KJ1XsTQ6L0bj+SMpsngJ5
-	CCK0cy5IwvEmG0PUI8g4n90sOYW5i8H+Ikg63Z0iG5f6
-X-Google-Smtp-Source: ACHHUZ5pYAVJMoBO7yk6amqhxvqNba5ZfSjyxVZ3v1GUqaTaromOwZnTc+9IGrAJ6vLbjJula+gILw==
-X-Received: by 2002:a17:907:36cb:b0:970:bef:4393 with SMTP id bj11-20020a17090736cb00b009700bef4393mr3816449ejc.7.1685133453507;
-        Fri, 26 May 2023 13:37:33 -0700 (PDT)
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
-        by smtp.gmail.com with ESMTPSA id q15-20020a1709066b0f00b0096b4c3489e6sm2583751ejr.177.2023.05.26.13.37.32
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 May 2023 13:37:33 -0700 (PDT)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5147f7d045bso1000889a12.2
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 13:37:32 -0700 (PDT)
-X-Received: by 2002:a17:907:3f92:b0:94e:dd30:54b5 with SMTP id
- hr18-20020a1709073f9200b0094edd3054b5mr3679061ejc.6.1685133452593; Fri, 26
- May 2023 13:37:32 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685133717; x=1687725717;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Jaj5bts2ys56VQ+QWVF3ByEpaCAX5z4OlrYGlYiteV0=;
+        b=dlHLDIa5yEeWgmKXtKTI3F25MKDyoMiz82jZfAdbKDZlLChPdxag048lgQiI0jLzwY
+         Mxbug3Fz35TR7JeCfgu9FnpijIV8p4fv2oaUSpmhZdQKgiGDSVXPnaUPVBJH/jfvSUuG
+         p80E76ojlp/Pr8Pn5UgpsvjArfwiNPoojXGQAmgT4IaR7P4R9furOTaBbBKPOxZl7NnA
+         Y4+DYjP0fT7WjT/hrowF6fqPhElJ9I58L58wTZu+FAxuVU823cYcL6UPx0mVuE0QX5qW
+         KxZawL+hit92PqAONobJ0rCCE7BV9Uc3yuo4iuOKQpEIj4rbOJX+fMZoOktUKijn10Sl
+         EO0g==
+X-Gm-Message-State: AC+VfDyIrX//ydXtEfUBcsjlMZc/AiOxrgT+5cqsblkv0triM06KQsuM
+	12ExDzWWTMJzFUs+Y2oa/zM=
+X-Google-Smtp-Source: ACHHUZ4NsK4PLy2XXEpL2R2verGyqAlkyFRs8KFHaYy+t7kilvX+AkDT61Lr/ig8Zq3Or+cNrvT/Ew==
+X-Received: by 2002:a7b:cbd2:0:b0:3f4:2452:966a with SMTP id n18-20020a7bcbd2000000b003f42452966amr2220459wmi.27.1685133717251;
+        Fri, 26 May 2023 13:41:57 -0700 (PDT)
+Received: from localhost.localdomain (93-34-93-173.ip49.fastwebnet.it. [93.34.93.173])
+        by smtp.googlemail.com with ESMTPSA id 13-20020a05600c228d00b003f60455de07sm6198427wmf.15.2023.05.26.13.41.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 May 2023 13:41:56 -0700 (PDT)
+From: Christian Marangi <ansuelsmth@gmail.com>
+To: "Jason A. Donenfeld" <Jason@zx2c4.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	wireguard@lists.zx2c4.com,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Christian Marangi <ansuelsmth@gmail.com>,
+	stable@vger.kernel.org
+Subject: [net PATCH] wireguard: allowedips: fix compilation warning for stack limit exceeded
+Date: Fri, 26 May 2023 22:41:34 +0200
+Message-Id: <20230526204134.29058-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CANn89iKUbyrJ=r2+_kK+sb2ZSSHifFZ7QkPLDpAtkJ8v4WUumA@mail.gmail.com>
- <CAHk-=whqNMUPbjCyMjyxfH_5-Xass=DrMkPT5ZTJbFrtU=qDEQ@mail.gmail.com>
- <CANn89i+bExb_P6A9ROmwqNgGdO5o8wawVZ5r3MHnz0qfhxvTtA@mail.gmail.com>
- <CAHk-=wig6VizZHtRznz7uAWa-hHWjrCNANZ9B+1G=aTWPiVH4g@mail.gmail.com>
- <CAHk-=whkci5ck5Him8Lx5ECKHEtj=bipYmOCGe8DWrrp8uDq5g@mail.gmail.com>
- <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com>
- <CANn89i+u8jvfSQAQ=_JY0be56deJNhKgDWbqpDAvfm-i34qX9A@mail.gmail.com>
- <CAHk-=wh16fVwO2yZ4Fx0kyRHsNDhGddzNxfQQz2+x08=CPvk_Q@mail.gmail.com>
- <CANn89iJ3=OiZEABRQQLL6z+J-Wy8AvTJz6NPLQDOtzREiiYb4Q@mail.gmail.com> <CAHk-=whZ23EHnBG4ox9QpHFDeiCSrA2H1wrYrfyg3KP=zK5Sog@mail.gmail.com>
-In-Reply-To: <CAHk-=whZ23EHnBG4ox9QpHFDeiCSrA2H1wrYrfyg3KP=zK5Sog@mail.gmail.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 26 May 2023 13:37:15 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wibWdTp-kdCKc-F3d4aVcHO40qqoxoATG+KhVivYE0TqA@mail.gmail.com>
-Message-ID: <CAHk-=wibWdTp-kdCKc-F3d4aVcHO40qqoxoATG+KhVivYE0TqA@mail.gmail.com>
-Subject: Re: x86 copy performance regression
-To: Eric Dumazet <edumazet@google.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 26, 2023 at 11:33=E2=80=AFAM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Anyway, I guess *this* avoids all issues. It creates an extra jump to
-> a jump for the case where the CPU doesn't have ERMS, but I guess we
-> don't really care about those CPUs anyway.
+On some arch (for example IPQ8074) and other with
+KERNEL_STACKPROTECTOR_STRONG enabled, the following compilation error is
+triggered:
+drivers/net/wireguard/allowedips.c: In function 'root_remove_peer_lists':
+drivers/net/wireguard/allowedips.c:80:1: error: the frame size of 1040 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+   80 | }
+      | ^
+drivers/net/wireguard/allowedips.c: In function 'root_free_rcu':
+drivers/net/wireguard/allowedips.c:67:1: error: the frame size of 1040 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+   67 | }
+      | ^
+cc1: all warnings being treated as errors
 
-Well, I'm obviously wrong, because my very own CPU (AMD Zen 2) doesn't do E=
-RMS.
+Since these are free function and returns void, using function that can
+fail is not ideal since an error would result in data not freed.
+Since the free are under RCU lock, we can allocate the required stack
+array as static outside the function and memset when needed.
+This effectively fix the stack frame warning without changing how the
+function work.
 
-But the extra 'jmp' doesn't seem to appreciably matter, so I guess I
-don't care. It does show up in profiles, but only barely.
+Fixes: Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+Cc: stable@vger.kernel.org
+---
+ drivers/net/wireguard/allowedips.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-I've committed and pushed out the fix.
+diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
+index 5bf7822c53f1..c129082f04c6 100644
+--- a/drivers/net/wireguard/allowedips.c
++++ b/drivers/net/wireguard/allowedips.c
+@@ -53,12 +53,16 @@ static void node_free_rcu(struct rcu_head *rcu)
+ 	kmem_cache_free(node_cache, container_of(rcu, struct allowedips_node, rcu));
+ }
+ 
++static struct allowedips_node *tmpstack[MAX_ALLOWEDIPS_BITS];
++
+ static void root_free_rcu(struct rcu_head *rcu)
+ {
+-	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = {
+-		container_of(rcu, struct allowedips_node, rcu) };
++	struct allowedips_node *node, **stack = tmpstack;
+ 	unsigned int len = 1;
+ 
++	memset(stack, 0, sizeof(*stack) * MAX_ALLOWEDIPS_BITS);
++	stack[0] = container_of(rcu, struct allowedips_node, rcu);
++
+ 	while (len > 0 && (node = stack[--len])) {
+ 		push_rcu(stack, node->bit[0], &len);
+ 		push_rcu(stack, node->bit[1], &len);
+@@ -68,9 +72,12 @@ static void root_free_rcu(struct rcu_head *rcu)
+ 
+ static void root_remove_peer_lists(struct allowedips_node *root)
+ {
+-	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = { root };
++	struct allowedips_node *node, **stack = tmpstack;
+ 	unsigned int len = 1;
+ 
++	memset(stack, 0, sizeof(*stack) * MAX_ALLOWEDIPS_BITS);
++	stack[0] = root;
++
+ 	while (len > 0 && (node = stack[--len])) {
+ 		push_rcu(stack, node->bit[0], &len);
+ 		push_rcu(stack, node->bit[1], &len);
+-- 
+2.39.2
 
-               Linus
 
