@@ -1,292 +1,152 @@
-Return-Path: <netdev+bounces-5642-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5644-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A4CE87124E7
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:39:37 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id EF93A7124F4
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:40:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0449F1C21042
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:39:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9F4621C2102F
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:40:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 433DE742C1;
-	Fri, 26 May 2023 10:39:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A42C742C8;
+	Fri, 26 May 2023 10:40:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3817617C9
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:39:34 +0000 (UTC)
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790A912A
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:39:31 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id 4fb4d7f45d1cf-51440706e59so766621a12.3
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:39:31 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 489AF8BE0
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:40:40 +0000 (UTC)
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E7F19C
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:40:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oMfmphZAKTEfrF5/W/G7E472f+x+IwLfp4IpaQBPJ2r8rH1Xgu7fwqhaHAo16H7WRUWNjb4lGuXzprjeZjuZfiuNDf5z5AK0qI4VB5Fo2TWn9C4QUXuteAjTMYDOLZyHXWnZCBK+AXtYH6a8aeb0zzgYNCYtHUwOu9q28Xm/LdlEEO2iIrUbP2h8fttSQ1jMs49PAkRJTuSI+uPiuhE1oVBcDg5c0MNzvGdOedB2viQdNBUjSknYxBOAFpRr1VDCt5srffiOPswO/F7UY/lHFAomxh7aOY2ZSaYakqRTINjUJlcxnphRIh06UnIpmt5HqdpoOuFPFLI0P8aV71cBSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qUnxgcYOaQdUojdakg1JCN11y1uegA5UBJXgrISNzBk=;
+ b=fBoP/MgJPjNDe8BPRKCIL56U+b5hPy+hw50wez4BypZoCkP06uu+t8zUK3gjm5MxN7RpKNk+VW/39Bcsu/El4IzCifXS/5twQKohXOe1qvnfkOG81QweY3zpcLWa25krxwAXMWpRXqpbYPurEs/Wt0GU7355KmiPeByfA4w53teu6xQoXmehqcg+wiIOpDpbo/8D9UrTpqKaYCy1HdzVjhTMlkpdaD1W4R21Sln0pUbQwWQ2asylKdHGHoPvlEScMg16nBI8JWm9NkHgHfwkEndnX+McCnGJe1+2wJfuXBVODeyP+f7h3kEVBjXbOaC3w/+Sg3cDOBQlKUiExTFb3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1685097570; x=1687689570;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nnaGXZy0EI8Syg5zP9M4YNVm4y2Oe3wo0VJ6UyZ1uIw=;
-        b=zxrhNc1mJUsS4852rPJmlSFlhzK0Pcla7b/5zqYZ6cP7hUIgnNPSF/qXPFuIUiKhZp
-         YeS10qFFVqQ5SqMADLMxsDLx/4MGQV/DSQrGea9mBB0pti04AZdXYLyj/KBIYa/EMni3
-         +EO0Plwxs7gEJrdTbGS0po0d3jTanw8Pxfd24Jg87/kbA++olBDUHGhNy0NOSqRRkspp
-         1C/tiX1Ag8k71mR9y2E9YXf2ABey+KPfyIia7AkyMKeEW1F8sEQi1vOvcKv+zJCPN7fr
-         /uvnFID3VJUquh2wrIYO9iGVSAuyRjZBpch/PorT1Q+eSMgXAnoJerB2IobjDMHciQFR
-         qXcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685097570; x=1687689570;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nnaGXZy0EI8Syg5zP9M4YNVm4y2Oe3wo0VJ6UyZ1uIw=;
-        b=atFCb00U2NcvwBh3oOiNGbasoVaDgkXWw/w0GMDbK3FHQslEf+PUdnSwmbQ3NFgvv9
-         4ivEB0V/SYrsJ08LbF2eHz3521tr/XWUNWN6EFSszWXJdO6LQqQ+F8By4L0xwncq7NCm
-         rH6kMMjOJn4l5qWP1joPT28ugnQVlIw69vwOhGYx+91mkwgpuwiysAIjRZPU4J9yWiiT
-         M4ILHoSqsqfkwU+o6XYmZISmf3srWqi92Rx7JuJDjWv0ZnqUKrPjqfGKWlRft+0tVadH
-         UUBs8rz0qBJmlMyAKRnZC9L3HMJH4Nx6bmTIT9sdqkGKha+2zUHFDrBtC/+KSqY1xZaQ
-         JUAg==
-X-Gm-Message-State: AC+VfDwo3QAz/0jpggf4zu8dh0VD+M/CG9r+mZEPgswA4ElDmKYzKmeG
-	S+CGWLJmMfvAjq8rIr+kPS653A==
-X-Google-Smtp-Source: ACHHUZ7QzX0ywzRsxsFjcM6NqyJniGVWg4W4KK8SfdbnzGuSeMSCR+HCckHhxmEXu8FOMB75MTSN4Q==
-X-Received: by 2002:aa7:d8cd:0:b0:510:f1dc:86c0 with SMTP id k13-20020aa7d8cd000000b00510f1dc86c0mr937375eds.32.1685097569882;
-        Fri, 26 May 2023 03:39:29 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id z6-20020aa7c646000000b00501d73cfc86sm1426697edr.9.2023.05.26.03.39.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 03:39:29 -0700 (PDT)
-Date: Fri, 26 May 2023 12:39:28 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-Cc: Vadim Fedorenko <vadfed@meta.com>, Jakub Kicinski <kuba@kernel.org>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	"Olech, Milena" <milena.olech@intel.com>,
-	"Michalik, Michal" <michal.michalik@intel.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-	poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: Re: [RFC PATCH v7 0/8] Create common DPLL configuration API
-Message-ID: <ZHCMYJGMYS5a2+Bf@nanopsycho>
-References: <20230428002009.2948020-1-vadfed@meta.com>
- <ZGSp/XRLExRqOKQs@nanopsycho>
- <DM6PR11MB46572080791FCA02107289549B479@DM6PR11MB4657.namprd11.prod.outlook.com>
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qUnxgcYOaQdUojdakg1JCN11y1uegA5UBJXgrISNzBk=;
+ b=NJ+ckP6aeH5VcvBEHJ63UHPyw9iUGWJizWv/qvZgFQMB6weg2cAWqgiJAmzrtuZ/JVp21Ptw96veLcefhAiegXIvUIww+tiP/L4KvxPH+VG/B5OztFNpGX+iW6rDVlt74X0qDnWfANskDc+/JpNlvqPZEeJP2XUNFjxpnO1Zg70=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB5465.namprd13.prod.outlook.com (2603:10b6:806:230::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.15; Fri, 26 May
+ 2023 10:40:26 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6433.017; Fri, 26 May 2023
+ 10:40:25 +0000
+Date: Fri, 26 May 2023 12:40:18 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Xin Long <lucien.xin@gmail.com>
+Cc: network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+	kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>, Thomas Graf <tgraf@infradead.org>,
+	Alexander Duyck <alexanderduyck@fb.com>
+Subject: Re: [PATCH net 1/3] rtnetlink: move validate_linkmsg into
+ rtnl_create_link
+Message-ID: <ZHCMksmHg5nk0ULX@corigine.com>
+References: <cover.1685051273.git.lucien.xin@gmail.com>
+ <7fde1eac7583cc93bc5b1cb3b386c522b32a94c9.1685051273.git.lucien.xin@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7fde1eac7583cc93bc5b1cb3b386c522b32a94c9.1685051273.git.lucien.xin@gmail.com>
+X-ClientProxiedBy: AM9P195CA0009.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21f::14) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM6PR11MB46572080791FCA02107289549B479@DM6PR11MB4657.namprd11.prod.outlook.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB5465:EE_
+X-MS-Office365-Filtering-Correlation-Id: b64b8354-95eb-4e87-fff4-08db5dd59d5b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	M55cHmxdJnQ3zXNIXQu4UVl0fEUlNSzJOqSbdJUCgYryHSXaiHhhFvvOQmcGBfKuVQDEd5sYcGTYAf8+6/mPuAMxKuIFot38lXERInszMOL5iPIoKncdYtpAhNLG5MzItfp+6q03+lvaWmzjRxpsyqWdvJbr07bm4Bn5ow9/k5Rk3jddFns07Aq04cKx+QHBrlNahjKxOMdMydJBGPenFTgGMjTgQBz1sfv7eHLKHiG2wExC4hHrezAdR2TtKk7izeHTtB0bG7Zo6bX1TgAVNQysUUCp90s6Ac+9Z/k/PToaZMJG2DBmOTPri0eYJ44FB50skBqjDtx4dhBmJILGISD1NTESJ1Na1zA/PpONGUkhItdgfVctfZC1XFSKTy7xebDEH9ZKN0notwRtE1rOJbtopn7eEdSkbPVpXHthBTc5Og0QQZZ/rJ7ajYDMVan8RB6wYgCcOkl1YQ9XGSUHoR9/hpgODttpF+JUBtJ8pU/KGIu0M+/SsVykOoTkT1RGIwRp5e5E2GAHKeCpo0fu1ZXuuLiivC4zqWwSfDuHWP7LbAwdba/MSy+ueUmBxZH+
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(396003)(366004)(136003)(376002)(346002)(451199021)(66946007)(6916009)(66476007)(4326008)(66556008)(36756003)(8936002)(8676002)(5660300002)(44832011)(316002)(54906003)(478600001)(6486002)(41300700001)(6666004)(38100700002)(6512007)(4744005)(186003)(2906002)(83380400001)(6506007)(15650500001)(86362001)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ZWmPMlKCFgd15jFq8lNQzImusDzDj12+mTk1BYYq5JPhmds29tMkMzbKHIGG?=
+ =?us-ascii?Q?I5LtdppdPJ1NTrfoF4W2eVhs+OniMnW4pWGjTt6esUqLvi+kp4w5+K+sMIyA?=
+ =?us-ascii?Q?mx/F/EOBFtFzLrhCRSjW4b3+dBgKCNF8p495lyDq8Av7w+X/SiIfaf26bycy?=
+ =?us-ascii?Q?9GZA9Q/71xrseqBiqxAc4Z6+Ul4VKMjdqUF3WIWoZJShWTnSKGvXO1JZIHY2?=
+ =?us-ascii?Q?GTG0Hrxx/GZd7jeBe3G0+aMn+XwCV29otzghAa6rsRtzKpYAQwdS0ixSRiQO?=
+ =?us-ascii?Q?mJxuCOAuCOFG629jgiJei/BXiwCocb9HgxQ23c3g837VVvSj6H5ytxPtsUGK?=
+ =?us-ascii?Q?ZFUj7sv/Dp/Hj+HJoLaK8tT96S7f2DlTwaWxj94VtsImto6EsnncTZXqJjaT?=
+ =?us-ascii?Q?HO5mEZDPNaP6qkd+cRiIQ+s4qUCdEKXMFETZH6qaW60nbH9Hdkqv4aUqbxJH?=
+ =?us-ascii?Q?j730/J2t4+dR4r+CV5V9rMufK2HmhfZeDaN48VMFEnI02JoSkYN/OkLBdsSb?=
+ =?us-ascii?Q?pqzZgTEWnGm0iN4T25QS3pE9Mjn/R5mVpv4SNoTfFMMBYXBDpYRnwY9r5KPZ?=
+ =?us-ascii?Q?OUcYFo9hE6RStxqcTUlwT5iQlKvcL6R1LSjp/9ywpjY193XnBpGBsUwjIdVV?=
+ =?us-ascii?Q?JzWQ3iK3MwSRfQblcWoaQXGrjswDO0VBQ01he0xYMsiXrWkSuezKxBUEbdxX?=
+ =?us-ascii?Q?1mqv9MiEqrr63qtOnl3NmRnYv88FPRzx6fGLySsSfT157x8/Op2AkSVlMkww?=
+ =?us-ascii?Q?D4q4UMH392O2FxIKAvZdxWSB4DU/7j1gzJPUDai7H2uyoddjStEtSrsFqbjM?=
+ =?us-ascii?Q?yns5juMO7P3sz1yaUmaMvhro5KYZ1NNWVwC40EXneABaDPYjx5kTlkDCSOSC?=
+ =?us-ascii?Q?XMHNrot3ZaLOVIEqYUAPgUMwnKrYybyULDs+ADcaeah30AAVxPr2QtDbevN9?=
+ =?us-ascii?Q?eLPTZYYP4nezhBhXVPQ6mn2f98//AsFzJjSf5+RqMmZvMdNWYRsPC3hSs5OX?=
+ =?us-ascii?Q?iTuvlZfnZj5oXeHszKw3UmL3y5qIRBlTjX1KTscv5BS/2tHQQ1jisDTpmEGR?=
+ =?us-ascii?Q?o55M/qPM9mIV/SNnEkF1zhuTM3yXCOnn5qf8JwAflDZlTrDVQiEhlwTwA2Uq?=
+ =?us-ascii?Q?fF6/K1JnOSQOFL7zqkJjsInF8odMmClv2jwqsVVsvU0Fjy07/+LzvjjPIgEN?=
+ =?us-ascii?Q?QbHdYDU2TVCypYPt1Or4XX7GBpMxd7K3t7yJUDNjSIIkLIXgVw6Tj33iUQI/?=
+ =?us-ascii?Q?JFuUXGxktIefo13pOwhUckNKN7dDiL2TcUMBgTytFtRG8CguOfrfeT9GRids?=
+ =?us-ascii?Q?vJzsZy7GWklYbv8L63A4YNw7w1ejDcuV8BriVjDh5/0WO9YCeVaOPorhdX5J?=
+ =?us-ascii?Q?ASP3Y5qywksOiZbRlEfPv1CLiM9veHeiD/9KPADZF+eaQ9S9mI9Z83dobrBu?=
+ =?us-ascii?Q?l0lsTh78H3XIVD7EZK2YX5qcuzaZ/iuUZ+sL2NS+4bm8TsdWxRz9oNYqffqy?=
+ =?us-ascii?Q?WQcJ5v7vCA8b3WDcYNt0xOIpwAa3T9qI+zAYqoMG+XoTxafwqvItHAqGgcSj?=
+ =?us-ascii?Q?75qjXZDHhQrf7X/7bZIED/QNHqtvkYQ1y2ryUqVaz/Qe+2/E8hzETdjnSyR3?=
+ =?us-ascii?Q?9dvV6GgnbPbaosPtZKcamIMuJ8urcXxTAtRxCLGbAGvgjNvet7QnbYguW31U?=
+ =?us-ascii?Q?6uPzng=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b64b8354-95eb-4e87-fff4-08db5dd59d5b
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2023 10:40:25.4440
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4RswVn+Y6etyWyCBCvPAivv1hVMIzhXFjRus3anKjcH7rKj9oUUi9fbkhWW1Uvc8Wbfx7+DBq7vOsw9JzJ1PMESScmN+IBRBk2OaEuMY1hA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5465
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Fri, May 26, 2023 at 12:14:00PM CEST, arkadiusz.kubalewski@intel.com wrote:
->>From: Jiri Pirko <jiri@resnulli.us>
->>Sent: Wednesday, May 17, 2023 12:19 PM
->>
->>Let me summarize the outcome of the discussion between me and Jakub
->>regarding attributes, handles and ID lookups in the RFCv7 thread:
->>
->>--------------------------------------------------------------
->>** Needed changes for RFCv8 **
->>
->>1) No scoped indexes.
->>   The indexes passed from driver to dpll core during call of:
->>        dpll_device_get() - device_idx
->>        dpll_pin_get() - pin_idx
->>   should be for INTERNAL kernel use only and NOT EXPOSED over uapi.
->>   Therefore following attributes need to be removed:
->>   DPLL_A_PIN_IDX
->>   DPLL_A_PIN_PARENT_IDX
->>
->
->Seems doable.
->So just to be clear, configuring a pin-pair (MUXed pins) will now be done
->with DPLL_A_PIN_PARENT nested attribute.
->I.e. configuring state of pin on parent:
->DPLL_CMD_PIN_SET
->	DPLL_A_PIN_ID		(id of pin being configured)
->	DPLL_A_PIN_PARENT	(nested)
->		DPLL_A_PIN_ID	(id of parent pin)
->		DPLL_A_PIN_STATE(expected state)
->		...		(other pin-pair attributes to be set)
->
->Is that ok, or we need separated attribute like DPLL_A_PIN_PARENT_ID??
->I think there is no need for separated one, documentation shall just reflect
->that.
->Also we have nested attribute DPLL_A_DEVICE which is used to show connections
->between PIN and multiple dpll devices, to make it consistent I will rename
->it to `DPLL_A_DEVICE_PARENT` and make configuration set cmd for the pin-dpll
->pair similar to the above:
->DPLL_CMD_PIN_SET
->	DPLL_A_PIN_ID		(id of pin being configured)
->	DPLL_A_DEVICE_PARENT	(nested)
+On Thu, May 25, 2023 at 05:49:15PM -0400, Xin Long wrote:
+> In commit 644c7eebbfd5 ("rtnetlink: validate attributes in do_setlink()"),
+> it moved validate_linkmsg() from rtnl_setlink() to do_setlink(). However,
+> as validate_linkmsg() is also called in __rtnl_newlink(), it caused
+> validate_linkmsg() being called twice when running 'ip link set'.
+> 
+> The validate_linkmsg() was introduced by commit 1840bb13c22f5b ("[RTNL]:
+> Validate hardware and broadcast address attribute for RTM_NEWLINK") for
+> existing links. After adding it in do_setlink(), there's no need to call
+> it in __rtnl_newlink().
+> 
+> Instead of deleting it from __rtnl_newlink(), this patch moves it to
+> rtnl_create_link() to fix the missing validation for the new created
+> links.
+> 
+> Fixes: 644c7eebbfd5 ("rtnetlink: validate attributes in do_setlink()")
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-It is a parent of pin, not device. The name is confusing. But see below.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-
->		DPLL_A_ID	(id of parent dpll)
->		DPLL_A_PIN_STATE(expected state)
->		...		(other pin-dpll attributes to be set)
->
->Does it make sense?
-
-Yeah, good idea. I like this. We will have consistent approach for
-parent pin and device. To take it even further, we can have one nested
-attr for parent and decide the parent type according to the id attr
-given:
-
-DPLL_CMD_PIN_SET
-	DPLL_A_PIN_ID		(id of pin being configured)
-	DPLL_A_PIN_PARENT	(nested)
-		DPLL_A_PIN_ID	(id of parent pin)
-		DPLL_A_PIN_STATE(expected state)
-		...		(other pin-pair attributes to be set)
-
-DPLL_CMD_PIN_SET
-	DPLL_A_PIN_ID		(id of pin being configured)
-	DPLL_A_PIN_PARENT	(nested)
-		DPLL_A_ID	(id of parent dpll)
-		DPLL_A_PIN_STATE(expected state)
-		...		(other pin-dpll attributes to be set)
-
-
-Same for PIN_GET
-
-Makes sense?
-
-
-
->
->
->>2) For device, the handle will be DPLL_A_ID == dpll->id.
->>   This will be the only handle for device for every
->>   device related GET, SET command and every device related notification.
->>   Note: this ID is not deterministing and may be different depending on
->>   order of device probes etc.
->>
->
->Seems doable.
->
->>3) For pin, the handle will be DPLL_A_PIN_ID == pin->id
->>   This will be the only handle for pin for every
->>   pin related GET, SET command and every pin related notification.
->>   Note: this ID is not deterministing and may be different depending on
->>   order of device probes etc.
->>
->
->Seems doable.
->
->>4) Remove attribute:
->>   DPLL_A_PIN_LABEL
->>   and replace it with:
->>   DPLL_A_PIN_PANEL_LABEL (string)
->>   DPLL_A_PIN_XXX (string)
->>   where XXX is a label type, like for example:
->>     DPLL_A_PIN_BOARD_LABEL
->>     DPLL_A_PIN_BOARD_TRACE
->>     DPLL_A_PIN_PACKAGE_PIN
->>
->
->Sorry, I don't get this idea, what are those types?
->What are they for?
-
-The point is to make the driver developer to think before passing
-randomly constructed label strings. For example, "board_label" would lead
-the developer to check how the pin is labeled on the board. The
-"panel_label" indicates this is label on a panel. Also, developer can
-fill multiple labels for the same pin.
-
-
-
->
->>5) Make sure you expose following attributes for every device and
->>   pin GET/DUMP command reply message:
->>   DPLL_A_MODULE_NAME
->>   DPLL_A_CLOCK_ID
->>
->
->Seems doable.
->
->>6) Remove attributes:
->>   DPLL_A_DEV_NAME
->>   DPLL_A_BUS_NAME
->>   as they no longer have any value and do no make sense (even in RFCv7)
->>
->
->Seems doable.
->
->>
->>--------------------------------------------------------------
->>** Lookup commands **
->>
->>Basically these would allow user to query DEVICE_ID and PIN_ID
->>according to provided atributes (see examples below).
->>
->>These would be from my perspective optional for this patchsets.
->>I believe we can do it as follow-up if needed. For example for mlx5
->>I don't have usecase for it, since I can consistently get PIN_ID
->>using RT netlink for given netdev. But I can imagine that for non-SyncE
->>dpll driver this would make sense to have.
->>
->>1) Introduce CMD_GET_ID - query the kernel for a dpll device
->>                          specified by given attrs
->>   Example:
->>   -> DPLL_A_MODULE_NAME
->>      DPLL_A_CLOCK_ID
->>      DPLL_A_TYPE
->>   <- DPLL_A_ID
->>   Example:
->>   -> DPLL_A_MODULE_NAME
->>      DPLL_A_CLOCK_ID
->>   <- DPLL_A_ID
->>   Example:
->>   -> DPLL_A_MODULE_NAME
->>   <- -EINVAL (Extack: "multiple devices matched")
->>
->>   If user passes a subset of attrs which would not result in
->>   a single match, kernel returns -EINVAL and proper extack message.
->>
->
->Seems ok.
->
->>2) Introduce CMD_GET_PIN_ID - query the kernel for a dpll pin
->>                              specified by given attrs
->>   Example:
->>   -> DPLL_A_MODULE_NAME
->>      DPLL_A_CLOCK_ID
->>      DPLL_A_PIN_TYPE
->>      DPLL_A_PIN_PANEL_LABEL
->>   <- DPLL_A_PIN_ID
->>   Example:
->>   -> DPLL_A_MODULE_NAME
->>      DPLL_A_CLOCK_ID
->>   <- DPLL_A_PIN_ID    (There was only one pin for given module/clock_id)
->>   Example:
->>   -> DPLL_A_MODULE_NAME
->>      DPLL_A_CLOCK_ID
->>   <- -EINVAL (Extack: "multiple pins matched")
->>
->>   If user passes a subset of attrs which would not result in
->>   a single match, kernel returns -EINVAL and proper extack message.
->
->
->Seems ok.
->
->Will try to implement those now.
-
-Cool, thx!
-
-
->
->Thank you,
->Arkadiusz
 
