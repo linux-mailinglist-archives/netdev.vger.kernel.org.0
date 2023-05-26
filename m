@@ -1,330 +1,110 @@
-Return-Path: <netdev+bounces-5811-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5812-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3F8CB712DC3
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 21:42:32 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9C5E3712DDB
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 21:47:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D9C2B1C21136
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:42:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5385D1C2112A
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:47:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1CDA62911E;
-	Fri, 26 May 2023 19:42:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65BEA2A9C4;
+	Fri, 26 May 2023 19:47:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0975424E96
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 19:42:28 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF307BD
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 12:42:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685130145;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=in+eQSmTGhBovw9OL0eJDGkd0WCUkhom4FQ91Qm5HHs=;
-	b=TchnAG/kDgebJ8XUXp98ni6jqhk8Y6WMjHIP4CsJa2Ghkf1UQu6nOqr8ZDFx6++UYpvMTF
-	nWRMNQKEfmp8vhDTLDvroQ8/UJwkNr96mCXyBdY/C70EMI6OXyLM5H3JhJuNMQ6FJ3/+QB
-	Vfi9W2iV9uyNSFjodI4Woc+p9xj9w+U=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-627-k6NReiDDOwivHog2Bqy0ZA-1; Fri, 26 May 2023 15:42:23 -0400
-X-MC-Unique: k6NReiDDOwivHog2Bqy0ZA-1
-Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-3078b9943d6so452822f8f.1
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 12:42:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685130142; x=1687722142;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5891B29115
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 19:47:47 +0000 (UTC)
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEC5DF
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 12:47:45 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id 3f1490d57ef6-bacf7060678so1969162276.0
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 12:47:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685130465; x=1687722465;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=in+eQSmTGhBovw9OL0eJDGkd0WCUkhom4FQ91Qm5HHs=;
-        b=jpX/rC6VmC2E7oYK1UzplYn1GCApNKpyCG9eylMTxA8x60dU9+9JBZ6QCfuI/BruYd
-         c2CwG7c4r01JSQ37GADZWEbo2Vvc8f5+L6dfD92tO5E58Fk1PDpsycAXhqtmYXVAeFX4
-         f0peeQ/QSpot/UDrYoFulob39fOS78GpG65Ti4lRKhRJoxQ4+kN7RnFfgiy8fjX54tF8
-         ZpN4BQ5bghuQfFY74EOxRCSbhCmRkv4/uZ7vybbzLACpSmpJKkGs5kaHyWoZ6yzY0dvx
-         mzu719fNnW4tAIluatMMSWaPAVXCvFj521Xha/mgq1JQ++6H8E9X+5aW4ZDJ33JMpYsI
-         I1sg==
-X-Gm-Message-State: AC+VfDxfAqBHmLNNlztJuXYf8hgqjo2gb8oLR+9y0N1rYiKntaYtk+1B
-	O3/xyeclmQiRqasmY89QX0zGXv2DC4fzeqa2IxICMYEzY9+zhZaS/ZUvz2zi6W2jhSsb7sDCojv
-	P5yxfQU50R+86QZhBkAgE+nLz
-X-Received: by 2002:adf:f702:0:b0:2ee:f77f:3d02 with SMTP id r2-20020adff702000000b002eef77f3d02mr2057035wrp.0.1685130142128;
-        Fri, 26 May 2023 12:42:22 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7TcJRcTqct9LMQgKq9jB8sgTpAUT0XkNEqX34l42h/p5UzE0Lw1rotysQIv2dW5oZoDo796A==
-X-Received: by 2002:adf:f702:0:b0:2ee:f77f:3d02 with SMTP id r2-20020adff702000000b002eef77f3d02mr2057026wrp.0.1685130141766;
-        Fri, 26 May 2023 12:42:21 -0700 (PDT)
-Received: from localhost ([37.162.134.31])
-        by smtp.gmail.com with ESMTPSA id x4-20020a5d54c4000000b002c70ce264bfsm5972926wrv.76.2023.05.26.12.42.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 12:42:21 -0700 (PDT)
-Date: Fri, 26 May 2023 21:42:17 +0200
-From: Andrea Claudi <aclaudi@redhat.com>
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2 v4 2/2] vxlan: make option printing more
- consistent
-Message-ID: <ZHELme0yf4sDF3UW@renaissance-vector>
-References: <20230526174141.5972-1-stephen@networkplumber.org>
- <20230526174141.5972-3-stephen@networkplumber.org>
+        bh=eUz3cYZJzxYpChJac/7E7ylhZT6Nv4qatri6Adv31ts=;
+        b=nGEyT5uymfWQJUBAXIcnKOztcnh+nuA/ennn48fCHOEnED4St0CC/dOuSXWfnFHnau
+         OYFzPg0TT6M2J/Lpui/uacLJNLWJIdkWkyIR6c+CkLnelBPOKHQgBEhG/z4CURSHN+k3
+         eTNza7OJnInTM0DnCb0qGmgAHt4uQkBo3phHmfjrOlEDfrrUE0mH9ZOg6XyLZJaKTMpw
+         cvKT1v4O5DATyNtP0YOuj6kvKb6Y98tIATVyFD+CCCrgtAhk/FqzjiZ2y6kBbsoKTwNy
+         gJMEDUNYLsfNsX1i7r18sb2HVYDbcUUFcbsfRDFZK63jcxMkrOIAG/mG1IhCK+WYkyWL
+         6wTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685130465; x=1687722465;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eUz3cYZJzxYpChJac/7E7ylhZT6Nv4qatri6Adv31ts=;
+        b=cOJsoG1q5S6X2usBmaGfNMOEQ3D97c3DDlXZdXXkxV/kT0Nuh1uEmqbA0FxMbmufk0
+         IT/e2qEnWZyTFw73NA19ntwdrGTq+OTFjUN46rcNvQvyp/yIUb749HiSdOqUsiC/hdUr
+         1Jby4gvwk8Lbb+SQTwyrsrWVjsFC61lQLupesU1tdKB3WISjjpRM/BApsaBAwO6k7l2p
+         udBTaKxCawjQrDA80QAnCf6iRGegjXz0B5FbvgQ4oMC3rO6+QOgr7V0ifyKGszC5MauL
+         Jxjlrm13Nip4mdjNJEyW9fKeAseL5YeGAYUDTKLUeY3ythI8EFFg+cEhWVxn5YIYIMlQ
+         0f1A==
+X-Gm-Message-State: AC+VfDxUFp4Lg9Rwu0AZPYlkxIzefhauhmt21R/+8FxnlPi7deYIXd2K
+	UB7c6PjVPXGyXpkHurjgEaqUla3HL6o4CTk+VUGfuQ==
+X-Google-Smtp-Source: ACHHUZ4JH7SDDIfaBbEyxaE595kxzNqDoryzPH4uuMbFwu5yeZoTstauDgITfnvovwUAv+R6UqOtD4URMnbpHNYU4ak=
+X-Received: by 2002:a25:5cb:0:b0:b9e:c516:6e32 with SMTP id
+ 194-20020a2505cb000000b00b9ec5166e32mr114111ybf.24.1685130465099; Fri, 26 May
+ 2023 12:47:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230526174141.5972-3-stephen@networkplumber.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <cover.1684887977.git.peilin.ye@bytedance.com> <429357af094297abbc45f47b8e606f11206df049.1684887977.git.peilin.ye@bytedance.com>
+ <faaeb0b0-8538-9dfa-4c1e-8a225e3534f4@mojatatu.com> <CAM0EoM=3iYmmLjnifx_FDcJfRbN31tRnCE0ZvqQs5xSBPzaqXQ@mail.gmail.com>
+In-Reply-To: <CAM0EoM=3iYmmLjnifx_FDcJfRbN31tRnCE0ZvqQs5xSBPzaqXQ@mail.gmail.com>
+From: Jamal Hadi Salim <jhs@mojatatu.com>
+Date: Fri, 26 May 2023 15:47:33 -0400
+Message-ID: <CAM0EoM=FS2arxv0__aQXF1a7ViJnM0hST=TL9dcnJpkf-ipjvA@mail.gmail.com>
+Subject: Re: [PATCH v5 net 6/6] net/sched: qdisc_destroy() old ingress and
+ clsact Qdiscs before grafting
+To: Pedro Tammela <pctammela@mojatatu.com>
+Cc: Peilin Ye <yepeilin.cs@gmail.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>, 
+	Peilin Ye <peilin.ye@bytedance.com>, Daniel Borkmann <daniel@iogearbox.net>, 
+	John Fastabend <john.fastabend@gmail.com>, Vlad Buslov <vladbu@mellanox.com>, 
+	Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Cong Wang <cong.wang@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 26, 2023 at 10:41:41AM -0700, Stephen Hemminger wrote:
-> Add new helper function print_bool_opt() which prints
-> with no prefix and use it for vxlan options.
-> 
-> If the option matches the expected default value,
-> it is not printed if in non JSON mode unless the details
-> setting is repeated.
-> 
-> Use a table for the vxlan options. This will change
-> the order of the printing of options.
-> 
-> Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
-> ---
->  include/json_print.h |   9 ++++
->  ip/iplink_vxlan.c    | 110 +++++++++++++------------------------------
->  lib/json_print.c     |  19 ++++++++
->  3 files changed, 60 insertions(+), 78 deletions(-)
-> 
-> diff --git a/include/json_print.h b/include/json_print.h
-> index 91b34571ceb0..49d3cc14789c 100644
-> --- a/include/json_print.h
-> +++ b/include/json_print.h
-> @@ -101,6 +101,15 @@ static inline int print_rate(bool use_iec, enum output_type t,
->  	return print_color_rate(use_iec, t, COLOR_NONE, key, fmt, rate);
->  }
->  
-> +int print_color_bool_opt(enum output_type type, enum color_attr color,
-> +			 const char *key, bool value, bool show);
-> +
-> +static inline int print_bool_opt(enum output_type type,
-> +				 const char *key, bool value, bool show)
-> +{
-> +	return print_color_bool_opt(type, COLOR_NONE, key, value, show);
-> +}
-> +
->  /* A backdoor to the size formatter. Please use print_size() instead. */
->  char *sprint_size(__u32 sz, char *buf);
->  
-> diff --git a/ip/iplink_vxlan.c b/ip/iplink_vxlan.c
-> index cb6745c74507..e77c3aa2e3a5 100644
-> --- a/ip/iplink_vxlan.c
-> +++ b/ip/iplink_vxlan.c
-> @@ -19,6 +19,25 @@
->  
->  #define VXLAN_ATTRSET(attrs, type) (((attrs) & (1L << (type))) != 0)
->  
-> +static const struct vxlan_bool_opt {
-> +	const char *key;
-> +	int type;
-> +	bool default_value;
-> +} vxlan_opts[] = {
-> +	{ "metadata",	IFLA_VXLAN_COLLECT_METADATA,	false },
+On Fri, May 26, 2023 at 8:20=E2=80=AFAM Jamal Hadi Salim <jhs@mojatatu.com>=
+ wrote:
+>
+> On Wed, May 24, 2023 at 11:39=E2=80=AFAM Pedro Tammela <pctammela@mojatat=
+u.com> wrote:
+> >
+> > On 23/05/2023 22:20, Peilin Ye wrote:
+> > > From: Peilin Ye <peilin.ye@bytedance.com>
 
-Here you are changing the output from "external" to "metadata", while
-continuing to use "external" to toggle the option. This may surprise a
-user which checks the output for this option after enabling it.
+> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-Moreover, looking at the man page for ip link, this option is used to
-specify "whether an external control plane (e.g. ip route encap) or the
-internal FDB should be used", so maybe "external" is more close to the
-true meaning of this option.
+I apologize i am going to take this back, lets please hold the series for n=
+ow.
 
-I would suggest either to continue using "external" or to switch to
-"metadata" also for option toggling (and update the manpage, too).
+In pursuit for the effect on events, Pedro and I spent a few _hours_
+chasing this - and regardless of the events, there are still
+challenges with the concurrency issue. The current reproducer
+unfortunately cant cause damage after patch 2, so really patch 6 was
+not being tested. We hacked the repro to hit codepath patch 6 fixes.
+We are not sure what the root cause is - but it certainly due to the
+series. Peilin, Pedro will post the new repro.
 
-All the rest looks good to me.
-
-> +	{ "vnifilter",	IFLA_VXLAN_VNIFILTER,		false },
-> +	{ "learning", 	IFLA_VXLAN_LEARNING,		true },
-> +	{ "proxy",	IFLA_VXLAN_PROXY,		false },
-> +	{ "rsc",	IFLA_VXLAN_RSC,			false },
-> +	{ "l2miss",	IFLA_VXLAN_L2MISS,		false },
-> +	{ "l3miss",	IFLA_VXLAN_L3MISS,		false },
-> +	{ "udp_csum",	IFLA_VXLAN_UDP_CSUM,		true },
-> +	{ "udp_zero_csum6_tx", IFLA_VXLAN_UDP_ZERO_CSUM6_TX, false },
-> +	{ "udp_zero_csum6_rx", IFLA_VXLAN_UDP_ZERO_CSUM6_RX, false },
-> +	{ "remcsum_tx", IFLA_VXLAN_REMCSUM_TX,		false },
-> +	{ "remcsum_rx", IFLA_VXLAN_REMCSUM_RX,		false },
-> +};
-> +
->  static void print_explain(FILE *f)
->  {
->  	fprintf(f,
-> @@ -420,6 +439,7 @@ static int vxlan_parse_opt(struct link_util *lu, int argc, char **argv,
->  
->  static void vxlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
->  {
-> +	unsigned int i;
->  	__u8 ttl = 0;
->  	__u8 tos = 0;
->  	__u32 maxaddr;
-> @@ -427,16 +447,6 @@ static void vxlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
->  	if (!tb)
->  		return;
->  
-> -	if (tb[IFLA_VXLAN_COLLECT_METADATA] &&
-> -	    rta_getattr_u8(tb[IFLA_VXLAN_COLLECT_METADATA])) {
-> -		print_bool(PRINT_ANY, "external", "external ", true);
-> -	}
-> -
-> -	if (tb[IFLA_VXLAN_VNIFILTER] &&
-> -	    rta_getattr_u8(tb[IFLA_VXLAN_VNIFILTER])) {
-> -		print_bool(PRINT_ANY, "vnifilter", "vnifilter", true);
-> -	}
-> -
->  	if (tb[IFLA_VXLAN_ID] &&
->  	    RTA_PAYLOAD(tb[IFLA_VXLAN_ID]) >= sizeof(__u32)) {
->  		print_uint(PRINT_ANY, "id", "id %u ", rta_getattr_u32(tb[IFLA_VXLAN_ID]));
-> @@ -529,26 +539,6 @@ static void vxlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
->  			   "dstport %u ",
->  			   rta_getattr_be16(tb[IFLA_VXLAN_PORT]));
->  
-> -	if (tb[IFLA_VXLAN_LEARNING]) {
-> -		__u8 learning = rta_getattr_u8(tb[IFLA_VXLAN_LEARNING]);
-> -
-> -		print_bool(PRINT_JSON, "learning", NULL, learning);
-> -		if (!learning)
-> -			print_bool(PRINT_FP, NULL, "nolearning ", true);
-> -	}
-> -
-> -	if (tb[IFLA_VXLAN_PROXY] && rta_getattr_u8(tb[IFLA_VXLAN_PROXY]))
-> -		print_bool(PRINT_ANY, "proxy", "proxy ", true);
-> -
-> -	if (tb[IFLA_VXLAN_RSC] && rta_getattr_u8(tb[IFLA_VXLAN_RSC]))
-> -		print_bool(PRINT_ANY, "rsc", "rsc ", true);
-> -
-> -	if (tb[IFLA_VXLAN_L2MISS] && rta_getattr_u8(tb[IFLA_VXLAN_L2MISS]))
-> -		print_bool(PRINT_ANY, "l2miss", "l2miss ", true);
-> -
-> -	if (tb[IFLA_VXLAN_L3MISS] && rta_getattr_u8(tb[IFLA_VXLAN_L3MISS]))
-> -		print_bool(PRINT_ANY, "l3miss", "l3miss ", true);
-> -
->  	if (tb[IFLA_VXLAN_TOS])
->  		tos = rta_getattr_u8(tb[IFLA_VXLAN_TOS]);
->  	if (tos) {
-> @@ -601,58 +591,22 @@ static void vxlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
->  	    ((maxaddr = rta_getattr_u32(tb[IFLA_VXLAN_LIMIT])) != 0))
->  		print_uint(PRINT_ANY, "limit", "maxaddr %u ", maxaddr);
->  
-> -	if (tb[IFLA_VXLAN_UDP_CSUM]) {
-> -		__u8 udp_csum = rta_getattr_u8(tb[IFLA_VXLAN_UDP_CSUM]);
-> -
-> -		if (is_json_context()) {
-> -			print_bool(PRINT_ANY, "udp_csum", NULL, udp_csum);
-> -		} else {
-> -			if (!udp_csum)
-> -				fputs("no", f);
-> -			fputs("udpcsum ", f);
-> -		}
-> -	}
-> -
-> -	if (tb[IFLA_VXLAN_UDP_ZERO_CSUM6_TX]) {
-> -		__u8 csum6 = rta_getattr_u8(tb[IFLA_VXLAN_UDP_ZERO_CSUM6_TX]);
-> -
-> -		if (is_json_context()) {
-> -			print_bool(PRINT_ANY,
-> -				   "udp_zero_csum6_tx", NULL, csum6);
-> -		} else {
-> -			if (!csum6)
-> -				fputs("no", f);
-> -			fputs("udp6zerocsumtx ", f);
-> -		}
-> -	}
-> -
-> -	if (tb[IFLA_VXLAN_UDP_ZERO_CSUM6_RX]) {
-> -		__u8 csum6 = rta_getattr_u8(tb[IFLA_VXLAN_UDP_ZERO_CSUM6_RX]);
-> -
-> -		if (is_json_context()) {
-> -			print_bool(PRINT_ANY,
-> -				   "udp_zero_csum6_rx",
-> -				   NULL,
-> -				   csum6);
-> -		} else {
-> -			if (!csum6)
-> -				fputs("no", f);
-> -			fputs("udp6zerocsumrx ", f);
-> -		}
-> -	}
-> -
-> -	if (tb[IFLA_VXLAN_REMCSUM_TX] &&
-> -	    rta_getattr_u8(tb[IFLA_VXLAN_REMCSUM_TX]))
-> -		print_bool(PRINT_ANY, "remcsum_tx", "remcsumtx ", true);
-> -
-> -	if (tb[IFLA_VXLAN_REMCSUM_RX] &&
-> -	    rta_getattr_u8(tb[IFLA_VXLAN_REMCSUM_RX]))
-> -		print_bool(PRINT_ANY, "remcsum_rx", "remcsumrx ", true);
-> -
->  	if (tb[IFLA_VXLAN_GBP])
->  		print_null(PRINT_ANY, "gbp", "gbp ", NULL);
->  	if (tb[IFLA_VXLAN_GPE])
->  		print_null(PRINT_ANY, "gpe", "gpe ", NULL);
-> +
-> +	for (i = 0; i < ARRAY_SIZE(vxlan_opts); i++) {
-> +		const struct vxlan_bool_opt *opt = &vxlan_opts[i];
-> +		__u8 val;
-> +
-> +		if (!tb[opt->type])
-> +			continue;
-> +		val = rta_getattr_u8(tb[opt->type]);
-> +
-> +		print_bool_opt(PRINT_ANY, opt->key, val,
-> +			       val != opt->default_value || show_details > 1);
-> +	}
->  }
->  
->  static void vxlan_print_help(struct link_util *lu, int argc, char **argv,
-> diff --git a/lib/json_print.c b/lib/json_print.c
-> index d7ee76b10de8..602de027ca27 100644
-> --- a/lib/json_print.c
-> +++ b/lib/json_print.c
-> @@ -215,6 +215,25 @@ int print_color_bool(enum output_type type,
->  				  value ? "true" : "false");
->  }
->  
-> +/* In JSON mode, acts like print_color_bool.
-> + * Otherwise, will print key with prefix of "no" if false.
-> + * The show flag is used to suppres printing in non-JSON mode
-> + */
-> +int print_color_bool_opt(enum output_type type,
-> +			 enum color_attr color,
-> +			 const char *key,
-> +			 bool value, bool show)
-> +{
-> +	int ret = 0;
-> +
-> +	if (_IS_JSON_CONTEXT(type))
-> +		jsonw_bool_field(_jw, key, value);
-> +	else if (_IS_FP_CONTEXT(type) && show)
-> +		ret = color_fprintf(stdout, color, "%s%s ",
-> +				    value ? "" : "no", key);
-> +	return ret;
-> +}
-> +
->  int print_color_on_off(enum output_type type,
->  		       enum color_attr color,
->  		       const char *key,
-> -- 
-> 2.39.2
-> 
-> 
-
+cheers,
+jamal
 
