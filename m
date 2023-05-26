@@ -1,124 +1,101 @@
-Return-Path: <netdev+bounces-5753-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5754-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7D4EC712A68
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 18:14:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id E965F712A69
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 18:14:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 058791C20F90
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:14:06 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A12FF1C20FFD
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:14:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E21C27718;
-	Fri, 26 May 2023 16:14:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 040302771A;
+	Fri, 26 May 2023 16:14:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 308B6742EE
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 16:14:06 +0000 (UTC)
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5AA9BC
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:14:04 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id 98e67ed59e1d1-2535edae73cso1016869a91.2
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:14:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED5EB742EE
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 16:14:27 +0000 (UTC)
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814A2BC
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:14:26 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-510e419d701so1734883a12.1
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:14:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685117644; x=1687709644;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JaJ2vbnARxGo51GuYCC+QnWlLxkxBOdIdH9HbCX6khU=;
-        b=lQ8bTLT6ANRkc48ezNo0Sf6992OsWfGWeeYew/NXRB1C0sgpyudiiYuG4KDzv2/HtK
-         zlQV/OgA0QJOx9fjmK16x1mBpfRNjbT+3gMNwssfklEFpEm0MSI4FTP1r5EBJPrMbXWa
-         nBQu4qW2+W1gJNM5R1LMSbgOj6EKT4qspC10VrXxHCAFczmqThDK9bAvmSWmO4B8FQKn
-         Bh6J2njMHOlTuslsSvxZMXXba0zOcFYre0r9nJPJ5tB2NSUKVhKsS/NDBLHlO5Pw8DML
-         pDn3HWeDwfoOpYJGPnnQQYKTwMpCCei/UqI81NxWvGI8eAMY4SZfbFdOassLh/RWeHP2
-         oc3w==
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1685117665; x=1687709665;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mlRPwp5Aeh3BF65UhqW02azq7DpYHrGGvyWVH1qyaxE=;
+        b=FrxxK7bf+p1Z7fn2OUEyPBzvSfPAYXepIBgYN6rUA6uY6/Xwm8Urje2B6gItt7ZM+8
+         kqaYYSLd/Ql37Onz4eVofLwmDkEhXykE705swqsdLlHAXyVTqXi8lFjv+wBG2oNDEd4P
+         Mh10bfqEN2bgXfagvGXT71LvP8iUZuY9cIo9/oNg/ykaeG6D4Zv86yrLv/1f73mfbKWw
+         nglVaGXjbMVDwuqKdQTy4/C5X8grHMYNVaC06ZhJbz+mx+gNyhTK+xZUiLtmamOND2P6
+         gM0kLBh/JOvLFyy/ZlInUK0/NEdXeucogFyC7szcEWp/0Srgy2J4ZUL+NaKsXSZP2NGm
+         C3gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685117644; x=1687709644;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JaJ2vbnARxGo51GuYCC+QnWlLxkxBOdIdH9HbCX6khU=;
-        b=bh/TXuM6w+33QlAAHGKwaDyAoGtkjyYB7iIdhAW65cZ0RrgW5gb9zQ9Q/mftd0R18C
-         0ZCLsKaklPo+K8crLfGltIr2N+xipISz5L4ymQzbEpodgQgDSvSGTymCgK3EbW9dkfgL
-         M3pxF4b3KNkHjyXP9JZlweWXJKp3g+VgKY95llbTd/CQ+FcS0COYYHmXi4agapRZTqTm
-         VK7dIQQ6WNzoNL6UYODO7N1xI/6lMeT2juRrHQiMEgg8bOA2z6ka9SESQ8jMco27fAZa
-         mr9voq0vGNwHTHFFWaqGbDKhbaEPkcpRUZYxWNtlUiQ3zxQ2rY1hPTswPu2MRjNDHQWB
-         2JUA==
-X-Gm-Message-State: AC+VfDz0KHQQEz1VsExXGMjfq2cWDlfgi8kz8mMiwLj0OlYLSx25CX0o
-	0OSxKB1GvqGWgFbgjvkRrXel+sIXzN7nfg==
-X-Google-Smtp-Source: ACHHUZ6fsxVzglXIdO0y6C1TnMjKuz8DBdAzQelrF0PMY6FnkBRl9KK5Y4aSC+FBvr8FCeq8xu2mCw==
-X-Received: by 2002:a17:90a:6e4e:b0:255:517a:41c9 with SMTP id s14-20020a17090a6e4e00b00255517a41c9mr3017867pjm.9.1685117644045;
-        Fri, 26 May 2023 09:14:04 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id lp7-20020a17090b4a8700b0024e026444b6sm7711544pjb.2.2023.05.26.09.13.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 May 2023 09:14:03 -0700 (PDT)
-Message-ID: <32662205-67f5-694d-b5cb-6e7fce40e3eb@gmail.com>
-Date: Fri, 26 May 2023 09:13:55 -0700
+        d=1e100.net; s=20221208; t=1685117665; x=1687709665;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mlRPwp5Aeh3BF65UhqW02azq7DpYHrGGvyWVH1qyaxE=;
+        b=eKBupXImqoQMTwwE0Osu+morP91nOc0STw0bXVcDpmzlaJvfM40ZY2k4kFmHE9ObHD
+         sUYWvvkMod8AkOhVyqY34jZLUFyft4yFTtBU33y44760wxRv4G0rTPjLUE0YHOSpbm2F
+         bmpCvrCHFhcO2+JvUi6y7x7oBjCrUTGfbmdHbGWjze91YfrjXkuLtL+hEJw5xIcbNJ5T
+         YorjNeTiBt8Kt9/udMgOQmhKOHgBOlekHzrfQPDx2q2EHeQmhYhIotrp68gOg+5JYHkq
+         ZnmQmO4BsVIuw6dqiUWng2N9np8qSOzZTdWL1S0mi8LJoPPENrteENNUVDShMHGab7eO
+         0y9A==
+X-Gm-Message-State: AC+VfDwqmop4LcA6PR1A9PJVpH3O951CjlZuLaTgJqlA4PyeSyenxB49
+	hQgr/bhjrskvZqe2YTeD770v9w==
+X-Google-Smtp-Source: ACHHUZ5kMofxmwKVOsTRYnRdIkZx/eRJea6iaxh5U7DBZQoztmJzlgggfZxADz4S//N2aASx2S7JCw==
+X-Received: by 2002:a17:906:da88:b0:96f:45cd:6c21 with SMTP id xh8-20020a170906da8800b0096f45cd6c21mr2690449ejb.30.1685117664697;
+        Fri, 26 May 2023 09:14:24 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id j23-20020a17090643d700b0095850aef138sm2322192ejn.6.2023.05.26.09.14.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 May 2023 09:14:23 -0700 (PDT)
+Date: Fri, 26 May 2023 18:14:22 +0200
+From: Jiri Pirko <jiri@resnulli.us>
+To: Eric Dumazet <edumazet@google.com>
+Cc: "David S . Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org, eric.dumazet@gmail.com,
+	Kuniyuki Iwashima <kuniyu@amazon.com>,
+	Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH net] af_packet: do not use READ_ONCE() in packet_bind()
+Message-ID: <ZHDa3kJH7+cmBV/4@nanopsycho>
+References: <20230526154342.2533026-1-edumazet@google.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [RFC/RFTv3 00/24] net: ethernet: Rework EEE
-Content-Language: en-US
-To: Andrew Lunn <andrew@lunn.ch>, Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: netdev <netdev@vger.kernel.org>, Heiner Kallweit <hkallweit1@gmail.com>,
- Russell King <rmk+kernel@armlinux.org.uk>,
- Oleksij Rempel <linux@rempel-privat.de>
-References: <20230331005518.2134652-1-andrew@lunn.ch>
- <20230526085604.GA21891@pengutronix.de>
- <95412f7c-1f91-4939-bc7e-f0625d477f7d@lunn.ch>
-From: Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <95412f7c-1f91-4939-bc7e-f0625d477f7d@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230526154342.2533026-1-edumazet@google.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 5/26/23 05:08, Andrew Lunn wrote:
-> On Fri, May 26, 2023 at 10:56:04AM +0200, Oleksij Rempel wrote:
->> Hi Andrew,
->>
->> On Fri, Mar 31, 2023 at 02:54:54AM +0200, Andrew Lunn wrote:
->>> Most MAC drivers get EEE wrong. The API to the PHY is not very
->>> obvious, which is probably why. Rework the API, pushing most of the
->>> EEE handling into phylib core, leaving the MAC drivers to just
->>> enable/disable support for EEE in there change_link call back, or
->>> phylink mac_link_up callback.
->>>
->>> MAC drivers are now expect to indicate to phylib/phylink if they
->>> support EEE. If not, no EEE link modes are advertised. If the MAC does
->>> support EEE, on phy_start()/phylink_start() EEE advertisement is
->>> configured.
->>>
->>> v3
->>> --
->>   
->> I was able to test some drivers and things seems to work ok so far. Do you
->> need more tests for a non RFC version?
-> 
-> No, i just need time to rebase and post them. Plus check if there are
-> more drivers which added support for EEE and fix them up. There is a
-> new Broadcom driver which i think will need work.
+Fri, May 26, 2023 at 05:43:42PM CEST, edumazet@google.com wrote:
+>A recent patch added READ_ONCE() in packet_bind() and packet_bind_spkt()
+>
+>This is better handled by reading pkt_sk(sk)->num later
+>in packet_do_bind() while appropriate lock is held.
 
-The Broadcom ASP driver should have EEE stripped off as we just found 
-out that the MAC does not drive the PHY signals properly yet. This 
-should allow your series to proceed through, without having to care 
-about that particular driver.
+Nit: easier to understand the desctiption if you use imperative mood,
+telling the codebase what to do.
 
-Thanks for doing this work Andrew!
--- 
-Florian
 
+>
+>READ_ONCE() in writers are often an evidence of something being wrong.
+>
+>Fixes: 822b5a1c17df ("af_packet: Fix data-races of pkt_sk(sk)->num.")
+>Signed-off-by: Eric Dumazet <edumazet@google.com>
+
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 
