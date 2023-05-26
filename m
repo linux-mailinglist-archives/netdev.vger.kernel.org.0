@@ -1,115 +1,111 @@
-Return-Path: <netdev+bounces-5661-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5662-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A8A407125CC
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 13:44:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 74C687125D4
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 13:46:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 241F11C2102C
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:44:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DBEC21C21038
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:46:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A862A883D;
-	Fri, 26 May 2023 11:44:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 34E02C8F2;
+	Fri, 26 May 2023 11:46:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D77A8476
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 11:44:51 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4921CA7
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 04:44:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-	:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-	Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=ViKYoK+ac+vQEyg0/T4n3gb0MwQDlLwS8Uix7Eaq9gQ=; b=z+LUcpvnCQMnlug51qsAywoW17
-	TS0ehuCe1evi93v53z2lqW3Bn6kjoOYCZRjz7Ia9w8D1AOICxvDpHk6k9pSJnWR4sywcK1YLvnH1P
-	/T/JtGlGRfmuIuNpFxCbn9EsygyGan4XuHGHd8s+x+qNmv+UNRpLE8snHIdnFwLB7axX0JeOMm31W
-	slbHhtEc9/GuJOM3fNSvMAfhFSj7UtEDGrBRuPka19svgr8CKkaDDmgRWRo/AzDnawO5+HoNvjwve
-	AogfnMmVOck6YrpWh53U14rWuxyVS3jv3dryY0ieqcZews/VlqLlx/BdKL5rqrwpMqWrBF08MN5AX
-	8SQwFTpw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:35330 helo=rmk-PC.armlinux.org.uk)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <rmk@armlinux.org.uk>)
-	id 1q2VsC-0005Wz-1f; Fri, 26 May 2023 12:44:44 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1q2VsB-008QlZ-El; Fri, 26 May 2023 12:44:43 +0100
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Ioana Ciornei <ioana.ciornei@nxp.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 290DD742FE
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 11:46:07 +0000 (UTC)
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDE3194
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 04:46:02 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id a640c23a62f3a-96fbe7fbdd4so110919066b.3
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 04:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1685101561; x=1687693561;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+vlt+5VLC7KI/CuMwSmVCoc1T0RjObSqqBqBI2FUoWI=;
+        b=abDSY2fbWfc/NpEno6lPCk1ECWzGdg/c0ZJO1PungQgyLhJWQl76dcMVxO/+NkvkJ7
+         ZTKZo5jTqwHAtIdUBhtv500uC6LwwqfGjYiV4Ry6kQ0Is86AoPfmVdbb9h/eIgxfTg1G
+         oIAQlFz+0mGelva57WyQqGHh/KnU31DZfuHcoZYZ2IlK4VsjOBqZe2Y2gvYnbseYN6fW
+         +pGTpXqPckNIAIZ54bUgFRmD+KnJMzxN3QL4ZH8yvSGe3cM4sTudhN2WbKPDDU8gSgU0
+         BG/GtnHtMVHl7nu2rnG6WtFou89Qovc8MDTLSJ3MmzQxUUZe7XXOmgKLILHD5l5C4DSs
+         3+CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685101561; x=1687693561;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+vlt+5VLC7KI/CuMwSmVCoc1T0RjObSqqBqBI2FUoWI=;
+        b=bHMdQIPwKBXanGM+hP0HRpO1GYkp5L3F24u667FldbNMVIOy4lDneKod6ZmNVo3pPW
+         wmZhyvhY+R+386747aRjKy72iIWVpC8Qb4Sl4YYEnBeedOmhy9njhVkMhT9nFGVtJEff
+         I6GDLt/HbMb8rSMZK9pkVTcn0PfoZMOgMGlggTYV5O+ZYpsXM5a9vaudpjdlMQ2WhGJM
+         SAqkHjJOOCYAcynqAcXnQa3kMROD6C8bycELv8JeXyINVOHZNhmnY8hRhYniYf20oVJn
+         wDXUku09ycek63pYZkHmJouu3e/EA0NIn8a1B/aGgaxA8p99oDVmDZutRaOifWqKsPDf
+         45pQ==
+X-Gm-Message-State: AC+VfDx1VjHO/9CZ1l74dc4O1s/OHmnGs3FQn+HryAegmvMShO7GFGsE
+	iTD4wbi4OyrHRSvdjBh0rEYNXQ==
+X-Google-Smtp-Source: ACHHUZ582mOEkzgQjppredkDpk8pe+heNFACxpfj1l33/h7T9wXg7DUZDmFAfhnCrlTTCh4EwAFbMw==
+X-Received: by 2002:a17:907:9708:b0:970:925:6563 with SMTP id jg8-20020a170907970800b0097009256563mr1837879ejc.8.1685101560854;
+        Fri, 26 May 2023 04:46:00 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id w24-20020a17090649d800b009666523d52dsm2043491ejv.156.2023.05.26.04.45.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 May 2023 04:45:59 -0700 (PDT)
+Date: Fri, 26 May 2023 14:45:54 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Oleksij Rempel <linux@rempel-privat.de>
+Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org
-Subject: [PATCH net-next] net: dpaa2-mac: use correct interface to free
- mdiodev
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net] net: phy: fix a signedness bug in genphy_loopback()
+Message-ID: <d7bb312e-2428-45f6-b9b3-59ba544e8b94@kili.mountain>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1q2VsB-008QlZ-El@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date: Fri, 26 May 2023 12:44:43 +0100
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Rather than using put_device(&mdiodev->dev), use the proper interface
-provided to dispose of the mdiodev - that being mdio_device_free().
+The "val" variable is used to store error codes from phy_read() so
+it needs to be signed for the error handling to work as expected.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
 ---
-This change is independent of the series I posted changing the lynx
-PCS - since we're only subsituting an explicit put_device() for the
-right interface in this driver, and this driver is not touched by
-that series.
+ drivers/net/phy/phy_device.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index b1871e6c4006..cb70855e2b9a 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -273,7 +273,7 @@ static int dpaa2_pcs_create(struct dpaa2_mac *mac,
- 	mac->pcs = lynx_pcs_create(mdiodev);
- 	if (!mac->pcs) {
- 		netdev_err(mac->net_dev, "lynx_pcs_create() failed\n");
--		put_device(&mdiodev->dev);
-+		mdio_device_free(mdiodev);
- 		return -ENOMEM;
- 	}
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 2cad9cc3f6b8..d52dd699ae0b 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2700,8 +2700,8 @@ EXPORT_SYMBOL(genphy_resume);
+ int genphy_loopback(struct phy_device *phydev, bool enable)
+ {
+ 	if (enable) {
+-		u16 val, ctl = BMCR_LOOPBACK;
+-		int ret;
++		u16 ctl = BMCR_LOOPBACK;
++		int val, ret;
  
-@@ -286,10 +286,9 @@ static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
+ 		ctl |= mii_bmcr_encode_fixed(phydev->speed, phydev->duplex);
  
- 	if (phylink_pcs) {
- 		struct mdio_device *mdio = lynx_get_mdio_device(phylink_pcs);
--		struct device *dev = &mdio->dev;
- 
- 		lynx_pcs_destroy(phylink_pcs);
--		put_device(dev);
-+		mdio_device_free(mdio);
- 		mac->pcs = NULL;
- 	}
- }
 -- 
-2.30.2
+2.39.2
 
 
