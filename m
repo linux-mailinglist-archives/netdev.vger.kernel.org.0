@@ -1,130 +1,112 @@
-Return-Path: <netdev+bounces-5672-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5673-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 58C3B71264C
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:11:52 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 35F92712672
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:19:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 14711281802
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:11:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E4B502816B3
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:19:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C48B171B0;
-	Fri, 26 May 2023 12:11:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63241171B5;
+	Fri, 26 May 2023 12:19:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37115742DE;
-	Fri, 26 May 2023 12:11:47 +0000 (UTC)
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6884C116;
-	Fri, 26 May 2023 05:11:42 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-	(envelope-from <fw@breakpoint.cc>)
-	id 1q2WIF-0006AJ-PB; Fri, 26 May 2023 14:11:39 +0200
-From: Florian Westphal <fw@strlen.de>
-To: <bpf@vger.kernel.org>
-Cc: <netdev@vger.kernel.org>,
-	ast@kernel.org,
-	Florian Westphal <fw@strlen.de>,
-	Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: [PATCH bpf] bpf: netfilter: add BPF_NETFILTER bpf_attach_type
-Date: Fri, 26 May 2023 14:11:24 +0200
-Message-Id: <20230526121124.3915-1-fw@strlen.de>
-X-Mailer: git-send-email 2.39.3
-In-Reply-To: <CAEf4BzZ69YgrQW7DHCJUT_X+GqMq_ZQQPBwopaJJVGFD5=d5Vg@mail.gmail.com>
-References: <CAEf4BzZ69YgrQW7DHCJUT_X+GqMq_ZQQPBwopaJJVGFD5=d5Vg@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58947742DE
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 12:19:45 +0000 (UTC)
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57C0116
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 05:19:43 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id 3f1490d57ef6-bad1ae90c2eso624210276.2
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 05:19:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685103583; x=1687695583;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jHsdIxAYeMANZULb6GLWJmQC7c45qZjIT81elj1fddI=;
+        b=lSJYGnqeQY7cNwiJUUTnU31YRBaYTiGEAM5UbYyrnHolLQt+Z9wiJH08UyUunhr38K
+         1XO2+rS24yyFIv0efH1UnT+Ma8A5UB5ttQhwqoPodZEeLO9fJFq6AohUXp7/5HzvLnJq
+         OIeuNMtgdyCng6SAjiFmDrOfKUu0Aq+FEF/VPys5BwuJoogGjgfl1WpVUl6OzwsEqEYw
+         tdLi51TSe1RKUup5yvobDkGwWBrkP4Gb0tXRaYGLbXzEzFN96Q/p4CLl/yeZ7/ziSJnI
+         5ZIIDLmg5NRzqAoO74SANVIhACpt34SUt9eEa08lJhxmisg0p3DfbesRIZE8TfEKL1Yq
+         kmXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685103583; x=1687695583;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jHsdIxAYeMANZULb6GLWJmQC7c45qZjIT81elj1fddI=;
+        b=Hw1lOsIGR5+zsmG1MfXcLk/Zn1r3fyAgg2AFDUIKy4a0/w+9D02x2whwjeGWtszgvT
+         zW4jPjY94/4N4xfHRjLpNSLp5kPW8mCOdxmHVfhjN1U7xPHLLE7jW5YWiHV2sEMldGee
+         1waewjWaUp8YZiJg5DfGfdnp55ELTQKBVOwRTB6HagowqccABn53O+iQr7SGM81yWcmj
+         gU0cQglOSeWbtULjPU05EOI/BmjM4xTxcINXzAJUcTM+xZlGguszmiG5X47NVgCcAxgt
+         hzStNErcS6+zoJReHlGXBF6n58bo7Rz5VMn8kgjT7wKSGktVx8reEcyslBZgF8CP+Bfx
+         Mcig==
+X-Gm-Message-State: AC+VfDwiv+qUY1vl5d/7FAUJvSYkTNtkma7PT0/Tu0On2U8VPM19fBuj
+	SpPBRD2Q09pvaJrtti51P6DB4rZB9VRF42quaiUR9w==
+X-Google-Smtp-Source: ACHHUZ6TR8aeEsFNfAjEOuHAuaWt7JWI/7ObSKbm04REWHMNhaCJaos0b7KfEN3AtBAAwszyMAqtvmTJQixwwbC2zu0=
+X-Received: by 2002:a25:cbd3:0:b0:ba8:8162:2538 with SMTP id
+ b202-20020a25cbd3000000b00ba881622538mr1640458ybg.42.1685103583132; Fri, 26
+ May 2023 05:19:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1684887977.git.peilin.ye@bytedance.com> <429357af094297abbc45f47b8e606f11206df049.1684887977.git.peilin.ye@bytedance.com>
+ <faaeb0b0-8538-9dfa-4c1e-8a225e3534f4@mojatatu.com> <CAM0EoM=T_p_-zRiPDPj2r9aX0BZ5Vtb5ugkNQ08Q+NrTWB+Kpg@mail.gmail.com>
+ <c536fcd795f74016928469be16fe21df8079a129.camel@redhat.com>
+In-Reply-To: <c536fcd795f74016928469be16fe21df8079a129.camel@redhat.com>
+From: Jamal Hadi Salim <jhs@mojatatu.com>
+Date: Fri, 26 May 2023 08:19:32 -0400
+Message-ID: <CAM0EoMm5R1qmqz+Pn2_Mawur0_PK070p2zw4Y+EqDwYNF2A6=A@mail.gmail.com>
+Subject: Re: [PATCH v5 net 6/6] net/sched: qdisc_destroy() old ingress and
+ clsact Qdiscs before grafting
+To: Paolo Abeni <pabeni@redhat.com>
+Cc: Pedro Tammela <pctammela@mojatatu.com>, Peilin Ye <yepeilin.cs@gmail.com>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Cong Wang <xiyou.wangcong@gmail.com>, 
+	Jiri Pirko <jiri@resnulli.us>, Peilin Ye <peilin.ye@bytedance.com>, 
+	Daniel Borkmann <daniel@iogearbox.net>, John Fastabend <john.fastabend@gmail.com>, 
+	Vlad Buslov <vladbu@mellanox.com>, Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Andrii Nakryiko writes:
+On Thu, May 25, 2023 at 5:25=E2=80=AFAM Paolo Abeni <pabeni@redhat.com> wro=
+te:
+>
+> On Wed, 2023-05-24 at 12:09 -0400, Jamal Hadi Salim wrote:
+> > When you have a moment - could you run tc monitor in parallel to the
+> > reproducer and double check it generates the correct events...
+>
+> FTR, I'll wait a bit to apply this series, to allow for the above
+> tests. Unless someone will scream very loudly very soon, it's not going
+> to enter today's PR. Since the addressed issue is an ancient one, it
+> should not a problem, I hope.
 
- And we currently don't have an attach type for NETLINK BPF link.
- Thankfully it's not too late to add it. I see that link_create() in
- kernel/bpf/syscall.c just bypasses attach_type check. We shouldn't
- have done that. Instead we need to add BPF_NETLINK attach type to enum
- bpf_attach_type. And wire all that properly throughout the kernel and
- libbpf itself.
+Sorry I do not mean to hold this back - I think we should have applied
+V1 then worried about making things better.  We can worry about events
+after.
+So Acking this.
 
-This adds BPF_NETFILTER and uses it.  This breaks uabi but this
-wasn't in any non-rc release yet, so it should be fine.
+cheers,
+jamal
 
-Fixes: 84601d6ee68a ("bpf: add bpf_link support for BPF_NETFILTER programs")
-Suggested-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Link: https://lore.kernel.org/bpf/CAEf4BzZ69YgrQW7DHCJUT_X+GqMq_ZQQPBwopaJJVGFD5=d5Vg@mail.gmail.com/
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- include/uapi/linux/bpf.h       | 1 +
- kernel/bpf/syscall.c           | 4 ++++
- tools/include/uapi/linux/bpf.h | 1 +
- tools/lib/bpf/libbpf.c         | 2 +-
- 4 files changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 1bb11a6ee667..c994ff5b157c 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1035,6 +1035,7 @@ enum bpf_attach_type {
- 	BPF_TRACE_KPROBE_MULTI,
- 	BPF_LSM_CGROUP,
- 	BPF_STRUCT_OPS,
-+	BPF_NETFILTER,
- 	__MAX_BPF_ATTACH_TYPE
- };
- 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 14f39c1e573e..cc1fc2404406 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2433,6 +2433,10 @@ bpf_prog_load_check_attach(enum bpf_prog_type prog_type,
- 		default:
- 			return -EINVAL;
- 		}
-+	case BPF_PROG_TYPE_NETFILTER:
-+		if (expected_attach_type == BPF_NETFILTER)
-+			return 0;
-+		return -EINVAL;
- 	case BPF_PROG_TYPE_SYSCALL:
- 	case BPF_PROG_TYPE_EXT:
- 		if (expected_attach_type)
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 1bb11a6ee667..c994ff5b157c 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1035,6 +1035,7 @@ enum bpf_attach_type {
- 	BPF_TRACE_KPROBE_MULTI,
- 	BPF_LSM_CGROUP,
- 	BPF_STRUCT_OPS,
-+	BPF_NETFILTER,
- 	__MAX_BPF_ATTACH_TYPE
- };
- 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index ad1ec893b41b..532a97cf1cc1 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8712,7 +8712,7 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("struct_ops+",		STRUCT_OPS, 0, SEC_NONE),
- 	SEC_DEF("struct_ops.s+",	STRUCT_OPS, 0, SEC_SLEEPABLE),
- 	SEC_DEF("sk_lookup",		SK_LOOKUP, BPF_SK_LOOKUP, SEC_ATTACHABLE),
--	SEC_DEF("netfilter",		NETFILTER, 0, SEC_NONE),
-+	SEC_DEF("netfilter",		NETFILTER, BPF_NETFILTER, SEC_NONE),
- };
- 
- static size_t custom_sec_def_cnt;
--- 
-2.39.3
-
+> Cheers,
+>
+> Paolo
+>
 
