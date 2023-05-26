@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-5513-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5514-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9F584711F5D
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:47:46 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 80E15711F5E
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:48:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 56366281684
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 05:47:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3D5D01C20F9A
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 05:48:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C8F823D0;
-	Fri, 26 May 2023 05:47:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BD793D8C;
+	Fri, 26 May 2023 05:47:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B8855241
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 05:47:15 +0000 (UTC)
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA2E51BD;
-	Thu, 25 May 2023 22:47:04 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-64d5f65a2f7so408725b3a.1;
-        Thu, 25 May 2023 22:47:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BE525241
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 05:47:22 +0000 (UTC)
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056D8E4E;
+	Thu, 25 May 2023 22:47:12 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-64d1a0d640cso445820b3a.1;
+        Thu, 25 May 2023 22:47:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685080024; x=1687672024;
+        d=gmail.com; s=20221208; t=1685080032; x=1687672032;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9aKMfg1fHr2OSnJGRh9PC/RqpCNLsXjfCs8xZ/3DKhk=;
-        b=BmFD4aUJPmEqKXrXWhOQ/s9gV3WbY9AQDVH4Z6IWJOiTooyBSk6OGmx//+EBiA1QjC
-         7wempSXYAZanDs5r5PjpXnbwsBzGPE93m1xOOlVDG6dbWMO5IwrEvvSN91ktPkHCMwGW
-         zIceiISirgOMXblsX2oRowb4Y++oO5yu43TMfDGEOxNGK8ay0cG5E+4j09gbYkIcM6jG
-         nvdi0wRY9DmyhZCBNDeQelbgqAmrPQ9hPyIIOsliOLJG9PHWX5chz43zAFfG90efyVXT
-         00aSq3u7F3c7cIOXk+oY/vLXKeCntIEV+jqhhDdpVUbBcKVRNkxn5ZW2EKIlDFXIVvvT
-         qjNQ==
+        bh=+O7euCPhXRepDDaePXuwLJp753j925icSBiznXzRFmA=;
+        b=nNoB88r0OJ7b2UzUBLRiGdAodjTSq3AZjkiQhtf8Y8TutlQqSB1g++Mc+IucdgTh3o
+         S5uU+8dz0pfype82L0zue8+9At70bDhKb7E5s+SUQATlJkF36MkcC9vBgdz4IZZSJs/4
+         wnGZFmrIkc+lAKT2wxrR+zQOEZ/LGISn/KavaN687F0x31YgpbSLjvMgPtvhs7JFZ7sy
+         KI2cPK9US0BzLxS8GdQJN8QmuFL6WW7H0aLfqfryzNzPvEld/e6H7X5ssPsVCr0/xOhu
+         BTw8gMQwZuYCY6d16abpxbidXVJ+dvniHk89m5aXYZIZ8dpcQhS5XhZAkdbOT4oTVpqu
+         H2yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685080024; x=1687672024;
+        d=1e100.net; s=20221208; t=1685080032; x=1687672032;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9aKMfg1fHr2OSnJGRh9PC/RqpCNLsXjfCs8xZ/3DKhk=;
-        b=BvzqftFUwoVjsUztXoE1IWqzA4aswCKJOFWysTbbpLctDhiCBNs1yfbpVnq5VnMTN4
-         u6RPAV1OrDina6vSutoh1MOxgeyf9/6uFzg0z5pDk0VR0TI7GZnz0O9C82qaQi0qHV5w
-         mdrh0NuGQ++E7Y8WJW6Kvs7DlHGQ0dUOA/9SLv6Gp4nwOoHwjdL1adGiq/GgZDKwIuGW
-         sYhiUi1IvVDaAtMU+Yh4oPkoICY/r/txUOYzE6hWBwPr56i+AwfNSAJGSkpdjbQGD2QE
-         SwuKS5PqeSCNGjU5/yxg5bj3ksKzUGbw9aScMFIYsnTGItHWdIn6Mkayo6U1a3d1Iksi
-         2gvQ==
-X-Gm-Message-State: AC+VfDy072aSDiSTnz1+UaAJSMxV9rpPufiejRmllMQ5iuXskSTKhScr
-	lqqY46tmtrZF6BYT0vkeZ8A=
-X-Google-Smtp-Source: ACHHUZ7nCPPQO2FAtG/9EEZJcOORV5prAxpUNUZpAJ9rRcv9tbqMF0YLxC5O2GvRX9b4AG5b877RTg==
-X-Received: by 2002:a05:6a21:6709:b0:10a:a0e1:96fa with SMTP id wh9-20020a056a21670900b0010aa0e196famr837654pzb.22.1685080023982;
-        Thu, 25 May 2023 22:47:03 -0700 (PDT)
+        bh=+O7euCPhXRepDDaePXuwLJp753j925icSBiznXzRFmA=;
+        b=YamZzjQyeZ8tXzRSm6Behaq12ipcH9czXVZoQekEg8dibJ9kiJFP+9S6t1wVLhTDKO
+         T1bKn5MpCEOPUAjnynOoT0u6dx0FS1yy3jd4eddkoOrKrOIuj7CAmYRfmfcbzoZQu2l7
+         wNOlVX5EmfojBDGCaGVCFx3r1KhBcNXYeKhBlp6LaOdMAUkVG20EnS117Ue/DkB32nUO
+         o8PHK01aCnMrgrU0Cqx1EVkmfn4yIPg18WG7n3f6aMLhOqIgKcp4YuaWmXf/1dcL2k4H
+         IjU9zdQ89M/OPgQz+7PEEwTIRF27GwNSKrqBuoEBQ40idyGgbZAuQZMTVh3FQUVOxGqG
+         x+eg==
+X-Gm-Message-State: AC+VfDzVPpvzT3cu+KeNQbbUZ0XM5Fg6GrWIsNzAG4HYZ7QULID/c1tc
+	Mea0LuSO9JaTW5gdbOOlbhs=
+X-Google-Smtp-Source: ACHHUZ4LXB/H4JL3WsCpADYGbGBaZt0SRNpsY+rWwEUkolUcHbcEx0swUqfbbOVzMRVc3s0GS8adDA==
+X-Received: by 2002:a05:6a20:8421:b0:10c:7676:73af with SMTP id c33-20020a056a20842100b0010c767673afmr778211pzd.53.1685080032355;
+        Thu, 25 May 2023 22:47:12 -0700 (PDT)
 Received: from localhost.localdomain ([104.149.188.130])
-        by smtp.gmail.com with ESMTPSA id b23-20020a6567d7000000b0050a0227a4bcsm1836485pgs.57.2023.05.25.22.46.56
+        by smtp.gmail.com with ESMTPSA id b23-20020a6567d7000000b0050a0227a4bcsm1836485pgs.57.2023.05.25.22.47.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 May 2023 22:47:02 -0700 (PDT)
+        Thu, 25 May 2023 22:47:11 -0700 (PDT)
 From: Liang Chen <liangchen.linux@gmail.com>
 To: jasowang@redhat.com,
 	mst@redhat.com
@@ -69,9 +69,9 @@ Cc: virtualization@lists.linux-foundation.org,
 	pabeni@redhat.com,
 	alexander.duyck@gmail.com,
 	Liang Chen <liangchen.linux@gmail.com>
-Subject: [PATCH net-next 4/5] virtio_ring: Introduce DMA pre-handler
-Date: Fri, 26 May 2023 13:46:20 +0800
-Message-Id: <20230526054621.18371-4-liangchen.linux@gmail.com>
+Subject: [PATCH net-next 5/5] virtio_net: Implement DMA pre-handler
+Date: Fri, 26 May 2023 13:46:21 +0800
+Message-Id: <20230526054621.18371-5-liangchen.linux@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20230526054621.18371-1-liangchen.linux@gmail.com>
 References: <20230526054621.18371-1-liangchen.linux@gmail.com>
@@ -89,200 +89,112 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Currently, DMA operations of virtio devices' data buffer are encapsulated
-within the underlying virtqueue implementation. DMA map/unmap operations
-are performed for each data buffer attached to/detached from the virtqueue,
-which is transparent and invisible to the higher-level virtio device
-drivers. This encapsulation makes it not viable for device drivers to
-introduce certain mechanisms, such as page pool, that require explicit
-management of DMA map/unmap. Therefore, by inserting a pre-handler before
-the generic DMA map/unmap operations, virtio device drivers have the
-opportunity to participate in DMA operations.
+Adding a DMA pre-handler that utilizes page pool for managing DMA mappings.
+When IOMMU is enabled, turning on the page_pool_dma_map module parameter to
+select page pool for DMA mapping management gives a significant reduction
+in the overhead caused by DMA mappings.
+
+In testing environments with a single core vm and qemu emulated IOMMU,
+significant performance improvements can be observed:
+  Upstream codebase: 1.76 Gbits/sec
+  Upstream codebase with page pool fragmentation support: 1.81 Gbits/sec
+  Upstream codebase with page pool fragmentation and DMA support: 19.3
+  Gbits/sec
 
 Signed-off-by: Liang Chen <liangchen.linux@gmail.com>
 ---
- drivers/virtio/virtio_ring.c | 73 +++++++++++++++++++++++++++++++++---
- include/linux/virtio.h       | 18 +++++++++
- 2 files changed, 85 insertions(+), 6 deletions(-)
+ drivers/net/virtio_net.c | 55 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index c5310eaf8b46..a99641260555 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -213,6 +213,9 @@ struct vring_virtqueue {
- 	bool last_add_time_valid;
- 	ktime_t last_add_time;
- #endif
-+
-+	/* DMA mapping Pre-handler for virtio device driver */
-+	struct virtqueue_pre_dma_ops *pre_dma_ops;
- };
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index ac40b8c66c59..73cc4f9fe4fa 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -22,6 +22,7 @@
+ #include <net/route.h>
+ #include <net/xdp.h>
+ #include <net/net_failover.h>
++#include <linux/iommu.h>
  
- static struct virtqueue *__vring_new_virtqueue(unsigned int index,
-@@ -369,6 +372,19 @@ static dma_addr_t vring_map_one_sg(const struct vring_virtqueue *vq,
- 		return (dma_addr_t)sg_phys(sg);
- 	}
+ static int napi_weight = NAPI_POLL_WEIGHT;
+ module_param(napi_weight, int, 0444);
+@@ -33,8 +34,10 @@ module_param(napi_tx, bool, 0644);
  
-+	/* Allow virtio drivers to perform customized mapping operation, and
-+	 * fallback to the generic path if it fails to handle the mapping.
-+	 */
-+	if (vq->pre_dma_ops && vq->pre_dma_ops->map_page) {
-+		dma_addr_t addr;
-+
-+		addr = vq->pre_dma_ops->map_page(vring_dma_dev(vq),
-+				sg_page(sg), sg->offset, sg->length,
-+				direction, 0);
-+		if (addr)
-+			return addr;
-+	}
-+
- 	/*
- 	 * We can't use dma_map_sg, because we don't use scatterlists in
- 	 * the way it expects (we don't guarantee that the scatterlist
-@@ -432,6 +448,15 @@ static void vring_unmap_one_split_indirect(const struct vring_virtqueue *vq,
+ static bool page_pool_enabled;
+ static bool page_pool_frag;
++static bool page_pool_dma_map;
+ module_param(page_pool_enabled, bool, 0400);
+ module_param(page_pool_frag, bool, 0400);
++module_param(page_pool_dma_map, bool, 0400);
  
- 	flags = virtio16_to_cpu(vq->vq.vdev, desc->flags);
- 
-+	if (vq->pre_dma_ops && vq->pre_dma_ops->unmap_page) {
-+		if (vq->pre_dma_ops->unmap_page(vring_dma_dev(vq),
-+					virtio64_to_cpu(vq->vq.vdev, desc->addr),
-+					virtio32_to_cpu(vq->vq.vdev, desc->len),
-+					(flags & VRING_DESC_F_WRITE) ?
-+					DMA_FROM_DEVICE : DMA_TO_DEVICE, 0))
-+			return;
-+	}
-+
- 	dma_unmap_page(vring_dma_dev(vq),
- 		       virtio64_to_cpu(vq->vq.vdev, desc->addr),
- 		       virtio32_to_cpu(vq->vq.vdev, desc->len),
-@@ -456,14 +481,22 @@ static unsigned int vring_unmap_one_split(const struct vring_virtqueue *vq,
- 				 extra[i].len,
- 				 (flags & VRING_DESC_F_WRITE) ?
- 				 DMA_FROM_DEVICE : DMA_TO_DEVICE);
--	} else {
--		dma_unmap_page(vring_dma_dev(vq),
--			       extra[i].addr,
--			       extra[i].len,
--			       (flags & VRING_DESC_F_WRITE) ?
--			       DMA_FROM_DEVICE : DMA_TO_DEVICE);
-+		goto out;
-+	} else if (vq->pre_dma_ops && vq->pre_dma_ops->unmap_page) {
-+		if (vq->pre_dma_ops->unmap_page(vring_dma_dev(vq),
-+					extra[i].addr,
-+					extra[i].len,
-+					(flags & VRING_DESC_F_WRITE) ?
-+					DMA_FROM_DEVICE : DMA_TO_DEVICE, 0))
-+			goto out;
- 	}
- 
-+	dma_unmap_page(vring_dma_dev(vq),
-+			extra[i].addr,
-+			extra[i].len,
-+			(flags & VRING_DESC_F_WRITE) ?
-+			DMA_FROM_DEVICE : DMA_TO_DEVICE);
-+
- out:
- 	return extra[i].next;
- }
-@@ -1206,10 +1239,19 @@ static void vring_unmap_extra_packed(const struct vring_virtqueue *vq,
- 				 (flags & VRING_DESC_F_WRITE) ?
- 				 DMA_FROM_DEVICE : DMA_TO_DEVICE);
- 	} else {
-+		if (vq->pre_dma_ops && vq->pre_dma_ops->unmap_page) {
-+			if (vq->pre_dma_ops->unmap_page(vring_dma_dev(vq),
-+						extra->addr,
-+						extra->len,
-+						(flags & VRING_DESC_F_WRITE) ?
-+						DMA_FROM_DEVICE : DMA_TO_DEVICE, 0))
-+				return;
-+		}
- 		dma_unmap_page(vring_dma_dev(vq),
- 			       extra->addr, extra->len,
- 			       (flags & VRING_DESC_F_WRITE) ?
- 			       DMA_FROM_DEVICE : DMA_TO_DEVICE);
-+
- 	}
+ /* FIXME: MTU in config. */
+ #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
+@@ -3830,6 +3833,49 @@ static void virtnet_del_vqs(struct virtnet_info *vi)
+ 	virtnet_free_queues(vi);
  }
  
-@@ -1223,6 +1265,15 @@ static void vring_unmap_desc_packed(const struct vring_virtqueue *vq,
- 
- 	flags = le16_to_cpu(desc->flags);
- 
-+	if (vq->pre_dma_ops && vq->pre_dma_ops->unmap_page) {
-+		if (vq->pre_dma_ops->unmap_page(vring_dma_dev(vq),
-+					le64_to_cpu(desc->addr),
-+					le32_to_cpu(desc->len),
-+					(flags & VRING_DESC_F_WRITE) ?
-+					DMA_FROM_DEVICE : DMA_TO_DEVICE, 0))
-+			return;
-+	}
-+
- 	dma_unmap_page(vring_dma_dev(vq),
- 		       le64_to_cpu(desc->addr),
- 		       le32_to_cpu(desc->len),
-@@ -2052,6 +2103,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	vq->packed_ring = true;
- 	vq->dma_dev = dma_dev;
- 	vq->use_dma_api = vring_use_dma_api(vdev);
-+	vq->pre_dma_ops = NULL;
- 
- 	vq->indirect = virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC) &&
- 		!context;
-@@ -2541,6 +2593,7 @@ static struct virtqueue *__vring_new_virtqueue(unsigned int index,
- #endif
- 	vq->dma_dev = dma_dev;
- 	vq->use_dma_api = vring_use_dma_api(vdev);
-+	vq->pre_dma_ops = NULL;
- 
- 	vq->indirect = virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC) &&
- 		!context;
-@@ -2945,4 +2998,12 @@ const struct vring *virtqueue_get_vring(const struct virtqueue *vq)
- }
- EXPORT_SYMBOL_GPL(virtqueue_get_vring);
- 
-+/* The virtio device driver can register its own DMA map/unmap pre-handler. */
-+void virtqueue_register_pre_dma_ops(struct virtqueue *vq,
-+		struct virtqueue_pre_dma_ops *pre_dma_ops)
++static dma_addr_t virtnet_pp_dma_map_page(struct device *dev, struct page *page,
++					  unsigned long offset, size_t size,
++					  enum dma_data_direction dir, unsigned long attrs)
 +{
-+	to_vvq(vq)->pre_dma_ops = pre_dma_ops;
-+}
-+EXPORT_SYMBOL_GPL(virtqueue_register_pre_dma_ops);
++	struct page *head_page;
 +
- MODULE_LICENSE("GPL");
-diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index b93238db94e3..1d5755b5e03f 100644
---- a/include/linux/virtio.h
-+++ b/include/linux/virtio.h
-@@ -9,6 +9,7 @@
- #include <linux/device.h>
- #include <linux/mod_devicetable.h>
- #include <linux/gfp.h>
-+#include <linux/dma-map-ops.h>
- 
- /**
-  * struct virtqueue - a queue to register buffers for sending or receiving.
-@@ -203,4 +204,21 @@ void unregister_virtio_driver(struct virtio_driver *drv);
- #define module_virtio_driver(__virtio_driver) \
- 	module_driver(__virtio_driver, register_virtio_driver, \
- 			unregister_virtio_driver)
-+/**
-+ * struct virtqueue_pre_dma_ops - DMA pre-handler for virtio device driver
-+ * @map_page: map a single page of memory for DMA
-+ * @unmap_page: unmap a single page of memory for DMA
-+ */
-+struct virtqueue_pre_dma_ops {
-+	dma_addr_t (*map_page)(struct device *dev, struct page *page,
-+			unsigned long offset, size_t size,
-+			enum dma_data_direction dir, unsigned long attrs);
-+	bool (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
-+			size_t size, enum dma_data_direction dir,
-+			unsigned long attrs);
++	if (dir != DMA_FROM_DEVICE)
++		return 0;
++
++	head_page = compound_head(page);
++	return page_pool_get_dma_addr(head_page)
++		+ (page - head_page) * PAGE_SIZE
++		+ offset;
++}
++
++static bool virtnet_pp_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
++				      size_t size, enum dma_data_direction dir,
++				      unsigned long attrs)
++{
++	phys_addr_t phys;
++
++	/* Handle only the RX direction, and sync the DMA memory only if it's not
++	 * a DMA coherent architecture.
++	 */
++	if (dir != DMA_FROM_DEVICE)
++		return false;
++
++	if (dev_is_dma_coherent(dev))
++		return true;
++
++	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
++	if (WARN_ON(!phys))
++		return false;
++
++	arch_sync_dma_for_cpu(phys, size, dir);
++	return true;
++}
++
++static struct virtqueue_pre_dma_ops virtnet_pp_pre_dma_ops = {
++	.map_page = virtnet_pp_dma_map_page,
++	.unmap_page = virtnet_pp_dma_unmap_page,
 +};
 +
-+void virtqueue_register_pre_dma_ops(struct virtqueue *vq,
-+		struct virtqueue_pre_dma_ops *pre_dma_ops);
+ static void virtnet_alloc_page_pool(struct receive_queue *rq)
+ {
+ 	struct virtio_device *vdev = rq->vq->vdev;
+@@ -3845,6 +3891,15 @@ static void virtnet_alloc_page_pool(struct receive_queue *rq)
+ 	if (page_pool_frag)
+ 		pp_params.flags |= PP_FLAG_PAGE_FRAG;
+ 
++	/* Consider using page pool DMA support only when DMA API is used. */
++	if (virtio_has_feature(vdev, VIRTIO_F_ACCESS_PLATFORM) &&
++	    page_pool_dma_map) {
++		pp_params.flags |= PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV;
++		pp_params.dma_dir = DMA_FROM_DEVICE;
++		pp_params.max_len = PAGE_SIZE << pp_params.order;
++		virtqueue_register_pre_dma_ops(rq->vq, &virtnet_pp_pre_dma_ops);
++	}
 +
- #endif /* _LINUX_VIRTIO_H */
+ 	rq->page_pool = page_pool_create(&pp_params);
+ 	if (IS_ERR(rq->page_pool)) {
+ 		dev_warn(&vdev->dev, "page pool creation failed: %ld\n",
 -- 
 2.31.1
 
