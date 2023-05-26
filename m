@@ -1,117 +1,114 @@
-Return-Path: <netdev+bounces-5787-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5788-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6592D712BDD
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:39:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 46D6A712BF2
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:41:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1F66F28197E
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:39:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F1535281931
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:41:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7086F28C3B;
-	Fri, 26 May 2023 17:39:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7C0A290E0;
+	Fri, 26 May 2023 17:41:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 661101E536
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:39:00 +0000 (UTC)
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC5E99;
-	Fri, 26 May 2023 10:38:58 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-96fab30d1e1so232516466b.0;
-        Fri, 26 May 2023 10:38:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D912828C3B
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:41:09 +0000 (UTC)
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE50CE6B
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:40:58 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-96f8d485ef3so159880166b.0
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:40:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685122737; x=1687714737;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=PTiLq4ygH0IvGpIu6yVKyZxG0Q1NzCebyg9n2MhnoWM=;
-        b=bwvKFcmzuCcjiY8UjRyGDFyDfiRO4TxeBvS+aOYa/Krvw0DQQ/A/QAR7XfbpE2cr59
-         cdDJlv9ERgQfVXA9QhbbHL7q11EMuj8eGZfNQz6+unf2MmVUBykymvQ4jE35p1jis4di
-         +GVUtSXRjAxgLjv2rvLHOKDI7VLjva6g1V4ILoYIpkzmvzLSYQTZVSlRPA9t7ylHrwNu
-         /d1r48lydgy64JZFUD5VDP2vAIhxZ3/+lbZlV9LNAsX692/FlVXD6vZYfWFtbJhZryzl
-         34RJYBCxsW20gJlsdowmvZYLdwDrnqRXBQwU2wBJVEyf31gEJDLeVyYTk9VnNER+lHKn
-         2WTg==
+        d=linux-foundation.org; s=google; t=1685122857; x=1687714857;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pSaK6G2VVNNpdqq+Y56+DOhWYZRR11ay4bAj5o0qKr0=;
+        b=czdUTFvhPB0C6gRIDGLrtXntLLjn8RAMUDHXPG5nwslO2jPFmWYNzO+F0MNWObI7tc
+         IdwG9omkM1l+EucKUrK4tisIoPYa/TVw8r+Ho1fMGy0DrxUz2LYhusjUAl/dG6r2MfJq
+         dChQOAoZqKl4SeoRM/4MPmdihEA4hptwF3e/U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685122737; x=1687714737;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=PTiLq4ygH0IvGpIu6yVKyZxG0Q1NzCebyg9n2MhnoWM=;
-        b=PaIO17GEyK3Q5VOPSQDF3pMX0qd+zxVbM8R0GFcoIrlq/WHt+rpckMZ3hEmRNzKcrA
-         Z2q6bNlA2DmilY3OS3tpPqRv6cTIj8bQe0+cKG8nanIFpTjFfnbj6C6qf2spgcAhLvGB
-         t09QIOM2imbPNF60rIPMRvQ8Go+BImiO1QdMkyTl2jC/+qiK8LDJ6mJ7P6yTO8CLaj5W
-         FkCbDzHg7KrP5/pogMCbuW0CTP/K1fOB35iE6sIDUeKNj01rq0YRyuA7suLRyEp1mDTo
-         u6xAaO/6oI81lB5W4p2iQh40Crx/ZMeQopTDsSzmgzoebIJe2b7b/NVd5xOAcBzexA59
-         V4FA==
-X-Gm-Message-State: AC+VfDy4dSK9EtEKtpP6wn5mP0f830AR7UA8FxwLpXuflF4sNimcGLP8
-	s1wl1EcJkwOjv/q3wZfTqFU=
-X-Google-Smtp-Source: ACHHUZ4PFyKyc2QUHAnlcpOFn+49tIH6s0K2Tb/i0az8Bqph4zclDagFl+Zci851eE1HSGF8K9cw0w==
-X-Received: by 2002:a17:907:3603:b0:969:c354:7d9a with SMTP id bk3-20020a170907360300b00969c3547d9amr4363175ejc.12.1685122737125;
-        Fri, 26 May 2023 10:38:57 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id z9-20020a1709060f0900b0094e1344ddfdsm2394951eji.34.2023.05.26.10.38.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 10:38:56 -0700 (PDT)
-Date: Fri, 26 May 2023 20:38:54 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: arinc9.unal@gmail.com
-Cc: Sean Wang <sean.wang@mediatek.com>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	DENG Qingfang <dqfext@gmail.com>,
-	Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Russell King <linux@armlinux.org.uk>,
-	=?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-	Richard van Schagen <richard@routerhints.com>,
-	Richard van Schagen <vschagen@cs.com>,
-	Frank Wunderlich <frank-w@public-files.de>,
-	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-	erkin.bozoglu@xeront.com, mithat.guner@xeront.com,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net-next 30/30] MAINTAINERS: add me as maintainer of
- MEDIATEK SWITCH DRIVER
-Message-ID: <20230526173854.ubaz2yojpt6k6rxj@skbuf>
-References: <20230522121532.86610-1-arinc.unal@arinc9.com>
- <20230522121532.86610-31-arinc.unal@arinc9.com>
+        d=1e100.net; s=20221208; t=1685122857; x=1687714857;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pSaK6G2VVNNpdqq+Y56+DOhWYZRR11ay4bAj5o0qKr0=;
+        b=ayrc9OksG0osrawxbVHaXr/U59Nd2Hz7xLgodPlFcpjn5HRaDOvS3XK94pVqsEobrP
+         I3veHLDbmL5JpsavD6AdJMDA3QxXYNK3NXX+oFP95W8O2wzmeitkkK557Qr9NXUqPzla
+         ZJq9CVmxPstp5iJUpms4Uy56iCt2xhxbPbcOGypDKo7eafZ9E8gCKOPhRhSWA4zF0Frw
+         e/2L+Lqubs3A2FZbVaXqnbE7ZXZUknd0AZNjPdMIQMVfK2e5PdiFHSK3+Vm6k5xBKLP6
+         ihkIuFpKsN2jms0BjIFnOKqCG9mM3k3IrPZiqIh0naxmFmO7MZHDzNxziGrKGXy/bQBp
+         mtjQ==
+X-Gm-Message-State: AC+VfDxUZbgsJJOSc1cvWZpgtlOjfRNA1+FbE1ZrdEz7Kb/jh9+u7fa/
+	0Z3bsLFK4P+IM3NOP69K2CLoIXRvghrmdyUIiIekFIYe
+X-Google-Smtp-Source: ACHHUZ6+kHb5jr7Z5aXb8gaRauf6k03IwbHq5G3j2WCW9LxJ/b9K0ByAjL+O80k1rpRFEf9d/MdJcg==
+X-Received: by 2002:a17:906:ee8e:b0:965:6b9e:7ded with SMTP id wt14-20020a170906ee8e00b009656b9e7dedmr2885697ejb.42.1685122857065;
+        Fri, 26 May 2023 10:40:57 -0700 (PDT)
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com. [209.85.208.52])
+        by smtp.gmail.com with ESMTPSA id lf13-20020a170907174d00b009571293d6acsm2429692ejc.59.2023.05.26.10.40.56
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 May 2023 10:40:56 -0700 (PDT)
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-51190fd46c3so1432828a12.1
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:40:56 -0700 (PDT)
+X-Received: by 2002:a17:907:786:b0:965:ff38:2fb3 with SMTP id
+ xd6-20020a170907078600b00965ff382fb3mr2607275ejb.74.1685122856105; Fri, 26
+ May 2023 10:40:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230522121532.86610-31-arinc.unal@arinc9.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+References: <CANn89iKUbyrJ=r2+_kK+sb2ZSSHifFZ7QkPLDpAtkJ8v4WUumA@mail.gmail.com>
+ <CAHk-=whqNMUPbjCyMjyxfH_5-Xass=DrMkPT5ZTJbFrtU=qDEQ@mail.gmail.com>
+ <CANn89i+bExb_P6A9ROmwqNgGdO5o8wawVZ5r3MHnz0qfhxvTtA@mail.gmail.com>
+ <CAHk-=wig6VizZHtRznz7uAWa-hHWjrCNANZ9B+1G=aTWPiVH4g@mail.gmail.com>
+ <CAHk-=whkci5ck5Him8Lx5ECKHEtj=bipYmOCGe8DWrrp8uDq5g@mail.gmail.com>
+ <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com> <CANn89i+u8jvfSQAQ=_JY0be56deJNhKgDWbqpDAvfm-i34qX9A@mail.gmail.com>
+In-Reply-To: <CANn89i+u8jvfSQAQ=_JY0be56deJNhKgDWbqpDAvfm-i34qX9A@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Fri, 26 May 2023 10:40:39 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh16fVwO2yZ4Fx0kyRHsNDhGddzNxfQQz2+x08=CPvk_Q@mail.gmail.com>
+Message-ID: <CAHk-=wh16fVwO2yZ4Fx0kyRHsNDhGddzNxfQQz2+x08=CPvk_Q@mail.gmail.com>
+Subject: Re: x86 copy performance regression
+To: Eric Dumazet <edumazet@google.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023 at 03:15:32PM +0300, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> 
-> Add me as a maintainer of the MediaTek MT7530 DSA subdriver.
-> 
-> List maintainers in alphabetical order by first name.
-> 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
+On Fri, May 26, 2023 at 10:25=E2=80=AFAM Eric Dumazet <edumazet@google.com>=
+ wrote:
+>
+> arch/x86/lib/copy_user_64.S:34:2: error: invalid instruction mnemonic
+> 'alternative'
 
-Well, I suppose we need more active people maintaining this driver, so yeah:
+Ok, that's just odd. For me, assembler mnemonics - very much including
+macros - are case-insensitive.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+It's actually documented that way, with the example given is for a
+macro that is declared as "sum" and then used as "SUM":
+
+   https://sourceware.org/binutils/docs/as/Macro.html
+
+And if you want to use macros as pseudo-instructions, that's what you
+want, since typically assembler instructions are not case sensitive.
+
+But yeah, your build environment is clearly different, and yes, we
+declare the macro with all caps, and other places use it that way too.
+
+Clang?
+
+              Linus
 
