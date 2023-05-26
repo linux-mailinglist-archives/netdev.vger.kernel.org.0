@@ -1,68 +1,87 @@
-Return-Path: <netdev+bounces-5792-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5793-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D429C712C03
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:44:48 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6081F712C09
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:47:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 89F651C20B81
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:44:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 145E81C210E7
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:47:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A0030290E5;
-	Fri, 26 May 2023 17:44:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A561290EE;
+	Fri, 26 May 2023 17:47:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94DE9271F6
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:44:45 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6DFA4;
-	Fri, 26 May 2023 10:44:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685123084; x=1716659084;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=x5pHN9VZUDdP2TLxPCWhN/t1BZUONMIrFg5l5cvTays=;
-  b=iumDFVZi7C80j6evW6iF0RKqad73FursD70v3leNkSM9R/swmRsZtacA
-   GI59VxuTAHyVoKzWWueAiltYGwmSooOapOedX4iDqdBMmb9KlgyVIfi86
-   AuxWod5EHeZkaL+lyVM4AkAWEssL2tiZS1zm7SNTRpRvTdGn83q91fvWO
-   bmqBp+Mf3uVsZVdGbWo2KH4kC32ei3BtUAqMrYg8libwgRpQ+1eBpsc4j
-   r91k5ksf1SK9myYf6v3iOIsGasbpfx2ORxTJKP7adTp5CBdfcm6h3n7lK
-   511WjJFydYB/XIMHCCnR/yaROsSn/A3Tjw0ZMVwL67TGC7pdZ4K8k+UlX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10722"; a="417745392"
-X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
-   d="scan'208";a="417745392"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 10:44:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10722"; a="775163669"
-X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
-   d="scan'208";a="775163669"
-Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 26 May 2023 10:44:40 -0700
-Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q2bUV-000JVq-2o;
-	Fri, 26 May 2023 17:44:39 +0000
-Date: Sat, 27 May 2023 01:44:27 +0800
-From: kernel test robot <lkp@intel.com>
-To: Liang Chen <liangchen.linux@gmail.com>, jasowang@redhat.com,
-	mst@redhat.com
-Cc: oe-kbuild-all@lists.linux.dev,
-	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, xuanzhuo@linux.alibaba.com,
-	kuba@kernel.org, edumazet@google.com, davem@davemloft.net,
-	pabeni@redhat.com, alexander.duyck@gmail.com,
-	Liang Chen <liangchen.linux@gmail.com>
-Subject: Re: [PATCH net-next 3/5] virtio_net: Add page pool fragmentation
- support
-Message-ID: <202305270116.TJ31IjNL-lkp@intel.com>
-References: <20230526054621.18371-3-liangchen.linux@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA41290E9
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:47:27 +0000 (UTC)
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5330C9;
+	Fri, 26 May 2023 10:47:25 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-9700219be87so179901966b.1;
+        Fri, 26 May 2023 10:47:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685123244; x=1687715244;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=nQ/mZiE1DDLOAtWwEqQIo9NTpf4yc0wp34Ig/HGhPX4=;
+        b=Rx3Q483hiduzAtSQ9xT826hU64MZ3nsv/l1S2d+95mbKEBV4iS1itIFuG1ACAlZ93M
+         WTxpNhgOf69JBFqtsBCawVdjXBi0R+joU1vOEz2c9pGRYvmdi/febe0zlTdHeAsntSui
+         Pi5x8A37be4zWIdYTRf5/436iKCxGyS9gVJcSPqmaXCIs+56dpyuXT5A7Uyi06NPy6B0
+         Hs3ZrbiykGC5m58K4lLlGb519Gkp1eNcB+poVYQK9FGrtVYzPIx65p9Q6bRMJlJdgQSB
+         /EIKPBTYbG9JunwvsE4gyapFKG9lP09YCKEbI67AbWYBQ6ul6O6l060hYJo/+RXHaGYN
+         sbKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685123244; x=1687715244;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nQ/mZiE1DDLOAtWwEqQIo9NTpf4yc0wp34Ig/HGhPX4=;
+        b=fvPwnxEAJJVQlbeVdVhwp4Ud/ybd9hajWKQv9UYZ92HY0qi3VHS575NUoRPBZQItcY
+         r0w1ewJNIFgYBYPjnXHtSTjTx4TU7URnXRSPa+Al95UY6YchePblm7p8D6Sb70rfd+Iq
+         +PHf8LNvWVV3bg20KfBRJUciz8bRaCGfR0grbRXumLIdT6qBJ0Yh1DMs9mGiyd5sQZwB
+         qKcn6BsbF51eI+h0oykKI8WBRnHiDDgW7dROUKYMhpvZMgtnR6GvLX+1uH6LhIU9eaDx
+         QH/Q3deYYJPdqEJFiaa3c1H2mr971J51+BCg2TXC7LrJLyVCdttzkRdgGsl1yQ7qNdRa
+         Y/Sw==
+X-Gm-Message-State: AC+VfDxwaWGw4+pYsyMqoSKLxbA1ekTTIafZNWOsv8A0iehCLXLueZRX
+	tBqyMyKiPBRU5LFo5A2ctec=
+X-Google-Smtp-Source: ACHHUZ4e3H4E47OpEJ4FjqZDL4K7u5OZImeOvXQZzOYZaPpmbevgWFJ++QbgFeYcEP/sZ/qITxh2IA==
+X-Received: by 2002:a17:907:16a3:b0:96a:928c:d391 with SMTP id hc35-20020a17090716a300b0096a928cd391mr3246692ejc.4.1685123243954;
+        Fri, 26 May 2023 10:47:23 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id i13-20020a17090685cd00b0096f83b16ab1sm2394439ejy.136.2023.05.26.10.47.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 May 2023 10:47:23 -0700 (PDT)
+Date: Fri, 26 May 2023 20:47:20 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: arinc9.unal@gmail.com
+Cc: Sean Wang <sean.wang@mediatek.com>,
+	Landen Chao <Landen.Chao@mediatek.com>,
+	DENG Qingfang <dqfext@gmail.com>,
+	Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Richard van Schagen <richard@routerhints.com>,
+	Richard van Schagen <vschagen@cs.com>,
+	Frank Wunderlich <frank-w@public-files.de>,
+	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+	erkin.bozoglu@xeront.com, mithat.guner@xeront.com,
+	=?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next 00/30] net: dsa: mt7530: improve, trap BPDU &
+ LLDP, and prefer CPU port
+Message-ID: <20230526174720.q7wsbbauyttu4grw@skbuf>
+References: <20230522121532.86610-1-arinc.unal@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -71,55 +90,31 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230526054621.18371-3-liangchen.linux@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+In-Reply-To: <20230522121532.86610-1-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Liang,
+On Mon, May 22, 2023 at 03:15:02PM +0300, arinc9.unal@gmail.com wrote:
+> Hello!
+> 
+> This patch series simplifies the code, improves the logic of the switch
+> hardware support, traps LLDP frames and BPDUs for MT7530, MT7531, and
+> MT7988 SoC switches, and introduces the preferring local CPU port
+> operation.
+> 
+> There's also a patch for fixing the port capabilities of the switch on the
+> MT7988 SoC.
+> 
+> I have done a bidirectional speed test using iperf3 on all ports of the
+> MT7530 and MT7531 switches with this patch series applied. I have tested
+> every possible configuration on the MCM and standalone MT7530 and MT7531
+> switch. I'll let the name of the dtb files speak for themselves.
 
-kernel test robot noticed the following build errors:
-
-[auto build test ERROR on net-next/main]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Liang-Chen/virtio_net-Add-page_pool-support-to-improve-performance/20230526-135805
-base:   net-next/main
-patch link:    https://lore.kernel.org/r/20230526054621.18371-3-liangchen.linux%40gmail.com
-patch subject: [PATCH net-next 3/5] virtio_net: Add page pool fragmentation support
-config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20230527/202305270116.TJ31IjNL-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-12) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/dda0469e059354b61192e1d25b77c57351346282
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Liang-Chen/virtio_net-Add-page_pool-support-to-improve-performance/20230526-135805
-        git checkout dda0469e059354b61192e1d25b77c57351346282
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 olddefconfig
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202305270116.TJ31IjNL-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   ld: vmlinux.o: in function `virtnet_find_vqs':
-   virtio_net.c:(.text+0x901fd2): undefined reference to `page_pool_create'
-   ld: vmlinux.o: in function `add_recvbuf_mergeable.isra.0':
-   virtio_net.c:(.text+0x905662): undefined reference to `page_pool_alloc_pages'
->> ld: virtio_net.c:(.text+0x905715): undefined reference to `page_pool_alloc_frag'
-   ld: vmlinux.o: in function `xdp_linearize_page':
-   virtio_net.c:(.text+0x906c50): undefined reference to `page_pool_alloc_pages'
-   ld: virtio_net.c:(.text+0x906e33): undefined reference to `page_pool_alloc_frag'
-   ld: vmlinux.o: in function `mergeable_xdp_get_buf.isra.0':
->> virtio_net.c:(.text+0x90740e): undefined reference to `page_pool_alloc_frag'
->> ld: virtio_net.c:(.text+0x90750b): undefined reference to `page_pool_alloc_pages'
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+As general feedback for the series, please sort the fixes to be first,
+to have as few dependencies as possible, and submit then to the 'net' tree,
+leaving cleanup at the end.
 
