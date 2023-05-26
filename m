@@ -1,117 +1,107 @@
-Return-Path: <netdev+bounces-5784-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5785-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E5247712BD4
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:34:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D32B8712BD7
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:35:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9CDB61C20C79
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:34:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 891151C21031
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:35:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0023228C37;
-	Fri, 26 May 2023 17:34:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6369428C39;
+	Fri, 26 May 2023 17:35:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA31F2CA6
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:34:45 +0000 (UTC)
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81040A4;
-	Fri, 26 May 2023 10:34:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685122484; x=1716658484;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aBPytJReVH8Ulrvcrruu/P0Ev+N0fGdkCGCZ+F2RSsI=;
-  b=Ww3Mu8d7J2CMp7BzdH1WlNB5lxPsEJZVKaDFrlD6DQqz0xbkIeZucTRY
-   hKrScSPU0wthH4QIiSiZP38LC4GGtwfslhueKanxWHTBKgAwCvXKtHm8/
-   AOIQuWnE/3UU19YNddiHwqHIHSri+hDBgX5R/IjI31gHpPIbqohwjE5JA
-   +nmJxzWdlcLhICL6tVeoleF1xTK4zYlCTYk/Xc6nJhosnufdET6vtiL8+
-   4AOWwkGdWfQRhlBCkxnJHvkfiS/TFRftpwI6puvXX52znKhPShv5yMRG4
-   j98CjnDIoUUbDCtjQW0D0VHrWLT3lBjq2Htf7Q5ZS+PD6MaNXInnIN0Cf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10722"; a="354273886"
-X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
-   d="scan'208";a="354273886"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 10:34:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10722"; a="879610852"
-X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
-   d="scan'208";a="879610852"
-Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 26 May 2023 10:34:40 -0700
-Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q2bKp-000JVc-2N;
-	Fri, 26 May 2023 17:34:39 +0000
-Date: Sat, 27 May 2023 01:34:01 +0800
-From: kernel test robot <lkp@intel.com>
-To: Liang Chen <liangchen.linux@gmail.com>, jasowang@redhat.com,
-	mst@redhat.com
-Cc: oe-kbuild-all@lists.linux.dev,
-	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, xuanzhuo@linux.alibaba.com,
-	kuba@kernel.org, edumazet@google.com, davem@davemloft.net,
-	pabeni@redhat.com, alexander.duyck@gmail.com,
-	Liang Chen <liangchen.linux@gmail.com>
-Subject: Re: [PATCH net-next 5/5] virtio_net: Implement DMA pre-handler
-Message-ID: <202305270110.TbNSDh0Z-lkp@intel.com>
-References: <20230526054621.18371-5-liangchen.linux@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5800528C34
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:35:28 +0000 (UTC)
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E519CA4;
+	Fri, 26 May 2023 10:35:26 -0700 (PDT)
+Received: from [10.10.2.69] (unknown [10.10.2.69])
+	by mail.ispras.ru (Postfix) with ESMTPSA id 25D1144C1026;
+	Fri, 26 May 2023 17:35:25 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 25D1144C1026
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+	s=default; t=1685122525;
+	bh=dYeLF47soPl7A+3mco/KP4CbNt6s64UADpsf1OpQymM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=pVeC0NSqyg0BQdlFdDE7MRCx9srs21kp9uSABHpC+mn3dAYyafLGtt/eD76tf+2Cc
+	 GkzTa70/deJoETlL7/UJCZXxzSQB+7co8if99rWDXJD4aCK3oJu7c5W7LBs0HHDBQx
+	 g5rpo9OEg2lALO1J/ndZkhVMg1Mpxn+mNxWXoOpY=
+Message-ID: <09834e8d-ca48-e21d-fd96-9de87294a7f4@ispras.ru>
+Date: Fri, 26 May 2023 20:35:25 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230526054621.18371-5-liangchen.linux@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH] batman-adv: Broken sync while rescheduling delayed work
+Content-Language: ru
+To: Sven Eckelmann <sven@narfation.org>,
+ Marek Lindner <mareklindner@neomailbox.ch>
+Cc: Simon Wunderlich <sw@simonwunderlich.de>,
+ Antonio Quartulli <a@unstable.cc>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, b.a.t.m.a.n@lists.open-mesh.org,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ lvc-project@linuxtesting.org
+References: <20230526161632.1460753-1-VEfanov@ispras.ru>
+ <5834562.MhkbZ0Pkbq@bentobox>
+From: Vlad Efanov <vefanov@ispras.ru>
+In-Reply-To: <5834562.MhkbZ0Pkbq@bentobox>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Liang,
+Sven,
 
-kernel test robot noticed the following build errors:
 
-[auto build test ERROR on net-next/main]
+cancel_delayed_work_sync() and queue_delayed_work()
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Liang-Chen/virtio_net-Add-page_pool-support-to-improve-performance/20230526-135805
-base:   net-next/main
-patch link:    https://lore.kernel.org/r/20230526054621.18371-5-liangchen.linux%40gmail.com
-patch subject: [PATCH net-next 5/5] virtio_net: Implement DMA pre-handler
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20230527/202305270110.TbNSDh0Z-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        mkdir -p ~/bin
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/e968bb5cacd30b672d0ccf705a24f1a792ff45aa
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Liang-Chen/virtio_net-Add-page_pool-support-to-improve-performance/20230526-135805
-        git checkout e968bb5cacd30b672d0ccf705a24f1a792ff45aa
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 ~/bin/make.cross W=1 O=build_dir ARCH=m68k olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 ~/bin/make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+use WORK_STRUCT_PENDING_BIT in work->data to synchronize.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202305270110.TbNSDh0Z-lkp@intel.com/
+INIT_DELAYED_WORK() clears this bit.
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
 
->> ERROR: modpost: "iommu_get_dma_domain" [drivers/net/virtio_net.ko] undefined!
+The situation is :  __cancel_work_timer() sets WORK_STRUCT_PENDING_BIT
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+but INIT_DELAYED_WORK() in batadv_dat_start_timer() clears it
+
+and queue_delayed_work() schedules new work.
+
+
+Best regards,
+
+Vlad.
+
+On 26.05.2023 19:49, Sven Eckelmann wrote:
+> On Friday, 26 May 2023 18:16:32 CEST Vladislav Efanov wrote:
+>> The reason for these issues is the lack of synchronization. Delayed
+>> work (batadv_dat_purge) schedules new timer/work while the device
+>> is being deleted. As the result new timer/delayed work is set after
+>> cancel_delayed_work_sync() was called. So after the device is freed
+>> the timer list contains pointer to already freed memory.
+> You are most likely right but could you please point out what in the worker is
+> checked by the workqueue code that prevents it from being scheduled again?
+> (and which seems to be overwritten as your patch seems to suggest)
+>
+> I think __cancel_work_timer marked the work as canceling but
+> batadv_dat_start_timer reinitialized the worked (thus removing this important
+> state). Would be nice if you could either correct me or confirm what I think to
+> remember.
+>
+> Kind regards,
+> 	Sven
 
