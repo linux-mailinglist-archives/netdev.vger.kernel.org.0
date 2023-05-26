@@ -1,691 +1,242 @@
-Return-Path: <netdev+bounces-5554-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5555-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id ABDB2712165
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:44:25 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D3051712166
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:44:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 609352815C2
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:44:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8837628164A
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:44:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C971AD27;
-	Fri, 26 May 2023 07:43:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 018328BED;
+	Fri, 26 May 2023 07:43:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C67B101D5
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:43:12 +0000 (UTC)
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2994812F;
-	Fri, 26 May 2023 00:43:07 -0700 (PDT)
-X-GND-Sasl: maxime.chevallier@bootlin.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1685086985;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ZSHO4Na2rM8AwFuAbc7+/YEMvRiXA5r07W34WmBo0Wk=;
-	b=pqKegkbdGW/Ts6AnYrf97VvM/dcL5vb9N5QhaZk37fkuYmCmZpVgMR0V05C81gVZZ2Mtp8
-	GpKuqEPTGh4JG5ag4Akcr1Hmo6UmknuY+iWmRzSksAywb9B+8ihdAPr14kEBpCUvDBbHlR
-	xFO7wGvGYX/7p0NGHLWHjDY/ExZVFIQfbaq/tTtMz6UCsf9mSGtF7hrvSXvBfVTWZI9E9O
-	oyIUEXWIxuB/EvhMgERAK2QVKZD78dSBrUN5t57HioK8nOXbdKlz7Ffl5FjuFu3v05EMRT
-	4at0/yUduzaqAaCgVy3BqTpJyg++E1mrZRkRCIcsEypBi1aAVI2sNRWmIHb4AA==
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 18AEB1C0008;
-	Fri, 26 May 2023 07:43:04 +0000 (UTC)
-From: Maxime Chevallier <maxime.chevallier@bootlin.com>
-To: Mark Brown <broonie@kernel.org>,
-	davem@davemloft.net
-Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	alexis.lothore@bootlin.com,
-	thomas.petazzoni@bootlin.com,
-	Andrew Lunn <andrew@lunn.ch>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Vladimir Oltean <vladimir.oltean@nxp.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Jose Abreu <joabreu@synopsys.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v3 4/4] net: stmmac: dwmac-sogfpga: use the lynx pcs driver
-Date: Fri, 26 May 2023 09:42:52 +0200
-Message-Id: <20230526074252.480200-5-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230526074252.480200-1-maxime.chevallier@bootlin.com>
-References: <20230526074252.480200-1-maxime.chevallier@bootlin.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E32EB79EE
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:43:48 +0000 (UTC)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F8510D5
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 00:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685087008; x=1716623008;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=pJfPvqeqtxhTa8QUbIPMKu55KZsOxJYY3zjAwO5JGw8=;
+  b=N0taqcFf+2gy0+tN3DGgOgzlI6wkasg+njyeRxt6zSh65AV/C8/tpO5p
+   pBPP6dalHqcqq4QM+sG009WE0kqN9Zle4MYN4K3R2l5CSC6H4tcvgMi2l
+   y++h1BAhfZ7GnsznJcryKmQ9bJ9ypRfuXnPe8vaURiiB5jqdarhsi9R3b
+   zr81W41dZzrBVci0Rf/yK94oJ3ytBDK262RtKL0HJni+/RGBnfiOmb4sM
+   z7WiYI3VbxHDEcO57Ok4nLJCPs+VngdUoihnvBa2S7BniALeFegvFVSSi
+   oqNRjt67odBa0FR+8GabbyriaCHjGhhxQGTIa+ImdpJbJtHA46712NAal
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="357396208"
+X-IronPort-AV: E=Sophos;i="6.00,193,1681196400"; 
+   d="scan'208";a="357396208"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 00:43:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="829417171"
+X-IronPort-AV: E=Sophos;i="6.00,193,1681196400"; 
+   d="scan'208";a="829417171"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga004.jf.intel.com with ESMTP; 26 May 2023 00:43:27 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Fri, 26 May 2023 00:43:26 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Fri, 26 May 2023 00:43:26 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Fri, 26 May 2023 00:43:26 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.175)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Fri, 26 May 2023 00:43:26 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BicPRVQQPegjytGk5NE9fsr+reKlc2w5Z7tX5+zpBUlr/ft736oUsOSV/ZgwNSAgL235V5+0MzybJqN5CDwfJBiH9OsHa+YLbZnBI4Pzfy7lthG0M5yTZ4tlwf0z3xkBNV79wT/4qWsVdw4UGEC0O1ArfYeXxMMEZY5e7RBmG8qYuYi7zhe7s25J4ZhuFCPq5/WO2JcaTgBvC+3UUnb98i4/iFZ47c90mlu1/PDXJQdQyfpfpC76V/S+f9h+bG4tGcKKux1eoe/9v+do7s/308fGwncO07KQGgumHw/jvXr/4CTTmO4mJd4lCSr4SUJuJ2o84AfGOSbz92/p2yRWIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=waiUJxMdnhYjH0Eo2IVD3S/Anc6X4mgxljhcPpZRHPE=;
+ b=Y5sJJGX55wEiSBq5fYflhO6NCvJBk+yqZ2t7cCvC8jIGAQp+rm/ZW/DS//7++FbA19D39pUpr0r67DJXna3lAK1KZZqi2zmfmMbAmtx60Um9WjzjTe2bZebG8ZMXLg91tAcFfn+jjG4/XHCZy5NqOmxDDGlcx8yBuPvTItTLpxkIbOiVjw41Hq+AFGjajrqezR8PCHwzdYhOaBrAWPWamzXQg+hYpLXnXx1n2lvFG8ds3/MDJK1sC0izSXQaruw4sMX+2TIlDJQLqfa+SYts9All6w0ooe2rIwlw7SxquJJJkn3BYHg8/enGoudafo0eD4nQmWluboTlTAsKNJBLdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO6PR11MB5603.namprd11.prod.outlook.com (2603:10b6:5:35c::12)
+ by SA2PR11MB4985.namprd11.prod.outlook.com (2603:10b6:806:111::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.17; Fri, 26 May
+ 2023 07:43:24 +0000
+Received: from CO6PR11MB5603.namprd11.prod.outlook.com
+ ([fe80::4287:6d31:8c78:de92]) by CO6PR11MB5603.namprd11.prod.outlook.com
+ ([fe80::4287:6d31:8c78:de92%6]) with mapi id 15.20.6433.015; Fri, 26 May 2023
+ 07:43:24 +0000
+Message-ID: <13cdd150-156f-65d2-2c38-e79115efbe8e@intel.com>
+Date: Fri, 26 May 2023 09:43:17 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH net-next 0/5][pull request] ice: Support 5 layer Tx
+ scheduler topology
+Content-Language: en-US
+To: Jakub Kicinski <kuba@kernel.org>
+CC: Jiri Pirko <jiri@resnulli.us>, Tony Nguyen <anthony.l.nguyen@intel.com>,
+	<davem@davemloft.net>, <pabeni@redhat.com>, <edumazet@google.com>,
+	<netdev@vger.kernel.org>, <lukasz.czapnik@intel.com>,
+	<przemyslaw.kitszel@intel.com>
+References: <20230523174008.3585300-1-anthony.l.nguyen@intel.com>
+ <ZG367+pNuYtvHXPh@nanopsycho>
+ <98366fa5-dc88-aa73-d07b-10e3bc84321c@intel.com>
+ <20230524092607.17123289@kernel.org>
+ <7ece1ba9-03bf-b836-1c55-c57f5235467c@intel.com>
+ <20230524130240.24a47852@kernel.org>
+ <e5a3edb9-1f6b-d7af-3f3a-4c80ee567c6b@intel.com>
+ <20230525084139.7e381557@kernel.org>
+From: "Wilczynski, Michal" <michal.wilczynski@intel.com>
+In-Reply-To: <20230525084139.7e381557@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0060.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:93::16) To CO6PR11MB5603.namprd11.prod.outlook.com
+ (2603:10b6:5:35c::12)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO6PR11MB5603:EE_|SA2PR11MB4985:EE_
+X-MS-Office365-Filtering-Correlation-Id: 399a3904-04b7-44e6-1380-08db5dbce2aa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NMouJjwE2yUFRju4lDhu+O6qrTqnq9tfQUTmR19xrL5XmCqKYDH0gU0tJdA1CAO1RBx8IV2uUWqJlWXSzocSuwDjzgf2FW3KcYJM/FeQBF2JYfBGHADX3GYwoq72JlG/lYRgHt7blRrx1wvF8L7G58cO9x6Xxd4xgz17abX/RWoGTCQU5TNKnA3wQYHlEjIGKZp2yjD86O1PvMb/BsM1FAsvLh2RezJdsiMoSVL766uKm0ZrJeYZ27kqFiOt0tFOr+1xdwzcHSYSS+PdKCXI90p/Vv9/2ENe/70M07oF8rCvkRvF9wG9gEUyizp22N+DlRaEibtxKB6AD/rRaYMU7bEwgnL4WOqrxjUgWhRqnJhoqa4KNI9jbjinSVJdKAf0EfN+hCN/6eKv0f+Y6SM4xWxBl8kaLwgYwkhCiaT3YEN7bg8XPQZru6AIQ7nVXFZoU8iqoiGUm4siWT2j6pdYrzlio1yms7+CkSfzL+cAbOvMR1Lr0M9iv68ST1iOluICtI+7CrgfQmocsFkKya0l59mtGmp++V7WRYRXVeugLJY6YJp1adkkd009c6kpys2ZVh8cJcPVlauli8nnhV859w/+ZpYwqrR2hHvnrY7Uvk8vkpatIpqBEUkHNCwOAM2VeGnxkh3/U+DFj3mavUuWMw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(346002)(366004)(396003)(376002)(136003)(451199021)(86362001)(8936002)(8676002)(316002)(31686004)(5660300002)(41300700001)(66476007)(6916009)(66556008)(66946007)(4326008)(2906002)(54906003)(478600001)(2616005)(82960400001)(6666004)(36756003)(6486002)(38100700002)(107886003)(26005)(53546011)(6512007)(186003)(6506007)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MWVKVXEvOXlDaGFGakVBWW11R3JtWXJ1UU9EOWpVRlA1RTUzUVk3Z2FoVVIv?=
+ =?utf-8?B?QlAzb3c5RVdZNzd3NUtGMThDWVYzMThEcXdVWEhKRW1hYzhYbDhOVy9sMXVx?=
+ =?utf-8?B?MGdhWkFJM0FydHB2cG1YbStHbXh2WVRjS0pqeS8yVW5FVmxzREJEMTZTK3Bp?=
+ =?utf-8?B?UGY0TW9lenlGMGQxeUpZdTFURlB0a2M0NjhralZPbGlHUUwreE51bHVtUWk1?=
+ =?utf-8?B?Sk56U3BrODRoQXpRRitVa2dSZzhwNTZSbEpPOXlSZGxad0FyVURxcEVodlRC?=
+ =?utf-8?B?cDNXdjhISmNqdkhKYWFSUStNWDI1c2l5WE5VRWI3OWdnd1lZSUF5bFdLc2Vp?=
+ =?utf-8?B?ZGVOUldPQUFlM1kwQUowTTArRE5CSmtTL29uRm9DNXZTU0R6eWEvaVFXdTVa?=
+ =?utf-8?B?Q1h6SktEN2dONUF3SnBsajJDcy8rOWlQV0VId1loamsyNThrZ2VNdW9oUk96?=
+ =?utf-8?B?bzRieWFEUUo1OHVBV1NzclpZR05relFuQjdOajVkdW15QUVVdURIdmE3ejU5?=
+ =?utf-8?B?amNoZGJjTXFGUnh2SWJvR1krZlV6eWxhK1owdWk4VEpkeHdvVDk2QTgvbVVP?=
+ =?utf-8?B?VFY3S2J4TGlrMjdOeEgweEdjbWNmKzBzd0d1Q2VRb0U2clJmdmZBV1JsR0hl?=
+ =?utf-8?B?Z3BHbHRWNUlaLzE0TmNKaEFjNDBNMXgzUkZwcmx1VlRkZkZBeTRGWXpMdndy?=
+ =?utf-8?B?YTFOTDZxNmlCdk9kUXFDYXRoNFk3TU5leUdUWFRZVnZEMWFBVkwydXV3c3BO?=
+ =?utf-8?B?WU1MeXJFVzVERmdOVm43SFkza3JpMkZYTUlkVnhsQ1dQWEEwbC9wZGN4NW1S?=
+ =?utf-8?B?MnRtMkM1MWQ1c0FTMVhTY1lhTEYvdjJZWjllbVVJS3NQMitSOTkxZzJrNUJ4?=
+ =?utf-8?B?bWRrRmR3MjEzZTJ6bE9iQnAxYWM4ajQySytBSWpVUVVTU0pKTXI0UmsxYWhj?=
+ =?utf-8?B?ZWZuZDc4NDJBU1ZEVzNNZ1BWN2Y0TDF6UDdDWGwxb2FLQnYzVzBsNTh1aklv?=
+ =?utf-8?B?N0llakxENUFxMXF5dTZZOUhsMHhvZ2FVN29uTkxSQmRBeHhibFQ0czgwSGpJ?=
+ =?utf-8?B?bzcrMGZSR3RZYWFJMHhKK3ozQ2p2NitqQkJDQUczQ0lwQ1EybEhER0VKZC9p?=
+ =?utf-8?B?NTBpcTVIdEVoalR5YVE3NEkwUzVhblEwZ0U5RDZRb21pSzhOZGxzREs4dW1i?=
+ =?utf-8?B?QU9lQklYU3hKVnptL0h0dGh6ODBNeGFvUW91STJaUytxV0dCZFI1REtqMldD?=
+ =?utf-8?B?ZUdhdWhyTUtqVk9GR1gvMXlXREZuZVBtWlRkb1ZQQ3laaFd5ZXJVTDhZbWJZ?=
+ =?utf-8?B?dEw2YXVCa1hQejZiS1h6eGlWZzdnbVJ5dUthb3R2UWtPbE1BZXIvanpyc0Ev?=
+ =?utf-8?B?dEZsenZHM3ZHbENDYllzbEdUZWVNWjM3WUFtb2xDTkdtQXFnT0ltMDdaeGx2?=
+ =?utf-8?B?NWxFYWMxVHJxKytQL3dGZTg5SGRETDRWZTIrZmlTakk5TzJTdXhsclQwMmhx?=
+ =?utf-8?B?VWF6L283ZGdWUmhSL1c3cStrTEF1WXZZZW9MbTU4WFJZZUxHQlB4dWY5TnlF?=
+ =?utf-8?B?MVhIWjJhRVlZN0lpaERaRnUxYXJwL3pvRFNWQzN1K1h5MkcyTnRIejlmVEU4?=
+ =?utf-8?B?Y2VEelhBOE9HY1VEb1BMRFFQenovc0k5QmhyUHNrRXZBejJqUGVkMXNVVkFr?=
+ =?utf-8?B?ekxKVFh3aS9LbjN6dnhpK1NWNlVMeGNiZm54R2kvN3E5bDdFdWJMSVlUZTVm?=
+ =?utf-8?B?Q28yZk0veEt3WW1RV0JrRTFONytpMXdZelYxYmMwRmZzZ2VHTHNVU2wyYm5T?=
+ =?utf-8?B?b1h3SmdlaXdKZjFVbThjYmZ3QllQVmdDV1lTeHBISFJkNFRrUlV2dlpkN3pG?=
+ =?utf-8?B?dUV0bDRLYVl4Y1hUbWowWkJxUGNOblU0SUVqdHZpbkNjbHU2ZStLcXhTSmc4?=
+ =?utf-8?B?YzFXMlNyemZ6WjBCQW1CUkk5VU12WTVCUmF5L2JkZ1M2QVhlejQ0Vkkrelpa?=
+ =?utf-8?B?MllmYTRSTTZiZlN0Z2xCUTZlT3NIbjNkOG1DOHNidFVvVGNHSHU4VUY0ZytC?=
+ =?utf-8?B?cEZyMk9hRTJsdFlUaUhzOWpRRzZnb0I5Y2pWNjJNUUp3b3pHbFp6WWNjOWo3?=
+ =?utf-8?B?QlNleUY0VExpcllwREhsS1IrUDh2WGloWkFldzJzUHlKSGNZMkt3WlRhVG9s?=
+ =?utf-8?B?YXc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 399a3904-04b7-44e6-1380-08db5dbce2aa
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2023 07:43:24.4196
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vnDX9pPImfFa+5tqIRb77DloOUl87753XkiFz+5BVaDBkRSKnHX4PKwvc1HZN4BOu1DOkltUjPyOXHktvfGDGCoD/P+kAevgZw3qD7e3W9s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB4985
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-dwmac_socfpga re-implements support for the TSE PCS, which is identical
-to the already existing TSE PCS, which in turn is the same as the Lynx
-PCS. Drop the existing TSE re-implemenation and use the Lynx PCS
-instead, relying on the regmap-mdio driver to translate MDIO accesses
-into mmio accesses.
 
-Instead of extending xpcs, allow using a generic phylink_pcs, populated
-by lynx_pcs_create(), and use .mac_select_pcs() to return the relevant
-PCS to be used.
 
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
----
-V2->V3 : No changes
-V1->V2 : No changes
+On 5/25/2023 5:41 PM, Jakub Kicinski wrote:
+> On Thu, 25 May 2023 09:49:53 +0200 Wilczynski, Michal wrote:
+>> On 5/24/2023 10:02 PM, Jakub Kicinski wrote:
+>>> On Wed, 24 May 2023 18:59:20 +0200 Wilczynski, Michal wrote:  
+>>>> Sorry about that, I gave examples from the top of my head, since those are the
+>>>> features that potentially could modify the scheduler tree, seemed obvious to me
+>>>> at the time. Lowering number of layers in the scheduling tree increases performance,
+>>>> but only allows you to create a much simpler scheduling tree. I agree that mentioning the
+>>>> features that actually modify the scheduling tree could be helpful to the reviewer.  
+>>> Reviewer is one thing, but also the user. The documentation needs to be
+>>> clear enough for the user to be able to confidently make a choice one
+>>> way or the other. I'm not sure 5- vs 9-layer is meaningful to the user
+>>> at all.  
+>> It is relevant especially if the number of VF's/queues is not a multiply of 8, as described
+>> in the first commit of this series - that's the real-world user problem. Performance was
+>> not consistent among queues if you had 9 queues for example.
+>>
+>> But I was also trying to provide some background on why we don't want to make 5-layer
+>> topology the default in the answers above.
+> What I'm saying is that 5- vs 9-layer is not meaningful as 
+> a description. The user has to (somehow?!) know that the number 
+> of layers in the hierarchy implies the grouping problem.
+> The documentation doesn't mention the grouping problem!
+>
+> +     - This parameter gives user flexibility to choose the 5-layer
+> +       transmit scheduler topology, which helps to smooth out the transmit
+> +       performance. The default topology is 9-layer. Each layer represents
+> +       a physical junction in the network. Decreased number of layers
+> +       improves performance, but at the same time number of network junctions
+> +       is reduced, which might not be desirable depending on the use case.
+>
+>>>  In fact, the entire configuration would be better defined as
+>>> a choice of features user wants to be available and the FW || driver
+>>> makes the decision on how to implement that most efficiently.  
+>> User can change number of queues/VF's 'on the fly' , but change in topology
+>> requires a reboot basically, since the contents of the NVM are changed.
+>>
+>> So to accomplish that we would need to perform topology change after each
+>> change to number of queues to adapt, and it's not feasible to reboot every time
+>> user changes number of queues.
+>>
+>> Additionally 5-layer topology doesn't disable any of the features mentioned
+>> (i.e. DCB/devlink-rate) it just makes them work a bit differently, but they still
+>> should work.
+>>
+>> To summarize: I would say that this series address specific performance problem
+>> user might have if their queue count is not a power of 8. I can't see how this can
+>> be solved by a choice of features, as the decision regarding number of queues can
+>> be made 'on-the-fly'.
+> Well, think among yourselves. "txbalancing" and a enigmatic
+> documentation talking about topology and junctions is a no go.
 
- drivers/net/ethernet/stmicro/stmmac/Kconfig   |   1 +
- drivers/net/ethernet/stmicro/stmmac/Makefile  |   2 +-
- .../ethernet/stmicro/stmmac/altr_tse_pcs.c    | 257 ------------------
- .../ethernet/stmicro/stmmac/altr_tse_pcs.h    |  29 --
- drivers/net/ethernet/stmicro/stmmac/common.h  |   1 +
- .../ethernet/stmicro/stmmac/dwmac-socfpga.c   |  90 ++++--
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  12 +-
- 7 files changed, 76 insertions(+), 316 deletions(-)
- delete mode 100644 drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
- delete mode 100644 drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 5f5a997f21f3..62b484cca1c3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -158,6 +158,7 @@ config DWMAC_SOCFPGA
- 	default ARCH_INTEL_SOCFPGA
- 	depends on OF && (ARCH_INTEL_SOCFPGA || COMPILE_TEST)
- 	select MFD_SYSCON
-+	select PCS_LYNX
- 	help
- 	  Support for ethernet controller on Altera SOCFPGA
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
-index 8738fdbb4b2d..7dd3d388068b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-+++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-@@ -35,7 +35,7 @@ obj-$(CONFIG_DWMAC_IMX8)	+= dwmac-imx.o
- obj-$(CONFIG_DWMAC_TEGRA)	+= dwmac-tegra.o
- obj-$(CONFIG_DWMAC_VISCONTI)	+= dwmac-visconti.o
- stmmac-platform-objs:= stmmac_platform.o
--dwmac-altr-socfpga-objs := altr_tse_pcs.o dwmac-socfpga.o
-+dwmac-altr-socfpga-objs := dwmac-socfpga.o
- 
- obj-$(CONFIG_STMMAC_PCI)	+= stmmac-pci.o
- obj-$(CONFIG_DWMAC_INTEL)	+= dwmac-intel.o
-diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-deleted file mode 100644
-index 00f6d347eaf7..000000000000
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-+++ /dev/null
-@@ -1,257 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/* Copyright Altera Corporation (C) 2016. All rights reserved.
-- *
-- * Author: Tien Hock Loh <thloh@altera.com>
-- */
--
--#include <linux/mfd/syscon.h>
--#include <linux/of.h>
--#include <linux/of_address.h>
--#include <linux/of_net.h>
--#include <linux/phy.h>
--#include <linux/regmap.h>
--#include <linux/reset.h>
--#include <linux/stmmac.h>
--
--#include "stmmac.h"
--#include "stmmac_platform.h"
--#include "altr_tse_pcs.h"
--
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII	0
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII		BIT(1)
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII		BIT(2)
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_WIDTH		2
--#define SYSMGR_EMACGRP_CTRL_PHYSEL_MASK			GENMASK(1, 0)
--
--#define TSE_PCS_CONTROL_AN_EN_MASK			BIT(12)
--#define TSE_PCS_CONTROL_REG				0x00
--#define TSE_PCS_CONTROL_RESTART_AN_MASK			BIT(9)
--#define TSE_PCS_CTRL_AUTONEG_SGMII			0x1140
--#define TSE_PCS_IF_MODE_REG				0x28
--#define TSE_PCS_LINK_TIMER_0_REG			0x24
--#define TSE_PCS_LINK_TIMER_1_REG			0x26
--#define TSE_PCS_SIZE					0x40
--#define TSE_PCS_STATUS_AN_COMPLETED_MASK		BIT(5)
--#define TSE_PCS_STATUS_LINK_MASK			0x0004
--#define TSE_PCS_STATUS_REG				0x02
--#define TSE_PCS_SGMII_SPEED_1000			BIT(3)
--#define TSE_PCS_SGMII_SPEED_100				BIT(2)
--#define TSE_PCS_SGMII_SPEED_10				0x0
--#define TSE_PCS_SW_RST_MASK				0x8000
--#define TSE_PCS_PARTNER_ABILITY_REG			0x0A
--#define TSE_PCS_PARTNER_DUPLEX_FULL			0x1000
--#define TSE_PCS_PARTNER_DUPLEX_HALF			0x0000
--#define TSE_PCS_PARTNER_DUPLEX_MASK			0x1000
--#define TSE_PCS_PARTNER_SPEED_MASK			GENMASK(11, 10)
--#define TSE_PCS_PARTNER_SPEED_1000			BIT(11)
--#define TSE_PCS_PARTNER_SPEED_100			BIT(10)
--#define TSE_PCS_PARTNER_SPEED_10			0x0000
--#define TSE_PCS_PARTNER_SPEED_1000			BIT(11)
--#define TSE_PCS_PARTNER_SPEED_100			BIT(10)
--#define TSE_PCS_PARTNER_SPEED_10			0x0000
--#define TSE_PCS_SGMII_SPEED_MASK			GENMASK(3, 2)
--#define TSE_PCS_SGMII_LINK_TIMER_0			0x0D40
--#define TSE_PCS_SGMII_LINK_TIMER_1			0x0003
--#define TSE_PCS_SW_RESET_TIMEOUT			100
--#define TSE_PCS_USE_SGMII_AN_MASK			BIT(1)
--#define TSE_PCS_USE_SGMII_ENA				BIT(0)
--#define TSE_PCS_IF_USE_SGMII				0x03
--
--#define AUTONEGO_LINK_TIMER				20
--
--static int tse_pcs_reset(void __iomem *base, struct tse_pcs *pcs)
--{
--	int counter = 0;
--	u16 val;
--
--	val = readw(base + TSE_PCS_CONTROL_REG);
--	val |= TSE_PCS_SW_RST_MASK;
--	writew(val, base + TSE_PCS_CONTROL_REG);
--
--	while (counter < TSE_PCS_SW_RESET_TIMEOUT) {
--		val = readw(base + TSE_PCS_CONTROL_REG);
--		val &= TSE_PCS_SW_RST_MASK;
--		if (val == 0)
--			break;
--		counter++;
--		udelay(1);
--	}
--	if (counter >= TSE_PCS_SW_RESET_TIMEOUT) {
--		dev_err(pcs->dev, "PCS could not get out of sw reset\n");
--		return -ETIMEDOUT;
--	}
--
--	return 0;
--}
--
--int tse_pcs_init(void __iomem *base, struct tse_pcs *pcs)
--{
--	int ret = 0;
--
--	writew(TSE_PCS_IF_USE_SGMII, base + TSE_PCS_IF_MODE_REG);
--
--	writew(TSE_PCS_CTRL_AUTONEG_SGMII, base + TSE_PCS_CONTROL_REG);
--
--	writew(TSE_PCS_SGMII_LINK_TIMER_0, base + TSE_PCS_LINK_TIMER_0_REG);
--	writew(TSE_PCS_SGMII_LINK_TIMER_1, base + TSE_PCS_LINK_TIMER_1_REG);
--
--	ret = tse_pcs_reset(base, pcs);
--	if (ret == 0)
--		writew(SGMII_ADAPTER_ENABLE,
--		       pcs->sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--
--	return ret;
--}
--
--static void pcs_link_timer_callback(struct tse_pcs *pcs)
--{
--	u16 val = 0;
--	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
--	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
--
--	val = readw(tse_pcs_base + TSE_PCS_STATUS_REG);
--	val &= TSE_PCS_STATUS_LINK_MASK;
--
--	if (val != 0) {
--		dev_dbg(pcs->dev, "Adapter: Link is established\n");
--		writew(SGMII_ADAPTER_ENABLE,
--		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--	} else {
--		mod_timer(&pcs->aneg_link_timer, jiffies +
--			  msecs_to_jiffies(AUTONEGO_LINK_TIMER));
--	}
--}
--
--static void auto_nego_timer_callback(struct tse_pcs *pcs)
--{
--	u16 val = 0;
--	u16 speed = 0;
--	u16 duplex = 0;
--	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
--	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
--
--	val = readw(tse_pcs_base + TSE_PCS_STATUS_REG);
--	val &= TSE_PCS_STATUS_AN_COMPLETED_MASK;
--
--	if (val != 0) {
--		dev_dbg(pcs->dev, "Adapter: Auto Negotiation is completed\n");
--		val = readw(tse_pcs_base + TSE_PCS_PARTNER_ABILITY_REG);
--		speed = val & TSE_PCS_PARTNER_SPEED_MASK;
--		duplex = val & TSE_PCS_PARTNER_DUPLEX_MASK;
--
--		if (speed == TSE_PCS_PARTNER_SPEED_10 &&
--		    duplex == TSE_PCS_PARTNER_DUPLEX_FULL)
--			dev_dbg(pcs->dev,
--				"Adapter: Link Partner is Up - 10/Full\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_100 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_FULL)
--			dev_dbg(pcs->dev,
--				"Adapter: Link Partner is Up - 100/Full\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_1000 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_FULL)
--			dev_dbg(pcs->dev,
--				"Adapter: Link Partner is Up - 1000/Full\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_10 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_HALF)
--			dev_err(pcs->dev,
--				"Adapter does not support Half Duplex\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_100 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_HALF)
--			dev_err(pcs->dev,
--				"Adapter does not support Half Duplex\n");
--		else if (speed == TSE_PCS_PARTNER_SPEED_1000 &&
--			 duplex == TSE_PCS_PARTNER_DUPLEX_HALF)
--			dev_err(pcs->dev,
--				"Adapter does not support Half Duplex\n");
--		else
--			dev_err(pcs->dev,
--				"Adapter: Invalid Partner Speed and Duplex\n");
--
--		if (duplex == TSE_PCS_PARTNER_DUPLEX_FULL &&
--		    (speed == TSE_PCS_PARTNER_SPEED_10 ||
--		     speed == TSE_PCS_PARTNER_SPEED_100 ||
--		     speed == TSE_PCS_PARTNER_SPEED_1000))
--			writew(SGMII_ADAPTER_ENABLE,
--			       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--	} else {
--		val = readw(tse_pcs_base + TSE_PCS_CONTROL_REG);
--		val |= TSE_PCS_CONTROL_RESTART_AN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_CONTROL_REG);
--
--		tse_pcs_reset(tse_pcs_base, pcs);
--		mod_timer(&pcs->aneg_link_timer, jiffies +
--			  msecs_to_jiffies(AUTONEGO_LINK_TIMER));
--	}
--}
--
--static void aneg_link_timer_callback(struct timer_list *t)
--{
--	struct tse_pcs *pcs = from_timer(pcs, t, aneg_link_timer);
--
--	if (pcs->autoneg == AUTONEG_ENABLE)
--		auto_nego_timer_callback(pcs);
--	else if (pcs->autoneg == AUTONEG_DISABLE)
--		pcs_link_timer_callback(pcs);
--}
--
--void tse_pcs_fix_mac_speed(struct tse_pcs *pcs, struct phy_device *phy_dev,
--			   unsigned int speed)
--{
--	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
--	u32 val;
--
--	pcs->autoneg = phy_dev->autoneg;
--
--	if (phy_dev->autoneg == AUTONEG_ENABLE) {
--		val = readw(tse_pcs_base + TSE_PCS_CONTROL_REG);
--		val |= TSE_PCS_CONTROL_AN_EN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_CONTROL_REG);
--
--		val = readw(tse_pcs_base + TSE_PCS_IF_MODE_REG);
--		val |= TSE_PCS_USE_SGMII_AN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_IF_MODE_REG);
--
--		val = readw(tse_pcs_base + TSE_PCS_CONTROL_REG);
--		val |= TSE_PCS_CONTROL_RESTART_AN_MASK;
--
--		tse_pcs_reset(tse_pcs_base, pcs);
--
--		timer_setup(&pcs->aneg_link_timer, aneg_link_timer_callback,
--			    0);
--		mod_timer(&pcs->aneg_link_timer, jiffies +
--			  msecs_to_jiffies(AUTONEGO_LINK_TIMER));
--	} else if (phy_dev->autoneg == AUTONEG_DISABLE) {
--		val = readw(tse_pcs_base + TSE_PCS_CONTROL_REG);
--		val &= ~TSE_PCS_CONTROL_AN_EN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_CONTROL_REG);
--
--		val = readw(tse_pcs_base + TSE_PCS_IF_MODE_REG);
--		val &= ~TSE_PCS_USE_SGMII_AN_MASK;
--		writew(val, tse_pcs_base + TSE_PCS_IF_MODE_REG);
--
--		val = readw(tse_pcs_base + TSE_PCS_IF_MODE_REG);
--		val &= ~TSE_PCS_SGMII_SPEED_MASK;
--
--		switch (speed) {
--		case 1000:
--			val |= TSE_PCS_SGMII_SPEED_1000;
--			break;
--		case 100:
--			val |= TSE_PCS_SGMII_SPEED_100;
--			break;
--		case 10:
--			val |= TSE_PCS_SGMII_SPEED_10;
--			break;
--		default:
--			return;
--		}
--		writew(val, tse_pcs_base + TSE_PCS_IF_MODE_REG);
--
--		tse_pcs_reset(tse_pcs_base, pcs);
--
--		timer_setup(&pcs->aneg_link_timer, aneg_link_timer_callback,
--			    0);
--		mod_timer(&pcs->aneg_link_timer, jiffies +
--			  msecs_to_jiffies(AUTONEGO_LINK_TIMER));
--	}
--}
-diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-deleted file mode 100644
-index 694ac25ef426..000000000000
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-+++ /dev/null
-@@ -1,29 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/* Copyright Altera Corporation (C) 2016. All rights reserved.
-- *
-- * Author: Tien Hock Loh <thloh@altera.com>
-- */
--
--#ifndef __TSE_PCS_H__
--#define __TSE_PCS_H__
--
--#include <linux/phy.h>
--#include <linux/timer.h>
--
--#define SGMII_ADAPTER_CTRL_REG		0x00
--#define SGMII_ADAPTER_ENABLE		0x0000
--#define SGMII_ADAPTER_DISABLE		0x0001
--
--struct tse_pcs {
--	struct device *dev;
--	void __iomem *tse_pcs_base;
--	void __iomem *sgmii_adapter_base;
--	struct timer_list aneg_link_timer;
--	int autoneg;
--};
--
--int tse_pcs_init(void __iomem *base, struct tse_pcs *pcs);
--void tse_pcs_fix_mac_speed(struct tse_pcs *pcs, struct phy_device *phy_dev,
--			   unsigned int speed);
--
--#endif /* __TSE_PCS_H__ */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 4ad692c4116c..34751524775a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -519,6 +519,7 @@ struct mac_device_info {
- 	const struct stmmac_tc_ops *tc;
- 	const struct stmmac_mmc_ops *mmc;
- 	struct dw_xpcs *xpcs;
-+	struct phylink_pcs *phylink_pcs; /* Generic external PCS */
- 	struct mii_regs mii;	/* MII register Addresses */
- 	struct mac_link link;
- 	void __iomem *pcsr;     /* vpointer to device CSRs */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-index 6ee050300b31..5f61b33905fc 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -10,14 +10,14 @@
- #include <linux/of_net.h>
- #include <linux/phy.h>
- #include <linux/regmap.h>
-+#include <linux/mdio/mdio-regmap.h>
- #include <linux/reset.h>
- #include <linux/stmmac.h>
-+#include <linux/pcs-lynx.h>
- 
- #include "stmmac.h"
- #include "stmmac_platform.h"
- 
--#include "altr_tse_pcs.h"
--
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
-@@ -37,6 +37,10 @@
- #define EMAC_SPLITTER_CTRL_SPEED_100		0x3
- #define EMAC_SPLITTER_CTRL_SPEED_1000		0x0
- 
-+#define SGMII_ADAPTER_CTRL_REG		0x00
-+#define SGMII_ADAPTER_ENABLE		0x0000
-+#define SGMII_ADAPTER_DISABLE		0x0001
-+
- struct socfpga_dwmac;
- struct socfpga_dwmac_ops {
- 	int (*set_phy_mode)(struct socfpga_dwmac *dwmac_priv);
-@@ -50,16 +54,18 @@ struct socfpga_dwmac {
- 	struct reset_control *stmmac_rst;
- 	struct reset_control *stmmac_ocp_rst;
- 	void __iomem *splitter_base;
-+	void __iomem *tse_pcs_base;
-+	void __iomem *sgmii_adapter_base;
- 	bool f2h_ptp_ref_clk;
--	struct tse_pcs pcs;
- 	const struct socfpga_dwmac_ops *ops;
-+	struct mdio_device *pcs_mdiodev;
- };
- 
- static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
- {
- 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
- 	void __iomem *splitter_base = dwmac->splitter_base;
--	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
-+	void __iomem *sgmii_adapter_base = dwmac->sgmii_adapter_base;
- 	struct device *dev = dwmac->dev;
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct phy_device *phy_dev = ndev->phydev;
-@@ -89,11 +95,9 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
- 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
- 	}
- 
--	if (phy_dev && sgmii_adapter_base) {
-+	if (phy_dev && sgmii_adapter_base)
- 		writew(SGMII_ADAPTER_ENABLE,
- 		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
--	}
- }
- 
- static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *dev)
-@@ -183,11 +187,11 @@ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *
- 				goto err_node_put;
- 			}
- 
--			dwmac->pcs.sgmii_adapter_base =
-+			dwmac->sgmii_adapter_base =
- 			    devm_ioremap_resource(dev, &res_sgmii_adapter);
- 
--			if (IS_ERR(dwmac->pcs.sgmii_adapter_base)) {
--				ret = PTR_ERR(dwmac->pcs.sgmii_adapter_base);
-+			if (IS_ERR(dwmac->sgmii_adapter_base)) {
-+				ret = PTR_ERR(dwmac->sgmii_adapter_base);
- 				goto err_node_put;
- 			}
- 		}
-@@ -205,11 +209,11 @@ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *
- 				goto err_node_put;
- 			}
- 
--			dwmac->pcs.tse_pcs_base =
-+			dwmac->tse_pcs_base =
- 			    devm_ioremap_resource(dev, &res_tse_pcs);
- 
--			if (IS_ERR(dwmac->pcs.tse_pcs_base)) {
--				ret = PTR_ERR(dwmac->pcs.tse_pcs_base);
-+			if (IS_ERR(dwmac->tse_pcs_base)) {
-+				ret = PTR_ERR(dwmac->tse_pcs_base);
- 				goto err_node_put;
- 			}
- 		}
-@@ -235,6 +239,13 @@ static int socfpga_get_plat_phymode(struct socfpga_dwmac *dwmac)
- 	return priv->plat->interface;
- }
- 
-+static void socfpga_sgmii_config(struct socfpga_dwmac *dwmac, bool enable)
-+{
-+	u16 val = enable ? SGMII_ADAPTER_ENABLE : SGMII_ADAPTER_DISABLE;
-+
-+	writew(val, dwmac->sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+}
-+
- static int socfpga_set_phy_mode_common(int phymode, u32 *val)
- {
- 	switch (phymode) {
-@@ -310,12 +321,8 @@ static int socfpga_gen5_set_phy_mode(struct socfpga_dwmac *dwmac)
- 	 */
- 	reset_control_deassert(dwmac->stmmac_ocp_rst);
- 	reset_control_deassert(dwmac->stmmac_rst);
--	if (phymode == PHY_INTERFACE_MODE_SGMII) {
--		if (tse_pcs_init(dwmac->pcs.tse_pcs_base, &dwmac->pcs) != 0) {
--			dev_err(dwmac->dev, "Unable to initialize TSE PCS");
--			return -EINVAL;
--		}
--	}
-+	if (phymode == PHY_INTERFACE_MODE_SGMII)
-+		socfpga_sgmii_config(dwmac, true);
- 
- 	return 0;
- }
-@@ -367,12 +374,8 @@ static int socfpga_gen10_set_phy_mode(struct socfpga_dwmac *dwmac)
- 	 */
- 	reset_control_deassert(dwmac->stmmac_ocp_rst);
- 	reset_control_deassert(dwmac->stmmac_rst);
--	if (phymode == PHY_INTERFACE_MODE_SGMII) {
--		if (tse_pcs_init(dwmac->pcs.tse_pcs_base, &dwmac->pcs) != 0) {
--			dev_err(dwmac->dev, "Unable to initialize TSE PCS");
--			return -EINVAL;
--		}
--	}
-+	if (phymode == PHY_INTERFACE_MODE_SGMII)
-+		socfpga_sgmii_config(dwmac, true);
- 	return 0;
- }
- 
-@@ -386,6 +389,14 @@ static int socfpga_dwmac_probe(struct platform_device *pdev)
- 	struct net_device	*ndev;
- 	struct stmmac_priv	*stpriv;
- 	const struct socfpga_dwmac_ops *ops;
-+	struct regmap_config pcs_regmap_cfg;
-+	struct regmap *pcs_regmap;
-+	struct mii_bus *pcs_bus;
-+
-+	struct mdio_regmap_config mrc = {
-+		.parent = &pdev->dev,
-+		.valid_addr = 0x0,
-+	};
- 
- 	ops = device_get_match_data(&pdev->dev);
- 	if (!ops) {
-@@ -443,6 +454,35 @@ static int socfpga_dwmac_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_dvr_remove;
- 
-+	memset(&pcs_regmap_cfg, 0, sizeof(pcs_regmap_cfg));
-+	pcs_regmap_cfg.reg_bits = 16;
-+	pcs_regmap_cfg.val_bits = 16;
-+	pcs_regmap_cfg.reg_shift = REGMAP_UPSHIFT(1);
-+
-+	/* Create a regmap for the PCS so that it can be used by the PCS driver,
-+	 * if we have such a PCS
-+	 */
-+	if (dwmac->tse_pcs_base) {
-+		pcs_regmap = devm_regmap_init_mmio(&pdev->dev, dwmac->tse_pcs_base,
-+						   &pcs_regmap_cfg);
-+		if (IS_ERR(pcs_regmap)) {
-+			ret = PTR_ERR(pcs_regmap);
-+			goto err_dvr_remove;
-+		}
-+
-+		mrc.regmap = pcs_regmap;
-+
-+		snprintf(mrc.name, MII_BUS_ID_SIZE, "%s-pcs-mii", ndev->name);
-+		pcs_bus = devm_mdio_regmap_register(&pdev->dev, &mrc);
-+		if (IS_ERR(pcs_bus)) {
-+			ret = PTR_ERR(pcs_bus);
-+			goto err_dvr_remove;
-+		}
-+
-+		dwmac->pcs_mdiodev = mdio_device_create(pcs_bus, 0);
-+		stpriv->hw->phylink_pcs = lynx_pcs_create(dwmac->pcs_mdiodev);
-+	}
-+
- 	return 0;
- 
- err_dvr_remove:
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 0fca81507a77..e570a95dd8d0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -937,10 +937,13 @@ static struct phylink_pcs *stmmac_mac_select_pcs(struct phylink_config *config,
- {
- 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
- 
--	if (!priv->hw->xpcs)
--		return NULL;
-+	if (priv->hw->xpcs)
-+		return &priv->hw->xpcs->pcs;
-+
-+	if (priv->hw->phylink_pcs)
-+		return priv->hw->phylink_pcs;
- 
--	return &priv->hw->xpcs->pcs;
-+	return NULL;
- }
- 
- static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
-@@ -3813,7 +3816,8 @@ static int __stmmac_open(struct net_device *dev,
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI &&
- 	    (!priv->hw->xpcs ||
--	     xpcs_get_an_mode(priv->hw->xpcs, mode) != DW_AN_C73)) {
-+	     xpcs_get_an_mode(priv->hw->xpcs, mode) != DW_AN_C73) &&
-+	    !priv->hw->phylink_pcs) {
- 		ret = stmmac_init_phy(dev);
- 		if (ret) {
- 			netdev_err(priv->dev,
--- 
-2.40.1
+Sure, thank you for your feedback, we'll fix the documentation and figure out a better
+name instead of "txbalancing"
+
+
 
 
