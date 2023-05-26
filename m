@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-5540-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5541-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5581D7120AF
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:10:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1E5DE7120B6
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:14:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 122F31C20B9B
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:10:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C984D281678
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:14:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 76B1D6FA2;
-	Fri, 26 May 2023 07:10:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C84A07490;
+	Fri, 26 May 2023 07:14:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A42153A0
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:10:21 +0000 (UTC)
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD53F114
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 00:10:16 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id 2adb3069b0e04-4f00c33c3d6so398661e87.2
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 00:10:16 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAC4E53B5
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:14:31 +0000 (UTC)
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289E19E
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 00:14:30 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id 38308e7fff4ca-2af24ee004dso3871381fa.0
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 00:14:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ferroamp-se.20221208.gappssmtp.com; s=20221208; t=1685085015; x=1687677015;
+        d=ferroamp-se.20221208.gappssmtp.com; s=20221208; t=1685085268; x=1687677268;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=PdSg9NNrGreQrCE+41nuiJXywFlMg6bfSTzQTeA3s0E=;
-        b=wV8hXAlTqXUsZbsSvOPXVKDD77Yds5Wc2nhgmK1XKx78K0YXTvRb7ImCIYu6fGBP1C
-         4ZGOG5EXz679whvOJcZVf9ayuTYDJkWfhJfGXZ1TTRlC12IFhRRJCudrcyocrGM8JsC7
-         gjApEvzwSGNhqtgBfYJikC7tHmBa/e1gRpecvurPwqj/N2DXnpienBYmThZ5EXymO7+S
-         qxqTg9udNGx1qMwuegqMdG4MtLTriQF/spcMcne+uAIaxTLAXYRZq9OyUvYnY8TcZg+r
-         fLRibuiWSK8ZbORI0XzQP9xpGZ372n4tO+ADw1Qkep36caoRbfOv2WwGk4hZ+KDY5MmL
-         PmKA==
+        bh=3K/62msDIii3xLYW9Icv9dnXBGx+K8WckoEIc9LcduA=;
+        b=H0qkNClkPMIWXXZNXMH5tA2x04zcS0hk+cqhMPZwXHszLan7W5SX1Kws9AaRAuDNGJ
+         pgCueACS7YZWv+imegF89fLvEOi7HrfnhEB3ZsyOatvcdcjOVXgutlhZZvtJlp/u2mcY
+         Kjh28TkQAxCVGaW17ZI4UiJTEsC00hwKlqpoFJF+sHnZxVlYHrUrt+Xtk+YDe/6ty1zh
+         /ShrdoYVV4mmQcIpdSizk8L9Kn4MmHbN6GcI+Hjc3yqkyZqHfsrfpbGh/vAKiRLuv22P
+         WExg/oEW3Y5cnzkoaFvd4D4U/67Sv9DLB5TthXCVUUWNFEDmLkpdSruB5EhpfPmhougY
+         ViBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685085015; x=1687677015;
+        d=1e100.net; s=20221208; t=1685085268; x=1687677268;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PdSg9NNrGreQrCE+41nuiJXywFlMg6bfSTzQTeA3s0E=;
-        b=jTPKiXg5KIxsSgpG6E1Yamg5U94l2O+Ixsqy5+bRioN7k7hT/HmU30hGc4bpcanAFa
-         FUhquBSlMQta6N0+i1sMTqIHi0ReX2zscfzZN3YysmyvO6iuEwnxQECu8X6tKqMhKZZ+
-         ixbUokCKYoMBtPXB7aGbvwcG35QvAtdtUDpzlnuddho0oFKKoJRkZFnRASv/DHBixxJ7
-         AnDVLTy3nn+bhYY7QGCp6iqsQBB7oM0bjElIRz+nfd4p1hNWnPuLJsos/cJP5ANiLDYS
-         huFEVLcRGDEnpEILKpCLSGKiPw+hpOct9fkr4ehq1cSS81SIDxPHO3jqnQ04MPO/9GN5
-         gQig==
-X-Gm-Message-State: AC+VfDyyYtTRPr9pDNA/QtBhuAK1xELSJJmFqjz8E2YbBgn5Ac2RpWBd
-	h/89tc7QBVq6blADTO22yr8BHQ==
-X-Google-Smtp-Source: ACHHUZ7+mkpIO2s9Sgs7OSiBzlir4Snu1p566KlcrNwvuimRXpNtoLOjtVD7HEOHgLF77AZ+hLTZkw==
-X-Received: by 2002:a05:6512:15d:b0:4ec:7b87:931a with SMTP id m29-20020a056512015d00b004ec7b87931amr359152lfo.13.1685085015190;
-        Fri, 26 May 2023 00:10:15 -0700 (PDT)
+        bh=3K/62msDIii3xLYW9Icv9dnXBGx+K8WckoEIc9LcduA=;
+        b=HxaxQQV3Bxoj+YVnaqmbTtLsjywFylgJZnfxTz53NeOtc59MqLMAFaxluupYZft6Rs
+         xMCIHOF42DL/mwmDMv6TvVOtrecy7R3lUlP9Ng+RrkPu6pNXWAggnpgxSJEIqTGDU7Qs
+         QjvbK5Pw2NYCwWZ+QgNoBapXVgKKjWBVmH4dUps+mh9BjBLhDqtli5YNhuIMmNW9FlRw
+         t8SWrTn09r5wI7WCl+v5wuGQqSto0FrKCSWTVGxY2TLVVvts3JUI1oVEyTZyi5fNQdRP
+         fie9H6+ZY8qwO1aWdToP/fDXBYZYttNKVE5a+YX56FT57SEkQx8kwc/XcNZF1dqtb1ae
+         +GXA==
+X-Gm-Message-State: AC+VfDwzLjsGUBeEWmHHBbEYW3WQITT+vfmSvhK2JoA0ToDQjLyQTy2j
+	dyp6/YBxPOATxf+Nsnn+/QE8CA==
+X-Google-Smtp-Source: ACHHUZ65xMv2X15SMYn7/LhjUXnbr6qqdbl8nLCRTsUbx9ec0tlYM2I8fNH80L+MU/pklpilBOqhRg==
+X-Received: by 2002:a2e:84c1:0:b0:2ac:8a05:b2c7 with SMTP id q1-20020a2e84c1000000b002ac8a05b2c7mr384572ljh.7.1685085268428;
+        Fri, 26 May 2023 00:14:28 -0700 (PDT)
 Received: from debian (151.236.202.107.c.fiberdirekt.net. [151.236.202.107])
-        by smtp.gmail.com with ESMTPSA id b27-20020a056512025b00b004f121c8beddsm501833lfo.124.2023.05.26.00.10.13
+        by smtp.gmail.com with ESMTPSA id z4-20020a05651c022400b002aa3cff0529sm586897ljn.74.2023.05.26.00.14.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 00:10:14 -0700 (PDT)
-Date: Fri, 26 May 2023 09:10:12 +0200
+        Fri, 26 May 2023 00:14:27 -0700 (PDT)
+Date: Fri, 26 May 2023 09:14:26 +0200
 From: =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
 To: Parthiban.Veerasooran@microchip.com
 Cc: andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
@@ -64,13 +64,13 @@ Cc: andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
 	linux-kernel@vger.kernel.org, Horatiu.Vultur@microchip.com,
 	Woojung.Huh@microchip.com, Nicolas.Ferre@microchip.com,
 	Thorsten.Kummermehr@microchip.com
-Subject: Re: [PATCH net-next v3 2/6] net: phy: microchip_t1s: replace
- read-modify-write code with phy_modify_mmd
-Message-ID: <ZHBbVNWeKK2di73h@debian>
+Subject: Re: [PATCH net-next v3 4/6] net: phy: microchip_t1s: fix reset
+ complete status handling
+Message-ID: <ZHBcUvSbX0taOED3@debian>
 References: <20230524144539.62618-1-Parthiban.Veerasooran@microchip.com>
- <20230524144539.62618-3-Parthiban.Veerasooran@microchip.com>
- <ZG9599nfDnkcw8er@debian>
- <f81c80cb-fbe8-0c7e-f0f9-14509f47c653@microchip.com>
+ <20230524144539.62618-5-Parthiban.Veerasooran@microchip.com>
+ <ZG+oOVWuKnwE0IB2@builder>
+ <8a46450d-7c6e-68a4-c09d-3b195a935907@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -79,52 +79,40 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f81c80cb-fbe8-0c7e-f0f9-14509f47c653@microchip.com>
+In-Reply-To: <8a46450d-7c6e-68a4-c09d-3b195a935907@microchip.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-	T_SPF_PERMERROR,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.6
+	T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 26, 2023 at 05:48:25AM +0000, Parthiban.Veerasooran@microchip.com wrote:
+On Fri, May 26, 2023 at 06:00:08AM +0000, Parthiban.Veerasooran@microchip.com wrote:
 > Hi Ramon,
-> > Nitpick, I think this block comment can be reduced to:
-> > /* The following block deviates from AN1699 which states that a values
-> >   * should be written back, even if unmodified.
-> >   * Which is not necessary, so it's safe to use phy_modify_mmd here.*/
+> >> +     /* Read STS2 register and check for the Reset Complete status to do the
+> >> +      * init configuration. If the Reset Complete is not set, wait for 5us
+> >> +      * and then read STS2 register again and check for Reset Complete status.
+> >> +      * Still if it is failed then declare PHY reset error or else proceed
+> >> +      * for the PHY initial register configuration.
+> >> +      */
 > > 
-> >   The comment I added was intended to describe why I was doing weird
-> >   things, but now I think it's more interesting to describe why we're
-> >   deviating from the AN.
+> > This comment explains exactly what the code does, which is also obvious
+> > from reading the code. A meaningful comment would be explaining why the
+> > state can change 5us later.
 > > 
-> >   Or the block comment could be dropped all togheter, I'm guessing no one
-> >   is going to consult the AN if things 'just work'
-> > 
-> By consolidating all your comments in the other emails as well on this 
-> 2nd patch, do you agree for my below proposal?
+> As per design, LAN867x reset to be completed by 3us. Just for a safer 
+> side it is recommended to use 5us. With the assumption of more than 3us 
+> completion, the first read checks for the Reset Complete. If the 
+> config_init is more faster, then once again checks for it after 5us.
 > 
-> We will remove all block comments and simply put AN1699 reference as we 
-> did for lan865x_revb0_config_init with a small addition on top of 
-> phy_modify_mmd for loop? so the comment will look like below,
+> As you mentioned, can we remove the existing block comment as it 
+> explains the code and add the above comment to explain 5us delay.
+> What is your opinion on this proposal?
 > 
-> /* Reference to AN1699
->   * 
-> https://ww1.microchip.com/downloads/aemDocuments/documents/AIS/ProductDocuments/SupportingCollateral/AN-LAN8670-1-2-config-60001699.pdf
->   * AN1699 says Read, Modify, Write, but the Write is not required if 
-> the  register already has the required value. So it is safe to use 
-> phy_modify_mmd here.
->   */
-> 
-> So in future, if someone wants to know about this configuration they can 
-> simply refer the AN1699.
-> 
-> What do you think?
-> 
-
-I'm not sure about the link, resources have a tendency to move.
-Otherwise LGTM
-
 > Best Regards,
 > Parthiban V
+> 
+
+I'd suggest the following
+/*The chip completes a reset in 3us, we might get here earlier than that,
+as an added margin we'll conditionally sleep 5us*/
 
