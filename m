@@ -1,203 +1,186 @@
-Return-Path: <netdev+bounces-5704-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5705-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 183EC712802
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:07:07 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DAFD8712803
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:07:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C04111C2109C
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:07:03 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6E7D528185B
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:07:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3DAB209B7;
-	Fri, 26 May 2023 14:07:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13B1524129;
+	Fri, 26 May 2023 14:07:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E018B1EA9D
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 14:07:03 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B03F2
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:07:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685110020;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=LAbN/2lmj85EfJ5ZXB9Lxx6BdfoaVulpG4pANfEifWY=;
-	b=X0a4NSjNHuSN756y5UHIbVku/E8Wmzzizc1uvkHKOwdCl2DnOsf9cggdnepCkqRU8CcEVi
-	q7A975UDNZqFxjfB2z6RtJcrfnOZt3QWh7fxZnU6FWU3Id41JwCmGN3NDrvTsxcSTqRbOp
-	2gMkafkCPtFCoi38movIyuMut3ZxKtM=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-671-2p5bw4jmNZeqgRUH0wSfhg-1; Fri, 26 May 2023 10:06:59 -0400
-X-MC-Unique: 2p5bw4jmNZeqgRUH0wSfhg-1
-Received: by mail-lf1-f70.google.com with SMTP id 2adb3069b0e04-4f3bb23174eso417308e87.2
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:06:59 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01F921EA9D;
+	Fri, 26 May 2023 14:07:07 +0000 (UTC)
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26285DF;
+	Fri, 26 May 2023 07:07:06 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id d75a77b69052e-3f6a3a76665so11076591cf.1;
+        Fri, 26 May 2023 07:07:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685110025; x=1687702025;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mpK9X8nhccAYYTxDVOlUGiQW5MD1MybeGcuhmmUxbrw=;
+        b=C235mJrz9ECdSMETjNOFNPzkF3k7s8BYqCBixlj5iGCV7/17qaGsv+PJqQpu1oDPe8
+         klmtmqFtCVMomSFScw6IxfsPrGru8iHa1qN/MTadbGZFM9JZ2JLDeRyrv8As/dcM+EsO
+         oXb33TEWrHeCu4YWOqVZyhIGJdFgpQCOoSnS+rGpnpeIJcUBfU6cW7mPucAy9/+KZKmz
+         Cxym2426r5iPTFPhAHz3NzIjpUsklBFoNtCx7ontpHX27egHe9PQhxAruMvmzXnXk6yW
+         pOIQnZpd4a4jbY6B+h5pX+97/5WPUnJgz5dbeGgVGzPkqo+186DgNAAG86gjOFfCXZ/6
+         y6Tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685110018; x=1687702018;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LAbN/2lmj85EfJ5ZXB9Lxx6BdfoaVulpG4pANfEifWY=;
-        b=X4s/PI8hGtcfLUXCx7P6m1CCf5jIkhGVxI9X5X+Yvj1scKk+t9IaP6ue9Rs1Y+YGfk
-         vfQhIAxE+Jo5M7Pq+nlfBd7vOyNUItU2fAyucwE8I4wyRummTcTzfoh76z+aY8pkErrw
-         VOTtedPMoAPFO3wSR2qvHhQqRVJzr8virjHhsAnbl2XdK0bmJVA7A1AN482CXLOolB4C
-         IXgUU3rdirST+7Vtd8IHi63otN4TcDnWf+b5XkQsSfbZw2+5NuRXkaI/pmQqrasuP1XI
-         oneK3EgsWpaNF/0r+nPARIOxPgXqMelTfCBye+x24mOjHAp6RmHwptcwN3eQiwXCpOWg
-         DPkA==
-X-Gm-Message-State: AC+VfDxpMned2nEqK8WKWFABM55HywvjUsGezhIoikB2dYykMiSy+FEY
-	dKqgKuImj2KubAbU89hRtyLOV/sIk5y5OYBql7LeCElkKibuUnPGnzPupVLL+4kRV+QFJP2cwqT
-	afLzo/dAWFXA+NIU=
-X-Received: by 2002:ac2:59cf:0:b0:4ed:d2cf:857b with SMTP id x15-20020ac259cf000000b004edd2cf857bmr543147lfn.5.1685110017970;
-        Fri, 26 May 2023 07:06:57 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7er+LeGsxnFDYQXWSIbLqlc4+5J32U68qYkTck/GPaTlh3YQQH7LynqG86HW/G1yXwV5CNog==
-X-Received: by 2002:ac2:59cf:0:b0:4ed:d2cf:857b with SMTP id x15-20020ac259cf000000b004edd2cf857bmr543126lfn.5.1685110017600;
-        Fri, 26 May 2023 07:06:57 -0700 (PDT)
-Received: from [192.168.1.121] (85-23-48-202.bb.dnainternet.fi. [85.23.48.202])
-        by smtp.gmail.com with ESMTPSA id j22-20020ac253b6000000b004f3aee3aae2sm639896lfh.140.2023.05.26.07.06.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 May 2023 07:06:56 -0700 (PDT)
-Message-ID: <5dd62fee-56bf-0b54-2e91-c31068a2b040@redhat.com>
-Date: Fri, 26 May 2023 17:06:55 +0300
+        d=1e100.net; s=20221208; t=1685110025; x=1687702025;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mpK9X8nhccAYYTxDVOlUGiQW5MD1MybeGcuhmmUxbrw=;
+        b=N63SfW1m2JibuAdVOYzJEqvQPljoxBonN7diq2ZG9NG51bt//Hw2hlercG5VbwHX/p
+         R8Vzr3guSqQTlwu8Nh6C9WuqLV1x71MDsQD20CwGVjf/mBI8h3MzMjblRhnlsS30s4o1
+         fNPSmbWHYBUD5ONHp/9agmTnxMyaeiT0wN08qiWKIlKa2vnrNwoMxR5f4Q4MTAf2rIUj
+         R9MvcM0EKpi8UR2kPjrDTw3Yqs7ItiAZabSB4L/OWJnEv998OzLpwH2Hzg8KSuH5BFrp
+         85/KyZ4qEKRosl3ZNLQ7P0+DGAej+9/EI+0duCVrlJ4y4uPfwzXhU/2NuG51yq3pClxV
+         9ByA==
+X-Gm-Message-State: AC+VfDxEJum1ASfEYqPlTANHG8U6+pDySjcyBJDLuwVm7Qgv5yD9sbBI
+	CdMjpTrNFFm4cwXtS4/EljY=
+X-Google-Smtp-Source: ACHHUZ7/8WyLCJiuWZU7NE7r4499LIvt6vjxd/kfiAK3HYySQ4ZF8SmMEdkp4FNjp90TnM36LaXRmw==
+X-Received: by 2002:a05:622a:1649:b0:3f5:1861:abe1 with SMTP id y9-20020a05622a164900b003f51861abe1mr1770282qtj.14.1685110025084;
+        Fri, 26 May 2023 07:07:05 -0700 (PDT)
+Received: from localhost (ool-944b8b4f.dyn.optonline.net. [148.75.139.79])
+        by smtp.gmail.com with ESMTPSA id f25-20020ac84659000000b003ee4b5a2dd3sm1269047qto.21.2023.05.26.07.07.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 May 2023 07:07:04 -0700 (PDT)
+Date: Fri, 26 May 2023 10:07:03 -0400
+From: Louis DeLosSantos <louis.delos.devel@gmail.com>
+To: John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+	netdev@vger.kernel.org
+Cc: Martin KaFai Lau <martin.lau@linux.dev>,
+	Stanislav Fomichev <sdf@google.com>, razor@blackwall.org
+Subject: Re: [PATCH 1/2] bpf: add table ID to bpf_fib_lookup BPF helper
+Message-ID: <ZHC9BzCv6KiAUpbj@fedora>
+References: <20230505-bpf-add-tbid-fib-lookup-v1-0-fd99f7162e76@gmail.com>
+ <20230505-bpf-add-tbid-fib-lookup-v1-1-fd99f7162e76@gmail.com>
+ <6470562cac756_2023020893@john.notmuch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net-next 04/12] mm: Make the page_frag_cache allocator use
- multipage folios
-Content-Language: en-US
-To: David Howells <dhowells@redhat.com>, Yunsheng Lin
- <linyunsheng@huawei.com>, Matthew Wilcox <willy@infradead.org>
-Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- Jeroen de Borst <jeroendb@google.com>, Catherine Sullivan
- <csully@google.com>, Shailend Chand <shailend@google.com>,
- Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
- Sean Wang <sean.wang@mediatek.com>, Mark Lee <Mark-MC.Lee@mediatek.com>,
- Lorenzo Bianconi <lorenzo@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
- Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
- Chaitanya Kulkarni <kch@nvidia.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-nvme@lists.infradead.org
-References: <a819dd80-54cc-695f-f142-e3d42ce815a7@huawei.com>
- <20230524153311.3625329-1-dhowells@redhat.com>
- <20230524153311.3625329-5-dhowells@redhat.com>
- <739166.1685105220@warthog.procyon.org.uk>
-From: =?UTF-8?Q?Mika_Penttil=c3=a4?= <mpenttil@redhat.com>
-In-Reply-To: <739166.1685105220@warthog.procyon.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6470562cac756_2023020893@john.notmuch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi,
+On Thu, May 25, 2023 at 11:48:12PM -0700, John Fastabend wrote:
+> Louis DeLosSantos wrote:
+> > Add ability to specify routing table ID to the `bpf_fib_lookup` BPF
+> > helper.
+> > 
+> > A new field `tbid` is added to `struct bpf_fib_lookup` used as
+> > parameters to the `bpf_fib_lookup` BPF helper.
+> > 
+> > When the helper is called with the `BPF_FIB_LOOKUP_DIRECT` flag and the
+> > `tbid` field in `struct bpf_fib_lookup` is greater then 0, the `tbid`
+> > field will be used as the table ID for the fib lookup.
+> > 
+> > If the `tbid` does not exist the fib lookup will fail with
+> > `BPF_FIB_LKUP_RET_NOT_FWDED`.
+> > 
+> > The `tbid` field becomes a union over the vlan related output fields in
+> > `struct bpf_fib_lookup` and will be zeroed immediately after usage.
+> > 
+> > This functionality is useful in containerized environments.
+> > 
+> > For instance, if a CNI wants to dictate the next-hop for traffic leaving
+> > a container it can create a container-specific routing table and perform
+> > a fib lookup against this table in a "host-net-namespace-side" TC program.
+> > 
+> > This functionality also allows `ip rule` like functionality at the TC
+> > layer, allowing an eBPF program to pick a routing table based on some
+> > aspect of the sk_buff.
+> > 
+> > As a concrete use case, this feature will be used in Cilium's SRv6 L3VPN
+> > datapath.
+> > 
+> > When egress traffic leaves a Pod an eBPF program attached by Cilium will
+> > determine which VRF the egress traffic should target, and then perform a
+> > FIB lookup in a specific table representing this VRF's FIB.
+> > 
+> > Signed-off-by: Louis DeLosSantos <louis.delos.devel@gmail.com>
+> > ---
+> >  include/uapi/linux/bpf.h       | 17 ++++++++++++++---
+> >  net/core/filter.c              | 12 ++++++++++++
+> >  tools/include/uapi/linux/bpf.h | 17 ++++++++++++++---
+> >  3 files changed, 40 insertions(+), 6 deletions(-)
+> > 
+> 
+> Looks good one question. Should we hide tbid behind a flag we have
+> lots of room. Is there any concern a user could feed a bpf_fib_lookup
+> into the helper without clearing the vlan fields? Perhaps by
+> pulling the struct from a map or something where it had been
+> previously used.
+> 
+> Thanks,
+> John
 
-On 26.5.2023 15.47, David Howells wrote:
-> Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> 
->>> Change the page_frag_cache allocator to use multipage folios rather than
->>> groups of pages.  This reduces page_frag_free to just a folio_put() or
->>> put_page().
->>
->> put_page() is not used in this patch, perhaps remove it to avoid
->> the confusion?
-> 
-> Will do if I need to respin the patches.
-> 
->> Also, Is there any significant difference between __free_pages()
->> and folio_put()? IOW, what does the 'reduces' part means here?
-> 
-> I meant that the folio code handles page compounding for us and we don't need
-> to work out how big the page is for ourselves.
-> 
-> If you look at __free_pages(), you can see a PageHead() call.  folio_put()
-> doesn't need that.
-> 
->> I followed some disscusion about folio before, but have not really
->> understood about real difference between 'multipage folios' and
->> 'groups of pages' yet. Is folio mostly used to avoid the confusion
->> about whether a page is 'headpage of compound page', 'base page' or
->> 'tailpage of compound page'? Or is there any abvious benefit about
->> folio that I missed?
-> 
-> There is a benefit: a folio pointer always points to the head page and so we
-> never need to do "is this compound? where's the head?" logic to find it.  When
-> going from a page pointer, we still have to find the head.
-> 
+This is a fair point. 
 
+I could imagine a scenario where an individual is caching bpf_fib_lookup structs,
+pulls in a kernel with this change, and is now accidentally feeding the stale vlan
+fields as table ID's, since their code is using `BPF_FIB_LOOKUP_DIRECT` with
+the old semantics. 
 
-But page_frag_free() uses folio_put(virt_to_folio(addr)) and 
-virt_to_folio() depends on the compound infrastructure to get the head 
-page and folio.
+Guarding with a new flag like this (just a quick example, not a full diff)...
 
+```
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 2096fbb328a9b..22095ccaaa64d 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -6823,6 +6823,7 @@ enum {
+        BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
+        BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
+        BPF_FIB_LOOKUP_SKIP_NEIGH = (1U << 2),
++       BPF_FIB_LOOKUP_TBID    = (1U << 3),
+ };
+ 
+ enum {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 6f710aa0a54b3..9b78460e39af2 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5803,7 +5803,7 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+                u32 tbid = l3mdev_fib_table_rcu(dev) ? : RT_TABLE_MAIN;
+                struct fib_table *tb;
+ 
+-               if (params->tbid) {
++               if (flags & BPF_FIB_LOOKUP_TBID) {
+                        tbid = params->tbid;
+                        /* zero out for vlan output */
+                        params->tbid = 0;
+```
 
-> Ultimately, the aim is to reduce struct page to a typed pointer to massively
-> reduce the amount of space consumed by mem_map[].  A page struct will then
-> point at a folio or a slab struct or one of a number of different types.  But
-> to get to that point, we have to stop a whole lot of things from using page
-> structs, but rather use some other type, such as folio.
-> 
-> Eventually, there won't be a need for head pages and tail pages per se - just
-> memory objects of different sizes.
-> 
->>> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
->>> index 306a3d1a0fa6..d7c52a5979cc 100644
->>> --- a/include/linux/mm_types.h
->>> +++ b/include/linux/mm_types.h
->>> @@ -420,18 +420,13 @@ static inline void *folio_get_private(struct folio *folio)
->>>   }
->>>   
->>>   struct page_frag_cache {
->>> -	void * va;
->>> -#if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
->>> -	__u16 offset;
->>> -	__u16 size;
->>> -#else
->>> -	__u32 offset;
->>> -#endif
->>> +	struct folio	*folio;
->>> +	unsigned int	offset;
->>>   	/* we maintain a pagecount bias, so that we dont dirty cache line
->>>   	 * containing page->_refcount every time we allocate a fragment.
->>>   	 */
->>> -	unsigned int		pagecnt_bias;
->>> -	bool pfmemalloc;
->>> +	unsigned int	pagecnt_bias;
->>> +	bool		pfmemalloc;
->>>   };
->>
->> It seems 'va' and 'size' field is used to avoid touching 'stuct page' to
->> avoid possible cache bouncing when there is more frag can be allocated
->> from the page while other frags is freed at the same time before this patch?
-> 
-> Hmmm... fair point, though va is calculated from the page pointer on most
-> arches without the need to dereference struct page (only arc, m68k and sparc
-> define WANT_PAGE_VIRTUAL).
-> 
-> David
-> 
+Maybe a bit safer, you're right. 
 
---Mika
+In this case the semantics around `BPF_FIB_LOOKUP_DIRECT` remain exactly the same,
+and if we do `flags = BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_TBID`, only then will
+the `tbid` field in the incoming params wil be considered. 
 
+If I squint at this, it technically also allows us to consider `tbid=0` as a 
+valid table id, since the caller now explicitly opts into it, where previously
+table id 0 was not selectable, tho I don't know if there's a *real* use case 
+for selecting the `all` table. 
+
+I'm happy to make this change, what are your thoughts? 
 
