@@ -1,129 +1,110 @@
-Return-Path: <netdev+bounces-5814-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5815-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E9D10712E22
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 22:30:30 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id AF4B0712E2E
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 22:37:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1BA552818BB
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 20:30:29 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 42F761C21113
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 20:37:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 57CF5168A1;
-	Fri, 26 May 2023 20:30:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B8DB2773D;
+	Fri, 26 May 2023 20:37:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DAA62A9DC
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 20:30:27 +0000 (UTC)
-Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E8BE7;
-	Fri, 26 May 2023 13:30:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-	s=20121; t=1685133022;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nrJocbC9yujvo/q/Zvs4to1pf3VWKChUTxeNN8aTAa0=;
-	b=I/LSxf9eXH1Ikzq1flOLF5C80S7pH/0I/Jm0EFS5cz2h5bm7XpXIbRPK2L0iu7XbaFTqTq
-	eNci93A+CRVdDUe6klTXO/tCMUkmTXTEk34RO8c3ohoKfnzOqMwP+DzxhjOBweZcZAYypG
-	B8AS5+F3I3PkNhHN5zgPby7OKPsQst0=
-From: Sven Eckelmann <sven@narfation.org>
-To: Marek Lindner <mareklindner@neomailbox.ch>,
- Vladislav Efanov <VEfanov@ispras.ru>
-Cc: Simon Wunderlich <sw@simonwunderlich.de>,
- Antonio Quartulli <a@unstable.cc>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, b.a.t.m.a.n@lists.open-mesh.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- lvc-project@linuxtesting.org
-Subject: Re: [PATCH] batman-adv: Broken sync while rescheduling delayed work
-Date: Fri, 26 May 2023 22:30:16 +0200
-Message-ID: <7526514.EvYhyI6sBW@sven-l14>
-In-Reply-To: <20230526161632.1460753-1-VEfanov@ispras.ru>
-References: <20230526161632.1460753-1-VEfanov@ispras.ru>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2017C2CA9
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 20:37:36 +0000 (UTC)
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F533114
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 13:37:35 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-51480d3e161so709219a12.3
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 13:37:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1685133453; x=1687725453;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eKtb5pF799Vf0zYkpYw5rmcT4zTxO2bOf/EKOzgAhcY=;
+        b=BOjN3c0mNuFLGaA8ph4Pbmp3phDLkFpEmpt7ob4g0VlG6IQxJqBcj42Dej6W8LeWYR
+         ql3RVtPvRxVf9j9PQKQl4EQewjdi4lBNwKNHhGhgUYmGJWUfOpULkOnvq2WUbMUju49c
+         XvBg68bgZ9/uoJaW3x1ZF5yJPaw1gS1utGf6s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685133453; x=1687725453;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eKtb5pF799Vf0zYkpYw5rmcT4zTxO2bOf/EKOzgAhcY=;
+        b=L9SA7PmoeYGsM2RJtYl2iRogxV+HwiSFN5F2LixXnXACodHSsuQ5MGLHOvqPyvw3jC
+         pmp41WnD2F2+MTsAnWiQS8DBWpgnVejn6DKtnghcJMGDjGql+7QCHh7IVLNEIq21kjGA
+         b7xXGPWfiYafNTYzmwGC/uCCWYCbotknFVpvurPCsgxU8k2sF7JNYPa/t5jGX6Hl44VZ
+         HoDUpkEGeCUP6pM/kf2ozFesbJ/8zq6SErfaBgrYJdskGp/CvlyzvrR2C7+l1tTpmaha
+         gUd2Nzcd3JaKH0leQB9g7YhIbK+SasGRngMgAt1Iknq7jfCC54jrwHY+1uk6oOZec6Av
+         Xzdg==
+X-Gm-Message-State: AC+VfDwQwH6MnmRuqh9lJ3FM9UzxgRPP2z4KJ1XsTQ6L0bj+SMpsngJ5
+	CCK0cy5IwvEmG0PUI8g4n90sOYW5i8H+Ikg63Z0iG5f6
+X-Google-Smtp-Source: ACHHUZ5pYAVJMoBO7yk6amqhxvqNba5ZfSjyxVZ3v1GUqaTaromOwZnTc+9IGrAJ6vLbjJula+gILw==
+X-Received: by 2002:a17:907:36cb:b0:970:bef:4393 with SMTP id bj11-20020a17090736cb00b009700bef4393mr3816449ejc.7.1685133453507;
+        Fri, 26 May 2023 13:37:33 -0700 (PDT)
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
+        by smtp.gmail.com with ESMTPSA id q15-20020a1709066b0f00b0096b4c3489e6sm2583751ejr.177.2023.05.26.13.37.32
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 May 2023 13:37:33 -0700 (PDT)
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5147f7d045bso1000889a12.2
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 13:37:32 -0700 (PDT)
+X-Received: by 2002:a17:907:3f92:b0:94e:dd30:54b5 with SMTP id
+ hr18-20020a1709073f9200b0094edd3054b5mr3679061ejc.6.1685133452593; Fri, 26
+ May 2023 13:37:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart3740035.kQq0lBPeGt";
- micalg="pgp-sha512"; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <CANn89iKUbyrJ=r2+_kK+sb2ZSSHifFZ7QkPLDpAtkJ8v4WUumA@mail.gmail.com>
+ <CAHk-=whqNMUPbjCyMjyxfH_5-Xass=DrMkPT5ZTJbFrtU=qDEQ@mail.gmail.com>
+ <CANn89i+bExb_P6A9ROmwqNgGdO5o8wawVZ5r3MHnz0qfhxvTtA@mail.gmail.com>
+ <CAHk-=wig6VizZHtRznz7uAWa-hHWjrCNANZ9B+1G=aTWPiVH4g@mail.gmail.com>
+ <CAHk-=whkci5ck5Him8Lx5ECKHEtj=bipYmOCGe8DWrrp8uDq5g@mail.gmail.com>
+ <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com>
+ <CANn89i+u8jvfSQAQ=_JY0be56deJNhKgDWbqpDAvfm-i34qX9A@mail.gmail.com>
+ <CAHk-=wh16fVwO2yZ4Fx0kyRHsNDhGddzNxfQQz2+x08=CPvk_Q@mail.gmail.com>
+ <CANn89iJ3=OiZEABRQQLL6z+J-Wy8AvTJz6NPLQDOtzREiiYb4Q@mail.gmail.com> <CAHk-=whZ23EHnBG4ox9QpHFDeiCSrA2H1wrYrfyg3KP=zK5Sog@mail.gmail.com>
+In-Reply-To: <CAHk-=whZ23EHnBG4ox9QpHFDeiCSrA2H1wrYrfyg3KP=zK5Sog@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Fri, 26 May 2023 13:37:15 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wibWdTp-kdCKc-F3d4aVcHO40qqoxoATG+KhVivYE0TqA@mail.gmail.com>
+Message-ID: <CAHk-=wibWdTp-kdCKc-F3d4aVcHO40qqoxoATG+KhVivYE0TqA@mail.gmail.com>
+Subject: Re: x86 copy performance regression
+To: Eric Dumazet <edumazet@google.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---nextPart3740035.kQq0lBPeGt
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-Date: Fri, 26 May 2023 22:30:16 +0200
-Message-ID: <7526514.EvYhyI6sBW@sven-l14>
-In-Reply-To: <20230526161632.1460753-1-VEfanov@ispras.ru>
-References: <20230526161632.1460753-1-VEfanov@ispras.ru>
-MIME-Version: 1.0
+On Fri, May 26, 2023 at 11:33=E2=80=AFAM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Anyway, I guess *this* avoids all issues. It creates an extra jump to
+> a jump for the case where the CPU doesn't have ERMS, but I guess we
+> don't really care about those CPUs anyway.
 
-On Friday, 26 May 2023 18:16:32 CEST Vladislav Efanov wrote:
-> Syzkaller got a lot of crashes like:
-> KASAN: use-after-free Write in *_timers*
-> 
-> All of these crashes point to the same memory area:
-> 
-> The buggy address belongs to the object at ffff88801f870000
->  which belongs to the cache kmalloc-8k of size 8192
-> The buggy address is located 5320 bytes inside of
->  8192-byte region [ffff88801f870000, ffff88801f872000)
-> 
-> This area belongs to :
->         batadv_priv->batadv_priv_dat->delayed_work->timer_list
-> 
-> The reason for these issues is the lack of synchronization. Delayed
-> work (batadv_dat_purge) schedules new timer/work while the device
-> is being deleted. As the result new timer/delayed work is set after
-> cancel_delayed_work_sync() was called. So after the device is freed
-> the timer list contains pointer to already freed memory.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with syzkaller.
-> 
-> Fixes: 2f1dfbe18507 ("batman-adv: Distributed ARP Table - implement local storage")
-> Signed-off-by: Vladislav Efanov <VEfanov@ispras.ru>
-> ---
+Well, I'm obviously wrong, because my very own CPU (AMD Zen 2) doesn't do E=
+RMS.
 
+But the extra 'jmp' doesn't seem to appreciably matter, so I guess I
+don't care. It does show up in profiles, but only barely.
 
-Acked-by: Sven Eckelmann <sven@narfation.org>
+I've committed and pushed out the fix.
 
-Thanks,
-	Sven
---nextPart3740035.kQq0lBPeGt
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmRxFtgACgkQXYcKB8Em
-e0ZD0RAAp8e/HTANDtMQF/tKm+CEosGlP+Hp8Aqdd8nNfTXXC2DJAouO/TO2ycmq
-G0N393ff6vuTkebzzuM8QqOQxFVMGCH/VDGZEkOAr+Qyq8V6Vq50uCJUyi1TkCEk
-lhM/wvBXJbadpikiJdkYdfJFBMUcNqRnMsmvDU3ASPw8g4/ZlTfRDKPn56UUUjb1
-juIiGBWFTQ0tzcEh5p9YgrArb/jI7YkZR4BNfheFEoPZqZRkP5CaonXE436uQIjz
-raVe+QnxlGHVFUGpIyebNEB5/ZtWN1gsOXetqLcjFgjkwh9Qvow8tjNv13VqbTd5
-rUHp8HoTwrq3UGNW3xUzRWuxJtQBOwKrNmebw2CN179C4qEZjipY14XnfGngZLyE
-27QcB6s4wWz1UMjIiZ8OnN7gAzDmHKde1LqdQQp9WaAfLwFKCEeNMECg1QhQExaD
-vsfUr5aNuaLNk9KV/l+sus4hOCzeGCgmlUsrw9rWR3yk5PEjpUeg0IkJmZr7nFkx
-ykj5yPFHvgFi6q0VV7ppV4iXEoPTP7s4uZqCeHn8MQ1jVNZio/l7YhwZBYN3pfbK
-5nv2jKXsK079UHV9qzmhQH31jZEh//jwcupyMF+k63RpQM8sfENKb25EkUJN5ebQ
-gNnzdr1ElKsPD8TUQ1B9SVI0QKNpTGMXWsiNjX/BMVblnUvcxKE=
-=sHaT
------END PGP SIGNATURE-----
-
---nextPart3740035.kQq0lBPeGt--
-
-
-
+               Linus
 
