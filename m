@@ -1,80 +1,85 @@
-Return-Path: <netdev+bounces-5705-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5706-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DAFD8712803
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:07:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 791B1712810
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:10:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6E7D528185B
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:07:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0D20A28185B
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:10:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13B1524129;
-	Fri, 26 May 2023 14:07:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1488923D57;
+	Fri, 26 May 2023 14:10:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01F921EA9D;
-	Fri, 26 May 2023 14:07:07 +0000 (UTC)
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26285DF;
-	Fri, 26 May 2023 07:07:06 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id d75a77b69052e-3f6a3a76665so11076591cf.1;
-        Fri, 26 May 2023 07:07:06 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 052ED1EA6F
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 14:10:32 +0000 (UTC)
+Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4D3DF;
+	Fri, 26 May 2023 07:10:31 -0700 (PDT)
+Received: by mail-ua1-x930.google.com with SMTP id a1e0cc1a2514c-786efb5ff24so44161241.0;
+        Fri, 26 May 2023 07:10:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685110025; x=1687702025;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mpK9X8nhccAYYTxDVOlUGiQW5MD1MybeGcuhmmUxbrw=;
-        b=C235mJrz9ECdSMETjNOFNPzkF3k7s8BYqCBixlj5iGCV7/17qaGsv+PJqQpu1oDPe8
-         klmtmqFtCVMomSFScw6IxfsPrGru8iHa1qN/MTadbGZFM9JZ2JLDeRyrv8As/dcM+EsO
-         oXb33TEWrHeCu4YWOqVZyhIGJdFgpQCOoSnS+rGpnpeIJcUBfU6cW7mPucAy9/+KZKmz
-         Cxym2426r5iPTFPhAHz3NzIjpUsklBFoNtCx7ontpHX27egHe9PQhxAruMvmzXnXk6yW
-         pOIQnZpd4a4jbY6B+h5pX+97/5WPUnJgz5dbeGgVGzPkqo+186DgNAAG86gjOFfCXZ/6
-         y6Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685110025; x=1687702025;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1685110230; x=1687702230;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=mpK9X8nhccAYYTxDVOlUGiQW5MD1MybeGcuhmmUxbrw=;
-        b=N63SfW1m2JibuAdVOYzJEqvQPljoxBonN7diq2ZG9NG51bt//Hw2hlercG5VbwHX/p
-         R8Vzr3guSqQTlwu8Nh6C9WuqLV1x71MDsQD20CwGVjf/mBI8h3MzMjblRhnlsS30s4o1
-         fNPSmbWHYBUD5ONHp/9agmTnxMyaeiT0wN08qiWKIlKa2vnrNwoMxR5f4Q4MTAf2rIUj
-         R9MvcM0EKpi8UR2kPjrDTw3Yqs7ItiAZabSB4L/OWJnEv998OzLpwH2Hzg8KSuH5BFrp
-         85/KyZ4qEKRosl3ZNLQ7P0+DGAej+9/EI+0duCVrlJ4y4uPfwzXhU/2NuG51yq3pClxV
-         9ByA==
-X-Gm-Message-State: AC+VfDxEJum1ASfEYqPlTANHG8U6+pDySjcyBJDLuwVm7Qgv5yD9sbBI
-	CdMjpTrNFFm4cwXtS4/EljY=
-X-Google-Smtp-Source: ACHHUZ7/8WyLCJiuWZU7NE7r4499LIvt6vjxd/kfiAK3HYySQ4ZF8SmMEdkp4FNjp90TnM36LaXRmw==
-X-Received: by 2002:a05:622a:1649:b0:3f5:1861:abe1 with SMTP id y9-20020a05622a164900b003f51861abe1mr1770282qtj.14.1685110025084;
-        Fri, 26 May 2023 07:07:05 -0700 (PDT)
-Received: from localhost (ool-944b8b4f.dyn.optonline.net. [148.75.139.79])
-        by smtp.gmail.com with ESMTPSA id f25-20020ac84659000000b003ee4b5a2dd3sm1269047qto.21.2023.05.26.07.07.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 07:07:04 -0700 (PDT)
-Date: Fri, 26 May 2023 10:07:03 -0400
-From: Louis DeLosSantos <louis.delos.devel@gmail.com>
-To: John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-	netdev@vger.kernel.org
-Cc: Martin KaFai Lau <martin.lau@linux.dev>,
-	Stanislav Fomichev <sdf@google.com>, razor@blackwall.org
-Subject: Re: [PATCH 1/2] bpf: add table ID to bpf_fib_lookup BPF helper
-Message-ID: <ZHC9BzCv6KiAUpbj@fedora>
-References: <20230505-bpf-add-tbid-fib-lookup-v1-0-fd99f7162e76@gmail.com>
- <20230505-bpf-add-tbid-fib-lookup-v1-1-fd99f7162e76@gmail.com>
- <6470562cac756_2023020893@john.notmuch>
+        bh=fG713w/n5a4Y4ViFtXQB/KYC9f0zPKWxoGiBTJxDL+k=;
+        b=m9DMWB2dnvhFdAq3/ujAYrL5BhwankhnPGSChUOWq8m3xfFLLE583TzVjx3bZgXsVS
+         kDlkULz9eDZ+xlKaLWpGgTdiOpqYohDhGGeKxmsS4WJPsMABy6VT/AyrEGa0Ts7vWZ8W
+         A8CXCpqyYuS7gJ0Ye0/5BXs7vrQrA9bmMEBcrFsWU/htHHYv1/no9yan/8P15XemaUax
+         BWdurVADFOe5XbQ6+PwCU7da2D/zhDHr055LRVAAA9vjXzvvVtzRFZqQuCBCFAfdtEV4
+         4W62mBBFz/lrUSjRLFfKJRDcvBdbIuteeK4gY5r/a0DjatF/qsVeGujZyAyCHRVQDqg+
+         rDsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685110230; x=1687702230;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fG713w/n5a4Y4ViFtXQB/KYC9f0zPKWxoGiBTJxDL+k=;
+        b=i8X5cAt6V315xbStmo9GskMgyDZVOJL8V1JG7Dvp3REc6RP23L6KTGj4SAmB3/WjSc
+         09CtISyw+tV/eHutWssvgrYe6Qu9GTkCpJRGgvkd3aQoPmq/1x8Gywvsl08jYvHbIgmP
+         t3c2b+6YiozsyT3UXlOGJppS7/gLza4QvVHBRpmmUzg7n2hYiQcGZZlh3p501BMwkFrF
+         3FlRgaaXTxE+dg7s2lDkEmZJaSbE8UaYfQ7G0g/xqBzgYil5Z7tMAMDsLi1tJxWppShG
+         Pek1zly4RNnwscq3dAtf19yBOu/ipIqvRJfVFGBQ94c59ZvKMj5c1L36bX55ZHQvcE6s
+         y0ow==
+X-Gm-Message-State: AC+VfDxLNdo8zWywY/QpaSrDtJ8YF2F3u2dby9k98CC+t6POBxlB411j
+	w+ZALPvkcRNSZICUGAItz0nrF+AZf34+r4eAQkk=
+X-Google-Smtp-Source: ACHHUZ6eVTZtnPu5x20WxcO0d18Lw5T2t9skn4lv62QG/WAk5aDS9ISiUWFT9zur/ylXW9J4eGBSPWcNqP+mXC3o1P0=
+X-Received: by 2002:a67:ffc9:0:b0:42f:18d9:a602 with SMTP id
+ w9-20020a67ffc9000000b0042f18d9a602mr462435vsq.32.1685110230556; Fri, 26 May
+ 2023 07:10:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6470562cac756_2023020893@john.notmuch>
+References: <20230525125503.400797-1-leitao@debian.org> <CAF=yD-LHQNkgPb-R==53-2auVxkP9r=xqrz2A8oe61vkoDdWjg@mail.gmail.com>
+ <a1074987-c3ce-56cd-3005-beb5a3c55ef9@kernel.org> <CAF=yD-LXcufhJBpkEcUuphFpR1TA4=QwUXw4sKFsSiEL_mwG4Q@mail.gmail.com>
+ <ZHB3BNopbx+5AnIa@gmail.com>
+In-Reply-To: <ZHB3BNopbx+5AnIa@gmail.com>
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Fri, 26 May 2023 10:09:53 -0400
+Message-ID: <CAF=yD-LO8fZJfayJoFPO_wvMw=FLGbf_DYUcaBpKv81OEOQVUA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3] net: ioctl: Use kernel memory on protocol
+ ioctl callbacks
+To: Breno Leitao <leitao@debian.org>
+Cc: David Ahern <dsahern@kernel.org>, Remi Denis-Courmont <courmisch@gmail.com>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Alexander Aring <alex.aring@gmail.com>, Stefan Schmidt <stefan@datenfreihafen.org>, 
+	Miquel Raynal <miquel.raynal@bootlin.com>, Matthieu Baerts <matthieu.baerts@tessares.net>, 
+	Mat Martineau <martineau@kernel.org>, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>, 
+	Xin Long <lucien.xin@gmail.com>, leit@fb.com, axboe@kernel.dk, asml.silence@gmail.com, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, dccp@vger.kernel.org, 
+	linux-wpan@vger.kernel.org, mptcp@lists.linux.dev, linux-sctp@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
 	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -82,105 +87,59 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, May 25, 2023 at 11:48:12PM -0700, John Fastabend wrote:
-> Louis DeLosSantos wrote:
-> > Add ability to specify routing table ID to the `bpf_fib_lookup` BPF
-> > helper.
-> > 
-> > A new field `tbid` is added to `struct bpf_fib_lookup` used as
-> > parameters to the `bpf_fib_lookup` BPF helper.
-> > 
-> > When the helper is called with the `BPF_FIB_LOOKUP_DIRECT` flag and the
-> > `tbid` field in `struct bpf_fib_lookup` is greater then 0, the `tbid`
-> > field will be used as the table ID for the fib lookup.
-> > 
-> > If the `tbid` does not exist the fib lookup will fail with
-> > `BPF_FIB_LKUP_RET_NOT_FWDED`.
-> > 
-> > The `tbid` field becomes a union over the vlan related output fields in
-> > `struct bpf_fib_lookup` and will be zeroed immediately after usage.
-> > 
-> > This functionality is useful in containerized environments.
-> > 
-> > For instance, if a CNI wants to dictate the next-hop for traffic leaving
-> > a container it can create a container-specific routing table and perform
-> > a fib lookup against this table in a "host-net-namespace-side" TC program.
-> > 
-> > This functionality also allows `ip rule` like functionality at the TC
-> > layer, allowing an eBPF program to pick a routing table based on some
-> > aspect of the sk_buff.
-> > 
-> > As a concrete use case, this feature will be used in Cilium's SRv6 L3VPN
-> > datapath.
-> > 
-> > When egress traffic leaves a Pod an eBPF program attached by Cilium will
-> > determine which VRF the egress traffic should target, and then perform a
-> > FIB lookup in a specific table representing this VRF's FIB.
-> > 
-> > Signed-off-by: Louis DeLosSantos <louis.delos.devel@gmail.com>
-> > ---
-> >  include/uapi/linux/bpf.h       | 17 ++++++++++++++---
-> >  net/core/filter.c              | 12 ++++++++++++
-> >  tools/include/uapi/linux/bpf.h | 17 ++++++++++++++---
-> >  3 files changed, 40 insertions(+), 6 deletions(-)
-> > 
-> 
-> Looks good one question. Should we hide tbid behind a flag we have
-> lots of room. Is there any concern a user could feed a bpf_fib_lookup
-> into the helper without clearing the vlan fields? Perhaps by
-> pulling the struct from a map or something where it had been
-> previously used.
-> 
-> Thanks,
-> John
+On Fri, May 26, 2023 at 5:08=E2=80=AFAM Breno Leitao <leitao@debian.org> wr=
+ote:
+>
+> On Thu, May 25, 2023 at 12:06:00PM -0400, Willem de Bruijn wrote:
+> > On Thu, May 25, 2023 at 11:34=E2=80=AFAM David Ahern <dsahern@kernel.or=
+g> wrote:
+> > > On 5/25/23 9:05 AM, Willem de Bruijn wrote:
+> > > > I don't understand what this buys us vs testing the sk_family,
+> > > > sk_protocol and cmd here.
+> > >
+> > > To keep protocol specific code out of core files is the reason I
+> > > suggested it.
+> >
+> > I guess you object to demultiplexing based on per-family
+> > protocol and ioctl cmd constants directly in this file?
+> >
+> > That only requires including the smaller uapi headers.
+> >
+> > But now net/core/sock.h now still has to add includes
+> > linux/mroute.h, linux/mroute6.h and net/phonet/phonet.h.
+> >
+> > Aside on phonet_is_sk, if we're keeping this: this should be
+> > sk_is_phonet? Analogous to sk_is_tcp and such. And, it should suffice
+> > to  demultiplex based on the protocol family, without testing the
+> > type or protocol. The family is defined in protocol-independent header
+> > linux/socket.h. The differences between
+> > PN_PROTO_PHONET and PN_PROTO_PIPE should be handled inside the family
+> > code. So I think it is cleaner just to open-coded as `if
+> > (sk->sk_family =3D=3D PF_PHONET)`
+>
+> Should we do the same for ipmr as well? Currently I am checking it
+> using:
+>
+>         return sk->sk_type =3D=3D SOCK_RAW && inet_sk(sk)->inet_num =3D=
+=3D IPPROTO_ICMPV6;
+>
+> This is what ip{6}mr functions[1] are use to check if `sk` is using ip{6}=
+mr.
+> If we just use `sk->family`, then I suppose that `sk_is_ip6mr` would be
+> something as coded below. Is this correct?
+>
+>         static inline int sk_is_ip6mr(struct sock *sk)
+>         {
+>                 return sk->sk_family =3D=3D PF_INET6;
+>         }
 
-This is a fair point. 
+Actually, for multicast routing, the protocol check is required.
 
-I could imagine a scenario where an individual is caching bpf_fib_lookup structs,
-pulls in a kernel with this change, and is now accidentally feeding the stale vlan
-fields as table ID's, since their code is using `BPF_FIB_LOOKUP_DIRECT` with
-the old semantics. 
+> Anyway, should we continue with the current (V3) approach, where we keep
+> the protocol code out of core files, or, should I come back to the
+> previous (V2) approach, where the protocol checks is coded directly in
+> the core file?
 
-Guarding with a new flag like this (just a quick example, not a full diff)...
-
-```
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 2096fbb328a9b..22095ccaaa64d 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -6823,6 +6823,7 @@ enum {
-        BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
-        BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
-        BPF_FIB_LOOKUP_SKIP_NEIGH = (1U << 2),
-+       BPF_FIB_LOOKUP_TBID    = (1U << 3),
- };
- 
- enum {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 6f710aa0a54b3..9b78460e39af2 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5803,7 +5803,7 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
-                u32 tbid = l3mdev_fib_table_rcu(dev) ? : RT_TABLE_MAIN;
-                struct fib_table *tb;
- 
--               if (params->tbid) {
-+               if (flags & BPF_FIB_LOOKUP_TBID) {
-                        tbid = params->tbid;
-                        /* zero out for vlan output */
-                        params->tbid = 0;
-```
-
-Maybe a bit safer, you're right. 
-
-In this case the semantics around `BPF_FIB_LOOKUP_DIRECT` remain exactly the same,
-and if we do `flags = BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_TBID`, only then will
-the `tbid` field in the incoming params wil be considered. 
-
-If I squint at this, it technically also allows us to consider `tbid=0` as a 
-valid table id, since the caller now explicitly opts into it, where previously
-table id 0 was not selectable, tho I don't know if there's a *real* use case 
-for selecting the `all` table. 
-
-I'm happy to make this change, what are your thoughts? 
+David expressed preference for the current approach. So let's stay with tha=
+t.
 
