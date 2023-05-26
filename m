@@ -1,113 +1,105 @@
-Return-Path: <netdev+bounces-5782-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5783-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 89058712BB5
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6F12E712BBE
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:27:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3EE7D28191D
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:25:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 27BCC28191D
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:27:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D48E28C26;
-	Fri, 26 May 2023 17:25:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7145328C2A;
+	Fri, 26 May 2023 17:27:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02B39271F6
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:25:40 +0000 (UTC)
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3567AF3
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:25:37 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-3f5dbd8f677so2995e9.1
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:25:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685121935; x=1687713935;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=l8g5Xna8j25EFmespE1bvOARSHuLS2nJdLVHo25mjSE=;
-        b=f23M39+X+33xnPxCbKYMOJ14/bCAA9KXeklSOwa8N+tHHQEeVXO9PG06uqnHlgbpvJ
-         yZcoi+2V0Rnvo3xNSbHS90ZINBSY8pxHi1Xm96Pc1OjyRBIMYwQg2pzWUKm9EvEGoqIg
-         mRQCwruUR1IwLekhmrhr2T58qvSw2Qkt3CloEtcqrhHH6VZq5NTF+ZeRAfTCprFOJPL7
-         s4ZPJ02tHgnaBv2DpSE42RD6H0VRLlp6RyMZXB3hJs1tYXQm0tIoHRpXpiEHXKluB88B
-         6iMsG8tJ8UdDub6koAvqI+jJOj4p/m1joTQtKjUwx/iR1zcf7M4i1WxdB9+hz7d0nCFk
-         KzDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685121935; x=1687713935;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=l8g5Xna8j25EFmespE1bvOARSHuLS2nJdLVHo25mjSE=;
-        b=JaF9yOloGtc+/MPQ162c0FCArV5ZrEk7JU+XVa34j4pW6ig6PLNM5+D8dBeSwaoGwC
-         2DrC2U0eSJzSMB9KbILWKpxwnknFMGdWzqYC7LyVmiIRbukBlYCVAULFub/6T5bgwuaH
-         73wlMSvrVsVFgsmXrHeBUaahXInwFVOh1lyID/C+1svHM7PpaxwbDfH3ZkEY5ErxMedO
-         hPEe6avGquYVkob7e8WIF0tzOJWwtwGhF7IJ95WsXCdA6laA+FlHjvUMbgJ2MHqT1IVu
-         RSSC9p7GlYN0WHmTvxvNY0jlXZU76D0tLkjZ/bAeM67Ga5D6QDcOTH0b6I33epSqvTt7
-         muFg==
-X-Gm-Message-State: AC+VfDxwgFuUfDE3ZyxlgwAOLfj7IHNAeBeWTaZX/AKThIPYGcyYe6lX
-	KfW0k+zPS3+kYzAHSTfP/+NFzwcfPt4zn39xULkQJA==
-X-Google-Smtp-Source: ACHHUZ4Br5pF7X3UghPjBulDtJS9kb5PDC2rSf69Im3yVJUMPcC8EHvOTVaj+JsGIKn1he9aPepATioYeEtg/pDKIjs=
-X-Received: by 2002:a05:600c:458b:b0:3f1:758c:dd23 with SMTP id
- r11-20020a05600c458b00b003f1758cdd23mr123345wmo.7.1685121935222; Fri, 26 May
- 2023 10:25:35 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53D23271F6
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:27:39 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3E618D
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:27:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685122056;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=WfImwx6ANvfYODSJStVm7dBX9qtlhxDtNe8BZxfBw5w=;
+	b=dEAiFUj5wmlHvTb18HNHigbDtqHuLGXtIqggdcN6fz3xDHwZteRx2BeKOvbvr1l61DFj5F
+	ho529YIkk5juDI+tdN+UDUxVbIzAV+menW5ghaHQ8SUOYwZjYGNv+fdMh1xG/IXAVRktly
+	F4ggGetxRq2Viz8KNIKlOSTqpnjy0rs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-152-fjFMXfz8NXaIMkaaZLgflA-1; Fri, 26 May 2023 13:27:33 -0400
+X-MC-Unique: fjFMXfz8NXaIMkaaZLgflA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 60CFD185A791;
+	Fri, 26 May 2023 17:27:33 +0000 (UTC)
+Received: from renaissance-vector.redhat.com (unknown [10.39.194.190])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 1790F1121314;
+	Fri, 26 May 2023 17:27:31 +0000 (UTC)
+From: Andrea Claudi <aclaudi@redhat.com>
+To: netdev@vger.kernel.org
+Cc: stephen@networkplumber.org,
+	dsahern@gmail.com,
+	roopa@nvidia.com,
+	razor@blackwall.org
+Subject: [PATCH iproute2-next] bridge: vni: remove useless checks on vni
+Date: Fri, 26 May 2023 19:27:20 +0200
+Message-Id: <ebcffc302b5886a71a3e7aaec4561be2d65de30f.1685095619.git.aclaudi@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CANn89iKUbyrJ=r2+_kK+sb2ZSSHifFZ7QkPLDpAtkJ8v4WUumA@mail.gmail.com>
- <CAHk-=whqNMUPbjCyMjyxfH_5-Xass=DrMkPT5ZTJbFrtU=qDEQ@mail.gmail.com>
- <CANn89i+bExb_P6A9ROmwqNgGdO5o8wawVZ5r3MHnz0qfhxvTtA@mail.gmail.com>
- <CAHk-=wig6VizZHtRznz7uAWa-hHWjrCNANZ9B+1G=aTWPiVH4g@mail.gmail.com>
- <CAHk-=whkci5ck5Him8Lx5ECKHEtj=bipYmOCGe8DWrrp8uDq5g@mail.gmail.com> <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com>
-In-Reply-To: <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Fri, 26 May 2023 19:25:23 +0200
-Message-ID: <CANn89i+u8jvfSQAQ=_JY0be56deJNhKgDWbqpDAvfm-i34qX9A@mail.gmail.com>
-Subject: Re: x86 copy performance regression
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 26, 2023 at 7:17=E2=80=AFPM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Fri, May 26, 2023 at 10:00=E2=80=AFAM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > Let me go look at it some more. I *really* didn't want to make the
-> > code worse for ERMS
->
-> Oh well. I'll think about it some more in the hope that I can come up
-> with something clever that doesn't make objtool hate me, but in the
-> meantime let me just give you the "not clever" patch.
->
-> It generates an annoying six-byte jump when the small 2-byte one would
-> work just fine, but I guess only my pride is wounded.
+After the (d == NULL || vni == NULL) check, vni cannot be NULL anymore.
 
-arch/x86/lib/copy_user_64.S:34:2: error: invalid instruction mnemonic
-'alternative'
- alternative "jae .Lunrolled", "jae .Llarge", ( 9*32+ 9)
- ^~~~~~~~~~~
+This remove two useless conditional checks on vni value:
+- the first check cannot be true, so remove the whole conditional block
+- the second check is always true, so remove the check
 
-I changed alternative to ALTERNATIVE to let it build.
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+---
+ bridge/vni.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
- SYM_FUNC_START(rep_movs_alternative)
-        cmpq $64,%rcx
--       jae .Lunrolled
-+       ALTERNATIVE "jae .Lunrolled", "jae .Llarge", X86_FEATURE_ERMS
+diff --git a/bridge/vni.c b/bridge/vni.c
+index 940f251c..77328a4f 100644
+--- a/bridge/vni.c
++++ b/bridge/vni.c
+@@ -138,14 +138,8 @@ static int vni_modify(int cmd, int argc, char **argv)
+ 		return -1;
+ 	}
+ 
+-	if (!vni && group_present) {
+-		fprintf(stderr, "Group can only be specified with a vni\n");
+-		return -1;
+-	}
+-
+-	if (vni)
+-		parse_vni_filter(vni, &req.n, sizeof(req),
+-				 (group_present ? &daddr : NULL));
++	parse_vni_filter(vni, &req.n, sizeof(req),
++			 (group_present ? &daddr : NULL));
+ 
+ 	req.tmsg.ifindex = ll_name_to_index(d);
+ 	if (req.tmsg.ifindex == 0) {
+-- 
+2.40.1
 
-I will report test result soon, thanks !
 
