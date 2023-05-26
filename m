@@ -1,70 +1,68 @@
-Return-Path: <netdev+bounces-5752-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5755-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AF156712A44
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 18:11:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5724A712A70
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 18:16:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6A7962818D9
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:11:18 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0AC9E1C20FFD
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:16:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95CC327713;
-	Fri, 26 May 2023 16:11:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 11C1927727;
+	Fri, 26 May 2023 16:16:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A634742EE
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 16:11:16 +0000 (UTC)
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E29A18D
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:11:09 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id 2adb3069b0e04-4f37b860173so1042080e87.2
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:11:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1685117467; x=1687709467;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Zv6Et/o2vJnq9DI/Xfro4OfCJ69MVMQNjKnU8DtfuT4=;
-        b=VzukazGCld+jAFWS8IFUso9SO51TpS9oyYn4OheWY3u2SyEd7+no2v4jCMVa1+4gNh
-         SOqcFuBJJQK8SQ7VyktdX4P+6iqOffT38nR5qFWUO4NErpGOjWAjFDPB1lrreUgjTdUr
-         Xr7LGFAL64TlriUYc8fpNWtzIaPtFLdmou6gKVCvwtzlvbik2wjEUfdsuk97e+XYRy5N
-         kqPJ7kgMgFMlbWq5+jG/GfEws0NWPpJH6SNbS1exeDSjOAvRr9AftBW2fP42YrTKvVOf
-         12NUFLQ/x6kFdM+kicM0FDQsQFhqnKKTuZrhD9AVvDWFWn/EZ6dgU5Rg4FwqgEPcdIzy
-         6izQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685117467; x=1687709467;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Zv6Et/o2vJnq9DI/Xfro4OfCJ69MVMQNjKnU8DtfuT4=;
-        b=TqHA3j8h9/WOzv+kMoGNsJhWimXNMkePU35dNy/OeOb+boNq2pgSvX7Y78FxehuH2M
-         P/B3PiEYUUo8EMYYLMteBwFTyv+npu6UiziSl3KgWOJYJYfIDb5Q/jFqIXqR6PPcUQhR
-         NKT2Po1mxxs2rCCi02N1r2Vu6TThmB3ype30I9kRcuqd6EqvbB922Fbd1ea3r8qP2u1I
-         xnqGJ+HAwtXbRKNI1fWwbrWumut0IqIiD9oJ0oWPLFaGvDsdk855lvEjA1OY+UX5VwCA
-         4KpuxP0SNhIff0Xk1ju20HyJc6JBQFdfq5DfL6nVOh8hMCx+z/BTFO4vv436OO6jvrB+
-         enHw==
-X-Gm-Message-State: AC+VfDxTnkIdqCPmeeks0GlulruRKXnEAsUyyCJ9GJaWIjB8AqyGht7l
-	nJCpaSlx4BscTyBC/ioOx0sKuyNyXXgi5FuC6UCRWg==
-X-Google-Smtp-Source: ACHHUZ6obE/Q8UNp563IPCuiGR1IgN4Q82ONYHibQTS5tTKEAU6GmCCswkQFT2eno5XaoIn23ro5JQ==
-X-Received: by 2002:ac2:46e5:0:b0:4f4:ca61:82bb with SMTP id q5-20020ac246e5000000b004f4ca6182bbmr706240lfo.45.1685117467596;
-        Fri, 26 May 2023 09:11:07 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id u14-20020ac248ae000000b004f2769a120dsm672913lfg.249.2023.05.26.09.11.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 09:11:06 -0700 (PDT)
-Date: Fri, 26 May 2023 18:11:05 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Simon Horman <horms@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] devlink: Spelling corrections
-Message-ID: <ZHDaGZeVZH8mZOsC@nanopsycho>
-References: <20230526-devlink-spelling-v1-1-9a3e36cdebc8@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05C4A742EE
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 16:16:52 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359B5BC;
+	Fri, 26 May 2023 09:16:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685117811; x=1716653811;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tFle62zzOw130eAw0UDs1o1U+rbjQMuBYyQ/MfXYpg0=;
+  b=VCu1WMMA6skKYPwsxaNpw7jflC1BcclZtiHxbBpsBeIxrVRYefMFyzst
+   hMUK6KJoT/tNkwjomkz6lH0LjXcpnbV8GvVWF+kjyBEeZXRKagx5Ys7pS
+   Vuq3h48ZwsGHek+IRvcR4OSsA5EOHGNZXZP8hQXpVtrIj3+gBxuuKLb51
+   ggJQIyswJ0WX7+UgKjXuyY1VsHd6n0GkWlvuqTWCbyV1HIDTAGkBySocc
+   Mbh/KaYriOkBNNVDbYaZeSav4hGJC+IM8VwYqEp/4Uc93+nqXxUYxhsB8
+   D6vQkbFzbWK6+0P9yYW14bzJ/ab4kckYGez6HRjl1/fIdFqqUE+2wGHn7
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10722"; a="334593844"
+X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
+   d="scan'208";a="334593844"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 09:11:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10722"; a="770387608"
+X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
+   d="scan'208";a="770387608"
+Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 26 May 2023 09:11:36 -0700
+Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1q2a2S-000JRq-0F;
+	Fri, 26 May 2023 16:11:36 +0000
+Date: Sat, 27 May 2023 00:11:25 +0800
+From: kernel test robot <lkp@intel.com>
+To: Liang Chen <liangchen.linux@gmail.com>, jasowang@redhat.com,
+	mst@redhat.com
+Cc: oe-kbuild-all@lists.linux.dev,
+	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, xuanzhuo@linux.alibaba.com,
+	kuba@kernel.org, edumazet@google.com, davem@davemloft.net,
+	pabeni@redhat.com, alexander.duyck@gmail.com,
+	Liang Chen <liangchen.linux@gmail.com>
+Subject: Re: [PATCH net-next 2/5] virtio_net: Add page_pool support to
+ improve performance
+Message-ID: <202305262334.GiFQ3wpG-lkp@intel.com>
+References: <20230526054621.18371-2-liangchen.linux@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -73,19 +71,52 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230526-devlink-spelling-v1-1-9a3e36cdebc8@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230526054621.18371-2-liangchen.linux@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Fri, May 26, 2023 at 03:45:13PM CEST, horms@kernel.org wrote:
->Make some minor spelling corrections in comments.
->
->Found by inspection.
->
->Signed-off-by: Simon Horman <horms@kernel.org>
+Hi Liang,
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+kernel test robot noticed the following build errors:
+
+[auto build test ERROR on net-next/main]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Liang-Chen/virtio_net-Add-page_pool-support-to-improve-performance/20230526-135805
+base:   net-next/main
+patch link:    https://lore.kernel.org/r/20230526054621.18371-2-liangchen.linux%40gmail.com
+patch subject: [PATCH net-next 2/5] virtio_net: Add page_pool support to improve performance
+config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20230526/202305262334.GiFQ3wpG-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-12) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/bfba563f43bba37181d8502cb2e566c32f96ec9e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Liang-Chen/virtio_net-Add-page_pool-support-to-improve-performance/20230526-135805
+        git checkout bfba563f43bba37181d8502cb2e566c32f96ec9e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 olddefconfig
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202305262334.GiFQ3wpG-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   ld: vmlinux.o: in function `virtnet_find_vqs':
+>> virtio_net.c:(.text+0x901fb5): undefined reference to `page_pool_create'
+   ld: vmlinux.o: in function `add_recvbuf_mergeable.isra.0':
+>> virtio_net.c:(.text+0x905618): undefined reference to `page_pool_alloc_pages'
+   ld: vmlinux.o: in function `xdp_linearize_page':
+   virtio_net.c:(.text+0x906b6b): undefined reference to `page_pool_alloc_pages'
+   ld: vmlinux.o: in function `mergeable_xdp_get_buf.isra.0':
+   virtio_net.c:(.text+0x90728f): undefined reference to `page_pool_alloc_pages'
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
