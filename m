@@ -1,47 +1,47 @@
-Return-Path: <netdev+bounces-5578-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5579-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A2ABB7122EC
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:04:31 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A6B37122ED
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:04:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5CC9C28103C
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:04:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D9E371C2100C
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:04:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 472E21097E;
-	Fri, 26 May 2023 09:03:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 12B10101FD;
+	Fri, 26 May 2023 09:03:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BB5310967
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:03:09 +0000 (UTC)
-Received: from smtpbgsg2.qq.com (smtpbgsg2.qq.com [54.254.200.128])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1959712C
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 02:03:06 -0700 (PDT)
-X-QQ-mid: bizesmtp89t1685091781t2172a2x
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 093D1111A3
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:03:15 +0000 (UTC)
+Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78185119
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 02:03:12 -0700 (PDT)
+X-QQ-mid: bizesmtp89t1685091784tdemj9zh
 Received: from localhost.localdomain ( [125.120.148.168])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 26 May 2023 17:02:59 +0800 (CST)
+	id ; Fri, 26 May 2023 17:03:03 +0800 (CST)
 X-QQ-SSF: 01400000000000N0Z000000A0000000
-X-QQ-FEAT: 7jw2iSiCazpO9lRC5CWx9LP/Zy/DFXjElKHk2pbNcPp3w6J+nmhllL2UrKBG3
-	UB4zrhtmgK+wVEoagHf9H23/YB45pAYKVTwd23OS4E4n3SFb8f0DSf24EdxENFR+5jmVHLW
-	PAXA3VpDr+6+H8V33CGD3uXgIqQ7P5Z3OK0BaR1I2jBUO3N1h2PB68LtUSTDuA8IfCDTqdw
-	2NkPo/O6+tANxWQ1HQWkaLRwJeuU7rm1TBQyur+Isfpol/boS+d9x05zWNJAu9SV+HkMsEG
-	vq+m6bSPOPZ8xSZFO3FXFunKJImCy3Fup+zRmFsFbRqOcKDS36DW30okVf5X99h5jbZRbXO
-	TfUXSkAUTHHVI5aTWPtILo3hfDuMyH7fjqa7nQm4l++lECYSW9+iADR1iWwtkSc4ga8vhaa
-	XCzmGlcH3d9JUIuxhQ2CtA==
+X-QQ-FEAT: znfcQSa1hKa5cDnuRiYBZWgF0mRL/LDU0OXgt1yyWkSHnYJkYM3pCYJao2vFj
+	1KbM3KAknRlmPqF7rEl3lWRSNinR1FLAw46Lzcmn/6xylt9FgeqsREPLlqWn7z07GTEYyHs
+	C7PrNLid9PauZ7jLpJEaMBsTIzoq1tPm/n1nw1VU7LQE6dz1UCAUfNmkrSUoUIcY5fL6VwF
+	hmiCXBy2vLL3a2B6kRL+Gljvb1WApt1Sb4Cq67AenHYPxpg9iOqEoEmBrg424LYZhJBehic
+	7wAFFMRq/THbvFA/K3f17i1idnaXDsfV6TEyhnl0/JuQNv45UpelGGzgEnFomHqIw6HbOTW
+	kRI+qD/uqcMPWu4lIFm7WDUXtiHyBckXWU9byzvoXhJ3lCRVjDl0jsc1+WXbnAYTVAXCtkx
+	TbAq+an7pXYiQInfSZitaQ==
 X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 14990435723325613460
+X-BIZMAIL-ID: 3560439683407533064
 From: Mengyuan Lou <mengyuanlou@net-swift.com>
 To: netdev@vger.kernel.org
 Cc: jiawenwu@trustnetic.com,
 	Mengyuan Lou <mengyuanlou@net-swift.com>
-Subject: [PATCH net-next v7 5/8] net: ngbe: Add netdev features support
-Date: Fri, 26 May 2023 17:02:27 +0800
-Message-Id: <20230526090230.71487-6-mengyuanlou@net-swift.com>
+Subject: [PATCH net-next v7 6/8] net: ngbe: Implement vlan add and remove ops
+Date: Fri, 26 May 2023 17:02:28 +0800
+Message-Id: <20230526090230.71487-7-mengyuanlou@net-swift.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230526090230.71487-1-mengyuanlou@net-swift.com>
 References: <20230526090230.71487-1-mengyuanlou@net-swift.com>
@@ -60,49 +60,47 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add features and hw_features that ngbe can support.
+ngbe add ndo_vlan_rx_add_vid and ndo_vlan_rx_kill_vid.
 
 Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
 ---
- drivers/net/ethernet/wangxun/ngbe/ngbe_main.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c | 3 +++
+ drivers/net/ethernet/wangxun/ngbe/ngbe_type.h | 1 +
+ 2 files changed, 4 insertions(+)
 
 diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-index df6b870aa871..f234c9c4b942 100644
+index f234c9c4b942..c99a5d3de72e 100644
 --- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
 +++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-@@ -473,6 +473,7 @@ static const struct net_device_ops ngbe_netdev_ops = {
- 	.ndo_change_mtu         = wx_change_mtu,
- 	.ndo_start_xmit         = wx_xmit_frame,
- 	.ndo_set_rx_mode        = wx_set_rx_mode,
-+	.ndo_set_features       = wx_set_features,
+@@ -115,6 +115,7 @@ static int ngbe_sw_init(struct wx *wx)
+ 	wx->mac.max_rx_queues = NGBE_MAX_RX_QUEUES;
+ 	wx->mac.max_tx_queues = NGBE_MAX_TX_QUEUES;
+ 	wx->mac.mcft_size = NGBE_MC_TBL_SIZE;
++	wx->mac.vft_size = NGBE_SP_VFT_TBL_SIZE;
+ 	wx->mac.rx_pb_size = NGBE_RX_PB_SIZE;
+ 	wx->mac.tx_pb_size = NGBE_TDB_PB_SZ;
+ 
+@@ -477,6 +478,8 @@ static const struct net_device_ops ngbe_netdev_ops = {
  	.ndo_validate_addr      = eth_validate_addr,
  	.ndo_set_mac_address    = wx_set_mac,
  	.ndo_get_stats64        = wx_get_stats64,
-@@ -551,12 +552,18 @@ static int ngbe_probe(struct pci_dev *pdev,
- 	ngbe_set_ethtool_ops(netdev);
- 	netdev->netdev_ops = &ngbe_netdev_ops;
++	.ndo_vlan_rx_add_vid    = wx_vlan_rx_add_vid,
++	.ndo_vlan_rx_kill_vid   = wx_vlan_rx_kill_vid,
+ };
  
--	netdev->features |= NETIF_F_HIGHDMA;
--	netdev->features = NETIF_F_SG;
--
-+	netdev->features = NETIF_F_SG | NETIF_F_IP_CSUM |
-+			   NETIF_F_TSO | NETIF_F_TSO6 |
-+			   NETIF_F_RXHASH | NETIF_F_RXCSUM;
-+	netdev->features |= NETIF_F_SCTP_CRC | NETIF_F_TSO_MANGLEID;
-+	netdev->vlan_features |= netdev->features;
-+	netdev->features |= NETIF_F_IPV6_CSUM | NETIF_F_VLAN_FEATURES;
- 	/* copy netdev features into list of user selectable features */
--	netdev->hw_features |= netdev->features |
--			       NETIF_F_RXALL;
-+	netdev->hw_features |= netdev->features | NETIF_F_RXALL;
-+	netdev->hw_features |= NETIF_F_NTUPLE | NETIF_F_HW_TC;
-+	netdev->features |= NETIF_F_HIGHDMA;
-+	netdev->hw_features |= NETIF_F_GRO;
-+	netdev->features |= NETIF_F_GRO;
+ /**
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
+index 373d5af628cd..b70eca397b67 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
+@@ -136,6 +136,7 @@ enum NGBE_MSCA_CMD_value {
+ #define NGBE_RAR_ENTRIES			32
+ #define NGBE_RX_PB_SIZE				42
+ #define NGBE_MC_TBL_SIZE			128
++#define NGBE_SP_VFT_TBL_SIZE			128
+ #define NGBE_TDB_PB_SZ				(20 * 1024) /* 160KB Packet Buffer */
  
- 	netdev->priv_flags |= IFF_UNICAST_FLT;
- 	netdev->priv_flags |= IFF_SUPP_NOFCS;
+ /* TX/RX descriptor defines */
 -- 
 2.40.1
 
