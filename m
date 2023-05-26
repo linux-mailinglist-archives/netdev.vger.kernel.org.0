@@ -1,178 +1,141 @@
-Return-Path: <netdev+bounces-5657-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5656-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5861A7125A5
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 13:36:14 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F12837125A3
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 13:35:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1378C1C21028
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:36:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A2E981C21019
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:35:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E0A0742F7;
-	Fri, 26 May 2023 11:36:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C3F0A742F7;
+	Fri, 26 May 2023 11:35:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 921C2AD24
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 11:36:11 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6C310C4
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 04:35:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685100900;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=IMHlvlz6CKzHL2wE0mYlxFl6H+erPJBHzeUTjMW5vZI=;
-	b=eq+FYkSeSJszMa7jmCs60cI4g8fTr3zoKTyuGuPlFst/pcN+4U3ve/NCRJPo50DP1wNAEf
-	eBPQcRZE6fAMvI1v+Hrx87uqWNg0D5HStZ/lqFdPMiqSwl8XnUw9RjF7skN/QtW6hQzwRR
-	0jt82PxgPBJrCDHrhbjjuazkfT4ErUY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-630-Fq5P_uGwNgawY86m8cYzKA-1; Fri, 26 May 2023 07:34:58 -0400
-X-MC-Unique: Fq5P_uGwNgawY86m8cYzKA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EB1AA801224;
-	Fri, 26 May 2023 11:34:57 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id DE04240CFD45;
-	Fri, 26 May 2023 11:34:54 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-To: netdev@vger.kernel.org
-cc: dhowells@redhat.com, Kenny Ho <Kenny.Ho@amd.com>,
-    Marc Dionne <marc.dionne@auristor.com>, Andrew Lunn <andrew@lunn.ch>,
-    David Laight <David.Laight@ACULAB.COM>,
-    "David S. Miller" <davem@davemloft.net>,
-    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-    Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
-    linux-kernel@vger.kernel.org
-Subject: [PATCH net] rxrpc: Truncate UTS_RELEASE for rxrpc version 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B120A742EB
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 11:35:43 +0000 (UTC)
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4A9E59
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 04:35:21 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3f6d38a140bso5495425e9.1
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 04:35:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1685100919; x=1687692919;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=DpLztVCn+WjMgDo0CeJvIn2oKMfgxX/uP6QgVFcHVGg=;
+        b=FeOaDdv4gg3f3wKgSD7Kj0nG2QU2orT4vRISPcorJsxX7ESno+ajAZv8gU4TmByLiz
+         y1t4L0mlb1JjReINz9H5X4xmpt6pFLA5eaMOsE/805ylU6BT5QLK8XsnnCmIqes/kplp
+         XJSO/KPFiHRJXHHLKIkyHr2hnaYky1p2A30vruPoPTKZi+WX4lHQItQKHu3RNWX5JwzO
+         q6c2LibE5nUj4R6Y4q0tZbpL8Ev6yMbLvUwjho8a++HDvm3ihasRPE2QGKL1I3ndXoH+
+         73sKRleH6qI4QbhpGh4vaTZWg9KtwOqxc53I8rMyv1K6jYF1Z+/Es3iBp33ykfwixC+U
+         vMZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685100919; x=1687692919;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DpLztVCn+WjMgDo0CeJvIn2oKMfgxX/uP6QgVFcHVGg=;
+        b=U6qL5RAljDBkTEhIiPJ31RPwsVA8pV1XXHddI1QTBLkDS4S+rF2D7yTawBgjWHakqm
+         9iPvs0R1sw0cyJ+fUb6biEGpo4ZWG4hyos3teqodskBzhsrYboBVdXplzUYz7Squk29R
+         0gXNkutYdNdCkQjkI+91vx9hr9qrypbm/k/edfZ/kw0u2m/SbKnfgSnWgbQyyQ0iUFjN
+         QZ7ysev9XUgmUkTc0bJzdsG7wLsPQ862RQj2qoqLkuyePlZk0Cf4D8uA5yQuTJ7qZddx
+         lM71DHyFfzDf/JNXPIQ2A+5LaqdEZylAPFk8AHXQuIQEqAF319YIS81bgX5IoyQkcM+g
+         uRPg==
+X-Gm-Message-State: AC+VfDxQ5Rkw1bPAVaKXq6gBgIiMf5psc9k4cpeUJr0i5n9IIws5m0Gf
+	Yz2tylf+9IapV0+fUbn4S8UXJA==
+X-Google-Smtp-Source: ACHHUZ4ZhsQ13Lm3DdrO2yqvqqxAEVD1pNeDBIO46XBTuTS52BAHoWC6NbJI1AN6s0KMkV1CzMXxOQ==
+X-Received: by 2002:a05:600c:b44:b0:3f4:2d85:bcda with SMTP id k4-20020a05600c0b4400b003f42d85bcdamr1123758wmr.19.1685100919101;
+        Fri, 26 May 2023 04:35:19 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id 24-20020a05600c021800b003f080b2f9f4sm8523185wmi.27.2023.05.26.04.35.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 May 2023 04:35:18 -0700 (PDT)
+Date: Fri, 26 May 2023 13:35:16 +0200
+From: Jiri Pirko <jiri@resnulli.us>
+To: "Wilczynski, Michal" <michal.wilczynski@intel.com>
+Cc: netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
+	davem@davemloft.net, edumazet@google.com, leon@kernel.org,
+	saeedm@nvidia.com, moshe@nvidia.com, jesse.brandeburg@intel.com,
+	anthony.l.nguyen@intel.com, tariqt@nvidia.com, idosch@nvidia.com,
+	petrm@nvidia.com, simon.horman@corigine.com, ecree.xilinx@gmail.com,
+	habetsm.xilinx@gmail.com, jacob.e.keller@intel.com
+Subject: Re: [patch net-next v2 02/15] ice: register devlink port for PF with
+ ops
+Message-ID: <ZHCZdD/m29yr5hfc@nanopsycho>
+References: <20230526102841.2226553-1-jiri@resnulli.us>
+ <20230526102841.2226553-3-jiri@resnulli.us>
+ <4b8dcf1e-72df-48dc-b249-81d07323a632@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <654973.1685100894.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 26 May 2023 12:34:54 +0100
-Message-ID: <654974.1685100894@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URI_DOTEDU autolearn=no
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4b8dcf1e-72df-48dc-b249-81d07323a632@intel.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-    =
+Fri, May 26, 2023 at 12:52:21PM CEST, michal.wilczynski@intel.com wrote:
+>
+>
+>On 5/26/2023 12:28 PM, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@nvidia.com>
+>>
+>> Use newly introduce devlink port registration function variant and
+>> register devlink port passing ops.
+>>
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+>> ---
+>>  drivers/net/ethernet/intel/ice/ice_devlink.c | 6 +++++-
+>>  1 file changed, 5 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+>> index bc44cc220818..6661d12772a3 100644
+>> --- a/drivers/net/ethernet/intel/ice/ice_devlink.c
+>> +++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+>> @@ -1512,6 +1512,9 @@ ice_devlink_set_port_split_options(struct ice_pf *pf,
+>>  	ice_active_port_option = active_idx;
+>>  }
+>>  
+>> +static const struct devlink_port_ops ice_devlink_port_ops = {
+>> +};
+>
+>I can see that you're doing this everywhere, but aren't those braces redundant ?
+>This struct would be initialized to zero anyway.
 
-UTS_RELEASE has a maximum length of 64 which can cause rxrpc_version to
-exceed the 65 byte message limit.
+Well, yeah, but 3 patches later, they are not going to be empty anymore.
 
-Per the rx spec[1]: "If a server receives a packet with a type value of 13=
-,
-and the client-initiated flag set, it should respond with a 65-byte payloa=
-d
-containing a string that identifies the version of AFS software it is
-running."
 
-The current implementation causes a compile error when WERROR is turned on
-and/or UTS_RELEASE exceeds the length of 49 (making the version string mor=
-e
-than 64 characters).
-
-Fix this by generating the string during module initialisation and limitin=
-g
-the UTS_RELEASE segment of the string does not exceed 49 chars.  We need t=
-o
-make sure that the 64 bytes includes "linux-" at the front and " AF_RXRPC"
-at the back as this may be used in pattern matching.
-
-Fixes: 44ba06987c0b ("RxRPC: Handle VERSION Rx protocol packets")
-Reported-by: Kenny Ho <Kenny.Ho@amd.com>
-Link: https://lore.kernel.org/r/20230523223944.691076-1-Kenny.Ho@amd.com/
-Signed-off-by: David Howells <dhowells@redhat.com>
-Acked-by: Kenny Ho <Kenny.Ho@amd.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: Andrew Lunn <andrew@lunn.ch>
-cc: David Laight <David.Laight@ACULAB.COM>
-cc: "David S. Miller" <davem@davemloft.net>
-cc: Eric Dumazet <edumazet@google.com>
-cc: Jakub Kicinski <kuba@kernel.org>
-cc: Paolo Abeni <pabeni@redhat.com>
-cc: linux-afs@lists.infradead.org
-cc: netdev@vger.kernel.org
-Link: https://web.mit.edu/kolya/afs/rx/rx-spec [1]
----
- net/rxrpc/af_rxrpc.c    |    1 +
- net/rxrpc/ar-internal.h |    1 +
- net/rxrpc/local_event.c |   11 ++++++++++-
- 3 files changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
-index 31f738d65f1c..da0b3b5157d5 100644
---- a/net/rxrpc/af_rxrpc.c
-+++ b/net/rxrpc/af_rxrpc.c
-@@ -980,6 +980,7 @@ static int __init af_rxrpc_init(void)
- 	BUILD_BUG_ON(sizeof(struct rxrpc_skb_priv) > sizeof_field(struct sk_buff=
-, cb));
- =
-
- 	ret =3D -ENOMEM;
-+	rxrpc_gen_version_string();
- 	rxrpc_call_jar =3D kmem_cache_create(
- 		"rxrpc_call_jar", sizeof(struct rxrpc_call), 0,
- 		SLAB_HWCACHE_ALIGN, NULL);
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 5d44dc08f66d..e8e14c6f904d 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -1068,6 +1068,7 @@ int rxrpc_get_server_data_key(struct rxrpc_connectio=
-n *, const void *, time64_t,
- /*
-  * local_event.c
-  */
-+void rxrpc_gen_version_string(void);
- void rxrpc_send_version_request(struct rxrpc_local *local,
- 				struct rxrpc_host_header *hdr,
- 				struct sk_buff *skb);
-diff --git a/net/rxrpc/local_event.c b/net/rxrpc/local_event.c
-index 5e69ea6b233d..993c69f97488 100644
---- a/net/rxrpc/local_event.c
-+++ b/net/rxrpc/local_event.c
-@@ -16,7 +16,16 @@
- #include <generated/utsrelease.h>
- #include "ar-internal.h"
- =
-
--static const char rxrpc_version_string[65] =3D "linux-" UTS_RELEASE " AF_=
-RXRPC";
-+static char rxrpc_version_string[65]; // "linux-" UTS_RELEASE " AF_RXRPC"=
-;
-+
-+/*
-+ * Generate the VERSION packet string.
-+ */
-+void rxrpc_gen_version_string(void)
-+{
-+	snprintf(rxrpc_version_string, sizeof(rxrpc_version_string),
-+		 "linux-%.49s AF_RXRPC", UTS_RELEASE);
-+}
- =
-
- /*
-  * Reply to a version request
-
+>
+>> +
+>>  /**
+>>   * ice_devlink_create_pf_port - Create a devlink port for this PF
+>>   * @pf: the PF to create a devlink port for
+>> @@ -1551,7 +1554,8 @@ int ice_devlink_create_pf_port(struct ice_pf *pf)
+>>  	devlink_port_attrs_set(devlink_port, &attrs);
+>>  	devlink = priv_to_devlink(pf);
+>>  
+>> -	err = devlink_port_register(devlink, devlink_port, vsi->idx);
+>> +	err = devlink_port_register_with_ops(devlink, devlink_port, vsi->idx,
+>> +					     &ice_devlink_port_ops);
+>>  	if (err) {
+>>  		dev_err(dev, "Failed to create devlink port for PF %d, error %d\n",
+>>  			pf->hw.pf_id, err);
+>
+>Looks good to me,
+>
+>Reviewed-by: Michal Wilczynski <michal.wilczynski@intel.com>
+>
+>
 
