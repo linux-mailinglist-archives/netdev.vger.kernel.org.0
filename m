@@ -1,130 +1,192 @@
-Return-Path: <netdev+bounces-5777-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5778-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F1A09712B92
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:17:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C99E1712B9D
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:18:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 95E501C210CF
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:17:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3199428189B
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:18:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB38A28C17;
-	Fri, 26 May 2023 17:17:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65F6C28C1B;
+	Fri, 26 May 2023 17:18:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF7812CA6
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:17:25 +0000 (UTC)
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E004D19A
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:17:23 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-510b6a249a8so1786502a12.0
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:17:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5579F2CA6
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:18:35 +0000 (UTC)
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16984E66;
+	Fri, 26 May 2023 10:18:01 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id a640c23a62f3a-96ff9c0a103so140585466b.0;
+        Fri, 26 May 2023 10:18:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1685121442; x=1687713442;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=2SDbH8jwxHalkcPD4Gq6t9y7De5VNrdlKn9k4tsGfLw=;
-        b=MW/im5IXrVqJSdFDGWSOK84wY4O3RxP+EURvoOQQHBAfvGOrslzA20/mwIm2C4u0kR
-         cK1Txc+qhLf5IwZiqNXj9N3x0ArpC7dps9Loty59MDYPLbPFfsjG6ABnRd/nU0jPXleN
-         FdPlR7eSep4csAWuqiHcaeA5bnNUKk4HKBh68=
+        d=gmail.com; s=20221208; t=1685121479; x=1687713479;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=rXAfU4krUfQItxKONERdy0UnGwuPi9mhVPa4tKH3xW4=;
+        b=blT6VhBS2mX05s5wK3U4WHJiAAhqRpdhqtpQnhde0RcdR3Z9PVGwJ+60BHw26bot3m
+         +MD3e5vekpWGhzpB9kMSAh13hs30iC6kdknWyrV36JwWcEfxBtzduGUfatSI5WNNxceC
+         lJXiA1WOxGJiRvpUH9FfKpyG4OMDw+tzzsY1YHVSGWYmlkj1fGpxyTjgvcJmf1FKbAs1
+         Lq5nbnIvcifvXWLQP4TcDSylXxYlUBssE540Sr7QbfgBb3C0DwmROamC7xzgYG64VIWo
+         uYuSdmgJ9M0od8/63dOnwHogZajZA8/QzcnOPlvwNXCnMY3dd07SFvN3eDbYjIJSjKiP
+         bXmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685121442; x=1687713442;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2SDbH8jwxHalkcPD4Gq6t9y7De5VNrdlKn9k4tsGfLw=;
-        b=gxfTR2+cf/5sidT+Xa6UyO9dVB6/S/axMB0Qq1YoHKb4MF0CW2OAA5ztFM9hGiuqUN
-         xB8OhQa401vJu1NxGoJRCeyiviKMxSSeMi7minxOgu1UOpV/3HQn+RO/lv4ByzfMtRaS
-         iH4lQYu0A5C9KNV9fJkt+lTWh/44n1vZqtpB3cimaB5UKB9szqhEgYN94bjSzNvXWTbT
-         cKpLTyOMH+QIJEXPjolwDO80yk4sfucFbbZfpxAXWxsArDNwoeIsiAn5xwFyd5J052kH
-         A7+28zN7PmhM7/Xh5YptDznccG+q90GN0ZeRplKIJTrT1gpgN/eDRuk0iM7wrlCOKY26
-         stYg==
-X-Gm-Message-State: AC+VfDyNj2WrMMUcbSYZnebGXKbJVGT+T++eHzzlMkQv+xyb9BdSFGE0
-	uzNw3ig7y8fks+Gi9Cc9d5AKcjC5ASInKzca3QIjWaDX
-X-Google-Smtp-Source: ACHHUZ57QlvrKbjYYYM2I0E51grI680PoYOMoidOqvfGJYEhaesFv4WQsoawofpArL17c4cdTHDZYA==
-X-Received: by 2002:a17:907:1b17:b0:96f:9a90:c924 with SMTP id mp23-20020a1709071b1700b0096f9a90c924mr2753662ejc.74.1685121442044;
-        Fri, 26 May 2023 10:17:22 -0700 (PDT)
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com. [209.85.208.49])
-        by smtp.gmail.com with ESMTPSA id f19-20020a170906139300b0095fd0462695sm2347003ejc.5.2023.05.26.10.17.21
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 May 2023 10:17:21 -0700 (PDT)
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-510b6a249a8so1786411a12.0
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:17:21 -0700 (PDT)
-X-Received: by 2002:a17:907:2684:b0:969:e55f:cca2 with SMTP id
- bn4-20020a170907268400b00969e55fcca2mr2526701ejc.38.1685121440670; Fri, 26
- May 2023 10:17:20 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685121479; x=1687713479;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rXAfU4krUfQItxKONERdy0UnGwuPi9mhVPa4tKH3xW4=;
+        b=lSK+fosVioD9UhB8q0ZDMhdrGgcETi8amFUT0BfKOgr4sUd1K0E7+NOvElY6g1vc1F
+         1KzalpuAM3dAQHEdl9OiDeRAuy5zh+m5o41znJz3jpBV3kmMu1QkxMnoB7YqNJ+lE+AE
+         huFcV+U53JizrDLxp3X2JFKg7GZGTHO3yz/l+O0Oqtcq+UUv1bVxk9OE5FG9pHejo7pO
+         5WC+x66KZbmfuR+zx74Hlasxb5HlDTosPyIsAx1N06dLGmeN5eKesgce7Arzj1JU7k+M
+         OL159CLmgPfNETbW5sUVtT/DUYLXUdf8SbrhSprU0M/pa64VuHf5BcRl2X7A7wYCqPRN
+         OUCA==
+X-Gm-Message-State: AC+VfDxfy9s2p522QEj0hVIFMlH8zCm/MibfS6Au3Z3fF9LKPvkTAlGr
+	XhhcQnPeSV71QMjCsSh8oT0=
+X-Google-Smtp-Source: ACHHUZ68f6SeRUgo46bYThmj4j2ets/qH5kJd72OCPkCJgENbXUwPSZg0P94z960AlvESDfW1LPHfA==
+X-Received: by 2002:a17:907:6e8e:b0:955:dcc9:d101 with SMTP id sh14-20020a1709076e8e00b00955dcc9d101mr3392414ejc.18.1685121478956;
+        Fri, 26 May 2023 10:17:58 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id dk24-20020a170906f0d800b00958434d4ecesm2440881ejb.13.2023.05.26.10.17.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 May 2023 10:17:58 -0700 (PDT)
+Date: Fri, 26 May 2023 20:17:55 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: arinc9.unal@gmail.com
+Cc: Sean Wang <sean.wang@mediatek.com>,
+	Landen Chao <Landen.Chao@mediatek.com>,
+	DENG Qingfang <dqfext@gmail.com>,
+	Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Russell King <linux@armlinux.org.uk>,
+	=?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+	Richard van Schagen <richard@routerhints.com>,
+	Richard van Schagen <vschagen@cs.com>,
+	Frank Wunderlich <frank-w@public-files.de>,
+	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+	erkin.bozoglu@xeront.com, mithat.guner@xeront.com,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next 29/30] net: dsa: introduce
+ preferred_default_local_cpu_port and use on MT7530
+Message-ID: <20230526171755.nk643aphoojvhjpg@skbuf>
+References: <20230522121532.86610-1-arinc.unal@arinc9.com>
+ <20230522121532.86610-1-arinc.unal@arinc9.com>
+ <20230522121532.86610-30-arinc.unal@arinc9.com>
+ <20230522121532.86610-30-arinc.unal@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CANn89iKUbyrJ=r2+_kK+sb2ZSSHifFZ7QkPLDpAtkJ8v4WUumA@mail.gmail.com>
- <CAHk-=whqNMUPbjCyMjyxfH_5-Xass=DrMkPT5ZTJbFrtU=qDEQ@mail.gmail.com>
- <CANn89i+bExb_P6A9ROmwqNgGdO5o8wawVZ5r3MHnz0qfhxvTtA@mail.gmail.com>
- <CAHk-=wig6VizZHtRznz7uAWa-hHWjrCNANZ9B+1G=aTWPiVH4g@mail.gmail.com> <CAHk-=whkci5ck5Him8Lx5ECKHEtj=bipYmOCGe8DWrrp8uDq5g@mail.gmail.com>
-In-Reply-To: <CAHk-=whkci5ck5Him8Lx5ECKHEtj=bipYmOCGe8DWrrp8uDq5g@mail.gmail.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 26 May 2023 10:17:03 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com>
-Message-ID: <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com>
-Subject: Re: x86 copy performance regression
-To: Eric Dumazet <edumazet@google.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, netdev <netdev@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="000000000000e02ff905fc9be809"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230522121532.86610-30-arinc.unal@arinc9.com>
+ <20230522121532.86610-30-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---000000000000e02ff905fc9be809
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Mon, May 22, 2023 at 03:15:31PM +0300, arinc9.unal@gmail.com wrote:
+> From: Vladimir Oltean <olteanv@gmail.com>
+> 
+> When multiple CPU ports are being used, the numerically smallest CPU port
+> becomes the port all user ports become affine to. This may not be the best
+> choice for all switches as there may be a numerically greater CPU port with
+> more bandwidth than the numerically smallest one.
+> 
+> Such switches are MT7530 and MT7531BE, which the MT7530 DSA subdriver
+> controls. Port 5 of these switches has got RGMII whilst port 6 has got
+> either TRGMII or SGMII.
+> 
+> Therefore, introduce the preferred_default_local_cpu_port operation to the
+> DSA subsystem and use it on the MT7530 DSA subdriver to prefer port 6 as
+> the default CPU port.
+> 
+> To prove the benefit of this operation, I (Arınç) have done a bidirectional
+> speed test between two DSA user ports on the MT7531BE switch using iperf3.
+> The user ports are 1 Gbps full duplex and on different networks so the SoC
+> MAC would have to do 2 Gbps TX and 2 Gbps RX to deliver full speed.
 
-On Fri, May 26, 2023 at 10:00=E2=80=AFAM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Let me go look at it some more. I *really* didn't want to make the
-> code worse for ERMS
+I think the real argument would sound like this:
 
-Oh well. I'll think about it some more in the hope that I can come up
-with something clever that doesn't make objtool hate me, but in the
-meantime let me just give you the "not clever" patch.
+Since the introduction of the OF bindings, DSA has always had a policy
+that in case multiple CPU ports are present in the device tree, the
+numerically first one is always chosen.
 
-It generates an annoying six-byte jump when the small 2-byte one would
-work just fine, but I guess only my pride is wounded.
+The MT7530 switch family has 2 CPU ports, 5 and 6, where port 6 is
+preferable because it has higher bandwidth.
 
-              Linus
+The MT7530 driver developers had 3 options:
+- to modify DSA when the driver was introduced, such as to prefer the
+  better port
+- to declare both CPU ports in device trees as CPU ports, and live with
+  the sub-optimal performance resulting from not preferring the better
+  port
+- to declare just port 6 in the device tree as a CPU port
 
---000000000000e02ff905fc9be809
-Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
-Content-Disposition: attachment; filename="patch.diff"
-Content-Transfer-Encoding: base64
-Content-ID: <f_li4tsaq50>
-X-Attachment-Id: f_li4tsaq50
+Of course they chose the path of least resistance (3rd option), kicking
+the can down the road. The hardware description in the device tree is
+supposed to be stable - developers are not supposed to adopt the
+strategy of piecemeal hardware description, where the device tree is
+updated in lockstep with the features that the kernel currently supports.
 
-IGFyY2gveDg2L2xpYi9jb3B5X3VzZXJfNjQuUyB8IDEwICsrKysrKysrKy0KIDEgZmlsZSBjaGFu
-Z2VkLCA5IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9hcmNoL3g4
-Ni9saWIvY29weV91c2VyXzY0LlMgYi9hcmNoL3g4Ni9saWIvY29weV91c2VyXzY0LlMKaW5kZXgg
-NGZjNWMyZGUyZGU0Li43ZTk3MjIyNGIwYmEgMTAwNjQ0Ci0tLSBhL2FyY2gveDg2L2xpYi9jb3B5
-X3VzZXJfNjQuUworKysgYi9hcmNoL3g4Ni9saWIvY29weV91c2VyXzY0LlMKQEAgLTcsNiArNyw4
-IEBACiAgKi8KIAogI2luY2x1ZGUgPGxpbnV4L2xpbmthZ2UuaD4KKyNpbmNsdWRlIDxhc20vY3B1
-ZmVhdHVyZXMuaD4KKyNpbmNsdWRlIDxhc20vYWx0ZXJuYXRpdmUuaD4KICNpbmNsdWRlIDxhc20v
-YXNtLmg+CiAjaW5jbHVkZSA8YXNtL2V4cG9ydC5oPgogCkBAIC0yOSw3ICszMSw3IEBACiAgKi8K
-IFNZTV9GVU5DX1NUQVJUKHJlcF9tb3ZzX2FsdGVybmF0aXZlKQogCWNtcHEgJDY0LCVyY3gKLQlq
-YWUgLkx1bnJvbGxlZAorCWFsdGVybmF0aXZlICJqYWUgLkx1bnJvbGxlZCIsICJqYWUgLkxsYXJn
-ZSIsIFg4Nl9GRUFUVVJFX0VSTVMKIAogCWNtcCAkOCwlZWN4CiAJamFlIC5Md29yZApAQCAtNjUs
-NiArNjcsMTIgQEAgU1lNX0ZVTkNfU1RBUlQocmVwX21vdnNfYWx0ZXJuYXRpdmUpCiAJX0FTTV9F
-WFRBQkxFX1VBKCAyYiwgLkxjb3B5X3VzZXJfdGFpbCkKIAlfQVNNX0VYVEFCTEVfVUEoIDNiLCAu
-TGNvcHlfdXNlcl90YWlsKQogCisuTGxhcmdlOgorMDoJcmVwIG1vdnNiCisxOglSRVQKKworICAg
-ICAgICBfQVNNX0VYVEFCTEVfVUEoIDBiLCAxYikKKwogCS5wMmFsaWduIDQKIC5MdW5yb2xsZWQ6
-CiAxMDoJbW92cSAoJXJzaSksJXI4Cg==
---000000000000e02ff905fc9be809--
+Now, as a result of the fact that they did that, any attempts to modify
+the device tree and describe both CPU ports as CPU ports would make DSA
+change its default selection from port 6 to 5, effectively resulting in
+a performance degradation visible to users as can be seen below vvvvv
+
+> 
+> Without preferring port 6:
+> 
+> [ ID][Role] Interval           Transfer     Bitrate         Retr
+> [  5][TX-C]   0.00-20.00  sec   374 MBytes   157 Mbits/sec  734    sender
+> [  5][TX-C]   0.00-20.00  sec   373 MBytes   156 Mbits/sec    receiver
+> [  7][RX-C]   0.00-20.00  sec  1.81 GBytes   778 Mbits/sec    0    sender
+> [  7][RX-C]   0.00-20.00  sec  1.81 GBytes   777 Mbits/sec    receiver
+> 
+> With preferring port 6:
+> 
+> [ ID][Role] Interval           Transfer     Bitrate         Retr
+> [  5][TX-C]   0.00-20.00  sec  1.99 GBytes   856 Mbits/sec  273    sender
+> [  5][TX-C]   0.00-20.00  sec  1.99 GBytes   855 Mbits/sec    receiver
+> [  7][RX-C]   0.00-20.00  sec  1.72 GBytes   737 Mbits/sec   15    sender
+> [  7][RX-C]   0.00-20.00  sec  1.71 GBytes   736 Mbits/sec    receiver
+> 
+> Using one port for WAN and the other ports for LAN is a very popular use
+> case which is what this test emulates.
+
+As such, this change proposes that we retroactively modify stable
+kernels to keep the mt7530 driver preferring port 6 even with device
+trees where the hardware is more fully described.
+
+Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+
+> 
+> This doesn't affect the remaining switches, MT7531AE and the switch on the
+> MT7988 SoC. Both CPU ports of the MT7531AE switch have got SGMII and there
+> is only one CPU port on the switch on the MT7988 SoC.
+> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+
+See the difference in intent?
 
