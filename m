@@ -1,130 +1,130 @@
-Return-Path: <netdev+bounces-5742-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5743-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B714A7129D2
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:43:08 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6665E7129D4
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:43:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6EA5C1C2091D
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 15:43:05 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 11A921C210AD
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 15:43:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB6A3271F3;
-	Fri, 26 May 2023 15:43:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7AD2D271F5;
+	Fri, 26 May 2023 15:43:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF808742EE
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 15:43:05 +0000 (UTC)
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3D410A;
-	Fri, 26 May 2023 08:43:03 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-970028cfb6cso166452466b.1;
-        Fri, 26 May 2023 08:43:03 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FA01742EE
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 15:43:46 +0000 (UTC)
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D71C134
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 08:43:44 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-ba81b238ee8so1983574276.0
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 08:43:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685115782; x=1687707782;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rVpwhBhZjm4u1PvolKtSrwJ++hTN+rljYI2eWWd/rv0=;
-        b=g1pKCw2HscEcTD2GSPzJcYYGnMv+ROG4mE/6/SigjSTX8eiwhWxP0BhCD/H4icUkHo
-         r6IuwTfsrmcU4LAIJVM2PyWwd1bjjyBBr034WXEIrlxXQI/LVBM+E7EA0elIQDJ8Djtb
-         N1wlACq8KMzwqpp2rfsQ9kL9GQYnAiEPPQIstlU7wg0AJ2zqHuo1am4MzLj4YdNLdQct
-         /cOWOV/PTUtDKBa9rsYWxTuzYvyrgn8b/8WfUUnYgbaI+GfsAdesMSD87roP64nEs6pI
-         pgHKPgiUm+GSZ9nCCBXCnp0Fx24vq8yR6H+DBI3k8a4/lJIQEgJk0VYRpcVzZLd3Ev3u
-         vcwA==
+        d=google.com; s=20221208; t=1685115824; x=1687707824;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=FQoh9ajoSQoocerlSNJVQjWy3Z8lhgiOUjOtV0wUfpQ=;
+        b=VgmUVTcPC+eQf7DaVFcvBgIKWTAql2pDQzmlWCOQBZWa9H48KlNi2BnpQ330rHYrsg
+         wyD7KCwpQFQmnc04ack1Th4cxju19Qzwrma/Trm36V6KVX/XusiBQk4NQkmg1s7ou9hO
+         NZaKO7z3eIDl1NMvD0cmbmLOoJOV8Pgmm5xOgLFygdRFESmxijG7QpD/zbdo31aP2p68
+         Q0nV3qn+AXBWWtGD+02kAyjvxjmNtU/idrjMtDV54eNJtOn5TxdMmDgXh0S4xjHC6S7G
+         4Hy8WIPC147L5VULNma5o8uoKp1B2F2K00LbTMUXmLNgh6kVvk+9ctrUsDt7j0B0r4W7
+         WmPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685115782; x=1687707782;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rVpwhBhZjm4u1PvolKtSrwJ++hTN+rljYI2eWWd/rv0=;
-        b=E2vRz+UKdGbsGrc8kNEf3C22KjQjkTvQIovowA9ovTop7v/OX9C93TBondWgkeIXFk
-         v1lTwR6fkfd1lRo7MvKF3hPE1kZP8447IouQIN2KS4vI/5soWl5IxUl+kxp97/NXrTWF
-         qRNl7J4bppUqXPLTlA2p22C7Q8MT5LDoJayUvuT2QDxksp2D0h5G5vY0PGYhkbtTgnaj
-         pde47VgsiStCCFrYZ4pvuXZC7wl38I+BlIiLy8AUeadfp3A8UyFPWwX3W25InnNBuXVC
-         5NQ8N/VFUDXwSq99UiDdA1rSpu58z+xwGRTiVbJvqrYeEqgOeTLAYwOTHSHtl8lf62le
-         9KLQ==
-X-Gm-Message-State: AC+VfDzxz8BLcZWGZkW6MV9KdGTT4aGXciwtrCg7SnxiqYB4XexH7xsU
-	VExfRNxudo08PnCqr3JrBAM=
-X-Google-Smtp-Source: ACHHUZ7ENqk+5BVzxKJXJxcqn1R2u/aOB0IQFM/e6/2oz6itZMbKG26Hj93JeZvFUEvEL21RD2w5Sw==
-X-Received: by 2002:a17:906:ee82:b0:96f:7af5:9e9e with SMTP id wt2-20020a170906ee8200b0096f7af59e9emr2410888ejb.53.1685115781493;
-        Fri, 26 May 2023 08:43:01 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id gr4-20020a170906e2c400b009660449b9a3sm2266901ejb.25.2023.05.26.08.42.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 08:43:01 -0700 (PDT)
-Date: Fri, 26 May 2023 18:42:58 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: arinc9.unal@gmail.com
-Cc: Sean Wang <sean.wang@mediatek.com>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	DENG Qingfang <dqfext@gmail.com>,
-	Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Russell King <linux@armlinux.org.uk>,
-	=?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-	Richard van Schagen <richard@routerhints.com>,
-	Richard van Schagen <vschagen@cs.com>,
-	Frank Wunderlich <frank-w@public-files.de>,
-	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-	erkin.bozoglu@xeront.com, mithat.guner@xeront.com,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net-next 24/30] net: dsa: mt7530: rename MT7530_MFC to
- MT753X_MFC
-Message-ID: <20230526154258.skbkk4p34ro5uivr@skbuf>
-References: <20230522121532.86610-1-arinc.unal@arinc9.com>
- <20230522121532.86610-25-arinc.unal@arinc9.com>
+        d=1e100.net; s=20221208; t=1685115824; x=1687707824;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FQoh9ajoSQoocerlSNJVQjWy3Z8lhgiOUjOtV0wUfpQ=;
+        b=eZPhc0/WExa6VMoApF19Qnw3FIkYMCBVzsq/O6bAGVLoJnq1n8YRu7kpbXm6rBPTqu
+         H6+h5vGnqxOnzAONQbAyDYOVVrH9f5QWD1NWAqhIavMP2e8CUsSDgos2JxuWtQ7lmHwi
+         VY+bLT004vguSBBtbqZ8KRRMxcoVfGNp8FzJeP2qg0EQGDSjfygUM/5ow1M0Knx11r4t
+         xkjUXivrcH+uVCkCYriQTlDlAKmBaUpimR/UPYUvKW064zsyWeGHOOtf+wSpsWsOlYWL
+         Wtohggbv2ggaJ6IUeu8i7hvwt5DkOMd6vRlHo1DL/p2RAUQ3zWYDtsi8WcdX53mjOeSK
+         NiBA==
+X-Gm-Message-State: AC+VfDwFFTQckxaC7BXnUGBI1eDChtfUjT0WK9U9cmRHUo+kdCFwp+No
+	/FyBWWSwLF9R7ywOdDm0pnSc6rTv57LbGw==
+X-Google-Smtp-Source: ACHHUZ4/XP5Bf3ulncs2nPqu39aQJTa0D3QTmEfRuGdjz4ZAw9LiLQ3FPJTYqWFzAxw2iW9fPwD0EKJE6KoCtA==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a25:d88c:0:b0:bac:adb8:a605 with SMTP id
+ p134-20020a25d88c000000b00bacadb8a605mr817913ybg.2.1685115823862; Fri, 26 May
+ 2023 08:43:43 -0700 (PDT)
+Date: Fri, 26 May 2023 15:43:42 +0000
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230522121532.86610-25-arinc.unal@arinc9.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
+Message-ID: <20230526154342.2533026-1-edumazet@google.com>
+Subject: [PATCH net] af_packet: do not use READ_ONCE() in packet_bind()
+From: Eric Dumazet <edumazet@google.com>
+To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
+	Eric Dumazet <edumazet@google.com>, Kuniyuki Iwashima <kuniyu@amazon.com>, 
+	Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 22, 2023 at 03:15:26PM +0300, arinc9.unal@gmail.com wrote:
->  	/* Disable flooding on all ports */
-> -	mt7530_clear(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK |
-> -		     UNU_FFP_MASK);
-> +	mt7530_clear(priv, MT753X_MFC, MT753X_BC_FFP_MASK | MT753X_UNM_FFP_MASK
-> +		     | MT753X_UNU_FFP_MASK);
+A recent patch added READ_ONCE() in packet_bind() and packet_bind_spkt()
 
-The preferred coding style is not to start new lines with operators.
+This is better handled by reading pkt_sk(sk)->num later
+in packet_do_bind() while appropriate lock is held.
 
-> +/* Register for CPU forward control */
->  #define MT7531_CFC			0x4
->  #define  MT7531_MIRROR_EN		BIT(19)
-> -#define  MT7531_MIRROR_MASK		(MIRROR_MASK << 16)
-> -#define  MT7531_MIRROR_PORT_GET(x)	(((x) >> 16) & MIRROR_MASK)
-> -#define  MT7531_MIRROR_PORT_SET(x)	(((x) & MIRROR_MASK) << 16)
-> +#define  MT7531_MIRROR_MASK		(0x7 << 16)
+READ_ONCE() in writers are often an evidence of something being wrong.
 
-minor nitpick: if you express this as GENMASK(18, 16), it will be a bit
-easier to cross-check with the datasheet, since both 18 and 16 are more
-representative than 0x7.
+Fixes: 822b5a1c17df ("af_packet: Fix data-races of pkt_sk(sk)->num.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: Willem de Bruijn <willemb@google.com>
+---
+ net/packet/af_packet.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-> +#define  MT7531_MIRROR_PORT_GET(x)	(((x) >> 16) & 0x7)
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index a1f9a0e9f3c8a72e5a95f96473b7b6c63f893935..a2dbeb264f260e5b8923ece9aac99fe19ddfeb62 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -3201,6 +3201,9 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
+ 
+ 	lock_sock(sk);
+ 	spin_lock(&po->bind_lock);
++	if (!proto)
++		proto = po->num;
++
+ 	rcu_read_lock();
+ 
+ 	if (po->fanout) {
+@@ -3299,7 +3302,7 @@ static int packet_bind_spkt(struct socket *sock, struct sockaddr *uaddr,
+ 	memcpy(name, uaddr->sa_data, sizeof(uaddr->sa_data_min));
+ 	name[sizeof(uaddr->sa_data_min)] = 0;
+ 
+-	return packet_do_bind(sk, name, 0, READ_ONCE(pkt_sk(sk)->num));
++	return packet_do_bind(sk, name, 0, 0);
+ }
+ 
+ static int packet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+@@ -3316,8 +3319,7 @@ static int packet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len
+ 	if (sll->sll_family != AF_PACKET)
+ 		return -EINVAL;
+ 
+-	return packet_do_bind(sk, NULL, sll->sll_ifindex,
+-			      sll->sll_protocol ? : READ_ONCE(pkt_sk(sk)->num));
++	return packet_do_bind(sk, NULL, sll->sll_ifindex, sll->sll_protocol);
+ }
+ 
+ static struct proto packet_proto = {
+-- 
+2.41.0.rc0.172.g3f132b7071-goog
 
-also here: (((x) & GENMASK(18, 16)) >> 16)
-
-> +#define  MT7531_MIRROR_PORT_SET(x)	(((x) & 0x7) << 16)
-
-and here: (((x) << 16) & GENMASK(18, 16))
 
