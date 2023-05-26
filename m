@@ -1,91 +1,130 @@
-Return-Path: <netdev+bounces-5671-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5672-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A7F8E712646
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:08:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 58C3B71264C
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:11:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1EEC5281827
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:08:13 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 14711281802
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:11:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7515C168DF;
-	Fri, 26 May 2023 12:08:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C48B171B0;
+	Fri, 26 May 2023 12:11:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ADF4168A3
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 12:08:11 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E1195
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 05:08:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=/Xnudso/RHzSe54PXcD4mz3d70ezqZEJnHo1B6uI8X8=; b=TN4QBPjmrM78nxK2sYsxUqs69F
-	51h3O2m8UtLZHlih/9Iil1iPnNSc0nU0ie7xfQcNHQB7JiF5oIkhjFGPRqqrRFupCy9c8B7UQQyX/
-	Y/MMN9CHYDl8rqmfT6rcvLr3cYN7rfUXQuIhL7nKvEgTufEt+pg//vhYSi9k0sTCFl2I=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q2WEk-00Dzcu-JA; Fri, 26 May 2023 14:08:02 +0200
-Date: Fri, 26 May 2023 14:08:02 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: netdev <netdev@vger.kernel.org>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <rmk+kernel@armlinux.org.uk>,
-	Oleksij Rempel <linux@rempel-privat.de>
-Subject: Re: [RFC/RFTv3 00/24] net: ethernet: Rework EEE
-Message-ID: <95412f7c-1f91-4939-bc7e-f0625d477f7d@lunn.ch>
-References: <20230331005518.2134652-1-andrew@lunn.ch>
- <20230526085604.GA21891@pengutronix.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37115742DE;
+	Fri, 26 May 2023 12:11:47 +0000 (UTC)
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6884C116;
+	Fri, 26 May 2023 05:11:42 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+	(envelope-from <fw@breakpoint.cc>)
+	id 1q2WIF-0006AJ-PB; Fri, 26 May 2023 14:11:39 +0200
+From: Florian Westphal <fw@strlen.de>
+To: <bpf@vger.kernel.org>
+Cc: <netdev@vger.kernel.org>,
+	ast@kernel.org,
+	Florian Westphal <fw@strlen.de>,
+	Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: [PATCH bpf] bpf: netfilter: add BPF_NETFILTER bpf_attach_type
+Date: Fri, 26 May 2023 14:11:24 +0200
+Message-Id: <20230526121124.3915-1-fw@strlen.de>
+X-Mailer: git-send-email 2.39.3
+In-Reply-To: <CAEf4BzZ69YgrQW7DHCJUT_X+GqMq_ZQQPBwopaJJVGFD5=d5Vg@mail.gmail.com>
+References: <CAEf4BzZ69YgrQW7DHCJUT_X+GqMq_ZQQPBwopaJJVGFD5=d5Vg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230526085604.GA21891@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 26, 2023 at 10:56:04AM +0200, Oleksij Rempel wrote:
-> Hi Andrew,
-> 
-> On Fri, Mar 31, 2023 at 02:54:54AM +0200, Andrew Lunn wrote:
-> > Most MAC drivers get EEE wrong. The API to the PHY is not very
-> > obvious, which is probably why. Rework the API, pushing most of the
-> > EEE handling into phylib core, leaving the MAC drivers to just
-> > enable/disable support for EEE in there change_link call back, or
-> > phylink mac_link_up callback.
-> > 
-> > MAC drivers are now expect to indicate to phylib/phylink if they
-> > support EEE. If not, no EEE link modes are advertised. If the MAC does
-> > support EEE, on phy_start()/phylink_start() EEE advertisement is
-> > configured.
-> > 
-> > v3
-> > --
->  
-> I was able to test some drivers and things seems to work ok so far. Do you
-> need more tests for a non RFC version?
+Andrii Nakryiko writes:
 
-No, i just need time to rebase and post them. Plus check if there are
-more drivers which added support for EEE and fix them up. There is a
-new Broadcom driver which i think will need work.
+ And we currently don't have an attach type for NETLINK BPF link.
+ Thankfully it's not too late to add it. I see that link_create() in
+ kernel/bpf/syscall.c just bypasses attach_type check. We shouldn't
+ have done that. Instead we need to add BPF_NETLINK attach type to enum
+ bpf_attach_type. And wire all that properly throughout the kernel and
+ libbpf itself.
 
-Hopefully next week i can do this.
+This adds BPF_NETFILTER and uses it.  This breaks uabi but this
+wasn't in any non-rc release yet, so it should be fine.
 
-	  Andrew
+Fixes: 84601d6ee68a ("bpf: add bpf_link support for BPF_NETFILTER programs")
+Suggested-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Link: https://lore.kernel.org/bpf/CAEf4BzZ69YgrQW7DHCJUT_X+GqMq_ZQQPBwopaJJVGFD5=d5Vg@mail.gmail.com/
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ include/uapi/linux/bpf.h       | 1 +
+ kernel/bpf/syscall.c           | 4 ++++
+ tools/include/uapi/linux/bpf.h | 1 +
+ tools/lib/bpf/libbpf.c         | 2 +-
+ 4 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 1bb11a6ee667..c994ff5b157c 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -1035,6 +1035,7 @@ enum bpf_attach_type {
+ 	BPF_TRACE_KPROBE_MULTI,
+ 	BPF_LSM_CGROUP,
+ 	BPF_STRUCT_OPS,
++	BPF_NETFILTER,
+ 	__MAX_BPF_ATTACH_TYPE
+ };
+ 
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 14f39c1e573e..cc1fc2404406 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2433,6 +2433,10 @@ bpf_prog_load_check_attach(enum bpf_prog_type prog_type,
+ 		default:
+ 			return -EINVAL;
+ 		}
++	case BPF_PROG_TYPE_NETFILTER:
++		if (expected_attach_type == BPF_NETFILTER)
++			return 0;
++		return -EINVAL;
+ 	case BPF_PROG_TYPE_SYSCALL:
+ 	case BPF_PROG_TYPE_EXT:
+ 		if (expected_attach_type)
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 1bb11a6ee667..c994ff5b157c 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -1035,6 +1035,7 @@ enum bpf_attach_type {
+ 	BPF_TRACE_KPROBE_MULTI,
+ 	BPF_LSM_CGROUP,
+ 	BPF_STRUCT_OPS,
++	BPF_NETFILTER,
+ 	__MAX_BPF_ATTACH_TYPE
+ };
+ 
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index ad1ec893b41b..532a97cf1cc1 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8712,7 +8712,7 @@ static const struct bpf_sec_def section_defs[] = {
+ 	SEC_DEF("struct_ops+",		STRUCT_OPS, 0, SEC_NONE),
+ 	SEC_DEF("struct_ops.s+",	STRUCT_OPS, 0, SEC_SLEEPABLE),
+ 	SEC_DEF("sk_lookup",		SK_LOOKUP, BPF_SK_LOOKUP, SEC_ATTACHABLE),
+-	SEC_DEF("netfilter",		NETFILTER, 0, SEC_NONE),
++	SEC_DEF("netfilter",		NETFILTER, BPF_NETFILTER, SEC_NONE),
+ };
+ 
+ static size_t custom_sec_def_cnt;
+-- 
+2.39.3
+
 
