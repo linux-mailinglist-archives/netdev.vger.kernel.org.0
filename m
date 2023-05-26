@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-5547-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5543-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id F216371212F
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:36:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 20A82712126
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:35:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AD249281678
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:36:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A7FF8281691
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:35:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAC3BAD43;
-	Fri, 26 May 2023 07:35:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C67AE847D;
+	Fri, 26 May 2023 07:35:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF63DAD32
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:35:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B90EC7496
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:35:37 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C71E5B
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 00:35:06 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3308B6
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 00:35:02 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q2RyL-0005lZ-Dw; Fri, 26 May 2023 09:34:49 +0200
+	id 1q2RyL-0005ld-Dw; Fri, 26 May 2023 09:34:49 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q2RyJ-002u6l-7M; Fri, 26 May 2023 09:34:47 +0200
+	id 1q2RyJ-002u6x-D5; Fri, 26 May 2023 09:34:47 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q2RyI-002nuF-8Z; Fri, 26 May 2023 09:34:46 +0200
+	id 1q2RyI-002nuP-98; Fri, 26 May 2023 09:34:46 +0200
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: "David S. Miller" <davem@davemloft.net>,
 	Andrew Lunn <andrew@lunn.ch>,
@@ -49,9 +49,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	netdev@vger.kernel.org,
 	UNGLinuxDriver@microchip.com,
 	"Russell King (Oracle)" <linux@armlinux.org.uk>
-Subject: [PATCH net-next v2 4/5] net: dsa: microchip: ksz8: Prepare ksz8863_smi for regmap register access validation
-Date: Fri, 26 May 2023 09:34:44 +0200
-Message-Id: <20230526073445.668430-5-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 5/5] net: dsa: microchip: Add register access control for KSZ8873 chip
+Date: Fri, 26 May 2023 09:34:45 +0200
+Message-Id: <20230526073445.668430-6-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230526073445.668430-1-o.rempel@pengutronix.de>
 References: <20230526073445.668430-1-o.rempel@pengutronix.de>
@@ -72,65 +72,75 @@ X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This patch prepares the ksz8863_smi part of ksz8 driver to utilize the
-regmap register access validation feature.
+This update introduces specific register access boundaries for the
+KSZ8873 and KSZ8863 chips within the DSA Microchip driver. The outlined
+ranges target global control registers, port registers, and advanced
+control registers.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8863_smi.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/dsa/microchip/ksz_common.c | 41 ++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
-index 2af807db0b45..fd6e2e69a42a 100644
---- a/drivers/net/dsa/microchip/ksz8863_smi.c
-+++ b/drivers/net/dsa/microchip/ksz8863_smi.c
-@@ -104,6 +104,7 @@ static const struct regmap_config ksz8863_regmap_config[] = {
- 		.cache_type = REGCACHE_NONE,
- 		.lock = ksz_regmap_lock,
- 		.unlock = ksz_regmap_unlock,
-+		.max_register = U8_MAX,
- 	},
- 	{
- 		.name = "#16",
-@@ -113,6 +114,7 @@ static const struct regmap_config ksz8863_regmap_config[] = {
- 		.cache_type = REGCACHE_NONE,
- 		.lock = ksz_regmap_lock,
- 		.unlock = ksz_regmap_unlock,
-+		.max_register = U8_MAX,
- 	},
- 	{
- 		.name = "#32",
-@@ -122,11 +124,14 @@ static const struct regmap_config ksz8863_regmap_config[] = {
- 		.cache_type = REGCACHE_NONE,
- 		.lock = ksz_regmap_lock,
- 		.unlock = ksz_regmap_unlock,
-+		.max_register = U8_MAX,
- 	}
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 53bb7d9712d0..768f649d2f40 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -1075,6 +1075,45 @@ static const struct regmap_access_table ksz9896_register_set = {
+ 	.n_yes_ranges = ARRAY_SIZE(ksz9896_valid_regs),
  };
  
- static int ksz8863_smi_probe(struct mdio_device *mdiodev)
- {
-+	struct device *ddev = &mdiodev->dev;
-+	const struct ksz_chip_data *chip;
- 	struct regmap_config rc;
- 	struct ksz_device *dev;
- 	int ret;
-@@ -136,9 +141,15 @@ static int ksz8863_smi_probe(struct mdio_device *mdiodev)
- 	if (!dev)
- 		return -ENOMEM;
- 
-+	chip = device_get_match_data(ddev);
-+	if (!chip)
-+		return -EINVAL;
++static const struct regmap_range ksz8873_valid_regs[] = {
++	regmap_reg_range(0x00, 0x01),
++	/* global control register */
++	regmap_reg_range(0x02, 0x0f),
 +
- 	for (i = 0; i < __KSZ_NUM_REGMAPS; i++) {
- 		rc = ksz8863_regmap_config[i];
- 		rc.lock_arg = &dev->regmap_mutex;
-+		rc.wr_table = chip->wr_table;
-+		rc.rd_table = chip->rd_table;
- 		dev->regmap[i] = devm_regmap_init(&mdiodev->dev,
- 						  &regmap_smi[i], dev,
- 						  &rc);
++	/* port registers */
++	regmap_reg_range(0x10, 0x1d),
++	regmap_reg_range(0x1e, 0x1f),
++	regmap_reg_range(0x20, 0x2d),
++	regmap_reg_range(0x2e, 0x2f),
++	regmap_reg_range(0x30, 0x39),
++	regmap_reg_range(0x3f, 0x3f),
++
++	/* advanced control registers */
++	regmap_reg_range(0x60, 0x6f),
++	regmap_reg_range(0x70, 0x75),
++	regmap_reg_range(0x76, 0x78),
++	regmap_reg_range(0x79, 0x7a),
++	regmap_reg_range(0x7b, 0x83),
++	regmap_reg_range(0x8e, 0x99),
++	regmap_reg_range(0x9a, 0xa5),
++	regmap_reg_range(0xa6, 0xa6),
++	regmap_reg_range(0xa7, 0xaa),
++	regmap_reg_range(0xab, 0xae),
++	regmap_reg_range(0xaf, 0xba),
++	regmap_reg_range(0xbb, 0xbc),
++	regmap_reg_range(0xbd, 0xbd),
++	regmap_reg_range(0xc0, 0xc0),
++	regmap_reg_range(0xc2, 0xc2),
++	regmap_reg_range(0xc3, 0xc3),
++	regmap_reg_range(0xc4, 0xc4),
++	regmap_reg_range(0xc6, 0xc6),
++};
++
++static const struct regmap_access_table ksz8873_register_set = {
++	.yes_ranges = ksz8873_valid_regs,
++	.n_yes_ranges = ARRAY_SIZE(ksz8873_valid_regs),
++};
++
+ const struct ksz_chip_data ksz_switch_chips[] = {
+ 	[KSZ8563] = {
+ 		.chip_id = KSZ8563_CHIP_ID,
+@@ -1214,6 +1253,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.supports_mii = {false, false, true},
+ 		.supports_rmii = {false, false, true},
+ 		.internal_phy = {true, true, false},
++		.wr_table = &ksz8873_register_set,
++		.rd_table = &ksz8873_register_set,
+ 	},
+ 
+ 	[KSZ9477] = {
 -- 
 2.39.2
 
