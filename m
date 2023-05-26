@@ -1,155 +1,100 @@
-Return-Path: <netdev+bounces-5747-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5748-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 71917712A19
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:58:55 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DE826712A1E
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 18:00:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C2F7E1C210A8
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 15:58:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 212B12818AA
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:00:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0BEA12720A;
-	Fri, 26 May 2023 15:58:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4164727702;
+	Fri, 26 May 2023 16:00:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F362E742EE
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 15:58:51 +0000 (UTC)
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567A1F7;
-	Fri, 26 May 2023 08:58:50 -0700 (PDT)
-Received: from [10.10.2.69] (unknown [10.10.2.69])
-	by mail.ispras.ru (Postfix) with ESMTPSA id 854ED40D403D;
-	Fri, 26 May 2023 15:58:48 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 854ED40D403D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-	s=default; t=1685116728;
-	bh=sZ8mdgkZi4Do7aNW4BbGNJlNBJlCPu2Np4nerPaxak4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=lM7HTOJzO9Aqx5Lf4HEFwnjhSgFxYg73UKvn2UDFs4vLgFN841cvFGFY1OEANNG5s
-	 aOXwzilhH4QXxlVwrIP9ZpUf5t/tIOLW1vmhSWsnqvjlDKoVnJzhGf6RgKLA1cz8eQ
-	 GvImaG59IZsXFdkqT30JmjqNijgFJK61Pbz/XVH0=
-Message-ID: <027d28a0-b31b-ab42-9eb6-2826c04c9364@ispras.ru>
-Date: Fri, 26 May 2023 18:58:48 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35053742EE
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 16:00:17 +0000 (UTC)
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C6EF7
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:00:15 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-3f600a6a890so75905e9.0
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:00:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1685116814; x=1687708814;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xkU55uqzq+ekvAZs1dNWqR5r1+9lSZcOTbRvaL+8zq8=;
+        b=hBlcOZEbxJxr/uZ7ExB4Ijf6sDeFpdS+91daVKdRfd4tC2i6rfOq8hNIdhnbPMQjd/
+         0hbo/3YPl4iZfgszqgewLAHSpVuHtNQOMV0qZHNRaH/ySrwBpfTjWRnOFkSPgY9Bnt/0
+         7gZmY2g1tPX3jDxOONBzcJxlrMxrfJxDD/r0olxEQ6x1slRCycZebagXpIEQHkua9st1
+         Izu0v0sRzIiWzO8tNHLWUVfajkF0eNXG/lpzXVvrDoEgicZC+/6AjK8/13Ad3TGw9MKA
+         laWYCnOo+fBsQdcYzeKjPZgt+i4kwkS1oS3SiuMPfXqA8pwJAfB7fxVPwRk6lLrhjGIH
+         ZpCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685116814; x=1687708814;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xkU55uqzq+ekvAZs1dNWqR5r1+9lSZcOTbRvaL+8zq8=;
+        b=REBy8HsU2wJ4VuIpcena9kqmbNTRq8PICgekXXLk/Rp/krLWvh7lL/lJzH8UfK1ZXQ
+         g6WlPdf8wSfbLW+X0pLhQEW4xVDk/nu8lQeeHP952z9RIQ5mnpNb+JkFbbpeiMNXhe2G
+         uiQmgUmtuMe3Ok8F/BP4BcLzYk/mloJ5IifMVr/9NAEksfwnRubpcrskYcbKeGuZaBIE
+         MoIg9d5kbLbxO2uFVgV/jF6N3lYxbO/SXyUV1zkdgqLnvsaVhbXfZ1xAEoOkTI/puvD7
+         X2C8HYJB89GZn3NBTojSh0QpYvDw3HHaXDJmMgjEyf24VzS5NXnOdEPU+6L2hh7z/Iub
+         5uNw==
+X-Gm-Message-State: AC+VfDxJxYboyob2Lv0bjYR0M+JK2g7twLN5MxQwDufYIqCvnZD1f3rt
+	BinA7K+J+cX+OMGlvdkStGhp8wMCJnIT7/dsakrj6x1BlUzXAcPLGe4=
+X-Google-Smtp-Source: ACHHUZ6XtQA8ACi3DtsPxc19flWObiDAt96Wd0LOg+dJc6I+OFPcxRFZEks8pe8qaFLfXVuDuxzzc3sw/eebnQLlKx8=
+X-Received: by 2002:a05:600c:4f4a:b0:3f4:2736:b5eb with SMTP id
+ m10-20020a05600c4f4a00b003f42736b5ebmr103572wmq.1.1685116813579; Fri, 26 May
+ 2023 09:00:13 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
+References: <20230526150806.1457828-1-VEfanov@ispras.ru> <27614af23cd7ae4433b909194062c553a6ae16ac.camel@redhat.com>
+ <027d28a0-b31b-ab42-9eb6-2826c04c9364@ispras.ru>
+In-Reply-To: <027d28a0-b31b-ab42-9eb6-2826c04c9364@ispras.ru>
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 26 May 2023 18:00:01 +0200
+Message-ID: <CANn89iLGOVwW-KHBuJ94E+QoVARWw5EBKyfh0mPkOT+5ws31Fw@mail.gmail.com>
 Subject: Re: [PATCH] udp6: Fix race condition in udp6_sendmsg & connect
-Content-Language: ru
-To: Paolo Abeni <pabeni@redhat.com>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>, David Ahern
- <dsahern@kernel.org>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-References: <20230526150806.1457828-1-VEfanov@ispras.ru>
- <27614af23cd7ae4433b909194062c553a6ae16ac.camel@redhat.com>
-From: =?UTF-8?B?0JXRhNCw0L3QvtCyINCS0LvQsNC00LjRgdC70LDQsiDQkNC70LXQutGB0LA=?=
- =?UTF-8?B?0L3QtNGA0L7QstC40Yc=?= <vefanov@ispras.ru>
-In-Reply-To: <27614af23cd7ae4433b909194062c553a6ae16ac.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+To: =?UTF-8?B?0JXRhNCw0L3QvtCyINCS0LvQsNC00LjRgdC70LDQsiDQkNC70LXQutGB0LDQvdC00YDQvtCy0Lg=?=
+	=?UTF-8?B?0Yc=?= <vefanov@ispras.ru>
+Cc: Paolo Abeni <pabeni@redhat.com>, Willem de Bruijn <willemdebruijn.kernel@gmail.com>, 
+	"David S. Miller" <davem@davemloft.net>, David Ahern <dsahern@kernel.org>, 
+	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	lvc-project@linuxtesting.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Paolo,
-
-
-I don't think that we can just move sk_dst_set() call.
-
-I think we can destroy dst of sendmsg task in this case.
-
-
-Best regards,
-
-Vlad.
-
-
-On 26.05.2023 18:33, Paolo Abeni wrote:
-> On Fri, 2023-05-26 at 18:08 +0300, Vladislav Efanov wrote:
->> Syzkaller got the following report:
->> BUG: KASAN: use-after-free in sk_setup_caps+0x621/0x690 net/core/sock.c:2018
->> Read of size 8 at addr ffff888027f82780 by task syz-executor276/3255
->>
->> The function sk_setup_caps (called by ip6_sk_dst_store_flow->
->> ip6_dst_store) referenced already freed memory as this memory was
->> freed by parallel task in udpv6_sendmsg->ip6_sk_dst_lookup_flow->
->> sk_dst_check.
->>
->>            task1 (connect)              task2 (udp6_sendmsg)
->>          sk_setup_caps->sk_dst_set |
->>                                    |  sk_dst_check->
->>                                    |      sk_dst_set
->>                                    |      dst_release
->>          sk_setup_caps references  |
->>          to already freed dst_entry|
->>
->> The reason for this race condition is: udp6_sendmsg() calls
->> ip6_sk_dst_lookup() without lock for sock structure and tries to
->> allocate/add dst_entry structure to sock structure in parallel with
->> "connect" task.
->>
->> Found by Linux Verification Center (linuxtesting.org) with syzkaller.
->>
->> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
->> Signed-off-by: Vladislav Efanov <VEfanov@ispras.ru>
-> Thank you for the detailed report!
+On Fri, May 26, 2023 at 5:58=E2=80=AFPM =D0=95=D1=84=D0=B0=D0=BD=D0=BE=D0=
+=B2 =D0=92=D0=BB=D0=B0=D0=B4=D0=B8=D1=81=D0=BB=D0=B0=D0=B2 =D0=90=D0=BB=D0=
+=B5=D0=BA=D1=81=D0=B0=D0=BD=D0=B4=D1=80=D0=BE=D0=B2=D0=B8=D1=87
+<vefanov@ispras.ru> wrote:
 >
->> ---
->>   net/ipv6/udp.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
->> index e5a337e6b970..a5ecd5d93b0a 100644
->> --- a/net/ipv6/udp.c
->> +++ b/net/ipv6/udp.c
->> @@ -1563,12 +1563,15 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
->>   
->>   	fl6->flowlabel = ip6_make_flowinfo(ipc6.tclass, fl6->flowlabel);
->>   
->> +	lock_sock(sk);
-> Acquiring the socket lock in this fast-path is going to kill the xmit
-> performances, I think we can't do that.
+> Paolo,
 >
-> What about something like the following instead? Does that addresses
-> the UaF? (completely untested, not even built ;) If so, feel free to
-> take it over.
 >
-> Thanks.
+> I don't think that we can just move sk_dst_set() call.
 >
-> Paolo
-> ---
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 5440e67bcfe3..24f2761bdb1d 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -2381,7 +2381,6 @@ void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
->   {
->   	u32 max_segs = 1;
->   
-> -	sk_dst_set(sk, dst);
->   	sk->sk_route_caps = dst->dev->features;
->   	if (sk_is_tcp(sk))
->   		sk->sk_route_caps |= NETIF_F_GSO;
-> @@ -2400,6 +2399,7 @@ void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
->   		}
->   	}
->   	sk->sk_gso_max_segs = max_segs;
-> +	sk_dst_set(sk, dst);
->   }
->   EXPORT_SYMBOL_GPL(sk_setup_caps);
->   
+> I think we can destroy dst of sendmsg task in this case.
 >
+
+dst are RCU protected, it should be easy to make sure we respect all the ru=
+les.
 
