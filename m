@@ -1,206 +1,113 @@
-Return-Path: <netdev+bounces-5781-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5782-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 20765712BAB
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:20:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 89058712BB5
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:25:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CBE3E1C20B84
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:20:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3EE7D28191D
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:25:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2264128C39;
-	Fri, 26 May 2023 17:20:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D48E28C26;
+	Fri, 26 May 2023 17:25:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11F8428C37
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:20:05 +0000 (UTC)
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71345FB;
-	Fri, 26 May 2023 10:19:50 -0700 (PDT)
-Received: from fpc.intra.ispras.ru (unknown [10.10.165.11])
-	by mail.ispras.ru (Postfix) with ESMTPSA id AF9EF4076265;
-	Fri, 26 May 2023 17:19:48 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru AF9EF4076265
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-	s=default; t=1685121588;
-	bh=Aku6F9F7nJAWf3z4o7yAlajfp8XKuCevG3Zt7WjhiDY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=OsLySGzEVwhZhGSG+jB3drYD7RzpV9urE1wW3k33kPOJT56woMTeBA2sn1L+u3fSM
-	 9sYAO4mCR4/VqNe8a5awRnFS6aajuXl4XN3r/ianA4E7ATMZ/Te7Gyu1GZ30y2Eo4y
-	 z2x9Mz2/xkVf1niQk6JqwNeQpY5WHCisuXrNpzKs=
-From: Fedor Pchelkin <pchelkin@ispras.ru>
-To: Oleksij Rempel <linux@rempel-privat.de>
-Cc: Fedor Pchelkin <pchelkin@ispras.ru>,
-	Marc Kleine-Budde <mkl@pengutronix.de>,
-	kernel@pengutronix.de,
-	Robin van der Gracht <robin@protonic.nl>,
-	Oliver Hartkopp <socketcan@hartkopp.net>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-	linux-can@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Alexey Khoroshilov <khoroshilov@ispras.ru>,
-	lvc-project@linuxtesting.org
-Subject: [PATCH 2/2] can: j1939: avoid possible use-after-free when j1939_can_rx_register fails
-Date: Fri, 26 May 2023 20:19:10 +0300
-Message-Id: <20230526171910.227615-3-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230526171910.227615-1-pchelkin@ispras.ru>
-References: <20230526171910.227615-1-pchelkin@ispras.ru>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02B39271F6
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:25:40 +0000 (UTC)
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3567AF3
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:25:37 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-3f5dbd8f677so2995e9.1
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:25:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1685121935; x=1687713935;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=l8g5Xna8j25EFmespE1bvOARSHuLS2nJdLVHo25mjSE=;
+        b=f23M39+X+33xnPxCbKYMOJ14/bCAA9KXeklSOwa8N+tHHQEeVXO9PG06uqnHlgbpvJ
+         yZcoi+2V0Rnvo3xNSbHS90ZINBSY8pxHi1Xm96Pc1OjyRBIMYwQg2pzWUKm9EvEGoqIg
+         mRQCwruUR1IwLekhmrhr2T58qvSw2Qkt3CloEtcqrhHH6VZq5NTF+ZeRAfTCprFOJPL7
+         s4ZPJ02tHgnaBv2DpSE42RD6H0VRLlp6RyMZXB3hJs1tYXQm0tIoHRpXpiEHXKluB88B
+         6iMsG8tJ8UdDub6koAvqI+jJOj4p/m1joTQtKjUwx/iR1zcf7M4i1WxdB9+hz7d0nCFk
+         KzDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685121935; x=1687713935;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=l8g5Xna8j25EFmespE1bvOARSHuLS2nJdLVHo25mjSE=;
+        b=JaF9yOloGtc+/MPQ162c0FCArV5ZrEk7JU+XVa34j4pW6ig6PLNM5+D8dBeSwaoGwC
+         2DrC2U0eSJzSMB9KbILWKpxwnknFMGdWzqYC7LyVmiIRbukBlYCVAULFub/6T5bgwuaH
+         73wlMSvrVsVFgsmXrHeBUaahXInwFVOh1lyID/C+1svHM7PpaxwbDfH3ZkEY5ErxMedO
+         hPEe6avGquYVkob7e8WIF0tzOJWwtwGhF7IJ95WsXCdA6laA+FlHjvUMbgJ2MHqT1IVu
+         RSSC9p7GlYN0WHmTvxvNY0jlXZU76D0tLkjZ/bAeM67Ga5D6QDcOTH0b6I33epSqvTt7
+         muFg==
+X-Gm-Message-State: AC+VfDxwgFuUfDE3ZyxlgwAOLfj7IHNAeBeWTaZX/AKThIPYGcyYe6lX
+	KfW0k+zPS3+kYzAHSTfP/+NFzwcfPt4zn39xULkQJA==
+X-Google-Smtp-Source: ACHHUZ4Br5pF7X3UghPjBulDtJS9kb5PDC2rSf69Im3yVJUMPcC8EHvOTVaj+JsGIKn1he9aPepATioYeEtg/pDKIjs=
+X-Received: by 2002:a05:600c:458b:b0:3f1:758c:dd23 with SMTP id
+ r11-20020a05600c458b00b003f1758cdd23mr123345wmo.7.1685121935222; Fri, 26 May
+ 2023 10:25:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+References: <CANn89iKUbyrJ=r2+_kK+sb2ZSSHifFZ7QkPLDpAtkJ8v4WUumA@mail.gmail.com>
+ <CAHk-=whqNMUPbjCyMjyxfH_5-Xass=DrMkPT5ZTJbFrtU=qDEQ@mail.gmail.com>
+ <CANn89i+bExb_P6A9ROmwqNgGdO5o8wawVZ5r3MHnz0qfhxvTtA@mail.gmail.com>
+ <CAHk-=wig6VizZHtRznz7uAWa-hHWjrCNANZ9B+1G=aTWPiVH4g@mail.gmail.com>
+ <CAHk-=whkci5ck5Him8Lx5ECKHEtj=bipYmOCGe8DWrrp8uDq5g@mail.gmail.com> <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com>
+In-Reply-To: <CAHk-=whtDupvWtj_ow11wU4_u=KvifTqno=5mW1VofyehjdVRA@mail.gmail.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 26 May 2023 19:25:23 +0200
+Message-ID: <CANn89i+u8jvfSQAQ=_JY0be56deJNhKgDWbqpDAvfm-i34qX9A@mail.gmail.com>
+Subject: Re: x86 copy performance regression
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Syzkaller reports the following failure:
+On Fri, May 26, 2023 at 7:17=E2=80=AFPM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Fri, May 26, 2023 at 10:00=E2=80=AFAM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > Let me go look at it some more. I *really* didn't want to make the
+> > code worse for ERMS
+>
+> Oh well. I'll think about it some more in the hope that I can come up
+> with something clever that doesn't make objtool hate me, but in the
+> meantime let me just give you the "not clever" patch.
+>
+> It generates an annoying six-byte jump when the small 2-byte one would
+> work just fine, but I guess only my pride is wounded.
 
-BUG: KASAN: use-after-free in kref_put include/linux/kref.h:64 [inline]
-BUG: KASAN: use-after-free in j1939_priv_put+0x25/0xa0 net/can/j1939/main.c:172
-Write of size 4 at addr ffff888141c15058 by task swapper/3/0
+arch/x86/lib/copy_user_64.S:34:2: error: invalid instruction mnemonic
+'alternative'
+ alternative "jae .Lunrolled", "jae .Llarge", ( 9*32+ 9)
+ ^~~~~~~~~~~
 
-CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.10.144-syzkaller #0
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x167 lib/dump_stack.c:118
- print_address_description.constprop.0+0x1c/0x220 mm/kasan/report.c:385
- __kasan_report mm/kasan/report.c:545 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
- check_memory_region_inline mm/kasan/generic.c:186 [inline]
- check_memory_region+0x145/0x190 mm/kasan/generic.c:192
- instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
- atomic_fetch_sub_release include/asm-generic/atomic-instrumented.h:220 [inline]
- __refcount_sub_and_test include/linux/refcount.h:272 [inline]
- __refcount_dec_and_test include/linux/refcount.h:315 [inline]
- refcount_dec_and_test include/linux/refcount.h:333 [inline]
- kref_put include/linux/kref.h:64 [inline]
- j1939_priv_put+0x25/0xa0 net/can/j1939/main.c:172
- j1939_sk_sock_destruct+0x44/0x90 net/can/j1939/socket.c:374
- __sk_destruct+0x4e/0x820 net/core/sock.c:1784
- rcu_do_batch kernel/rcu/tree.c:2485 [inline]
- rcu_core+0xb35/0x1a30 kernel/rcu/tree.c:2726
- __do_softirq+0x289/0x9a3 kernel/softirq.c:298
- asm_call_irq_on_stack+0x12/0x20
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
- do_softirq_own_stack+0xaa/0xe0 arch/x86/kernel/irq_64.c:77
- invoke_softirq kernel/softirq.c:393 [inline]
- __irq_exit_rcu kernel/softirq.c:423 [inline]
- irq_exit_rcu+0x136/0x200 kernel/softirq.c:435
- sysvec_apic_timer_interrupt+0x4d/0x100 arch/x86/kernel/apic/apic.c:1095
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:635
+I changed alternative to ALTERNATIVE to let it build.
 
-Allocated by task 1141:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc.constprop.0+0xc9/0xd0 mm/kasan/common.c:461
- kmalloc include/linux/slab.h:552 [inline]
- kzalloc include/linux/slab.h:664 [inline]
- j1939_priv_create net/can/j1939/main.c:131 [inline]
- j1939_netdev_start+0x111/0x860 net/can/j1939/main.c:268
- j1939_sk_bind+0x8ea/0xd30 net/can/j1939/socket.c:485
- __sys_bind+0x1f2/0x260 net/socket.c:1645
- __do_sys_bind net/socket.c:1656 [inline]
- __se_sys_bind net/socket.c:1654 [inline]
- __x64_sys_bind+0x6f/0xb0 net/socket.c:1654
- do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x61/0xc6
+ SYM_FUNC_START(rep_movs_alternative)
+        cmpq $64,%rcx
+-       jae .Lunrolled
++       ALTERNATIVE "jae .Lunrolled", "jae .Llarge", X86_FEATURE_ERMS
 
-Freed by task 1141:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track+0x1c/0x30 mm/kasan/common.c:56
- kasan_set_free_info+0x1b/0x30 mm/kasan/generic.c:355
- __kasan_slab_free+0x112/0x170 mm/kasan/common.c:422
- slab_free_hook mm/slub.c:1542 [inline]
- slab_free_freelist_hook+0xad/0x190 mm/slub.c:1576
- slab_free mm/slub.c:3149 [inline]
- kfree+0xd9/0x3b0 mm/slub.c:4125
- j1939_netdev_start+0x5ee/0x860 net/can/j1939/main.c:300
- j1939_sk_bind+0x8ea/0xd30 net/can/j1939/socket.c:485
- __sys_bind+0x1f2/0x260 net/socket.c:1645
- __do_sys_bind net/socket.c:1656 [inline]
- __se_sys_bind net/socket.c:1654 [inline]
- __x64_sys_bind+0x6f/0xb0 net/socket.c:1654
- do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x61/0xc6
-
-It can be caused by this scenario:
-
-CPU0					CPU1
-j1939_sk_bind(socket0, ndev0, ...)
-  j1939_netdev_start()
-					j1939_sk_bind(socket1, ndev0, ...)
-                                          j1939_netdev_start()
-  mutex_lock(&j1939_netdev_lock)
-  j1939_priv_set(ndev0, priv)
-  mutex_unlock(&j1939_netdev_lock)
-					  if (priv_new)
-					    kref_get(&priv_new->rx_kref)
-					    return priv_new;
-					  /* inside j1939_sk_bind() */
-					  jsk->priv = priv
-  j1939_can_rx_register(priv) // fails
-  j1939_priv_set(ndev, NULL)
-  kfree(priv)
-					j1939_sk_sock_destruct()
-					j1939_priv_put() // <- uaf
-
-To avoid this, call j1939_can_rx_register() under j1939_netdev_lock so
-that a concurrent thread cannot process j1939_priv before
-j1939_can_rx_register() returns.
-
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
----
- net/can/j1939/main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
-index 6ed79afe19a5..ecff1c947d68 100644
---- a/net/can/j1939/main.c
-+++ b/net/can/j1939/main.c
-@@ -290,16 +290,18 @@ struct j1939_priv *j1939_netdev_start(struct net_device *ndev)
- 		return priv_new;
- 	}
- 	j1939_priv_set(ndev, priv);
--	mutex_unlock(&j1939_netdev_lock);
- 
- 	ret = j1939_can_rx_register(priv);
- 	if (ret < 0)
- 		goto out_priv_put;
- 
-+	mutex_unlock(&j1939_netdev_lock);
- 	return priv;
- 
-  out_priv_put:
- 	j1939_priv_set(ndev, NULL);
-+	mutex_unlock(&j1939_netdev_lock);
-+
- 	dev_put(ndev);
- 	kfree(priv);
- 
--- 
-2.34.1
-
+I will report test result soon, thanks !
 
