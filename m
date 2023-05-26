@@ -1,204 +1,105 @@
-Return-Path: <netdev+bounces-5770-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5771-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DE299712B46
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 18:59:49 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 076EF712B48
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:00:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 987F3281933
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:59:48 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BD3A71C210A5
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:00:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5CC228C02;
-	Fri, 26 May 2023 16:59:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4783928C04;
+	Fri, 26 May 2023 17:00:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBA0A271F6
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 16:59:46 +0000 (UTC)
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895FFA3;
-	Fri, 26 May 2023 09:59:43 -0700 (PDT)
-X-GND-Sasl: maxime.chevallier@bootlin.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1685120381;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=VZ4try5mxxCJlBunlZdGkrN9b4onog+w6GD5OBfPZ7k=;
-	b=P9YxnulzHQAoElHA1eGhvpXma1e61ONUekwqIi37lQ4rGilzyW0Ixv3nmGR3cuA1955htB
-	CleYfzQ+DVF8Kzp33TFBmiQPmPRAd0WCU4SNRsR/xrGoNDQiTWJMI9OTzutuUy7lhENix2
-	aUxmIn/Qz0p0VtcWwS6rkG7k7gyZWyaeQUVmgKjrZ5UDwXUgqvxKfznXhWSFgFdZ61ipL7
-	7zQAf83MjminoiClr/xlj7CsqqbZKVtrsfqvXvbBzWWzScxdBTE/yQ9S+yEChojsQEYV/Y
-	P8zx/MXsfmbcMHX76y4VdfW15Z5d02mV7fvffMh4/HREhwzr8w1SEpOZpmFU7w==
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 840FC1BF208;
-	Fri, 26 May 2023 16:59:37 +0000 (UTC)
-Date: Fri, 26 May 2023 18:59:36 +0200
-From: Maxime Chevallier <maxime.chevallier@bootlin.com>
-To: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: Mark Brown <broonie@kernel.org>, davem@davemloft.net,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- alexis.lothore@bootlin.com, thomas.petazzoni@bootlin.com, Andrew Lunn
- <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>, Eric Dumazet
- <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Florian Fainelli
- <f.fainelli@gmail.com>, Heiner Kallweit <hkallweit1@gmail.com>, Russell
- King <linux@armlinux.org.uk>, Ioana Ciornei <ioana.ciornei@nxp.com>,
- linux-stm32@st-md-mailman.stormreply.com,
- linux-arm-kernel@lists.infradead.org, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Jose Abreu <joabreu@synopsys.com>, Alexandre
- Torgue <alexandre.torgue@foss.st.com>, Giuseppe Cavallaro
- <peppe.cavallaro@st.com>, Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH net-next v3 1/4] net: mdio: Introduce a regmap-based
- mdio driver
-Message-ID: <20230526185936.0a95b9e9@pc-7.home>
-In-Reply-To: <20230526102139.dwttilkquihvp7bs@skbuf>
-References: <20230526074252.480200-1-maxime.chevallier@bootlin.com>
-	<20230526074252.480200-2-maxime.chevallier@bootlin.com>
-	<20230526102139.dwttilkquihvp7bs@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-redhat-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A883271F6
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:00:14 +0000 (UTC)
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E255125;
+	Fri, 26 May 2023 10:00:10 -0700 (PDT)
+Received: from [10.10.2.69] (unknown [10.10.2.69])
+	by mail.ispras.ru (Postfix) with ESMTPSA id AEF2344C100F;
+	Fri, 26 May 2023 17:00:08 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru AEF2344C100F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+	s=default; t=1685120408;
+	bh=K6mspQaxjuMVv9+CF48XVDc5ehAnfgeTpsYDWKVwgzg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=kmqIq9Bkpq4xhXGEF6Ci7/dJXUYCiwy9CmVggLFqEk3Ebkt8lZLKdv0RGtC35J2Mq
+	 fqSroNe5jEXynE0U/HJSTIQhu3VxWF0mjCgGiCu3WhPliktUI5Bik6svHXRlI+VI5W
+	 EhObld1L/vPEp+dXgw47N2de1PJkZIOy0ll/vhLw=
+Message-ID: <7a8b806f-14f5-5965-8915-0cd0b2473338@ispras.ru>
+Date: Fri, 26 May 2023 20:00:08 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH] udp6: Fix race condition in udp6_sendmsg & connect
+Content-Language: ru
+To: Eric Dumazet <edumazet@google.com>
+Cc: Paolo Abeni <pabeni@redhat.com>,
+ Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, David Ahern <dsahern@kernel.org>,
+ Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+References: <20230526150806.1457828-1-VEfanov@ispras.ru>
+ <27614af23cd7ae4433b909194062c553a6ae16ac.camel@redhat.com>
+ <027d28a0-b31b-ab42-9eb6-2826c04c9364@ispras.ru>
+ <CANn89iLGOVwW-KHBuJ94E+QoVARWw5EBKyfh0mPkOT+5ws31Fw@mail.gmail.com>
+ <d3fccbd0-c92e-9aff-8c32-48c1171746c3@ispras.ru>
+ <CANn89i+UYRXD16epov9x7+Zr5vCKL+DTCidsOaQdMBjWMmK8CA@mail.gmail.com>
+From: Vlad Efanov <vefanov@ispras.ru>
+In-Reply-To: <CANn89i+UYRXD16epov9x7+Zr5vCKL+DTCidsOaQdMBjWMmK8CA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
 	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello Vlad,
+I will rework the patch.
 
-On Fri, 26 May 2023 13:21:39 +0300
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+Best regards,
 
-> >  M:	William Breathitt Gray <william.gray@linaro.org>
-> >  L:	linux-iio@vger.kernel.org
-> > diff --git a/drivers/net/ethernet/altera/Kconfig
-> > b/drivers/net/ethernet/altera/Kconfig index
-> > dd7fd41ccde5..0a7c0a217536 100644 ---
-> > a/drivers/net/ethernet/altera/Kconfig +++
-> > b/drivers/net/ethernet/altera/Kconfig @@ -5,6 +5,8 @@ config
-> > ALTERA_TSE select PHYLIB
-> >  	select PHYLINK
-> >  	select PCS_ALTERA_TSE
-> > +	select MDIO_REGMAP
-> > +	depends on REGMAP  
-> 
-> I don't think this bit belongs in this patch.
-> Also: depends on REGMAP or select REGMAP?
+Vlad.
 
-Ugh sorry about that... I'll address both the dependency and the wrong
-patch splitting in next revision.
 
-> >  	help
-> >  	  This driver supports the Altera Triple-Speed (TSE)
-> > Ethernet MAC. 
-> > diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-> > index 9ff2e6f22f3f..aef39c89cf44 100644
-> > --- a/drivers/net/mdio/Kconfig
-> > +++ b/drivers/net/mdio/Kconfig
-> > @@ -185,6 +185,16 @@ config MDIO_IPQ8064
-> >  	  This driver supports the MDIO interface found in the
-> > network interface units of the IPQ8064 SoC
-> >  
-> > +config MDIO_REGMAP
-> > +	tristate
-> > +	help
-> > +	  This driver allows using MDIO devices that are not
-> > sitting on a
-> > +	  regular MDIO bus, but still exposes the standard 802.3
-> > register
-> > +	  layout. It's regmap-based so that it can be used on
-> > integrated,
-> > +	  memory-mapped PHYs, SPI PHYs and so on. A new virtual
-> > MDIO bus is
-> > +	  created, and its read/write operations are mapped to the
-> > underlying
-> > +	  regmap.  
-> 
-> It would probably be helpful to state that those who select this
-> option should also explicitly select REGMAP.
-
-You're right, I'll update this
-
-> > +
-> >  config MDIO_THUNDER
-> >  	tristate "ThunderX SOCs MDIO buses"
-> >  	depends on 64BIT
-> > diff --git a/drivers/net/mdio/Makefile b/drivers/net/mdio/Makefile
-> > index 7d4cb4c11e4e..1015f0db4531 100644
-> > --- a/drivers/net/mdio/Makefile
-> > +++ b/drivers/net/mdio/Makefile
-> > @@ -19,6 +19,7 @@ obj-$(CONFIG_MDIO_MOXART)		+=
-> > mdio-moxart.o obj-$(CONFIG_MDIO_MSCC_MIIM)		+=
-> > mdio-mscc-miim.o obj-$(CONFIG_MDIO_MVUSB)		+=
-> > mdio-mvusb.o obj-$(CONFIG_MDIO_OCTEON)		+=
-> > mdio-octeon.o +obj-$(CONFIG_MDIO_REGMAP)		+=
-> > mdio-regmap.o obj-$(CONFIG_MDIO_SUN4I)		+=
-> > mdio-sun4i.o obj-$(CONFIG_MDIO_THUNDER)		+=
-> > mdio-thunder.o obj-$(CONFIG_MDIO_XGENE)		+=
-> > mdio-xgene.o diff --git a/include/linux/mdio/mdio-regmap.h
-> > b/include/linux/mdio/mdio-regmap.h new file mode 100644
-> > index 000000000000..b8508f152552
-> > --- /dev/null
-> > +++ b/include/linux/mdio/mdio-regmap.h
-> > @@ -0,0 +1,24 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/* Driver for MMIO-Mapped MDIO devices. Some IPs expose internal
-> > PHYs or PCS
-> > + * within the MMIO-mapped area
-> > + *
-> > + * Copyright (C) 2023 Maxime Chevallier
-> > <maxime.chevallier@bootlin.com>
-> > + */
-> > +#ifndef MDIO_REGMAP_H
-> > +#define MDIO_REGMAP_H
-> > +
-> > +struct device;
-> > +struct regmap;
-> > +
-> > +struct mdio_regmap_config {
-> > +	struct device *parent;
-> > +	struct regmap *regmap;
-> > +	char name[MII_BUS_ID_SIZE];  
-> 
-> don't we need a header included for the MII_BUS_ID_SIZE macro?
-> An empty C file which includes just <linux/mdio/mdio-regmap.h> must
-> build without errors.
-
-You're correct, I'll include the proper header.
-
-Thanks,
-
-Maxime
+On 26.05.2023 19:47, Eric Dumazet wrote:
+> On Fri, May 26, 2023 at 6:41 PM Vlad Efanov <vefanov@ispras.ru> wrote:
+>> sk_dst_set() is called by sk_setup_caps().
+>>
+>> sk_dst_set() replaces dst in socket using xchg() call and we still have
+>> two tasks use one socket but expect different dst in sk_dst_cache.
+>>
+>>
+>> __sk_dst_set() is rcu protected, but it checks for socket lock.
+>>
+>>
+>> static inline void
+>> __sk_dst_set(struct sock *sk, struct dst_entry *dst)
+>> {
+>>       struct dst_entry *old_dst;
+>>
+>>       sk_tx_queue_clear(sk);
+>>       sk->sk_dst_pending_confirm = 0;
+>>       old_dst = rcu_dereference_protected(sk->sk_dst_cache,
+>>                           lockdep_sock_is_held(sk));
+>>       rcu_assign_pointer(sk->sk_dst_cache, dst);
+>>       dst_release(old_dst);
+>> }
+> I am quite familiar with this code.
+>
+> What are you trying to say exactly ?
+>
+> Please come with a V2 without grabbing the socket lock.
 
