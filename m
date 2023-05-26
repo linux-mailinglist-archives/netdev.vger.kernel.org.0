@@ -1,63 +1,64 @@
-Return-Path: <netdev+bounces-5720-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5719-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8FAEF71287D
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:35:08 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id CF27F712879
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:34:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4B06228193F
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:35:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 55D771C21108
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:34:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7217D261DE;
-	Fri, 26 May 2023 14:33:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B83D11950C;
+	Fri, 26 May 2023 14:32:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66ACCE57D
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 14:33:01 +0000 (UTC)
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A7C1704
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:32:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACD62E57D
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 14:32:42 +0000 (UTC)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEEB1BF
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:32:17 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-	by smtp-out2.suse.de (Postfix) with ESMTP id E0BE21F86C;
+	by smtp-out2.suse.de (Postfix) with ESMTP id E9BC61FD83;
 	Fri, 26 May 2023 14:31:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
 	t=1685111519; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=i/MJTUeDZzlx42IR4b00ab5UFRMqUbHmDFYZj2cxqws=;
-	b=rF+oM9uLvegbK0EkU26cwdUfsKGPut0IrffY574Elbjjjik9xDXg/XvI5wYGjRNgdIMc11
-	+BPdSA90fKsNPNP4XQyuPC0FEj0SsJGp6QOLrUU4i0udHla5YrEilNGXtXTr4XDtwdTPni
-	lTokl8tx0Eg400ZUp/I/0OBmzhG7GQE=
+	bh=UB5GBQFweZUWjgDcOnDYdTqCiqD9xyzydwjoRdzZYzw=;
+	b=DpMmZsj5zdIs8rrJ/s/SbB4Rzh8g54S8Lv7obVO+ySkKC904jCo1rpwbGWjysW+5WTYX78
+	jGcQeVAfIM08sSUGJJf/7e8+RG59SAPDLxD8d3SfhxhY07VWvNrQp1ZiwPBEp1SCYIAZO/
+	6VUDnh1JjqlhIdhBXOMtkCMR5ACuyzc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
 	s=susede2_ed25519; t=1685111519;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=i/MJTUeDZzlx42IR4b00ab5UFRMqUbHmDFYZj2cxqws=;
-	b=aj3nIkf4Zm15Cl/dpHb4fV6ZDEfetCNQtjwS+TgY4yYNYitKcUhPt6NpMD67Yvxpfmr2qB
-	SyUrd3ZhLXp7AGDA==
+	bh=UB5GBQFweZUWjgDcOnDYdTqCiqD9xyzydwjoRdzZYzw=;
+	b=h2IIeg6H1qdXRibjQPJQwx8uoYScGloE1/jabmR7p3AF4cv6CLNc8KiyAOz/KVkBDMnWu9
+	OZPdiwslO8S69IDQ==
 Received: from adalid.arch.suse.de (adalid.arch.suse.de [10.161.8.13])
-	by relay2.suse.de (Postfix) with ESMTP id BEAF42C143;
+	by relay2.suse.de (Postfix) with ESMTP id C7B932C145;
 	Fri, 26 May 2023 14:31:59 +0000 (UTC)
 Received: by adalid.arch.suse.de (Postfix, from userid 16045)
-	id B4A3D51C3F42; Fri, 26 May 2023 16:31:58 +0200 (CEST)
+	id BD51951C3F44; Fri, 26 May 2023 16:31:58 +0200 (CEST)
 From: Hannes Reinecke <hare@suse.de>
 To: Christoph Hellwig <hch@lst.de>
 Cc: Sagi Grimberg <sagi@grimberg.me>,
 	Keith Busch <kbusch@kernel.org>,
 	linux-nvme@lists.infradead.org,
 	Hannes Reinecke <hare@suse.de>,
+	Boris Pismenny <boris.pismenny@gmail.com>,
 	Jakub Kicinski <kuba@kernel.org>,
 	netdev@vger.kernel.org
-Subject: [PATCH 2/3] net/tls: handle MSG_EOR for tls_device TX flow
-Date: Fri, 26 May 2023 16:31:51 +0200
-Message-Id: <20230526143152.53954-3-hare@suse.de>
+Subject: [PATCH 3/3] net/tls: implement ->read_sock()
+Date: Fri, 26 May 2023 16:31:52 +0200
+Message-Id: <20230526143152.53954-4-hare@suse.de>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230526143152.53954-1-hare@suse.de>
 References: <20230526143152.53954-1-hare@suse.de>
@@ -75,52 +76,129 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-tls_push_data() MSG_MORE / MSG_SENDPAGE_NOTLAST, but bails
-out on MSG_EOR.
-But seeing that MSG_EOR is basically the opposite of
-MSG_MORE / MSG_SENDPAGE_NOTLAST this patch adds handling
-MSG_EOR by treating it as the negation of MSG_MORE.
+Implement ->read_sock() function for use with nvme-tcp.
 
+Signed-off-by: Hannes Reinecke <hare@suse.de>
+Cc: Boris Pismenny <boris.pismenny@gmail.com>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: netdev@vger.kernel.org
-Signed-off-by: Hannes Reinecke <hare@suse.de>
 ---
- net/tls/tls_device.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ net/tls/tls.h      |  2 ++
+ net/tls/tls_main.c |  2 ++
+ net/tls/tls_sw.c   | 71 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 75 insertions(+)
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index a7cc4f9faac2..9603a3c9ec24 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -449,7 +449,7 @@ static int tls_push_data(struct sock *sk,
- 	long timeo;
+diff --git a/net/tls/tls.h b/net/tls/tls.h
+index 804c3880d028..a5bf3a9ce142 100644
+--- a/net/tls/tls.h
++++ b/net/tls/tls.h
+@@ -113,6 +113,8 @@ bool tls_sw_sock_is_readable(struct sock *sk);
+ ssize_t tls_sw_splice_read(struct socket *sock, loff_t *ppos,
+ 			   struct pipe_inode_info *pipe,
+ 			   size_t len, unsigned int flags);
++int tls_sw_read_sock(struct sock *sk, read_descriptor_t *desc,
++		     sk_read_actor_t read_actor);
  
- 	if (flags &
--	    ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL | MSG_SENDPAGE_NOTLAST))
-+	    ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL | MSG_SENDPAGE_NOTLAST | MSG_EOR))
- 		return -EOPNOTSUPP;
+ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size);
+ int tls_device_sendpage(struct sock *sk, struct page *page,
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index f2e7302a4d96..767297a029b9 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -922,9 +922,11 @@ static void build_proto_ops(struct proto_ops ops[TLS_NUM_CONFIG][TLS_NUM_CONFIG]
  
- 	if (unlikely(sk->sk_err))
-@@ -529,6 +529,10 @@ static int tls_push_data(struct sock *sk,
- 				more = true;
- 				break;
- 			}
-+			if (flags & MSG_EOR) {
-+				more = false;
-+				break;
-+			}
+ 	ops[TLS_BASE][TLS_SW  ] = ops[TLS_BASE][TLS_BASE];
+ 	ops[TLS_BASE][TLS_SW  ].splice_read	= tls_sw_splice_read;
++	ops[TLS_BASE][TLS_SW  ].read_sock	= tls_sw_read_sock;
  
- 			done = true;
- 		}
-@@ -603,6 +607,8 @@ int tls_device_sendpage(struct sock *sk, struct page *page,
+ 	ops[TLS_SW  ][TLS_SW  ] = ops[TLS_SW  ][TLS_BASE];
+ 	ops[TLS_SW  ][TLS_SW  ].splice_read	= tls_sw_splice_read;
++	ops[TLS_SW  ][TLS_SW  ].read_sock	= tls_sw_read_sock;
  
- 	if (flags & MSG_SENDPAGE_NOTLAST)
- 		flags |= MSG_MORE;
-+	if (flags & MSG_EOR)
-+		flags &= ~(MSG_MORE | MSG_SENDPAGE_NOTLAST);
+ #ifdef CONFIG_TLS_DEVICE
+ 	ops[TLS_HW  ][TLS_BASE] = ops[TLS_BASE][TLS_BASE];
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index be8e0459d403..9bee2dcd55bf 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -2219,6 +2219,77 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
+ 	goto splice_read_end;
+ }
  
- 	mutex_lock(&tls_ctx->tx_lock);
- 	lock_sock(sk);
++int tls_sw_read_sock(struct sock *sk, read_descriptor_t *desc,
++		     sk_read_actor_t read_actor)
++{
++	struct tls_context *tls_ctx = tls_get_ctx(sk);
++	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
++	struct strp_msg *rxm = NULL;
++	struct tls_msg *tlm;
++	struct sk_buff *skb;
++	ssize_t copied = 0;
++	int err, used;
++
++	if (!skb_queue_empty(&ctx->rx_list)) {
++		skb = __skb_dequeue(&ctx->rx_list);
++	} else {
++		struct tls_decrypt_arg darg;
++
++		err = tls_rx_rec_wait(sk, NULL, true, true);
++		if (err <= 0)
++			return err;
++
++		memset(&darg.inargs, 0, sizeof(darg.inargs));
++
++		err = tls_rx_one_record(sk, NULL, &darg);
++		if (err < 0) {
++			tls_err_abort(sk, -EBADMSG);
++			return err;
++		}
++
++		tls_rx_rec_done(ctx);
++		skb = darg.skb;
++	}
++
++	do {
++		rxm = strp_msg(skb);
++		tlm = tls_msg(skb);
++
++		/* read_sock does not support reading control messages */
++		if (tlm->control != TLS_RECORD_TYPE_DATA) {
++			err = -EINVAL;
++			goto read_sock_requeue;
++		}
++
++		used = read_actor(desc, skb, rxm->offset, rxm->full_len);
++		if (used <= 0) {
++			err = used;
++			goto read_sock_end;
++		}
++
++		copied += used;
++		if (used < rxm->full_len) {
++			rxm->offset += used;
++			rxm->full_len -= used;
++			if (!desc->count)
++				goto read_sock_requeue;
++		} else {
++			consume_skb(skb);
++			if (desc->count && !skb_queue_empty(&ctx->rx_list))
++				skb = __skb_dequeue(&ctx->rx_list);
++			else
++				skb = NULL;
++		}
++	} while (skb);
++
++read_sock_end:
++	return copied ? : err;
++
++read_sock_requeue:
++	__skb_queue_head(&ctx->rx_list, skb);
++	goto read_sock_end;
++}
++
+ bool tls_sw_sock_is_readable(struct sock *sk)
+ {
+ 	struct tls_context *tls_ctx = tls_get_ctx(sk);
 -- 
 2.35.3
 
