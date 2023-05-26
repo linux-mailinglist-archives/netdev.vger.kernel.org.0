@@ -1,225 +1,178 @@
-Return-Path: <netdev+bounces-5655-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5657-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3F381712583
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 13:31:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5861A7125A5
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 13:36:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C4C6B281727
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:31:52 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1378C1C21028
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:36:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 095B1742F3;
-	Fri, 26 May 2023 11:31:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E0A0742F7;
+	Fri, 26 May 2023 11:36:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECCB7742D9
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 11:31:50 +0000 (UTC)
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC4B12F;
-	Fri, 26 May 2023 04:31:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685100708; x=1716636708;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=lKFISDoOGT/vHV9uu2T/75vdvXK9iJgFX6rs9G33zhw=;
-  b=XFEZ5CPmuNOL8on0NN3jFSq/X22BuZLz/MA3X3oHMzCE6Xk78YLC/Pac
-   opjIMUqm24+q6s70UQ8rPFv2qMm/QsCH5IHEjrbk+F7wE1OUqdbDf2Xfb
-   hi3s1wrMm2/d9cG2B/FCNTSUZwmZ4j5noCKL8oP/5S9q331wOfs7daKKQ
-   UH3ZYRZsQqigBkWZy2yLaNFWla4jEWP2GK6T0MLTVS+BuWiYX/GIDOWxv
-   HFzTbk1qhtD8Ufmp7HkS5Ct1xzRRTxp6PM9/TmNpquPdIni6YhuZy3kkD
-   pP52L/PLwAAsw4yr0CGeAkxPAOH5VC2r8DKfLHBtPp8EtIRO2MBA2O128
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="440536170"
-X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
-   d="scan'208";a="440536170"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 04:31:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="738218505"
-X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
-   d="scan'208";a="738218505"
-Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 26 May 2023 04:31:28 -0700
-Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q2VfL-000JIC-1U;
-	Fri, 26 May 2023 11:31:27 +0000
-Date: Fri, 26 May 2023 19:30:45 +0800
-From: kernel test robot <lkp@intel.com>
-To: Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
-	jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
-	mika.westerberg@linux.intel.com, jsd@semihalf.com,
-	Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
-	linux@armlinux.org.uk
-Cc: oe-kbuild-all@lists.linux.dev, linux-i2c@vger.kernel.org,
-	linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com,
-	Jiawen Wu <jiawenwu@trustnetic.com>,
-	Piotr Raczynski <piotr.raczynski@intel.com>
-Subject: Re: [PATCH net-next v9 5/9] net: txgbe: Add SFP module identify
-Message-ID: <202305261959.mnGUW17n-lkp@intel.com>
-References: <20230524091722.522118-6-jiawenwu@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 921C2AD24
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 11:36:11 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6C310C4
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 04:35:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685100900;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=IMHlvlz6CKzHL2wE0mYlxFl6H+erPJBHzeUTjMW5vZI=;
+	b=eq+FYkSeSJszMa7jmCs60cI4g8fTr3zoKTyuGuPlFst/pcN+4U3ve/NCRJPo50DP1wNAEf
+	eBPQcRZE6fAMvI1v+Hrx87uqWNg0D5HStZ/lqFdPMiqSwl8XnUw9RjF7skN/QtW6hQzwRR
+	0jt82PxgPBJrCDHrhbjjuazkfT4ErUY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-630-Fq5P_uGwNgawY86m8cYzKA-1; Fri, 26 May 2023 07:34:58 -0400
+X-MC-Unique: Fq5P_uGwNgawY86m8cYzKA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EB1AA801224;
+	Fri, 26 May 2023 11:34:57 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id DE04240CFD45;
+	Fri, 26 May 2023 11:34:54 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+To: netdev@vger.kernel.org
+cc: dhowells@redhat.com, Kenny Ho <Kenny.Ho@amd.com>,
+    Marc Dionne <marc.dionne@auristor.com>, Andrew Lunn <andrew@lunn.ch>,
+    David Laight <David.Laight@ACULAB.COM>,
+    "David S. Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+    Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
+    linux-kernel@vger.kernel.org
+Subject: [PATCH net] rxrpc: Truncate UTS_RELEASE for rxrpc version 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230524091722.522118-6-jiawenwu@trustnetic.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <654973.1685100894.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 26 May 2023 12:34:54 +0100
+Message-ID: <654974.1685100894@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URI_DOTEDU autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Jiawen,
+    =
 
-kernel test robot noticed the following build errors:
+UTS_RELEASE has a maximum length of 64 which can cause rxrpc_version to
+exceed the 65 byte message limit.
 
-[auto build test ERROR on net-next/main]
+Per the rx spec[1]: "If a server receives a packet with a type value of 13=
+,
+and the client-initiated flag set, it should respond with a 65-byte payloa=
+d
+containing a string that identifies the version of AFS software it is
+running."
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jiawen-Wu/net-txgbe-Add-software-nodes-to-support-phylink/20230524-173221
-base:   net-next/main
-patch link:    https://lore.kernel.org/r/20230524091722.522118-6-jiawenwu%40trustnetic.com
-patch subject: [PATCH net-next v9 5/9] net: txgbe: Add SFP module identify
-config: csky-randconfig-r003-20230525 (https://download.01.org/0day-ci/archive/20230526/202305261959.mnGUW17n-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        mkdir -p ~/bin
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/c382745a6443e8ff9b3fab9b10c90b216b2ca59b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jiawen-Wu/net-txgbe-Add-software-nodes-to-support-phylink/20230524-173221
-        git checkout c382745a6443e8ff9b3fab9b10c90b216b2ca59b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 ~/bin/make.cross W=1 O=build_dir ARCH=csky olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 ~/bin/make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash drivers/net/phy/
+The current implementation causes a compile error when WERROR is turned on
+and/or UTS_RELEASE exceeds the length of 49 (making the version string mor=
+e
+than 64 characters).
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202305261959.mnGUW17n-lkp@intel.com/
+Fix this by generating the string during module initialisation and limitin=
+g
+the UTS_RELEASE segment of the string does not exceed 49 chars.  We need t=
+o
+make sure that the 64 bytes includes "linux-" at the front and " AF_RXRPC"
+at the back as this may be used in pattern matching.
 
-All errors (new ones prefixed by >>):
+Fixes: 44ba06987c0b ("RxRPC: Handle VERSION Rx protocol packets")
+Reported-by: Kenny Ho <Kenny.Ho@amd.com>
+Link: https://lore.kernel.org/r/20230523223944.691076-1-Kenny.Ho@amd.com/
+Signed-off-by: David Howells <dhowells@redhat.com>
+Acked-by: Kenny Ho <Kenny.Ho@amd.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: Andrew Lunn <andrew@lunn.ch>
+cc: David Laight <David.Laight@ACULAB.COM>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: Eric Dumazet <edumazet@google.com>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: Paolo Abeni <pabeni@redhat.com>
+cc: linux-afs@lists.infradead.org
+cc: netdev@vger.kernel.org
+Link: https://web.mit.edu/kolya/afs/rx/rx-spec [1]
+---
+ net/rxrpc/af_rxrpc.c    |    1 +
+ net/rxrpc/ar-internal.h |    1 +
+ net/rxrpc/local_event.c |   11 ++++++++++-
+ 3 files changed, 12 insertions(+), 1 deletion(-)
 
-   drivers/net/phy/sfp.c: In function 'sfp_i2c_read':
->> drivers/net/phy/sfp.c:609:23: error: implicit declaration of function 'i2c_transfer' [-Werror=implicit-function-declaration]
-     609 |                 ret = i2c_transfer(sfp->i2c, msgs, ARRAY_SIZE(msgs));
-         |                       ^~~~~~~~~~~~
-   drivers/net/phy/sfp.c: In function 'sfp_i2c_configure':
->> drivers/net/phy/sfp.c:653:14: error: implicit declaration of function 'i2c_check_functionality' [-Werror=implicit-function-declaration]
-     653 |         if (!i2c_check_functionality(i2c, I2C_FUNC_I2C))
-         |              ^~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/phy/sfp.c: In function 'sfp_cleanup':
->> drivers/net/phy/sfp.c:2919:17: error: implicit declaration of function 'i2c_put_adapter' [-Werror=implicit-function-declaration]
-    2919 |                 i2c_put_adapter(sfp->i2c);
-         |                 ^~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
+index 31f738d65f1c..da0b3b5157d5 100644
+--- a/net/rxrpc/af_rxrpc.c
++++ b/net/rxrpc/af_rxrpc.c
+@@ -980,6 +980,7 @@ static int __init af_rxrpc_init(void)
+ 	BUILD_BUG_ON(sizeof(struct rxrpc_skb_priv) > sizeof_field(struct sk_buff=
+, cb));
+ =
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for I2C_DESIGNWARE_PLATFORM
-   Depends on [n]: I2C [=n] && HAS_IOMEM [=y] && (ACPI && COMMON_CLK [=y] || !ACPI)
-   Selected by [y]:
-   - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
-   WARNING: unmet direct dependencies detected for SFP
-   Depends on [n]: NETDEVICES [=y] && PHYLIB [=y] && I2C [=n] && PHYLINK [=y] && (HWMON [=n] || HWMON [=n]=n)
-   Selected by [y]:
-   - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
+ 	ret =3D -ENOMEM;
++	rxrpc_gen_version_string();
+ 	rxrpc_call_jar =3D kmem_cache_create(
+ 		"rxrpc_call_jar", sizeof(struct rxrpc_call), 0,
+ 		SLAB_HWCACHE_ALIGN, NULL);
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 5d44dc08f66d..e8e14c6f904d 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -1068,6 +1068,7 @@ int rxrpc_get_server_data_key(struct rxrpc_connectio=
+n *, const void *, time64_t,
+ /*
+  * local_event.c
+  */
++void rxrpc_gen_version_string(void);
+ void rxrpc_send_version_request(struct rxrpc_local *local,
+ 				struct rxrpc_host_header *hdr,
+ 				struct sk_buff *skb);
+diff --git a/net/rxrpc/local_event.c b/net/rxrpc/local_event.c
+index 5e69ea6b233d..993c69f97488 100644
+--- a/net/rxrpc/local_event.c
++++ b/net/rxrpc/local_event.c
+@@ -16,7 +16,16 @@
+ #include <generated/utsrelease.h>
+ #include "ar-internal.h"
+ =
 
+-static const char rxrpc_version_string[65] =3D "linux-" UTS_RELEASE " AF_=
+RXRPC";
++static char rxrpc_version_string[65]; // "linux-" UTS_RELEASE " AF_RXRPC"=
+;
++
++/*
++ * Generate the VERSION packet string.
++ */
++void rxrpc_gen_version_string(void)
++{
++	snprintf(rxrpc_version_string, sizeof(rxrpc_version_string),
++		 "linux-%.49s AF_RXRPC", UTS_RELEASE);
++}
+ =
 
-vim +/i2c_transfer +609 drivers/net/phy/sfp.c
+ /*
+  * Reply to a version request
 
-73970055450eeb Russell King  2017-07-25  583  
-3bb35261c74e39 Jon Nettleton 2018-02-27  584  static int sfp_i2c_read(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
-3bb35261c74e39 Jon Nettleton 2018-02-27  585  			size_t len)
-73970055450eeb Russell King  2017-07-25  586  {
-73970055450eeb Russell King  2017-07-25  587  	struct i2c_msg msgs[2];
-426c6cbc409cbd Pali Rohár    2021-01-25  588  	u8 bus_addr = a2 ? 0x51 : 0x50;
-426c6cbc409cbd Pali Rohár    2021-01-25  589  	size_t block_size = sfp->i2c_block_size;
-28e74a7cfd6403 Russell King  2019-06-02  590  	size_t this_len;
-73970055450eeb Russell King  2017-07-25  591  	int ret;
-73970055450eeb Russell King  2017-07-25  592  
-73970055450eeb Russell King  2017-07-25  593  	msgs[0].addr = bus_addr;
-73970055450eeb Russell King  2017-07-25  594  	msgs[0].flags = 0;
-73970055450eeb Russell King  2017-07-25  595  	msgs[0].len = 1;
-73970055450eeb Russell King  2017-07-25  596  	msgs[0].buf = &dev_addr;
-73970055450eeb Russell King  2017-07-25  597  	msgs[1].addr = bus_addr;
-73970055450eeb Russell King  2017-07-25  598  	msgs[1].flags = I2C_M_RD;
-73970055450eeb Russell King  2017-07-25  599  	msgs[1].len = len;
-73970055450eeb Russell King  2017-07-25  600  	msgs[1].buf = buf;
-73970055450eeb Russell King  2017-07-25  601  
-28e74a7cfd6403 Russell King  2019-06-02  602  	while (len) {
-28e74a7cfd6403 Russell King  2019-06-02  603  		this_len = len;
-0d035bed2a4a6c Russell King  2020-12-09  604  		if (this_len > block_size)
-0d035bed2a4a6c Russell King  2020-12-09  605  			this_len = block_size;
-28e74a7cfd6403 Russell King  2019-06-02  606  
-28e74a7cfd6403 Russell King  2019-06-02  607  		msgs[1].len = this_len;
-28e74a7cfd6403 Russell King  2019-06-02  608  
-3bb35261c74e39 Jon Nettleton 2018-02-27 @609  		ret = i2c_transfer(sfp->i2c, msgs, ARRAY_SIZE(msgs));
-73970055450eeb Russell King  2017-07-25  610  		if (ret < 0)
-73970055450eeb Russell King  2017-07-25  611  			return ret;
-73970055450eeb Russell King  2017-07-25  612  
-28e74a7cfd6403 Russell King  2019-06-02  613  		if (ret != ARRAY_SIZE(msgs))
-28e74a7cfd6403 Russell King  2019-06-02  614  			break;
-28e74a7cfd6403 Russell King  2019-06-02  615  
-28e74a7cfd6403 Russell King  2019-06-02  616  		msgs[1].buf += this_len;
-28e74a7cfd6403 Russell King  2019-06-02  617  		dev_addr += this_len;
-28e74a7cfd6403 Russell King  2019-06-02  618  		len -= this_len;
-28e74a7cfd6403 Russell King  2019-06-02  619  	}
-28e74a7cfd6403 Russell King  2019-06-02  620  
-28e74a7cfd6403 Russell King  2019-06-02  621  	return msgs[1].buf - (u8 *)buf;
-73970055450eeb Russell King  2017-07-25  622  }
-73970055450eeb Russell King  2017-07-25  623  
-3bb35261c74e39 Jon Nettleton 2018-02-27  624  static int sfp_i2c_write(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
-73970055450eeb Russell King  2017-07-25  625  	size_t len)
-73970055450eeb Russell King  2017-07-25  626  {
-3bb35261c74e39 Jon Nettleton 2018-02-27  627  	struct i2c_msg msgs[1];
-3bb35261c74e39 Jon Nettleton 2018-02-27  628  	u8 bus_addr = a2 ? 0x51 : 0x50;
-3bb35261c74e39 Jon Nettleton 2018-02-27  629  	int ret;
-3bb35261c74e39 Jon Nettleton 2018-02-27  630  
-3bb35261c74e39 Jon Nettleton 2018-02-27  631  	msgs[0].addr = bus_addr;
-3bb35261c74e39 Jon Nettleton 2018-02-27  632  	msgs[0].flags = 0;
-3bb35261c74e39 Jon Nettleton 2018-02-27  633  	msgs[0].len = 1 + len;
-3bb35261c74e39 Jon Nettleton 2018-02-27  634  	msgs[0].buf = kmalloc(1 + len, GFP_KERNEL);
-3bb35261c74e39 Jon Nettleton 2018-02-27  635  	if (!msgs[0].buf)
-3bb35261c74e39 Jon Nettleton 2018-02-27  636  		return -ENOMEM;
-3bb35261c74e39 Jon Nettleton 2018-02-27  637  
-3bb35261c74e39 Jon Nettleton 2018-02-27  638  	msgs[0].buf[0] = dev_addr;
-3bb35261c74e39 Jon Nettleton 2018-02-27  639  	memcpy(&msgs[0].buf[1], buf, len);
-3bb35261c74e39 Jon Nettleton 2018-02-27  640  
-3bb35261c74e39 Jon Nettleton 2018-02-27  641  	ret = i2c_transfer(sfp->i2c, msgs, ARRAY_SIZE(msgs));
-3bb35261c74e39 Jon Nettleton 2018-02-27  642  
-3bb35261c74e39 Jon Nettleton 2018-02-27  643  	kfree(msgs[0].buf);
-3bb35261c74e39 Jon Nettleton 2018-02-27  644  
-3bb35261c74e39 Jon Nettleton 2018-02-27  645  	if (ret < 0)
-3bb35261c74e39 Jon Nettleton 2018-02-27  646  		return ret;
-3bb35261c74e39 Jon Nettleton 2018-02-27  647  
-3bb35261c74e39 Jon Nettleton 2018-02-27  648  	return ret == ARRAY_SIZE(msgs) ? len : 0;
-73970055450eeb Russell King  2017-07-25  649  }
-73970055450eeb Russell King  2017-07-25  650  
-73970055450eeb Russell King  2017-07-25  651  static int sfp_i2c_configure(struct sfp *sfp, struct i2c_adapter *i2c)
-73970055450eeb Russell King  2017-07-25  652  {
-73970055450eeb Russell King  2017-07-25 @653  	if (!i2c_check_functionality(i2c, I2C_FUNC_I2C))
-73970055450eeb Russell King  2017-07-25  654  		return -EINVAL;
-73970055450eeb Russell King  2017-07-25  655  
-73970055450eeb Russell King  2017-07-25  656  	sfp->i2c = i2c;
-73970055450eeb Russell King  2017-07-25  657  	sfp->read = sfp_i2c_read;
-3bb35261c74e39 Jon Nettleton 2018-02-27  658  	sfp->write = sfp_i2c_write;
-73970055450eeb Russell King  2017-07-25  659  
-e85b1347ace677 Marek Behún   2022-09-30  660  	return 0;
-e85b1347ace677 Marek Behún   2022-09-30  661  }
-e85b1347ace677 Marek Behún   2022-09-30  662  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
 
