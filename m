@@ -1,145 +1,93 @@
-Return-Path: <netdev+bounces-5497-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5496-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 638D1711E23
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 04:50:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7568C711E20
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 04:49:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C55E9281673
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 02:50:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DD46B1C20F4C
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 02:49:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35B8717F4;
-	Fri, 26 May 2023 02:50:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 22A2E17F4;
+	Fri, 26 May 2023 02:49:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F0851FCF;
-	Fri, 26 May 2023 02:50:03 +0000 (UTC)
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276FD9C;
-	Thu, 25 May 2023 19:50:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1685069401; x=1716605401;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2k6LATmSEjQ87/ONfQdITiWFK2HdYH+jsh6Z7mJU0RU=;
-  b=rqVSCh5RFLYceZrZi13CA08HAcoo16Ikn7eOGBuR8DwrXCScPNYCxMZg
-   9nehmqWDYwj1uWkvqbEyZtfGEfLzEfFznDs2YfBUD9sCrNwtrfcy9gkIG
-   TuYMzFPZXuMHVHjDa8sGpv/1/sR1kQWa+Q8WYhH5sYp9CCnttZVq6YtyS
-   k=;
-X-IronPort-AV: E=Sophos;i="6.00,192,1681171200"; 
-   d="scan'208";a="287490348"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 02:49:53 +0000
-Received: from EX19MTAUWC002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-	by email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com (Postfix) with ESMTPS id 7B9408064D;
-	Fri, 26 May 2023 02:49:50 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Fri, 26 May 2023 02:49:45 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.106.100.20) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Fri, 26 May 2023 02:49:40 +0000
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-To: <kuniyu@amazon.com>
-CC: <andrii@kernel.org>, <ast@kernel.org>, <bpf@vger.kernel.org>,
-	<daniel@iogearbox.net>, <davem@davemloft.net>, <dsahern@kernel.org>,
-	<edumazet@google.com>, <haoluo@google.com>, <joe@cilium.io>,
-	<joe@wand.net.nz>, <john.fastabend@gmail.com>, <jolsa@kernel.org>,
-	<kafai@fb.com>, <kpsingh@kernel.org>, <kuba@kernel.org>,
-	<linux-kernel@vger.kernel.org>, <lmb@isovalent.com>, <martin.lau@linux.dev>,
-	<netdev@vger.kernel.org>, <pabeni@redhat.com>, <sdf@google.com>,
-	<song@kernel.org>, <willemdebruijn.kernel@gmail.com>, <yhs@fb.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf, net: Support SO_REUSEPORT sockets with bpf_sk_assign
-Date: Thu, 25 May 2023 19:49:31 -0700
-Message-ID: <20230526024931.88117-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230526014317.80715-1-kuniyu@amazon.com>
-References: <20230526014317.80715-1-kuniyu@amazon.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 173C217F3
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 02:49:55 +0000 (UTC)
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AC6B6
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 19:49:53 -0700 (PDT)
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1afbc02c602so12837775ad.1
+        for <netdev@vger.kernel.org>; Thu, 25 May 2023 19:49:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685069393; x=1687661393;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/OPLzWUVi7gsop6G9dajjYUDmWusRBpLPLHka0+jrUs=;
+        b=Tcbs52HTQXa064gx+SofxdoO70YJsujMrNPMXXAiNSZoUcmn8vmKwcQeqxoNcM2Zga
+         kbPkXNMJUnK6WboKI3EMNI5SKIi03FunsTjY1QxSSKLnOjUZZOrxnjqaiJrgM2DY4QWp
+         SerxrY9mb1e+DosNbw6z4AaZKOEW6UaUC5GFn/xGhE+MHPhvwSbrj1BA6EHyxUXsiKJY
+         9JsqJE+jtqdMHfIb2BV7yQz6xROsRRgQLaUS5Iez9p0Ce8TSz5OBG0txR7202/sc36eN
+         aOcIfIQvK0/Hc1IHMkX6EhDeGugnuJeuDb38+WjWiHKjhwqVQS4wIflNBViwtLlJjvoU
+         eUuQ==
+X-Gm-Message-State: AC+VfDxjSXo+hYG707MG7KHzQyEcbwUhe9908XIop6QPH+I5spUasX9S
+	x66oF1q5W9ymMYs4j9IVTRU=
+X-Google-Smtp-Source: ACHHUZ5XFpzeemUD1TUof6eCOZ3HnG5K/XByXYk4BPuootwhqPjfiNQxiSFweZaNQrfTmkP0NOc3aw==
+X-Received: by 2002:a17:903:1c7:b0:1ad:bccc:af77 with SMTP id e7-20020a17090301c700b001adbcccaf77mr4770197plh.18.1685069393239;
+        Thu, 25 May 2023 19:49:53 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([20.69.120.36])
+        by smtp.gmail.com with ESMTPSA id 17-20020a170902e9d100b00199203a4fa3sm2065914plk.203.2023.05.25.19.49.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 May 2023 19:49:52 -0700 (PDT)
+Date: Fri, 26 May 2023 02:49:51 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Wei Liu <wei.liu@kernel.org>,
+	Paul Durrant <paul@xen.org>, xen-devel@lists.xenproject.org,
+	netdev@vger.kernel.org
+Subject: Re: [PATCH] xen/netback: Pass (void *) to virt_to_page()
+Message-ID: <ZHAeT2m7297SOKfS@liuwe-devbox-debian-v2>
+References: <20230523140342.2672713-1-linus.walleij@linaro.org>
+ <20230524221147.5791ba3a@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.100.20]
-X-ClientProxiedBy: EX19D032UWA004.ant.amazon.com (10.13.139.56) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-Precedence: Bulk
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230524221147.5791ba3a@kernel.org>
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-Date: Thu, 25 May 2023 18:43:17 -0700
-> From: Martin KaFai Lau <martin.lau@linux.dev>
-> Date: Thu, 25 May 2023 16:42:46 -0700
-> > On 5/25/23 1:19 AM, Lorenz Bauer wrote:
-> > > diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
-> > > index 56f1286583d3..3ba4dc2703da 100644
-> > > --- a/include/net/inet6_hashtables.h
-> > > +++ b/include/net/inet6_hashtables.h
-> > > @@ -48,6 +48,13 @@ struct sock *__inet6_lookup_established(struct net *net,
-> > >   					const u16 hnum, const int dif,
-> > >   					const int sdif);
-> > >   
-> > > +struct sock *inet6_lookup_reuseport(struct net *net, struct sock *sk,
-> > > +				    struct sk_buff *skb, int doff,
-> > > +				    const struct in6_addr *saddr,
-> > > +				    __be16 sport,
-> > > +				    const struct in6_addr *daddr,
-> > > +				    unsigned short hnum);
-> > > +
-> > >   struct sock *inet6_lookup_listener(struct net *net,
-> > >   				   struct inet_hashinfo *hashinfo,
-> > >   				   struct sk_buff *skb, int doff,
-> > > @@ -85,14 +92,33 @@ static inline struct sock *__inet6_lookup_skb(struct inet_hashinfo *hashinfo,
-> > >   					      int iif, int sdif,
-> > >   					      bool *refcounted)
-> > >   {
-> > > -	struct sock *sk = skb_steal_sock(skb, refcounted);
-> > > -
-> > > +	bool prefetched;
-> > > +	struct sock *sk = skb_steal_sock(skb, refcounted, &prefetched);
-> > > +	struct net *net = dev_net(skb_dst(skb)->dev);
-> > > +	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
-> > > +
-> > > +	if (prefetched) {
-> > > +		struct sock *reuse_sk = inet6_lookup_reuseport(net, sk, skb, doff,
+On Wed, May 24, 2023 at 10:11:47PM -0700, Jakub Kicinski wrote:
+> On Tue, 23 May 2023 16:03:42 +0200 Linus Walleij wrote:
+> > virt_to_page() takes a virtual address as argument but
+> > the driver passes an unsigned long, which works because
+> > the target platform(s) uses polymorphic macros to calculate
+> > the page.
 > > 
-> > If sk is TCP_ESTABLISHED, I suspect sk->sk_reuseport is 1 (from sk_clone)?
+> > Since many architectures implement virt_to_pfn() as
+> > a macro, this function becomes polymorphic and accepts both a
+> > (unsigned long) and a (void *).
+> > 
+> > Fix this up by an explicit (void *) cast.
 > 
-> Exactly, it will cause null-ptr-deref in reuseport_select_sock().
+> Paul, Wei, looks like netdev may be the usual path for this patch 
+> to flow thru, although I'm never 100% sure with Xen.
 
-Sorry, this doesn't occur.  reuseport_select_sock() has null check.
+Yes. Netdev is the right path.
 
-
-> We may want to use rcu_access_pointer(sk->sk_reuseport_cb) in
-> each lookup_reuseport() instead of adding sk_state check ?
-
-And if someone has a weird program that creates multiple listeners and
-disable SO_REUSEPORT for a listener that hits first in lhash2, checking
-sk_reuseport_cb might not work ?  I hope no one does such though, checking
-sk_reuseport and sk_state could be better.
-
-> 
-> 
-> > 
-> > If it is, it should still work other than an extra inet6_ehashfn. Does it worth 
-> > an extra sk->sk_state check or it is overkill?
-> > 
-> > 
-> > > +							       &ip6h->saddr, sport,
-> > > +							       &ip6h->daddr, ntohs(dport));
+Thanks,
+Wei.
 
