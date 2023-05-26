@@ -1,146 +1,114 @@
-Return-Path: <netdev+bounces-5658-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5660-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 09BD67125A8
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 13:36:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5A4607125BE
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 13:41:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B7672281706
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:36:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 10F4F1C21044
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:40:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EED4D742F8;
-	Fri, 26 May 2023 11:36:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6AD2E8476;
+	Fri, 26 May 2023 11:40:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD363AD24
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 11:36:36 +0000 (UTC)
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C187B1BC
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 04:36:04 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id 5614622812f47-38ea3f8e413so385520b6e.2
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 04:36:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685100963; x=1687692963;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pFd41XKJrUfCj+2pjpJ2godOowFfIUzHbTpvmgGBs4o=;
-        b=sAWKejYv0HGnNQN0xF/x2qrDPcEyrTvU2yaVK5aDBrGSpp9XHKeZ7fa5prH3QPY5nm
-         mwjpxNXfyDpScXBWao4sJr2uHWoUP7jFAtggZLlFErVHFFDFLOKhPXA0O9uqQpsrmzAg
-         /S4rD1UYMaZQ3f++ATBLjuUcPKUiahZiTt4rTpsW970GshLxGC4KWqbV1yqB6RURYfEY
-         294c7M1j0Ol5c6oOXzNIusHcPK8o/8M3nuXOs9tG8h/zkbmF4oF6ebZtPIDu+eUC4D1n
-         UTQG02x1W3ts5UYn35kGoKrGBJUZhjATBf3/f9NsYeBFMz63XcDDJ2wKCNqUmQCb/Fjh
-         SPgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685100963; x=1687692963;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pFd41XKJrUfCj+2pjpJ2godOowFfIUzHbTpvmgGBs4o=;
-        b=I5J2v2VZUHznZHjHf+uFpu8V46gvMIN179WAgjfG31cwx+K4UWTXu+VJBE0Iipc4B0
-         Ux1c7Okqop4BAxip1ZyNTBBDoXQ9VL6jHdL5iny36A9qDau3V1uqiwCB46CxB6Hbh11L
-         CRXl4bllbpQndP7Y1gtLGzR2cnZdl0kvy6rUNgEWw0Ld46tywlkuIakMKlXobyQLrjvl
-         dzYhhu+An60ZZgEnzlkrOTwNIRzS3be/sSwYHSbmwuboOg3Yh5/hXMXGjXRbFdK3nosQ
-         MTUxf4Ux41U9QUf6tlifinXrjLtCID3GQCwuj/E5oFMUQNQiwfCsOKB+jgV1yX69q8Qe
-         TlPQ==
-X-Gm-Message-State: AC+VfDzkFAFzGt027Hw5FWJbw1eFEPCYrdgy/8HLc76BX8XJVHXq6Zth
-	dJIzfyko1ogy8RR8qFjwX8yE8foy4iHnGJ6JE4eLfgwKicnySHvK
-X-Google-Smtp-Source: ACHHUZ6/2KoIIJx+ckBpAy7rmKlPZp+spTzeIdjlD36oXb35W/bCwWLHzFdoFMxjTfSvyRlENrnKyFULsV3gi3lxDnk=
-X-Received: by 2002:aca:1318:0:b0:396:20fd:7362 with SMTP id
- e24-20020aca1318000000b0039620fd7362mr670061oii.28.1685100963378; Fri, 26 May
- 2023 04:36:03 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C2A1742EA
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 11:40:57 +0000 (UTC)
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808D6E7;
+	Fri, 26 May 2023 04:40:54 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+	by mx.sberdevices.ru (Postfix) with ESMTP id B9BEA5FD33;
+	Fri, 26 May 2023 14:40:50 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+	s=mail; t=1685101250;
+	bh=n2x4yjau1soFcfco90woNujVljdNR0rpU1zLVAOSyM4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	b=QiFeUnJmQzxST7Eo7f4WbbpPTgf1DzVYdaSYuXVVy2W6rGiomiqPNQoaBVwFUoFYA
+	 sDPdl/LSd8TRdKpSlu+JpVZG3UCLdV9hjxbfL5oW16+i2T4yh23vvbYmywgOFmcQaB
+	 YJkGmeGkQ8OJ4q1cy3/om+lBjxQu1u4kAw7fUNERqF5BsySFTY+tGZn5oMIbmowzAI
+	 GVjwZ3hLx7/TXp3T57fGm7f2tSs7bqQMmVsUcVomikBwUjDykFgN3/udy7I/21Qakb
+	 oGcwX0Fs577IAtNXepODapC6y7EH+P2AtEmenX89JAg8/dkXdke7QOFaegVeSGkbD6
+	 OnqpjPpNFhC6Q==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+	by mx.sberdevices.ru (Postfix) with ESMTP;
+	Fri, 26 May 2023 14:40:45 +0300 (MSK)
+Message-ID: <4baf786b-afe5-371d-9bc4-90226e5df3af@sberdevices.ru>
+Date: Fri, 26 May 2023 14:36:17 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230524131331.56664-1-cambda@linux.alibaba.com>
-In-Reply-To: <20230524131331.56664-1-cambda@linux.alibaba.com>
-From: Jason Xing <kerneljasonxing@gmail.com>
-Date: Fri, 26 May 2023 19:35:27 +0800
-Message-ID: <CAL+tcoD__dnnEJbJXDcV5JLnQK3XC_1Ww6trhur_DhWejLp1bg@mail.gmail.com>
-Subject: Re: [PATCH net v2] tcp: Return user_mss for TCP_MAXSEG in
- CLOSE/LISTEN state if user_mss set
-To: Cambda Zhu <cambda@linux.alibaba.com>
-Cc: netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>, 
-	Paolo Abeni <pabeni@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, 
-	Dust Li <dust.li@linux.alibaba.com>, Tony Lu <tonylu@linux.alibaba.com>, 
-	Jack Yang <mingliang@linux.alibaba.com>, David Miller <davem@davemloft.net>, dsahern@kernel.org, 
-	Jakub Kicinski <kuba@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [RFC PATCH v3 00/17] vsock: MSG_ZEROCOPY flag support
+Content-Language: en-US
+To: Stefano Garzarella <sgarzare@redhat.com>
+CC: Stefan Hajnoczi <stefanha@redhat.com>, "David S. Miller"
+	<davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+	<kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, "Michael S. Tsirkin"
+	<mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Bobby Eshleman
+	<bobby.eshleman@bytedance.com>, <kvm@vger.kernel.org>,
+	<virtualization@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <kernel@sberdevices.ru>, <oxffffaa@gmail.com>
+References: <20230522073950.3574171-1-AVKrasnov@sberdevices.ru>
+ <76270fab-8af7-7597-9193-64cb553a543e@sberdevices.ru>
+ <y5tgyj5awrd4hvlrsxsvrern6pd2sby2mdtskah2qp5hemmo2a@72nhcpilg7v2>
+From: Arseniy Krasnov <avkrasnov@sberdevices.ru>
+In-Reply-To: <y5tgyj5awrd4hvlrsxsvrern6pd2sby2mdtskah2qp5hemmo2a@72nhcpilg7v2>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/05/26 06:32:00 #21351256
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 24, 2023 at 9:14=E2=80=AFPM Cambda Zhu <cambda@linux.alibaba.co=
-m> wrote:
->
-> This patch replaces the tp->mss_cache check in getting TCP_MAXSEG
-> with tp->rx_opt.user_mss check for CLOSE/LISTEN sock. Since
-> tp->mss_cache is initialized with TCP_MSS_DEFAULT, checking if
-> it's zero is probably a bug.
->
-> With this change, getting TCP_MAXSEG before connecting will return
-> default MSS normally, and return user_mss if user_mss is set.
->
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Reported-by: Jack Yang <mingliang@linux.alibaba.com>
-> Suggested-by: Eric Dumazet <edumazet@google.com>
-> Link: https://lore.kernel.org/netdev/CANn89i+3kL9pYtkxkwxwNMzvC_w3LNUum_2=
-=3D3u+UyLBmGmifHA@mail.gmail.com/#t
-> Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
-> Link: https://lore.kernel.org/netdev/14D45862-36EA-4076-974C-EA67513C92F6=
-@linux.alibaba.com/
-> Reviewed-by: Jason Xing <kerneljasonxing@gmail.com>
-> ---
-> v2:
-> - Update Fixes tag with commit in current tree.
-> - Add Jason's Reviewed-by tag.
->
-> v1:
-> - Return default MSS if user_mss not set for backwards compatibility.
-> - Send patch to net instead of net-next, with Fixes tag.
-> - Add Eric's tags.
-> ---
->  net/ipv4/tcp.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 4d6392c16b7a..3e01a58724b8 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -4081,7 +4081,8 @@ int do_tcp_getsockopt(struct sock *sk, int level,
->         switch (optname) {
->         case TCP_MAXSEG:
->                 val =3D tp->mss_cache;
-> -               if (!val && ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LIS=
-TEN)))
-> +               if (tp->rx_opt.user_mss &&
-> +                   ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
->                         val =3D tp->rx_opt.user_mss;
->                 if (tp->repair)
->                         val =3D tp->rx_opt.mss_clamp;
-> --
-> 2.16.6
->
 
-Ah, I just realised that you didn't CC other maintainers though
-reading the patchwork. Please run this command [1] before you submit a
-patch next time.
 
-[1]: $./scripts/get_maintainer.pl net/ipv4/tcp.c
+On 26.05.2023 13:30, Stefano Garzarella wrote:
+> On Thu, May 25, 2023 at 06:56:42PM +0300, Arseniy Krasnov wrote:
+>>
+>>
+>> On 22.05.2023 10:39, Arseniy Krasnov wrote:
+>>
+>> This patchset is unstable with SOCK_SEQPACKET. I'll fix it.
+> 
+> Thanks for let us know!
+> 
+> I'm thinking if we should start split this series in two, because it
+> becomes too big.
+> 
+> But let keep this for RFC, we can decide later. An idea is to send
+> the first 7 patches with a preparation series, and the next ones with a
+> second series.
 
-+CC kuba, davem, dsahern
+Hello, ok! So i'll split patchset in the following way:
+1) Patches which adds new fields/flags and checks. But all of this is not used,
+   as it is preparation.
+2) Second part starts to use it and also carries tests.
 
-Thanks,
-Jason
+Thanks, Arseniy
+
+> 
+> Thanks,
+> Stefano
+> 
 
