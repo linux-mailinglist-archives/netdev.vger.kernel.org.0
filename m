@@ -1,92 +1,79 @@
-Return-Path: <netdev+bounces-5523-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5525-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3CC3C711FCF
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 08:23:35 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C0C1C71200C
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 08:35:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A1A2128166A
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 06:23:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81A982816BA
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 06:35:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7A8F5243;
-	Fri, 26 May 2023 06:23:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC65D523E;
+	Fri, 26 May 2023 06:35:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD3983FFB
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 06:23:31 +0000 (UTC)
-Received: from smtpbg156.qq.com (smtpbg156.qq.com [15.184.82.18])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B941A8
-	for <netdev@vger.kernel.org>; Thu, 25 May 2023 23:23:25 -0700 (PDT)
-X-QQ-mid:Yeas48t1685082084t447t64459
-Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [125.120.148.168])
-X-QQ-SSF:00400000000000F0FOF000000000000
-From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
-X-BIZMAIL-ID: 15681098690706422503
-To: "'Jakub Kicinski'" <kuba@kernel.org>
-Cc: <netdev@vger.kernel.org>,
-	<jarkko.nikula@linux.intel.com>,
-	<andriy.shevchenko@linux.intel.com>,
-	<mika.westerberg@linux.intel.com>,
-	<jsd@semihalf.com>,
-	<Jose.Abreu@synopsys.com>,
-	<andrew@lunn.ch>,
-	<hkallweit1@gmail.com>,
-	<linux@armlinux.org.uk>,
-	<linux-i2c@vger.kernel.org>,
-	<linux-gpio@vger.kernel.org>,
-	<mengyuanlou@net-swift.com>
-References: <20230524091722.522118-1-jiawenwu@trustnetic.com>	<20230524091722.522118-9-jiawenwu@trustnetic.com> <20230525211403.44b5f766@kernel.org>
-In-Reply-To: <20230525211403.44b5f766@kernel.org>
-Subject: RE: [PATCH net-next v9 8/9] net: txgbe: Implement phylink pcs
-Date: Fri, 26 May 2023 14:21:23 +0800
-Message-ID: <022201d98f9a$4b4ccc00$e1e66400$@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2E7D20E6
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 06:35:29 +0000 (UTC)
+X-Greylist: delayed 525 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 25 May 2023 23:35:26 PDT
+Received: from umail2.aei.mpg.de (umail2.aei.mpg.de [194.94.224.8])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E978E19C
+	for <netdev@vger.kernel.org>; Thu, 25 May 2023 23:35:26 -0700 (PDT)
+Received: from arc.aei.uni-hannover.de (ahgate1.aei.uni-hannover.de [130.75.117.49])
+	by umail2.aei.mpg.de (Postfix) with ESMTPS id D655F1BA0C3C
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 08:26:18 +0200 (CEST)
+Date: Fri, 26 May 2023 08:26:18 +0200
+From: Gerrit =?UTF-8?B?S8O8aG4=?= <gerrit.kuehn@aei.mpg.de>
+To: netdev@vger.kernel.org
+Subject: ip-link manpage improvement
+Message-ID: <20230526082618.3b0f731d@arc.aei.uni-hannover.de>
+Organization: MPG
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; amd64-portbld-freebsd13.0)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQIrQcdiCo7tNEhbaUMwQ6r5o07FvQI4H2aIApOsZCeuok+UAA==
-Content-Language: zh-cn
-X-QQ-SENDSIZE: 520
-Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_20,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Friday, May 26, 2023 12:14 PM, Jakub Kicinski wrote:
-> On Wed, 24 May 2023 17:17:21 +0800 Jiawen Wu wrote:
-> > +	ret = devm_mdiobus_register(&pdev->dev, mii_bus);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	mdiodev = mdio_device_create(mii_bus, 0);
-> > +	if (IS_ERR(mdiodev))
-> > +		return PTR_ERR(mdiodev);
-> > +
-> > +	xpcs = xpcs_create(mdiodev, PHY_INTERFACE_MODE_10GBASER);
-> > +	if (IS_ERR(xpcs)) {
-> > +		mdio_device_free(mdiodev);
-> > +		return PTR_ERR(xpcs);
-> > +	}
-> 
-> How does the mdiodev get destroyed in case of success?
-> Seems like either freeing it in case of xpcs error is unnecessary
-> or it needs to also be freed when xpcs is destroyed?
+Note: Please cc: me for any answers as I am not subscribed to this mailing
+list.
 
-When xpcs is destroyed, that means mdiodev is no longer needed.
-I think there is no need to free mdiodev in case of xpcs error,
-since devm_* function leads to free it.
 
+Dear all,
+
+I came across an issue with the ip link command that in the end boiled
+down to an incomplete manpage entry:
+
+---
+ip link set { DEVICE | group GROUP }
+---
+
+This is missing one option (the "dev" part) compared to the help page (ip
+link help):
+
+---
+ip link set { DEVICE | dev DEVICE | group DEVGROUP }
+---
+
+I surely lost a few hairs the other day because my vpn features a tap
+interface named "dev" (for the "development" network), and to my surprise
+"ip link set dev up" complained about device "up" not being found as the
+"dev" part got eaten away by the parser due to the extra syntax I didn't
+know about. ;)
+It would be great if this could be fixed in the manpage to avoid confusion.
+
+
+cu
+  Gerrit
 
