@@ -1,218 +1,166 @@
-Return-Path: <netdev+bounces-5561-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5562-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 87F55712242
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:33:40 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2770971225D
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:37:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 32B0F1C20FE5
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 08:33:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4DE902816C4
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 08:37:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB8353C04;
-	Fri, 26 May 2023 08:33:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D6A05254;
+	Fri, 26 May 2023 08:37:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 971BA23A4
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 08:33:37 +0000 (UTC)
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A745213A;
-	Fri, 26 May 2023 01:33:35 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-3093aa2f2a5so52833f8f.0;
-        Fri, 26 May 2023 01:33:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685090014; x=1687682014;
-        h=references:to:cc:in-reply-to:date:subject:mime-version:message-id
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nRhRobWF9Hr3G4ofrhF1TL7x8KZgTqCRAivN1RjHiAY=;
-        b=dh885MJtpnnCAR1HoaRZO2f1Kcv/ajJu+pRmPCS3XXxbkXKTptXtn8eke3u6H2rgjU
-         qbuP8xXu2PhgMUD2teehIpNL4V5xeuTfrtxvPeqNP9RtxI2U9wR9VVvAArbFb70vAbj2
-         Bh0namDnVf+GEPbCOJSs7ohNjRAB5fgCzvsYDaviYp5ovvlYHtWzzIVOrerjvF7Bh3Pn
-         6b08TZM3NiyGoOhVTHX0o0JV98wqST3FClZsy00SxlFNY1hJspRnpbyBpBuCxaGJlDWT
-         JW4eLAt8tzL0O2VAZcGpcrGMN6w6rQHtE+UJlEdeW68Tx/FZVsbbzDcmnEloKyABGVw/
-         aY2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685090014; x=1687682014;
-        h=references:to:cc:in-reply-to:date:subject:mime-version:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nRhRobWF9Hr3G4ofrhF1TL7x8KZgTqCRAivN1RjHiAY=;
-        b=P0737YF6ZPDI2ekbNZ1/d1Y9KlbngNz6sGQNjUKs2Zz78lCCxKmXeIwkS8BGCLufX/
-         2GtWaRMXXLQR4iNyG0zkc8Jqv9xqoRx1OCzTWdRbSuGxzNb7tk2k9FJHUs4V102oBhYR
-         MyZ3mds3Xu0IYFfPCIz5MytUEg1Cb152gQzJwKDpPtF0Rg1xZmGbiKTqC7qUJHCACO6i
-         B8J9KNEKKiR25C+ZBzT2P1NjbAJeS9as+SS/ET9v5VvdV0QHo4m34yhubmf4c1clR8n3
-         d0CXSMkm6n4Gbn2qw5Bf8ORRUNBEXBy/FhIorJS44og8y9JF3ANqOrdp7MlQbLEi3euG
-         XwhQ==
-X-Gm-Message-State: AC+VfDyD96bZ4q4T6jlrGchE5k3sW4O+/nhrs5YcIC0TmFpv+Pvl/tzB
-	Suu0JpT8ksEJWKCy7C4hy3pF3xF0LIE2XA==
-X-Google-Smtp-Source: ACHHUZ7MGzp+g/hoKuvONM19NevX3m9E9u8iKlkxmxt9F3MLjZSkqLfL1LEGk7gSjoo8624Dmg/y2g==
-X-Received: by 2002:a5d:6910:0:b0:309:3a72:3cea with SMTP id t16-20020a5d6910000000b003093a723ceamr713191wru.0.1685090013739;
-        Fri, 26 May 2023 01:33:33 -0700 (PDT)
-Received: from smtpclient.apple (212-39-89-99.ip.btc-net.bg. [212.39.89.99])
-        by smtp.gmail.com with ESMTPSA id k7-20020a5d66c7000000b00307a83ea722sm4280769wrw.58.2023.05.26.01.33.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 May 2023 01:33:33 -0700 (PDT)
-From: George Valkov <gvalkov@gmail.com>
-Message-Id: <C0FADE3B-5422-444A-8F09-32BE215B5E88@gmail.com>
-Content-Type: multipart/mixed;
-	boundary="Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AE17524B
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 08:37:55 +0000 (UTC)
+Received: from mail.avm.de (mail.avm.de [212.42.244.120])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853DC9B
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 01:37:52 -0700 (PDT)
+Received: from mail-auth.avm.de (unknown [IPv6:2001:bf0:244:244::71])
+	by mail.avm.de (Postfix) with ESMTPS;
+	Fri, 26 May 2023 10:37:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
+	t=1685090268; bh=iLDsmBp/bnLMgnE8s+73OnYsWcOM7tHgbqVUqIPl8tE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OP1h0iU6vRBkryaGDGTd4+RPn0lqwQWSqtlZ2ar7imwFlnwxVjsfwAs3WL25BFsk0
+	 T+flCCAn92GlUDtDDH0fojjj/DXtz4QMeOVB+y8VHavcPxT+V4ai/zgmKTh+68RdeG
+	 wcHAYUyq0WUiFHqLVfiAxCW0coRqVYqNfuykpJ/o=
+Received: from localhost (unknown [172.17.88.63])
+	by mail-auth.avm.de (Postfix) with ESMTPSA id 2EB7C80A44;
+	Fri, 26 May 2023 10:37:50 +0200 (CEST)
+Date: Fri, 26 May 2023 10:37:50 +0200
+From: Johannes Nixdorf <jnixdorf-oss@avm.de>
+To: Nikolay Aleksandrov <razor@blackwall.org>
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Oleksij Rempel <linux@rempel-privat.de>, netdev@vger.kernel.org,
+	bridge@lists.linux-foundation.org,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Roopa Prabhu <roopa@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] bridge: Add a limit on FDB entries
+Message-ID: <ZHBv3l9wnbeJzyO2@u-jnixdorf.ads.avm.de>
+References: <ZGNEk3F8mcT7nNdB@u-jnixdorf.ads.avm.de>
+ <f899f032-b726-7b6d-953d-c7f3f98744ca@blackwall.org>
+ <20230516102141.w75yh6pdo53ufjur@skbuf>
+ <ce3835d9-c093-cfcb-3687-3a375236cb8f@blackwall.org>
+ <20230516104428.i5ou4ogx7gt2x6gq@skbuf>
+ <c05b5623-c096-162f-3a2d-db19ca760098@blackwall.org>
+ <20230516105509.xaalfs77vrlr663u@skbuf>
+ <6a688292-a7a0-20c9-03b9-cad11a61144f@blackwall.org>
+ <20230516111005.ni3jygnnxgygoenh@skbuf>
+ <b12a817f-de9f-6d25-f189-67e5e7ef49a4@blackwall.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.600.7\))
-Subject: Re: [PATCH net-next v2 1/2] usbnet: ipheth: fix risk of NULL pointer
- deallocation
-Date: Fri, 26 May 2023 11:33:21 +0300
-In-Reply-To: <ZHBlShZDu3C8VOl3@corigine.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>,
- linux-usb <linux-usb@vger.kernel.org>,
- Linux Netdev List <netdev@vger.kernel.org>
-To: Simon Horman <simon.horman@corigine.com>,
- Foster Snowhill <forst@pen.gy>
-References: <20230525194255.4516-1-forst@pen.gy>
- <ZHBlShZDu3C8VOl3@corigine.com>
-X-Mailer: Apple Mail (2.3731.600.7)
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b12a817f-de9f-6d25-f189-67e5e7ef49a4@blackwall.org>
+X-purgate-ID: 149429::1685090268-42F8D128-28E51B1A/0/0
+X-purgate-type: clean
+X-purgate-size: 4387
+X-purgate-Ad: Categorized by eleven eXpurgate (R) http://www.eleven.de
+X-purgate: This mail is considered clean (visit http://www.eleven.de for further information)
+X-purgate: clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Tue, May 16, 2023 at 02:18:15PM +0300, Nikolay Aleksandrov wrote:
+> On 16/05/2023 14:10, Vladimir Oltean wrote:
+> > On Tue, May 16, 2023 at 02:04:30PM +0300, Nikolay Aleksandrov wrote:
+> >> That was one of the questions actually. More that I'm thinking about this, the more
+> >> I want to break it apart by type because we discussed being able to specify a flag
+> >> mask for the limit (all, dynamic, dynamic+static etc). If we embed these stats into a
+> >> bridge fdb count attribute, it can be easily extended later if anything new comes along.
+> >> If switchdev doesn't support some of these global limit configs, we can pass the option
+> >> and it can deny setting it later. I think this should be more than enough as a first step.
+> > 
+> > Ok, and by "type" you actually mean the impossibly hard to understand
+> > neighbor discovery states used by the bridge UAPI? Like having
+> 
+> Yes, that is what I mean. It's not that hard, we can limit it to a few combinations
+> that are well understood and defined.
+> 
+> > (overlapping) limits per NUD_REACHABLE, NUD_NOARP etc flags set in
+> > ndm->ndm_state? Or how should the UAPI look like?
+> 
+> Hmm, perhaps for the time being and for keeping it simpler it'd be best if the type initially is just about
+> dynamic entries and the count reflects only those. We can add an abstraction later if we want "per-type"/mask limits.
+> Adding such abstraction should be pretty-straight forward if we keep in mind the flags that can change only
+> under lock, otherwise proper counting would have to be revisited.
 
---Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=utf-8
+Now that I implemented most of v2, except that I kept the netlink API
+roughly the same as v1, I noticed that we probably need to discuss the UAPI
+design more, or else we'd be stuck with the new netlink attributes that
+do not fit the later abstraction design.
 
+I see several options from what was discussed here and what seems to be
+the easiest to implement for me:
 
-> On 26 May 2023, at 10:52 AM, Simon Horman <simon.horman@corigine.com> =
-wrote:
->=20
-> On Thu, May 25, 2023 at 09:42:54PM +0200, Foster Snowhill wrote:
->> From: Georgi Valkov <gvalkov@gmail.com>
->>=20
->> The cleanup precedure in ipheth_probe will attempt to free a
->> NULL pointer in dev->ctrl_buf if the memory allocation for
->> this buffer is not successful. Rearrange the goto labels to
->> avoid this risk.
->=20
-> Hi Georgi and Foster,
->=20
-> kfree will ignore a NULL argument, so I think the existing code is =
-safe.
-> But given the name of the label I do agree there is scope for a =
-cleanup
-> here.
+ 1. Everything is a separate netlink attribute:
 
-It=E2=80=99s good to know that precaution has been taken in kfree to =
-avoid this, yet at my opinion knowingly attempting to free a NULL =
-pointer is a red flag and bad design. Likely a misplaced label.
+ My current draft of v2 adds 2 netlink attributes -
+ IFLA_BR_FDB_MAX_LEARNED_ENTRIES and IFLA_BR_FDB_CUR_LEARNED_ENTRIES.
+ More generally this would be two u32 netlink attributes for each limit
+ (_MAX_ (RW) and _CUR_ (RO)), which can be differentiated by their name.
 
-> Could you consider rewording the patch description accordingly?
+ 1.a Each limit is a separate netlink attribute, _CUR_ and _MAX_ are
+     grouped together as a nested message:
 
-What would you like me to use as title and description? Can I use this?
+ Like 1., but add only one netlink attribute for each limit
+ (e.g. IFLA_BR_FDB_LIMIT_LEARNED), containing a nested message with the
+ _CUR_ and _MAX_ attributes.
 
-usbnet: ipheth: avoid kfree with a NULL pointer
+ 1.b The same as 1.a, but have one nested message
+     (e.g. IFLA_BR_FDB_LIMITS):
 
-The cleanup precedure in ipheth_probe will attempt to free a
-NULL pointer in dev->ctrl_buf if the memory allocation for
-this buffer is not successful. While kfree ignores NULL pointers,
-and the existing code is safe, it is a better design to rearrange
-the goto labels and avoid this.
+ The message would contain attributes of the form
+ IFLA_BR_FDB_LIMITS_${NAME}_CUR, IFLA_BR_FDB_LIMITS_${NAME}_MAX, initially
+ only for NAME=LEARNED.
 
+ 2. Add a new dynamically sized list of attributes + flag mask:
 
->> Signed-off-by: Georgi Valkov <gvalkov@gmail.com>
->=20
-> If Georgi is the author of the patch, which seems to be the case,
-> then the above is correct. But as the patch is being posted by Foster
-> I think it should be followed by a Signed-off-by line for Foster.
+ Permitt the netlink caller to pass a dynamically sized array
+ (NL_ATTR_TYPE_NESTED_ARRAY?) of pairs of a flag (and state) mask
+ combination and the limit to enforce for them. We'd be rejecting
+ everything but NTF_USE + NUD_NOARP for the first implementation.
 
-Yes, I discovered the potential issue and authored the patch to help. =
-We=E2=80=99ll append Signed-off-by Foster as you suggested. Thanks =
-Simon!
+ Problems:
+  - Those are the impossibly hard to understand neighbour discovery
+    states. (as in the quoted mail) Having now looked closer at them
+    and the bridge internal flags they translate to, I also would prefer
+    a different approach.
+  - For the general approach of not just rejecting all but one
+    flag combination accounting is more difficult.
+    For the one limit in v1, and the v2 draft, we can just start counting
+    when creating the bridge, and the accounting is up to date when the
+    user sets a limit.
+    For the general approach later we'd probably not want to include
+    separate counters for each combination in the bridge struct. Instead
+    we'd dynamically allocate our counter when the user sets a limit,
+    so for each newly set limit we'd then need to lock the fdb table and
+    count the current fdb entries matching the limit first.
 
-Something like that?
+ 2.a Invent new names for the supported limits without exposing their flag
+     (and state) masks:
 
+ Conceptually this is equivalent to putting the names in the netlink
+ attribute namespace as in 1., so I'd prefer to go with one of them
+ instead.
 
---Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A
-Content-Disposition: attachment;
-	filename=0001-usbnet-ipheth-avoid-kfree-with-a-NULL-pointer.patch
-Content-Type: application/octet-stream;
-	x-unix-mode=0644;
-	name="0001-usbnet-ipheth-avoid-kfree-with-a-NULL-pointer.patch"
-Content-Transfer-Encoding: quoted-printable
-
-=46rom=2015dc5cec0d239d30856dc6d9b9a7a9528342cde0=20Mon=20Sep=2017=20=
-00:00:00=202001=0AFrom:=20Georgi=20Valkov=20<gvalkov@gmail.com>=0ADate:=20=
-Thu,=2025=20May=202023=2021:23:12=20+0200=0ASubject:=20[PATCH=20net-next=20=
-v3=201/2]=20usbnet:=20ipheth:=20avoid=20kfree=20with=20a=20NULL=20=
-pointer=0A=0AThe=20cleanup=20precedure=20in=20ipheth_probe=20will=20=
-attempt=20to=20free=20a=0ANULL=20pointer=20in=20dev->ctrl_buf=20if=20the=20=
-memory=20allocation=20for=0Athis=20buffer=20is=20not=20successful.=20=
-While=20kfree=20ignores=20NULL=20pointers,=0Aand=20the=20existing=20code=20=
-is=20safe,=20it=20is=20a=20better=20design=20to=20rearrange=0Athe=20goto=20=
-labels=20and=20avoid=20this.=0A=0ASigned-off-by:=20Georgi=20Valkov=20=
-<gvalkov@gmail.com>=0ASigned-off-by:=20Foster=20Snowhill=20=
-<forst@pen.gy>=0A---=0A=20drivers/net/usb/ipheth.c=20|=202=20+-=0A=201=20=
-file=20changed,=201=20insertion(+),=201=20deletion(-)=0A=0Adiff=20--git=20=
-a/drivers/net/usb/ipheth.c=20b/drivers/net/usb/ipheth.c=0Aindex=20=
-6a769df0b421..8875a3d0e6d9=20100644=0A---=20a/drivers/net/usb/ipheth.c=0A=
-+++=20b/drivers/net/usb/ipheth.c=0A@@=20-510,8=20+510,8=20@@=20static=20=
-int=20ipheth_probe(struct=20usb_interface=20*intf,=0A=20=09=
-ipheth_free_urbs(dev);=0A=20err_alloc_urbs:=0A=20err_get_macaddr:=0A=
--err_alloc_ctrl_buf:=0A=20=09kfree(dev->ctrl_buf);=0A=
-+err_alloc_ctrl_buf:=0A=20err_endpoints:=0A=20=09free_netdev(netdev);=0A=20=
-=09return=20retval;=0A--=20=0A2.40.1=0A=0A=
-
---Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=us-ascii
-
-
-
-
-Georgi Valkov
-httpstorm.com
-nano RTOS
-
-> Link: =
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html?hig=
-hlight=3Dsigned+off#developer-s-certificate-of-origin-1-1
->=20
->> ---
->> drivers/net/usb/ipheth.c | 2 +-
->> 1 file changed, 1 insertion(+), 1 deletion(-)
->>=20
->> diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
->> index 6a769df0b..8875a3d0e 100644
->> --- a/drivers/net/usb/ipheth.c
->> +++ b/drivers/net/usb/ipheth.c
->> @@ -510,8 +510,8 @@ static int ipheth_probe(struct usb_interface =
-*intf,
->>        ipheth_free_urbs(dev);
->> err_alloc_urbs:
->> err_get_macaddr:
->> -err_alloc_ctrl_buf:
->>        kfree(dev->ctrl_buf);
->> +err_alloc_ctrl_buf:
->> err_endpoints:
->>        free_netdev(netdev);
->>        return retval;
->=20
-> --=20
-> pw-bot: cr
-
-
-
---Apple-Mail=_AE9305BA-4843-43E1-8A58-3CAC7A95C28A--
+Do you have a preference for an approach from the list, or do you see
+different options I did not include?
 
