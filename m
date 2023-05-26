@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-5546-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5545-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DEB0571212E
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:36:36 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1003471212B
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:36:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 997232816B8
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:36:35 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BEC8B281659
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 07:36:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C8427AD2F;
-	Fri, 26 May 2023 07:35:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 54C6D8835;
+	Fri, 26 May 2023 07:35:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDB65AD2B
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:35:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A4C8A95E
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 07:35:38 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE373E58
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 00:35:06 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5940C12F
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 00:35:05 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q2RyL-0005lc-Dw; Fri, 26 May 2023 09:34:49 +0200
+	id 1q2RyL-0005lb-Dw; Fri, 26 May 2023 09:34:49 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q2RyJ-002u6s-Ar; Fri, 26 May 2023 09:34:47 +0200
+	id 1q2RyJ-002u6r-9q; Fri, 26 May 2023 09:34:47 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q2RyI-002ntb-5y; Fri, 26 May 2023 09:34:46 +0200
+	id 1q2RyI-002ntl-6a; Fri, 26 May 2023 09:34:46 +0200
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: "David S. Miller" <davem@davemloft.net>,
 	Andrew Lunn <andrew@lunn.ch>,
@@ -49,10 +49,12 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	netdev@vger.kernel.org,
 	UNGLinuxDriver@microchip.com,
 	"Russell King (Oracle)" <linux@armlinux.org.uk>
-Subject: [PATCH net-next v2 0/5] Microchip DSA Driver Improvements
-Date: Fri, 26 May 2023 09:34:40 +0200
-Message-Id: <20230526073445.668430-1-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 1/5] net: dsa: microchip: improving error handling for 8-bit register RMW operations
+Date: Fri, 26 May 2023 09:34:41 +0200
+Message-Id: <20230526073445.668430-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230526073445.668430-1-o.rempel@pengutronix.de>
+References: <20230526073445.668430-1-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -70,37 +72,72 @@ X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-changes v2:
-- set .max_register = U8_MAX, it should be more readable
-- clarify in the RMW error handling patch, logging behavior
-  expectation.
+This patch refines the error handling mechanism for 8-bit register
+read-modify-write operations. In case of a failure, it now logs an error
+message detailing the problematic offset. This enhancement aids in
+debugging by providing more precise information when these operations
+encounter issues.
 
-I'd like to share a set of patches for the Microchip DSA driver. These
-patches were chosen from a bigger set because they are simpler and
-should be easier to review. The goal is to make the code easier to read,
-get rid of unused code, and handle errors better.
+Furthermore, the ksz_prmw8() function has been updated to return error
+values rather than void, enabling calling functions to appropriately
+respond to errors.
 
-Oleksij Rempel (4):
-  net: dsa: microchip: improving error handling for 8-bit register RMW
-    operations
-  net: dsa: microchip: remove ksz_port:on variable
-  net: dsa: microchip: ksz8: Prepare ksz8863_smi for regmap register
-    access validation
-  net: dsa: microchip: Add register access control for KSZ8873 chip
+Additionally, in case of an error that affects both the current and
+future accesses, the PHY driver will log the errors consistently, akin
+to the existing behavior in all ksz_read*/ksz_write* helpers.
 
-Vladimir Oltean (1):
-  net: dsa: microchip: add an enum for regmap widths
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz_common.h | 28 ++++++++++++++++++++------
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
- drivers/net/dsa/microchip/ksz8795.c      | 28 ++-------
- drivers/net/dsa/microchip/ksz8863_smi.c  | 13 +++-
- drivers/net/dsa/microchip/ksz9477.c      | 24 ++++----
- drivers/net/dsa/microchip/ksz9477_i2c.c  |  2 +-
- drivers/net/dsa/microchip/ksz_common.c   | 47 ++++++++++++++-
- drivers/net/dsa/microchip/ksz_common.h   | 77 +++++++++++++++++-------
- drivers/net/dsa/microchip/ksz_spi.c      |  2 +-
- drivers/net/dsa/microchip/lan937x_main.c |  8 +--
- 8 files changed, 135 insertions(+), 66 deletions(-)
-
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 8abecaf6089e..b86f1e27a0c3 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -508,7 +508,14 @@ static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
+ 
+ static inline int ksz_rmw8(struct ksz_device *dev, int offset, u8 mask, u8 val)
+ {
+-	return regmap_update_bits(dev->regmap[0], offset, mask, val);
++	int ret;
++
++	ret = regmap_update_bits(dev->regmap[0], offset, mask, val);
++	if (ret)
++		dev_err(dev->dev, "can't rmw 8bit reg 0x%x: %pe\n", offset,
++			ERR_PTR(ret));
++
++	return ret;
+ }
+ 
+ static inline int ksz_pread8(struct ksz_device *dev, int port, int offset,
+@@ -549,12 +556,21 @@ static inline int ksz_pwrite32(struct ksz_device *dev, int port, int offset,
+ 			   data);
+ }
+ 
+-static inline void ksz_prmw8(struct ksz_device *dev, int port, int offset,
+-			     u8 mask, u8 val)
++static inline int ksz_prmw8(struct ksz_device *dev, int port, int offset,
++			    u8 mask, u8 val)
+ {
+-	regmap_update_bits(dev->regmap[0],
+-			   dev->dev_ops->get_port_addr(port, offset),
+-			   mask, val);
++	int ret;
++
++	ret = regmap_update_bits(dev->regmap[0],
++				 dev->dev_ops->get_port_addr(port, offset),
++				 mask, val);
++	if (ret)
++		dev_err(dev->dev, "can't rmw 8bit reg 0x%x: %pe\n",
++			dev->dev_ops->get_port_addr(port, offset),
++			ERR_PTR(ret));
++
++	return ret;
++
+ }
+ 
+ static inline void ksz_regmap_lock(void *__mtx)
 -- 
 2.39.2
 
