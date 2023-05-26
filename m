@@ -1,69 +1,66 @@
-Return-Path: <netdev+bounces-5647-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5648-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5FEA37124F7
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:41:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 834A17124F9
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:42:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0C7B61C20A3E
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:41:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0D9521C21062
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 10:42:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D0D4742D2;
-	Fri, 26 May 2023 10:41:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 88D8B742D6;
+	Fri, 26 May 2023 10:42:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82E32742C1
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:41:56 +0000 (UTC)
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F25F7
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:41:55 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id a640c23a62f3a-96f7bf3cf9eso107867066b.0
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 03:41:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1685097713; x=1687689713;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hysKvq7DbhMVFZsocweWj6VdrlfWBl8+cDhU5kuSF80=;
-        b=0hc00AMXfJO+thpQeXkeQenwekOiYG+gQdUEvYPr3DnNHoWxqnNPCFjZTVxcb22kf/
-         kRhp0KuTl8lJvg0v/nq3hz3uHo1hTU1018ekV1EgO/ODdvjxl9I1uQm3rIVlzr3UQ6XA
-         ANfwvB6w4TXyYAC7B8ZA0PqDnluIXcWSVIEa99YfvfzVv7dk1iv5cWzt6/qt8Y4zS2Rz
-         l8vJiSDpiR/o4c2j2qNUFUO5nJcWvjTEfKatftqM/ToEAlaKBdjGpeiPYc5DoXe4hnrX
-         q0JB5Mweam7vxrRML074vrF+9FnsmW/7+qsiX+/i5oSlBreyX8zpMmDMbeNw4BTMjy9g
-         VHJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685097713; x=1687689713;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hysKvq7DbhMVFZsocweWj6VdrlfWBl8+cDhU5kuSF80=;
-        b=NNxXtFUfY3f7PxRboBC8t7OQRSyqFLTv/Cd+32Gc3v165V7V90UYmLkTCfHmGPxdHZ
-         cGT/HpD7hKvkbar2qcVb2KGkC4uMtMe1E3lfaGRCarErEn5JxCBKWbjMEaoCXzqcc9RW
-         Y0DxFnXDiORYdHoGoKPHpJFoWGo4XQ2BL+4T47Ni8loiAy0HUOSAtt3I1pkWlHW9D7+R
-         VF6mM8QEAhxiHKLdBO2j/XIqebhIflBHvXGi+rILiKkbpIe9aJfq717EtX1jj0wOGBMl
-         uU7aInjBfLIfVN1tbVg2RF7qXqZNASrjZBJnP42OJChPr0rZoLCIG7JDJ27j5cJZ2OCJ
-         oMHA==
-X-Gm-Message-State: AC+VfDw1Qkgx7Q5oAQpKc7sch82gelzo/aHVJw3+GwcntSCkJcKxeEep
-	5jCUpz4ffQ2697UNIbR/xtE61g==
-X-Google-Smtp-Source: ACHHUZ6zXqRsvaX+ucQroEJ/4lEkbfHNQ/3jtWNti/1MfZXOKTMNMCdPMK4rgOsTh2dJoyG/wjrt8g==
-X-Received: by 2002:a17:907:7b95:b0:96b:6fb:38d6 with SMTP id ne21-20020a1709077b9500b0096b06fb38d6mr1699870ejc.65.1685097713532;
-        Fri, 26 May 2023 03:41:53 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id pg27-20020a170907205b00b009662d0e637esm1960288ejb.155.2023.05.26.03.41.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 03:41:53 -0700 (PDT)
-Date: Fri, 26 May 2023 12:41:52 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Raju Rangoju <Raju.Rangoju@amd.com>
-Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, Shyam-sundar.S-k@amd.com,
-	Sudheesh Mavila <sudheesh.mavila@amd.com>
-Subject: Re: [PATCH net] amd-xgbe: fix the false linkup in xgbe_phy_status
-Message-ID: <ZHCM8PinlpaA8RaO@nanopsycho>
-References: <20230524174902.369921-1-Raju.Rangoju@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BE30742CE
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:42:38 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B97F7;
+	Fri, 26 May 2023 03:42:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=TYBe5AFwuX4MXC+/3wWMZkQ5/KmJbSdQayPMBQLdxS8=; b=rBsiChtclHsPj528BCJQJWA2P7
+	79bIuwrvmxDEuzW7uTbXHUTtru38R+IPEGxDXkSqdWCmpbKbFArCOZWpT3uMigQ/2vzBTEubor04i
+	rCEVJOuH7CPr0kxo5gOKoK+kCu30KwvWtzwI+Nu+Gj/ma58ToW3b6ub8PIFPG0G894HniUlnXC9Ds
+	2EeU3o74LwpK+2LxVlJH6afwrg5YLg/zewpO1nKBCaTAxkECocbt4mlXJV04LMaZJFiBcNQMVE5Og
+	ezZAmB0rI8EiQ1od0m1cSBomPOjLb4Fii2a+7JkQOym14HiDm8f50KDjZYfmOxUxYYXy+ugZDtRdk
+	p1nJgRoQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42072)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q2Uty-0005Sj-Pq; Fri, 26 May 2023 11:42:30 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q2Uts-0003fN-6a; Fri, 26 May 2023 11:42:24 +0100
+Date: Fri, 26 May 2023 11:42:24 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Jiawen Wu <jiawenwu@trustnetic.com>
+Cc: 'Jakub Kicinski' <kuba@kernel.org>, netdev@vger.kernel.org,
+	jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
+	mika.westerberg@linux.intel.com, jsd@semihalf.com,
+	Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
+	linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+	mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next v9 8/9] net: txgbe: Implement phylink pcs
+Message-ID: <ZHCNEACuJB4EkZG9@shell.armlinux.org.uk>
+References: <20230524091722.522118-1-jiawenwu@trustnetic.com>
+ <20230524091722.522118-9-jiawenwu@trustnetic.com>
+ <20230525211403.44b5f766@kernel.org>
+ <022201d98f9a$4b4ccc00$e1e66400$@trustnetic.com>
+ <ZHBxJP4DXevPNpab@shell.armlinux.org.uk>
+ <026901d98fb0$b5001d80$1f005880$@trustnetic.com>
+ <ZHB2vXBP1B2iHXBl@shell.armlinux.org.uk>
+ <026a01d98fb3$97e3d8b0$c7ab8a10$@trustnetic.com>
+ <ZHB9wJSgfQctd2aX@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -72,27 +69,23 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230524174902.369921-1-Raju.Rangoju@amd.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <ZHB9wJSgfQctd2aX@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Wed, May 24, 2023 at 07:49:02PM CEST, Raju.Rangoju@amd.com wrote:
->In the event of a change in XGBE mode, the current auto-negotiation
->needs to be reset and the AN cycle needs to be re-triggerred. However,
->the current code ignores the return value of xgbe_set_mode(), leading to
->false information as the link is declared without checking the status
->register.
->
->Fix this by propogating the mode switch status information to
->xgbe_phy_status().
->
->Fixes: e57f7a3feaef ("amd-xgbe: Prepare for working with more than one type of phy")
->Co-developed-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
->Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
->Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+On Fri, May 26, 2023 at 10:37:04AM +0100, Russell King (Oracle) wrote:
+> I'm just creating a patch series for both xpcs and lynx, which this
+> morning have had patches identifying similar problems with creation
+> and destruction.
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+https://lore.kernel.org/all/ZHCGZ8IgAAwr8bla@shell.armlinux.org.uk/
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
