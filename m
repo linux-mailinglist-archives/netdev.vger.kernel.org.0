@@ -1,47 +1,47 @@
-Return-Path: <netdev+bounces-5576-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5578-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8C76C7122E7
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:03:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A2ABB7122EC
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:04:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4755E1C20FE4
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:03:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5CC9C28103C
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:04:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D3DE110783;
-	Fri, 26 May 2023 09:03:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 472E21097E;
+	Fri, 26 May 2023 09:03:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9F2210948
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:03:05 +0000 (UTC)
-Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4061119
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 02:03:03 -0700 (PDT)
-X-QQ-mid: bizesmtp89t1685091777t5lbx765
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BB5310967
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:03:09 +0000 (UTC)
+Received: from smtpbgsg2.qq.com (smtpbgsg2.qq.com [54.254.200.128])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1959712C
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 02:03:06 -0700 (PDT)
+X-QQ-mid: bizesmtp89t1685091781t2172a2x
 Received: from localhost.localdomain ( [125.120.148.168])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 26 May 2023 17:02:56 +0800 (CST)
+	id ; Fri, 26 May 2023 17:02:59 +0800 (CST)
 X-QQ-SSF: 01400000000000N0Z000000A0000000
-X-QQ-FEAT: Xz3VOcA7Mr2+6qHwlGHRssJ9kJYyIQbHO30aqrqt8pII1Mja45Q8ioaxXIGrP
-	OFrbkD9b3MgenRcnEwLk9M9Q6U0eKVMNi3TmfY3CUFI9NXj1wVcAfajWvrm8WahkjMW3Rmn
-	JyUcTzSFHIg/d2XFSrqJpzJ3Y8Ki9EDIg1KlEvVeREOaPNPQtAZ3tx4lkYsebqZExTtNBo/
-	NSqi+mPSTGOGfj45d7lHz7FYLxUaRDZSskKZpahu6qoYifgOPYokyRjyFP2QxQKdAdonkC0
-	8P2qVyE5YlXqRGNm3+FjRS7hbGaZMlenf0NLbkSx4FX4MD7gOcC9Q1vBmLR+wR9orLEvhEF
-	Y9Fky69vAn9HYVwiPigO3mjbgsZE73ZmNzTGDc4pYMcO+9PkYgRlubUfCH/htNFk+YPXZlp
-	A8KohWqTWXesX10bpFNRpw==
+X-QQ-FEAT: 7jw2iSiCazpO9lRC5CWx9LP/Zy/DFXjElKHk2pbNcPp3w6J+nmhllL2UrKBG3
+	UB4zrhtmgK+wVEoagHf9H23/YB45pAYKVTwd23OS4E4n3SFb8f0DSf24EdxENFR+5jmVHLW
+	PAXA3VpDr+6+H8V33CGD3uXgIqQ7P5Z3OK0BaR1I2jBUO3N1h2PB68LtUSTDuA8IfCDTqdw
+	2NkPo/O6+tANxWQ1HQWkaLRwJeuU7rm1TBQyur+Isfpol/boS+d9x05zWNJAu9SV+HkMsEG
+	vq+m6bSPOPZ8xSZFO3FXFunKJImCy3Fup+zRmFsFbRqOcKDS36DW30okVf5X99h5jbZRbXO
+	TfUXSkAUTHHVI5aTWPtILo3hfDuMyH7fjqa7nQm4l++lECYSW9+iADR1iWwtkSc4ga8vhaa
+	XCzmGlcH3d9JUIuxhQ2CtA==
 X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 4897826992394885209
+X-BIZMAIL-ID: 14990435723325613460
 From: Mengyuan Lou <mengyuanlou@net-swift.com>
 To: netdev@vger.kernel.org
 Cc: jiawenwu@trustnetic.com,
 	Mengyuan Lou <mengyuanlou@net-swift.com>
-Subject: [PATCH net-next v7 4/8] net: libwx: Implement xx_set_features ops
-Date: Fri, 26 May 2023 17:02:26 +0800
-Message-Id: <20230526090230.71487-5-mengyuanlou@net-swift.com>
+Subject: [PATCH net-next v7 5/8] net: ngbe: Add netdev features support
+Date: Fri, 26 May 2023 17:02:27 +0800
+Message-Id: <20230526090230.71487-6-mengyuanlou@net-swift.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230526090230.71487-1-mengyuanlou@net-swift.com>
 References: <20230526090230.71487-1-mengyuanlou@net-swift.com>
@@ -60,69 +60,49 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Implement wx_set_features function which to support
-ndo_set_features.
+Add features and hw_features that ngbe can support.
 
 Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
 ---
- drivers/net/ethernet/wangxun/libwx/wx_lib.c  | 20 ++++++++++++++++++++
- drivers/net/ethernet/wangxun/libwx/wx_lib.h  |  1 +
- drivers/net/ethernet/wangxun/libwx/wx_type.h |  2 ++
- 3 files changed, 23 insertions(+)
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.c b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-index 680f1ad36240..3dd328d33fcc 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-@@ -2704,4 +2704,24 @@ void wx_get_stats64(struct net_device *netdev,
- }
- EXPORT_SYMBOL(wx_get_stats64);
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+index df6b870aa871..f234c9c4b942 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+@@ -473,6 +473,7 @@ static const struct net_device_ops ngbe_netdev_ops = {
+ 	.ndo_change_mtu         = wx_change_mtu,
+ 	.ndo_start_xmit         = wx_xmit_frame,
+ 	.ndo_set_rx_mode        = wx_set_rx_mode,
++	.ndo_set_features       = wx_set_features,
+ 	.ndo_validate_addr      = eth_validate_addr,
+ 	.ndo_set_mac_address    = wx_set_mac,
+ 	.ndo_get_stats64        = wx_get_stats64,
+@@ -551,12 +552,18 @@ static int ngbe_probe(struct pci_dev *pdev,
+ 	ngbe_set_ethtool_ops(netdev);
+ 	netdev->netdev_ops = &ngbe_netdev_ops;
  
-+int wx_set_features(struct net_device *netdev, netdev_features_t features)
-+{
-+	netdev_features_t changed = netdev->features ^ features;
-+	struct wx *wx = netdev_priv(netdev);
-+
-+	if (changed & NETIF_F_RXHASH)
-+		wr32m(wx, WX_RDB_RA_CTL, WX_RDB_RA_CTL_RSS_EN,
-+		      WX_RDB_RA_CTL_RSS_EN);
-+	else
-+		wr32m(wx, WX_RDB_RA_CTL, WX_RDB_RA_CTL_RSS_EN, 0);
-+
-+	if (changed &
-+	    (NETIF_F_HW_VLAN_CTAG_RX |
-+	     NETIF_F_HW_VLAN_STAG_RX))
-+		wx_set_rx_mode(netdev);
-+
-+	return 1;
-+}
-+EXPORT_SYMBOL(wx_set_features);
-+
- MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.h b/drivers/net/ethernet/wangxun/libwx/wx_lib.h
-index 50ee41f1fa10..df1f4a5951f0 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_lib.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.h
-@@ -28,5 +28,6 @@ void wx_free_resources(struct wx *wx);
- int wx_setup_resources(struct wx *wx);
- void wx_get_stats64(struct net_device *netdev,
- 		    struct rtnl_link_stats64 *stats);
-+int wx_set_features(struct net_device *netdev, netdev_features_t features);
+-	netdev->features |= NETIF_F_HIGHDMA;
+-	netdev->features = NETIF_F_SG;
+-
++	netdev->features = NETIF_F_SG | NETIF_F_IP_CSUM |
++			   NETIF_F_TSO | NETIF_F_TSO6 |
++			   NETIF_F_RXHASH | NETIF_F_RXCSUM;
++	netdev->features |= NETIF_F_SCTP_CRC | NETIF_F_TSO_MANGLEID;
++	netdev->vlan_features |= netdev->features;
++	netdev->features |= NETIF_F_IPV6_CSUM | NETIF_F_VLAN_FEATURES;
+ 	/* copy netdev features into list of user selectable features */
+-	netdev->hw_features |= netdev->features |
+-			       NETIF_F_RXALL;
++	netdev->hw_features |= netdev->features | NETIF_F_RXALL;
++	netdev->hw_features |= NETIF_F_NTUPLE | NETIF_F_HW_TC;
++	netdev->features |= NETIF_F_HIGHDMA;
++	netdev->hw_features |= NETIF_F_GRO;
++	netdev->features |= NETIF_F_GRO;
  
- #endif /* _NGBE_LIB_H_ */
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index a7ff6c6749d0..a52cc5ac1db6 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -111,6 +111,8 @@
- #define WX_RDB_PL_CFG_L2HDR          BIT(3)
- #define WX_RDB_PL_CFG_TUN_TUNHDR     BIT(4)
- #define WX_RDB_PL_CFG_TUN_OUTL2HDR   BIT(5)
-+#define WX_RDB_RA_CTL                0x194F4
-+#define WX_RDB_RA_CTL_RSS_EN         BIT(2) /* RSS Enable */
- 
- /******************************* PSR Registers *******************************/
- /* psr control */
+ 	netdev->priv_flags |= IFF_UNICAST_FLT;
+ 	netdev->priv_flags |= IFF_SUPP_NOFCS;
 -- 
 2.40.1
 
