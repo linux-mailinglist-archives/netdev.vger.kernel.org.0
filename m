@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-5676-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5677-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0F17D7126BB
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:34:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id EB9F87126BC
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 14:34:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BCD231C21092
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:33:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6125D2816BE
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 12:34:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6190F1C26;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A457F111BC;
 	Fri, 26 May 2023 12:34:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 551ED742D4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99C1B111B6
 	for <netdev@vger.kernel.org>; Fri, 26 May 2023 12:34:00 +0000 (UTC)
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9CBE61
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 05:33:27 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id af79cd13be357-75b00e5f8e4so47726485a.0
-        for <netdev@vger.kernel.org>; Fri, 26 May 2023 05:33:27 -0700 (PDT)
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8D2E62
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 05:33:28 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id af79cd13be357-75affe977abso99704185a.0
+        for <netdev@vger.kernel.org>; Fri, 26 May 2023 05:33:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685104358; x=1687696358;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=kIFl7xJEC24t46tpIRLMfHm5aQaJwJk+Td3zYyok57I=;
-        b=AkBwZuz+aIXs2BGmfuFd01f+TfCQMdPsMqhH4eWrDj1Jne76r6cZuwqCl5/lGru267
-         gojV1fDGgVTFUuWolxrg9YW/32a0hmQKTHQXAxWkCkzhWODBcJkphXQMckirnTFCpukF
-         VgDFWGABme4Sq07kxlLgF0l/pkLj1G1Br7E3KpKaVaWYeATrBvmOpAYE7FGC0nFZqUIC
-         mm+k5di73ivcBDB9UiatQdWpH7YV4Y2LwbTgKrKg8WPe50Xl/Nuw2wNzD4v7P7KU5hrF
-         CbLVxo0feJ5zifcC8o31nMFsR7FmuJHwTkALpPWfYh7EgFKpbB8G3tN0uCiU0/WF+f2n
-         eDsg==
+        d=gmail.com; s=20221208; t=1685104360; x=1687696360;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6X4Bfe6hVtGh+yHd5QM/+fO4/1vvEt43SDEWITn87u0=;
+        b=oGE6hEKAWYztS8Y+SBy/2Iapgm3o3xxyFT4qgVOOBZp9kRsrAzP1hBtdf2gBtfF0i6
+         g4AXvEx0buL97QpI+PakxIEZQfyBpBFVD6cLvr6EFotdUn+66lxAFcZYrBIdDN+2dOfB
+         qjYJifWdFS9DpdA3/qmGjmy42WD8sYW3zC0fK+6c3IYhY9mJOh50w5XAZQh/HPj5wDbT
+         DA5Tpg3Fuk20I5Leke5TYrqMq5ObxxWYiHXugwW7SWMT4TU8NVSZLQ+gVhumw0lHzX82
+         zDiPozYSLY34TCYPTagNs6N5lZCIchT8r4EnG6QsLMuE2rIOlRc5HdBGvjVyR/mmdLfC
+         RCuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685104358; x=1687696358;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kIFl7xJEC24t46tpIRLMfHm5aQaJwJk+Td3zYyok57I=;
-        b=McNabyWoAkvYdxxSY6ZYGqEk2tKVdDLyH3lhn9enNyPRXJTGtjxRUsib9iFN4Y90px
-         2C0pUdGpQor9IUobkkc6L+9DTWyqI25nvuMjdtHb1qKXic88nfXTvw096XifeZji2+p3
-         f5Q1dsVdnHsFftkC+F6kBFHvBs0WrbYlONFeaCtF0bruKjBG8EEoq9NtINO9ijqyMLdM
-         6jnsYqShHejxwD7ABLGzPmMdW2leqyIteqXuuQ5ECRR3+9rDF2z71s+noioCemGEfx+e
-         uJcOFD+zoYBt6gV6/bAmR0gwipQwm70J2adtaTyasr2xqImmd4arstSnwdxdQc1K0Jo1
-         YzRA==
-X-Gm-Message-State: AC+VfDy6oFRYKoVZaye/MTc5yUKUDe4TwlkzBfEkxu3raiCLZJ52ZZ9/
-	CnbebGphI5r42d3JveKllGh8lvPNho/4W0Xj
-X-Google-Smtp-Source: ACHHUZ4hKs9DAkUe9mjlh9qg0cgqxJZqqKZDUTb6+zT7QE+J2OJRZbhtcjUZ+yR+PamYN/9o6ARQOA==
-X-Received: by 2002:a05:620a:6287:b0:75b:23a0:d9db with SMTP id ov7-20020a05620a628700b0075b23a0d9dbmr1457206qkn.49.1685104358312;
-        Fri, 26 May 2023 05:32:38 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685104360; x=1687696360;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6X4Bfe6hVtGh+yHd5QM/+fO4/1vvEt43SDEWITn87u0=;
+        b=GCYADZKpoRzkvqjHAPrYdqmLCxrL9L76AxTpHAFKtFnaXTGY2+Ai+aqOv5ZFQs4SXL
+         gdky3y5aSBa5zNiH3JmHHnygA0p0qxOtNei2zLoCu698pni9rJc2f6kHKQHMLm53z2U7
+         Ns2hSqhqK55u/JLYZrm6DQyks1q/QUVK94FNy9Bd44+5Fqdurjefn/HKrfbeNEio8xov
+         vKJrQoa8PwIH1YKFdgJpYeWimQi8qK1q1vi/inPcfgxJuf940E5Ync+wgLJuSOXRgK2l
+         WL5TpnSXlU4PQKCqfpSbILjEd+kBxJ7IBKQR/SHuuDk5Sqj7xG0mcJXtco8cMSNW7F2D
+         R6Xw==
+X-Gm-Message-State: AC+VfDxvjgVVJN3tnG8HKRn6Z5l6AA+kG7Big4YPZMpchCY5wlVPnKnE
+	AEqXsLvr9yEiYo5jwi6dShrshsjdjJxyGnSs
+X-Google-Smtp-Source: ACHHUZ7MHN2lEP9V1/EgkKZN0ShEt946ZoMgt+dwnf4qrDwDMUTcpxcMjGNoO+aG4L5lLPZADA1gcw==
+X-Received: by 2002:a05:620a:8287:b0:75b:23a1:3611 with SMTP id ox7-20020a05620a828700b0075b23a13611mr1544031qkn.34.1685104359913;
+        Fri, 26 May 2023 05:32:39 -0700 (PDT)
 Received: from imac.redhat.com ([88.97.103.74])
-        by smtp.gmail.com with ESMTPSA id d13-20020a05620a166d00b007595614c17bsm1121026qko.57.2023.05.26.05.32.36
+        by smtp.gmail.com with ESMTPSA id d13-20020a05620a166d00b007595614c17bsm1121026qko.57.2023.05.26.05.32.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 May 2023 05:32:37 -0700 (PDT)
+        Fri, 26 May 2023 05:32:39 -0700 (PDT)
 From: Donald Hunter <donald.hunter@gmail.com>
 To: netdev@vger.kernel.org,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -63,10 +64,12 @@ To: netdev@vger.kernel.org,
 	Paolo Abeni <pabeni@redhat.com>
 Cc: donald.hunter@redhat.com,
 	Donald Hunter <donald.hunter@gmail.com>
-Subject: [PATCH net-next v1 0/4] netlink: specs: add ynl spec for ovs_flow
-Date: Fri, 26 May 2023 13:32:19 +0100
-Message-Id: <20230526123223.35755-1-donald.hunter@gmail.com>
+Subject: [PATCH net-next v1 1/4] doc: ynl: Add doc attr to struct members in genetlink-legacy spec
+Date: Fri, 26 May 2023 13:32:20 +0100
+Message-Id: <20230526123223.35755-2-donald.hunter@gmail.com>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230526123223.35755-1-donald.hunter@gmail.com>
+References: <20230526123223.35755-1-donald.hunter@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -76,31 +79,33 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add a ynl specification for ovs_flow. The spec is sufficient to dump ovs
-flows but some attrs have been left as binary blobs because ynl doesn't
-support C arrays in struct definitions yet.
+Make it possible to document the meaning of struct member attributes in
+genetlink-legacy specs.
 
-Patches 1-3 add features for genetlink-legacy specs
-Patch 4 is the ovs_flow netlink spec
+Signed-off-by: Donald Hunter <donald.hunter@gmail.com>
+---
+ Documentation/netlink/genetlink-legacy.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Donald Hunter (4):
-  doc: ynl: Add doc attr to struct members in genetlink-legacy spec
-  tools: ynl: Initialise fixed headers to 0 in genetlink-legacy
-  tools: ynl: Support enums in struct members in genetlink-legacy
-  netlink: specs: add ynl spec for ovs_flow
-
- Documentation/netlink/genetlink-legacy.yaml |   6 +
- Documentation/netlink/specs/ovs_flow.yaml   | 822 ++++++++++++++++++++
- tools/net/ynl/lib/nlspec.py                 |   2 +
- tools/net/ynl/lib/ynl.py                    |   8 +-
- 4 files changed, 836 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/netlink/specs/ovs_flow.yaml
-
+diff --git a/Documentation/netlink/genetlink-legacy.yaml b/Documentation/netlink/genetlink-legacy.yaml
+index b5319cde9e17..d8f132114308 100644
+--- a/Documentation/netlink/genetlink-legacy.yaml
++++ b/Documentation/netlink/genetlink-legacy.yaml
+@@ -124,6 +124,9 @@ properties:
+                 $ref: '#/$defs/len-or-define'
+               byte-order:
+                 enum: [ little-endian, big-endian ]
++              doc:
++                description: Documentation for the struct member attribute.
++                type: string
+         # End genetlink-legacy
+ 
+   attribute-sets:
 -- 
 2.40.0
 
