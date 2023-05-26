@@ -1,71 +1,63 @@
-Return-Path: <netdev+bounces-5587-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5588-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 306A8712305
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:07:24 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id D8944712306
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 11:07:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DFA261C21055
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:07:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 947241C20FDC
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 09:07:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BA88111AA;
-	Fri, 26 May 2023 09:05:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CCB8B10791;
+	Fri, 26 May 2023 09:07:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F8DA107AD
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:05:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD0875255
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:07:16 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF93112C;
-	Fri, 26 May 2023 02:05:35 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E312612A;
+	Fri, 26 May 2023 02:07:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
 	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
 	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=WfyvF+/NECwYo9ZudJFD/DZL9T1Xq6mvSda7aihRN9s=; b=SGlbDl7+BOB8Rof4kWDOWcR6FX
-	jerwkKmwBd/A5c5M5S0eJv9W3sjxeOhBI0op7H03b1s8Tc6n1Bdh79i0dYyBjDvSUqf1SR9Wouwnb
-	VLRLaBhjJNGC3ddzth67g0dxqQx2JlbT0lB/jsJ9Y1STQNAOa4IyflcRiqio7xCfFlm311YqfXYtj
-	08IjIPPt12qJkyPvoEwy+KoTR2VNjiNi898K8v6PCka8B4AhnUw2XnaJTnqpg9wMILClI12GBvD1L
-	HUIaxEhIaTbhVrJ+aVLYvqW5+/vdQcf3ck+YWyOdFXkNjiLGvpfVVXTPRTlOcU+7B78rPb23ip3Q+
-	AY9/qlrA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45018)
+	bh=ywAOw4y6wdHt7k3wEYHNdxs4ti0WSGVJ93d4/r7t8Wc=; b=jGMryH9LHrq1dEYoYBDB2wTMR2
+	iTqIgfuXLVStjfy7PQo3jVGi98Cj9TVs54DoHH++QkG6Zu6pwhW+Lg05hCHyfQM9RpsPAhFkhLnyT
+	2i30oqNgIbSqStsFODHAMcFSzk4JcibFgh5xXImrKAjOuU+mJlXZd/8CbLEmh+IKv9eZA+pxqVY45
+	pZ+j+Qud789Q5lUrxBGoavxtipzl5mMTYvQHRgH/Z5OJdG56yd8UI6WiJublGGCgWaECY0QgkANTC
+	AYQgmaA3jt5CO2fPS1Ut6cW7sv/l3Bp6Y9qvDqovBBadSOsd1ZRPpu7u4+tvvg9UJxVdeXv/VCeuN
+	LXtZwgRg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43364)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <linux@armlinux.org.uk>)
-	id 1q2TNz-0005G2-4j; Fri, 26 May 2023 10:05:23 +0100
+	id 1q2TPj-0005Gh-Qd; Fri, 26 May 2023 10:07:11 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q2TNt-0003an-Sm; Fri, 26 May 2023 10:05:17 +0100
-Date: Fri, 26 May 2023 10:05:17 +0100
+	id 1q2TPh-0003au-NP; Fri, 26 May 2023 10:07:09 +0100
+Date: Fri, 26 May 2023 10:07:09 +0100
 From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
-	Mark Brown <broonie@kernel.org>, davem@davemloft.net,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	alexis.lothore@bootlin.com, thomas.petazzoni@bootlin.com,
-	Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Vladimir Oltean <vladimir.oltean@nxp.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Jose Abreu <joabreu@synopsys.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Subject: Re: [PATCH net-next v3 2/4] net: ethernet: altera-tse: Convert to
- mdio-regmap and use PCS Lynx
-Message-ID: <ZHB2Tfn9yZPs6l56@shell.armlinux.org.uk>
-References: <20230526074252.480200-1-maxime.chevallier@bootlin.com>
- <20230526074252.480200-3-maxime.chevallier@bootlin.com>
- <ZHBwLBnKacQCG2/U@corigine.com>
+To: Jiawen Wu <jiawenwu@trustnetic.com>
+Cc: 'Jakub Kicinski' <kuba@kernel.org>, netdev@vger.kernel.org,
+	jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
+	mika.westerberg@linux.intel.com, jsd@semihalf.com,
+	Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
+	linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+	mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next v9 8/9] net: txgbe: Implement phylink pcs
+Message-ID: <ZHB2vXBP1B2iHXBl@shell.armlinux.org.uk>
+References: <20230524091722.522118-1-jiawenwu@trustnetic.com>
+ <20230524091722.522118-9-jiawenwu@trustnetic.com>
+ <20230525211403.44b5f766@kernel.org>
+ <022201d98f9a$4b4ccc00$e1e66400$@trustnetic.com>
+ <ZHBxJP4DXevPNpab@shell.armlinux.org.uk>
+ <026901d98fb0$b5001d80$1f005880$@trustnetic.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -74,7 +66,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZHBwLBnKacQCG2/U@corigine.com>
+In-Reply-To: <026901d98fb0$b5001d80$1f005880$@trustnetic.com>
 Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
@@ -83,25 +75,48 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 26, 2023 at 10:39:08AM +0200, Simon Horman wrote:
-> On Fri, May 26, 2023 at 09:42:50AM +0200, Maxime Chevallier wrote:
-> > The newly introduced regmap-based MDIO driver allows for an easy mapping
-> > of an mdiodevice onto the memory-mapped TSE PCS, which is actually a
-> > Lynx PCS.
+On Fri, May 26, 2023 at 05:01:49PM +0800, Jiawen Wu wrote:
+> On Friday, May 26, 2023 4:43 PM, Russell King (Oracle) wrote:
+> > On Fri, May 26, 2023 at 02:21:23PM +0800, Jiawen Wu wrote:
+> > > On Friday, May 26, 2023 12:14 PM, Jakub Kicinski wrote:
+> > > > On Wed, 24 May 2023 17:17:21 +0800 Jiawen Wu wrote:
+> > > > > +	ret = devm_mdiobus_register(&pdev->dev, mii_bus);
+> > > > > +	if (ret)
+> > > > > +		return ret;
+> > > > > +
+> > > > > +	mdiodev = mdio_device_create(mii_bus, 0);
+> > > > > +	if (IS_ERR(mdiodev))
+> > > > > +		return PTR_ERR(mdiodev);
+> > > > > +
+> > > > > +	xpcs = xpcs_create(mdiodev, PHY_INTERFACE_MODE_10GBASER);
+> > > > > +	if (IS_ERR(xpcs)) {
+> > > > > +		mdio_device_free(mdiodev);
+> > > > > +		return PTR_ERR(xpcs);
+> > > > > +	}
+> > > >
+> > > > How does the mdiodev get destroyed in case of success?
+> > > > Seems like either freeing it in case of xpcs error is unnecessary
+> > > > or it needs to also be freed when xpcs is destroyed?
+> > >
+> > > When xpcs is destroyed, that means mdiodev is no longer needed.
+> > > I think there is no need to free mdiodev in case of xpcs error,
+> > > since devm_* function leads to free it.
 > > 
-> > Convert Altera TSE to use this PCS instead of the pcs-altera-tse, which
-> > is nothing more than a memory-mapped Lynx PCS.
+> > If you are relying on the devm-ness of devm_mdiobus_register() then
+> > it won't. Although mdiobus_unregister() walks bus->mdio_map[], I
+> > think you are assuming that the mdio device you've created in
+> > mdio_device_create() will be in that array. MDIO devices only get
+> > added to that array when mdiobus_register_device() has been called,
+> > which must only be called from mdio_device_register().
 > > 
-> > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> > Please arrange to call mdio_device_free() prior to destroying the
+> > XPCS in every case.
 > 
-> Hi Maxime,
-> 
-> I have some concerns about the error paths in this patch.
+> Get it.
 
-We've had similar problems with mdio_device_create() vs the XPCS
-driver.
-
-I think it's time that we made this easier for users.
+It seems this is becoming a pattern, so I think we need to solve it
+differently. How about something like this, which means you only have
+to care about calling xpcs_create_mdiodev() and xpcs_destroy() ?
 
 diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
 index b87c69c4cdd7..802222581feb 100644
@@ -178,12 +193,6 @@ index 1d7d550bbf1a..537b62330c90 100644
  static inline bool mdio_phy_id_is_c45(int phy_id)
  {
  	return (phy_id & MDIO_PHY_ID_C45) && !(phy_id & ~MDIO_PHY_ID_C45_MASK);
-
-The same for pcs-lynx. That way we remove the need for driver authors
-to get the creation and destruction of the mdio device correct
-without messing up the existing users - they only have to worry about
-creating the PCS via the xxx_create_mdiodev() function and destroying
-it via xxx_destroy().
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
