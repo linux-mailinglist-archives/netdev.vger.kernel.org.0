@@ -1,55 +1,62 @@
-Return-Path: <netdev+bounces-5756-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5757-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D9402712A75
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 18:17:29 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id AC2CD712A8A
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 18:23:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 932072818FF
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:17:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6518F1C210A5
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 16:23:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C806527727;
-	Fri, 26 May 2023 16:17:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE4DD2772C;
+	Fri, 26 May 2023 16:23:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE42E742EE
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 16:17:26 +0000 (UTC)
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA94BC;
-	Fri, 26 May 2023 09:17:25 -0700 (PDT)
-Received: from vefanov-Precision-3650-Tower.intra.ispras.ru (unknown [10.10.2.69])
-	by mail.ispras.ru (Postfix) with ESMTPSA id 878B644C100F;
-	Fri, 26 May 2023 16:17:23 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 878B644C100F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-	s=default; t=1685117843;
-	bh=aqS+SmgTj1O1ACMyKobn1Ejjd1RSyeh/KMYxC+E+Wpw=;
-	h=From:To:Cc:Subject:Date:From;
-	b=WWuzkfeeBYGRMal7EvzSPJ1GwuO9j5aqUIvjRD/XGiesQHPXHBQL4RuXh1Ed4gZfg
-	 deRtyLECp5+T7H6Wyse4v5qDYMKCBT0wkBc1y0dCyY6AvrK7HuR9daK5FjFGmpG8yR
-	 T57ZgSiCU27zWgZp6IXoHAuFKLuNIOAzmzY/nT8k=
-From: Vladislav Efanov <VEfanov@ispras.ru>
-To: Marek Lindner <mareklindner@neomailbox.ch>
-Cc: Vladislav Efanov <VEfanov@ispras.ru>,
-	Simon Wunderlich <sw@simonwunderlich.de>,
-	Antonio Quartulli <a@unstable.cc>,
-	Sven Eckelmann <sven@narfation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	b.a.t.m.a.n@lists.open-mesh.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	lvc-project@linuxtesting.org
-Subject: [PATCH] batman-adv: Broken sync while rescheduling delayed work
-Date: Fri, 26 May 2023 19:16:32 +0300
-Message-Id: <20230526161632.1460753-1-VEfanov@ispras.ru>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1BEE2770A
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 16:23:43 +0000 (UTC)
+Received: from smtp-fw-52005.amazon.com (smtp-fw-52005.amazon.com [52.119.213.156])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA8D1BC
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 09:23:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1685118218; x=1716654218;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=wqre3bxxTbDd5AE2xCdQtiYMSqdjU5WnIDUeEmEF/eU=;
+  b=TCPvZykFXt4umwXJeYseCUCPb5DixmrecWrzbWj/aaXqTpZudn5RSn66
+   vc6vuPngNu49z4tqZp2P+j22bpKp4SMJVo6AuEKfx3y6xvMkG3v2a4siE
+   /KfhHslFdMoOlKM+ZdufLNLgB0sqR0jbYB3BACdr0SyQPOqWXXSrN4SNI
+   I=;
+X-IronPort-AV: E=Sophos;i="6.00,194,1681171200"; 
+   d="scan'208";a="585615736"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-52005.iad7.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 16:23:35 +0000
+Received: from EX19MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+	by email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com (Postfix) with ESMTPS id ED49CC1642;
+	Fri, 26 May 2023 16:23:33 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Fri, 26 May 2023 16:23:33 +0000
+Received: from 88665a182662.ant.amazon.com (10.88.130.94) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Fri, 26 May 2023 16:23:31 +0000
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+To: <edumazet@google.com>
+CC: <davem@davemloft.net>, <eric.dumazet@gmail.com>, <kuba@kernel.org>,
+	<kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+	<willemb@google.com>
+Subject: [PATCH net] af_packet: do not use READ_ONCE() in packet_bind()
+Date: Fri, 26 May 2023 09:23:20 -0700
+Message-ID: <20230526162320.5816-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230526154342.2533026-1-edumazet@google.com>
+References: <20230526154342.2533026-1-edumazet@google.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -57,61 +64,74 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.88.130.94]
+X-ClientProxiedBy: EX19D046UWB001.ant.amazon.com (10.13.139.187) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+Precedence: Bulk
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Syzkaller got a lot of crashes like:
-KASAN: use-after-free Write in *_timers*
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 26 May 2023 15:43:42 +0000
+> A recent patch added READ_ONCE() in packet_bind() and packet_bind_spkt()
+> 
+> This is better handled by reading pkt_sk(sk)->num later
+> in packet_do_bind() while appropriate lock is held.
+> 
+> READ_ONCE() in writers are often an evidence of something being wrong.
+> 
+> Fixes: 822b5a1c17df ("af_packet: Fix data-races of pkt_sk(sk)->num.")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+> Cc: Willem de Bruijn <willemb@google.com>
 
-All of these crashes point to the same memory area:
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-The buggy address belongs to the object at ffff88801f870000
- which belongs to the cache kmalloc-8k of size 8192
-The buggy address is located 5320 bytes inside of
- 8192-byte region [ffff88801f870000, ffff88801f872000)
+Thanks!
 
-This area belongs to :
-        batadv_priv->batadv_priv_dat->delayed_work->timer_list
 
-The reason for these issues is the lack of synchronization. Delayed
-work (batadv_dat_purge) schedules new timer/work while the device
-is being deleted. As the result new timer/delayed work is set after
-cancel_delayed_work_sync() was called. So after the device is freed
-the timer list contains pointer to already freed memory.
-
-Found by Linux Verification Center (linuxtesting.org) with syzkaller.
-
-Fixes: 2f1dfbe18507 ("batman-adv: Distributed ARP Table - implement local storage")
-Signed-off-by: Vladislav Efanov <VEfanov@ispras.ru>
----
- net/batman-adv/distributed-arp-table.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/batman-adv/distributed-arp-table.c b/net/batman-adv/distributed-arp-table.c
-index 6968e55eb971..28a939d56090 100644
---- a/net/batman-adv/distributed-arp-table.c
-+++ b/net/batman-adv/distributed-arp-table.c
-@@ -101,7 +101,6 @@ static void batadv_dat_purge(struct work_struct *work);
-  */
- static void batadv_dat_start_timer(struct batadv_priv *bat_priv)
- {
--	INIT_DELAYED_WORK(&bat_priv->dat.work, batadv_dat_purge);
- 	queue_delayed_work(batadv_event_workqueue, &bat_priv->dat.work,
- 			   msecs_to_jiffies(10000));
- }
-@@ -819,6 +818,7 @@ int batadv_dat_init(struct batadv_priv *bat_priv)
- 	if (!bat_priv->dat.hash)
- 		return -ENOMEM;
- 
-+	INIT_DELAYED_WORK(&bat_priv->dat.work, batadv_dat_purge);
- 	batadv_dat_start_timer(bat_priv);
- 
- 	batadv_tvlv_handler_register(bat_priv, batadv_dat_tvlv_ogm_handler_v1,
--- 
-2.34.1
-
+> ---
+>  net/packet/af_packet.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index a1f9a0e9f3c8a72e5a95f96473b7b6c63f893935..a2dbeb264f260e5b8923ece9aac99fe19ddfeb62 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -3201,6 +3201,9 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
+>  
+>  	lock_sock(sk);
+>  	spin_lock(&po->bind_lock);
+> +	if (!proto)
+> +		proto = po->num;
+> +
+>  	rcu_read_lock();
+>  
+>  	if (po->fanout) {
+> @@ -3299,7 +3302,7 @@ static int packet_bind_spkt(struct socket *sock, struct sockaddr *uaddr,
+>  	memcpy(name, uaddr->sa_data, sizeof(uaddr->sa_data_min));
+>  	name[sizeof(uaddr->sa_data_min)] = 0;
+>  
+> -	return packet_do_bind(sk, name, 0, READ_ONCE(pkt_sk(sk)->num));
+> +	return packet_do_bind(sk, name, 0, 0);
+>  }
+>  
+>  static int packet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+> @@ -3316,8 +3319,7 @@ static int packet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len
+>  	if (sll->sll_family != AF_PACKET)
+>  		return -EINVAL;
+>  
+> -	return packet_do_bind(sk, NULL, sll->sll_ifindex,
+> -			      sll->sll_protocol ? : READ_ONCE(pkt_sk(sk)->num));
+> +	return packet_do_bind(sk, NULL, sll->sll_ifindex, sll->sll_protocol);
+>  }
+>  
+>  static struct proto packet_proto = {
+> -- 
+> 2.41.0.rc0.172.g3f132b7071-goog
 
