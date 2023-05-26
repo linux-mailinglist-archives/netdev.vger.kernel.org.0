@@ -1,105 +1,117 @@
-Return-Path: <netdev+bounces-5783-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5784-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6F12E712BBE
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:27:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E5247712BD4
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:34:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 27BCC28191D
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:27:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9CDB61C20C79
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 17:34:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7145328C2A;
-	Fri, 26 May 2023 17:27:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0023228C37;
+	Fri, 26 May 2023 17:34:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53D23271F6
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:27:39 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3E618D
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 10:27:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685122056;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=WfImwx6ANvfYODSJStVm7dBX9qtlhxDtNe8BZxfBw5w=;
-	b=dEAiFUj5wmlHvTb18HNHigbDtqHuLGXtIqggdcN6fz3xDHwZteRx2BeKOvbvr1l61DFj5F
-	ho529YIkk5juDI+tdN+UDUxVbIzAV+menW5ghaHQ8SUOYwZjYGNv+fdMh1xG/IXAVRktly
-	F4ggGetxRq2Viz8KNIKlOSTqpnjy0rs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-152-fjFMXfz8NXaIMkaaZLgflA-1; Fri, 26 May 2023 13:27:33 -0400
-X-MC-Unique: fjFMXfz8NXaIMkaaZLgflA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 60CFD185A791;
-	Fri, 26 May 2023 17:27:33 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (unknown [10.39.194.190])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 1790F1121314;
-	Fri, 26 May 2023 17:27:31 +0000 (UTC)
-From: Andrea Claudi <aclaudi@redhat.com>
-To: netdev@vger.kernel.org
-Cc: stephen@networkplumber.org,
-	dsahern@gmail.com,
-	roopa@nvidia.com,
-	razor@blackwall.org
-Subject: [PATCH iproute2-next] bridge: vni: remove useless checks on vni
-Date: Fri, 26 May 2023 19:27:20 +0200
-Message-Id: <ebcffc302b5886a71a3e7aaec4561be2d65de30f.1685095619.git.aclaudi@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA31F2CA6
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 17:34:45 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81040A4;
+	Fri, 26 May 2023 10:34:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685122484; x=1716658484;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=aBPytJReVH8Ulrvcrruu/P0Ev+N0fGdkCGCZ+F2RSsI=;
+  b=Ww3Mu8d7J2CMp7BzdH1WlNB5lxPsEJZVKaDFrlD6DQqz0xbkIeZucTRY
+   hKrScSPU0wthH4QIiSiZP38LC4GGtwfslhueKanxWHTBKgAwCvXKtHm8/
+   AOIQuWnE/3UU19YNddiHwqHIHSri+hDBgX5R/IjI31gHpPIbqohwjE5JA
+   +nmJxzWdlcLhICL6tVeoleF1xTK4zYlCTYk/Xc6nJhosnufdET6vtiL8+
+   4AOWwkGdWfQRhlBCkxnJHvkfiS/TFRftpwI6puvXX52znKhPShv5yMRG4
+   j98CjnDIoUUbDCtjQW0D0VHrWLT3lBjq2Htf7Q5ZS+PD6MaNXInnIN0Cf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10722"; a="354273886"
+X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
+   d="scan'208";a="354273886"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 10:34:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10722"; a="879610852"
+X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
+   d="scan'208";a="879610852"
+Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 26 May 2023 10:34:40 -0700
+Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1q2bKp-000JVc-2N;
+	Fri, 26 May 2023 17:34:39 +0000
+Date: Sat, 27 May 2023 01:34:01 +0800
+From: kernel test robot <lkp@intel.com>
+To: Liang Chen <liangchen.linux@gmail.com>, jasowang@redhat.com,
+	mst@redhat.com
+Cc: oe-kbuild-all@lists.linux.dev,
+	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, xuanzhuo@linux.alibaba.com,
+	kuba@kernel.org, edumazet@google.com, davem@davemloft.net,
+	pabeni@redhat.com, alexander.duyck@gmail.com,
+	Liang Chen <liangchen.linux@gmail.com>
+Subject: Re: [PATCH net-next 5/5] virtio_net: Implement DMA pre-handler
+Message-ID: <202305270110.TbNSDh0Z-lkp@intel.com>
+References: <20230526054621.18371-5-liangchen.linux@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230526054621.18371-5-liangchen.linux@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-After the (d == NULL || vni == NULL) check, vni cannot be NULL anymore.
+Hi Liang,
 
-This remove two useless conditional checks on vni value:
-- the first check cannot be true, so remove the whole conditional block
-- the second check is always true, so remove the check
+kernel test robot noticed the following build errors:
 
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- bridge/vni.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+[auto build test ERROR on net-next/main]
 
-diff --git a/bridge/vni.c b/bridge/vni.c
-index 940f251c..77328a4f 100644
---- a/bridge/vni.c
-+++ b/bridge/vni.c
-@@ -138,14 +138,8 @@ static int vni_modify(int cmd, int argc, char **argv)
- 		return -1;
- 	}
- 
--	if (!vni && group_present) {
--		fprintf(stderr, "Group can only be specified with a vni\n");
--		return -1;
--	}
--
--	if (vni)
--		parse_vni_filter(vni, &req.n, sizeof(req),
--				 (group_present ? &daddr : NULL));
-+	parse_vni_filter(vni, &req.n, sizeof(req),
-+			 (group_present ? &daddr : NULL));
- 
- 	req.tmsg.ifindex = ll_name_to_index(d);
- 	if (req.tmsg.ifindex == 0) {
+url:    https://github.com/intel-lab-lkp/linux/commits/Liang-Chen/virtio_net-Add-page_pool-support-to-improve-performance/20230526-135805
+base:   net-next/main
+patch link:    https://lore.kernel.org/r/20230526054621.18371-5-liangchen.linux%40gmail.com
+patch subject: [PATCH net-next 5/5] virtio_net: Implement DMA pre-handler
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20230527/202305270110.TbNSDh0Z-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        mkdir -p ~/bin
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e968bb5cacd30b672d0ccf705a24f1a792ff45aa
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Liang-Chen/virtio_net-Add-page_pool-support-to-improve-performance/20230526-135805
+        git checkout e968bb5cacd30b672d0ccf705a24f1a792ff45aa
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 ~/bin/make.cross W=1 O=build_dir ARCH=m68k olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 ~/bin/make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202305270110.TbNSDh0Z-lkp@intel.com/
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "iommu_get_dma_domain" [drivers/net/virtio_net.ko] undefined!
+
 -- 
-2.40.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
