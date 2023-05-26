@@ -1,82 +1,86 @@
-Return-Path: <netdev+bounces-5808-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5809-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6EF17712D1A
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 21:10:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 85BEE712D8B
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 21:34:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2998A2819CB
-	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:10:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E3FC71C21101
+	for <lists+netdev@lfdr.de>; Fri, 26 May 2023 19:34:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9DADA2911A;
-	Fri, 26 May 2023 19:10:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3991329117;
+	Fri, 26 May 2023 19:34:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B167C290FD
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 19:10:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5FA38C4339C;
-	Fri, 26 May 2023 19:10:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8DF924EAE
+	for <netdev@vger.kernel.org>; Fri, 26 May 2023 19:34:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2700BC433EF;
+	Fri, 26 May 2023 19:34:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685128220;
-	bh=BXnAQ2oVXPMDepAB0f17uIFqW6aEa7LrTD6UIDHooK8=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=Uh+NtWwH8V+CY0yxDCUODccuCJq2vTF97227DiJTJi8mYJmLf46mPbLDXMvCh6sYI
-	 MoBiERKiyOSLmZQn9SjDAktbIWypsUgrPjmknbS27tKPg5KKcQzUzAJnnqRe86+kG8
-	 alPkkuJQQGDRgErsbJSt7p8WAEF74yTFpRfjkJqKjx0pwBBTUHP43f1Gr/hh0vACLp
-	 0/Fmwn8ViIXmj0qFhCywW29o+4hob20p1ZjqwVyayn5R14sxG16bhyCPPULF3GWqcb
-	 uhH8LFWijJdB79kdNMU+evvl6jNACxoTuJTfRB2tKC2br1yQgMrAUcOcVuHIHxeA0Q
-	 45vQKsCBVixxQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4829BE4D00E;
-	Fri, 26 May 2023 19:10:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	s=k20201202; t=1685129679;
+	bh=0wIUbbcscAUBqw47efumjiTT+7DS3+Vtur3hdfNojAo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=A/8HIBZrrmAxGJRh9SaBBY8Qj0VUZwqkEnktkgclppGe22V8KtqflWm/GL54cNhhj
+	 wmIOMt3vUC0fsnYYGKXr+PhN5rtj3H2fEBXuaWJNKITJnzeDxd5zAs/xZ3E47bGIJ1
+	 kn/JNQKz5mJlTwurFvNmHGg4dIn+qGt1oNlQhLZCNs7tqrq49U8R+k3rsTwBEFJFjg
+	 Y+ZMXLZzlJcPcua0rSPGX3DEIhY1L+dW/FieEXXlqaFTZ1nA06mUu5jaNkFJ2LG95w
+	 BCEN9mn6LvRCNtrATuzeohvI5AwfZqg3Q9stimMjdUR47Ql7WD93MAaJZ1a1B/Zhx8
+	 cHb+ieJCrDQnA==
+Date: Fri, 26 May 2023 12:34:38 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: <davem@davemloft.net>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>,
+ Ilias Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet
+ <edumazet@google.com>, Lorenzo Bianconi <lorenzo@kernel.org>, Daniel
+ Borkmann <daniel@iogearbox.net>, John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH net] page_pool: fix inconsistency for
+ page_pool_ring_[un]lock()
+Message-ID: <20230526123438.3d3e7158@kernel.org>
+In-Reply-To: <20230522031714.5089-1-linyunsheng@huawei.com>
+References: <20230522031714.5089-1-linyunsheng@huawei.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2] ip: remove double space before 'allmulti' flag
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168512822027.18754.500469334913725007.git-patchwork-notify@kernel.org>
-Date: Fri, 26 May 2023 19:10:20 +0000
-References: <6f33fb3b3479dc333c7dc3145d2e8bbc184b2c2a.1685122479.git.aclaudi@redhat.com>
-In-Reply-To: <6f33fb3b3479dc333c7dc3145d2e8bbc184b2c2a.1685122479.git.aclaudi@redhat.com>
-To: Andrea Claudi <aclaudi@redhat.com>
-Cc: netdev@vger.kernel.org, stephen@networkplumber.org, dsahern@gmail.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hello:
-
-This patch was applied to iproute2/iproute2.git (main)
-by Stephen Hemminger <stephen@networkplumber.org>:
-
-On Fri, 26 May 2023 19:36:54 +0200 you wrote:
-> Current output:
-> $ ip -d link show vxlan0
-> 79: vxlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether b6:f6:12:c3:2d:52 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535
+On Mon, 22 May 2023 11:17:14 +0800 Yunsheng Lin wrote:
+> page_pool_ring_[un]lock() use in_softirq() to decide which
+> spin lock variant to use, and when they are called in the
+> context with in_softirq() being false, spin_lock_bh() is
+> called in page_pool_ring_lock() while spin_unlock() is
+> called in page_pool_ring_unlock(), because spin_lock_bh()
+> has disabled the softirq in page_pool_ring_lock(), which
+> causes inconsistency for spin lock pair calling.
 > 
-> Resulting output:
-> $ ip -d link show vxlan0
-> 79: vxlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether b6:f6:12:c3:2d:52 brd ff:ff:ff:ff:ff:ff promiscuity 0 allmulti 0 minmtu 68 maxmtu 65535
+> This patch fixes it by returning in_softirq state from
+> page_pool_producer_lock(), and use it to decide which
+> spin lock variant to use in page_pool_producer_unlock().
 > 
-> [...]
+> As pool->ring has both producer and consumer lock, so
+> rename it to page_pool_producer_[un]lock() to reflect
+> the actual usage. Also move them to page_pool.c as they
+> are only used there, and remove the 'inline' as the
+> compiler may have better idea to do inlining or not.
+> 
+> Fixes: 7886244736a4 ("net: page_pool: Add bulk support for ptr_ring")
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 
-Here is the summary with links:
-  - [iproute2] ip: remove double space before 'allmulti' flag
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=72df7f7e25cb
+I just realized now while doing backports that the Fixes tag is
+incorrect here. The correct Fixes tag is:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Fixes: 542bcea4be86 ("net: page_pool: use in_softirq() instead")
 
-
+Before that we used in_serving_softirq() which was perfectly fine.
+This explains the major mystery of how such a serious bug would survive
+for 10+ releases... it didn't, it wasn't there :) It only came in 6.3.
+We can't change the tag now but at least the universe makes sense again.
 
