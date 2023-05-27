@@ -1,81 +1,63 @@
-Return-Path: <netdev+bounces-5836-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5837-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 66E00713148
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 03:06:18 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id D6A6B71314C
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 03:08:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C4C322819D4
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 01:06:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 400D71C20F1B
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 01:08:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A1E5E380;
-	Sat, 27 May 2023 01:06:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4BDCE380;
+	Sat, 27 May 2023 01:08:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF09837D;
-	Sat, 27 May 2023 01:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 54886C433D2;
-	Sat, 27 May 2023 01:06:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D723737D
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 01:08:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CECFFC433D2;
+	Sat, 27 May 2023 01:08:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685149570;
-	bh=Im+mbOYpXq0psYQk80W8X+3HhgyTTWi4jqRlij+6PsQ=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=BsbdRRQcKt3KAnLDT4TLmB447TV1Xu+3pcFEtD8yfDnwNjqyOsGzd419c0xOLPWQf
-	 y1frV8c2aUrmx0SMGCSfE+TgL4NqcMGNFZLcvEK+f59bMsEz3DY52E+qi3LdKEBPN1
-	 x8FvGV9HyVFLSeFoOkMIiTvwMgLax1drcvaIm4fu4/70SNhB7Can1+Q0INmXDTorG8
-	 2dPcPb9rzB4iLqQcSWwvJyy4bI+BC8OPvTRMXa+PqBrnY7aejoTegy2D5PFnfNjddw
-	 qzWgUp8u+8J54J8ILWqV1P0IGMjdE2VjIxfxZgCvG0DYLM72wnNCeMKh8EH0UpOncu
-	 tRMoRTW+hCReg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 41BD7E21ECD;
-	Sat, 27 May 2023 01:06:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	s=k20201202; t=1685149726;
+	bh=5zHdJvK0bRkHVe/BmCiGndweGuWhBH6cjRIMmLkfBi8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Yn5ttwEb4eOBNsxFRNaaKLoRAE0oaarcy3jczitqa0fQZz9JIWsPlV+QDEjoOazUV
+	 JeoDyIHBJEW1zs0+LkrRU3D4B0eb3PvBLeuri5uSFyD5UMg3QdX2JV9y3IYQv1BIlW
+	 puUR5KhLkbtSPGR9HUhR6ZxrtxZFOot1yo8YBVmOye1fNsuPh4kzZgl00bOSU+vZfh
+	 ayjW+kLDNYEYmSznXcLjQdTM/yIdiJUuil/DoaFN58Sb1dn8KIrXrU8jSNZSlfdLQB
+	 RjyQ+iwmAxl/x94z8JS5lAZ5YBOa8lBvYztVJQOGK15c70HVS62KyyB566CnEW0lHQ
+	 sm6Xh/p7tt7xw==
+Date: Fri, 26 May 2023 18:08:44 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: David Howells <dhowells@redhat.com>
+Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Willem de
+ Bruijn <willemdebruijn.kernel@gmail.com>, David Ahern <dsahern@kernel.org>,
+ Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org, Chuck Lever
+ <chuck.lever@oracle.com>, Boris Pismenny <borisp@nvidia.com>, John
+ Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH net-next 09/12] tls/sw: Support MSG_SPLICE_PAGES
+Message-ID: <20230526180844.73745d78@kernel.org>
+In-Reply-To: <20230524153311.3625329-10-dhowells@redhat.com>
+References: <20230524153311.3625329-1-dhowells@redhat.com>
+	<20230524153311.3625329-10-dhowells@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bpf-next 2023-05-26
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168514957026.32430.15128757597078806721.git-patchwork-notify@kernel.org>
-Date: Sat, 27 May 2023 01:06:10 +0000
-References: <20230526222747.17775-1-daniel@iogearbox.net>
-In-Reply-To: <20230526222747.17775-1-daniel@iogearbox.net>
-To: Daniel Borkmann <daniel@iogearbox.net>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
- edumazet@google.com, ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
- netdev@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hello:
+On Wed, 24 May 2023 16:33:08 +0100 David Howells wrote:
+> +static int rls_sw_sendmsg_splice(struct sock *sk, struct msghdr *msg,
 
-This pull request was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+s/rls/tls/ ?
 
-On Sat, 27 May 2023 00:27:47 +0200 you wrote:
-> Hi David, hi Jakub, hi Paolo, hi Eric,
-> 
-> The following pull-request contains BPF updates for your *net-next* tree.
-> 
-> We've added 54 non-merge commits during the last 10 day(s) which contain
-> a total of 76 files changed, 2729 insertions(+), 1003 deletions(-).
-> 
-> [...]
-
-Here is the summary with links:
-  - pull-request: bpf-next 2023-05-26
-    https://git.kernel.org/netdev/net-next/c/75455b906d82
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Will the TLS selftests under tools/.../net/tls.c exercise this?
 
