@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-5905-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5906-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 28B95713501
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:31:25 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CE425713502
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:31:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 868B01C209D5
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 13:31:21 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 523B71C209FD
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 13:31:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9122511CB7;
-	Sat, 27 May 2023 13:31:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EAF41125A4;
+	Sat, 27 May 2023 13:31:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8177B847B
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 13:31:21 +0000 (UTC)
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F1EA6
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 06:31:20 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id d75a77b69052e-3f6c014d33fso8298971cf.2
-        for <netdev@vger.kernel.org>; Sat, 27 May 2023 06:31:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD726125A3
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 13:31:22 +0000 (UTC)
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA7AA6
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 06:31:21 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-6260e8a1424so4753136d6.2
+        for <netdev@vger.kernel.org>; Sat, 27 May 2023 06:31:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685194279; x=1687786279;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7ZvXOnRyI10Cg/XyOu+r6iFTXWEGhzLKOZ+rAL5qIeI=;
-        b=SxJFGeZgpW1335Z9lqZZ3WlGOnOIn5hPrg9ln1W/RcxiDZW/ocgnHZOv5U93KbSQ0w
-         P1Nv88c6szWPYL3W4Sg60Ny9E4bT6J4MbLp+vyPW9tRh3Us+QSQvBbqEXv7zoC4TI1hS
-         ROuj8yEqc7Yer1SHlOR12t0VSgNnO8XwwjLN8w2XgPLRID7QVLvlC80GPXtD5tIblibN
-         wm+cumkLH8Jdn+u/krvQvMpyUSVC4aTt7VorGHNMJtPg+LIrzJk8jbnxBRd1vhRr2skJ
-         wl4WVWkIS80A2ELxG/ksANN9ppCumt6lCsfGTy2oxYtIJcpF3Fgd2jDWFrR6DHJqJIXj
-         HE4w==
+        d=gmail.com; s=20221208; t=1685194280; x=1687786280;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3iv2Uw2VUZnaHXukTO80M8vue39EcfBHRFOOD/lQVJA=;
+        b=KKY7tWWONZ99JHnmx9TwZReIYXJsF4YYYQJ6STCZ25lnyL3ETzO1f6OxWKajWUBFkU
+         i1zPrpiudXW5YgbwH5O/C/D23eCZn6HQPYAZjNTd0M8a/V8LfI2EkCefiHaSHmyewefM
+         9GzrItDptbIpDCjSt0eeF1cdTLZpj07vRnILMaQf41NNtPCr7IFREnH6D5vdCUQPozAG
+         RmV+0ajJVTmspXcW7RU0dUkXGMqv8cTRELbCmtRxGC/o267+4R85ucDJZq3cOeVUN1Mv
+         1PVah7JPMSVlJtrBqHJAjDDN+EIkrmsVmhwUSe+G8cc0DEuhyxpUshm0+DbZ4SNu5pAy
+         ewzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685194279; x=1687786279;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7ZvXOnRyI10Cg/XyOu+r6iFTXWEGhzLKOZ+rAL5qIeI=;
-        b=Lp2ko21Ta+u/JI0JU5VUi+ap3sKEGDLJJur6t4dD976UA7hzZTibbpqea0OGWXct/6
-         m2IkwFyOGIHznp+y28F0YFUX/701KCYcLgDauV8GZWHntRoe2BhXz1hgchDRxJ6/ocxE
-         T2cM/nr3oDSORE9+GsJoo53tWeBI7On7nOQEN5qOdNG4DBfiFZ3w5jHPPLviLupgVAbb
-         /ICytzg7/R+uJ4gIJApg61wV2z/SSBD31UsEEtJdEXZcSZzb1QDef2PFx5BMPJyf/rVD
-         rMzjy+Eh7XvI3gLIGARgeXHPZKl9HTcAHgqbShMsDhlyHVl5muu8WaRRCJ3ZTNgt4Zq0
-         kApw==
-X-Gm-Message-State: AC+VfDwGvHOLngbprJ0uQVMrwA1ZrfQxOSkhaTLCGHIN7DItTaVHtSmK
-	4/lsSauWjFwzmMHXezVK6T1owRXV86YLFFVB
-X-Google-Smtp-Source: ACHHUZ6k/lcJGCwnRYa2i5AvySkl6dK3vCQ18CHWFZQwXGf5BtR3yyAmfeo2JTybllPMFYnoBcwvAg==
-X-Received: by 2002:a05:622a:50:b0:3f5:3f9e:ffce with SMTP id y16-20020a05622a005000b003f53f9effcemr5194976qtw.43.1685194278699;
-        Sat, 27 May 2023 06:31:18 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685194280; x=1687786280;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3iv2Uw2VUZnaHXukTO80M8vue39EcfBHRFOOD/lQVJA=;
+        b=BEw3Zxd7J2YW+eiHd/QNxM5j47hxlXfVu0Z340iLQaICa/GzizH/nUBCeotcmVxQuc
+         gt+vLKseWYgnsiR1uvOQI5SJCJdCjrAPasz22pfny9EzhDGUHPiuT1RwmQNOUOKIcbfg
+         VmEMeNAAzBfTX6yvDPAr0JDaqjZSgzdkz4LXn36Fy3gVJ8vxRtYjX5Ap7mJL4epxz8Vk
+         QBNBKOA42tkpjTGbLIgOx5lRhK/RiIqKEKlpsGl+9PRR13Nu/qDNUnHIbi3+9Jmp/dv6
+         FnSuuLtfG22nOZ4+1eDd3svTKMYyNoBgPtDoq1RpCJHLAqUTMFWICfsuXhfEVWqXOfns
+         JdQw==
+X-Gm-Message-State: AC+VfDxdzBpK2G3gzqjDq8AQu0s0N439U913sykrpl1ZFAV9CruJBDnJ
+	mU4eB2D2yXrPCIiXwpu5OJOrZkIoZML78ud+
+X-Google-Smtp-Source: ACHHUZ4XicAWkrB00prAaaCQK1hhHlkPdvXJkeNnaG3O2GNQe2tJ8qi4EhuGu3Woc5OGQMkWTwuJcg==
+X-Received: by 2002:ad4:5ce6:0:b0:626:476:5ea1 with SMTP id iv6-20020ad45ce6000000b0062604765ea1mr6367766qvb.15.1685194280363;
+        Sat, 27 May 2023 06:31:20 -0700 (PDT)
 Received: from imac.redhat.com ([88.97.103.74])
-        by smtp.gmail.com with ESMTPSA id b10-20020a0cbf4a000000b006215f334a18sm2020282qvj.28.2023.05.27.06.31.16
+        by smtp.gmail.com with ESMTPSA id b10-20020a0cbf4a000000b006215f334a18sm2020282qvj.28.2023.05.27.06.31.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 May 2023 06:31:18 -0700 (PDT)
+        Sat, 27 May 2023 06:31:19 -0700 (PDT)
 From: Donald Hunter <donald.hunter@gmail.com>
 To: netdev@vger.kernel.org,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -63,10 +64,12 @@ To: netdev@vger.kernel.org,
 	Paolo Abeni <pabeni@redhat.com>
 Cc: donald.hunter@redhat.com,
 	Donald Hunter <donald.hunter@gmail.com>
-Subject: [PATCH net-next v2 0/4] netlink: specs: add ynl spec for ovs_flow
-Date: Sat, 27 May 2023 14:31:03 +0100
-Message-Id: <20230527133107.68161-1-donald.hunter@gmail.com>
+Subject: [PATCH net-next v2 1/4] doc: ynl: Add doc attr to struct members in genetlink-legacy spec
+Date: Sat, 27 May 2023 14:31:04 +0100
+Message-Id: <20230527133107.68161-2-donald.hunter@gmail.com>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230527133107.68161-1-donald.hunter@gmail.com>
+References: <20230527133107.68161-1-donald.hunter@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -81,29 +84,28 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add a ynl specification for ovs_flow. The spec is sufficient to dump ovs
-flows but some attrs have been left as binary blobs because ynl doesn't
-support C arrays in struct definitions yet.
+Make it possible to document the meaning of struct member attributes in
+genetlink-legacy specs.
 
-Patches 1-3 add features for genetlink-legacy specs
-Patch 4 is the ovs_flow netlink spec
+Signed-off-by: Donald Hunter <donald.hunter@gmail.com>
+---
+ Documentation/netlink/genetlink-legacy.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Changes in v2:
- - Add reply attribute to flow-get op as reported by Jakub Kicinski
-
-Donald Hunter (4):
-  doc: ynl: Add doc attr to struct members in genetlink-legacy spec
-  tools: ynl: Initialise fixed headers to 0 in genetlink-legacy
-  tools: ynl: Support enums in struct members in genetlink-legacy
-  netlink: specs: add ynl spec for ovs_flow
-
- Documentation/netlink/genetlink-legacy.yaml |   6 +
- Documentation/netlink/specs/ovs_flow.yaml   | 831 ++++++++++++++++++++
- tools/net/ynl/lib/nlspec.py                 |   2 +
- tools/net/ynl/lib/ynl.py                    |   8 +-
- 4 files changed, 845 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/netlink/specs/ovs_flow.yaml
-
+diff --git a/Documentation/netlink/genetlink-legacy.yaml b/Documentation/netlink/genetlink-legacy.yaml
+index b5319cde9e17..d8f132114308 100644
+--- a/Documentation/netlink/genetlink-legacy.yaml
++++ b/Documentation/netlink/genetlink-legacy.yaml
+@@ -124,6 +124,9 @@ properties:
+                 $ref: '#/$defs/len-or-define'
+               byte-order:
+                 enum: [ little-endian, big-endian ]
++              doc:
++                description: Documentation for the struct member attribute.
++                type: string
+         # End genetlink-legacy
+ 
+   attribute-sets:
 -- 
 2.39.0
 
