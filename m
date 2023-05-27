@@ -1,937 +1,332 @@
-Return-Path: <netdev+bounces-5909-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5910-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9545A713505
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:32:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 07E21713514
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:56:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2023B1C20A25
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 13:32:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4F9721C20A2C
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 13:56:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6E15134AD;
-	Sat, 27 May 2023 13:31:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67667125A6;
+	Sat, 27 May 2023 13:56:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95BC8134A4
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 13:31:29 +0000 (UTC)
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C10AC
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 06:31:26 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-6238da9c235so19211206d6.3
-        for <netdev@vger.kernel.org>; Sat, 27 May 2023 06:31:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B9D420EB
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 13:56:53 +0000 (UTC)
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2133.outbound.protection.outlook.com [40.107.94.133])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0F6D9
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 06:56:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BMi+4OUCrYNBpCq4L4YF8VLc3xsTfStLO70TQ0ZxmA0+T0oUqxocYeZdNlmN1+EMm7PpyRPT5gecC3VYEcaSkh/4/kWJbDUgQk+oUF2v6xQWo+TFQq4faAOJ5K2Cp3zQbOjTWWY07MVrHKl5mQsYwI/uzHWs8SOQO5QCFe/9C3Dm58NVaFrJFcZjXMGo1luEW4cvzQUFW01GLo1/QqVylm0Hfq2a34+YTMXU2B3EnF2UolPSq1TOlUt+zIJLJL4jQG6Ufj3fY6Em1tsFB+4fX00qb68uQGB1nd3CwA85ItkvB+HKFBULqq21l2+ze9ugKKE3r15Ot5YFtspQ+hTCYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fCJloE2AjBpsYv4ZhpW4fp9m4a9kFaDg9RM5LfjyYfw=;
+ b=lQeFQapnVTCx2+MPmgjPEfxHZwv6Da8SBZQ5VAZUBD+xilxYpTO6G6uCOuxImnCVX9e1KSD+mTOEpPKe6FSzdWTK8rVzsxKVL+PMvGndmUdHcmgzYEbD3rXAluBSGe2xiFhH11dAeViADk6nnLli+A3JQre7oGFI8oBW4LlYXoMgAkNsfQvqBluObtjgcbZcwDJVJYBeNNGUYfjEwGucRLnSEt5ROC/YrHD9wyd+dMHi4fEEuDsQnPU9+xT074Z+yzsfaSa3Y92ivCPRmeViVGvnYJCHOoV6vR29Syj6lR8MwuqsTKnSZXBwxtsIdBGdHxeuJqgWggNUyVyQ2p2iJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685194286; x=1687786286;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ytbjh4LogBnMhH66GujAEWu71DZYyxhZ84y6jL418RY=;
-        b=WkSgq1MxnJS7cFbKjj7IaviiRr1W/TgiD48mxrAzp+RGK9hk/As/Jjwx3zDTXVchma
-         ufYPCfcZwNJ0QzmlTLAvbtTLxBPtqyi3tg5+hAJKP6tERTjDOD4tFN2qhY4L6AXct1Lu
-         Wq304nS8NlsVaMj6phvOHyoA4okyY4SKRTZ8bPfvlVQFiB+qxzoQy/U0BGtH7uRxfKGn
-         PloSTu+PPG8m9Bb8Dj3bJu6tzVPQZdb0eOM0ry0J4CW1tGQ84xAvAR26zA/68kJEgu4Z
-         +KSSMncGUORgmti2uZgLjwRlO2VGL39J3M8/+Atdbg+T4HtKnkQQ+C/0CXhN3JPulfTT
-         jKhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685194286; x=1687786286;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Ytbjh4LogBnMhH66GujAEWu71DZYyxhZ84y6jL418RY=;
-        b=QOKw19ihj/fw0fEPZ8v956QLEhzvUSkZb9fCGpnu+2+LznaTJyR5JCWnLO0vtJOpWc
-         Ug4ShUFFzYkinW5sJpEIQefDSKcc+ecXtR5ukvHK5JRLxmsG2ZsUAaLkTbtocvbfbVeV
-         6Sij0ilcZrm3QYZETN/L4Tt7Ycr+3VnJDGcdRlo5Tou7otPVmAp7M4Pue9GoRU+ZuNlQ
-         PtNYQdqGcAIe160os+1ixOZu5u76A5Oddd/tE47bRQyjI2tIPlaTgfahMK4tEZFoIry/
-         onWXPhxu8sKj79bzuPYeKlOMPDBkZlad3cTxeiQlkioaeGrgvYqeTs0uUdGzJlbtr+bF
-         /ylg==
-X-Gm-Message-State: AC+VfDzy+eDTaXV/kxt5PjdJn9Q2OHwWombbK+QIH2c9NCISDSiHkiVT
-	zFDRswTbdpMM+EwetfEDp2C7kNCUIDK3G5EI
-X-Google-Smtp-Source: ACHHUZ60IPmAeZi81u6+kQJdD/mCpmaNl4N58T3N2BHrkSdKUEavznKc7zdWi5GbwddkSoe0yM4RqQ==
-X-Received: by 2002:a05:6214:529b:b0:625:aa49:c344 with SMTP id kj27-20020a056214529b00b00625aa49c344mr5948067qvb.56.1685194285524;
-        Sat, 27 May 2023 06:31:25 -0700 (PDT)
-Received: from imac.redhat.com ([88.97.103.74])
-        by smtp.gmail.com with ESMTPSA id b10-20020a0cbf4a000000b006215f334a18sm2020282qvj.28.2023.05.27.06.31.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 May 2023 06:31:25 -0700 (PDT)
-From: Donald Hunter <donald.hunter@gmail.com>
-To: netdev@vger.kernel.org,
-	Jakub Kicinski <kuba@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>
-Cc: donald.hunter@redhat.com,
-	Donald Hunter <donald.hunter@gmail.com>
-Subject: [PATCH net-next v2 4/4] netlink: specs: add ynl spec for ovs_flow
-Date: Sat, 27 May 2023 14:31:07 +0100
-Message-Id: <20230527133107.68161-5-donald.hunter@gmail.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230527133107.68161-1-donald.hunter@gmail.com>
-References: <20230527133107.68161-1-donald.hunter@gmail.com>
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fCJloE2AjBpsYv4ZhpW4fp9m4a9kFaDg9RM5LfjyYfw=;
+ b=iR0gOUVj0l0qkLqOgSOcjxOvC4F9wUdCmX++rtuVOsrO9aR/Msy/Tvr+JQWTZE9m08JjwWaQswho9Ho5qA/JuX+OYF3scBjwsKwzKsk9Ss2D38eFwR1aQSFYsa3BU2A7DIjw3UTyQOpwo6o1zD5t1qvNSIVUoVRer1HTjcTKJ3g=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by DM4PR13MB5859.namprd13.prod.outlook.com (2603:10b6:8:48::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.19; Sat, 27 May
+ 2023 13:56:46 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6433.018; Sat, 27 May 2023
+ 13:56:45 +0000
+Date: Sat, 27 May 2023 15:56:39 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Tristram.Ha@microchip.com
+Cc: "David S. Miller" <davem@davemloft.net>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+	UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next] net: phy: smsc: add WoL support to
+ LAN8740/LAN8742 PHYs.
+Message-ID: <ZHIMF8k+bYGosakh@corigine.com>
+References: <1685151574-2752-1-git-send-email-Tristram.Ha@microchip.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1685151574-2752-1-git-send-email-Tristram.Ha@microchip.com>
+X-ClientProxiedBy: AM0PR02CA0024.eurprd02.prod.outlook.com
+ (2603:10a6:208:3e::37) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM4PR13MB5859:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6e25b9a8-90d8-446a-13dd-08db5eba350e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ndVW3ejwch1t3cqtIpbMnVOV+v8H33aRLD5ougLYF7E+gpoxXAqtvyL197uPFoeUvtcvuPi0qVbhOJ1vHPTHrPsQqz+s0ScfjBJAvN6Oan0QurzOwDX3NV/qetZwzfk6/qI3SHy2YC/lv31QrTWAy+lWWN0nw3xrG++gAOlX9JOFO4E1LbLaPAyD26ckb49foqCJ8+wfMie2hR/QBw8HLRclOO1bfsNFr7Wlw273GP5Ny2y0ZwWCnDgGvGZSLViepMrzuMfdtz65uQWP3T9DpHO60cMXDNFyNdZecqcYrfD9TnJHYbQ1WhEp/HDRSmhAOAnQz2QeuRQKiBDPCYGqDoT1ymGPd2hn+ek09P1Wac3r87clfyeYfPPtnhUlM0Fu3OJ5+l/ue9KdR87p5l+vsutnLC5Lq8rsjFF4Pv7tH3H2sUq2sVHMF7bwpF8pPvh3PrHBeg+xLNdoUc+4MoluFVTg/10nxz4HpCnAf4vBqB0/GjYakbGLXwru1IwkRUtRbbuV6PTt68h8inJp0N/zLEdDHMtBww1Pu+WrNgwKkTbTeY1aiSYbMsqJVFeAyrvG8xpybPyp2pIJ+MajXIZ1XDbRYnn1+wGU7V2RXSnqijE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39830400003)(376002)(346002)(136003)(396003)(451199021)(86362001)(36756003)(4326008)(186003)(8936002)(8676002)(41300700001)(83380400001)(6512007)(6506007)(2616005)(5660300002)(54906003)(478600001)(6916009)(66946007)(66476007)(66556008)(316002)(6486002)(6666004)(38100700002)(44832011)(2906002)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?PKMI9Osk3eDZDZ/LHy+mv6eSUkNQi3Tk9/0Co46QKSkmBPlY7F7EZbmAhCHz?=
+ =?us-ascii?Q?y1zkPH/tMEUoK3YA3BCgTQ9WRf6zcNUaI0vEPKHKXS5+TEdoqlHgHosU5DX2?=
+ =?us-ascii?Q?O2/esEnPf0Bag5mM5mYmivWUoDobaWdsc4jmF7tSheel+ymDbNNv3t7UaCYq?=
+ =?us-ascii?Q?oaaYSQ/vzO5gVD8WaOPnvBi8oZ2MLk+dnWYgASurkPEZu6g5Tms3STMQOoMk?=
+ =?us-ascii?Q?wSekukkWcxPSHdOrr4rj1tdKPAMgU4y/l8BXdhj/XUYDxwdt3T2yke15wx7w?=
+ =?us-ascii?Q?pH7fAbGWKke1Di6om6Ejk1GhvAKA5bgj0EOqaswuTMSLLhcmo5VXdAC/IIAN?=
+ =?us-ascii?Q?ameZELr/gR1rN4lEoP8xuoU6ZH6x4jNjYkrsNZ0PiCsCxDAht3YYvx0+ZFp2?=
+ =?us-ascii?Q?h97BnkJJQlleqZoMeUD671EN8ry/3rI3nABgjStSQ7rDi4XckyJtt7yXng0R?=
+ =?us-ascii?Q?VvjyhnTtUSi4eHaY32KaQOy7sskIWDOFpumrYBX5mLxG+LaLRfUuvfBbVk+Z?=
+ =?us-ascii?Q?iPm0n0WdmWVIfd7Xvn/oRLUborsrSGmae3jjhD9w4eTFEFz1U2uAyem/Eo3d?=
+ =?us-ascii?Q?EgKRD54K/5YawNSQ5RK4Hq0tw4KsIZjPi+E5Ou0J9KBICE87tLmLEJyGMqxV?=
+ =?us-ascii?Q?mLLifrO8njcTMHEB69Akw5ftbdjvB3aab+5VvJBihrhaKxwJRV/IzdcrA+ur?=
+ =?us-ascii?Q?xIyTkZ216E4/8n3NbScbyl4bEy8Xbj2nU5thBRKFBibQvEw4hoADlIvYanf3?=
+ =?us-ascii?Q?TXoSUqa1qRXtkZoq4msxMZFd2UF3T9hyBBKsOe4DhzrVBSdvhtHeHugJsl1H?=
+ =?us-ascii?Q?rnJ4Kl4Hg0z+fYaAVHu6DjatUyJWFOxI64B7gHzt1Qa8ew6ihKYy4ygu0eiD?=
+ =?us-ascii?Q?zRNn1X6ygFuThJzITfFzf6prSl5o16pH8K9ZPiQBpO2CE5NvSIb5TEQ0Vk6h?=
+ =?us-ascii?Q?qyKhXJRTUGqrbWyPGcKWKgepWp6TjrIjJLnxm6lpezLkHwUQ+QSmvb9m0Boi?=
+ =?us-ascii?Q?rtk43opmwlZiX8nAVfn3/i0sP7iTpf81DSNa8E1x4UMA0n0LpisdTlaU30Jj?=
+ =?us-ascii?Q?QyN15RdfNBGw/Jbw67ET1zjeeLhijG/LOHoPVNF7x6coXlp4fLI3OxKdj/NY?=
+ =?us-ascii?Q?sD9+h6waOEhLqup99KtK+/5FF2pqfeh4kX6kkDGIVfqUOh6ngXR4dB1C+agv?=
+ =?us-ascii?Q?U/Q1M0RoalqT8euH77L0v2ubJwhBGsBB+Kni2vgNRFvj9aSgaHw5VA9p3sW3?=
+ =?us-ascii?Q?emuPI1tia0ADkQiKfME1OThEpxBzudpFc7CLfkdKGHHXjjMNze/Grjlt8CDq?=
+ =?us-ascii?Q?mCbQEA8uBfk7LzpqKQJ3sqQL1Wmd24c+SI9ZOD7+X3MS6U/YxoNMGLkPHD6E?=
+ =?us-ascii?Q?wdodAcRRxQhZwZKsuTWgyngNj0h+ihrf6cDsB6Uz30rYHdtFUbZDp4n1e77s?=
+ =?us-ascii?Q?avdcd8tT0v1SQT2H7buF9M4D1mDR8pCaQj++8RhDPAGNUTkP9wJtqMZJ32sB?=
+ =?us-ascii?Q?W0p1lvmmetOm/qJ4n1l6ZF1KNtKPGxhQSoZJg3ECZhllGhVK55hTGVVIft3a?=
+ =?us-ascii?Q?rKtZ/rRr7H8bV7JtMkkaW5cwCpR/AkU9d6EcDtldM8id8jUrmy5vBpRFA9/3?=
+ =?us-ascii?Q?45u9oVshTTmBR7wBP2ePSAbaSA0uC8yvPEc5ViTq/7vfavf0INDNVQyZDc/7?=
+ =?us-ascii?Q?dgWnuA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e25b9a8-90d8-446a-13dd-08db5eba350e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2023 13:56:45.2452
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7db6eix1jL8fI4GlR62x6B3eirB86poMWUBTZ8eN9B0qg2tmTEKMmMME4f1EaAPaYuX/xSOPGoiTKlDfqu1NGRCHb0XTeB3lsmguyW9/Nic=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR13MB5859
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add a ynl specification for ovs_flow. This spec is sufficient to dump ovs
-flows. Some attrs are left as binary blobs because ynl doesn't support C
-arrays in struct definitions yet.
+On Fri, May 26, 2023 at 06:39:34PM -0700, Tristram.Ha@microchip.com wrote:
+> From: Tristram Ha <Tristram.Ha@microchip.com>
+> 
+> Microchip LAN8740/LAN8742 PHYs support basic unicast, broadcast, and
+> Magic Packet WoL.  They have one pattern filter matching up to 128 bytes
+> of frame data, which can be used to implement ARP or multicast WoL.
+> 
+> ARP WoL matches ARP request for IPv4 address of the net device using the
+> PHY.
+> 
+> Multicast WoL matches IPv6 Neighbor Solicitation which is sent when
+> somebody wants to talk to the net device using IPv6.  This
+> implementation may not be appropriate and can be changed by users later.
+> 
+> Signed-off-by: Tristram Ha <Tristram.Ha@microchip.com>
 
-Signed-off-by: Donald Hunter <donald.hunter@gmail.com>
----
- Documentation/netlink/specs/ovs_flow.yaml | 831 ++++++++++++++++++++++
- 1 file changed, 831 insertions(+)
- create mode 100644 Documentation/netlink/specs/ovs_flow.yaml
+...
 
-diff --git a/Documentation/netlink/specs/ovs_flow.yaml b/Documentation/netlink/specs/ovs_flow.yaml
-new file mode 100644
-index 000000000000..3b0624c87074
---- /dev/null
-+++ b/Documentation/netlink/specs/ovs_flow.yaml
-@@ -0,0 +1,831 @@
-+# SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-+
-+name: ovs_flow
-+version: 1
-+protocol: genetlink-legacy
-+
-+doc:
-+  OVS flow configuration over generic netlink.
-+
-+definitions:
-+  -
-+    name: ovs-header
-+    type: struct
-+    doc: |
-+      Header for OVS Generic Netlink messages.
-+    members:
-+      -
-+        name: dp-ifindex
-+        type: u32
-+        doc: |
-+          ifindex of local port for datapath (0 to make a request not specific
-+          to a datapath).
-+  -
-+    name: ovs-flow-stats
-+    type: struct
-+    members:
-+      -
-+        name: n-packets
-+        type: u64
-+        doc: Number of matched packets.
-+      -
-+        name: n-bytes
-+        type: u64
-+        doc: Number of matched bytes.
-+  -
-+    name: ovs-key-mpls
-+    type: struct
-+    members:
-+      -
-+        name: mpls-lse
-+        type: u32
-+        byte-order: big-endian
-+  -
-+    name: ovs-key-ipv4
-+    type: struct
-+    members:
-+      -
-+        name: ipv4-src
-+        type: u32
-+        byte-order: big-endian
-+      -
-+        name: ipv4-dst
-+        type: u32
-+        byte-order: big-endian
-+      -
-+        name: ipv4-proto
-+        type: u8
-+      -
-+        name: ipv4-tos
-+        type: u8
-+      -
-+        name: ipv4-ttl
-+        type: u8
-+      -
-+        name: ipv4-frag
-+        type: u8
-+        enum: ovs-frag-type
-+  -
-+    name: ovs-frag-type
-+    type: enum
-+    entries:
-+      -
-+        name: none
-+        doc: Packet is not a fragment.
-+      -
-+        name: first
-+        doc: Packet is a fragment with offset 0.
-+      -
-+        name: later
-+        doc: Packet is a fragment with nonzero offset.
-+      -
-+        name: any
-+        value: 255
-+  -
-+    name: ovs-key-tcp
-+    type: struct
-+    members:
-+      -
-+        name: tcp-src
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: tcp-dst
-+        type: u16
-+        byte-order: big-endian
-+  -
-+    name: ovs-key-udp
-+    type: struct
-+    members:
-+      -
-+        name: udp-src
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: udp-dst
-+        type: u16
-+        byte-order: big-endian
-+  -
-+    name: ovs-key-sctp
-+    type: struct
-+    members:
-+      -
-+        name: sctp-src
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: sctp-dst
-+        type: u16
-+        byte-order: big-endian
-+  -
-+    name: ovs-key-icmp
-+    type: struct
-+    members:
-+      -
-+        name: icmp-type
-+        type: u8
-+      -
-+        name: icmp-code
-+        type: u8
-+  -
-+    name: ovs-key-ct-tuple-ipv4
-+    type: struct
-+    members:
-+      -
-+        name: ipv4-src
-+        type: u32
-+        byte-order: big-endian
-+      -
-+        name: ipv4-dst
-+        type: u32
-+        byte-order: big-endian
-+      -
-+        name: src-port
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: dst-port
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: ipv4-proto
-+        type: u8
-+  -
-+    name: ovs-action-push-vlan
-+    type: struct
-+    members:
-+      -
-+        name: vlan_tpid
-+        type: u16
-+        byte-order: big-endian
-+        doc: Tag protocol identifier (TPID) to push.
-+      -
-+        name: vlan_tci
-+        type: u16
-+        byte-order: big-endian
-+        doc: Tag control identifier (TCI) to push.
-+  -
-+    name: ovs-ufid-flags
-+    type: flags
-+    entries:
-+      - omit-key
-+      - omit-mask
-+      - omit-actions
-+  -
-+    name: ovs-action-hash
-+    type: struct
-+    members:
-+      -
-+        name: hash-algorithm
-+        type: u32
-+        doc: Algorithm used to compute hash prior to recirculation.
-+      -
-+        name: hash-basis
-+        type: u32
-+        doc: Basis used for computing hash.
-+  -
-+    name: ovs-hash-alg
-+    type: enum
-+    doc: |
-+      Data path hash algorithm for computing Datapath hash. The algorithm type only specifies
-+      the fields in a flow will be used as part of the hash. Each datapath is free to use its
-+      own hash algorithm. The hash value will be opaque to the user space daemon.
-+    entries:
-+      - ovs-hash-alg-l4
-+
-+  -
-+    name: ovs-action-push-mpls
-+    type: struct
-+    members:
-+      -
-+        name: lse
-+        type: u32
-+        byte-order: big-endian
-+        doc: |
-+          MPLS label stack entry to push
-+      -
-+        name: ethertype
-+        type: u32
-+        byte-order: big-endian
-+        doc: |
-+          Ethertype to set in the encapsulating ethernet frame.  The only values
-+          ethertype should ever be given are ETH_P_MPLS_UC and ETH_P_MPLS_MC,
-+          indicating MPLS unicast or multicast. Other are rejected.
-+  -
-+    name: ovs-action-add-mpls
-+    type: struct
-+    members:
-+      -
-+        name: lse
-+        type: u32
-+        byte-order: big-endian
-+        doc: |
-+          MPLS label stack entry to push
-+      -
-+        name: ethertype
-+        type: u32
-+        byte-order: big-endian
-+        doc: |
-+          Ethertype to set in the encapsulating ethernet frame.  The only values
-+          ethertype should ever be given are ETH_P_MPLS_UC and ETH_P_MPLS_MC,
-+          indicating MPLS unicast or multicast. Other are rejected.
-+      -
-+        name: tun-flags
-+        type: u16
-+        doc: |
-+          MPLS tunnel attributes.
-+  -
-+    name: ct-state-flags
-+    type: flags
-+    entries:
-+      -
-+        name: new
-+        doc: Beginning of a new connection.
-+      -
-+        name: established
-+        doc: Part of an existing connenction
-+      -
-+        name: related
-+        doc: Related to an existing connection.
-+      -
-+        name: reply-dir
-+        doc: Flow is in the reply direction.
-+      -
-+        name: invalid
-+        doc: Could not track the connection.
-+      -
-+        name: tracked
-+        doc: Conntrack has occurred.
-+      -
-+        name: src-nat
-+        doc: Packet's source address/port was mangled by NAT.
-+      -
-+        name: dst-nat
-+        doc: Packet's destination address/port was mangled by NAT.
-+
-+attribute-sets:
-+  -
-+    name: flow-attrs
-+    attributes:
-+      -
-+        name: key
-+        type: nest
-+        nested-attributes: key-attrs
-+        doc: |
-+          Nested attributes specifying the flow key. Always present in
-+          notifications. Required for all requests (except dumps).
-+      -
-+        name: actions
-+        type: nest
-+        nested-attributes: action-attrs
-+        doc: |
-+          Nested attributes specifying the actions to take for packets that
-+          match the key. Always present in notifications. Required for
-+          OVS_FLOW_CMD_NEW requests, optional for OVS_FLOW_CMD_SET requests.  An
-+          OVS_FLOW_CMD_SET without OVS_FLOW_ATTR_ACTIONS will not modify the
-+          actions.  To clear the actions, an OVS_FLOW_ATTR_ACTIONS without any
-+          nested attributes must be given.
-+      -
-+        name: stats
-+        type: binary
-+        struct: ovs-flow-stats
-+        doc: |
-+          Statistics for this flow. Present in notifications if the stats would
-+          be nonzero. Ignored in requests.
-+      -
-+        name: tcp-flags
-+        type: u8
-+        doc: |
-+          An 8-bit value giving the ORed value of all of the TCP flags seen on
-+          packets in this flow. Only present in notifications for TCP flows, and
-+          only if it would be nonzero. Ignored in requests.
-+      -
-+        name: used
-+        type: u64
-+        doc: |
-+          A 64-bit integer giving the time, in milliseconds on the system
-+          monotonic clock, at which a packet was last processed for this
-+          flow. Only present in notifications if a packet has been processed for
-+          this flow. Ignored in requests.
-+      -
-+        name: clear
-+        type: flag
-+        doc: |
-+          If present in a OVS_FLOW_CMD_SET request, clears the last-used time,
-+          accumulated TCP flags, and statistics for this flow.  Otherwise
-+          ignored in requests. Never present in notifications.
-+      -
-+        name: mask
-+        type: nest
-+        nested-attributes: key-attrs
-+        doc: |
-+          Nested attributes specifying the mask bits for wildcarded flow
-+          match. Mask bit value '1' specifies exact match with corresponding
-+          flow key bit, while mask bit value '0' specifies a wildcarded
-+          match. Omitting attribute is treated as wildcarding all corresponding
-+          fields. Optional for all requests. If not present, all flow key bits
-+          are exact match bits.
-+      -
-+        name: probe
-+        type: binary
-+        doc: |
-+          Flow operation is a feature probe, error logging should be suppressed.
-+      -
-+        name: ufid
-+        type: binary
-+        doc: |
-+          A value between 1-16 octets specifying a unique identifier for the
-+          flow. Causes the flow to be indexed by this value rather than the
-+          value of the OVS_FLOW_ATTR_KEY attribute. Optional for all
-+          requests. Present in notifications if the flow was created with this
-+          attribute.
-+      -
-+        name: ufid-flags
-+        type: u32
-+        enum: ovs-ufid-flags
-+        doc: |
-+          A 32-bit value of ORed flags that provide alternative semantics for
-+          flow installation and retrieval. Optional for all requests.
-+      -
-+        name: pad
-+        type: binary
-+
-+  -
-+    name: key-attrs
-+    attributes:
-+      -
-+        name: encap
-+        type: nest
-+        nested-attributes: key-attrs
-+      -
-+        name: priority
-+        type: u32
-+      -
-+        name: in-port
-+        type: u32
-+      -
-+        name: ethernet
-+        type: binary
-+        doc: struct ovs_key_ethernet
-+      -
-+        name: vlan
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: ethertype
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: ipv4
-+        type: binary
-+        struct: ovs-key-ipv4
-+      -
-+        name: ipv6
-+        type: binary
-+        doc: struct ovs_key_ipv6
-+      -
-+        name: tcp
-+        type: binary
-+        struct: ovs-key-tcp
-+      -
-+        name: udp
-+        type: binary
-+        struct: ovs-key-udp
-+      -
-+        name: icmp
-+        type: binary
-+        struct: ovs-key-icmp
-+      -
-+        name: icmpv6
-+        type: binary
-+        struct: ovs-key-icmp
-+      -
-+        name: arp
-+        type: binary
-+        doc: struct ovs_key_arp
-+      -
-+        name: nd
-+        type: binary
-+        doc: struct ovs_key_nd
-+      -
-+        name: skb-mark
-+        type: u32
-+      -
-+        name: tunnel
-+        type: nest
-+        nested-attributes: tunnel-key-attrs
-+      -
-+        name: sctp
-+        type: binary
-+        struct: ovs-key-sctp
-+      -
-+        name: tcp-flags
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: dp-hash
-+        type: u32
-+        doc: Value 0 indicates the hash is not computed by the datapath.
-+      -
-+        name: recirc-id
-+        type: u32
-+      -
-+        name: mpls
-+        type: binary
-+        struct: ovs-key-mpls
-+      -
-+        name: ct-state
-+        type: u32
-+        enum: ct-state-flags
-+        enum-as-flags: true
-+      -
-+        name: ct-zone
-+        type: u16
-+        doc: connection tracking zone
-+      -
-+        name: ct-mark
-+        type: u32
-+        doc: connection tracking mark
-+      -
-+        name: ct-labels
-+        type: binary
-+        doc: 16-octet connection tracking label
-+      -
-+        name: ct-orig-tuple-ipv4
-+        type: binary
-+        struct: ovs-key-ct-tuple-ipv4
-+      -
-+        name: ct-orig-tuple-ipv6
-+        type: binary
-+        doc: struct ovs_key_ct_tuple_ipv6
-+      -
-+        name: nsh
-+        type: nest
-+        nested-attributes: ovs-nsh-key-attrs
-+      -
-+        name: packet-type
-+        type: u32
-+        byte-order: big-endian
-+        doc: Should not be sent to the kernel
-+      -
-+        name: nd-extensions
-+        type: binary
-+        doc: Should not be sent to the kernel
-+      -
-+        name: tunnel-info
-+        type: binary
-+        doc: struct ip_tunnel_info
-+      -
-+        name: ipv6-exthdrs
-+        type: binary
-+        doc: struct ovs_key_ipv6_exthdr
-+  -
-+    name: action-attrs
-+    attributes:
-+      -
-+        name: output
-+        type: u32
-+        doc: ovs port number in datapath
-+      -
-+        name: userspace
-+        type: nest
-+        nested-attributes: userspace-attrs
-+      -
-+        name: set
-+        type: nest
-+        nested-attributes: key-attrs
-+        doc: Replaces the contents of an existing header. The single nested attribute specifies a header to modify and its value.
-+      -
-+        name: push-vlan
-+        type: binary
-+        struct: ovs-action-push-vlan
-+        doc: Push a new outermost 802.1Q or 802.1ad header onto the packet.
-+      -
-+        name: pop-vlan
-+        type: flag
-+        doc: Pop the outermost 802.1Q or 802.1ad header from the packet.
-+      -
-+        name: sample
-+        type: nest
-+        nested-attributes: sample-attrs
-+        doc: |
-+          Probabilistically executes actions, as specified in the nested attributes.
-+      -
-+        name: recirc
-+        type: u32
-+        doc: recirc id
-+      -
-+        name: hash
-+        type: binary
-+        struct: ovs-action-hash
-+      -
-+        name: push-mpls
-+        type: binary
-+        struct: ovs-action-push-mpls
-+        doc: |
-+          Push a new MPLS label stack entry onto the top of the packets MPLS
-+          label stack. Set the ethertype of the encapsulating frame to either
-+          ETH_P_MPLS_UC or ETH_P_MPLS_MC to indicate the new packet contents.
-+      -
-+        name: pop-mpls
-+        type: u16
-+        byte-order: big-endian
-+        doc: ethertype
-+      -
-+        name: set-masked
-+        type: nest
-+        nested-attributes: key-attrs
-+        doc: |
-+          Replaces the contents of an existing header. A nested attribute
-+          specifies a header to modify, its value, and a mask. For every bit set
-+          in the mask, the corresponding bit value is copied from the value to
-+          the packet header field, rest of the bits are left unchanged. The
-+          non-masked value bits must be passed in as zeroes. Masking is not
-+          supported for the OVS_KEY_ATTR_TUNNEL attribute.
-+      -
-+        name: ct
-+        type: nest
-+        nested-attributes: ct-attrs
-+        doc: |
-+          Track the connection. Populate the conntrack-related entries
-+          in the flow key.
-+      -
-+        name: trunc
-+        type: u32
-+        doc: struct ovs_action_trunc is a u32 max length
-+      -
-+        name: push-eth
-+        type: binary
-+        doc: struct ovs_action_push_eth
-+      -
-+        name: pop-eth
-+        type: flag
-+      -
-+        name: ct-clear
-+        type: flag
-+      -
-+        name: push-nsh
-+        type: nest
-+        nested-attributes: ovs-nsh-key-attrs
-+        doc: |
-+          Push NSH header to the packet.
-+      -
-+        name: pop-nsh
-+        type: flag
-+        doc: |
-+          Pop the outermost NSH header off the packet.
-+      -
-+        name: meter
-+        type: u32
-+        doc: |
-+          Run packet through a meter, which may drop the packet, or modify the
-+          packet (e.g., change the DSCP field)
-+      -
-+        name: clone
-+        type: nest
-+        nested-attributes: action-attrs
-+        doc: |
-+          Make a copy of the packet and execute a list of actions without
-+          affecting the original packet and key.
-+      -
-+        name: check-pkt-len
-+        type: nest
-+        nested-attributes: check-pkt-len-attrs
-+        doc: |
-+          Check the packet length and execute a set of actions if greater than
-+          the specified packet length, else execute another set of actions.
-+      -
-+        name: add-mpls
-+        type: binary
-+        struct: ovs-action-add-mpls
-+        doc: |
-+          Push a new MPLS label stack entry at the start of the packet or at the
-+          start of the l3 header depending on the value of l3 tunnel flag in the
-+          tun_flags field of this OVS_ACTION_ATTR_ADD_MPLS argument.
-+      -
-+        name: dec-ttl
-+        type: nest
-+        nested-attributes: dec-ttl-attrs
-+  -
-+    name: tunnel-key-attrs
-+    attributes:
-+      -
-+        name: id
-+        type: u64
-+        byte-order: big-endian
-+        value: 0
-+      -
-+        name: ipv4-src
-+        type: u32
-+        byte-order: big-endian
-+      -
-+        name: ipv4-dst
-+        type: u32
-+        byte-order: big-endian
-+      -
-+        name: tos
-+        type: u8
-+      -
-+        name: ttl
-+        type: u8
-+      -
-+        name: dont-fragment
-+        type: flag
-+      -
-+        name: csum
-+        type: flag
-+      -
-+        name: oam
-+        type: flag
-+      -
-+        name: geneve-opts
-+        type: binary
-+        sub-type: u32
-+      -
-+        name: tp-src
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: tp-dst
-+        type: u16
-+        byte-order: big-endian
-+      -
-+        name: vxlan-opts
-+        type: nest
-+        nested-attributes: vxlan-ext-attrs
-+      -
-+        name: ipv6-src
-+        type: binary
-+        doc: |
-+          struct in6_addr source IPv6 address
-+      -
-+        name: ipv6-dst
-+        type: binary
-+        doc: |
-+          struct in6_addr destination IPv6 address
-+      -
-+        name: pad
-+        type: binary
-+      -
-+        name: erspan-opts
-+        type: binary
-+        doc: |
-+          struct erspan_metadata
-+      -
-+        name: ipv4-info-bridge
-+        type: flag
-+  -
-+    name: check-pkt-len-attrs
-+    attributes:
-+      -
-+        name: pkt-len
-+        type: u16
-+      -
-+        name: actions-if-greater
-+        type: nest
-+        nested-attributes: action-attrs
-+      -
-+        name: actions-if-less-equal
-+        type: nest
-+        nested-attributes: action-attrs
-+  -
-+    name: sample-attrs
-+    attributes:
-+      -
-+        name: probability
-+        type: u32
-+      -
-+        name: actions
-+        type: nest
-+        nested-attributes: action-attrs
-+  -
-+    name: userspace-attrs
-+    attributes:
-+      -
-+        name: pid
-+        type: u32
-+      -
-+        name: userdata
-+        type: binary
-+      -
-+        name: egress-tun-port
-+        type: u32
-+      -
-+        name: actions
-+        type: flag
-+  -
-+    name: ovs-nsh-key-attrs
-+    attributes:
-+      -
-+        name: base
-+        type: binary
-+      -
-+        name: md1
-+        type: binary
-+      -
-+        name: md2
-+        type: binary
-+  -
-+    name: ct-attrs
-+    attributes:
-+      -
-+        name: commit
-+        type: flag
-+      -
-+        name: zone
-+        type: u16
-+      -
-+        name: mark
-+        type: binary
-+      -
-+        name: labels
-+        type: binary
-+      -
-+        name: helper
-+        type: string
-+      -
-+        name: nat
-+        type: nest
-+        nested-attributes: nat-attrs
-+      -
-+        name: force-commit
-+        type: flag
-+      -
-+        name: eventmask
-+        type: u32
-+      -
-+        name: timeout
-+        type: string
-+  -
-+    name: nat-attrs
-+    attributes:
-+      -
-+        name: src
-+        type: binary
-+      -
-+        name: dst
-+        type: binary
-+      -
-+        name: ip-min
-+        type: binary
-+      -
-+        name: ip-max
-+        type: binary
-+      -
-+        name: proto-min
-+        type: binary
-+      -
-+        name: proto-max
-+        type: binary
-+      -
-+        name: persistent
-+        type: binary
-+      -
-+        name: proto-hash
-+        type: binary
-+      -
-+        name: proto-random
-+        type: binary
-+  -
-+    name: dec-ttl-attrs
-+    attributes:
-+      -
-+        name: action
-+        type: nest
-+        nested-attributes: action-attrs
-+  -
-+    name: vxlan-ext-attrs
-+    attributes:
-+      -
-+        name: gbp
-+        type: u32
-+
-+operations:
-+  fixed-header: ovs-header
-+  list:
-+    -
-+      name: flow-get
-+      doc: Get / dump OVS flow configuration and state
-+      value: 3
-+      attribute-set: flow-attrs
-+      do: &flow-get-op
-+        request:
-+          attributes:
-+            - dp-ifindex
-+            - key
-+            - ufid
-+            - ufid-flags
-+        reply:
-+          attributes:
-+            - dp-ifindex
-+            - key
-+            - ufid
-+            - mask
-+            - stats
-+            - actions
-+      dump: *flow-get-op
-+
-+mcast-groups:
-+  list:
-+    -
-+      name: ovs_flow
+> +static int lan874x_set_wol(struct phy_device *phydev,
+> +			   struct ethtool_wolinfo *wol)
+> +{
+> +	struct net_device *ndev = phydev->attached_dev;
+> +	struct smsc_phy_priv *priv = phydev->priv;
+> +	u16 val, val_wucsr;
+> +	u8 data[128];
+> +	u8 datalen;
+> +	int rc;
+> +
+> +	if (wol->wolopts & WAKE_PHY)
+> +		return -EOPNOTSUPP;
+> +
+> +	/* lan874x has only one WoL filter pattern */
+> +	if ((wol->wolopts & (WAKE_ARP | WAKE_MCAST)) ==
+> +	    (WAKE_ARP | WAKE_MCAST)) {
+> +		phydev_info(phydev,
+> +			    "lan874x WoL supports one of ARP|MCAST at a time\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	rc = phy_read_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_WOL_WUCSR);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	val_wucsr = rc;
+> +
+> +	if (wol->wolopts & WAKE_UCAST)
+> +		val_wucsr |= MII_LAN874X_PHY_WOL_PFDAEN;
+> +	else
+> +		val_wucsr &= ~MII_LAN874X_PHY_WOL_PFDAEN;
+> +
+> +	if (wol->wolopts & WAKE_BCAST)
+> +		val_wucsr |= MII_LAN874X_PHY_WOL_BCSTEN;
+> +	else
+> +		val_wucsr &= ~MII_LAN874X_PHY_WOL_BCSTEN;
+> +
+> +	if (wol->wolopts & WAKE_MAGIC)
+> +		val_wucsr |= MII_LAN874X_PHY_WOL_MPEN;
+> +	else
+> +		val_wucsr &= ~MII_LAN874X_PHY_WOL_MPEN;
+> +
+> +	/* Need to use pattern matching */
+> +	if (wol->wolopts & (WAKE_ARP | WAKE_MCAST))
+> +		val_wucsr |= MII_LAN874X_PHY_WOL_WUEN;
+> +	else
+> +		val_wucsr &= ~MII_LAN874X_PHY_WOL_WUEN;
+> +
+> +	if (wol->wolopts & WAKE_ARP) {
+> +		const u8 *ip_addr =
+> +			((const u8 *)&((ndev->ip_ptr)->ifa_list)->ifa_address);
+
+Hi Tristram,
+
+Sparse seems unhappy about this:
+
+.../smsc.c:449:27: warning: cast removes address space '__rcu' of expression
+
+> +		const u16 mask[3] = { 0xF03F, 0x003F, 0x03C0 };
+> +		u8 pattern[42] = {
+> +			0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+> +			0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+> +			0x08, 0x06,
+> +			0x00, 0x01, 0x08, 0x00, 0x06, 0x04, 0x00, 0x01,
+> +			0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+> +			0x00, 0x00, 0x00, 0x00,
+> +			0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+> +			0x00, 0x00, 0x00, 0x00 };
+> +		u8 len = 42;
+> +
+> +		memcpy(&pattern[38], ip_addr, 4);
+> +		rc = lan874x_chk_wol_pattern(pattern, mask, len,
+> +					     data, &datalen);
+> +		if (rc)
+> +			phydev_dbg(phydev, "pattern not valid at %d\n", rc);
+> +
+> +		/* Need to match broadcast destination address. */
+> +		val = MII_LAN874X_PHY_WOL_FILTER_BCSTEN;
+> +		rc = lan874x_set_wol_pattern(phydev, val, data, datalen, mask,
+> +					     len);
+> +		if (rc < 0)
+> +			return rc;
+> +		priv->wol_arp = true;
+> +	}
+> +
+> +	if (wol->wolopts & WAKE_MCAST) {
+> +		u8 pattern[6] = { 0x33, 0x33, 0xFF, 0x00, 0x00, 0x00 };
+> +		u16 mask[1] = { 0x0007 };
+> +		u8 len = 3;
+> +
+> +		/* Try to match IPv6 Neighbor Solicitation. */
+> +		if (ndev->ip6_ptr) {
+> +			struct list_head *addr_list =
+> +				&ndev->ip6_ptr->addr_list;
+
+And this:
+
+.../smsc.c:485:38: warning: incorrect type in initializer (different address spaces)
+.../smsc.c:485:38:    expected struct list_head *addr_list
+.../smsc.c:485:38:    got struct list_head [noderef] __rcu *
+.../smsc.c:449:45: warning: dereference of noderef expression
+
+Please make sure that patches don't intoduce new warnings with W=1 C=1 builds.
+
+> +			struct inet6_ifaddr *ifa;
+> +
+> +			list_for_each_entry(ifa, addr_list, if_list) {
+> +				if (ifa->scope == IFA_LINK) {
+> +					memcpy(&pattern[3],
+> +					       &ifa->addr.in6_u.u6_addr8[13],
+> +					       3);
+> +					mask[0] = 0x003F;
+> +					len = 6;
+> +					break;
+> +				}
+> +			}
+> +		}
+> +		rc = lan874x_chk_wol_pattern(pattern, mask, len,
+> +					     data, &datalen);
+> +		if (rc)
+> +			phydev_dbg(phydev, "pattern not valid at %d\n", rc);
+> +
+> +		/* Need to match multicast destination address. */
+> +		val = MII_LAN874X_PHY_WOL_FILTER_MCASTTEN;
+> +		rc = lan874x_set_wol_pattern(phydev, val, data, datalen, mask,
+> +					     len);
+> +		if (rc < 0)
+> +			return rc;
+> +		priv->wol_arp = false;
+> +	}
+
+...
+
+> diff --git a/include/linux/smscphy.h b/include/linux/smscphy.h
+> index e1c88627755a..b876333257bf 100644
+> --- a/include/linux/smscphy.h
+> +++ b/include/linux/smscphy.h
+> @@ -38,4 +38,38 @@ int smsc_phy_set_tunable(struct phy_device *phydev,
+>  			 struct ethtool_tunable *tuna, const void *data);
+>  int smsc_phy_probe(struct phy_device *phydev);
+>  
+> +#define MII_LAN874X_PHY_MMD_WOL_WUCSR		0x8010
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_CFGA	0x8011
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_CFGB	0x8012
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK0	0x8021
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK1	0x8022
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK2	0x8023
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK3	0x8024
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK4	0x8025
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK5	0x8026
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK6	0x8027
+> +#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK7	0x8028
+> +#define MII_LAN874X_PHY_MMD_WOL_RX_ADDRA	0x8061
+> +#define MII_LAN874X_PHY_MMD_WOL_RX_ADDRB	0x8062
+> +#define MII_LAN874X_PHY_MMD_WOL_RX_ADDRC	0x8063
+> +#define MII_LAN874X_PHY_MMD_MCFGR		0x8064
+> +
+> +#define MII_LAN874X_PHY_PME1_SET		(2<<13)
+> +#define MII_LAN874X_PHY_PME2_SET		(2<<11)
+
+nit: Maybe GENMASK is appropriate here.
+     If not, please consider spaces around '<<'
+
+> +#define MII_LAN874X_PHY_PME_SELF_CLEAR		BIT(9)
+> +#define MII_LAN874X_PHY_WOL_PFDA_FR		BIT(7)
+> +#define MII_LAN874X_PHY_WOL_WUFR		BIT(6)
+> +#define MII_LAN874X_PHY_WOL_MPR			BIT(5)
+> +#define MII_LAN874X_PHY_WOL_BCAST_FR		BIT(4)
+> +#define MII_LAN874X_PHY_WOL_PFDAEN		BIT(3)
+> +#define MII_LAN874X_PHY_WOL_WUEN		BIT(2)
+> +#define MII_LAN874X_PHY_WOL_MPEN		BIT(1)
+> +#define MII_LAN874X_PHY_WOL_BCSTEN		BIT(0)
+> +
+> +#define MII_LAN874X_PHY_WOL_FILTER_EN		BIT(15)
+> +#define MII_LAN874X_PHY_WOL_FILTER_MCASTTEN	BIT(9)
+> +#define MII_LAN874X_PHY_WOL_FILTER_BCSTEN	BIT(8)
+> +
+> +#define MII_LAN874X_PHY_PME_SELF_CLEAR_DELAY	0x1000 /* 81 milliseconds */
+> +
+>  #endif /* __LINUX_SMSCPHY_H__ */
+
 -- 
-2.39.0
+pw-bot: cr
 
 
