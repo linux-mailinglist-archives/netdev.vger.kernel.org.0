@@ -1,67 +1,66 @@
-Return-Path: <netdev+bounces-5922-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5923-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 51A6F713578
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 17:48:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B39D9713581
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 17:54:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6F0CD28150E
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:48:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5EEC72815FD
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:54:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6715B134BA;
-	Sat, 27 May 2023 15:48:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95E1E134BD;
+	Sat, 27 May 2023 15:54:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5648C3FEF
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 15:48:04 +0000 (UTC)
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA4AA2;
-	Sat, 27 May 2023 08:48:02 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id 98e67ed59e1d1-256531ad335so322313a91.0;
-        Sat, 27 May 2023 08:48:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A70A1078A
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 15:54:40 +0000 (UTC)
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022BDBA;
+	Sat, 27 May 2023 08:54:39 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id d2e1a72fcca58-64d426e63baso2309457b3a.0;
+        Sat, 27 May 2023 08:54:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685202482; x=1687794482;
+        d=gmail.com; s=20221208; t=1685202878; x=1687794878;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=J49g5r+C8X2NVCkBgl8IzrTCMvTMcQQzUyfAMjxZsPg=;
-        b=bUL5aHRkLeXZgL9zLh88p3YSSEdIcCAWRafE5CCYjGxTY3b4C3Nvx9HyPTyr/MFIOy
-         XNJoF8YCF/UuX9K7KUHu0+XrePH07oMRCWX8Xbo1x7sNks0uPXrC7DyAE2YZ4nRJbxmX
-         R+vS/qobWvWDwbY/vp3IFGaoobPrHdxLodkySGURPv0utOVIMAyhkSVf+YGDr2He0s2+
-         mFeAz0s4hFMt6E5OhaapTV9xjhbS5h7hmrocjChFeleEtRzzQxiyNpffZQ1mkdD3wp6N
-         kwic0v4RCyjRUeyXdYulrgWtKqFCkPBnTY7+z+AWj+P7a+4sVK3Mo/U26rqt0pp8KAYf
-         6I9Q==
+        bh=l+G4puGLv1p8z/Hlge1/6NOCJbk0UrLfWek2Xulcb84=;
+        b=gQhLpA9ZJ3MsbjBLRHKg/Bu7sQtUuFnFo0w9+0BYJ9KOLiAmaHm/m4Y4E06NNRB1dl
+         0q6K6DFbWeTb5Z/iyCZr4tT1ppDQtz7yJeeBl9m8r9FuOoRb1xD5m3BqBek2b4tbNxxa
+         pA67T941mfHhp1dUVfT2Jr+DVuBy/2445xXa8FHpcG7rg9eZAqCVjK74O2s10v+F/6ug
+         hMy8q4g8ddP/1iBz/DlNKwpEJann3ERIFh3Wn4PR1+/YgtOpHJkf01XWT69+1N+oMzVG
+         cQNsioSb+HO7UB/dsiirhUAhze1c1ZFpySoti411TJ3f8G7crCWmFMZf6m+agVEApcpW
+         vz+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685202482; x=1687794482;
+        d=1e100.net; s=20221208; t=1685202878; x=1687794878;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=J49g5r+C8X2NVCkBgl8IzrTCMvTMcQQzUyfAMjxZsPg=;
-        b=PH50FTu4ko7yvm2Fk2JnQ26AuDnuOWGzIB6d8MfhR60zmBTY6wGlN5vQX0BpSkGxJJ
-         9Y7nVtKuwh4DkoRYr55ee60cswz3X3nxzdJ/tGYeTZlDBjagJFFn2jceKEOxBxsOZLiE
-         T1x7pnkkXutNV1J0wOYcxvpa4P+2EpotPbArR1ai7B4pXQcHJ0gl0RxuKB2qQM2+E9Ip
-         Lqpqwsx2kGncuZML3CrQ9sBRJvFST8vkGZ6EB7laypT21xOzb4oZbG4ir9qID6mQZPUX
-         c8O0StfYtd2ZXdQv33nuhUmp9UQT+VQGH9vtoieN7AiE2Gl/kp0Vwz2eqLMcT/sKfUrC
-         bTRQ==
-X-Gm-Message-State: AC+VfDzOydpZ7h6/FqkiKCvq2DJw7iX2h93/5WfnSuPoNr1CdtLQetZN
-	aa1rqM/9r86l/GpIoFGE5Y8=
-X-Google-Smtp-Source: ACHHUZ7QPh85GAe4qtDoAAFctO3cPI86At/IRUfb5BaooKwKJwDEqjmatrKZ0/p6N1NdUk4vgS+bMw==
-X-Received: by 2002:a17:90a:7021:b0:250:7d1f:938b with SMTP id f30-20020a17090a702100b002507d1f938bmr6504460pjk.23.1685202481899;
-        Sat, 27 May 2023 08:48:01 -0700 (PDT)
+        bh=l+G4puGLv1p8z/Hlge1/6NOCJbk0UrLfWek2Xulcb84=;
+        b=WTPzrS2QWir+LV+XT/8Atb4wF6jyotde2UUpSUxFuc33Oo+BjdhCCA5O7BCjq6uKzo
+         RKcwRWhdwkzEoWLpuuiW8QXIyIwZZJuNNn1R+xB3E2GcIEwS+ksgsVKGkG8ufUf2/pnM
+         hWnNCwIMcp25uvyH0ppOqloRsvMGRZ6DYDvtPKwDmwnodcGREJrqovxi720HmPz9GMLl
+         akrB0/5heuXRzXyd8qWd1crdxa3gDepJjf6u8n5YPIfLaZfb4kagqWWh0PYcOhby3M0J
+         G+687oTuAPAI2EuwqnfZW6RTfuzCR1z1z2ZWB28dQV6TID5VL/3Y35rR+fBervn6LHLo
+         iXJQ==
+X-Gm-Message-State: AC+VfDw9ZAL0YicsVRX+bjaFqdHMYje1VNW2fQeCy60Gjnaj5cbu4zOW
+	nyCrA5GkRbNVYEMv06uXUqQ=
+X-Google-Smtp-Source: ACHHUZ4eTm+gSTcfMJyzZbWF/OB3D5r515LcsPPvEz9Qas5w+qwp4srtHFosGb4KBrd58salPotjYw==
+X-Received: by 2002:a05:6a21:338b:b0:d5:73ad:87c2 with SMTP id yy11-20020a056a21338b00b000d573ad87c2mr3545769pzb.56.1685202878254;
+        Sat, 27 May 2023 08:54:38 -0700 (PDT)
 Received: from ?IPv6:2605:59c8:448:b800:82ee:73ff:fe41:9a02? ([2605:59c8:448:b800:82ee:73ff:fe41:9a02])
-        by smtp.googlemail.com with ESMTPSA id 5-20020a17090a000500b00253311d508esm6598798pja.27.2023.05.27.08.47.59
+        by smtp.googlemail.com with ESMTPSA id v12-20020a62a50c000000b0063f1430dd57sm4201560pfm.49.2023.05.27.08.54.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 May 2023 08:48:01 -0700 (PDT)
-Message-ID: <f7919c2c9e1cb6218a0b0f55ddaa9a34f7d2b9a7.camel@gmail.com>
-Subject: Re: [PATCH net-next 04/12] mm: Make the page_frag_cache allocator
- use multipage folios
+        Sat, 27 May 2023 08:54:37 -0700 (PDT)
+Message-ID: <51161740e832334594960ed43430b868a6f892c3.camel@gmail.com>
+Subject: Re: [PATCH net-next 03/12] mm: Make the page_frag_cache allocator
+ alignment param a pow-of-2
 From: Alexander H Duyck <alexander.duyck@gmail.com>
-To: Yunsheng Lin <linyunsheng@huawei.com>, David Howells
- <dhowells@redhat.com>,  netdev@vger.kernel.org
+To: David Howells <dhowells@redhat.com>, netdev@vger.kernel.org
 Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
  <edumazet@google.com>,  Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
  <pabeni@redhat.com>, Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
@@ -78,11 +77,10 @@ Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
  <sagi@grimberg.me>, Chaitanya Kulkarni <kch@nvidia.com>, Andrew Morton
  <akpm@linux-foundation.org>,  linux-arm-kernel@lists.infradead.org,
  linux-mediatek@lists.infradead.org,  linux-nvme@lists.infradead.org
-Date: Sat, 27 May 2023 08:47:58 -0700
-In-Reply-To: <a819dd80-54cc-695f-f142-e3d42ce815a7@huawei.com>
+Date: Sat, 27 May 2023 08:54:34 -0700
+In-Reply-To: <20230524153311.3625329-4-dhowells@redhat.com>
 References: <20230524153311.3625329-1-dhowells@redhat.com>
-	 <20230524153311.3625329-5-dhowells@redhat.com>
-	 <a819dd80-54cc-695f-f142-e3d42ce815a7@huawei.com>
+	 <20230524153311.3625329-4-dhowells@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.44.4 (3.44.4-3.fc36) 
@@ -99,71 +97,26 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, 2023-05-26 at 19:56 +0800, Yunsheng Lin wrote:
-> On 2023/5/24 23:33, David Howells wrote:
-> > Change the page_frag_cache allocator to use multipage folios rather tha=
-n
-> > groups of pages.  This reduces page_frag_free to just a folio_put() or
-> > put_page().
+On Wed, 2023-05-24 at 16:33 +0100, David Howells wrote:
+> Make the page_frag_cache allocator's alignment parameter a power of 2
+> rather than a mask and give a warning if it isn't.
 >=20
-> Hi, David
+> This means that it's consistent with {napi,netdec}_alloc_frag_align() and
+> allows __{napi,netdev}_alloc_frag_align() to be removed.
 >=20
-> put_page() is not used in this patch, perhaps remove it to avoid
-> the confusion?
-> Also, Is there any significant difference between __free_pages()
-> and folio_put()? IOW, what does the 'reduces' part means here?
->=20
-> I followed some disscusion about folio before, but have not really
-> understood about real difference between 'multipage folios' and
-> 'groups of pages' yet. Is folio mostly used to avoid the confusion
-> about whether a page is 'headpage of compound page', 'base page' or
-> 'tailpage of compound page'? Or is there any abvious benefit about
-> folio that I missed?
->=20
-> >=20
-> > diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> > index 306a3d1a0fa6..d7c52a5979cc 100644
-> > --- a/include/linux/mm_types.h
-> > +++ b/include/linux/mm_types.h
-> > @@ -420,18 +420,13 @@ static inline void *folio_get_private(struct foli=
-o *folio)
-> >  }
-> > =20
-> >  struct page_frag_cache {
-> > -	void * va;
-> > -#if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
-> > -	__u16 offset;
-> > -	__u16 size;
-> > -#else
-> > -	__u32 offset;
-> > -#endif
-> > +	struct folio	*folio;
-> > +	unsigned int	offset;
-> >  	/* we maintain a pagecount bias, so that we dont dirty cache line
-> >  	 * containing page->_refcount every time we allocate a fragment.
-> >  	 */
-> > -	unsigned int		pagecnt_bias;
-> > -	bool pfmemalloc;
-> > +	unsigned int	pagecnt_bias;
-> > +	bool		pfmemalloc;
-> >  };
->=20
-> It seems 'va' and 'size' field is used to avoid touching 'stuct page' to
-> avoid possible cache bouncing when there is more frag can be allocated
-> from the page while other frags is freed at the same time before this pat=
-ch?
-> It might be worth calling that out in the commit log or split it into ano=
-ther
-> patch to make it clearer and easier to review?
 
-Yes, there is a cost for going from page to virtual address. That is
-why we only use the page when we finally get to freeing or resetting
-the pagecnt_bias.
+This goes against the original intention of these functions. One of the
+reasons why this is being used is because when somebody enables
+something like 2K jumbo frames they don't necessarily want to have to
+allocate 4K SLABs. Instead they can just add a bit of overhead and get
+almost twice the utilization out of an order 3 page.
 
-Also I have some concerns about going from page to folio as it seems
-like the folio_alloc setups the transparent hugepage destructor instead
-of using the compound page destructor. I would think that would slow
-down most users as it looks like there is a spinlock that is taken in
-the hugepage destructor that isn't there in the compound page
-destructor.
+The requirement should only be cache alignment, not power of 2
+alignment. This isn't meant to be a slab allocator. We are just
+sectioning up pages to handle mixed workloads. In the case of
+networking we can end up getting everything from 60B packets, to 1514B
+in the standard cases. That was why we started sectioning up pages in
+the first place so putting a power of 2 requirement on it doens't fit
+our use case at all and is what we were trying to get away from with
+the SLAB allocators.
 
