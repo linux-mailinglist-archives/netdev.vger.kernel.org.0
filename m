@@ -1,51 +1,51 @@
-Return-Path: <netdev+bounces-5918-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5919-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 92B8771355B
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 17:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id EAD9B71355E
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 17:09:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 16FC01C20A03
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:08:46 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9C6BC1C20AE1
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:09:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 62BFF134AA;
-	Sat, 27 May 2023 15:08:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D371134AB;
+	Sat, 27 May 2023 15:09:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52037134A5
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 15:08:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A4A71078A
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 15:09:07 +0000 (UTC)
 Received: from sequoia-grove.ad.secure-endpoints.com (sequoia-grove.ad.secure-endpoints.com [IPv6:2001:470:1f07:f77:70f5:c082:a96a:5685])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B83116
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 08:08:39 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E065D3
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 08:09:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/relaxed;
-	d=auristor.com; s=MDaemon; r=y; t=1685200118; x=1685804918;
+	d=auristor.com; s=MDaemon; r=y; t=1685200144; x=1685804944;
 	i=jaltman@auristor.com; q=dns/txt; h=Message-ID:Date:
 	MIME-Version:User-Agent:From:Subject:To:Cc:References:
-	Content-Language:Organization:In-Reply-To:Content-Type; bh=Qibg7
-	x4Zpl3S57mTxC2OBmLK/SkQTYNwEW9Jf0USha8=; b=UGAX9luxsKqzSlsjx8p+k
-	HAYVj7vynjAQZstXY/qmNGcxudkBOOFe1och48TIBLwAa7N8pFgonyQDJY4TxP3j
-	ANqUSM6S0iSXrBRxtGOVRSG5XH5UE3m5hxwzq6dN0Ephb3SqOcoyJRoLTyJzQxUB
-	RM/f8XvUjXbh4v3H7+s+o4=
+	Content-Language:Organization:In-Reply-To:Content-Type; bh=fBr5v
+	aU5l4+M2dWD4AhY0TC41S4UlzvUhHAedWHRyPU=; b=CFllCGTd/DIPLRw4+2q+E
+	hpZ3CpjIkr27L01OvOyb5u/QHrWn+IUq0UbDqnG5dPytlaf1dTD7RE3v7/MPom9a
+	LJi8vi1mpz4GBpguite9lZKl/uxSlyLBBLlZ0PFdK5QsD1aawkNkWVig6x7x9usR
+	q+6z9S4lNvFgx0htrFxKOc=
 X-MDAV-Result: clean
-X-MDAV-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 11:08:38 -0400
+X-MDAV-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 11:09:04 -0400
 Received: from [IPV6:2603:7000:73c:9c99:401:2567:fdc3:c2b4] by auristor.com (IPv6:2001:470:1f07:f77:28d9:68fb:855d:c2a5) (MDaemon PRO v23.0.2c) 
-	with ESMTPSA id md5001003473524.msg; Sat, 27 May 2023 11:08:38 -0400
-X-Spam-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 11:08:38 -0400
+	with ESMTPSA id md5001003473528.msg; Sat, 27 May 2023 11:09:03 -0400
+X-Spam-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 11:09:03 -0400
 	(not processed: message from trusted or authenticated source)
 X-MDRemoteIP: 2603:7000:73c:9c99:401:2567:fdc3:c2b4
 X-MDHelo: [IPV6:2603:7000:73c:9c99:401:2567:fdc3:c2b4]
-X-MDArrival-Date: Sat, 27 May 2023 11:08:38 -0400
+X-MDArrival-Date: Sat, 27 May 2023 11:09:03 -0400
 X-MDOrigin-Country: US, NA
 X-Authenticated-Sender: jaltman@auristor.com
 X-Return-Path: prvs=1511ba3f43=jaltman@auristor.com
 X-Envelope-From: jaltman@auristor.com
 X-MDaemon-Deliver-To: netdev@vger.kernel.org
-Message-ID: <76cb5084-a2aa-6ccd-b531-6338f6673f51@auristor.com>
-Date: Sat, 27 May 2023 11:08:33 -0400
+Message-ID: <c22f76b1-0559-410f-38f2-266e1a9fcca5@auristor.com>
+Date: Sat, 27 May 2023 11:08:58 -0400
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -56,61 +56,87 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.1
 From: Jeffrey E Altman <jaltman@auristor.com>
 Subject: Re: [PATCH] Remove hardcoded static string length
-To: Andrew Lunn <andrew@lunn.ch>, Kenny Ho <y2kenny@gmail.com>
-Cc: Marc Dionne <marc.dionne@auristor.com>, Kenny Ho <Kenny.Ho@amd.com>,
- David Howells <dhowells@redhat.com>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+To: Kenny Ho <y2kenny@gmail.com>, David Laight <David.Laight@aculab.com>
+Cc: Andrew Lunn <andrew@lunn.ch>, Marc Dionne <marc.dionne@auristor.com>,
+ Kenny Ho <Kenny.Ho@amd.com>, David Howells <dhowells@redhat.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
  Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- linux-afs@lists.infradead.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
+ "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 References: <20230523223944.691076-1-Kenny.Ho@amd.com>
  <01936d68-85d3-4d20-9beb-27ff9f62d826@lunn.ch>
  <CAB9dFdt4-cBFhEqsTXk9suE+Bw-xcpM0n3Q6rFmBaa+8A5uMWQ@mail.gmail.com>
  <c0fda91b-1e98-420f-a18a-16bbed25e98d@lunn.ch>
  <CAOWid-erNGD24Ouf4fAJJBqm69QVoHOpNt0E-G+Wt=nq1W4oBQ@mail.gmail.com>
  <5b1355b8-17f7-49c8-b7b5-3d9ecdb146ce@lunn.ch>
+ <CAOWid-dYtkcKuNxoOyf3yqSJ7OtcNjaqJLVX1QhRUhYSOO6vHA@mail.gmail.com>
+ <30d65ea9170d4f60bd76ed516541cb46@AcuMS.aculab.com>
+ <CAOWid-eEbeeU9mOpwgOatt5rHQhRt+xPrsQ1fsMemVZDdeN=MQ@mail.gmail.com>
+ <81d01562a59a4fb49cd4681ebcf2e74a@AcuMS.aculab.com>
+ <CAOWid-d=OFn7JS5JvsK9qc7X6HeZgOm5OAd1_g2=_GZgpKRZnA@mail.gmail.com>
 Content-Language: en-US
 Organization: AuriStor, Inc.
-In-Reply-To: <5b1355b8-17f7-49c8-b7b5-3d9ecdb146ce@lunn.ch>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms060009050609070502080304"
+In-Reply-To: <CAOWid-d=OFn7JS5JvsK9qc7X6HeZgOm5OAd1_g2=_GZgpKRZnA@mail.gmail.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms010900070404080802040909"
 X-MDCFSigsAdded: auristor.com
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 This is a cryptographically signed message in MIME format.
 
---------------ms060009050609070502080304
+--------------ms010900070404080802040909
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 5/24/2023 1:43 PM, Andrew Lunn wrote:
-> On Wed, May 24, 2023 at 01:02:36PM -0400, Kenny Ho wrote:
->> On Wed, May 24, 2023 at 12:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
->>> So the compiler warning/error needs to be fixed a different want.
->> Understood. Would caping the length at iov_len with a ternary be 
->> sufficient?
-> The quoted text said 'string'. It is not clear if that means c-string,
-> with a trailing \0. If you just cap iov_len you could end up with a
-> string which is not terminated.
-The expected buffer is a NUL terminated c-string.
-> The other end of the socket should not blow up, because that would be
-> an obvious DOS or buffer overwrite attack vector.
+On 5/25/2023 11:37 AM, Kenny Ho wrote:
+> On Thu, May 25, 2023 at 11:04 AM David Laight<David.Laight@aculab.com>  wrote:
+>>> "The standard formulation seems to be: <project> <version> built
+>>> <yyyy>-<mm>-<dd>"
+>> Which I don't recall the string actually matching?
+>> Also the people who like reproducible builds don't like __DATE__.
+> That's correct, it was not matching even when it was introduced.  I am
+> simply taking that as people caring about the content and not simply
+> making rxrpc_version_string == UTS_RELEASE.  The current format is:
+>
+> "linux-" UTS_RELEASE " AF_RXRPC"
+>
+> Kenny
 
-This is a valid concern because all versions of IBM AFS 3.6 Rx and 
-OpenAFS Rx prior to 1.6.23 are susceptible to read beyond the end of 
-buffer if either the received data is longer than 65 octets or the 
-received data is 65 octets but not NUL terminated.
+The RX_PACKET_TYPE_VERSION query is issued by the "rxdebug <host> <port> 
+-version" command which prints the received string to stdout.   It has 
+also been used some implementations to record the version of the peer.   
+Although it is required that a response to the RX_PACKET_TYPE_VERSION 
+query be issued, there is no requirement that the returned string 
+contain anything beyond a single NUL octet.
+
+Although it is convenient to be able to remotely identify the version of 
+an Rx implementation, there are good reasons why this information should 
+not be exposed to an anonymous requester:
+
+ 1. Linux AF_RXRPC is part of the kernel.  As such, returning
+    UTS_RELEASE identifies to potential attackers the explicit kernel
+    version, architecture and perhaps distro.  As this query can be
+    issued anonymously, this provides an information disclosure that can
+    be used to target known vulnerabilities in the kernel.
+ 2. The RX_PACKET_TYPE_VERSION reply is larger than the query by the
+    number of octets in the version data.  As the query is received via
+    udp with no reachability test, it means that the
+    RX_PACKET_TYPE_VERSION query/response can be used to perform an 3.3x
+    amplification attack: 28 octets in and potentially 93 octets out.
+
+With my security hat on I would suggest that either AF_RXRPC return a 
+single NUL octet or the c-string "AF_RXRPC" and nothing more.
 
 Jeffrey Altman
 
 
 
-
---------------ms060009050609070502080304
+--------------ms010900070404080802040909
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -179,18 +205,18 @@ p/BscizYdNk2WXJMTnH+wVLN8sLEwEtQR4eTLoFmQvrK2AMBS9kW5sBkMzINt/ZbbcZ3F+eA
 MDGCAxQwggMQAgEBME4wOjELMAkGA1UEBhMCVVMxEjAQBgNVBAoTCUlkZW5UcnVzdDEXMBUG
 A1UEAxMOVHJ1c3RJRCBDQSBBMTMCEEABgmmaL+s+f8XR8nIOXMwwDQYJYIZIAWUDBAIBBQCg
 ggGXMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDUyNzE1
-MDgzM1owLwYJKoZIhvcNAQkEMSIEIGFlo3MXMz+hJulcthFb1XbQXAPq/3E6wjobm0FlR/3n
+MDg1OFowLwYJKoZIhvcNAQkEMSIEIKUG3xhHKm0s+6hIgcn+Bis43ck3z/lCmDGlveI5zI1B
 MF0GCSsGAQQBgjcQBDFQME4wOjELMAkGA1UEBhMCVVMxEjAQBgNVBAoTCUlkZW5UcnVzdDEX
 MBUGA1UEAxMOVHJ1c3RJRCBDQSBBMTMCEEABgmmaL+s+f8XR8nIOXMwwXwYLKoZIhvcNAQkQ
 AgsxUKBOMDoxCzAJBgNVBAYTAlVTMRIwEAYDVQQKEwlJZGVuVHJ1c3QxFzAVBgNVBAMTDlRy
 dXN0SUQgQ0EgQTEzAhBAAYJpmi/rPn/F0fJyDlzMMGwGCSqGSIb3DQEJDzFfMF0wCwYJYIZI
 AWUDBAEqMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZI
-hvcNAwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEASZZD
-U9UczcaICVtWX/m2Zn1Cl6+Rst4CCxRYMXlYRC9EPkvqdXUZ0NeAweSTGGf00dD7XOKAYLXO
-gjIz1s0mloYtfHgDdJRYyyBq+8kPzU7P0Fi4ZZ70y06KD0HrPJ9XjhsAubdfTa/jiaBXu7FB
-A0+yZrXgG/j22pbMpzhgO5phuyakKkhNhzzwoheZvxBHNSa/v5mS53a7cPRj+e7rLhJSiw6C
-Ei7e5OUgAoGmsLLtZdtZ4HvEY5sKQZ+Wl5nEubtT69M+H8UFr3WZHOoOX7hHWi6NhHT/MZg7
-EkJYanp8sIWI4A4YZ824hHwtTRJg70MFvub66JTRvw9GxIXS+AAAAAAAAA==
---------------ms060009050609070502080304--
+hvcNAwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEALVTu
+3M9hW2LbbV43BuSc2z80x7zOjWzxLcxuG7hKQFDUv95dJ90hiHllwzmoHTB8nsKVPnthIFKy
+obBKxmglqOU+SAVXrtK48xPFuTfudFo/kC2+ZoL4Mr7sqLx9Kj9OqrvRteGjimaLL2jDy3N3
+1wykbVIEiZOPTbhMpqurAnSr1Qg9fljZT8OyTl1qBVHrqW1GcyCUYz81Nnl2FdNhFNFqmYXo
+CTq8hMRNbCk3vUyxlbdO3vTXdWvfWAqwY7OVZgaohBZ+k6/6SHiAvrv9xbhn1M36GT7bMT5l
+FxGBX0GPLWyqFQwIy2i7XMc39rPQAXWHR4vVn3Js+IIh70Q2hQAAAAAAAA==
+--------------ms010900070404080802040909--
 
 
