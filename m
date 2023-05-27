@@ -1,105 +1,76 @@
-Return-Path: <netdev+bounces-5851-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5852-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 74A4B71326B
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 06:04:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id DA576713279
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 06:08:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9A1202819CE
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 04:04:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 94C501C21101
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 04:08:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B9EB389;
-	Sat, 27 May 2023 04:04:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B07A5A20;
+	Sat, 27 May 2023 04:08:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DC00646
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 04:04:39 +0000 (UTC)
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B90D7
-	for <netdev@vger.kernel.org>; Fri, 26 May 2023 21:04:36 -0700 (PDT)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R261e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VjYbSEb_1685160272;
-Received: from localhost(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0VjYbSEb_1685160272)
-          by smtp.aliyun-inc.com;
-          Sat, 27 May 2023 12:04:33 +0800
-From: Cambda Zhu <cambda@linux.alibaba.com>
-To: netdev@vger.kernel.org
-Cc: Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Jason Xing <kerneljasonxing@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	David Ahern <dsahern@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Dust Li <dust.li@linux.alibaba.com>,
-	Tony Lu <tonylu@linux.alibaba.com>,
-	Cambda Zhu <cambda@linux.alibaba.com>,
-	Jack Yang <mingliang@linux.alibaba.com>
-Subject: [PATCH net v3] tcp: Return user_mss for TCP_MAXSEG in CLOSE/LISTEN state if user_mss set
-Date: Sat, 27 May 2023 12:03:17 +0800
-Message-Id: <20230527040317.68247-1-cambda@linux.alibaba.com>
-X-Mailer: git-send-email 2.16.6
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4803646
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 04:08:24 +0000 (UTC)
+Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3686719C;
+	Fri, 26 May 2023 21:08:16 -0700 (PDT)
+Date: Sat, 27 May 2023 04:07:56 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
+	s=jszrlxa4gzh5bnhkd22xh7nmpi.protonmail; t=1685160491; x=1685419691;
+	bh=xmCBZKa3oW/2MDrSFjMmMw1tLSxZ4M52/i7LPIG8qlY=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=eAxamXziwf1i2MmtvkA3Y+EBp9goOjRkfFNG7Io8CN16Ak2ZAr7YY55QliuEU9+nl
+	 auc7vbfWAoFKxXrKhWaVts6xa/2UJm9KETSMYDAmd6PNGA8OH8U6G57XdEr4ZHLxNh
+	 tDlx6bcQr1qw37hIMQo+t+OC7wXQXRVRi1nxsvAJ/QxvGwWACxTtKROj6DZCjw+U9J
+	 g15RWUl7Y0VOEAL3LBbVJMj97Tih4fCyL62uUHuSDCULg2B7th97JilMF8b8pq4b7d
+	 WpVgxhxJQwScJwk1nyjnEHtEjiC2/sJf0Ma5R3okXBG1MwlEwTPvpAwyP6RDHwHdh1
+	 E36a8gy2dPrQw==
+To: Bagas Sanjaya <bagasdotme@gmail.com>
+From: Sami Korkalainen <sami.korkalainen@proton.me>
+Cc: Linux Stable <stable@vger.kernel.org>, Linux Regressions <regressions@lists.linux.dev>, Linux Networking <netdev@vger.kernel.org>, Linux ACPI <linux-acpi@vger.kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [REGRESSION][BISECTED] Boot stall from merge tag 'net-next-6.2'
+Message-ID: <NVN-hJsvHwaHe6R-y6XIYJp0FV7sCavgMjobFnseULT1wjgkOFNXbGBGT5iVjCfbtU7dW5xy2hIDoq0ASeNaXhvSY-g2Df4aHWVIMQ2c3TQ=@proton.me>
+In-Reply-To: <ZHFaFosKY24-L7tQ@debian.me>
+References: <GQUnKz2al3yke5mB2i1kp3SzNHjK8vi6KJEh7rnLrOQ24OrlljeCyeWveLW9pICEmB9Qc8PKdNt3w1t_g3-Uvxq1l8Wj67PpoMeWDoH8PKk=@proton.me> <ZHFaFosKY24-L7tQ@debian.me>
+Feedback-ID: 45678890:user:proton
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-This patch replaces the tp->mss_cache check in getting TCP_MAXSEG
-with tp->rx_opt.user_mss check for CLOSE/LISTEN sock. Since
-tp->mss_cache is initialized with TCP_MSS_DEFAULT, checking if
-it's zero is probably a bug.
+>Where is SCSI info?
 
-With this change, getting TCP_MAXSEG before connecting will return
-default MSS normally, and return user_mss if user_mss is set.
+Right there, under the text (It was so short, that I thought to put it in t=
+he message. Maybe I should have put that also in pastebin for consistency a=
+nd clarity):
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Jack Yang <mingliang@linux.alibaba.com>
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/netdev/CANn89i+3kL9pYtkxkwxwNMzvC_w3LNUum_2=3u+UyLBmGmifHA@mail.gmail.com/#t
-Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
-Link: https://lore.kernel.org/netdev/14D45862-36EA-4076-974C-EA67513C92F6@linux.alibaba.com/
-Reviewed-by: Jason Xing <kerneljasonxing@gmail.com>
----
-v3:
-- Add CC maintainers.
+Attached devices:
+Host: scsi0 Channel: 00 Id: 00 Lun: 00
+Vendor: ATA      Model: KINGSTON SVP200S Rev: C4
+Type:   Direct-Access                    ANSI  SCSI revision: 05
+Host: scsi1 Channel: 00 Id: 00 Lun: 00
+Vendor: hp       Model: CDDVDW TS-L633M  Rev: 0301
+Type:   CD-ROM                           ANSI  SCSI revision: 05
 
-v2:
-- Update Fixes tag with commit in current tree.
-- Add Jason's Reviewed-by tag.
-
-v1:
-- Return default MSS if user_mss not set for backwards compatibility.
-- Send patch to net instead of net-next, with Fixes tag.
-- Add Eric's tags.
----
- net/ipv4/tcp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 4d6392c16b7a..3e01a58724b8 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4081,7 +4081,8 @@ int do_tcp_getsockopt(struct sock *sk, int level,
- 	switch (optname) {
- 	case TCP_MAXSEG:
- 		val = tp->mss_cache;
--		if (!val && ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
-+		if (tp->rx_opt.user_mss &&
-+		    ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
- 			val = tp->rx_opt.user_mss;
- 		if (tp->repair)
- 			val = tp->rx_opt.mss_clamp;
--- 
-2.16.6
-
+>I think networking changes shouldn't cause this ACPI regression, right?
+Yeah, beats me, but that's what I got by bisecting. My expertise ends about=
+ here.
 
