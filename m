@@ -1,52 +1,51 @@
-Return-Path: <netdev+bounces-5912-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5913-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4F42D713528
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 16:24:53 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B6D5071352F
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 16:45:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id ECFEA1C20A87
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 14:24:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1EFF51C209E5
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 14:45:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0EAD3125D6;
-	Sat, 27 May 2023 14:24:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0971F11CBB;
+	Sat, 27 May 2023 14:45:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F150820EB
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 14:24:49 +0000 (UTC)
-X-Greylist: delayed 242 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 27 May 2023 07:24:47 PDT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E131A644
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 14:45:20 +0000 (UTC)
 Received: from sequoia-grove.ad.secure-endpoints.com (sequoia-grove.ad.secure-endpoints.com [IPv6:2001:470:1f07:f77:70f5:c082:a96a:5685])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E0BB4
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 07:24:46 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222CBE3
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 07:45:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/relaxed;
-	d=auristor.com; s=MDaemon; r=y; t=1685197242; x=1685802042;
+	d=auristor.com; s=MDaemon; r=y; t=1685198718; x=1685803518;
 	i=jaltman@auristor.com; q=dns/txt; h=Message-ID:Date:
-	MIME-Version:User-Agent:Subject:To:Cc:References:
-	Content-Language:From:Organization:In-Reply-To:Content-Type;
-	bh=Vi9PzcyFFsaHlFnFOVoXC09Y/5y5HvFtbe/EXH+86Js=; b=Xsm5EGJM0xX97
-	nqzuUKg/I1ei0bpIFSj5thN6AcVZivE8XLoAiRfkloGh2wq9ER2MTxwU8NtylDXz
-	PS3xtzL0hI1jcf4CXK1z4ZaOR7AnvDwutJTSU0sDgrXy781di1F+PZm9OxcvWqow
-	mI8ZIvHEZYH5rsms3DihE6QTx1lcVs=
+	MIME-Version:User-Agent:Subject:Content-Language:To:Cc:
+	References:From:Organization:In-Reply-To:Content-Type; bh=P0zjCt
+	3tuUnpATArZQqhGBrDVh4m1AJKb6dAfgkwLaU=; b=SxYNHip/Z7rYEVRQDxvwHd
+	opXUGGqWTuFI5PP+jHJ72TI0OOzbblU3BXW6Yk8yae8GpRHJLut7fFm7cWmqVu66
+	BBaO7grLmIinm9MAHf8ZQxhPpDxCbmZAL0S41QvG8V/mK/B0QTFeluSpkJIBGV/A
+	FhVReftK/bE1Qe7qgFftA=
 X-MDAV-Result: clean
-X-MDAV-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 10:20:42 -0400
+X-MDAV-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 10:45:18 -0400
 Received: from [IPV6:2603:7000:73c:9c99:401:2567:fdc3:c2b4] by auristor.com (IPv6:2001:470:1f07:f77:28d9:68fb:855d:c2a5) (MDaemon PRO v23.0.2c) 
-	with ESMTPSA id md5001003473501.msg; Sat, 27 May 2023 10:20:40 -0400
-X-Spam-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 10:20:40 -0400
+	with ESMTPSA id md5001003473511.msg; Sat, 27 May 2023 10:45:16 -0400
+X-Spam-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 10:45:16 -0400
 	(not processed: message from trusted or authenticated source)
 X-MDRemoteIP: 2603:7000:73c:9c99:401:2567:fdc3:c2b4
 X-MDHelo: [IPV6:2603:7000:73c:9c99:401:2567:fdc3:c2b4]
-X-MDArrival-Date: Sat, 27 May 2023 10:20:40 -0400
+X-MDArrival-Date: Sat, 27 May 2023 10:45:16 -0400
 X-MDOrigin-Country: US, NA
 X-Authenticated-Sender: jaltman@auristor.com
 X-Return-Path: prvs=1511ba3f43=jaltman@auristor.com
 X-Envelope-From: jaltman@auristor.com
 X-MDaemon-Deliver-To: netdev@vger.kernel.org
-Message-ID: <2a3bc88a-d851-b3c4-89d4-fdcc4378c2f5@auristor.com>
-Date: Sat, 27 May 2023 10:20:33 -0400
+Message-ID: <51ea1522-edc2-bd15-2873-0712e7eb49c3@auristor.com>
+Date: Sat, 27 May 2023 10:45:10 -0400
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -55,125 +54,61 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.1
-Subject: Re: [PATCH net] rxrpc: Truncate UTS_RELEASE for rxrpc version
-To: David Howells <dhowells@redhat.com>, netdev@vger.kernel.org
-Cc: Kenny Ho <Kenny.Ho@amd.com>, Marc Dionne <marc.dionne@auristor.com>,
- Andrew Lunn <andrew@lunn.ch>, David Laight <David.Laight@ACULAB.COM>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <654974.1685100894@warthog.procyon.org.uk>
+Subject: Re: [PATCH] Remove hardcoded static string length
 Content-Language: en-US
+To: Andrew Lunn <andrew@lunn.ch>, Kenny Ho <y2kenny@gmail.com>
+Cc: Marc Dionne <marc.dionne@auristor.com>, Kenny Ho <Kenny.Ho@amd.com>,
+ David Howells <dhowells@redhat.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20230523223944.691076-1-Kenny.Ho@amd.com>
+ <01936d68-85d3-4d20-9beb-27ff9f62d826@lunn.ch>
+ <CAB9dFdt4-cBFhEqsTXk9suE+Bw-xcpM0n3Q6rFmBaa+8A5uMWQ@mail.gmail.com>
+ <c0fda91b-1e98-420f-a18a-16bbed25e98d@lunn.ch>
+ <CAOWid-erNGD24Ouf4fAJJBqm69QVoHOpNt0E-G+Wt=nq1W4oBQ@mail.gmail.com>
+ <5b1355b8-17f7-49c8-b7b5-3d9ecdb146ce@lunn.ch>
 From: Jeffrey E Altman <jaltman@auristor.com>
 Organization: AuriStor, Inc.
-In-Reply-To: <654974.1685100894@warthog.procyon.org.uk>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms030104000003030305050504"
+In-Reply-To: <5b1355b8-17f7-49c8-b7b5-3d9ecdb146ce@lunn.ch>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms080803090806010400090206"
 X-MDCFSigsAdded: auristor.com
-X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URI_DOTEDU autolearn=no
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 This is a cryptographically signed message in MIME format.
 
---------------ms030104000003030305050504
+--------------ms080803090806010400090206
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 5/26/2023 7:34 AM, David Howells wrote:
->      
-> UTS_RELEASE has a maximum length of 64 which can cause rxrpc_version to
-> exceed the 65 byte message limit.
->
-> Per the rx spec[1]: "If a server receives a packet with a type value of 13,
-> and the client-initiated flag set, it should respond with a 65-byte payload
-> containing a string that identifies the version of AFS software it is
-> running."
->
-> The current implementation causes a compile error when WERROR is turned on
-> and/or UTS_RELEASE exceeds the length of 49 (making the version string more
-> than 64 characters).
->
-> Fix this by generating the string during module initialisation and limiting
-> the UTS_RELEASE segment of the string does not exceed 49 chars.  We need to
-> make sure that the 64 bytes includes "linux-" at the front and " AF_RXRPC"
-> at the back as this may be used in pattern matching.
->
-> Fixes: 44ba06987c0b ("RxRPC: Handle VERSION Rx protocol packets")
-> Reported-by: Kenny Ho <Kenny.Ho@amd.com>
-> Link: https://lore.kernel.org/r/20230523223944.691076-1-Kenny.Ho@amd.com/
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> Acked-by: Kenny Ho <Kenny.Ho@amd.com>
-> cc: Marc Dionne <marc.dionne@auristor.com>
-> cc: Andrew Lunn <andrew@lunn.ch>
-> cc: David Laight <David.Laight@ACULAB.COM>
-> cc: "David S. Miller" <davem@davemloft.net>
-> cc: Eric Dumazet <edumazet@google.com>
-> cc: Jakub Kicinski <kuba@kernel.org>
-> cc: Paolo Abeni <pabeni@redhat.com>
-> cc: linux-afs@lists.infradead.org
-> cc: netdev@vger.kernel.org
-> Link: https://web.mit.edu/kolya/afs/rx/rx-spec [1]
-> ---
->   net/rxrpc/af_rxrpc.c    |    1 +
->   net/rxrpc/ar-internal.h |    1 +
->   net/rxrpc/local_event.c |   11 ++++++++++-
->   3 files changed, 12 insertions(+), 1 deletion(-)
->
-> diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
-> index 31f738d65f1c..da0b3b5157d5 100644
-> --- a/net/rxrpc/af_rxrpc.c
-> +++ b/net/rxrpc/af_rxrpc.c
-> @@ -980,6 +980,7 @@ static int __init af_rxrpc_init(void)
->   	BUILD_BUG_ON(sizeof(struct rxrpc_skb_priv) > sizeof_field(struct sk_buff, cb));
->   
->   	ret = -ENOMEM;
-> +	rxrpc_gen_version_string();
->   	rxrpc_call_jar = kmem_cache_create(
->   		"rxrpc_call_jar", sizeof(struct rxrpc_call), 0,
->   		SLAB_HWCACHE_ALIGN, NULL);
-> diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-> index 5d44dc08f66d..e8e14c6f904d 100644
-> --- a/net/rxrpc/ar-internal.h
-> +++ b/net/rxrpc/ar-internal.h
-> @@ -1068,6 +1068,7 @@ int rxrpc_get_server_data_key(struct rxrpc_connection *, const void *, time64_t,
->   /*
->    * local_event.c
->    */
-> +void rxrpc_gen_version_string(void);
->   void rxrpc_send_version_request(struct rxrpc_local *local,
->   				struct rxrpc_host_header *hdr,
->   				struct sk_buff *skb);
-> diff --git a/net/rxrpc/local_event.c b/net/rxrpc/local_event.c
-> index 5e69ea6b233d..993c69f97488 100644
-> --- a/net/rxrpc/local_event.c
-> +++ b/net/rxrpc/local_event.c
-> @@ -16,7 +16,16 @@
->   #include <generated/utsrelease.h>
->   #include "ar-internal.h"
->   
-> -static const char rxrpc_version_string[65] = "linux-" UTS_RELEASE " AF_RXRPC";
-> +static char rxrpc_version_string[65]; // "linux-" UTS_RELEASE " AF_RXRPC";
-> +
-> +/*
-> + * Generate the VERSION packet string.
-> + */
-> +void rxrpc_gen_version_string(void)
-> +{
-> +	snprintf(rxrpc_version_string, sizeof(rxrpc_version_string),
-> +		 "linux-%.49s AF_RXRPC", UTS_RELEASE);
-> +}
->   
->   /*
->    * Reply to a version request
->
-Reviewed-by: Jeffrey Altman <jaltman@auristor.com>
+On 5/24/2023 1:43 PM, Andrew Lunn wrote:
+> On Wed, May 24, 2023 at 01:02:36PM -0400, Kenny Ho wrote:
+>> On Wed, May 24, 2023 at 12:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>>> So the compiler warning/error needs to be fixed a different want.
+>> Understood.  Would caping the length at iov_len with a ternary be sufficient?
+> The quoted text said 'string'. It is not clear if that means c-string,
+> with a trailing \0. If you just cap iov_len you could end up with a
+> string which is not terminated.
+The expected buffer is a NUL terminated c-string.
+> The other end of the socket should not blow up, because that would be
+> an obvious DOS or buffer overwrite attack vector.
+
+This is a valid concern because all versions of IBM AFS 3.6 Rx and 
+OpenAFS Rx prior to 1.6.23 are susceptible to read beyond the end of 
+buffer if either the received data is longer than 65 octets or the 
+received data is 65 octets but not NUL terminated.
+
+Jeffrey Altman
 
 
 
---------------ms030104000003030305050504
+--------------ms080803090806010400090206
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -242,18 +177,18 @@ p/BscizYdNk2WXJMTnH+wVLN8sLEwEtQR4eTLoFmQvrK2AMBS9kW5sBkMzINt/ZbbcZ3F+eA
 MDGCAxQwggMQAgEBME4wOjELMAkGA1UEBhMCVVMxEjAQBgNVBAoTCUlkZW5UcnVzdDEXMBUG
 A1UEAxMOVHJ1c3RJRCBDQSBBMTMCEEABgmmaL+s+f8XR8nIOXMwwDQYJYIZIAWUDBAIBBQCg
 ggGXMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDUyNzE0
-MjAzM1owLwYJKoZIhvcNAQkEMSIEIBxhlGJkASrECQ+WELnnl4qoQVeG0EoggCIMCZg2BpRN
+NDUxMFowLwYJKoZIhvcNAQkEMSIEICCzqUhZaac2mBcRMTMSFVOUhsltz25bdhvoK0wfek/+
 MF0GCSsGAQQBgjcQBDFQME4wOjELMAkGA1UEBhMCVVMxEjAQBgNVBAoTCUlkZW5UcnVzdDEX
 MBUGA1UEAxMOVHJ1c3RJRCBDQSBBMTMCEEABgmmaL+s+f8XR8nIOXMwwXwYLKoZIhvcNAQkQ
 AgsxUKBOMDoxCzAJBgNVBAYTAlVTMRIwEAYDVQQKEwlJZGVuVHJ1c3QxFzAVBgNVBAMTDlRy
 dXN0SUQgQ0EgQTEzAhBAAYJpmi/rPn/F0fJyDlzMMGwGCSqGSIb3DQEJDzFfMF0wCwYJYIZI
 AWUDBAEqMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZI
-hvcNAwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEAXBt8
-wyUZPEV6JAAvOmiKEjKw2Zni+7jFCJg126C12VHTJW2eFLybkouVx55J4etDgLhRPZvnpiBx
-ntJPw75lE337jdDbrYn/D2T/e1WMY1Hwhd0q0eZtwZJ6lxXvu4M96ssQDIcJ3rKIQ4Fz9bH4
-zogfo3Bzj1MLMCR8QF9jrtsrn1e5oNG2ADH+1qE33DdgHPck06IAComO++CRZXl2XLJCyWnT
-ohpbt5sb9QCPYlrU02R1PKlL+7Rk0JFMRICzwXEb6TY3vnhZO+Tuxbbz0xuQP2nnbxBUXw+p
-VKT5D9eWCuSwOkYPsFUeS871pGrzeSQ4YuXa27f0sn0Je00XnAAAAAAAAA==
---------------ms030104000003030305050504--
+hvcNAwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEAfunV
+btawcQPyQHkWSzcuphraBPmYQIPX5MXqCOwnHJDoxiP8tTEwadI1mcR+unDZHEo5fv28+cDc
+IStZFrD4VsmCnoInggfzu3urUcnoGtV+NBeMP/yo1XThw/D89qRSqRZdE88YzXQ9B0DqdIlZ
+bjhdWTXclmv7QNM8LNwG6p1TIL6m42O50nNa0cKuIK8/6FU6NYS7RgcynD9QDrQIGdQR53Gg
+Pq7ucqX5EtzjewOTGm3exBflg2sJbcaRKy2vd044LeKTa+Ms2K/vtfZTesmVObGSxtEObOfy
+YtzawT59cbObzDigzYd65RfsK6SCsbP6XxLUlYj5e9JSKSWPagAAAAAAAA==
+--------------ms080803090806010400090206--
 
 
