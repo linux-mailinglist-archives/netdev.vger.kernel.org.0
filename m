@@ -1,51 +1,51 @@
-Return-Path: <netdev+bounces-5916-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5917-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7D47571353E
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 17:05:50 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 061E1713559
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 17:08:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A584D281743
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:05:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 14ADF281767
+	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 15:08:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 98E0F134A5;
-	Sat, 27 May 2023 15:05:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06E45134A9;
+	Sat, 27 May 2023 15:08:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87E76644
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 15:05:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E78E6134A5
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 15:08:20 +0000 (UTC)
 Received: from sequoia-grove.ad.secure-endpoints.com (sequoia-grove.ad.secure-endpoints.com [IPv6:2001:470:1f07:f77:70f5:c082:a96a:5685])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A34E3
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 08:05:44 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4326CEA
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 08:08:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/relaxed;
-	d=auristor.com; s=MDaemon; r=y; t=1685199943; x=1685804743;
+	d=auristor.com; s=MDaemon; r=y; t=1685200098; x=1685804898;
 	i=jaltman@auristor.com; q=dns/txt; h=Message-ID:Date:
-	MIME-Version:User-Agent:Subject:Content-Language:To:Cc:
-	References:From:Organization:In-Reply-To:Content-Type; bh=OGHV7f
-	8FsngynZ1IOn8sEr+4Qm71i/QsjmyDT/W+DW4=; b=ScoZ1OqKHMzHBfI8Qppmkb
-	AhnyRB5F8QIBE8YkP7JfkELcdwyT+tUWhjPUp9lx8yVxc5fzWQYdw9QCx5maas5s
-	tvHZVDq0nMEjWZvGEVB0nPmP60VP0IOWsTm82Cf6SRCoDgpEKMjgNL3U0NJytbG0
-	fvFJi5g0MwpVjNE4JhWjg=
+	MIME-Version:User-Agent:From:Subject:To:Cc:References:
+	Content-Language:Organization:In-Reply-To:Content-Type; bh=+vI3b
+	zalYhKXw28rKlCaLq7EHUeIlgldBrhHvSq7J90=; b=YwgGB3eTWHEmUOecSb5YT
+	pV23BzgcZHJGy+MjPD8YOIWNXX9g30As5SjkR5QMy4PZRtys4bi88qJ30UYCg6WD
+	ZmYMEXWr3S/z2n/FZc4SsiVFuWlw3wbYjk6fb2LxsdpMyvL6Cbt/wo47xIPY50vp
+	HATflXObPVFcFcAtzYo7jc=
 X-MDAV-Result: clean
-X-MDAV-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 11:05:43 -0400
+X-MDAV-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 11:08:18 -0400
 Received: from [IPV6:2603:7000:73c:9c99:401:2567:fdc3:c2b4] by auristor.com (IPv6:2001:470:1f07:f77:28d9:68fb:855d:c2a5) (MDaemon PRO v23.0.2c) 
-	with ESMTPSA id md5001003473520.msg; Sat, 27 May 2023 11:05:42 -0400
-X-Spam-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 11:05:42 -0400
+	with ESMTPSA id md5001003473523.msg; Sat, 27 May 2023 11:08:17 -0400
+X-Spam-Processed: sequoia-grove.ad.secure-endpoints.com, Sat, 27 May 2023 11:08:17 -0400
 	(not processed: message from trusted or authenticated source)
 X-MDRemoteIP: 2603:7000:73c:9c99:401:2567:fdc3:c2b4
 X-MDHelo: [IPV6:2603:7000:73c:9c99:401:2567:fdc3:c2b4]
-X-MDArrival-Date: Sat, 27 May 2023 11:05:42 -0400
+X-MDArrival-Date: Sat, 27 May 2023 11:08:17 -0400
 X-MDOrigin-Country: US, NA
 X-Authenticated-Sender: jaltman@auristor.com
 X-Return-Path: prvs=1511ba3f43=jaltman@auristor.com
 X-Envelope-From: jaltman@auristor.com
 X-MDaemon-Deliver-To: netdev@vger.kernel.org
-Message-ID: <813a4b0d-5a56-7bc4-c4de-ba6912169881@auristor.com>
-Date: Sat, 27 May 2023 11:05:36 -0400
+Message-ID: <f1d7630f-f6e2-5748-9b75-579babed0953@auristor.com>
+Date: Sat, 27 May 2023 11:08:10 -0400
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -54,164 +54,131 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.1
-Subject: Re: [PATCH] Remove hardcoded static string length
-Content-Language: en-US
-To: Kenny Ho <y2kenny@gmail.com>, David Laight <David.Laight@aculab.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Marc Dionne <marc.dionne@auristor.com>,
- Kenny Ho <Kenny.Ho@amd.com>, David Howells <dhowells@redhat.com>,
+From: Jeffrey E Altman <jaltman@auristor.com>
+Subject: Re: [PATCH net] rxrpc: Truncate UTS_RELEASE for rxrpc version
+To: David Howells <dhowells@redhat.com>, netdev@vger.kernel.org
+Cc: Kenny Ho <Kenny.Ho@amd.com>, Marc Dionne <marc.dionne@auristor.com>,
+ Andrew Lunn <andrew@lunn.ch>, David Laight <David.Laight@ACULAB.COM>,
  "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
  Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20230523223944.691076-1-Kenny.Ho@amd.com>
- <01936d68-85d3-4d20-9beb-27ff9f62d826@lunn.ch>
- <CAB9dFdt4-cBFhEqsTXk9suE+Bw-xcpM0n3Q6rFmBaa+8A5uMWQ@mail.gmail.com>
- <c0fda91b-1e98-420f-a18a-16bbed25e98d@lunn.ch>
- <CAOWid-erNGD24Ouf4fAJJBqm69QVoHOpNt0E-G+Wt=nq1W4oBQ@mail.gmail.com>
- <5b1355b8-17f7-49c8-b7b5-3d9ecdb146ce@lunn.ch>
- <CAOWid-dYtkcKuNxoOyf3yqSJ7OtcNjaqJLVX1QhRUhYSOO6vHA@mail.gmail.com>
- <30d65ea9170d4f60bd76ed516541cb46@AcuMS.aculab.com>
- <CAOWid-eEbeeU9mOpwgOatt5rHQhRt+xPrsQ1fsMemVZDdeN=MQ@mail.gmail.com>
- <81d01562a59a4fb49cd4681ebcf2e74a@AcuMS.aculab.com>
- <CAOWid-d=OFn7JS5JvsK9qc7X6HeZgOm5OAd1_g2=_GZgpKRZnA@mail.gmail.com>
-From: Jeffrey E Altman <jaltman@auristor.com>
+ linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <654974.1685100894@warthog.procyon.org.uk>
+Content-Language: en-US
 Organization: AuriStor, Inc.
-In-Reply-To: <CAOWid-d=OFn7JS5JvsK9qc7X6HeZgOm5OAd1_g2=_GZgpKRZnA@mail.gmail.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms030807070607010901010700"
+In-Reply-To: <654974.1685100894@warthog.procyon.org.uk>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms030001030300050008010007"
 X-MDCFSigsAdded: auristor.com
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URI_DOTEDU autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 This is a cryptographically signed message in MIME format.
 
---------------ms030807070607010901010700
-Content-Type: multipart/alternative;
- boundary="------------RmdMt7nvILt7hLP1oa00UDtC"
-
---------------RmdMt7nvILt7hLP1oa00UDtC
+--------------ms030001030300050008010007
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 5/25/2023 11:37 AM, Kenny Ho wrote:
-> On Thu, May 25, 2023 at 11:04 AM David Laight<David.Laight@aculab.com>  wrote:
->>> "The standard formulation seems to be: <project> <version> built
->>> <yyyy>-<mm>-<dd>"
->> Which I don't recall the string actually matching?
->> Also the people who like reproducible builds don't like __DATE__.
-> That's correct, it was not matching even when it was introduced.  I am
-> simply taking that as people caring about the content and not simply
-> making rxrpc_version_string == UTS_RELEASE.  The current format is:
+On 5/26/2023 7:34 AM, David Howells wrote:
+> UTS_RELEASE has a maximum length of 64 which can cause rxrpc_version to
+> exceed the 65 byte message limit.
 >
-> "linux-" UTS_RELEASE " AF_RXRPC"
+> Per the rx spec[1]: "If a server receives a packet with a type value 
+> of 13,
+> and the client-initiated flag set, it should respond with a 65-byte 
+> payload
+> containing a string that identifies the version of AFS software it is
+> running."
 >
-> Kenny
+> The current implementation causes a compile error when WERROR is turned on
+> and/or UTS_RELEASE exceeds the length of 49 (making the version string 
+> more
+> than 64 characters).
+>
+> Fix this by generating the string during module initialisation and 
+> limiting
+> the UTS_RELEASE segment of the string does not exceed 49 chars. We need to
+> make sure that the 64 bytes includes "linux-" at the front and " AF_RXRPC"
+> at the back as this may be used in pattern matching.
+>
+> Fixes: 44ba06987c0b ("RxRPC: Handle VERSION Rx protocol packets")
+> Reported-by: Kenny Ho <Kenny.Ho@amd.com>
+> Link: https://lore.kernel.org/r/20230523223944.691076-1-Kenny.Ho@amd.com/
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> Acked-by: Kenny Ho <Kenny.Ho@amd.com>
+> cc: Marc Dionne <marc.dionne@auristor.com>
+> cc: Andrew Lunn <andrew@lunn.ch>
+> cc: David Laight <David.Laight@ACULAB.COM>
+> cc: "David S. Miller" <davem@davemloft.net>
+> cc: Eric Dumazet <edumazet@google.com>
+> cc: Jakub Kicinski <kuba@kernel.org>
+> cc: Paolo Abeni <pabeni@redhat.com>
+> cc: linux-afs@lists.infradead.org
+> cc: netdev@vger.kernel.org
+> Link: https://web.mit.edu/kolya/afs/rx/rx-spec [1]
+> ---
+> net/rxrpc/af_rxrpc.c | 1 +
+> net/rxrpc/ar-internal.h | 1 +
+> net/rxrpc/local_event.c | 11 ++++++++++-
+> 3 files changed, 12 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
+> index 31f738d65f1c..da0b3b5157d5 100644
+> --- a/net/rxrpc/af_rxrpc.c
+> +++ b/net/rxrpc/af_rxrpc.c
+> @@ -980,6 +980,7 @@ static int __init af_rxrpc_init(void)
+> BUILD_BUG_ON(sizeof(struct rxrpc_skb_priv) > sizeof_field(struct 
+> sk_buff, cb));
+> ret = -ENOMEM;
+> + rxrpc_gen_version_string();
+> rxrpc_call_jar = kmem_cache_create(
+> "rxrpc_call_jar", sizeof(struct rxrpc_call), 0,
+> SLAB_HWCACHE_ALIGN, NULL);
+> diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+> index 5d44dc08f66d..e8e14c6f904d 100644
+> --- a/net/rxrpc/ar-internal.h
+> +++ b/net/rxrpc/ar-internal.h
+> @@ -1068,6 +1068,7 @@ int rxrpc_get_server_data_key(struct 
+> rxrpc_connection *, const void *, time64_t,
+> /*
+> * local_event.c
+> */
+> +void rxrpc_gen_version_string(void);
+> void rxrpc_send_version_request(struct rxrpc_local *local,
+> struct rxrpc_host_header *hdr,
+> struct sk_buff *skb);
+> diff --git a/net/rxrpc/local_event.c b/net/rxrpc/local_event.c
+> index 5e69ea6b233d..993c69f97488 100644
+> --- a/net/rxrpc/local_event.c
+> +++ b/net/rxrpc/local_event.c
+> @@ -16,7 +16,16 @@
+> #include <generated/utsrelease.h>
+> #include "ar-internal.h"
+> -static const char rxrpc_version_string[65] = "linux-" UTS_RELEASE " 
+> AF_RXRPC";
+> +static char rxrpc_version_string[65]; // "linux-" UTS_RELEASE " 
+> AF_RXRPC";
+> +
+> +/*
+> + * Generate the VERSION packet string.
+> + */
+> +void rxrpc_gen_version_string(void)
+> +{
+> + snprintf(rxrpc_version_string, sizeof(rxrpc_version_string),
+> + "linux-%.49s AF_RXRPC", UTS_RELEASE);
+> +}
+> /*
+> * Reply to a version request
+>
+Reviewed-by: Jeffrey Altman <jaltman@auristor.com>
 
-The RX_PACKET_TYPE_VERSION query is issued by the "rxdebug <host> <port> 
--version" command which prints the received string to stdout.   It has 
-also been used some implementations to record the version of the peer.   
-Although it is required that a response to the RX_PACKET_TYPE_VERSION 
-query be issued, there is no requirement that the returned string 
-contain anything beyond a single NUL octet.
-
-Although it is convenient to be able to remotely identify the version of 
-an Rx implementation, there are good reasons why this information should 
-not be exposed to an anonymous requester:
-
- 1. Linux AF_RXRPC is part of the kernel.  As such, returning
-    UTS_RELEASE identifies to potential attackers the explicit kernel
-    version, architecture and perhaps distro.  As this query can be
-    issued anonymously, this provides an information disclosure that can
-    be used to target known vulnerabilities in the kernel.
- 2. The RX_PACKET_TYPE_VERSION reply is larger than the query by the
-    number of octets in the version data.  As the query is received via
-    udp with no reachability test, it means that the
-    RX_PACKET_TYPE_VERSION query/response can be used to perform an 3.3x
-    amplification attack: 28 octets in and potentially 93 octets out.
-
-With my security hat on I would suggest that either AF_RXRPC return a 
-single NUL octet or the c-string "AF_RXRPC" and nothing more.
-
-Jeffrey Altman
 
 
---------------RmdMt7nvILt7hLP1oa00UDtC
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <div class="moz-cite-prefix">On 5/25/2023 11:37 AM, Kenny Ho wrote:<br>
-    </div>
-    <blockquote type="cite"
-cite="mid:CAOWid-d=OFn7JS5JvsK9qc7X6HeZgOm5OAd1_g2=_GZgpKRZnA@mail.gmail.com">
-      <pre class="moz-quote-pre" wrap="">On Thu, May 25, 2023 at 11:04 AM David Laight <a class="moz-txt-link-rfc2396E" href="mailto:David.Laight@aculab.com">&lt;David.Laight@aculab.com&gt;</a> wrote:
-</pre>
-      <blockquote type="cite">
-        <blockquote type="cite">
-          <pre class="moz-quote-pre" wrap="">"The standard formulation seems to be: &lt;project&gt; &lt;version&gt; built
-&lt;yyyy&gt;-&lt;mm&gt;-&lt;dd&gt;"
-</pre>
-        </blockquote>
-        <pre class="moz-quote-pre" wrap="">
-Which I don't recall the string actually matching?
-Also the people who like reproducible builds don't like __DATE__.
-</pre>
-      </blockquote>
-      <pre class="moz-quote-pre" wrap="">
-That's correct, it was not matching even when it was introduced.  I am
-simply taking that as people caring about the content and not simply
-making rxrpc_version_string == UTS_RELEASE.  The current format is:
 
-"linux-" UTS_RELEASE " AF_RXRPC"
-
-Kenny</pre>
-    </blockquote>
-    <p>The RX_PACKET_TYPE_VERSION query is issued by the "rxdebug
-      &lt;host&gt; &lt;port&gt; -version" command which prints the
-      received string to stdout.   It has also been used some
-      implementations to record the version of the peer.   Although it
-      is required that a response to the RX_PACKET_TYPE_VERSION query be
-      issued, there is no requirement that the returned string contain
-      anything beyond a single NUL octet.</p>
-    <p>Although it is convenient to be able to remotely identify the
-      version of an Rx implementation, there are good reasons why this
-      information should not be exposed to an anonymous requester:<br>
-    </p>
-    <ol>
-      <li>Linux AF_RXRPC is part of the kernel.  As such, returning
-        UTS_RELEASE identifies to potential attackers the explicit
-        kernel version, architecture and perhaps distro.  As this query
-        can be issued anonymously, this provides an information
-        disclosure that can be used to target known vulnerabilities in
-        the kernel.</li>
-      <li>The RX_PACKET_TYPE_VERSION reply is larger than the query by
-        the number of octets in the version data.  As the query is
-        received via udp with no reachability test, it means that the
-        RX_PACKET_TYPE_VERSION query/response can be used to perform an
-        3.3x amplification attack: 28 octets in and potentially 93
-        octets out.<br>
-      </li>
-    </ol>
-    <p>With my security hat on I would suggest that either AF_RXRPC
-      return a single NUL octet or the c-string "AF_RXRPC" and nothing
-      more.</p>
-    <p>Jeffrey Altman</p>
-    <p><br>
-    </p>
-  </body>
-</html>
-
---------------RmdMt7nvILt7hLP1oa00UDtC--
-
---------------ms030807070607010901010700
+--------------ms030001030300050008010007
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -280,18 +247,18 @@ p/BscizYdNk2WXJMTnH+wVLN8sLEwEtQR4eTLoFmQvrK2AMBS9kW5sBkMzINt/ZbbcZ3F+eA
 MDGCAxQwggMQAgEBME4wOjELMAkGA1UEBhMCVVMxEjAQBgNVBAoTCUlkZW5UcnVzdDEXMBUG
 A1UEAxMOVHJ1c3RJRCBDQSBBMTMCEEABgmmaL+s+f8XR8nIOXMwwDQYJYIZIAWUDBAIBBQCg
 ggGXMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDUyNzE1
-MDUzNlowLwYJKoZIhvcNAQkEMSIEIBwt4ZUaz261rYOGRUYThjxy+cSAilyku2eWo6Ls0LMD
+MDgxMFowLwYJKoZIhvcNAQkEMSIEIGbsQJUdUhwpgw/Jn6gMy9RNWVyC/ar1CDFNphLmj2MU
 MF0GCSsGAQQBgjcQBDFQME4wOjELMAkGA1UEBhMCVVMxEjAQBgNVBAoTCUlkZW5UcnVzdDEX
 MBUGA1UEAxMOVHJ1c3RJRCBDQSBBMTMCEEABgmmaL+s+f8XR8nIOXMwwXwYLKoZIhvcNAQkQ
 AgsxUKBOMDoxCzAJBgNVBAYTAlVTMRIwEAYDVQQKEwlJZGVuVHJ1c3QxFzAVBgNVBAMTDlRy
 dXN0SUQgQ0EgQTEzAhBAAYJpmi/rPn/F0fJyDlzMMGwGCSqGSIb3DQEJDzFfMF0wCwYJYIZI
 AWUDBAEqMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZI
-hvcNAwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEAOrEy
-DTafkeFM/5IGuh/QO597YINm/oGXG2+Sza739cn4G3dOSiJ1xN1PKimNt6uG26/NU5huzOC9
-8tF6Wmf9vzgPXN7ob1MPDXl+eM+bukAgfRP+JMGdTfgSL8xo0vF2WZ0ae5AU5pA1RNp2/TgH
-xvPxdHRuORbw5GBwn2AV6ep0ekmNZJzVIrx4vPVU0ytGWYoCxxYaUIauyuiIbVJ9dbuSR8ut
-T6HK0IeNjkA2zB3CfyEyxyRkVwITO+AM/U3UqOtJ/TlOu+YSmkEMlrTMTNfsJZrNFk22mo+7
-Ra3CKzuf339/lIkogI4af9z6dBOQcDRRG9rm/C1J1fN0ua75ywAAAAAAAA==
---------------ms030807070607010901010700--
+hvcNAwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEAc9XE
+SKytfDPUBt6envzloCqaZBX4jzSPSV0AKcR9PkCsMAgflBWvxgnsqD1uOqR2iWJTeu5fqu6O
+AhhHQJ0UaBoMGVlSrS2LmNQ9vEJ9hlb4EqPKxaIi54ZoM6Cj06ftfAGtZ9CRYCwxMLeZE3PT
+rbLUfiIIFqcdh09XNDcH8cqsG0LwBhTuj9Fcw3qdhYge9DQ44yTZSi1EdoOhz3vLlP8z9SAX
+nR6Plve836KH33RIuRKf16Q5YQNZ45syLakQM+jsARwWDVu1BjabcUEwYYNqNRej+ZANpPrf
+M1KeSBfKp5w6WcSCAAtLVSO9OqvSSfcGF/tYdPUpIg1cxNJTQgAAAAAAAA==
+--------------ms030001030300050008010007--
 
 
