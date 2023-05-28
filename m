@@ -1,65 +1,65 @@
-Return-Path: <netdev+bounces-5965-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5966-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E2625713B49
-	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 19:37:53 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 111A4713B4A
+	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 19:38:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 630F61C20972
-	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 17:37:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B25B41C209AD
+	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 17:37:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1503E6AA4;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 280126AA9;
 	Sun, 28 May 2023 17:36:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0903D6AA2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 125BB6AA3
 	for <netdev@vger.kernel.org>; Sun, 28 May 2023 17:36:18 +0000 (UTC)
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85335100
-	for <netdev@vger.kernel.org>; Sun, 28 May 2023 10:36:09 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id ffacd0b85a97d-30ad99fa586so2280906f8f.2
-        for <netdev@vger.kernel.org>; Sun, 28 May 2023 10:36:09 -0700 (PDT)
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B250C6
+	for <netdev@vger.kernel.org>; Sun, 28 May 2023 10:36:10 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id ffacd0b85a97d-3093eb8cd1fso1526722f8f.1
+        for <netdev@vger.kernel.org>; Sun, 28 May 2023 10:36:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1685295368; x=1687887368;
+        d=tessares.net; s=google; t=1685295369; x=1687887369;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=AX0sr/PbmfXMRT0E3FKR7vPpjL8rwaKTtVDAJqhMqgY=;
-        b=EY+2YTKvShTyvWZoi+qEzRbIh7STaLYSxenN389oH5pyQ3B+M6jSpEI8GNpm5CpraP
-         09RcCudi4w5jNwK0MOlckZAwUlm3hacHFR2OmuNNhyTHNaHquEseO6Ua2wNKnOf7z8vk
-         0CQjiXnQ/ulYYqxXYEuZqqg3QynYsLTFWrf+qBfEj5MMiGGAuDhGJOato0aChAVOWYmY
-         FBAXMmloa0jrqH7V01MYLn0CyzCw0qOqqxWAvMCn/A76Wmh19/J4Z3BLwlcTCizWspqZ
-         bp9zeWc+d9MSA1swO9j8agu031xbqLLEpAZC/aHWFh5TUsD1PZUELh/BQfcLoWRRoXif
-         Nhyw==
+        bh=1iFsQSoektVWo2hESWKZtZkktu5l6M6gOCDs+m+CLio=;
+        b=a4tjax/M037J4XbF6dF2XBpbWlJBX6yjwE0k5qXuPWPE3SMUGoct7HZBuY2/j7YKo7
+         zLaS9ywinq8EuJ+wSZMD7GvdeeNbqs53v22RL7OUxgDe4WJR9rR61MwgR9gFi9qn+nIi
+         BWCiu5P4s3+1xSaP3j3qyLhYbXx9vgnbh7l58Gb0jvS2kFUxNQrAZmJ2YdmT4in6rfy5
+         iNVmvTr4ybYda6DiBx56ZvNxFsTsMN+zgV+R7HnIq5zmY7eVsZpQLklhLvqBX9nOCWG4
+         5nd5O0mNuu0OtvOfOztIvPUOxBWgPFVfXgB+6S73fYwzEjGV5Vk1LkijAX4gsKKdaQjG
+         lipQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685295368; x=1687887368;
+        d=1e100.net; s=20221208; t=1685295369; x=1687887369;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=AX0sr/PbmfXMRT0E3FKR7vPpjL8rwaKTtVDAJqhMqgY=;
-        b=DZE6xiJqBo6NsHkHjyqJYuGNAgqzI0FRqQsDnJ/pmDJ6Z+zDLj7s9b5EuP7ge9L2oZ
-         uPLK2RqCOi75//hMKlyseZvp9RbxspYgBxU6Hp9YgO7cAX3tO0nNcwuvAj0xn7dI1b9Y
-         dNuzwPM/fS0/qwsmaqk6pmx/LS6TFj0H8KeNdWMYUiYStYHxk4AYHiu4GX9+GJS3Epfa
-         pRI7gP8e1reS39CSjEmn7Vk4McOD/StEyGGIxaCHdf8nAp9rDC5rBNsVcEwO5ajFcWWm
-         tX9QOUryQCrHKVzRRwb/SdXnlgQcukSCg0+fZhLCssA/hMddYl1UOiflK6r2J83XIG6P
-         bLCA==
-X-Gm-Message-State: AC+VfDyH7xqC+nRz32vu5/zhBNUs2D5d2gYFi2kZGY+UYNkZGBg1+S7D
-	WBbhPcnthKRMj6FfD0bByNE3oQ==
-X-Google-Smtp-Source: ACHHUZ7KAR8RXl6O+5H4v9gJJWlzSY/1hej76B1j5B7n8S6haKDU+hOJztCZ51pMTxrr47XPx0UCdg==
-X-Received: by 2002:a5d:4ac6:0:b0:309:54b6:33b0 with SMTP id y6-20020a5d4ac6000000b0030954b633b0mr7315737wrs.44.1685295367931;
-        Sun, 28 May 2023 10:36:07 -0700 (PDT)
+        bh=1iFsQSoektVWo2hESWKZtZkktu5l6M6gOCDs+m+CLio=;
+        b=X8unUwmXaH/h3wE2vKAH0v7kAxEULlYWs06gXrrD1onP5+5dU+yEVbDBKxe+vjciWR
+         3bo2ljjN7sC2MulK18dJouOvrGzfsCTTDqdR6oARCQG8QlU4QXg5GNv5DgEvhUP4BUsW
+         O5QszAQIwGLcP2YKqqTiCyp0UI+0MdpFcZcOOFMeJqxJr0Y9bOCuDWE9wnHCZTQLgB24
+         fazqhfEd55Bkc3l4Y4N9Xc4SO/jNttbUkGcpHNMJkMyBLbT+I5y5sOA4cwx83zFTuyAP
+         a4sMXYdoFBM+AiN8V83ZfabEQWokuyc86Q4lZ3DCWoXVVmRwymF8wi9Dyvza3ordayGo
+         8B1A==
+X-Gm-Message-State: AC+VfDz6QkQOpBKHYdIa8kk3BPLN4dMGQ4r2lsrVss5ed1ADGMtcYj5i
+	yuf8pKUUvFzrBFNYmy5hmDL75g==
+X-Google-Smtp-Source: ACHHUZ7lEvgV+qut8uP8royK7zsV4iUfaV7/oCLmJ3rXb8INkqqpzBbYMEkUYnHNz2Acj5w8YLFygg==
+X-Received: by 2002:adf:d089:0:b0:307:9f8:4f30 with SMTP id y9-20020adfd089000000b0030709f84f30mr5825464wrh.70.1685295368987;
+        Sun, 28 May 2023 10:36:08 -0700 (PDT)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id z10-20020a7bc7ca000000b003f602e2b653sm15334523wmk.28.2023.05.28.10.36.06
+        by smtp.gmail.com with ESMTPSA id z10-20020a7bc7ca000000b003f602e2b653sm15334523wmk.28.2023.05.28.10.36.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 May 2023 10:36:07 -0700 (PDT)
+        Sun, 28 May 2023 10:36:08 -0700 (PDT)
 From: Matthieu Baerts <matthieu.baerts@tessares.net>
-Date: Sun, 28 May 2023 19:35:30 +0200
-Subject: [PATCH net 5/8] selftests: mptcp: diag: skip if MPTCP is not
- supported
+Date: Sun, 28 May 2023 19:35:31 +0200
+Subject: [PATCH net 6/8] selftests: mptcp: simult flows: skip if MPTCP is
+ not supported
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -68,7 +68,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230528-upstream-net-20230528-mptcp-selftests-support-old-kernels-part-1-v1-5-a32d85577fc6@tessares.net>
+Message-Id: <20230528-upstream-net-20230528-mptcp-selftests-support-old-kernels-part-1-v1-6-a32d85577fc6@tessares.net>
 References: <20230528-upstream-net-20230528-mptcp-selftests-support-old-kernels-part-1-v1-0-a32d85577fc6@tessares.net>
 In-Reply-To: <20230528-upstream-net-20230528-mptcp-selftests-support-old-kernels-part-1-v1-0-a32d85577fc6@tessares.net>
 To: mptcp@lists.linux.dev, Mat Martineau <martineau@kernel.org>, 
@@ -81,26 +81,26 @@ Cc: netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
  linux-kernel@vger.kernel.org, 
  Matthieu Baerts <matthieu.baerts@tessares.net>, stable@vger.kernel.org
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1203;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1220;
  i=matthieu.baerts@tessares.net; h=from:subject:message-id;
- bh=2XieG7aH+1H6UjQufr7rYq3MJt3yeF3n93mM9qxyF/k=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkc5EBVsy9726j4G9jjMrxnRAZd2w+eAda1JbfZ
- BSSWuPepeaJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZHORAQAKCRD2t4JPQmmg
- c90rEADZxBUPh9w2TPif0/EokmXKrf1ty8a3RmkE20WglnJTTAowpUPzIxTQnA2mMH6G4T+iD50
- f/vCtbr8xigVWUf2mFE8RY+ijac4XnuctSmaj1SY8L3xTE+3+1k6G/XC8COwJrpcQVE9o5i98Z7
- gO/j8Oh47+FMeaUB/xyXEO8T14bbG8w8JnRpy6n3olvwbvMqtuVGEre7BoyuvWpV05Nqmz1DLA0
- S5fYqrf1BHCmobd7JGoiFlIiYkuaxee9qm/fi/dEIw0QUgVMq8NSVouzi4kIp6WbPvmn4lMJdre
- iiAvIO84IN7unWkXg9nVefl8u0x22W7IYsPAByQUSRyIBYAghF0S1UouHO952bCpC0ZF+Nczx25
- Rzs5Q2vJgOAdZR3hutsfSeO5YGeS897blfYpL8xW7EDY+CKDvzHaVnFHDvyt2Mc5dcOWXgPUhoE
- 71AfIOvO+8qs6f57QGqn8T/Kg8EvtrWYXxVbx1iIqi6Q/CkqNlvaLi/KenhiXDOQyO8Fza6Y8KC
- WBcZvy3JNBOGQA9VZ6d+05SB9vJta8QyZkiSoO6zkVwjsYt1NLobmuv2nkXCHYpaRJzetj3tC7u
- tW3xlwCtqwXYOAnOPq65RmKtfv73nLWaJ/lsB1GwqXXfxjIwvmrfAXaM4B6eVAunAEM6sNY84Bj
- VbNoHru1F33zdYw==
+ bh=v3FXhGp3rLA92fFtVw6q1d5taMCbFn424ZxPvKCJnwY=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkc5EBEEKka3mFHa3kBEbaRn4dGVLd1UAKUl96L
+ 82Sf1dCsKqJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZHORAQAKCRD2t4JPQmmg
+ c1fiEACI6DNewO2JBxnZ2diUvafyiEsds+h9elQVCf6sS6J1NOthez6aPSn+CBp8SNYjQ/13MRX
+ RdktsaoaNMf69NKQGm1zIaTlU1e3AJaiwqx6bJcCAnMqEc+BlP+RuV51/AB8F6hc5ORiSHKvzqd
+ sGvFwhICaF8eEbYv+Mew0fqSQexJdcHy9ABHQJEvsWJa5pdSv8Ojl7OWPakE3ldqpSH0L16oBxs
+ ipY3qO+0JkBdpmCBLCbUE6ilkjovLurvmkXpK0k0t4e3aRpk0FhH1mUiTnlj4uaByZHJH53UTwU
+ xuGvAcxiFpg9GCkVQAf8A4peVDReZUlLhw91ftPg/uJJSGly4gfKvaopDA5K9U8+Uj/El4tOQag
+ vVToFZ4asX/o9rThmFzMXJHakRmiufxZG9midl0dScVB0EzsJgaYdPT0LB8h2i19vJUttGkvREo
+ pwfLpSrKgdgwBpK79NU/1JHINZwBJ/qdlPuRjl1bA7rUiYl5e8c1+p9ZoYUCSIX11tdgh4HXsja
+ nU+qmEV4i3xAn0QQwjWSKhPE9atWttMQrl7MC+TtdmRm1stdLJu4NgSPzfGOt8hjWVnac4h3Afk
+ O4dOniWiXgsNnzp1IUflixhjCQ0gnqP+aujJEtMtUPRRgp4dWgLTIFvLWcyVttkK/O/RqFzhnEF
+ 5YxSNMA7W66gO2w==
 X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
  fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
@@ -112,18 +112,18 @@ A new check is then added to make sure MPTCP is supported. If not, the
 test stops and is marked as "skipped".
 
 Link: https://github.com/multipath-tcp/mptcp_net-next/issues/368
-Fixes: df62f2ec3df6 ("selftests/mptcp: add diag interface tests")
+Fixes: 1a418cb8e888 ("mptcp: simult flow self-tests")
 Cc: stable@vger.kernel.org
 Acked-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- tools/testing/selftests/net/mptcp/diag.sh | 4 ++++
+ tools/testing/selftests/net/mptcp/simult_flows.sh | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/tools/testing/selftests/net/mptcp/diag.sh b/tools/testing/selftests/net/mptcp/diag.sh
-index ef628b16fe9b..4eacdb1ab962 100755
---- a/tools/testing/selftests/net/mptcp/diag.sh
-+++ b/tools/testing/selftests/net/mptcp/diag.sh
+diff --git a/tools/testing/selftests/net/mptcp/simult_flows.sh b/tools/testing/selftests/net/mptcp/simult_flows.sh
+index 9f22f7e5027d..36a3c9d92e20 100755
+--- a/tools/testing/selftests/net/mptcp/simult_flows.sh
++++ b/tools/testing/selftests/net/mptcp/simult_flows.sh
 @@ -1,6 +1,8 @@
  #!/bin/bash
  # SPDX-License-Identifier: GPL-2.0
@@ -132,9 +132,9 @@ index ef628b16fe9b..4eacdb1ab962 100755
 +
  sec=$(date +%s)
  rndh=$(printf %x $sec)-$(mktemp -u XXXXXX)
- ns="ns1-$rndh"
-@@ -31,6 +33,8 @@ cleanup()
- 	ip netns del $ns
+ ns1="ns1-$rndh"
+@@ -34,6 +36,8 @@ cleanup()
+ 	done
  }
  
 +mptcp_lib_check_mptcp
