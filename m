@@ -1,124 +1,172 @@
-Return-Path: <netdev+bounces-5959-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5960-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3A58B713B25
-	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 19:35:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 36CF3713B2B
+	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 19:36:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 853FE1C20975
-	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 17:35:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E44F2280DFC
+	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 17:36:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1D5D567E;
-	Sun, 28 May 2023 17:35:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 771D2568B;
+	Sun, 28 May 2023 17:36:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2E242F3D
-	for <netdev@vger.kernel.org>; Sun, 28 May 2023 17:35:18 +0000 (UTC)
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C0DBE
-	for <netdev@vger.kernel.org>; Sun, 28 May 2023 10:35:17 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-5149c51fd5bso704170a12.0
-        for <netdev@vger.kernel.org>; Sun, 28 May 2023 10:35:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6027F567B
+	for <netdev@vger.kernel.org>; Sun, 28 May 2023 17:36:10 +0000 (UTC)
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A34BE
+	for <netdev@vger.kernel.org>; Sun, 28 May 2023 10:36:03 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-3f601c57d8dso18234395e9.0
+        for <netdev@vger.kernel.org>; Sun, 28 May 2023 10:36:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685295315; x=1687887315;
-        h=content-transfer-encoding:subject:content-language:cc:to:from
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Cj365/JQiEDVMfbC0p5rg2f+3RSJRHh7P6pnW9O2PUU=;
-        b=VIcbye2MuIGI7s2S2jdJPzvOZyekYz7cCQoyyTxmCMeeIIXK9m2unHt46NzZ7ZnAQZ
-         NCqwD3L08bTPqQRcuz3OmU/qg5IIL/GZ2nZ1t7/0rn31mq5xpOoeV6LnrkOS+xlXum2Y
-         fH/cO9OL70DYIIr0fkqn+Vwc+7hcpLn1XBJeKVtmS6uHVwcH1guilrAQOx+x5/rD6g4i
-         byhO5ZCt5/z1AqMX8f0aUJudl8IXd4V9Mh9e3LDFBlATzi2smIqTu152m/CnGD6/iJpo
-         I2CwfrUWqOd7cqziraitOxjJAkr67VGl4l/nBvOdqXRO/WBnR3Rtyleigv9uIvXGiEbM
-         xwQQ==
+        d=tessares.net; s=google; t=1685295362; x=1687887362;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=VgPDfFpDepN09tAvzxisbxa58llXbpe18nSgqJnJRjU=;
+        b=rgj5G2s+N52emvHq9W1ntw8O5uPxq+pFx+5FwzcifTQGSiHAVomnhwVHf1nnidWt6q
+         NrIujJh8uDAKJiVEE2AO+RaCfhYUiVuG0bcdG8m17Zt7PxdybGrfmJRSr/bJcL9zIB3t
+         bALRae5eRglG6ztQSpzYuISK6BCpS0ttutLSZenNkgg56GBcfDlsFeO0bOBrIVIG29W0
+         oFD5E1UKAIS6mRSN9YmJenVDqSCujgfmoCF52NYyyOfHDs4CYcbxG77k8++6omrvvUNu
+         xBWCslqPWucSlU2a0ghvYOqCiF3LeEISxTb6aUughSQlgc2OQvWsKVK1ZPP23IEUHdZQ
+         EyIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685295315; x=1687887315;
-        h=content-transfer-encoding:subject:content-language:cc:to:from
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Cj365/JQiEDVMfbC0p5rg2f+3RSJRHh7P6pnW9O2PUU=;
-        b=AQKbRwmBjdHBtGnm0wsyefJxDHtU45fF7U/3BMWYsOWJjUdvtHzhIq/Pu78o6CQix/
-         ZnhsqvhgNrJO8iOZS8+LMaHItl4RQ5cVNtkdUKGvF6fv9S/JdFBYjQYHzsoyHp0fXA7b
-         lTpWbIz8WRK757qITtS/mvT/bV4bQ5K61CcKKDAoi94wvci+4qw79GTvbDjOagy/cviG
-         Utlp5gMCsHr+vkYUwP266ltLwWR9nLsOf4qTpB/GBfdcMubBIG+OJxSzUmvXhd48PLfn
-         XqZbVOlNSKI0MOPfvNfsfvji05wNXA+VzifXHwDg+m0vbvrsHPLoDfY9b33nANJbEvxp
-         ke2g==
-X-Gm-Message-State: AC+VfDx+IMX2i3eqcdCvkIPwla4Sq2NDADsGpZL23DTXKMM12kFM4VdW
-	xOYh7ZQHwFICzJ1gCwxkZes=
-X-Google-Smtp-Source: ACHHUZ4UByKptwopJ3FW7TvGSNh//YD11SuUfodWgqnaB5Zo12qBWvo06iCGqMF+Ykx0DodBLouXxQ==
-X-Received: by 2002:aa7:c40f:0:b0:514:75c3:2691 with SMTP id j15-20020aa7c40f000000b0051475c32691mr8074474edq.27.1685295314622;
-        Sun, 28 May 2023 10:35:14 -0700 (PDT)
-Received: from ?IPV6:2a01:c22:6f2c:fe00:a151:3e12:d4b2:cf2f? (dynamic-2a01-0c22-6f2c-fe00-a151-3e12-d4b2-cf2f.c22.pool.telefonica.de. [2a01:c22:6f2c:fe00:a151:3e12:d4b2:cf2f])
-        by smtp.googlemail.com with ESMTPSA id f22-20020a50ee96000000b0050c0d651fb1sm2158586edr.75.2023.05.28.10.35.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 May 2023 10:35:14 -0700 (PDT)
-Message-ID: <75b54d23-fefe-2bf4-7e80-c9d3bc91af11@gmail.com>
-Date: Sun, 28 May 2023 19:35:12 +0200
+        d=1e100.net; s=20221208; t=1685295362; x=1687887362;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VgPDfFpDepN09tAvzxisbxa58llXbpe18nSgqJnJRjU=;
+        b=BHdV9couTQfPhiRDERRMXxevSwhy7OfyjcamuLaWYu+gCf4XgoRqhKhtKstWSyByYy
+         I1++qi2aJ7emPwiyXyvgB2Dzc3cERsUZPDiY6diE4laXjZgnPH7RxREcvExsuyUReuC2
+         hsw+tA62UYqslRbTxst5G536/2Zb8uHwGTN5HLIJcKtviqmJiC7FKD10FdKGjgkVjAOS
+         t3vlMhkumYrMx5QNKYa4VRxKBT2QE6OsPffz7jG8TkYgZX7Tt6fpGfqRvONxJDw/cS4B
+         saJ8yFX62wqcaVHjjJG+qUZC8/L/0iHm0sGD9g3DOuTizq1rhrOEmKSDgwkzIofOgt6f
+         K3nQ==
+X-Gm-Message-State: AC+VfDzm9kbs7hA9+tTOMYnoZN1wRBMrILEqYyl1SpRaHCNzexxa3NBf
+	uch0XAMiOC54WNirOI6N/zJrEQ==
+X-Google-Smtp-Source: ACHHUZ5z6UUO9qErx7rddM51YnwXRZiYQBfzXxkC1QPVxR3oFA3IrRiJbAnW7uzu+eZzQY+dbKlJ4Q==
+X-Received: by 2002:a7b:ca42:0:b0:3f6:8ba:6ea2 with SMTP id m2-20020a7bca42000000b003f608ba6ea2mr4894454wml.15.1685295362339;
+        Sun, 28 May 2023 10:36:02 -0700 (PDT)
+Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
+        by smtp.gmail.com with ESMTPSA id z10-20020a7bc7ca000000b003f602e2b653sm15334523wmk.28.2023.05.28.10.36.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 May 2023 10:36:02 -0700 (PDT)
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: [PATCH net 0/8] selftests: mptcp: skip tests not supported by old
+ kernels (part 1)
+Date: Sun, 28 May 2023 19:35:25 +0200
+Message-Id: <20230528-upstream-net-20230528-mptcp-selftests-support-old-kernels-part-1-v1-0-a32d85577fc6@tessares.net>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-From: Heiner Kallweit <hkallweit1@gmail.com>
-To: Jakub Kicinski <kuba@kernel.org>, David Miller <davem@davemloft.net>,
- Realtek linux nic maintainers <nic_swsd@realtek.com>,
- Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>
-Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Language: en-US
-Subject: [PATCH net-next] r8169: check for PCI read error in probe
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-B4-Tracking: v=1; b=H4sIAN6Qc2QC/z2O0QqCQBBFf0XmuSFdK6RfiR7WdcwlXYeZMQLx3
+ 1uDerzncjl3BSWJpHAtVhB6RY1zyqE6FBAGnx6EscsZXOnq8uwaXFhNyE+YyPBPJ7bAqDT2Rmq
+ KujDPYjiPHT5JEo2K7DOoMA8uddOfujaUkDWtV8JWfArDLrLjz7CXLNTH9/ffDbIR7tv2ATEX4
+ d20AAAA
+To: mptcp@lists.linux.dev, Mat Martineau <martineau@kernel.org>, 
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+ Shuah Khan <shuah@kernel.org>, Christoph Paasch <cpaasch@apple.com>, 
+ Florian Westphal <fw@strlen.de>, Davide Caratti <dcaratti@redhat.com>, 
+ Kishen Maloor <kishen.maloor@intel.com>
+Cc: netdev@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Matthieu Baerts <matthieu.baerts@tessares.net>, stable@vger.kernel.org
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3353;
+ i=matthieu.baerts@tessares.net; h=from:subject:message-id;
+ bh=75HYeXxG55KPo56OT1QMXARO4lwKjONuoUweD6PxHRY=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkc5EA0+GzNb8nihOX2uRnYncESRC+xg4pKxRCH
+ 3sJCo5oNgiJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZHORAAAKCRD2t4JPQmmg
+ c/j5D/sH3eiNSTv3LwOpchmkjY6MqFbvbi6mOgFz//+ZA0bTiNqOHHdCPpT54xqZaA3w79kikmr
+ A3Nn57sA4oAQNkhsrDKLIhZ74yita2bAjZTAa9xsO9BcIrTv2K59oz+2g/tydCEetWEp77iQsF1
+ qF8S8+OVYuKBsU8VtXf+Or49hbqu6RwzbE2VdMGy0OZjm4ZAJFWN0mmUTI0BeblLUrJYdFVfidQ
+ IhVhot7uV/NMKB/ih5GxWEXkll5zmLlkD976ykMnsOkWZDsupmnCXujpoKSKwjnAexP1nNZvuRP
+ xQJ00+M7iSNgzmMVWQT4LBqGs+eQ6McrpHVLKeoQea+bcCuaUJ9O/+DY/JIDH3zlVDV2ce0yNrc
+ lqyurAfO1rrs6HCOt4oJbF+dZLE81nHck5wgCh6txZwx3Ho7AwK61Yz9h5WU+n5k76dK1gVHd+I
+ gZykh5/XdL/vs2PoQa2IzWALvXThrdaVmT8iaaKSVWnlB7nBE0nR4uK6DzyfGKnu09vFBL1UZU2
+ LnJBV+pDuMkBZ8/MKofyiF4H6mtwBGthu/qX0b0Ws2YQnh1iVlR1txdAv5ulwbseJVWSb/7xF4N
+ 2h3Qm7xQFoUfJRE7UJC0QiGlwrGyoDugRPS+fihDgB4RraM4Cl9BykS+bvq77erhoyzGZ5D9liD
+ c7IFbmwDq/IFJjw==
+X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
+ fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Check whether first PCI read returns 0xffffffff. Currently, if this is
-the case, the user sees the following misleading message:
-unknown chip XID fcf, contact r8169 maintainers (see MAINTAINERS file)
+After a few years of increasing test coverage in the MPTCP selftests, we
+realised [1] the last version of the selftests is supposed to run on old
+kernels without issues.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Supporting older versions is not that easy for this MPTCP case: these
+selftests are often validating the internals by checking packets that
+are exchanged, when some MIB counters are incremented after some
+actions, how connections are getting opened and closed in some cases,
+etc. In other words, it is not limited to the socket interface between
+the userspace and the kernelspace. In addition, the current selftests
+run a lot of different sub-tests but the TAP13 protocol used in the
+selftests don't support sub-tests: in other words, one failure in
+sub-tests implies that the whole selftest is seen as failed at the end
+because sub-tests are not tracked. It is then important to skip
+sub-tests not supported by old kernels.
+
+To minimise the modifications and reduce the complexity to support old
+versions, the idea is to look at external signs and skip the whole
+selftests or just some sub-tests before starting them.
+
+This first part focuses on marking the different selftests as skipped
+if MPTCP is not even supported. That's what is done in patches 2 to 8.
+Patch 2/8 introduces a new file (mptcp_lib.sh) to be able to re-use some
+helpers in the different selftests. The first MPTCP selftest has been
+introduced in v5.6.
+
+Patch 1/8 is a bit different but still linked: it modifies mptcp_join.sh
+selftest not to use 'cmp --bytes' which is not supported by the BusyBox
+implementation. It is apparently quite common to use BusyBox in CI
+environments. This tool is needed for a subtest introduced in v6.1.
+
+Link: https://lore.kernel.org/stable/CA+G9fYtDGpgT4dckXD-y-N92nqUxuvue_7AtDdBcHrbOMsDZLg@mail.gmail.com/ [1]
+Link: https://github.com/multipath-tcp/mptcp_net-next/issues/368
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Matthieu Baerts (8):
+      selftests: mptcp: join: avoid using 'cmp --bytes'
+      selftests: mptcp: connect: skip if MPTCP is not supported
+      selftests: mptcp: pm nl: skip if MPTCP is not supported
+      selftests: mptcp: join: skip if MPTCP is not supported
+      selftests: mptcp: diag: skip if MPTCP is not supported
+      selftests: mptcp: simult flows: skip if MPTCP is not supported
+      selftests: mptcp: sockopt: skip if MPTCP is not supported
+      selftests: mptcp: userspace pm: skip if MPTCP is not supported
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 4b19803a7..5e6308d57 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5164,6 +5164,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	int jumbo_max, region, rc;
- 	enum mac_version chipset;
- 	struct net_device *dev;
-+	u32 txconfig;
- 	u16 xid;
- 
- 	dev = devm_alloc_etherdev(&pdev->dev, sizeof (*tp));
-@@ -5218,7 +5219,13 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	tp->mmio_addr = pcim_iomap_table(pdev)[region];
- 
--	xid = (RTL_R32(tp, TxConfig) >> 20) & 0xfcf;
-+	txconfig = RTL_R32(tp, TxConfig);
-+	if (txconfig == ~0U) {
-+		dev_err(&pdev->dev, "PCI read failed\n");
-+		return -EIO;
-+	}
-+
-+	xid = (txconfig >> 20) & 0xfcf;
- 
- 	/* Identify chip attached to board */
- 	chipset = rtl8169_get_mac_version(xid, tp->supports_gmii);
+ tools/testing/selftests/net/mptcp/Makefile         |  2 +-
+ tools/testing/selftests/net/mptcp/diag.sh          |  4 +++
+ tools/testing/selftests/net/mptcp/mptcp_connect.sh |  4 +++
+ tools/testing/selftests/net/mptcp/mptcp_join.sh    | 17 +++++++--
+ tools/testing/selftests/net/mptcp/mptcp_lib.sh     | 40 ++++++++++++++++++++++
+ tools/testing/selftests/net/mptcp/mptcp_sockopt.sh |  4 +++
+ tools/testing/selftests/net/mptcp/pm_netlink.sh    |  4 +++
+ tools/testing/selftests/net/mptcp/simult_flows.sh  |  4 +++
+ tools/testing/selftests/net/mptcp/userspace_pm.sh  |  4 +++
+ 9 files changed, 80 insertions(+), 3 deletions(-)
+---
+base-commit: 9b9e46aa07273ceb96866b2e812b46f1ee0b8d2f
+change-id: 20230528-upstream-net-20230528-mptcp-selftests-support-old-kernels-part-1-305638f4dbc0
+
+Best regards,
 -- 
-2.40.1
+Matthieu Baerts <matthieu.baerts@tessares.net>
 
 
