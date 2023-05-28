@@ -1,223 +1,269 @@
-Return-Path: <netdev+bounces-5938-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5939-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DC720713708
-	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 00:34:55 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id DE0C57137C0
+	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 06:52:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7C77E1C209C5
-	for <lists+netdev@lfdr.de>; Sat, 27 May 2023 22:34:52 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 57F7A280E95
+	for <lists+netdev@lfdr.de>; Sun, 28 May 2023 04:52:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D1F419510;
-	Sat, 27 May 2023 22:34:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6186E366;
+	Sun, 28 May 2023 04:52:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 876599461
-	for <netdev@vger.kernel.org>; Sat, 27 May 2023 22:34:52 +0000 (UTC)
-Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-pr2fra01on2112.outbound.protection.outlook.com [40.107.12.112])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04351AD;
-	Sat, 27 May 2023 15:34:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NF+J+V2KtCEd9LvH1cHSpcSlNUpyY/VdalPuwUbrwdwMKC5FqrWSXKlyjYaR4zGpm6GGHJJCmZMTCoWwRSwOn3ALMcTy9qXEohBZ8KBNdoPKwRcOyTbV9FUR21ITPfiDMkQ6GxjbsEp/nUFoXko3hL9Uo1et1sdPhGfwbdumfexlUWyEh/KA2WPVO8bILqDe+nvI7RYvUAyBSjFgQAFL3/B0mMEIjF9OuplA1EdaTgBCKbHvC7AFhnXHERKsPa4VUi737B1CU8zqZv7wQyr/IFzKlD0Qi7+xjWZrcxMMr8vAFxbNhvATGasj7W30Kp5as+FHiLqpoCUWXYQUyiK0RQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t+KayWd7+frViExUTaUyvlm+98YCyIHslSums7jvV/U=;
- b=KvyWWjaYDE2EdaFZ9u1bKc58k4nTNSPQjZc22HEOzACQXgqg34eUm0Ot3brNtrJDujWZoSG+NF5isOwDCLtfZW1u73eK1x/3i6vDUC0eC+tFLZlu+xe+xYbJAVMqgcFgqce+V3JpJGja+zElHoeIH7o7GMgdzE2nMR4Or09RmvgMH0x6abdRX0vpdmRKR+iXDsmefd3ai0wBlIoGjQsOZVBgXz41ROzus5r3ZsJRyd3lGsaYl6mqbjAK+QdmeftywEEuatvmPJiYlsO841/Dt8HqdOo6Ub9xCT9YyttjzbJ5HwVcq0ksUlVldcLkW5R0Bt06DTqQKHymt54r1PiWIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=ekinops.com; dmarc=pass action=none header.from=ekinops.com;
- dkim=pass header.d=ekinops.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ekinops.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t+KayWd7+frViExUTaUyvlm+98YCyIHslSums7jvV/U=;
- b=pPQF6SejQrZHWfxZU91CGmKfe1IdDWgE3LagBJCTeoX9s7f2K9om2CpZaU8nTyytbXyROX1WU0GLHt1AXEhhAXSVOrY6gD2f8xtD7PipyJ23tT3SOyDfGRJNKRu7qrrnird8it5jYZbwzm00xeo/ZwZOLvxbF64sGZCOWVSXz8o=
-Received: from PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:141::6)
- by MR1P264MB2255.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:11::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.21; Sat, 27 May
- 2023 22:34:46 +0000
-Received: from PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM
- ([fe80::5442:2af6:2ce1:f8a]) by PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM
- ([fe80::5442:2af6:2ce1:f8a%4]) with mapi id 15.20.6433.020; Sat, 27 May 2023
- 22:34:46 +0000
-From: Ganesh Babu <ganesh.babu@ekinops.com>
-To: Stephen Hemminger <stephen@networkplumber.org>, Jakub Kicinski
-	<kuba@kernel.org>
-CC: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Ganesh Babu
-	<ganesh.babu@ekinops.com>
-Subject: RE: [PATCH] net: mroute6.h: change type of mif6c_pifi to __u32
-Thread-Topic: [PATCH] net: mroute6.h: change type of mif6c_pifi to __u32
-Thread-Index: AQHZYUP13XlrMpW17Ue8ZSjM0wOOK68RBfoAgCx+ieeACdaAAIAAIdAAgCd1/1A=
-Date: Sat, 27 May 2023 22:34:46 +0000
-Message-ID:
- <PAZP264MB4064D9406001EB75D768D0E7FC449@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
-References:
- <PAZP264MB4064279CBAB0D7672726F4A1FC889@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
-	<20230328191456.43d2222e@kernel.org>
-	<PAZP264MB406414BA18689729DDE24F3DFC659@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
-	<20230502085718.0551a86d@kernel.org> <20230502105820.2c27630d@hermes.local>
-In-Reply-To: <20230502105820.2c27630d@hermes.local>
-Accept-Language: en-IN, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=ekinops.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PAZP264MB4064:EE_|MR1P264MB2255:EE_
-x-ms-office365-filtering-correlation-id: 0074e422-ac4a-4aa3-17ea-08db5f0292e9
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- IcXsoVjWGoMZwR9gUPym3HmXuYxDrs7TbX+iZ66owlkQbFc3QQ14t8DqqV4jH6Q3qCJJF1GFFIm5mESQPB98CeMlABt9+ovW1zEDg//WWwQlLNyFH25SaeKySXeVXPyaTjBcew/d2YboWgkOZDQWhHd0bblbaAd7z8u7g7AWgdYIyoXwWrMwBlsjQCCjAYeC/jRPCRcCipi7hp/3fWe4kjCN+b7rIi7nk3+t8Dx1NePeaUYQUnicvt/4QOn93TObAqwB3//0w3wkDXf6kLPn2+Iv1EwNYKpV7fG2OF2ot6S/0zys7fo1nVwx5GZ7PZnaJqwVq6/OxqOCkathUZnlWssO146xVirfw+a2o/alHrsaINSM0Lx9D+AQ27fEexIBP5ALuaZBAvPEWBy05Chbd7PNv9sPnROBrgmJ5vJaTV85LQmGqPHRISCJPvu58XFxa7oTrSMghDbHTRlmMbReKqxtp+NqsOHe80k4lECjp2Gg1+y6NjOZIssKuC9VgU0628DExmQbnlUa5LRccX/NNNf6fg3JiIZiJSUDVzKgYX3nUJSwe2HerZTjj+4iiexSLibVGpAVu5x+ahcqnb4U3cYFVFbEE3eLyMiT7scV48VE4B3qxltzDWr6a8duoTI/ma5TLIzyL0YFDXqdBC3zMw==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(346002)(366004)(396003)(39840400004)(376002)(136003)(451199021)(55016003)(186003)(76116006)(66556008)(4326008)(83380400001)(66946007)(44832011)(41300700001)(38070700005)(5660300002)(86362001)(316002)(110136005)(54906003)(2906002)(9686003)(6506007)(107886003)(7696005)(66446008)(66476007)(64756008)(71200400001)(478600001)(55236004)(53546011)(33656002)(122000001)(8676002)(8936002)(26005)(52536014)(38100700002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?yaW4ItbjiU+iHeBY9HR+eFySVbYw4BFvU8KDO3Dc/par8Mr3l6yIw/0EfYXT?=
- =?us-ascii?Q?cV8O5Ei0kQVyBQnnHWFDlJ0sboaNBKsTh/n0Oo1gcGFv9XN2q5pHIPEhuMq2?=
- =?us-ascii?Q?k59PgTM3gfj/WN5oERNkI3FnPUVJuU2VNZekpRvhpN5xNDjctHjQjO7NoizU?=
- =?us-ascii?Q?Ty1+VRzwoMAsUlLCMC1x19ggjKw7WUt59WlsRNoAdZ7v6Qhn2hRF7t+HbtEr?=
- =?us-ascii?Q?6m70netzbC3xbnNOMFoEGLWGyMBK090ratbGvWSSt1ewlausUpiHcX0xwL1a?=
- =?us-ascii?Q?9gbLFi2T0o87hBKY7TcgCkExAIJB/U1teWjPwAwGFfw4w5MKHY78H5T8NlK+?=
- =?us-ascii?Q?eqeM22wWpzteLNdAag7eTV2dG8RVsJNp6S1y0tgCOIk/cE9CSiy7o6SvmSbl?=
- =?us-ascii?Q?1q/M6s1NzH2sPy02ucaPh+pj1256EMC4WKgPltFMK+SxZR3QnXaHyf2W27z6?=
- =?us-ascii?Q?ArLtJSgRMIqiqTPe300tf4Co418PNWnof2ATaaqqG2c9l1BwJo2fxfxhwHez?=
- =?us-ascii?Q?e11078Q9XYlhLzfHQs3jg2NlxR249JwpmnklEW9PqA0fs7ShBBl7sxkAtPjq?=
- =?us-ascii?Q?1oNu1sq7vmxS+qI7SdRMK/+/mrbCkH3o4WfFOlZ4VGDW2QWhyQ9yWPxDtU7c?=
- =?us-ascii?Q?nMazGjtarjhW1LCxR+ZFkx2i9eIoP4Os1oHIndVLAXxgGmW+qC3EcwYxAodt?=
- =?us-ascii?Q?KauM0MVFW3gwm2x9TCTgJJCbupvVQWeAe1J9x3WS/O+/szzoXF9Uj3erY7hP?=
- =?us-ascii?Q?ytZC67Zlb4Tt9093vRsNzjpbANj08om4kwSVd/JsGWx34VuKJkB814W5wHqz?=
- =?us-ascii?Q?kesZV3hGt2qDmardjZ7A7iX9gTmunBPDtcAB3sGIrGCvTZ7Ylf4QnhboMoYI?=
- =?us-ascii?Q?TNt5bkd9QiO4bUmem/GFBJeNFb7RkQeuOeEOKCsyPTRH0PaA/nv3E/9LXgES?=
- =?us-ascii?Q?VHN8+4zEjOXvEAxAs2nyfgM5otmtRidTbloE8zROmm+NpYfsEgpTU4UHqQmu?=
- =?us-ascii?Q?1lE1sLJyYe+YOEckxCJnPAHrBro9X8RxBFRQnF8DQ47+h6EZRl2lJm1/zmq6?=
- =?us-ascii?Q?aZ5620Gg2ZrQRsjXlT1/JMsENtond8uFRXBrTjpUqhiyhrJpXl2nV5vSTnBS?=
- =?us-ascii?Q?+CDvgQ6rDfsl71Y1s4pXfabhWGTXCwC6k0iIZkj7Z0EqO5qkRVD5o8uHRfmO?=
- =?us-ascii?Q?T31C2NNBBvmQSCUdRAnp7cUlgi6kU0s39hNbEi2h67Z9DgZBf1kSYVvWXiQG?=
- =?us-ascii?Q?HiLS/s4yl2GAD/l/R7raP4EilT+XBiU7sG6wZQ7xF+C2HAL2tVrQcz4TkV0c?=
- =?us-ascii?Q?5llrj/LlfUTaCrdlJTQKzkTTwFi0O6eonrRoOKCPZxdrsF38xCRLX1bFWtYQ?=
- =?us-ascii?Q?AlR6wIxobbBq05RirbBMDtziw3WYgCwuYyvyXo0qQkZh76I5jPOYF6iuJtfc?=
- =?us-ascii?Q?o3adQ0YrtgD1ELyICw3jnvaNyjwvYut/d19sfNl6L76cyJcm6dLlqMQsiuOp?=
- =?us-ascii?Q?oa+S8Q6BGnyy0P0QmtFHBPVzbZFlzfnBxllXzs/g8JHcFBiEqu8R1xFNQ6ol?=
- =?us-ascii?Q?sCqkGyDOTNOtgXXmVNIsu50LcD5UmMG+yadCqpff?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50CB764B
+	for <netdev@vger.kernel.org>; Sun, 28 May 2023 04:52:00 +0000 (UTC)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407FAC3
+	for <netdev@vger.kernel.org>; Sat, 27 May 2023 21:51:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685249518; x=1716785518;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EnbXtQhNpzXuIjlq7kcao3OWpxiPFaXH7Guxvx3hVbY=;
+  b=HdHQDj+c5lbDyScmdCGeH7ZoCQ1981ZHJUKadnaQOtzeemm3MN92RDVk
+   +VTiUnD3lPWVVBa5EbFyBM4mMEl5bckMoSQ0SFpniiXKF6x6nEInrkQue
+   4+X6EFExElUFyqQ0To71uvmARTGhnfDDJiKMvWoYTWo30xMhmmmHHhH07
+   A5ATMSbnevLqdKx/LLlgkg899MoOy/IkypU6eLVA3386PK/6JS7G8fE2F
+   UHFqFbaqnfvKV8GuDGd3YBhBqj7rxP9qJYlsKRZitT6DPbzDqzWQplJI1
+   6LDX7qHVzhsuHa1tZcXAetnu0meXTRvXZU5oBp49EBi25CEpbv5Dcd3vh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10723"; a="357731519"
+X-IronPort-AV: E=Sophos;i="6.00,198,1681196400"; 
+   d="scan'208";a="357731519"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2023 21:51:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10723"; a="708841576"
+X-IronPort-AV: E=Sophos;i="6.00,198,1681196400"; 
+   d="scan'208";a="708841576"
+Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 27 May 2023 21:51:55 -0700
+Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1q38Nm-000KRO-1s;
+	Sun, 28 May 2023 04:51:54 +0000
+Date: Sun, 28 May 2023 12:50:55 +0800
+From: kernel test robot <lkp@intel.com>
+To: Tristram.Ha@microchip.com, "David S. Miller" <davem@davemloft.net>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>
+Cc: oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
+	UNGLinuxDriver@microchip.com,
+	Tristram Ha <Tristram.Ha@microchip.com>
+Subject: Re: [PATCH net-next] net: phy: smsc: add WoL support to
+ LAN8740/LAN8742 PHYs.
+Message-ID: <202305281254.hziqmfSD-lkp@intel.com>
+References: <1685151574-2752-1-git-send-email-Tristram.Ha@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: ekinops.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0074e422-ac4a-4aa3-17ea-08db5f0292e9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2023 22:34:46.2004
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: f57b78a6-c654-4771-a72f-837275f46179
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZFOjae0F65PN7CaxkwOx5aOFVWF1jZ/l9GvotezSVLu+hR6gjqn6+AJiY3RXpkOrxRJhTMn2ryyec5wYs/CpJQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB2255
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1685151574-2752-1-git-send-email-Tristram.Ha@microchip.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Hi,
 
-> -----Original Message-----
-> From: Stephen Hemminger <stephen@networkplumber.org>
-> Sent: 02 May 2023 23:28
-> To: Jakub Kicinski <kuba@kernel.org>
-> Cc: Ganesh Babu <ganesh.babu@ekinops.com>; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH] net: mroute6.h: change type of mif6c_pifi to __u32
->=20
-> On Tue, 2 May 2023 08:57:18 -0700
-> Jakub Kicinski <kuba@kernel.org> wrote:
->=20
-> > On Tue, 2 May 2023 08:07:10 +0000 Ganesh Babu wrote:
-> > > Thank you for your response. Regarding the proposed change to the
-> > > mif6ctl structure in mroute6.h, I would like to clarify, that
-> > > changing the datatype of mif6c_pifi from __u16 to __u32 will not
-> > > change the offset of the structure members, which means that the
-> > > size of the structure remains the same and the ABI remains
-> > > compatible. Furthermore, ifindex is treated as an integer in all the
-> > > subsystems of the kernel and not as a 16-bit value. Therefore,
-> > > changing the datatype of mif6c_pifi from __u16 to __u32 is a natural
-> > > and expected change that aligns with the existing practice in the
-> > > kernel.
-> > > I understand that the mif6ctl structure is part of the uAPI and
-> > > changing its geometry is not allowed. However, in this case, we are
-> > > not changing the geometry of the structure, as the size of the
-> > > structure remains the same and the offset of the structure members
-> > > will not change. Thus, the proposed change will not affect the ABI
-> > > or the user API. Instead, it will allow the kernel to handle 32-bit
-> > > ifindex values without any issues, which is essential for the smooth
-> > > functioning of the PIM6 protocol. I hope this explanation clarifies
-> > > any concerns you may have had. Let me know if you have any further
-> > > questions or need any more details.
-> >
-> > Please don't top post on the list.
-> >
-> > How does the hole look on big endian? Does it occupy the low or the
-> > high bytes?
-> >
+kernel test robot noticed the following build warnings:
 
-We don't need to be concerned about the byte arrangement, whether it
-occupies the low or high bytes, in the big-endian machine. The reason
-is that the mif6c_pifi variable is only used when calling the
-dev_get_by_index() function to retrieve the device information of an
-interface. This function expects the interface index to be passed as
-an integer. Since both the mif6c_pifi variable and the expected
-argument of the dev_get_by_index() function are of the same data type,
-there is no possibility of data truncation.
+[auto build test WARNING on net-next/main]
 
-It could have been problematic if mif6c_pifi were 32-bit and the
-interface index values passed as arguments to the dev_get_by_index()
-function were 16-bit, as this could result in unexpected behavior.
-However, the proposed change avoids this issue and ensures
-compatibility between the data types, eliminating any concerns about
-the byte arrangement in the big-endian machine.
+url:    https://github.com/intel-lab-lkp/linux/commits/Tristram-Ha-microchip-com/net-phy-smsc-add-WoL-support-to-LAN8740-LAN8742-PHYs/20230527-094102
+base:   net-next/main
+patch link:    https://lore.kernel.org/r/1685151574-2752-1-git-send-email-Tristram.Ha%40microchip.com
+patch subject: [PATCH net-next] net: phy: smsc: add WoL support to LAN8740/LAN8742 PHYs.
+config: i386-randconfig-s002-20230528 (https://download.01.org/0day-ci/archive/20230528/202305281254.hziqmfSD-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-12) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/a1e40c5a7a32445d5ae4541d4e57bbc4b5065057
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Tristram-Ha-microchip-com/net-phy-smsc-add-WoL-support-to-LAN8740-LAN8742-PHYs/20230527-094102
+        git checkout a1e40c5a7a32445d5ae4541d4e57bbc4b5065057
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 olddefconfig
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/phy/
 
-> > There's also the problem of old user space possibly not initializing
-> > the hole, and passing in garbage.
->=20
-> Looks like multicast routing is one of the last places with no netlink AP=
-I, and
-> only ioctl. There is no API to modify multicast routes in iproute2.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202305281254.hziqmfSD-lkp@intel.com/
 
-In open-source applications like FRR
-(https://github.com/FRRouting/frr/blob/master/pimd/pim_mroute.c) and
-pim6sd (https://github.com/troglobit/pim6sd.git), 32-bit interface
-indices are sometimes assigned to 16-bit variables, potentially causing dat=
-a
-loss. This can result in inaccurate or invalid interface indices being used=
-,
-leading to incorrect network interface identification and improper multicas=
-t
-forwarding. For instance, in FRR's pim_mroute_add_vif function, assigning a
-32-bit ifindex to a 16-bit vc_pifi variable truncates the value, risking da=
-ta
-loss. Similarly, in pim6sd's k_add_vif function, a 32-bit uv_ifindex=20
-assigned to a 16-bit mc.mif6c_pifi variable, also risking data loss if the
-value exceeds the 16-bit range.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/net/phy/smsc.c:449:27: sparse: sparse: cast removes address space '__rcu' of expression
+>> drivers/net/phy/smsc.c:485:38: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct list_head *addr_list @@     got struct list_head [noderef] __rcu * @@
+   drivers/net/phy/smsc.c:485:38: sparse:     expected struct list_head *addr_list
+   drivers/net/phy/smsc.c:485:38: sparse:     got struct list_head [noderef] __rcu *
+>> drivers/net/phy/smsc.c:449:45: sparse: sparse: dereference of noderef expression
 
-However, even if the userspace application still maintains the mif6c_pifi
-variable as 16-bit, the proposed patch ensures that no issues are created.
-This is because the size of the mif6ctl structure remains unchanged, even
-after converting the datatype of mif6c_pifi from _u16 to _u32. This guarant=
-ees
-that there is no risk of data truncation when copying the 16-bit mif6c_pifi
-userspace value to the 32-bit mif6c_pifi kernel variable.
+vim +/__rcu +449 drivers/net/phy/smsc.c
+
+   398	
+   399	static int lan874x_set_wol(struct phy_device *phydev,
+   400				   struct ethtool_wolinfo *wol)
+   401	{
+   402		struct net_device *ndev = phydev->attached_dev;
+   403		struct smsc_phy_priv *priv = phydev->priv;
+   404		u16 val, val_wucsr;
+   405		u8 data[128];
+   406		u8 datalen;
+   407		int rc;
+   408	
+   409		if (wol->wolopts & WAKE_PHY)
+   410			return -EOPNOTSUPP;
+   411	
+   412		/* lan874x has only one WoL filter pattern */
+   413		if ((wol->wolopts & (WAKE_ARP | WAKE_MCAST)) ==
+   414		    (WAKE_ARP | WAKE_MCAST)) {
+   415			phydev_info(phydev,
+   416				    "lan874x WoL supports one of ARP|MCAST at a time\n");
+   417			return -EOPNOTSUPP;
+   418		}
+   419	
+   420		rc = phy_read_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_WOL_WUCSR);
+   421		if (rc < 0)
+   422			return rc;
+   423	
+   424		val_wucsr = rc;
+   425	
+   426		if (wol->wolopts & WAKE_UCAST)
+   427			val_wucsr |= MII_LAN874X_PHY_WOL_PFDAEN;
+   428		else
+   429			val_wucsr &= ~MII_LAN874X_PHY_WOL_PFDAEN;
+   430	
+   431		if (wol->wolopts & WAKE_BCAST)
+   432			val_wucsr |= MII_LAN874X_PHY_WOL_BCSTEN;
+   433		else
+   434			val_wucsr &= ~MII_LAN874X_PHY_WOL_BCSTEN;
+   435	
+   436		if (wol->wolopts & WAKE_MAGIC)
+   437			val_wucsr |= MII_LAN874X_PHY_WOL_MPEN;
+   438		else
+   439			val_wucsr &= ~MII_LAN874X_PHY_WOL_MPEN;
+   440	
+   441		/* Need to use pattern matching */
+   442		if (wol->wolopts & (WAKE_ARP | WAKE_MCAST))
+   443			val_wucsr |= MII_LAN874X_PHY_WOL_WUEN;
+   444		else
+   445			val_wucsr &= ~MII_LAN874X_PHY_WOL_WUEN;
+   446	
+   447		if (wol->wolopts & WAKE_ARP) {
+   448			const u8 *ip_addr =
+ > 449				((const u8 *)&((ndev->ip_ptr)->ifa_list)->ifa_address);
+   450			const u16 mask[3] = { 0xF03F, 0x003F, 0x03C0 };
+   451			u8 pattern[42] = {
+   452				0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+   453				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+   454				0x08, 0x06,
+   455				0x00, 0x01, 0x08, 0x00, 0x06, 0x04, 0x00, 0x01,
+   456				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+   457				0x00, 0x00, 0x00, 0x00,
+   458				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+   459				0x00, 0x00, 0x00, 0x00 };
+   460			u8 len = 42;
+   461	
+   462			memcpy(&pattern[38], ip_addr, 4);
+   463			rc = lan874x_chk_wol_pattern(pattern, mask, len,
+   464						     data, &datalen);
+   465			if (rc)
+   466				phydev_dbg(phydev, "pattern not valid at %d\n", rc);
+   467	
+   468			/* Need to match broadcast destination address. */
+   469			val = MII_LAN874X_PHY_WOL_FILTER_BCSTEN;
+   470			rc = lan874x_set_wol_pattern(phydev, val, data, datalen, mask,
+   471						     len);
+   472			if (rc < 0)
+   473				return rc;
+   474			priv->wol_arp = true;
+   475		}
+   476	
+   477		if (wol->wolopts & WAKE_MCAST) {
+   478			u8 pattern[6] = { 0x33, 0x33, 0xFF, 0x00, 0x00, 0x00 };
+   479			u16 mask[1] = { 0x0007 };
+   480			u8 len = 3;
+   481	
+   482			/* Try to match IPv6 Neighbor Solicitation. */
+   483			if (ndev->ip6_ptr) {
+   484				struct list_head *addr_list =
+ > 485					&ndev->ip6_ptr->addr_list;
+   486				struct inet6_ifaddr *ifa;
+   487	
+   488				list_for_each_entry(ifa, addr_list, if_list) {
+   489					if (ifa->scope == IFA_LINK) {
+   490						memcpy(&pattern[3],
+   491						       &ifa->addr.in6_u.u6_addr8[13],
+   492						       3);
+   493						mask[0] = 0x003F;
+   494						len = 6;
+   495						break;
+   496					}
+   497				}
+   498			}
+   499			rc = lan874x_chk_wol_pattern(pattern, mask, len,
+   500						     data, &datalen);
+   501			if (rc)
+   502				phydev_dbg(phydev, "pattern not valid at %d\n", rc);
+   503	
+   504			/* Need to match multicast destination address. */
+   505			val = MII_LAN874X_PHY_WOL_FILTER_MCASTTEN;
+   506			rc = lan874x_set_wol_pattern(phydev, val, data, datalen, mask,
+   507						     len);
+   508			if (rc < 0)
+   509				return rc;
+   510			priv->wol_arp = false;
+   511		}
+   512	
+   513		if (wol->wolopts & (WAKE_MAGIC | WAKE_UCAST)) {
+   514			const u8 *mac = (const u8 *)ndev->dev_addr;
+   515	
+   516			if (!is_valid_ether_addr(mac))
+   517				return -EINVAL;
+   518	
+   519			rc = phy_write_mmd(phydev, MDIO_MMD_PCS,
+   520					   MII_LAN874X_PHY_MMD_WOL_RX_ADDRC,
+   521					   ((mac[1] << 8) | mac[0]));
+   522			if (rc < 0)
+   523				return rc;
+   524	
+   525			rc = phy_write_mmd(phydev, MDIO_MMD_PCS,
+   526					   MII_LAN874X_PHY_MMD_WOL_RX_ADDRB,
+   527					   ((mac[3] << 8) | mac[2]));
+   528			if (rc < 0)
+   529				return rc;
+   530	
+   531			rc = phy_write_mmd(phydev, MDIO_MMD_PCS,
+   532					   MII_LAN874X_PHY_MMD_WOL_RX_ADDRA,
+   533					   ((mac[5] << 8) | mac[4]));
+   534			if (rc < 0)
+   535				return rc;
+   536		}
+   537	
+   538		rc = phy_write_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_WOL_WUCSR,
+   539				   val_wucsr);
+   540		if (rc < 0)
+   541			return rc;
+   542	
+   543		return 0;
+   544	}
+   545	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
