@@ -1,66 +1,68 @@
-Return-Path: <netdev+bounces-6169-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6170-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2A386715063
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 22:19:52 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C6A58715068
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 22:20:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 762801C20A88
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 20:19:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BC344280F59
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 20:20:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A53FA10780;
-	Mon, 29 May 2023 20:19:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 45D461078B;
+	Mon, 29 May 2023 20:20:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBD4BA53
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 20:19:48 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on20629.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::629])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB59FCF;
-	Mon, 29 May 2023 13:19:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321F010780
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 20:20:05 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2074.outbound.protection.outlook.com [40.107.223.74])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B0CB7;
+	Mon, 29 May 2023 13:20:03 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HP7d+6L+agk4a+PjU+Op+XEBKchLsLJV42OTL6KPmN2WROxevtlDKyptwk62VVuSG8rY36aLoEE77HpKV/SH5rchg1Hod4ZkN/0aFCN9MtMe9nUMUNFGL3T6aiOA9I7a6FRTrlhaGV3xTfOcEwY+RDbEWGa7L3RUsP4MuUJIvbrQe5SU4kDcuiyRJVkOj5HV030UAfwB7QVsF6/nEGDZoYHPSnDul53Dgou+jen1bR+zIhhrRW/YjmMVPKcrUe9VIx5weF3AIc2+U9wC+wBl1SC5KrCHUB+Oufu5OKEm1yYRj+hkbwZD7Mchyq/L0fzMPqcaKPUPMRuERMaGvPJTTg==
+ b=WOpC5pH/0qSNjr+UXRXcNDJDrAhJN80yuiyulntZzzPDm4fMuvuZbfRtdtmtEN5JeifCJrToMDopIMwlhZeRU3DIyUQj05xPnQp1OcXQFmI7uIw2iEwV/IRSe8B0K7pLGdLMSyoG5QE8YrKwbtbzykyu2Z95lymlP4O+ldLxIe4ujkg1f1fzT5ehRfl3PWVPygVqcfVLwKlZ8LoTG81DW5y4J0SPr8OmdNzXF3fMCS9/abKjx2wtgdbQ2iz5jcy5jGVgeN9PPFweNtAb9NY88sXGzgaDciX7Im1ZWM8EYiD4zIwf0Zgcib8HPxJzwLiph4PAqOa3K7+F9E9sb9HUmg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G94JeCZEPXVuTfPis6gKgswmtsaHQtxgn2reOOQ1Aks=;
- b=atEQy80lLjv4/h6mYc889HQDm5lW9f95+Xyve+wo4teECPmlZ63Y5RXndMca1bvGnegeF5WQskq6eNfesPiaAMj85kLRM6iJrCUdrgcq03nJUInCF6ZcA7fMSrMn3cIP3wQSwGg6H1McItrBT+YWFn3Q57hAOm4t6SK+okbL2FhvvOyJCrgsUi67xF+XqahLqZXkRzYIV6DlfTR/hnDUUiCIjpVNoSKjzyaImQReIdGkaAyQIAJl9LS2gIWIrUB3w+dh+aQoGF5QVnf5g2ex6pgQJ4vhlB9dEM0IANCXzJeWiajoOhEGgwapAVqd/mN8WqdhV4LUul0plqMVgMPtrQ==
+ bh=v6rhKu6B8MykQQnV3BsVHwJJwxznNKpwTwyi45MSWfU=;
+ b=XzzzxlMi3LoNPEU1PDhBjirAymL8H0qM9MosVPjngo6bDt6//SKNVlGW8s5ECNfaqi81t8hP6u7Wre74kKMCVd+N0hE+Rgeit91b5noVshna+YT9kBRJEancvHyYa2y5aAG1xFZnnLwmqjI4exux7PAoU2OuxuaB+9b7saV8ljmbm2kNFk/JU4eZlTg21lBEhtbvoq8aEYrOlVcxfS1GWd4UT0nos3Hj/nDt6cw1Elbt6w604HQxccMoAsy84OQccKN6Vh33bCXUkq8Jd7jWg9aI//HvCydmkVRR1orA3asfSSNigcFAoWwQs82cao7AseTrod6Wd07rU58f2m0Blw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G94JeCZEPXVuTfPis6gKgswmtsaHQtxgn2reOOQ1Aks=;
- b=oQie2lwPxFOnwRGIQczQ7jfgcUwi5+zDjGOrXd/FsgboJmVU+8H2lnnlfiv6XaTaVzVWtUM24+WQGHvinWlcPyz+fioAivNQIxWkm0l3+C+rw3zsY81SapNAkp6QnOXvphgNXVAZeAu00+PCL2b5BRF74caXPnUZHY68b6xoSQBKyZzS1CvKy9gfAwlVzF0JVjsUoL+mInvO8157Wf+B+oRp3KpMTxX8J2S2K/XW2EWboZsoFoyDVEvaobRSZf5RVUZaX1l0UUkhRNkvLoI4CGWeISPlIM7MmJdH84jOPWA/KjGXORX7ypvbH/in4qfclviaPqNl0oBhFXyrwNzxWw==
+ bh=v6rhKu6B8MykQQnV3BsVHwJJwxznNKpwTwyi45MSWfU=;
+ b=aAn8Wqnah3j20D7mPApfuolKaLIsJPeIpwmCoVkVjkM/YUkJ/mRsz/YqAEpGWL7y5EtWlkkaVmyQ+1c+ouUCk0XHvhw+64qk201osCwWJLUxLaNDc8iWRNN3+JtTlTXTMWFPgufCr8vsCFmEuMaadg2yTtBUTqKm9H/PT29fYKObqvFWIwTq3NQyO23WKcQ13Lfpo1ZPH/O4YaCWyyrTMi5IUV9cbdvlp8BUSgVG0Z42Sl39eWeNJUL2XGkeizjIdmJd0LaQI2HZSCb6puD68j4bSoeLDrwnmufGMzVxm5eJ1KCrEqCTWQSzg/ed1TaqA8OPbcyyIkf5OUEhwFPOGg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from MN2PR12MB4373.namprd12.prod.outlook.com (2603:10b6:208:261::8)
  by IA0PR12MB8254.namprd12.prod.outlook.com (2603:10b6:208:408::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Mon, 29 May
- 2023 20:19:44 +0000
+ 2023 20:20:02 +0000
 Received: from MN2PR12MB4373.namprd12.prod.outlook.com
  ([fe80::96fe:2d5b:98bf:e1da]) by MN2PR12MB4373.namprd12.prod.outlook.com
  ([fe80::96fe:2d5b:98bf:e1da%5]) with mapi id 15.20.6433.022; Mon, 29 May 2023
- 20:19:43 +0000
+ 20:20:02 +0000
 From: Benjamin Poirier <bpoirier@nvidia.com>
 To: netdev@vger.kernel.org
 Cc: David Ahern <dsahern@kernel.org>,
 	Shuah Khan <shuah@kernel.org>,
 	linux-kselftest@vger.kernel.org,
 	Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 0/4] nexthop: Refactor and fix nexthop selection for multipath routes
-Date: Mon, 29 May 2023 16:19:10 -0400
-Message-Id: <20230529201914.69828-1-bpoirier@nvidia.com>
+Subject: [PATCH net-next 1/4] nexthop: Factor out hash threshold fdb nexthop selection
+Date: Mon, 29 May 2023 16:19:11 -0400
+Message-Id: <20230529201914.69828-2-bpoirier@nvidia.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230529201914.69828-1-bpoirier@nvidia.com>
+References: <20230529201914.69828-1-bpoirier@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: YQBPR0101CA0193.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:c01:67::32) To MN2PR12MB4373.namprd12.prod.outlook.com
+X-ClientProxiedBy: YQBPR0101CA0284.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c01:6d::23) To MN2PR12MB4373.namprd12.prod.outlook.com
  (2603:10b6:208:261::8)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -70,84 +72,116 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: MN2PR12MB4373:EE_|IA0PR12MB8254:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4e4228b3-d525-4660-0985-08db608209f0
+X-MS-Office365-Filtering-Correlation-Id: 6f2f2bbf-9f23-4abb-06ef-08db608214f4
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	6H2UXcCphaYVxpbera0A8U0L3IEOBYxBlsVVX/pehWkeauasGmLqwhLfF1xsuawAsFa5BCpWBxWxF9mOSFj/m4wyxpL6NxGGwQvZCXfYsJbpuQVS2z89AWYpA1B8PABBNeoGjQTBvmDCSmQE6/Q5n5nn3u0rc9y32AYokLDd7iSa0Jxcgxh0VqiV/6NIoZ42KTA8MeaYjZJppgrgerXZ9ryiFYI4Xl6zm7mLHlls60mXQG+ZQPskvgtewhu83+YinB4I+HjCo97TnNjR2thZaOTrkyzV3jjr4AcWMwhRmKsWRriXH0DTQYujTDLeumi+zKuK/Vt/AtvLrSZhIRwjikrUmAmdGetazdBOKQiFyHzjLDlDED5ZBLlON3BcLz64iMhNP/0BYr90mDymVXQvld1kpPJhabmi7nyhc69cdfOGNR7gj7SMvMYyh4buVoxXNT7stlhC5FtikG2tHz58ObJCRO+XDKTUW9witkdxf4b/Eh2IFzmbIPPCkwsBj6rDnKE2vFKL6go6ELkYBe+8gKk5wU+eU1cGEEUILET06LTnsJZTIpnBoeFPPaW+xaPy
+	qKuTubFa7bkQ6YdEKIGhdUsCsh2GNzrniJI7SAVaWQtpg9zIjDkOvBrTD27A9XXkH6A6qcWga3WQ9xRJr83oIlq1KVWK+6awRCp8TDqjGcpJYrnyr7XZeLyhR7Z76On8+GR5+2pa3+6MpLcG9CAdIjRYjoZLggIcyUqnyYRvcAKwcTg4OzLVQcc/p+KV3l6bIRSyqVt4e1EhUYhjhSASf6/G+zRUysmufiC1+ITALJUiRWF+Z+zbBXyva/dTawK6GoEMUDipgBcW1jKISPhebXbh67R5rULrx0FI7Yk4T5SNniI5qUdaCAJ9MjaqpmKUrV+6Q3Yu6nbuS7HYkQ1aAbUCRf1aXkL095iaVX6dP0qjHP2jWyJRJ+HRNmJS0uP9xMBRcsOmd2qGTwUNCe7dFJLQzrq17hyRAAfi+cO6dmz4w67vxgQHAMoz+LmfApmNouubr6NbAaTsEhZJdcT80yKJpfMoA+omM11dIsPSJhVUK5s13wXLK5Onh/U/tcLlFaGHpZ2PyKMbeGoIwYxfTVsXJzBWcAZUqtYX+ApFxVb+CJLoY2luxkYPMGytdZ+d
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(376002)(136003)(39860400002)(451199021)(38100700002)(478600001)(2616005)(66556008)(83380400001)(66476007)(66946007)(54906003)(86362001)(4326008)(6916009)(2906002)(6666004)(6512007)(6506007)(186003)(6486002)(26005)(1076003)(316002)(41300700001)(36756003)(5660300002)(107886003)(8676002)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?p+lxEPYDXYt8fNdcRWnut7Z3lvZ+rQdSiXD6E9ZDwS4O6ZQHsTe9BvpNgcoV?=
- =?us-ascii?Q?xH0bph6AcKcQQ2ADP4rFgoSP1FxHrb/h3ZMjfrQgl6NRYmM+kbidbde0zImP?=
- =?us-ascii?Q?Dtcf7s+w2Qba9XcK6btflrDJR7Y4kuWNPYTMBT8tHz27P5i/0RwROF5Hgw2S?=
- =?us-ascii?Q?F92omSgoU9iHz3cM00Li9EzCJbWzhZw8GVR3mZageb0BOX3Mxtp1xGXRtPVy?=
- =?us-ascii?Q?qgx37wOc8L0iULuaeLq4Ca+4HdIgrw9rZL3aeEIVp8GqW4jTdQhU7IYz+srJ?=
- =?us-ascii?Q?OjrlgfJ6OH5DPr4/AUZVYmNB/zGoYyy2EBrJPRl/h8NVWgI44kXCCJb+7RNW?=
- =?us-ascii?Q?SB0FzgeuokweQMiplEdu+3yNj0LygSVoFAtYQolKgFxY/h3SYdL//TYD+ehI?=
- =?us-ascii?Q?VLQG2L66Q0a61Sc4rRKHdnDmpEBQPikHMmFsYsw/1ltgQ8CXbMKUQf1b9G+f?=
- =?us-ascii?Q?qgQbiLVVKWjwAR/mMXRz0tqaDsSGrUu0YEBQk3HbvFHeCjfrTne4b0MgmQJG?=
- =?us-ascii?Q?pGmdjet+5QlDyXU4V3l8z+WdNEWjBlci0zcCiR7PFoOAlzXU6y0c66tV7uXw?=
- =?us-ascii?Q?NvHN/sGrP4lR56YCtgqt+w35LGgMjr2MkeqcLkA6m7rCP1q1uY1H5RITWyGI?=
- =?us-ascii?Q?oudeRJ34jCng/F2xD6KkSUVnj5AvBzJo9y7Min5uxPEXdNeRaX8MlXt7E90W?=
- =?us-ascii?Q?EMSBRtDsn8cCy6eIjNfC8374Ou4WW9wlQj2amVTc4nb7oC3zGlhXeqqK+CET?=
- =?us-ascii?Q?gFm9Uv0xW5s3nFjkFa855LGbNtuCem9QPEoaBB+E65oOkxmvd+jZEmITf/jK?=
- =?us-ascii?Q?orefSMS6DihkRRfZuWfjEbqfHarFgXJn4sdR+sA1MzVT2LOMb1o+kHl6hLUx?=
- =?us-ascii?Q?zwflWRsYLjv8fDwPrVKu556/pqHG5z7LOnECxkjnkYqqC3Vk6mElSHR2g6up?=
- =?us-ascii?Q?nhwqpyPtZn04RYVCr0qqjNR2gMvF8sw1JFD6LVOFbxV3ie1/h46x4nqQaF6E?=
- =?us-ascii?Q?pU6gioPe1SSMcM9iGPgIxSVIIzFGW0xVrAkvi3CjOzDzmMjAViMZy/TH8B/c?=
- =?us-ascii?Q?/RVo5vBhKt9fA4T309sr6GVsrmxHn8MuEiil+YvbbTtUV2zwHqJ1UjqRqYjr?=
- =?us-ascii?Q?9miACyW/+gnjEnfiFtQlfslyR1Uvn0t/qy0Q93QQ0Oei3NpQo6f+1uWUuntq?=
- =?us-ascii?Q?/zHhOYlLys38BNtltQY9tpKihoZ7ACqCn5mBRZbESteVlk0fNctpXqJZ3qHV?=
- =?us-ascii?Q?C60VTdDTY1BKo8AtUmN+KNPLo/PgsYVno7/SAIB2jQAHxff747TGTAVhNiEa?=
- =?us-ascii?Q?cDZ31ICNNeNqOFJDgZo6hvlHrvEVAVppvlGo8/jm+ZleXXP/xyheU/K/+KDU?=
- =?us-ascii?Q?sJMG3esJSBVKjAmccjQ94L1cLDupWR8dmInWbhVJM/YUqKUpSMq7geJqZ1h+?=
- =?us-ascii?Q?wnr/tSs/3P0vDMNA8hc0oKwfw99ERV0oBRpfIEUvPnUNbioxAqDrlo6MDfLS?=
- =?us-ascii?Q?af0ARcfhJWDwDIsGILxR6//TMgxTb7tskuA+wslEVZMCUPJObkiCXxivCZlq?=
- =?us-ascii?Q?zymwvk5sJ/XqhwNlEzLV8fg9ebaKb0eO9Pbn6Lz3?=
+	=?us-ascii?Q?NpRUxTcHNij4y2XlDnfRt+n7msa+X1EEPWXF5iCsnPyMuEJdPBJle4dMkM8A?=
+ =?us-ascii?Q?5b3MrRgu1Fuck0OuX0jV0DZZVSYmFIyFGLPkzHRz//SNYqTB+ecZ26sI2QI3?=
+ =?us-ascii?Q?ZEg8jwenn2/nArhbeC7nrxFxJFc2SeDmIClfSMHvJN/sHzfcqeEXVE4cF8wX?=
+ =?us-ascii?Q?e3dRgJ6oWIRNL/kFAr7t7IITHE3sXsu3oTmanS6GmQH2kogGt6Y/RF9TGcJ9?=
+ =?us-ascii?Q?dUsnEm6LYhWG+8FZTbeD23dBViP2o0lneV+/IkWBSX3BB0DFhyM+PHUhHj81?=
+ =?us-ascii?Q?dLpFposbdEAJaoLcZfIKMLIaW5zRzEQazSwmsXbxmXPo06a1IpWnclKdfMwf?=
+ =?us-ascii?Q?8C1YsPoB2Wcv4T0/RADXSzRQbBiSWGeyjNy678R/JsLd8RAcz/5M/PDskPAn?=
+ =?us-ascii?Q?R6lr7C2sjQbaS9QWm67rZlqN0U5hOrxwJOfgirNghmOZRoywKhqmNhcfDazc?=
+ =?us-ascii?Q?pO+1tvoxslCIAhFEjw+0ieAa25vthpK5eBkre5hDFyCHIEUzOaQHERVEZmS/?=
+ =?us-ascii?Q?n0qXDiq+L71QR/Vj+EQ7urKQSeONwlbV6iNs0M04K61B4N4TeVprfX2kva7l?=
+ =?us-ascii?Q?7EaLdna1QG4Y3o9QhLXPPSzeGZLr/aLPqaZPgwH38JcyTsOMv2P9prDpcteV?=
+ =?us-ascii?Q?uIq4iwVBay0xv54ImbDaHej60piG+b4EA05E2kvw1b8IOq+epPwwqxJ76s1V?=
+ =?us-ascii?Q?W7kYKZvp12WIeiEEk1KxfWWBj5ji/vg60srKMVXa+APnGR6/mBCCV5/ktzcG?=
+ =?us-ascii?Q?8SBU+CxtiB6HucL+YWoIipfQ2gKM4s8G9vP9OsUi4A56R8gJHnwIIIi1goKE?=
+ =?us-ascii?Q?uBvt03dM+yd/0QbzihHYLEPRp2kRcKQRb6zyjiQHeC7E6j/RXXV7/FP1Owak?=
+ =?us-ascii?Q?hRGopuFH5ZHmRRPVy59VoNXOUgIZx0c0H2OjliCbwP2HJ63EUUIxRhfbWLn+?=
+ =?us-ascii?Q?PQ3OX0jSqPTo0zo42wfYg7XawPMSJTekuqTiIviKUAgaNzxrg3z3s1VoNvm8?=
+ =?us-ascii?Q?dhski0cfslxe1QRGtPJblyjpv2rqdSZVYQ7aFzzTloBYcY8CyxaTsScCxGc3?=
+ =?us-ascii?Q?8zGZZAgwWUBkkxhmHYDbah8jYH/zFP8m4U7dnWPtoxT+nLbamVFtgOFyuiMF?=
+ =?us-ascii?Q?zSQNt4owm4nZx9FoiQGhkzNL2cz2VDbf4891PJsvQCVHTk/ym6ezTFKPp1Ue?=
+ =?us-ascii?Q?7OXBeMHslRL3nglVP1+M5NCJTa61j+BtEHCHGH7Wa29nDQXnfKvEAOE6mSoe?=
+ =?us-ascii?Q?LZTEA9oOyz8kDwsqDA0tpenhJ5PecAu/t7eLR+lSUv3F032gRoDiKeTkspMf?=
+ =?us-ascii?Q?bDrdN7OBdPdjGh3Pe+nGRKHJ1mzibQ/yCTb3btZYAyAQqbiNfwbDWLzJn4AL?=
+ =?us-ascii?Q?GKfbjHlI6SOiSgPcadDWWtynWg7w53p5qwO0GxEsxYaGccqc7PYzu97ZHDvl?=
+ =?us-ascii?Q?31BLM+G5aJ9Aa40p5Pl6JHqBebd83H6f9StJu6iF/arh3ZM8VDq8n1ztoaw8?=
+ =?us-ascii?Q?DvyBcVH3+HfsZVblBPifekE4BnP/Q16ELh70w6vAZskT2GMYGPTMHhswR1Z2?=
+ =?us-ascii?Q?co1HhJR2CztfpKBLFr2L2gzYSYC30fx/30UJhbj4?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e4228b3-d525-4660-0985-08db608209f0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f2f2bbf-9f23-4abb-06ef-08db608214f4
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4373.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2023 20:19:43.4633
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2023 20:20:01.9185
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aL0biol+j0i+WwdrJVVHMS82eRkQOO9jFL4/s9pQkkr/U5Nb7xbNycfMSuLYS/sKAoMgUVNP+6whaR7VlErnBw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: Favrc+TY5Z9EAPJaz4S4D0Qqt/QjipjF6upL4oPR75gzIcBg79POQgW3IVOQB03hAkfXWlkR4eLHDc/pMfs0yA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8254
 X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-	autolearn_force=no version=3.4.6
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-In order to select a nexthop for multipath routes, fib_select_multipath()
-is used with legacy nexthops and nexthop_select_path_hthr() is used with
-nexthop objects. Those two functions perform a validity test on the
-neighbor related to each nexthop but their logic is structured differently.
-This causes a divergence in behavior and nexthop_select_path_hthr() may
-return a nexthop that failed the neighbor validity test even if there was
-one that passed.
+The loop in nexthop_select_path_hthr() includes code to check for neighbor
+validity. Since this does not apply to fdb nexthops, simplify the loop by
+moving the fdb nexthop selection to its own function.
 
-Refactor nexthop_select_path_hthr() to make it more similar to
-fib_select_multipath() and fix the problem mentioned above.
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Benjamin Poirier <bpoirier@nvidia.com>
+---
+ net/ipv4/nexthop.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
-Benjamin Poirier (4):
-  nexthop: Factor out hash threshold fdb nexthop selection
-  nexthop: Factor out neighbor validity check
-  nexthop: Do not return invalid nexthop object during multipath
-    selection
-  selftests: net: Add test cases for nexthop groups with invalid
-    neighbors
-
- net/ipv4/nexthop.c                          |  64 +++++++---
- tools/testing/selftests/net/fib_nexthops.sh | 129 ++++++++++++++++++++
- 2 files changed, 174 insertions(+), 19 deletions(-)
-
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index f95142e56da0..27089dea0ed0 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -1152,11 +1152,31 @@ static bool ipv4_good_nh(const struct fib_nh *nh)
+ 	return !!(state & NUD_VALID);
+ }
+ 
++static struct nexthop *nexthop_select_path_fdb(struct nh_group *nhg, int hash)
++{
++	int i;
++
++	for (i = 0; i < nhg->num_nh; i++) {
++		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
++
++		if (hash > atomic_read(&nhge->hthr.upper_bound))
++			continue;
++
++		return nhge->nh;
++	}
++
++	WARN_ON_ONCE(1);
++	return NULL;
++}
++
+ static struct nexthop *nexthop_select_path_hthr(struct nh_group *nhg, int hash)
+ {
+ 	struct nexthop *rc = NULL;
+ 	int i;
+ 
++	if (nhg->fdb_nh)
++		return nexthop_select_path_fdb(nhg, hash);
++
+ 	for (i = 0; i < nhg->num_nh; ++i) {
+ 		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
+ 		struct nh_info *nhi;
+@@ -1165,8 +1185,6 @@ static struct nexthop *nexthop_select_path_hthr(struct nh_group *nhg, int hash)
+ 			continue;
+ 
+ 		nhi = rcu_dereference(nhge->nh->nh_info);
+-		if (nhi->fdb_nh)
+-			return nhge->nh;
+ 
+ 		/* nexthops always check if it is good and does
+ 		 * not rely on a sysctl for this behavior
 -- 
 2.40.1
 
