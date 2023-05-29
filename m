@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-6130-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6131-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E340F714DB2
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 18:00:52 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0FA0A714DB5
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 18:01:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 89CF01C20A36
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 16:00:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BF71D280EC0
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 16:01:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 979A61426A;
-	Mon, 29 May 2023 15:51:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0EE7174FC;
+	Mon, 29 May 2023 15:51:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A6BC14265;
-	Mon, 29 May 2023 15:51:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1308174FB;
+	Mon, 29 May 2023 15:51:22 +0000 (UTC)
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751F0A3;
-	Mon, 29 May 2023 08:51:19 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B70A3;
+	Mon, 29 May 2023 08:51:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685375479; x=1716911479;
+  t=1685375481; x=1716911481;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=95GqTvlmuQ59hVLj2UomxKfzOqq0J8bLQWQg/CLG5/M=;
-  b=jvZpJJfEqJa8K8L+a15FilDhz++O5IsF1Js/9BgEIqrdjyAjs+/wEv15
-   Ho8XswPQ7qgBFod8botNfj1RU4mzYr0+Rp9XjTVaVitUAI9M6hFBpy3oN
-   ou0x1Qz+9qLxaNZHKqTiMSzZFbDsk8mRSO4dcTOQZ7vOZO13HkmeH9MwD
-   ZjXGIcopU4nK6TpaxFmXfs9T8mOj/CrW0dtzxJUTUkXWwQ8xDvm8cET6n
-   ndoxR9WpIsbtSYRPoxq8TyN2U77vMqKkjsO9sFZ0nrrgXz3aRwbfED+Bs
-   /P3RDpDHqIpftgvyXHGmRMaYTwUtiCQJLT2Wcs9ACOy3Vnlo3xp11n/Mf
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="344229104"
+  bh=gSB+hgR2vfbiw29TZSXitUEJtG7n/EKVboWM74wIYpY=;
+  b=Xv8r6h4eDeKa3SgZCwyBhNCGkNsgO0jsXivf50OC787RySwMq9xXS7xY
+   JyqiHCWvYaiOx+pj5O2Mc4hXHgUN36Zuf9qhADZbR+zymNhSiAl3IqVRl
+   lp9y12Bs80QhHfs046R8G6oLUuQajo3cZw0qGKxavaA5vfvlWOGO9HPSG
+   gXfONAtexwyZ8FPY8ANH0/+mj1g7bDSKNOJlvAunrBzma5yz1DbA3b2c8
+   Hk9eneATfrE7vo/mVTaDo6llWzgw886hpE+2/jALTzFNXYx52DxYSFiUZ
+   B3Vhib8MBNccslTakGVT2op1wmeah7ZrpaBL7fQ1zTKJyrQr3biXt6gIT
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="344229111"
 X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
-   d="scan'208";a="344229104"
+   d="scan'208";a="344229111"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 08:51:19 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 08:51:21 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="880441270"
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="880441287"
 X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
-   d="scan'208";a="880441270"
+   d="scan'208";a="880441287"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga005.jf.intel.com with ESMTP; 29 May 2023 08:51:16 -0700
+  by orsmga005.jf.intel.com with ESMTP; 29 May 2023 08:51:19 -0700
 From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To: bpf@vger.kernel.org,
 	ast@kernel.org,
@@ -53,10 +53,11 @@ To: bpf@vger.kernel.org,
 Cc: netdev@vger.kernel.org,
 	magnus.karlsson@intel.com,
 	bjorn@kernel.org,
-	tirthendu.sarkar@intel.com
-Subject: [PATCH v2 bpf-next 21/22] selftests/xsk: add test for too many frags
-Date: Mon, 29 May 2023 17:50:23 +0200
-Message-Id: <20230529155024.222213-22-maciej.fijalkowski@intel.com>
+	tirthendu.sarkar@intel.com,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v2 bpf-next 22/22] selftests/xsk: reset NIC settings to default after running test suite
+Date: Mon, 29 May 2023 17:50:24 +0200
+Message-Id: <20230529155024.222213-23-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230529155024.222213-1-maciej.fijalkowski@intel.com>
 References: <20230529155024.222213-1-maciej.fijalkowski@intel.com>
@@ -74,93 +75,72 @@ X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+Currently, when running ZC test suite, after finishing first run of test
+suite and then switching to busy-poll tests within xskxceiver, such
+errors are observed:
 
-Add a test for testing that a packet consisting of more than 17 frags
-is discarded. This is only valid for SKB and DRV mode since in
-zero-copy mode, this limit is up to the HW and what it supports.
+libbpf: Kernel error message: ice: MTU is too large for linear frames and XDP prog does not support frags
+1..26
+libbpf: Kernel error message: Native and generic XDP can't be active at the same time
+Error attaching XDP program
+not ok 1 [xskxceiver.c:xsk_reattach_xdp:1568]: ERROR: 17/"File exists"
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+this is because test suite ends with 9k MTU and native xdp program being
+loaded. Busy-poll tests start non-multi-buffer tests for generic mode.
+To fix this, let us introduce bash function that will reset NIC settings
+to default (e.g. 1500 MTU and no xdp progs loaded) so that test suite
+can continue without interrupts. It also means that after busy-poll
+tests NIC will have those default settings, whereas right now it is left
+with 9k MTU and xdp prog loaded in native mode.
+
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- tools/testing/selftests/bpf/xskxceiver.c | 37 ++++++++++++++++++++++++
- tools/testing/selftests/bpf/xskxceiver.h |  2 ++
- 2 files changed, 39 insertions(+)
+ tools/testing/selftests/bpf/test_xsk.sh    | 5 +++++
+ tools/testing/selftests/bpf/xsk_prereqs.sh | 7 +++++++
+ 2 files changed, 12 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-index 658e978053d4..430ff0cec24c 100644
---- a/tools/testing/selftests/bpf/xskxceiver.c
-+++ b/tools/testing/selftests/bpf/xskxceiver.c
-@@ -1975,6 +1975,40 @@ static int testapp_poll_rxq_tmout(struct test_spec *test)
- 	return testapp_validate_traffic_single_thread(test, test->ifobj_rx);
+diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
+index c2ad50f26b63..2aa5a3445056 100755
+--- a/tools/testing/selftests/bpf/test_xsk.sh
++++ b/tools/testing/selftests/bpf/test_xsk.sh
+@@ -171,7 +171,10 @@ exec_xskxceiver
+ 
+ if [ -z $ETH ]; then
+ 	cleanup_exit ${VETH0} ${VETH1}
++else
++	cleanup_iface ${ETH} ${MTU}
+ fi
++
+ TEST_NAME="XSK_SELFTESTS_${VETH0}_BUSY_POLL"
+ busy_poll=1
+ 
+@@ -184,6 +187,8 @@ exec_xskxceiver
+ 
+ if [ -z $ETH ]; then
+ 	cleanup_exit ${VETH0} ${VETH1}
++else
++	cleanup_iface ${ETH} ${MTU}
+ fi
+ 
+ failures=0
+diff --git a/tools/testing/selftests/bpf/xsk_prereqs.sh b/tools/testing/selftests/bpf/xsk_prereqs.sh
+index ae697a10a056..29175682c44d 100755
+--- a/tools/testing/selftests/bpf/xsk_prereqs.sh
++++ b/tools/testing/selftests/bpf/xsk_prereqs.sh
+@@ -53,6 +53,13 @@ test_exit()
+ 	exit 1
  }
  
-+static int testapp_too_many_frags(struct test_spec *test)
++cleanup_iface()
 +{
-+	struct pkt pkts[XSK_DESC__MAX_FRAGS + 3] = {};
-+	u32 i;
-+
-+	test_spec_set_name(test, "TOO_MANY_FRAGS");
-+	if (test->mode == TEST_MODE_ZC) {
-+		/* Limit is up to driver for zero-copy mode so not testable. */
-+		ksft_test_result_skip("Cannot be run for zero-copy mode.\n");
-+		return TEST_SKIP;
-+	}
-+
-+	test->mtu = MAX_ETH_JUMBO_SIZE;
-+
-+	/* Valid packet for synch */
-+	pkts[0].len = MIN_PKT_SIZE;
-+	pkts[0].valid = true;
-+
-+	/* Do not signal end-of-packet in the 17th frag. This is not legal. */
-+	for (i = 1; i < XSK_DESC__MAX_FRAGS + 2; i++) {
-+		pkts[i].len = MIN_PKT_SIZE;
-+		pkts[i].options = XDP_PKT_CONTD;
-+		pkts[i].valid = true;
-+	}
-+	pkts[XSK_DESC__MAX_FRAGS + 1].valid = false;
-+
-+	/* Valid packet for synch */
-+	pkts[XSK_DESC__MAX_FRAGS + 2].len = MIN_PKT_SIZE;
-+	pkts[XSK_DESC__MAX_FRAGS + 2].valid = true;
-+
-+	pkt_stream_generate_custom(test, pkts, ARRAY_SIZE(pkts));
-+	return testapp_validate_traffic(test);
++	ip link set $1 mtu $2
++	ip link set $1 xdp off
++	ip link set $1 xdpgeneric off
 +}
 +
- static int xsk_load_xdp_programs(struct ifobject *ifobj)
+ clear_configs()
  {
- 	ifobj->xdp_progs = xsk_xdp_progs__open_and_load();
-@@ -2160,6 +2194,9 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
- 		test->mtu = MAX_ETH_JUMBO_SIZE;
- 		ret = testapp_xdp_metadata_count(test);
- 		break;
-+	case TEST_TYPE_TOO_MANY_FRAGS:
-+		ret = testapp_too_many_frags(test);
-+		break;
- 	default:
- 		break;
- 	}
-diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
-index 786c2dfab7a6..bb9d36a7e544 100644
---- a/tools/testing/selftests/bpf/xskxceiver.h
-+++ b/tools/testing/selftests/bpf/xskxceiver.h
-@@ -53,6 +53,7 @@
- #define XSK_UMEM__LARGE_FRAME_SIZE (3 * 1024)
- #define XSK_UMEM__MAX_FRAME_SIZE (4 * 1024)
- #define XSK_DESC__INVALID_OPTION (0xffff)
-+#define XSK_DESC__MAX_FRAGS 17
- #define HUGEPAGE_SIZE (2 * 1024 * 1024)
- #define PKT_DUMP_NB_TO_PRINT 16
- 
-@@ -93,6 +94,7 @@ enum test_type {
- 	TEST_TYPE_UNALIGNED_MB,
- 	TEST_TYPE_ALIGNED_INV_DESC_MB,
- 	TEST_TYPE_UNALIGNED_INV_DESC_MB,
-+	TEST_TYPE_TOO_MANY_FRAGS,
- 	TEST_TYPE_MAX
- };
- 
+ 	[ $(ip link show $1 &>/dev/null; echo $?;) == 0 ] &&
 -- 
 2.35.3
 
