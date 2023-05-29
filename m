@@ -1,104 +1,154 @@
-Return-Path: <netdev+bounces-6168-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6169-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D94FF71505F
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 22:11:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A386715063
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 22:19:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 488E8280F10
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 20:11:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 762801C20A88
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 20:19:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C738DDDE;
-	Mon, 29 May 2023 20:11:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A53FA10780;
+	Mon, 29 May 2023 20:19:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0A6ED309
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 20:11:30 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0E3CF;
-	Mon, 29 May 2023 13:11:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=1rAW9JT281DChV4HgV3bBJET8wRpN/l5/QpeY2saKK4=; b=tgYM3BPPfiTWa7K5TW6BetLEez
-	UirQhVdsxWYdKw+k5lbfh70FSMm0fgtIr8kavdXtmEpLJidWTrxYnkBXEiYrJ02+j2KGdX/BiPHUa
-	mP3rrLR5RvjSZCDVWZvuu34F43680MPnlOH0CZhzBPznsRbv1ioge6t0hE5ohLdS0ToY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q3jCy-00EG3B-2g; Mon, 29 May 2023 22:11:12 +0200
-Date: Mon, 29 May 2023 22:11:12 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Conor Dooley <conor@kernel.org>
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, s.shtylyov@omp.ru,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-	geert+renesas@glider.be, magnus.damm@gmail.com,
-	netdev@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH net-next 1/5] dt-bindings: net: r8a779f0-ether-switch:
- Add ACLK
-Message-ID: <15fece9d-a716-44d6-bd88-876979acedf1@lunn.ch>
-References: <20230529080840.1156458-1-yoshihiro.shimoda.uh@renesas.com>
- <20230529080840.1156458-2-yoshihiro.shimoda.uh@renesas.com>
- <20230529-cassette-carnivore-4109a31ccd11@spud>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBD4BA53
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 20:19:48 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on20629.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB59FCF;
+	Mon, 29 May 2023 13:19:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HP7d+6L+agk4a+PjU+Op+XEBKchLsLJV42OTL6KPmN2WROxevtlDKyptwk62VVuSG8rY36aLoEE77HpKV/SH5rchg1Hod4ZkN/0aFCN9MtMe9nUMUNFGL3T6aiOA9I7a6FRTrlhaGV3xTfOcEwY+RDbEWGa7L3RUsP4MuUJIvbrQe5SU4kDcuiyRJVkOj5HV030UAfwB7QVsF6/nEGDZoYHPSnDul53Dgou+jen1bR+zIhhrRW/YjmMVPKcrUe9VIx5weF3AIc2+U9wC+wBl1SC5KrCHUB+Oufu5OKEm1yYRj+hkbwZD7Mchyq/L0fzMPqcaKPUPMRuERMaGvPJTTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=G94JeCZEPXVuTfPis6gKgswmtsaHQtxgn2reOOQ1Aks=;
+ b=atEQy80lLjv4/h6mYc889HQDm5lW9f95+Xyve+wo4teECPmlZ63Y5RXndMca1bvGnegeF5WQskq6eNfesPiaAMj85kLRM6iJrCUdrgcq03nJUInCF6ZcA7fMSrMn3cIP3wQSwGg6H1McItrBT+YWFn3Q57hAOm4t6SK+okbL2FhvvOyJCrgsUi67xF+XqahLqZXkRzYIV6DlfTR/hnDUUiCIjpVNoSKjzyaImQReIdGkaAyQIAJl9LS2gIWIrUB3w+dh+aQoGF5QVnf5g2ex6pgQJ4vhlB9dEM0IANCXzJeWiajoOhEGgwapAVqd/mN8WqdhV4LUul0plqMVgMPtrQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G94JeCZEPXVuTfPis6gKgswmtsaHQtxgn2reOOQ1Aks=;
+ b=oQie2lwPxFOnwRGIQczQ7jfgcUwi5+zDjGOrXd/FsgboJmVU+8H2lnnlfiv6XaTaVzVWtUM24+WQGHvinWlcPyz+fioAivNQIxWkm0l3+C+rw3zsY81SapNAkp6QnOXvphgNXVAZeAu00+PCL2b5BRF74caXPnUZHY68b6xoSQBKyZzS1CvKy9gfAwlVzF0JVjsUoL+mInvO8157Wf+B+oRp3KpMTxX8J2S2K/XW2EWboZsoFoyDVEvaobRSZf5RVUZaX1l0UUkhRNkvLoI4CGWeISPlIM7MmJdH84jOPWA/KjGXORX7ypvbH/in4qfclviaPqNl0oBhFXyrwNzxWw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4373.namprd12.prod.outlook.com (2603:10b6:208:261::8)
+ by IA0PR12MB8254.namprd12.prod.outlook.com (2603:10b6:208:408::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Mon, 29 May
+ 2023 20:19:44 +0000
+Received: from MN2PR12MB4373.namprd12.prod.outlook.com
+ ([fe80::96fe:2d5b:98bf:e1da]) by MN2PR12MB4373.namprd12.prod.outlook.com
+ ([fe80::96fe:2d5b:98bf:e1da%5]) with mapi id 15.20.6433.022; Mon, 29 May 2023
+ 20:19:43 +0000
+From: Benjamin Poirier <bpoirier@nvidia.com>
+To: netdev@vger.kernel.org
+Cc: David Ahern <dsahern@kernel.org>,
+	Shuah Khan <shuah@kernel.org>,
+	linux-kselftest@vger.kernel.org,
+	Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/4] nexthop: Refactor and fix nexthop selection for multipath routes
+Date: Mon, 29 May 2023 16:19:10 -0400
+Message-Id: <20230529201914.69828-1-bpoirier@nvidia.com>
+X-Mailer: git-send-email 2.40.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: YQBPR0101CA0193.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c01:67::32) To MN2PR12MB4373.namprd12.prod.outlook.com
+ (2603:10b6:208:261::8)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230529-cassette-carnivore-4109a31ccd11@spud>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4373:EE_|IA0PR12MB8254:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4e4228b3-d525-4660-0985-08db608209f0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	6H2UXcCphaYVxpbera0A8U0L3IEOBYxBlsVVX/pehWkeauasGmLqwhLfF1xsuawAsFa5BCpWBxWxF9mOSFj/m4wyxpL6NxGGwQvZCXfYsJbpuQVS2z89AWYpA1B8PABBNeoGjQTBvmDCSmQE6/Q5n5nn3u0rc9y32AYokLDd7iSa0Jxcgxh0VqiV/6NIoZ42KTA8MeaYjZJppgrgerXZ9ryiFYI4Xl6zm7mLHlls60mXQG+ZQPskvgtewhu83+YinB4I+HjCo97TnNjR2thZaOTrkyzV3jjr4AcWMwhRmKsWRriXH0DTQYujTDLeumi+zKuK/Vt/AtvLrSZhIRwjikrUmAmdGetazdBOKQiFyHzjLDlDED5ZBLlON3BcLz64iMhNP/0BYr90mDymVXQvld1kpPJhabmi7nyhc69cdfOGNR7gj7SMvMYyh4buVoxXNT7stlhC5FtikG2tHz58ObJCRO+XDKTUW9witkdxf4b/Eh2IFzmbIPPCkwsBj6rDnKE2vFKL6go6ELkYBe+8gKk5wU+eU1cGEEUILET06LTnsJZTIpnBoeFPPaW+xaPy
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(376002)(136003)(39860400002)(451199021)(38100700002)(478600001)(2616005)(66556008)(83380400001)(66476007)(66946007)(54906003)(86362001)(4326008)(6916009)(2906002)(6666004)(6512007)(6506007)(186003)(6486002)(26005)(1076003)(316002)(41300700001)(36756003)(5660300002)(107886003)(8676002)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?p+lxEPYDXYt8fNdcRWnut7Z3lvZ+rQdSiXD6E9ZDwS4O6ZQHsTe9BvpNgcoV?=
+ =?us-ascii?Q?xH0bph6AcKcQQ2ADP4rFgoSP1FxHrb/h3ZMjfrQgl6NRYmM+kbidbde0zImP?=
+ =?us-ascii?Q?Dtcf7s+w2Qba9XcK6btflrDJR7Y4kuWNPYTMBT8tHz27P5i/0RwROF5Hgw2S?=
+ =?us-ascii?Q?F92omSgoU9iHz3cM00Li9EzCJbWzhZw8GVR3mZageb0BOX3Mxtp1xGXRtPVy?=
+ =?us-ascii?Q?qgx37wOc8L0iULuaeLq4Ca+4HdIgrw9rZL3aeEIVp8GqW4jTdQhU7IYz+srJ?=
+ =?us-ascii?Q?OjrlgfJ6OH5DPr4/AUZVYmNB/zGoYyy2EBrJPRl/h8NVWgI44kXCCJb+7RNW?=
+ =?us-ascii?Q?SB0FzgeuokweQMiplEdu+3yNj0LygSVoFAtYQolKgFxY/h3SYdL//TYD+ehI?=
+ =?us-ascii?Q?VLQG2L66Q0a61Sc4rRKHdnDmpEBQPikHMmFsYsw/1ltgQ8CXbMKUQf1b9G+f?=
+ =?us-ascii?Q?qgQbiLVVKWjwAR/mMXRz0tqaDsSGrUu0YEBQk3HbvFHeCjfrTne4b0MgmQJG?=
+ =?us-ascii?Q?pGmdjet+5QlDyXU4V3l8z+WdNEWjBlci0zcCiR7PFoOAlzXU6y0c66tV7uXw?=
+ =?us-ascii?Q?NvHN/sGrP4lR56YCtgqt+w35LGgMjr2MkeqcLkA6m7rCP1q1uY1H5RITWyGI?=
+ =?us-ascii?Q?oudeRJ34jCng/F2xD6KkSUVnj5AvBzJo9y7Min5uxPEXdNeRaX8MlXt7E90W?=
+ =?us-ascii?Q?EMSBRtDsn8cCy6eIjNfC8374Ou4WW9wlQj2amVTc4nb7oC3zGlhXeqqK+CET?=
+ =?us-ascii?Q?gFm9Uv0xW5s3nFjkFa855LGbNtuCem9QPEoaBB+E65oOkxmvd+jZEmITf/jK?=
+ =?us-ascii?Q?orefSMS6DihkRRfZuWfjEbqfHarFgXJn4sdR+sA1MzVT2LOMb1o+kHl6hLUx?=
+ =?us-ascii?Q?zwflWRsYLjv8fDwPrVKu556/pqHG5z7LOnECxkjnkYqqC3Vk6mElSHR2g6up?=
+ =?us-ascii?Q?nhwqpyPtZn04RYVCr0qqjNR2gMvF8sw1JFD6LVOFbxV3ie1/h46x4nqQaF6E?=
+ =?us-ascii?Q?pU6gioPe1SSMcM9iGPgIxSVIIzFGW0xVrAkvi3CjOzDzmMjAViMZy/TH8B/c?=
+ =?us-ascii?Q?/RVo5vBhKt9fA4T309sr6GVsrmxHn8MuEiil+YvbbTtUV2zwHqJ1UjqRqYjr?=
+ =?us-ascii?Q?9miACyW/+gnjEnfiFtQlfslyR1Uvn0t/qy0Q93QQ0Oei3NpQo6f+1uWUuntq?=
+ =?us-ascii?Q?/zHhOYlLys38BNtltQY9tpKihoZ7ACqCn5mBRZbESteVlk0fNctpXqJZ3qHV?=
+ =?us-ascii?Q?C60VTdDTY1BKo8AtUmN+KNPLo/PgsYVno7/SAIB2jQAHxff747TGTAVhNiEa?=
+ =?us-ascii?Q?cDZ31ICNNeNqOFJDgZo6hvlHrvEVAVppvlGo8/jm+ZleXXP/xyheU/K/+KDU?=
+ =?us-ascii?Q?sJMG3esJSBVKjAmccjQ94L1cLDupWR8dmInWbhVJM/YUqKUpSMq7geJqZ1h+?=
+ =?us-ascii?Q?wnr/tSs/3P0vDMNA8hc0oKwfw99ERV0oBRpfIEUvPnUNbioxAqDrlo6MDfLS?=
+ =?us-ascii?Q?af0ARcfhJWDwDIsGILxR6//TMgxTb7tskuA+wslEVZMCUPJObkiCXxivCZlq?=
+ =?us-ascii?Q?zymwvk5sJ/XqhwNlEzLV8fg9ebaKb0eO9Pbn6Lz3?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e4228b3-d525-4660-0985-08db608209f0
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4373.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2023 20:19:43.4633
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aL0biol+j0i+WwdrJVVHMS82eRkQOO9jFL4/s9pQkkr/U5Nb7xbNycfMSuLYS/sKAoMgUVNP+6whaR7VlErnBw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8254
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 29, 2023 at 07:36:03PM +0100, Conor Dooley wrote:
-> Hey,
-> 
-> On Mon, May 29, 2023 at 05:08:36PM +0900, Yoshihiro Shimoda wrote:
-> > Add ACLK of GWCA which needs to calculate registers' values for
-> > rate limiter feature.
-> > 
-> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > ---
-> >  .../bindings/net/renesas,r8a779f0-ether-switch.yaml    | 10 ++++++++--
-> >  1 file changed, 8 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/renesas,r8a779f0-ether-switch.yaml b/Documentation/devicetree/bindings/net/renesas,r8a779f0-ether-switch.yaml
-> > index e933a1e48d67..cbe05fdcadaf 100644
-> > --- a/Documentation/devicetree/bindings/net/renesas,r8a779f0-ether-switch.yaml
-> > +++ b/Documentation/devicetree/bindings/net/renesas,r8a779f0-ether-switch.yaml
-> > @@ -75,7 +75,12 @@ properties:
-> >        - const: rmac2_phy
-> >  
-> >    clocks:
-> > -    maxItems: 1
-> > +    maxItems: 2
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: fck
-> > +      - const: aclk
-> 
-> Since having both clocks is now required, please add some detail in the
-> commit message about why that is the case. Reading it sounds like this
-> is an optional new feature & not something that is required.
+In order to select a nexthop for multipath routes, fib_select_multipath()
+is used with legacy nexthops and nexthop_select_path_hthr() is used with
+nexthop objects. Those two functions perform a validity test on the
+neighbor related to each nexthop but their logic is structured differently.
+This causes a divergence in behavior and nexthop_select_path_hthr() may
+return a nexthop that failed the neighbor validity test even if there was
+one that passed.
 
-This is something i wondered about, backwards compatibility with old
-DT blobs. In the C code it is optional, and has a default clock rate
-if the clock is not present. So the yaml should not enforce an aclk
-member.
+Refactor nexthop_select_path_hthr() to make it more similar to
+fib_select_multipath() and fix the problem mentioned above.
 
-	Andrew
+Benjamin Poirier (4):
+  nexthop: Factor out hash threshold fdb nexthop selection
+  nexthop: Factor out neighbor validity check
+  nexthop: Do not return invalid nexthop object during multipath
+    selection
+  selftests: net: Add test cases for nexthop groups with invalid
+    neighbors
+
+ net/ipv4/nexthop.c                          |  64 +++++++---
+ tools/testing/selftests/net/fib_nexthops.sh | 129 ++++++++++++++++++++
+ 2 files changed, 174 insertions(+), 19 deletions(-)
+
+-- 
+2.40.1
+
 
