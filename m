@@ -1,158 +1,260 @@
-Return-Path: <netdev+bounces-5985-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5986-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D2EF47143E0
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 08:06:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1381C714443
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 08:22:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 94E26280DD2
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 06:06:32 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 336B0280DD7
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 06:22:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 704DE7F7;
-	Mon, 29 May 2023 06:06:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 505327FB;
+	Mon, 29 May 2023 06:22:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4FD7E
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:06:30 +0000 (UTC)
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D97AC
-	for <netdev@vger.kernel.org>; Sun, 28 May 2023 23:06:27 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id 38308e7fff4ca-2af1c884b08so36062251fa.1
-        for <netdev@vger.kernel.org>; Sun, 28 May 2023 23:06:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E4CD7E
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:22:27 +0000 (UTC)
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81CD9B1;
+	Sun, 28 May 2023 23:22:24 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2af24ee004dso28985001fa.0;
+        Sun, 28 May 2023 23:22:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1685340385; x=1687932385;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1C27tR1D32rDokgoNpN/XlX8PxjtaCmAUIQOsW9e+Dg=;
-        b=lHDuh9IwSH407x7/vRzlwq0hjpkP8Rb2yu9wptuaBjL+KJd4DvVK8VLEhhmA+GX+6Q
-         G1azGO7JRAUPF5fIeYiIChNNunt6NUqHdgjDqzARXUsP/UXpH/W3ZPYxz4PS6e9q2KBE
-         IFvecFl3EFNk9ZLCLkaWEqLncQxB//UkKAxrUgHcO9x8xkwRUVYj/hCSqi4+oPOshN0h
-         yyAh8rhj/+mri+QN/UTx4EjGI+LKpPu6DvquJWyWkT9FoyMz+7KgO3/E/hen7Wq8SODO
-         3qMXCpjWB0fyDpwJ0bcYBGimsxlXEg95SRrPpdf8Lqi1YOS8GtCckCet0U50PI/eAt/U
-         048Q==
+        d=gmail.com; s=20221208; t=1685341343; x=1687933343;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vOdzodRAM2H1nmvYMP9+2ZlCwspQLwnxmVWQ2MZpYPM=;
+        b=hxzRRdX8heyI8wsSG3Y9gXKRDUBm+h6aiIzm2U4NbVJcF0PPnKUQd2BPlNJbZfVPc7
+         rj9jYgzdEmjyhEmKiceZCYihYV2JUGLyKo5N/UwXjDxetguifQkcS1k7MiexOh4cb3Wm
+         rVLzLGHpDbLhEjmwktDrHIljuSpGXt95JWP0djP/clnDnFvsqNWg8eLw9tVeB8WHTYFm
+         uZ6rlZw91nPB5a3SdtsNW/19gS6JCeVgkpzd9vfV9bRk2XX1z4yzfst3M3DznMCPQMYj
+         21jL4XTQfD/HyQB8TYRGy2QOYOyx5Iln/oXIrqJ/YIRqdreMXEIPA6oxUS+R8Sgvm7bs
+         feag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685340385; x=1687932385;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1C27tR1D32rDokgoNpN/XlX8PxjtaCmAUIQOsW9e+Dg=;
-        b=HD23btJMyAcVOsJXUqQU9RzLYq9i0jVpVYzynfHLvoL/MhLyNN/47OMk+OaRSbJOOv
-         EpI9WBsluyXK5CccQLmHkUusgORkH7cfw7aMMtiqixObkB7Fho9lPEgecml4G7a9tCb5
-         Lv9FIWw+0VmlTrCUNIvL3Y3fQ1z1qFK2efbu6rZd2KXxHYBH7ChOG94+w/X0LY09Ngvj
-         ZZakEsg6rfNNRrkfiFiydv4vgeMYWRsasgApCITswUmRR/MVQFiTNABYzfLLlUYTfkCG
-         5KJetbRvl12Dwoi8tF2DuSkK/EDfpZJjT0nqKFAqsiOH3BT1TBPTinkHLwF3AvejgfhH
-         c7MA==
-X-Gm-Message-State: AC+VfDxsjy3u9+U2qezauWGEfxfHZaeA2gQ03fWWsY7LQF3cndmWr5pv
-	YTXbOSiWSrc4hLxfOc40S4AfXQ==
-X-Google-Smtp-Source: ACHHUZ6bw9id1UY6mTID3C5HLVO2jCwdaQJ1hyxaGmO8a9avu9r1S2sRXoo8t+5MDWsyQh32F5W+zA==
-X-Received: by 2002:a2e:8681:0:b0:2b0:62f0:a4db with SMTP id l1-20020a2e8681000000b002b062f0a4dbmr2793445lji.13.1685340385173;
-        Sun, 28 May 2023 23:06:25 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id x8-20020a2e8808000000b002a9f022e8bcsm2242377ljh.65.2023.05.28.23.06.23
+        d=1e100.net; s=20221208; t=1685341343; x=1687933343;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vOdzodRAM2H1nmvYMP9+2ZlCwspQLwnxmVWQ2MZpYPM=;
+        b=YHFbanjSGF226sn1X/ZhY0M1X0pMuLr4Nq1aYRk9V+I6dcow81Vs2GpQ8Z4OXSbkAz
+         sBqAllKaF3Nn06GBzvNbKOQbI+zaZ0t7ov+yrI8LWjjzGMK7Pw8JVQX/tjmnk4JShdlh
+         7ZCQKNDyuKt33OO7DSGSh5J4vlOmngC4yyTtXOG8L9f+36l5yjzikvQMZ5/foqDy8FwS
+         btN1Zz5BZguGS6c5ZHq9OMycDfEq8WcmlYRLDnBCDf00eScCpda1xoHPSZBzl7lJg4ru
+         VIt5Ya7Lh59N8igDj+1ho0dvrSZxmLAyYrDdRn7VJJ/nY15hqo5ooX5ov7f4E2GFFLPP
+         2EoQ==
+X-Gm-Message-State: AC+VfDx0MgNv2JfLH/NgSA4wCBXhviU0IxwMU6tFlVMlytRvRA6n8W9E
+	3xbuWNAYLH0+ws8Y+Ye0yGE=
+X-Google-Smtp-Source: ACHHUZ6z/suHetYnUAr6zG+ImfzBn9sW+n3lS/7H9NuTh8pRvMhTDM6QOBiCNx7BcByzLFd44sKzWA==
+X-Received: by 2002:a2e:8848:0:b0:2af:22a0:81ec with SMTP id z8-20020a2e8848000000b002af22a081ecmr3663644ljj.27.1685341342325;
+        Sun, 28 May 2023 23:22:22 -0700 (PDT)
+Received: from fedora (62-78-225-252.bb.dnainternet.fi. [62.78.225.252])
+        by smtp.gmail.com with ESMTPSA id l19-20020a2e99d3000000b002a777ec77dcsm2303433ljj.34.2023.05.28.23.22.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 May 2023 23:06:23 -0700 (PDT)
-Date: Mon, 29 May 2023 08:06:22 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Manish Chopra <manishc@marvell.com>
-Cc: "kuba@kernel.org" <kuba@kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	Ariel Elior <aelior@marvell.com>, Alok Prasad <palok@marvell.com>,
-	Sudarsana Reddy Kalluru <skalluru@marvell.com>,
-	David Miller <davem@davemloft.net>
-Subject: Re: [EXT] Re: [PATCH v5 net] qede: Fix scheduling while atomic
-Message-ID: <ZHRA0Ef6l9YwVDfE@nanopsycho>
-References: <20230523144235.672290-1-manishc@marvell.com>
- <ZG31gX7aVN1jRpn6@nanopsycho>
- <BY3PR18MB4612A5906D64C3DBACFAAECDAB469@BY3PR18MB4612.namprd18.prod.outlook.com>
+        Sun, 28 May 2023 23:22:21 -0700 (PDT)
+Date: Mon, 29 May 2023 09:22:15 +0300
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+To: Matti Vaittinen <mazziesaccount@gmail.com>,
+	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Daniel Scally <djrscally@gmail.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Wolfram Sang <wsa@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Andreas Klinger <ak@it-klinger.de>, Marcin Wojtas <mw@semihalf.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Akhil R <akhilrajeev@nvidia.com>, linux-acpi@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org, netdev@vger.kernel.org,
+	openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
+	linux-mips@vger.kernel.org
+Subject: [PATCH v7 0/9] fix fwnode_irq_get[_byname()] returnvalue
+Message-ID: <cover.1685340157.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ApeyYNQ5RiUDsQjW"
 Content-Disposition: inline
-In-Reply-To: <BY3PR18MB4612A5906D64C3DBACFAAECDAB469@BY3PR18MB4612.namprd18.prod.outlook.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Thu, May 25, 2023 at 05:27:03PM CEST, manishc@marvell.com wrote:
->Hi Jiri,
->
->> -----Original Message-----
->> From: Jiri Pirko <jiri@resnulli.us>
->> Sent: Wednesday, May 24, 2023 5:01 PM
->> To: Manish Chopra <manishc@marvell.com>
->> Cc: kuba@kernel.org; netdev@vger.kernel.org; Ariel Elior
->> <aelior@marvell.com>; Alok Prasad <palok@marvell.com>; Sudarsana Reddy
->> Kalluru <skalluru@marvell.com>; David Miller <davem@davemloft.net>
->> Subject: [EXT] Re: [PATCH v5 net] qede: Fix scheduling while atomic
->> 
->> External Email
->> 
->> ----------------------------------------------------------------------
->> Tue, May 23, 2023 at 04:42:35PM CEST, manishc@marvell.com wrote:
->> >Bonding module collects the statistics while holding the spinlock,
->> >beneath that qede->qed driver statistics flow gets scheduled out due to
->> >usleep_range() used in PTT acquire logic which results into below bug
->> >and traces -
->> >
->> >[ 3673.988874] Hardware name: HPE ProLiant DL365 Gen10 Plus/ProLiant
->> >DL365 Gen10 Plus, BIOS A42 10/29/2021 [ 3673.988878] Call Trace:
->> >[ 3673.988891]  dump_stack_lvl+0x34/0x44 [ 3673.988908]
->> >__schedule_bug.cold+0x47/0x53 [ 3673.988918]  __schedule+0x3fb/0x560 [
->> >3673.988929]  schedule+0x43/0xb0 [ 3673.988932]
->> >schedule_hrtimeout_range_clock+0xbf/0x1b0
->> >[ 3673.988937]  ? __hrtimer_init+0xc0/0xc0 [ 3673.988950]
->> >usleep_range+0x5e/0x80 [ 3673.988955]  qed_ptt_acquire+0x2b/0xd0 [qed]
->> >[ 3673.988981]  _qed_get_vport_stats+0x141/0x240 [qed] [ 3673.989001]
->> >qed_get_vport_stats+0x18/0x80 [qed] [ 3673.989016]
->> >qede_fill_by_demand_stats+0x37/0x400 [qede] [ 3673.989028]
->> >qede_get_stats64+0x19/0xe0 [qede] [ 3673.989034]
->> >dev_get_stats+0x5c/0xc0 [ 3673.989045]
->> >netstat_show.constprop.0+0x52/0xb0
->> >[ 3673.989055]  dev_attr_show+0x19/0x40 [ 3673.989065]
->> >sysfs_kf_seq_show+0x9b/0xf0 [ 3673.989076]  seq_read_iter+0x120/0x4b0 [
->> >3673.989087]  new_sync_read+0x118/0x1a0 [ 3673.989095]
->> >vfs_read+0xf3/0x180 [ 3673.989099]  ksys_read+0x5f/0xe0 [ 3673.989102]
->> >do_syscall_64+0x3b/0x90 [ 3673.989109]
->> >entry_SYSCALL_64_after_hwframe+0x44/0xae
->> 
->> You mention "bonding module" at the beginning of this description. Where
->> exactly is that shown in the trace?
->> 
->> I guess that the "spinlock" you talk about is "dev_base_lock", isn't it?
->
->Bonding function somehow were not part of traces, but this is the flow from bonding module
->which calls dev_get_stats() under spin_lock_nested(&bond->stats_lock, nest_level) which results to this issue.
 
-Trace you included is obviously from sysfs read. Either change the trace
-or the description.
+--ApeyYNQ5RiUDsQjW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->
->> 
->> 
->> >[ 3673.989115] RIP: 0033:0x7f8467d0b082 [ 3673.989119] Code: c0 e9 b2
->> >fe ff ff 50 48 8d 3d ca 05 08 00 e8 35 e7 01 00 0f 1f 44 00 00 f3 0f 1e
->> >fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56
->> >c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24 [ 3673.989121] RSP:
->> >002b:00007ffffb21fd08 EFLAGS: 00000246 ORIG_RAX: 0000000000000000 [
->> >3673.989127] RAX: ffffffffffffffda RBX: 000000000100eca0 RCX:
->> >00007f8467d0b082 [ 3673.989128] RDX: 00000000000003ff RSI:
->> >00007ffffb21fdc0 RDI: 0000000000000003 [ 3673.989130] RBP:
->> 00007f8467b96028 R08: 0000000000000010 R09: 00007ffffb21ec00 [
->> 3673.989132] R10: 00007ffffb27b170 R11: 0000000000000246 R12:
->> 00000000000000f0 [ 3673.989134] R13: 0000000000000003 R14:
->> 00007f8467b92000 R15: 0000000000045a05
->> >[ 3673.989139] CPU: 30 PID: 285188 Comm: read_all Kdump: loaded
->> Tainted: G        W  OE
+The fwnode_irq_get() and the fwnode_irq_get_byname() may have returned
+zero if mapping the IRQ fails. This contradicts the
+fwnode_irq_get_byname() documentation. Furthermore, returning zero or
+errno on error is unepected and can easily lead to problems
+like:
 
-[...]
+int probe(foo)
+{
+=2E..
+	ret =3D fwnode_irq_get_byname(...);
+	if (ret < 0)
+		return ret;
+=2E..
+}
+
+or
+
+int probe(foo)
+{
+=2E..
+	ret =3D fwnode_irq_get_byname(...);
+	if (ret <=3D 0)
+		return ret;
+=2E..
+}
+
+which are both likely to be wrong. First treats zero as successful call and
+misses the IRQ mapping failure. Second returns zero from probe even though
+it detects the IRQ mapping failure correvtly.
+
+Here we change the fwnode_irq_get() and the fwnode_irq_get_byname() to
+always return a negative errno upon failure.
+
+I have audited following callers (v6.4-rc2):
+
+fwnode_irq_get_byname():
+drivers/i2c/i2c-smbus.c
+drivers/iio/accel/adxl355_core.c
+drivers/iio/accel/kionix-kx022a.c
+drivers/iio/adc/ad4130.c
+drivers/iio/adc/max11410.c
+drivers/iio/addac/ad74115.c
+drivers/iio/gyro/fxas21002c_core.c
+drivers/iio/imu/adis16480.c
+drivers/iio/imu/bmi160/bmi160_core.c
+drivers/iio/imu/bmi160/bmi160_core.c
+
+fwnode_irq_get():
+drivers/gpio/gpio-dwapb.c
+drivers/iio/chemical/scd30_serial.c
+drivers/iio/proximity/mb1232.c
+drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+drivers/net/mdio/fwnode_mdio.c
+drivers/pinctrl/pinctrl-ingenic.c
+drivers/pinctrl/pinctrl-microchip-sgpio.c
+drivers/pinctrl/pinctrl-pistachio.c
+
+and it seems to me these calls will be Ok after the change. The
+i2c-smbus.c and kionix-kx022a.c will gain a functional change (bugfix?) as
+after this patch the probe will return -EINVAL should the IRQ mapping fail.
+The series will also adjust the return value check for zero to be omitted.
+
+NOTES:
+
+Changes are compile-tested only.
+
+drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
+will also gain a functional change. The pinctrl-wpcm450.c change is easy
+to see - after this series the device-tree mapping failures will be
+handled as any other errors - probe will be aborted with -EINVAL. Other
+feasible option could be treating other errors in IRQ getting same way
+as the DT mapping failures - just silently skip the IRQ. Please see
+comment in the respective patch.
+
+drivers/iio/cdc/ad7150.c
+Changed logic so that all the IRQ getting errors jump to the same
+'no-IRQ' branch as the DT mapping error did.
+
+Revision history:
+v6 =3D> v7:
+ - re-ordered patches per subsystem
+ - mvpp2 - added a patch for not shadowing the return value
+v5 =3D> v6:
+ - iio: cdc: ad7150 - never abort probe if IRQ getting fails
+v4 =3D> v5:
+ - Fix subject lines for mvpp2 and wpcm450
+ - drop unnecessary irqno assignment from mb1232
+ - add back the drivers/i2c/i2c-smbus.c change which was accidentally
+   dropped during v3 =3D> v4 work
+v3 =3D> v4:
+ - Change also the fwnode_irq_get() as was suggested by Jonathan.
+Changelog v2 =3D> v3:
+ - rebase/resend/add kx022a fix.
+Changelog v1 =3D> v2:
+ - minor styling
+
+---
+
+Matti Vaittinen (9):
+  drivers: fwnode: fix fwnode_irq_get[_byname]()
+  iio: mb1232: relax return value check for IRQ get
+  iio: cdc: ad7150: relax return value check for IRQ get
+  pinctrl: wpcm450: relax return value check for IRQ get
+  pinctrl: ingenic: relax return value check for IRQ get
+  pinctrl: pistachio: relax return value check for IRQ get
+  i2c: i2c-smbus: fwnode_irq_get_byname() return value fix
+  net-next: mvpp2: relax return value check for IRQ get
+  net-next: mvpp2: don't shadow error
+
+ drivers/base/property.c                         | 12 +++++++++---
+ drivers/i2c/i2c-smbus.c                         |  2 +-
+ drivers/iio/cdc/ad7150.c                        | 10 +++++-----
+ drivers/iio/proximity/mb1232.c                  |  7 ++-----
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 12 ++++++------
+ drivers/pinctrl/nuvoton/pinctrl-wpcm450.c       |  2 --
+ drivers/pinctrl/pinctrl-ingenic.c               |  2 --
+ drivers/pinctrl/pinctrl-pistachio.c             |  6 ------
+ 8 files changed, 23 insertions(+), 30 deletions(-)
+
+
+base-commit: f1fcbaa18b28dec10281551dfe6ed3a3ed80e3d6
+--=20
+2.40.1
+
+
+--=20
+Matti Vaittinen, Linux device drivers
+ROHM Semiconductors, Finland SWDC
+Kiviharjunlenkki 1E
+90220 OULU
+FINLAND
+
+~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
+Simon says - in Latin please.
+~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
+Thanks to Simon Glass for the translation =3D]=20
+
+--ApeyYNQ5RiUDsQjW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmR0RJMACgkQeFA3/03a
+ocWMgggAnc9af0RzQuL4f2RCAa2y50+OtDNzSl89ig9U7EQvWU57mrBl/mDP9oVv
+xL9/XLDRx1EWnl7fW+YM5Ju8ghuxOd9ydu5OQSFSdJ97yAJgZUTNMzyv8bBIjAcR
+EdmkQg4UsPJTRoYd5QLTdy5p/Jo2y4rhcwcmX2qxxvXG6OLKwbHSII28be+ripkc
+/Tdy33thGZ9uD3bkWELWD1suiTpcqRbqQAUpRMlEFBMwbKXAf0l9oqkMQHGfCNAD
+xQp5tnVfOs6dziwhYA51scaRtMTh6eqkZiXmq47c3o03fmLTmiapo16NKPjpOdg+
+3ege5LvaWKy6DhpZ7ckP5l2B5YMrpg==
+=2yur
+-----END PGP SIGNATURE-----
+
+--ApeyYNQ5RiUDsQjW--
 
