@@ -1,225 +1,247 @@
-Return-Path: <netdev+bounces-6043-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6044-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AF415714850
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 13:08:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5671171486D
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 13:17:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 492B91C209C6
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 11:07:57 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DA2191C209E8
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 11:17:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E8786AB9;
-	Mon, 29 May 2023 11:07:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B2676AAB;
+	Mon, 29 May 2023 11:17:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A54A6FAA;
-	Mon, 29 May 2023 11:07:05 +0000 (UTC)
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2062.outbound.protection.outlook.com [40.107.220.62])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9887CCD;
-	Mon, 29 May 2023 04:07:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S2rPOxKP/1zvy1Nqn6Mi0GCXMlxrrKbmSoWpg1SLqPiPUFi8/r0Z/cNFz8h2u0rhtjP5gfiLR2kdkh6gA2qLRQH2FwHUNt6h6ZEOcRyjOuYxnGRcpDm5RqFJ3RwIZ8+LD7qGDErXop1qsKLXzLwtLLUsWWrnK7bMukviQZ9kvFVbBkcW3yccjhq3AD2LQV77bcw9SV+KEFbfHqviJMJi7fOZ4vk7itVmrwp3kNMKLVVhf20gum2cf5uaR0+gfs12CBfzCmCm/vOzC3Qe6mSpMvyY47t+geEFRecBknAn5+XS+POcfw7/naTMb/sKAkwjjMe9MjY4KLyfQE4Njb8Hrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PmR4uOOcYTjS2mseZe13g+DKAkcYDOI+Tz0W46e7FVo=;
- b=g+hkMtUMFejCcb0jwIUJtNkWWEvY0kvSoC8erDWcXMzdSVyer6IQcKwQxFT+CboywavEgRROygTHNhavLXJ0qz6XO94KdvFIlQm+FdmIrYdsKwO/LN6Wi1ZGG5BoV+MeY02hXJGqR2Fn0VVGp5wJ8ncqh/nPOrZJp3WVVQdYkkXyUaI1aB/+AwMs4kpHVrclu7CnAYb7CMxS0V91oCTKXpjh1z10TmsCr/4I6/yOnlNJDyCv28j7WCtH22vNRlq5QyQKcpYTIRysX7eb264w9nPuWy+DScJv/NscFL8zj0YlqFqnY9nyScsA7qcKUVv0jt7K+Z8BTW8oFBaluFL90A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PmR4uOOcYTjS2mseZe13g+DKAkcYDOI+Tz0W46e7FVo=;
- b=REuEHllmysHLG/89trJ4QllhZr+Jttp4wEVHSB48EI3u5AXpY19pBk3v+LWKoDgC9Kh5s34SHrJV58l4DmkMzCxpBbXNYoSf+Z8tuAsVx7jQv0Hzq8OA/9xpoz/VTnvikTxkueQGfWjeIt9TuCXbU47+6iflcdGm2lwNeXlf9h1vFZnNeLWZi4frfmMvx49SEdAPgvmGtdqUVTj7rX+x4XgHTikHue+fxeXJcouCzApRmAh+vRFZiSSbapM+Mp8QLDXgfGw1UOMn+Blx3Yl02QJL49FRk9P+KdQLPKz20QqOJrtEsDLuB7FO5CtPANuJR6UF3nbe/u/H+c/9wakxLQ==
-Received: from BYAPR21CA0007.namprd21.prod.outlook.com (2603:10b6:a03:114::17)
- by DS0PR12MB8573.namprd12.prod.outlook.com (2603:10b6:8:162::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Mon, 29 May
- 2023 11:07:00 +0000
-Received: from DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
- (2603:10b6:a03:114:cafe::c) by BYAPR21CA0007.outlook.office365.com
- (2603:10b6:a03:114::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.5 via Frontend
- Transport; Mon, 29 May 2023 11:07:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT039.mail.protection.outlook.com (10.13.172.83) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6455.21 via Frontend Transport; Mon, 29 May 2023 11:07:00 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 29 May 2023
- 04:06:46 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 29 May
- 2023 04:06:45 -0700
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server id 15.2.986.37 via Frontend Transport; Mon, 29 May
- 2023 04:06:42 -0700
-From: Tariq Toukan <tariqt@nvidia.com>
-To: Alexei Starovoitov <ast@kernel.org>, John Fastabend
-	<john.fastabend@gmail.com>, Jakub Kicinski <kuba@kernel.org>
-CC: Daniel Borkmann <daniel@iogearbox.net>, Jesper Dangaard Brouer
-	<hawk@kernel.org>, <bpf@vger.kernel.org>, "David S. Miller"
-	<davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-	<netdev@vger.kernel.org>, Gal Pressman <gal@nvidia.com>, Nimrod Oren
-	<noren@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH bpf-next 2/2] samples/bpf: fixup xdp_redirect_map tool to be able to support xdp multibuffer
-Date: Mon, 29 May 2023 14:06:08 +0300
-Message-ID: <20230529110608.597534-3-tariqt@nvidia.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230529110608.597534-1-tariqt@nvidia.com>
-References: <20230529110608.597534-1-tariqt@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46833A53
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 11:17:36 +0000 (UTC)
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A384CD;
+	Mon, 29 May 2023 04:17:34 -0700 (PDT)
+Received: by linux.microsoft.com (Postfix, from userid 1134)
+	id BE6F720FC3C2; Mon, 29 May 2023 04:17:33 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BE6F720FC3C2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1685359053;
+	bh=zbJHCfpQge+fU0YA6gOtWPse9WhEuNPrb8yZEQ3BNWU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=D+m7uZFFOpMY0pky9R7YBEh9SDk71aDBLorxNrk/l9L+0gQTYlCPo7bI5tE+RHS0h
+	 wJOGPGMcYP4GC7B5EH+s2lgI7ekJSdFYGBy0o1qS9B3/bJk9F7T51pdQ5ETdjNbFe8
+	 4dnvg4sfyz7t0WQbi/hokNIfVlws5eWkt4EJ+UVg=
+Date: Mon, 29 May 2023 04:17:33 -0700
+From: Shradha Gupta <shradhagupta@linux.microsoft.com>
+To: Praveen Kumar <kumarpraveen@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+	netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>,
+	Michael Kelley <mikelley@microsoft.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Steen Hegelund <steen.hegelund@microchip.com>,
+	Simon Horman <simon.horman@corigine.com>
+Subject: Re: [PATCH v3] hv_netvsc: Allocate rx indirection table size
+ dynamically
+Message-ID: <20230529111733.GA21447@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+References: <1685080949-18316-1-git-send-email-shradhagupta@linux.microsoft.com>
+ <5fc413e5-77d2-814d-250a-7ddf8eb6d6ad@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT039:EE_|DS0PR12MB8573:EE_
-X-MS-Office365-Filtering-Correlation-Id: cec20769-928f-4ce8-a73a-08db6034d351
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	4UlLwjZJqVDdKO6Bl7q9i50QpDn6tdXQhiBbE9G+J6NuBB3PEByWtIe2ptm/1I5/1SGMlsVrpplLe6+x/fcZSDSosLmmPHN5UTxTkq8MP+rPI0I6FCKNG8ZavKh96IUsi/kll+eeGPKY2sWGEqXwmawQZqRcS97FdPFbLb3BLnP/QiAFi8LVtQP8DCeuBhYdryh5Ulu8bn3D80xSl67/722rgOR39qvwFz7N9oTBNWiSXKyZ1FC0xETscsAaXmyibkQoo8VkS1VzOsf3hD7xmfNtzZvHzPIr2JT0kG6Rp5qFJPrIftQ8R2aIaaCHu+ljcpIF0PMy7u1nyImOsCuVWhdF6J9HMYaDZVb/bZK/uWB+VzDbz3RTAPSmr2Yqz+FGhuCrG2smKeiJSC6rwDh8lnSsqUrx9o4ppe6GMZk8TJyRyDl8CzHhcLchmhaqN1v7q6JHC8pCKzdjxJ5ApMrEPa1fuRpHqpAHA3jRGghmn4yKqSqJttvKw3bxpk/Wek9CZECEUm1g6FpemFlO1YQjy40Cts4os7CroxdG6HmIc92QXOArv7dsZfW7QR63HYqDndMsdxQSpHtMRqbP84M1Emz4qCVXbzfy2kdhB0JbvZlQyAf3/igNg8elwnWyoXWgKIT04W5od/MpVzTbiZcSzOycxM4ieGzLeh8tAdjOX0wRcDWaJxtzceizJXkdsZrQyN+8wfU7u/sYYx1SGgNWezbIQsVs+BrIwi0KJwcw9E0Hsnncw++5MOrvGcLs2R/r
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(396003)(136003)(376002)(451199021)(46966006)(40470700004)(36840700001)(54906003)(478600001)(110136005)(40460700003)(8936002)(8676002)(5660300002)(36756003)(2906002)(86362001)(82310400005)(82740400003)(70206006)(70586007)(4326008)(316002)(7636003)(356005)(40480700001)(41300700001)(2616005)(426003)(336012)(107886003)(186003)(26005)(1076003)(47076005)(36860700001)(6666004)(7696005)(83380400001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2023 11:07:00.1560
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cec20769-928f-4ce8-a73a-08db6034d351
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8573
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5fc413e5-77d2-814d-250a-7ddf8eb6d6ad@linux.microsoft.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
+	USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Nimrod Oren <noren@nvidia.com>
+On Mon, May 29, 2023 at 03:09:49PM +0530, Praveen Kumar wrote:
+> On 5/26/2023 11:32 AM, Shradha Gupta wrote:
+> > Allocate the size of rx indirection table dynamically in netvsc
+> > from the value of size provided by OID_GEN_RECEIVE_SCALE_CAPABILITIES
+> > query instead of using a constant value of ITAB_NUM.
+> > 
+> > Signed-off-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
+> > Tested-on: Ubuntu22 (azure VM, SKU size: Standard_F72s_v2)
+> > Testcases:
+> > 1. ethtool -x eth0 output
+> > 2. LISA testcase:PERF-NETWORK-TCP-THROUGHPUT-MULTICONNECTION-NTTTCP-Synthetic
+> > 3. LISA testcase:PERF-NETWORK-TCP-THROUGHPUT-MULTICONNECTION-NTTTCP-SRIOV
+> > 
+> > ---
+> > Changes in v3:
+> >  * Changed the data type of rx_table_sz to u32
+> >  * Moved the rx indirection table free to rndis_filter_device_remove()
+> >  * Device add will fail with error if not enough memory is available
+> >  * Changed kzmalloc to kcalloc as suggested in checkpatch script
+> >  * Removed redundant log if memory allocation failed.
+> > ---
+> >  drivers/net/hyperv/hyperv_net.h   |  5 ++++-
+> >  drivers/net/hyperv/netvsc_drv.c   | 10 ++++++----
+> >  drivers/net/hyperv/rndis_filter.c | 27 +++++++++++++++++++++++----
+> >  3 files changed, 33 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+> > index dd5919ec408b..c40868f287a9 100644
+> > --- a/drivers/net/hyperv/hyperv_net.h
+> > +++ b/drivers/net/hyperv/hyperv_net.h
+> > @@ -74,6 +74,7 @@ struct ndis_recv_scale_cap { /* NDIS_RECEIVE_SCALE_CAPABILITIES */
+> >  #define NDIS_RSS_HASH_SECRET_KEY_MAX_SIZE_REVISION_2   40
+> >  
+> >  #define ITAB_NUM 128
+> > +#define ITAB_NUM_MAX 256
+> >  
+> >  struct ndis_recv_scale_param { /* NDIS_RECEIVE_SCALE_PARAMETERS */
+> >  	struct ndis_obj_header hdr;
+> > @@ -1034,7 +1035,9 @@ struct net_device_context {
+> >  
+> >  	u32 tx_table[VRSS_SEND_TAB_SIZE];
+> >  
+> > -	u16 rx_table[ITAB_NUM];
+> > +	u16 *rx_table;
+> > +
+> > +	u32 rx_table_sz;
+> >  
+> >  	/* Ethtool settings */
+> >  	u8 duplex;
+> > diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+> > index 0103ff914024..3ba3c8fb28a5 100644
+> > --- a/drivers/net/hyperv/netvsc_drv.c
+> > +++ b/drivers/net/hyperv/netvsc_drv.c
+> > @@ -1747,7 +1747,9 @@ static u32 netvsc_get_rxfh_key_size(struct net_device *dev)
+> >  
+> >  static u32 netvsc_rss_indir_size(struct net_device *dev)
+> >  {
+> > -	return ITAB_NUM;
+> > +	struct net_device_context *ndc = netdev_priv(dev);
+> > +
+> > +	return ndc->rx_table_sz;
+> >  }
+> >  
+> >  static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
+> > @@ -1766,7 +1768,7 @@ static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
+> >  
+> >  	rndis_dev = ndev->extension;
+> >  	if (indir) {
+> > -		for (i = 0; i < ITAB_NUM; i++)
+> > +		for (i = 0; i < ndc->rx_table_sz; i++)
+> >  			indir[i] = ndc->rx_table[i];
+> >  	}
+> >  
+> > @@ -1792,11 +1794,11 @@ static int netvsc_set_rxfh(struct net_device *dev, const u32 *indir,
+> >  
+> >  	rndis_dev = ndev->extension;
+> >  	if (indir) {
+> > -		for (i = 0; i < ITAB_NUM; i++)
+> > +		for (i = 0; i < ndc->rx_table_sz; i++)
+> >  			if (indir[i] >= ndev->num_chn)
+> >  				return -EINVAL;
+> >  
+> > -		for (i = 0; i < ITAB_NUM; i++)
+> > +		for (i = 0; i < ndc->rx_table_sz; i++)
+> >  			ndc->rx_table[i] = indir[i];
+> >  	}
+> >  
+> > diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+> > index eea777ec2541..dc7b9b326690 100644
+> > --- a/drivers/net/hyperv/rndis_filter.c
+> > +++ b/drivers/net/hyperv/rndis_filter.c
+> > @@ -21,6 +21,7 @@
+> >  #include <linux/rtnetlink.h>
+> >  #include <linux/ucs2_string.h>
+> >  #include <linux/string.h>
+> > +#include <linux/slab.h>
+> >  
+> >  #include "hyperv_net.h"
+> >  #include "netvsc_trace.h"
+> > @@ -927,7 +928,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
+> >  	struct rndis_set_request *set;
+> >  	struct rndis_set_complete *set_complete;
+> >  	u32 extlen = sizeof(struct ndis_recv_scale_param) +
+> > -		     4 * ITAB_NUM + NETVSC_HASH_KEYLEN;
+> > +		     4 * ndc->rx_table_sz + NETVSC_HASH_KEYLEN;
+> >  	struct ndis_recv_scale_param *rssp;
+> >  	u32 *itab;
+> >  	u8 *keyp;
+> > @@ -953,7 +954,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
+> >  	rssp->hashinfo = NDIS_HASH_FUNC_TOEPLITZ | NDIS_HASH_IPV4 |
+> >  			 NDIS_HASH_TCP_IPV4 | NDIS_HASH_IPV6 |
+> >  			 NDIS_HASH_TCP_IPV6;
+> > -	rssp->indirect_tabsize = 4*ITAB_NUM;
+> > +	rssp->indirect_tabsize = 4 * ndc->rx_table_sz;
+> >  	rssp->indirect_taboffset = sizeof(struct ndis_recv_scale_param);
+> >  	rssp->hashkey_size = NETVSC_HASH_KEYLEN;
+> >  	rssp->hashkey_offset = rssp->indirect_taboffset +
+> > @@ -961,7 +962,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
+> >  
+> >  	/* Set indirection table entries */
+> >  	itab = (u32 *)(rssp + 1);
+> > -	for (i = 0; i < ITAB_NUM; i++)
+> > +	for (i = 0; i < ndc->rx_table_sz; i++)
+> >  		itab[i] = ndc->rx_table[i];
+> >  
+> >  	/* Set hask key values */
+> > @@ -1548,6 +1549,17 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
+> >  	if (ret || rsscap.num_recv_que < 2)
+> >  		goto out;
+> >  
+> > +	if (rsscap.num_indirect_tabent &&
+> > +	    rsscap.num_indirect_tabent <= ITAB_NUM_MAX)
+> > +		ndc->rx_table_sz = rsscap.num_indirect_tabent;
+> > +	else
+> > +		ndc->rx_table_sz = ITAB_NUM;
+> > +
+> > +	ndc->rx_table = kcalloc(ndc->rx_table_sz, sizeof(u16),
+> > +				GFP_KERNEL);
+> > +	if (!ndc->rx_table)
+> > +		goto err_dev_remv;
+> > +
+> >  	/* This guarantees that num_possible_rss_qs <= num_online_cpus */
+> >  	num_possible_rss_qs = min_t(u32, num_online_cpus(),
+> >  				    rsscap.num_recv_que);
+> > @@ -1558,7 +1570,7 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
+> >  	net_device->num_chn = min(net_device->max_chn, device_info->num_chn);
+> >  
+> >  	if (!netif_is_rxfh_configured(net)) {
+> > -		for (i = 0; i < ITAB_NUM; i++)
+> > +		for (i = 0; i < ndc->rx_table_sz; i++)
+> >  			ndc->rx_table[i] = ethtool_rxfh_indir_default(
+> >  						i, net_device->num_chn);
+> >  	}
+> > @@ -1596,11 +1608,18 @@ void rndis_filter_device_remove(struct hv_device *dev,
+> >  				struct netvsc_device *net_dev)
+> >  {
+> >  	struct rndis_device *rndis_dev = net_dev->extension;
+> > +	struct net_device *net = hv_get_drvdata(dev);
+> > +	struct net_device_context *ndc = netdev_priv(net);
+> >  
+> >  	/* Halt and release the rndis device */
+> >  	rndis_filter_halt_device(net_dev, rndis_dev);
+> >  
+> >  	netvsc_device_remove(dev);
+> 
+> Shouldn't the netvsc_device_remove be called post table cleanup ? or better, the cleanup should happen as part of netvsc_device_remove operation ? This looks a bug to me as with remove operation, we already cleaned up the device and the association between context and device is removed.
 
-Expand the xdp multi-buffer support to xdp_redirect_map tool.
-Similar to what's done in commit
-772251742262 ("samples/bpf: fixup some tools to be able to support xdp multibuffer")
-and its fix commit
-7a698edf954c ("samples/bpf: Fix MAC address swapping in xdp2_kern").
+The netvsc_device_remove() function is responsible for cleaning up/removing the netvsc_device structures upon events like remove/suspend. The net_device and net_device_context structures(where the rx indirection table exists) remain untouched in netvsc_device_remove(). They(net_device, net_device_context) only get cleaned up in netvsc_remove(). So, the netvsc_device_remove() should not affect the cleanup for the rx indirection table, that we did.
 
-Signed-off-by: Nimrod Oren <noren@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
----
- samples/bpf/xdp_redirect_map.bpf.c | 31 ++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
-
-diff --git a/samples/bpf/xdp_redirect_map.bpf.c b/samples/bpf/xdp_redirect_map.bpf.c
-index 8557c278df77..dd034fdff1a9 100644
---- a/samples/bpf/xdp_redirect_map.bpf.c
-+++ b/samples/bpf/xdp_redirect_map.bpf.c
-@@ -35,15 +35,20 @@ struct {
- /* store egress interface mac address */
- const volatile __u8 tx_mac_addr[ETH_ALEN];
- 
-+#define XDPBUFSIZE	64
- static __always_inline int xdp_redirect_map(struct xdp_md *ctx, void *redirect_map)
- {
--	void *data_end = (void *)(long)ctx->data_end;
--	void *data = (void *)(long)ctx->data;
-+	__u8 pkt[XDPBUFSIZE] = {};
-+	void *data_end = &pkt[XDPBUFSIZE-1];
-+	void *data = pkt;
- 	u32 key = bpf_get_smp_processor_id();
- 	struct ethhdr *eth = data;
- 	struct datarec *rec;
- 	u64 nh_off;
- 
-+	if (bpf_xdp_load_bytes(ctx, 0, pkt, sizeof(pkt)))
-+		return XDP_DROP;
-+
- 	nh_off = sizeof(*eth);
- 	if (data + nh_off > data_end)
- 		return XDP_DROP;
-@@ -53,30 +58,37 @@ static __always_inline int xdp_redirect_map(struct xdp_md *ctx, void *redirect_m
- 		return XDP_PASS;
- 	NO_TEAR_INC(rec->processed);
- 	swap_src_dst_mac(data);
-+	if (bpf_xdp_store_bytes(ctx, 0, pkt, sizeof(pkt)))
-+		return XDP_DROP;
-+
- 	return bpf_redirect_map(redirect_map, 0, 0);
- }
- 
--SEC("xdp")
-+SEC("xdp.frags")
- int xdp_redirect_map_general(struct xdp_md *ctx)
- {
- 	return xdp_redirect_map(ctx, &tx_port_general);
- }
- 
--SEC("xdp")
-+SEC("xdp.frags")
- int xdp_redirect_map_native(struct xdp_md *ctx)
- {
- 	return xdp_redirect_map(ctx, &tx_port_native);
- }
- 
--SEC("xdp/devmap")
-+SEC("xdp.frags/devmap")
- int xdp_redirect_map_egress(struct xdp_md *ctx)
- {
--	void *data_end = (void *)(long)ctx->data_end;
--	void *data = (void *)(long)ctx->data;
-+	__u8 pkt[XDPBUFSIZE] = {};
-+	void *data_end = &pkt[XDPBUFSIZE-1];
-+	void *data = pkt;
- 	u8 *mac_addr = (u8 *) tx_mac_addr;
- 	struct ethhdr *eth = data;
- 	u64 nh_off;
- 
-+	if (bpf_xdp_load_bytes(ctx, 0, pkt, sizeof(pkt)))
-+		return XDP_DROP;
-+
- 	nh_off = sizeof(*eth);
- 	if (data + nh_off > data_end)
- 		return XDP_DROP;
-@@ -84,11 +96,14 @@ int xdp_redirect_map_egress(struct xdp_md *ctx)
- 	barrier_var(mac_addr); /* prevent optimizing out memcpy */
- 	__builtin_memcpy(eth->h_source, mac_addr, ETH_ALEN);
- 
-+	if (bpf_xdp_store_bytes(ctx, 0, pkt, sizeof(pkt)))
-+		return XDP_DROP;
-+
- 	return XDP_PASS;
- }
- 
- /* Redirect require an XDP bpf_prog loaded on the TX device */
--SEC("xdp")
-+SEC("xdp.frags")
- int xdp_redirect_dummy_prog(struct xdp_md *ctx)
- {
- 	return XDP_PASS;
--- 
-2.34.1
-
+> > +
+> > +	ndc->rx_table_sz = 0;
+> > +	kfree(ndc->rx_table);
+> > +	ndc->rx_table = NULL;
+> > +
+> >  }
+> >  
+> >  int rndis_filter_open(struct netvsc_device *nvdev)
 
