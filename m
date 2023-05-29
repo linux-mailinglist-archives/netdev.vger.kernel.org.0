@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-5994-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5995-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B887A71448F
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 08:25:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 545FF714496
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 08:26:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 619551C20992
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 06:25:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 05000280DF4
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 06:26:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6608E7FB;
-	Mon, 29 May 2023 06:25:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 47F457FB;
+	Mon, 29 May 2023 06:26:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59D277E
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:25:17 +0000 (UTC)
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1F11B6;
-	Sun, 28 May 2023 23:24:44 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id 38308e7fff4ca-2af20198f20so29804651fa.0;
-        Sun, 28 May 2023 23:24:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37E167E
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:26:02 +0000 (UTC)
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C9819C;
+	Sun, 28 May 2023 23:25:29 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id 2adb3069b0e04-4eed764a10cso3043213e87.0;
+        Sun, 28 May 2023 23:25:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685341475; x=1687933475;
+        d=gmail.com; s=20221208; t=1685341520; x=1687933520;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OZRQfz643dmJHeeo+jkhXyvA3F1dCaDB2UQgCJF1mJ8=;
-        b=Vv79P5w9D8h+XFDM95DLNQIVFZ5ylVvfzphxGNnUlDerYoJDaJkY43xI3mAuUfZm0z
-         C4fob+gOq8w3UMfh0SSQGKfk9tcsd9Nk/OcAaL2OXUJNrFrebQM6K/eZWFdiBNwewpMR
-         ovK7SpJ8g7eS+u0DK1IbINs6g9baH4okHVEj/GiQforgbnEHTgIE12hpV6YazIkqllSY
-         LN/xGaiY7b4Cb9RDIHHhQvA2vOKR6tslRfXB3vrOwvH/5FBRTamlbXDwtkHwLP8ou34u
-         SLC6CErI3ZG4MJp2VmVs5FKOOe3lIV+ztG5v6vJvTEU5wq/IXgWRfOm9ngHFexvhvY6L
-         wIkA==
+        bh=C8+bnKjskXykSg/iKyM4tx22OBuA1gQnjvmBSIg+LQg=;
+        b=fFliZVkMY6bLJAuYH+zFK4+JAx6PcjcFknIiq781O2oY3I435SWATGl1m+BLfl752X
+         9VF5qvU7gxfrJcCYmb0eAg3X65C+BMJ3nFUxTBQ0/y7jHU9eQ+9tbfJbLNrfDTBwom73
+         tQ00BJhN236S6OG3HE2gbGrJqlo6ls+rTxX7WUcgwmL/An/DgfvtOswQbaWmjbRxgJJd
+         dr0+1qJ+ZTSsgElhFGpPQ/0V+7uEz9iu9rxuT0m81vFZzJ9NcoAa0ZItX4q4fvbwHX4O
+         SCCYEQsoM0lVFBLlzpYs2CaibCeIqOOYaOj2PJPNS1znR8dAxIHFdobqPTvcE3rtDhDr
+         7eYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685341475; x=1687933475;
+        d=1e100.net; s=20221208; t=1685341520; x=1687933520;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=OZRQfz643dmJHeeo+jkhXyvA3F1dCaDB2UQgCJF1mJ8=;
-        b=erMNR6RsSMn6Ry8blTEAuiUoXjJbiJSLpPJ6sW7QkDNGSHI5xpc4fXkTswcN40Iqgv
-         Utn8Txt8t+EQoOfVZ3YgNOiO+qxTt9W9ApETWasTgIBlGLTlFfmpDbOjI1Tc5+XVskUV
-         QDksmm5isMDUtd+O0ZujEQRQdGlsjwmkiQrpy3t5G8dJC+UBgEesKwaEx4lHmK40D6lC
-         B70tKQ/Vhji7buvS/bW7Gll1jtSiLWJmXwTTE+QkYPAmvabotALGMOOBRDVu/3g7O8M0
-         jbM2QCSO9Vp9kpcaEevYCQapIzkMzpZrNKLLiUuGxktHuYG+yLDob+IFo8+d0Uhy4VWt
-         a7IA==
-X-Gm-Message-State: AC+VfDzvpSX97rz8ISpSiozLQbTXkNs+43GZhgcTD/a4tOK75SPQfo1H
-	Mc2gBmyvA9r+vKt4ipbKnXs=
-X-Google-Smtp-Source: ACHHUZ7FtmSMOib8Ov0ArZ3oVpwS2pIyq4LIkauz+GxfTaYPkIg0JToW3ToziUlQWKilosw5qbF0cA==
-X-Received: by 2002:a2e:3e0e:0:b0:2ac:82c1:5a3d with SMTP id l14-20020a2e3e0e000000b002ac82c15a3dmr3693931lja.23.1685341475524;
-        Sun, 28 May 2023 23:24:35 -0700 (PDT)
+        bh=C8+bnKjskXykSg/iKyM4tx22OBuA1gQnjvmBSIg+LQg=;
+        b=I9yhLMOZUDVehKqgErP+HKR9ptEVmAEmfJarvkBbpi9y3Kcb4FyLXGnAVq7sNp/a/w
+         M1489/diKS6uSZO71GtDWVBsjVbbZNYm/dpQ9dtbRPt/Gc0TNTXRrqmgH4HVtjcdiXwP
+         zwF5xV+yLzoq3fbflTVGpDxb8CMtCDb1u/OF04EzvaYpfQPCt/ne6wBQJnXKB5cgCVpw
+         /BfsHx0DmebcOs20+y6kX1myZMcqK7gJKiVM51pQQuSfXz4txMCszTYFRomA4Mhfr2yp
+         XPYYl4QnZGb5+2xps2atHjtzqzboibqGJ6XHz3GXcJNiDBUgRSWycuJD6PmWG1WOoMPd
+         87pg==
+X-Gm-Message-State: AC+VfDztJ4/tdjG2aPPeZWt3LJacl3tWD1Xh5JDEMj58Q2I1d/+sKhpe
+	i6Cct/TCnnM1G5VhCiMZo5s=
+X-Google-Smtp-Source: ACHHUZ6Xj6UKjjPlJgrfE9uMHkKDWTfWA5sR45BQylbXf8Ay6rkSnz/XTqU+Q3yir0vd0i1zrhMoUw==
+X-Received: by 2002:ac2:4477:0:b0:4f5:76a:2033 with SMTP id y23-20020ac24477000000b004f5076a2033mr46640lfl.25.1685341520423;
+        Sun, 28 May 2023 23:25:20 -0700 (PDT)
 Received: from fedora (62-78-225-252.bb.dnainternet.fi. [62.78.225.252])
-        by smtp.gmail.com with ESMTPSA id s10-20020a2e98ca000000b002aa4713b925sm2305506ljj.21.2023.05.28.23.24.34
+        by smtp.gmail.com with ESMTPSA id c18-20020a197612000000b004efd3c2b746sm1857330lff.162.2023.05.28.23.25.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 May 2023 23:24:34 -0700 (PDT)
-Date: Mon, 29 May 2023 09:24:30 +0300
+        Sun, 28 May 2023 23:25:19 -0700 (PDT)
+Date: Mon, 29 May 2023 09:25:15 +0300
 From: Matti Vaittinen <mazziesaccount@gmail.com>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
@@ -81,8 +81,8 @@ Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-iio@vger.kernel.org, netdev@vger.kernel.org,
 	openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
 	linux-mips@vger.kernel.org
-Subject: [PATCH v7 8/9] net-next: mvpp2: relax return value check for IRQ get
-Message-ID: <b458502919c7144882e745d6e936d1e01aef62ea.1685340157.git.mazziesaccount@gmail.com>
+Subject: [PATCH v7 9/9] net-next: mvpp2: don't shadow error
+Message-ID: <16d2b244566d4993c8fb26e1e2fbd178f46587f4.1685340157.git.mazziesaccount@gmail.com>
 References: <cover.1685340157.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -91,7 +91,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="/5RWSa/LMvuLUu/P"
+	protocol="application/pgp-signature"; boundary="SctzMwS3S5m1hcfy"
 Content-Disposition: inline
 In-Reply-To: <cover.1685340157.git.mazziesaccount@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -102,55 +102,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 
---/5RWSa/LMvuLUu/P
+--SctzMwS3S5m1hcfy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-fwnode_irq_get[_byname]() were changed to not return 0 anymore.
+Do not overwrite error from lower layers but return the actual error to
+user if obtaining an IRQ fails.
 
-Drop check for return value 0.
-
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Suggested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-
 ---
 Revision history:
-v5 =3D>:
- - No changes
-v4 =3D v5:
-Fix the subject, mb1232 =3D> mvpp2
+v7: New patch
 
-The first patch of the series changes the fwnode_irq_get() so this depends
-on the first patch of the series and should not be applied alone.
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/=
 ethernet/marvell/mvpp2/mvpp2_main.c
-index adc953611913..5b987af306a5 100644
+index 5b987af306a5..57cacdcd49ea 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -5833,7 +5833,7 @@ static int mvpp2_multi_queue_vectors_init(struct mvpp=
-2_port *port,
- 			v->irq =3D of_irq_get_byname(port_node, irqname);
- 		else
- 			v->irq =3D fwnode_irq_get(port->fwnode, i);
--		if (v->irq <=3D 0) {
-+		if (v->irq < 0) {
- 			ret =3D -EINVAL;
- 			goto err;
+@@ -5830,13 +5830,13 @@ static int mvpp2_multi_queue_vectors_init(struct mv=
+pp2_port *port,
  		}
-@@ -6764,7 +6764,7 @@ static int mvpp2_port_probe(struct platform_device *p=
-dev,
- 		err =3D -EPROBE_DEFER;
- 		goto err_deinit_qvecs;
- 	}
--	if (port->port_irq <=3D 0)
-+	if (port->port_irq < 0)
- 		/* the link irq is optional */
- 		port->port_irq =3D 0;
 =20
+ 		if (port_node)
+-			v->irq =3D of_irq_get_byname(port_node, irqname);
++			ret =3D of_irq_get_byname(port_node, irqname);
+ 		else
+-			v->irq =3D fwnode_irq_get(port->fwnode, i);
+-		if (v->irq < 0) {
+-			ret =3D -EINVAL;
++			ret =3D fwnode_irq_get(port->fwnode, i);
++		if (ret < 0)
+ 			goto err;
+-		}
++
++		v->irq =3D ret;
+=20
+ 		netif_napi_add(port->dev, &v->napi, mvpp2_poll);
+ 	}
 --=20
 2.40.1
 
@@ -167,20 +161,20 @@ Simon says - in Latin please.
 ~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
 Thanks to Simon Glass for the translation =3D]=20
 
---/5RWSa/LMvuLUu/P
+--SctzMwS3S5m1hcfy
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmR0RR0ACgkQeFA3/03a
-ocV19AgAxqaFRBUT6btb94P25gicQllwWLpd2KMLhCnrMsb3cTiR+wCDcQjQIY7y
-qpu2Dabi1L0v82mxPr4cPu9SjdK3NGBEyZ/VqHguFgjzC1grKOd6FFB/VQFBzsIV
-digNYfuLcFZYgjBTnKXeXoGypbgCUF8gbQI0rthkOwnTTDgq4TMaFuEgf1fWMxd3
-GZk954Ge8cUETjmZK1K26Y0EtrihBkIh1oN61T3I1Qcvpu7GKGcYnjHtm1h/NSrm
-tywl1uNfAF7q4WbbLfKr+wZUtIGa/eTfFwyeJ5aXZSadF/2Zj2r6cz0QwY7mM1In
-VnYJlZ4Va4M4CbCxPDcoIZid+xjAqg==
-=bDpI
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmR0RUsACgkQeFA3/03a
+ocU54Qf8CkaOG5QvcsAv7Y80ZCZ2KrWN3VVw6ajXQPGUsVHkPHKy+YRDzxzHjWlG
+vZqTFYYV+31mM2MrbjtkgoP6VKIncoMH4ZqK9iFnGFEiNmtLJRz3a7GNQVZFe9xP
+xLQMMxprxtwBUpwDarlyovyuRMyKjJ00i/efaFU9o6n4vAXfwovRy9L+gbuH+vpf
+GwIOUJcNG/UaGvr2+y6msRA4zOLzyef6p+Mr7MK0645A1jPhPkyfqAhfbiYlJ2b5
+S36vWFgRHfjDwU/XZH4s6uT7wdPGl/CRbFeo6f5lCKc4RwWJO3PFNKofNgnV08CI
+RNifxhTc8Pz30LxHLbcQQD7swjI1jg==
+=xQ21
 -----END PGP SIGNATURE-----
 
---/5RWSa/LMvuLUu/P--
+--SctzMwS3S5m1hcfy--
 
