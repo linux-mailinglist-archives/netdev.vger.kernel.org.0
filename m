@@ -1,190 +1,122 @@
-Return-Path: <netdev+bounces-6074-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6078-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 00920714B33
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 15:57:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id AA919714BEC
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 16:22:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A5280280E78
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 13:57:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5165B1C209FB
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 14:22:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D085579CB;
-	Mon, 29 May 2023 13:57:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D610882F;
+	Mon, 29 May 2023 14:22:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C30B77489
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 13:57:09 +0000 (UTC)
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B101A8
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:56:49 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id 3f1490d57ef6-b9a7e639656so6462245276.0
-        for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:56:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F4448486
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 14:22:42 +0000 (UTC)
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F698E8;
+	Mon, 29 May 2023 07:22:33 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id 5b1f17b1804b1-3f6e72a1464so22082565e9.1;
+        Mon, 29 May 2023 07:22:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685368562; x=1687960562;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=E5ZbOTNIGsyMBPrAGlum0uVhbCXq1Fr/43Mrcd4J4TI=;
-        b=48Ctxr1/ag8+dCHgnLgD8YIpipfZQcA1TCxj3+6gKZrmXhCswKf4C59OXdAz0IC7bF
-         bG44mkRiqFPq3DsHtz9h3qliHTP3fb8J6hZO7DjiXcFJ1+Ev5XZXPmkYDL3H0yThKZIr
-         KOwYGAK/6cQQBdRYCNbxrO0Jm8f1YC6HvNGvNE641EkROqZUCVUX78W6z5RJ1RunekcU
-         e59y29Ft8jIbRX8YkIKsPMPCtsFIUBLk2bEUCAmxgWK7tpUliDNkWyMci5om8tOUThcl
-         Dk9FNmt6f8o5DpMiKXHIrftmlASk80YqRIWjKhxNTxKvg7dIp+VbzewirFqq/eiNsAhQ
-         sQvg==
+        d=gmail.com; s=20221208; t=1685370151; x=1687962151;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=vl5E9mH7Bi/ClQnlPR1LRMwr8a1e9GOqSgKO5eVDbSU=;
+        b=ggFbeCNormcSCt72bW8IqNCobzV+UiIQWrJ9Ra/a1MX8/CEq8Vuu2VbkPylXs5EuPQ
+         RNt0w9J+lWwJ4Z+A01vIG6BYwn74yVGk8J/cGKNjM7h+REbVxa2JPofUPwESHBHYJU90
+         aT71CuC6NDB1jcXke5SD8VNO8AV1tKjvGTrjFlr1X+hsH/2hQQc+8oKAfJxcN9/HIdcr
+         DTfWxy2yVqhgnMBPWupKvBk3t7qm+ViQ401ZLvgfGL7w+CfzSIIMzxv+87oV8OPrcxWD
+         jsf40vMFg7CHF05UHz7hdf3gEmhRuPab2tFDg0ocOqFRrTs0npl6jyzn57vktB4yOfV0
+         gwNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685368562; x=1687960562;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=E5ZbOTNIGsyMBPrAGlum0uVhbCXq1Fr/43Mrcd4J4TI=;
-        b=YwRhvQCzA/UEy6p+ptPHUMZ6UScvvskTBRfzQOsFMuF9yxe5wg4AQlvWgGaIoghvhF
-         13d5S0cTgW1MrghyOhwTgV6GUL91J6QclG6x9/92644TLGVfHTAvNuShvi3vGfkRibHm
-         kDzpTuwff/0ftAJXSrbjmhjXGkHqnH18ObnM+wUHG1APGEPwjAvZLHltFTrVguF819P6
-         zx8oBfiwG8a4lyNd9qniB73ficJdm9qe+beIZ5RtB7m3qPwpQRHfF2EPTgERYg3qPGN3
-         p9ogP6/ejRJkDfo21hagUbNFmaVr6P5Ay10qoXE/M0p8ZMsb1lCV+dQyaB/zXs2jGaZM
-         YXyg==
-X-Gm-Message-State: AC+VfDyKeh178A9LxsA8EaTIIajIyKVj4cmSgtQ0bkjvPYT7FqhJNa77
-	Et5Mi+ByMQWboEzIVuh6eI69EB+8q/G09maTzej0Lg==
-X-Google-Smtp-Source: ACHHUZ4nJ8K4bXKZc5FqraNai4oH3/N9lj+KYIRKMArOKtBGraC4zDL79G1uBMriT6QFR7x8fNPoSOxHZd66GTHzmRw=
-X-Received: by 2002:a05:6902:1507:b0:ba7:4356:e0fa with SMTP id
- q7-20020a056902150700b00ba74356e0famr13335669ybu.3.1685368562572; Mon, 29 May
- 2023 06:56:02 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685370151; x=1687962151;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vl5E9mH7Bi/ClQnlPR1LRMwr8a1e9GOqSgKO5eVDbSU=;
+        b=I7CmJuIoTHKShWxP3IDCU0mga+WAZBXQG6HFDUahfo9D0qlDgGjyvHqVtvXNNwUlVA
+         7XvDm+1bgg/BhtYVBl/IguaOR0J5ErTi6yGz6XSaX14JKZy4Od5rBOlU1UwbwixHNF8I
+         LkBicOva69M4t1mlxeDVf21EP8oS/Z73KvnbjbD4+BYHFJiY3YOHjeUG5/JL+gc93nAZ
+         ad/1+sAwH3a0tCDNbTP+NTFd+BvWkPINhsmOT6/GBhDKbCOXNEUqWRALFZiDaAdwlV8J
+         F8FjkRpc/18VWXahfHGD8UdYfHVIFFh95I0wdfveW3FLA+9hz10LL6qlFa/rb6bupQ/b
+         qrDQ==
+X-Gm-Message-State: AC+VfDy2b9aL9/FP2gtYleqPzPI2SVo7gAgoCrHEnBXNUDSrJSe8fngM
+	bwUn9iDhWo7hR5aXlwaARE0=
+X-Google-Smtp-Source: ACHHUZ7L+Y8YK2pmRY6CMGxDXgKqI9PIYbA5LjI3TodqBKoH52Wli1y549++A2DTU7/h9dwYIpcbFA==
+X-Received: by 2002:a7b:c448:0:b0:3f6:4cfc:79cb with SMTP id l8-20020a7bc448000000b003f64cfc79cbmr8855842wmi.31.1685370151110;
+        Mon, 29 May 2023 07:22:31 -0700 (PDT)
+Received: from Ansuel-xps. (93-34-93-173.ip49.fastwebnet.it. [93.34.93.173])
+        by smtp.gmail.com with ESMTPSA id y6-20020a05600c364600b003f6042d6da0sm14382269wmq.16.2023.05.29.07.22.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 May 2023 07:22:30 -0700 (PDT)
+Message-ID: <6474b526.050a0220.baa3e.31c1@mx.google.com>
+X-Google-Original-Message-ID: <ZHSyI+ph47zQgpWw@Ansuel-xps.>
+Date: Mon, 29 May 2023 16:09:39 +0200
+From: Christian Marangi <ansuelsmth@gmail.com>
+To: Jonathan Corbet <corbet@lwn.net>
+Cc: Bagas Sanjaya <bagasdotme@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+	Lee Jones <lee@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	linux-leds@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v3 03/13] Documentation: leds: leds-class:
+ Document new Hardware driven LEDs APIs
+References: <20230527112854.2366-1-ansuelsmth@gmail.com>
+ <20230527112854.2366-4-ansuelsmth@gmail.com>
+ <ZHRd5wDnMrWZlwrd@debian.me>
+ <871qiz5iqt.fsf@meer.lwn.net>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1684887977.git.peilin.ye@bytedance.com> <429357af094297abbc45f47b8e606f11206df049.1684887977.git.peilin.ye@bytedance.com>
- <faaeb0b0-8538-9dfa-4c1e-8a225e3534f4@mojatatu.com> <CAM0EoM=3iYmmLjnifx_FDcJfRbN31tRnCE0ZvqQs5xSBPzaqXQ@mail.gmail.com>
- <CAM0EoM=FS2arxv0__aQXF1a7ViJnM0hST=TL9dcnJpkf-ipjvA@mail.gmail.com>
- <7879f218-c712-e9cc-57ba-665990f5f4c9@mojatatu.com> <ZHE8P9Bi6FlKz4US@C02FL77VMD6R.googleapis.com>
- <20230526193324.41dfafc8@kernel.org> <ZHG+AR8qgpJ6/Zhx@C02FL77VMD6R.googleapis.com>
- <CAM0EoM=xLkAr5EF7bty+ETmZ3GXnmB9De3fYSCrQjKPb8qDy7Q@mail.gmail.com> <87jzwrxrz8.fsf@nvidia.com>
-In-Reply-To: <87jzwrxrz8.fsf@nvidia.com>
-From: Jamal Hadi Salim <jhs@mojatatu.com>
-Date: Mon, 29 May 2023 09:55:51 -0400
-Message-ID: <CAM0EoMkS+F5DRN=NOuuA0M1CCCmMYdjDpB1Wz2wjW=eJzHvC0w@mail.gmail.com>
-Subject: Re: [PATCH v5 net 6/6] net/sched: qdisc_destroy() old ingress and
- clsact Qdiscs before grafting
-To: Vlad Buslov <vladbu@nvidia.com>
-Cc: Peilin Ye <yepeilin.cs@gmail.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Pedro Tammela <pctammela@mojatatu.com>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
-	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>, 
-	Peilin Ye <peilin.ye@bytedance.com>, Daniel Borkmann <daniel@iogearbox.net>, 
-	John Fastabend <john.fastabend@gmail.com>, Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org, 
-	Cong Wang <cong.wang@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <871qiz5iqt.fsf@meer.lwn.net>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 29, 2023 at 8:06=E2=80=AFAM Vlad Buslov <vladbu@nvidia.com> wro=
-te:
->
-> On Sun 28 May 2023 at 14:54, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> > On Sat, May 27, 2023 at 4:23=E2=80=AFAM Peilin Ye <yepeilin.cs@gmail.co=
-m> wrote:
-> >>
-> >> Hi Jakub and all,
-> >>
-> >> On Fri, May 26, 2023 at 07:33:24PM -0700, Jakub Kicinski wrote:
-> >> > On Fri, 26 May 2023 16:09:51 -0700 Peilin Ye wrote:
-> >> > > Thanks a lot, I'll get right on it.
-> >> >
-> >> > Any insights? Is it just a live-lock inherent to the retry scheme
-> >> > or we actually forget to release the lock/refcnt?
-> >>
-> >> I think it's just a thread holding the RTNL mutex for too long (replay=
-ing
-> >> too many times).  We could replay for arbitrary times in
-> >> tc_{modify,get}_qdisc() if the user keeps sending RTNL-unlocked filter
-> >> requests for the old Qdisc.
->
-> After looking very carefully at the code I think I know what the issue
-> might be:
->
->    Task 1 graft Qdisc   Task 2 new filter
->            +                    +
->            |                    |
->            v                    v
->         rtnl_lock()       take  q->refcnt
->            +                    +
->            |                    |
->            v                    v
-> Spin while q->refcnt!=3D1   Block on rtnl_lock() indefinitely due to -EAG=
-AIN
->
-> This will cause a real deadlock with the proposed patch. I'll try to
-> come up with a better approach. Sorry for not seeing it earlier.
->
-> >>
-> >> I tested the new reproducer Pedro posted, on:
-> >>
-> >> 1. All 6 v5 patches, FWIW, which caused a similar hang as Pedro report=
-ed
-> >>
-> >> 2. First 5 v5 patches, plus patch 6 in v1 (no replaying), did not trig=
-ger
-> >>    any issues (in about 30 minutes).
-> >>
-> >> 3. All 6 v5 patches, plus this diff:
-> >>
-> >> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> >> index 286b7c58f5b9..988718ba5abe 100644
-> >> --- a/net/sched/sch_api.c
-> >> +++ b/net/sched/sch_api.c
-> >> @@ -1090,8 +1090,11 @@ static int qdisc_graft(struct net_device *dev, =
-struct Qdisc *parent,
-> >>                          * RTNL-unlocked filter request(s).  This is t=
-he counterpart of that
-> >>                          * qdisc_refcount_inc_nz() call in __tcf_qdisc=
-_find().
-> >>                          */
-> >> -                       if (!qdisc_refcount_dec_if_one(dev_queue->qdis=
-c_sleeping))
-> >> +                       if (!qdisc_refcount_dec_if_one(dev_queue->qdis=
-c_sleeping)) {
-> >> +                               rtnl_unlock();
-> >> +                               rtnl_lock();
-> >>                                 return -EAGAIN;
-> >> +                       }
-> >>                 }
-> >>
-> >>                 if (dev->flags & IFF_UP)
-> >>
-> >>    Did not trigger any issues (in about 30 mintues) either.
-> >>
-> >> What would you suggest?
-> >
-> >
-> > I am more worried it is a wackamole situation. We fixed the first
-> > reproducer with essentially patches 1-4 but we opened a new one which
-> > the second reproducer catches. One thing the current reproducer does
-> > is create a lot rtnl contention in the beggining by creating all those
-> > devices and then after it is just creating/deleting qdisc and doing
-> > update with flower where such contention is reduced. i.e it may just
-> > take longer for the mole to pop up.
-> >
-> > Why dont we push the V1 patch in and then worry about getting clever
-> > with EAGAIN after? Can you test the V1 version with the repro Pedro
-> > posted? It shouldnt have these issues. Also it would be interesting to
-> > see how performance of the parallel updates to flower is affected.
->
-> This or at least push first 4 patches of this series. They target other
-> older commits and fix straightforward issues with the API.
+On Mon, May 29, 2023 at 08:12:42AM -0600, Jonathan Corbet wrote:
+> Bagas Sanjaya <bagasdotme@gmail.com> writes:
+> 
+> >> +    - hw_control_get_device:
+> >> +                return the device associated with the LED driver in
+> >> +                hw control. A trigger might use this to match the
+> >> +                returned device from this function with a configured
+> >> +                device for the trigger as the source for blinking
+> >> +                events and correctly enable hw control.
+> >> +                (example a netdev trigger configured to blink for a
+> >> +                particular dev match the returned dev from get_device
+> >> +                to set hw control)
+> >> +
+> >> +                Return a device or NULL if nothing is currently attached.
+> > Returns a device name?
+> 
+> The return type of this function is struct device * - how would you
+> expect it to return a name?
+> 
 
+Just to clarify, a device name can't be returned. Not every device have
+a name and such name can be changed. An example is network device where
+you can change the name of the interface.
 
-Yes, lets get patch 1-4 in first ...
+Using the device prevents all of this problem. 
 
-cheers,
-jamal
+-- 
+	Ansuel
 
