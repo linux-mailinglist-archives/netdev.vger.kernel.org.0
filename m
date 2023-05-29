@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-6145-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6146-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 19723714E81
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 18:36:23 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6454C714E83
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 18:36:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C6B4A280F97
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 16:36:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 96EB2280FDA
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 16:36:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A2519D50B;
-	Mon, 29 May 2023 16:34:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 270D3D30B;
+	Mon, 29 May 2023 16:34:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96C0DD30B
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 16:34:50 +0000 (UTC)
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B60DA3;
-	Mon, 29 May 2023 09:34:49 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id ffacd0b85a97d-30ae967ef74so839283f8f.0;
-        Mon, 29 May 2023 09:34:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C82FDDDF
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 16:34:52 +0000 (UTC)
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B055B2;
+	Mon, 29 May 2023 09:34:50 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-3f6d3f83d0cso36417315e9.2;
+        Mon, 29 May 2023 09:34:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685378088; x=1687970088;
+        d=gmail.com; s=20221208; t=1685378089; x=1687970089;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Gfvrz5G3XlnZ2Vf1vClzhgeEjYoUMrP7las42y0bA9Q=;
-        b=Etqzt3m1D0bdS7EJCaFaYCnfOToBbs2idvHlXP9DUF0SI74sS/sQvkccvcvNwVNp9V
-         QhkpbtiTro0KWvvvTgDn/avcEwI7wi6o4O2U31SsGtyeNsXzj7Aey3HEIdZiQPoh2wt0
-         PZjIJezCeUcKrF++EI9kwmjIKeCdbYyhJsktPfkz91TrS/npaOzImsDK/icmwXhnkRbx
-         vz4oRECuV71wONKIhbwI1X86Xxl/I7nH043o7//5Z87LWaXbUYIkEplaa6WTSGsjr+Bk
-         o+4VVUvyOPYqsVw6HpAQEWkXIFc4vrRB5he1VLoaQh8y4PAKjDnYMGH6Bj1sYcZTQKVM
-         wfUg==
+        bh=IlQrvGRD4ZHltBpv2SQtNiv0lfrM6U3jabiv2fdlEjA=;
+        b=DtHAc0glKUPrO98buFtsgCTz1Ie8aLDtveoXlqHpy4/v/pzDmV6NkXceOfvN2VkKJO
+         Mzlc6eKDDreLC9/+0Klduzktr30qbdTdYjpLA6b/rpcTluYntiEhyO0pX8otblRuioJK
+         e39c9hD4rORHrGO4IhsWDGn4p1+bGbOzmtiBfxnuywI9eUiZkKO80S5gleEdSnt+qmED
+         Xd/o8iF/f8TgMtkhdnG/s5eFksnFMGOPHBlG9y3SEdgP9Kfug33ktmKDKIGN+0zhowYZ
+         E1g2czs++O2e+XgfIG6G1bFZ+QZpOvRgZ/9oEC0pdwJxPftpAIIaR6KRzJujsufgu0bX
+         DyIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685378088; x=1687970088;
+        d=1e100.net; s=20221208; t=1685378089; x=1687970089;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Gfvrz5G3XlnZ2Vf1vClzhgeEjYoUMrP7las42y0bA9Q=;
-        b=TpInGGrfD6QUXuspxtC0yCS5XF5rb5Fwr4ZDZGeu5/vbhbE3KskFHP3EscJpVx1MQs
-         RbmIZgb2Nex3XL2cQa3syPxGy3bpeTY+fJRJnVruBmKfY5k6wGnwddZ7QtO3tkQYHrOE
-         XEjZtZa6pur9FLhBXsslbCrme5Qpjm8k5CRtulLXqyzqUaBGXsvPMzmo/lM32oGnmABS
-         /E8PyH/U8+rtsvUxXR5L7XUZzEua/heIgNIRIofV5Homo+YQIh1+9p1c7LS0SN+A5k6l
-         vPbKrBnQe1KB2pErDj20iL1XXjJR2Su9hcaaEhZf5MwCYH0RtBfbpVLj3pnkAzGxqSTO
-         +G8g==
-X-Gm-Message-State: AC+VfDw6GdbgTtm0abQU/CELwgaJbnVHTFdPAEd3prx9doNRAfkFo01T
-	TlfSx3C4WoZCAJEFVBANeoM=
-X-Google-Smtp-Source: ACHHUZ7+larGJmqw2AZBA7u9cay97RHZujQ31A+rcyfXytbbFvHbHQe/P/4ZHvEqu4ZrI8xBA4ZUPg==
-X-Received: by 2002:adf:fc50:0:b0:30a:bdfd:5c3c with SMTP id e16-20020adffc50000000b0030abdfd5c3cmr10863252wrs.17.1685378087601;
-        Mon, 29 May 2023 09:34:47 -0700 (PDT)
+        bh=IlQrvGRD4ZHltBpv2SQtNiv0lfrM6U3jabiv2fdlEjA=;
+        b=MWzqKmbOiWFBaA14h1wNDITl/ZiMp+082HMNCEU7rCnHbxjKvo8uvDdAU8ZkcOuFhF
+         BBmTieuoLAuPibM8sWCqeO5jrpRxoNOstSrIS8ijYR+PwcZPXG2IU3XLtn2t+J9LARzj
+         +ian8QOnHkannScAtSoPMOSdp9Dl6/Kxs27XEOY0kflqJUR0maz3k7Dm3OX6FVDnEKdM
+         QTrz7FS+pAhhP0ad+mUXvRJcRu4G0vw2/7fUFMzKNSLzmC+T4Jp5uZxly9LGDVVfYvzF
+         ZzGtCdnYY4tzu8FX5BZypp4eo5UJc3iCqPy8ZPBsvMfdneyi0VYc2mKlebj3wHl9DBZ4
+         IVvw==
+X-Gm-Message-State: AC+VfDwRawo7OFOA+mjjrs9SPHYaNvsSCoao2eiBR/jIrszuMRfWHqTT
+	NvDNl5OinFpCoKCBWqGHeUc=
+X-Google-Smtp-Source: ACHHUZ641zKVt+dvxchLwmAXeTl3o99OfbAJcCRE4+hN+GQzUQzNx2B0Z3gWlYjxdlQlll5hmeYOkA==
+X-Received: by 2002:a05:600c:d5:b0:3f5:ce2:9c82 with SMTP id u21-20020a05600c00d500b003f50ce29c82mr10531066wmm.32.1685378088594;
+        Mon, 29 May 2023 09:34:48 -0700 (PDT)
 Received: from localhost.localdomain (93-34-93-173.ip49.fastwebnet.it. [93.34.93.173])
-        by smtp.googlemail.com with ESMTPSA id h14-20020a5d6e0e000000b002ff2c39d072sm417513wrz.104.2023.05.29.09.34.46
+        by smtp.googlemail.com with ESMTPSA id h14-20020a5d6e0e000000b002ff2c39d072sm417513wrz.104.2023.05.29.09.34.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 May 2023 09:34:47 -0700 (PDT)
+        Mon, 29 May 2023 09:34:48 -0700 (PDT)
 From: Christian Marangi <ansuelsmth@gmail.com>
 To: Pavel Machek <pavel@ucw.cz>,
 	Lee Jones <lee@kernel.org>,
@@ -72,9 +72,9 @@ To: Pavel Machek <pavel@ucw.cz>,
 	linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [net-next PATCH v4 05/13] leds: trigger: netdev: introduce check for possible hw control
-Date: Mon, 29 May 2023 18:32:35 +0200
-Message-Id: <20230529163243.9555-6-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v4 06/13] leds: trigger: netdev: add basic check for hw control support
+Date: Mon, 29 May 2023 18:32:36 +0200
+Message-Id: <20230529163243.9555-7-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230529163243.9555-1-ansuelsmth@gmail.com>
 References: <20230529163243.9555-1-ansuelsmth@gmail.com>
@@ -92,55 +92,43 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Introduce function to check if the requested mode can use hw control in
-preparation for hw control support. Currently everything is handled in
-software so can_hw_control will always return false.
-
-Add knob with the new value hw_control in trigger_data struct to
-set hw control possible. Useful for future implementation to implement
-in set_baseline_state() the required function to set the requested mode
-using LEDs hw control ops and in other function to reject set if hw
-control is currently active.
+Add basic check for hw control support. Check if the required API are
+defined and check if the defined trigger supported in hw control for the
+LED driver match netdev.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/leds/trigger/ledtrig-netdev.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/leds/trigger/ledtrig-netdev.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-index c93ac3bc85a6..e1f3cedd5d57 100644
+index e1f3cedd5d57..2101cbbda707 100644
 --- a/drivers/leds/trigger/ledtrig-netdev.c
 +++ b/drivers/leds/trigger/ledtrig-netdev.c
-@@ -51,6 +51,7 @@ struct led_netdev_data {
- 
- 	unsigned long mode;
- 	bool carrier_link_up;
-+	bool hw_control;
- };
- 
- enum led_trigger_netdev_modes {
-@@ -91,6 +92,11 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
+@@ -92,8 +92,22 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
  	}
  }
  
-+static bool can_hw_control(struct led_netdev_data *trigger_data)
++static bool supports_hw_control(struct led_classdev *led_cdev)
 +{
-+	return false;
++	if (!led_cdev->hw_control_get || !led_cdev->hw_control_set ||
++	    !led_cdev->hw_control_is_supported)
++		return false;
++
++	return !strcmp(led_cdev->hw_control_trigger, led_cdev->trigger->name);
 +}
 +
- static ssize_t device_name_show(struct device *dev,
- 				struct device_attribute *attr, char *buf)
+ static bool can_hw_control(struct led_netdev_data *trigger_data)
  {
-@@ -204,6 +210,8 @@ static ssize_t netdev_led_attr_store(struct device *dev, const char *buf,
- 	else
- 		clear_bit(bit, &trigger_data->mode);
- 
-+	trigger_data->hw_control = can_hw_control(trigger_data);
++	struct led_classdev *led_cdev = trigger_data->led_cdev;
 +
- 	set_baseline_state(trigger_data);
++	if (!supports_hw_control(led_cdev))
++		return false;
++
+ 	return false;
+ }
  
- 	return size;
 -- 
 2.39.2
 
