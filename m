@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-6121-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6122-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9FF51714D8D
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 17:56:24 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CD2C2714D8F
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 17:56:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5C22C280EA5
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 15:56:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 718B11C20A6C
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 15:56:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81FC111186;
-	Mon, 29 May 2023 15:51:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 876131119A;
+	Mon, 29 May 2023 15:51:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 740D68F62;
-	Mon, 29 May 2023 15:51:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7576411196;
+	Mon, 29 May 2023 15:51:02 +0000 (UTC)
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300ABDB;
-	Mon, 29 May 2023 08:50:58 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF40CF;
+	Mon, 29 May 2023 08:51:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685375458; x=1716911458;
+  t=1685375460; x=1716911460;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TexfAAXuZtQ3n+9KFI8j2ot5gwJO7QF5sLKTHpPEBuI=;
-  b=CH0iNVbqUnZIutDYe7j+o/JDW9OfLi31+SAMO1XTtobpzpizdY9Y4IM3
-   SBRTVbYSgeTFRuz6zkxpF6oY532jvLNmVuBxRWvfD80/tav6mgX2y7mkO
-   OwKeiaJ/KWeQ1yxUwP0HPIAjSsk/NCnkzJ3CGuGc3Rif0vbXKlEdIxZjC
-   BuI3biU+LYU8OpSKOco2Cbswhr4zmpQsx7IQSKmyO97E0grC1ALWNZDjE
-   XLqdxxpF2JMmD0wLThGprOElHUio2dQ7iv7X81BPfVFyKynAwwE+ciMyk
-   jo3TmBiZYwV56Kni61pwWLZaXegVDVp7meQ7etoKLrDtYuL77UYxkQITG
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="344229028"
+  bh=KIxYAJTX1HXf9qG9oPpa2qNiCKMKWw47fIZSNt4aIhU=;
+  b=YmXicTpn7dSrRg93rYI6JwWmxN41eyuYHK6oJs4G3v8CZunL/i8eRhLt
+   zCD14zuqdivBSB6J6n2kAIDGAutWjgJ3594WGSsqSh+20XKrurhFjrlz3
+   xGMU5rR/3X2k4duaFfwXoCb5gu9AoTDWnD4ffMk3sD6LZIexT536zFa1p
+   P4dzi/mCIA/ng526KY7ZWfgy+OwSQVpWAzEM2bPbgaiwcCVUnbZpIfLa2
+   +E12j3XQggV0zx1lSCc4EuTl069ndXwcSLTz1rXthHzgIt6LE5GGGBZq3
+   t30utdWNKjI8V68yqWcQtrj/2TPffqPcJ+MhxRfntd9wRZtlBPtO+hdB5
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="344229035"
 X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
-   d="scan'208";a="344229028"
+   d="scan'208";a="344229035"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 08:50:58 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 08:51:00 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="880441138"
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="880441159"
 X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
-   d="scan'208";a="880441138"
+   d="scan'208";a="880441159"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga005.jf.intel.com with ESMTP; 29 May 2023 08:50:55 -0700
+  by orsmga005.jf.intel.com with ESMTP; 29 May 2023 08:50:58 -0700
 From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To: bpf@vger.kernel.org,
 	ast@kernel.org,
@@ -55,9 +55,9 @@ Cc: netdev@vger.kernel.org,
 	bjorn@kernel.org,
 	tirthendu.sarkar@intel.com,
 	Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v2 bpf-next 12/22] xsk: support ZC Tx multi-buffer in batch API
-Date: Mon, 29 May 2023 17:50:14 +0200
-Message-Id: <20230529155024.222213-13-maciej.fijalkowski@intel.com>
+Subject: [PATCH v2 bpf-next 13/22] xsk: report ZC multi-buffer capability via xdp_features
+Date: Mon, 29 May 2023 17:50:15 +0200
+Message-Id: <20230529155024.222213-14-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230529155024.222213-1-maciej.fijalkowski@intel.com>
 References: <20230529155024.222213-1-maciej.fijalkowski@intel.com>
@@ -75,96 +75,48 @@ X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Modify xskq_cons_read_desc_batch() in a way that each processed
-descriptor will be checked if it is an EOP one or not and act
-accordingly to that.
-
-Change the behavior of mentioned function to break the processing when
-stumbling upon invalid descriptor instead of skipping it. Furthermore,
-let us give only full packets down to ZC driver.
-With these two assumptions ZC drivers will not have to take care of an
-intermediate state of incomplete frames, which will simplify its
-implementations a lot.
+Introduce new xdp_feature NETDEV_XDP_ACT_NDO_ZC_SG that will be used to
+find out if user space that wants to do ZC multi-buffer will be able to
+do so against underlying ZC driver.
 
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- net/xdp/xsk_queue.h | 41 ++++++++++++++++++++++++++++++++---------
- 1 file changed, 32 insertions(+), 9 deletions(-)
+ include/uapi/linux/netdev.h | 4 ++--
+ net/xdp/xsk_buff_pool.c     | 6 ++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index ab0d13d6d90e..a8f11a41609a 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -48,6 +48,11 @@ struct xsk_queue {
- 	size_t ring_vmalloc_size;
+diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
+index 639524b59930..bfca07224f7b 100644
+--- a/include/uapi/linux/netdev.h
++++ b/include/uapi/linux/netdev.h
+@@ -33,8 +33,8 @@ enum netdev_xdp_act {
+ 	NETDEV_XDP_ACT_HW_OFFLOAD = 16,
+ 	NETDEV_XDP_ACT_RX_SG = 32,
+ 	NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
+-
+-	NETDEV_XDP_ACT_MASK = 127,
++	NETDEV_XDP_ACT_NDO_ZC_SG = 128,
++	NETDEV_XDP_ACT_MASK = 255,
  };
  
-+struct parsed_desc {
-+	u32 mb;
-+	u32 valid;
-+};
-+
- /* The structure of the shared state of the rings are a simple
-  * circular buffer, as outlined in
-  * Documentation/core-api/circular-buffers.rst. For the Rx and
-@@ -218,30 +223,48 @@ static inline void xskq_cons_release_n(struct xsk_queue *q, u32 cnt)
- 	q->cached_cons += cnt;
- }
- 
--static inline u32 xskq_cons_read_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
--					    u32 max)
-+static inline void parse_desc(struct xsk_queue *q, struct xsk_buff_pool *pool,
-+			      struct xdp_desc *desc, struct parsed_desc *parsed)
-+{
-+	parsed->valid = xskq_cons_is_valid_desc(q, desc, pool);
-+	parsed->mb = xp_mb_desc(desc);
-+}
-+
-+static inline
-+u32 xskq_cons_read_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
-+			      u32 max)
- {
- 	u32 cached_cons = q->cached_cons, nb_entries = 0;
- 	struct xdp_desc *descs = pool->tx_descs;
-+	u32 total_descs = 0, nr_frags = 0;
- 
-+	/* track first entry, if stumble upon *any* invalid descriptor, rewind
-+	 * current packet that consists of frags and stop the processing
-+	 */
- 	while (cached_cons != q->cached_prod && nb_entries < max) {
- 		struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
- 		u32 idx = cached_cons & q->ring_mask;
-+		struct parsed_desc parsed;
- 
- 		descs[nb_entries] = ring->desc[idx];
--		if (unlikely(!xskq_cons_is_valid_desc(q, &descs[nb_entries], pool))) {
--			/* Skip the entry */
--			cached_cons++;
--			continue;
--		}
-+		cached_cons++;
-+		parse_desc(q, pool, &descs[nb_entries], &parsed);
-+		if (unlikely(!parsed.valid))
-+			break;
- 
- 		nb_entries++;
--		cached_cons++;
-+		if (likely(!parsed.mb)) {
-+			total_descs += (nr_frags + 1);
-+			nr_frags = 0;
-+		} else {
-+			nr_frags++;
-+		}
+ enum {
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 0a9f8ea68de3..43cca5fa90cf 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -189,6 +189,12 @@ int xp_assign_dev(struct xsk_buff_pool *pool,
+ 		goto err_unreg_pool;
  	}
  
-+	cached_cons -= nr_frags;
- 	/* Release valid plus any invalid entries */
- 	xskq_cons_release_n(q, cached_cons - q->cached_cons);
--	return nb_entries;
-+	return total_descs;
- }
- 
- /* Functions for consumers */
++	if (!(netdev->xdp_features & NETDEV_XDP_ACT_NDO_ZC_SG) &&
++	    flags & XDP_USE_SG) {
++		err = -EOPNOTSUPP;
++		goto err_unreg_pool;
++	}
++
+ 	bpf.command = XDP_SETUP_XSK_POOL;
+ 	bpf.xsk.pool = pool;
+ 	bpf.xsk.queue_id = queue_id;
 -- 
 2.35.3
 
