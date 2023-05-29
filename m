@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-6006-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6007-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2DAA271457B
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 09:28:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6A0F671457F
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 09:29:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 85446280DEB
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 07:28:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B032B280E08
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 07:29:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 98E441104;
-	Mon, 29 May 2023 07:28:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BC8721106;
+	Mon, 29 May 2023 07:29:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87496ECB
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 07:28:44 +0000 (UTC)
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7354EFD;
-	Mon, 29 May 2023 00:28:32 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id 38308e7fff4ca-2af2e1725bdso36937401fa.0;
-        Mon, 29 May 2023 00:28:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAB8AA5C
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 07:29:45 +0000 (UTC)
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F446B2;
+	Mon, 29 May 2023 00:29:41 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id 38308e7fff4ca-2af20198f20so30311431fa.0;
+        Mon, 29 May 2023 00:29:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685345310; x=1687937310;
+        d=gmail.com; s=20221208; t=1685345379; x=1687937379;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PjsN5fk/DFO2FMNlviuxDCLmb3ffNRXz+JeOMI+cajU=;
-        b=Thn3rXeXxFWGN583MVThEG/Gp/158xMTOU5oOTHLjKzkbZ4/4fp1lG0IK4SPrky0Y9
-         DWR6pbvTT+8KKvppjOT9Mp14uuq75EucuFJnFZFvlHOarVDrsCdXYQTK5jykb9AYIXEY
-         SkXDFgWX5YClUAkkam82OEZ2IiLkkigQxKVJih8JedwF9klJN07coMNshsgqU+JD5tLx
-         FP7yU4lbmNFIe0diOWTUWWYdPHtZ7EjLazL5P41wQAoin2iKGr2M7ldTHXe6X347/Rvc
-         Gmml3sRn2hxWTIAFZ+Z9l1ELddx+FHb/jLQ2hIo5E4nCUvQzoltRcSnJvFH/a1/+Bxmk
-         //XQ==
+        bh=TuyYcu8t+w4tBaiuC6qtUy6PrdNxgiYYt2fH8+OWVDY=;
+        b=QyZQ45wMo1H/zbmv5hl67s6/CQ/iTljYSFFQrpTwhPoSKo3Y8hcx0rtgxQr81Jdzwh
+         XENE8WRNIT/SfwkQb/k7hwarAmqWGmTMniberK9F5KXA8oxRAqqY52+zIrNAUJHEU2rk
+         5Z2UP1FSVWZM5ra4pGDgXOcEy941BjAASlxf71N2LdhyyrYZt5dos6SRHCvONPUivPuo
+         mdY/0+6M4ukzeuf7AAZ0Mi1SOqy/bym8ZkWPENgI0yjNtNa6eloLhaC1JgyrljkexlvH
+         1x4XE33mrfpX2BjGwqEG8S4kiEE2J+Su2S3BAA0fcZqbuBLVPJxD+QntLFy26wexSwBr
+         vJIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685345310; x=1687937310;
+        d=1e100.net; s=20221208; t=1685345379; x=1687937379;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=PjsN5fk/DFO2FMNlviuxDCLmb3ffNRXz+JeOMI+cajU=;
-        b=XdWg1YHjRI/QWFnEDtrUUB538lXnizHehV/nC2nispPcesPsCHROb4qR12L9NMJGYR
-         udsvkGjIWjCIDyDtnU4VcpzwBcNFUOm79Us6uxMs7vkzZ/QnRN1yZXhSoYMLxeSaxElZ
-         I+aHTkwE5Q4hSduavld5AE+ejUydn0TvMezr77q5rlda/Vdy6dSdH8iyqKDJt7POGn54
-         gtBRQo2OLHEhqQWuidQ/ZSnJSlF18W18/kWN4R2wMBp1IAKjlvM1gv380tqnOVWjb/6R
-         rnrKzCVGFDRcT19jwQHgYNNCmcCDH6DtZ3LpvQMi8AbqFUjh5SkpfZ1Vx4LrZhFCV/hV
-         Xg0Q==
-X-Gm-Message-State: AC+VfDwS5RHJCKggrgxhm4cRClGw1sM3gMfjRlj6+8r/59Qb8JNx3EJh
-	migHVB8eSslsyc7bCsPwT3XDgcIqUdzVLjOAHUPoon0M
-X-Google-Smtp-Source: ACHHUZ4AiCb2O+MN4guzGAJW94jOIEiQMul7ITUDSJXVEgMzsNcT1/pSWAP6rgrWhgmOk6S+1oUsWWTXSzPJCsbHEtM=
-X-Received: by 2002:a05:651c:2c1:b0:2ac:75fa:eef0 with SMTP id
- f1-20020a05651c02c100b002ac75faeef0mr2270344ljo.7.1685345310121; Mon, 29 May
- 2023 00:28:30 -0700 (PDT)
+        bh=TuyYcu8t+w4tBaiuC6qtUy6PrdNxgiYYt2fH8+OWVDY=;
+        b=ZyLSuzOLbJmzKY4Wu17MZZcYM5hS7Y39GrNdXfJ5jB4ax5KkIgPJzoilbBxKDvMbUc
+         5YbHGmh3pGtb2z0yqVAI1nzbri3W0TkegHW0A5dw3Mgt69j2T8C/OlnXe4waaB+OGF1N
+         fBjraW9oWsEmLU/FobTGeDx2C1H0n5bFgFxGP/jRc0qSzACniNsqXRZPB+znOJI4Cac+
+         2IlaTOX5onhfOVliV0eOuIaAHhAqxvMEmITfztg4EyzHaRej411vyCBpD2MxIqAKOq2i
+         2vk5YpEBjB210hJNWvTVpaRkHgcwFyiKaEvkoEJ6JxCDpvPfoUzzoT1LWK/61uCP3lE2
+         uu9g==
+X-Gm-Message-State: AC+VfDyU4+bF86yvvaT20PSc3/SbSBFI/SMenLv4yYLoFsphEE35bE/A
+	DiMgHD5BCsS4cWiKgWiI0BsCrhy4+tpexWfZ6qk=
+X-Google-Smtp-Source: ACHHUZ5vNyF4W+5bG5UxT0wd2OAbCfY+GFjfWFElVoSmaPe5/FUy0nqfBFTkIsivhWe5c+qh/DptkgT6RTS5OOYlWCY=
+X-Received: by 2002:a2e:94c3:0:b0:2ad:9a11:b131 with SMTP id
+ r3-20020a2e94c3000000b002ad9a11b131mr3432418ljh.32.1685345379171; Mon, 29 May
+ 2023 00:29:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -60,15 +60,14 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20230526054621.18371-1-liangchen.linux@gmail.com>
- <20230526054621.18371-2-liangchen.linux@gmail.com> <CACGkMEv+5150S4ooWFMnUs-GpwRYgRMTku0ZgkFpH5iFR1qQsw@mail.gmail.com>
- <CAKhg4tL2b9LEsaNuLi94Zf9XQ4S2FyoXWzW9wTTkrU8L1qNQcQ@mail.gmail.com> <20230528023956-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230528023956-mutt-send-email-mst@kernel.org>
+ <20230526054621.18371-3-liangchen.linux@gmail.com> <20230528022057-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230528022057-mutt-send-email-mst@kernel.org>
 From: Liang Chen <liangchen.linux@gmail.com>
-Date: Mon, 29 May 2023 15:28:17 +0800
-Message-ID: <CAKhg4t+8TsNZ-0hzfo63qCh_uFYHCmyZR+Fx+rC8garnMBt9jw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/5] virtio_net: Add page_pool support to improve performance
+Date: Mon, 29 May 2023 15:29:26 +0800
+Message-ID: <CAKhg4tKrG=G6VGUsBK-ykypioWiEydR8z_w_xJiKdPrnKA9xjA@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/5] virtio_net: Add page pool fragmentation support
 To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, 
+Cc: jasowang@redhat.com, virtualization@lists.linux-foundation.org, 
 	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	xuanzhuo@linux.alibaba.com, kuba@kernel.org, edumazet@google.com, 
 	davem@davemloft.net, pabeni@redhat.com, alexander.duyck@gmail.com
@@ -81,606 +80,261 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sun, May 28, 2023 at 2:40=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com>=
+On Sun, May 28, 2023 at 2:25=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com>=
  wrote:
 >
-> On Sat, May 27, 2023 at 08:35:01PM +0800, Liang Chen wrote:
-> > On Fri, May 26, 2023 at 2:51=E2=80=AFPM Jason Wang <jasowang@redhat.com=
-> wrote:
-> > >
-> > > On Fri, May 26, 2023 at 1:46=E2=80=AFPM Liang Chen <liangchen.linux@g=
-mail.com> wrote:
-> > > >
-> > > > The implementation at the moment uses one page per packet in both t=
-he
-> > > > normal and XDP path.
-> > >
-> > > It's better to explain why we need a page pool and how it can help th=
-e
-> > > performance.
-> > >
+> On Fri, May 26, 2023 at 01:46:19PM +0800, Liang Chen wrote:
+> > To further enhance performance, implement page pool fragmentation
+> > support and introduce a module parameter to enable or disable it.
 > >
-> > Sure, I will include that on v2.
-> > > > In addition, introducing a module parameter to enable
-> > > > or disable the usage of page pool (disabled by default).
-> > >
-> > > If page pool wins for most of the cases, any reason to disable it by =
-default?
-> > >
+> > In single-core vm testing environments, there is an additional performa=
+nce
+> > gain observed in the normal path compared to the one packet per page
+> > approach.
+> >   Upstream codebase: 47.5 Gbits/sec
+> >   Upstream codebase with page pool: 50.2 Gbits/sec
+> >   Upstream codebase with page pool fragmentation support: 52.3 Gbits/se=
+c
 > >
-> > Thank you for raising the point. It does make sense to enable it by def=
-ault.
+> > There is also some performance gain for XDP cpumap.
+> >   Upstream codebase: 1.38 Gbits/sec
+> >   Upstream codebase with page pool: 9.74 Gbits/sec
+> >   Upstream codebase with page pool fragmentation: 10.3 Gbits/sec
+> >
+> > Signed-off-by: Liang Chen <liangchen.linux@gmail.com>
 >
-> I'd like to see more benchmarks pls then, with a variety of packet
-> sizes, udp and tcp.
+> I think it's called fragmenting not fragmentation.
+>
 >
 
-Sure, more benchmarks will be provided. Thanks.
+Sure, thanks!
+
+> > ---
+> >  drivers/net/virtio_net.c | 72 ++++++++++++++++++++++++++++++----------
+> >  1 file changed, 55 insertions(+), 17 deletions(-)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 99c0ca0c1781..ac40b8c66c59 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -32,7 +32,9 @@ module_param(gso, bool, 0444);
+> >  module_param(napi_tx, bool, 0644);
+> >
+> >  static bool page_pool_enabled;
+> > +static bool page_pool_frag;
+> >  module_param(page_pool_enabled, bool, 0400);
+> > +module_param(page_pool_frag, bool, 0400);
+> >
+> >  /* FIXME: MTU in config. */
+> >  #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
+>
+> So here again same questions.
+>
+> -when is this a net perf gain when does it have no effect?
+> -can be on by default
+> - can we get rid of the extra modes?
+>
+>
+
+Yeah, now I believe it makes sense to enable it by default to avoid
+the extra modes. Thanks.
 
 
-> > > >
-> > > > In single-core vm testing environments, it gives a modest performan=
-ce gain
-> > > > in the normal path.
-> > > >   Upstream codebase: 47.5 Gbits/sec
-> > > >   Upstream codebase + page_pool support: 50.2 Gbits/sec
-> > > >
-> > > > In multi-core vm testing environments, The most significant perform=
-ance
-> > > > gain is observed in XDP cpumap:
-> > > >   Upstream codebase: 1.38 Gbits/sec
-> > > >   Upstream codebase + page_pool support: 9.74 Gbits/sec
-> > >
-> > > Please show more details on the test. E.g which kinds of tests have
-> > > you measured?
-> > >
-> > > Btw, it would be better to measure PPS as well.
-> > >
+> > @@ -909,23 +911,32 @@ static struct page *xdp_linearize_page(struct rec=
+eive_queue *rq,
+> >                                      struct page *p,
+> >                                      int offset,
+> >                                      int page_off,
+> > -                                    unsigned int *len)
+> > +                                    unsigned int *len,
+> > +                                        unsigned int *pp_frag_offset)
+> >  {
+> >       int tailroom =3D SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+> >       struct page *page;
+> > +     unsigned int pp_frag_offset_val;
 > >
-> > Sure. It will be added on v2.
-> > > >
-> > > > With this foundation, we can further integrate page pool fragmentat=
-ion and
-> > > > DMA map/unmap support.
-> > > >
-> > > > Signed-off-by: Liang Chen <liangchen.linux@gmail.com>
-> > > > ---
-> > > >  drivers/net/virtio_net.c | 188 ++++++++++++++++++++++++++++++-----=
-----
-> > >
-> > > I believe we should make virtio-net to select CONFIG_PAGE_POOL or do
-> > > the ifdef tricks at least.
-> > >
+> >       if (page_off + *len + tailroom > PAGE_SIZE)
+> >               return NULL;
 > >
-> > Sure. it will be done on v2.
-> > > >  1 file changed, 146 insertions(+), 42 deletions(-)
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index c5dca0d92e64..99c0ca0c1781 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -31,6 +31,9 @@ module_param(csum, bool, 0444);
-> > > >  module_param(gso, bool, 0444);
-> > > >  module_param(napi_tx, bool, 0644);
-> > > >
-> > > > +static bool page_pool_enabled;
-> > > > +module_param(page_pool_enabled, bool, 0400);
-> > > > +
-> > > >  /* FIXME: MTU in config. */
-> > > >  #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
-> > > >  #define GOOD_COPY_LEN  128
-> > > > @@ -159,6 +162,9 @@ struct receive_queue {
-> > > >         /* Chain pages by the private ptr. */
-> > > >         struct page *pages;
-> > > >
-> > > > +       /* Page pool */
-> > > > +       struct page_pool *page_pool;
-> > > > +
-> > > >         /* Average packet length for mergeable receive buffers. */
-> > > >         struct ewma_pkt_len mrg_avg_pkt_len;
-> > > >
-> > > > @@ -459,6 +465,14 @@ static struct sk_buff *virtnet_build_skb(void =
-*buf, unsigned int buflen,
-> > > >         return skb;
-> > > >  }
-> > > >
-> > > > +static void virtnet_put_page(struct receive_queue *rq, struct page=
- *page)
-> > > > +{
-> > > > +       if (rq->page_pool)
-> > > > +               page_pool_put_full_page(rq->page_pool, page, true);
-> > > > +       else
-> > > > +               put_page(page);
-> > > > +}
-> > > > +
-> > > >  /* Called from bottom half context */
-> > > >  static struct sk_buff *page_to_skb(struct virtnet_info *vi,
-> > > >                                    struct receive_queue *rq,
-> > > > @@ -555,7 +569,7 @@ static struct sk_buff *page_to_skb(struct virtn=
-et_info *vi,
-> > > >         hdr =3D skb_vnet_hdr(skb);
-> > > >         memcpy(hdr, hdr_p, hdr_len);
-> > > >         if (page_to_free)
-> > > > -               put_page(page_to_free);
-> > > > +               virtnet_put_page(rq, page_to_free);
-> > > >
-> > > >         return skb;
-> > > >  }
-> > > > @@ -802,7 +816,7 @@ static int virtnet_xdp_xmit(struct net_device *=
-dev,
-> > > >         return ret;
-> > > >  }
-> > > >
-> > > > -static void put_xdp_frags(struct xdp_buff *xdp)
-> > > > +static void put_xdp_frags(struct xdp_buff *xdp, struct receive_que=
-ue *rq)
-> > > >  {
-> > >
-> > > rq could be fetched from xdp_rxq_info?
-> >
-> > Yeah, it has the queue_index there.
-> > >
-> > > >         struct skb_shared_info *shinfo;
-> > > >         struct page *xdp_page;
-> > > > @@ -812,7 +826,7 @@ static void put_xdp_frags(struct xdp_buff *xdp)
-> > > >                 shinfo =3D xdp_get_shared_info_from_buff(xdp);
-> > > >                 for (i =3D 0; i < shinfo->nr_frags; i++) {
-> > > >                         xdp_page =3D skb_frag_page(&shinfo->frags[i=
-]);
-> > > > -                       put_page(xdp_page);
-> > > > +                       virtnet_put_page(rq, xdp_page);
-> > > >                 }
-> > > >         }
-> > > >  }
-> > > > @@ -903,7 +917,11 @@ static struct page *xdp_linearize_page(struct =
-receive_queue *rq,
-> > > >         if (page_off + *len + tailroom > PAGE_SIZE)
-> > > >                 return NULL;
-> > > >
-> > > > -       page =3D alloc_page(GFP_ATOMIC);
-> > > > +       if (rq->page_pool)
-> > > > +               page =3D page_pool_dev_alloc_pages(rq->page_pool);
-> > > > +       else
-> > > > +               page =3D alloc_page(GFP_ATOMIC);
-> > > > +
-> > > >         if (!page)
-> > > >                 return NULL;
-> > > >
-> > > > @@ -926,21 +944,24 @@ static struct page *xdp_linearize_page(struct=
- receive_queue *rq,
-> > > >                  * is sending packet larger than the MTU.
-> > > >                  */
-> > > >                 if ((page_off + buflen + tailroom) > PAGE_SIZE) {
-> > > > -                       put_page(p);
-> > > > +                       virtnet_put_page(rq, p);
-> > > >                         goto err_buf;
-> > > >                 }
-> > > >
-> > > >                 memcpy(page_address(page) + page_off,
-> > > >                        page_address(p) + off, buflen);
-> > > >                 page_off +=3D buflen;
-> > > > -               put_page(p);
-> > > > +               virtnet_put_page(rq, p);
-> > > >         }
-> > > >
-> > > >         /* Headroom does not contribute to packet length */
-> > > >         *len =3D page_off - VIRTIO_XDP_HEADROOM;
-> > > >         return page;
-> > > >  err_buf:
-> > > > -       __free_pages(page, 0);
-> > > > +       if (rq->page_pool)
-> > > > +               page_pool_put_full_page(rq->page_pool, page, true);
-> > > > +       else
-> > > > +               __free_pages(page, 0);
-> > > >         return NULL;
-> > > >  }
-> > > >
-> > > > @@ -1144,7 +1165,7 @@ static void mergeable_buf_free(struct receive=
-_queue *rq, int num_buf,
-> > > >                 }
-> > > >                 stats->bytes +=3D len;
-> > > >                 page =3D virt_to_head_page(buf);
-> > > > -               put_page(page);
-> > > > +               virtnet_put_page(rq, page);
-> > > >         }
-> > > >  }
-> > > >
-> > > > @@ -1264,7 +1285,7 @@ static int virtnet_build_xdp_buff_mrg(struct =
-net_device *dev,
-> > > >                 cur_frag_size =3D truesize;
-> > > >                 xdp_frags_truesz +=3D cur_frag_size;
-> > > >                 if (unlikely(len > truesize - room || cur_frag_size=
- > PAGE_SIZE)) {
-> > > > -                       put_page(page);
-> > > > +                       virtnet_put_page(rq, page);
-> > > >                         pr_debug("%s: rx error: len %u exceeds true=
-size %lu\n",
-> > > >                                  dev->name, len, (unsigned long)(tr=
-uesize - room));
-> > > >                         dev->stats.rx_length_errors++;
-> > > > @@ -1283,7 +1304,7 @@ static int virtnet_build_xdp_buff_mrg(struct =
-net_device *dev,
-> > > >         return 0;
-> > > >
-> > > >  err:
-> > > > -       put_xdp_frags(xdp);
-> > > > +       put_xdp_frags(xdp, rq);
-> > > >         return -EINVAL;
-> > > >  }
-> > > >
-> > > > @@ -1344,7 +1365,10 @@ static void *mergeable_xdp_get_buf(struct vi=
-rtnet_info *vi,
-> > > >                 if (*len + xdp_room > PAGE_SIZE)
-> > > >                         return NULL;
-> > > >
-> > > > -               xdp_page =3D alloc_page(GFP_ATOMIC);
-> > > > +               if (rq->page_pool)
-> > > > +                       xdp_page =3D page_pool_dev_alloc_pages(rq->=
-page_pool);
-> > > > +               else
-> > > > +                       xdp_page =3D alloc_page(GFP_ATOMIC);
-> > > >                 if (!xdp_page)
-> > > >                         return NULL;
-> > > >
-> > > > @@ -1354,7 +1378,7 @@ static void *mergeable_xdp_get_buf(struct vir=
-tnet_info *vi,
-> > > >
-> > > >         *frame_sz =3D PAGE_SIZE;
-> > > >
-> > > > -       put_page(*page);
-> > > > +       virtnet_put_page(rq, *page);
-> > > >
-> > > >         *page =3D xdp_page;
-> > > >
-> > > > @@ -1400,6 +1424,8 @@ static struct sk_buff *receive_mergeable_xdp(=
-struct net_device *dev,
-> > > >                 head_skb =3D build_skb_from_xdp_buff(dev, vi, &xdp,=
- xdp_frags_truesz);
-> > > >                 if (unlikely(!head_skb))
-> > > >                         break;
-> > > > +               if (rq->page_pool)
-> > > > +                       skb_mark_for_recycle(head_skb);
-> > > >                 return head_skb;
-> > > >
-> > > >         case XDP_TX:
-> > > > @@ -1410,10 +1436,10 @@ static struct sk_buff *receive_mergeable_xd=
-p(struct net_device *dev,
-> > > >                 break;
-> > > >         }
-> > > >
-> > > > -       put_xdp_frags(&xdp);
-> > > > +       put_xdp_frags(&xdp, rq);
-> > > >
-> > > >  err_xdp:
-> > > > -       put_page(page);
-> > > > +       virtnet_put_page(rq, page);
-> > > >         mergeable_buf_free(rq, num_buf, dev, stats);
-> > > >
-> > > >         stats->xdp_drops++;
-> > > > @@ -1467,6 +1493,9 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >         head_skb =3D page_to_skb(vi, rq, page, offset, len, truesiz=
-e, headroom);
-> > > >         curr_skb =3D head_skb;
-> > > >
-> > > > +       if (rq->page_pool)
-> > > > +               skb_mark_for_recycle(curr_skb);
-> > > > +
-> > > >         if (unlikely(!curr_skb))
-> > > >                 goto err_skb;
-> > > >         while (--num_buf) {
-> > > > @@ -1509,6 +1538,8 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >                         curr_skb =3D nskb;
-> > > >                         head_skb->truesize +=3D nskb->truesize;
-> > > >                         num_skb_frags =3D 0;
-> > > > +                       if (rq->page_pool)
-> > > > +                               skb_mark_for_recycle(curr_skb);
-> > > >                 }
-> > > >                 if (curr_skb !=3D head_skb) {
-> > > >                         head_skb->data_len +=3D len;
-> > > > @@ -1517,7 +1548,7 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >                 }
-> > > >                 offset =3D buf - page_address(page);
-> > > >                 if (skb_can_coalesce(curr_skb, num_skb_frags, page,=
- offset)) {
-> > > > -                       put_page(page);
-> > > > +                       virtnet_put_page(rq, page);
-> > >
-> > > I wonder why not we can't do this during buffer allocation like other=
- drivers?
-> > >
-> >
-> > Sorry, I don't quite understand the point here. Would you please
-> > elaborate a bit more?
-> > > >                         skb_coalesce_rx_frag(curr_skb, num_skb_frag=
-s - 1,
-> > > >                                              len, truesize);
-> > > >                 } else {
-> > > > @@ -1530,7 +1561,7 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >         return head_skb;
-> > > >
-> > > >  err_skb:
-> > > > -       put_page(page);
-> > > > +       virtnet_put_page(rq, page);
-> > > >         mergeable_buf_free(rq, num_buf, dev, stats);
-> > > >
-> > > >  err_buf:
-> > > > @@ -1737,31 +1768,40 @@ static int add_recvbuf_mergeable(struct vir=
-tnet_info *vi,
-> > > >          * disabled GSO for XDP, it won't be a big issue.
-> > > >          */
-> > > >         len =3D get_mergeable_buf_len(rq, &rq->mrg_avg_pkt_len, roo=
-m);
-> > > > -       if (unlikely(!skb_page_frag_refill(len + room, alloc_frag, =
-gfp)))
-> > > > -               return -ENOMEM;
-> > > > +       if (rq->page_pool) {
-> > > > +               struct page *page;
-> > > >
-> > > > -       buf =3D (char *)page_address(alloc_frag->page) + alloc_frag=
-->offset;
-> > > > -       buf +=3D headroom; /* advance address leaving hole at front=
- of pkt */
-> > > > -       get_page(alloc_frag->page);
-> > > > -       alloc_frag->offset +=3D len + room;
-> > > > -       hole =3D alloc_frag->size - alloc_frag->offset;
-> > > > -       if (hole < len + room) {
-> > > > -               /* To avoid internal fragmentation, if there is ver=
-y likely not
-> > > > -                * enough space for another buffer, add the remaini=
-ng space to
-> > > > -                * the current buffer.
-> > > > -                * XDP core assumes that frame_size of xdp_buff and=
- the length
-> > > > -                * of the frag are PAGE_SIZE, so we disable the hol=
-e mechanism.
-> > > > -                */
-> > > > -               if (!headroom)
-> > > > -                       len +=3D hole;
-> > > > -               alloc_frag->offset +=3D hole;
-> > > > -       }
-> > > > +               page =3D page_pool_dev_alloc_pages(rq->page_pool);
-> > > > +               if (unlikely(!page))
-> > > > +                       return -ENOMEM;
-> > > > +               buf =3D (char *)page_address(page);
-> > > > +               buf +=3D headroom; /* advance address leaving hole =
-at front of pkt */
-> > > > +       } else {
-> > > > +               if (unlikely(!skb_page_frag_refill(len + room, allo=
-c_frag, gfp)))
-> > >
-> > > Why not simply use a helper like virtnet_page_frag_refill() and add
-> > > the page_pool allocation logic there? It helps to reduce the
-> > > changeset.
-> > >
-> >
-> > Sure. Will do that on v2.
-> > > > +                       return -ENOMEM;
-> > > >
-> > > > +               buf =3D (char *)page_address(alloc_frag->page) + al=
-loc_frag->offset;
-> > > > +               buf +=3D headroom; /* advance address leaving hole =
-at front of pkt */
-> > > > +               get_page(alloc_frag->page);
-> > > > +               alloc_frag->offset +=3D len + room;
-> > > > +               hole =3D alloc_frag->size - alloc_frag->offset;
-> > > > +               if (hole < len + room) {
-> > > > +                       /* To avoid internal fragmentation, if ther=
-e is very likely not
-> > > > +                        * enough space for another buffer, add the=
- remaining space to
-> > > > +                        * the current buffer.
-> > > > +                        * XDP core assumes that frame_size of xdp_=
-buff and the length
-> > > > +                        * of the frag are PAGE_SIZE, so we disable=
- the hole mechanism.
-> > > > +                        */
-> > > > +                       if (!headroom)
-> > > > +                               len +=3D hole;
-> > > > +                       alloc_frag->offset +=3D hole;
-> > > > +               }
-> > > > +       }
-> > > >         sg_init_one(rq->sg, buf, len);
-> > > >         ctx =3D mergeable_len_to_ctx(len + room, headroom);
-> > > >         err =3D virtqueue_add_inbuf_ctx(rq->vq, rq->sg, 1, buf, ctx=
-, gfp);
-> > > >         if (err < 0)
-> > > > -               put_page(virt_to_head_page(buf));
-> > > > +               virtnet_put_page(rq, virt_to_head_page(buf));
-> > > >
-> > > >         return err;
-> > > >  }
-> > > > @@ -1994,8 +2034,15 @@ static int virtnet_enable_queue_pair(struct =
-virtnet_info *vi, int qp_index)
-> > > >         if (err < 0)
-> > > >                 return err;
-> > > >
-> > > > -       err =3D xdp_rxq_info_reg_mem_model(&vi->rq[qp_index].xdp_rx=
-q,
-> > > > -                                        MEM_TYPE_PAGE_SHARED, NULL=
-);
-> > > > +       if (vi->rq[qp_index].page_pool)
-> > > > +               err =3D xdp_rxq_info_reg_mem_model(&vi->rq[qp_index=
-].xdp_rxq,
-> > > > +                                                MEM_TYPE_PAGE_POOL=
-,
-> > > > +                                                vi->rq[qp_index].p=
-age_pool);
-> > > > +       else
-> > > > +               err =3D xdp_rxq_info_reg_mem_model(&vi->rq[qp_index=
-].xdp_rxq,
-> > > > +                                                MEM_TYPE_PAGE_SHAR=
-ED,
-> > > > +                                                NULL);
-> > > > +
-> > > >         if (err < 0)
-> > > >                 goto err_xdp_reg_mem_model;
-> > > >
-> > > > @@ -2951,6 +2998,7 @@ static void virtnet_get_strings(struct net_de=
-vice *dev, u32 stringset, u8 *data)
-> > > >                                 ethtool_sprintf(&p, "tx_queue_%u_%s=
-", i,
-> > > >                                                 virtnet_sq_stats_de=
-sc[j].desc);
-> > > >                 }
-> > > > +               page_pool_ethtool_stats_get_strings(p);
-> > > >                 break;
-> > > >         }
-> > > >  }
-> > > > @@ -2962,12 +3010,30 @@ static int virtnet_get_sset_count(struct ne=
-t_device *dev, int sset)
-> > > >         switch (sset) {
-> > > >         case ETH_SS_STATS:
-> > > >                 return vi->curr_queue_pairs * (VIRTNET_RQ_STATS_LEN=
- +
-> > > > -                                              VIRTNET_SQ_STATS_LEN=
-);
-> > > > +                                              VIRTNET_SQ_STATS_LEN=
- +
-> > > > +                                               (page_pool_enabled =
-&& vi->mergeable_rx_bufs ?
-> > > > +                                                page_pool_ethtool_=
-stats_get_count() : 0));
-> > > >         default:
-> > > >                 return -EOPNOTSUPP;
-> > > >         }
-> > > >  }
-> > > >
-> > > > +static void virtnet_get_page_pool_stats(struct net_device *dev, u6=
-4 *data)
-> > > > +{
-> > > > +#ifdef CONFIG_PAGE_POOL_STATS
-> > > > +       struct virtnet_info *vi =3D netdev_priv(dev);
-> > > > +       struct page_pool_stats pp_stats =3D {};
-> > > > +       int i;
-> > > > +
-> > > > +       for (i =3D 0; i < vi->curr_queue_pairs; i++) {
-> > > > +               if (!vi->rq[i].page_pool)
-> > > > +                       continue;
-> > > > +               page_pool_get_stats(vi->rq[i].page_pool, &pp_stats)=
+> >       if (rq->page_pool)
+> > -             page =3D page_pool_dev_alloc_pages(rq->page_pool);
+> > +             if (rq->page_pool->p.flags & PP_FLAG_PAGE_FRAG)
+> > +                     page =3D page_pool_dev_alloc_frag(rq->page_pool, =
+pp_frag_offset,
+> > +                                                     PAGE_SIZE);
+> > +             else
+> > +                     page =3D page_pool_dev_alloc_pages(rq->page_pool)=
 ;
-> > > > +       }
-> > > > +       page_pool_ethtool_stats_get(data, &pp_stats);
-> > > > +#endif /* CONFIG_PAGE_POOL_STATS */
-> > > > +}
-> > > > +
-> > > >  static void virtnet_get_ethtool_stats(struct net_device *dev,
-> > > >                                       struct ethtool_stats *stats, =
-u64 *data)
-> > > >  {
-> > > > @@ -3003,6 +3069,8 @@ static void virtnet_get_ethtool_stats(struct =
-net_device *dev,
-> > > >                 } while (u64_stats_fetch_retry(&sq->stats.syncp, st=
-art));
-> > > >                 idx +=3D VIRTNET_SQ_STATS_LEN;
-> > > >         }
-> > > > +
-> > > > +       virtnet_get_page_pool_stats(dev, &data[idx]);
-> > > >  }
-> > > >
-> > > >  static void virtnet_get_channels(struct net_device *dev,
-> > > > @@ -3623,6 +3691,8 @@ static void virtnet_free_queues(struct virtne=
-t_info *vi)
-> > > >         for (i =3D 0; i < vi->max_queue_pairs; i++) {
-> > > >                 __netif_napi_del(&vi->rq[i].napi);
-> > > >                 __netif_napi_del(&vi->sq[i].napi);
-> > > > +               if (vi->rq[i].page_pool)
-> > > > +                       page_pool_destroy(vi->rq[i].page_pool);
-> > > >         }
-> > > >
-> > > >         /* We called __netif_napi_del(),
-> > > > @@ -3679,12 +3749,19 @@ static void virtnet_rq_free_unused_buf(stru=
-ct virtqueue *vq, void *buf)
-> > > >         struct virtnet_info *vi =3D vq->vdev->priv;
-> > > >         int i =3D vq2rxq(vq);
-> > > >
-> > > > -       if (vi->mergeable_rx_bufs)
-> > > > -               put_page(virt_to_head_page(buf));
-> > > > -       else if (vi->big_packets)
-> > > > +       if (vi->mergeable_rx_bufs) {
-> > > > +               if (vi->rq[i].page_pool) {
-> > > > +                       page_pool_put_full_page(vi->rq[i].page_pool=
+> >       else
+> >               page =3D alloc_page(GFP_ATOMIC);
+> >
+> >       if (!page)
+> >               return NULL;
+> >
+> > -     memcpy(page_address(page) + page_off, page_address(p) + offset, *=
+len);
+> > +     pp_frag_offset_val =3D pp_frag_offset ? *pp_frag_offset : 0;
+> > +
+> > +     memcpy(page_address(page) + page_off + pp_frag_offset_val,
+> > +            page_address(p) + offset, *len);
+> >       page_off +=3D *len;
+> >
+> >       while (--*num_buf) {
+> > @@ -948,7 +959,7 @@ static struct page *xdp_linearize_page(struct recei=
+ve_queue *rq,
+> >                       goto err_buf;
+> >               }
+> >
+> > -             memcpy(page_address(page) + page_off,
+> > +             memcpy(page_address(page) + page_off + pp_frag_offset_val=
 ,
-> > > > +                                               virt_to_head_page(b=
-uf),
-> > > > +                                               true);
-> > > > +               } else {
-> > > > +                       put_page(virt_to_head_page(buf));
-> > > > +               }
-> > > > +       } else if (vi->big_packets) {
-> > > >                 give_pages(&vi->rq[i], buf);
-> > >
-> > > Any reason only mergeable were modified but not for small and big?
-> > >
-> > > Thanks
-> > >
+> >                      page_address(p) + off, buflen);
+> >               page_off +=3D buflen;
+> >               virtnet_put_page(rq, p);
+> > @@ -1029,7 +1040,7 @@ static struct sk_buff *receive_small_xdp(struct n=
+et_device *dev,
+> >                       SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+> >               xdp_page =3D xdp_linearize_page(rq, &num_buf, page,
+> >                                             offset, header_offset,
+> > -                                           &tlen);
+> > +                                           &tlen, NULL);
+> >               if (!xdp_page)
+> >                       goto err_xdp;
 > >
-> > Big mode uses the page chain to recycle pages, thus the using of
-> > "private" of the buffer page. I will take further look into that to
-> > see if it is better to use page pool in these cases. Thanks!
+> > @@ -1323,6 +1334,7 @@ static void *mergeable_xdp_get_buf(struct virtnet=
+_info *vi,
+> >       unsigned int headroom =3D mergeable_ctx_to_headroom(ctx);
+> >       struct page *xdp_page;
+> >       unsigned int xdp_room;
+> > +     unsigned int page_frag_offset =3D 0;
 > >
+> >       /* Transient failure which in theory could occur if
+> >        * in-flight packets from before XDP was enabled reach
+> > @@ -1356,7 +1368,8 @@ static void *mergeable_xdp_get_buf(struct virtnet=
+_info *vi,
+> >               xdp_page =3D xdp_linearize_page(rq, num_buf,
+> >                                             *page, offset,
+> >                                             VIRTIO_XDP_HEADROOM,
+> > -                                           len);
+> > +                                           len,
+> > +                                               &page_frag_offset);
+> >               if (!xdp_page)
+> >                       return NULL;
+> >       } else {
+> > @@ -1366,14 +1379,19 @@ static void *mergeable_xdp_get_buf(struct virtn=
+et_info *vi,
+> >                       return NULL;
 > >
+> >               if (rq->page_pool)
+> > -                     xdp_page =3D page_pool_dev_alloc_pages(rq->page_p=
+ool);
+> > +                     if (rq->page_pool->p.flags & PP_FLAG_PAGE_FRAG)
+> > +                             xdp_page =3D page_pool_dev_alloc_frag(rq-=
+>page_pool,
+> > +                                                                 &page=
+_frag_offset, PAGE_SIZE);
+> > +                     else
+> > +                             xdp_page =3D page_pool_dev_alloc_pages(rq=
+->page_pool);
+> >               else
+> >                       xdp_page =3D alloc_page(GFP_ATOMIC);
+> > +
+> >               if (!xdp_page)
+> >                       return NULL;
 > >
-> > > > -       else
-> > > > +       } else {
-> > > >                 put_page(virt_to_head_page(buf));
-> > > > +       }
-> > > >  }
-> > > >
-> > > >  static void free_unused_bufs(struct virtnet_info *vi)
-> > > > @@ -3718,6 +3795,26 @@ static void virtnet_del_vqs(struct virtnet_i=
-nfo *vi)
-> > > >         virtnet_free_queues(vi);
-> > > >  }
-> > > >
-> > > > +static void virtnet_alloc_page_pool(struct receive_queue *rq)
-> > > > +{
-> > > > +       struct virtio_device *vdev =3D rq->vq->vdev;
-> > > > +
-> > > > +       struct page_pool_params pp_params =3D {
-> > > > +               .order =3D 0,
-> > > > +               .pool_size =3D rq->vq->num_max,
-> > > > +               .nid =3D dev_to_node(vdev->dev.parent),
-> > > > +               .dev =3D vdev->dev.parent,
-> > > > +               .offset =3D 0,
-> > > > +       };
-> > > > +
-> > > > +       rq->page_pool =3D page_pool_create(&pp_params);
-> > > > +       if (IS_ERR(rq->page_pool)) {
-> > > > +               dev_warn(&vdev->dev, "page pool creation failed: %l=
-d\n",
-> > > > +                        PTR_ERR(rq->page_pool));
-> > > > +               rq->page_pool =3D NULL;
-> > > > +       }
-> > > > +}
-> > > > +
-> > > >  /* How large should a single buffer be so a queue full of these ca=
-n fit at
-> > > >   * least one full packet?
-> > > >   * Logic below assumes the mergeable buffer header is used.
-> > > > @@ -3801,6 +3898,13 @@ static int virtnet_find_vqs(struct virtnet_i=
-nfo *vi)
-> > > >                 vi->rq[i].vq =3D vqs[rxq2vq(i)];
-> > > >                 vi->rq[i].min_buf_len =3D mergeable_min_buf_len(vi,=
- vi->rq[i].vq);
-> > > >                 vi->sq[i].vq =3D vqs[txq2vq(i)];
-> > > > +
-> > > > +               if (page_pool_enabled && vi->mergeable_rx_bufs)
-> > > > +                       virtnet_alloc_page_pool(&vi->rq[i]);
-> > > > +               else
-> > > > +                       dev_warn(&vi->vdev->dev,
-> > > > +                                "page pool only support mergeable =
-mode\n");
-> > > > +
-> > > >         }
-> > > >
-> > > >         /* run here: ret =3D=3D 0. */
-> > > > --
-> > > > 2.31.1
-> > > >
-> > >
+> > -             memcpy(page_address(xdp_page) + VIRTIO_XDP_HEADROOM,
+> > -                    page_address(*page) + offset, *len);
+> > +             memcpy(page_address(xdp_page) + VIRTIO_XDP_HEADROOM +
+> > +                             page_frag_offset, page_address(*page) + o=
+ffset, *len);
+> >       }
+> >
+> >       *frame_sz =3D PAGE_SIZE;
+> > @@ -1382,7 +1400,7 @@ static void *mergeable_xdp_get_buf(struct virtnet=
+_info *vi,
+> >
+> >       *page =3D xdp_page;
+> >
+> > -     return page_address(*page) + VIRTIO_XDP_HEADROOM;
+> > +     return page_address(*page) + VIRTIO_XDP_HEADROOM + page_frag_offs=
+et;
+> >  }
+> >
+> >  static struct sk_buff *receive_mergeable_xdp(struct net_device *dev,
+> > @@ -1762,6 +1780,7 @@ static int add_recvbuf_mergeable(struct virtnet_i=
+nfo *vi,
+> >       void *ctx;
+> >       int err;
+> >       unsigned int len, hole;
+> > +     unsigned int pp_frag_offset;
+> >
+> >       /* Extra tailroom is needed to satisfy XDP's assumption. This
+> >        * means rx frags coalescing won't work, but consider we've
+> > @@ -1769,13 +1788,29 @@ static int add_recvbuf_mergeable(struct virtnet=
+_info *vi,
+> >        */
+> >       len =3D get_mergeable_buf_len(rq, &rq->mrg_avg_pkt_len, room);
+> >       if (rq->page_pool) {
+> > -             struct page *page;
+> > +             if (rq->page_pool->p.flags & PP_FLAG_PAGE_FRAG) {
+> > +                     if (unlikely(!page_pool_dev_alloc_frag(rq->page_p=
+ool,
+> > +                                                            &pp_frag_o=
+ffset, len + room)))
+> > +                             return -ENOMEM;
+> > +                     buf =3D (char *)page_address(rq->page_pool->frag_=
+page) +
+> > +                             pp_frag_offset;
+> > +                     buf +=3D headroom; /* advance address leaving hol=
+e at front of pkt */
+> > +                     hole =3D (PAGE_SIZE << rq->page_pool->p.order)
+> > +                             - rq->page_pool->frag_offset;
+> > +                     if (hole < len + room) {
+> > +                             if (!headroom)
+> > +                                     len +=3D hole;
+> > +                             rq->page_pool->frag_offset +=3D hole;
+> > +                     }
+> > +             } else {
+> > +                     struct page *page;
+> >
+> > -             page =3D page_pool_dev_alloc_pages(rq->page_pool);
+> > -             if (unlikely(!page))
+> > -                     return -ENOMEM;
+> > -             buf =3D (char *)page_address(page);
+> > -             buf +=3D headroom; /* advance address leaving hole at fro=
+nt of pkt */
+> > +                     page =3D page_pool_dev_alloc_pages(rq->page_pool)=
+;
+> > +                     if (unlikely(!page))
+> > +                             return -ENOMEM;
+> > +                     buf =3D (char *)page_address(page);
+> > +                     buf +=3D headroom; /* advance address leaving hol=
+e at front of pkt */
+> > +             }
+> >       } else {
+> >               if (unlikely(!skb_page_frag_refill(len + room, alloc_frag=
+, gfp)))
+> >                       return -ENOMEM;
+> > @@ -3800,13 +3835,16 @@ static void virtnet_alloc_page_pool(struct rece=
+ive_queue *rq)
+> >       struct virtio_device *vdev =3D rq->vq->vdev;
+> >
+> >       struct page_pool_params pp_params =3D {
+> > -             .order =3D 0,
+> > +             .order =3D page_pool_frag ? SKB_FRAG_PAGE_ORDER : 0,
+> >               .pool_size =3D rq->vq->num_max,
+> >               .nid =3D dev_to_node(vdev->dev.parent),
+> >               .dev =3D vdev->dev.parent,
+> >               .offset =3D 0,
+> >       };
+> >
+> > +     if (page_pool_frag)
+> > +             pp_params.flags |=3D PP_FLAG_PAGE_FRAG;
+> > +
+> >       rq->page_pool =3D page_pool_create(&pp_params);
+> >       if (IS_ERR(rq->page_pool)) {
+> >               dev_warn(&vdev->dev, "page pool creation failed: %ld\n",
+> > --
+> > 2.31.1
 >
 
